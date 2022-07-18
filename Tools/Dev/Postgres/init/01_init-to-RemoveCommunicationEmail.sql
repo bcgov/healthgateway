@@ -1,4 +1,4 @@
-\c hglocal
+﻿\c hglocal
 SET ROLE hglocal;
 
 CREATE TABLE IF NOT EXISTS "__EFMigrationsHistory" (
@@ -13,7 +13,9 @@ START TRANSACTION;
 DO $EF$
 BEGIN
     IF NOT EXISTS(SELECT 1 FROM "__EFMigrationsHistory" WHERE "MigrationId" = '20191119083157_InitialCreate') THEN
-    CREATE SCHEMA IF NOT EXISTS gateway;
+        IF NOT EXISTS(SELECT 1 FROM pg_namespace WHERE nspname = 'gateway') THEN
+            CREATE SCHEMA gateway;
+        END IF;
     END IF;
 END $EF$;
 
@@ -30,9 +32,9 @@ BEGIN
     CREATE TABLE gateway."AuditTransactionResultCode" (
         "ResultCode" character varying(10) NOT NULL,
         "CreatedBy" character varying(60) NOT NULL,
-        "CreatedDateTime" timestamp without time zone NOT NULL,
+        "CreatedDateTime" timestamp with time zone NOT NULL,
         "UpdatedBy" character varying(60) NOT NULL,
-        "UpdatedDateTime" timestamp without time zone NOT NULL,
+        "UpdatedDateTime" timestamp with time zone NOT NULL,
         "Description" character varying(30) NOT NULL,
         CONSTRAINT "PK_AuditTransactionResultCode" PRIMARY KEY ("ResultCode")
     );
@@ -45,9 +47,9 @@ BEGIN
     CREATE TABLE gateway."EmailFormatCode" (
         "FormatCode" character varying(4) NOT NULL,
         "CreatedBy" character varying(60) NOT NULL,
-        "CreatedDateTime" timestamp without time zone NOT NULL,
+        "CreatedDateTime" timestamp with time zone NOT NULL,
         "UpdatedBy" character varying(60) NOT NULL,
-        "UpdatedDateTime" timestamp without time zone NOT NULL,
+        "UpdatedDateTime" timestamp with time zone NOT NULL,
         CONSTRAINT "PK_EmailFormatCode" PRIMARY KEY ("FormatCode")
     );
     END IF;
@@ -59,9 +61,9 @@ BEGIN
     CREATE TABLE gateway."EmailStatusCode" (
         "StatusCode" character varying(10) NOT NULL,
         "CreatedBy" character varying(60) NOT NULL,
-        "CreatedDateTime" timestamp without time zone NOT NULL,
+        "CreatedDateTime" timestamp with time zone NOT NULL,
         "UpdatedBy" character varying(60) NOT NULL,
-        "UpdatedDateTime" timestamp without time zone NOT NULL,
+        "UpdatedDateTime" timestamp with time zone NOT NULL,
         "Description" character varying(30) NOT NULL,
         CONSTRAINT "PK_EmailStatusCode" PRIMARY KEY ("StatusCode")
     );
@@ -74,9 +76,9 @@ BEGIN
     CREATE TABLE gateway."ProgramTypeCode" (
         "ProgramCode" character varying(10) NOT NULL,
         "CreatedBy" character varying(60) NOT NULL,
-        "CreatedDateTime" timestamp without time zone NOT NULL,
+        "CreatedDateTime" timestamp with time zone NOT NULL,
         "UpdatedBy" character varying(60) NOT NULL,
-        "UpdatedDateTime" timestamp without time zone NOT NULL,
+        "UpdatedDateTime" timestamp with time zone NOT NULL,
         "Description" character varying(50) NOT NULL,
         CONSTRAINT "PK_ProgramTypeCode" PRIMARY KEY ("ProgramCode")
     );
@@ -89,9 +91,9 @@ BEGIN
     CREATE TABLE gateway."Schedule" (
         "ScheduleId" uuid NOT NULL,
         "CreatedBy" character varying(60) NOT NULL,
-        "CreatedDateTime" timestamp without time zone NOT NULL,
+        "CreatedDateTime" timestamp with time zone NOT NULL,
         "UpdatedBy" character varying(60) NOT NULL,
-        "UpdatedDateTime" timestamp without time zone NOT NULL,
+        "UpdatedDateTime" timestamp with time zone NOT NULL,
         "ScheduleDesc" character varying(40) NULL,
         "ScheduleDescFrench" character varying(80) NULL,
         "DrugProductId" uuid NOT NULL,
@@ -106,9 +108,9 @@ BEGIN
     CREATE TABLE gateway."UserFeedback" (
         "UserFeedbackId" uuid NOT NULL,
         "CreatedBy" character varying(60) NOT NULL,
-        "CreatedDateTime" timestamp without time zone NOT NULL,
+        "CreatedDateTime" timestamp with time zone NOT NULL,
         "UpdatedBy" character varying(60) NOT NULL,
-        "UpdatedDateTime" timestamp without time zone NOT NULL,
+        "UpdatedDateTime" timestamp with time zone NOT NULL,
         "IsSatisfied" boolean NOT NULL,
         "Comment" character varying(500) NULL,
         CONSTRAINT "PK_UserFeedback" PRIMARY KEY ("UserFeedbackId")
@@ -122,9 +124,9 @@ BEGIN
     CREATE TABLE gateway."UserProfile" (
         "UserProfileId" character varying(52) NOT NULL,
         "CreatedBy" character varying(60) NOT NULL,
-        "CreatedDateTime" timestamp without time zone NOT NULL,
+        "CreatedDateTime" timestamp with time zone NOT NULL,
         "UpdatedBy" character varying(60) NOT NULL,
-        "UpdatedDateTime" timestamp without time zone NOT NULL,
+        "UpdatedDateTime" timestamp with time zone NOT NULL,
         "AcceptedTermsOfService" boolean NOT NULL,
         "Email" character varying(254) NULL,
         CONSTRAINT "PK_UserProfile" PRIMARY KEY ("UserProfileId")
@@ -138,16 +140,16 @@ BEGIN
     CREATE TABLE gateway."EmailTemplate" (
         "EmailTemplateId" uuid NOT NULL,
         "CreatedBy" character varying(60) NOT NULL,
-        "CreatedDateTime" timestamp without time zone NOT NULL,
+        "CreatedDateTime" timestamp with time zone NOT NULL,
         "UpdatedBy" character varying(60) NOT NULL,
-        "UpdatedDateTime" timestamp without time zone NOT NULL,
+        "UpdatedDateTime" timestamp with time zone NOT NULL,
         "Name" character varying(30) NOT NULL,
         "From" character varying(254) NOT NULL,
         "Subject" character varying(100) NOT NULL,
         "Body" text NOT NULL,
         "Priority" integer NOT NULL,
-        "EffectiveDate" timestamp without time zone NOT NULL,
-        "ExpiryDate" timestamp without time zone NULL,
+        "EffectiveDate" timestamp with time zone NOT NULL,
+        "ExpiryDate" timestamp with time zone NULL,
         "FormatCode" character varying(4) NOT NULL,
         CONSTRAINT "PK_EmailTemplate" PRIMARY KEY ("EmailTemplateId"),
         CONSTRAINT "FK_EmailTemplate_EmailFormatCode_FormatCode" FOREIGN KEY ("FormatCode") REFERENCES gateway."EmailFormatCode" ("FormatCode") ON DELETE CASCADE
@@ -161,17 +163,17 @@ BEGIN
     CREATE TABLE gateway."Email" (
         "EmailId" uuid NOT NULL,
         "CreatedBy" character varying(60) NOT NULL,
-        "CreatedDateTime" timestamp without time zone NOT NULL,
+        "CreatedDateTime" timestamp with time zone NOT NULL,
         "UpdatedBy" character varying(60) NOT NULL,
-        "UpdatedDateTime" timestamp without time zone NOT NULL,
+        "UpdatedDateTime" timestamp with time zone NOT NULL,
         "From" character varying(254) NOT NULL,
         "To" character varying(254) NOT NULL,
         "Subject" character varying(100) NOT NULL,
         "Body" text NOT NULL,
         "FormatCode" character varying(4) NOT NULL,
         "Priority" integer NOT NULL,
-        "SentDateTime" timestamp without time zone NULL,
-        "LastRetryDateTime" timestamp without time zone NULL,
+        "SentDateTime" timestamp with time zone NULL,
+        "LastRetryDateTime" timestamp with time zone NULL,
         "Attempts" integer NOT NULL,
         "SmtpStatusCode" integer NOT NULL,
         "EmailStatusCode" character varying(10) NOT NULL,
@@ -188,10 +190,10 @@ BEGIN
     CREATE TABLE gateway."AuditEvent" (
         "AuditEventId" uuid NOT NULL,
         "CreatedBy" character varying(60) NOT NULL,
-        "CreatedDateTime" timestamp without time zone NOT NULL,
+        "CreatedDateTime" timestamp with time zone NOT NULL,
         "UpdatedBy" character varying(60) NOT NULL,
-        "UpdatedDateTime" timestamp without time zone NOT NULL,
-        "AuditEventDateTime" timestamp without time zone NOT NULL,
+        "UpdatedDateTime" timestamp with time zone NOT NULL,
+        "AuditEventDateTime" timestamp with time zone NOT NULL,
         "ClientIP" character varying(15) NOT NULL,
         "ApplicationSubject" character varying(100) NULL,
         "ApplicationType" character varying(10) NOT NULL,
@@ -213,9 +215,9 @@ BEGIN
     CREATE TABLE gateway."FileDownload" (
         "FileDownloadId" uuid NOT NULL,
         "CreatedBy" character varying(60) NOT NULL,
-        "CreatedDateTime" timestamp without time zone NOT NULL,
+        "CreatedDateTime" timestamp with time zone NOT NULL,
         "UpdatedBy" character varying(60) NOT NULL,
-        "UpdatedDateTime" timestamp without time zone NOT NULL,
+        "UpdatedDateTime" timestamp with time zone NOT NULL,
         "Name" character varying(35) NOT NULL,
         "Hash" character varying(44) NOT NULL,
         "ProgramCode" character varying(10) NOT NULL,
@@ -231,9 +233,9 @@ BEGIN
     CREATE TABLE gateway."EmailInvite" (
         "EmailInviteId" uuid NOT NULL,
         "CreatedBy" character varying(60) NOT NULL,
-        "CreatedDateTime" timestamp without time zone NOT NULL,
+        "CreatedDateTime" timestamp with time zone NOT NULL,
         "UpdatedBy" character varying(60) NOT NULL,
-        "UpdatedDateTime" timestamp without time zone NOT NULL,
+        "UpdatedDateTime" timestamp with time zone NOT NULL,
         "HdId" character varying(52) NOT NULL,
         "Validated" boolean NOT NULL,
         "EmailId" uuid NOT NULL,
@@ -250,9 +252,9 @@ BEGIN
     CREATE TABLE gateway."DrugProduct" (
         "DrugProductId" uuid NOT NULL,
         "CreatedBy" character varying(60) NOT NULL,
-        "CreatedDateTime" timestamp without time zone NOT NULL,
+        "CreatedDateTime" timestamp with time zone NOT NULL,
         "UpdatedBy" character varying(60) NOT NULL,
-        "UpdatedDateTime" timestamp without time zone NOT NULL,
+        "UpdatedDateTime" timestamp with time zone NOT NULL,
         "DrugCode" character varying(8) NOT NULL,
         "ProductCategorization" character varying(80) NULL,
         "DrugClass" character varying(40) NULL,
@@ -265,7 +267,7 @@ BEGIN
         "PediatricFlag" character varying(1) NULL,
         "AccessionNumber" character varying(5) NULL,
         "NumberOfAis" character varying(10) NULL,
-        "LastUpdate" timestamp without time zone NOT NULL,
+        "LastUpdate" timestamp with time zone NOT NULL,
         "AiGroupNumber" character varying(10) NULL,
         "FileDownloadId" uuid NOT NULL,
         CONSTRAINT "PK_DrugProduct" PRIMARY KEY ("DrugProductId"),
@@ -280,9 +282,9 @@ BEGIN
     CREATE TABLE gateway."PharmaCareDrug" (
         "PharmaCareDrugId" uuid NOT NULL,
         "CreatedBy" character varying(60) NOT NULL,
-        "CreatedDateTime" timestamp without time zone NOT NULL,
+        "CreatedDateTime" timestamp with time zone NOT NULL,
         "UpdatedBy" character varying(60) NOT NULL,
-        "UpdatedDateTime" timestamp without time zone NOT NULL,
+        "UpdatedDateTime" timestamp with time zone NOT NULL,
         "DINPIN" character varying(8) NOT NULL,
         "Plan" character varying(2) NULL,
         "EffectiveDate" Date NOT NULL,
@@ -320,9 +322,9 @@ BEGIN
     CREATE TABLE gateway."ActiveIngredient" (
         "ActiveIngredientId" uuid NOT NULL,
         "CreatedBy" character varying(60) NOT NULL,
-        "CreatedDateTime" timestamp without time zone NOT NULL,
+        "CreatedDateTime" timestamp with time zone NOT NULL,
         "UpdatedBy" character varying(60) NOT NULL,
-        "UpdatedDateTime" timestamp without time zone NOT NULL,
+        "UpdatedDateTime" timestamp with time zone NOT NULL,
         "ActiveIngredientCode" integer NOT NULL,
         "Ingredient" character varying(240) NULL,
         "IngredientFrench" character varying(400) NULL,
@@ -350,9 +352,9 @@ BEGIN
     CREATE TABLE gateway."Company" (
         "CompanyId" uuid NOT NULL,
         "CreatedBy" character varying(60) NOT NULL,
-        "CreatedDateTime" timestamp without time zone NOT NULL,
+        "CreatedDateTime" timestamp with time zone NOT NULL,
         "UpdatedBy" character varying(60) NOT NULL,
-        "UpdatedDateTime" timestamp without time zone NOT NULL,
+        "UpdatedDateTime" timestamp with time zone NOT NULL,
         "ManufacturerCode" character varying(5) NULL,
         "CompanyCode" integer NOT NULL,
         "CompanyName" character varying(80) NULL,
@@ -383,9 +385,9 @@ BEGIN
     CREATE TABLE gateway."Form" (
         "FormId" uuid NOT NULL,
         "CreatedBy" character varying(60) NOT NULL,
-        "CreatedDateTime" timestamp without time zone NOT NULL,
+        "CreatedDateTime" timestamp with time zone NOT NULL,
         "UpdatedBy" character varying(60) NOT NULL,
-        "UpdatedDateTime" timestamp without time zone NOT NULL,
+        "UpdatedDateTime" timestamp with time zone NOT NULL,
         "PharmaceuticalFormCode" integer NOT NULL,
         "PharmaceuticalForm" character varying(40) NULL,
         "PharmaceuticalFormFrench" character varying(80) NULL,
@@ -402,9 +404,9 @@ BEGIN
     CREATE TABLE gateway."Packaging" (
         "PackagingId" uuid NOT NULL,
         "CreatedBy" character varying(60) NOT NULL,
-        "CreatedDateTime" timestamp without time zone NOT NULL,
+        "CreatedDateTime" timestamp with time zone NOT NULL,
         "UpdatedBy" character varying(60) NOT NULL,
-        "UpdatedDateTime" timestamp without time zone NOT NULL,
+        "UpdatedDateTime" timestamp with time zone NOT NULL,
         "UPC" character varying(12) NULL,
         "PackageType" character varying(40) NULL,
         "PackageTypeFrench" character varying(80) NULL,
@@ -425,9 +427,9 @@ BEGIN
     CREATE TABLE gateway."PharmaceuticalStd" (
         "PharmaceuticalStdId" uuid NOT NULL,
         "CreatedBy" character varying(60) NOT NULL,
-        "CreatedDateTime" timestamp without time zone NOT NULL,
+        "CreatedDateTime" timestamp with time zone NOT NULL,
         "UpdatedBy" character varying(60) NOT NULL,
-        "UpdatedDateTime" timestamp without time zone NOT NULL,
+        "UpdatedDateTime" timestamp with time zone NOT NULL,
         "PharmaceuticalStdDesc" text NULL,
         "DrugProductId" uuid NOT NULL,
         CONSTRAINT "PK_PharmaceuticalStd" PRIMARY KEY ("PharmaceuticalStdId"),
@@ -442,9 +444,9 @@ BEGIN
     CREATE TABLE gateway."Route" (
         "RouteId" uuid NOT NULL,
         "CreatedBy" character varying(60) NOT NULL,
-        "CreatedDateTime" timestamp without time zone NOT NULL,
+        "CreatedDateTime" timestamp with time zone NOT NULL,
         "UpdatedBy" character varying(60) NOT NULL,
-        "UpdatedDateTime" timestamp without time zone NOT NULL,
+        "UpdatedDateTime" timestamp with time zone NOT NULL,
         "AdministrationCode" integer NOT NULL,
         "Administration" character varying(40) NULL,
         "AdministrationFrench" character varying(80) NULL,
@@ -461,15 +463,15 @@ BEGIN
     CREATE TABLE gateway."Status" (
         "StatusId" uuid NOT NULL,
         "CreatedBy" character varying(60) NOT NULL,
-        "CreatedDateTime" timestamp without time zone NOT NULL,
+        "CreatedDateTime" timestamp with time zone NOT NULL,
         "UpdatedBy" character varying(60) NOT NULL,
-        "UpdatedDateTime" timestamp without time zone NOT NULL,
+        "UpdatedDateTime" timestamp with time zone NOT NULL,
         "CurrentStatusFlag" character varying(1) NULL,
         "StatusDesc" character varying(40) NULL,
         "StatusDescFrench" character varying(80) NULL,
-        "HistoryDate" timestamp without time zone NULL,
+        "HistoryDate" timestamp with time zone NULL,
         "LotNumber" character varying(80) NULL,
-        "ExpirationDate" timestamp without time zone NULL,
+        "ExpirationDate" timestamp with time zone NULL,
         "DrugProductId" uuid NOT NULL,
         CONSTRAINT "PK_Status" PRIMARY KEY ("StatusId"),
         CONSTRAINT "FK_Status_DrugProduct_DrugProductId" FOREIGN KEY ("DrugProductId") REFERENCES gateway."DrugProduct" ("DrugProductId") ON DELETE CASCADE
@@ -483,9 +485,9 @@ BEGIN
     CREATE TABLE gateway."TherapeuticClass" (
         "TherapeuticClassId" uuid NOT NULL,
         "CreatedBy" character varying(60) NOT NULL,
-        "CreatedDateTime" timestamp without time zone NOT NULL,
+        "CreatedDateTime" timestamp with time zone NOT NULL,
         "UpdatedBy" character varying(60) NOT NULL,
-        "UpdatedDateTime" timestamp without time zone NOT NULL,
+        "UpdatedDateTime" timestamp with time zone NOT NULL,
         "AtcNumber" character varying(8) NULL,
         "Atc" character varying(120) NULL,
         "AtcFrench" character varying(240) NULL,
@@ -505,9 +507,9 @@ BEGIN
     CREATE TABLE gateway."VeterinarySpecies" (
         "VeterinarySpeciesId" uuid NOT NULL,
         "CreatedBy" character varying(60) NOT NULL,
-        "CreatedDateTime" timestamp without time zone NOT NULL,
+        "CreatedDateTime" timestamp with time zone NOT NULL,
         "UpdatedBy" character varying(60) NOT NULL,
-        "UpdatedDateTime" timestamp without time zone NOT NULL,
+        "UpdatedDateTime" timestamp with time zone NOT NULL,
         "Species" character varying(80) NULL,
         "SpeciesFrench" character varying(160) NULL,
         "SubSpecies" character varying(80) NULL,
@@ -522,7 +524,7 @@ DO $EF$
 BEGIN
     IF NOT EXISTS(SELECT 1 FROM "__EFMigrationsHistory" WHERE "MigrationId" = '20191119083157_InitialCreate') THEN
     INSERT INTO gateway."AuditTransactionResultCode" ("ResultCode", "CreatedBy", "CreatedDateTime", "Description", "UpdatedBy", "UpdatedDateTime")
-    VALUES ('Ok', 'System', TIMESTAMP '2019-05-01 00:00:00', 'Success', 'System', TIMESTAMP '2019-05-01 00:00:00');
+    VALUES ('Ok', 'System', TIMESTAMPTZ '2019-05-01 00:00:00Z', 'Success', 'System', TIMESTAMPTZ '2019-05-01 00:00:00Z');
     END IF;
 END $EF$;
 
@@ -530,7 +532,7 @@ DO $EF$
 BEGIN
     IF NOT EXISTS(SELECT 1 FROM "__EFMigrationsHistory" WHERE "MigrationId" = '20191119083157_InitialCreate') THEN
     INSERT INTO gateway."AuditTransactionResultCode" ("ResultCode", "CreatedBy", "CreatedDateTime", "Description", "UpdatedBy", "UpdatedDateTime")
-    VALUES ('Fail', 'System', TIMESTAMP '2019-05-01 00:00:00', 'Failure', 'System', TIMESTAMP '2019-05-01 00:00:00');
+    VALUES ('Fail', 'System', TIMESTAMPTZ '2019-05-01 00:00:00Z', 'Failure', 'System', TIMESTAMPTZ '2019-05-01 00:00:00Z');
     END IF;
 END $EF$;
 
@@ -538,7 +540,7 @@ DO $EF$
 BEGIN
     IF NOT EXISTS(SELECT 1 FROM "__EFMigrationsHistory" WHERE "MigrationId" = '20191119083157_InitialCreate') THEN
     INSERT INTO gateway."AuditTransactionResultCode" ("ResultCode", "CreatedBy", "CreatedDateTime", "Description", "UpdatedBy", "UpdatedDateTime")
-    VALUES ('NotAuth', 'System', TIMESTAMP '2019-05-01 00:00:00', 'Unauthorized', 'System', TIMESTAMP '2019-05-01 00:00:00');
+    VALUES ('NotAuth', 'System', TIMESTAMPTZ '2019-05-01 00:00:00Z', 'Unauthorized', 'System', TIMESTAMPTZ '2019-05-01 00:00:00Z');
     END IF;
 END $EF$;
 
@@ -546,7 +548,7 @@ DO $EF$
 BEGIN
     IF NOT EXISTS(SELECT 1 FROM "__EFMigrationsHistory" WHERE "MigrationId" = '20191119083157_InitialCreate') THEN
     INSERT INTO gateway."AuditTransactionResultCode" ("ResultCode", "CreatedBy", "CreatedDateTime", "Description", "UpdatedBy", "UpdatedDateTime")
-    VALUES ('Err', 'System', TIMESTAMP '2019-05-01 00:00:00', 'System Error', 'System', TIMESTAMP '2019-05-01 00:00:00');
+    VALUES ('Err', 'System', TIMESTAMPTZ '2019-05-01 00:00:00Z', 'System Error', 'System', TIMESTAMPTZ '2019-05-01 00:00:00Z');
     END IF;
 END $EF$;
 
@@ -554,7 +556,7 @@ DO $EF$
 BEGIN
     IF NOT EXISTS(SELECT 1 FROM "__EFMigrationsHistory" WHERE "MigrationId" = '20191119083157_InitialCreate') THEN
     INSERT INTO gateway."EmailFormatCode" ("FormatCode", "CreatedBy", "CreatedDateTime", "UpdatedBy", "UpdatedDateTime")
-    VALUES ('Text', 'System', TIMESTAMP '2019-05-01 00:00:00', 'System', TIMESTAMP '2019-05-01 00:00:00');
+    VALUES ('Text', 'System', TIMESTAMPTZ '2019-05-01 00:00:00Z', 'System', TIMESTAMPTZ '2019-05-01 00:00:00Z');
     END IF;
 END $EF$;
 
@@ -562,7 +564,7 @@ DO $EF$
 BEGIN
     IF NOT EXISTS(SELECT 1 FROM "__EFMigrationsHistory" WHERE "MigrationId" = '20191119083157_InitialCreate') THEN
     INSERT INTO gateway."EmailFormatCode" ("FormatCode", "CreatedBy", "CreatedDateTime", "UpdatedBy", "UpdatedDateTime")
-    VALUES ('HTML', 'System', TIMESTAMP '2019-05-01 00:00:00', 'System', TIMESTAMP '2019-05-01 00:00:00');
+    VALUES ('HTML', 'System', TIMESTAMPTZ '2019-05-01 00:00:00Z', 'System', TIMESTAMPTZ '2019-05-01 00:00:00Z');
     END IF;
 END $EF$;
 
@@ -570,7 +572,7 @@ DO $EF$
 BEGIN
     IF NOT EXISTS(SELECT 1 FROM "__EFMigrationsHistory" WHERE "MigrationId" = '20191119083157_InitialCreate') THEN
     INSERT INTO gateway."EmailStatusCode" ("StatusCode", "CreatedBy", "CreatedDateTime", "Description", "UpdatedBy", "UpdatedDateTime")
-    VALUES ('Processed', 'System', TIMESTAMP '2019-05-01 00:00:00', 'An email that has been sent', 'System', TIMESTAMP '2019-05-01 00:00:00');
+    VALUES ('Processed', 'System', TIMESTAMPTZ '2019-05-01 00:00:00Z', 'An email that has been sent', 'System', TIMESTAMPTZ '2019-05-01 00:00:00Z');
     END IF;
 END $EF$;
 
@@ -578,7 +580,7 @@ DO $EF$
 BEGIN
     IF NOT EXISTS(SELECT 1 FROM "__EFMigrationsHistory" WHERE "MigrationId" = '20191119083157_InitialCreate') THEN
     INSERT INTO gateway."EmailStatusCode" ("StatusCode", "CreatedBy", "CreatedDateTime", "Description", "UpdatedBy", "UpdatedDateTime")
-    VALUES ('Error', 'System', TIMESTAMP '2019-05-01 00:00:00', 'An Email that will not be sent', 'System', TIMESTAMP '2019-05-01 00:00:00');
+    VALUES ('Error', 'System', TIMESTAMPTZ '2019-05-01 00:00:00Z', 'An Email that will not be sent', 'System', TIMESTAMPTZ '2019-05-01 00:00:00Z');
     END IF;
 END $EF$;
 
@@ -586,7 +588,7 @@ DO $EF$
 BEGIN
     IF NOT EXISTS(SELECT 1 FROM "__EFMigrationsHistory" WHERE "MigrationId" = '20191119083157_InitialCreate') THEN
     INSERT INTO gateway."EmailStatusCode" ("StatusCode", "CreatedBy", "CreatedDateTime", "Description", "UpdatedBy", "UpdatedDateTime")
-    VALUES ('New', 'System', TIMESTAMP '2019-05-01 00:00:00', 'A newly created email', 'System', TIMESTAMP '2019-05-01 00:00:00');
+    VALUES ('New', 'System', TIMESTAMPTZ '2019-05-01 00:00:00Z', 'A newly created email', 'System', TIMESTAMPTZ '2019-05-01 00:00:00Z');
     END IF;
 END $EF$;
 
@@ -594,7 +596,7 @@ DO $EF$
 BEGIN
     IF NOT EXISTS(SELECT 1 FROM "__EFMigrationsHistory" WHERE "MigrationId" = '20191119083157_InitialCreate') THEN
     INSERT INTO gateway."EmailStatusCode" ("StatusCode", "CreatedBy", "CreatedDateTime", "Description", "UpdatedBy", "UpdatedDateTime")
-    VALUES ('Pending', 'System', TIMESTAMP '2019-05-01 00:00:00', 'An email pending batch pickup', 'System', TIMESTAMP '2019-05-01 00:00:00');
+    VALUES ('Pending', 'System', TIMESTAMPTZ '2019-05-01 00:00:00Z', 'An email pending batch pickup', 'System', TIMESTAMPTZ '2019-05-01 00:00:00Z');
     END IF;
 END $EF$;
 
@@ -602,7 +604,7 @@ DO $EF$
 BEGIN
     IF NOT EXISTS(SELECT 1 FROM "__EFMigrationsHistory" WHERE "MigrationId" = '20191119083157_InitialCreate') THEN
     INSERT INTO gateway."ProgramTypeCode" ("ProgramCode", "CreatedBy", "CreatedDateTime", "Description", "UpdatedBy", "UpdatedDateTime")
-    VALUES ('PAT', 'System', TIMESTAMP '2019-05-01 00:00:00', 'Patient Service', 'System', TIMESTAMP '2019-05-01 00:00:00');
+    VALUES ('PAT', 'System', TIMESTAMPTZ '2019-05-01 00:00:00Z', 'Patient Service', 'System', TIMESTAMPTZ '2019-05-01 00:00:00Z');
     END IF;
 END $EF$;
 
@@ -610,7 +612,7 @@ DO $EF$
 BEGIN
     IF NOT EXISTS(SELECT 1 FROM "__EFMigrationsHistory" WHERE "MigrationId" = '20191119083157_InitialCreate') THEN
     INSERT INTO gateway."ProgramTypeCode" ("ProgramCode", "CreatedBy", "CreatedDateTime", "Description", "UpdatedBy", "UpdatedDateTime")
-    VALUES ('FED-DRUG-A', 'System', TIMESTAMP '2019-05-01 00:00:00', 'Federal Approved Drug Load', 'System', TIMESTAMP '2019-05-01 00:00:00');
+    VALUES ('FED-DRUG-A', 'System', TIMESTAMPTZ '2019-05-01 00:00:00Z', 'Federal Approved Drug Load', 'System', TIMESTAMPTZ '2019-05-01 00:00:00Z');
     END IF;
 END $EF$;
 
@@ -618,7 +620,7 @@ DO $EF$
 BEGIN
     IF NOT EXISTS(SELECT 1 FROM "__EFMigrationsHistory" WHERE "MigrationId" = '20191119083157_InitialCreate') THEN
     INSERT INTO gateway."ProgramTypeCode" ("ProgramCode", "CreatedBy", "CreatedDateTime", "Description", "UpdatedBy", "UpdatedDateTime")
-    VALUES ('FED-DRUG-M', 'System', TIMESTAMP '2019-05-01 00:00:00', 'Federal Marketed Drug Load', 'System', TIMESTAMP '2019-05-01 00:00:00');
+    VALUES ('FED-DRUG-M', 'System', TIMESTAMPTZ '2019-05-01 00:00:00Z', 'Federal Marketed Drug Load', 'System', TIMESTAMPTZ '2019-05-01 00:00:00Z');
     END IF;
 END $EF$;
 
@@ -626,7 +628,7 @@ DO $EF$
 BEGIN
     IF NOT EXISTS(SELECT 1 FROM "__EFMigrationsHistory" WHERE "MigrationId" = '20191119083157_InitialCreate') THEN
     INSERT INTO gateway."ProgramTypeCode" ("ProgramCode", "CreatedBy", "CreatedDateTime", "Description", "UpdatedBy", "UpdatedDateTime")
-    VALUES ('FED-DRUG-C', 'System', TIMESTAMP '2019-05-01 00:00:00', 'Federal Cancelled Drug Load', 'System', TIMESTAMP '2019-05-01 00:00:00');
+    VALUES ('FED-DRUG-C', 'System', TIMESTAMPTZ '2019-05-01 00:00:00Z', 'Federal Cancelled Drug Load', 'System', TIMESTAMPTZ '2019-05-01 00:00:00Z');
     END IF;
 END $EF$;
 
@@ -634,7 +636,7 @@ DO $EF$
 BEGIN
     IF NOT EXISTS(SELECT 1 FROM "__EFMigrationsHistory" WHERE "MigrationId" = '20191119083157_InitialCreate') THEN
     INSERT INTO gateway."ProgramTypeCode" ("ProgramCode", "CreatedBy", "CreatedDateTime", "Description", "UpdatedBy", "UpdatedDateTime")
-    VALUES ('FED-DRUG-D', 'System', TIMESTAMP '2019-05-01 00:00:00', 'Federal Dormant Drug Load', 'System', TIMESTAMP '2019-05-01 00:00:00');
+    VALUES ('FED-DRUG-D', 'System', TIMESTAMPTZ '2019-05-01 00:00:00Z', 'Federal Dormant Drug Load', 'System', TIMESTAMPTZ '2019-05-01 00:00:00Z');
     END IF;
 END $EF$;
 
@@ -642,7 +644,7 @@ DO $EF$
 BEGIN
     IF NOT EXISTS(SELECT 1 FROM "__EFMigrationsHistory" WHERE "MigrationId" = '20191119083157_InitialCreate') THEN
     INSERT INTO gateway."ProgramTypeCode" ("ProgramCode", "CreatedBy", "CreatedDateTime", "Description", "UpdatedBy", "UpdatedDateTime")
-    VALUES ('PROV-DRUG', 'System', TIMESTAMP '2019-05-01 00:00:00', 'Provincial Pharmacare Drug Load', 'System', TIMESTAMP '2019-05-01 00:00:00');
+    VALUES ('PROV-DRUG', 'System', TIMESTAMPTZ '2019-05-01 00:00:00Z', 'Provincial Pharmacare Drug Load', 'System', TIMESTAMPTZ '2019-05-01 00:00:00Z');
     END IF;
 END $EF$;
 
@@ -650,7 +652,7 @@ DO $EF$
 BEGIN
     IF NOT EXISTS(SELECT 1 FROM "__EFMigrationsHistory" WHERE "MigrationId" = '20191119083157_InitialCreate') THEN
     INSERT INTO gateway."ProgramTypeCode" ("ProgramCode", "CreatedBy", "CreatedDateTime", "Description", "UpdatedBy", "UpdatedDateTime")
-    VALUES ('CFG', 'System', TIMESTAMP '2019-05-01 00:00:00', 'Configuration Service', 'System', TIMESTAMP '2019-05-01 00:00:00');
+    VALUES ('CFG', 'System', TIMESTAMPTZ '2019-05-01 00:00:00Z', 'Configuration Service', 'System', TIMESTAMPTZ '2019-05-01 00:00:00Z');
     END IF;
 END $EF$;
 
@@ -658,7 +660,7 @@ DO $EF$
 BEGIN
     IF NOT EXISTS(SELECT 1 FROM "__EFMigrationsHistory" WHERE "MigrationId" = '20191119083157_InitialCreate') THEN
     INSERT INTO gateway."ProgramTypeCode" ("ProgramCode", "CreatedBy", "CreatedDateTime", "Description", "UpdatedBy", "UpdatedDateTime")
-    VALUES ('WEB', 'System', TIMESTAMP '2019-05-01 00:00:00', 'Web Client', 'System', TIMESTAMP '2019-05-01 00:00:00');
+    VALUES ('WEB', 'System', TIMESTAMPTZ '2019-05-01 00:00:00Z', 'Web Client', 'System', TIMESTAMPTZ '2019-05-01 00:00:00Z');
     END IF;
 END $EF$;
 
@@ -666,7 +668,7 @@ DO $EF$
 BEGIN
     IF NOT EXISTS(SELECT 1 FROM "__EFMigrationsHistory" WHERE "MigrationId" = '20191119083157_InitialCreate') THEN
     INSERT INTO gateway."ProgramTypeCode" ("ProgramCode", "CreatedBy", "CreatedDateTime", "Description", "UpdatedBy", "UpdatedDateTime")
-    VALUES ('IMM', 'System', TIMESTAMP '2019-05-01 00:00:00', 'Immunization Service', 'System', TIMESTAMP '2019-05-01 00:00:00');
+    VALUES ('IMM', 'System', TIMESTAMPTZ '2019-05-01 00:00:00Z', 'Immunization Service', 'System', TIMESTAMPTZ '2019-05-01 00:00:00Z');
     END IF;
 END $EF$;
 
@@ -674,7 +676,7 @@ DO $EF$
 BEGIN
     IF NOT EXISTS(SELECT 1 FROM "__EFMigrationsHistory" WHERE "MigrationId" = '20191119083157_InitialCreate') THEN
     INSERT INTO gateway."ProgramTypeCode" ("ProgramCode", "CreatedBy", "CreatedDateTime", "Description", "UpdatedBy", "UpdatedDateTime")
-    VALUES ('MED', 'System', TIMESTAMP '2019-05-01 00:00:00', 'Medication Service', 'System', TIMESTAMP '2019-05-01 00:00:00');
+    VALUES ('MED', 'System', TIMESTAMPTZ '2019-05-01 00:00:00Z', 'Medication Service', 'System', TIMESTAMPTZ '2019-05-01 00:00:00Z');
     END IF;
 END $EF$;
 
@@ -711,7 +713,7 @@ BEGIN
             </tr>
         </table>
     </body>
-    </html>', 'System', TIMESTAMP '2019-05-01 00:00:00', TIMESTAMP '2019-05-01 00:00:00', NULL, 'HTML', 'donotreply@gov.bc.ca', 'Registration', 10, 'Health Gateway Email Verification ${Environment}', 'System', TIMESTAMP '2019-05-01 00:00:00');
+    </html>', 'System', TIMESTAMPTZ '2019-05-01 00:00:00Z', TIMESTAMPTZ '2019-05-01 00:00:00Z', NULL, 'HTML', 'donotreply@gov.bc.ca', 'Registration', 10, 'Health Gateway Email Verification ${Environment}', 'System', TIMESTAMPTZ '2019-05-01 00:00:00Z');
     END IF;
 END $EF$;
 
@@ -852,7 +854,7 @@ DO $EF$
 BEGIN
     IF NOT EXISTS(SELECT 1 FROM "__EFMigrationsHistory" WHERE "MigrationId" = '20191119083157_InitialCreate') THEN
     INSERT INTO "__EFMigrationsHistory" ("MigrationId", "ProductVersion")
-    VALUES ('20191119083157_InitialCreate', '5.0.16');
+    VALUES ('20191119083157_InitialCreate', '6.0.7');
     END IF;
 END $EF$;
 COMMIT;
@@ -872,7 +874,7 @@ DO $EF$
 BEGIN
     IF NOT EXISTS(SELECT 1 FROM "__EFMigrationsHistory" WHERE "MigrationId" = '20191120010543_UpdateRegistrationEmail') THEN
     INSERT INTO "__EFMigrationsHistory" ("MigrationId", "ProductVersion")
-    VALUES ('20191120010543_UpdateRegistrationEmail', '5.0.16');
+    VALUES ('20191120010543_UpdateRegistrationEmail', '6.0.7');
     END IF;
 END $EF$;
 COMMIT;
@@ -891,7 +893,7 @@ DO $EF$
 BEGIN
     IF NOT EXISTS(SELECT 1 FROM "__EFMigrationsHistory" WHERE "MigrationId" = '20191128232437_ChangeEmailInviteToNullableHdid') THEN
     INSERT INTO "__EFMigrationsHistory" ("MigrationId", "ProductVersion")
-    VALUES ('20191128232437_ChangeEmailInviteToNullableHdid', '5.0.16');
+    VALUES ('20191128232437_ChangeEmailInviteToNullableHdid', '6.0.7');
     END IF;
 END $EF$;
 COMMIT;
@@ -970,7 +972,7 @@ BEGIN
             </tr>
         </table>
     </body>
-    </html>', 'System', TIMESTAMP '2019-05-01 00:00:00', TIMESTAMP '2019-05-01 00:00:00', NULL, 'HTML', 'HG_Donotreply@gov.bc.ca', 'Invite', 1, 'Health Gateway Private Invitation', 'System', TIMESTAMP '2019-05-01 00:00:00');
+    </html>', 'System', TIMESTAMPTZ '2019-05-01 00:00:00Z', TIMESTAMPTZ '2019-05-01 00:00:00Z', NULL, 'HTML', 'HG_Donotreply@gov.bc.ca', 'Invite', 1, 'Health Gateway Private Invitation', 'System', TIMESTAMPTZ '2019-05-01 00:00:00Z');
     END IF;
 END $EF$;
 
@@ -978,7 +980,7 @@ DO $EF$
 BEGIN
     IF NOT EXISTS(SELECT 1 FROM "__EFMigrationsHistory" WHERE "MigrationId" = '20191203232803_AddUpdateEmailTemplate') THEN
     INSERT INTO "__EFMigrationsHistory" ("MigrationId", "ProductVersion")
-    VALUES ('20191203232803_AddUpdateEmailTemplate', '5.0.16');
+    VALUES ('20191203232803_AddUpdateEmailTemplate', '6.0.7');
     END IF;
 END $EF$;
 COMMIT;
@@ -1027,7 +1029,7 @@ DO $EF$
 BEGIN
     IF NOT EXISTS(SELECT 1 FROM "__EFMigrationsHistory" WHERE "MigrationId" = '20191204191457_UpdateEmailVerificationTemplate') THEN
     INSERT INTO "__EFMigrationsHistory" ("MigrationId", "ProductVersion")
-    VALUES ('20191204191457_UpdateEmailVerificationTemplate', '5.0.16');
+    VALUES ('20191204191457_UpdateEmailVerificationTemplate', '6.0.7');
     END IF;
 END $EF$;
 COMMIT;
@@ -1114,7 +1116,7 @@ DO $EF$
 BEGIN
     IF NOT EXISTS(SELECT 1 FROM "__EFMigrationsHistory" WHERE "MigrationId" = '20191204211020_UpdateEmailTemplateLogo') THEN
     INSERT INTO "__EFMigrationsHistory" ("MigrationId", "ProductVersion")
-    VALUES ('20191204211020_UpdateEmailTemplateLogo', '5.0.16');
+    VALUES ('20191204211020_UpdateEmailTemplateLogo', '6.0.7');
     END IF;
 END $EF$;
 COMMIT;
@@ -1147,7 +1149,7 @@ DO $EF$
 BEGIN
     IF NOT EXISTS(SELECT 1 FROM "__EFMigrationsHistory" WHERE "MigrationId" = '20200107171825_NullableReferenceTypes') THEN
     INSERT INTO "__EFMigrationsHistory" ("MigrationId", "ProductVersion")
-    VALUES ('20200107171825_NullableReferenceTypes', '5.0.16');
+    VALUES ('20200107171825_NullableReferenceTypes', '6.0.7');
     END IF;
 END $EF$;
 COMMIT;
@@ -1174,7 +1176,7 @@ DO $EF$
 BEGIN
     IF NOT EXISTS(SELECT 1 FROM "__EFMigrationsHistory" WHERE "MigrationId" = '20200115203341_AddBetaRequest') THEN
     INSERT INTO "__EFMigrationsHistory" ("MigrationId", "ProductVersion")
-    VALUES ('20200115203341_AddBetaRequest', '5.0.16');
+    VALUES ('20200115203341_AddBetaRequest', '6.0.7');
     END IF;
 END $EF$;
 COMMIT;
@@ -1185,7 +1187,7 @@ START TRANSACTION;
 DO $EF$
 BEGIN
     IF NOT EXISTS(SELECT 1 FROM "__EFMigrationsHistory" WHERE "MigrationId" = '20200117220253_UpdateEmailInviteExpire') THEN
-    ALTER TABLE gateway."EmailInvite" ADD "ExpireDate" timestamp without time zone NOT NULL DEFAULT TIMESTAMP '9999-12-31 23:59:59.999999';
+    ALTER TABLE gateway."EmailInvite" ADD "ExpireDate" timestamp without time zone NOT NULL DEFAULT TIMESTAMP 'infinity';
     END IF;
 END $EF$;
 
@@ -1193,7 +1195,7 @@ DO $EF$
 BEGIN
     IF NOT EXISTS(SELECT 1 FROM "__EFMigrationsHistory" WHERE "MigrationId" = '20200117220253_UpdateEmailInviteExpire') THEN
     INSERT INTO "__EFMigrationsHistory" ("MigrationId", "ProductVersion")
-    VALUES ('20200117220253_UpdateEmailInviteExpire', '5.0.16');
+    VALUES ('20200117220253_UpdateEmailInviteExpire', '6.0.7');
     END IF;
 END $EF$;
 COMMIT;
@@ -1241,7 +1243,7 @@ DO $EF$
 BEGIN
     IF NOT EXISTS(SELECT 1 FROM "__EFMigrationsHistory" WHERE "MigrationId" = '20200123030013_UpdateBetaConfirmationTemplate') THEN
     INSERT INTO "__EFMigrationsHistory" ("MigrationId", "ProductVersion")
-    VALUES ('20200123030013_UpdateBetaConfirmationTemplate', '5.0.16');
+    VALUES ('20200123030013_UpdateBetaConfirmationTemplate', '6.0.7');
     END IF;
 END $EF$;
 COMMIT;
@@ -1261,7 +1263,7 @@ DO $EF$
 BEGIN
     IF NOT EXISTS(SELECT 1 FROM "__EFMigrationsHistory" WHERE "MigrationId" = '20200129233249_UpdateProgramTypes') THEN
     INSERT INTO "__EFMigrationsHistory" ("MigrationId", "ProductVersion")
-    VALUES ('20200129233249_UpdateProgramTypes', '5.0.16');
+    VALUES ('20200129233249_UpdateProgramTypes', '6.0.7');
     END IF;
 END $EF$;
 COMMIT;
@@ -1280,7 +1282,7 @@ DO $EF$
 BEGIN
     IF NOT EXISTS(SELECT 1 FROM "__EFMigrationsHistory" WHERE "MigrationId" = '20200218200745_UpdateUserFeedbackReviewed') THEN
     INSERT INTO "__EFMigrationsHistory" ("MigrationId", "ProductVersion")
-    VALUES ('20200218200745_UpdateUserFeedbackReviewed', '5.0.16');
+    VALUES ('20200218200745_UpdateUserFeedbackReviewed', '6.0.7');
     END IF;
 END $EF$;
 COMMIT;
@@ -1395,7 +1397,7 @@ DO $EF$
 BEGIN
     IF NOT EXISTS(SELECT 1 FROM "__EFMigrationsHistory" WHERE "MigrationId" = '20200221211918_LegalAgreements') THEN
     INSERT INTO "__EFMigrationsHistory" ("MigrationId", "ProductVersion")
-    VALUES ('20200221211918_LegalAgreements', '5.0.16');
+    VALUES ('20200221211918_LegalAgreements', '6.0.7');
     END IF;
 END $EF$;
 COMMIT;
@@ -1457,7 +1459,7 @@ DO $EF$
 BEGIN
     IF NOT EXISTS(SELECT 1 FROM "__EFMigrationsHistory" WHERE "MigrationId" = '20200224231036_ApplicationSettings') THEN
     INSERT INTO "__EFMigrationsHistory" ("MigrationId", "ProductVersion")
-    VALUES ('20200224231036_ApplicationSettings', '5.0.16');
+    VALUES ('20200224231036_ApplicationSettings', '6.0.7');
     END IF;
 END $EF$;
 COMMIT;
@@ -1547,7 +1549,7 @@ DO $EF$
 BEGIN
     IF NOT EXISTS(SELECT 1 FROM "__EFMigrationsHistory" WHERE "MigrationId" = '20200226012259_UserProfileHistory') THEN
     INSERT INTO "__EFMigrationsHistory" ("MigrationId", "ProductVersion")
-    VALUES ('20200226012259_UserProfileHistory', '5.0.16');
+    VALUES ('20200226012259_UserProfileHistory', '6.0.7');
     END IF;
 END $EF$;
 COMMIT;
@@ -1622,7 +1624,7 @@ DO $EF$
 BEGIN
     IF NOT EXISTS(SELECT 1 FROM "__EFMigrationsHistory" WHERE "MigrationId" = '20200226200434_ToSTemplate') THEN
     INSERT INTO "__EFMigrationsHistory" ("MigrationId", "ProductVersion")
-    VALUES ('20200226200434_ToSTemplate', '5.0.16');
+    VALUES ('20200226200434_ToSTemplate', '6.0.7');
     END IF;
 END $EF$;
 COMMIT;
@@ -1742,7 +1744,7 @@ DO $EF$
 BEGIN
     IF NOT EXISTS(SELECT 1 FROM "__EFMigrationsHistory" WHERE "MigrationId" = '20200226230220_AccountClosureTemplates') THEN
     INSERT INTO "__EFMigrationsHistory" ("MigrationId", "ProductVersion")
-    VALUES ('20200226230220_AccountClosureTemplates', '5.0.16');
+    VALUES ('20200226230220_AccountClosureTemplates', '6.0.7');
     END IF;
 END $EF$;
 COMMIT;
@@ -1778,7 +1780,7 @@ DO $EF$
 BEGIN
     IF NOT EXISTS(SELECT 1 FROM "__EFMigrationsHistory" WHERE "MigrationId" = '20200227234222_ChangeEmailTemplatePriority') THEN
     INSERT INTO "__EFMigrationsHistory" ("MigrationId", "ProductVersion")
-    VALUES ('20200227234222_ChangeEmailTemplatePriority', '5.0.16');
+    VALUES ('20200227234222_ChangeEmailTemplatePriority', '6.0.7');
     END IF;
 END $EF$;
 COMMIT;
@@ -1832,7 +1834,7 @@ DO $EF$
 BEGIN
     IF NOT EXISTS(SELECT 1 FROM "__EFMigrationsHistory" WHERE "MigrationId" = '20200228193314_ToSTemplateUpdate') THEN
     INSERT INTO "__EFMigrationsHistory" ("MigrationId", "ProductVersion")
-    VALUES ('20200228193314_ToSTemplateUpdate', '5.0.16');
+    VALUES ('20200228193314_ToSTemplateUpdate', '6.0.7');
     END IF;
 END $EF$;
 COMMIT;
@@ -1870,7 +1872,7 @@ DO $EF$
 BEGIN
     IF NOT EXISTS(SELECT 1 FROM "__EFMigrationsHistory" WHERE "MigrationId" = '20200304212452_Notes') THEN
     INSERT INTO "__EFMigrationsHistory" ("MigrationId", "ProductVersion")
-    VALUES ('20200304212452_Notes', '5.0.16');
+    VALUES ('20200304212452_Notes', '6.0.7');
     END IF;
 END $EF$;
 COMMIT;
@@ -1919,7 +1921,7 @@ DO $EF$
 BEGIN
     IF NOT EXISTS(SELECT 1 FROM "__EFMigrationsHistory" WHERE "MigrationId" = '20200304214641_UpdateVerifyEmailTemplate') THEN
     INSERT INTO "__EFMigrationsHistory" ("MigrationId", "ProductVersion")
-    VALUES ('20200304214641_UpdateVerifyEmailTemplate', '5.0.16');
+    VALUES ('20200304214641_UpdateVerifyEmailTemplate', '6.0.7');
     END IF;
 END $EF$;
 COMMIT;
@@ -1945,7 +1947,7 @@ DO $EF$
 BEGIN
     IF NOT EXISTS(SELECT 1 FROM "__EFMigrationsHistory" WHERE "MigrationId" = '20200312180332_CompositeNoteKeys') THEN
     INSERT INTO "__EFMigrationsHistory" ("MigrationId", "ProductVersion")
-    VALUES ('20200312180332_CompositeNoteKeys', '5.0.16');
+    VALUES ('20200312180332_CompositeNoteKeys', '6.0.7');
     END IF;
 END $EF$;
 COMMIT;
@@ -2060,7 +2062,7 @@ DO $EF$
 BEGIN
     IF NOT EXISTS(SELECT 1 FROM "__EFMigrationsHistory" WHERE "MigrationId" = '20200317223800_ToSUpdate4Notes') THEN
     INSERT INTO "__EFMigrationsHistory" ("MigrationId", "ProductVersion")
-    VALUES ('20200317223800_ToSUpdate4Notes', '5.0.16');
+    VALUES ('20200317223800_ToSUpdate4Notes', '6.0.7');
     END IF;
 END $EF$;
 COMMIT;
@@ -2091,7 +2093,7 @@ DO $EF$
 BEGIN
     IF NOT EXISTS(SELECT 1 FROM "__EFMigrationsHistory" WHERE "MigrationId" = '20200330230502_GenericCache') THEN
     INSERT INTO "__EFMigrationsHistory" ("MigrationId", "ProductVersion")
-    VALUES ('20200330230502_GenericCache', '5.0.16');
+    VALUES ('20200330230502_GenericCache', '6.0.7');
     END IF;
 END $EF$;
 COMMIT;
@@ -2124,7 +2126,7 @@ DO $EF$
 BEGIN
     IF NOT EXISTS(SELECT 1 FROM "__EFMigrationsHistory" WHERE "MigrationId" = '20200413234129_AddHDID2Feedback') THEN
     INSERT INTO "__EFMigrationsHistory" ("MigrationId", "ProductVersion")
-    VALUES ('20200413234129_AddHDID2Feedback', '5.0.16');
+    VALUES ('20200413234129_AddHDID2Feedback', '6.0.7');
     END IF;
 END $EF$;
 COMMIT;
@@ -2162,7 +2164,7 @@ DO $EF$
 BEGIN
     IF NOT EXISTS(SELECT 1 FROM "__EFMigrationsHistory" WHERE "MigrationId" = '20200421223141_Comment') THEN
     INSERT INTO "__EFMigrationsHistory" ("MigrationId", "ProductVersion")
-    VALUES ('20200421223141_Comment', '5.0.16');
+    VALUES ('20200421223141_Comment', '6.0.7');
     END IF;
 END $EF$;
 COMMIT;
@@ -2232,7 +2234,7 @@ DO $EF$
 BEGIN
     IF NOT EXISTS(SELECT 1 FROM "__EFMigrationsHistory" WHERE "MigrationId" = '20200422234729_SupportEncryption') THEN
     INSERT INTO "__EFMigrationsHistory" ("MigrationId", "ProductVersion")
-    VALUES ('20200422234729_SupportEncryption', '5.0.16');
+    VALUES ('20200422234729_SupportEncryption', '6.0.7');
     END IF;
 END $EF$;
 COMMIT;
@@ -2262,7 +2264,7 @@ DO $EF$
 BEGIN
     IF NOT EXISTS(SELECT 1 FROM "__EFMigrationsHistory" WHERE "MigrationId" = '20200423173644_Communication') THEN
     INSERT INTO "__EFMigrationsHistory" ("MigrationId", "ProductVersion")
-    VALUES ('20200423173644_Communication', '5.0.16');
+    VALUES ('20200423173644_Communication', '6.0.7');
     END IF;
 END $EF$;
 COMMIT;
@@ -2282,7 +2284,7 @@ DO $EF$
 BEGIN
     IF NOT EXISTS(SELECT 1 FROM "__EFMigrationsHistory" WHERE "MigrationId" = '20200512223446_AddLaboratoryApplication') THEN
     INSERT INTO "__EFMigrationsHistory" ("MigrationId", "ProductVersion")
-    VALUES ('20200512223446_AddLaboratoryApplication', '5.0.16');
+    VALUES ('20200512223446_AddLaboratoryApplication', '6.0.7');
     END IF;
 END $EF$;
 COMMIT;
@@ -2301,7 +2303,7 @@ DO $EF$
 BEGIN
     IF NOT EXISTS(SELECT 1 FROM "__EFMigrationsHistory" WHERE "MigrationId" = '20200514220748_UpdateCommentModel') THEN
     INSERT INTO "__EFMigrationsHistory" ("MigrationId", "ProductVersion")
-    VALUES ('20200514220748_UpdateCommentModel', '5.0.16');
+    VALUES ('20200514220748_UpdateCommentModel', '6.0.7');
     END IF;
 END $EF$;
 COMMIT;
@@ -2320,7 +2322,7 @@ DO $EF$
 BEGIN
     IF NOT EXISTS(SELECT 1 FROM "__EFMigrationsHistory" WHERE "MigrationId" = '20200515154544_UpdateProfile') THEN
     INSERT INTO "__EFMigrationsHistory" ("MigrationId", "ProductVersion")
-    VALUES ('20200515154544_UpdateProfile', '5.0.16');
+    VALUES ('20200515154544_UpdateProfile', '6.0.7');
     END IF;
 END $EF$;
 COMMIT;
@@ -2374,7 +2376,7 @@ DO $EF$
 BEGIN
     IF NOT EXISTS(SELECT 1 FROM "__EFMigrationsHistory" WHERE "MigrationId" = '20200521185337_RenameEmailInviteDB') THEN
     INSERT INTO "__EFMigrationsHistory" ("MigrationId", "ProductVersion")
-    VALUES ('20200521185337_RenameEmailInviteDB', '5.0.16');
+    VALUES ('20200521185337_RenameEmailInviteDB', '6.0.7');
     END IF;
 END $EF$;
 COMMIT;
@@ -2393,7 +2395,7 @@ DO $EF$
 BEGIN
     IF NOT EXISTS(SELECT 1 FROM "__EFMigrationsHistory" WHERE "MigrationId" = '20200521185607_RenameEmailInviteModel') THEN
     INSERT INTO "__EFMigrationsHistory" ("MigrationId", "ProductVersion")
-    VALUES ('20200521185607_RenameEmailInviteModel', '5.0.16');
+    VALUES ('20200521185607_RenameEmailInviteModel', '6.0.7');
     END IF;
 END $EF$;
 COMMIT;
@@ -2482,7 +2484,7 @@ DO $EF$
 BEGIN
     IF NOT EXISTS(SELECT 1 FROM "__EFMigrationsHistory" WHERE "MigrationId" = '20200526063610_SMSVerification') THEN
     INSERT INTO "__EFMigrationsHistory" ("MigrationId", "ProductVersion")
-    VALUES ('20200526063610_SMSVerification', '5.0.16');
+    VALUES ('20200526063610_SMSVerification', '6.0.7');
     END IF;
 END $EF$;
 COMMIT;
@@ -2501,7 +2503,7 @@ DO $EF$
 BEGIN
     IF NOT EXISTS(SELECT 1 FROM "__EFMigrationsHistory" WHERE "MigrationId" = '20200526203427_MissingMigrationNullable') THEN
     INSERT INTO "__EFMigrationsHistory" ("MigrationId", "ProductVersion")
-    VALUES ('20200526203427_MissingMigrationNullable', '5.0.16');
+    VALUES ('20200526203427_MissingMigrationNullable', '6.0.7');
     END IF;
 END $EF$;
 COMMIT;
@@ -2557,7 +2559,7 @@ DO $EF$
 BEGIN
     IF NOT EXISTS(SELECT 1 FROM "__EFMigrationsHistory" WHERE "MigrationId" = '20200529202233_PhoneBugfix') THEN
     INSERT INTO "__EFMigrationsHistory" ("MigrationId", "ProductVersion")
-    VALUES ('20200529202233_PhoneBugfix', '5.0.16');
+    VALUES ('20200529202233_PhoneBugfix', '6.0.7');
     END IF;
 END $EF$;
 COMMIT;
@@ -2590,7 +2592,7 @@ DO $EF$
 BEGIN
     IF NOT EXISTS(SELECT 1 FROM "__EFMigrationsHistory" WHERE "MigrationId" = '20200601194243_UpdateMessagingVerification') THEN
     INSERT INTO "__EFMigrationsHistory" ("MigrationId", "ProductVersion")
-    VALUES ('20200601194243_UpdateMessagingVerification', '5.0.16');
+    VALUES ('20200601194243_UpdateMessagingVerification', '6.0.7');
     END IF;
 END $EF$;
 COMMIT;
@@ -2616,7 +2618,7 @@ DO $EF$
 BEGIN
     IF NOT EXISTS(SELECT 1 FROM "__EFMigrationsHistory" WHERE "MigrationId" = '20200609144240_UpdateMessagingVerificationAttempts') THEN
     INSERT INTO "__EFMigrationsHistory" ("MigrationId", "ProductVersion")
-    VALUES ('20200609144240_UpdateMessagingVerificationAttempts', '5.0.16');
+    VALUES ('20200609144240_UpdateMessagingVerificationAttempts', '6.0.7');
     END IF;
 END $EF$;
 COMMIT;
@@ -2627,7 +2629,8 @@ START TRANSACTION;
 DO $EF$
 BEGIN
     IF NOT EXISTS(SELECT 1 FROM "__EFMigrationsHistory" WHERE "MigrationId" = '20200619221413_CommunicationDateConstraint') THEN
-        ALTER TABLE gateway."Communication" ADD CONSTRAINT unique_date_range EXCLUDE USING gist (tsrange("EffectiveDateTime", "ExpiryDateTime") WITH &&);
+
+                    ALTER TABLE gateway."Communication" ADD CONSTRAINT unique_date_range EXCLUDE USING gist (tsrange("EffectiveDateTime", "ExpiryDateTime") WITH &&);
     END IF;
 END $EF$;
 
@@ -2635,7 +2638,7 @@ DO $EF$
 BEGIN
     IF NOT EXISTS(SELECT 1 FROM "__EFMigrationsHistory" WHERE "MigrationId" = '20200619221413_CommunicationDateConstraint') THEN
     INSERT INTO "__EFMigrationsHistory" ("MigrationId", "ProductVersion")
-    VALUES ('20200619221413_CommunicationDateConstraint', '5.0.16');
+    VALUES ('20200619221413_CommunicationDateConstraint', '6.0.7');
     END IF;
 END $EF$;
 COMMIT;
@@ -2766,7 +2769,7 @@ DO $EF$
 BEGIN
     IF NOT EXISTS(SELECT 1 FROM "__EFMigrationsHistory" WHERE "MigrationId" = '20200622183501_ToSUpdateCovid') THEN
     INSERT INTO "__EFMigrationsHistory" ("MigrationId", "ProductVersion")
-    VALUES ('20200622183501_ToSUpdateCovid', '5.0.16');
+    VALUES ('20200622183501_ToSUpdateCovid', '6.0.7');
     END IF;
 END $EF$;
 COMMIT;
@@ -2786,7 +2789,7 @@ DO $EF$
 BEGIN
     IF NOT EXISTS(SELECT 1 FROM "__EFMigrationsHistory" WHERE "MigrationId" = '20200630213031_MvToSEffDt') THEN
     INSERT INTO "__EFMigrationsHistory" ("MigrationId", "ProductVersion")
-    VALUES ('20200630213031_MvToSEffDt', '5.0.16');
+    VALUES ('20200630213031_MvToSEffDt', '6.0.7');
     END IF;
 END $EF$;
 COMMIT;
@@ -2814,7 +2817,7 @@ DO $EF$
 BEGIN
     IF NOT EXISTS(SELECT 1 FROM "__EFMigrationsHistory" WHERE "MigrationId" = '20200710203326_AddUserPreference') THEN
     INSERT INTO "__EFMigrationsHistory" ("MigrationId", "ProductVersion")
-    VALUES ('20200710203326_AddUserPreference', '5.0.16');
+    VALUES ('20200710203326_AddUserPreference', '6.0.7');
     END IF;
 END $EF$;
 COMMIT;
@@ -2986,7 +2989,7 @@ DO $EF$
 BEGIN
     IF NOT EXISTS(SELECT 1 FROM "__EFMigrationsHistory" WHERE "MigrationId" = '20200724222252_NewComms') THEN
     INSERT INTO "__EFMigrationsHistory" ("MigrationId", "ProductVersion")
-    VALUES ('20200724222252_NewComms', '5.0.16');
+    VALUES ('20200724222252_NewComms', '6.0.7');
     END IF;
 END $EF$;
 COMMIT;
@@ -3005,7 +3008,7 @@ DO $EF$
 BEGIN
     IF NOT EXISTS(SELECT 1 FROM "__EFMigrationsHistory" WHERE "MigrationId" = '20200724230921_UpdateCommunicationAddScheduledDate') THEN
     INSERT INTO "__EFMigrationsHistory" ("MigrationId", "ProductVersion")
-    VALUES ('20200724230921_UpdateCommunicationAddScheduledDate', '5.0.16');
+    VALUES ('20200724230921_UpdateCommunicationAddScheduledDate', '6.0.7');
     END IF;
 END $EF$;
 COMMIT;
@@ -3067,7 +3070,7 @@ DO $EF$
 BEGIN
     IF NOT EXISTS(SELECT 1 FROM "__EFMigrationsHistory" WHERE "MigrationId" = '20200803222317_PushBannerChange') THEN
     INSERT INTO "__EFMigrationsHistory" ("MigrationId", "ProductVersion")
-    VALUES ('20200803222317_PushBannerChange', '5.0.16');
+    VALUES ('20200803222317_PushBannerChange', '6.0.7');
     END IF;
 END $EF$;
 COMMIT;
@@ -3095,7 +3098,7 @@ DO $EF$
 BEGIN
     IF NOT EXISTS(SELECT 1 FROM "__EFMigrationsHistory" WHERE "MigrationId" = '20200817213421_AddRatingsTable') THEN
     INSERT INTO "__EFMigrationsHistory" ("MigrationId", "ProductVersion")
-    VALUES ('20200817213421_AddRatingsTable', '5.0.16');
+    VALUES ('20200817213421_AddRatingsTable', '6.0.7');
     END IF;
 END $EF$;
 COMMIT;
@@ -3115,7 +3118,7 @@ DO $EF$
 BEGIN
     IF NOT EXISTS(SELECT 1 FROM "__EFMigrationsHistory" WHERE "MigrationId" = '20200901174715_UpdateProgramTypeCode') THEN
     INSERT INTO "__EFMigrationsHistory" ("MigrationId", "ProductVersion")
-    VALUES ('20200901174715_UpdateProgramTypeCode', '5.0.16');
+    VALUES ('20200901174715_UpdateProgramTypeCode', '6.0.7');
     END IF;
 END $EF$;
 COMMIT;
@@ -3135,7 +3138,7 @@ DO $EF$
 BEGIN
     IF NOT EXISTS(SELECT 1 FROM "__EFMigrationsHistory" WHERE "MigrationId" = '20200922192259_AddCommunicationStatusCodeDraft') THEN
     INSERT INTO "__EFMigrationsHistory" ("MigrationId", "ProductVersion")
-    VALUES ('20200922192259_AddCommunicationStatusCodeDraft', '5.0.16');
+    VALUES ('20200922192259_AddCommunicationStatusCodeDraft', '6.0.7');
     END IF;
 END $EF$;
 COMMIT;
@@ -3146,14 +3149,16 @@ START TRANSACTION;
 DO $EF$
 BEGIN
     IF NOT EXISTS(SELECT 1 FROM "__EFMigrationsHistory" WHERE "MigrationId" = '20200926222603_ModifyUniqueDateRangeConstraint') THEN
-        ALTER TABLE gateway."Communication" DROP CONSTRAINT unique_date_range;
+
+                    ALTER TABLE gateway."Communication" DROP CONSTRAINT unique_date_range;
     END IF;
 END $EF$;
 
 DO $EF$
 BEGIN
     IF NOT EXISTS(SELECT 1 FROM "__EFMigrationsHistory" WHERE "MigrationId" = '20200926222603_ModifyUniqueDateRangeConstraint') THEN
-        ALTER TABLE gateway."Communication" ADD CONSTRAINT unique_date_range EXCLUDE USING gist (tsrange("EffectiveDateTime", "ExpiryDateTime") WITH &&) WHERE ("CommunicationTypeCode" = 'Banner');
+
+                    ALTER TABLE gateway."Communication" ADD CONSTRAINT unique_date_range EXCLUDE USING gist (tsrange("EffectiveDateTime", "ExpiryDateTime") WITH &&) WHERE ("CommunicationTypeCode" = 'Banner');
     END IF;
 END $EF$;
 
@@ -3161,7 +3166,7 @@ DO $EF$
 BEGIN
     IF NOT EXISTS(SELECT 1 FROM "__EFMigrationsHistory" WHERE "MigrationId" = '20200926222603_ModifyUniqueDateRangeConstraint') THEN
     INSERT INTO "__EFMigrationsHistory" ("MigrationId", "ProductVersion")
-    VALUES ('20200926222603_ModifyUniqueDateRangeConstraint', '5.0.16');
+    VALUES ('20200926222603_ModifyUniqueDateRangeConstraint', '6.0.7');
     END IF;
 END $EF$;
 COMMIT;
@@ -3188,7 +3193,7 @@ DO $EF$
 BEGIN
     IF NOT EXISTS(SELECT 1 FROM "__EFMigrationsHistory" WHERE "MigrationId" = '20201008222443_UserDelegate') THEN
     INSERT INTO "__EFMigrationsHistory" ("MigrationId", "ProductVersion")
-    VALUES ('20201008222443_UserDelegate', '5.0.16');
+    VALUES ('20201008222443_UserDelegate', '6.0.7');
     END IF;
 END $EF$;
 COMMIT;
@@ -3206,7 +3211,7 @@ END $EF$;
 DO $EF$
 BEGIN
     IF NOT EXISTS(SELECT 1 FROM "__EFMigrationsHistory" WHERE "MigrationId" = '20201017085954_GenericCacheIndexes') THEN
-        CREATE INDEX "IX_GenericCache_JSON_GIN" on gateway."GenericCache" USING gin("JSON");
+    CREATE INDEX "IX_GenericCache_JSON_GIN" on gateway."GenericCache" USING gin("JSON");
     END IF;
 END $EF$;
 
@@ -3214,7 +3219,7 @@ DO $EF$
 BEGIN
     IF NOT EXISTS(SELECT 1 FROM "__EFMigrationsHistory" WHERE "MigrationId" = '20201017085954_GenericCacheIndexes') THEN
     INSERT INTO "__EFMigrationsHistory" ("MigrationId", "ProductVersion")
-    VALUES ('20201017085954_GenericCacheIndexes', '5.0.16');
+    VALUES ('20201017085954_GenericCacheIndexes', '6.0.7');
     END IF;
 END $EF$;
 COMMIT;
@@ -3225,14 +3230,14 @@ START TRANSACTION;
 DO $EF$
 BEGIN
     IF NOT EXISTS(SELECT 1 FROM "__EFMigrationsHistory" WHERE "MigrationId" = '20201018001236_GenericCacheUnique') THEN
-        TRUNCATE gateway."GenericCache";
+    TRUNCATE gateway."GenericCache";
     END IF;
 END $EF$;
 
 DO $EF$
 BEGIN
     IF NOT EXISTS(SELECT 1 FROM "__EFMigrationsHistory" WHERE "MigrationId" = '20201018001236_GenericCacheUnique') THEN
-        DROP INDEX gateway."IX_GenericCache_HdId_Domain";
+    DROP INDEX gateway."IX_GenericCache_HdId_Domain";
     END IF;
 END $EF$;
 
@@ -3247,7 +3252,7 @@ DO $EF$
 BEGIN
     IF NOT EXISTS(SELECT 1 FROM "__EFMigrationsHistory" WHERE "MigrationId" = '20201018001236_GenericCacheUnique') THEN
     INSERT INTO "__EFMigrationsHistory" ("MigrationId", "ProductVersion")
-    VALUES ('20201018001236_GenericCacheUnique', '5.0.16');
+    VALUES ('20201018001236_GenericCacheUnique', '6.0.7');
     END IF;
 END $EF$;
 COMMIT;
@@ -3258,40 +3263,41 @@ START TRANSACTION;
 DO $EF$
 BEGIN
     IF NOT EXISTS(SELECT 1 FROM "__EFMigrationsHistory" WHERE "MigrationId" = '20201021193628_AddUserDelegateHistory') THEN
-        CREATE TABLE gateway."UserDelegateHistory" (
-            "UserDelegateHistoryId" uuid NOT NULL,
-            "CreatedBy" character varying(60) NOT NULL,
-            "CreatedDateTime" timestamp without time zone NOT NULL,
-            "UpdatedBy" character varying(60) NOT NULL,
-            "UpdatedDateTime" timestamp without time zone NOT NULL,
-            "OwnerId" character varying(52) NOT NULL,
-            "DelegateId" character varying(52) NOT NULL,
-            "Operation" text NOT NULL,
-            "OperationDateTime" timestamp without time zone NOT NULL,
-            CONSTRAINT "PK_UserDelegateHistory" PRIMARY KEY ("UserDelegateHistoryId")
-        );
+    CREATE TABLE gateway."UserDelegateHistory" (
+        "UserDelegateHistoryId" uuid NOT NULL,
+        "CreatedBy" character varying(60) NOT NULL,
+        "CreatedDateTime" timestamp without time zone NOT NULL,
+        "UpdatedBy" character varying(60) NOT NULL,
+        "UpdatedDateTime" timestamp without time zone NOT NULL,
+        "OwnerId" character varying(52) NOT NULL,
+        "DelegateId" character varying(52) NOT NULL,
+        "Operation" text NOT NULL,
+        "OperationDateTime" timestamp without time zone NOT NULL,
+        CONSTRAINT "PK_UserDelegateHistory" PRIMARY KEY ("UserDelegateHistoryId")
+    );
     END IF;
 END $EF$;
 
 DO $EF$
 BEGIN
     IF NOT EXISTS(SELECT 1 FROM "__EFMigrationsHistory" WHERE "MigrationId" = '20201021193628_AddUserDelegateHistory') THEN
-        CREATE FUNCTION gateway."UserDelegateHistoryFunction"()
-            RETURNS trigger
-            LANGUAGE 'plpgsql'
-            NOT LEAKPROOF
-        AS $BODY$
-        BEGIN
-            IF(TG_OP = 'DELETE') THEN
-                INSERT INTO gateway."UserDelegateHistory"("UserDelegateHistoryId", "Operation", "OperationDateTime",
-                            "OwnerId", "DelegateId", 						 
-                            "CreatedBy", "CreatedDateTime", "UpdatedBy", "UpdatedDateTime") 
-                VALUES(uuid_generate_v4(), TG_OP, now(),
-                    old."OwnerId", old."DelegateId",
-                    old."CreatedBy", old."CreatedDateTime", old."UpdatedBy", old."UpdatedDateTime");
-                RETURN old;
-            END IF;
-        END;$BODY$;
+
+    CREATE FUNCTION gateway."UserDelegateHistoryFunction"()
+        RETURNS trigger
+        LANGUAGE 'plpgsql'
+        NOT LEAKPROOF
+    AS $BODY$
+    BEGIN
+        IF(TG_OP = 'DELETE') THEN
+            INSERT INTO gateway."UserDelegateHistory"("UserDelegateHistoryId", "Operation", "OperationDateTime",
+                        "OwnerId", "DelegateId", 						 
+    				    "CreatedBy", "CreatedDateTime", "UpdatedBy", "UpdatedDateTime") 
+    		VALUES(uuid_generate_v4(), TG_OP, now(),
+                   old."OwnerId", old."DelegateId",
+                   old."CreatedBy", old."CreatedDateTime", old."UpdatedBy", old."UpdatedDateTime");
+            RETURN old;
+        END IF;
+    END;$BODY$;
     END IF;
 END $EF$;
 
@@ -3311,7 +3317,7 @@ DO $EF$
 BEGIN
     IF NOT EXISTS(SELECT 1 FROM "__EFMigrationsHistory" WHERE "MigrationId" = '20201021193628_AddUserDelegateHistory') THEN
     INSERT INTO "__EFMigrationsHistory" ("MigrationId", "ProductVersion")
-    VALUES ('20201021193628_AddUserDelegateHistory', '5.0.16');
+    VALUES ('20201021193628_AddUserDelegateHistory', '6.0.7');
     END IF;
 END $EF$;
 COMMIT;
@@ -3322,128 +3328,129 @@ START TRANSACTION;
 DO $EF$
 BEGIN
     IF NOT EXISTS(SELECT 1 FROM "__EFMigrationsHistory" WHERE "MigrationId" = '20201118002050_AddResourceDelegate') THEN
-        DROP TRIGGER IF EXISTS "UserDelegateHistoryTrigger" ON gateway."UserDelegate";
+    DROP TRIGGER IF EXISTS "UserDelegateHistoryTrigger" ON gateway."UserDelegate";
     END IF;
 END $EF$;
 
 DO $EF$
 BEGIN
     IF NOT EXISTS(SELECT 1 FROM "__EFMigrationsHistory" WHERE "MigrationId" = '20201118002050_AddResourceDelegate') THEN
-        DROP FUNCTION IF EXISTS gateway."UserDelegateHistoryFunction"();
+    DROP FUNCTION IF EXISTS gateway."UserDelegateHistoryFunction"();
     END IF;
 END $EF$;
 
 DO $EF$
 BEGIN
     IF NOT EXISTS(SELECT 1 FROM "__EFMigrationsHistory" WHERE "MigrationId" = '20201118002050_AddResourceDelegate') THEN
-        DROP TABLE IF EXISTS gateway."UserDelegate";
+    DROP TABLE IF EXISTS gateway."UserDelegate";
     END IF;
 END $EF$;
 
 DO $EF$
 BEGIN
     IF NOT EXISTS(SELECT 1 FROM "__EFMigrationsHistory" WHERE "MigrationId" = '20201118002050_AddResourceDelegate') THEN
-        DROP TABLE IF EXISTS gateway."UserDelegateHistory";
+    DROP TABLE IF EXISTS gateway."UserDelegateHistory";
     END IF;
 END $EF$;
 
 DO $EF$
 BEGIN
     IF NOT EXISTS(SELECT 1 FROM "__EFMigrationsHistory" WHERE "MigrationId" = '20201118002050_AddResourceDelegate') THEN
-        CREATE TABLE gateway."ResourceDelegateHistory" (
-            "ResourceDelegateHistoryId" uuid NOT NULL,
-            "CreatedBy" character varying(60) NOT NULL,
-            "CreatedDateTime" timestamp without time zone NOT NULL,
-            "UpdatedBy" character varying(60) NOT NULL,
-            "UpdatedDateTime" timestamp without time zone NOT NULL,
-            "ResourceOwnerHdid" character varying(52) NOT NULL,
-            "ProfileHdid" character varying(52) NOT NULL,
-            "ReasonCode" character varying(10) NOT NULL,
-            "ReasonObjectType" text NOT NULL,
-            "ReasonObject" jsonb NOT NULL,
-            "Operation" text NOT NULL,
-            "OperationDateTime" timestamp without time zone NOT NULL,
-            CONSTRAINT "PK_ResourceDelegateHistory" PRIMARY KEY ("ResourceDelegateHistoryId")
-        );
+    CREATE TABLE gateway."ResourceDelegateHistory" (
+        "ResourceDelegateHistoryId" uuid NOT NULL,
+        "CreatedBy" character varying(60) NOT NULL,
+        "CreatedDateTime" timestamp without time zone NOT NULL,
+        "UpdatedBy" character varying(60) NOT NULL,
+        "UpdatedDateTime" timestamp without time zone NOT NULL,
+        "ResourceOwnerHdid" character varying(52) NOT NULL,
+        "ProfileHdid" character varying(52) NOT NULL,
+        "ReasonCode" character varying(10) NOT NULL,
+        "ReasonObjectType" text NOT NULL,
+        "ReasonObject" jsonb NOT NULL,
+        "Operation" text NOT NULL,
+        "OperationDateTime" timestamp without time zone NOT NULL,
+        CONSTRAINT "PK_ResourceDelegateHistory" PRIMARY KEY ("ResourceDelegateHistoryId")
+    );
     END IF;
 END $EF$;
 
 DO $EF$
 BEGIN
     IF NOT EXISTS(SELECT 1 FROM "__EFMigrationsHistory" WHERE "MigrationId" = '20201118002050_AddResourceDelegate') THEN
-        CREATE TABLE gateway."ResourceDelegateReasonCode" (
-            "ReasonTypeCode" character varying(10) NOT NULL,
-            "CreatedBy" character varying(60) NOT NULL,
-            "CreatedDateTime" timestamp without time zone NOT NULL,
-            "UpdatedBy" character varying(60) NOT NULL,
-            "UpdatedDateTime" timestamp without time zone NOT NULL,
-            "Description" character varying(50) NOT NULL,
-            CONSTRAINT "PK_ResourceDelegateReasonCode" PRIMARY KEY ("ReasonTypeCode")
-        );
+    CREATE TABLE gateway."ResourceDelegateReasonCode" (
+        "ReasonTypeCode" character varying(10) NOT NULL,
+        "CreatedBy" character varying(60) NOT NULL,
+        "CreatedDateTime" timestamp without time zone NOT NULL,
+        "UpdatedBy" character varying(60) NOT NULL,
+        "UpdatedDateTime" timestamp without time zone NOT NULL,
+        "Description" character varying(50) NOT NULL,
+        CONSTRAINT "PK_ResourceDelegateReasonCode" PRIMARY KEY ("ReasonTypeCode")
+    );
     END IF;
 END $EF$;
 
 DO $EF$
 BEGIN
     IF NOT EXISTS(SELECT 1 FROM "__EFMigrationsHistory" WHERE "MigrationId" = '20201118002050_AddResourceDelegate') THEN
-        CREATE TABLE gateway."ResourceDelegate" (
-            "ResourceOwnerHdid" character varying(52) NOT NULL,
-            "ProfileHdid" character varying(52) NOT NULL,
-            "ReasonCode" character varying(10) NOT NULL,
-            "CreatedBy" character varying(60) NOT NULL,
-            "CreatedDateTime" timestamp without time zone NOT NULL,
-            "UpdatedBy" character varying(60) NOT NULL,
-            "UpdatedDateTime" timestamp without time zone NOT NULL,
-            "ReasonObjectType" text NOT NULL,
-            "ReasonObject" jsonb NOT NULL,
-            CONSTRAINT "PK_ResourceDelegate" PRIMARY KEY ("ResourceOwnerHdid", "ProfileHdid", "ReasonCode"),
-            CONSTRAINT "FK_ResourceDelegate_UserProfile_ProfileHdid" FOREIGN KEY ("ProfileHdid") REFERENCES gateway."UserProfile" ("UserProfileId") ON DELETE CASCADE,
-            CONSTRAINT "FK_ResourceDelegate_ResourceDelegateReasonCode_ReasonCode" FOREIGN KEY ("ReasonCode") REFERENCES gateway."ResourceDelegateReasonCode" ("ReasonTypeCode") ON DELETE CASCADE
-        );
+    CREATE TABLE gateway."ResourceDelegate" (
+        "ResourceOwnerHdid" character varying(52) NOT NULL,
+        "ProfileHdid" character varying(52) NOT NULL,
+        "ReasonCode" character varying(10) NOT NULL,
+        "CreatedBy" character varying(60) NOT NULL,
+        "CreatedDateTime" timestamp without time zone NOT NULL,
+        "UpdatedBy" character varying(60) NOT NULL,
+        "UpdatedDateTime" timestamp without time zone NOT NULL,
+        "ReasonObjectType" text NOT NULL,
+        "ReasonObject" jsonb NOT NULL,
+        CONSTRAINT "PK_ResourceDelegate" PRIMARY KEY ("ResourceOwnerHdid", "ProfileHdid", "ReasonCode"),
+        CONSTRAINT "FK_ResourceDelegate_UserProfile_ProfileHdid" FOREIGN KEY ("ProfileHdid") REFERENCES gateway."UserProfile" ("UserProfileId") ON DELETE CASCADE,
+        CONSTRAINT "FK_ResourceDelegate_ResourceDelegateReasonCode_ReasonCode" FOREIGN KEY ("ReasonCode") REFERENCES gateway."ResourceDelegateReasonCode" ("ReasonTypeCode") ON DELETE CASCADE
+    );
     END IF;
 END $EF$;
 
 DO $EF$
 BEGIN
     IF NOT EXISTS(SELECT 1 FROM "__EFMigrationsHistory" WHERE "MigrationId" = '20201118002050_AddResourceDelegate') THEN
-        INSERT INTO gateway."ResourceDelegateReasonCode" ("ReasonTypeCode", "CreatedBy", "CreatedDateTime", "Description", "UpdatedBy", "UpdatedDateTime")
-        VALUES ('COVIDLab', 'System', TIMESTAMP '2019-05-01 00:00:00', 'Resource Delegation for Covid Laboratory', 'System', TIMESTAMP '2019-05-01 00:00:00');
+    INSERT INTO gateway."ResourceDelegateReasonCode" ("ReasonTypeCode", "CreatedBy", "CreatedDateTime", "Description", "UpdatedBy", "UpdatedDateTime")
+    VALUES ('COVIDLab', 'System', TIMESTAMP '2019-05-01 00:00:00', 'Resource Delegation for Covid Laboratory', 'System', TIMESTAMP '2019-05-01 00:00:00');
     END IF;
 END $EF$;
 
 DO $EF$
 BEGIN
     IF NOT EXISTS(SELECT 1 FROM "__EFMigrationsHistory" WHERE "MigrationId" = '20201118002050_AddResourceDelegate') THEN
-        CREATE INDEX "IX_ResourceDelegate_ProfileHdid" ON gateway."ResourceDelegate" ("ProfileHdid");
+    CREATE INDEX "IX_ResourceDelegate_ProfileHdid" ON gateway."ResourceDelegate" ("ProfileHdid");
     END IF;
 END $EF$;
 
 DO $EF$
 BEGIN
     IF NOT EXISTS(SELECT 1 FROM "__EFMigrationsHistory" WHERE "MigrationId" = '20201118002050_AddResourceDelegate') THEN
-        CREATE INDEX "IX_ResourceDelegate_ReasonCode" ON gateway."ResourceDelegate" ("ReasonCode");
+    CREATE INDEX "IX_ResourceDelegate_ReasonCode" ON gateway."ResourceDelegate" ("ReasonCode");
     END IF;
 END $EF$;
 
 DO $EF$
 BEGIN
     IF NOT EXISTS(SELECT 1 FROM "__EFMigrationsHistory" WHERE "MigrationId" = '20201118002050_AddResourceDelegate') THEN
-        CREATE FUNCTION gateway."ResourceDelegateHistoryFunction"()
-            RETURNS trigger
-            LANGUAGE 'plpgsql'
-            NOT LEAKPROOF
-        AS $BODY$
-        BEGIN
-            IF(TG_OP = 'DELETE') THEN
-                INSERT INTO gateway."ResourceDelegateHistory"("ResourceDelegateHistoryId", "Operation", "OperationDateTime",
-                            "ResourceOwnerHdid", "ProfileHdid", "ReasonCode", "ReasonObjectType", "ReasonObject",                    
-                            "CreatedBy", "CreatedDateTime", "UpdatedBy", "UpdatedDateTime") 
-                VALUES(uuid_generate_v4(), TG_OP, now(),
-                    old."ResourceOwnerHdid", old."ProfileHdid", old."ReasonCode", old."ReasonObjectType", old."ReasonObject",
-                    old."CreatedBy", old."CreatedDateTime", old."UpdatedBy", old."UpdatedDateTime");
-                RETURN old;
-            END IF;
-        END;$BODY$;
+
+    CREATE FUNCTION gateway."ResourceDelegateHistoryFunction"()
+        RETURNS trigger
+        LANGUAGE 'plpgsql'
+        NOT LEAKPROOF
+    AS $BODY$
+    BEGIN
+        IF(TG_OP = 'DELETE') THEN
+            INSERT INTO gateway."ResourceDelegateHistory"("ResourceDelegateHistoryId", "Operation", "OperationDateTime",
+                        "ResourceOwnerHdid", "ProfileHdid", "ReasonCode", "ReasonObjectType", "ReasonObject",                    
+                        "CreatedBy", "CreatedDateTime", "UpdatedBy", "UpdatedDateTime") 
+            VALUES(uuid_generate_v4(), TG_OP, now(),
+                   old."ResourceOwnerHdid", old."ProfileHdid", old."ReasonCode", old."ReasonObjectType", old."ReasonObject",
+                   old."CreatedBy", old."CreatedDateTime", old."UpdatedBy", old."UpdatedDateTime");
+            RETURN old;
+        END IF;
+    END;$BODY$;
     END IF;
 END $EF$;
 
@@ -3463,7 +3470,7 @@ DO $EF$
 BEGIN
     IF NOT EXISTS(SELECT 1 FROM "__EFMigrationsHistory" WHERE "MigrationId" = '20201118002050_AddResourceDelegate') THEN
     INSERT INTO "__EFMigrationsHistory" ("MigrationId", "ProductVersion")
-    VALUES ('20201118002050_AddResourceDelegate', '5.0.16');
+    VALUES ('20201118002050_AddResourceDelegate', '6.0.7');
     END IF;
 END $EF$;
 COMMIT;
@@ -3482,7 +3489,7 @@ DO $EF$
 BEGIN
     IF NOT EXISTS(SELECT 1 FROM "__EFMigrationsHistory" WHERE "MigrationId" = '20201208231819_RemoveBetaRequest') THEN
     INSERT INTO "__EFMigrationsHistory" ("MigrationId", "ProductVersion")
-    VALUES ('20201208231819_RemoveBetaRequest', '5.0.16');
+    VALUES ('20201208231819_RemoveBetaRequest', '6.0.7');
     END IF;
 END $EF$;
 COMMIT;
@@ -3703,7 +3710,7 @@ DO $EF$
 BEGIN
     IF NOT EXISTS(SELECT 1 FROM "__EFMigrationsHistory" WHERE "MigrationId" = '20201224092706_UpdatedTermsOfService') THEN
     INSERT INTO "__EFMigrationsHistory" ("MigrationId", "ProductVersion")
-    VALUES ('20201224092706_UpdatedTermsOfService', '5.0.16');
+    VALUES ('20201224092706_UpdatedTermsOfService', '6.0.7');
     END IF;
 END $EF$;
 COMMIT;
@@ -3943,7 +3950,7 @@ DO $EF$
 BEGIN
     IF NOT EXISTS(SELECT 1 FROM "__EFMigrationsHistory" WHERE "MigrationId" = '20201224191731_FixTermsOfService') THEN
     INSERT INTO "__EFMigrationsHistory" ("MigrationId", "ProductVersion")
-    VALUES ('20201224191731_FixTermsOfService', '5.0.16');
+    VALUES ('20201224191731_FixTermsOfService', '6.0.7');
     END IF;
 END $EF$;
 COMMIT;
@@ -3963,7 +3970,7 @@ DO $EF$
 BEGIN
     IF NOT EXISTS(SELECT 1 FROM "__EFMigrationsHistory" WHERE "MigrationId" = '20210105213714_UpdateToSDate') THEN
     INSERT INTO "__EFMigrationsHistory" ("MigrationId", "ProductVersion")
-    VALUES ('20210105213714_UpdateToSDate', '5.0.16');
+    VALUES ('20210105213714_UpdateToSDate', '6.0.7');
     END IF;
 END $EF$;
 COMMIT;
@@ -3989,7 +3996,7 @@ DO $EF$
 BEGIN
     IF NOT EXISTS(SELECT 1 FROM "__EFMigrationsHistory" WHERE "MigrationId" = '20210105220604_UpdateFeedbackFK') THEN
     INSERT INTO "__EFMigrationsHistory" ("MigrationId", "ProductVersion")
-    VALUES ('20210105220604_UpdateFeedbackFK', '5.0.16');
+    VALUES ('20210105220604_UpdateFeedbackFK', '6.0.7');
     END IF;
 END $EF$;
 COMMIT;
@@ -4009,7 +4016,7 @@ DO $EF$
 BEGIN
     IF NOT EXISTS(SELECT 1 FROM "__EFMigrationsHistory" WHERE "MigrationId" = '20210106170417_UpdateToSDate2') THEN
     INSERT INTO "__EFMigrationsHistory" ("MigrationId", "ProductVersion")
-    VALUES ('20210106170417_UpdateToSDate2', '5.0.16');
+    VALUES ('20210106170417_UpdateToSDate2', '6.0.7');
     END IF;
 END $EF$;
 COMMIT;
@@ -4033,7 +4040,7 @@ DO $EF$
 BEGIN
     IF NOT EXISTS(SELECT 1 FROM "__EFMigrationsHistory" WHERE "MigrationId" = '20210107205552_UserProfileHistoryLogin') THEN
     ALTER TABLE gateway."UserProfile" ALTER COLUMN "LastLoginDateTime" SET NOT NULL;
-    ALTER TABLE gateway."UserProfile" ALTER COLUMN "LastLoginDateTime" SET DEFAULT TIMESTAMP '0001-01-01 00:00:00';
+    ALTER TABLE gateway."UserProfile" ALTER COLUMN "LastLoginDateTime" SET DEFAULT TIMESTAMP '-infinity';
     END IF;
 END $EF$;
 
@@ -4084,7 +4091,7 @@ DO $EF$
 BEGIN
     IF NOT EXISTS(SELECT 1 FROM "__EFMigrationsHistory" WHERE "MigrationId" = '20210107205552_UserProfileHistoryLogin') THEN
     INSERT INTO "__EFMigrationsHistory" ("MigrationId", "ProductVersion")
-    VALUES ('20210107205552_UserProfileHistoryLogin', '5.0.16');
+    VALUES ('20210107205552_UserProfileHistoryLogin', '6.0.7');
     END IF;
 END $EF$;
 COMMIT;
@@ -4138,7 +4145,7 @@ DO $EF$
 BEGIN
     IF NOT EXISTS(SELECT 1 FROM "__EFMigrationsHistory" WHERE "MigrationId" = '20210107212709_UpdateToSEmail') THEN
     INSERT INTO "__EFMigrationsHistory" ("MigrationId", "ProductVersion")
-    VALUES ('20210107212709_UpdateToSEmail', '5.0.16');
+    VALUES ('20210107212709_UpdateToSEmail', '6.0.7');
     END IF;
 END $EF$;
 COMMIT;
@@ -4150,7 +4157,7 @@ DO $EF$
 BEGIN
     IF NOT EXISTS(SELECT 1 FROM "__EFMigrationsHistory" WHERE "MigrationId" = '20210111203912_UserProfileHistoryNullValue') THEN
     ALTER TABLE gateway."UserProfileHistory" ALTER COLUMN "LastLoginDateTime" SET NOT NULL;
-    ALTER TABLE gateway."UserProfileHistory" ALTER COLUMN "LastLoginDateTime" SET DEFAULT TIMESTAMP '0001-01-01 00:00:00';
+    ALTER TABLE gateway."UserProfileHistory" ALTER COLUMN "LastLoginDateTime" SET DEFAULT TIMESTAMP '-infinity';
     END IF;
 END $EF$;
 
@@ -4158,7 +4165,7 @@ DO $EF$
 BEGIN
     IF NOT EXISTS(SELECT 1 FROM "__EFMigrationsHistory" WHERE "MigrationId" = '20210111203912_UserProfileHistoryNullValue') THEN
     INSERT INTO "__EFMigrationsHistory" ("MigrationId", "ProductVersion")
-    VALUES ('20210111203912_UserProfileHistoryNullValue', '5.0.16');
+    VALUES ('20210111203912_UserProfileHistoryNullValue', '6.0.7');
     END IF;
 END $EF$;
 COMMIT;
@@ -4187,7 +4194,7 @@ DO $EF$
 BEGIN
     IF NOT EXISTS(SELECT 1 FROM "__EFMigrationsHistory" WHERE "MigrationId" = '20210119080944_EventLog') THEN
     INSERT INTO "__EFMigrationsHistory" ("MigrationId", "ProductVersion")
-    VALUES ('20210119080944_EventLog', '5.0.16');
+    VALUES ('20210119080944_EventLog', '6.0.7');
     END IF;
 END $EF$;
 COMMIT;
@@ -4198,9 +4205,10 @@ START TRANSACTION;
 DO $EF$
 BEGIN
     IF NOT EXISTS(SELECT 1 FROM "__EFMigrationsHistory" WHERE "MigrationId" = '20210122215516_AddCommentEntryTypeCode') THEN
-        UPDATE gateway."Comment" 
-        SET "EntryTypeCode" = 'NA', "UpdatedBy" = 'AddCommentEntryTypeCodeMigration', "UpdatedDateTime"=now()
-        WHERE "EntryTypeCode" = '';                    
+     
+                    UPDATE gateway."Comment" 
+                    SET "EntryTypeCode" = 'NA', "UpdatedBy" = 'AddCommentEntryTypeCodeMigration', "UpdatedDateTime"=now()
+                    WHERE "EntryTypeCode" = '';
     END IF;
 END $EF$;
 
@@ -4253,7 +4261,7 @@ DO $EF$
 BEGIN
     IF NOT EXISTS(SELECT 1 FROM "__EFMigrationsHistory" WHERE "MigrationId" = '20210122215516_AddCommentEntryTypeCode') THEN
     INSERT INTO "__EFMigrationsHistory" ("MigrationId", "ProductVersion")
-    VALUES ('20210122215516_AddCommentEntryTypeCode', '5.0.16');
+    VALUES ('20210122215516_AddCommentEntryTypeCode', '6.0.7');
     END IF;
 END $EF$;
 COMMIT;
@@ -4303,7 +4311,7 @@ DO $EF$
 BEGIN
     IF NOT EXISTS(SELECT 1 FROM "__EFMigrationsHistory" WHERE "MigrationId" = '20210211202508_UpdateEmailValidationTemplate') THEN
     INSERT INTO "__EFMigrationsHistory" ("MigrationId", "ProductVersion")
-    VALUES ('20210211202508_UpdateEmailValidationTemplate', '5.0.16');
+    VALUES ('20210211202508_UpdateEmailValidationTemplate', '6.0.7');
     END IF;
 END $EF$;
 COMMIT;
@@ -4314,25 +4322,27 @@ START TRANSACTION;
 DO $EF$
 BEGIN
     IF NOT EXISTS(SELECT 1 FROM "__EFMigrationsHistory" WHERE "MigrationId" = '20210316172822_FixMessagingVerification') THEN
-        UPDATE gateway."MessagingVerification"
-        SET "SMSNumber" = regexp_replace("SMSNumber", '[^0-9]', '', 'g')
-        WHERE "SMSNumber" IS NOT null;
+
+    UPDATE gateway."MessagingVerification"
+    SET "SMSNumber" = regexp_replace("SMSNumber", '[^0-9]', '', 'g')
+    WHERE "SMSNumber" IS NOT null;
     END IF;
 END $EF$;
 
 DO $EF$
 BEGIN
     IF NOT EXISTS(SELECT 1 FROM "__EFMigrationsHistory" WHERE "MigrationId" = '20210316172822_FixMessagingVerification') THEN
-        UPDATE gateway."MessagingVerification"
-        SET "ExpireDate" = "CreatedDateTime" + interval '5' hour
-        WHERE "VerificationType" = 'SMS' AND extract(year from "ExpireDate") = 9999;
+
+    UPDATE gateway."MessagingVerification"
+    SET "ExpireDate" = "CreatedDateTime" + interval '5' hour
+    WHERE "VerificationType" = 'SMS' AND extract(year from "ExpireDate") = 9999;
     END IF;
 END $EF$;
 
 DO $EF$
 BEGIN
     IF NOT EXISTS(SELECT 1 FROM "__EFMigrationsHistory" WHERE "MigrationId" = '20210316172822_FixMessagingVerification') THEN
-        ALTER TABLE gateway."MessagingVerification" ALTER COLUMN "SMSNumber" TYPE character varying(10);
+    ALTER TABLE gateway."MessagingVerification" ALTER COLUMN "SMSNumber" TYPE character varying(10);
     END IF;
 END $EF$;
 
@@ -4340,7 +4350,7 @@ DO $EF$
 BEGIN
     IF NOT EXISTS(SELECT 1 FROM "__EFMigrationsHistory" WHERE "MigrationId" = '20210316172822_FixMessagingVerification') THEN
     INSERT INTO "__EFMigrationsHistory" ("MigrationId", "ProductVersion")
-    VALUES ('20210316172822_FixMessagingVerification', '5.0.16');
+    VALUES ('20210316172822_FixMessagingVerification', '6.0.7');
     END IF;
 END $EF$;
 COMMIT;
@@ -4360,7 +4370,7 @@ DO $EF$
 BEGIN
     IF NOT EXISTS(SELECT 1 FROM "__EFMigrationsHistory" WHERE "MigrationId" = '20210317235519_AddSpecialAuthorityCommentEntryTypeCode') THEN
     INSERT INTO "__EFMigrationsHistory" ("MigrationId", "ProductVersion")
-    VALUES ('20210317235519_AddSpecialAuthorityCommentEntryTypeCode', '5.0.16');
+    VALUES ('20210317235519_AddSpecialAuthorityCommentEntryTypeCode', '6.0.7');
     END IF;
 END $EF$;
 COMMIT;
@@ -5095,7 +5105,7 @@ DO $EF$
 BEGIN
     IF NOT EXISTS(SELECT 1 FROM "__EFMigrationsHistory" WHERE "MigrationId" = '20210330184059_UpdatedAssets') THEN
     INSERT INTO "__EFMigrationsHistory" ("MigrationId", "ProductVersion")
-    VALUES ('20210330184059_UpdatedAssets', '5.0.16');
+    VALUES ('20210330184059_UpdatedAssets', '6.0.7');
     END IF;
 END $EF$;
 COMMIT;
@@ -5981,7 +5991,7 @@ DO $EF$
 BEGIN
     IF NOT EXISTS(SELECT 1 FROM "__EFMigrationsHistory" WHERE "MigrationId" = '20210420220008_UpdateAssets') THEN
     INSERT INTO "__EFMigrationsHistory" ("MigrationId", "ProductVersion")
-    VALUES ('20210420220008_UpdateAssets', '5.0.16');
+    VALUES ('20210420220008_UpdateAssets', '6.0.7');
     END IF;
 END $EF$;
 COMMIT;
@@ -6047,7 +6057,7 @@ DO $EF$
 BEGIN
     IF NOT EXISTS(SELECT 1 FROM "__EFMigrationsHistory" WHERE "MigrationId" = '20210510213821_CreateAdminTag') THEN
     INSERT INTO "__EFMigrationsHistory" ("MigrationId", "ProductVersion")
-    VALUES ('20210510213821_CreateAdminTag', '5.0.16');
+    VALUES ('20210510213821_CreateAdminTag', '6.0.7');
     END IF;
 END $EF$;
 COMMIT;
@@ -6188,7 +6198,7 @@ DO $EF$
 BEGIN
     IF NOT EXISTS(SELECT 1 FROM "__EFMigrationsHistory" WHERE "MigrationId" = '20210601235231_SetupWallet') THEN
     INSERT INTO "__EFMigrationsHistory" ("MigrationId", "ProductVersion")
-    VALUES ('20210601235231_SetupWallet', '5.0.16');
+    VALUES ('20210601235231_SetupWallet', '6.0.7');
     END IF;
 END $EF$;
 COMMIT;
@@ -6216,7 +6226,7 @@ DO $EF$
 BEGIN
     IF NOT EXISTS(SELECT 1 FROM "__EFMigrationsHistory" WHERE "MigrationId" = '20210604003608_AddRequiredCredentialsAttributes') THEN
     INSERT INTO "__EFMigrationsHistory" ("MigrationId", "ProductVersion")
-    VALUES ('20210604003608_AddRequiredCredentialsAttributes', '5.0.16');
+    VALUES ('20210604003608_AddRequiredCredentialsAttributes', '6.0.7');
     END IF;
 END $EF$;
 COMMIT;
@@ -6242,7 +6252,7 @@ DO $EF$
 BEGIN
     IF NOT EXISTS(SELECT 1 FROM "__EFMigrationsHistory" WHERE "MigrationId" = '20210607193749_UpdateCredFieldsRegd') THEN
     INSERT INTO "__EFMigrationsHistory" ("MigrationId", "ProductVersion")
-    VALUES ('20210607193749_UpdateCredFieldsRegd', '5.0.16');
+    VALUES ('20210607193749_UpdateCredFieldsRegd', '6.0.7');
     END IF;
 END $EF$;
 COMMIT;
@@ -6272,7 +6282,7 @@ DO $EF$
 BEGIN
     IF NOT EXISTS(SELECT 1 FROM "__EFMigrationsHistory" WHERE "MigrationId" = '20210618155609_AdminFeedbackEmail') THEN
     INSERT INTO "__EFMigrationsHistory" ("MigrationId", "ProductVersion")
-    VALUES ('20210618155609_AdminFeedbackEmail', '5.0.16');
+    VALUES ('20210618155609_AdminFeedbackEmail', '6.0.7');
     END IF;
 END $EF$;
 COMMIT;
@@ -6344,7 +6354,7 @@ DO $EF$
 BEGIN
     IF NOT EXISTS(SELECT 1 FROM "__EFMigrationsHistory" WHERE "MigrationId" = '20210618185129_AddInAppCommsType') THEN
     INSERT INTO "__EFMigrationsHistory" ("MigrationId", "ProductVersion")
-    VALUES ('20210618185129_AddInAppCommsType', '5.0.16');
+    VALUES ('20210618185129_AddInAppCommsType', '6.0.7');
     END IF;
 END $EF$;
 COMMIT;
@@ -6375,7 +6385,7 @@ DO $EF$
 BEGIN
     IF NOT EXISTS(SELECT 1 FROM "__EFMigrationsHistory" WHERE "MigrationId" = '20210621184624_UpdateAdminFeedbackTemplate') THEN
     INSERT INTO "__EFMigrationsHistory" ("MigrationId", "ProductVersion")
-    VALUES ('20210621184624_UpdateAdminFeedbackTemplate', '5.0.16');
+    VALUES ('20210621184624_UpdateAdminFeedbackTemplate', '6.0.7');
     END IF;
 END $EF$;
 COMMIT;
@@ -6401,7 +6411,7 @@ DO $EF$
 BEGIN
     IF NOT EXISTS(SELECT 1 FROM "__EFMigrationsHistory" WHERE "MigrationId" = '20210621225608_UserProfileVerifications') THEN
     INSERT INTO "__EFMigrationsHistory" ("MigrationId", "ProductVersion")
-    VALUES ('20210621225608_UserProfileVerifications', '5.0.16');
+    VALUES ('20210621225608_UserProfileVerifications', '6.0.7');
     END IF;
 END $EF$;
 COMMIT;
@@ -6435,7 +6445,7 @@ DO $EF$
 BEGIN
     IF NOT EXISTS(SELECT 1 FROM "__EFMigrationsHistory" WHERE "MigrationId" = '20210726205526_FixMVConstraint') THEN
     INSERT INTO "__EFMigrationsHistory" ("MigrationId", "ProductVersion")
-    VALUES ('20210726205526_FixMVConstraint', '5.0.16');
+    VALUES ('20210726205526_FixMVConstraint', '6.0.7');
     END IF;
 END $EF$;
 COMMIT;
@@ -6504,7 +6514,7 @@ DO $EF$
 BEGIN
     IF NOT EXISTS(SELECT 1 FROM "__EFMigrationsHistory" WHERE "MigrationId" = '20211027211258_VaccineProofRequestCache') THEN
     INSERT INTO "__EFMigrationsHistory" ("MigrationId", "ProductVersion")
-    VALUES ('20211027211258_VaccineProofRequestCache', '5.0.16');
+    VALUES ('20211027211258_VaccineProofRequestCache', '6.0.7');
     END IF;
 END $EF$;
 COMMIT;
@@ -6523,7 +6533,7 @@ DO $EF$
 BEGIN
     IF NOT EXISTS(SELECT 1 FROM "__EFMigrationsHistory" WHERE "MigrationId" = '20211028175602_VPAddAssetEndpoint') THEN
     INSERT INTO "__EFMigrationsHistory" ("MigrationId", "ProductVersion")
-    VALUES ('20211028175602_VPAddAssetEndpoint', '5.0.16');
+    VALUES ('20211028175602_VPAddAssetEndpoint', '6.0.7');
     END IF;
 END $EF$;
 COMMIT;
@@ -6577,7 +6587,7 @@ DO $EF$
 BEGIN
     IF NOT EXISTS(SELECT 1 FROM "__EFMigrationsHistory" WHERE "MigrationId" = '20211103205732_CleanupVCVP') THEN
     INSERT INTO "__EFMigrationsHistory" ("MigrationId", "ProductVersion")
-    VALUES ('20211103205732_CleanupVCVP', '5.0.16');
+    VALUES ('20211103205732_CleanupVCVP', '6.0.7');
     END IF;
 END $EF$;
 COMMIT;
@@ -6588,14 +6598,16 @@ START TRANSACTION;
 DO $EF$
 BEGIN
     IF NOT EXISTS(SELECT 1 FROM "__EFMigrationsHistory" WHERE "MigrationId" = '20211109195934_AdminAllowOverlapMultipleStatus') THEN
-        ALTER TABLE IF EXISTS gateway."Communication" DROP CONSTRAINT IF EXISTS unique_date_range;
+
+                    ALTER TABLE IF EXISTS gateway."Communication" DROP CONSTRAINT IF EXISTS unique_date_range;
     END IF;
 END $EF$;
 
 DO $EF$
 BEGIN
     IF NOT EXISTS(SELECT 1 FROM "__EFMigrationsHistory" WHERE "MigrationId" = '20211109195934_AdminAllowOverlapMultipleStatus') THEN
-        ALTER TABLE gateway."Communication" ADD CONSTRAINT unique_date_range EXCLUDE USING gist (tsrange("EffectiveDateTime", "ExpiryDateTime") WITH &&) WHERE ("CommunicationTypeCode" = 'Banner'  AND "CommunicationStatusCode"  IN ('New' ,'Pending','Processed','Processing'));
+
+                    ALTER TABLE gateway."Communication" ADD CONSTRAINT unique_date_range EXCLUDE USING gist (tsrange("EffectiveDateTime", "ExpiryDateTime") WITH &&) WHERE ("CommunicationTypeCode" = 'Banner'  AND "CommunicationStatusCode"  IN ('New' ,'Pending','Processed','Processing'));
     END IF;
 END $EF$;
 
@@ -6603,7 +6615,7 @@ DO $EF$
 BEGIN
     IF NOT EXISTS(SELECT 1 FROM "__EFMigrationsHistory" WHERE "MigrationId" = '20211109195934_AdminAllowOverlapMultipleStatus') THEN
     INSERT INTO "__EFMigrationsHistory" ("MigrationId", "ProductVersion")
-    VALUES ('20211109195934_AdminAllowOverlapMultipleStatus', '5.0.16');
+    VALUES ('20211109195934_AdminAllowOverlapMultipleStatus', '6.0.7');
     END IF;
 END $EF$;
 COMMIT;
@@ -6622,7 +6634,7 @@ DO $EF$
 BEGIN
     IF NOT EXISTS(SELECT 1 FROM "__EFMigrationsHistory" WHERE "MigrationId" = '20211206215849_AddIndexToUserProfileHistory') THEN
     INSERT INTO "__EFMigrationsHistory" ("MigrationId", "ProductVersion")
-    VALUES ('20211206215849_AddIndexToUserProfileHistory', '5.0.16');
+    VALUES ('20211206215849_AddIndexToUserProfileHistory', '6.0.7');
     END IF;
 END $EF$;
 COMMIT;
@@ -6658,7 +6670,7 @@ DO $EF$
 BEGIN
     IF NOT EXISTS(SELECT 1 FROM "__EFMigrationsHistory" WHERE "MigrationId" = '20211221220853_CreateAdminUserProfile') THEN
     INSERT INTO "__EFMigrationsHistory" ("MigrationId", "ProductVersion")
-    VALUES ('20211221220853_CreateAdminUserProfile', '5.0.16');
+    VALUES ('20211221220853_CreateAdminUserProfile', '6.0.7');
     END IF;
 END $EF$;
 COMMIT;
@@ -6677,7 +6689,7 @@ DO $EF$
 BEGIN
     IF NOT EXISTS(SELECT 1 FROM "__EFMigrationsHistory" WHERE "MigrationId" = '20220112050257_DropEmailFromAdminUserProfile') THEN
     INSERT INTO "__EFMigrationsHistory" ("MigrationId", "ProductVersion")
-    VALUES ('20220112050257_DropEmailFromAdminUserProfile', '5.0.16');
+    VALUES ('20220112050257_DropEmailFromAdminUserProfile', '6.0.7');
     END IF;
 END $EF$;
 COMMIT;
@@ -6705,7 +6717,1589 @@ DO $EF$
 BEGIN
     IF NOT EXISTS(SELECT 1 FROM "__EFMigrationsHistory" WHERE "MigrationId" = '20220127215846_AddAllLaboratoryOrdersCommentEntryType') THEN
     INSERT INTO "__EFMigrationsHistory" ("MigrationId", "ProductVersion")
-    VALUES ('20220127215846_AddAllLaboratoryOrdersCommentEntryType', '5.0.16');
+    VALUES ('20220127215846_AddAllLaboratoryOrdersCommentEntryType', '6.0.7');
     END IF;
 END $EF$;
 COMMIT;
+
+START TRANSACTION;
+
+
+DO $EF$
+BEGIN
+    IF NOT EXISTS(SELECT 1 FROM "__EFMigrationsHistory" WHERE "MigrationId" = '20220419231412_EF6Upgrade') THEN
+    DROP TRIGGER IF EXISTS "UserProfileHistoryLoginTrigger" ON gateway."UserProfile";
+    END IF;
+END $EF$;
+
+DO $EF$
+BEGIN
+    IF NOT EXISTS(SELECT 1 FROM "__EFMigrationsHistory" WHERE "MigrationId" = '20220419231412_EF6Upgrade') THEN
+    ALTER TABLE gateway."Communication" DROP CONSTRAINT unique_date_range;
+    END IF;
+END $EF$;
+
+DO $EF$
+BEGIN
+    IF NOT EXISTS(SELECT 1 FROM "__EFMigrationsHistory" WHERE "MigrationId" = '20220419231412_EF6Upgrade') THEN
+    ALTER TABLE gateway."VeterinarySpecies" ALTER COLUMN "UpdatedDateTime" TYPE timestamp with time zone;
+    END IF;
+END $EF$;
+
+DO $EF$
+BEGIN
+    IF NOT EXISTS(SELECT 1 FROM "__EFMigrationsHistory" WHERE "MigrationId" = '20220419231412_EF6Upgrade') THEN
+    ALTER TABLE gateway."VeterinarySpecies" ALTER COLUMN "CreatedDateTime" TYPE timestamp with time zone;
+    END IF;
+END $EF$;
+
+DO $EF$
+BEGIN
+    IF NOT EXISTS(SELECT 1 FROM "__EFMigrationsHistory" WHERE "MigrationId" = '20220419231412_EF6Upgrade') THEN
+    ALTER TABLE gateway."UserProfileHistory" ALTER COLUMN "UpdatedDateTime" TYPE timestamp with time zone;
+    END IF;
+END $EF$;
+
+DO $EF$
+BEGIN
+    IF NOT EXISTS(SELECT 1 FROM "__EFMigrationsHistory" WHERE "MigrationId" = '20220419231412_EF6Upgrade') THEN
+    ALTER TABLE gateway."UserProfileHistory" ALTER COLUMN "OperationDateTime" TYPE timestamp with time zone;
+    END IF;
+END $EF$;
+
+DO $EF$
+BEGIN
+    IF NOT EXISTS(SELECT 1 FROM "__EFMigrationsHistory" WHERE "MigrationId" = '20220419231412_EF6Upgrade') THEN
+    ALTER TABLE gateway."UserProfileHistory" ALTER COLUMN "LastLoginDateTime" TYPE timestamp with time zone;
+    END IF;
+END $EF$;
+
+DO $EF$
+BEGIN
+    IF NOT EXISTS(SELECT 1 FROM "__EFMigrationsHistory" WHERE "MigrationId" = '20220419231412_EF6Upgrade') THEN
+    ALTER TABLE gateway."UserProfileHistory" ALTER COLUMN "CreatedDateTime" TYPE timestamp with time zone;
+    END IF;
+END $EF$;
+
+DO $EF$
+BEGIN
+    IF NOT EXISTS(SELECT 1 FROM "__EFMigrationsHistory" WHERE "MigrationId" = '20220419231412_EF6Upgrade') THEN
+    ALTER TABLE gateway."UserProfileHistory" ALTER COLUMN "ClosedDateTime" TYPE timestamp with time zone;
+    END IF;
+END $EF$;
+
+DO $EF$
+BEGIN
+    IF NOT EXISTS(SELECT 1 FROM "__EFMigrationsHistory" WHERE "MigrationId" = '20220419231412_EF6Upgrade') THEN
+    ALTER TABLE gateway."UserProfile" ALTER COLUMN "UpdatedDateTime" TYPE timestamp with time zone;
+    END IF;
+END $EF$;
+
+DO $EF$
+BEGIN
+    IF NOT EXISTS(SELECT 1 FROM "__EFMigrationsHistory" WHERE "MigrationId" = '20220419231412_EF6Upgrade') THEN
+    ALTER TABLE gateway."UserProfile" ALTER COLUMN "LastLoginDateTime" TYPE timestamp with time zone;
+    END IF;
+END $EF$;
+
+DO $EF$
+BEGIN
+    IF NOT EXISTS(SELECT 1 FROM "__EFMigrationsHistory" WHERE "MigrationId" = '20220419231412_EF6Upgrade') THEN
+    ALTER TABLE gateway."UserProfile" ALTER COLUMN "CreatedDateTime" TYPE timestamp with time zone;
+    END IF;
+END $EF$;
+
+DO $EF$
+BEGIN
+    IF NOT EXISTS(SELECT 1 FROM "__EFMigrationsHistory" WHERE "MigrationId" = '20220419231412_EF6Upgrade') THEN
+    ALTER TABLE gateway."UserProfile" ALTER COLUMN "ClosedDateTime" TYPE timestamp with time zone;
+    END IF;
+END $EF$;
+
+DO $EF$
+BEGIN
+    IF NOT EXISTS(SELECT 1 FROM "__EFMigrationsHistory" WHERE "MigrationId" = '20220419231412_EF6Upgrade') THEN
+    ALTER TABLE gateway."UserPreference" ALTER COLUMN "UpdatedDateTime" TYPE timestamp with time zone;
+    END IF;
+END $EF$;
+
+DO $EF$
+BEGIN
+    IF NOT EXISTS(SELECT 1 FROM "__EFMigrationsHistory" WHERE "MigrationId" = '20220419231412_EF6Upgrade') THEN
+    ALTER TABLE gateway."UserPreference" ALTER COLUMN "CreatedDateTime" TYPE timestamp with time zone;
+    END IF;
+END $EF$;
+
+DO $EF$
+BEGIN
+    IF NOT EXISTS(SELECT 1 FROM "__EFMigrationsHistory" WHERE "MigrationId" = '20220419231412_EF6Upgrade') THEN
+    ALTER TABLE gateway."UserFeedbackTag" ALTER COLUMN "UpdatedDateTime" TYPE timestamp with time zone;
+    END IF;
+END $EF$;
+
+DO $EF$
+BEGIN
+    IF NOT EXISTS(SELECT 1 FROM "__EFMigrationsHistory" WHERE "MigrationId" = '20220419231412_EF6Upgrade') THEN
+    ALTER TABLE gateway."UserFeedbackTag" ALTER COLUMN "CreatedDateTime" TYPE timestamp with time zone;
+    END IF;
+END $EF$;
+
+DO $EF$
+BEGIN
+    IF NOT EXISTS(SELECT 1 FROM "__EFMigrationsHistory" WHERE "MigrationId" = '20220419231412_EF6Upgrade') THEN
+    ALTER TABLE gateway."UserFeedback" ALTER COLUMN "UpdatedDateTime" TYPE timestamp with time zone;
+    END IF;
+END $EF$;
+
+DO $EF$
+BEGIN
+    IF NOT EXISTS(SELECT 1 FROM "__EFMigrationsHistory" WHERE "MigrationId" = '20220419231412_EF6Upgrade') THEN
+    ALTER TABLE gateway."UserFeedback" ALTER COLUMN "CreatedDateTime" TYPE timestamp with time zone;
+    END IF;
+END $EF$;
+
+DO $EF$
+BEGIN
+    IF NOT EXISTS(SELECT 1 FROM "__EFMigrationsHistory" WHERE "MigrationId" = '20220419231412_EF6Upgrade') THEN
+    ALTER TABLE gateway."TherapeuticClass" ALTER COLUMN "UpdatedDateTime" TYPE timestamp with time zone;
+    END IF;
+END $EF$;
+
+DO $EF$
+BEGIN
+    IF NOT EXISTS(SELECT 1 FROM "__EFMigrationsHistory" WHERE "MigrationId" = '20220419231412_EF6Upgrade') THEN
+    ALTER TABLE gateway."TherapeuticClass" ALTER COLUMN "CreatedDateTime" TYPE timestamp with time zone;
+    END IF;
+END $EF$;
+
+DO $EF$
+BEGIN
+    IF NOT EXISTS(SELECT 1 FROM "__EFMigrationsHistory" WHERE "MigrationId" = '20220419231412_EF6Upgrade') THEN
+    ALTER TABLE gateway."Status" ALTER COLUMN "UpdatedDateTime" TYPE timestamp with time zone;
+    END IF;
+END $EF$;
+
+DO $EF$
+BEGIN
+    IF NOT EXISTS(SELECT 1 FROM "__EFMigrationsHistory" WHERE "MigrationId" = '20220419231412_EF6Upgrade') THEN
+    ALTER TABLE gateway."Status" ALTER COLUMN "HistoryDate" TYPE timestamp with time zone;
+    END IF;
+END $EF$;
+
+DO $EF$
+BEGIN
+    IF NOT EXISTS(SELECT 1 FROM "__EFMigrationsHistory" WHERE "MigrationId" = '20220419231412_EF6Upgrade') THEN
+    ALTER TABLE gateway."Status" ALTER COLUMN "ExpirationDate" TYPE timestamp with time zone;
+    END IF;
+END $EF$;
+
+DO $EF$
+BEGIN
+    IF NOT EXISTS(SELECT 1 FROM "__EFMigrationsHistory" WHERE "MigrationId" = '20220419231412_EF6Upgrade') THEN
+    ALTER TABLE gateway."Status" ALTER COLUMN "CreatedDateTime" TYPE timestamp with time zone;
+    END IF;
+END $EF$;
+
+DO $EF$
+BEGIN
+    IF NOT EXISTS(SELECT 1 FROM "__EFMigrationsHistory" WHERE "MigrationId" = '20220419231412_EF6Upgrade') THEN
+    ALTER TABLE gateway."Schedule" ALTER COLUMN "UpdatedDateTime" TYPE timestamp with time zone;
+    END IF;
+END $EF$;
+
+DO $EF$
+BEGIN
+    IF NOT EXISTS(SELECT 1 FROM "__EFMigrationsHistory" WHERE "MigrationId" = '20220419231412_EF6Upgrade') THEN
+    ALTER TABLE gateway."Schedule" ALTER COLUMN "CreatedDateTime" TYPE timestamp with time zone;
+    END IF;
+END $EF$;
+
+DO $EF$
+BEGIN
+    IF NOT EXISTS(SELECT 1 FROM "__EFMigrationsHistory" WHERE "MigrationId" = '20220419231412_EF6Upgrade') THEN
+    ALTER TABLE gateway."Route" ALTER COLUMN "UpdatedDateTime" TYPE timestamp with time zone;
+    END IF;
+END $EF$;
+
+DO $EF$
+BEGIN
+    IF NOT EXISTS(SELECT 1 FROM "__EFMigrationsHistory" WHERE "MigrationId" = '20220419231412_EF6Upgrade') THEN
+    ALTER TABLE gateway."Route" ALTER COLUMN "CreatedDateTime" TYPE timestamp with time zone;
+    END IF;
+END $EF$;
+
+DO $EF$
+BEGIN
+    IF NOT EXISTS(SELECT 1 FROM "__EFMigrationsHistory" WHERE "MigrationId" = '20220419231412_EF6Upgrade') THEN
+    ALTER TABLE gateway."ResourceDelegateReasonCode" ALTER COLUMN "UpdatedDateTime" TYPE timestamp with time zone;
+    END IF;
+END $EF$;
+
+DO $EF$
+BEGIN
+    IF NOT EXISTS(SELECT 1 FROM "__EFMigrationsHistory" WHERE "MigrationId" = '20220419231412_EF6Upgrade') THEN
+    ALTER TABLE gateway."ResourceDelegateReasonCode" ALTER COLUMN "CreatedDateTime" TYPE timestamp with time zone;
+    END IF;
+END $EF$;
+
+DO $EF$
+BEGIN
+    IF NOT EXISTS(SELECT 1 FROM "__EFMigrationsHistory" WHERE "MigrationId" = '20220419231412_EF6Upgrade') THEN
+    ALTER TABLE gateway."ResourceDelegateHistory" ALTER COLUMN "UpdatedDateTime" TYPE timestamp with time zone;
+    END IF;
+END $EF$;
+
+DO $EF$
+BEGIN
+    IF NOT EXISTS(SELECT 1 FROM "__EFMigrationsHistory" WHERE "MigrationId" = '20220419231412_EF6Upgrade') THEN
+    ALTER TABLE gateway."ResourceDelegateHistory" ALTER COLUMN "OperationDateTime" TYPE timestamp with time zone;
+    END IF;
+END $EF$;
+
+DO $EF$
+BEGIN
+    IF NOT EXISTS(SELECT 1 FROM "__EFMigrationsHistory" WHERE "MigrationId" = '20220419231412_EF6Upgrade') THEN
+    ALTER TABLE gateway."ResourceDelegateHistory" ALTER COLUMN "CreatedDateTime" TYPE timestamp with time zone;
+    END IF;
+END $EF$;
+
+DO $EF$
+BEGIN
+    IF NOT EXISTS(SELECT 1 FROM "__EFMigrationsHistory" WHERE "MigrationId" = '20220419231412_EF6Upgrade') THEN
+    ALTER TABLE gateway."ResourceDelegate" ALTER COLUMN "UpdatedDateTime" TYPE timestamp with time zone;
+    END IF;
+END $EF$;
+
+DO $EF$
+BEGIN
+    IF NOT EXISTS(SELECT 1 FROM "__EFMigrationsHistory" WHERE "MigrationId" = '20220419231412_EF6Upgrade') THEN
+    ALTER TABLE gateway."ResourceDelegate" ALTER COLUMN "CreatedDateTime" TYPE timestamp with time zone;
+    END IF;
+END $EF$;
+
+DO $EF$
+BEGIN
+    IF NOT EXISTS(SELECT 1 FROM "__EFMigrationsHistory" WHERE "MigrationId" = '20220419231412_EF6Upgrade') THEN
+    ALTER TABLE gateway."Rating" ALTER COLUMN "UpdatedDateTime" TYPE timestamp with time zone;
+    END IF;
+END $EF$;
+
+DO $EF$
+BEGIN
+    IF NOT EXISTS(SELECT 1 FROM "__EFMigrationsHistory" WHERE "MigrationId" = '20220419231412_EF6Upgrade') THEN
+    ALTER TABLE gateway."Rating" ALTER COLUMN "CreatedDateTime" TYPE timestamp with time zone;
+    END IF;
+END $EF$;
+
+DO $EF$
+BEGIN
+    IF NOT EXISTS(SELECT 1 FROM "__EFMigrationsHistory" WHERE "MigrationId" = '20220419231412_EF6Upgrade') THEN
+    ALTER TABLE gateway."ProgramTypeCode" ALTER COLUMN "UpdatedDateTime" TYPE timestamp with time zone;
+    END IF;
+END $EF$;
+
+DO $EF$
+BEGIN
+    IF NOT EXISTS(SELECT 1 FROM "__EFMigrationsHistory" WHERE "MigrationId" = '20220419231412_EF6Upgrade') THEN
+    ALTER TABLE gateway."ProgramTypeCode" ALTER COLUMN "CreatedDateTime" TYPE timestamp with time zone;
+    END IF;
+END $EF$;
+
+DO $EF$
+BEGIN
+    IF NOT EXISTS(SELECT 1 FROM "__EFMigrationsHistory" WHERE "MigrationId" = '20220419231412_EF6Upgrade') THEN
+    ALTER TABLE gateway."PharmaceuticalStd" ALTER COLUMN "UpdatedDateTime" TYPE timestamp with time zone;
+    END IF;
+END $EF$;
+
+DO $EF$
+BEGIN
+    IF NOT EXISTS(SELECT 1 FROM "__EFMigrationsHistory" WHERE "MigrationId" = '20220419231412_EF6Upgrade') THEN
+    ALTER TABLE gateway."PharmaceuticalStd" ALTER COLUMN "CreatedDateTime" TYPE timestamp with time zone;
+    END IF;
+END $EF$;
+
+DO $EF$
+BEGIN
+    IF NOT EXISTS(SELECT 1 FROM "__EFMigrationsHistory" WHERE "MigrationId" = '20220419231412_EF6Upgrade') THEN
+    ALTER TABLE gateway."PharmaCareDrug" ALTER COLUMN "UpdatedDateTime" TYPE timestamp with time zone;
+    END IF;
+END $EF$;
+
+DO $EF$
+BEGIN
+    IF NOT EXISTS(SELECT 1 FROM "__EFMigrationsHistory" WHERE "MigrationId" = '20220419231412_EF6Upgrade') THEN
+    ALTER TABLE gateway."PharmaCareDrug" ALTER COLUMN "CreatedDateTime" TYPE timestamp with time zone;
+    END IF;
+END $EF$;
+
+DO $EF$
+BEGIN
+    IF NOT EXISTS(SELECT 1 FROM "__EFMigrationsHistory" WHERE "MigrationId" = '20220419231412_EF6Upgrade') THEN
+    ALTER TABLE gateway."Packaging" ALTER COLUMN "UpdatedDateTime" TYPE timestamp with time zone;
+    END IF;
+END $EF$;
+
+DO $EF$
+BEGIN
+    IF NOT EXISTS(SELECT 1 FROM "__EFMigrationsHistory" WHERE "MigrationId" = '20220419231412_EF6Upgrade') THEN
+    ALTER TABLE gateway."Packaging" ALTER COLUMN "CreatedDateTime" TYPE timestamp with time zone;
+    END IF;
+END $EF$;
+
+DO $EF$
+BEGIN
+    IF NOT EXISTS(SELECT 1 FROM "__EFMigrationsHistory" WHERE "MigrationId" = '20220419231412_EF6Upgrade') THEN
+    ALTER TABLE gateway."Note" ALTER COLUMN "UpdatedDateTime" TYPE timestamp with time zone;
+    END IF;
+END $EF$;
+
+DO $EF$
+BEGIN
+    IF NOT EXISTS(SELECT 1 FROM "__EFMigrationsHistory" WHERE "MigrationId" = '20220419231412_EF6Upgrade') THEN
+    ALTER TABLE gateway."Note" ALTER COLUMN "JournalDateTime" TYPE timestamp with time zone;
+    END IF;
+END $EF$;
+
+DO $EF$
+BEGIN
+    IF NOT EXISTS(SELECT 1 FROM "__EFMigrationsHistory" WHERE "MigrationId" = '20220419231412_EF6Upgrade') THEN
+    ALTER TABLE gateway."Note" ALTER COLUMN "CreatedDateTime" TYPE timestamp with time zone;
+    END IF;
+END $EF$;
+
+DO $EF$
+BEGIN
+    IF NOT EXISTS(SELECT 1 FROM "__EFMigrationsHistory" WHERE "MigrationId" = '20220419231412_EF6Upgrade') THEN
+    ALTER TABLE gateway."MessagingVerificationTypeCode" ALTER COLUMN "UpdatedDateTime" TYPE timestamp with time zone;
+    END IF;
+END $EF$;
+
+DO $EF$
+BEGIN
+    IF NOT EXISTS(SELECT 1 FROM "__EFMigrationsHistory" WHERE "MigrationId" = '20220419231412_EF6Upgrade') THEN
+    ALTER TABLE gateway."MessagingVerificationTypeCode" ALTER COLUMN "CreatedDateTime" TYPE timestamp with time zone;
+    END IF;
+END $EF$;
+
+DO $EF$
+BEGIN
+    IF NOT EXISTS(SELECT 1 FROM "__EFMigrationsHistory" WHERE "MigrationId" = '20220419231412_EF6Upgrade') THEN
+    ALTER TABLE gateway."MessagingVerification" ALTER COLUMN "UpdatedDateTime" TYPE timestamp with time zone;
+    END IF;
+END $EF$;
+
+DO $EF$
+BEGIN
+    IF NOT EXISTS(SELECT 1 FROM "__EFMigrationsHistory" WHERE "MigrationId" = '20220419231412_EF6Upgrade') THEN
+    ALTER TABLE gateway."MessagingVerification" ALTER COLUMN "ExpireDate" TYPE timestamp with time zone;
+    END IF;
+END $EF$;
+
+DO $EF$
+BEGIN
+    IF NOT EXISTS(SELECT 1 FROM "__EFMigrationsHistory" WHERE "MigrationId" = '20220419231412_EF6Upgrade') THEN
+    ALTER TABLE gateway."MessagingVerification" ALTER COLUMN "CreatedDateTime" TYPE timestamp with time zone;
+    END IF;
+END $EF$;
+
+DO $EF$
+BEGIN
+    IF NOT EXISTS(SELECT 1 FROM "__EFMigrationsHistory" WHERE "MigrationId" = '20220419231412_EF6Upgrade') THEN
+    ALTER TABLE gateway."LegalAgreementTypeCode" ALTER COLUMN "UpdatedDateTime" TYPE timestamp with time zone;
+    END IF;
+END $EF$;
+
+DO $EF$
+BEGIN
+    IF NOT EXISTS(SELECT 1 FROM "__EFMigrationsHistory" WHERE "MigrationId" = '20220419231412_EF6Upgrade') THEN
+    ALTER TABLE gateway."LegalAgreementTypeCode" ALTER COLUMN "CreatedDateTime" TYPE timestamp with time zone;
+    END IF;
+END $EF$;
+
+DO $EF$
+BEGIN
+    IF NOT EXISTS(SELECT 1 FROM "__EFMigrationsHistory" WHERE "MigrationId" = '20220419231412_EF6Upgrade') THEN
+    ALTER TABLE gateway."LegalAgreement" ALTER COLUMN "UpdatedDateTime" TYPE timestamp with time zone;
+    END IF;
+END $EF$;
+
+DO $EF$
+BEGIN
+    IF NOT EXISTS(SELECT 1 FROM "__EFMigrationsHistory" WHERE "MigrationId" = '20220419231412_EF6Upgrade') THEN
+    ALTER TABLE gateway."LegalAgreement" ALTER COLUMN "EffectiveDate" TYPE timestamp with time zone;
+    END IF;
+END $EF$;
+
+DO $EF$
+BEGIN
+    IF NOT EXISTS(SELECT 1 FROM "__EFMigrationsHistory" WHERE "MigrationId" = '20220419231412_EF6Upgrade') THEN
+    ALTER TABLE gateway."LegalAgreement" ALTER COLUMN "CreatedDateTime" TYPE timestamp with time zone;
+    END IF;
+END $EF$;
+
+DO $EF$
+BEGIN
+    IF NOT EXISTS(SELECT 1 FROM "__EFMigrationsHistory" WHERE "MigrationId" = '20220419231412_EF6Upgrade') THEN
+    ALTER TABLE gateway."GenericCache" ALTER COLUMN "UpdatedDateTime" TYPE timestamp with time zone;
+    END IF;
+END $EF$;
+
+DO $EF$
+BEGIN
+    IF NOT EXISTS(SELECT 1 FROM "__EFMigrationsHistory" WHERE "MigrationId" = '20220419231412_EF6Upgrade') THEN
+    ALTER TABLE gateway."GenericCache" ALTER COLUMN "ExpiryDateTime" TYPE timestamp with time zone;
+    END IF;
+END $EF$;
+
+DO $EF$
+BEGIN
+    IF NOT EXISTS(SELECT 1 FROM "__EFMigrationsHistory" WHERE "MigrationId" = '20220419231412_EF6Upgrade') THEN
+    ALTER TABLE gateway."GenericCache" ALTER COLUMN "CreatedDateTime" TYPE timestamp with time zone;
+    END IF;
+END $EF$;
+
+DO $EF$
+BEGIN
+    IF NOT EXISTS(SELECT 1 FROM "__EFMigrationsHistory" WHERE "MigrationId" = '20220419231412_EF6Upgrade') THEN
+    ALTER TABLE gateway."Form" ALTER COLUMN "UpdatedDateTime" TYPE timestamp with time zone;
+    END IF;
+END $EF$;
+
+DO $EF$
+BEGIN
+    IF NOT EXISTS(SELECT 1 FROM "__EFMigrationsHistory" WHERE "MigrationId" = '20220419231412_EF6Upgrade') THEN
+    ALTER TABLE gateway."Form" ALTER COLUMN "CreatedDateTime" TYPE timestamp with time zone;
+    END IF;
+END $EF$;
+
+DO $EF$
+BEGIN
+    IF NOT EXISTS(SELECT 1 FROM "__EFMigrationsHistory" WHERE "MigrationId" = '20220419231412_EF6Upgrade') THEN
+    ALTER TABLE gateway."FileDownload" ALTER COLUMN "UpdatedDateTime" TYPE timestamp with time zone;
+    END IF;
+END $EF$;
+
+DO $EF$
+BEGIN
+    IF NOT EXISTS(SELECT 1 FROM "__EFMigrationsHistory" WHERE "MigrationId" = '20220419231412_EF6Upgrade') THEN
+    ALTER TABLE gateway."FileDownload" ALTER COLUMN "CreatedDateTime" TYPE timestamp with time zone;
+    END IF;
+END $EF$;
+
+DO $EF$
+BEGIN
+    IF NOT EXISTS(SELECT 1 FROM "__EFMigrationsHistory" WHERE "MigrationId" = '20220419231412_EF6Upgrade') THEN
+    ALTER TABLE gateway."EventLog" ALTER COLUMN "UpdatedDateTime" TYPE timestamp with time zone;
+    END IF;
+END $EF$;
+
+DO $EF$
+BEGIN
+    IF NOT EXISTS(SELECT 1 FROM "__EFMigrationsHistory" WHERE "MigrationId" = '20220419231412_EF6Upgrade') THEN
+    ALTER TABLE gateway."EventLog" ALTER COLUMN "CreatedDateTime" TYPE timestamp with time zone;
+    END IF;
+END $EF$;
+
+DO $EF$
+BEGIN
+    IF NOT EXISTS(SELECT 1 FROM "__EFMigrationsHistory" WHERE "MigrationId" = '20220419231412_EF6Upgrade') THEN
+    ALTER TABLE gateway."EmailTemplate" ALTER COLUMN "UpdatedDateTime" TYPE timestamp with time zone;
+    END IF;
+END $EF$;
+
+DO $EF$
+BEGIN
+    IF NOT EXISTS(SELECT 1 FROM "__EFMigrationsHistory" WHERE "MigrationId" = '20220419231412_EF6Upgrade') THEN
+    ALTER TABLE gateway."EmailTemplate" ALTER COLUMN "ExpiryDate" TYPE timestamp with time zone;
+    END IF;
+END $EF$;
+
+DO $EF$
+BEGIN
+    IF NOT EXISTS(SELECT 1 FROM "__EFMigrationsHistory" WHERE "MigrationId" = '20220419231412_EF6Upgrade') THEN
+    ALTER TABLE gateway."EmailTemplate" ALTER COLUMN "EffectiveDate" TYPE timestamp with time zone;
+    END IF;
+END $EF$;
+
+DO $EF$
+BEGIN
+    IF NOT EXISTS(SELECT 1 FROM "__EFMigrationsHistory" WHERE "MigrationId" = '20220419231412_EF6Upgrade') THEN
+    ALTER TABLE gateway."EmailTemplate" ALTER COLUMN "CreatedDateTime" TYPE timestamp with time zone;
+    END IF;
+END $EF$;
+
+DO $EF$
+BEGIN
+    IF NOT EXISTS(SELECT 1 FROM "__EFMigrationsHistory" WHERE "MigrationId" = '20220419231412_EF6Upgrade') THEN
+    ALTER TABLE gateway."EmailStatusCode" ALTER COLUMN "UpdatedDateTime" TYPE timestamp with time zone;
+    END IF;
+END $EF$;
+
+DO $EF$
+BEGIN
+    IF NOT EXISTS(SELECT 1 FROM "__EFMigrationsHistory" WHERE "MigrationId" = '20220419231412_EF6Upgrade') THEN
+    ALTER TABLE gateway."EmailStatusCode" ALTER COLUMN "CreatedDateTime" TYPE timestamp with time zone;
+    END IF;
+END $EF$;
+
+DO $EF$
+BEGIN
+    IF NOT EXISTS(SELECT 1 FROM "__EFMigrationsHistory" WHERE "MigrationId" = '20220419231412_EF6Upgrade') THEN
+    ALTER TABLE gateway."EmailFormatCode" ALTER COLUMN "UpdatedDateTime" TYPE timestamp with time zone;
+    END IF;
+END $EF$;
+
+DO $EF$
+BEGIN
+    IF NOT EXISTS(SELECT 1 FROM "__EFMigrationsHistory" WHERE "MigrationId" = '20220419231412_EF6Upgrade') THEN
+    ALTER TABLE gateway."EmailFormatCode" ALTER COLUMN "CreatedDateTime" TYPE timestamp with time zone;
+    END IF;
+END $EF$;
+
+DO $EF$
+BEGIN
+    IF NOT EXISTS(SELECT 1 FROM "__EFMigrationsHistory" WHERE "MigrationId" = '20220419231412_EF6Upgrade') THEN
+    ALTER TABLE gateway."Email" ALTER COLUMN "UpdatedDateTime" TYPE timestamp with time zone;
+    END IF;
+END $EF$;
+
+DO $EF$
+BEGIN
+    IF NOT EXISTS(SELECT 1 FROM "__EFMigrationsHistory" WHERE "MigrationId" = '20220419231412_EF6Upgrade') THEN
+    ALTER TABLE gateway."Email" ALTER COLUMN "SentDateTime" TYPE timestamp with time zone;
+    END IF;
+END $EF$;
+
+DO $EF$
+BEGIN
+    IF NOT EXISTS(SELECT 1 FROM "__EFMigrationsHistory" WHERE "MigrationId" = '20220419231412_EF6Upgrade') THEN
+    ALTER TABLE gateway."Email" ALTER COLUMN "LastRetryDateTime" TYPE timestamp with time zone;
+    END IF;
+END $EF$;
+
+DO $EF$
+BEGIN
+    IF NOT EXISTS(SELECT 1 FROM "__EFMigrationsHistory" WHERE "MigrationId" = '20220419231412_EF6Upgrade') THEN
+    ALTER TABLE gateway."Email" ALTER COLUMN "CreatedDateTime" TYPE timestamp with time zone;
+    END IF;
+END $EF$;
+
+DO $EF$
+BEGIN
+    IF NOT EXISTS(SELECT 1 FROM "__EFMigrationsHistory" WHERE "MigrationId" = '20220419231412_EF6Upgrade') THEN
+    ALTER TABLE gateway."DrugProduct" ALTER COLUMN "UpdatedDateTime" TYPE timestamp with time zone;
+    END IF;
+END $EF$;
+
+DO $EF$
+BEGIN
+    IF NOT EXISTS(SELECT 1 FROM "__EFMigrationsHistory" WHERE "MigrationId" = '20220419231412_EF6Upgrade') THEN
+    ALTER TABLE gateway."DrugProduct" ALTER COLUMN "LastUpdate" TYPE timestamp with time zone;
+    END IF;
+END $EF$;
+
+DO $EF$
+BEGIN
+    IF NOT EXISTS(SELECT 1 FROM "__EFMigrationsHistory" WHERE "MigrationId" = '20220419231412_EF6Upgrade') THEN
+    ALTER TABLE gateway."DrugProduct" ALTER COLUMN "CreatedDateTime" TYPE timestamp with time zone;
+    END IF;
+END $EF$;
+
+DO $EF$
+BEGIN
+    IF NOT EXISTS(SELECT 1 FROM "__EFMigrationsHistory" WHERE "MigrationId" = '20220419231412_EF6Upgrade') THEN
+    ALTER TABLE gateway."Company" ALTER COLUMN "UpdatedDateTime" TYPE timestamp with time zone;
+    END IF;
+END $EF$;
+
+DO $EF$
+BEGIN
+    IF NOT EXISTS(SELECT 1 FROM "__EFMigrationsHistory" WHERE "MigrationId" = '20220419231412_EF6Upgrade') THEN
+    ALTER TABLE gateway."Company" ALTER COLUMN "CreatedDateTime" TYPE timestamp with time zone;
+    END IF;
+END $EF$;
+
+DO $EF$
+BEGIN
+    IF NOT EXISTS(SELECT 1 FROM "__EFMigrationsHistory" WHERE "MigrationId" = '20220419231412_EF6Upgrade') THEN
+    ALTER TABLE gateway."CommunicationTypeCode" ALTER COLUMN "UpdatedDateTime" TYPE timestamp with time zone;
+    END IF;
+END $EF$;
+
+DO $EF$
+BEGIN
+    IF NOT EXISTS(SELECT 1 FROM "__EFMigrationsHistory" WHERE "MigrationId" = '20220419231412_EF6Upgrade') THEN
+    ALTER TABLE gateway."CommunicationTypeCode" ALTER COLUMN "CreatedDateTime" TYPE timestamp with time zone;
+    END IF;
+END $EF$;
+
+DO $EF$
+BEGIN
+    IF NOT EXISTS(SELECT 1 FROM "__EFMigrationsHistory" WHERE "MigrationId" = '20220419231412_EF6Upgrade') THEN
+    ALTER TABLE gateway."CommunicationStatusCode" ALTER COLUMN "UpdatedDateTime" TYPE timestamp with time zone;
+    END IF;
+END $EF$;
+
+DO $EF$
+BEGIN
+    IF NOT EXISTS(SELECT 1 FROM "__EFMigrationsHistory" WHERE "MigrationId" = '20220419231412_EF6Upgrade') THEN
+    ALTER TABLE gateway."CommunicationStatusCode" ALTER COLUMN "CreatedDateTime" TYPE timestamp with time zone;
+    END IF;
+END $EF$;
+
+DO $EF$
+BEGIN
+    IF NOT EXISTS(SELECT 1 FROM "__EFMigrationsHistory" WHERE "MigrationId" = '20220419231412_EF6Upgrade') THEN
+    ALTER TABLE gateway."CommunicationEmail" ALTER COLUMN "UpdatedDateTime" TYPE timestamp with time zone;
+    END IF;
+END $EF$;
+
+DO $EF$
+BEGIN
+    IF NOT EXISTS(SELECT 1 FROM "__EFMigrationsHistory" WHERE "MigrationId" = '20220419231412_EF6Upgrade') THEN
+    ALTER TABLE gateway."CommunicationEmail" ALTER COLUMN "CreatedDateTime" TYPE timestamp with time zone;
+    END IF;
+END $EF$;
+
+DO $EF$
+BEGIN
+    IF NOT EXISTS(SELECT 1 FROM "__EFMigrationsHistory" WHERE "MigrationId" = '20220419231412_EF6Upgrade') THEN
+    ALTER TABLE gateway."Communication" ALTER COLUMN "UpdatedDateTime" TYPE timestamp with time zone;
+    END IF;
+END $EF$;
+
+DO $EF$
+BEGIN
+    IF NOT EXISTS(SELECT 1 FROM "__EFMigrationsHistory" WHERE "MigrationId" = '20220419231412_EF6Upgrade') THEN
+    ALTER TABLE gateway."Communication" ALTER COLUMN "ScheduledDateTime" TYPE timestamp with time zone;
+    END IF;
+END $EF$;
+
+DO $EF$
+BEGIN
+    IF NOT EXISTS(SELECT 1 FROM "__EFMigrationsHistory" WHERE "MigrationId" = '20220419231412_EF6Upgrade') THEN
+    ALTER TABLE gateway."Communication" ALTER COLUMN "ExpiryDateTime" TYPE timestamp with time zone;
+    END IF;
+END $EF$;
+
+DO $EF$
+BEGIN
+    IF NOT EXISTS(SELECT 1 FROM "__EFMigrationsHistory" WHERE "MigrationId" = '20220419231412_EF6Upgrade') THEN
+    ALTER TABLE gateway."Communication" ALTER COLUMN "EffectiveDateTime" TYPE timestamp with time zone;
+    END IF;
+END $EF$;
+
+DO $EF$
+BEGIN
+    IF NOT EXISTS(SELECT 1 FROM "__EFMigrationsHistory" WHERE "MigrationId" = '20220419231412_EF6Upgrade') THEN
+    ALTER TABLE gateway."Communication" ALTER COLUMN "CreatedDateTime" TYPE timestamp with time zone;
+    END IF;
+END $EF$;
+
+DO $EF$
+BEGIN
+    IF NOT EXISTS(SELECT 1 FROM "__EFMigrationsHistory" WHERE "MigrationId" = '20220419231412_EF6Upgrade') THEN
+    ALTER TABLE gateway."CommentEntryTypeCode" ALTER COLUMN "UpdatedDateTime" TYPE timestamp with time zone;
+    END IF;
+END $EF$;
+
+DO $EF$
+BEGIN
+    IF NOT EXISTS(SELECT 1 FROM "__EFMigrationsHistory" WHERE "MigrationId" = '20220419231412_EF6Upgrade') THEN
+    ALTER TABLE gateway."CommentEntryTypeCode" ALTER COLUMN "CreatedDateTime" TYPE timestamp with time zone;
+    END IF;
+END $EF$;
+
+DO $EF$
+BEGIN
+    IF NOT EXISTS(SELECT 1 FROM "__EFMigrationsHistory" WHERE "MigrationId" = '20220419231412_EF6Upgrade') THEN
+    ALTER TABLE gateway."Comment" ALTER COLUMN "UpdatedDateTime" TYPE timestamp with time zone;
+    END IF;
+END $EF$;
+
+DO $EF$
+BEGIN
+    IF NOT EXISTS(SELECT 1 FROM "__EFMigrationsHistory" WHERE "MigrationId" = '20220419231412_EF6Upgrade') THEN
+    ALTER TABLE gateway."Comment" ALTER COLUMN "CreatedDateTime" TYPE timestamp with time zone;
+    END IF;
+END $EF$;
+
+DO $EF$
+BEGIN
+    IF NOT EXISTS(SELECT 1 FROM "__EFMigrationsHistory" WHERE "MigrationId" = '20220419231412_EF6Upgrade') THEN
+    ALTER TABLE gateway."AuditTransactionResultCode" ALTER COLUMN "UpdatedDateTime" TYPE timestamp with time zone;
+    END IF;
+END $EF$;
+
+DO $EF$
+BEGIN
+    IF NOT EXISTS(SELECT 1 FROM "__EFMigrationsHistory" WHERE "MigrationId" = '20220419231412_EF6Upgrade') THEN
+    ALTER TABLE gateway."AuditTransactionResultCode" ALTER COLUMN "CreatedDateTime" TYPE timestamp with time zone;
+    END IF;
+END $EF$;
+
+DO $EF$
+BEGIN
+    IF NOT EXISTS(SELECT 1 FROM "__EFMigrationsHistory" WHERE "MigrationId" = '20220419231412_EF6Upgrade') THEN
+    ALTER TABLE gateway."AuditEvent" ALTER COLUMN "UpdatedDateTime" TYPE timestamp with time zone;
+    END IF;
+END $EF$;
+
+DO $EF$
+BEGIN
+    IF NOT EXISTS(SELECT 1 FROM "__EFMigrationsHistory" WHERE "MigrationId" = '20220419231412_EF6Upgrade') THEN
+    ALTER TABLE gateway."AuditEvent" ALTER COLUMN "CreatedDateTime" TYPE timestamp with time zone;
+    END IF;
+END $EF$;
+
+DO $EF$
+BEGIN
+    IF NOT EXISTS(SELECT 1 FROM "__EFMigrationsHistory" WHERE "MigrationId" = '20220419231412_EF6Upgrade') THEN
+    ALTER TABLE gateway."AuditEvent" ALTER COLUMN "AuditEventDateTime" TYPE timestamp with time zone;
+    END IF;
+END $EF$;
+
+DO $EF$
+BEGIN
+    IF NOT EXISTS(SELECT 1 FROM "__EFMigrationsHistory" WHERE "MigrationId" = '20220419231412_EF6Upgrade') THEN
+    ALTER TABLE gateway."ApplicationSetting" ALTER COLUMN "UpdatedDateTime" TYPE timestamp with time zone;
+    END IF;
+END $EF$;
+
+DO $EF$
+BEGIN
+    IF NOT EXISTS(SELECT 1 FROM "__EFMigrationsHistory" WHERE "MigrationId" = '20220419231412_EF6Upgrade') THEN
+    ALTER TABLE gateway."ApplicationSetting" ALTER COLUMN "CreatedDateTime" TYPE timestamp with time zone;
+    END IF;
+END $EF$;
+
+DO $EF$
+BEGIN
+    IF NOT EXISTS(SELECT 1 FROM "__EFMigrationsHistory" WHERE "MigrationId" = '20220419231412_EF6Upgrade') THEN
+    ALTER TABLE gateway."AdminUserProfile" ALTER COLUMN "UpdatedDateTime" TYPE timestamp with time zone;
+    END IF;
+END $EF$;
+
+DO $EF$
+BEGIN
+    IF NOT EXISTS(SELECT 1 FROM "__EFMigrationsHistory" WHERE "MigrationId" = '20220419231412_EF6Upgrade') THEN
+    ALTER TABLE gateway."AdminUserProfile" ALTER COLUMN "LastLoginDateTime" TYPE timestamp with time zone;
+    END IF;
+END $EF$;
+
+DO $EF$
+BEGIN
+    IF NOT EXISTS(SELECT 1 FROM "__EFMigrationsHistory" WHERE "MigrationId" = '20220419231412_EF6Upgrade') THEN
+    ALTER TABLE gateway."AdminUserProfile" ALTER COLUMN "CreatedDateTime" TYPE timestamp with time zone;
+    END IF;
+END $EF$;
+
+DO $EF$
+BEGIN
+    IF NOT EXISTS(SELECT 1 FROM "__EFMigrationsHistory" WHERE "MigrationId" = '20220419231412_EF6Upgrade') THEN
+    ALTER TABLE gateway."AdminTag" ALTER COLUMN "UpdatedDateTime" TYPE timestamp with time zone;
+    END IF;
+END $EF$;
+
+DO $EF$
+BEGIN
+    IF NOT EXISTS(SELECT 1 FROM "__EFMigrationsHistory" WHERE "MigrationId" = '20220419231412_EF6Upgrade') THEN
+    ALTER TABLE gateway."AdminTag" ALTER COLUMN "CreatedDateTime" TYPE timestamp with time zone;
+    END IF;
+END $EF$;
+
+DO $EF$
+BEGIN
+    IF NOT EXISTS(SELECT 1 FROM "__EFMigrationsHistory" WHERE "MigrationId" = '20220419231412_EF6Upgrade') THEN
+    ALTER TABLE gateway."ActiveIngredient" ALTER COLUMN "UpdatedDateTime" TYPE timestamp with time zone;
+    END IF;
+END $EF$;
+
+DO $EF$
+BEGIN
+    IF NOT EXISTS(SELECT 1 FROM "__EFMigrationsHistory" WHERE "MigrationId" = '20220419231412_EF6Upgrade') THEN
+    ALTER TABLE gateway."ActiveIngredient" ALTER COLUMN "CreatedDateTime" TYPE timestamp with time zone;
+    END IF;
+END $EF$;
+
+DO $EF$
+BEGIN
+    IF NOT EXISTS(SELECT 1 FROM "__EFMigrationsHistory" WHERE "MigrationId" = '20220419231412_EF6Upgrade') THEN
+
+         CREATE TRIGGER "UserProfileHistoryLoginTrigger"
+         AFTER UPDATE OF "LastLoginDateTime"
+         ON gateway."UserProfile"
+         FOR EACH ROW
+         EXECUTE PROCEDURE gateway."UserProfileHistoryFunction"();
+    END IF;
+END $EF$;
+
+DO $EF$
+BEGIN
+    IF NOT EXISTS(SELECT 1 FROM "__EFMigrationsHistory" WHERE "MigrationId" = '20220419231412_EF6Upgrade') THEN
+
+         ALTER TABLE gateway."Communication"
+             ADD CONSTRAINT unique_date_range EXCLUDE USING gist (
+             tstzrange("EffectiveDateTime", "ExpiryDateTime") WITH &&)
+             WHERE ("CommunicationTypeCode" = 'Banner' AND
+                    "CommunicationStatusCode" IN ('New' ,'Pending','Processed','Processing'));
+    END IF;
+END $EF$;
+
+DO $EF$
+BEGIN
+    IF NOT EXISTS(SELECT 1 FROM "__EFMigrationsHistory" WHERE "MigrationId" = '20220419231412_EF6Upgrade') THEN
+    INSERT INTO "__EFMigrationsHistory" ("MigrationId", "ProductVersion")
+    VALUES ('20220419231412_EF6Upgrade', '6.0.7');
+    END IF;
+END $EF$;
+COMMIT;
+
+START TRANSACTION;
+
+
+DO $EF$
+BEGIN
+    IF NOT EXISTS(SELECT 1 FROM "__EFMigrationsHistory" WHERE "MigrationId" = '20220420211930_NoteJournalType') THEN
+    ALTER TABLE gateway."Note" ALTER COLUMN "JournalDateTime" TYPE date;
+    END IF;
+END $EF$;
+
+DO $EF$
+BEGIN
+    IF NOT EXISTS(SELECT 1 FROM "__EFMigrationsHistory" WHERE "MigrationId" = '20220420211930_NoteJournalType') THEN
+    INSERT INTO "__EFMigrationsHistory" ("MigrationId", "ProductVersion")
+    VALUES ('20220420211930_NoteJournalType', '6.0.7');
+    END IF;
+END $EF$;
+COMMIT;
+
+START TRANSACTION;
+
+
+DO $EF$
+BEGIN
+    IF NOT EXISTS(SELECT 1 FROM "__EFMigrationsHistory" WHERE "MigrationId" = '20220420212201_RenameNoteJournal') THEN
+    ALTER TABLE gateway."Note" RENAME COLUMN "JournalDateTime" TO "JournalDate";
+    END IF;
+END $EF$;
+
+DO $EF$
+BEGIN
+    IF NOT EXISTS(SELECT 1 FROM "__EFMigrationsHistory" WHERE "MigrationId" = '20220420212201_RenameNoteJournal') THEN
+    INSERT INTO "__EFMigrationsHistory" ("MigrationId", "ProductVersion")
+    VALUES ('20220420212201_RenameNoteJournal', '6.0.7');
+    END IF;
+END $EF$;
+COMMIT;
+
+START TRANSACTION;
+
+
+DO $EF$
+BEGIN
+    IF NOT EXISTS(SELECT 1 FROM "__EFMigrationsHistory" WHERE "MigrationId" = '20220503003723_AddDateTruncate') THEN
+
+    CREATE OR REPLACE FUNCTION gateway.date_trunc(
+    	text,
+    	timestamp with time zone)
+        RETURNS timestamp with time zone
+        LANGUAGE 'sql'
+        IMMUTABLE STRICT PARALLEL UNSAFE
+    AS $BODY$
+    SELECT date_trunc($1, $2);
+    $BODY$;
+    END IF;
+END $EF$;
+
+DO $EF$
+BEGIN
+    IF NOT EXISTS(SELECT 1 FROM "__EFMigrationsHistory" WHERE "MigrationId" = '20220503003723_AddDateTruncate') THEN
+    INSERT INTO "__EFMigrationsHistory" ("MigrationId", "ProductVersion")
+    VALUES ('20220503003723_AddDateTruncate', '6.0.7');
+    END IF;
+END $EF$;
+COMMIT;
+
+START TRANSACTION;
+
+
+DO $EF$
+BEGIN
+    IF NOT EXISTS(SELECT 1 FROM "__EFMigrationsHistory" WHERE "MigrationId" = '20220510181145_UpdateParentEntryIdPrecision') THEN
+    ALTER TABLE gateway."Comment" ALTER COLUMN "ParentEntryId" TYPE character varying(100);
+    END IF;
+END $EF$;
+
+DO $EF$
+BEGIN
+    IF NOT EXISTS(SELECT 1 FROM "__EFMigrationsHistory" WHERE "MigrationId" = '20220510181145_UpdateParentEntryIdPrecision') THEN
+    INSERT INTO "__EFMigrationsHistory" ("MigrationId", "ProductVersion")
+    VALUES ('20220510181145_UpdateParentEntryIdPrecision', '6.0.7');
+    END IF;
+END $EF$;
+COMMIT;
+
+START TRANSACTION;
+
+
+DO $EF$
+BEGIN
+    IF NOT EXISTS(SELECT 1 FROM "__EFMigrationsHistory" WHERE "MigrationId" = '20220518183026_UserProfileToSFK') THEN
+    DROP TRIGGER IF EXISTS "UserProfileHistoryLoginTrigger" ON gateway."UserProfile";
+    END IF;
+END $EF$;
+
+DO $EF$
+BEGIN
+    IF NOT EXISTS(SELECT 1 FROM "__EFMigrationsHistory" WHERE "MigrationId" = '20220518183026_UserProfileToSFK') THEN
+    ALTER TABLE gateway."UserProfileHistory" ADD "TermsOfServiceId" uuid NULL;
+    END IF;
+END $EF$;
+
+DO $EF$
+BEGIN
+    IF NOT EXISTS(SELECT 1 FROM "__EFMigrationsHistory" WHERE "MigrationId" = '20220518183026_UserProfileToSFK') THEN
+    ALTER TABLE gateway."UserProfile" ADD "TermsOfServiceId" uuid NOT NULL DEFAULT 'c99fd839-b4a2-40f9-b103-529efccd0dcd';
+    END IF;
+END $EF$;
+
+DO $EF$
+BEGIN
+    IF NOT EXISTS(SELECT 1 FROM "__EFMigrationsHistory" WHERE "MigrationId" = '20220518183026_UserProfileToSFK') THEN
+    CREATE INDEX "IX_UserProfile_TermsOfServiceId" ON gateway."UserProfile" ("TermsOfServiceId");
+    END IF;
+END $EF$;
+
+DO $EF$
+BEGIN
+    IF NOT EXISTS(SELECT 1 FROM "__EFMigrationsHistory" WHERE "MigrationId" = '20220518183026_UserProfileToSFK') THEN
+    ALTER TABLE gateway."UserProfile" ADD CONSTRAINT "FK_UserProfile_LegalAgreement_TermsOfServiceId" FOREIGN KEY ("TermsOfServiceId") REFERENCES gateway."LegalAgreement" ("LegalAgreementsId") ON DELETE RESTRICT;
+    END IF;
+END $EF$;
+
+DO $EF$
+BEGIN
+    IF NOT EXISTS(SELECT 1 FROM "__EFMigrationsHistory" WHERE "MigrationId" = '20220518183026_UserProfileToSFK') THEN
+    INSERT INTO "__EFMigrationsHistory" ("MigrationId", "ProductVersion")
+    VALUES ('20220518183026_UserProfileToSFK', '6.0.7');
+    END IF;
+END $EF$;
+COMMIT;
+
+START TRANSACTION;
+
+
+DO $EF$
+BEGIN
+    IF NOT EXISTS(SELECT 1 FROM "__EFMigrationsHistory" WHERE "MigrationId" = '20220518211625_UserRemoveAcceptedToS') THEN
+    ALTER TABLE gateway."UserProfile" DROP COLUMN "AcceptedTermsOfService";
+    END IF;
+END $EF$;
+
+DO $EF$
+BEGIN
+    IF NOT EXISTS(SELECT 1 FROM "__EFMigrationsHistory" WHERE "MigrationId" = '20220518211625_UserRemoveAcceptedToS') THEN
+    ALTER TABLE gateway."UserProfileHistory" ALTER COLUMN "AcceptedTermsOfService" DROP NOT NULL;
+    END IF;
+END $EF$;
+
+DO $EF$
+BEGIN
+    IF NOT EXISTS(SELECT 1 FROM "__EFMigrationsHistory" WHERE "MigrationId" = '20220518211625_UserRemoveAcceptedToS') THEN
+
+         CREATE TRIGGER "UserProfileHistoryLoginTrigger"
+         AFTER UPDATE OF "LastLoginDateTime"
+         ON gateway."UserProfile"
+         FOR EACH ROW
+         EXECUTE PROCEDURE gateway."UserProfileHistoryFunction"();
+    END IF;
+END $EF$;
+
+DO $EF$
+BEGIN
+    IF NOT EXISTS(SELECT 1 FROM "__EFMigrationsHistory" WHERE "MigrationId" = '20220518211625_UserRemoveAcceptedToS') THEN
+
+    CREATE or REPLACE FUNCTION gateway."UserProfileHistoryFunction"()
+        RETURNS trigger
+        LANGUAGE 'plpgsql'
+        NOT LEAKPROOF
+    AS $BODY$
+    BEGIN
+        IF(TG_OP = 'DELETE') THEN
+            INSERT INTO gateway."UserProfileHistory"("UserProfileHistoryId", "Operation", "OperationDateTime",
+                        "UserProfileId", "AcceptedTermsOfService", "TermsOfServiceId", "Email", "ClosedDateTime", "IdentityManagementId",
+                        "EncryptionKey", "LastLoginDateTime", "CreatedBy", "CreatedDateTime", "UpdatedBy", "UpdatedDateTime", "SMSNumber")
+    		VALUES(uuid_generate_v4(), TG_OP, now(),
+                   old."UserProfileId", null, old."TermsOfServiceId", old."Email", old."ClosedDateTime", old."IdentityManagementId",
+                   old."EncryptionKey", old."LastLoginDateTime", old."CreatedBy", old."CreatedDateTime", old."UpdatedBy", old."UpdatedDateTime", old."SMSNumber");
+            RETURN old;
+        ELSEIF(TG_OP = 'UPDATE') THEN
+            INSERT INTO gateway."UserProfileHistory"("UserProfileHistoryId", "Operation", "OperationDateTime",
+                        "UserProfileId", "AcceptedTermsOfService", "TermsOfServiceId", "Email", "ClosedDateTime", "IdentityManagementId",
+                        "EncryptionKey", "LastLoginDateTime", "CreatedBy", "CreatedDateTime", "UpdatedBy", "UpdatedDateTime", "SMSNumber")
+    		VALUES(uuid_generate_v4(), TG_OP || '_LOGIN', now(),
+                   old."UserProfileId", null, old."TermsOfServiceId", old."Email", old."ClosedDateTime", old."IdentityManagementId",
+                   old."EncryptionKey", old."LastLoginDateTime", old."CreatedBy", old."CreatedDateTime", old."UpdatedBy", old."UpdatedDateTime", old."SMSNumber");
+            RETURN old;
+        END IF;
+    END;$BODY$;
+    END IF;
+END $EF$;
+
+DO $EF$
+BEGIN
+    IF NOT EXISTS(SELECT 1 FROM "__EFMigrationsHistory" WHERE "MigrationId" = '20220518211625_UserRemoveAcceptedToS') THEN
+    INSERT INTO "__EFMigrationsHistory" ("MigrationId", "ProductVersion")
+    VALUES ('20220518211625_UserRemoveAcceptedToS', '6.0.7');
+    END IF;
+END $EF$;
+COMMIT;
+
+START TRANSACTION;
+
+
+DO $EF$
+BEGIN
+    IF NOT EXISTS(SELECT 1 FROM "__EFMigrationsHistory" WHERE "MigrationId" = '20220519190920_ToSJobCleanup') THEN
+    DELETE FROM gateway."ApplicationSetting"
+    WHERE "ApplicationSettingsId" = '5f279ba2-8e7b-4b1d-8c69-467d94dcb7fb';
+    END IF;
+END $EF$;
+
+DO $EF$
+BEGIN
+    IF NOT EXISTS(SELECT 1 FROM "__EFMigrationsHistory" WHERE "MigrationId" = '20220519190920_ToSJobCleanup') THEN
+    DELETE FROM gateway."EmailTemplate"
+    WHERE "EmailTemplateId" = 'eb695050-e2fb-4933-8815-3d4656e4541d';
+    END IF;
+END $EF$;
+
+DO $EF$
+BEGIN
+    IF NOT EXISTS(SELECT 1 FROM "__EFMigrationsHistory" WHERE "MigrationId" = '20220519190920_ToSJobCleanup') THEN
+    INSERT INTO "__EFMigrationsHistory" ("MigrationId", "ProductVersion")
+    VALUES ('20220519190920_ToSJobCleanup', '6.0.7');
+    END IF;
+END $EF$;
+COMMIT;
+
+START TRANSACTION;
+
+
+DO $EF$
+BEGIN
+    IF NOT EXISTS(SELECT 1 FROM "__EFMigrationsHistory" WHERE "MigrationId" = '20220519201544_ToSUpdate051922') THEN
+    INSERT INTO gateway."LegalAgreement" ("LegalAgreementsId", "CreatedBy", "CreatedDateTime", "EffectiveDate", "LegalAgreementCode", "LegalText", "UpdatedBy", "UpdatedDateTime")
+    VALUES ('eafeee76-8a64-49ee-81ba-ddfe2c01deb8', 'System', TIMESTAMPTZ '2022-05-19 00:00:00Z', TIMESTAMPTZ '2022-05-19 00:00:00Z', 'ToS', '<p><strong>HealthGateway Terms of Service</strong></p>
+    <p>
+        Use of the Health Gateway service (the <strong>"Service"</strong>) is
+        governed by the following terms and conditions. Please read these terms and
+        conditions carefully, as by using the Service you will be deemed to have
+        agreed to them. If you do not agree with these terms and conditions, please
+        do not use the Service.
+    </p>
+    <p><strong>1. The Health Gateway Service</strong></p>
+    <p>
+        The Service provides residents of British Columbia with access to their
+        health information (<strong>"Health Information"</strong>). It allows users
+        to, in one place, view their Health Information from various Provincial
+        health information systems, empowering patients and their families to manage
+        their health care.
+    </p>
+    <p><strong>2. Your use of the Service</strong></p>
+    <p>You may only access your own Health Information using the Service.</p>
+    <p>
+        If you choose to share the Health Information accessed through this Service
+        with others (e.g. with a family member or caregiver), you are responsible
+        for all the actions they take with respect to the use of your Health
+        Information.
+    </p>
+    <p>
+        You must follow any additional terms and conditions made available to you in
+        relation to the Service.
+    </p>
+    <p>
+        Do not misuse the Service, for example by trying to access or use it using a
+        method other than the interface and instructions we provide. You may use the
+        Service only as permitted by law. We may suspend or stop providing the
+        Service to you if you do not comply with these terms and conditions, or if
+        we are investigating a suspected misuse of the Service.
+    </p>
+    <p>
+        Using the Service does not give you ownership of any intellectual property
+        rights in the Service or the content you access. Don’t remove, obscure, or
+        alter any legal notices displayed in connection with the Service.
+    </p>
+    <p>
+        We may stop providing the Service to you, or may add or create new limits on
+        the Service, for any reason and at any time.
+    </p>
+    <p>
+        <strong
+            >3. Service is not a comprehensive health record or medical
+            advice</strong
+        >
+    </p>
+    <p>
+        The Health Information accessed through this Service is not a comprehensive
+        record of your health care in BC.
+    </p>
+    <p>
+        This Service is not intended to provide you with medical advice or replace
+        the care provided by qualified health care professionals. If you have
+        questions or concerns about your health, please contact your care provider.
+    </p>
+    <p><strong>4. Privacy Notice</strong></p>
+    <p>
+        Your personal information will be collected by the Health Gateway (Ministry
+        of Health) and Service BC under the authority of section 26(c) of the
+        Freedom of Information and Protection of Privacy Act for the purpose of
+        providing access to your health records. Your personal information such as
+        name, email and cell phone number will be shared with other public health
+        service agencies to query your health information and notify you of updates.
+        Your personal information will not be used or disclosed for any other
+        purposes.
+    </p>
+    <p>
+        The Service’s notes and comments features allow you to enter your own notes
+        to provide more information related to your health care. Use of these
+        features is entirely voluntary. Any notes will be stored in the Health
+        Gateway until you choose to delete your account or remove specific notes.
+        Any notes that you create can only be accessed by you securely using your BC
+        Services Card.
+    </p>
+    <p>
+        If you have any questions about our collection or use of personal
+        information, please direct your inquiries to the Health Gateway team:
+    </p>
+    <p>
+        <em>
+            Ministry of Health Privacy Officer
+            <br />
+            Telephone: <a href="tel:778-698-5849">778-698-5849</a>
+            <br />
+            Email: <a href="mailto:MOH.Privacy.Officer@gov.bc.ca">MOH.Privacy.Officer@gov.bc.ca</a>
+            <br />
+        </em>
+    </p>
+    <p><strong>5. Privacy Protection Guidance for Minors</strong></p>
+    <p>
+        Health Gateway takes the protection of your privacy very seriously and will
+        make sure that your information is secure in the Health Gateway portal,
+        however you will also need to take steps to protect your information. There
+        may be consequences to sharing your device with others, for example people
+        may be able to open your Health Gateway account and see whether you are
+        taking any prescriptions, such as birth control medication or whether you
+        have a positive COVID-19 test result.
+    </p>
+    <p>Protect your privacy by doing the following:</p>
+    <p>
+        It is not recommended that you download the BC Services Card app and set up
+        a Health Gateway account if you cannot fully control who has access to your
+        device. If you are unable to control who has access to your device, for
+        example you do not own your phone or you share your phone or password with
+        others, then the security of your information could be at risk. If this is a
+        shared device, or one you do not fully control, there are other options to
+        access your information. For example, to access your COVID-19 test results,
+        please visit the BC Centre for Disease Control (BCCDC) website.
+    </p>
+    <p>
+        Before downloading the BC Services Card app and setting up a Health Gateway
+        account, make sure you have a secure password on your device that no one but
+        you knows. For tips on how to create a secure password and password
+        protection, please go to
+        <a
+            href="https://www.getcybersafe.gc.ca/en/secure-your-accounts/passphrases-passwords-and-pins"
+            >https://www.getcybersafe.gc.ca/en/secure-your-accounts/passphrases-passwords-and-pins</a
+        >.
+    </p>
+    <p>
+        Make sure to log out of your account and close out of the screen once you
+        are finished using the Health Gateway portal and lock and store your device
+        securely when it is not in use.
+    </p>
+    <p>
+        If you suspect your personal information has been viewed without your
+        permission, please reach out to a trusted adult for help on what to do next.
+        For more information, adults may go to
+        <a
+            href="https://www.priv.gc.ca/en/privacy-topics/information-and-advice-for-individuals/privacy-and-kids/"
+            >https://www.priv.gc.ca/en/privacy-topics/information-and-advice-for-individuals/privacy-and-kids/</a
+        >.
+    </p>
+    <p>
+        Be suspicious of any unusual requests for your information. For example,
+        Health Gateway will never ask you for any of your personal health
+        information such as medical diagnosis.
+    </p>
+    <p>
+        For more tips on how to protect your privacy go to
+        <a href="https://www.getcybersafe.gc.ca/en/home"
+            >https://www.getcybersafe.gc.ca/en/home</a
+        >.
+    </p>
+    <p>
+        If you notice anything unusual in your account or have any privacy
+        questions, please contact the Health Gateway team below for help.
+    </p>
+    <p>
+        Email: <a href="mailto:HealthGateway@gov.bc.ca">HealthGateway@gov.bc.ca</a>
+    </p>
+    <p><strong>6. Warranty Disclaimer</strong></p>
+    <p>
+        The Service and all of the information it contains are provided "as is"
+        without warranty of any kind, whether express or implied. All implied
+        warranties, including, without limitation, implied warranties of
+        merchantability, fitness for a particular purpose, and non-infringement, are
+        hereby expressly disclaimed.
+    </p>
+    <p><strong>7. Attestation of Guardianship</strong></p>
+    <p>
+        By providing the child’s name, date of birth, personal health number and
+        date of COVID-19 test, I declare that I am the child’s legal guardian as per
+        the Family Law Act, the Adoption Act and/or the Child, Family and Community
+        Services Act, and am attesting that I have the authority to request and
+        receive health information respecting the child from third parties.
+    </p>
+    <p>
+        If I either: (a) cease to be guardian of this child; (b) or lose the right
+        to request or receive health information from third parties respecting this
+        child, I will remove them as a dependent under my Health Gateway account
+        immediately.
+    </p>
+    <p>
+        I understand that I will no longer be able to access my child’s COVID-19
+        test results once they are 12 years of age. I understand it is a legal
+        offence to falsely claim guardianship or access another individual’s
+        personal health information without legal authority or consent.
+    </p>
+    <p><strong>8. Limitation of Liabilities</strong></p>
+    <p>
+        Under no circumstances will the Government of British Columbia be liable to
+        any person or business entity for any direct, indirect, special, incidental,
+        consequential, or other damages based on any use of the Service or any
+        website or system to which this Service may be linked, including, without
+        limitation, any lost profits, business interruption, or loss of programs or
+        information, even if the Government of British Columbia has been
+        specifically advised of the possibility of such damages.
+    </p>
+    <p><strong>9. About these Terms and Conditions</strong></p>
+    <p>
+        We may modify these terms of service, or any additional terms that apply to
+        the Service, at any time, for example to reflect changes to the law or
+        changes to the Service. You should review these terms of service regularly.
+        Changes to these terms of service will be effective immediately after they
+        are posted. If you do not agree to any changes to these terms, you should
+        discontinue your use of the Service immediately.
+    </p>
+    <p>
+        If there is any conflict between these terms of service and any additional
+        terms of service, the additional terms of service will prevail.
+    </p>
+    <p>
+        These terms of service are governed by and to be construed in accordance
+        with the laws of British Columbia and the federal laws of Canada applicable
+        therein.
+    </p>
+    ', 'System', TIMESTAMPTZ '2022-05-19 00:00:00Z');
+    END IF;
+END $EF$;
+
+DO $EF$
+BEGIN
+    IF NOT EXISTS(SELECT 1 FROM "__EFMigrationsHistory" WHERE "MigrationId" = '20220519201544_ToSUpdate051922') THEN
+    INSERT INTO "__EFMigrationsHistory" ("MigrationId", "ProductVersion")
+    VALUES ('20220519201544_ToSUpdate051922', '6.0.7');
+    END IF;
+END $EF$;
+COMMIT;
+
+START TRANSACTION;
+
+
+DO $EF$
+BEGIN
+    IF NOT EXISTS(SELECT 1 FROM "__EFMigrationsHistory" WHERE "MigrationId" = '20220606211634_RevampTermsOfService') THEN
+    INSERT INTO gateway."LegalAgreement" ("LegalAgreementsId", "CreatedBy", "CreatedDateTime", "EffectiveDate", "LegalAgreementCode", "LegalText", "UpdatedBy", "UpdatedDateTime")
+    VALUES ('2fab66e7-37c9-4b03-ba25-e8fad604dc7f', 'System', TIMESTAMPTZ '2022-06-07 00:00:00Z', TIMESTAMPTZ '2022-06-07 00:00:00Z', 'ToS', '<p><strong>Health Gateway Terms of Service</strong></p>
+    <p><strong>Last updated: June 7, 2022</strong></p>
+    <p>
+        Health Gateway service (the <strong>"Service"</strong>) is governed by the
+        following terms and conditions. Please read them carefully.
+    </p>
+    <p>
+        By using Health Gateway, you are agreeing to follow and be bound by the
+        Terms of Service.
+    </p>
+    <p>
+        We may modify these terms of service at any time. You should review these
+        terms of service regularly. Changes to these terms of service are effective
+        immediately upon publication. If you do not agree to any changes to these
+        terms, you should discontinue your use of Health Gateway right away.
+    </p>
+    <p>
+        If there is any conflict between these terms of service and any new or
+        additional terms of service, the additional terms of service will prevail.
+    </p>
+    <p>
+        These terms of service are governed by and to be interpreted in accordance
+        with the laws of British Columbia and the federal laws of Canada applicable
+        therein.
+    </p>
+    <p><strong>What’s covered in these terms:</strong></p>
+    <ol>
+        <li><a href="#tos-1">The Health Gateway Service</a></li>
+        <li><a href="#tos-2">Your use of the Service</a></li>
+        <li><a href="#tos-3">Service Limitations</a></li>
+        <li><a href="#tos-4">Privacy Notice</a></li>
+        <li><a href="#tos-5">Privacy Protection Guidance for Minors</a></li>
+        <li><a href="#tos-6">Attestation of Guardianship</a></li>
+        <li><a href="#tos-7">Warranty Disclaimer</a></li>
+        <li><a href="#tos-8">Limitation of Liabilities</a></li>
+    </ol>
+
+    <p id="tos-1"><strong>1. The Health Gateway Service</strong></p>
+    <p>
+        The Service provides you with online access to your B.C. health information
+        (<strong>"Health Information"</strong>). It allows you to view your Health
+        Information from various Provincial health information systems in one place.
+    </p>
+
+    <p id="tos-2"><strong>2. Your use of the Service</strong></p>
+    <p>
+        You may only access your own or your dependents’ Health Information using
+        the Service.
+    </p>
+    <p>
+        If you choose to share the Health Information accessed through the Service
+        with others (e.g., with a family member, caregiver or healthcare provider),
+        Health Gateway cannot be held responsible for any actions they take with
+        your Health Information.
+    </p>
+    <p>
+        Do not misuse the Service. Do not try to access or use it in any way other
+        than through the interface and instructions we provide. You may use the
+        Service only as permitted by law.
+    </p>
+    <p>We may suspend or stop providing the Service to you if:</p>
+    <ul>
+        <li>you do not comply with these terms and conditions, or</li>
+        <li>we are investigating a suspected misuse of the Service.</li>
+    </ul>
+    <p>
+        We have the right to stop providing the Service to you or to create new
+        Terms of Service for any reason and at any time. You must follow any
+        additional terms and conditions made available to you in relation to the
+        Service.
+    </p>
+    <p>
+        Using the Service does not give you ownership of any intellectual property
+        rights in the Service or the content you access. Don’t remove, obscure, or
+        alter any legal notices displayed in connection with the Service.
+    </p>
+
+    <p id="tos-3"><strong>3. Service Limitations</strong></p>
+    <p>
+        The Health Information accessed through this Service is not a complete
+        record of all your health care in BC.
+    </p>
+    <p>
+        This Service is not intended to provide you with medical advice and does not
+        replace care from qualified health professionals. If you have questions or
+        concerns about your health, please contact your doctor or care provider.
+    </p>
+
+    <p id="tos-4"><strong>4. Privacy Notice</strong></p>
+    <p>
+        Your personal information will be collected by Health Gateway (Ministry of
+        Health) and Service BC under the authority of section 26(c) of the Freedom
+        of Information and Protection of Privacy Act for the purpose of providing
+        access to your health records. Your personal information such as name, email
+        and mobile phone number will be shared with other public health service
+        agencies to query your health information and notify you of updates.
+    </p>
+    <p>
+        The Service’s notes and comments features allow you to enter your own
+        private notes to record more information related to your health care. Use of
+        this feature is voluntary. Any notes will be stored in Health Gateway until
+        you choose to remove them or delete your account. Any notes that you create
+        can only be accessed by you.
+    </p>
+    <p>
+        If you have any questions about our collection or use of personal
+        information, please contact:
+    </p>
+    <p>
+        <em>
+            Ministry of Health Privacy Officer
+            <br />
+            Telephone: <a href="tel:778-698-5849">778-698-5849</a>
+            <br />
+            Email:
+            <a href="mailto:MOH.Privacy.Officer@gov.bc.ca"
+                >MOH.Privacy.Officer@gov.bc.ca</a
+            >
+        </em>
+    </p>
+
+    <p id="tos-5"><strong>5. Privacy Protection Guidance for Minors</strong></p>
+    <p>The below guidance is recommended for anyone under the age of 19.</p>
+    <p>
+        Health Gateway takes your privacy seriously. Although Health Gateway
+        includes security features, you must also take steps to protect your
+        privacy:
+    </p>
+    <ol type="a">
+        <li>
+            <p>
+                Do not set up a Health Gateway account if you cannot fully control
+                who has access to your device. If you share your phone or password
+                with others, the security of your information is at risk. Anyone who
+                has access to your device may be able to open your Health Gateway
+                account and see your:
+            </p>
+            <ul>
+                <li><p>prescriptions, such as birth control medication,</p></li>
+                <li><p>health visit and procedure details,</p></li>
+                <li><p>vaccination status, and</p></li>
+                <li>
+                    <p>
+                        blood test results, including sexually transmitted infection
+                        testing.
+                    </p>
+                </li>
+            </ul>
+        </li>
+        <li>
+            <p>
+                If you can’t use Health Gateway because you don’t have your own
+                secure device, we can tell you about other ways to access the health
+                information you need. Email us at:
+                <a href="mailto:HealthGateway@gov.bc.ca">HealthGateway@gov.bc.ca</a>
+            </p>
+        </li>
+        <li>
+            <p>
+                Before setting up a Health Gateway account, make sure you have a
+                password on your device that only you know. For tips on how to
+                create a secure password, visit
+                <a
+                    href="https://www.getcybersafe.gc.ca/en/secure-your-accounts/passphrases-passwords-and-pins"
+                >
+                    https://www.getcybersafe.gc.ca/en/secure-your-accounts/passphrases-passwords-and-pins</a
+                >. Or you can secure your device with facial recognition or
+                fingerprint identification.
+            </p>
+        </li>
+        <li>
+            <p>
+                Make sure to log out of your account and close the screen once you
+                are finished using Health Gateway. Lock and store your device
+                securely when not in use.
+            </p>
+        </li>
+        <li>
+            <p>
+                If you suspect your personal information has been viewed without
+                your permission, please reach out to a trusted adult for help on
+                what to do next. For more information, adults may go to
+                <a
+                    href="https://www.priv.gc.ca/en/privacy-topics/information-and-advice-for-individuals/privacy-and-kids/"
+                    >https://www.priv.gc.ca/en/privacy-topics/information-and-advice-for-individuals/privacy-and-kids/</a
+                >.
+            </p>
+        </li>
+    </ol>
+    <p>
+        For more tips on how to protect your privacy, visit:
+        <a href="https://www.getcybersafe.gc.ca/">https://www.getcybersafe.gc.ca</a>
+    </p>
+    <p>
+        If you notice anything unusual in your account or if you have any privacy
+        questions, contact the Health Gateway team for help:
+        <a href="mailto:HealthGateway@gov.bc.ca">HealthGateway@gov.bc.ca</a>
+    </p>
+
+    <p id="tos-6">
+        <strong
+            >6. Attestation of Guardianship (Child under 12 years of age)</strong
+        >
+    </p>
+    <p>
+        By providing the child’s name, date of birth, personal health number and
+        date of COVID-19 test, I declare that I am the child’s guardian and that I
+        have the authority to request and receive health information respecting the
+        child from third parties.
+    </p>
+    <p>
+        If I either: (a) cease to be guardian of this child; (b) or lose the right
+        to request or receive health information from third parties respecting this
+        child, I will remove them as a dependent under my Health Gateway account
+        immediately.
+    </p>
+    <p>
+        I understand that I will no longer be able to access my child’s COVID-19
+        test results once they are 12 years of age.
+    </p>
+
+    <p id="tos-7"><strong>7. Warranty Disclaimer</strong></p>
+    <p>
+        The Service and the information contained therein are provided "as is"
+        without warranty of any kind, whether express or implied. All implied
+        warranties, including, without limitation, implied warranties of
+        merchantability, fitness for a particular purpose, and non-infringement, are
+        hereby expressly disclaimed.
+    </p>
+
+    <p id="tos-8"><strong>8. Limitation of Liabilities</strong></p>
+    <p>
+        Under no circumstances will the Government of British Columbia be liable to
+        any person or business entity for any direct, indirect, special, incidental,
+        consequential, or other damages based on any use of the Service or any
+        website or system to which this Service may be linked, including, without
+        limitation, any lost profits, business interruption, or loss of programs or
+        information, even if the Government of British Columbia has been
+        specifically advised of the possibility of such damages.
+    </p>
+    ', 'System', TIMESTAMPTZ '2022-06-07 00:00:00Z');
+    END IF;
+END $EF$;
+
+DO $EF$
+BEGIN
+    IF NOT EXISTS(SELECT 1 FROM "__EFMigrationsHistory" WHERE "MigrationId" = '20220606211634_RevampTermsOfService') THEN
+    INSERT INTO "__EFMigrationsHistory" ("MigrationId", "ProductVersion")
+    VALUES ('20220606211634_RevampTermsOfService', '6.0.7');
+    END IF;
+END $EF$;
+COMMIT;
+
+START TRANSACTION;
+
+
+DO $EF$
+BEGIN
+    IF NOT EXISTS(SELECT 1 FROM "__EFMigrationsHistory" WHERE "MigrationId" = '20220607220711_RemoveCommunicationEmail') THEN
+    DROP TABLE gateway."CommunicationEmail";
+    END IF;
+END $EF$;
+
+DO $EF$
+BEGIN
+    IF NOT EXISTS(SELECT 1 FROM "__EFMigrationsHistory" WHERE "MigrationId" = '20220607220711_RemoveCommunicationEmail') THEN
+    DELETE FROM gateway."CommunicationTypeCode"
+    WHERE "StatusCode" = 'Email';
+    END IF;
+END $EF$;
+
+DO $EF$
+BEGIN
+    IF NOT EXISTS(SELECT 1 FROM "__EFMigrationsHistory" WHERE "MigrationId" = '20220607220711_RemoveCommunicationEmail') THEN
+    INSERT INTO "__EFMigrationsHistory" ("MigrationId", "ProductVersion")
+    VALUES ('20220607220711_RemoveCommunicationEmail', '6.0.7');
+    END IF;
+END $EF$;
+COMMIT;
+

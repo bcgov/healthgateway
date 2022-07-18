@@ -25,10 +25,10 @@ namespace HealthGateway.Database.Migrations
         {
             string schema = "gateway";
             string constraint1 = @$"
-                ALTER TABLE IF EXISTS {schema}.""Communication"" DROP CONSTRAINT IF EXISTS unique_date_range";
+                ALTER TABLE IF EXISTS {schema}.""Communication"" DROP CONSTRAINT IF EXISTS unique_date_range;";
 
             string constraint2 = @$"
-                ALTER TABLE {schema}.""Communication"" ADD CONSTRAINT unique_date_range EXCLUDE USING gist (tsrange(""EffectiveDateTime"", ""ExpiryDateTime"") WITH &&) WHERE (""CommunicationTypeCode"" = 'Banner'  AND ""CommunicationStatusCode""  IN ('New' ,'Pending','Processed','Processing'))";
+                ALTER TABLE {schema}.""Communication"" ADD CONSTRAINT unique_date_range EXCLUDE USING gist (tsrange(""EffectiveDateTime"", ""ExpiryDateTime"") WITH &&) WHERE (""CommunicationTypeCode"" = 'Banner'  AND ""CommunicationStatusCode""  IN ('New' ,'Pending','Processed','Processing'));";
             migrationBuilder.Sql(constraint1);
             migrationBuilder.Sql(constraint2);
         }
@@ -37,10 +37,10 @@ namespace HealthGateway.Database.Migrations
         {
             string schema = "gateway";
             string constraint1 = @$"
-                ALTER TABLE {schema}.""Communication"" DROP CONSTRAINT unique_date_range";
+                ALTER TABLE {schema}.""Communication"" DROP CONSTRAINT unique_date_range;";
 
             string constraint2 = @$"
-                ALTER TABLE {schema}.""Communication"" ADD CONSTRAINT unique_date_range EXCLUDE USING gist (tsrange(""EffectiveDateTime"", ""ExpiryDateTime"") WITH &&) WHERE (""CommunicationTypeCode"" = 'Banner')";
+                ALTER TABLE {schema}.""Communication"" ADD CONSTRAINT unique_date_range EXCLUDE USING gist (tsrange(""EffectiveDateTime"", ""ExpiryDateTime"") WITH &&) WHERE (""CommunicationTypeCode"" = 'Banner');";
             migrationBuilder.Sql(constraint1);
             migrationBuilder.Sql(constraint2);
         }

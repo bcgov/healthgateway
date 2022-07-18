@@ -27,14 +27,14 @@ namespace HealthGateway.Database.Migrations
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             // Drop User Delegate history functions
-            migrationBuilder.Sql(@$"DROP TRIGGER IF EXISTS ""UserDelegateHistoryTrigger"" ON {Schema}.""UserDelegate""");
+            migrationBuilder.Sql(@$"DROP TRIGGER IF EXISTS ""UserDelegateHistoryTrigger"" ON {Schema}.""UserDelegate"";");
             migrationBuilder.Sql(@$"DROP FUNCTION IF EXISTS {Schema}.""UserDelegateHistoryFunction""();");
 
             // Drop the UserDelegate
-            migrationBuilder.Sql(@$"DROP TABLE IF EXISTS {Schema}.""UserDelegate""");
+            migrationBuilder.Sql(@$"DROP TABLE IF EXISTS {Schema}.""UserDelegate"";");
 
             // Drop the UserDelegateHistory
-            migrationBuilder.Sql(@$"DROP TABLE IF EXISTS {Schema}.""UserDelegateHistory""");
+            migrationBuilder.Sql(@$"DROP TABLE IF EXISTS {Schema}.""UserDelegateHistory"";");
 
             migrationBuilder.CreateTable(
                 name: "ResourceDelegateHistory",
@@ -162,7 +162,7 @@ CREATE TRIGGER ""ResourceDelegateHistoryTrigger""
 
         protected override void Down(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.Sql(@$"DROP TRIGGER IF EXISTS ""ResourceDelegateHistoryTrigger"" ON {Schema}.""ResourceDelegate""");
+            migrationBuilder.Sql(@$"DROP TRIGGER IF EXISTS ""ResourceDelegateHistoryTrigger"" ON {Schema}.""ResourceDelegate"";");
             migrationBuilder.Sql(@$"DROP FUNCTION IF EXISTS {Schema}.""ResourceDelegateHistoryFunction""();");
 
             migrationBuilder.DropTable(
