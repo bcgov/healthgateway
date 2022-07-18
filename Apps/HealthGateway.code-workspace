@@ -95,6 +95,7 @@
         },
         "editor.defaultFormatter": "esbenp.prettier-vscode",
         "editor.formatOnSave": true,
+        "editor.guides.bracketPairs": true,
         "[csharp]": {
             "editor.defaultFormatter": "ms-dotnettools.csharp",
             "editor.formatOnSave": false
