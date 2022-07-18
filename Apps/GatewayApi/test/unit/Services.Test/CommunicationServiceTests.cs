@@ -16,7 +16,6 @@
 namespace HealthGateway.GatewayApi.Test.Services
 {
     using System;
-    using System.Text.Json;
     using DeepEqual.Syntax;
     using HealthGateway.Common.Data.Constants;
     using HealthGateway.Common.Data.ViewModels;
@@ -126,7 +125,7 @@ namespace HealthGateway.GatewayApi.Test.Services
 
             IMemoryCache memoryCache = CreateCache();
             Mock<ICommunicationDelegate> communicationDelegateMock = new();
-            communicationDelegateMock.Setup(s => s.Find(It.IsAny<CommunicationType>())).Returns(dbResult);
+            communicationDelegateMock.Setup(s => s.GetNext(It.IsAny<CommunicationType>())).Returns(dbResult);
 
             ICommunicationService service = new CommunicationService(
                 new Mock<ILogger<CommunicationService>>().Object,

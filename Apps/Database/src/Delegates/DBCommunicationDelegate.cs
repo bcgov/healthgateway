@@ -53,9 +53,9 @@ namespace HealthGateway.Database.Delegates
         }
 
         /// <inheritdoc />
-        public DBResult<Communication?> Find(CommunicationType communicationType)
+        public DBResult<Communication?> GetNext(CommunicationType communicationType)
         {
-            this.logger.LogTrace($"Getting active Communication from DB...");
+            this.logger.LogTrace($"Getting next non-expired Communication from DB...");
             Communication? communication = this.dbContext.Communication
                 .Where(c => c.CommunicationTypeCode == communicationType &&
                             c.CommunicationStatusCode == CommunicationStatus.New &&
