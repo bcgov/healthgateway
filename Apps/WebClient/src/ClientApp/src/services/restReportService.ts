@@ -1,7 +1,8 @@
 import { injectable } from "inversify";
 
+import { ServiceCode } from "@/constants/serviceCodes";
 import { ExternalConfiguration } from "@/models/configData";
-import { ServiceName } from "@/models/errorInterfaces";
+import { HttpError } from "@/models/errors";
 import Report from "@/models/report";
 import ReportRequest from "@/models/reportRequest";
 import RequestResult from "@/models/requestResult";
@@ -37,12 +38,14 @@ export class RestReportService implements IReportService {
                 .then((result) => {
                     return resolve(result);
                 })
-                .catch((err) => {
-                    this.logger.error(`generateReport Fetch error: ${err}`);
+                .catch((err: HttpError) => {
+                    this.logger.error(
+                        `Error in RestReportService.generateReport()`
+                    );
                     reject(
                         ErrorTranslator.internalNetworkError(
                             err,
-                            ServiceName.Report
+                            ServiceCode.Report
                         )
                     );
                 });

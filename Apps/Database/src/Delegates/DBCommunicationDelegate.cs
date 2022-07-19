@@ -53,25 +53,20 @@ namespace HealthGateway.Database.Delegates
         }
 
         /// <inheritdoc />
-        public DBResult<Communication> GetActiveBanner(CommunicationType communicationType)
+        public DBResult<Communication?> GetNext(CommunicationType communicationType)
         {
-            this.logger.LogTrace($"Getting active Communication from DB...");
-            DBResult<Communication> result = new DBResult<Communication>()
-            {
-                Status = DBStatusCode.NotFound,
-            };
+            this.logger.LogTrace($"Getting next non-expired Communication from DB...");
             Communication? communication = this.dbContext.Communication
-                .OrderByDescending(c => c.CreatedDateTime)
-                .Where(c => c.CommunicationTypeCode == communicationType)
-                .Where(c => c.CommunicationStatusCode == CommunicationStatus.New)
-                .Where(c => DateTime.UtcNow >= c.EffectiveDateTime && DateTime.UtcNow <= c.ExpiryDateTime)
+                .Where(c => c.CommunicationTypeCode == communicationType &&
+                            c.CommunicationStatusCode == CommunicationStatus.New &&
+                            DateTime.UtcNow < c.ExpiryDateTime)
+                .OrderBy(c => c.EffectiveDateTime)
                 .FirstOrDefault();
-
-            if (communication != null)
+            DBResult<Communication?> result = new()
             {
-                result.Status = DBStatusCode.Read;
-                result.Payload = communication;
-            }
+                Status = communication != null ? DBStatusCode.Read : DBStatusCode.NotFound,
+                Payload = communication,
+            };
 
             return result;
         }

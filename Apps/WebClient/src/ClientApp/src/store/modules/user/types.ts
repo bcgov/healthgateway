@@ -8,9 +8,9 @@ import {
 
 import { ErrorType } from "@/constants/errorType";
 import { DateWrapper } from "@/models/dateWrapper";
+import { ResultError } from "@/models/errors";
 import PatientData from "@/models/patientData";
 import { QuickLink } from "@/models/quickLink";
-import { ResultError } from "@/models/requestResult";
 import { LoadStatus } from "@/models/storeOperations";
 import User, { OidcUserInfo } from "@/models/user";
 import { UserPreference } from "@/models/userPreference";

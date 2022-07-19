@@ -100,8 +100,8 @@ namespace HealthGateway.Common.AccessManagement.Authentication
         /// <inheritdoc/>
         public string? AccessTokenAsUser(string sectionName)
         {
-            (Uri tokenUri, ClientCredentialsTokenRequest tokenRequest) = this.GetConfiguration(sectionName);
-            return this.AccessTokenAsUser(tokenUri, tokenRequest);
+            (Uri tUri, ClientCredentialsTokenRequest tRequest) = this.GetConfiguration(sectionName);
+            return this.AccessTokenAsUser(tUri, tRequest);
         }
 
         /// <inheritdoc/>

@@ -37,7 +37,7 @@ namespace HealthGateway.GatewayApi.Test.Controllers
         [Fact]
         public void ShouldGetCommunication()
         {
-            RequestResult<Communication> expectedResult = new()
+            RequestResult<Communication?> expectedResult = new()
             {
                 ResourcePayload = new Communication()
                 {
@@ -51,7 +51,7 @@ namespace HealthGateway.GatewayApi.Test.Controllers
             communicationServiceMock.Setup(s => s.GetActiveBanner(CommunicationType.Banner)).Returns(expectedResult);
 
             CommunicationController controller = new(communicationServiceMock.Object);
-            RequestResult<Communication> actualResult = controller.Get();
+            RequestResult<Communication?> actualResult = controller.Get();
 
             expectedResult.ShouldDeepEqual(actualResult);
         }

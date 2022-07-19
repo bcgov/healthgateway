@@ -8,7 +8,8 @@ import {
 
 import { ErrorType } from "@/constants/errorType";
 import Encounter from "@/models/encounter";
-import RequestResult, { ResultError } from "@/models/requestResult";
+import { ResultError } from "@/models/errors";
+import RequestResult from "@/models/requestResult";
 import { LoadStatus } from "@/models/storeOperations";
 import { RootState } from "@/store/types";
 

@@ -12,7 +12,7 @@ import LoadingComponent from "@/components/LoadingComponent.vue";
 import { ErrorSourceType, ErrorType } from "@/constants/errorType";
 import { RegistrationStatus } from "@/constants/registrationStatus";
 import type { WebClientConfiguration } from "@/models/configData";
-import { ResultError } from "@/models/requestResult";
+import { ResultError } from "@/models/errors";
 import { TermsOfService } from "@/models/termsOfService";
 import type { OidcUserInfo } from "@/models/user";
 import container from "@/plugins/container";

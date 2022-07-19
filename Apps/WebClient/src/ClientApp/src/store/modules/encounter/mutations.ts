@@ -1,5 +1,5 @@
 import Encounter from "@/models/encounter";
-import { ResultError } from "@/models/requestResult";
+import { ResultError } from "@/models/errors";
 import { LoadStatus } from "@/models/storeOperations";
 
 import { EncounterMutations, EncounterState } from "./types";

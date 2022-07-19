@@ -1,8 +1,9 @@
 import { EntryType } from "@/constants/entryType";
 import { ErrorSourceType, ErrorType } from "@/constants/errorType";
 import { ResultType } from "@/constants/resulttype";
+import { ResultError } from "@/models/errors";
 import MedicationRequest from "@/models/MedicationRequest";
-import RequestResult, { ResultError } from "@/models/requestResult";
+import RequestResult from "@/models/requestResult";
 import { LoadStatus } from "@/models/storeOperations";
 import container from "@/plugins/container";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";

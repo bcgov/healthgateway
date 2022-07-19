@@ -1,12 +1,16 @@
 import { injectable } from "inversify";
 
+import { ServiceCode } from "@/constants/serviceCodes";
 import { ExternalConfiguration } from "@/models/configData";
-import { ServiceName } from "@/models/errorInterfaces";
-import { IConfigService, IHttpDelegate } from "@/services/interfaces";
+import { HttpError } from "@/models/errors";
+import container from "@/plugins/container";
+import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
+import { IConfigService, IHttpDelegate, ILogger } from "@/services/interfaces";
 import ErrorTranslator from "@/utility/errorTranslator";
 
 @injectable()
 export class RestConfigService implements IConfigService {
+    private logger: ILogger = container.get(SERVICE_IDENTIFIER.Logger);
     private readonly CONFIG_BASE_URI: string = "/configuration";
     private http!: IHttpDelegate;
 
@@ -21,12 +25,14 @@ export class RestConfigService implements IConfigService {
                 .then((result) => {
                     return resolve(result);
                 })
-                .catch((err) => {
-                    console.log("Fetch error:" + err.toString());
+                .catch((err: HttpError) => {
+                    this.logger.error(
+                        `Error in RestConfigService.getConfiguration()`
+                    );
                     reject(
                         ErrorTranslator.internalNetworkError(
                             err,
-                            ServiceName.HealthGatewayUser
+                            ServiceCode.HealthGatewayUser
                         )
                     );
                 });

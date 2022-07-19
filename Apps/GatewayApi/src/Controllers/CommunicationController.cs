@@ -49,7 +49,7 @@ namespace HealthGateway.GatewayApi.Controllers
         /// <response code="200">Returns the communication json.</response>
         [HttpGet]
         [Route("{bannerType}")]
-        public RequestResult<Communication> Get(CommunicationType bannerType = CommunicationType.Banner)
+        public RequestResult<Communication?> Get(CommunicationType bannerType = CommunicationType.Banner)
         {
             return this.communicationService.GetActiveBanner(bannerType);
         }

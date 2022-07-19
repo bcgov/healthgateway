@@ -11,6 +11,8 @@ TRUNCATE gateway."Note" CASCADE;
 TRUNCATE gateway."GenericCache" CASCADE;
 TRUNCATE gateway."Rating" CASCADE;
 TRUNCATE gateway."Email" CASCADE;
+TRUNCATE gateway."AdminTag" CASCADE;
+TRUNCATE gateway."UserFeedback" CASCADE;
 
 /* Registered HealthGateway User - Keycloak User (healthgateway) */
 INSERT INTO gateway."UserProfile"(
@@ -879,3 +881,46 @@ VALUES (
 	'2022-01-16'
 );
 
+INSERT INTO gateway."UserFeedback"(
+	"UserFeedbackId",
+	"CreatedBy",
+	"CreatedDateTime",
+	"UpdatedBy",
+	"UpdatedDateTime",
+	"IsSatisfied",
+	"Comment",
+	"IsReviewed",
+	"UserProfileId")
+VALUES (
+	'6913821b-8c8c-4273-8cd8-afe6fdd05194',
+	'P6FFO433A5WPMVTGM7T4ZVWBKCSVNAYGTWTU3J2LWMGUMERKI72A',
+	'2022-07-06 15:30:43.095652+00',
+	'P6FFO433A5WPMVTGM7T4ZVWBKCSVNAYGTWTU3J2LWMGUMERKI72A',
+	'2022-07-06 15:30:43.095652+00',
+	false,
+	'It would be helpful to have some feedback entries already in the database when the functional tests run.',
+	false,
+	'P6FFO433A5WPMVTGM7T4ZVWBKCSVNAYGTWTU3J2LWMGUMERKI72A'
+);
+
+INSERT INTO gateway."UserFeedback"(
+	"UserFeedbackId",
+	"CreatedBy",
+	"CreatedDateTime",
+	"UpdatedBy",
+	"UpdatedDateTime",
+	"IsSatisfied",
+	"Comment",
+	"IsReviewed",
+	"UserProfileId")
+VALUES (
+	'57abe4d7-2f83-43fd-9037-cc11ab9c9a12',
+	'P6FFO433A5WPMVTGM7T4ZVWBKCSVNAYGTWTU3J2LWMGUMERKI72A',
+	'2022-07-06 15:31:18.492904+00',
+	'P6FFO433A5WPMVTGM7T4ZVWBKCSVNAYGTWTU3J2LWMGUMERKI72A',
+	'2022-07-06 15:31:18.492904+00',
+	false,
+	'The database seed script should populate some rows in the feedback table.',
+	false,
+	'P6FFO433A5WPMVTGM7T4ZVWBKCSVNAYGTWTU3J2LWMGUMERKI72A'
+);

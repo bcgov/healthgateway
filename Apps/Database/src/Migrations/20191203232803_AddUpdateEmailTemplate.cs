@@ -96,7 +96,7 @@ namespace HealthGateway.Database.Migrations
         </tr>
     </table>
 </body>
-</html>", "System", new DateTime(2019, 5, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new DateTime(2019, 5, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), null, "HTML", "HG_Donotreply@gov.bc.ca", "Invite", 1, "Health Gateway Private Invitation", "System", new DateTime(2019, 5, 1, 0, 0, 0, 0, DateTimeKind.Unspecified) });
+</html>", "System", new DateTime(2019, 5, 1, 0, 0, 0, 0, DateTimeKind.Utc), new DateTime(2019, 5, 1, 0, 0, 0, 0, DateTimeKind.Utc), null, "HTML", "HG_Donotreply@gov.bc.ca", "Invite", 1, "Health Gateway Private Invitation", "System", new DateTime(2019, 5, 1, 0, 0, 0, 0, DateTimeKind.Utc) });
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)

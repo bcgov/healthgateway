@@ -16,6 +16,7 @@ export default class FooterComponent extends Vue {
         data-testid="footer"
         toggleable="lg"
         type="dark"
+        aria-label="Footer Nav"
     >
         <!-- Navbar content -->
         <b-navbar-nav>

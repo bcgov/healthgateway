@@ -2,7 +2,7 @@ import Vue from "vue";
 
 import { Dictionary } from "@/models/baseTypes";
 import { DateWrapper } from "@/models/dateWrapper";
-import { ResultError } from "@/models/requestResult";
+import { ResultError } from "@/models/errors";
 import { LoadStatus } from "@/models/storeOperations";
 import { UserComment } from "@/models/userComment";
 

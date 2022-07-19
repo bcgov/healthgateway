@@ -1,7 +1,8 @@
 ﻿import { injectable } from "inversify";
 
+import { ServiceCode } from "@/constants/serviceCodes";
 import { ExternalConfiguration } from "@/models/configData";
-import { ServiceName } from "@/models/errorInterfaces";
+import { HttpError } from "@/models/errors";
 import UserFeedback from "@/models/userFeedback";
 import container from "@/plugins/container";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
@@ -40,12 +41,14 @@ export class RestUserFeedbackService implements IUserFeedbackService {
                 .then(() => {
                     return resolve(true);
                 })
-                .catch((err) => {
-                    this.logger.error(`submitFeedback Fetch error: ${err}`);
+                .catch((err: HttpError) => {
+                    this.logger.error(
+                        `Error in RestUserFeedbackService.submitFeedback()`
+                    );
                     reject(
                         ErrorTranslator.internalNetworkError(
                             err,
-                            ServiceName.HealthGatewayUser
+                            ServiceCode.HealthGatewayUser
                         )
                     );
                 });

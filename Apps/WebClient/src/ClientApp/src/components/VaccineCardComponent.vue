@@ -10,8 +10,8 @@ import Vue from "vue";
 import { Component, Emit, Prop } from "vue-property-decorator";
 
 import { VaccinationState } from "@/constants/vaccinationState";
-import BannerError from "@/models/bannerError";
 import { DateWrapper } from "@/models/dateWrapper";
+import { BannerError } from "@/models/errors";
 import VaccinationStatus from "@/models/vaccinationStatus";
 
 library.add(faCheckCircle, faChevronLeft, faChevronRight, faHandPointer);

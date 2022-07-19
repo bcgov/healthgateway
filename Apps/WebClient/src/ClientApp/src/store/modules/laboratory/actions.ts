@@ -2,8 +2,8 @@ import { ActionType } from "@/constants/actionType";
 import { EntryType } from "@/constants/entryType";
 import { ErrorSourceType, ErrorType } from "@/constants/errorType";
 import { ResultType } from "@/constants/resulttype";
-import { CustomBannerError } from "@/models/bannerError";
 import { StringISODate } from "@/models/dateWrapper";
+import { CustomBannerError, ResultError } from "@/models/errors";
 import {
     Covid19LaboratoryOrder,
     Covid19LaboratoryOrderResult,
@@ -11,7 +11,7 @@ import {
     LaboratoryOrderResult,
     PublicCovidTestResponseResult,
 } from "@/models/laboratory";
-import RequestResult, { ResultError } from "@/models/requestResult";
+import RequestResult from "@/models/requestResult";
 import { LoadStatus } from "@/models/storeOperations";
 import container from "@/plugins/container";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";

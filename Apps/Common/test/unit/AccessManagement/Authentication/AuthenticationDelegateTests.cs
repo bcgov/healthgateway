@@ -17,7 +17,6 @@ namespace HealthGateway.CommonTests.AccessManagement.Administration
 {
     using System;
     using System.Collections.Generic;
-    using System.Diagnostics.CodeAnalysis;
     using System.Net;
     using System.Net.Http;
     using System.Text.Json;
@@ -88,10 +87,10 @@ namespace HealthGateway.CommonTests.AccessManagement.Administration
             JwtModel actualModel = authDelegate.AuthenticateAsUser(tokenUri, tokenRequest, false);
             expected.ShouldDeepEqual(actualModel);
 
-            (JwtModel cacheResult, bool cached) = authDelegate.AuthenticateUser(tokenUri, tokenRequest, true);
+            (_, bool cached) = authDelegate.AuthenticateUser(tokenUri, tokenRequest, true);
             Assert.True(!cached);
 
-            (JwtModel fetchedCachedResult, cached) = authDelegate.AuthenticateUser(tokenUri, tokenRequest, true);
+            (_, cached) = authDelegate.AuthenticateUser(tokenUri, tokenRequest, true);
             Assert.True(cached);
         }
 

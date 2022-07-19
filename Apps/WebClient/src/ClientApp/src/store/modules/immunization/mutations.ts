@@ -1,5 +1,5 @@
+import { ResultError } from "@/models/errors";
 import ImmunizationResult from "@/models/immunizationResult";
-import { ResultError } from "@/models/requestResult";
 import { LoadStatus } from "@/models/storeOperations";
 
 import { ImmunizationMutations, ImmunizationState } from "./types";

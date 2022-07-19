@@ -1,9 +1,10 @@
 import { injectable } from "inversify";
 
 import { ResultType } from "@/constants/resulttype";
+import { ServiceCode } from "@/constants/serviceCodes";
 import { Dictionary } from "@/models/baseTypes";
 import { ExternalConfiguration } from "@/models/configData";
-import { ServiceName } from "@/models/errorInterfaces";
+import { HttpError } from "@/models/errors";
 import RequestResult from "@/models/requestResult";
 import type { UserComment } from "@/models/userComment";
 import container from "@/plugins/container";
@@ -55,12 +56,14 @@ export class RestUserCommentService implements IUserCommentService {
                 .then((entryComments) => {
                     return resolve(entryComments);
                 })
-                .catch((err) => {
-                    this.logger.error(`getCommentsForEntry error: ${err}`);
+                .catch((err: HttpError) => {
+                    this.logger.error(
+                        `Error in RestUserCommentService.getCommentsForEntry()`
+                    );
                     return reject(
                         ErrorTranslator.internalNetworkError(
                             err,
-                            ServiceName.HealthGatewayUser
+                            ServiceCode.HealthGatewayUser
                         )
                     );
                 });
@@ -88,12 +91,14 @@ export class RestUserCommentService implements IUserCommentService {
                 .then((userComments) => {
                     return resolve(userComments);
                 })
-                .catch((err) => {
-                    this.logger.error(`getCommentsForProfile error: ${err}`);
+                .catch((err: HttpError) => {
+                    this.logger.error(
+                        `Error in RestUserCommentService.getCommentsForProfile()`
+                    );
                     return reject(
                         ErrorTranslator.internalNetworkError(
                             err,
-                            ServiceName.HealthGatewayUser
+                            ServiceCode.HealthGatewayUser
                         )
                     );
                 });
@@ -124,12 +129,14 @@ export class RestUserCommentService implements IUserCommentService {
                         reject
                     );
                 })
-                .catch((err) => {
-                    this.logger.error(`createComment error: ${err}`);
+                .catch((err: HttpError) => {
+                    this.logger.error(
+                        `Error in RestUserCommentService.createComment()`
+                    );
                     return reject(
                         ErrorTranslator.internalNetworkError(
                             err,
-                            ServiceName.HealthGatewayUser
+                            ServiceCode.HealthGatewayUser
                         )
                     );
                 });
@@ -153,12 +160,14 @@ export class RestUserCommentService implements IUserCommentService {
                         reject
                     );
                 })
-                .catch((err) => {
-                    this.logger.error(`updateComment error: ${err}`);
+                .catch((err: HttpError) => {
+                    this.logger.error(
+                        `Error in RestUserCommentService.updateComment()`
+                    );
                     return reject(
                         ErrorTranslator.internalNetworkError(
                             err,
-                            ServiceName.HealthGatewayUser
+                            ServiceCode.HealthGatewayUser
                         )
                     );
                 });
@@ -179,12 +188,14 @@ export class RestUserCommentService implements IUserCommentService {
                         reject
                     )
                 )
-                .catch((err) => {
-                    this.logger.error(`deleteComment error: ${err}`);
+                .catch((err: HttpError) => {
+                    this.logger.error(
+                        `Error in RestUserCommentService.deleteComment()`
+                    );
                     return reject(
                         ErrorTranslator.internalNetworkError(
                             err,
-                            ServiceName.HealthGatewayUser
+                            ServiceCode.HealthGatewayUser
                         )
                     );
                 });
