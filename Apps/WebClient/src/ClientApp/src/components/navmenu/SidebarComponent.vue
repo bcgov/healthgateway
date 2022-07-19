@@ -209,7 +209,12 @@ export default class SidebarComponent extends Vue {
 <template>
     <div v-if="isSidebarAvailable" class="wrapper">
         <!-- Sidebar -->
-        <nav id="sidebar" data-testid="sidebar" :class="{ collapsed: !isOpen }">
+        <nav
+            id="sidebar"
+            data-testid="sidebar"
+            :class="{ collapsed: !isOpen }"
+            aria-label="Side Nav"
+        >
             <b-row class="row-container">
                 <b-col>
                     <!-- Home button -->

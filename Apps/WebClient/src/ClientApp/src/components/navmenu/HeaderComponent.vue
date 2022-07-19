@@ -166,7 +166,7 @@ export default class HeaderComponent extends Vue {
 
 <template>
     <header class="sticky-top" :class="{ 'nav-up': !isHeaderShown }">
-        <b-navbar toggleable="md" type="dark">
+        <b-navbar toggleable="md" type="dark" aria-label="Top Nav">
             <!-- Hamburger toggle -->
             <hg-button
                 v-if="isSidebarButtonShown"
