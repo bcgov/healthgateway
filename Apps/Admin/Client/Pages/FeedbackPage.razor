@@ -1,10 +1,9 @@
 ﻿@page "/feedback"
 @attribute [Authorize(Roles = $"{Roles.Admin},{Roles.Reviewer}")]
-@inherits Fluxor.Blazor.Web.Components.FluxorComponent
-
 @using HealthGateway.Admin.Client.Store.Tag
 @using HealthGateway.Admin.Common.Models
 @using HealthGateway.Common.Data.Utils
+@inherits Fluxor.Blazor.Web.Components.FluxorComponent
 
 <PageTitle>Feedback Review</PageTitle>
 <HgPageHeading>Feedback Review</HgPageHeading>
@@ -98,7 +97,7 @@ else
                         Comments
                     </MudTableSortLabel>
                 </MudTh>
-                <MudTh>
+                <MudTh Style="min-width: 252px;">
                     <MudTableSortLabel SortBy="new Func<FeedbackRow, object>(x => x.TagIds.Count())">
                         Tags
                     </MudTableSortLabel>
@@ -119,7 +118,7 @@ else
                         <MudIconButton Icon="@Icons.Material.Filled.PersonSearch"
                                        Color="@Color.Dark"
                                        data-testid="feedback-person-search-button"
-                                       OnClick="() => NavigateToSupport(context.Hdid)"/>
+                                       OnClick="() => NavigateToSupport(context.Hdid)" />
                     }
                     @if (context.Email.Length > 0)
                     {
@@ -149,11 +148,11 @@ else
                                    Color="@(context.IsReviewed ? Color.Success : Color.Error)"
                                    Disabled="@FeedbackUpdating"
                                    data-testid="feedback-review-button"
-                                   @onclick="@(() => ToggleIsReviewed(context.Id))"/>
+                                   @onclick="@(() => ToggleIsReviewed(context.Id))" />
                 </MudTd>
             </RowTemplate>
             <PagerContent>
-                <MudTablePager data-testid="feedback-table-pagination"/>
+                <MudTablePager data-testid="feedback-table-pagination" />
             </PagerContent>
         </MudTable>
     </MudForm>
