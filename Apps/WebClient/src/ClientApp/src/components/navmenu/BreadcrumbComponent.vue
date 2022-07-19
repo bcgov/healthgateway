@@ -49,6 +49,7 @@ export default class BreadcrumbComponent extends Vue {
         v-if="displayBreadcrumbs"
         data-testid="breadcrumbs"
         class="pt-0"
+        aria-label="Breadcrumb Nav"
     >
         <b-breadcrumb-item
             v-for="item in allBreadcrumbItems"
