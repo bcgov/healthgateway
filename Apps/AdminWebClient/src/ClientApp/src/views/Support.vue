@@ -12,6 +12,7 @@ import { QueryType } from "@/models/userQuery";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import container from "@/plugins/inversify.config";
 import { ISupportService } from "@/services/interfaces";
+import { Mask, phnMaskTemplate } from "@/utility/masks";
 import PHNValidator from "@/utility/phnValidator";
 
 interface UserSearchRow {
@@ -40,6 +41,7 @@ export default class SupportView extends Vue {
         message: "",
     };
 
+    private searchPhn = "";
     private searchText = "";
     private selectedQueryType: QueryType | null = null;
 
@@ -87,6 +89,17 @@ export default class SupportView extends Vue {
         return phn !== null ? phn : "-";
     }
 
+    private get phnSelected(): boolean {
+        return (
+            this.selectedQueryType !== null &&
+            this.selectedQueryType === QueryType.PHN
+        );
+    }
+
+    private get phnMask(): Mask {
+        return phnMaskTemplate;
+    }
+
     private get userInfo(): UserSearchRow[] {
         return this.emailList.map<UserSearchRow>((x) => {
             return {
@@ -109,6 +122,12 @@ export default class SupportView extends Vue {
         }
     }
 
+    private clearSearch(): void {
+        this.searchText = "";
+        this.searchPhn = "";
+        this.emailList = [];
+    }
+
     private formatDateTime(date: StringISODateTime): string {
         if (!date) {
             return "";
@@ -119,13 +138,23 @@ export default class SupportView extends Vue {
     }
 
     private handleSearch() {
-        if (this.selectedQueryType === null || this.searchText.length === 0) {
+        if (
+            this.selectedQueryType === null ||
+            (this.selectedQueryType !== QueryType.PHN &&
+                this.searchText.length === 0) ||
+            (this.selectedQueryType === QueryType.PHN &&
+                this.searchPhn.length === 0)
+        ) {
             this.emailList = [];
             return;
         }
 
+        let searchText =
+            this.selectedQueryType !== QueryType.PHN ? this.searchText : "";
+
         if (this.selectedQueryType === QueryType.PHN) {
-            var isValid = PHNValidator.IsValid(this.searchText);
+            const phnDigits = this.searchPhn.replace(/[^0-9]/g, "");
+            var isValid = PHNValidator.IsValid(phnDigits);
 
             if (!isValid) {
                 this.showFeedback = true;
@@ -136,10 +165,11 @@ export default class SupportView extends Vue {
                 };
                 return;
             }
+            searchText = phnDigits;
         }
 
         this.supportService
-            .getMessageVerifications(this.selectedQueryType, this.searchText)
+            .getMessageVerifications(this.selectedQueryType, searchText)
             .then((result) => {
                 this.emailList = result;
             })
@@ -172,10 +202,21 @@ export default class SupportView extends Vue {
                         :items="queryTypes"
                         label="Query Type"
                         outlined
+                        @change="clearSearch"
                     />
                 </v-col>
                 <v-col>
-                    <v-text-field v-model="searchText" label="Search Query" />
+                    <v-text-field
+                        v-show="!phnSelected"
+                        v-model="searchText"
+                        label="Search Query"
+                    />
+                    <v-text-field
+                        v-show="phnSelected"
+                        v-model="searchPhn"
+                        v-mask="phnMask"
+                        label="Search Query"
+                    />
                 </v-col>
                 <v-col cols="auto">
                     <v-btn type="submit" class="mt-2">
