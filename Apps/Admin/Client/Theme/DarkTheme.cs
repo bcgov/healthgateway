@@ -7,7 +7,7 @@
 //
 // http://www.apache.org/licenses/LICENSE-2.0
 //
-// Unless required by applicable law or agreed to in writing, software
+// Unless required by applicable law or agreed to in writing, softwaredotnet
 // distributed under the License is distributed on an "AS IS" BASIS,
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
@@ -32,12 +32,12 @@ namespace HealthGateway.Admin.Client.Theme
             {
                 Black = "#27272f",
                 White = Colors.Shades.White,
-                Primary = "#A7C8FF",
+                Primary = "#A7C8FF ",
                 PrimaryContrastText = "#003061",
-                Secondary = "#9BCBFF",
-                SecondaryContrastText = "#003256",
-                Tertiary = "#ADC7FF",
-                TertiaryContrastText = "#002E68",
+                Secondary = "#FDBB1B",
+                SecondaryContrastText = "#412D00",
+                Tertiary = "#002E68",
+                TertiaryContrastText = "#ADC7FF",
                 Info = "#D1ECF1",
                 InfoContrastText = Colors.Shades.Black,
                 Success = "#82DA8A",
@@ -48,7 +48,7 @@ namespace HealthGateway.Admin.Client.Theme
                 ErrorContrastText = "#680011",
                 Dark = Colors.Grey.Darken3,
                 DarkContrastText = Colors.Shades.White,
-                TextPrimary = "#D5E3FF",
+                TextPrimary = "#D0E4FF",
                 TextSecondary = "rgba(255,255,255, 0.50)",
                 TextDisabled = "rgba(255,255,255, 0.2)",
                 ActionDefault = "#91A3BF",
