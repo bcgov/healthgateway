@@ -90,10 +90,7 @@ export default class SupportView extends Vue {
     }
 
     private get phnSelected(): boolean {
-        return (
-            this.selectedQueryType !== null &&
-            this.selectedQueryType === QueryType.PHN
-        );
+        return this.selectedQueryType === QueryType.PHN;
     }
 
     private get phnMask(): Mask {
@@ -159,6 +156,7 @@ export default class SupportView extends Vue {
             var isValid = PHNValidator.IsValid(phnDigits);
 
             if (!isValid) {
+                this.emailList = [];
                 this.showFeedback = true;
                 this.bannerFeedback = {
                     type: ResultType.Error,
