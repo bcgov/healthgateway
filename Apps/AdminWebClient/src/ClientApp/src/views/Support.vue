@@ -126,6 +126,7 @@ export default class SupportView extends Vue {
         this.searchText = "";
         this.searchPhn = "";
         this.emailList = [];
+        this.showFeedback = false;
     }
 
     private formatDateTime(date: StringISODateTime): string {
@@ -138,6 +139,7 @@ export default class SupportView extends Vue {
     }
 
     private handleSearch() {
+        this.showFeedback = false;
         if (
             this.selectedQueryType === null ||
             (this.selectedQueryType !== QueryType.PHN &&
