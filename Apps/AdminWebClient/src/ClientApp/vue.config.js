@@ -3,7 +3,10 @@ module.exports = {
     publicPath: process.env.NODE_ENV === "production" ? "/admin/" : "/",
     productionSourceMap: false,
     lintOnSave: true,
-    integrity: true,
+    integrity:
+        process.env.VUE_APP_CONFIG_INTEGRITY === undefined
+            ? true
+            : process.env.VUE_APP_CONFIG_INTEGRITY === "true",
     devServer: {
         client: {
             logging: "info",
