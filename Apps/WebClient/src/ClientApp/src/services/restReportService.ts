@@ -13,7 +13,7 @@ import ErrorTranslator from "@/utility/errorTranslator";
 
 @injectable()
 export class RestReportService implements IReportService {
-    private logger: ILogger = container.get(SERVICE_IDENTIFIER.Logger);
+    private logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
     private readonly REPORT_BASE_URI: string = "Report";
     private http!: IHttpDelegate;
     private baseUri = "";
@@ -29,15 +29,13 @@ export class RestReportService implements IReportService {
     public generateReport(
         reportRequest: ReportRequest
     ): Promise<RequestResult<Report>> {
-        return new Promise((resolve, reject) => {
+        return new Promise((resolve, reject) =>
             this.http
                 .post<RequestResult<Report>>(
                     `${this.baseUri}${this.REPORT_BASE_URI}`,
                     reportRequest
                 )
-                .then((result) => {
-                    return resolve(result);
-                })
+                .then((result) => resolve(result))
                 .catch((err: HttpError) => {
                     this.logger.error(
                         `Error in RestReportService.generateReport()`
@@ -48,7 +46,7 @@ export class RestReportService implements IReportService {
                             ServiceCode.Report
                         )
                     );
-                });
-        });
+                })
+        );
     }
 }

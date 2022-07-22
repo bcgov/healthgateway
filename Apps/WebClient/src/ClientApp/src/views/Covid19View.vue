@@ -213,7 +213,7 @@ export default class Covid19View extends Vue {
             : DateWrapper.format(date, "yyyy-MMM-dd");
     }
 
-    private showImmunizationHistory(show: boolean) {
+    private showImmunizationHistory(show: boolean): void {
         if (show) {
             this.fetchHistoryData();
         }
@@ -232,27 +232,27 @@ export default class Covid19View extends Vue {
         });
     }
 
-    private fetchVaccineCardData() {
+    private fetchVaccineCardData(): void {
         this.retrieveVaccineStatus({ hdid: this.user.hdid })
-            .then(() => {
+            .then(() =>
                 SnowPlow.trackEvent({
                     action: "view_card",
                     text: "COVID Card",
-                });
-            })
-            .catch((err) => {
-                this.logger.error(`Error loading COVID-19 data: ${err}`);
-            });
+                })
+            )
+            .catch((err) =>
+                this.logger.error(`Error loading COVID-19 data: ${err}`)
+            );
     }
 
-    private fetchHistoryData() {
-        this.retrieveImmunizations({ hdid: this.user.hdid }).catch((err) => {
-            this.logger.error(`Error loading immunization data: ${err}`);
-        });
+    private fetchHistoryData(): void {
+        this.retrieveImmunizations({ hdid: this.user.hdid }).catch((err) =>
+            this.logger.error(`Error loading immunization data: ${err}`)
+        );
     }
 
     @Watch("vaccineRecord")
-    private saveVaccinePdf() {
+    private saveVaccinePdf(): void {
         if (this.vaccineRecord !== undefined) {
             const mimeType = this.vaccineRecord.document.mediaType;
             const downloadLink = `data:${mimeType};base64,${this.vaccineRecord.document.data}`;
@@ -261,26 +261,24 @@ export default class Covid19View extends Vue {
                     action: "download_card",
                     text: "COVID Card PDF",
                 });
-                res.blob().then((blob) => {
-                    saveAs(blob, "ProvincialVaccineProof.pdf");
-                });
+                res.blob().then((blob) =>
+                    saveAs(blob, "ProvincialVaccineProof.pdf")
+                );
             });
         }
     }
 
-    private retrieveVaccinePdf() {
+    private retrieveVaccinePdf(): void {
         this.retrieveAuthenticatedVaccineRecord({
             hdid: this.user.hdid,
-        }).catch((err) => {
-            this.logger.error(
-                `Error loading authenticated record data: ${err}`
-            );
-        });
+        }).catch((err) =>
+            this.logger.error(`Error loading authenticated record data: ${err}`)
+        );
     }
 
-    private download() {
-        const printingArea: HTMLElement | null =
-            document.querySelector(".vaccine-card");
+    private download(): void {
+        const printingArea =
+            document.querySelector<HTMLElement>(".vaccine-card");
         if (printingArea !== null) {
             this.isDownloading = true;
             SnowPlow.trackEvent({
@@ -294,11 +292,13 @@ export default class Covid19View extends Vue {
             })
                 .then((canvas) => {
                     const dataUrl = canvas.toDataURL();
-                    fetch(dataUrl).then((res) => {
-                        res.blob().then((blob) => {
-                            saveAs(blob, "ProvincialVaccineProof.png");
-                        });
-                    });
+                    fetch(dataUrl).then((res) =>
+                        res
+                            .blob()
+                            .then((blob) =>
+                                saveAs(blob, "ProvincialVaccineProof.png")
+                            )
+                    );
                 })
                 .finally(() => {
                     this.isDownloading = false;
@@ -306,15 +306,15 @@ export default class Covid19View extends Vue {
         }
     }
 
-    private showVaccineCardMessageModal() {
+    private showVaccineCardMessageModal(): void {
         this.vaccineCardMessageModal.showModal();
     }
 
-    private showConfirmationModal() {
+    private showConfirmationModal(): void {
         this.messageModal.showModal();
     }
 
-    private created() {
+    private created(): void {
         this.logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
         this.fetchVaccineCardData();
     }
@@ -471,7 +471,9 @@ export default class Covid19View extends Vue {
                                         Dose {{ index + 1 }}
                                     </div>
                                 </b-col>
-                                <b-col><hr /></b-col>
+                                <b-col>
+                                    <hr />
+                                </b-col>
                             </b-row>
                             <b-row no-gutters class="justify-content-end">
                                 <b-col>
@@ -521,6 +523,7 @@ export default class Covid19View extends Vue {
 
 <style lang="scss" scoped>
 @import "@/assets/scss/_variables.scss";
+
 .vaccine-card {
     max-width: 438px;
     color-adjust: exact;
@@ -530,9 +533,11 @@ export default class Covid19View extends Vue {
         border-bottom-right-radius: 0.25rem;
     }
 }
+
 .immunization-history {
     max-width: 700px;
 }
+
 .primary {
     color: $primary;
 }

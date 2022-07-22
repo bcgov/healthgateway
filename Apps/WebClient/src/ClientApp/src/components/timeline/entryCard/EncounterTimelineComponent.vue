@@ -75,10 +75,12 @@ export default class EncounterTimelineComponent extends Vue {
     padding: 0px;
     margin: 0px;
 }
+
 .row {
     padding: 0;
     margin: 0px;
 }
+
 .infoIcon {
     color: $aquaBlue;
 }

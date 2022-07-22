@@ -14,7 +14,7 @@ import RequestResultUtil from "@/utility/requestResultUtil";
 
 @injectable()
 export class RestPcrTestService implements IPcrTestService {
-    private logger: ILogger = container.get(SERVICE_IDENTIFIER.Logger);
+    private logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
 
     private readonly LABORATORY_BASE_URI: string = "Laboratory";
     private readonly PUBLIC_LABORATORY_BASE_URI: string = "PublicLaboratory";

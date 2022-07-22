@@ -15,6 +15,7 @@
 //-------------------------------------------------------------------------
 namespace HealthGateway.Medication.Services
 {
+    using System;
     using System.Collections.Generic;
     using System.Diagnostics;
     using System.Globalization;
@@ -74,18 +75,18 @@ namespace HealthGateway.Medication.Services
             this.medicationStatementDelegate = medicationStatementDelegate;
         }
 
-        private static ActivitySource Source { get; } = new ActivitySource(nameof(RestMedicationStatementService));
+        private static ActivitySource Source { get; } = new(nameof(RestMedicationStatementService));
 
         /// <inheritdoc/>
         public async Task<RequestResult<IList<MedicationStatementHistory>>> GetMedicationStatementsHistory(string hdid, string? protectiveWord)
         {
-            using (Source.StartActivity("GetMedicationStatementsHistory"))
+            using (Source.StartActivity())
             {
                 this.logger.LogDebug("Getting history of medication statements");
                 this.logger.LogTrace($"User hdid: {hdid}");
 
                 protectiveWord = protectiveWord?.ToUpper(CultureInfo.InvariantCulture);
-                RequestResult<IList<MedicationStatementHistory>> result = new RequestResult<IList<MedicationStatementHistory>>();
+                RequestResult<IList<MedicationStatementHistory>> result = new();
                 (bool okProtectiveWord, string? protectiveWordValidationMessage) = ValidateProtectiveWord(protectiveWord);
                 if (okProtectiveWord)
                 {
@@ -94,16 +95,17 @@ namespace HealthGateway.Medication.Services
                     if (patientResult.ResultStatus == ResultType.Success && patientResult.ResourcePayload != null)
                     {
                         PatientModel patient = patientResult.ResourcePayload;
-                        OdrHistoryQuery historyQuery = new OdrHistoryQuery()
+                        OdrHistoryQuery historyQuery = new()
                         {
                             StartDate = patient.Birthdate,
-                            EndDate = System.DateTime.Now,
+                            EndDate = DateTime.Now,
                             PHN = patient.PersonalHealthNumber,
                             PageSize = 20000,
                         };
                         IPAddress? address = this.httpContextAccessor.HttpContext?.Connection.RemoteIpAddress;
                         string ipv4Address = address?.MapToIPv4().ToString() ?? "Unknown";
-                        RequestResult<MedicationHistoryResponse> response = await this.medicationStatementDelegate.GetMedicationStatementsAsync(historyQuery, protectiveWord, hdid, ipv4Address).ConfigureAwait(true);
+                        RequestResult<MedicationHistoryResponse> response =
+                            await this.medicationStatementDelegate.GetMedicationStatementsAsync(historyQuery, protectiveWord, hdid, ipv4Address).ConfigureAwait(true);
                         result.ResultStatus = response.ResultStatus;
                         result.ResultError = response.ResultError;
                         if (response.ResultStatus == ResultType.Success)
@@ -134,7 +136,7 @@ namespace HealthGateway.Medication.Services
                     result.ResultError = ErrorTranslator.ActionRequired(protectiveWordValidationMessage, ActionType.Protected);
                 }
 
-                this.logger.LogDebug($"Finished getting history of medication statements");
+                this.logger.LogDebug("Finished getting history of medication statements");
                 return result;
             }
         }
@@ -147,7 +149,7 @@ namespace HealthGateway.Medication.Services
             {
                 if (protectiveWord.Length >= MinLengthProtectiveWord && protectiveWord.Length <= MaxLengthProtectiveWord)
                 {
-                    Regex regex = new Regex(@"^[0-9A-Za-z_]+$");
+                    Regex regex = new(@"^[0-9A-Za-z_]+$");
                     if (!regex.IsMatch(protectiveWord))
                     {
                         valid = false;
@@ -174,7 +176,7 @@ namespace HealthGateway.Medication.Services
 
         private void PopulateMedicationSummary(List<MedicationSummary> medSummaries)
         {
-            using (Source.StartActivity("PopulateMedicationSummary"))
+            using (Source.StartActivity())
             {
                 List<string> medicationIdentifiers = medSummaries.Select(s => s.DIN.PadLeft(8, '0')).ToList();
 
@@ -186,7 +188,7 @@ namespace HealthGateway.Medication.Services
                 // Retrieve the brand names using the Federal data
                 IList<DrugProduct> drugProducts = this.drugLookupDelegate.GetDrugProductsByDIN(uniqueDrugIdentifers);
                 Dictionary<string, DrugProduct> drugProductsDict = drugProducts.ToDictionary(pcd => pcd.DrugIdentificationNumber, pcd => pcd);
-                Dictionary<string, PharmaCareDrug> provicialDict = new Dictionary<string, PharmaCareDrug>();
+                Dictionary<string, PharmaCareDrug> provicialDict = new();
                 if (uniqueDrugIdentifers.Count > drugProductsDict.Count)
                 {
                     // Get the DINs not found on the previous query

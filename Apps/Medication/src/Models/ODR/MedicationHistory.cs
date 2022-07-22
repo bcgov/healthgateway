@@ -15,7 +15,6 @@
 // -------------------------------------------------------------------------
 namespace HealthGateway.Medication.Models.ODR
 {
-    using System;
     using System.Text.Json.Serialization;
     using HealthGateway.Common.Models.ODR;
 

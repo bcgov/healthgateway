@@ -8,7 +8,7 @@ export default class ReleaseNoteComponent extends Vue {
     @Prop({ required: true }) version!: string;
     @Prop({ required: true }) title!: string;
 
-    private get hasSlot() {
+    private get hasSlot(): boolean {
         return this.$slots.default !== undefined;
     }
 }
@@ -22,7 +22,9 @@ export default class ReleaseNoteComponent extends Vue {
             </b-col>
         </b-row>
         <b-row v-if="hasSlot">
-            <b-col><slot /></b-col>
+            <b-col>
+                <slot />
+            </b-col>
         </b-row>
     </div>
 </template>

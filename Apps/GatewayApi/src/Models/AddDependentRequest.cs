@@ -16,7 +16,6 @@
 namespace HealthGateway.GatewayApi.Models
 {
     using System;
-    using HealthGateway.Common.Models;
 
     /// <summary>
     /// Object that defines the request for registering a dependent.

@@ -32,12 +32,12 @@ export default class VaccineCardComponent extends Vue {
         | undefined;
 
     @Emit("clickPreviousButton")
-    private onClickPreviousButton() {
+    private onClickPreviousButton(): void {
         return;
     }
 
     @Emit("clickNextButton")
-    private onClickNextButton() {
+    private onClickNextButton(): void {
         return;
     }
 
@@ -89,7 +89,7 @@ export default class VaccineCardComponent extends Vue {
         return this.$listeners.clickNextButton !== undefined;
     }
 
-    private handleCloseQrModal() {
+    private handleCloseQrModal(): void {
         this.$bvModal.hide("big-qr");
     }
 }
@@ -266,9 +266,11 @@ export default class VaccineCardComponent extends Vue {
     &.fully-vaccinated {
         background-color: $hg-state-success;
     }
+
     &.partially-vaccinated {
         background-color: $hg-background-navigation;
     }
+
     &.not-found {
         background-color: #6c757d;
     }

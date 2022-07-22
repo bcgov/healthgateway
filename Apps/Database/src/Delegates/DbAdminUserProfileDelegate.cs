@@ -15,19 +15,19 @@
 // -------------------------------------------------------------------------
 namespace HealthGateway.Database.Delegates;
 
+using System;
+using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
+using System.Linq;
+using System.Text.Json;
 using HealthGateway.Database.Constants;
 using HealthGateway.Database.Context;
 using HealthGateway.Database.Models;
 using HealthGateway.Database.Wrapper;
-using System.Linq;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
-using System.Diagnostics.CodeAnalysis;
-using System.Text.Json;
-using System.Collections.Generic;
-using System;
 
-/// <inheritdoc />
+/// <inheritdoc/>
 [ExcludeFromCodeCoverage]
 public class DbAdminUserProfileDelegate : IAdminUserProfileDelegate
 {
@@ -47,11 +47,11 @@ public class DbAdminUserProfileDelegate : IAdminUserProfileDelegate
         this.dbContext = dbContext;
     }
 
-    /// <inheritdoc />
+    /// <inheritdoc/>
     public DBResult<AdminUserProfile> GetAdminUserProfile(string username)
     {
         this.logger.LogTrace("Getting admin user profile from DB with Username: {Username}", username);
-        DBResult<AdminUserProfile> result = new DBResult<AdminUserProfile>();
+        DBResult<AdminUserProfile> result = new();
         AdminUserProfile? profile = this.dbContext.AdminUserProfile.SingleOrDefault(profile => profile.Username == username);
 
         if (profile != null)
@@ -69,16 +69,17 @@ public class DbAdminUserProfileDelegate : IAdminUserProfileDelegate
         return result;
     }
 
-    /// <inheritdoc />
+    /// <inheritdoc/>
     public DBResult<IEnumerable<AdminUserProfile>> GetActiveAdminUserProfiles(int activeDays, TimeSpan timeOffset)
     {
         this.logger.LogTrace("Retrieving all the active admin user profiles since {ActiveDays} day(s) ago...", activeDays);
 
-        DBResult<IEnumerable<AdminUserProfile>> result = new DBResult<IEnumerable<AdminUserProfile>>()
+        DBResult<IEnumerable<AdminUserProfile>> result = new()
         {
             Payload = this.dbContext.AdminUserProfile
-                .Where(profile => GatewayDbContext.DateTrunc("days", profile.LastLoginDateTime.AddMinutes(timeOffset.TotalMinutes)) >=
-                                  GatewayDbContext.DateTrunc("days", DateTime.UtcNow.AddMinutes(timeOffset.TotalMinutes).AddDays(-activeDays)))
+                .Where(
+                    profile => GatewayDbContext.DateTrunc("days", profile.LastLoginDateTime.AddMinutes(timeOffset.TotalMinutes)) >=
+                               GatewayDbContext.DateTrunc("days", DateTime.UtcNow.AddMinutes(timeOffset.TotalMinutes).AddDays(-activeDays)))
                 .OrderByDescending(profile => profile.LastLoginDateTime)
                 .ToList(),
             Status = DBStatusCode.Read,
@@ -88,16 +89,17 @@ public class DbAdminUserProfileDelegate : IAdminUserProfileDelegate
         return result;
     }
 
-    /// <inheritdoc />
+    /// <inheritdoc/>
     public DBResult<IEnumerable<AdminUserProfile>> GetInactiveAdminUserProfiles(int inactiveDays, TimeSpan timeOffset)
     {
         this.logger.LogTrace("Retrieving all the inactive admin user profiles for the past {InactiveDays} day(s)...", inactiveDays);
 
-        DBResult<IEnumerable<AdminUserProfile>> result = new DBResult<IEnumerable<AdminUserProfile>>()
+        DBResult<IEnumerable<AdminUserProfile>> result = new()
         {
             Payload = this.dbContext.AdminUserProfile
-                .Where(profile => GatewayDbContext.DateTrunc("days", profile.LastLoginDateTime.AddMinutes(timeOffset.TotalMinutes)) <=
-                                  GatewayDbContext.DateTrunc("days", DateTime.UtcNow.AddMinutes(timeOffset.TotalMinutes).AddDays(-inactiveDays)))
+                .Where(
+                    profile => GatewayDbContext.DateTrunc("days", profile.LastLoginDateTime.AddMinutes(timeOffset.TotalMinutes)) <=
+                               GatewayDbContext.DateTrunc("days", DateTime.UtcNow.AddMinutes(timeOffset.TotalMinutes).AddDays(-inactiveDays)))
                 .OrderByDescending(profile => profile.LastLoginDateTime)
                 .ToList(),
             Status = DBStatusCode.Read,
@@ -107,11 +109,11 @@ public class DbAdminUserProfileDelegate : IAdminUserProfileDelegate
         return result;
     }
 
-    /// <inheritdoc />
+    /// <inheritdoc/>
     public DBResult<AdminUserProfile> Add(AdminUserProfile profile)
     {
         this.logger.LogTrace("Inserting admin user profile to DB... {Profile}", JsonSerializer.Serialize(profile));
-        DBResult<AdminUserProfile> result = new DBResult<AdminUserProfile>();
+        DBResult<AdminUserProfile> result = new();
         this.dbContext.Add(profile);
         try
         {
@@ -129,7 +131,7 @@ public class DbAdminUserProfileDelegate : IAdminUserProfileDelegate
         return result;
     }
 
-    /// <inheritdoc />
+    /// <inheritdoc/>
     public DBResult<AdminUserProfile> Update(AdminUserProfile profile, bool commit = true)
     {
         this.logger.LogTrace("Updating admin user profile in DB... {Profile}", JsonSerializer.Serialize(profile));

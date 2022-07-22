@@ -35,7 +35,7 @@ export default class TermsOfServiceView extends Vue {
         },
     ];
 
-    private mounted() {
+    private mounted(): void {
         this.logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
         this.userProfileService = container.get(
             SERVICE_IDENTIFIER.UserProfileService

@@ -21,7 +21,6 @@ namespace HealthGateway.Database.Models
     using System.Text.Json.Serialization;
     using HealthGateway.Common.Data.Constants;
     using HealthGateway.Common.Data.Models;
-    using HealthGateway.Database.Constants;
 
     /// <summary>
     /// A system Communication.

@@ -28,7 +28,7 @@ namespace HealthGateway.GatewayApi.Services
     using HealthGateway.Database.Models;
     using Microsoft.Extensions.Logging;
 
-    /// <inheritdoc />
+    /// <inheritdoc/>
     public class UserSMSService : IUserSMSService
     {
         /// <summary>
@@ -63,7 +63,7 @@ namespace HealthGateway.GatewayApi.Services
             this.validSMSRegex = new Regex("[^0-9]");
         }
 
-        /// <inheritdoc />
+        /// <inheritdoc/>
         public PrimitiveRequestResult<bool> ValidateSMS(string hdid, string validationCode)
         {
             this.logger.LogTrace($"Validating sms... {validationCode}");
@@ -100,21 +100,21 @@ namespace HealthGateway.GatewayApi.Services
                 }
             }
 
-            this.logger.LogDebug($"Finished validating sms");
+            this.logger.LogDebug("Finished validating sms");
             return retVal;
         }
 
-        /// <inheritdoc />
+        /// <inheritdoc/>
         public MessagingVerification CreateUserSMS(string hdid, string sms)
         {
             this.logger.LogInformation($"Adding new sms verification for user ${hdid}");
             string sanitizedSms = this.SanitizeSMS(sms);
             MessagingVerification messagingVerification = this.AddVerificationSMS(hdid, sanitizedSms);
-            this.logger.LogDebug($"Finished updating user sms");
+            this.logger.LogDebug("Finished updating user sms");
             return messagingVerification;
         }
 
-        /// <inheritdoc />
+        /// <inheritdoc/>
         public bool UpdateUserSMS(string hdid, string sms)
         {
             this.logger.LogTrace($"Removing user sms number ${hdid}");
@@ -142,7 +142,7 @@ namespace HealthGateway.GatewayApi.Services
             // Update the notification settings
             this.notificationSettingsService.QueueNotificationSettings(notificationRequest);
 
-            this.logger.LogDebug($"Finished updating user sms");
+            this.logger.LogDebug("Finished updating user sms");
             return true;
         }
 

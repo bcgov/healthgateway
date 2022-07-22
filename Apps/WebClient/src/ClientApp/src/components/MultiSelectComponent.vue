@@ -31,28 +31,28 @@ export default class MultiSelectComponent extends Vue {
     }
 
     @Watch("values")
-    private onValueChanged() {
+    private onValueChanged(): void {
         this.updateModel();
     }
 
     @Watch("model")
-    private onModelChanged() {
+    private onModelChanged(): void {
         this.values = this.model;
     }
 
     @Emit("change")
-    private updateModel() {
+    private updateModel(): string[] {
         return this.values;
     }
 
-    private getValueText(value: unknown) {
+    private getValueText(value: unknown): string | SelectOption | undefined {
         const option = this.options.find(
             (opt) => opt.value === value || opt === value
         );
         return option?.text || option;
     }
 
-    private mounted() {
+    private mounted(): void {
         this.values = this.model;
     }
 }

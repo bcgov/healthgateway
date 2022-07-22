@@ -62,16 +62,19 @@ namespace HealthGateway.Medication
             this.startupConfig.ConfigurePatientAccess(services);
             this.startupConfig.ConfigureTracing(services);
 
-            services.AddCors(options =>
-            {
-                options.AddPolicy("allowAny", policy =>
+            services.AddCors(
+                options =>
                 {
-                    policy
-                        .AllowAnyOrigin()
-                        .AllowAnyMethod()
-                        .AllowAnyHeader();
+                    options.AddPolicy(
+                        "allowAny",
+                        policy =>
+                        {
+                            policy
+                                .AllowAnyOrigin()
+                                .AllowAnyMethod()
+                                .AllowAnyHeader();
+                        });
                 });
-            });
 
             // Add services
             services.AddMemoryCache();

@@ -135,9 +135,9 @@ namespace HealthGateway.DrugMaintainer.Apps
         protected void RemoveOldFiles(FileDownload downloadedFile)
         {
             List<FileDownload> oldIds = this.DrugDbContext.FileDownload
-                                            .Where(p => p.ProgramCode == downloadedFile.ProgramCode && p.Hash != downloadedFile.Hash)
-                                            .Select(f => new FileDownload { Id = f.Id, Version = f.Version })
-                                            .ToList();
+                .Where(p => p.ProgramCode == downloadedFile.ProgramCode && p.Hash != downloadedFile.Hash)
+                .Select(f => new FileDownload { Id = f.Id, Version = f.Version })
+                .ToList();
             oldIds.ForEach(s => this.Logger.LogInformation($"Deleting old Download file with hash: {s}"));
             this.DrugDbContext.RemoveRange(oldIds);
         }
@@ -150,7 +150,7 @@ namespace HealthGateway.DrugMaintainer.Apps
         /// <returns>A FileDownload object.</returns>
         private FileDownload DownloadFile(Uri source, string targetFolder)
         {
-            this.Logger.LogInformation($"Downloading file from {source.ToString()} to {targetFolder}");
+            this.Logger.LogInformation($"Downloading file from {source} to {targetFolder}");
             return Task.Run(async () => await this.DownloadService.GetFileFromUrl(source, targetFolder, true).ConfigureAwait(true)).Result;
         }
 
@@ -171,12 +171,10 @@ namespace HealthGateway.DrugMaintainer.Apps
                 File.Delete(filename);
                 return unzipedPath;
             }
-            else
-            {
-                throw new ArgumentNullException(
-                            nameof(downloadedFile),
-                            $"Downloaded file has null attributes, LocalFilePath = {downloadedFile.LocalFilePath} Name = {downloadedFile.Name}");
-            }
+
+            throw new ArgumentNullException(
+                nameof(downloadedFile),
+                $"Downloaded file has null attributes, LocalFilePath = {downloadedFile.LocalFilePath} Name = {downloadedFile.Name}");
         }
 
         /// <summary>

@@ -15,7 +15,9 @@
 //-------------------------------------------------------------------------
 namespace HealthGateway.WebClient.Models
 {
+    using System;
     using System.Collections.Generic;
+    using System.Diagnostics.CodeAnalysis;
 
     /// <summary>
     /// Configuration data to be used by the Health Gateway Webclient.
@@ -30,7 +32,7 @@ namespace HealthGateway.WebClient.Models
         /// <summary>
         /// Gets or sets the Webclient timeout values.
         /// </summary>
-        public TimeOutsConfiguration Timeouts { get; set; } = new TimeOutsConfiguration();
+        public TimeOutsConfiguration Timeouts { get; set; } = new();
 
         /// <summary>
         /// Gets or sets the Webclient registration status.
@@ -40,14 +42,14 @@ namespace HealthGateway.WebClient.Models
         /// <summary>
         /// Gets or sets the ExternalURLs used by the Webclient.
         /// </summary>
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "CA2227:Collection properties should be read only", Justification = "Team decision")]
-        public Dictionary<string, System.Uri> ExternalURLs { get; set; } = new Dictionary<string, System.Uri>();
+        [SuppressMessage("Usage", "CA2227:Collection properties should be read only", Justification = "Team decision")]
+        public Dictionary<string, Uri> ExternalURLs { get; set; } = new();
 
         /// <summary>
         /// Gets or sets the state for each of our modules.
         /// </summary>
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "CA2227:Collection properties should be read only", Justification = "Team decision")]
-        public Dictionary<string, bool> Modules { get; set; } = new Dictionary<string, bool>();
+        [SuppressMessage("Usage", "CA2227:Collection properties should be read only", Justification = "Team decision")]
+        public Dictionary<string, bool> Modules { get; set; } = new();
 
         /// <summary>
         /// Gets or sets the number of hours until an account is removed after being closed.

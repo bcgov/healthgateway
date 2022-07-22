@@ -57,7 +57,7 @@ namespace Healthgateway.JobScheduler.Utils
         {
             Contract.Requires(cfg != null);
             JobConfiguration jc = GetJobConfiguration(cfg!, key);
-            ScheduleJob<T>(jc, GetLocalTimeZone(cfg!), methodCall);
+            ScheduleJob(jc, GetLocalTimeZone(cfg!), methodCall);
         }
 
         /// <summary>
@@ -70,18 +70,19 @@ namespace Healthgateway.JobScheduler.Utils
         public static void ScheduleJob<T>(JobConfiguration cfg, TimeZoneInfo tz, Expression<Action<T>> methodCall)
         {
             Contract.Requires(cfg != null);
-            RecurringJob.AddOrUpdate<T>(cfg!.Id, methodCall, cfg!.Schedule, tz);
+            RecurringJob.AddOrUpdate(cfg!.Id, methodCall, cfg!.Schedule, tz);
             if (cfg.Immediate)
             {
-                BackgroundJob.Schedule<T>(methodCall, TimeSpan.FromSeconds(cfg.Delay));
+                BackgroundJob.Schedule(methodCall, TimeSpan.FromSeconds(cfg.Delay));
             }
         }
 
         private static TimeZoneInfo GetLocalTimeZone(IConfiguration cfg)
         {
-            return TimeZoneInfo.FindSystemTimeZoneById(RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ?
-                    GetConfigurationValue<string>(cfg, WindowsTzKey) :
-                    GetConfigurationValue<string>(cfg, UnixTzKey));
+            return TimeZoneInfo.FindSystemTimeZoneById(
+                RuntimeInformation.IsOSPlatform(OSPlatform.Windows)
+                    ? GetConfigurationValue<string>(cfg, WindowsTzKey)
+                    : GetConfigurationValue<string>(cfg, UnixTzKey));
         }
 
         private static T GetConfigurationValue<T>(IConfiguration cfg, string key)
@@ -91,7 +92,7 @@ namespace Healthgateway.JobScheduler.Utils
 
         private static JobConfiguration GetJobConfiguration(IConfiguration cfg, string key)
         {
-            return cfg.GetSection(key).Get<Models.JobConfiguration>();
+            return cfg.GetSection(key).Get<JobConfiguration>();
         }
     }
 }

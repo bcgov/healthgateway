@@ -93,6 +93,7 @@ export default abstract class TimelineEntry {
             this.commentApplies(keyword)
         );
     }
+
     private commentApplies(keyword: string): boolean {
         if (this.comments !== null) {
             return this.comments.some((comment) =>

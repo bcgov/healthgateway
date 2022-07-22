@@ -45,7 +45,7 @@ namespace Healthgateway.JobScheduler.Jobs
             this.logger = logger;
             this.emailDelegate = emailDelegate!;
             IConfigurationSection section = configuration.GetSection("DeleteEmailJob");
-            this.deleteMaxRows = section.GetValue<int>("DeleteMaxRows", 1000);
+            this.deleteMaxRows = section.GetValue("DeleteMaxRows", 1000);
             this.deleteAfterDays = section.GetValue<uint>("DeleteAfterDays", 30);
         }
 
@@ -56,7 +56,7 @@ namespace Healthgateway.JobScheduler.Jobs
         public void DeleteOldEmails()
         {
             this.logger.LogInformation($"Delete job running: Delete emails {this.deleteAfterDays} days old and limit to {this.deleteMaxRows} deleted");
-            int count = this.emailDelegate.Delete(this.deleteAfterDays, this.deleteMaxRows, true);
+            int count = this.emailDelegate.Delete(this.deleteAfterDays, this.deleteMaxRows);
             this.logger.LogInformation($"Delete job finished after removing {count} records");
         }
     }

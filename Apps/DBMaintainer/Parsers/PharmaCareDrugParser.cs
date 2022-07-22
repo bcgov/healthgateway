@@ -51,7 +51,7 @@ namespace HealthGateway.DrugMaintainer
             using CsvReader csv = new(reader, csvConfig);
             TypeConverterOptions options = new()
             {
-                Formats = new[] { "yyyyMMdd", },
+                Formats = new[] { "yyyyMMdd" },
                 DateTimeStyle = DateTimeStyles.AssumeUniversal | DateTimeStyles.AdjustToUniversal,
             };
             csv.Context.TypeConverterOptionsCache.AddOptions<DateTime>(options);

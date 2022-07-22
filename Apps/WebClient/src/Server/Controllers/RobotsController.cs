@@ -17,6 +17,7 @@ namespace HealthGateway.WebClient.Controllers
 {
     using System;
     using System.Net.Mime;
+    using HealthGateway.Common.Utils;
     using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.Extensions.Configuration;
@@ -35,8 +36,8 @@ namespace HealthGateway.WebClient.Controllers
         public RobotsController(IConfiguration configuration)
         {
             string environment = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") ?? "Development";
-            string? defaultRobotsAssetContent = Common.Utils.AssetReader.Read("HealthGateway.WebClient.Server.Assets.Robots.txt");
-            string? envRobotsAssetContent = Common.Utils.AssetReader.Read($"HealthGateway.WebClient.Server.Assets.Robots.{environment}.txt");
+            string? defaultRobotsAssetContent = AssetReader.Read("HealthGateway.WebClient.Server.Assets.Robots.txt");
+            string? envRobotsAssetContent = AssetReader.Read($"HealthGateway.WebClient.Server.Assets.Robots.{environment}.txt");
             this.robotsContent = configuration.GetValue("robots.txt", envRobotsAssetContent ?? defaultRobotsAssetContent);
         }
 
@@ -48,7 +49,7 @@ namespace HealthGateway.WebClient.Controllers
         [Produces(MediaTypeNames.Text.Plain)]
         public ActionResult Robots()
         {
-            ContentResult result = new ContentResult()
+            ContentResult result = new()
             {
                 StatusCode = StatusCodes.Status200OK,
                 ContentType = MediaTypeNames.Text.Plain,

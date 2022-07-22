@@ -28,7 +28,7 @@ namespace HealthGateway.GatewayApi.Services
     using HealthGateway.GatewayApi.Models;
     using Microsoft.Extensions.Logging;
 
-    /// <inheritdoc />
+    /// <inheritdoc/>
     public class ReportService : IReportService
     {
         private readonly ILogger logger;
@@ -45,7 +45,7 @@ namespace HealthGateway.GatewayApi.Services
             this.cdogsDelegate = cdogsDelegate;
         }
 
-        /// <inheritdoc />
+        /// <inheritdoc/>
         public RequestResult<ReportModel> GetReport(ReportRequestModel reportRequest)
         {
             this.logger.LogTrace($"New report request: {JsonSerializer.Serialize(reportRequest)}");
@@ -54,13 +54,13 @@ namespace HealthGateway.GatewayApi.Services
             CDogsRequestModel cdogsRequest = new()
             {
                 Data = reportRequest.Data,
-                Options = new CDogsOptionsModel()
+                Options = new CDogsOptionsModel
                 {
                     Overwrite = true,
                     ConvertTo = reportRequest.Type.ToString().ToLower(CultureInfo.CurrentCulture),
                     ReportName = reportName,
                 },
-                Template = new CDogsTemplateModel()
+                Template = new CDogsTemplateModel
                 {
                     Content = ReadTemplate(reportRequest.Template, reportRequest.Type),
                     FileType = GetTemplateExtension(reportRequest.Type),
@@ -98,7 +98,7 @@ namespace HealthGateway.GatewayApi.Services
                 throw new FileNotFoundException($"Template {resourceName} not found.");
             }
 
-            using MemoryStream memoryStream = new MemoryStream();
+            using MemoryStream memoryStream = new();
             resourceStream.CopyTo(memoryStream);
             return Convert.ToBase64String(memoryStream.ToArray());
         }

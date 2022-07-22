@@ -40,9 +40,9 @@ namespace Healthgateway.JobScheduler.Tasks
         /// <param name="dbContext">The db context to use.</param>
         /// <param name="notificationSettingsService">The notification settings service.</param>
         public SendValidatedUsersToPHSA(
-                ILogger<SendValidatedUsersToPHSA> logger,
-                GatewayDbContext dbContext,
-                INotificationSettingsService notificationSettingsService)
+            ILogger<SendValidatedUsersToPHSA> logger,
+            GatewayDbContext dbContext,
+            INotificationSettingsService notificationSettingsService)
         {
             this.logger = logger;
             this.dbContext = dbContext;

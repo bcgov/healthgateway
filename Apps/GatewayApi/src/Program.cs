@@ -25,7 +25,7 @@ namespace HealthGateway.GatewayApi
     [ExcludeFromCodeCoverage]
     public static class Program
     {
-        /// <summary>.
+        /// <summary>
         /// The entry point for the class.
         /// </summary>
         /// <param name="args">The command line arguments to be passed in.</param>
@@ -34,12 +34,14 @@ namespace HealthGateway.GatewayApi
             CreateHostBuilder(args).Build().Run();
         }
 
-        /// <summary>.
+        /// <summary>
         /// Creates the IWebHostBuilder.
         /// </summary>
         /// <param name="args">The command line arguments to be passed in.</param>
         /// <returns>Returns the configured webhost.</returns>
-        public static IHostBuilder CreateHostBuilder(string[] args) =>
-            ProgramConfiguration.CreateHostBuilder<Startup>(args);
+        public static IHostBuilder CreateHostBuilder(string[] args)
+        {
+            return ProgramConfiguration.CreateHostBuilder<Startup>(args);
+        }
     }
 }

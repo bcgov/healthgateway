@@ -58,9 +58,9 @@ export default class LaboratoryOrderTimelineEntry extends TimelineEntry {
         this.orderStatus = model.orderStatus;
 
         this.tests = [];
-        model.laboratoryTests.forEach((test) => {
-            this.tests.push(new LaboratoryTestViewModel(test));
-        });
+        model.laboratoryTests.forEach((test) =>
+            this.tests.push(new LaboratoryTestViewModel(test))
+        );
 
         this.sortResults();
 
@@ -80,7 +80,7 @@ export default class LaboratoryOrderTimelineEntry extends TimelineEntry {
         return text.includes(keyword.toUpperCase());
     }
 
-    private sortResults() {
+    private sortResults(): void {
         this.tests.sort((a, b) => {
             if (a.result === b.result) {
                 return 0;

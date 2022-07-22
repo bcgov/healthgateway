@@ -15,6 +15,7 @@
 //-------------------------------------------------------------------------
 namespace HealthGateway.Common.Services
 {
+    using System;
     using System.IO;
     using System.ServiceModel;
     using System.ServiceModel.Channels;
@@ -35,7 +36,7 @@ namespace HealthGateway.Common.Services
         /// <param name="logger">The logger provider.</param>
         public LoggingMessageInspector(ILogger<LoggingMessageInspector> logger)
         {
-            this.logger = logger ?? throw new System.ArgumentNullException(nameof(logger));
+            this.logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
 
         /// <summary>
@@ -66,9 +67,9 @@ namespace HealthGateway.Common.Services
         {
             this.logger.LogTrace($"Getting the reply request... {request.State}");
 
-            using (var buffer = request.CreateBufferedCopy(int.MaxValue))
+            using (MessageBuffer buffer = request.CreateBufferedCopy(int.MaxValue))
             {
-                var document = GetDocument(buffer.CreateMessage());
+                XmlDocument document = GetDocument(buffer.CreateMessage());
                 this.logger.LogDebug($"Finished getting the reply request. {document.OuterXml}");
                 request = buffer.CreateMessage();
                 return null!;
@@ -77,8 +78,8 @@ namespace HealthGateway.Common.Services
 
         private static XmlDocument GetDocument(Message request)
         {
-            XmlDocument document = new XmlDocument();
-            using (MemoryStream memoryStream = new MemoryStream())
+            XmlDocument document = new();
+            using (MemoryStream memoryStream = new())
             {
                 // write request to memory stream
                 using (XmlWriter writer = XmlWriter.Create(memoryStream))

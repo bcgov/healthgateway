@@ -54,17 +54,16 @@ export default class MedicationHistoryReportComponent extends Vue {
 
     private readonly headerClass = "medication-report-table-header";
 
-    private get isEmpty() {
+    private get isEmpty(): boolean {
         return this.visibleRecords.length === 0;
     }
 
     private get visibleRecords(): MedicationStatementHistory[] {
-        let records = this.medicationStatements.filter((record) => {
-            return (
+        let records = this.medicationStatements.filter(
+            (record) =>
                 this.filter.allowsDate(record.dispensedDate) &&
                 this.filter.allowsMedication(record.medicationSummary.brandName)
-            );
-        });
+        );
         records.sort((a, b) => {
             const firstDate = new DateWrapper(a.dispensedDate);
             const secondDate = new DateWrapper(b.dispensedDate);
@@ -84,48 +83,45 @@ export default class MedicationHistoryReportComponent extends Vue {
     }
 
     private get items(): MedicationRow[] {
-        return this.visibleRecords.map<MedicationRow>((x) => {
-            return {
-                date: DateWrapper.format(x.dispensedDate),
-                din_pin: x.medicationSummary.din,
-                brand: x.medicationSummary.brandName,
-                generic: x.medicationSummary.genericName || this.notFoundText,
-                practitioner: x.practitionerSurname || "",
-                quantity:
-                    x.medicationSummary.quantity === undefined
-                        ? ""
-                        : x.medicationSummary.quantity.toString(),
-                strength:
-                    (x.medicationSummary.strength || "") +
-                        (x.medicationSummary.strengthUnit || "") ||
-                    this.notFoundText,
-                form: x.medicationSummary.form || this.notFoundText,
-                manufacturer:
-                    x.medicationSummary.manufacturer || this.notFoundText,
-            };
-        });
+        return this.visibleRecords.map<MedicationRow>((x) => ({
+            date: DateWrapper.format(x.dispensedDate),
+            din_pin: x.medicationSummary.din,
+            brand: x.medicationSummary.brandName,
+            generic: x.medicationSummary.genericName || this.notFoundText,
+            practitioner: x.practitionerSurname || "",
+            quantity:
+                x.medicationSummary.quantity === undefined
+                    ? ""
+                    : x.medicationSummary.quantity.toString(),
+            strength:
+                (x.medicationSummary.strength || "") +
+                    (x.medicationSummary.strengthUnit || "") ||
+                this.notFoundText,
+            form: x.medicationSummary.form || this.notFoundText,
+            manufacturer: x.medicationSummary.manufacturer || this.notFoundText,
+        }));
     }
 
     @Watch("isLoading")
     @Emit()
-    private onIsLoadingChanged() {
+    private onIsLoadingChanged(): boolean {
         return this.isLoading;
     }
 
     @Watch("isEmpty")
     @Emit()
-    private onIsEmptyChanged() {
+    private onIsEmptyChanged(): boolean {
         return this.isEmpty;
     }
 
-    private created() {
+    private created(): void {
         this.logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
-        this.retrieveMedications({ hdid: this.user.hdid }).catch((err) => {
-            this.logger.error(`Error loading medication data: ${err}`);
-        });
+        this.retrieveMedications({ hdid: this.user.hdid }).catch((err) =>
+            this.logger.error(`Error loading medication data: ${err}`)
+        );
     }
 
-    private mounted() {
+    private mounted(): void {
         this.onIsEmptyChanged();
     }
 
@@ -133,7 +129,7 @@ export default class MedicationHistoryReportComponent extends Vue {
         reportFormatType: ReportFormatType,
         headerData: ReportHeader
     ): Promise<RequestResult<Report>> {
-        const reportService: IReportService = container.get<IReportService>(
+        const reportService = container.get<IReportService>(
             SERVICE_IDENTIFIER.ReportService
         );
 
@@ -222,6 +218,7 @@ export default class MedicationHistoryReportComponent extends Vue {
 
 <style lang="scss">
 @import "@/assets/scss/_variables.scss";
+
 .medication-report-table-header {
     color: $heading_color;
     font-size: 0.8rem;

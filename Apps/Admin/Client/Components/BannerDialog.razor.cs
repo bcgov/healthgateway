@@ -59,9 +59,7 @@ public partial class BannerDialog : FluxorComponent
 
     private bool HasUpdateError => this.CommunicationsState.Value.Update.Error != null && this.CommunicationsState.Value.Update.Error.Message.Length > 0;
 
-    private string? ErrorMessage => this.HasAddError ?
-        this.CommunicationsState.Value.Add.Error?.Message :
-        this.CommunicationsState.Value.Update.Error?.Message;
+    private string? ErrorMessage => this.HasAddError ? this.CommunicationsState.Value.Add.Error?.Message : this.CommunicationsState.Value.Update.Error?.Message;
 
     private MudForm Form { get; set; } = default!;
 
@@ -89,8 +87,8 @@ public partial class BannerDialog : FluxorComponent
     protected override void OnInitialized()
     {
         base.OnInitialized();
-        this.ActionSubscriber.SubscribeToAction<CommunicationsActions.AddSuccessAction>(this, (action) => this.MudDialog.Close(true));
-        this.ActionSubscriber.SubscribeToAction<CommunicationsActions.UpdateSuccessAction>(this, (action) => this.MudDialog.Close(true));
+        this.ActionSubscriber.SubscribeToAction<CommunicationsActions.AddSuccessAction>(this, action => this.MudDialog.Close(true));
+        this.ActionSubscriber.SubscribeToAction<CommunicationsActions.UpdateSuccessAction>(this, action => this.MudDialog.Close(true));
         this.SetFormValues();
     }
 

@@ -15,8 +15,6 @@
 //-------------------------------------------------------------------------
 namespace HealthGateway.Database.Constants
 {
-    using System.Runtime.Serialization;
-
     /// <summary>
     /// ResourceDelegate Reasons for delegation.
     /// </summary>

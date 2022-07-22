@@ -63,18 +63,18 @@ export default class ImmunizationHistoryReportComponent extends Vue {
         return this.immunizationIsDeferred || this.isImmunizationLoading;
     }
 
-    private get isEmpty() {
+    private get isEmpty(): boolean {
         return this.visibleImmunizations.length === 0;
     }
 
-    private get isRecommendationEmpty() {
+    private get isRecommendationEmpty(): boolean {
         return this.visibleRecomendations.length === 0;
     }
 
     private get visibleImmunizations(): ImmunizationEvent[] {
-        let records = this.patientImmunizations.filter((record) => {
-            return this.filter.allowsDate(record.dateOfImmunization);
-        });
+        let records = this.patientImmunizations.filter((record) =>
+            this.filter.allowsDate(record.dateOfImmunization)
+        );
 
         records.sort((a, b) => {
             const firstDate = new DateWrapper(a.dateOfImmunization);
@@ -95,14 +95,12 @@ export default class ImmunizationHistoryReportComponent extends Vue {
     }
 
     private get immunizationItems(): ImmunizationRow[] {
-        return this.visibleImmunizations.map<ImmunizationRow>((x) => {
-            return {
-                date: DateWrapper.format(x.dateOfImmunization),
-                immunization: x.immunization.name,
-                agents: x.immunization.immunizationAgents,
-                provider_clinic: x.providerOrClinic,
-            };
-        });
+        return this.visibleImmunizations.map<ImmunizationRow>((x) => ({
+            date: DateWrapper.format(x.dateOfImmunization),
+            immunization: x.immunization.name,
+            agents: x.immunization.immunizationAgents,
+            provider_clinic: x.providerOrClinic,
+        }));
     }
 
     private get visibleRecomendations(): Recommendation[] {
@@ -146,42 +144,40 @@ export default class ImmunizationHistoryReportComponent extends Vue {
     }
 
     private get recomendationItems(): RecomendationRow[] {
-        return this.visibleRecomendations.map<RecomendationRow>((x) => {
-            return {
-                immunization: x.targetDiseases.find((y) => y.name)?.name ?? "",
-                due_date:
-                    x.diseaseDueDate === undefined || x.diseaseDueDate === null
-                        ? ""
-                        : DateWrapper.format(x.diseaseDueDate),
-                status: x.status || "",
-            };
-        });
+        return this.visibleRecomendations.map<RecomendationRow>((x) => ({
+            immunization: x.targetDiseases.find((y) => y.name)?.name ?? "",
+            due_date:
+                x.diseaseDueDate === undefined || x.diseaseDueDate === null
+                    ? ""
+                    : DateWrapper.format(x.diseaseDueDate),
+            status: x.status || "",
+        }));
     }
 
     @Watch("isLoading")
     @Emit()
-    private onIsLoadingChanged() {
+    private onIsLoadingChanged(): boolean {
         return this.isLoading;
     }
 
     @Watch("isEmpty")
     @Watch("isRecommendationEmpty")
     @Emit()
-    private onIsEmptyChanged() {
+    private onIsEmptyChanged(): boolean {
         return this.isEmpty && this.isRecommendationEmpty;
     }
 
-    private created() {
+    private created(): void {
         this.logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
         this.logger.debug(
             `Retrieving immunizations for Hdid: ${this.user.hdid}`
         );
-        this.retrieveImmunizations({ hdid: this.user.hdid }).catch((err) => {
-            this.logger.error(`Error loading immunization data: ${err}`);
-        });
+        this.retrieveImmunizations({ hdid: this.user.hdid }).catch((err) =>
+            this.logger.error(`Error loading immunization data: ${err}`)
+        );
     }
 
-    private mounted() {
+    private mounted(): void {
         this.$emit(
             "on-is-empty-changed",
             this.isEmpty && this.isRecommendationEmpty
@@ -192,7 +188,7 @@ export default class ImmunizationHistoryReportComponent extends Vue {
         reportFormatType: ReportFormatType,
         headerData: ReportHeader
     ): Promise<RequestResult<Report>> {
-        const reportService: IReportService = container.get<IReportService>(
+        const reportService = container.get<IReportService>(
             SERVICE_IDENTIFIER.ReportService
         );
 
@@ -358,6 +354,7 @@ export default class ImmunizationHistoryReportComponent extends Vue {
 
 <style lang="scss">
 @import "@/assets/scss/_variables.scss";
+
 .immunization-report-table-header {
     color: $heading_color;
     font-size: 0.8rem;

@@ -29,21 +29,21 @@ export default class ValidateEmailView extends Vue {
     private validatedValue = false;
     private resultStatus: ResultType | null = null;
 
-    private get isVerified() {
+    private get isVerified(): boolean {
         return this.resultStatus === ResultType.Success && this.validatedValue;
     }
 
-    private get isAlreadyVerified() {
+    private get isAlreadyVerified(): boolean {
         return this.resultStatus === ResultType.Error && this.validatedValue;
     }
 
-    private mounted() {
+    private mounted(): void {
         this.verifyEmail();
     }
 
-    private verifyEmail() {
+    private verifyEmail(): void {
         this.isLoading = true;
-        const userProfileService: IUserProfileService = container.get(
+        const userProfileService = container.get<IUserProfileService>(
             SERVICE_IDENTIFIER.UserProfileService
         );
         userProfileService
@@ -131,6 +131,7 @@ export default class ValidateEmailView extends Vue {
 
 <style lang="scss" scoped>
 @import "@/assets/scss/_variables.scss";
+
 .title {
     color: $primary;
     font-size: 2.1em;

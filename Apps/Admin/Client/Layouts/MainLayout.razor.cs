@@ -108,7 +108,7 @@ namespace HealthGateway.Admin.Client.Layouts
             this.IsInactivityModalShown = false;
         }
 
-        /// <inheritdoc />
+        /// <inheritdoc/>
         public void Dispose()
         {
             // Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
@@ -119,7 +119,10 @@ namespace HealthGateway.Admin.Client.Layouts
         /// <summary>
         /// Releases the unmanaged resources used by this class optionally disposes of the managed resources.
         /// </summary>
-        /// <param name="disposing">If true, releases both managed and unmanaged resources. If false, releases only unmanaged resources.</param>
+        /// <param name="disposing">
+        /// If true, releases both managed and unmanaged resources. If false, releases only unmanaged
+        /// resources.
+        /// </param>
         protected virtual void Dispose(bool disposing)
         {
             if (!this.disposed)
@@ -133,7 +136,7 @@ namespace HealthGateway.Admin.Client.Layouts
             }
         }
 
-        /// <inheritdoc />
+        /// <inheritdoc/>
         protected override async Task OnInitializedAsync()
         {
             await base.OnInitializedAsync().ConfigureAwait(true);

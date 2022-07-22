@@ -13,5 +13,5 @@ const namespaced = true;
 export const medication: MedicationModule = {
     namespaced,
     state,
-    modules: { statement: statement, request: request },
+    modules: { statement, request },
 };

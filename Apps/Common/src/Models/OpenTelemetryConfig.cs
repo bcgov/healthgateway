@@ -16,8 +16,7 @@
 namespace HealthGateway.Common.Models
 {
     using System;
-    using System.Collections.Generic;
-    using System.Text.Json.Serialization;
+    using System.Diagnostics.CodeAnalysis;
 
     /// <summary>
     /// Provides configuration data for the Notifications Settings PHSA API.
@@ -37,7 +36,7 @@ namespace HealthGateway.Common.Models
         /// <summary>
         /// Gets or sets the set of sources to listen for activities on.
         /// </summary>
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Performance", "CA1819:Properties should not return arrays", Justification = "Configuration Binding")]
+        [SuppressMessage("Performance", "CA1819:Properties should not return arrays", Justification = "Configuration Binding")]
         public string[] Sources { get; set; } = Array.Empty<string>();
 
         /// <summary>
@@ -58,7 +57,7 @@ namespace HealthGateway.Common.Models
         /// <summary>
         /// Gets or sets the path prefixes that tracing will ignore.
         /// </summary>
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Performance", "CA1819:Properties should not return arrays", Justification = "Configuration Binding")]
+        [SuppressMessage("Performance", "CA1819:Properties should not return arrays", Justification = "Configuration Binding")]
         public string[] IgnorePathPrefixes { get; set; } = Array.Empty<string>();
     }
 }

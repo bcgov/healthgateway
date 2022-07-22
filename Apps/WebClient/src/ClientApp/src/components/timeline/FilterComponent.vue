@@ -13,7 +13,6 @@ import { Action, Getter } from "vuex-class";
 import DatePickerComponent from "@/components/DatePickerComponent.vue";
 import { EntryType, entryTypeMap } from "@/constants/entryType";
 import type { WebClientConfiguration } from "@/models/configData";
-import { StringISODate } from "@/models/dateWrapper";
 import TimelineFilter, { TimelineFilterBuilder } from "@/models/timelineFilter";
 import container from "@/plugins/container";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
@@ -73,8 +72,8 @@ export default class FilterComponent extends Vue {
     private isModalVisible = false;
     private isMenuVisible = false;
 
-    private startDate: StringISODate = "";
-    private endDate: StringISODate = "";
+    private startDate = "";
+    private endDate = "";
     private selectedEntryTypes: EntryType[] = [];
     private keywordInputText = "";
 
@@ -91,38 +90,38 @@ export default class FilterComponent extends Vue {
         return this.activeFilter.hasActiveFilter();
     }
 
-    private mounted() {
+    private mounted(): void {
         this.logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
         this.syncWithFilter();
     }
 
     @Watch("isMobileView")
-    private onIsMobileView() {
+    private onIsMobileView(): void {
         this.isModalVisible = false;
     }
 
     @Watch("isSidebarOpen")
-    private onIsSidebarOpen() {
+    private onIsSidebarOpen(): void {
         this.isModalVisible = false;
     }
 
     @Watch("activeFilter", { deep: true })
-    private syncWithFilter() {
+    private syncWithFilter(): void {
         this.keywordInputText = this.activeFilter.keyword;
         this.startDate = this.activeFilter.startDate;
         this.endDate = this.activeFilter.endDate;
         this.selectedEntryTypes = Array.from(this.activeFilter.entryTypes);
     }
 
-    private toggleMenu() {
+    private toggleMenu(): void {
         this.isMenuVisible = !this.isMenuVisible;
     }
 
-    private toggleMobileView() {
+    private toggleMobileView(): void {
         this.isModalVisible = !this.isModalVisible;
     }
 
-    private apply() {
+    private apply(): void {
         let builder = TimelineFilterBuilder.create()
             .withKeyword(this.keywordInputText)
             .withStartDate(this.startDate)
@@ -134,12 +133,12 @@ export default class FilterComponent extends Vue {
         this.closeMenu();
     }
 
-    private cancel() {
+    private cancel(): void {
         this.syncWithFilter();
         this.closeMenu();
     }
 
-    private closeMenu() {
+    private closeMenu(): void {
         this.isMenuVisible = false;
         this.isModalVisible = false;
     }
@@ -457,10 +456,12 @@ export default class FilterComponent extends Vue {
     left: 0;
     bottom: 0;
     border-radius: 0px;
+
     .btn-mobile {
         color: #494949;
         border: none;
     }
+
     .btn-close {
         font-size: 1.5em;
     }
@@ -496,10 +497,12 @@ export default class FilterComponent extends Vue {
 
 .view-selector {
     min-width: 170px;
+
     .list-view-btn {
         border-radius: 5px 0px 0px 5px;
         border-right: 0px;
     }
+
     .month-view-btn {
         border-radius: 0px 5px 5px 0px;
     }

@@ -20,8 +20,8 @@ export const actions: VaccinationStatusActions = {
             dateOfVaccine: StringISODate;
         }
     ): Promise<void> {
-        const logger: ILogger = container.get(SERVICE_IDENTIFIER.Logger);
-        const vaccinationStatusService: IVaccinationStatusService =
+        const logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
+        const vaccinationStatusService =
             container.get<IVaccinationStatusService>(
                 SERVICE_IDENTIFIER.VaccinationStatusService
             );
@@ -74,7 +74,7 @@ export const actions: VaccinationStatusActions = {
         });
     },
     handlePublicError(context, error: ResultError) {
-        const logger: ILogger = container.get(SERVICE_IDENTIFIER.Logger);
+        const logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
 
         logger.error(`ERROR: ${JSON.stringify(error)}`);
         const customBannerError: CustomBannerError = {
@@ -98,15 +98,15 @@ export const actions: VaccinationStatusActions = {
             dateOfVaccine: StringISODate;
         }
     ): Promise<CovidVaccineRecord> {
-        const logger: ILogger = container.get(SERVICE_IDENTIFIER.Logger);
-        logger.debug(`Retrieving Vaccination Record`);
-        context.commit("setPublicVaccineRecordRequested");
-        const vaccinationStatusService: IVaccinationStatusService =
+        const logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
+        const vaccinationStatusService =
             container.get<IVaccinationStatusService>(
                 SERVICE_IDENTIFIER.VaccinationStatusService
             );
 
-        return new Promise((resolve, reject) => {
+        logger.debug(`Retrieving Vaccination Record`);
+        context.commit("setPublicVaccineRecordRequested");
+        return new Promise((resolve, reject) =>
             vaccinationStatusService
                 .getPublicVaccineStatusPdf(
                     params.phn,
@@ -147,11 +147,11 @@ export const actions: VaccinationStatusActions = {
                 .catch((error: ResultError) => {
                     context.dispatch("handlePdfError", error);
                     reject(error);
-                });
-        });
+                })
+        );
     },
     handlePdfError(context, error: ResultError) {
-        const logger: ILogger = container.get(SERVICE_IDENTIFIER.Logger);
+        const logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
 
         logger.error(`ERROR: ${JSON.stringify(error)}`);
         const customBannerError: CustomBannerError = {
@@ -168,8 +168,8 @@ export const actions: VaccinationStatusActions = {
             hdid: string;
         }
     ): Promise<void> {
-        const logger: ILogger = container.get(SERVICE_IDENTIFIER.Logger);
-        const vaccinationStatusService: IVaccinationStatusService =
+        const logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
+        const vaccinationStatusService =
             container.get<IVaccinationStatusService>(
                 SERVICE_IDENTIFIER.VaccinationStatusService
             );
@@ -236,7 +236,7 @@ export const actions: VaccinationStatusActions = {
         context,
         params: { error: ResultError; errorType: ErrorType }
     ) {
-        const logger: ILogger = container.get(SERVICE_IDENTIFIER.Logger);
+        const logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
 
         logger.error(`ERROR: ${JSON.stringify(params.error)}`);
         context.commit("authenticatedVaccinationStatusError", params.error);
@@ -257,8 +257,8 @@ export const actions: VaccinationStatusActions = {
             hdid: string;
         }
     ): Promise<CovidVaccineRecord> {
-        const logger: ILogger = container.get(SERVICE_IDENTIFIER.Logger);
-        const vaccinationStatusService: IVaccinationStatusService =
+        const logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
+        const vaccinationStatusService =
             container.get<IVaccinationStatusService>(
                 SERVICE_IDENTIFIER.VaccinationStatusService
             );
@@ -316,7 +316,7 @@ export const actions: VaccinationStatusActions = {
         context,
         params: { error: ResultError; errorType: ErrorType }
     ) {
-        const logger: ILogger = container.get(SERVICE_IDENTIFIER.Logger);
+        const logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
 
         logger.error(`ERROR: ${JSON.stringify(params.error)}`);
         context.commit("setAuthenticatedVaccineRecordError", params.error);

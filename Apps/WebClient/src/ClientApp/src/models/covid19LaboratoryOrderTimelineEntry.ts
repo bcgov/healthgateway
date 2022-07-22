@@ -45,9 +45,9 @@ export default class Covid19LaboratoryOrderTimelineEntry extends TimelineEntry {
         this.reportAvailable = model.reportAvailable;
 
         this.tests = [];
-        model.labResults.forEach((test) => {
-            this.tests.push(new Covid19LaboratoryTestViewModel(test));
-        });
+        model.labResults.forEach((test) =>
+            this.tests.push(new Covid19LaboratoryTestViewModel(test))
+        );
 
         this.sortResults();
 
@@ -73,7 +73,7 @@ export default class Covid19LaboratoryOrderTimelineEntry extends TimelineEntry {
         return text.includes(keyword.toUpperCase());
     }
 
-    private sortResults() {
+    private sortResults(): void {
         this.tests.sort((a, b) => {
             if (a.collectedDateTime.isBefore(b.collectedDateTime)) {
                 return 1;

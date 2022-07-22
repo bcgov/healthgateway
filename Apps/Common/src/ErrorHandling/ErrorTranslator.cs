@@ -16,7 +16,7 @@
 
 namespace HealthGateway.Common.ErrorHandling
 {
-    using HealthGateway.Common.Data.Models;
+    using System;
     using HealthGateway.Common.Data.Models.ErrorHandling;
     using HealthGateway.Common.Data.ViewModels;
 
@@ -33,7 +33,7 @@ namespace HealthGateway.Common.ErrorHandling
         /// <returns>A codified string representing the error.</returns>
         public static string ServiceError(ErrorType errorType, ServiceType service)
         {
-            var applicationName = System.AppDomain.CurrentDomain.FriendlyName.ToString();
+            string applicationName = AppDomain.CurrentDomain.FriendlyName;
             return applicationName + "Server-" + errorType.Value + "-" + service.Value;
         }
 
@@ -44,7 +44,7 @@ namespace HealthGateway.Common.ErrorHandling
         /// <returns>A codified string representing the error.</returns>
         public static string InternalError(ErrorType errorType)
         {
-            var applicationName = System.AppDomain.CurrentDomain.FriendlyName.ToString();
+            string applicationName = AppDomain.CurrentDomain.FriendlyName;
             return applicationName + "Server-" + errorType.Value;
         }
 
@@ -56,10 +56,10 @@ namespace HealthGateway.Common.ErrorHandling
         /// <returns>A RequestResultError encapsulating the action required.</returns>
         public static RequestResultError ActionRequired(string message, ActionType actionType)
         {
-            return new RequestResultError()
+            return new RequestResultError
             {
                 ResultMessage = message,
-                ErrorCode = ErrorTranslator.InternalError(ErrorType.InvalidState),
+                ErrorCode = InternalError(ErrorType.InvalidState),
                 ActionCode = actionType,
             };
         }

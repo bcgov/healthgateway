@@ -15,7 +15,6 @@
 // -------------------------------------------------------------------------
 namespace HealthGateway.Laboratory.Models;
 
-using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Text.Json.Serialization;
 using HealthGateway.Laboratory.Models.PHSA;
@@ -77,23 +76,23 @@ public class LaboratoryTest
     {
         return new()
         {
-           BatteryType = model.BatteryType,
-           ObxId = model.ObxId,
-           OutOfRange = model.OutOfRange,
-           Loinc = model.Loinc,
-           TestStatus = model.PlisTestStatus,
-           FilteredTestStatus = model.PlisTestStatus switch
-           {
-               "Active" => "Pending",
-               _ => model.PlisTestStatus,
-           },
-           Result = model.PlisTestStatus switch
-           {
-               "Completed" or "Corrected" when model.OutOfRange => "Out of Range",
-               "Completed" or "Corrected" when !model.OutOfRange => "In Range",
-               "Cancelled" => "Cancelled",
-               _ => "Pending",
-           },
+            BatteryType = model.BatteryType,
+            ObxId = model.ObxId,
+            OutOfRange = model.OutOfRange,
+            Loinc = model.Loinc,
+            TestStatus = model.PlisTestStatus,
+            FilteredTestStatus = model.PlisTestStatus switch
+            {
+                "Active" => "Pending",
+                _ => model.PlisTestStatus,
+            },
+            Result = model.PlisTestStatus switch
+            {
+                "Completed" or "Corrected" when model.OutOfRange => "Out of Range",
+                "Completed" or "Corrected" when !model.OutOfRange => "In Range",
+                "Cancelled" => "Cancelled",
+                _ => "Pending",
+            },
         };
     }
 }

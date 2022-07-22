@@ -31,6 +31,6 @@ namespace HealthGateway.Medication.Models
         /// <summary>
         ///  Gets or sets a <see cref="PharmaCareDrug"/> instance.
         /// </summary>
-        public PharmaCareDrug PharmaCareDrug { get; set; } = new PharmaCareDrug();
+        public PharmaCareDrug PharmaCareDrug { get; set; } = new();
     }
 }

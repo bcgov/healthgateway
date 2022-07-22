@@ -16,7 +16,6 @@
 namespace HealthGateway.GatewayApi.Models
 {
     using System;
-    using HealthGateway.Database.Models;
 
     /// <summary>
     /// Model that provides Terms of service model.

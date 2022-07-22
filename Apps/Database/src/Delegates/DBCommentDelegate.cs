@@ -15,7 +15,6 @@
 //-------------------------------------------------------------------------
 namespace HealthGateway.Database.Delegates
 {
-    using System;
     using System.Collections.Generic;
     using System.Diagnostics.CodeAnalysis;
     using System.Linq;
@@ -48,24 +47,24 @@ namespace HealthGateway.Database.Delegates
             this.dbContext = dbContext;
         }
 
-        /// <inheritdoc />
+        /// <inheritdoc/>
         public DBResult<IEnumerable<Comment>> GetByParentEntry(string hdId, string parentEntryId)
         {
             this.logger.LogTrace($"Getting Comments for user {hdId} and entry id {parentEntryId}...");
-            DBResult<IEnumerable<Comment>> result = new DBResult<IEnumerable<Comment>>();
+            DBResult<IEnumerable<Comment>> result = new();
             result.Payload = this.dbContext.Comment
-                    .Where(p => p.UserProfileId == hdId && p.ParentEntryId == parentEntryId)
-                    .OrderBy(o => o.CreatedDateTime)
-                    .ToList();
+                .Where(p => p.UserProfileId == hdId && p.ParentEntryId == parentEntryId)
+                .OrderBy(o => o.CreatedDateTime)
+                .ToList();
             result.Status = result.Payload != null ? DBStatusCode.Read : DBStatusCode.NotFound;
             return result;
         }
 
-        /// <inheritdoc />
+        /// <inheritdoc/>
         public DBResult<Comment> Add(Comment comment, bool commit = true)
         {
-            this.logger.LogTrace($"Adding Note to DB...");
-            DBResult<Comment> result = new DBResult<Comment>()
+            this.logger.LogTrace("Adding Note to DB...");
+            DBResult<Comment> result = new()
             {
                 Payload = comment,
                 Status = DBStatusCode.Deferred,
@@ -86,15 +85,15 @@ namespace HealthGateway.Database.Delegates
                 }
             }
 
-            this.logger.LogDebug($"Finished adding Comment to DB");
+            this.logger.LogDebug("Finished adding Comment to DB");
             return result;
         }
 
-        /// <inheritdoc />
+        /// <inheritdoc/>
         public DBResult<Comment> Update(Comment comment, bool commit = true)
         {
-            this.logger.LogTrace($"Updating Comment in DB...");
-            DBResult<Comment> result = new DBResult<Comment>()
+            this.logger.LogTrace("Updating Comment in DB...");
+            DBResult<Comment> result = new()
             {
                 Payload = comment,
                 Status = DBStatusCode.Deferred,
@@ -115,15 +114,15 @@ namespace HealthGateway.Database.Delegates
                 }
             }
 
-            this.logger.LogDebug($"Finished updating Comment in DB");
+            this.logger.LogDebug("Finished updating Comment in DB");
             return result;
         }
 
-        /// <inheritdoc />
+        /// <inheritdoc/>
         public DBResult<Comment> Delete(Comment comment, bool commit = true)
         {
-            this.logger.LogTrace($"Deleting Comment from DB...");
-            DBResult<Comment> result = new DBResult<Comment>()
+            this.logger.LogTrace("Deleting Comment from DB...");
+            DBResult<Comment> result = new()
             {
                 Payload = comment,
                 Status = DBStatusCode.Deferred,
@@ -143,24 +142,24 @@ namespace HealthGateway.Database.Delegates
                 }
             }
 
-            this.logger.LogDebug($"Finished deleting Comment in DB");
+            this.logger.LogDebug("Finished deleting Comment in DB");
             return result;
         }
 
-        /// <inheritdoc />
+        /// <inheritdoc/>
         public DBResult<IEnumerable<Comment>> GetAll(string hdId)
         {
             this.logger.LogTrace($"Getting Comments for user {hdId}...");
-            DBResult<IEnumerable<Comment>> result = new DBResult<IEnumerable<Comment>>();
+            DBResult<IEnumerable<Comment>> result = new();
             result.Payload = this.dbContext.Comment
-                    .Where(p => p.UserProfileId == hdId)
-                    .OrderBy(o => o.CreatedDateTime)
-                    .ToList();
+                .Where(p => p.UserProfileId == hdId)
+                .OrderBy(o => o.CreatedDateTime)
+                .ToList();
             result.Status = result.Payload != null ? DBStatusCode.Read : DBStatusCode.NotFound;
             return result;
         }
 
-        /// <inheritdoc />
+        /// <inheritdoc/>
         public DBResult<IEnumerable<Comment>> GetAll(int page, int pageSize)
         {
             this.logger.LogTrace($"Retrieving all the comments for the page #{page} with pageSize: {pageSize}...");

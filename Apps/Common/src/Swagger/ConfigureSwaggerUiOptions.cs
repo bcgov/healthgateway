@@ -23,7 +23,7 @@ namespace HealthGateway.Common.Swagger
     using Microsoft.Extensions.Options;
     using Swashbuckle.AspNetCore.SwaggerUI;
 
-    /// <inheritdoc cref="SwaggerUIOptions"/>>
+    /// <inheritdoc cref="SwaggerUIOptions"/>
     [ExcludeFromCodeCoverage]
     public sealed class ConfigureSwaggerUiOptions : IConfigureOptions<SwaggerUIOptions>
     {
@@ -55,12 +55,13 @@ namespace HealthGateway.Common.Swagger
                 this.provider
                     .ApiVersionDescriptions
                     .ToList()
-                    .ForEach(description =>
-                    {
-                        options.SwaggerEndpoint(
-                            $"/{this.settings.RoutePrefixWithSlash}{description.GroupName}/swagger.json",
-                            description.GroupName.ToUpperInvariant());
-                    });
+                    .ForEach(
+                        description =>
+                        {
+                            options.SwaggerEndpoint(
+                                $"/{this.settings.RoutePrefixWithSlash}{description.GroupName}/swagger.json",
+                                description.GroupName.ToUpperInvariant());
+                        });
             }
         }
     }

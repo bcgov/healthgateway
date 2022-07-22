@@ -17,6 +17,7 @@ namespace HealthGateway.Common.AspNetConfiguration.Modules
 {
     using System;
     using System.Diagnostics.CodeAnalysis;
+    using System.IO;
     using System.Security.Cryptography.X509Certificates;
     using System.ServiceModel;
     using System.ServiceModel.Description;
@@ -44,37 +45,36 @@ namespace HealthGateway.Common.AspNetConfiguration.Modules
         {
             services.AddTransient<IEndpointBehavior, LoggingEndpointBehaviour>();
             services.AddTransient<IClientMessageInspector, LoggingMessageInspector>();
-            services.AddTransient<QUPA_AR101102_PortType>(s =>
-            {
-                IConfigurationSection clientConfiguration = configuration.GetSection("PatientService:ClientRegistry");
-                EndpointAddress clientRegistriesEndpoint = new(new Uri(clientConfiguration.GetValue<string>("ServiceUrl")));
-
-                QUPA_AR101102_PortTypeClient client = new(
-                                        QUPA_AR101102_PortTypeClient.EndpointConfiguration.QUPA_AR101102_Port,
-                                        clientRegistriesEndpoint);
-                if (clientConfiguration.GetValue<bool>("IsSecure", true))
+            services.AddTransient<QUPA_AR101102_PortType>(
+                s =>
                 {
-                    // Load Certificate
-                    // Note: As per reading we do not have to dispose of the certificate.
-                    string clientCertificatePath = clientConfiguration.GetSection("ClientCertificate").GetValue<string>("Path");
-                    string certificatePassword = clientConfiguration.GetSection("ClientCertificate").GetValue<string>("Password");
-                    X509Certificate2 clientRegistriesCertificate = new(System.IO.File.ReadAllBytes(clientCertificatePath), certificatePassword);
-                    client.ClientCredentials.ClientCertificate.Certificate = clientRegistriesCertificate;
-                    client.Endpoint.EndpointBehaviors.Add(s.GetService<IEndpointBehavior>());
-                    client.ClientCredentials.ServiceCertificate.SslCertificateAuthentication =
-                        new X509ServiceCertificateAuthentication()
-                        {
-                            CertificateValidationMode = X509CertificateValidationMode.None,
-                            RevocationMode = X509RevocationMode.NoCheck,
-                        };
+                    IConfigurationSection clientConfiguration = configuration.GetSection("PatientService:ClientRegistry");
+                    EndpointAddress clientRegistriesEndpoint = new(new Uri(clientConfiguration.GetValue<string>("ServiceUrl")));
 
-                    BasicHttpBinding binding = new(BasicHttpSecurityMode.Transport);
-                    binding.Security.Transport.ClientCredentialType = HttpClientCredentialType.Certificate;
-                    client.Endpoint.Binding = binding;
-                }
+                    QUPA_AR101102_PortTypeClient client = new(QUPA_AR101102_PortTypeClient.EndpointConfiguration.QUPA_AR101102_Port, clientRegistriesEndpoint);
+                    if (clientConfiguration.GetValue("IsSecure", true))
+                    {
+                        // Load Certificate
+                        // Note: As per reading we do not have to dispose of the certificate.
+                        string clientCertificatePath = clientConfiguration.GetSection("ClientCertificate").GetValue<string>("Path");
+                        string certificatePassword = clientConfiguration.GetSection("ClientCertificate").GetValue<string>("Password");
+                        X509Certificate2 clientRegistriesCertificate = new(File.ReadAllBytes(clientCertificatePath), certificatePassword);
+                        client.ClientCredentials.ClientCertificate.Certificate = clientRegistriesCertificate;
+                        client.Endpoint.EndpointBehaviors.Add(s.GetService<IEndpointBehavior>());
+                        client.ClientCredentials.ServiceCertificate.SslCertificateAuthentication =
+                            new X509ServiceCertificateAuthentication
+                            {
+                                CertificateValidationMode = X509CertificateValidationMode.None,
+                                RevocationMode = X509RevocationMode.NoCheck,
+                            };
 
-                return client;
-            });
+                        BasicHttpBinding binding = new(BasicHttpSecurityMode.Transport);
+                        binding.Security.Transport.ClientCredentialType = HttpClientCredentialType.Certificate;
+                        client.Endpoint.Binding = binding;
+                    }
+
+                    return client;
+                });
 
             services.AddTransient<IClientRegistriesDelegate, ClientRegistriesDelegate>();
             services.AddTransient<IPatientService, PatientService>();

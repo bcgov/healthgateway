@@ -16,7 +16,6 @@
 namespace HealthGateway.GatewayApi.Models
 {
     using System;
-    using System.Collections.Generic;
 
     /// <summary>
     /// Model that provides a user preference.

@@ -51,10 +51,10 @@ namespace HealthGateway.Common.Auditing
             this.writeEventDelegate = writeEventDelegate;
         }
 
-        /// <inheritdoc />
+        /// <inheritdoc/>
         public void WriteAuditEvent(AuditEvent auditEvent)
         {
-            #pragma warning disable CA1031 // Modify 'WriteAuditEvent' to catch a more specific exception type, or rethrow the exception.
+#pragma warning disable CA1031 // Modify 'WriteAuditEvent' to catch a more specific exception type, or rethrow the exception.
             this.logger.LogDebug(@"Begin WriteAuditEvent(auditEvent)");
             try
             {
@@ -65,10 +65,10 @@ namespace HealthGateway.Common.Auditing
             {
                 this.logger.LogError(ex, @"In WriteAuditEvent");
             }
-            #pragma warning restore CA1303
+#pragma warning restore CA1303
         }
 
-        /// <inheritdoc />
+        /// <inheritdoc/>
         public void PopulateWithHttpContext(HttpContext context, AuditEvent auditEvent)
         {
             ClaimsIdentity? claimsIdentity = context.User.Identity as ClaimsIdentity;
@@ -100,8 +100,7 @@ namespace HealthGateway.Common.Auditing
             RouteData routeData = context.GetRouteData();
 
             // Some routes might not have the version
-            auditEvent.TransactionVersion = routeData?.Values["version"] != null ?
-                routeData.Values["version"]?.ToString() : string.Empty;
+            auditEvent.TransactionVersion = routeData?.Values["version"] != null ? routeData.Values["version"]?.ToString() : string.Empty;
         }
 
         /// <summary>
@@ -171,5 +170,5 @@ namespace HealthGateway.Common.Auditing
         }
     }
 
-    #pragma warning restore CA1303 // Do not pass literals as localized parameters
+#pragma warning restore CA1303 // Do not pass literals as localized parameters
 }

@@ -15,15 +15,15 @@
 //-------------------------------------------------------------------------
 namespace HealthGateway.Admin.Client.Components;
 
+using System;
+using System.Collections.Generic;
+using System.Globalization;
+using System.Linq;
 using Fluxor;
 using Fluxor.Blazor.Web.Components;
 using HealthGateway.Admin.Client.Store;
 using HealthGateway.Admin.Client.Store.Dashboard;
 using Microsoft.AspNetCore.Components;
-using System;
-using System.Collections.Generic;
-using System.Globalization;
-using System.Linq;
 
 /// <summary>
 /// Backing logic for the RatingSummary component.
@@ -44,8 +44,8 @@ public partial class RatingSummary : FluxorComponent
         get
         {
             decimal totalScore = this.Ratings
-                       ?.Select(r => r.Key * r.Value)
-                       ?.Sum() ?? 0;
+                ?.Select(r => r.Key * r.Value)
+                ?.Sum() ?? 0;
 
             return this.TotalRatings != 0 ? (totalScore / this.TotalRatings).ToString("0.00", CultureInfo.InvariantCulture) : "N/A";
         }
@@ -62,7 +62,7 @@ public partial class RatingSummary : FluxorComponent
                 int? count = null;
                 if (this.Ratings?.ContainsKey(stars) == true)
                 {
-                    percentage = this.TotalRatings > 0 ? (100 * this.Ratings[stars] / this.TotalRatings) : 0;
+                    percentage = this.TotalRatings > 0 ? (100 * this.Ratings[stars]) / this.TotalRatings : 0;
                     count = this.Ratings[stars];
                 }
 

@@ -66,12 +66,6 @@ namespace HealthGateway.Common.Data.ViewModels
         /// Will always be set when ResultType is ActionRequired.
         /// </summary>
         [JsonPropertyName("actionCode")]
-        public string? ActionCodeValue
-        {
-            get
-            {
-                return this.ActionCode?.Value;
-            }
-        }
+        public string? ActionCodeValue => this.ActionCode?.Value;
     }
 }

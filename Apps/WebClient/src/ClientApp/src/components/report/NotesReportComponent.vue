@@ -43,9 +43,9 @@ export default class NotesReportComponent extends Vue {
     private readonly headerClass = "note-report-table-header";
 
     private get visibleRecords(): UserNote[] {
-        let records = this.notes.filter((record) => {
-            return this.filter.allowsDate(record.journalDate);
-        });
+        let records = this.notes.filter((record) =>
+            this.filter.allowsDate(record.journalDate)
+        );
         records.sort((a, b) => {
             const firstDate = new DateWrapper(a.journalDate);
             const secondDate = new DateWrapper(b.journalDate);
@@ -64,40 +64,38 @@ export default class NotesReportComponent extends Vue {
         return records;
     }
 
-    private get isEmpty() {
+    private get isEmpty(): boolean {
         return this.visibleRecords.length === 0;
     }
 
     private get items(): UserNoteRow[] {
-        return this.visibleRecords.map<UserNoteRow>((x) => {
-            return {
-                date: DateWrapper.format(x.journalDate),
-                title: x.title,
-                note: x.text,
-            };
-        });
+        return this.visibleRecords.map<UserNoteRow>((x) => ({
+            date: DateWrapper.format(x.journalDate),
+            title: x.title,
+            note: x.text,
+        }));
     }
 
     @Watch("isLoading")
     @Emit()
-    private onIsLoadingChanged() {
+    private onIsLoadingChanged(): boolean {
         return this.isLoading;
     }
 
     @Watch("isEmpty")
     @Emit()
-    private onIsEmptyChanged() {
+    private onIsEmptyChanged(): boolean {
         return this.isEmpty;
     }
 
-    private created() {
+    private created(): void {
         this.logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
-        this.retrieveNotes({ hdid: this.user.hdid }).catch((err) => {
-            this.logger.error(`Error loading user note data: ${err}`);
-        });
+        this.retrieveNotes({ hdid: this.user.hdid }).catch((err) =>
+            this.logger.error(`Error loading user note data: ${err}`)
+        );
     }
 
-    private mounted() {
+    private mounted(): void {
         this.onIsEmptyChanged();
     }
 
@@ -105,7 +103,7 @@ export default class NotesReportComponent extends Vue {
         reportFormatType: ReportFormatType,
         headerData: ReportHeader
     ): Promise<RequestResult<Report>> {
-        const reportService: IReportService = container.get<IReportService>(
+        const reportService = container.get<IReportService>(
             SERVICE_IDENTIFIER.ReportService
         );
 
@@ -171,6 +169,7 @@ export default class NotesReportComponent extends Vue {
 
 <style lang="scss">
 @import "@/assets/scss/_variables.scss";
+
 .note-report-table-header {
     color: $heading_color;
     font-size: 0.8rem;

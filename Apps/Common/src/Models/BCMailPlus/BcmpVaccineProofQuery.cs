@@ -18,7 +18,6 @@ namespace HealthGateway.Common.Models.BCMailPlus
     using System.Collections.Generic;
     using System.Text.Json.Serialization;
     using HealthGateway.Common.Constants;
-    using HealthGateway.Database.Constants;
 
     /// <summary>
     /// The BC Mail Plus Vaccine Proof query model.

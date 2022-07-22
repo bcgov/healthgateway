@@ -33,12 +33,15 @@ export default class StatusLabelComponent extends Vue {
 
 .hg-status-label {
     color: $hg-text-primary !important;
+
     .text-muted {
         color: $hg-text-secondary !important;
     }
+
     .text-success {
         color: $hg-state-success !important;
     }
+
     .text-danger {
         color: $hg-state-danger !important;
     }

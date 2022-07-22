@@ -16,10 +16,10 @@
 namespace HealthGateway.Admin.Client.Store.Tag;
 
 using System;
-using Fluxor;
-using HealthGateway.Admin.Common.Models;
 using System.Collections.Generic;
 using System.Collections.Immutable;
+using Fluxor;
+using HealthGateway.Admin.Common.Models;
 
 /// <summary>
 /// The set of reducers for the feature.

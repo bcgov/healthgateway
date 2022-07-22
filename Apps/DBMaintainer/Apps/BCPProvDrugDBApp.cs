@@ -25,7 +25,9 @@ namespace HealthGateway.DrugMaintainer.Apps
 
     /// <summary>
     /// Utility program to load the BC Government PharmaCare drug file.
-    /// See https://www2.gov.bc.ca/gov/content/health/practitioner-professional-resources/pharmacare/health-industry-professionals/downloadable-drug-data-files for reference.
+    /// See
+    /// https://www2.gov.bc.ca/gov/content/health/practitioner-professional-resources/pharmacare/health-industry-professionals/downloadable-drug-data-files
+    /// for reference.
     /// </summary>
     public class BcpProvDrugDbApp : BaseDrugApp<IPharmaCareDrugParser>
     {

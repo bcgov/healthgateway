@@ -23,7 +23,7 @@ import ErrorTranslator from "@/utility/errorTranslator";
 
 @injectable()
 export class RestLaboratoryService implements ILaboratoryService {
-    private logger: ILogger = container.get(SERVICE_IDENTIFIER.Logger);
+    private logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
     private readonly LABORATORY_BASE_URI: string = "Laboratory";
     private readonly PUBLIC_LABORATORY_BASE_URI: string = "PublicLaboratory";
     private baseUri = "";
@@ -62,9 +62,7 @@ export class RestLaboratoryService implements ILaboratoryService {
                     `${this.baseUri}${this.PUBLIC_LABORATORY_BASE_URI}/CovidTests`,
                     headers
                 )
-                .then((requestResult) => {
-                    resolve(requestResult);
-                })
+                .then((requestResult) => resolve(requestResult))
                 .catch((err: HttpError) => {
                     this.logger.error(
                         `Error in RestLaboratoryService.getPublicCovid19Tests()`
@@ -97,9 +95,7 @@ export class RestLaboratoryService implements ILaboratoryService {
                 .getWithCors<RequestResult<Covid19LaboratoryOrderResult>>(
                     `${this.baseUri}${this.LABORATORY_BASE_URI}/Covid19Orders?hdid=${hdid}`
                 )
-                .then((requestResult) => {
-                    resolve(requestResult);
-                })
+                .then((requestResult) => resolve(requestResult))
                 .catch((err: HttpError) => {
                     this.logger.error(
                         `Error in RestLaboratoryService.getCovid19LaboratoryOrders()`
@@ -137,9 +133,7 @@ export class RestLaboratoryService implements ILaboratoryService {
                 .getWithCors<RequestResult<LaboratoryOrderResult>>(
                     `${this.baseUri}${this.LABORATORY_BASE_URI}/LaboratoryOrders?hdid=${hdid}`
                 )
-                .then((requestResult) => {
-                    resolve(requestResult);
-                })
+                .then((requestResult) => resolve(requestResult))
                 .catch((err: HttpError) => {
                     this.logger.error(
                         `Error in RestLaboratoryService.getLaboratoryOrders()`
@@ -177,9 +171,7 @@ export class RestLaboratoryService implements ILaboratoryService {
                 .getWithCors<RequestResult<LaboratoryReport>>(
                     `${this.baseUri}${this.LABORATORY_BASE_URI}/${reportId}/Report?hdid=${hdid}&isCovid19=${isCovid19}`
                 )
-                .then((requestResult) => {
-                    resolve(requestResult);
-                })
+                .then((requestResult) => resolve(requestResult))
                 .catch((err: HttpError) => {
                     this.logger.error(
                         `Error in RestLaboratoryService.getReportDocument()`

@@ -15,6 +15,7 @@
 //-------------------------------------------------------------------------
 namespace HealthGateway.WebClient.Services
 {
+    using HealthGateway.WebClient.Models;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.Logging;
 
@@ -24,36 +25,34 @@ namespace HealthGateway.WebClient.Services
     public class ConfigurationService : IConfigurationService
     {
         private readonly ILogger logger;
-        private readonly Models.ExternalConfiguration config;
-        private readonly Models.MobileConfiguration mobileConfig;
+        private readonly ExternalConfiguration config;
+        private readonly MobileConfiguration mobileConfig;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ConfigurationService"/> class.
         /// </summary>
         /// <param name="logger">Injected Logger Provider.</param>
         /// <param name="configuration">Injected Configuration Provider.</param>
-        public ConfigurationService(
-            ILogger<ConfigurationService> logger,
-            IConfiguration configuration)
+        public ConfigurationService(ILogger<ConfigurationService> logger, IConfiguration configuration)
         {
             this.logger = logger;
-            this.config = new Models.ExternalConfiguration();
-            this.config = configuration.Get<Models.ExternalConfiguration>();
-            this.mobileConfig = new Models.MobileConfiguration();
+            this.config = new ExternalConfiguration();
+            this.config = configuration.Get<ExternalConfiguration>();
+            this.mobileConfig = new MobileConfiguration();
             configuration.Bind("MobileConfiguration", this.mobileConfig);
         }
 
-        /// <inheritdoc />
-        public Models.ExternalConfiguration GetConfiguration()
+        /// <inheritdoc/>
+        public ExternalConfiguration GetConfiguration()
         {
-            this.logger.LogTrace($"Getting configuration data...");
+            this.logger.LogTrace("Getting configuration data...");
             return this.config;
         }
 
-        /// <inheritdoc />
-        public Models.MobileConfiguration GetMobileConfiguration()
+        /// <inheritdoc/>
+        public MobileConfiguration GetMobileConfiguration()
         {
-            this.logger.LogTrace($"Getting mobile configuration data...");
+            this.logger.LogTrace("Getting mobile configuration data...");
             return this.mobileConfig;
         }
     }

@@ -25,7 +25,7 @@ namespace HealthGateway.Admin.Server.Models.CovidSupport
         /// <summary>
         /// Gets or sets the retrieved patient information.
         /// </summary>
-        public PatientModel Patient { get; set; } = new PatientModel();
+        public PatientModel Patient { get; set; } = new();
 
         /// <summary>
         /// Gets or sets the Vaccine Details.

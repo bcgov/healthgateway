@@ -15,8 +15,6 @@
 // -------------------------------------------------------------------------
 namespace HealthGateway.Database.Models.Cacheable
 {
-    using System.Text.Json.Serialization;
-
     /// <summary>
     /// Represents a generic hash object.
     /// </summary>

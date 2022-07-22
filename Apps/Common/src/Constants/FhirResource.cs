@@ -56,7 +56,8 @@ namespace HealthGateway.Common.Constants
         public const string Patient = "Patient";
 
         /// <summary>
-        /// An interaction between a patient and healthcare provider(s) for the purpose of providing healthcare service(s) or assessing the health status of a patient.
+        /// An interaction between a patient and healthcare provider(s) for the purpose of providing healthcare service(s) or
+        /// assessing the health status of a patient.
         /// See <a href="http://www.hl7.org/fhir/stu3/encounter.html"/>.
         /// </summary>
         public const string Encounter = "Encounter";

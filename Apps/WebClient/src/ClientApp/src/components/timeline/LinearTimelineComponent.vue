@@ -202,7 +202,7 @@ export default class LinearTimelineComponent extends Vue {
     }
 
     @Watch("currentPage")
-    private onCurrentPage() {
+    private onCurrentPage(): void {
         if (this.visibleTimelineEntries.length > 0) {
             // Update the store
             this.setLinearDate(this.visibleTimelineEntries[0].date);
@@ -210,27 +210,27 @@ export default class LinearTimelineComponent extends Vue {
     }
 
     @Watch("selectedDate")
-    private onSelectedDate() {
+    private onSelectedDate(): void {
         if (
             this.selectedDate !== null &&
             this.setPageFromDate(this.selectedDate)
         ) {
             // Wait for next render cycle until the pages have been calculated and displayed
-            this.$nextTick().then(() => {
-                this.focusOnDate(this.selectedDate as DateWrapper);
-            });
+            this.$nextTick().then(() =>
+                this.focusOnDate(this.selectedDate as DateWrapper)
+            );
         }
     }
 
-    private linkGen(pageNum: number) {
+    private linkGen(pageNum: number): string {
         return `?page=${pageNum}`;
     }
 
-    private created() {
+    private created(): void {
         this.logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
     }
 
-    private mounted() {
+    private mounted(): void {
         this.setPageFromDate(this.linearDate);
     }
 
@@ -263,9 +263,9 @@ export default class LinearTimelineComponent extends Vue {
         }
     }
 
-    private focusOnDate(date: DateWrapper) {
+    private focusOnDate(date: DateWrapper): void {
         const dateEpoch = date.fromEpoch();
-        let container: HTMLElement[] = this.$refs[dateEpoch] as HTMLElement[];
+        const container = this.$refs[dateEpoch] as HTMLElement[];
         container[0].querySelector("button")?.focus();
     }
 
@@ -274,7 +274,7 @@ export default class LinearTimelineComponent extends Vue {
     }
 
     private isFilterApplied(entryType: EntryType): boolean {
-        const entryTypes: EntryType[] = Array.from(this.filter.entryTypes);
+        const entryTypes = Array.from(this.filter.entryTypes);
         const filterApplied = !!entryTypes.includes(entryType);
         this.logger.debug(
             `Timeline filter entry type: ${entryType} applied: ${filterApplied}`

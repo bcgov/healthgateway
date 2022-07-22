@@ -36,7 +36,7 @@ namespace HealthGateway.Admin.Client.Pages
         [Inject]
         private IConfiguration Configuration { get; set; } = default!;
 
-        /// <inheritdoc />
+        /// <inheritdoc/>
         protected override async Task OnInitializedAsync()
         {
             AuthenticationState authState = await this.AuthenticationStateProvider.GetAuthenticationStateAsync().ConfigureAwait(true);

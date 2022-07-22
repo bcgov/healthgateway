@@ -19,7 +19,7 @@ import ErrorTranslator from "@/utility/errorTranslator";
 
 @injectable()
 export class RestMedicationService implements IMedicationService {
-    private logger: ILogger = container.get(SERVICE_IDENTIFIER.Logger);
+    private logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
     private readonly MEDICATION_STATEMENT_BASE_URI: string =
         "MedicationStatement";
     private readonly MEDICATION_REQUEST_BASE_URI: string = "MedicationRequest";
@@ -63,9 +63,7 @@ export class RestMedicationService implements IMedicationService {
                     `${this.baseUri}${this.MEDICATION_STATEMENT_BASE_URI}/${hdid}`,
                     headers
                 )
-                .then((requestResult) => {
-                    resolve(requestResult);
-                })
+                .then((requestResult) => resolve(requestResult))
                 .catch((err: HttpError) => {
                     this.logger.error(
                         `Error in RestMedicationService.getPatientMedicationStatementHistory()`
@@ -98,9 +96,7 @@ export class RestMedicationService implements IMedicationService {
                 .get<RequestResult<MedicationRequest[]>>(
                     `${this.baseUri}${this.MEDICATION_REQUEST_BASE_URI}/${hdid}`
                 )
-                .then((requestResult) => {
-                    resolve(requestResult);
-                })
+                .then((requestResult) => resolve(requestResult))
                 .catch((err: HttpError) => {
                     this.logger.error(
                         `Error in RestMedicationService.getPatientMedicationRequest()`

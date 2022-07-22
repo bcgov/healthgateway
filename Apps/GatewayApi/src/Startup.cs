@@ -17,7 +17,6 @@
 namespace HealthGateway.GatewayApi
 {
     using System.Diagnostics.CodeAnalysis;
-    using System.Reflection;
     using HealthGateway.Common.AccessManagement.Authentication;
     using HealthGateway.Common.AspNetConfiguration;
     using HealthGateway.Common.Delegates;
@@ -26,7 +25,6 @@ namespace HealthGateway.GatewayApi
     using HealthGateway.Common.Utils;
     using HealthGateway.Database.Delegates;
     using HealthGateway.GatewayApi.Listeners;
-    using HealthGateway.GatewayApi.MapProfiles;
     using HealthGateway.GatewayApi.Services;
     using Microsoft.AspNetCore.Builder;
     using Microsoft.AspNetCore.Hosting;
@@ -107,15 +105,9 @@ namespace HealthGateway.GatewayApi
 
             // Add Background Services
             services.AddHostedService<BannerListener>();
-            services.Configure<ApiBehaviorOptions>(options =>
-            {
-                options.SuppressModelStateInvalidFilter = true;
-            });
+            services.Configure<ApiBehaviorOptions>(options => options.SuppressModelStateInvalidFilter = true);
 
-            services.AddControllers().AddJsonOptions(options =>
-            {
-                options.JsonSerializerOptions.Converters.Add(new DateOnlyJsonConverter());
-            });
+            services.AddControllers().AddJsonOptions(options => options.JsonSerializerOptions.Converters.Add(new DateOnlyJsonConverter()));
 
             services.AddAutoMapper(typeof(Startup));
         }
@@ -138,16 +130,17 @@ namespace HealthGateway.GatewayApi
 
         private static void DisableTraceMethod(IApplicationBuilder app)
         {
-            app.Use(async (context, next) =>
-            {
-                if (context.Request.Method == "TRACE")
+            app.Use(
+                async (context, next) =>
                 {
-                    context.Response.StatusCode = 405;
-                    return;
-                }
+                    if (context.Request.Method == "TRACE")
+                    {
+                        context.Response.StatusCode = 405;
+                        return;
+                    }
 
-                await next.Invoke().ConfigureAwait(true);
-            });
+                    await next.Invoke().ConfigureAwait(true);
+                });
         }
     }
 }

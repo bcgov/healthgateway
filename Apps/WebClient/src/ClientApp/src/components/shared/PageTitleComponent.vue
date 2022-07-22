@@ -6,7 +6,7 @@ import { Component, Prop } from "vue-property-decorator";
 export default class PageTitleComponent extends Vue {
     @Prop({ required: true }) title!: string;
 
-    private get hasSlot() {
+    private get hasSlot(): boolean {
         return this.$slots.default !== undefined;
     }
 }
@@ -18,7 +18,9 @@ export default class PageTitleComponent extends Vue {
             <b-col cols="auto" sm>
                 <h1 id="subject">{{ title }}</h1>
             </b-col>
-            <b-col v-if="hasSlot" class="mb-2 ml-2"><slot /></b-col>
+            <b-col v-if="hasSlot" class="mb-2 ml-2">
+                <slot />
+            </b-col>
         </b-row>
         <hr />
     </div>
