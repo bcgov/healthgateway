@@ -1,5 +1,3 @@
-import { verifyTestingEnvironment } from "../../support/functions/environment";
-
 const email = "fakeemail@healthgateway.gov.bc.ca";
 const emailNotFound = "fakeemail_noresults@healthgateway.gov.bc.ca";
 const emailHdid = "DEV4FPEGCXG2NB5K2USBL52S66SC3GOUHWRP3GTXR2BTY5HEC4YA";
@@ -35,8 +33,6 @@ function verifyTableResults(queryType) {
 
 describe("Support", () => {
     beforeEach(() => {
-        verifyTestingEnvironment();
-
         // PHN with results
         cy.intercept(
             "GET",
@@ -109,16 +105,11 @@ describe("Support", () => {
             }
         );
 
-        cy.log("Logging in.");
-        cy.login(Cypress.env("idir_username"), Cypress.env("idir_password"));
-
-        cy.log("Navigate to support page.");
-        cy.visit("/support");
-    });
-
-    afterEach(() => {
-        cy.log("Logging out.");
-        cy.logout();
+        cy.login(
+            Cypress.env("keycloak_username"),
+            Cypress.env("keycloak_password"),
+            "/support"
+        );
     });
 
     it("Verify support query.", () => {
