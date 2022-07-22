@@ -7,7 +7,7 @@
 //
 // http://www.apache.org/licenses/LICENSE-2.0
 //
-// Unless required by applicable law or agreed to in writing, softwaredotnet
+// Unless required by applicable law or agreed to in writing, software
 // distributed under the License is distributed on an "AS IS" BASIS,
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
@@ -36,19 +36,19 @@ namespace HealthGateway.Admin.Client.Theme
                 PrimaryContrastText = "#003061",
                 Secondary = "#FDBB1B",
                 SecondaryContrastText = "#412D00",
-                Tertiary = "#002E68",
-                TertiaryContrastText = "#ADC7FF",
+                Tertiary = "#C4C6CF",
+                TertiaryContrastText = "#243140",
                 Info = "#D1ECF1",
                 InfoContrastText = Colors.Shades.Black,
                 Success = "#82DA8A",
                 SuccessContrastText = "#003912",
                 Warning = "#FCC966",
-                WarningContrastText = Colors.Shades.Black,
+                WarningContrastText = "#261900",
                 Error = "#FFB3B1",
                 ErrorContrastText = "#680011",
                 Dark = Colors.Grey.Darken3,
                 DarkContrastText = Colors.Shades.White,
-                TextPrimary = "#D0E4FF",
+                TextPrimary = "#FFFFFF",
                 TextSecondary = "rgba(255,255,255, 0.50)",
                 TextDisabled = "rgba(255,255,255, 0.2)",
                 ActionDefault = "#91A3BF",
@@ -58,10 +58,10 @@ namespace HealthGateway.Admin.Client.Theme
                 BackgroundGrey = "#FDBB1B",
                 Surface = "#123147",
                 DrawerBackground = "#0D2C41",
-                DrawerText = "#FFFFFF",
-                DrawerIcon = "#FFFFFF",
+                DrawerText = "#CAE6FF",
+                DrawerIcon = "#CAE6FF",
                 AppbarBackground = "#0D2C41",
-                AppbarText = "#FFFFFF",
+                AppbarText = "#CAE6FF",
                 LinesDefault = "rgba(255,255,255, 0.12)",
                 LinesInputs = "rgba(255,255,255, 0.3)",
                 TableLines = "rgba(255,255,255, 0.12)",
