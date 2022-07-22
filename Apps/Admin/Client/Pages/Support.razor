@@ -3,7 +3,7 @@
 @inherits Fluxor.Blazor.Web.Components.FluxorComponent
 
 @using HealthGateway.Admin.Client.Store.MessageVerification
-@using HealthGateway.Common.Data.Utils
+@using HealthGateway.Common.Ui.Constants
 
 <PageTitle>Support</PageTitle>
 <HgPageHeading>Support</HgPageHeading>
@@ -23,7 +23,14 @@
             </HgSelect>
         </MudItem>
         <MudItem xs="12" sm="9">
-            <HgTextField LeftMargin="Breakpoint.Sm" T="string" Label="@SelectedQueryType.ToString()" Required="@true" Validation="@ValidateQueryParameter" @bind-Value="QueryParameter" data-testid="query-input"/>
+            @if (PhnSelected)
+            {
+                <HgTextField LeftMargin="Breakpoint.Sm" T="string" Label="@SelectedQueryType.ToString()" Required="@true" Validation="@ValidateQueryParameter" Mask="@(new PatternMask(Mask.PhnMaskTemplate))" @bind-Value="QueryParameter" data-testid="query-input" />
+            }
+            else
+            {
+                <HgTextField LeftMargin="Breakpoint.Sm" T="string" Label="@SelectedQueryType.ToString()" Required="@true" Validation="@ValidateQueryParameter" @bind-Value="QueryParameter" data-testid="query-input" />
+            }
         </MudItem>
         <MudItem Class="d-flex justify-end" xs="12">
             <HgButton TopMargin="Breakpoint.Always" EndIcon="@Icons.Material.Filled.Search" Variant="Variant.Filled" Color="Color.Primary" @onclick="SearchAsync" data-testid="search-btn">Search</HgButton>

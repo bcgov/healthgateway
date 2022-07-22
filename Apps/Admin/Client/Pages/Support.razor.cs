@@ -47,7 +47,19 @@ namespace HealthGateway.Admin.Client.Pages
         [Inject]
         private NavigationManager NavigationManager { get; set; } = default!;
 
-        private UserQueryType SelectedQueryType { get; set; } = UserQueryType.PHN;
+        private UserQueryType QueryType { get; set; } = UserQueryType.PHN;
+
+        private UserQueryType SelectedQueryType
+        {
+            get => this.QueryType;
+
+            set
+            {
+                this.ResetState();
+                this.QueryParameter = string.Empty;
+                this.QueryType = value;
+            }
+        }
 
         private string QueryParameter { get; set; } = string.Empty;
 
@@ -56,6 +68,8 @@ namespace HealthGateway.Admin.Client.Pages
         private bool MessagingVerificationsLoading => this.MessageVerificationState.Value.IsLoading;
 
         private bool MessagingVerificationsLoaded => this.MessageVerificationState.Value.Loaded;
+
+        private bool PhnSelected => this.SelectedQueryType == UserQueryType.PHN;
 
         private bool HasError => this.MessageVerificationState.Value.Error != null && this.MessageVerificationState.Value.Error.Message.Length > 0;
 
