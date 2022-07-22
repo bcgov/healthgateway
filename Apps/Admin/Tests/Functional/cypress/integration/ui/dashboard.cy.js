@@ -1,9 +1,5 @@
-import { verifyTestingEnvironment } from "../../support/functions/environment";
-
 describe("Dashboard", () => {
     beforeEach(() => {
-        verifyTestingEnvironment();
-
         cy.intercept("GET", "**/Dashboard/RegisteredCount*", {
             fixture: "DashboardService/registered-count.json",
         });
@@ -26,13 +22,11 @@ describe("Dashboard", () => {
             body: 2,
         });
 
-        cy.log("Logging in.");
-        cy.login(Cypress.env("idir_username"), Cypress.env("idir_password"));
-    });
-
-    afterEach(() => {
-        cy.log("Logging out.");
-        cy.logout();
+        cy.login(
+            Cypress.env("keycloak_username"),
+            Cypress.env("keycloak_password"),
+            "/"
+        );
     });
 
     it("Verify dashboard counts and skeletons.", () => {

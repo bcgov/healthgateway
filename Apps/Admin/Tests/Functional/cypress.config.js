@@ -16,6 +16,8 @@ module.exports = defineConfig({
         env: {
             idir_username: "hgateway",
             idir_password: "",
+            keycloak_username: "blazoradmin",
+            keycloak_password: "",
         },
         trashAssetsBeforeRuns: true,
         setupNodeEvents(on, config) {

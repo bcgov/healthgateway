@@ -1,1 +1,3 @@
-export const localDevUri = "http://localhost:5027";
+export const AuthMethod = {
+    Keycloak: "Keycloak",
+};

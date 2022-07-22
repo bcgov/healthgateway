@@ -1,4 +1,4 @@
-//-------------------------------------------------------------------------
+﻿//-------------------------------------------------------------------------
 // Copyright © 2019 Province of British Columbia
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -13,8 +13,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //-------------------------------------------------------------------------
-namespace HealthGateway.Admin.Server.Models
+namespace HealthGateway.Admin.Common.Models
 {
+    using System;
     using System.Collections.Generic;
 
     /// <summary>
@@ -46,7 +47,7 @@ namespace HealthGateway.Admin.Server.Models
         /// Gets or sets the Callback URIs.
         /// </summary>
 #pragma warning disable CA2227 //disable read-only Dictionary
-        public Dictionary<string, System.Uri>? Callbacks { get; set; }
+        public Dictionary<string, Uri>? Callbacks { get; set; }
 
         /// <summary>
         /// Gets or sets the SaveTokens flag.
