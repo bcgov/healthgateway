@@ -1,6 +1,5 @@
 ﻿@page "/user-info"
 @inherits Fluxor.Blazor.Web.Components.FluxorComponent
-@using System.Security.Claims
 
 <PageTitle>User Info</PageTitle>
 <MudHidden Invert="@(!ConfigurationState.Value.IsLoading)">
@@ -20,15 +19,15 @@
 @if (Claims.Any())
 {
     <MudField Label="Claims" Variant="Variant.Outlined">
-    <MudTable Items="@Claims" Dense="true" Hover="true" Striped="true" Style="overflow-x: auto;">
-        <HeaderContent>
-            <MudTh>Claim</MudTh>
-            <MudTh>Value</MudTh>
-        </HeaderContent>
-        <RowTemplate>
-            <MudTd DataLabel="Claim">@context.Type</MudTd>
-            <MudTd DataLabel="Value">@context.Value</MudTd>
-        </RowTemplate>
-    </MudTable>
+        <MudTable Items="@Claims" Dense="true" Hover="true" Striped="true" Style="overflow-x: auto;">
+            <HeaderContent>
+                <MudTh>Claim</MudTh>
+                <MudTh>Value</MudTh>
+            </HeaderContent>
+            <RowTemplate>
+                <MudTd DataLabel="Claim">@context.Type</MudTd>
+                <MudTd DataLabel="Value">@context.Value</MudTd>
+            </RowTemplate>
+        </MudTable>
     </MudField>
- }
+}

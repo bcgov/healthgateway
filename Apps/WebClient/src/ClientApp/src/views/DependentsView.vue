@@ -61,24 +61,22 @@ export default class DependentsView extends Vue {
         },
     ];
 
-    private created() {
+    private created(): void {
         this.logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
     }
 
-    private mounted() {
+    private mounted(): void {
         this.dependentService = container.get<IDependentService>(
             SERVICE_IDENTIFIER.DependentService
         );
         this.fetchDependents();
     }
 
-    private fetchDependents() {
+    private fetchDependents(): void {
         this.isLoading = true;
         this.dependentService
             .getAll(this.user.hdid)
-            .then((results) => {
-                this.setDependents(results);
-            })
+            .then((results) => this.setDependents(results))
             .catch((error: ResultError) => {
                 this.logger.error(error.resultMessage);
                 this.addError({
@@ -114,15 +112,15 @@ export default class DependentsView extends Vue {
         });
     }
 
-    private showModal() {
+    private showModal(): void {
         this.newDependentModal.showModal();
     }
 
-    private hideModal() {
+    private hideModal(): void {
         this.newDependentModal.hideModal();
     }
 
-    private needsUpdate() {
+    private needsUpdate(): void {
         this.fetchDependents();
     }
 }

@@ -35,9 +35,12 @@ namespace HealthGateway.GatewayApi.MapUtils
         /// <returns>The UserProfileModel.</returns>
         public static UserProfileModel CreateFromDbModel(UserProfile userProfile, Guid? latestTermsOfServiceId, IMapper mapper)
         {
-            UserProfileModel userProfileModel = mapper.Map<UserProfile, UserProfileModel>(userProfile, opts =>
-                opts.AfterMap((src, dest) =>
-                    dest.HasTermsOfServiceUpdated = src.TermsOfServiceId != latestTermsOfServiceId));
+            UserProfileModel userProfileModel = mapper.Map<UserProfile, UserProfileModel>(
+                userProfile,
+                opts =>
+                    opts.AfterMap(
+                        (src, dest) =>
+                            dest.HasTermsOfServiceUpdated = src.TermsOfServiceId != latestTermsOfServiceId));
             return userProfileModel;
         }
     }

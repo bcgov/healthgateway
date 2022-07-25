@@ -16,7 +16,6 @@
 namespace Healthgateway.JobScheduler.Jobs
 {
     using System;
-    using System.Threading.Tasks;
     using Hangfire;
     using HealthGateway.Database.Constants;
     using HealthGateway.Database.Context;
@@ -80,9 +79,9 @@ namespace Healthgateway.JobScheduler.Jobs
                 {
                     this.logger.LogInformation($"OneTimeJob will invoke {taskType.Name}");
                     ApplicationSetting? hasRunAppSetting = this.applicationSettingsDelegate.GetApplicationSetting(
-                            ApplicationType.JobScheduler,
-                            this.GetType().Name,
-                            className);
+                        ApplicationType.JobScheduler,
+                        this.GetType().Name,
+                        className);
                     if (hasRunAppSetting == null)
                     {
                         this.logger.LogInformation($"OneTimeJob is invoking {className}");
@@ -90,7 +89,7 @@ namespace Healthgateway.JobScheduler.Jobs
                         IOneTimeTask task = (IOneTimeTask)ActivatorUtilities.CreateInstance(this.serviceProvider, type);
                         task.Run();
                         this.logger.LogInformation($"OneTimeJob is marking class {taskType.Name} as invoked");
-                        hasRunAppSetting = new ApplicationSetting()
+                        hasRunAppSetting = new ApplicationSetting
                         {
                             Application = ApplicationType.JobScheduler,
                             Component = this.GetType().Name,
@@ -98,7 +97,7 @@ namespace Healthgateway.JobScheduler.Jobs
                             Value = true.ToString(),
                         };
                         this.applicationSettingsDelegate.AddApplicationSetting(hasRunAppSetting);
-                        this.logger.LogInformation($"OneTimeJob is commiting DB changes");
+                        this.logger.LogInformation("OneTimeJob is commiting DB changes");
                         this.dbContext.SaveChanges();
                     }
                     else
@@ -113,10 +112,10 @@ namespace Healthgateway.JobScheduler.Jobs
             }
             else
             {
-                this.logger.LogInformation($"OneTime job is not configured to run anything");
+                this.logger.LogInformation("OneTime job is not configured to run anything");
             }
 
-            this.logger.LogInformation($"OneTimeJob Finished running");
+            this.logger.LogInformation("OneTimeJob Finished running");
         }
-}
+    }
 }

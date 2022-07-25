@@ -30,7 +30,7 @@ namespace HealthGateway.GatewayApi.Services
     using HealthGateway.GatewayApi.Models;
     using Microsoft.Extensions.Logging;
 
-    /// <inheritdoc />
+    /// <inheritdoc/>
     public class CommentService : ICommentService
     {
         private readonly ILogger logger;
@@ -56,7 +56,7 @@ namespace HealthGateway.GatewayApi.Services
             this.autoMapper = autoMapper;
         }
 
-        /// <inheritdoc />
+        /// <inheritdoc/>
         public RequestResult<UserComment> Add(UserComment userComment)
         {
             UserProfile profile = this.profileDelegate.GetUserProfile(userComment.UserProfileId).Payload;
@@ -64,25 +64,33 @@ namespace HealthGateway.GatewayApi.Services
             if (key == null)
             {
                 this.logger.LogError($"User does not have a key: ${userComment.UserProfileId}");
-                return new RequestResult<UserComment>()
+                return new RequestResult<UserComment>
                 {
                     ResultStatus = ResultType.Error,
-                    ResultError = new RequestResultError() { ResultMessage = "Profile Key not set", ErrorCode = ErrorTranslator.InternalError(ErrorType.InvalidState) },
+                    ResultError = new RequestResultError
+                    {
+                        ResultMessage = "Profile Key not set",
+                        ErrorCode = ErrorTranslator.InternalError(ErrorType.InvalidState),
+                    },
                 };
             }
 
             Comment comment = CommentMapUtils.ToDbModel(userComment, this.cryptoDelegate, key, this.autoMapper);
             DBResult<Comment> dbComment = this.commentDelegate.Add(comment);
-            RequestResult<UserComment> result = new RequestResult<UserComment>()
+            RequestResult<UserComment> result = new()
             {
                 ResourcePayload = CommentMapUtils.CreateFromDbModel(dbComment.Payload, this.cryptoDelegate, key, this.autoMapper),
                 ResultStatus = dbComment.Status == DBStatusCode.Created ? ResultType.Success : ResultType.Error,
-                ResultError = new RequestResultError() { ResultMessage = dbComment.Message, ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationInternal, ServiceType.Database) },
+                ResultError = new RequestResultError
+                {
+                    ResultMessage = dbComment.Message,
+                    ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationInternal, ServiceType.Database),
+                },
             };
             return result;
         }
 
-        /// <inheritdoc />
+        /// <inheritdoc/>
         public RequestResult<IEnumerable<UserComment>> GetEntryComments(string hdId, string parentEntryId)
         {
             UserProfile profile = this.profileDelegate.GetUserProfile(hdId).Payload;
@@ -92,27 +100,37 @@ namespace HealthGateway.GatewayApi.Services
             if (key == null)
             {
                 this.logger.LogError($"User does not have a key: ${hdId}");
-                return new RequestResult<IEnumerable<UserComment>>()
+                return new RequestResult<IEnumerable<UserComment>>
                 {
                     ResultStatus = ResultType.Error,
-                    ResultError = new RequestResultError() { ResultMessage = "Profile Key not set", ErrorCode = ErrorTranslator.InternalError(ErrorType.InvalidState) },
+                    ResultError = new RequestResultError
+                    {
+                        ResultMessage = "Profile Key not set",
+                        ErrorCode = ErrorTranslator.InternalError(ErrorType.InvalidState),
+                    },
                 };
             }
 
             DBResult<IEnumerable<Comment>> dbComments = this.commentDelegate.GetByParentEntry(hdId, parentEntryId);
-            RequestResult<IEnumerable<UserComment>> result = new RequestResult<IEnumerable<UserComment>>()
+            RequestResult<IEnumerable<UserComment>> result = new()
             {
                 ResourcePayload = dbComments.Payload.Select(c => CommentMapUtils.CreateFromDbModel(c, this.cryptoDelegate, key, this.autoMapper)),
                 TotalResultCount = dbComments.Payload.Count(),
                 PageIndex = 0,
                 PageSize = dbComments.Payload.Count(),
                 ResultStatus = dbComments.Status == DBStatusCode.Read ? ResultType.Success : ResultType.Error,
-                ResultError = dbComments.Status != DBStatusCode.Read ? new RequestResultError() { ResultMessage = dbComments.Message, ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationInternal, ServiceType.Database) } : null,
+                ResultError = dbComments.Status != DBStatusCode.Read
+                    ? new RequestResultError
+                    {
+                        ResultMessage = dbComments.Message,
+                        ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationInternal, ServiceType.Database),
+                    }
+                    : null,
             };
             return result;
         }
 
-        /// <inheritdoc />
+        /// <inheritdoc/>
         public RequestResult<IDictionary<string, IEnumerable<UserComment>>> GetProfileComments(string hdId)
         {
             UserProfile profile = this.profileDelegate.GetUserProfile(hdId).Payload;
@@ -122,10 +140,14 @@ namespace HealthGateway.GatewayApi.Services
             if (key == null)
             {
                 this.logger.LogError($"User does not have a key: ${hdId}");
-                return new RequestResult<IDictionary<string, IEnumerable<UserComment>>>()
+                return new RequestResult<IDictionary<string, IEnumerable<UserComment>>>
                 {
                     ResultStatus = ResultType.Error,
-                    ResultError = new RequestResultError() { ResultMessage = "Profile Key not set", ErrorCode = ErrorTranslator.InternalError(ErrorType.InvalidState) },
+                    ResultError = new RequestResultError
+                    {
+                        ResultMessage = "Profile Key not set",
+                        ErrorCode = ErrorTranslator.InternalError(ErrorType.InvalidState),
+                    },
                 };
             }
 
@@ -133,19 +155,25 @@ namespace HealthGateway.GatewayApi.Services
             IEnumerable<UserComment> comments = dbComments.Payload.Select(c => CommentMapUtils.CreateFromDbModel(c, this.cryptoDelegate, key, this.autoMapper));
             IDictionary<string, IEnumerable<UserComment>> userCommentsByEntry = comments.GroupBy(x => x.ParentEntryId).ToDictionary(g => g.Key, g => g.AsEnumerable());
 
-            RequestResult<IDictionary<string, IEnumerable<UserComment>>> result = new RequestResult<IDictionary<string, IEnumerable<UserComment>>>()
+            RequestResult<IDictionary<string, IEnumerable<UserComment>>> result = new()
             {
                 ResourcePayload = userCommentsByEntry,
                 TotalResultCount = userCommentsByEntry.Count,
                 PageIndex = 0,
                 PageSize = userCommentsByEntry.Count,
                 ResultStatus = dbComments.Status == DBStatusCode.Read ? ResultType.Success : ResultType.Error,
-                ResultError = dbComments.Status != DBStatusCode.Read ? new RequestResultError() { ResultMessage = dbComments.Message, ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationInternal, ServiceType.Database) } : null,
+                ResultError = dbComments.Status != DBStatusCode.Read
+                    ? new RequestResultError
+                    {
+                        ResultMessage = dbComments.Message,
+                        ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationInternal, ServiceType.Database),
+                    }
+                    : null,
             };
             return result;
         }
 
-        /// <inheritdoc />
+        /// <inheritdoc/>
         public RequestResult<UserComment> Update(UserComment userComment)
         {
             UserProfile profile = this.profileDelegate.GetUserProfile(userComment.UserProfileId).Payload;
@@ -153,26 +181,36 @@ namespace HealthGateway.GatewayApi.Services
             if (key == null)
             {
                 this.logger.LogError($"User does not have a key: ${userComment.UserProfileId}");
-                return new RequestResult<UserComment>()
+                return new RequestResult<UserComment>
                 {
                     ResultStatus = ResultType.Error,
-                    ResultError = new RequestResultError() { ResultMessage = "Profile Key not set", ErrorCode = ErrorTranslator.InternalError(ErrorType.InvalidState) },
+                    ResultError = new RequestResultError
+                    {
+                        ResultMessage = "Profile Key not set",
+                        ErrorCode = ErrorTranslator.InternalError(ErrorType.InvalidState),
+                    },
                 };
             }
 
             Comment comment = CommentMapUtils.ToDbModel(userComment, this.cryptoDelegate, key, this.autoMapper);
 
             DBResult<Comment> dbResult = this.commentDelegate.Update(comment);
-            RequestResult<UserComment> result = new RequestResult<UserComment>()
+            RequestResult<UserComment> result = new()
             {
                 ResourcePayload = CommentMapUtils.CreateFromDbModel(dbResult.Payload, this.cryptoDelegate, key, this.autoMapper),
                 ResultStatus = dbResult.Status == DBStatusCode.Updated ? ResultType.Success : ResultType.Error,
-                ResultError = dbResult.Status != DBStatusCode.Updated ? new RequestResultError() { ResultMessage = dbResult.Message, ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationInternal, ServiceType.Database) } : null,
+                ResultError = dbResult.Status != DBStatusCode.Updated
+                    ? new RequestResultError
+                    {
+                        ResultMessage = dbResult.Message,
+                        ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationInternal, ServiceType.Database),
+                    }
+                    : null,
             };
             return result;
         }
 
-        /// <inheritdoc />
+        /// <inheritdoc/>
         public RequestResult<UserComment> Delete(UserComment userComment)
         {
             UserProfile profile = this.profileDelegate.GetUserProfile(userComment.UserProfileId).Payload;
@@ -180,21 +218,31 @@ namespace HealthGateway.GatewayApi.Services
             if (key == null)
             {
                 this.logger.LogError($"User does not have a key: ${userComment.UserProfileId}");
-                return new RequestResult<UserComment>()
+                return new RequestResult<UserComment>
                 {
                     ResultStatus = ResultType.Error,
-                    ResultError = new RequestResultError() { ResultMessage = "Profile Key not set", ErrorCode = ErrorTranslator.InternalError(ErrorType.InvalidState) },
+                    ResultError = new RequestResultError
+                    {
+                        ResultMessage = "Profile Key not set",
+                        ErrorCode = ErrorTranslator.InternalError(ErrorType.InvalidState),
+                    },
                 };
             }
 
             Comment comment = CommentMapUtils.ToDbModel(userComment, this.cryptoDelegate, key, this.autoMapper);
 
             DBResult<Comment> dbResult = this.commentDelegate.Delete(comment);
-            RequestResult<UserComment> result = new RequestResult<UserComment>()
+            RequestResult<UserComment> result = new()
             {
                 ResourcePayload = CommentMapUtils.CreateFromDbModel(dbResult.Payload, this.cryptoDelegate, key, this.autoMapper),
                 ResultStatus = dbResult.Status == DBStatusCode.Deleted ? ResultType.Success : ResultType.Error,
-                ResultError = dbResult.Status != DBStatusCode.Deleted ? new RequestResultError() { ResultMessage = dbResult.Message, ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationInternal, ServiceType.Database) } : null,
+                ResultError = dbResult.Status != DBStatusCode.Deleted
+                    ? new RequestResultError
+                    {
+                        ResultMessage = dbResult.Message,
+                        ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationInternal, ServiceType.Database),
+                    }
+                    : null,
             };
             return result;
         }

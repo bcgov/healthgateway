@@ -1,7 +1,12 @@
 declare namespace Cypress {
     interface Chainable {
         logout(): void;
-        login(username: string, password: string): void;
+        login(
+            username: string,
+            password: string,
+            path: string,
+            authMethod?: string
+        ): void;
         readConfig(): Chainable<any>;
         /**
          * Select an `<option>` with specific text, value, or index within a `<select>`.

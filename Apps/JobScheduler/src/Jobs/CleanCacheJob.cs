@@ -49,8 +49,8 @@ namespace Healthgateway.JobScheduler.Jobs
         {
             this.logger = logger;
             this.dbContext = dbContext;
-            var jobConfig = configuration.GetSection($"{JobKey}");
-            this.deleteMaxRows = jobConfig.GetValue<int>("DeleteMaxRows", 1000);
+            IConfigurationSection jobConfig = configuration.GetSection($"{JobKey}");
+            this.deleteMaxRows = jobConfig.GetValue("DeleteMaxRows", 1000);
         }
 
         /// <summary>
@@ -61,11 +61,11 @@ namespace Healthgateway.JobScheduler.Jobs
         {
             this.logger.LogInformation("CleanCacheJob Starting");
             List<GenericCache> oldIds = this.dbContext.GenericCache
-                    .Where(cache => cache.ExpiryDateTime < DateTime.UtcNow)
-                    .Select(cache => new GenericCache { Id = cache.Id, Version = cache.Version, ExpiryDateTime = cache.ExpiryDateTime })
-                    .OrderBy(o => o.ExpiryDateTime)
-                    .Take(this.deleteMaxRows)
-                    .ToList();
+                .Where(cache => cache.ExpiryDateTime < DateTime.UtcNow)
+                .Select(cache => new GenericCache { Id = cache.Id, Version = cache.Version, ExpiryDateTime = cache.ExpiryDateTime })
+                .OrderBy(o => o.ExpiryDateTime)
+                .Take(this.deleteMaxRows)
+                .ToList();
             if (oldIds.Count > 0)
             {
                 this.logger.LogInformation($"Deleting {oldIds.Count} Generic cache entries out of a maximum of {this.deleteMaxRows}");
@@ -73,7 +73,7 @@ namespace Healthgateway.JobScheduler.Jobs
                 this.dbContext.SaveChanges();
             }
 
-            this.logger.LogInformation($"CleanCacheJob Finished running");
+            this.logger.LogInformation("CleanCacheJob Finished running");
         }
-}
+    }
 }

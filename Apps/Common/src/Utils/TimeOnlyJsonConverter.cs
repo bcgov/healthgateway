@@ -27,13 +27,13 @@ namespace HealthGateway.Common.Utils
     {
         private const string TimeFormat = "HH:mm:ss.FFFFFFF";
 
-        /// <inheritdoc />
+        /// <inheritdoc/>
         public override TimeOnly Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
         {
             return TimeOnly.ParseExact(reader.GetString(), TimeFormat, CultureInfo.InvariantCulture);
         }
 
-        /// <inheritdoc />
+        /// <inheritdoc/>
         public override void Write(Utf8JsonWriter writer, TimeOnly value, JsonSerializerOptions options)
         {
             writer.WriteStringValue(value.ToString(TimeFormat, CultureInfo.InvariantCulture));

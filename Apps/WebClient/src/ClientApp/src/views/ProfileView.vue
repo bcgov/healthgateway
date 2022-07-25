@@ -240,7 +240,7 @@ export default class ProfileView extends Vue {
         return items;
     }
 
-    private mounted() {
+    private mounted(): void {
         this.logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
         this.userProfileService = container.get<IUserProfileService>(
             SERVICE_IDENTIFIER.UserProfileService
@@ -286,12 +286,13 @@ export default class ProfileView extends Vue {
             });
 
         this.calculateTimeForDeletion();
-        this.intervalHandler = window.setInterval(() => {
-            this.calculateTimeForDeletion();
-        }, 1000);
+        this.intervalHandler = window.setInterval(
+            () => this.calculateTimeForDeletion(),
+            1000
+        );
     }
 
-    private checkToVerifyPhone() {
+    private checkToVerifyPhone(): void {
         let toVerifyPhone = this.$route.query.toVerifyPhone;
         this.logger.debug(
             `toVerifyPhone: ${toVerifyPhone}; smsVerified: ${this.smsVerified}`
@@ -302,7 +303,7 @@ export default class ProfileView extends Vue {
         }
     }
 
-    private checkToVerifyEmail() {
+    private checkToVerifyEmail(): void {
         let toVerifyEmail = this.$route.query.toVerifyEmail;
         this.logger.debug(
             `toVerifyEmail: ${toVerifyEmail}; emailVerified: ${this.emailVerified}`
@@ -317,30 +318,29 @@ export default class ProfileView extends Vue {
         }
     }
 
-    private validations() {
+    private validations(): unknown {
         const sms = helpers.regex("sms", /^\D?(\d{3})\D?\D?(\d{3})\D?(\d{4})$/);
         return {
             smsNumber: {
-                required: requiredIf(() => {
-                    return this.isSMSEditable && this.smsNumber !== "";
-                }),
+                required: requiredIf(
+                    () => this.isSMSEditable && this.smsNumber !== ""
+                ),
                 newSMSNumber: not(sameAs("tempSMS")),
                 sms,
             },
             smsVerificationCode: {
-                required: requiredIf(() => {
-                    return (
+                required: requiredIf(
+                    () =>
                         !this.smsVerified &&
                         this.smsNumber !== "" &&
                         !this.isSMSEditable
-                    );
-                }),
+                ),
                 minLength: minLength(6),
             },
             email: {
-                required: requiredIf(() => {
-                    return this.isEmailEditable && !this.isEmptyEmail;
-                }),
+                required: requiredIf(
+                    () => this.isEmailEditable && !this.isEmptyEmail
+                ),
                 newEmail: not(sameAs("tempEmail")),
                 email,
             },
@@ -424,6 +424,7 @@ export default class ProfileView extends Vue {
         this.checkRegistration();
         this.smsVerified = true;
     }
+
     private sendUserEmailUpdate(): void {
         this.isLoading = true;
         this.updateUserEmail({
@@ -478,9 +479,7 @@ export default class ProfileView extends Vue {
     private recoverAccount(): void {
         this.isLoading = true;
         this.recoverUserAccount()
-            .then(() => {
-                this.logger.verbose("success!");
-            })
+            .then(() => this.logger.verbose("success!"))
             .catch((err) => {
                 this.logger.error(err);
                 this.addCustomError({
@@ -981,10 +980,11 @@ export default class ProfileView extends Vue {
                                                 item, index
                                             ) in postalAddress.streetLines"
                                             :key="index"
-                                            ><b-col>{{ item }} </b-col></b-row
                                         >
-                                        <b-row
-                                            ><b-col
+                                            <b-col>{{ item }}</b-col>
+                                        </b-row>
+                                        <b-row>
+                                            <b-col
                                                 >{{ postalAddress.city }},
                                                 {{ postalAddress.state }},
                                                 {{ postalAddress.postalCode }}
@@ -1029,10 +1029,11 @@ export default class ProfileView extends Vue {
                                                 item, index
                                             ) in physicalAddress.streetLines"
                                             :key="index"
-                                            ><b-col>{{ item }} </b-col></b-row
                                         >
-                                        <b-row
-                                            ><b-col
+                                            <b-col>{{ item }}</b-col>
+                                        </b-row>
+                                        <b-row>
+                                            <b-col
                                                 >{{ physicalAddress.city }},
                                                 {{ physicalAddress.state }},
                                                 {{ physicalAddress.postalCode }}

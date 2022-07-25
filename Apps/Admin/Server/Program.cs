@@ -44,7 +44,7 @@ namespace HealthGateway.Admin.Server
     {
         private const string PhsaConfigSectionKey = "PHSA";
 
-        /// <summary>.
+        /// <summary>
         /// The entry point for the class.
         /// </summary>
         /// <param name="args">The command line arguments to be passed in.</param>

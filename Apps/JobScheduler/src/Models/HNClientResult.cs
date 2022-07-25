@@ -15,7 +15,6 @@
 // -------------------------------------------------------------------------
 namespace Healthgateway.JobScheduler.Models
 {
-    using System.Collections.Generic;
     using System.Text.Json.Serialization;
 
     /// <summary>

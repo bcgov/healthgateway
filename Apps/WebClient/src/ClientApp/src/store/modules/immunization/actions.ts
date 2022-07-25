@@ -12,11 +12,10 @@ import { ImmunizationActions } from "./types";
 
 export const actions: ImmunizationActions = {
     retrieve(context, params: { hdid: string }): Promise<void> {
-        const logger: ILogger = container.get(SERVICE_IDENTIFIER.Logger);
-        const immunizationService: IImmunizationService =
-            container.get<IImmunizationService>(
-                SERVICE_IDENTIFIER.ImmunizationService
-            );
+        const logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
+        const immunizationService = container.get<IImmunizationService>(
+            SERVICE_IDENTIFIER.ImmunizationService
+        );
 
         return new Promise((resolve, reject) => {
             if (context.state.status === LoadStatus.LOADED) {
@@ -68,7 +67,7 @@ export const actions: ImmunizationActions = {
         });
     },
     handleError(context, params: { error: ResultError; errorType: ErrorType }) {
-        const logger: ILogger = container.get(SERVICE_IDENTIFIER.Logger);
+        const logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
 
         logger.error(`ERROR: ${JSON.stringify(params.error)}`);
         context.commit("immunizationError", params.error);

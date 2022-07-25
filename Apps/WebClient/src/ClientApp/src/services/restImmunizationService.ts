@@ -17,7 +17,7 @@ import ErrorTranslator from "@/utility/errorTranslator";
 
 @injectable()
 export class RestImmunizationService implements IImmunizationService {
-    private logger: ILogger = container.get(SERVICE_IDENTIFIER.Logger);
+    private logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
     private readonly IMMS_BASE_URI: string = "Immunization";
     private baseUri = "";
     private http!: IHttpDelegate;
@@ -55,9 +55,7 @@ export class RestImmunizationService implements IImmunizationService {
                 .getWithCors<RequestResult<ImmunizationResult>>(
                     `${this.baseUri}${this.IMMS_BASE_URI}?hdid=${hdid}`
                 )
-                .then((requestResult) => {
-                    resolve(requestResult);
-                })
+                .then((requestResult) => resolve(requestResult))
                 .catch((err: HttpError) => {
                     this.logger.error(
                         `Error in RestImmunizationService.getPatientImmunizations()`

@@ -26,7 +26,7 @@ export default class BreadcrumbComponent extends Vue {
         dataTestId: "breadcrumb-home",
     };
 
-    private created() {
+    private created(): void {
         this.logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
     }
 
@@ -38,7 +38,7 @@ export default class BreadcrumbComponent extends Vue {
         return this.isAuthenticated && this.isValidIdentityProvider;
     }
 
-    private visitLink(link: string) {
+    private visitLink(link: string): void {
         window.open(link, "_self");
     }
 }
@@ -49,6 +49,7 @@ export default class BreadcrumbComponent extends Vue {
         v-if="displayBreadcrumbs"
         data-testid="breadcrumbs"
         class="pt-0"
+        aria-label="Breadcrumb Nav"
     >
         <b-breadcrumb-item
             v-for="item in allBreadcrumbItems"

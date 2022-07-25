@@ -27,7 +27,7 @@ namespace HealthGateway.Database.Delegates
     using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.Logging;
 
-    /// <inheritdoc />
+    /// <inheritdoc/>
     [ExcludeFromCodeCoverage]
     public class DBFeedbackDelegate : IFeedbackDelegate
     {
@@ -47,7 +47,7 @@ namespace HealthGateway.Database.Delegates
             this.dbContext = dbContext;
         }
 
-        /// <inheritdoc />
+        /// <inheritdoc/>
         public DBResult<UserFeedback> InsertUserFeedback(UserFeedback feedback)
         {
             this.logger.LogTrace($"Inserting user feedback to DB... {JsonSerializer.Serialize(feedback)}");
@@ -68,7 +68,7 @@ namespace HealthGateway.Database.Delegates
             return result;
         }
 
-        /// <inheritdoc />
+        /// <inheritdoc/>
         public void UpdateUserFeedback(UserFeedback feedback)
         {
             this.logger.LogTrace($"Updating the user feedback in DB... {feedback}");
@@ -85,7 +85,7 @@ namespace HealthGateway.Database.Delegates
             this.logger.LogDebug($"Finished updating feedback in DB. {JsonSerializer.Serialize(feedback)}");
         }
 
-        /// <inheritdoc />
+        /// <inheritdoc/>
         public DBResult<UserFeedback> UpdateUserFeedbackWithTagAssociations(UserFeedback feedback)
         {
             this.logger.LogTrace("Updating the user feedback id {UserFeedbackId} with {NumberOfAssociations} admin tag association in DB", feedback.Id, feedback.Tags.Count);
@@ -107,7 +107,7 @@ namespace HealthGateway.Database.Delegates
             return result;
         }
 
-        /// <inheritdoc />
+        /// <inheritdoc/>
         public DBResult<UserFeedback> GetUserFeedback(Guid feedbackId)
         {
             this.logger.LogTrace($"Getting user feedback from DB... {feedbackId}");
@@ -128,7 +128,7 @@ namespace HealthGateway.Database.Delegates
             return result;
         }
 
-        /// <inheritdoc />
+        /// <inheritdoc/>
         public DBResult<UserFeedback> GetUserFeedbackWithFeedbackTags(Guid feedbackId)
         {
             this.logger.LogTrace("Getting user feedback with associations from DB {FeedbackId}", feedbackId);
@@ -154,10 +154,10 @@ namespace HealthGateway.Database.Delegates
             return result;
         }
 
-        /// <inheritdoc />
+        /// <inheritdoc/>
         public DBResult<IList<UserFeedback>> GetAllUserFeedbackEntries()
         {
-            this.logger.LogTrace($"Getting all user feedback entries");
+            this.logger.LogTrace("Getting all user feedback entries");
             IList<UserFeedback> feedback = this.dbContext.UserFeedback
                 .Include(f => f.Tags)
                 .ThenInclude(t => t.AdminTag)
@@ -169,7 +169,7 @@ namespace HealthGateway.Database.Delegates
                 Payload = feedback,
                 Status = DBStatusCode.Read,
             };
-            this.logger.LogDebug($"Finished getting user feedback from DB...");
+            this.logger.LogDebug("Finished getting user feedback from DB...");
             return result;
         }
     }

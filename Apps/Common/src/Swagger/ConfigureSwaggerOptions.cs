@@ -21,7 +21,7 @@ namespace HealthGateway.Common.Swagger
     using Microsoft.OpenApi.Models;
     using Swashbuckle.AspNetCore.Swagger;
 
-    /// <inheritdoc />
+    /// <inheritdoc/>
     [ExcludeFromCodeCoverage]
     public sealed class ConfigureSwaggerOptions : IConfigureOptions<SwaggerOptions>
     {
@@ -36,7 +36,7 @@ namespace HealthGateway.Common.Swagger
             this.settings = settings?.Value ?? new SwaggerSettings();
         }
 
-        /// <inheritdoc />
+        /// <inheritdoc/>
         public void Configure(SwaggerOptions options)
         {
             if (options != null)
@@ -44,10 +44,11 @@ namespace HealthGateway.Common.Swagger
                 options.RouteTemplate = this.settings.RouteTemplatePrefix + "/{documentName}/swagger.json";
                 if (!string.IsNullOrEmpty(this.settings.BasePath))
                 {
-                    options.PreSerializeFilters.Add((swaggerDoc, httpReq) =>
-                    {
-                        swaggerDoc.Servers = new List<OpenApiServer> { new OpenApiServer { Url = $"{httpReq.Scheme}://{httpReq.Host.Value}{this.settings.BasePath}" } };
-                    });
+                    options.PreSerializeFilters.Add(
+                        (swaggerDoc, httpReq) => swaggerDoc.Servers = new List<OpenApiServer>
+                        {
+                            new() { Url = $"{httpReq.Scheme}://{httpReq.Host.Value}{this.settings.BasePath}" },
+                        });
                 }
             }
         }

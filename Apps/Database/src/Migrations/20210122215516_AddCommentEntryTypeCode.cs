@@ -27,8 +27,7 @@ namespace HealthGateway.Database.Migrations
             string updateEmptyEntryTypeSql = @$" 
                 UPDATE gateway.""Comment"" 
                 SET ""EntryTypeCode"" = 'NA', ""UpdatedBy"" = 'AddCommentEntryTypeCodeMigration', ""UpdatedDateTime""=now()
-                WHERE ""EntryTypeCode"" = ''
-                ";
+                WHERE ""EntryTypeCode"" = '';";
             migrationBuilder.Sql(updateEmptyEntryTypeSql);
 
             migrationBuilder.CreateTable(

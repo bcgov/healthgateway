@@ -25,22 +25,26 @@
         // Set on html element to keep footer at bottom of window short pages
         .fill-height#{$infix} {
             height: 100%;
+
             body,
             .fill-body {
                 display: flex;
                 flex-flow: column nowrap;
                 min-height: 100%;
             }
+
             // Apply to extra container element(s) around the main
             .fill-body {
                 flex: auto;
             }
+
             header,
             .header,
             footer,
             .footer {
                 flex: none;
             }
+
             main,
             .main {
                 flex: auto;
@@ -64,25 +68,30 @@ $info-alert-border-level: -4;
 @each $color, $value in (primary, secondary, success, info, warning, danger) {
     .card-#{$color} {
         border-color: theme-color-level($color, panel-border-level($color));
+
         > .card-header {
             @include gradient-bg(theme-color-level($color, $alert-bg-level));
             border-color: theme-color-level($color, panel-border-level($color));
             color: theme-color-level($color, $alert-color-level);
         }
+
         > .card-footer {
             border-color: theme-color-level($color, panel-border-level($color));
         }
     }
 }
+
 // Light text on dark header, with dark border. When you really want to look like the
 // old default panel class
 .card-default {
     border-color: theme-color(primary);
+
     > .card-header {
         background: theme-color(primary);
         border-color: theme-color(primary);
         color: theme-color(light);
     }
+
     > .card-footer {
         border-color: theme-color(primary);
     }

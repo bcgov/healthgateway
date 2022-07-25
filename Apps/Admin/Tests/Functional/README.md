@@ -23,8 +23,10 @@ Create a cypress.env.json and update with passwords or any other environment var
 
 ```bash
 {
-    "idir_username": "THE IDIR USERNAME",
-    "idir_password": "THE PASSWORD"
+    "idir_username": "THE USERNAME",
+    "idir_password": "THE PASSWORD",
+    "keycloak_username": "THE USERNAME",
+    "keycloak_password": "THE PASSWORD",
 }
 ```
 

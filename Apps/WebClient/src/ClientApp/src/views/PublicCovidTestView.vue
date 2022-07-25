@@ -30,7 +30,7 @@ import SnowPlow from "@/utility/snowPlow";
 
 library.add(faInfoCircle);
 
-const validPersonalHealthNumber = (value: string): boolean => {
+const validPersonalHealthNumber = (value: string) => {
     let phn = value.replace(/ /g, "");
     return PHNValidator.IsValid(phn);
 };
@@ -112,27 +112,25 @@ export default class PublicCovidTestView extends Vue {
         return detail ? true : false;
     }
 
-    private cancel() {
+    private cancel(): void {
         // Reset store module in case there are errors
         this.resetPublicCovidTestResponseResult();
         router.push("/");
     }
 
-    private checkAnotherTest() {
+    private checkAnotherTest(): void {
         this.displayResult = false;
         this.phn = "";
         this.dateOfBirth = "";
         this.dateOfCollection = "";
 
         // Reset input components when changing between div tags
-        this.$nextTick(() => {
-            this.$v.$reset();
-        });
+        this.$nextTick(() => this.$v.$reset());
         // Depending on where button is clicked on page, we need to ensure that top of page is displayed on the changed DIV
         window.scrollTo(0, 0);
     }
 
-    private created() {
+    private created(): void {
         this.logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
     }
 
@@ -146,7 +144,7 @@ export default class PublicCovidTestView extends Vue {
         return "";
     }
 
-    private handleSubmit() {
+    private handleSubmit(): void {
         this.$v.$touch();
         if (!this.$v.$invalid) {
             this.isLoadingCovidTests = true;
@@ -159,16 +157,14 @@ export default class PublicCovidTestView extends Vue {
                 dateOfBirth: this.dateOfBirth,
                 collectionDate: this.dateOfCollection,
             })
-                .then(() => {
-                    this.logger.debug(
-                        "Public Covid Tests retrieved from store"
-                    );
-                })
-                .catch((err) => {
+                .then(() =>
+                    this.logger.debug("Public Covid Tests retrieved from store")
+                )
+                .catch((err) =>
                     this.logger.error(
                         `Error retrieving Public Covid Tests from store: ${err}`
-                    );
-                })
+                    )
+                )
                 .finally(() => {
                     this.isLoadingCovidTests = false;
                 });
@@ -212,31 +208,31 @@ export default class PublicCovidTestView extends Vue {
         return param.$dirty ? !param.$invalid : undefined;
     }
 
-    private validations() {
+    private validations(): unknown {
         return {
             phn: {
-                required: required,
+                required,
                 formatted: validPersonalHealthNumber,
             },
             dateOfBirth: {
-                required: required,
+                required,
                 maxValue: (value: string) =>
                     new DateWrapper(value).isBefore(new DateWrapper()),
             },
             dateOfCollection: {
-                required: required,
+                required,
                 maxValue: (value: string) =>
                     new DateWrapper(value).isBefore(new DateWrapper()),
             },
         };
     }
 
-    private visitLink(link: string) {
+    private visitLink(link: string): void {
         window.open(link, "_blank");
     }
 
     @Watch("publicCovidTestResponseResult")
-    private onPublicCovidTestResponseResultChange() {
+    private onPublicCovidTestResponseResultChange(): void {
         if (this.publicCovidTestResponseResult?.loaded) {
             this.displayResult = true;
         }
@@ -411,11 +407,15 @@ export default class PublicCovidTestView extends Vue {
                     </div>
                     <div class="text-center">
                         <b-row class="my-3 no-gutters align-items-center">
-                            <b-col><hr /></b-col>
+                            <b-col>
+                                <hr />
+                            </b-col>
                             <b-col cols="auto">
                                 <h3 class="h5 m-0 px-3 text-muted">OR</h3>
                             </b-col>
-                            <b-col><hr /></b-col>
+                            <b-col>
+                                <hr />
+                            </b-col>
                         </b-row>
                         <p>Already a Health Gateway user?</p>
                         <router-link to="/login">
@@ -654,11 +654,15 @@ export default class PublicCovidTestView extends Vue {
                     </b-popover>
                     <div class="text-center">
                         <b-row class="my-3 no-gutters align-items-center">
-                            <b-col><hr /></b-col>
+                            <b-col>
+                                <hr />
+                            </b-col>
                             <b-col cols="auto">
                                 <h3 class="h5 m-0 px-3 text-muted">OR</h3>
                             </b-col>
-                            <b-col><hr /></b-col>
+                            <b-col>
+                                <hr />
+                            </b-col>
                         </b-row>
                         <p>Already a Health Gateway user?</p>
                         <router-link to="/login">

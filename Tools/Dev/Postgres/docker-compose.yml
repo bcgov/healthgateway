@@ -12,5 +12,8 @@ services:
     volumes:
       - ./backups:/backups
       - ./scripts:/scripts
-      - ./pgdata:/var/lib/postgresql/data
+      - gatewaydb:/var/lib/postgresql/data
       - ./init://docker-entrypoint-initdb.d
+volumes:
+  gatewaydb:
+    name: gatewaydb.local

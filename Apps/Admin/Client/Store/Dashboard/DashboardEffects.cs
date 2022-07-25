@@ -16,15 +16,15 @@
 
 namespace HealthGateway.Admin.Client.Store.Dashboard;
 
+using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 using Fluxor;
 using HealthGateway.Admin.Client.Services;
 using HealthGateway.Admin.Client.Utils;
 using Microsoft.AspNetCore.Components;
 using Microsoft.Extensions.Logging;
 using Refit;
-using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 
 /// <summary>
 /// The effects for the feature.

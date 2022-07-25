@@ -1,13 +1,13 @@
 @page "/dashboard"
-@using HealthGateway.Admin.Client.Store.Dashboard
 @attribute [Authorize(Roles = $"{Roles.Admin},{Roles.Reviewer}")]
+@using HealthGateway.Admin.Client.Store.Dashboard
 @inherits Fluxor.Blazor.Web.Components.FluxorComponent
 
 <PageTitle>Admin Dashboard</PageTitle>
 <HgPageHeading>Dashboard</HgPageHeading>
 
 <HgBannerFeedback Severity="Severity.Error" IsEnabled="@HasError" TResetAction="DashboardActions.ResetStateAction">
-    @foreach(var error in ErrorList)
+    @foreach (string error in ErrorList)
     {
         <li>@error</li>
     }
@@ -26,14 +26,14 @@
     <MudGrid>
         <MudItem xs="6" lg="6">
             <MudPaper Class="my-2 pa-4" Outlined="true">
-                <MudSkeleton/>
-                <MudSkeleton data-testid="skeleton-registered-users"/>
+                <MudSkeleton />
+                <MudSkeleton data-testid="skeleton-registered-users" />
             </MudPaper>
         </MudItem>
         <MudItem xs="6" lg="6">
             <MudPaper Class="my-2 pa-4" Outlined="true">
-                <MudSkeleton/>
-                <MudSkeleton data-testid="skeleton-dependents"/>
+                <MudSkeleton />
+                <MudSkeleton data-testid="skeleton-dependents" />
             </MudPaper>
         </MudItem>
     </MudGrid>
@@ -43,14 +43,22 @@ else
     <MudGrid>
         <MudItem xs="6" lg="6">
             <MudPaper Class="my-2 pa-4" Outlined="true">
-                <MudText Align="Align.Center" Typo="Typo.subtitle1"><strong>Registered Users</strong></MudText>
-                <MudText Align="Align.Center" Typo="Typo.subtitle1" data-testid="total-registered-users"><strong>@TotalRegisteredUsers</strong></MudText>
+                <MudText Align="Align.Center" Typo="Typo.subtitle1">
+                    <strong>Registered Users</strong>
+                </MudText>
+                <MudText Align="Align.Center" Typo="Typo.subtitle1" data-testid="total-registered-users">
+                    <strong>@TotalRegisteredUsers</strong>
+                </MudText>
             </MudPaper>
         </MudItem>
         <MudItem xs="6" lg="6">
             <MudPaper Class="my-2 pa-4" Outlined="true">
-                <MudText Align="Align.Center" Typo="Typo.subtitle1"><strong>Dependents</strong></MudText>
-                <MudText Align="Align.Center" Typo="Typo.subtitle1" data-testid="total-dependents"><strong>@TotalDependents</strong></MudText>
+                <MudText Align="Align.Center" Typo="Typo.subtitle1">
+                    <strong>Dependents</strong>
+                </MudText>
+                <MudText Align="Align.Center" Typo="Typo.subtitle1" data-testid="total-dependents">
+                    <strong>@TotalDependents</strong>
+                </MudText>
             </MudPaper>
         </MudItem>
     </MudGrid>
@@ -60,10 +68,10 @@ else
 {
     <MudGrid Class="my-3">
         <MudItem xs="6" lg="3">
-            <MudSkeleton data-testid="skeleton-selected-date-range" SkeletonType="SkeletonType.Rectangle" Height="48px"/>
+            <MudSkeleton data-testid="skeleton-selected-date-range" SkeletonType="SkeletonType.Rectangle" Height="48px" />
         </MudItem>
         <MudItem xs="6" lg="3">
-            <MudSkeleton data-testid="skeleton-unique-days" SkeletonType="SkeletonType.Rectangle" Height="48px"/>
+            <MudSkeleton data-testid="skeleton-unique-days" SkeletonType="SkeletonType.Rectangle" Height="48px" />
         </MudItem>
     </MudGrid>
 }
@@ -80,31 +88,37 @@ else
             </MudDateRangePicker>
         </MudItem>
         <MudItem xs="6" lg="3">
-            <MudNumericField data-testid="unique-days-input" T="int" Label="Unique Days" @bind-Value="UniqueDays" Required="@true"/>
+            <MudNumericField data-testid="unique-days-input" T="int" Label="Unique Days" @bind-Value="UniqueDays" Required="@true" />
         </MudItem>
     </MudGrid>
 }
 
 @if (RecurringUsersLoading)
 {
-    <MudSkeleton Width="20%"/>
+    <MudSkeleton Width="20%" />
     <MudGrid>
         <MudItem xs="6" lg="6">
             <MudPaper Class="my-2 pa-4" Outlined="true">
-                <MudSkeleton/>
-                <MudSkeleton data-testid="skeleton-user-count"/>
+                <MudSkeleton />
+                <MudSkeleton data-testid="skeleton-user-count" />
             </MudPaper>
         </MudItem>
     </MudGrid>
 }
 else
 {
-    <MudText Class="my-3" Typo="Typo.subtitle1"><strong>Recurring Users</strong></MudText>
+    <MudText Class="my-3" Typo="Typo.subtitle1">
+        <strong>Recurring Users</strong>
+    </MudText>
     <MudGrid>
         <MudItem xs="6" lg="6">
             <MudPaper Class="my-2 pa-4" Outlined="true">
-                <MudText Align="Align.Center" Typo="Typo.subtitle1"><strong>User Count</strong></MudText>
-                <MudText Align="Align.Center" Typo="Typo.subtitle1" data-testid="total-unique-users"><strong>@TotalUniqueUsers</strong></MudText>
+                <MudText Align="Align.Center" Typo="Typo.subtitle1">
+                    <strong>User Count</strong>
+                </MudText>
+                <MudText Align="Align.Center" Typo="Typo.subtitle1" data-testid="total-unique-users">
+                    <strong>@TotalUniqueUsers</strong>
+                </MudText>
             </MudPaper>
         </MudItem>
     </MudGrid>
@@ -112,18 +126,22 @@ else
 
 @if (RatingSummaryLoading)
 {
-    <MudSkeleton Width="20%"/>
-    <MudSkeleton data-testid="skeleton-rating-summary" SkeletonType="SkeletonType.Rectangle" Width="500px" Height="350px"/>
+    <MudSkeleton Width="20%" />
+    <MudSkeleton data-testid="skeleton-rating-summary" SkeletonType="SkeletonType.Rectangle" Width="500px" Height="350px" />
 }
 else
 {
-    <MudText Class="my-3" Typo="Typo.subtitle1"><strong>Rating Summary</strong></MudText>
-    <RatingSummary/>
+    <MudText Class="my-3" Typo="Typo.subtitle1">
+        <strong>Rating Summary</strong>
+    </MudText>
+    <RatingSummary />
 }
 
 <MudGrid>
     <MudItem xs="12" lg="12">
-        <MudText Class="mt-3" Typo="Typo.subtitle1"><strong>Daily Data</strong></MudText>
+        <MudText Class="mt-3" Typo="Typo.subtitle1">
+            <strong>Daily Data</strong>
+        </MudText>
         <MudTable Class="mt-3" Loading="@(RegisteredUsersLoading || LoggedInUsersLoading || DependentsLoading)" data-testid="daily-data-table" Items="@TableData" HorizontalScrollbar="true" Striped="true" Dense="true" RowsPerPage="25">
             <HeaderContent>
                 <MudTh>Date</MudTh>

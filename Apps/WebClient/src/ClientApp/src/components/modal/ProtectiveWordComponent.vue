@@ -45,25 +45,25 @@ export default class ProtectiveWordComponent extends Vue {
         return this.protectedWordAttempts > 1;
     }
 
-    private created() {
+    private created(): void {
         this.logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
     }
 
-    private handleOk(bvModalEvt: Event) {
+    private handleOk(bvModalEvt: Event): void {
         // Prevent modal from closing
         bvModalEvt.preventDefault();
         this.fetchMedications();
     }
 
-    private fetchMedications() {
+    private fetchMedications(): void {
         this.retrieveMedications({
             hdid: this.user.hdid,
             protectiveWord: this.protectiveWord,
-        }).catch((err: ResultError) => {
+        }).catch((err: ResultError) =>
             this.logger.error(
                 "Error retrieving medications: " + JSON.stringify(err)
-            );
-        });
+            )
+        );
     }
 }
 </script>
@@ -153,8 +153,10 @@ export default class ProtectiveWordComponent extends Vue {
 
 <style lang="scss" scoped>
 @import "@/assets/scss/_variables.scss";
+
 .modal-footer {
     justify-content: flex-start;
+
     button {
         padding: 5px 20px 5px 20px;
     }

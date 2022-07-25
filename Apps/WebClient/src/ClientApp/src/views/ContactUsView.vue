@@ -46,7 +46,7 @@ export default class ContactUsView extends Vue {
                                 9 am to 5 pm on holidays.
                             </b-col>
                         </b-row>
-                        <b-row class="pb-4"> </b-row>
+                        <b-row class="pb-4"></b-row>
                         <b-row>
                             <b-col>
                                 <h4>Health Gateway</h4>

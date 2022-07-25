@@ -10,7 +10,7 @@ export default class LogoutCompleteView extends Vue {
     @Getter("webClient", { namespace: "config" })
     config!: WebClientConfiguration;
 
-    private created() {
+    private created(): void {
         setTimeout(() => {
             if (this.$route.path == "/logoutComplete") {
                 this.$router.push({ path: "/" });

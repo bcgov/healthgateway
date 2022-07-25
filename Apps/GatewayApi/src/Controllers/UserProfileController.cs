@@ -22,7 +22,6 @@ namespace HealthGateway.GatewayApi.Controllers
     using System.Threading.Tasks;
     using HealthGateway.Common.AccessManagement.Authorization.Policy;
     using HealthGateway.Common.Data.ViewModels;
-    using HealthGateway.Common.Models;
     using HealthGateway.Common.Utils;
     using HealthGateway.GatewayApi.Models;
     using HealthGateway.GatewayApi.Services;
@@ -78,7 +77,10 @@ namespace HealthGateway.GatewayApi.Controllers
         /// <response code="200">The user profile record was saved.</response>
         /// <response code="400">The user profile was already inserted.</response>
         /// <response code="401">The client must authenticate itself to get the requested response.</response>
-        /// <response code="403">The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.</response>
+        /// <response code="403">
+        /// The client does not have access rights to the content; that is, it is unauthorized, so the server
+        /// is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.
+        /// </response>
         [HttpPost]
         [Route("{hdid}")]
         [Authorize(Policy = UserProfilePolicy.Write)]
@@ -109,7 +111,10 @@ namespace HealthGateway.GatewayApi.Controllers
         /// <param name="hdid">The user hdid.</param>
         /// <response code="200">Returns the user profile json.</response>
         /// <response code="401">the client must authenticate itself to get the requested response.</response>
-        /// <response code="403">The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.</response>
+        /// <response code="403">
+        /// The client does not have access rights to the content; that is, it is unauthorized, so the server
+        /// is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.
+        /// </response>
         [HttpGet]
         [Route("{hdid}")]
         [Authorize(Policy = UserProfilePolicy.Read)]
@@ -131,7 +136,10 @@ namespace HealthGateway.GatewayApi.Controllers
         /// <param name="hdid">The user hdid.</param>
         /// <response code="200">The request result is returned.</response>
         /// <response code="401">the client must authenticate itself to get the requested response.</response>
-        /// <response code="403">The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.</response>
+        /// <response code="403">
+        /// The client does not have access rights to the content; that is, it is unauthorized, so the server
+        /// is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.
+        /// </response>
         [HttpGet]
         [Route("{hdid}/Validate")]
         [Authorize(Policy = UserProfilePolicy.Read)]
@@ -147,7 +155,10 @@ namespace HealthGateway.GatewayApi.Controllers
         /// <param name="hdid">The user hdid.</param>
         /// <response code="200">Returns the user profile json.</response>
         /// <response code="401">the client must authenticate itself to get the requested response.</response>
-        /// <response code="403">The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.</response>
+        /// <response code="403">
+        /// The client does not have access rights to the content; that is, it is unauthorized, so the server
+        /// is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.
+        /// </response>
         [HttpDelete]
         [Route("{hdid}")]
         [Authorize(Policy = UserProfilePolicy.Write)]
@@ -156,7 +167,7 @@ namespace HealthGateway.GatewayApi.Controllers
         {
             // Retrieve the user identity id from the claims
             ClaimsPrincipal user = this.httpContextAccessor.HttpContext!.User;
-            Guid userId = new Guid(user.FindFirst(ClaimTypes.NameIdentifier)!.Value);
+            Guid userId = new(user.FindFirst(ClaimTypes.NameIdentifier)!.Value);
 
             return this.userProfileService.CloseUserProfile(hdid, userId);
         }
@@ -168,7 +179,10 @@ namespace HealthGateway.GatewayApi.Controllers
         /// <param name="hdid">The user hdid.</param>
         /// <response code="200">Returns the user profile json.</response>
         /// <response code="401">the client must authenticate itself to get the requested response.</response>
-        /// <response code="403">The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.</response>
+        /// <response code="403">
+        /// The client does not have access rights to the content; that is, it is unauthorized, so the server
+        /// is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.
+        /// </response>
         [HttpGet]
         [Route("{hdid}/recover")]
         [Authorize(Policy = UserProfilePolicy.Write)]
@@ -184,7 +198,10 @@ namespace HealthGateway.GatewayApi.Controllers
         /// <returns>The terms of service model wrapped in a request result.</returns>
         /// <response code="200">Returns the terms of service json.</response>
         /// <response code="401">the client must authenticate itself to get the requested response.</response>
-        /// <response code="403">The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.</response>
+        /// <response code="403">
+        /// The client does not have access rights to the content; that is, it is unauthorized, so the server
+        /// is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.
+        /// </response>
         [HttpGet]
         [Route("termsofservice")]
         [AllowAnonymous]
@@ -259,7 +276,10 @@ namespace HealthGateway.GatewayApi.Controllers
         /// <returns>True if the action was successful.</returns>
         /// <response code="200">Returns true if the call was successful.</response>
         /// <response code="401">the client must authenticate itself to get the requested response.</response>
-        /// <response code="403">The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.</response>
+        /// <response code="403">
+        /// The client does not have access rights to the content; that is, it is unauthorized, so the server
+        /// is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.
+        /// </response>
         [HttpPut]
         [Route("{hdid}/email")]
         [Authorize(Policy = UserProfilePolicy.Write)]
@@ -276,7 +296,10 @@ namespace HealthGateway.GatewayApi.Controllers
         /// <returns>True if the action was successful.</returns>
         /// <response code="200">Returns true if the call was successful.</response>
         /// <response code="401">the client must authenticate itself to get the requested response.</response>
-        /// <response code="403">The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.</response>
+        /// <response code="403">
+        /// The client does not have access rights to the content; that is, it is unauthorized, so the server
+        /// is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.
+        /// </response>
         [HttpPut]
         [Route("{hdid}/sms")]
         [Authorize(Policy = UserProfilePolicy.Write)]
@@ -293,7 +316,10 @@ namespace HealthGateway.GatewayApi.Controllers
         /// <param name="userPreferenceModel">The user preference request model.</param>
         /// <response code="200">The user preference record was saved.</response>
         /// <response code="401">The client must authenticate itself to get the requested response.</response>
-        /// <response code="403">The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.</response>
+        /// <response code="403">
+        /// The client does not have access rights to the content; that is, it is unauthorized, so the server
+        /// is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.
+        /// </response>
         [HttpPut]
         [Route("{hdid}/preference")]
         [Authorize(Policy = UserProfilePolicy.Write)]
@@ -321,7 +347,10 @@ namespace HealthGateway.GatewayApi.Controllers
         /// <param name="userPreferenceModel">The user preference request model.</param>
         /// <response code="200">The comment record was saved.</response>
         /// <response code="401">The client must authenticate itself to get the requested response.</response>
-        /// <response code="403">The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.</response>
+        /// <response code="403">
+        /// The client does not have access rights to the content; that is, it is unauthorized, so the server
+        /// is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.
+        /// </response>
         [HttpPost]
         [Route("{hdid}/preference")]
         [Authorize(Policy = UserProfilePolicy.Write)]
@@ -346,7 +375,10 @@ namespace HealthGateway.GatewayApi.Controllers
         /// <param name="termsOfServiceId">The id of the terms of service to update for this user.</param>
         /// <response code="200">Returns the user profile json.</response>
         /// <response code="401">the client must authenticate itself to get the requested response.</response>
-        /// <response code="403">The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.</response>
+        /// <response code="403">
+        /// The client does not have access rights to the content; that is, it is unauthorized, so the server
+        /// is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.
+        /// </response>
         [HttpPut]
         [Route("{hdid}/acceptedterms")]
         [Authorize(Policy = UserProfilePolicy.Write)]

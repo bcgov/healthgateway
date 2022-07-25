@@ -6,11 +6,11 @@ import { Component, Prop } from "vue-property-decorator";
 export default class HgCardButtonComponent extends Vue {
     @Prop({ required: true }) title!: string;
 
-    private get hasIconSlot() {
+    private get hasIconSlot(): boolean {
         return this.$slots.icon !== undefined;
     }
 
-    private get hasMenuSlot() {
+    private get hasMenuSlot(): boolean {
         return this.$slots.menu !== undefined;
     }
 }

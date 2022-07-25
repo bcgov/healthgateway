@@ -32,7 +32,7 @@ namespace HealthGateway.Laboratory.Delegates
         /// <param name="token">The bearer token to authorize the call.</param>
         /// <returns>The lab test kit sent.</returns>
         [Post("/api/v1/Public/LabTestKits/Registration")]
-        Task<HttpResponseMessage> RegisterLabTest([Body] PublicLabTestKit testKit, [Authorize("Bearer")] string token);
+        Task<HttpResponseMessage> RegisterLabTest([Body] PublicLabTestKit testKit, [Authorize] string token);
 
         /// <summary>
         /// Registers a lab test kit for an authenticated user.
@@ -42,6 +42,6 @@ namespace HealthGateway.Laboratory.Delegates
         /// <param name="token">The bearer token to authorize the call.</param>
         /// <returns>The lab test kit sent.</returns>
         [Post("/api/v1/LabTestKits/Registration?subjectHdid={HdId}")]
-        Task<HttpResponseMessage> RegisterLabTest(string hdid, [Body] LabTestKit testKit, [Authorize("Bearer")] string token);
+        Task<HttpResponseMessage> RegisterLabTest(string hdid, [Body] LabTestKit testKit, [Authorize] string token);
     }
 }

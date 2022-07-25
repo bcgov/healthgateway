@@ -73,23 +73,23 @@ export default class SidebarComponent extends Vue {
     private isExportTutorialEnabled = true;
 
     @Watch("$route")
-    private onRouteChanged() {
+    private onRouteChanged(): void {
         this.clearOverlay();
     }
 
     @Watch("isOpen")
-    private onIsOpen(val: boolean) {
+    private onIsOpen(val: boolean): void {
         this.logger.verbose(`isOpen: ${val}`);
 
         // disable popover when transition starts
         this.isExportTutorialEnabled = false;
     }
 
-    private created() {
+    private created(): void {
         this.logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
     }
 
-    private async mounted() {
+    private async mounted(): Promise<void> {
         await this.$nextTick();
 
         // set up listener to monitor sidebar collapsing and expanding
@@ -117,29 +117,29 @@ export default class SidebarComponent extends Vue {
         });
     }
 
-    private toggleOpen() {
+    private toggleOpen(): void {
         this.toggleSidebar();
     }
 
-    private clearOverlay() {
+    private clearOverlay(): void {
         if (this.isOverlayVisible) {
             this.toggleSidebar();
         }
     }
 
-    private dismissTutorial(userPreference: UserPreference) {
+    private dismissTutorial(userPreference: UserPreference): void {
         this.logger.debug(
             `Dismissing tutorial ${userPreference.preference}...`
         );
         userPreference.value = "false";
         if (userPreference.hdId != undefined) {
             this.updateUserPreference({
-                userPreference: userPreference,
+                userPreference,
             });
         } else {
             userPreference.hdId = this.user.hdid;
             this.createUserPreference({
-                userPreference: userPreference,
+                userPreference,
             });
         }
     }
@@ -164,7 +164,7 @@ export default class SidebarComponent extends Vue {
         this.isExportTutorialEnabled = value;
     }
 
-    private get isOverlayVisible() {
+    private get isOverlayVisible(): boolean {
         return this.isOpen && this.isMobileWidth;
     }
 
@@ -209,7 +209,12 @@ export default class SidebarComponent extends Vue {
 <template>
     <div v-if="isSidebarAvailable" class="wrapper">
         <!-- Sidebar -->
-        <nav id="sidebar" data-testid="sidebar" :class="{ collapsed: !isOpen }">
+        <nav
+            id="sidebar"
+            data-testid="sidebar"
+            :class="{ collapsed: !isOpen }"
+            aria-label="Side Nav"
+        >
             <b-row class="row-container">
                 <b-col>
                     <!-- Home button -->
@@ -526,6 +531,7 @@ hr {
 
 <style lang="scss">
 @import "@/assets/scss/_variables.scss";
+
 .popover-style {
     z-index: $z_popover;
 }

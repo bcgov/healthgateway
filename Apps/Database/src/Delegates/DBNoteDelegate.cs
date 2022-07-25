@@ -48,10 +48,10 @@ namespace HealthGateway.Database.Delegates
             this.dbContext = dbContext;
         }
 
-        /// <inheritdoc />
+        /// <inheritdoc/>
         public DBResult<Note> GetNote(Guid noteId, string hdid)
         {
-            DBResult<Note> result = new DBResult<Note>()
+            DBResult<Note> result = new()
             {
                 Status = DBStatusCode.NotFound,
             };
@@ -65,26 +65,26 @@ namespace HealthGateway.Database.Delegates
             return result;
         }
 
-        /// <inheritdoc />
+        /// <inheritdoc/>
         public DBResult<IEnumerable<Note>> GetNotes(string hdId, int offset = 0, int pagesize = 500)
         {
             this.logger.LogTrace($"Getting Notes for {hdId}...");
-            DBResult<IEnumerable<Note>> result = new DBResult<IEnumerable<Note>>();
+            DBResult<IEnumerable<Note>> result = new();
             result.Payload = this.dbContext.Note
-                    .Where(p => p.HdId == hdId)
-                    .OrderBy(o => o.JournalDate)
-                    .Skip(offset)
-                    .Take(pagesize)
-                    .ToList();
+                .Where(p => p.HdId == hdId)
+                .OrderBy(o => o.JournalDate)
+                .Skip(offset)
+                .Take(pagesize)
+                .ToList();
             result.Status = result.Payload != null ? DBStatusCode.Read : DBStatusCode.NotFound;
             return result;
         }
 
-        /// <inheritdoc />
+        /// <inheritdoc/>
         public DBResult<Note> AddNote(Note note, bool commit = true)
         {
-            this.logger.LogTrace($"Adding Note to DB...");
-            DBResult<Note> result = new DBResult<Note>()
+            this.logger.LogTrace("Adding Note to DB...");
+            DBResult<Note> result = new()
             {
                 Payload = note,
                 Status = DBStatusCode.Deferred,
@@ -99,21 +99,21 @@ namespace HealthGateway.Database.Delegates
                 }
                 catch (DbUpdateException e)
                 {
-                    this.logger.LogError($"Unable to save note to DB {e.ToString()}");
+                    this.logger.LogError($"Unable to save note to DB {e}");
                     result.Status = DBStatusCode.Error;
                     result.Message = e.Message;
                 }
             }
 
-            this.logger.LogDebug($"Finished adding Note in DB");
+            this.logger.LogDebug("Finished adding Note in DB");
             return result;
         }
 
-        /// <inheritdoc />
+        /// <inheritdoc/>
         public DBResult<Note> UpdateNote(Note note, bool commit = true)
         {
-            this.logger.LogTrace($"Updating Note request in DB...");
-            DBResult<Note> result = new DBResult<Note>()
+            this.logger.LogTrace("Updating Note request in DB...");
+            DBResult<Note> result = new()
             {
                 Payload = note,
                 Status = DBStatusCode.Deferred,
@@ -134,15 +134,15 @@ namespace HealthGateway.Database.Delegates
                 }
             }
 
-            this.logger.LogDebug($"Finished updating Note in DB");
+            this.logger.LogDebug("Finished updating Note in DB");
             return result;
         }
 
-        /// <inheritdoc />
+        /// <inheritdoc/>
         public DBResult<IEnumerable<Note>> BatchUpdate(IEnumerable<Note> notes, bool commit = true)
         {
-            this.logger.LogTrace($"Updating Note request in DB...");
-            DBResult<IEnumerable<Note>> result = new DBResult<IEnumerable<Note>>()
+            this.logger.LogTrace("Updating Note request in DB...");
+            DBResult<IEnumerable<Note>> result = new()
             {
                 Payload = notes,
                 Status = DBStatusCode.Deferred,
@@ -162,15 +162,15 @@ namespace HealthGateway.Database.Delegates
                 }
             }
 
-            this.logger.LogDebug($"Finished updating Note in DB");
+            this.logger.LogDebug("Finished updating Note in DB");
             return result;
         }
 
-        /// <inheritdoc />
+        /// <inheritdoc/>
         public DBResult<Note> DeleteNote(Note note, bool commit = true)
         {
-            this.logger.LogTrace($"Deleting Note from DB...");
-            DBResult<Note> result = new DBResult<Note>()
+            this.logger.LogTrace("Deleting Note from DB...");
+            DBResult<Note> result = new()
             {
                 Payload = note,
                 Status = DBStatusCode.Deferred,
@@ -191,11 +191,11 @@ namespace HealthGateway.Database.Delegates
                 }
             }
 
-            this.logger.LogDebug($"Finished deleting Note in DB");
+            this.logger.LogDebug("Finished deleting Note in DB");
             return result;
         }
 
-        /// <inheritdoc />
+        /// <inheritdoc/>
         public DBResult<IEnumerable<Note>> GetAll(int page, int pageSize)
         {
             this.logger.LogTrace($"Retrieving all the notes for the page #{page} with pageSize: {pageSize}...");

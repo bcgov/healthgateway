@@ -140,17 +140,17 @@ export default class PcrTestView extends Vue {
     private DSMANUAL = PcrDataSource.Manual;
 
     // Set this to none initially to show options
-    private dataSource: PcrDataSource = this.DSNONE;
+    private dataSource = this.DSNONE;
 
     // ### Lifecycle ###
-    private created() {
+    private created(): void {
         this.logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
         this.pcrTestService = container.get<IPcrTestService>(
             SERVICE_IDENTIFIER.PcrTestService
         );
     }
 
-    private mounted() {
+    private mounted(): void {
         if (!this.serialNumber || this.serialNumber === "") {
             this.noSerialNumber = true;
             this.noTestKitCode = true;
@@ -160,7 +160,7 @@ export default class PcrTestView extends Vue {
     }
 
     @Watch("oidcIsAuthenticated")
-    private oidcIsAuthenticatedChanged() {
+    private oidcIsAuthenticatedChanged(): void {
         if (this.oidcIsAuthenticated) {
             this.dataSource = this.DSKEYCLOAK;
         }
@@ -191,12 +191,12 @@ export default class PcrTestView extends Vue {
     }
 
     // Redirect back to serial number path if user had it before logging in
-    private get oidcRedirectPath() {
+    private get oidcRedirectPath(): string {
         return this.noSerialNumber ? "/pcrtest" : this.redirectPath;
     }
 
     // ### Setters ###
-    private setHasNoPhn(value: boolean) {
+    private setHasNoPhn(value: boolean): void {
         this.noPhn = value;
         const phnField = this.$v.pcrTest.phn;
         if (phnField) {
@@ -206,7 +206,7 @@ export default class PcrTestView extends Vue {
     }
 
     // Sets the data source to either NONE (landing), KEYCLOAK (login), or MANUAL (registration)
-    private setDataSource(dataSource: PcrDataSource) {
+    private setDataSource(dataSource: PcrDataSource): void {
         if (
             dataSource === PcrDataSource.Keycloak &&
             !this.oidcIsAuthenticated
@@ -264,7 +264,7 @@ export default class PcrTestView extends Vue {
         return pattern.test(value);
     }
 
-    private validations() {
+    private validations(): unknown {
         return {
             pcrTest: {
                 firstName: {
@@ -307,7 +307,7 @@ export default class PcrTestView extends Vue {
                     minLength: minLength(7),
                 },
                 testTakenMinutesAgo: {
-                    required: required,
+                    required,
                     minValue: minValue(0),
                 },
                 testKitCode: {
@@ -323,7 +323,7 @@ export default class PcrTestView extends Vue {
     }
 
     // ### Form Actions ###
-    private handleSubmit() {
+    private handleSubmit(): void {
         this.$v.$touch();
         this.errorMessage = "";
         if (this.$v.$invalid) {
@@ -364,9 +364,9 @@ export default class PcrTestView extends Vue {
                         );
                         this.displaySuccess();
                     })
-                    .catch((err: ResultError) => {
-                        this.handleError(err, "registerTestKit");
-                    });
+                    .catch((err: ResultError) =>
+                        this.handleError(err, "registerTestKit")
+                    );
                 break;
             // ### Submitted through manual input
             case this.DSMANUAL:
@@ -400,9 +400,9 @@ export default class PcrTestView extends Vue {
                         );
                         this.displaySuccess();
                     })
-                    .catch((err: ResultError) => {
-                        this.handleError(err, "registerTestKitPublic");
-                    });
+                    .catch((err: ResultError) =>
+                        this.handleError(err, "registerTestKitPublic")
+                    );
                 break;
             default:
                 break;
@@ -416,7 +416,7 @@ export default class PcrTestView extends Vue {
         window.scrollTo(0, 0);
     }
 
-    private handleError(err: ResultError, domain: string) {
+    private handleError(err: ResultError, domain: string): void {
         this.logger.error(`${domain} Error: ${err}`);
         if (err.actionCode == ActionType.Processed) {
             this.errorMessage = err.resultMessage;
@@ -431,13 +431,13 @@ export default class PcrTestView extends Vue {
         window.scrollTo(0, 0);
     }
 
-    private handleCancel() {
+    private handleCancel(): void {
         this.resetForm();
         this.dataSource = PcrDataSource.None;
         window.scrollTo(0, 0);
     }
 
-    private resetForm() {
+    private resetForm(): void {
         this.pcrTest = {
             firstName: "",
             lastName: "",
@@ -497,11 +497,15 @@ export default class PcrTestView extends Vue {
                         </b-col>
                     </b-row>
                     <b-row class="my-3 no-gutters align-items-center">
-                        <b-col><hr /></b-col>
+                        <b-col>
+                            <hr />
+                        </b-col>
                         <b-col cols="auto">
                             <h3 class="h5 m-0 px-3 text-muted">OR</h3>
                         </b-col>
-                        <b-col><hr /></b-col>
+                        <b-col>
+                            <hr />
+                        </b-col>
                     </b-row>
                     <b-row align="center">
                         <b-col>
@@ -1106,6 +1110,7 @@ export default class PcrTestView extends Vue {
     background-color: #1a5a95 !important;
     border-color: #1a5a95 !important;
 }
+
 .phn-info {
     color: #636363 !important;
 }

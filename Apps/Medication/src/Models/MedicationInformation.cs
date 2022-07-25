@@ -15,10 +15,6 @@
 //-------------------------------------------------------------------------
 namespace HealthGateway.Medication.Models
 {
-    using System;
-    using System.Collections.Generic;
-    using HealthGateway.Database.Models;
-
     /// <summary>
     /// The medications data model.
     /// </summary>

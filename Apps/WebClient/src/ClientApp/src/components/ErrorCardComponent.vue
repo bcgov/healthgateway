@@ -82,7 +82,7 @@ export default class ErrorCardComponent extends Vue {
         return errorDetails;
     }
 
-    private onCopy() {
+    private onCopy(): void {
         this.copyToClipBoardModal.showModal();
     }
 }
@@ -173,6 +173,7 @@ export default class ErrorCardComponent extends Vue {
 :not(.collapsed) > .when-closed {
     display: none;
 }
+
 .break-word {
     word-wrap: break-word;
 }

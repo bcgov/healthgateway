@@ -18,10 +18,8 @@ namespace HealthGateway.Immunization
     using System.Diagnostics.CodeAnalysis;
     using HealthGateway.Common.AccessManagement.Authentication;
     using HealthGateway.Common.AspNetConfiguration;
-    using HealthGateway.Common.Delegates;
     using HealthGateway.Common.Delegates.PHSA;
     using HealthGateway.Common.Models.PHSA;
-    using HealthGateway.Database.Delegates;
     using HealthGateway.Immunization.Api;
     using HealthGateway.Immunization.Delegates;
     using HealthGateway.Immunization.Services;
@@ -72,7 +70,7 @@ namespace HealthGateway.Immunization
             services.AddTransient<IVaccineStatusService, VaccineStatusService>();
 
             // Add delegates
-            services.AddTransient<Delegates.IImmunizationDelegate, Delegates.RestImmunizationDelegate>();
+            services.AddTransient<IImmunizationDelegate, RestImmunizationDelegate>();
             services.AddTransient<IVaccineStatusDelegate, RestVaccineStatusDelegate>();
             services.AddTransient<IAuthenticationDelegate, AuthenticationDelegate>();
 

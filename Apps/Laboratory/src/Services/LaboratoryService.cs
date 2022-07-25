@@ -86,8 +86,7 @@ namespace HealthGateway.Laboratory.Services
 
             if (accessToken != null)
             {
-                RequestResult<PhsaResult<List<PhsaCovid19Order>>> delegateResult = await this.laboratoryDelegate
-                    .GetCovid19Orders(accessToken, hdid, pageIndex).ConfigureAwait(true);
+                RequestResult<PhsaResult<List<PhsaCovid19Order>>> delegateResult = await this.laboratoryDelegate.GetCovid19Orders(accessToken, hdid, pageIndex).ConfigureAwait(true);
 
                 retVal.ResultStatus = delegateResult.ResultStatus;
                 retVal.ResultError = delegateResult.ResultError;
@@ -203,7 +202,7 @@ namespace HealthGateway.Laboratory.Services
             catch (Exception e) when (e is FormatException || e is ArgumentNullException)
             {
                 retVal.ResultStatus = ResultType.Error;
-                retVal.ResultError = new RequestResultError()
+                retVal.ResultError = new RequestResultError
                 {
                     ResultMessage = "Error parsing date of birth",
                     ErrorCode = ErrorTranslator.InternalError(ErrorType.InvalidState),
@@ -219,7 +218,7 @@ namespace HealthGateway.Laboratory.Services
             catch (Exception e) when (e is FormatException || e is ArgumentNullException)
             {
                 retVal.ResultStatus = ResultType.Error;
-                retVal.ResultError = new RequestResultError()
+                retVal.ResultError = new RequestResultError
                 {
                     ResultMessage = "Error parsing collection date",
                     ErrorCode = ErrorTranslator.InternalError(ErrorType.InvalidState),
@@ -230,7 +229,7 @@ namespace HealthGateway.Laboratory.Services
             if (!PhnValidator.IsValid(phn))
             {
                 retVal.ResultStatus = ResultType.Error;
-                retVal.ResultError = new RequestResultError()
+                retVal.ResultError = new RequestResultError
                 {
                     ResultMessage = "Error parsing phn",
                     ErrorCode = ErrorTranslator.InternalError(ErrorType.InvalidState),

@@ -31,6 +31,6 @@ namespace HealthGateway.Medication.Models
         /// <summary>
         /// Gets or sets the drug product.
         /// </summary>
-        public DrugProduct DrugProduct { get; set; } = new DrugProduct();
+        public DrugProduct DrugProduct { get; set; } = new();
     }
 }

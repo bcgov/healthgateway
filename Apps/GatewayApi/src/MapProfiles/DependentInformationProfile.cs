@@ -16,9 +16,7 @@
 namespace HealthGateway.GatewayApi.MapProfiles
 {
     using AutoMapper;
-    using HealthGateway.Common.AspNetConfiguration.Modules;
     using HealthGateway.Common.Models;
-    using HealthGateway.Database.Models;
     using HealthGateway.GatewayApi.Models;
 
     /// <summary>

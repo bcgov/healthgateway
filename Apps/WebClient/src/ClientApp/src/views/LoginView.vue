@@ -44,7 +44,7 @@ export default class LoginView extends Vue {
     private isLoading = true;
     private redirectPath = "";
 
-    private mounted() {
+    private mounted(): void {
         if (this.$route.query.redirect && this.$route.query.redirect !== "") {
             this.redirectPath = this.$route.query.redirect.toString();
         } else {
@@ -136,7 +136,8 @@ export default class LoginView extends Vue {
                             identityProviders.indexOf(provider) <
                             identityProviders.length - 1
                         "
-                        ><b-col>or</b-col>
+                    >
+                        <b-col>or</b-col>
                     </b-row>
                 </div>
             </b-card-body>

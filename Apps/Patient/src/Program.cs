@@ -31,7 +31,7 @@ namespace HealthGateway.HGAdmin.Server
     [ExcludeFromCodeCoverage]
     public static class Program
     {
-        /// <summary>.
+        /// <summary>
         /// The entry point for the class.
         /// </summary>
         /// <param name="args">The command line arguments to be passed in.</param>

@@ -13,4 +13,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //-------------------------------------------------------------------------
-[assembly: System.CLSCompliant(false)]
+using System;
+
+[assembly: CLSCompliant(false)]

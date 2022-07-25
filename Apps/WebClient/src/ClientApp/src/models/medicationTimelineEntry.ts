@@ -44,6 +44,7 @@ export default class MedicationTimelineEntry extends TimelineEntry {
     public get comments(): UserComment[] | null {
         return this.getComments(this.id);
     }
+
     public containsText(keyword: string): boolean {
         let text =
             (this.practitionerSurname || "") +
@@ -91,6 +92,7 @@ class MedicationViewModel {
     public strengthUnit?: string;
     public manufacturer?: string;
     public isPin!: boolean;
+
     constructor(model: MedicationSummary) {
         this.din = model.din ? model.din : "";
         this.brandName = model.brandName;

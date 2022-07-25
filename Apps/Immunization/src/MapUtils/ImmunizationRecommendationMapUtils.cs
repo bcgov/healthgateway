@@ -38,7 +38,7 @@ namespace HealthGateway.Immunization.MapUtils
         /// <returns>A list of ImmunizationRecommendation objects.</returns>
         public static IList<ImmunizationRecommendation> FromPHSAModelList(IEnumerable<ImmunizationRecommendationResponse> models, IMapper autoMapper)
         {
-            List<ImmunizationRecommendation> recommendations = new List<ImmunizationRecommendation>();
+            List<ImmunizationRecommendation> recommendations = new();
             ImmunizationRecommendationResponse? recommendationSet = models.FirstOrDefault();
             if (recommendationSet != null)
             {

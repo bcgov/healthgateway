@@ -45,7 +45,7 @@ namespace HealthGateway.Encounter.Models
         /// Gets or sets the Diagnostic Code.
         /// </summary>
         [JsonPropertyName("diagnosticCode")]
-        public DiagnosticCode DiagnosticCode { get; set; } = new DiagnosticCode();
+        public DiagnosticCode DiagnosticCode { get; set; } = new();
 
         /// <summary>
         /// Gets or sets the Specialty Desc.
@@ -69,6 +69,6 @@ namespace HealthGateway.Encounter.Models
         /// Gets or sets the Location Address.
         /// </summary>
         [JsonPropertyName("locationAddress")]
-        public LocationAddress LocationAddress { get; set; } = new LocationAddress();
+        public LocationAddress LocationAddress { get; set; } = new();
     }
 }

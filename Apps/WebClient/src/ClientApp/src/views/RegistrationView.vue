@@ -94,7 +94,8 @@ export default class RegistrationView extends Vue {
             this.webClientConfig.registrationStatus == RegistrationStatus.Closed
         );
     }
-    private get isPredefinedEmail() {
+
+    private get isPredefinedEmail(): boolean {
         if (
             this.webClientConfig.registrationStatus != RegistrationStatus.Open
         ) {
@@ -103,7 +104,7 @@ export default class RegistrationView extends Vue {
         return false;
     }
 
-    private mounted() {
+    private mounted(): void {
         this.logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
         this.minimumAge = this.webClientConfig.minPatientAge;
 
@@ -158,25 +159,19 @@ export default class RegistrationView extends Vue {
         this.loadTermsOfService();
     }
 
-    private validations() {
+    private validations(): unknown {
         const sms = helpers.regex("sms", /^\D?(\d{3})\D?\D?(\d{3})\D?(\d{4})$/);
         return {
             smsNumber: {
-                required: requiredIf(() => {
-                    return this.isSMSNumberChecked;
-                }),
+                required: requiredIf(() => this.isSMSNumberChecked),
                 sms,
             },
             email: {
-                required: requiredIf(() => {
-                    return this.isEmailChecked;
-                }),
+                required: requiredIf(() => this.isEmailChecked),
                 email,
             },
             emailConfirmation: {
-                required: requiredIf(() => {
-                    return this.isEmailChecked;
-                }),
+                required: requiredIf(() => this.isEmailChecked),
                 sameAsEmail: sameAs("email"),
                 email,
             },
@@ -211,7 +206,7 @@ export default class RegistrationView extends Vue {
         return param.$dirty ? !param.$invalid : undefined;
     }
 
-    private onSubmit(event: Event) {
+    private onSubmit(event: Event): void {
         this.$v.$touch();
         if (this.$v.$invalid || this.oidcUserInfo === undefined) {
             this.submitStatus = "ERROR";
@@ -244,13 +239,13 @@ export default class RegistrationView extends Vue {
                 );
                 this.redirect();
             })
-            .catch((err: ResultError) => {
+            .catch((err: ResultError) =>
                 this.addError({
                     errorType: ErrorType.Create,
                     source: ErrorSourceType.Profile,
                     traceId: err.traceId,
-                });
-            })
+                })
+            )
             .finally(() => {
                 this.loadingTermsOfService = false;
             });

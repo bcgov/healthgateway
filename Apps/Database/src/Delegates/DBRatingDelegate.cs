@@ -28,7 +28,7 @@ namespace HealthGateway.Database.Delegates
     using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.Logging;
 
-    /// <inheritdoc />
+    /// <inheritdoc/>
     [ExcludeFromCodeCoverage]
     public class DBRatingDelegate : IRatingDelegate
     {
@@ -48,12 +48,12 @@ namespace HealthGateway.Database.Delegates
             this.dbContext = dbContext;
         }
 
-        /// <inheritdoc />
+        /// <inheritdoc/>
         public DBResult<Rating> InsertRating(Rating rating)
         {
             this.logger.LogTrace($"Inserting rating to DB... {JsonSerializer.Serialize(rating)}");
-            DBResult<Rating> result = new DBResult<Rating>();
-            this.dbContext.Add<Rating>(rating);
+            DBResult<Rating> result = new();
+            this.dbContext.Add(rating);
             try
             {
                 this.dbContext.SaveChanges();
@@ -69,18 +69,18 @@ namespace HealthGateway.Database.Delegates
             return result;
         }
 
-        /// <inheritdoc />
+        /// <inheritdoc/>
         public DBResult<IEnumerable<Rating>> GetAll(int page, int pageSize)
         {
             this.logger.LogTrace($"Retrieving all the ratings for the page #{page} with pageSize: {pageSize}...");
-            return DBDelegateHelper.GetPagedDBResult<Rating>(
+            return DBDelegateHelper.GetPagedDBResult(
                 this.dbContext.Rating
                     .OrderBy(rating => rating.CreatedDateTime),
                 page,
                 pageSize);
         }
 
-        /// <inheritdoc />
+        /// <inheritdoc/>
         public IDictionary<string, int> GetSummary(DateTime startDate, DateTime endDate)
         {
             this.logger.LogTrace($"Retrieving the ratings summary between {startDate} and {endDate}...");

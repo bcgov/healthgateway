@@ -37,7 +37,7 @@ export default class CommentComponent extends Vue {
     private isEditMode = false;
     private isLoading = false;
 
-    private created() {
+    private created(): void {
         this.logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
     }
 
@@ -72,12 +72,8 @@ export default class CommentComponent extends Vue {
                 version: this.comment.version,
             },
         })
-            .then(() => {
-                this.logger.info("Comment Updated");
-            })
-            .catch((err) => {
-                this.logger.error(JSON.stringify(err));
-            })
+            .then(() => this.logger.info("Comment Updated"))
+            .catch((err) => this.logger.error(JSON.stringify(err)))
             .finally(() => {
                 this.isEditMode = false;
                 this.isLoading = false;
@@ -88,12 +84,8 @@ export default class CommentComponent extends Vue {
         if (confirm("Are you sure you want to delete this comment?")) {
             this.isLoading = true;
             this.deleteComment({ hdid: this.user.hdid, comment: this.comment })
-                .then(() => {
-                    this.logger.info("Comment removed");
-                })
-                .catch((err) => {
-                    this.logger.error(JSON.stringify(err));
-                })
+                .then(() => this.logger.info("Comment removed"))
+                .catch((err) => this.logger.error(JSON.stringify(err)))
                 .finally(() => {
                     this.isLoading = false;
                 });
@@ -211,6 +203,7 @@ export default class CommentComponent extends Vue {
     padding: 0px;
     margin: 0px;
 }
+
 .row {
     padding: 0;
     margin: 0px;

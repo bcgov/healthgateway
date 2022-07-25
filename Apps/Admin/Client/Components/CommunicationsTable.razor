@@ -46,19 +46,19 @@
                     <MudIconButton OnClick="@(() => ToggleExpandRow(context.Id))"
                                    Icon="@(context.IsExpanded ? Icons.Material.Filled.ExpandLess : Icons.Material.Filled.ExpandMore)"
                                    Color="@Color.Primary"
-                                   data-testid="comm-table-expand-btn"/>
+                                   data-testid="comm-table-expand-btn" />
                 </MudTooltip>
                 <MudTooltip Text="Edit">
                     <MudIconButton OnClick="@(async () => await EditCommunicationAsync(context.Id))"
                                    Icon="@Icons.Material.Filled.Edit"
                                    Color="@Color.Primary"
-                                   data-testid="comm-table-edit-btn"/>
+                                   data-testid="comm-table-edit-btn" />
                 </MudTooltip>
                 <MudTooltip Text="Delete">
                     <MudIconButton OnClick="@(() => DeleteCommunication(context.Id))"
                                    Icon="@Icons.Material.Filled.Delete"
                                    Color="@Color.Primary"
-                                   data-testid="comm-table-delete-btn"/>
+                                   data-testid="comm-table-delete-btn" />
                 </MudTooltip>
             </div>
         </MudTd>

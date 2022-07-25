@@ -1,4 +1,9 @@
 <script lang="ts">
+// Add font awesome styles manually
+import "@fortawesome/fontawesome-svg-core/styles.css";
+
+// Load general icons
+import { config } from "@fortawesome/fontawesome-svg-core";
 // Load Bootstrap general plugins
 import {
     AlertPlugin,
@@ -25,6 +30,23 @@ import {
     TablePlugin,
     TooltipPlugin,
 } from "bootstrap-vue";
+import Vue from "vue";
+import { Component, Ref, Watch } from "vue-property-decorator";
+import VueTheMask from "vue-the-mask";
+import { Action, Getter } from "vuex-class";
+
+import CommunicationComponent from "@/components/CommunicationComponent.vue";
+import ErrorCardComponent from "@/components/ErrorCardComponent.vue";
+import IdleComponent from "@/components/modal/IdleComponent.vue";
+import FooterComponent from "@/components/navmenu/FooterComponent.vue";
+import HeaderComponent from "@/components/navmenu/HeaderComponent.vue";
+import SidebarComponent from "@/components/navmenu/SidebarComponent.vue";
+import ResourceCentreComponent from "@/components/ResourceCentreComponent.vue";
+import Process, { EnvironmentType } from "@/constants/process";
+import ScreenWidth from "@/constants/screenWidth";
+import container from "@/plugins/container";
+import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
+import { ILogger } from "@/services/interfaces";
 
 Vue.use(LayoutPlugin);
 Vue.use(NavPlugin);
@@ -51,32 +73,10 @@ Vue.use(FormDatepickerPlugin);
 Vue.use(IconsPlugin);
 Vue.use(VueTheMask);
 
-// Load general icons
-import { config } from "@fortawesome/fontawesome-svg-core";
 // Prevent auto adding CSS to the header since that breaks Content security policies.
 config.autoAddCss = false;
-// Add font awesome styles manually
-import "@fortawesome/fontawesome-svg-core/styles.css";
 
-import Vue from "vue";
-import { Component, Ref, Watch } from "vue-property-decorator";
-import VueTheMask from "vue-the-mask";
-import { Action, Getter } from "vuex-class";
-
-import CommunicationComponent from "@/components/CommunicationComponent.vue";
-import ErrorCardComponent from "@/components/ErrorCardComponent.vue";
-import IdleComponent from "@/components/modal/IdleComponent.vue";
-import FooterComponent from "@/components/navmenu/FooterComponent.vue";
-import HeaderComponent from "@/components/navmenu/HeaderComponent.vue";
-import SidebarComponent from "@/components/navmenu/SidebarComponent.vue";
-import ResourceCentreComponent from "@/components/ResourceCentreComponent.vue";
-import Process, { EnvironmentType } from "@/constants/process";
-import ScreenWidth from "@/constants/screenWidth";
-import container from "@/plugins/container";
-import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
-import { ILogger } from "@/services/interfaces";
-
-const logger: ILogger = container.get(SERVICE_IDENTIFIER.Logger);
+const logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
 
 @Component({
     components: {
@@ -143,13 +143,13 @@ export default class App extends Vue {
     }
 
     @Watch("isAppIdle")
-    private onIsAppIdleChanged(idle: boolean) {
+    private onIsAppIdleChanged(idle: boolean): void {
         if (idle && this.oidcIsAuthenticated && this.isValidIdentityProvider) {
             this.idleModal.show();
         }
     }
 
-    private created() {
+    private created(): void {
         this.windowWidth = window.innerWidth;
         this.$nextTick(() => {
             window.addEventListener("resize", this.onResize);
@@ -158,11 +158,11 @@ export default class App extends Vue {
         });
     }
 
-    private beforeDestroy() {
+    private beforeDestroy(): void {
         window.removeEventListener("resize", this.onResize);
     }
 
-    private onResize() {
+    private onResize(): void {
         this.windowWidth = window.innerWidth;
 
         if (this.windowWidth < ScreenWidth.Mobile) {
@@ -290,6 +290,7 @@ export default class App extends Vue {
 </style>
 <style lang="scss">
 @import "@/assets/scss/_variables.scss";
+
 @media print {
     .navbar {
         display: flex !important;

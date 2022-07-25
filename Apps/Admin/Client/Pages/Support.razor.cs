@@ -47,7 +47,19 @@ namespace HealthGateway.Admin.Client.Pages
         [Inject]
         private NavigationManager NavigationManager { get; set; } = default!;
 
-        private UserQueryType SelectedQueryType { get; set; } = UserQueryType.PHN;
+        private UserQueryType QueryType { get; set; } = UserQueryType.PHN;
+
+        private UserQueryType SelectedQueryType
+        {
+            get => this.QueryType;
+
+            set
+            {
+                this.ResetState();
+                this.QueryParameter = string.Empty;
+                this.QueryType = value;
+            }
+        }
 
         private string QueryParameter { get; set; } = string.Empty;
 
@@ -57,6 +69,8 @@ namespace HealthGateway.Admin.Client.Pages
 
         private bool MessagingVerificationsLoaded => this.MessageVerificationState.Value.Loaded;
 
+        private bool PhnSelected => this.SelectedQueryType == UserQueryType.PHN;
+
         private bool HasError => this.MessageVerificationState.Value.Error != null && this.MessageVerificationState.Value.Error.Message.Length > 0;
 
         private IEnumerable<MessagingVerificationModel> MessagingVerifications =>
@@ -64,7 +78,7 @@ namespace HealthGateway.Admin.Client.Pages
 
         private IEnumerable<MessagingVerificationRow> MessagingVerificationRows => this.MessagingVerifications.Select(v => new MessagingVerificationRow(v));
 
-        private Func<string, string?> ValidateQueryParameter => (parameter) =>
+        private Func<string, string?> ValidateQueryParameter => parameter =>
         {
             if (string.IsNullOrWhiteSpace(parameter))
             {
@@ -123,7 +137,6 @@ namespace HealthGateway.Admin.Client.Pages
                 {
                     MessagingVerificationType.Email => model.Email?.To ?? "N/A",
                     _ => model.SMSNumber ?? "N/A",
-
                 };
                 this.Verified = model.Validated ? "true" : "false";
                 this.VerificationDate = DateFormatter.ToShortDateAndTime(model.UpdatedDateTime.ToLocalTime());
@@ -134,17 +147,17 @@ namespace HealthGateway.Admin.Client.Pages
                 };
             }
 
-            public string Hdid { get; init; }
+            public string Hdid { get; }
 
-            public string PersonalHealthNumber { get; init; }
+            public string PersonalHealthNumber { get; }
 
-            public string EmailOrSms { get; init; }
+            public string EmailOrSms { get; }
 
-            public string Verified { get; init; }
+            public string Verified { get; }
 
-            public string VerificationDate { get; init; }
+            public string VerificationDate { get; }
 
-            public string VerificationCode { get; init; }
+            public string VerificationCode { get; }
         }
     }
 }

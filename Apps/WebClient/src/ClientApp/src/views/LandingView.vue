@@ -111,11 +111,11 @@ export default class LandingView extends Vue {
         return this.config.registrationStatus === RegistrationStatus.Open;
     }
 
-    private created() {
+    private created(): void {
         this.logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
     }
 
-    private mounted() {
+    private mounted(): void {
         // Get core tiles from entry type constants
         this.loadCoreTiles();
 
@@ -188,7 +188,7 @@ export default class LandingView extends Vue {
         this.tiles = this.entryTypes.map((type) => {
             const details = entryTypeMap.get(type);
             const tile: Tile = {
-                type: type,
+                type,
                 icon: details?.icon ?? "",
                 name: details?.name ?? "",
                 description: details?.description ?? "",

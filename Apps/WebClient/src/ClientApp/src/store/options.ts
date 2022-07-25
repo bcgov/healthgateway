@@ -32,9 +32,7 @@ export class StoreOptions implements GatewayStoreOptions {
         },
     };
     getters = {
-        isMobile: (state: RootState): boolean => {
-            return state.isMobile;
-        },
+        isMobile: (state: RootState): boolean => state.isMobile,
     };
     mutations = {
         setIsMobile(state: RootState, isMobile: boolean): void {

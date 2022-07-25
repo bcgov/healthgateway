@@ -1,5 +1,3 @@
-import { verifyTestingEnvironment } from "../../support/functions/environment";
-
 const suggestionTag = "suggestion";
 const questionTag = "question";
 
@@ -21,18 +19,11 @@ function validateTableRowCount(tableSelector, count) {
 
 describe("Feedback Review", () => {
     beforeEach(() => {
-        verifyTestingEnvironment();
-
-        cy.log("Logging in.");
-        cy.login(Cypress.env("idir_username"), Cypress.env("idir_password"));
-
-        cy.log("Navigating to feedback review page.");
-        cy.visit("/feedback");
-    });
-
-    afterEach(() => {
-        cy.log("Logging out.");
-        cy.logout();
+        cy.login(
+            Cypress.env("keycloak_username"),
+            Cypress.env("keycloak_password"),
+            "/feedback"
+        );
     });
 
     it("Tag and Feedback Table Functionality", () => {

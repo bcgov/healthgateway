@@ -51,7 +51,7 @@ namespace HealthGateway.Common.Services
             this.resourceDelegateDelegate = resourceDelegateDelegate;
         }
 
-        /// <inheritdoc />
+        /// <inheritdoc/>
         public void QueueNotificationSettings(NotificationSettingsRequest notificationSettings)
         {
             if (notificationSettings.SMSEnabled && !notificationSettings.SMSVerified && string.IsNullOrEmpty(notificationSettings.SMSVerificationCode))
@@ -59,7 +59,7 @@ namespace HealthGateway.Common.Services
                 throw new InvalidOperationException();
             }
 
-            this.logger.LogTrace($"Queueing Notification Settings push to PHSA...");
+            this.logger.LogTrace("Queueing Notification Settings push to PHSA...");
             string json = JsonSerializer.Serialize(notificationSettings);
             this.jobClient.Enqueue<INotificationSettingsJob>(j => j.PushNotificationSettings(json));
 
@@ -67,7 +67,7 @@ namespace HealthGateway.Common.Services
             DBResult<IEnumerable<ResourceDelegate>> dbResult = this.resourceDelegateDelegate.Get(notificationSettings.SubjectHdid, 0, 500);
             foreach (ResourceDelegate resourceDelegate in dbResult.Payload)
             {
-                this.logger.LogDebug($"Queueing Dependent Notification Settings.");
+                this.logger.LogDebug("Queueing Dependent Notification Settings.");
                 NotificationSettingsRequest dependentNotificationSettings = new()
                 {
                     SubjectHdid = resourceDelegate.ResourceOwnerHdid,
@@ -89,7 +89,7 @@ namespace HealthGateway.Common.Services
                 this.jobClient.Enqueue<INotificationSettingsJob>(j => j.PushNotificationSettings(delegateJson));
             }
 
-            this.logger.LogDebug($"Finished queueing Notification Settings push.");
+            this.logger.LogDebug("Finished queueing Notification Settings push.");
         }
     }
 }

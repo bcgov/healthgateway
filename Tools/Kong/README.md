@@ -2,7 +2,7 @@
 
 ## Prerequisites
 
-Read the [GWA API documentation](https://github.com/bcgov/gwa-api/blob/dev/USER-JOURNEY.md).
+Read the [GWA API documentation](https://bcgov.github.io/aps-infra-platform/guides/owner-journey/).
 
 Based on reading above documentation you should have the `gwa` command-line application installed locally.
 

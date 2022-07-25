@@ -51,7 +51,10 @@ namespace HealthGateway.Admin.Server.Controllers
         /// <param name="refresh">Whether the call should force cached data to be refreshed.</param>
         /// <response code="200">Returns the wrapped result of the request.</response>
         /// <response code="401">the client must authenticate itself to get the requested response.</response>
-        /// <response code="403">The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.</response>
+        /// <response code="403">
+        /// The client does not have access rights to the content; that is, it is unauthorized, so the server
+        /// is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.
+        /// </response>
         [HttpGet]
         [Route("Patient")]
         public async Task<IActionResult> GetPatient([FromHeader] string phn, [FromHeader] bool refresh)
@@ -66,7 +69,10 @@ namespace HealthGateway.Admin.Server.Controllers
         /// <param name="request">The mail document request.</param>
         /// <response code="200">Returns the wrapped result of the request.</response>
         /// <response code="401">the client must authenticate itself to get the requested response.</response>
-        /// <response code="403">The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.</response>
+        /// <response code="403">
+        /// The client does not have access rights to the content; that is, it is unauthorized, so the server
+        /// is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.
+        /// </response>
         [HttpPost]
         [Route("Patient/Document")]
         public async Task<IActionResult> MailVaccineCard([FromBody] MailDocumentRequest request)
@@ -81,7 +87,10 @@ namespace HealthGateway.Admin.Server.Controllers
         /// <param name="phn">The personal health number that matches the document to retrieve.</param>
         /// <response code="200">Returns the wrapped result of the request.</response>
         /// <response code="401">the client must authenticate itself to get the requested response.</response>
-        /// <response code="403">The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.</response>
+        /// <response code="403">
+        /// The client does not have access rights to the content; that is, it is unauthorized, so the server
+        /// is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.
+        /// </response>
         [HttpGet]
         [Route("Patient/Document")]
         public async Task<IActionResult> RetrieveVaccineRecord([FromHeader] string phn)
@@ -96,7 +105,10 @@ namespace HealthGateway.Admin.Server.Controllers
         /// <returns>A CovidAssessmentResponse object wrapped in a request result.</returns>
         /// <response code="200">The CovidAssessmentRequest was submitted.</response>
         /// <response code="401">The client must authenticate itself to get the requested response.</response>
-        /// <response code="403">The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.</response>
+        /// <response code="403">
+        /// The client does not have access rights to the content; that is, it is unauthorized, so the server
+        /// is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.
+        /// </response>
         /// <response code="503">The service is unavailable for use.</response>
         [HttpPost]
         [Produces("application/json")]
@@ -113,7 +125,10 @@ namespace HealthGateway.Admin.Server.Controllers
         /// <returns>A CovidAssessmentResponse object wrapped in a request result.</returns>
         /// <response code="200">The CovidAssessmentRequest was submitted.</response>
         /// <response code="401">The client must authenticate itself to get the requested response.</response>
-        /// <response code="403">The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.</response>
+        /// <response code="403">
+        /// The client does not have access rights to the content; that is, it is unauthorized, so the server
+        /// is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.
+        /// </response>
         /// <response code="503">The service is unavailable for use.</response>
         [HttpGet]
         [Produces("application/json")]

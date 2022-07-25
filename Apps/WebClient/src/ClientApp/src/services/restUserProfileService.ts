@@ -21,7 +21,7 @@ import RequestResultUtil from "@/utility/requestResultUtil";
 
 @injectable()
 export class RestUserProfileService implements IUserProfileService {
-    private logger: ILogger = container.get(SERVICE_IDENTIFIER.Logger);
+    private logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
     private readonly APPLICATION_JSON: string =
         "application/json; charset=utf-8";
     private readonly CONTENT_TYPE: string = "Content-Type";
@@ -38,7 +38,7 @@ export class RestUserProfileService implements IUserProfileService {
     }
 
     public getProfile(hdid: string): Promise<UserProfile> {
-        return new Promise((resolve, reject) => {
+        return new Promise((resolve, reject) =>
             this.http
                 .getWithCors<RequestResult<UserProfile>>(
                     `${this.baseUri}${this.USER_PROFILE_BASE_URI}/${hdid}`
@@ -61,14 +61,14 @@ export class RestUserProfileService implements IUserProfileService {
                             ServiceCode.HealthGatewayUser
                         )
                     );
-                });
-        });
+                })
+        );
     }
 
     public createProfile(
         createRequest: CreateUserRequest
     ): Promise<UserProfile> {
-        return new Promise((resolve, reject) => {
+        return new Promise((resolve, reject) =>
             this.http
                 .post<RequestResult<UserProfile>>(
                     `${this.baseUri}${this.USER_PROFILE_BASE_URI}/${createRequest.profile.hdid}`,
@@ -92,12 +92,12 @@ export class RestUserProfileService implements IUserProfileService {
                             ServiceCode.HealthGatewayUser
                         )
                     );
-                });
-        });
+                })
+        );
     }
 
     public closeAccount(hdid: string): Promise<UserProfile> {
-        return new Promise((resolve, reject) => {
+        return new Promise((resolve, reject) =>
             this.http
                 .delete<RequestResult<UserProfile>>(
                     `${this.baseUri}${this.USER_PROFILE_BASE_URI}/${hdid}`
@@ -120,12 +120,12 @@ export class RestUserProfileService implements IUserProfileService {
                             ServiceCode.HealthGatewayUser
                         )
                     );
-                });
-        });
+                })
+        );
     }
 
     public recoverAccount(hdid: string): Promise<UserProfile> {
-        return new Promise((resolve, reject) => {
+        return new Promise((resolve, reject) =>
             this.http
                 .get<RequestResult<UserProfile>>(
                     `${this.baseUri}${this.USER_PROFILE_BASE_URI}/${hdid}/recover`
@@ -148,12 +148,12 @@ export class RestUserProfileService implements IUserProfileService {
                             ServiceCode.HealthGatewayUser
                         )
                     );
-                });
-        });
+                })
+        );
     }
 
     public validateAge(hdid: string): Promise<boolean> {
-        return new Promise((resolve, reject) => {
+        return new Promise((resolve, reject) =>
             this.http
                 .get<RequestResult<boolean>>(
                     `${this.baseUri}${this.USER_PROFILE_BASE_URI}/${hdid}/Validate`
@@ -176,12 +176,12 @@ export class RestUserProfileService implements IUserProfileService {
                             ServiceCode.HealthGatewayUser
                         )
                     );
-                });
-        });
+                })
+        );
     }
 
     public getTermsOfService(): Promise<TermsOfService> {
-        return new Promise((resolve, reject) => {
+        return new Promise((resolve, reject) =>
             this.http
                 .get<RequestResult<TermsOfService>>(
                     `${this.baseUri}${this.USER_PROFILE_BASE_URI}/termsofservice`
@@ -204,22 +204,20 @@ export class RestUserProfileService implements IUserProfileService {
                             ServiceCode.HealthGatewayUser
                         )
                     );
-                });
-        });
+                })
+        );
     }
 
     public validateEmail(
         hdid: string,
         inviteKey: string
     ): Promise<RequestResult<boolean>> {
-        return new Promise((resolve, reject) => {
+        return new Promise((resolve, reject) =>
             this.http
                 .get<RequestResult<boolean>>(
                     `${this.baseUri}${this.USER_PROFILE_BASE_URI}/${hdid}/email/validate/${inviteKey}`
                 )
-                .then((requestResult) => {
-                    return resolve(requestResult);
-                })
+                .then((requestResult) => resolve(requestResult))
                 .catch((err: HttpError) => {
                     this.logger.error(
                         `Error in RestUserProfileService.validateEmail()`
@@ -230,12 +228,12 @@ export class RestUserProfileService implements IUserProfileService {
                             ServiceCode.HealthGatewayUser
                         )
                     );
-                });
-        });
+                })
+        );
     }
 
     public validateSMS(hdid: string, digit: string): Promise<boolean> {
-        return new Promise((resolve, reject) => {
+        return new Promise((resolve, reject) =>
             this.http
                 .get<RequestResult<boolean>>(
                     `${this.baseUri}${this.USER_PROFILE_BASE_URI}/${hdid}/sms/validate/${digit}`
@@ -257,8 +255,8 @@ export class RestUserProfileService implements IUserProfileService {
                             ServiceCode.HealthGatewayUser
                         )
                     );
-                });
-        });
+                })
+        );
     }
 
     public updateEmail(hdid: string, email: string): Promise<boolean> {
@@ -272,9 +270,7 @@ export class RestUserProfileService implements IUserProfileService {
                     JSON.stringify(email),
                     headers
                 )
-                .then(() => {
-                    return resolve(true);
-                })
+                .then(() => resolve(true))
                 .catch((err: HttpError) => {
                     this.logger.error(
                         `Error in RestUserProfileService.updateEmail()`
@@ -300,9 +296,7 @@ export class RestUserProfileService implements IUserProfileService {
                     JSON.stringify(smsNumber),
                     headers
                 )
-                .then(() => {
-                    return resolve(true);
-                })
+                .then(() => resolve(true))
                 .catch((err: HttpError) => {
                     this.logger.error(
                         `Error in RestUserProfileService.updateSMSNumber()`
@@ -321,7 +315,7 @@ export class RestUserProfileService implements IUserProfileService {
         hdid: string,
         userPreference: UserPreference
     ): Promise<UserPreference> {
-        return new Promise<UserPreference>((resolve, reject) => {
+        return new Promise<UserPreference>((resolve, reject) =>
             this.http
                 .put<RequestResult<UserPreference>>(
                     `${this.baseUri}${this.USER_PROFILE_BASE_URI}/${hdid}/preference`,
@@ -349,8 +343,8 @@ export class RestUserProfileService implements IUserProfileService {
                             ServiceCode.HealthGatewayUser
                         )
                     );
-                });
-        });
+                })
+        );
     }
 
     public updateAcceptedTerms(
@@ -396,7 +390,7 @@ export class RestUserProfileService implements IUserProfileService {
         hdid: string,
         userPreference: UserPreference
     ): Promise<UserPreference> {
-        return new Promise<UserPreference>((resolve, reject) => {
+        return new Promise<UserPreference>((resolve, reject) =>
             this.http
                 .post<RequestResult<UserPreference>>(
                     `${this.baseUri}${this.USER_PROFILE_BASE_URI}/${hdid}/preference`,
@@ -424,7 +418,7 @@ export class RestUserProfileService implements IUserProfileService {
                             ServiceCode.HealthGatewayUser
                         )
                     );
-                });
-        });
+                })
+        );
     }
 }

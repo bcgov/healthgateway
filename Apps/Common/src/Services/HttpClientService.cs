@@ -43,7 +43,7 @@ namespace HealthGateway.Common.Services
             this.configService = configService;
         }
 
-        /// <inheritdoc />
+        /// <inheritdoc/>
         public HttpClient CreateDefaultHttpClient()
         {
             HttpClient retVal = this.httpClientFactory.CreateClient();

@@ -84,7 +84,7 @@ namespace HealthGateway.Database.Migrations
                 schema: "gateway",
                 table: "CommunicationTypeCode",
                 columns: new[] { "StatusCode", "CreatedBy", "CreatedDateTime", "Description", "UpdatedBy", "UpdatedDateTime" },
-                values: new object[] { "Email", "System", new DateTime(2019, 5, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "Email communication type", "System", new DateTime(2019, 5, 1, 0, 0, 0, 0, DateTimeKind.Unspecified) });
+                values: new object[] { "Email", "System", new DateTime(2019, 5, 1, 0, 0, 0, 0, DateTimeKind.Utc), "Email communication type", "System", new DateTime(2019, 5, 1, 0, 0, 0, 0, DateTimeKind.Utc) });
 
             migrationBuilder.CreateIndex(
                 name: "IX_CommunicationEmail_CommunicationId",

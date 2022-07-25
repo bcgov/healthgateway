@@ -19,7 +19,7 @@ import RequestResultUtil from "@/utility/requestResultUtil";
 
 @injectable()
 export class RestUserNoteService implements IUserNoteService {
-    private logger: ILogger = container.get(SERVICE_IDENTIFIER.Logger);
+    private logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
     private readonly USER_NOTE_BASE_URI: string = "Note";
     private http!: IHttpDelegate;
     private isEnabled = false;
@@ -51,9 +51,7 @@ export class RestUserNoteService implements IUserNoteService {
                 .getWithCors<RequestResult<UserNote[]>>(
                     `${this.baseUri}${this.USER_NOTE_BASE_URI}/${hdid}`
                 )
-                .then((requestResult) => {
-                    return resolve(requestResult);
-                })
+                .then((requestResult) => resolve(requestResult))
                 .catch((err: HttpError) => {
                     this.logger.error(
                         `Error in RestUserNoteService.getNotes()`
@@ -109,7 +107,7 @@ export class RestUserNoteService implements IUserNoteService {
     }
 
     public updateNote(hdid: string, note: UserNote): Promise<UserNote> {
-        return new Promise((resolve, reject) => {
+        return new Promise((resolve, reject) =>
             this.http
                 .put<RequestResult<UserNote>>(
                     `${this.baseUri}${this.USER_NOTE_BASE_URI}/${hdid}`,
@@ -133,8 +131,8 @@ export class RestUserNoteService implements IUserNoteService {
                             ServiceCode.HealthGatewayUser
                         )
                     );
-                });
-        });
+                })
+        );
     }
 
     public deleteNote(hdid: string, note: UserNote): Promise<void> {

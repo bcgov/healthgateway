@@ -35,7 +35,7 @@ namespace HealthGateway.Common.Data.Utils
         /// <returns>The manipulated string.</returns>
         public static string? Replace(string? inStr, string key, string value)
         {
-            Dictionary<string, string> data = new Dictionary<string, string>()
+            Dictionary<string, string> data = new()
             {
                 { key, value },
             };
@@ -57,9 +57,9 @@ namespace HealthGateway.Common.Data.Utils
                 // The regex will find all instances of ${ANYTHING} and will evaluate if the keys between
                 // the mustaches match one of those in the dictionary.  If so it then replaces the match
                 // with the value in the dictionary.
-                retVal = PlaceholderRegex.Replace(inStr, m =>
-                   (m.Groups.Count > 1 && data.ContainsKey(m.Groups[1].Value)) ?
-                   data[m.Groups[1].Value] : m.Value);
+                retVal = PlaceholderRegex.Replace(
+                    inStr,
+                    m => m.Groups.Count > 1 && data.ContainsKey(m.Groups[1].Value) ? data[m.Groups[1].Value] : m.Value);
             }
 
             return retVal;

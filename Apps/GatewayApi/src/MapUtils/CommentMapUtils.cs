@@ -36,9 +36,12 @@ namespace HealthGateway.GatewayApi.MapUtils
         /// <returns>A Comment.</returns>
         public static Comment ToDbModel(UserComment userComment, ICryptoDelegate cryptoDelegate, string key, IMapper autoMapper)
         {
-            Comment comment = autoMapper.Map<UserComment, Comment>(userComment, opts =>
-                opts.AfterMap((src, dest) =>
-                    dest.Text = !string.IsNullOrEmpty(src.Text) ? cryptoDelegate.Encrypt(key, src.Text) : string.Empty));
+            Comment comment = autoMapper.Map<UserComment, Comment>(
+                userComment,
+                opts =>
+                    opts.AfterMap(
+                        (src, dest) =>
+                            dest.Text = !string.IsNullOrEmpty(src.Text) ? cryptoDelegate.Encrypt(key, src.Text) : string.Empty));
             return comment;
         }
 
@@ -52,9 +55,12 @@ namespace HealthGateway.GatewayApi.MapUtils
         /// <returns>A UserComment.</returns>
         public static UserComment CreateFromDbModel(Comment comment, ICryptoDelegate cryptoDelegate, string key, IMapper autoMapper)
         {
-            UserComment userComment = autoMapper.Map<Comment, UserComment>(comment, opts =>
-                opts.AfterMap((src, dest) =>
-                    dest.Text = !string.IsNullOrEmpty(src.Text) ? cryptoDelegate.Decrypt(key, src.Text) : string.Empty));
+            UserComment userComment = autoMapper.Map<Comment, UserComment>(
+                comment,
+                opts =>
+                    opts.AfterMap(
+                        (src, dest) =>
+                            dest.Text = !string.IsNullOrEmpty(src.Text) ? cryptoDelegate.Decrypt(key, src.Text) : string.Empty));
 
             return userComment;
         }

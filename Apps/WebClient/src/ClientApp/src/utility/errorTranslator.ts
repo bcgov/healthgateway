@@ -78,7 +78,7 @@ export default class ErrorTranslator {
         }
     }
 
-    private static pluralizeErrorSourceType(source: ErrorSourceType) {
+    private static pluralizeErrorSourceType(source: ErrorSourceType): string {
         switch (source) {
             case ErrorSourceType.MedicationRequests:
                 return "special authorities";
@@ -93,7 +93,7 @@ export default class ErrorTranslator {
         source: ErrorSourceType,
         pluralize: boolean,
         simplify: boolean
-    ) {
+    ): string {
         let formattedSource: string = source;
         if (pluralize) {
             formattedSource = this.pluralizeErrorSourceType(source);

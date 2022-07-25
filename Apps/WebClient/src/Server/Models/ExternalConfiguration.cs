@@ -17,6 +17,7 @@ namespace HealthGateway.WebClient.Models
 {
     using System;
     using System.Collections.Generic;
+    using System.Diagnostics.CodeAnalysis;
 
     /// <summary>
     /// A collection of configuration items for use by Health Gateway and
@@ -27,23 +28,23 @@ namespace HealthGateway.WebClient.Models
         /// <summary>
         /// Gets or sets the OpenIdConnect configuration.
         /// </summary>
-        public OpenIdConnectConfiguration OpenIdConnect { get; set; } = new OpenIdConnectConfiguration();
+        public OpenIdConnectConfiguration OpenIdConnect { get; set; } = new();
 
         /// <summary>
         /// Gets or sets the List of Identity providers.
         /// </summary>
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Performance", "CA1819:Properties should not return arrays", Justification = "Team decision")]
+        [SuppressMessage("Performance", "CA1819:Properties should not return arrays", Justification = "Team decision")]
         public IdentityProviderConfiguration[] IdentityProviders { get; set; } = Array.Empty<IdentityProviderConfiguration>();
 
         /// <summary>
         /// Gets or sets the Health Gateway Webclient specific configuration.
         /// </summary>
-        public WebClientConfiguration WebClient { get; set; } = new WebClientConfiguration();
+        public WebClientConfiguration WebClient { get; set; } = new();
 
         /// <summary>
         /// Gets or sets the Service Endpoints.
         /// </summary>
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "CA2227:Collection properties should be read only", Justification = "Team decision")]
-        public Dictionary<string, System.Uri> ServiceEndpoints { get; set; } = new Dictionary<string, Uri>();
+        [SuppressMessage("Usage", "CA2227:Collection properties should be read only", Justification = "Team decision")]
+        public Dictionary<string, Uri> ServiceEndpoints { get; set; } = new();
     }
 }

@@ -15,9 +15,6 @@
 // -------------------------------------------------------------------------
 namespace HealthGateway.Admin.Common.Models
 {
-    using System;
-    using System.Text.Json.Serialization;
-
     /// <summary>
     /// Provides configuration data for the Notifications Settings PHSA API.
     /// </summary>

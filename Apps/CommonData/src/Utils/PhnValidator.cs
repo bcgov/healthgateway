@@ -16,10 +16,8 @@
 namespace HealthGateway.Common.Data.Utils
 {
     using System;
-    using System.Collections.Generic;
     using System.Globalization;
     using System.Linq;
-    using System.Text.RegularExpressions;
 
     /// <summary>
     /// Validates a Personal Health Number.

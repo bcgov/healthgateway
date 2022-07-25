@@ -62,11 +62,13 @@ public partial class FeedbackPage : FluxorComponent
     private MudTextField<string> AddTagNameInput { get; set; } = default!;
 
     private IEnumerable<RequestError> TagErrors => new[]
-    {
-        this.TagState.Value.Load.Error,
-        this.TagState.Value.Add.Error,
-        this.TagState.Value.Delete.Error,
-    }.OfType<RequestError>().Where(e => e.Message.Length > 0);
+        {
+            this.TagState.Value.Load.Error,
+            this.TagState.Value.Add.Error,
+            this.TagState.Value.Delete.Error,
+        }
+        .OfType<RequestError>()
+        .Where(e => e.Message.Length > 0);
 
     private IEnumerable<AdminTagView> Tags => this.TagState.Value.Data?.Values.OrderBy(t => t.Name) ?? Enumerable.Empty<AdminTagView>();
 
@@ -88,7 +90,7 @@ public partial class FeedbackPage : FluxorComponent
     private bool FeedbackUpdating => this.UserFeedbackState.Value.Update.IsLoading ||
                                      this.UserFeedbackState.Value.AssociateTags.IsLoading;
 
-    /// <inheritdoc />
+    /// <inheritdoc/>
     protected override void OnInitialized()
     {
         base.OnInitialized();
@@ -141,7 +143,7 @@ public partial class FeedbackPage : FluxorComponent
         string tagName = this.AddTagModel.Name.Trim();
         if (tagName.Length == 0)
         {
-            this.Snackbar.Add($"Tag is invalid.", Severity.Warning);
+            this.Snackbar.Add("Tag is invalid.", Severity.Warning);
             this.AddTagModel.Clear();
             this.StateHasChanged();
             return;
@@ -211,7 +213,10 @@ public partial class FeedbackPage : FluxorComponent
     {
         public string Name { get; set; } = string.Empty;
 
-        public void Clear() => this.Name = string.Empty;
+        public void Clear()
+        {
+            this.Name = string.Empty;
+        }
     }
 
     private sealed class FeedbackRow
@@ -237,7 +242,7 @@ public partial class FeedbackPage : FluxorComponent
 
         public string Comments { get; }
 
-        public IEnumerable<Guid> TagIds { get; set; }
+        public IEnumerable<Guid> TagIds { get; }
 
         public bool IsReviewed { get; }
     }

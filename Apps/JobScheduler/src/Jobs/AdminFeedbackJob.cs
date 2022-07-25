@@ -22,6 +22,7 @@ namespace Healthgateway.JobScheduler.Jobs
     using HealthGateway.Common.Jobs;
     using HealthGateway.Common.Models;
     using HealthGateway.Common.Services;
+    using HealthGateway.Database.Constants;
     using HealthGateway.Database.Delegates;
     using HealthGateway.Database.Models;
     using HealthGateway.Database.Wrapper;
@@ -30,8 +31,9 @@ namespace Healthgateway.JobScheduler.Jobs
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.Logging;
     using MimeKit;
+    using MimeKit.Text;
 
-    /// <inheritdoc />
+    /// <inheritdoc/>
     public class AdminFeedbackJob : IAdminFeedbackJob
     {
         private const string FeedbackTemplateName = "AdminFeedback";
@@ -66,21 +68,21 @@ namespace Healthgateway.JobScheduler.Jobs
             this.adminEmail = section.GetValue<string>("AdminEmail");
         }
 
-        /// <inheritdoc />
+        /// <inheritdoc/>
         [DisableConcurrentExecution(ConcurrencyTimeout)]
         public void SendEmail(ClientFeedback clientFeedback)
         {
             DBResult<UserFeedback> dbResult = this.feedBackDelegate.GetUserFeedback(clientFeedback.UserFeedbackId);
-            if (dbResult.Status == HealthGateway.Database.Constants.DBStatusCode.Read)
+            if (dbResult.Status == DBStatusCode.Read)
             {
                 UserFeedback feedback = dbResult.Payload;
-                this.logger.LogDebug($"Sending Email...");
+                this.logger.LogDebug("Sending Email...");
                 using SmtpClient smtpClient = new();
                 smtpClient.Connect(this.host, this.port, SecureSocketOptions.None);
                 using MimeMessage message = this.PrepareMessage(clientFeedback.Email, feedback);
                 smtpClient.Send(message);
                 smtpClient.Disconnect(true);
-                this.logger.LogDebug($"Finished Sending Email...");
+                this.logger.LogDebug("Finished Sending Email...");
             }
             else
             {
@@ -110,7 +112,7 @@ namespace Healthgateway.JobScheduler.Jobs
             msg.ReplyTo.Add(MailboxAddress.Parse(userEmail));
             msg.To.Add(MailboxAddress.Parse(email.To));
             msg.Subject = email.Subject;
-            msg.Body = new TextPart(MimeKit.Text.TextFormat.Html)
+            msg.Body = new TextPart(TextFormat.Html)
             {
                 Text = email.Body,
             };

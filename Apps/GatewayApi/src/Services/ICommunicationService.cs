@@ -18,6 +18,7 @@ namespace HealthGateway.GatewayApi.Services
     using HealthGateway.Common.Data.Constants;
     using HealthGateway.Common.Data.ViewModels;
     using HealthGateway.Database.Models;
+    using HealthGateway.GatewayApi.Models;
 
     /// <summary>
     /// Service to interact with the Communication Delegate.
@@ -30,26 +31,12 @@ namespace HealthGateway.GatewayApi.Services
         /// </summary>
         /// <param name="communicationType">The type of communication banner to retrieve.</param>
         /// <returns>The active communication wrapped in a RequestResult.</returns>
-        RequestResult<Communication> GetActiveBanner(CommunicationType communicationType);
+        RequestResult<Communication?> GetActiveBanner(CommunicationType communicationType);
 
         /// <summary>
-        /// Adds the associated banner to the local cache.
+        /// Processes a change event from the DB for Communication banners.
         /// </summary>
-        /// <param name="cacheEntry">The communication to be cached..</param>
-        /// <param name="cacheType">The communication type to be removed.</param>
-        public void AddBannerCache(RequestResult<Communication> cacheEntry, CommunicationType cacheType);
-
-        /// <summary>
-        /// Removes the associated banner from the local cache.
-        /// </summary>
-        /// <param name="cacheType">The communication type to be removed.</param>
-        void RemoveBannerCache(CommunicationType cacheType);
-
-        /// <summary>
-        /// Gets the associated banner from the local cache.
-        /// </summary>
-        /// <param name="cacheType">The communication type to be removed.</param>
-        /// <returns>The cached object.</returns>
-        RequestResult<Communication>? GetBannerCache(CommunicationType cacheType);
+        /// <param name="changeEvent">The change event that was triggered.</param>
+        void ProcessChange(BannerChangeEvent changeEvent);
     }
 }

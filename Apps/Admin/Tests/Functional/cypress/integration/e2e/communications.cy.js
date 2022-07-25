@@ -1,5 +1,3 @@
-import { verifyTestingEnvironment } from "../../support/functions/environment";
-
 function getTodayPlusDaysDate(days) {
     let ms = new Date(Date.now());
     ms.setDate(ms.getDate() + days);
@@ -8,17 +6,11 @@ function getTodayPlusDaysDate(days) {
 
 describe("Communications", () => {
     beforeEach(() => {
-        verifyTestingEnvironment();
-        cy.log("Logging in.");
-        cy.login(Cypress.env("idir_username"), Cypress.env("idir_password"));
-
-        cy.log("Navigate to communications page.");
-        cy.visit("/communications");
-    });
-
-    afterEach(() => {
-        cy.log("Logging out.");
-        cy.logout();
+        cy.login(
+            Cypress.env("keycloak_username"),
+            Cypress.env("keycloak_password"),
+            "/communications"
+        );
     });
 
     it("Verify banner crud functions.", () => {

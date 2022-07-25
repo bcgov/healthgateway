@@ -15,6 +15,7 @@
 //-------------------------------------------------------------------------
 namespace HealthGateway.Admin.Client.Authorization
 {
+    using System.Collections.Generic;
     using System.Linq;
     using System.Security.Claims;
     using System.Text.Json;
@@ -38,27 +39,28 @@ namespace HealthGateway.Admin.Client.Authorization
 
         /// <inheritdoc/>
         public override async ValueTask<ClaimsPrincipal> CreateUserAsync(
-            RemoteUserAccount account, RemoteAuthenticationUserOptions options)
+            RemoteUserAccount account,
+            RemoteAuthenticationUserOptions options)
         {
-            var user = await base.CreateUserAsync(account, options).ConfigureAwait(true);
+            ClaimsPrincipal? user = await base.CreateUserAsync(account, options).ConfigureAwait(true);
             if (user.Identity == null || !user.Identity.IsAuthenticated)
             {
                 return user;
             }
 
-            var identity = (ClaimsIdentity)user.Identity;
-            var roleClaims = identity.FindAll(claim => claim.Type == "roles");
+            ClaimsIdentity identity = (ClaimsIdentity)user.Identity;
+            IEnumerable<Claim>? roleClaims = identity.FindAll(claim => claim.Type == "roles");
             if (roleClaims == null || !roleClaims.Any())
             {
                 return user;
             }
 
-            foreach (var existingClaim in roleClaims.ToArray())
+            foreach (Claim existingClaim in roleClaims.ToArray())
             {
                 identity.RemoveClaim(existingClaim);
             }
 
-            var rolesElem = account.AdditionalProperties["roles"];
+            object? rolesElem = account.AdditionalProperties["roles"];
             if (rolesElem is not JsonElement roles)
             {
                 return user;
@@ -66,7 +68,7 @@ namespace HealthGateway.Admin.Client.Authorization
 
             if (roles.ValueKind == JsonValueKind.Array)
             {
-                foreach (var role in roles.EnumerateArray())
+                foreach (JsonElement role in roles.EnumerateArray())
                 {
                     identity.AddClaim(new Claim(options.RoleClaim, role.GetString()));
                 }

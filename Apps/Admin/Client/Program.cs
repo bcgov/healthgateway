@@ -38,10 +38,10 @@ namespace HealthGateway.Admin.Client
     /// The entry point for the project.
     /// </summary>
     [ExcludeFromCodeCoverage]
-    [System.Diagnostics.CodeAnalysis.SuppressMessage("Maintainability", "CA1506:Avoid excessive class coupling", Justification = "Team decision")]
+    [SuppressMessage("Maintainability", "CA1506:Avoid excessive class coupling", Justification = "Team decision")]
     public static class Program
     {
-        /// <summary>.
+        /// <summary>
         /// The entry point for the class.
         /// </summary>
         /// <param name="args">The command line arguments to be passed in.</param>
@@ -58,33 +58,27 @@ namespace HealthGateway.Admin.Client
             // Configure Logging
             IConfigurationSection loggerConfig = builder.Configuration.GetSection("Logging");
             builder.Services
-                        .AddLogging(builder =>
-                        {
-                            builder.AddConfiguration(loggerConfig);
-                        });
+                .AddLogging(loggingBuilder => loggingBuilder.AddConfiguration(loggerConfig));
 
             // Enable Mud Blazor component services
-            builder.Services.AddMudServices(config =>
-            {
-                config.SnackbarConfiguration.PositionClass = Defaults.Classes.Position.BottomRight;
-            });
+            builder.Services.AddMudServices(config => config.SnackbarConfiguration.PositionClass = Defaults.Classes.Position.BottomRight);
 
             // Configure Authentication and Authorization
-            builder.Services.AddOidcAuthentication(options =>
-            {
-                builder.Configuration.Bind("Oidc", options.ProviderOptions);
-                options.ProviderOptions.ResponseType = "code";
-                options.UserOptions.RoleClaim = "role";
-            }).AddAccountClaimsPrincipalFactory<RolesClaimsPrincipalFactory>();
+            builder.Services.AddOidcAuthentication(
+                    options =>
+                    {
+                        builder.Configuration.Bind("Oidc", options.ProviderOptions);
+                        options.ProviderOptions.ResponseType = "code";
+                        options.UserOptions.RoleClaim = "role";
+                    })
+                .AddAccountClaimsPrincipalFactory<RolesClaimsPrincipalFactory>();
 
             // Configure State Management
             Assembly currentAssembly = typeof(Program).Assembly;
-            builder.Services.AddFluxor(options => options
-                                    .ScanAssemblies(currentAssembly)
-                                    .UseReduxDevTools(rdt =>
-                                    {
-                                        rdt.Name = "Health Gateway Admin";
-                                    }));
+            builder.Services.AddFluxor(
+                options => options
+                    .ScanAssemblies(currentAssembly)
+                    .UseReduxDevTools(rdt => rdt.Name = "Health Gateway Admin"));
 
             builder.Services.AddBlazoredLocalStorage();
 
@@ -113,13 +107,13 @@ namespace HealthGateway.Admin.Client
             if (isAuthorized)
             {
                 builder.Services.AddRefitClient<T>()
-                    .ConfigureHttpClient(c => { c.BaseAddress = address; })
+                    .ConfigureHttpClient(c => c.BaseAddress = address)
                     .AddHttpMessageHandler(sp => ConfigureAuthorization(sp, address.AbsoluteUri));
                 return;
             }
 
             builder.Services.AddRefitClient<T>()
-                 .ConfigureHttpClient(c => { c.BaseAddress = address; });
+                .ConfigureHttpClient(c => c.BaseAddress = address);
         }
 
         private static DelegatingHandler ConfigureAuthorization(IServiceProvider serviceProvider, string address)

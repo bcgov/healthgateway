@@ -1061,7 +1061,7 @@ namespace HealthGateway.Database.Migrations
          ADD CONSTRAINT unique_date_range EXCLUDE USING gist (
          tstzrange(""EffectiveDateTime"", ""ExpiryDateTime"") WITH &&)
          WHERE (""CommunicationTypeCode"" = 'Banner' AND
-                ""CommunicationStatusCode"" IN ('New' ,'Pending','Processed','Processing'))";
+                ""CommunicationStatusCode"" IN ('New' ,'Pending','Processed','Processing'));";
 
              migrationBuilder.Sql(constraint);
         }
@@ -2103,7 +2103,7 @@ namespace HealthGateway.Database.Migrations
          ADD CONSTRAINT unique_date_range EXCLUDE USING gist (
          tsrange(""EffectiveDateTime"", ""ExpiryDateTime"") WITH &&)
          WHERE (""CommunicationTypeCode"" = 'Banner' AND
-                ""CommunicationStatusCode"" IN ('New' ,'Pending','Processed','Processing'))";
+                ""CommunicationStatusCode"" IN ('New' ,'Pending','Processed','Processing'));";
 
             migrationBuilder.Sql(constraint);
         }

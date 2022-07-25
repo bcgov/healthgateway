@@ -10,7 +10,7 @@ import ErrorTranslator from "@/utility/errorTranslator";
 
 @injectable()
 export class RestConfigService implements IConfigService {
-    private logger: ILogger = container.get(SERVICE_IDENTIFIER.Logger);
+    private logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
     private readonly CONFIG_BASE_URI: string = "/configuration";
     private http!: IHttpDelegate;
 
@@ -19,12 +19,10 @@ export class RestConfigService implements IConfigService {
     }
 
     public getConfiguration(): Promise<ExternalConfiguration> {
-        return new Promise((resolve, reject) => {
+        return new Promise((resolve, reject) =>
             this.http
                 .getWithCors<ExternalConfiguration>(`${this.CONFIG_BASE_URI}/`)
-                .then((result) => {
-                    return resolve(result);
-                })
+                .then((result) => resolve(result))
                 .catch((err: HttpError) => {
                     this.logger.error(
                         `Error in RestConfigService.getConfiguration()`
@@ -35,7 +33,7 @@ export class RestConfigService implements IConfigService {
                             ServiceCode.HealthGatewayUser
                         )
                     );
-                });
-        });
+                })
+        );
     }
 }

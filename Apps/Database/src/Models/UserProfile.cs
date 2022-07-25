@@ -19,6 +19,7 @@ namespace HealthGateway.Database.Models
     using System.Collections.Generic;
     using System.ComponentModel.DataAnnotations;
     using System.ComponentModel.DataAnnotations.Schema;
+    using System.Diagnostics.CodeAnalysis;
     using HealthGateway.Common.Data.Models;
 
     /// <summary>
@@ -84,7 +85,7 @@ namespace HealthGateway.Database.Models
         /// <summary>
         /// Gets or sets the messaging verifications for this user.
         /// </summary>
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "CA2227:Collection properties should be read only", Justification = "Team decision")]
+        [SuppressMessage("Usage", "CA2227:Collection properties should be read only", Justification = "Team decision")]
         public virtual ICollection<MessagingVerification>? Verifications { get; set; }
     }
 }

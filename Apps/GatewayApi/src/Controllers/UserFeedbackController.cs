@@ -55,7 +55,10 @@ namespace HealthGateway.GatewayApi.Controllers
         /// <response code="400">The user feedback object is invalid.</response>
         /// <response code="409">The user feedback was already inserted.</response>
         /// <response code="401">The client must authenticate itself to get the requested response.</response>
-        /// <response code="403">The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.</response>
+        /// <response code="403">
+        /// The client does not have access rights to the content; that is, it is unauthorized, so the server
+        /// is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.
+        /// </response>
         [HttpPost]
         [Route("{hdid}")]
         [Authorize(Policy = UserProfilePolicy.Write)]
@@ -65,19 +68,17 @@ namespace HealthGateway.GatewayApi.Controllers
             {
                 return new BadRequestResult();
             }
-            else
-            {
-                userFeedback.UserProfileId = hdid;
-                userFeedback.CreatedBy = hdid;
-                userFeedback.UpdatedBy = hdid;
-                DBResult<UserFeedback> result = this.userFeedbackService.CreateUserFeedback(userFeedback);
-                if (result.Status != DBStatusCode.Created)
-                {
-                    return new ConflictResult();
-                }
 
-                return new OkResult();
+            userFeedback.UserProfileId = hdid;
+            userFeedback.CreatedBy = hdid;
+            userFeedback.UpdatedBy = hdid;
+            DBResult<UserFeedback> result = this.userFeedbackService.CreateUserFeedback(userFeedback);
+            if (result.Status != DBStatusCode.Created)
+            {
+                return new ConflictResult();
             }
+
+            return new OkResult();
         }
 
         /// <summary>
@@ -87,7 +88,10 @@ namespace HealthGateway.GatewayApi.Controllers
         /// <returns>The saved rating wrapped in a request result.</returns>
         /// <response code="200">Returns the saved rating json.</response>
         /// <response code="401">the client must authenticate itself to get the requested response.</response>
-        /// <response code="403">The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.</response>
+        /// <response code="403">
+        /// The client does not have access rights to the content; that is, it is unauthorized, so the server
+        /// is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.
+        /// </response>
         [HttpPost]
         [Route("Rating")]
         public RequestResult<Rating> CreateRating(Rating rating)

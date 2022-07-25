@@ -17,11 +17,10 @@ export const actions: EncounterActions = {
         context,
         params: { hdid: string }
     ): Promise<RequestResult<Encounter[]>> {
-        const logger: ILogger = container.get(SERVICE_IDENTIFIER.Logger);
-        const encounterService: IEncounterService =
-            container.get<IEncounterService>(
-                SERVICE_IDENTIFIER.EncounterService
-            );
+        const logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
+        const encounterService = container.get<IEncounterService>(
+            SERVICE_IDENTIFIER.EncounterService
+        );
 
         return new Promise((resolve, reject) => {
             const patientEncounters: Encounter[] =
@@ -70,7 +69,7 @@ export const actions: EncounterActions = {
         });
     },
     handleError(context, params: { error: ResultError; errorType: ErrorType }) {
-        const logger: ILogger = container.get(SERVICE_IDENTIFIER.Logger);
+        const logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
 
         logger.error(`ERROR: ${JSON.stringify(params.error)}`);
         context.commit("encounterError", params.error);

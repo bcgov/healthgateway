@@ -17,9 +17,7 @@ namespace HealthGateway.GatewayApi.Models
 {
     using System;
     using System.Collections.Generic;
-    using System.Linq;
     using System.Text.Json.Serialization;
-    using HealthGateway.Database.Models;
 
     /// <summary>
     /// Model that provides a user representation of an user profile database model.

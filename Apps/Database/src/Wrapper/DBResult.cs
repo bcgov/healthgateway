@@ -22,7 +22,7 @@ namespace HealthGateway.Database.Wrapper
     /// </summary>
     /// <typeparam name="T">The payload type.</typeparam>
     public class DBResult<T>
-        where T : class
+        where T : class?
     {
         /// <summary>
         /// Gets or sets the result payload.

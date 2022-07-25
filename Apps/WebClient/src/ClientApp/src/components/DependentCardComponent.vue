@@ -26,7 +26,7 @@ import {
     ImmunizationEvent,
     Recommendation,
 } from "@/models/immunizationModel";
-import { Covid19LaboratoryTest, LaboratoryReport } from "@/models/laboratory";
+import { Covid19LaboratoryTest } from "@/models/laboratory";
 import Report from "@/models/report";
 import ReportHeader from "@/models/reportHeader";
 import { ReportFormatType, TemplateType } from "@/models/reportRequest";
@@ -100,7 +100,7 @@ export default class DependentCardComponent extends Vue {
     readonly deleteModal!: DeleteModalComponent;
 
     @Emit()
-    private needsUpdate() {
+    private needsUpdate(): void {
         return;
     }
 
@@ -157,7 +157,7 @@ export default class DependentCardComponent extends Vue {
         );
     }
 
-    private get isExpired() {
+    private get isExpired(): boolean {
         let birthDate = new DateWrapper(
             this.dependent.dependentInformation.dateOfBirth
         );
@@ -173,36 +173,30 @@ export default class DependentCardComponent extends Vue {
     }
 
     private get immunizationItems(): ImmunizationRow[] {
-        return this.immunizations.map<ImmunizationRow>((x) => {
-            return {
-                date: DateWrapper.format(x.dateOfImmunization),
-                immunization: x.immunization.name,
-                agent: this.getAgentNames(x.immunization.immunizationAgents),
-                product: this.getProductNames(
-                    x.immunization.immunizationAgents
-                ),
-                provider_clinic: x.providerOrClinic,
-                lotNumber: this.getAgentLotNumbers(
-                    x.immunization.immunizationAgents
-                ),
-            };
-        });
+        return this.immunizations.map<ImmunizationRow>((x) => ({
+            date: DateWrapper.format(x.dateOfImmunization),
+            immunization: x.immunization.name,
+            agent: this.getAgentNames(x.immunization.immunizationAgents),
+            product: this.getProductNames(x.immunization.immunizationAgents),
+            provider_clinic: x.providerOrClinic,
+            lotNumber: this.getAgentLotNumbers(
+                x.immunization.immunizationAgents
+            ),
+        }));
     }
 
     private get recommendationItems(): RecommendationRow[] {
-        return this.recommendations.map<RecommendationRow>((x) => {
-            return {
-                immunization: x.targetDiseases.find((y) => y.name)?.name ?? "",
-                due_date:
-                    x.diseaseDueDate === undefined || x.diseaseDueDate === null
-                        ? ""
-                        : DateWrapper.format(x.diseaseDueDate),
-                status: x.status || "",
-            };
-        });
+        return this.recommendations.map<RecommendationRow>((x) => ({
+            immunization: x.targetDiseases.find((y) => y.name)?.name ?? "",
+            due_date:
+                x.diseaseDueDate === undefined || x.diseaseDueDate === null
+                    ? ""
+                    : DateWrapper.format(x.diseaseDueDate),
+            status: x.status || "",
+        }));
     }
 
-    private created() {
+    private created(): void {
         this.logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
         this.immunizationService = container.get<IImmunizationService>(
             SERVICE_IDENTIFIER.ImmunizationService
@@ -219,22 +213,20 @@ export default class DependentCardComponent extends Vue {
         this.isLoading = true;
         this.dependentService
             .removeDependent(this.user.hdid, this.dependent)
-            .then(() => {
-                this.needsUpdate();
-            })
-            .catch((err: ResultError) => {
+            .then(() => this.needsUpdate())
+            .catch((err: ResultError) =>
                 this.addError({
                     errorType: ErrorType.Delete,
                     source: ErrorSourceType.Dependent,
                     traceId: err.traceId,
-                });
-            })
+                })
+            )
             .finally(() => {
                 this.isLoading = false;
             });
     }
 
-    private downloadCovid19Report() {
+    private downloadCovid19Report(): void {
         this.isGeneratingReport = true;
         let test = this.selectedTestRow.test;
         this.laboratoryService
@@ -244,17 +236,17 @@ export default class DependentCardComponent extends Vue {
                 true
             )
             .then((result) => {
-                let report: LaboratoryReport = result.resourcePayload;
+                const report = result.resourcePayload;
                 fetch(
                     `data:${report.mediaType};${report.encoding},${report.data}`
                 )
                     .then((response) => response.blob())
-                    .then((blob) => {
+                    .then((blob) =>
                         saveAs(
                             blob,
                             `COVID_Result_${this.dependent.dependentInformation.firstname}${this.dependent.dependentInformation.lastname}_${test.collectedDateTime}.pdf`
-                        );
-                    });
+                        )
+                    );
             })
             .catch((err: ResultError) => {
                 this.logger.error(err.resultMessage);
@@ -269,7 +261,7 @@ export default class DependentCardComponent extends Vue {
             });
     }
 
-    private downloadImmunizationReport() {
+    private downloadImmunizationReport(): void {
         this.isGeneratingReport = true;
 
         this.trackDownload();
@@ -282,18 +274,20 @@ export default class DependentCardComponent extends Vue {
             .then((result: RequestResult<Report>) => {
                 const mimeType = this.getMimeType(this.reportFormatType);
                 const downloadLink = `data:${mimeType};base64,${result.resourcePayload.data}`;
-                fetch(downloadLink).then((res) => {
-                    res.blob().then((blob) => {
-                        saveAs(blob, result.resourcePayload.fileName);
-                    });
-                });
+                fetch(downloadLink).then((res) =>
+                    res
+                        .blob()
+                        .then((blob) =>
+                            saveAs(blob, result.resourcePayload.fileName)
+                        )
+                );
             })
             .finally(() => {
                 this.isGeneratingReport = false;
             });
     }
 
-    private downloadReport() {
+    private downloadReport(): void {
         this.logger.debug(
             `Download report for dependent tab: ${this.dependentTab}`
         );
@@ -309,7 +303,7 @@ export default class DependentCardComponent extends Vue {
         return new DateWrapper(date).format();
     }
 
-    private fetchCovid19LaboratoryTests() {
+    private fetchCovid19LaboratoryTests(): void {
         this.logger.debug(
             `Fetching COVID 19 Laboratory Tests - data loaded: ${this.isDataLoaded}`
         );
@@ -326,18 +320,12 @@ export default class DependentCardComponent extends Vue {
                 const payload = result.resourcePayload;
                 if (result.resultStatus == ResultType.Success) {
                     this.testRows =
-                        payload.orders.flatMap<Covid19LaboratoryTestRow>(
-                            (o) => {
-                                return o.labResults.map<Covid19LaboratoryTestRow>(
-                                    (r) => {
-                                        return {
-                                            id: o.id,
-                                            reportAvailable: o.reportAvailable,
-                                            test: r,
-                                        };
-                                    }
-                                );
-                            }
+                        payload.orders.flatMap<Covid19LaboratoryTestRow>((o) =>
+                            o.labResults.map<Covid19LaboratoryTestRow>((r) => ({
+                                id: o.id,
+                                reportAvailable: o.reportAvailable,
+                                test: r,
+                            }))
                         );
                     this.sortEntries();
                     this.isDataLoaded = true;
@@ -350,9 +338,10 @@ export default class DependentCardComponent extends Vue {
                     this.logger.info(
                         "Re-querying for COVID-19 Laboratory Orders"
                     );
-                    setTimeout(() => {
-                        this.fetchCovid19LaboratoryTests();
-                    }, payload.retryin);
+                    setTimeout(
+                        () => this.fetchCovid19LaboratoryTests(),
+                        payload.retryin
+                    );
                 } else {
                     this.logger.error(
                         "Error returned from the COVID-19 Laboratory Orders call: " +
@@ -377,7 +366,7 @@ export default class DependentCardComponent extends Vue {
             });
     }
 
-    private fetchPatientImmunizations() {
+    private fetchPatientImmunizations(): void {
         const hdid = this.dependent.ownerId;
         this.logger.debug(`Fetching Patient Immunizations for Hdid: ${hdid}`);
         this.logger.debug(`Logged in user Hdid: ${this.user.hdid}`);
@@ -397,9 +386,10 @@ export default class DependentCardComponent extends Vue {
                     const payload = result.resourcePayload;
                     if (payload.loadState.refreshInProgress) {
                         this.logger.info("Re-querying Patient Immunizations");
-                        setTimeout(() => {
-                            this.fetchPatientImmunizations();
-                        }, 10000);
+                        setTimeout(
+                            () => this.fetchPatientImmunizations(),
+                            10000
+                        );
                     } else {
                         this.setImmunizations(payload.immunizations);
                         this.setRecommendations(payload.recommendations);
@@ -443,7 +433,7 @@ export default class DependentCardComponent extends Vue {
         reportFormatType: ReportFormatType,
         headerData: ReportHeader
     ): Promise<RequestResult<Report>> {
-        const reportService: IReportService = container.get<IReportService>(
+        const reportService = container.get<IReportService>(
             SERVICE_IDENTIFIER.ReportService
         );
 
@@ -461,18 +451,16 @@ export default class DependentCardComponent extends Vue {
     private getAgentLotNumbers(
         immunizationAgents: ImmunizationAgent[]
     ): string {
-        const lotNumbers: string[] = immunizationAgents.map<string>(
-            (x) => x.lotNumber
-        );
+        const lotNumbers = immunizationAgents.map<string>((x) => x.lotNumber);
         return lotNumbers.join(", ");
     }
 
     private getAgentNames(immunizationAgents: ImmunizationAgent[]): string {
-        const agents: string[] = immunizationAgents.map<string>((x) => x.name);
+        const agents = immunizationAgents.map<string>((x) => x.name);
         return agents.join(", ");
     }
 
-    private getMimeType(reportFormatType: ReportFormatType) {
+    private getMimeType(reportFormatType: ReportFormatType): string {
         switch (reportFormatType) {
             case ReportFormatType.PDF:
                 return "application/pdf";
@@ -497,13 +485,13 @@ export default class DependentCardComponent extends Vue {
     }
 
     private getProductNames(immunizationAgents: ImmunizationAgent[]): string {
-        const productNames: string[] = immunizationAgents.map<string>(
+        const productNames = immunizationAgents.map<string>(
             (x) => x.productName
         );
         return productNames.join(", ");
     }
 
-    private setImmunizations(immunizations: ImmunizationEvent[]) {
+    private setImmunizations(immunizations: ImmunizationEvent[]): void {
         this.immunizations = immunizations;
 
         this.immunizations.sort((a, b) => {
@@ -522,7 +510,7 @@ export default class DependentCardComponent extends Vue {
         });
     }
 
-    private setRecommendations(recommendations: Recommendation[]) {
+    private setRecommendations(recommendations: Recommendation[]): void {
         this.recommendations = recommendations.filter((x) =>
             x.targetDiseases.some((y) => y.name)
         );
@@ -560,7 +548,7 @@ export default class DependentCardComponent extends Vue {
         });
     }
 
-    private sortEntries() {
+    private sortEntries(): void {
         this.testRows.sort((a, b) => {
             let dateA = new DateWrapper(a.test.collectedDateTime);
             let dateB = new DateWrapper(b.test.collectedDateTime);
@@ -576,7 +564,7 @@ export default class DependentCardComponent extends Vue {
 
     private showCovid19DownloadConfirmationModal(
         row: Covid19LaboratoryTestRow
-    ) {
+    ): void {
         this.selectedTestRow = row;
         this.sensitiveDocumentDownloadModal.showModal();
     }
@@ -691,7 +679,9 @@ export default class DependentCardComponent extends Vue {
                         <div data-testid="covid19TabTitle">COVID-19</div>
                     </template>
                     <b-row v-if="isLoading" class="m-2">
-                        <b-col><b-spinner /></b-col>
+                        <b-col>
+                            <b-spinner />
+                        </b-col>
                     </b-row>
                     <b-row v-else-if="testRows.length == 0" class="m-2">
                         <b-col data-testid="covid19NoRecords">
@@ -819,7 +809,9 @@ export default class DependentCardComponent extends Vue {
                         </div>
                     </template>
                     <b-row v-if="isLoading" class="m-2">
-                        <b-col><b-spinner /></b-col>
+                        <b-col>
+                            <b-spinner />
+                        </b-col>
                     </b-row>
                     <div
                         v-else
@@ -1109,22 +1101,28 @@ export default class DependentCardComponent extends Vue {
 
 <style lang="scss" scoped>
 @import "@/assets/scss/_variables.scss";
+
 tr:nth-child(even) {
     background: $soft_background;
 }
+
 th {
     font-weight: bold;
 }
+
 td,
 th {
     text-align: center;
 }
+
 .tableTab {
     padding: 0;
 }
+
 .dependentMenu {
     color: $soft_text;
 }
+
 .card-title {
     padding-left: 14px;
     font-size: 1.2em;

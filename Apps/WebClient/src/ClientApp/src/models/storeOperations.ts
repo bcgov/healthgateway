@@ -21,6 +21,7 @@ export class Operation {
     public readonly id: string;
     public readonly operationType: OperationType;
     public readonly date: DateWrapper;
+
     constructor(id: string, operationType: OperationType) {
         this.id = id;
         this.operationType = operationType;

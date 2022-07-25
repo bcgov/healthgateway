@@ -19,9 +19,8 @@ export const getters: CommentGetters = {
         },
     entryHasComments:
         (state: CommentState) =>
-        (entryId: string): boolean => {
-            return entryId in state.profileComments;
-        },
+        (entryId: string): boolean =>
+            entryId in state.profileComments,
     isLoading(state: CommentState): boolean {
         return state.status === LoadStatus.REQUESTED;
     },

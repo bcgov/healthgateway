@@ -16,11 +16,8 @@
 namespace HealthGateway.Common.AccessManagement.Authorization.Handlers
 {
     using System.Linq;
-    using System.Security.Claims;
     using System.Threading.Tasks;
-    using HealthGateway.Common.AccessManagement.Authorization.Claims;
     using HealthGateway.Common.AccessManagement.Authorization.Requirements;
-    using HealthGateway.Common.Constants;
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Http;
     using Microsoft.Extensions.Logging;
@@ -59,7 +56,7 @@ namespace HealthGateway.Common.AccessManagement.Authorization.Handlers
                 string? resourceHDID = this.GetResourceHDID(requirement);
                 if (resourceHDID == null)
                 {
-                    this.logger.LogWarning($"Fhir resource Handler has been invoked without route resource being specified, ignoring");
+                    this.logger.LogWarning("Fhir resource Handler has been invoked without route resource being specified, ignoring");
                 }
                 else if (this.IsOwner(context, resourceHDID))
                 {

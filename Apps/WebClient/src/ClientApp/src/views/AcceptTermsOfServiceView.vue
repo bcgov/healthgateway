@@ -65,7 +65,7 @@ export default class AcceptTermsOfServiceView extends Vue {
         return this.loadingTermsOfService;
     }
 
-    private mounted() {
+    private mounted(): void {
         this.logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
 
         this.userProfileService = container.get(
@@ -75,7 +75,7 @@ export default class AcceptTermsOfServiceView extends Vue {
         this.loadTermsOfService();
     }
 
-    private validations() {
+    private validations(): unknown {
         return {
             accepted: { isChecked: sameAs(() => true) },
         };
@@ -109,7 +109,7 @@ export default class AcceptTermsOfServiceView extends Vue {
         return param.$dirty ? !param.$invalid : undefined;
     }
 
-    private onSubmit(event: Event) {
+    private onSubmit(event: Event): void {
         this.$v.$touch();
         if (this.$v.$invalid) {
             event.preventDefault();
@@ -119,9 +119,7 @@ export default class AcceptTermsOfServiceView extends Vue {
         this.loadingTermsOfService = true;
 
         this.updateAcceptedTerms({ termsOfServiceId: this.termsOfServiceId })
-            .then(() => {
-                this.redirect();
-            })
+            .then(() => this.redirect())
             .catch((err: ResultError) => {
                 this.logger.error(
                     `Error updating accepted terms of service: ${JSON.stringify(

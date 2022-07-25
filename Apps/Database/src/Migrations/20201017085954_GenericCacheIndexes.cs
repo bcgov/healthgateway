@@ -31,7 +31,7 @@ namespace HealthGateway.Database.Migrations
 
             string schema = "gateway";
             string table = "GenericCache";
-            string index = $"CREATE INDEX \"IX_{table}_JSON_GIN\" on {schema}.\"{table}\" USING gin(\"JSON\")";
+            string index = $"CREATE INDEX \"IX_{table}_JSON_GIN\" on {schema}.\"{table}\" USING gin(\"JSON\");";
             migrationBuilder.Sql(index);
         }
 
@@ -44,7 +44,7 @@ namespace HealthGateway.Database.Migrations
 
             string schema = "gateway";
             string table = "GenericCache";
-            string index = $"DROP INDEX {schema}.\"IX_{table}_JSON_GIN\"";
+            string index = $"DROP INDEX {schema}.\"IX_{table}_JSON_GIN\";";
             migrationBuilder.Sql(index);
         }
     }

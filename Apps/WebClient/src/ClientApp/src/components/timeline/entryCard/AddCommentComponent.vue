@@ -30,7 +30,7 @@ export default class AddCommentComponent extends Vue {
     private logger!: ILogger;
     private isSaving = false;
 
-    private created() {
+    private created(): void {
         this.logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
     }
 
@@ -58,20 +58,20 @@ export default class AddCommentComponent extends Vue {
                     this.onCommentAdded(newComment);
                 }
             })
-            .catch((err) => {
+            .catch((err) =>
                 this.logger.error(
                     `Error adding comment on entry ${
                         this.comment.parentEntryId
                     }: ${JSON.stringify(err)}`
-                );
-            })
+                )
+            )
             .finally(() => {
                 this.isSaving = false;
             });
     }
 
     @Emit()
-    private onCommentAdded(comment: UserComment) {
+    private onCommentAdded(comment: UserComment): UserComment {
         return comment;
     }
 }
@@ -132,19 +132,24 @@ export default class AddCommentComponent extends Vue {
 
 <style lang="scss" scoped>
 @import "@/assets/scss/_variables.scss";
+
 .col {
     padding: 0px;
     margin: 0px;
 }
+
 .row {
     padding: 0;
     margin: 0px;
 }
+
 .comment-input {
     border-right: 0px;
+
     &.faded {
         background-color: $soft-background;
     }
+
     &.single-line {
         height: 38px !important;
     }

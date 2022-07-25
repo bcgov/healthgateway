@@ -114,6 +114,7 @@ export default class MedicationTimelineComponent extends Vue {
     padding: 0px;
     margin: 0px;
 }
+
 .row {
     padding: 0;
     margin: 0px;

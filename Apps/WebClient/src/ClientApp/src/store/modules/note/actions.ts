@@ -15,8 +15,8 @@ export const actions: NoteActions = {
         context,
         params: { hdid: string }
     ): Promise<RequestResult<UserNote[]>> {
-        const logger: ILogger = container.get(SERVICE_IDENTIFIER.Logger);
-        const noteService: IUserNoteService = container.get<IUserNoteService>(
+        const logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
+        const noteService = container.get<IUserNoteService>(
             SERVICE_IDENTIFIER.UserNoteService
         );
 
@@ -62,11 +62,11 @@ export const actions: NoteActions = {
         context,
         params: { hdid: string; note: UserNote }
     ): Promise<UserNote | undefined> {
-        const noteService: IUserNoteService = container.get<IUserNoteService>(
+        const noteService = container.get<IUserNoteService>(
             SERVICE_IDENTIFIER.UserNoteService
         );
 
-        return new Promise((resolve, reject) => {
+        return new Promise((resolve, reject) =>
             noteService
                 .createNote(params.hdid, params.note)
                 .then((result) => {
@@ -79,17 +79,18 @@ export const actions: NoteActions = {
                         errorType: ErrorType.Create,
                     });
                     reject(error);
-                });
-        });
+                })
+        );
     },
     updateNote(
         context,
         params: { hdid: string; note: UserNote }
     ): Promise<UserNote> {
-        const noteService: IUserNoteService = container.get<IUserNoteService>(
+        const noteService = container.get<IUserNoteService>(
             SERVICE_IDENTIFIER.UserNoteService
         );
-        return new Promise<UserNote>((resolve, reject) => {
+
+        return new Promise<UserNote>((resolve, reject) =>
             noteService
                 .updateNote(params.hdid, params.note)
                 .then((result) => {
@@ -102,17 +103,18 @@ export const actions: NoteActions = {
                         errorType: ErrorType.Update,
                     });
                     reject(error);
-                });
-        });
+                })
+        );
     },
     deleteNote(
         context,
         params: { hdid: string; note: UserNote }
     ): Promise<void> {
-        const noteService: IUserNoteService = container.get<IUserNoteService>(
+        const noteService = container.get<IUserNoteService>(
             SERVICE_IDENTIFIER.UserNoteService
         );
-        return new Promise((resolve, reject) => {
+
+        return new Promise((resolve, reject) =>
             noteService
                 .deleteNote(params.hdid, params.note)
                 .then(() => {
@@ -125,11 +127,11 @@ export const actions: NoteActions = {
                         errorType: ErrorType.Delete,
                     });
                     reject(error);
-                });
-        });
+                })
+        );
     },
     handleError(context, params: { error: ResultError; errorType: ErrorType }) {
-        const logger: ILogger = container.get(SERVICE_IDENTIFIER.Logger);
+        const logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
 
         logger.error(`ERROR: ${JSON.stringify(params.error)}`);
         context.commit("noteError", params.error);

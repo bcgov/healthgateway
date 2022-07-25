@@ -15,7 +15,7 @@ import ErrorTranslator from "@/utility/errorTranslator";
 
 @injectable()
 export class RestUserFeedbackService implements IUserFeedbackService {
-    private logger: ILogger = container.get(SERVICE_IDENTIFIER.Logger);
+    private logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
     private readonly USER_FEEDBACK_BASE_URI: string = "UserFeedback";
     private http!: IHttpDelegate;
     private baseUri = "";
@@ -32,15 +32,13 @@ export class RestUserFeedbackService implements IUserFeedbackService {
         hdid: string,
         feedback: UserFeedback
     ): Promise<boolean> {
-        return new Promise((resolve, reject) => {
+        return new Promise((resolve, reject) =>
             this.http
                 .post<void>(
                     `${this.baseUri}${this.USER_FEEDBACK_BASE_URI}/${hdid}`,
                     feedback
                 )
-                .then(() => {
-                    return resolve(true);
-                })
+                .then(() => resolve(true))
                 .catch((err: HttpError) => {
                     this.logger.error(
                         `Error in RestUserFeedbackService.submitFeedback()`
@@ -51,7 +49,7 @@ export class RestUserFeedbackService implements IUserFeedbackService {
                             ServiceCode.HealthGatewayUser
                         )
                     );
-                });
-        });
+                })
+        );
     }
 }
