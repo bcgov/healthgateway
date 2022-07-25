@@ -30,7 +30,6 @@ export interface ErrorBannerGetters
 type StoreContext = ActionContext<ErrorBannerState, RootState>;
 export interface ErrorBannerActions
     extends ActionTree<ErrorBannerState, RootState> {
-    dismiss(context: StoreContext): void;
     show(context: StoreContext): void;
     addError(
         context: StoreContext,
@@ -48,7 +47,7 @@ export interface ErrorBannerActions
             traceId: string | undefined;
         }
     ): void;
-    clearError(context: StoreContext): void;
+    clearErrors(context: StoreContext): void;
     setTooManyRequestsWarning(
         context: StoreContext,
         params: {
@@ -65,10 +64,9 @@ export interface ErrorBannerActions
 }
 
 export interface ErrorBannerMutations extends MutationTree<ErrorBannerState> {
-    dismiss(state: ErrorBannerState): void;
     show(state: ErrorBannerState): void;
     addError(state: ErrorBannerState, bannerError: BannerError): void;
-    clearError(state: ErrorBannerState): void;
+    clearErrors(state: ErrorBannerState): void;
     setTooManyRequestsWarning(state: ErrorBannerState, key: string): void;
     setTooManyRequestsError(state: ErrorBannerState, key: string): void;
     clearTooManyRequests(state: ErrorBannerState): void;

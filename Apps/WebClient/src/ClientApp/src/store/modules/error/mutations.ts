@@ -3,11 +3,6 @@ import { BannerError } from "@/models/errors";
 import { ErrorBannerMutations, ErrorBannerState } from "./types";
 
 export const mutations: ErrorBannerMutations = {
-    dismiss(state: ErrorBannerState) {
-        state.genericErrorBanner.errors = [];
-        state.genericErrorBanner.isShowing =
-            !state.genericErrorBanner.isShowing;
-    },
     show(state: ErrorBannerState) {
         state.genericErrorBanner.isShowing = true;
     },
@@ -15,8 +10,9 @@ export const mutations: ErrorBannerMutations = {
         state.genericErrorBanner.isShowing = true;
         state.genericErrorBanner.errors.push(bannerError);
     },
-    clearError(state: ErrorBannerState) {
+    clearErrors(state: ErrorBannerState) {
         state.genericErrorBanner.errors = [];
+        state.genericErrorBanner.isShowing = false;
     },
     setTooManyRequestsWarning(state: ErrorBannerState, key: string) {
         state.tooManyRequestsWarning = key;
