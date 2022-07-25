@@ -1,4 +1,4 @@
-﻿// -------------------------------------------------------------------------
+// -------------------------------------------------------------------------
 //  Copyright © 2019 Province of British Columbia
 //
 //  Licensed under the Apache License, Version 2.0 (the "License");
@@ -13,26 +13,23 @@
 //  See the License for the specific language governing permissions and
 //  limitations under the License.
 // -------------------------------------------------------------------------
-namespace HealthGateway.Admin.Constants
+namespace HealthGateway.Admin.Services
 {
+    using System.Collections.Generic;
+    using HealthGateway.Admin.Constants;
+    using HealthGateway.Common.Data.ViewModels;
+
     /// <summary>
-    /// Represents the status constants of a user invite.
+    /// Service that provides functionality for the admin support page.
     /// </summary>
-    public static class UserInviteStatus
+    public interface ISupportService
     {
         /// <summary>
-        /// Not invited status.
+        /// Retrieves a list of message verifications matching the query.
         /// </summary>
-        public const string NotInvited = "Not Invited";
-
-        /// <summary>
-        /// Invited but not validated status.
-        /// </summary>
-        public const string InvitedNotValidated = "Invited/Not Validated";
-
-        /// <summary>
-        /// Invited and validated status.
-        /// </summary>
-        public const string InvitedValidated = "Invited/Validated";
+        /// <param name="queryType">The type of query to perform.</param>
+        /// <param name="queryString">The value to query on.</param>
+        /// <returns>A list of users matching the query.</returns>
+        RequestResult<IEnumerable<MessagingVerificationModel>> GetMessageVerifications(UserQueryType queryType, string queryString);
     }
 }

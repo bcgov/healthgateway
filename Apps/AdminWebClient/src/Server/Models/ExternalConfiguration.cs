@@ -34,12 +34,6 @@ namespace HealthGateway.Admin.Models
         public AdminConfiguration Admin { get; set; } = new AdminConfiguration();
 
         /// <summary>
-        /// Gets or sets the Service Endpoints.
-        /// </summary>
-#pragma warning disable CA2227 //disable read-only Dictionary
-        public Dictionary<string, System.Uri> ServiceEndpoints { get; set; } = new Dictionary<string, System.Uri>();
-
-        /// <summary>
         /// Gets or sets the forward proxies configuration.
         /// </summary>
         public ForwardProxiesConfiguration ForwardProxies { get; set; } = new ForwardProxiesConfiguration();

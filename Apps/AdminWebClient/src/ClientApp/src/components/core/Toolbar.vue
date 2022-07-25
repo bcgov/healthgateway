@@ -6,7 +6,10 @@ import { Action, Getter } from "vuex-class";
 export default class ToolbarComponent extends Vue {
     @Action("setState", { namespace: "drawer" })
     private setDrawerState!: (params: { isDrawerOpen: boolean }) => void;
-    @Getter("isOpen", { namespace: "drawer" }) private isDrawerOpen!: boolean;
+
+    @Getter("isOpen", { namespace: "drawer" })
+    private isDrawerOpen!: boolean;
+
     @Getter("isAuthenticated", { namespace: "auth" })
     private isLoggedIn!: boolean;
 

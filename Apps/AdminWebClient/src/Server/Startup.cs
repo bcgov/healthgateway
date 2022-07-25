@@ -15,20 +15,20 @@
 //-------------------------------------------------------------------------
 namespace HealthGateway.AdminWebClient
 {
+    using System;
+    using System.Diagnostics;
     using System.Threading.Tasks;
     using HealthGateway.Admin.Server.Api;
     using HealthGateway.Admin.Server.Delegates;
-    using HealthGateway.Admin.Server.Services;
     using HealthGateway.Admin.Services;
-    using HealthGateway.Common.AccessManagement.Administration;
     using HealthGateway.Common.AccessManagement.Authentication;
     using HealthGateway.Common.AspNetConfiguration;
     using HealthGateway.Common.Authorization.Admin;
     using HealthGateway.Common.Delegates;
     using HealthGateway.Common.Delegates.PHSA;
     using HealthGateway.Common.Models.PHSA;
-    using HealthGateway.Common.Services;
     using HealthGateway.Database.Delegates;
+    using Microsoft.AspNetCore.Authentication;
     using Microsoft.AspNetCore.Authentication.Cookies;
     using Microsoft.AspNetCore.Authentication.OpenIdConnect;
     using Microsoft.AspNetCore.Builder;
@@ -44,6 +44,8 @@ namespace HealthGateway.AdminWebClient
     using Microsoft.IdentityModel.Tokens;
     using Refit;
     using VueCliMiddleware;
+    using AuthenticationService = HealthGateway.Admin.Services.AuthenticationService;
+    using IAuthenticationService = HealthGateway.Admin.Services.IAuthenticationService;
 
     /// <summary>
     /// Configures the application during startup.
@@ -57,7 +59,7 @@ namespace HealthGateway.AdminWebClient
         private readonly ILogger logger;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="Startup"/> class.
+        /// Initializes a new instance of the <see cref="Startup" /> class.
         /// </summary>
         /// <param name="env">The injected Environment provider.</param>
         /// <param name="configuration">The injected configuration provider.</param>
@@ -92,41 +94,22 @@ namespace HealthGateway.AdminWebClient
             // Add services
             services.AddTransient<IConfigurationService, ConfigurationService>();
             services.AddTransient<IAuthenticationService, AuthenticationService>();
-            services.AddTransient<IEmailQueueService, EmailQueueService>();
-            services.AddTransient<IUserFeedbackService, UserFeedbackService>();
-            services.AddTransient<IDashboardService, DashboardService>();
-            services.AddTransient<ICommunicationService, CommunicationService>();
-            services.AddTransient<ICsvExportService, CsvExportService>();
+            services.AddTransient<ISupportService, SupportService>();
             services.AddTransient<ICovidSupportService, CovidSupportService>();
-            services.AddTransient<IInactiveUserService, InactiveUserService>();
 
             // Add delegates
-            services.AddTransient<IEmailDelegate, DBEmailDelegate>();
             services.AddTransient<IMessagingVerificationDelegate, DBMessagingVerificationDelegate>();
-            services.AddTransient<IFeedbackDelegate, DBFeedbackDelegate>();
-            services.AddTransient<IRatingDelegate, DBRatingDelegate>();
-            services.AddTransient<IUserProfileDelegate, DBProfileDelegate>();
-            services.AddTransient<ICommunicationDelegate, DBCommunicationDelegate>();
-            services.AddTransient<INoteDelegate, DBNoteDelegate>();
-            services.AddTransient<IResourceDelegateDelegate, DBResourceDelegateDelegate>();
-            services.AddTransient<ICommentDelegate, DBCommentDelegate>();
-            services.AddTransient<IAdminTagDelegate, DBAdminTagDelegate>();
-            services.AddTransient<IFeedbackTagDelegate, DBFeedbackTagDelegate>();
             services.AddTransient<IImmunizationAdminDelegate, RestImmunizationAdminDelegate>();
             services.AddTransient<IVaccineStatusDelegate, RestVaccineStatusDelegate>();
             services.AddTransient<IVaccineProofDelegate, VaccineProofDelegate>();
             services.AddTransient<IAdminUserProfileDelegate, DbAdminUserProfileDelegate>();
             services.AddTransient<IAuthenticationDelegate, AuthenticationDelegate>();
-            services.AddTransient<IUserAdminDelegate, KeycloakUserAdminDelegate>();
 
             // Configure SPA
             services.AddControllersWithViews();
 
             // In production, the Vue files will be served from this directory
-            services.AddSpaStaticFiles(configuration =>
-            {
-                configuration.RootPath = "ClientApp/dist";
-            });
+            services.AddSpaStaticFiles(configuration => { configuration.RootPath = "ClientApp/dist"; });
 
             // Add API Clients
             PhsaConfig phsaConfig = new();
@@ -158,28 +141,28 @@ namespace HealthGateway.AdminWebClient
                 app.UseResponseCompression();
             }
 
-            bool debugerAttached = System.Diagnostics.Debugger.IsAttached;
-            bool serverOnly = bool.Parse(System.Environment.GetEnvironmentVariable("ServerOnly") ?? "false");
+            bool debugerAttached = Debugger.IsAttached;
+            bool serverOnly = bool.Parse(Environment.GetEnvironmentVariable("ServerOnly") ?? "false");
 
             bool launchDevSpa = debugerAttached && !serverOnly;
 
             app.UseEndpoints(endpoints =>
-                {
-                    endpoints.MapControllers();
-                    endpoints.MapControllerRoute(
-                        name: "default",
-                        pattern: "{controller}/{action=Index}/{id?}");
+            {
+                endpoints.MapControllers();
+                endpoints.MapControllerRoute(
+                    "default",
+                    "{controller}/{action=Index}/{id?}");
 
-                    if (env.IsDevelopment() && launchDevSpa)
-                    {
-                        endpoints.MapToVueCliProxy(
-                            "{*path}",
-                            new SpaOptions { SourcePath = "ClientApp" },
-                            npmScript: "serve",
-                            regex: "Compiled successfully",
-                            forceKill: true);
-                    }
-                });
+                if (env.IsDevelopment() && launchDevSpa)
+                {
+                    endpoints.MapToVueCliProxy(
+                        "{*path}",
+                        new SpaOptions { SourcePath = "ClientApp" },
+                        "serve",
+                        regex: "Compiled successfully",
+                        forceKill: true);
+                }
+            });
 
             app.UseSpa(spa =>
             {
@@ -220,23 +203,23 @@ namespace HealthGateway.AdminWebClient
         {
             string basePath = this.GetBasePath();
 
-            Microsoft.AspNetCore.Authentication.AuthenticationBuilder builder = services.AddAuthentication(options =>
-            {
-                options.DefaultAuthenticateScheme = CookieAuthenticationDefaults.AuthenticationScheme;
-                options.DefaultSignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
-                options.DefaultChallengeScheme = OpenIdConnectDefaults.AuthenticationScheme;
-            })
-            .AddCookie(options =>
-            {
-                options.Cookie.Name = AuthorizationConstants.CookieName;
-                options.LoginPath = $"{basePath}{AuthorizationConstants.LoginPath}";
-                options.LogoutPath = $"{basePath}{AuthorizationConstants.LogoutPath}";
-            });
+            AuthenticationBuilder builder = services.AddAuthentication(options =>
+                {
+                    options.DefaultAuthenticateScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+                    options.DefaultSignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+                    options.DefaultChallengeScheme = OpenIdConnectDefaults.AuthenticationScheme;
+                })
+                .AddCookie(options =>
+                {
+                    options.Cookie.Name = AuthorizationConstants.CookieName;
+                    options.LoginPath = $"{basePath}{AuthorizationConstants.LoginPath}";
+                    options.LogoutPath = $"{basePath}{AuthorizationConstants.LogoutPath}";
+                });
 
             this.ConfigureOpenId(builder);
         }
 
-        private void ConfigureOpenId(Microsoft.AspNetCore.Authentication.AuthenticationBuilder services)
+        private void ConfigureOpenId(AuthenticationBuilder services)
         {
             services.AddOpenIdConnect(options =>
             {
@@ -258,7 +241,7 @@ namespace HealthGateway.AdminWebClient
                     this.logger.LogCritical("OpenIdConnect Authority is missing, bad things are going to occur");
                 }
 
-                options.Events = new OpenIdConnectEvents()
+                options.Events = new OpenIdConnectEvents
                 {
                     OnRedirectToIdentityProvider = ctx =>
                     {
@@ -286,7 +269,7 @@ namespace HealthGateway.AdminWebClient
         {
             string basePath = string.Empty;
             IConfigurationSection section = this.configuration.GetSection("ForwardProxies");
-            if (section.GetValue<bool>("Enabled", false))
+            if (section.GetValue("Enabled", false))
             {
                 basePath = section.GetValue<string>("BasePath");
             }

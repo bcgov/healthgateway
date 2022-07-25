@@ -15,86 +15,37 @@
 // -------------------------------------------------------------------------
 namespace HealthGateway.Admin.Services
 {
-    using System;
     using System.Collections.Generic;
-    using System.Globalization;
     using System.Linq;
     using System.Threading.Tasks;
-    using HealthGateway.Admin.Constants;
     using HealthGateway.Common.Constants;
     using HealthGateway.Common.Data.Constants;
     using HealthGateway.Common.Data.Models;
     using HealthGateway.Common.Data.ViewModels;
     using HealthGateway.Common.Models;
     using HealthGateway.Common.Services;
+    using HealthGateway.Database.Constants;
     using HealthGateway.Database.Delegates;
     using HealthGateway.Database.Wrapper;
+    using UserQueryType = HealthGateway.Admin.Constants.UserQueryType;
 
     /// <inheritdoc />
-    public class DashboardService : IDashboardService
+    public class SupportService : ISupportService
     {
-        private readonly IResourceDelegateDelegate dependentDelegate;
-        private readonly IUserProfileDelegate userProfileDelegate;
         private readonly IMessagingVerificationDelegate messagingVerificationDelegate;
         private readonly IPatientService patientService;
-        private readonly IRatingDelegate ratingDelegate;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="DashboardService"/> class.
+        /// Initializes a new instance of the <see cref="SupportService" /> class.
         /// </summary>
-        /// <param name="dependentDelegate">The dependent delegate to interact with the DB.</param>
-        /// <param name="userProfileDelegate">The user profile delegate to interact with the DB.</param>
         /// <param name="messagingVerificationDelegate">The Messaging verification delegate to interact with the DB.</param>
         /// <param name="patientService">The patient service to lookup HDIDs by PHN.</param>
-        /// <param name="ratingDelegate">The rating delegate.</param>
-        public DashboardService(
-            IResourceDelegateDelegate dependentDelegate,
-            IUserProfileDelegate userProfileDelegate,
+        public SupportService(
             IMessagingVerificationDelegate messagingVerificationDelegate,
-            IPatientService patientService,
-            IRatingDelegate ratingDelegate)
+            IPatientService patientService)
         {
-            this.dependentDelegate = dependentDelegate;
-            this.userProfileDelegate = userProfileDelegate;
             this.messagingVerificationDelegate = messagingVerificationDelegate;
             this.patientService = patientService;
-            this.ratingDelegate = ratingDelegate;
-        }
-
-        /// <inheritdoc />
-        public IDictionary<DateTime, int> GetDailyRegisteredUsersCount(int timeOffset)
-        {
-            // Javascript offset is positive # of minutes if the local timezone is behind UTC, and negative if it is ahead.
-            TimeSpan ts = new(0, timeOffset, 0);
-            return this.userProfileDelegate.GetDailyRegisteredUsersCount(ts);
-        }
-
-        /// <inheritdoc />
-        public IDictionary<DateTime, int> GetDailyLoggedInUsersCount(int timeOffset)
-        {
-            // Javascript offset is positive # of minutes if the local timezone is behind UTC, and negative if it is ahead.
-            TimeSpan ts = new(0, timeOffset, 0);
-            return this.userProfileDelegate.GetDailyLoggedInUsersCount(ts);
-        }
-
-        /// <inheritdoc />
-        public IDictionary<DateTime, int> GetDailyDependentCount(int timeOffset)
-        {
-            // Javascript offset is positive # of minutes if the local timezone is behind UTC, and negative if it is ahead.
-            TimeSpan ts = new(0, timeOffset, 0);
-            return this.dependentDelegate.GetDailyDependentCount(ts);
-        }
-
-        /// <inheritdoc />
-        public int GetRecurrentUserCount(int dayCount, string startPeriod, string endPeriod, int timeOffset)
-        {
-            // Javascript offset is positive # of minutes if the local timezone is behind UTC, and negative if it is ahead.
-            TimeSpan ts = new(0, timeOffset, 0);
-            DateTime startDate = DateTime.Parse(startPeriod, CultureInfo.InvariantCulture).Date.Add(ts);
-            startDate = DateTime.SpecifyKind(startDate, DateTimeKind.Utc);
-            DateTime endDate = DateTime.Parse(endPeriod, CultureInfo.InvariantCulture).Date.Add(ts).AddDays(1).AddMilliseconds(-1);
-            endDate = DateTime.SpecifyKind(endDate, DateTimeKind.Utc);
-            return this.userProfileDelegate.GetRecurrentUserCount(dayCount, startDate, endDate);
         }
 
         /// <inheritdoc />
@@ -145,7 +96,7 @@ namespace HealthGateway.Admin.Services
                     break;
             }
 
-            if (dbResult != null && dbResult.Status == Database.Constants.DBStatusCode.Read)
+            if (dbResult != null && dbResult.Status == DBStatusCode.Read)
             {
                 retVal.ResultStatus = ResultType.Success;
                 List<MessagingVerificationModel> results = new();
@@ -154,7 +105,7 @@ namespace HealthGateway.Admin.Services
                     results.AddRange(dbResult.Payload.Select(MessagingVerificationModel.CreateFromDbModel));
                     if (queryType == UserQueryType.HDID || queryType == UserQueryType.PHN)
                     {
-                        foreach (var item in results)
+                        foreach (MessagingVerificationModel item in results)
                         {
                             item.PersonalHealthNumber = phn;
                         }
@@ -165,18 +116,6 @@ namespace HealthGateway.Admin.Services
             }
 
             return retVal;
-        }
-
-        /// <inheritdoc />
-        public IDictionary<string, int> GetRatingSummary(string startPeriod, string endPeriod, int timeOffset)
-        {
-            // Javascript offset is positive # of minutes if the local timezone is behind UTC, and negative if it is ahead.
-            TimeSpan ts = new(0, timeOffset, 0);
-            DateTime startDate = DateTime.Parse(startPeriod, CultureInfo.InvariantCulture).Date.Add(ts);
-            startDate = DateTime.SpecifyKind(startDate, DateTimeKind.Utc);
-            DateTime endDate = DateTime.Parse(endPeriod, CultureInfo.InvariantCulture).Date.Add(ts).AddDays(1).AddMilliseconds(-1);
-            endDate = DateTime.SpecifyKind(endDate, DateTimeKind.Utc);
-            return this.ratingDelegate.GetSummary(startDate, endDate);
         }
     }
 }

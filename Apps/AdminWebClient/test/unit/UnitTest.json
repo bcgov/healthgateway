@@ -27,8 +27,5 @@
         "ExternalURLs": {
             "External": "https://localhost/external"
         }
-    },
-    "ServiceEndpoints": {
-        "Service": "https://localhost/service"
     }
 }

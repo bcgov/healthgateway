@@ -14,16 +14,15 @@ const namespace = "auth";
     },
 })
 export default class LoginView extends Vue {
-    public name = "Dashboard";
-    @Action("login", { namespace }) private login!: (params: {
-        redirectPath: string;
-    }) => Promise<void>;
+    @Action("login", { namespace })
+    private login!: (params: { redirectPath: string }) => Promise<void>;
 
-    @Getter("isAuthenticated", { namespace }) private isAuthenticated!: boolean;
+    @Getter("isAuthenticated", { namespace })
+    private isAuthenticated!: boolean;
+
     @Getter("roles", { namespace: "auth" })
     private roles!: string[];
 
-    private isLoading = true;
     private redirectPath = "";
     private routeHandler!: VueRouter;
 
@@ -34,17 +33,12 @@ export default class LoginView extends Vue {
     }
 
     private mounted() {
-        this.isLoading = true;
         console.log(this.roles);
 
         if (this.$route.query.redirect && this.$route.query.redirect !== "") {
             this.redirectPath = this.$route.query.redirect.toString();
         } else {
-            if (this.isSupportOnly) {
-                this.redirectPath = "/covidcard";
-            } else {
-                this.redirectPath = "/";
-            }
+            this.redirectPath = "/covidcard";
         }
         this.routeHandler = this.$router;
         if (this.isAuthenticated) {
@@ -68,7 +62,7 @@ export default class LoginView extends Vue {
 
 <template>
     <v-layout class="fill-height">
-        <LoadingComponent :is-loading="isLoading"></LoadingComponent>
+        <LoadingComponent :is-loading="true" />
 
         <v-row justify="center">Redirecting...</v-row>
     </v-layout>
