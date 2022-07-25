@@ -28,106 +28,67 @@ namespace HealthGateway.Common.ErrorHandling
         /// <summary>
         /// Gets the Database service code.
         /// </summary>
-        public static ServiceType Database
-        {
-            get { return new ServiceType("DB"); }
-        }
+        public static ServiceType Database => new("DB");
 
         /// <summary>
         /// Gets the Client Registries service code.
         /// </summary>
-        public static ServiceType ClientRegistries
-        {
-            get { return new ServiceType("CR"); }
-        }
+        public static ServiceType ClientRegistries => new("CR");
 
         /// <summary>
         /// Gets the ODRRecords service code.
         /// </summary>
-        public static ServiceType ODRRecords
-        {
-            get { return new ServiceType("ODR"); }
-        }
+        public static ServiceType ODRRecords => new("ODR");
 
         /// <summary>
         /// Gets the Medication service code.
         /// </summary>
-        public static ServiceType Medication
-        {
-            get { return new ServiceType("MED"); }
-        }
+        public static ServiceType Medication => new("MED");
 
         /// <summary>
         /// Gets the Laboratory service code.
         /// </summary>
-        public static ServiceType Laboratory
-        {
-            get { return new ServiceType("LAB"); }
-        }
+        public static ServiceType Laboratory => new("LAB");
 
         /// <summary>
         /// Gets the Immunization service code.
         /// </summary>
-        public static ServiceType Immunization
-        {
-            get { return new ServiceType("IMZ"); }
-        }
+        public static ServiceType Immunization => new("IMZ");
 
         /// <summary>
         /// Gets the Patient service code.
         /// </summary>
-        public static ServiceType Patient
-        {
-            get { return new ServiceType("PAT"); }
-        }
+        public static ServiceType Patient => new("PAT");
 
         /// <summary>
         /// Gets the PHSA service code.
         /// </summary>
-        public static ServiceType PHSA
-        {
-            get { return new ServiceType("PHSA"); }
-        }
+        public static ServiceType PHSA => new("PHSA");
 
         /// <summary>
         /// Gets the Salesforce service code.
         /// </summary>
-        public static ServiceType SF
-        {
-            get { return new ServiceType("SF"); }
-        }
+        public static ServiceType SF => new("SF");
 
         /// <summary>
         /// Gets the CDogs service code.
         /// </summary>
-        public static ServiceType CDogs
-        {
-            get { return new ServiceType("CDOGS"); }
-        }
+        public static ServiceType CDogs => new("CDOGS");
 
         /// <summary>
         /// Gets the SFTP service code.
         /// </summary>
-        public static ServiceType SFTP
-        {
-            get { return new ServiceType("SFTP"); }
-        }
+        public static ServiceType SFTP => new("SFTP");
 
         /// <summary>
         /// Gets the BCMP service code.
         /// </summary>
-        public static ServiceType BCMP
-        {
-            get { return new ServiceType("BCMP"); }
-        }
+        public static ServiceType BCMP => new("BCMP");
 
         /// <summary>
         /// Gets the Keycloak service code.
         /// </summary>
-        public static ServiceType Keycloak
-        {
-            get { return new ServiceType("KEYCLOAK"); }
-        }
+        public static ServiceType Keycloak => new("KEYCLOAK");
 
         /// <summary>
         /// Gets or sets the Value that holds the internal representation of the ServiceType.

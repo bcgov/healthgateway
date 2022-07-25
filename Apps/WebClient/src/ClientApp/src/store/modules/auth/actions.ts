@@ -38,11 +38,10 @@ export const actions: AuthActions = {
         context,
         params: { idpHint: string; redirectPath: string }
     ): Promise<void> {
-        const logger: ILogger = container.get(SERVICE_IDENTIFIER.Logger);
-        const authService: IAuthenticationService =
-            container.get<IAuthenticationService>(
-                SERVICE_IDENTIFIER.AuthenticationService
-            );
+        const logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
+        const authService = container.get<IAuthenticationService>(
+            SERVICE_IDENTIFIER.AuthenticationService
+        );
 
         try {
             const tokenDetails = await authService.signIn(
@@ -124,9 +123,10 @@ export const actions: AuthActions = {
             if (refreshTimeout !== undefined) {
                 clearTimeout(refreshTimeout);
             }
-            refreshTimeout = setTimeout(() => {
-                context.dispatch("refreshToken");
-            }, accessTokenDuration);
+            refreshTimeout = setTimeout(
+                () => context.dispatch("refreshToken"),
+                accessTokenDuration
+            );
         }
     },
     clearStorage(context): void {

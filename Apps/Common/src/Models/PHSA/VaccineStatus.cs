@@ -107,7 +107,7 @@ namespace HealthGateway.Common.Models.PHSA
         /// <returns>The vaccine status model.</returns>
         public static VaccineStatus FromModel(VaccineStatusResult model, string? personalHealthNumber = null)
         {
-            return new VaccineStatus()
+            return new VaccineStatus
             {
                 Birthdate = model.Birthdate,
                 PersonalHealthNumber = personalHealthNumber,

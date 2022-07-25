@@ -50,7 +50,7 @@ namespace HealthGateway.Common.AccessManagement.Authorization.Handlers
         {
             foreach (ApiKeyRequirement requirement in context.PendingRequirements.OfType<ApiKeyRequirement>().ToList())
             {
-                var apiKey = this.httpContextAccessor.HttpContext?.Request.Headers[requirement.ApiKeyHeaderName].FirstOrDefault();
+                string? apiKey = this.httpContextAccessor.HttpContext?.Request.Headers[requirement.ApiKeyHeaderName].FirstOrDefault();
                 if (!string.IsNullOrEmpty(requirement.ApiKey))
                 {
                     if (!string.IsNullOrEmpty(apiKey) && apiKey == requirement.ApiKey)

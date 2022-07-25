@@ -31,7 +31,7 @@ public interface IImmunizationAdminClient
     /// <param name="token">The bearer token to authorize the call.</param>
     /// <returns>The response to the submitted covid anti viral therapeutic assessment form.</returns>
     [Post("/api/v1/Support/Immunizations/AntiViralScreenerSubmission")]
-    Task<IApiResponse<CovidAssessmentResponse>> SubmitCovidAssessment([Body] CovidAssessmentRequest request, [Authorize("Bearer")] string token);
+    Task<IApiResponse<CovidAssessmentResponse>> SubmitCovidAssessment([Body] CovidAssessmentRequest request, [Authorize] string token);
 
     /// <summary>
     /// Get details to help support the covid anti viral therapeutic assessment form for a phn.
@@ -40,5 +40,5 @@ public interface IImmunizationAdminClient
     /// <param name="token">The bearer token to authorize the call.</param>
     /// <returns>The details to help support covid anti viral therapeutic assessment.</returns>
     [Post("/api/v1/Support/Immunizations/AntiViralSupportDetails")]
-    Task<IApiResponse<CovidAssessmentDetailsResponse>> GetCovidAssessmentDetails([Body] CovidAssessmentDetailsRequest request, [Authorize("Bearer")] string token);
+    Task<IApiResponse<CovidAssessmentDetailsResponse>> GetCovidAssessmentDetails([Body] CovidAssessmentDetailsRequest request, [Authorize] string token);
 }

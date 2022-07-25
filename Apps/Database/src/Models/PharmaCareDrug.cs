@@ -135,9 +135,11 @@ namespace HealthGateway.Database.Models
         /// Gets or sets the Low Cost Alternative price.
         /// LCA price in effect for this drug. A generic price of $0 indicates the drug is (a) a full benefit under the
         /// Low Cost Alternative (LCA) program or (b) is not included in the LCA program.
-        /// An entry in this field other than zero indicates that the drug is a partial benefit under the Low Cost Alternative (LCA) program
+        /// An entry in this field other than zero indicates that the drug is a partial benefit under the Low Cost Alternative
+        /// (LCA) program
         /// and the LCA price indicated is the highest amount PharmaCare will recognize for the drug.
-        /// Note: a lower price may supersede the LCA price listed here for claim adjudication.Most often, this would be the RDP price.
+        /// Note: a lower price may supersede the LCA price listed here for claim adjudication.Most often, this would be the RDP
+        /// price.
         /// </summary>
         [Column(TypeName = "decimal(8,4)")]
         public decimal? LCAPrice { get; set; }
@@ -186,9 +188,11 @@ namespace HealthGateway.Database.Models
         /// -
         /// Note: Notice of Compliance (NOC) items are not listed in the DPD. NOC lists are a separate entity on the
         /// Health Canada website and do not include federal schedule codes.Since the NOC list does not include the federal
-        /// schedule code, NOCs are added to the MedKnowledge database as Not Marketed products and usually without a federal schedule code.
+        /// schedule code, NOCs are added to the MedKnowledge database as Not Marketed products and usually without a federal
+        /// schedule code.
         /// -
-        /// Note: Products that fall under two or more regulatory codes are listed under the code for the category that is most restrictive.
+        /// Note: Products that fall under two or more regulatory codes are listed under the code for the category that is most
+        /// restrictive.
         /// </summary>
         [MaxLength(1)]
         public string? CFRCode { get; set; }

@@ -25,7 +25,6 @@ namespace HealthGateway.Database.Delegates
     using HealthGateway.Database.Wrapper;
     using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.Logging;
-    using Npgsql.EntityFrameworkCore;
 
     /// <summary>
     /// Entity framework based implementation of the GenericCache delegate.
@@ -49,12 +48,12 @@ namespace HealthGateway.Database.Delegates
             this.dbContext = dbContext;
         }
 
-        /// <inheritdoc />
+        /// <inheritdoc/>
         public DBResult<GenericCache> CacheObject(object cacheObject, string hdid, string domain, int expires, bool commit = true)
         {
             string json = JsonSerializer.Serialize(cacheObject, cacheObject.GetType());
             JsonDocument jsonDoc = JsonDocument.Parse(json);
-            GenericCache genericCache = new GenericCache()
+            GenericCache genericCache = new()
             {
                 HdId = hdid,
                 Domain = domain,
@@ -65,7 +64,7 @@ namespace HealthGateway.Database.Delegates
             return this.AddCacheObject(genericCache, commit);
         }
 
-        /// <inheritdoc />
+        /// <inheritdoc/>
         public T? GetCacheObject<T>(string hdid, string domain)
             where T : class
         {
@@ -73,19 +72,17 @@ namespace HealthGateway.Database.Delegates
             return this.DeserializeCacheObject<T>(cacheObject);
         }
 
-        /// <inheritdoc />
+        /// <inheritdoc/>
         public DBResult<GenericCache> GetCacheObject(string hdid, string domain)
         {
-            DBResult<GenericCache> result = new DBResult<GenericCache>()
+            DBResult<GenericCache> result = new()
             {
                 Status = DBStatusCode.NotFound,
             };
             GenericCache? cache = this.dbContext.GenericCache
-                                    .Where(p => p.HdId == hdid &&
-                                                p.Domain == domain &&
-                                                p.ExpiryDateTime >= DateTime.UtcNow)
-                                    .OrderByDescending(o => o.CreatedDateTime)
-                                    .FirstOrDefault();
+                .Where(p => p.HdId == hdid && p.Domain == domain && p.ExpiryDateTime >= DateTime.UtcNow)
+                .OrderByDescending(o => o.CreatedDateTime)
+                .FirstOrDefault();
             if (cache != null)
             {
                 result.Status = DBStatusCode.Read;
@@ -95,7 +92,7 @@ namespace HealthGateway.Database.Delegates
             return result;
         }
 
-        /// <inheritdoc />
+        /// <inheritdoc/>
         public T? GetCacheObjectByJSONProperty<T>(string propertyName, string propertyValue, string domain)
             where T : class
         {
@@ -103,20 +100,18 @@ namespace HealthGateway.Database.Delegates
             return this.DeserializeCacheObject<T>(cacheObject);
         }
 
-        /// <inheritdoc />
+        /// <inheritdoc/>
         public DBResult<GenericCache> GetCacheObjectByJSONProperty(string propertyName, string propertyValue, string domain)
         {
-            DBResult<GenericCache> result = new DBResult<GenericCache>()
+            DBResult<GenericCache> result = new()
             {
                 Status = DBStatusCode.NotFound,
             };
 
             GenericCache? cache = this.dbContext.GenericCache
-                                    .Where(p => p.JSON!.RootElement.GetProperty(propertyName).GetString() == propertyValue &&
-                                                p.Domain == domain &&
-                                                p.ExpiryDateTime >= DateTime.UtcNow)
-                                    .OrderByDescending(o => o.ExpiryDateTime)
-                                    .FirstOrDefault();
+                .Where(p => p.JSON!.RootElement.GetProperty(propertyName).GetString() == propertyValue && p.Domain == domain && p.ExpiryDateTime >= DateTime.UtcNow)
+                .OrderByDescending(o => o.ExpiryDateTime)
+                .FirstOrDefault();
             if (cache != null)
             {
                 result.Status = DBStatusCode.Read;
@@ -126,19 +121,19 @@ namespace HealthGateway.Database.Delegates
             return result;
         }
 
-        /// <inheritdoc />
+        /// <inheritdoc/>
         public DBResult<GenericCache> AddCacheObject(GenericCache cacheObject, bool commit = true)
         {
             this.logger.LogTrace("Adding GenericCache object to DB...");
-            DBResult<GenericCache> result = new DBResult<GenericCache>()
+            DBResult<GenericCache> result = new()
             {
                 Payload = cacheObject,
                 Status = DBStatusCode.Deferred,
             };
             GenericCache? dbCacheItem = this.dbContext.GenericCache
-                                            .Where(p => p.HdId == cacheObject.HdId && p.Domain == cacheObject.Domain)
-                                            .OrderByDescending(o => o.ExpiryDateTime)
-                                            .FirstOrDefault();
+                .Where(p => p.HdId == cacheObject.HdId && p.Domain == cacheObject.Domain)
+                .OrderByDescending(o => o.ExpiryDateTime)
+                .FirstOrDefault();
             if (dbCacheItem == null)
             {
                 this.dbContext.GenericCache.Add(cacheObject);
@@ -171,11 +166,11 @@ namespace HealthGateway.Database.Delegates
             return result;
         }
 
-        /// <inheritdoc />
+        /// <inheritdoc/>
         public DBResult<GenericCache> UpdateCacheObject(GenericCache cacheObject, bool commit = true)
         {
-            this.logger.LogTrace($"Updating GenericCache request in DB...");
-            DBResult<GenericCache> result = new DBResult<GenericCache>()
+            this.logger.LogTrace("Updating GenericCache request in DB...");
+            DBResult<GenericCache> result = new()
             {
                 Payload = cacheObject,
                 Status = DBStatusCode.Deferred,
@@ -200,11 +195,11 @@ namespace HealthGateway.Database.Delegates
             return result;
         }
 
-        /// <inheritdoc />
+        /// <inheritdoc/>
         public DBResult<GenericCache> DeleteCacheObject(GenericCache cacheObject, bool commit = true)
         {
             this.logger.LogTrace("Deleting GenericCache object from DB...");
-            DBResult<GenericCache> result = new DBResult<GenericCache>()
+            DBResult<GenericCache> result = new()
             {
                 Payload = cacheObject,
                 Status = DBStatusCode.Deferred,

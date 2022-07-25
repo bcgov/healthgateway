@@ -18,6 +18,7 @@ namespace HealthGateway.Common.AccessManagement.Administration
     using System;
     using System.Collections.Generic;
     using System.Diagnostics;
+    using System.Net;
     using System.Net.Http;
     using System.Text.Json;
     using System.Threading.Tasks;
@@ -87,7 +88,7 @@ namespace HealthGateway.Common.AccessManagement.Administration
             this.configuration = configuration;
         }
 
-        private static ActivitySource Source { get; } = new ActivitySource(nameof(KeycloakUserAdminDelegate));
+        private static ActivitySource Source { get; } = new(nameof(KeycloakUserAdminDelegate));
 
         /// <inheritdoc/>
         public UserRepresentation GetUser(Guid userId, JwtModel jwtModel)
@@ -111,7 +112,7 @@ namespace HealthGateway.Common.AccessManagement.Administration
 
             try
             {
-                Uri baseUri = new Uri(this.configuration.GetSection(KEYCLOAKADMIN).GetValue<string>(GetRolesUrlKey));
+                Uri baseUri = new(this.configuration.GetSection(KEYCLOAKADMIN).GetValue<string>(GetRolesUrlKey));
                 HttpClient client = this.CreateHttpClient(baseUri, jwtModel.AccessToken);
                 string uri = $"{role}/users?max=-1";
 
@@ -134,7 +135,7 @@ namespace HealthGateway.Common.AccessManagement.Administration
                 {
                     this.logger.LogError("Unable to connect to endpoint: {Endpoint}, HTTP Error: {Response} ...", baseUri + uri, response.StatusCode);
 
-                    retVal.ResultError = new RequestResultError()
+                    retVal.ResultError = new RequestResultError
                     {
                         ResultMessage = $"Unable to connect to endpoint: {baseUri}{uri}, HTTP Error: {response.StatusCode}.",
                         ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.Keycloak),
@@ -145,7 +146,11 @@ namespace HealthGateway.Common.AccessManagement.Administration
             catch (Exception e)
 #pragma warning restore CA1031 // Do not catch general exception types
             {
-                retVal.ResultError = new RequestResultError() { ResultMessage = $"Exception getting users: {e}", ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.Keycloak) };
+                retVal.ResultError = new RequestResultError
+                {
+                    ResultMessage = $"Exception getting users: {e}",
+                    ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.Keycloak),
+                };
                 this.logger.LogError($"Unexpected exception in Get Users {e}");
             }
 
@@ -176,7 +181,7 @@ namespace HealthGateway.Common.AccessManagement.Administration
         private async Task<bool> DeleteUserAsync(Guid userId, JwtModel jwtModel)
         {
             bool retVal = false;
-            Uri baseUri = new Uri(this.configuration.GetSection(KEYCLOAKADMIN).GetValue<string>(DELETEUSERURL));
+            Uri baseUri = new(this.configuration.GetSection(KEYCLOAKADMIN).GetValue<string>(DELETEUSERURL));
             using HttpClient client = this.CreateHttpClient(baseUri, jwtModel.AccessToken!);
             HttpResponseMessage response = await client.DeleteAsync(new Uri(userId.ToString(), UriKind.Relative)).ConfigureAwait(true);
             if (response.IsSuccessStatusCode)
@@ -188,7 +193,7 @@ namespace HealthGateway.Common.AccessManagement.Administration
                 string msg = $"Error performing DELETE Request: {userId}, HTTP StatusCode: {response.StatusCode}";
                 this.logger.LogError(msg);
 
-                if (response.StatusCode != System.Net.HttpStatusCode.NotFound)
+                if (response.StatusCode != HttpStatusCode.NotFound)
                 {
                     throw new HttpRequestException(msg);
                 }

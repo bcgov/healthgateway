@@ -24,7 +24,7 @@ namespace HealthGateway.Database.Delegates
     using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.Logging;
 
-    /// <inheritdoc />
+    /// <inheritdoc/>
     [ExcludeFromCodeCoverage]
     public class DBEventLogDelegate : IEventLogDelegate
     {
@@ -44,12 +44,12 @@ namespace HealthGateway.Database.Delegates
             this.dbContext = dbContext;
         }
 
-        /// <inheritdoc />
+        /// <inheritdoc/>
         public DBResult<EventLog> WriteEventLog(EventLog eventLog, bool commit = true)
         {
             this.logger.LogTrace($"Inserting event log to DB... {JsonSerializer.Serialize(eventLog)}");
-            DBResult<EventLog> result = new DBResult<EventLog>();
-            this.dbContext.Add<EventLog>(eventLog);
+            DBResult<EventLog> result = new();
+            this.dbContext.Add(eventLog);
             if (commit)
             {
                 try

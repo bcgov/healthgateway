@@ -45,28 +45,28 @@ export default class AddNoteButtonComponent extends Vue {
         return tutorialPopover?.value === "true";
     }
 
-    private dismissTutorial(userPreference: UserPreference) {
+    private dismissTutorial(userPreference: UserPreference): void {
         this.logger.debug(
             `Dismissing tutorial ${userPreference.preference}...`
         );
         userPreference.value = "false";
         if (userPreference.hdId != undefined) {
             this.updateUserPreference({
-                userPreference: userPreference,
+                userPreference,
             });
         } else {
             userPreference.hdId = this.user.hdid;
             this.createUserPreference({
-                userPreference: userPreference,
+                userPreference,
             });
         }
     }
 
-    private createNote() {
+    private createNote(): void {
         this.eventBus.$emit(EventMessageName.CreateNote);
     }
 
-    private created() {
+    private created(): void {
         this.logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
     }
 }

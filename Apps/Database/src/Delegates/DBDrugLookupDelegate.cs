@@ -50,18 +50,18 @@ namespace HealthGateway.Database.Delegates
         /// <inheritdoc/>
         public IList<DrugProduct> GetDrugProductsByDIN(IList<string> drugIdentifiers)
         {
-            this.logger.LogDebug($"Getting list of drug products from DB");
+            this.logger.LogDebug("Getting list of drug products from DB");
             this.logger.LogTrace($"Identifiers {JsonSerializer.Serialize(drugIdentifiers)}");
             IList<string> uniqueDrugIdentifers = drugIdentifiers.Distinct().ToList();
             IList<DrugProduct> retVal = this.dbContext.DrugProduct
-                                            .Include(c => c.Company)
-                                            .Include(a => a.ActiveIngredient)
-                                            .Include(f => f.Form)
-                                            .Where(dp => uniqueDrugIdentifers.Contains(dp.DrugIdentificationNumber))
-                                            .AsEnumerable()
-                                            .GroupBy(dp => dp.DrugIdentificationNumber)
-                                            .Select(drug => drug.OrderByDescending(o => o.LastUpdate).First())
-                                            .ToList();
+                .Include(c => c.Company)
+                .Include(a => a.ActiveIngredient)
+                .Include(f => f.Form)
+                .Where(dp => uniqueDrugIdentifers.Contains(dp.DrugIdentificationNumber))
+                .AsEnumerable()
+                .GroupBy(dp => dp.DrugIdentificationNumber)
+                .Select(drug => drug.OrderByDescending(o => o.LastUpdate).First())
+                .ToList();
             this.logger.LogDebug("Finished getting list of drug products from DB");
             this.logger.LogTrace($"Products: {JsonSerializer.Serialize(retVal)}");
             return retVal;
@@ -70,14 +70,15 @@ namespace HealthGateway.Database.Delegates
         /// <inheritdoc/>
         public IList<PharmaCareDrug> GetPharmaCareDrugsByDIN(IList<string> drugIdentifiers)
         {
-            this.logger.LogDebug($"Getting list of pharmacare drug products from DB");
+            this.logger.LogDebug("Getting list of pharmacare drug products from DB");
             this.logger.LogTrace($"Identifiers {JsonSerializer.Serialize(drugIdentifiers)}");
             IList<string> uniqueDrugIdentifers = drugIdentifiers.Distinct().ToList();
             DateTime now = DateTime.UtcNow;
             IList<PharmaCareDrug> retVal = this.dbContext.PharmaCareDrug
-                .Where(dp => uniqueDrugIdentifers.Contains(dp.DINPIN) && (now > dp.EffectiveDate && now <= dp.EndDate))
+                .Where(dp => uniqueDrugIdentifers.Contains(dp.DINPIN) && now > dp.EffectiveDate && now <= dp.EndDate)
                 .AsEnumerable()
-                .GroupBy(pcd => pcd.DINPIN).Select(g => g.OrderByDescending(p => p.EndDate).First())
+                .GroupBy(pcd => pcd.DINPIN)
+                .Select(g => g.OrderByDescending(p => p.EndDate).First())
                 .ToList();
 
             this.logger.LogDebug("Finished getting list of pharmacare drug products from DB");

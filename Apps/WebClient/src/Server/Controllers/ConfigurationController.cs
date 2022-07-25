@@ -15,6 +15,7 @@
 //-------------------------------------------------------------------------
 namespace HealthGateway.WebClient.Controllers
 {
+    using HealthGateway.WebClient.Models;
     using HealthGateway.WebClient.Services;
     using Microsoft.AspNetCore.Mvc;
 
@@ -43,9 +44,9 @@ namespace HealthGateway.WebClient.Controllers
         /// </summary>
         /// <returns>The Health Gateway WebClient Configuration.</returns>
         [HttpGet]
-        public Models.ExternalConfiguration Index()
+        public ExternalConfiguration Index()
         {
-            Models.ExternalConfiguration config = this.configservice.GetConfiguration();
+            ExternalConfiguration config = this.configservice.GetConfiguration();
             config.WebClient.ClientIP = this.HttpContext.Connection.RemoteIpAddress?.MapToIPv4().ToString();
             return config;
         }
@@ -56,9 +57,9 @@ namespace HealthGateway.WebClient.Controllers
         /// <returns>The Health Gateway Mobile Configuration.</returns>
         [HttpGet]
         [Route("~/MobileConfiguration")]
-        public Models.MobileConfiguration MobileConfiguration()
+        public MobileConfiguration MobileConfiguration()
         {
-            Models.MobileConfiguration config = this.configservice.GetMobileConfiguration();
+            MobileConfiguration config = this.configservice.GetMobileConfiguration();
             return config;
         }
     }

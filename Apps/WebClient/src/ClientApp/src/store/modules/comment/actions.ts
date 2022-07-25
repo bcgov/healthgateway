@@ -11,12 +11,11 @@ import { CommentActions } from "./types";
 
 export const actions: CommentActions = {
     retrieve(context, params: { hdid: string }): Promise<void> {
-        const logger: ILogger = container.get(SERVICE_IDENTIFIER.Logger);
+        const logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
+        const commentService = container.get<IUserCommentService>(
+            SERVICE_IDENTIFIER.UserCommentService
+        );
 
-        const commentService: IUserCommentService =
-            container.get<IUserCommentService>(
-                SERVICE_IDENTIFIER.UserCommentService
-            );
         return new Promise((resolve, reject) => {
             if (context.state.status === LoadStatus.LOADED) {
                 logger.debug(`Comments found stored, not querying!`);
@@ -55,11 +54,11 @@ export const actions: CommentActions = {
         context,
         params: { hdid: string; comment: UserComment }
     ): Promise<UserComment | undefined> {
-        const commentService: IUserCommentService =
-            container.get<IUserCommentService>(
-                SERVICE_IDENTIFIER.UserCommentService
-            );
-        return new Promise((resolve, reject) => {
+        const commentService = container.get<IUserCommentService>(
+            SERVICE_IDENTIFIER.UserCommentService
+        );
+
+        return new Promise((resolve, reject) =>
             commentService
                 .createComment(params.hdid, params.comment)
                 .then((resultComment) => {
@@ -72,18 +71,18 @@ export const actions: CommentActions = {
                         errorType: ErrorType.Create,
                     });
                     reject(error);
-                });
-        });
+                })
+        );
     },
     updateComment(
         context,
         params: { hdid: string; comment: UserComment }
     ): Promise<UserComment> {
-        const commentService: IUserCommentService =
-            container.get<IUserCommentService>(
-                SERVICE_IDENTIFIER.UserCommentService
-            );
-        return new Promise((resolve, reject) => {
+        const commentService = container.get<IUserCommentService>(
+            SERVICE_IDENTIFIER.UserCommentService
+        );
+
+        return new Promise((resolve, reject) =>
             commentService
                 .updateComment(params.hdid, params.comment)
                 .then((resultComment) => {
@@ -96,18 +95,18 @@ export const actions: CommentActions = {
                         errorType: ErrorType.Update,
                     });
                     reject(error);
-                });
-        });
+                })
+        );
     },
     deleteComment(
         context,
         params: { hdid: string; comment: UserComment }
     ): Promise<void> {
-        const commentService: IUserCommentService =
-            container.get<IUserCommentService>(
-                SERVICE_IDENTIFIER.UserCommentService
-            );
-        return new Promise((resolve, reject) => {
+        const commentService = container.get<IUserCommentService>(
+            SERVICE_IDENTIFIER.UserCommentService
+        );
+
+        return new Promise((resolve, reject) =>
             commentService
                 .deleteComment(params.hdid, params.comment)
                 .then(() => {
@@ -120,11 +119,11 @@ export const actions: CommentActions = {
                         errorType: ErrorType.Delete,
                     });
                     reject(error);
-                });
-        });
+                })
+        );
     },
     handleError(context, params: { error: ResultError; errorType: ErrorType }) {
-        const logger: ILogger = container.get(SERVICE_IDENTIFIER.Logger);
+        const logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
 
         logger.error(`ERROR: ${JSON.stringify(params.error)}`);
         context.commit("commentError", params.error);

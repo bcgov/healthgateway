@@ -24,13 +24,13 @@ namespace HealthGateway.GatewayApi.Converters
     /// </summary>
     public class DateTimeConverter : JsonConverter<DateTime>
     {
-        /// <inheritdoc />
+        /// <inheritdoc/>
         public override DateTime Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
         {
             return reader.GetDateTime().ToUniversalTime();
         }
 
-        /// <inheritdoc />
+        /// <inheritdoc/>
         public override void Write(Utf8JsonWriter writer, DateTime value, JsonSerializerOptions options)
         {
             writer.WriteStringValue(value.ToUniversalTime());

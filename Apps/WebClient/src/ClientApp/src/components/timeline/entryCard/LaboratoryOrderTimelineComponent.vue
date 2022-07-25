@@ -9,7 +9,6 @@ import { Getter } from "vuex-class";
 import MessageModalComponent from "@/components/modal/MessageModalComponent.vue";
 import { EntryType, entryTypeMap } from "@/constants/entryType";
 import { DateWrapper } from "@/models/dateWrapper";
-import { LaboratoryReport } from "@/models/laboratory";
 import LaboratoryOrderTimelineEntry from "@/models/laboratoryOrderTimelineEntry";
 import User from "@/models/user";
 import container from "@/plugins/container";
@@ -42,7 +41,7 @@ export default class LaboratoryOrderTimelineComponent extends Vue {
     private isLoadingDocument = false;
     private logger!: ILogger;
 
-    private created() {
+    private created(): void {
         this.logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
         this.laboratoryService = container.get<ILaboratoryService>(
             SERVICE_IDENTIFIER.LaboratoryService
@@ -77,7 +76,7 @@ export default class LaboratoryOrderTimelineComponent extends Vue {
         this.messageModal.showModal();
     }
 
-    private getReport() {
+    private getReport(): void {
         SnowPlow.trackEvent({
             action: "download_report",
             text: "Laboratory Report PDF",
@@ -87,20 +86,18 @@ export default class LaboratoryOrderTimelineComponent extends Vue {
         this.laboratoryService
             .getReportDocument(this.entry.id, this.user.hdid, false)
             .then((result) => {
-                let dateString =
+                const dateString =
                     this.entry.timelineDateTime.format("yyyy_MM_dd-HH_mm");
-                let report: LaboratoryReport = result.resourcePayload;
+                const report = result.resourcePayload;
                 fetch(
                     `data:${report.mediaType};${report.encoding},${report.data}`
                 )
                     .then((response) => response.blob())
-                    .then((blob) => {
-                        saveAs(blob, `Laboratory_Report_${dateString}.pdf`);
-                    });
+                    .then((blob) =>
+                        saveAs(blob, `Laboratory_Report_${dateString}.pdf`)
+                    );
             })
-            .catch((err) => {
-                this.logger.error(err);
-            })
+            .catch((err) => this.logger.error(err))
             .finally(() => {
                 this.isLoadingDocument = false;
             });

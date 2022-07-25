@@ -16,12 +16,11 @@
     All activities performed on this system are logged and monitored.
 </MudText>
 
-<MudButton Variant="Variant.Filled" Color="Color.Primary" Link="@($"/authentication/login{(returnUrl!=null?$"?returnUrl={Uri.EscapeDataString(returnUrl)}":string.Empty)}")" Size="Size.Large" FullWidth="true" data-testid="sign-in-btn">Sign In</MudButton>
+<MudButton Variant="Variant.Filled" Color="Color.Primary" Link="@($"/authentication/login{(returnUrl != null ? $"?returnUrl={Uri.EscapeDataString(returnUrl)}" : string.Empty)}")" Size="Size.Large" FullWidth="true" data-testid="sign-in-btn">Sign In</MudButton>
 
-@code {
+@code
+{
     [Parameter]
     [SupplyParameterFromQuery]
     public string? returnUrl { get; set; }
 }
-
-

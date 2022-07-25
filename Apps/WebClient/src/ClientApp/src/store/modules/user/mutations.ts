@@ -25,7 +25,7 @@ export const mutations: UserMutation = {
         state.status = LoadStatus.LOADED;
     },
     setProfileUserData(state: UserState, userProfile: UserProfile) {
-        const logger: ILogger = container.get(SERVICE_IDENTIFIER.Logger);
+        const logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
 
         if (userProfile) {
             const notePreference = UserPreferenceType.TutorialMenuNote;
@@ -93,7 +93,8 @@ export const mutations: UserMutation = {
         state.status = LoadStatus.LOADED;
     },
     setUserPreference(state: UserState, userPreference: UserPreference) {
-        const logger: ILogger = container.get(SERVICE_IDENTIFIER.Logger);
+        const logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
+
         logger.debug(
             `setUserPreference: preference.name: ${JSON.stringify(
                 userPreference.preference

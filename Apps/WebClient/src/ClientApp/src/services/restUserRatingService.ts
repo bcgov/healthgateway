@@ -15,7 +15,7 @@ import ErrorTranslator from "@/utility/errorTranslator";
 
 @injectable()
 export class RestUserRatingService implements IUserRatingService {
-    private logger: ILogger = container.get(SERVICE_IDENTIFIER.Logger);
+    private logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
     private readonly USER_RATING_BASE_URI: string = "UserFeedback/Rating";
     private http!: IHttpDelegate;
     private baseUri = "";
@@ -29,15 +29,13 @@ export class RestUserRatingService implements IUserRatingService {
     }
 
     public submitRating(rating: UserRating): Promise<boolean> {
-        return new Promise((resolve, reject) => {
+        return new Promise((resolve, reject) =>
             this.http
                 .post<void>(
                     `${this.baseUri}${this.USER_RATING_BASE_URI}`,
                     rating
                 )
-                .then(() => {
-                    return resolve(true);
-                })
+                .then(() => resolve(true))
                 .catch((err: HttpError) => {
                     this.logger.error(
                         `Error in RestUserRatingService.submitRating()`
@@ -48,7 +46,7 @@ export class RestUserRatingService implements IUserRatingService {
                             ServiceCode.HealthGatewayUser
                         )
                     );
-                });
-        });
+                })
+        );
     }
 }

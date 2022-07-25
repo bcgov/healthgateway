@@ -16,6 +16,7 @@
 namespace HealthGateway.Common.Delegates
 {
     using System;
+    using System.Diagnostics.CodeAnalysis;
     using System.Globalization;
     using System.Linq;
     using System.Net;
@@ -80,7 +81,7 @@ namespace HealthGateway.Common.Delegates
                 PageIndex = 0,
             };
 
-            this.logger.LogTrace($"Sending request to BC Mail Plus to generate and mail a vaccine proof...");
+            this.logger.LogTrace("Sending request to BC Mail Plus to generate and mail a vaccine proof...");
             string endpointString = string.Format(CultureInfo.InvariantCulture, "{0}{1}{2}", this.bcMailPlusEndpoint, "create:", this.bcMailPlusJobClass);
 
             BcmpVaccineProofQuery vaccineProofQuery = new()
@@ -88,7 +89,7 @@ namespace HealthGateway.Common.Delegates
                 SchemaVersion = this.bcMailPlusSchemaVersion,
                 Operation = "Mail",
                 VaccineStatus = request.Status,
-                SmartHealthCard = new BcmpSmartHealthCard() { QrCode = request.SmartHealthCardQr },
+                SmartHealthCard = new BcmpSmartHealthCard { QrCode = request.SmartHealthCardQr },
                 Address = new()
                 {
                     AddressLine1 = address.StreetLines.FirstOrDefault() ?? string.Empty,
@@ -107,7 +108,7 @@ namespace HealthGateway.Common.Delegates
             BcmpJobStatusResult? jobStatusResult = requestResult.ResourcePayload;
             if (jobStatusResult != null)
             {
-                retVal.ResourcePayload = new VaccineProofResponse()
+                retVal.ResourcePayload = new VaccineProofResponse
                 {
                     Id = jobStatusResult.JobId,
                     Status = jobStatusResult.JobStatus switch
@@ -139,7 +140,7 @@ namespace HealthGateway.Common.Delegates
                 PageIndex = 0,
             };
 
-            this.logger.LogTrace($"Sending request to BC Mail Plus to generate a vaccine proof...");
+            this.logger.LogTrace("Sending request to BC Mail Plus to generate a vaccine proof...");
             string endpointString = string.Format(CultureInfo.InvariantCulture, "{0}{1}{2}", this.bcMailPlusEndpoint, "create:", this.bcMailPlusJobClass);
 
             BcmpVaccineProofQuery vaccineProofQuery = new()
@@ -147,7 +148,7 @@ namespace HealthGateway.Common.Delegates
                 SchemaVersion = this.bcMailPlusSchemaVersion,
                 Operation = "Generate",
                 VaccineStatus = request.Status,
-                SmartHealthCard = new BcmpSmartHealthCard() { QrCode = request.SmartHealthCardQr },
+                SmartHealthCard = new BcmpSmartHealthCard { QrCode = request.SmartHealthCardQr },
             };
             vaccineProofQuery.Templates.Add(vaccineProofTemplate);
 
@@ -158,7 +159,7 @@ namespace HealthGateway.Common.Delegates
             BcmpJobStatusResult? jobStatusResult = requestResult.ResourcePayload;
             if (jobStatusResult != null)
             {
-                retVal.ResourcePayload = new VaccineProofResponse()
+                retVal.ResourcePayload = new VaccineProofResponse
                 {
                     Id = jobStatusResult.JobId,
                     Status = jobStatusResult.JobStatus switch
@@ -183,7 +184,7 @@ namespace HealthGateway.Common.Delegates
         }
 
         /// <inheritdoc/>
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1031:Do not catch general exception types", Justification = "Prevent exception propagation")]
+        [SuppressMessage("Design", "CA1031:Do not catch general exception types", Justification = "Prevent exception propagation")]
         public async Task<RequestResult<ReportModel>> GetAssetAsync(Uri assetUri)
         {
             RequestResult<ReportModel> retVal = new()
@@ -216,7 +217,11 @@ namespace HealthGateway.Common.Delegates
                         }
                         else
                         {
-                            retVal.ResultError = new RequestResultError() { ResultMessage = $"Empty file returned from BC Mail Plus", ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.BCMP) };
+                            retVal.ResultError = new RequestResultError
+                            {
+                                ResultMessage = "Empty file returned from BC Mail Plus",
+                                ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.BCMP),
+                            };
                         }
 
                         break;
@@ -225,13 +230,21 @@ namespace HealthGateway.Common.Delegates
                         retVal.ResultError = ErrorTranslator.ActionRequired("Vaccine Proof is not yet available", ActionType.Refresh);
                         break;
                     default:
-                        retVal.ResultError = new RequestResultError() { ResultMessage = $"HTTP Error {response.StatusCode} encountered from BC Mail Plus", ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.BCMP) };
+                        retVal.ResultError = new RequestResultError
+                        {
+                            ResultMessage = $"HTTP Error {response.StatusCode} encountered from BC Mail Plus",
+                            ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.BCMP),
+                        };
                         break;
                 }
             }
             catch (Exception e)
             {
-                retVal.ResultError = new RequestResultError() { ResultMessage = $"Exception while fetching Vaccine Proof: {e}", ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.BCMP) };
+                retVal.ResultError = new RequestResultError
+                {
+                    ResultMessage = $"Exception while fetching Vaccine Proof: {e}",
+                    ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.BCMP),
+                };
                 this.logger.LogError($"Unexpected exception while fetching Vaccine Proof {e}");
             }
 
@@ -262,7 +275,11 @@ namespace HealthGateway.Common.Delegates
 
                         if (payload.StartsWith("ERROR: ", StringComparison.InvariantCulture))
                         {
-                            retVal.ResultError = new RequestResultError() { ResultMessage = $"Error encountered from BC Mail Plus", ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.BCMP) };
+                            retVal.ResultError = new RequestResultError
+                            {
+                                ResultMessage = "Error encountered from BC Mail Plus",
+                                ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.BCMP),
+                            };
                             this.logger.LogWarning($"Error Details:{Environment.NewLine}{payload}");
                         }
                         else
@@ -276,13 +293,21 @@ namespace HealthGateway.Common.Delegates
                             }
                             else
                             {
-                                retVal.ResultError = new RequestResultError() { ResultMessage = "Error with JSON data", ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.BCMP) };
+                                retVal.ResultError = new RequestResultError
+                                {
+                                    ResultMessage = "Error with JSON data",
+                                    ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.BCMP),
+                                };
                             }
                         }
 
                         break;
                     default:
-                        retVal.ResultError = new RequestResultError() { ResultMessage = $"Unable to connect to BC Mail Plus Endpoint, HTTP Error {response.StatusCode}", ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.BCMP) };
+                        retVal.ResultError = new RequestResultError
+                        {
+                            ResultMessage = $"Unable to connect to BC Mail Plus Endpoint, HTTP Error {response.StatusCode}",
+                            ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.BCMP),
+                        };
                         this.logger.LogError($"Unable to connect to endpoint {endpointString}, HTTP Error {response.StatusCode}\n{payload}");
                         break;
                 }
@@ -291,7 +316,11 @@ namespace HealthGateway.Common.Delegates
             catch (Exception e)
 #pragma warning restore CA1031 // Do not catch general exception types
             {
-                retVal.ResultError = new RequestResultError() { ResultMessage = $"Exception while sending HTTP request to BC Mail Plus: {e}", ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.BCMP) };
+                retVal.ResultError = new RequestResultError
+                {
+                    ResultMessage = $"Exception while sending HTTP request to BC Mail Plus: {e}",
+                    ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.BCMP),
+                };
                 this.logger.LogError($"Unexpected exception while sending HTTP request to BC Mail Plus {e}");
             }
 

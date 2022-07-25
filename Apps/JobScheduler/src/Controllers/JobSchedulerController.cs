@@ -71,15 +71,15 @@ namespace HealthGateway.JobScheduler.Controllers
         /// </summary>
         /// <returns>Redirect to main page.</returns>
 #pragma warning disable CA1822 //  does not access instance data and can be marked as static
-
         [HttpGet(AuthorizationConstants.LogoutPath)]
         public IActionResult Logout()
         {
-            return new SignOutResult(new[]
-            {
-                OpenIdConnectDefaults.AuthenticationScheme,
-                CookieAuthenticationDefaults.AuthenticationScheme,
-            });
+            return new SignOutResult(
+                new[]
+                {
+                    OpenIdConnectDefaults.AuthenticationScheme,
+                    CookieAuthenticationDefaults.AuthenticationScheme,
+                });
         }
 
         /// <summary>

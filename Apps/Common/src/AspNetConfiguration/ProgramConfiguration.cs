@@ -37,28 +37,28 @@ namespace HealthGateway.Common.AspNetConfiguration
         /// <param name="args">The command line arguments.</param>
         /// <returns>Returns the configured WebHostBuilder.</returns>
         public static IHostBuilder CreateHostBuilder<T>(string[] args)
-             where T : class
+            where T : class
         {
             return Host.CreateDefaultBuilder(args)
-                .ConfigureLogging(logging =>
-                {
-                    logging.ClearProviders();
-                    logging.AddSimpleConsole(options =>
+                .ConfigureLogging(
+                    logging =>
                     {
-                        options.TimestampFormat = "[yyyy/MM/dd HH:mm:ss]";
-                        options.IncludeScopes = true;
-                    });
-                    logging.AddOpenTelemetry();
-                })
-                .ConfigureAppConfiguration((builderContext, config) =>
-                {
-                    config.AddJsonFile("appsettings.local.json", true, true); // Loads local settings last to keep override
-                    config.AddEnvironmentVariables(prefix: EnvironmentPrefix);
-                })
-                .ConfigureWebHostDefaults(webBuilder =>
-                {
-                    webBuilder.UseStartup<T>();
-                });
+                        logging.ClearProviders();
+                        logging.AddSimpleConsole(
+                            options =>
+                            {
+                                options.TimestampFormat = "[yyyy/MM/dd HH:mm:ss]";
+                                options.IncludeScopes = true;
+                            });
+                        logging.AddOpenTelemetry();
+                    })
+                .ConfigureAppConfiguration(
+                    (_, config) =>
+                    {
+                        config.AddJsonFile("appsettings.local.json", true, true); // Loads local settings last to keep override
+                        config.AddEnvironmentVariables(prefix: EnvironmentPrefix);
+                    })
+                .ConfigureWebHostDefaults(webBuilder => webBuilder.UseStartup<T>());
         }
 
         /// <summary>
@@ -72,11 +72,12 @@ namespace HealthGateway.Common.AspNetConfiguration
 
             // Configure logging
             builder.Logging.ClearProviders();
-            builder.Logging.AddSimpleConsole(options =>
-            {
-                options.TimestampFormat = "[yyyy/MM/dd HH:mm:ss]";
-                options.IncludeScopes = true;
-            });
+            builder.Logging.AddSimpleConsole(
+                options =>
+                {
+                    options.TimestampFormat = "[yyyy/MM/dd HH:mm:ss]";
+                    options.IncludeScopes = true;
+                });
 
             // OpenTelemetry
             builder.Logging.AddOpenTelemetry();
@@ -95,16 +96,18 @@ namespace HealthGateway.Common.AspNetConfiguration
         /// <returns>An instance of a logger.</returns>
         public static ILogger GetInitialLogger(IConfiguration configuration)
         {
-            using var loggerFactory = LoggerFactory.Create(builder =>
-            {
-                builder.AddSimpleConsole(options =>
+            using ILoggerFactory loggerFactory = LoggerFactory.Create(
+                builder =>
                 {
-                    options.TimestampFormat = "[yyyy/MM/dd HH:mm:ss]";
-                    options.IncludeScopes = true;
-                });
+                    builder.AddSimpleConsole(
+                        options =>
+                        {
+                            options.TimestampFormat = "[yyyy/MM/dd HH:mm:ss]";
+                            options.IncludeScopes = true;
+                        });
 
-                builder.AddConfiguration(configuration);
-            });
+                    builder.AddConfiguration(configuration);
+                });
 
             return loggerFactory.CreateLogger("Startup");
         }

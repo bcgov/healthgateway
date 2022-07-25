@@ -25,11 +25,10 @@ export const actions: LaboratoryActions = {
         context,
         params: { hdid: string }
     ): Promise<RequestResult<Covid19LaboratoryOrderResult>> {
-        const logger: ILogger = container.get(SERVICE_IDENTIFIER.Logger);
-        const laboratoryService: ILaboratoryService =
-            container.get<ILaboratoryService>(
-                SERVICE_IDENTIFIER.LaboratoryService
-            );
+        const logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
+        const laboratoryService = container.get<ILaboratoryService>(
+            SERVICE_IDENTIFIER.LaboratoryService
+        );
 
         return new Promise((resolve, reject) => {
             const covid19LaboratoryOrders: Covid19LaboratoryOrder[] =
@@ -114,11 +113,10 @@ export const actions: LaboratoryActions = {
         context,
         params: { hdid: string }
     ): Promise<RequestResult<LaboratoryOrderResult>> {
-        const logger: ILogger = container.get(SERVICE_IDENTIFIER.Logger);
-        const laboratoryService: ILaboratoryService =
-            container.get<ILaboratoryService>(
-                SERVICE_IDENTIFIER.LaboratoryService
-            );
+        const logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
+        const laboratoryService = container.get<ILaboratoryService>(
+            SERVICE_IDENTIFIER.LaboratoryService
+        );
 
         return new Promise((resolve, reject) => {
             const laboratoryOrders: LaboratoryOrder[] =
@@ -206,7 +204,7 @@ export const actions: LaboratoryActions = {
             errorSourceType: ErrorSourceType;
         }
     ) {
-        const logger: ILogger = container.get(SERVICE_IDENTIFIER.Logger);
+        const logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
 
         logger.error(`ERROR: ${JSON.stringify(params.error)}`);
 
@@ -239,11 +237,10 @@ export const actions: LaboratoryActions = {
             collectionDate: StringISODate;
         }
     ): Promise<PublicCovidTestResponseResult> {
-        const logger: ILogger = container.get(SERVICE_IDENTIFIER.Logger);
-        const laboratoryService: ILaboratoryService =
-            container.get<ILaboratoryService>(
-                SERVICE_IDENTIFIER.LaboratoryService
-            );
+        const logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
+        const laboratoryService = container.get<ILaboratoryService>(
+            SERVICE_IDENTIFIER.LaboratoryService
+        );
 
         return new Promise((resolve, reject) => {
             logger.debug(`Retrieving Public Covid Tests in store.`);
@@ -298,7 +295,7 @@ export const actions: LaboratoryActions = {
         });
     },
     handlePublicCovidTestsError(context, error: ResultError) {
-        const logger: ILogger = container.get(SERVICE_IDENTIFIER.Logger);
+        const logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
 
         logger.error(`ERROR: ${JSON.stringify(error)}`);
         const customBannerError: CustomBannerError = {
@@ -321,7 +318,8 @@ export const actions: LaboratoryActions = {
         );
     },
     resetPublicCovidTestResponseResult(context) {
-        const logger: ILogger = container.get(SERVICE_IDENTIFIER.Logger);
+        const logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
+
         logger.debug(
             `Resetting Laboratory store module for Public COVID-19 Test response result.`
         );

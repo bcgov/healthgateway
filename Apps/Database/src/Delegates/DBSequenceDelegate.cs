@@ -15,6 +15,7 @@
 //-------------------------------------------------------------------------
 namespace HealthGateway.Database.Delegates
 {
+    using System.Data;
     using System.Diagnostics.CodeAnalysis;
     using HealthGateway.Database.Context;
     using Microsoft.Extensions.Logging;
@@ -51,9 +52,9 @@ namespace HealthGateway.Database.Delegates
         public long GetNextValueForSequence(string sequenceName)
         {
             this.logger.LogTrace($"Getting next value for sequence from database... {sequenceName}");
-            NpgsqlParameter result = new NpgsqlParameter("@result", NpgsqlDbType.Integer)
+            NpgsqlParameter result = new("@result", NpgsqlDbType.Integer)
             {
-                Direction = System.Data.ParameterDirection.Output,
+                Direction = ParameterDirection.Output,
             };
             this.dbContext.ExecuteSqlCommand($"SELECT nextval('{sequenceName}')", result);
             this.logger.LogDebug($"Finished getting next value for sequence from database. {result.Value}");

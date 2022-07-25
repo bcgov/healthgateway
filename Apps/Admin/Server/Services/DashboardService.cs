@@ -20,18 +20,19 @@ namespace HealthGateway.Admin.Server.Services
     using System.Globalization;
     using System.Linq;
     using System.Threading.Tasks;
-    using HealthGateway.Admin.Common.Constants;
     using HealthGateway.Common.Constants;
     using HealthGateway.Common.Data.Constants;
     using HealthGateway.Common.Data.Models;
     using HealthGateway.Common.Data.ViewModels;
     using HealthGateway.Common.Models;
     using HealthGateway.Common.Services;
+    using HealthGateway.Database.Constants;
     using HealthGateway.Database.Delegates;
     using HealthGateway.Database.Wrapper;
     using Microsoft.Extensions.Logging;
+    using UserQueryType = HealthGateway.Admin.Common.Constants.UserQueryType;
 
-    /// <inheritdoc />
+    /// <inheritdoc/>
     public class DashboardService : IDashboardService
     {
         private readonly ILogger logger;
@@ -66,28 +67,28 @@ namespace HealthGateway.Admin.Server.Services
             this.ratingDelegate = ratingDelegate;
         }
 
-        /// <inheritdoc />
+        /// <inheritdoc/>
         public IDictionary<DateTime, int> GetDailyRegisteredUsersCount(int timeOffset)
         {
             TimeSpan ts = new(0, timeOffset, 0);
             return this.userProfileDelegate.GetDailyRegisteredUsersCount(ts);
         }
 
-        /// <inheritdoc />
+        /// <inheritdoc/>
         public IDictionary<DateTime, int> GetDailyLoggedInUsersCount(int timeOffset)
         {
             TimeSpan ts = new(0, timeOffset, 0);
             return this.userProfileDelegate.GetDailyLoggedInUsersCount(ts);
         }
 
-        /// <inheritdoc />
+        /// <inheritdoc/>
         public IDictionary<DateTime, int> GetDailyDependentCount(int timeOffset)
         {
             TimeSpan ts = new(0, timeOffset, 0);
             return this.dependentDelegate.GetDailyDependentCount(ts);
         }
 
-        /// <inheritdoc />
+        /// <inheritdoc/>
         public int GetRecurrentUserCount(int dayCount, string startPeriod, string endPeriod, int timeOffset)
         {
             int offset = GetOffset(timeOffset);
@@ -112,7 +113,7 @@ namespace HealthGateway.Admin.Server.Services
             return this.userProfileDelegate.GetRecurrentUserCount(dayCount, startDate, endDate);
         }
 
-        /// <inheritdoc />
+        /// <inheritdoc/>
         public RequestResult<IEnumerable<MessagingVerificationModel>> GetMessageVerifications(UserQueryType queryType, string queryString)
         {
             RequestResult<IEnumerable<MessagingVerificationModel>> retVal = new()
@@ -160,7 +161,7 @@ namespace HealthGateway.Admin.Server.Services
                     break;
             }
 
-            if (dbResult != null && dbResult.Status == Database.Constants.DBStatusCode.Read)
+            if (dbResult != null && dbResult.Status == DBStatusCode.Read)
             {
                 retVal.ResultStatus = ResultType.Success;
                 List<MessagingVerificationModel> results = new();
@@ -182,7 +183,7 @@ namespace HealthGateway.Admin.Server.Services
             return retVal;
         }
 
-        /// <inheritdoc />
+        /// <inheritdoc/>
         public IDictionary<string, int> GetRatingSummary(string startPeriod, string endPeriod, int timeOffset)
         {
             TimeSpan ts = new(0, GetOffset(timeOffset), 0);

@@ -15,6 +15,7 @@
 //-------------------------------------------------------------------------
 namespace HealthGateway.Encounter.Services
 {
+    using System;
     using System.Collections.Generic;
     using System.Diagnostics;
     using System.Linq;
@@ -58,27 +59,27 @@ namespace HealthGateway.Encounter.Services
             this.mspVisitDelegate = mspVisitDelegate;
         }
 
-        private static ActivitySource Source { get; } = new ActivitySource(nameof(EncounterService));
+        private static ActivitySource Source { get; } = new(nameof(EncounterService));
 
         /// <inheritdoc/>
         public async Task<RequestResult<IEnumerable<EncounterModel>>> GetEncounters(string hdid)
         {
-            using (Source.StartActivity("GetEncounters"))
+            using (Source.StartActivity())
             {
                 this.logger.LogDebug("Getting encounters");
                 this.logger.LogTrace($"User hdid: {hdid}");
 
-                RequestResult<IEnumerable<EncounterModel>> result = new RequestResult<IEnumerable<EncounterModel>>();
+                RequestResult<IEnumerable<EncounterModel>> result = new();
 
                 // Retrieve the phn
                 RequestResult<PatientModel> patientResult = await this.patientService.GetPatient(hdid).ConfigureAwait(true);
                 if (patientResult.ResultStatus == ResultType.Success && patientResult.ResourcePayload != null)
                 {
                     PatientModel patient = patientResult.ResourcePayload;
-                    OdrHistoryQuery mspHistoryQuery = new OdrHistoryQuery()
+                    OdrHistoryQuery mspHistoryQuery = new()
                     {
                         StartDate = patient.Birthdate,
-                        EndDate = System.DateTime.Now,
+                        EndDate = DateTime.Now,
                         PHN = patient.PersonalHealthNumber,
                         PageSize = 20000,
                     };
@@ -107,7 +108,7 @@ namespace HealthGateway.Encounter.Services
                     result.ResultError = patientResult.ResultError;
                 }
 
-                this.logger.LogDebug($"Finished getting history of medication statements");
+                this.logger.LogDebug("Finished getting history of medication statements");
                 return result;
             }
         }

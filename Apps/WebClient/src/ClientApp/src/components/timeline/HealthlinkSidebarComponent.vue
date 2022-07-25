@@ -47,7 +47,7 @@ export default class HealthlinkSidebarComponent extends Vue {
     ];
     private cardIndex = 1;
 
-    private mounted() {
+    private mounted(): void {
         this.rotate();
     }
 

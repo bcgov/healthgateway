@@ -38,7 +38,7 @@ export default class FeedbackComponent extends Vue {
     private isLoading = false;
     private userFeedbackService!: IUserFeedbackService;
 
-    private get isValid() {
+    private get isValid(): boolean {
         return this.comment.length > 1;
     }
 
@@ -69,27 +69,27 @@ export default class FeedbackComponent extends Vue {
     }
 
     @Watch("isSidebarOpen")
-    private onIsSidebarOpen(newValue: boolean) {
+    private onIsSidebarOpen(newValue: boolean): void {
         // Make sure it closes if the sidebar is closing and reset state
         if (!newValue) {
             this.resetFeedback();
         }
     }
 
-    private created() {
+    private created(): void {
         this.userFeedbackService = container.get(
             SERVICE_IDENTIFIER.UserFeedbackService
         );
     }
 
-    private toggleExpanded() {
+    private toggleExpanded(): void {
         this.visible = !this.visible;
         if (!this.isSidebarOpen) {
             this.toggleSidebar();
         }
     }
 
-    private onSubmit(event: Event) {
+    private onSubmit(event: Event): void {
         this.isLoading = true;
 
         this.userFeedbackService
@@ -110,7 +110,7 @@ export default class FeedbackComponent extends Vue {
         event.preventDefault();
     }
 
-    private resetFeedback() {
+    private resetFeedback(): void {
         this.visible = false;
         this.hasSubmitted = false;
         this.isSuccess = false;
@@ -297,6 +297,7 @@ export default class FeedbackComponent extends Vue {
 
 <style lang="scss" scoped>
 @import "@/assets/scss/_variables.scss";
+
 .feedback {
     background-color: $aquaBlue;
     display: inline;

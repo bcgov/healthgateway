@@ -31,7 +31,7 @@ namespace Healthgateway.JobScheduler.Jobs
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.Logging;
 
-    /// <inheritdoc />
+    /// <inheritdoc/>
     public class NotificationSettingsJob : INotificationSettingsJob
     {
         private const int ConcurrencyTimeout = 5 * 60; // 5 minutes
@@ -65,7 +65,7 @@ namespace Healthgateway.JobScheduler.Jobs
             this.notificationSettingsDelegate = notificationSettingsDelegate;
             this.authDelegate = authDelegate;
             this.eventLogDelegate = eventLogDelegate;
-            this.jobEnabled = configuration.GetSection(JobConfigKey).GetValue<bool>(JobEnabledKey, true);
+            this.jobEnabled = configuration.GetSection(JobConfigKey).GetValue(JobEnabledKey, true);
 
             IConfigurationSection? configSection = configuration?.GetSection(AuthConfigSectionName);
             this.tokenUri = configSection.GetValue<Uri>(@"TokenUri");
@@ -74,11 +74,11 @@ namespace Healthgateway.JobScheduler.Jobs
             configSection.Bind(this.tokenRequest); // Client ID, Client Secret, Audience, Username, Password
         }
 
-        /// <inheritdoc />
+        /// <inheritdoc/>
         [DisableConcurrentExecution(ConcurrencyTimeout)]
         public void PushNotificationSettings(string notificationSettingsJSON)
         {
-            this.logger.LogDebug($"Queueing Notification Settings push to PHSA...");
+            this.logger.LogDebug("Queueing Notification Settings push to PHSA...");
             if (this.jobEnabled)
             {
                 NotificationSettingsRequest? notificationSettings = JsonSerializer.Deserialize<NotificationSettingsRequest>(notificationSettingsJSON);
@@ -91,27 +91,25 @@ namespace Healthgateway.JobScheduler.Jobs
                         this.logger.LogError($"Authenticated as User System access token is null or empty, Error:\n{accessToken}");
                         throw new FormatException($"Authenticated as User System access token is null or empty, Error:\n{accessToken}");
                     }
+
+                    RequestResult<NotificationSettingsResponse> retVal =
+                        Task.Run(async () => await this.notificationSettingsDelegate.SetNotificationSettings(notificationSettings, accessToken).ConfigureAwait(true)).Result;
+                    if (retVal.ResultStatus == ResultType.ActionRequired)
+                    {
+                        EventLog eventLog = new()
+                        {
+                            EventSource = this.notificationSettingsDelegate.GetType().Name,
+                            EventName = "SMS Rejected",
+                            EventDescription = notificationSettings.SMSNumber ?? string.Empty,
+                        };
+                        this.eventLogDelegate.WriteEventLog(eventLog);
+                    }
                     else
                     {
-                        RequestResult<NotificationSettingsResponse> retVal = Task.Run(async () => await
-                                        this.notificationSettingsDelegate.SetNotificationSettings(notificationSettings, accessToken).ConfigureAwait(true)).Result;
-                        if (retVal.ResultStatus == ResultType.ActionRequired)
+                        if (retVal.ResultStatus != ResultType.Success)
                         {
-                            EventLog eventLog = new()
-                            {
-                                EventSource = this.notificationSettingsDelegate.GetType().Name,
-                                EventName = "SMS Rejected",
-                                EventDescription = notificationSettings.SMSNumber ?? string.Empty,
-                            };
-                            this.eventLogDelegate.WriteEventLog(eventLog);
-                        }
-                        else
-                        {
-                            if (retVal.ResultStatus != ResultType.Success)
-                            {
-                                this.logger.LogError($"Unable to send Notification Settings to PHSA, Error:\n{retVal.ResultError?.ResultMessage}");
-                                throw new FormatException($"Unable to send Notification Settings to PHSA, Error:\n{retVal.ResultError?.ResultMessage}");
-                            }
+                            this.logger.LogError($"Unable to send Notification Settings to PHSA, Error:\n{retVal.ResultError?.ResultMessage}");
+                            throw new FormatException($"Unable to send Notification Settings to PHSA, Error:\n{retVal.ResultError?.ResultMessage}");
                         }
                     }
                 }
@@ -126,7 +124,7 @@ namespace Healthgateway.JobScheduler.Jobs
                 this.logger.LogInformation("Job has been disabled by configuration");
             }
 
-            this.logger.LogDebug($"Finished queueing Notification Settings push.");
+            this.logger.LogDebug("Finished queueing Notification Settings push.");
         }
     }
 }

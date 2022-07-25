@@ -2,7 +2,6 @@
 <MudNavMenu>
     @if (ConfigurationState.Value.Result?.Features["Showcase"] ?? false)
     {
-
         <MudNavGroup Title="Showcase" Icon="@Icons.Material.Filled.WbSunny" Expanded="false">
             <MudNavLink Href="showcase/alerts" Icon="@Icons.Material.Filled.PriorityHigh">Alerts</MudNavLink>
             <MudNavLink Href="showcase/chips" Icon="@Icons.Material.Filled.Label">Chips</MudNavLink>

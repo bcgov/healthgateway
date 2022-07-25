@@ -9,7 +9,8 @@ import { IHttpDelegate, ILogger } from "@/services/interfaces";
 
 @injectable()
 export default class HttpDelegate implements IHttpDelegate {
-    private logger: ILogger = container.get(SERVICE_IDENTIFIER.Logger);
+    private logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
+
     public unsetAuthorizationHeader(): void {
         this.logger.debug(`ACCESS TOKEN UNSET`);
         Axios.defaults.headers.common = {};
@@ -39,9 +40,7 @@ export default class HttpDelegate implements IHttpDelegate {
                 headers,
             };
             Axios.get(url, config)
-                .then((response: AxiosResponse<T>) => {
-                    return resolve(response.data);
-                })
+                .then((response: AxiosResponse<T>) => resolve(response.data))
                 .catch((error: Error | AxiosError) =>
                     reject(this.toHttpError(error, "GET"))
                 );
@@ -58,9 +57,7 @@ export default class HttpDelegate implements IHttpDelegate {
                 headers,
             };
             Axios.post(url, payload, config)
-                .then((response: AxiosResponse<T>) => {
-                    return resolve(response.data);
-                })
+                .then((response: AxiosResponse<T>) => resolve(response.data))
                 .catch((error: Error | AxiosError) =>
                     reject(this.toHttpError(error, "POST"))
                 );
@@ -78,9 +75,7 @@ export default class HttpDelegate implements IHttpDelegate {
             };
             this.logger.debug(`Config: ${JSON.stringify(config)}`);
             Axios.put(url, payload, config)
-                .then((response: AxiosResponse<T>) => {
-                    return resolve(response.data);
-                })
+                .then((response: AxiosResponse<T>) => resolve(response.data))
                 .catch((error: Error | AxiosError) =>
                     reject(this.toHttpError(error, "PUT"))
                 );
@@ -98,9 +93,7 @@ export default class HttpDelegate implements IHttpDelegate {
             };
             this.logger.debug(`Config: ${JSON.stringify(config)}`);
             Axios.patch(url, payload, config)
-                .then((response: AxiosResponse<T>) => {
-                    return resolve(response.data);
-                })
+                .then((response: AxiosResponse<T>) => resolve(response.data))
                 .catch((error: Error | AxiosError) =>
                     reject(this.toHttpError(error, "PATCH"))
                 );
@@ -119,9 +112,7 @@ export default class HttpDelegate implements IHttpDelegate {
             this.logger.debug(`Config: ${JSON.stringify(config)}`);
 
             Axios.delete(url, { data: payload, headers })
-                .then((response: AxiosResponse<T>) => {
-                    return resolve(response.data);
-                })
+                .then((response: AxiosResponse<T>) => resolve(response.data))
                 .catch((error: Error | AxiosError) =>
                     reject(this.toHttpError(error, "DELETE"))
                 );

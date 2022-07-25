@@ -94,8 +94,8 @@ export enum UserState {
     acceptTermsOfService = "acceptTermsOfService",
 }
 
-function calculateUserState() {
-    const storeWrapper: IStoreProvider = container.get(
+function calculateUserState(): UserState {
+    const storeWrapper = container.get<IStoreProvider>(
         STORE_IDENTIFIER.StoreProvider
     );
     const store = storeWrapper.getStore();
@@ -125,8 +125,8 @@ function calculateUserState() {
     }
 }
 
-function getAvailableModules() {
-    const storeWrapper: IStoreProvider = container.get(
+function getAvailableModules(): string[] {
+    const storeWrapper = container.get<IStoreProvider>(
         STORE_IDENTIFIER.StoreProvider
     );
     const store = storeWrapper.getStore();
@@ -388,8 +388,8 @@ export const beforeEachGuard: NavigationGuard = async (
     from: Route,
     next: NavigationGuardNext<Vue>
 ) => {
-    const logger: ILogger = container.get(SERVICE_IDENTIFIER.Logger);
-    const storeWrapper: IStoreProvider = container.get(
+    const logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
+    const storeWrapper = container.get<IStoreProvider>(
         STORE_IDENTIFIER.StoreProvider
     );
     const store = storeWrapper.getStore();
@@ -484,8 +484,6 @@ const router = new VueRouter({
 
 router.beforeEach(beforeEachGuard);
 
-router.afterEach(() => {
-    window.snowplow("trackPageView");
-});
+router.afterEach(() => window.snowplow("trackPageView"));
 
 export default router;

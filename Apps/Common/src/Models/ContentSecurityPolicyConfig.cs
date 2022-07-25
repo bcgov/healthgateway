@@ -15,11 +15,6 @@
 // -------------------------------------------------------------------------
 namespace HealthGateway.Common.Models
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Text.Json.Serialization;
-    using Microsoft.Extensions.Configuration;
-
     /// <summary>
     /// Provides configuration data for the ContentSecurityPolicy header.
     /// </summary>

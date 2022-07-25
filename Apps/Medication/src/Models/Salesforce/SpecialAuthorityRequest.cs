@@ -95,7 +95,7 @@ namespace HealthGateway.Medication.Models.Salesforce
         /// <returns>The newly created MedicationRequest object.</returns>
         public MedicationRequest ToHGModel()
         {
-            return new MedicationRequest()
+            return new MedicationRequest
             {
                 ReferenceNumber = this.ReferenceNumber,
                 DrugName = this.DrugName,

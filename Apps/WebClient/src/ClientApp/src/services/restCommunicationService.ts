@@ -16,7 +16,7 @@ import ErrorTranslator from "@/utility/errorTranslator";
 
 @injectable()
 export class RestCommunicationService implements ICommunicationService {
-    private logger: ILogger = container.get(SERVICE_IDENTIFIER.Logger);
+    private logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
     private readonly BASE_URI: string = "Communication";
     private http!: IHttpDelegate;
     private baseUri = "";
@@ -32,14 +32,12 @@ export class RestCommunicationService implements ICommunicationService {
     public getActive(
         type: CommunicationType
     ): Promise<RequestResult<Communication>> {
-        return new Promise((resolve, reject) => {
+        return new Promise((resolve, reject) =>
             this.http
                 .getWithCors<RequestResult<Communication>>(
                     `${this.baseUri}${this.BASE_URI}/${type}`
                 )
-                .then((communication) => {
-                    return resolve(communication);
-                })
+                .then((communication) => resolve(communication))
                 .catch((err: HttpError) => {
                     this.logger.error(
                         `Error in RestCommunicationService.getActive()`
@@ -50,7 +48,7 @@ export class RestCommunicationService implements ICommunicationService {
                             ServiceCode.HealthGatewayUser
                         )
                     );
-                });
-        });
+                })
+        );
     }
 }

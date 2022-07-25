@@ -16,8 +16,6 @@
 namespace Healthgateway.JobScheduler.Models
 {
     using System;
-    using System.Collections.Generic;
-    using System.Text.Json.Serialization;
 
     /// <summary>
     /// Represents the RocketChat Configuration.

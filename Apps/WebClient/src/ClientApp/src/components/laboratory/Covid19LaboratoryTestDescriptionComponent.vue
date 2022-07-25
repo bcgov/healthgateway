@@ -7,15 +7,15 @@ export default class Covid19LaboratoryTestDescriptionComponent extends Vue {
     @Prop({ required: true }) description!: string[];
     @Prop({ required: true }) link!: string;
 
-    private isLastEntry(index: number) {
+    private isLastEntry(index: number): boolean {
         return index + 1 === this.description.length;
     }
 
-    private shouldDisplayLink(index: number) {
-        return this.isLastEntry(index) && this.link;
+    private shouldDisplayLink(index: number): boolean {
+        return this.isLastEntry(index) && this.link != null;
     }
 
-    private visitLink() {
+    private visitLink(): void {
         window.open(this.link, "_blank");
     }
 }

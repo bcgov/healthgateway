@@ -302,11 +302,11 @@ public static class DashboardReducers
     {
         return state with
         {
-           RegisteredUsers = new(),
-           LoggedInUsers = new(),
-           Dependents = new(),
-           RecurringUsers = new(),
-           RatingSummary = new(),
+            RegisteredUsers = new(),
+            LoggedInUsers = new(),
+            Dependents = new(),
+            RecurringUsers = new(),
+            RatingSummary = new(),
         };
     }
 }

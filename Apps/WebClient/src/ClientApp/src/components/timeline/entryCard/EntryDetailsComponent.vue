@@ -56,14 +56,14 @@ export default class EntryDetailsComponent extends Vue {
     }
 
     @Watch("isMobile")
-    private onIsMobile() {
+    private onIsMobile(): void {
         if (this.isVisible && !this.isMobile) {
             this.handleClose();
         }
     }
 
     @Watch("lastNoteOperation")
-    private onLastNoteOperation() {
+    private onLastNoteOperation(): void {
         if (
             this.lastNoteOperation !== null &&
             this.entry !== null &&
@@ -72,14 +72,15 @@ export default class EntryDetailsComponent extends Vue {
             this.handleClose();
         }
     }
-    private created() {
+
+    private created(): void {
         window.onpopstate = (event: PopStateEvent) => {
             this.hideModal();
             event.preventDefault();
         };
     }
 
-    private mounted() {
+    private mounted(): void {
         this.entry = null;
         this.eventBus.$on(EventMessageName.ViewEntryDetails, this.viewDetails);
     }
@@ -106,7 +107,7 @@ export default class EntryDetailsComponent extends Vue {
         this.isVisible = false;
     }
 
-    private clear() {
+    private clear(): void {
         this.entry = null;
     }
 }
@@ -179,10 +180,12 @@ export default class EntryDetailsComponent extends Vue {
 
 <style lang="scss">
 @import "@/assets/scss/_variables.scss";
+
 .entry-details-modal-content {
     min-height: 100vh;
     border: 0px;
     border-radius: 0px;
+
     .modal-body {
         padding: 0em;
     }

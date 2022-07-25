@@ -96,9 +96,9 @@ class ImmunizationViewModel {
         this.providerOrClinic =
             model.providerOrClinic === "" ? "N/A" : model.providerOrClinic;
         this.immunizationAgents = [];
-        model.immunization.immunizationAgents.forEach((agent) => {
-            this.immunizationAgents.push(new ImmunizationAgentViewModel(agent));
-        });
+        model.immunization.immunizationAgents.forEach((agent) =>
+            this.immunizationAgents.push(new ImmunizationAgentViewModel(agent))
+        );
         if (model.forecast) {
             this.forecast = new ForecastViewModel(model.forecast);
         }

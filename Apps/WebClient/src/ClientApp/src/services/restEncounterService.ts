@@ -17,7 +17,7 @@ import ErrorTranslator from "@/utility/errorTranslator";
 
 @injectable()
 export class RestEncounterService implements IEncounterService {
-    private logger: ILogger = container.get(SERVICE_IDENTIFIER.Logger);
+    private logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
     private readonly ENCOUNTER_BASE_URI: string = "Encounter";
     private baseUri = "";
     private http!: IHttpDelegate;
@@ -50,9 +50,7 @@ export class RestEncounterService implements IEncounterService {
                 .getWithCors<RequestResult<Encounter[]>>(
                     `${this.baseUri}${this.ENCOUNTER_BASE_URI}/${hdid}`
                 )
-                .then((requestResult) => {
-                    resolve(requestResult);
-                })
+                .then((requestResult) => resolve(requestResult))
                 .catch((err: HttpError) => {
                     this.logger.error(
                         `Error in RestEncounterService.getPatientEncounters()`

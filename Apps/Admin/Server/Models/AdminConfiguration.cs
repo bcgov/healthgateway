@@ -15,7 +15,9 @@
 //-------------------------------------------------------------------------
 namespace HealthGateway.Admin.Server.Models
 {
+    using System;
     using System.Collections.Generic;
+    using System.Diagnostics.CodeAnalysis;
 
     /// <summary>
     /// Configuration data to be used by the Health Gateway Admin.
@@ -25,8 +27,8 @@ namespace HealthGateway.Admin.Server.Models
         /// <summary>
         /// Gets or sets the enabled states of each toggleable feature.
         /// </summary>
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "CA2227:Collection properties should be read only", Justification = "Team decision")]
-        public Dictionary<string, bool> Features { get; set; } = new Dictionary<string, bool>();
+        [SuppressMessage("Usage", "CA2227:Collection properties should be read only", Justification = "Team decision")]
+        public Dictionary<string, bool> Features { get; set; } = new();
 
         /// <summary>
         /// Gets or sets the logging level used by the Admin.
@@ -42,7 +44,7 @@ namespace HealthGateway.Admin.Server.Models
         /// Gets or sets the ExternalURLs used by the Admin.
         /// </summary>
 #pragma warning disable CA2227 //disable read-only Dictionary
-        public Dictionary<string, System.Uri> ExternalURLs { get; set; } = new Dictionary<string, System.Uri>();
+        public Dictionary<string, Uri> ExternalURLs { get; set; } = new();
 
         /// <summary>
         /// Gets or sets the unix timezone id.

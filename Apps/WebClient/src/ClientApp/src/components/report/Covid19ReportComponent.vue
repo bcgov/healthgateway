@@ -46,11 +46,9 @@ export default class Covid19ReportComponent extends Vue {
     private readonly headerClass = "covid19-laboratory-report-table-header";
 
     private get visibleRecords(): Covid19LaboratoryOrder[] {
-        let records = this.covid19LaboratoryOrders.filter((record) => {
-            return this.filter.allowsDate(
-                record.labResults[0].collectedDateTime
-            );
-        });
+        let records = this.covid19LaboratoryOrders.filter((record) =>
+            this.filter.allowsDate(record.labResults[0].collectedDateTime)
+        );
         records.sort((a, b) => {
             const firstDate = new DateWrapper(
                 a.labResults[0].collectedDateTime
@@ -73,7 +71,7 @@ export default class Covid19ReportComponent extends Vue {
         return records;
     }
 
-    private get isEmpty() {
+    private get isEmpty(): boolean {
         return this.visibleRecords.length === 0;
     }
 
@@ -91,26 +89,24 @@ export default class Covid19ReportComponent extends Vue {
 
     @Watch("isCovid19LaboratoryLoading")
     @Emit()
-    private onIsLoadingChanged() {
+    private onIsLoadingChanged(): boolean {
         return this.isCovid19LaboratoryLoading;
     }
 
     @Watch("isEmpty")
     @Emit()
-    private onIsEmptyChanged() {
+    private onIsEmptyChanged(): boolean {
         return this.isEmpty;
     }
 
-    private created() {
+    private created(): void {
         this.logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
         this.retrieveCovid19LaboratoryOrders({ hdid: this.user.hdid }).catch(
-            (err) => {
-                this.logger.error(`Error loading Covid19 data: ${err}`);
-            }
+            (err) => this.logger.error(`Error loading Covid19 data: ${err}`)
         );
     }
 
-    private mounted() {
+    private mounted(): void {
         this.onIsEmptyChanged();
     }
 
@@ -118,7 +114,7 @@ export default class Covid19ReportComponent extends Vue {
         reportFormatType: ReportFormatType,
         headerData: ReportHeader
     ): Promise<RequestResult<Report>> {
-        const reportService: IReportService = container.get<IReportService>(
+        const reportService = container.get<IReportService>(
             SERVICE_IDENTIFIER.ReportService
         );
 
@@ -184,6 +180,7 @@ export default class Covid19ReportComponent extends Vue {
 
 <style lang="scss">
 @import "@/assets/scss/_variables.scss";
+
 .covid19-laboratory-report-table-header {
     color: $heading_color;
     font-size: 0.8rem;

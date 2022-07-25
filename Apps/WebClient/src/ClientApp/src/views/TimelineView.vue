@@ -343,7 +343,7 @@ export default class TimelineView extends Vue {
     }
 
     private get isFilterModuleSelected(): boolean {
-        const entryTypes: EntryType[] = Array.from(this.filter.entryTypes);
+        const entryTypes = Array.from(this.filter.entryTypes);
         this.logger.debug(
             `Number of imeline filter modules selected: ${entryTypes.length}`
         );
@@ -396,12 +396,12 @@ export default class TimelineView extends Vue {
         return labels;
     }
 
-    private created() {
+    private created(): void {
         this.logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
         this.fetchTimelineData();
     }
 
-    private fetchTimelineData() {
+    private fetchTimelineData(): void {
         Promise.all([
             this.retrievePatientData(),
             this.retrieveMedications({ hdid: this.user.hdid }),
@@ -412,13 +412,13 @@ export default class TimelineView extends Vue {
             this.retrieveEncounters({ hdid: this.user.hdid }),
             this.retrieveNotes({ hdid: this.user.hdid }),
             this.retrieveComments({ hdid: this.user.hdid }),
-        ]).catch((err) => {
-            this.logger.error(`Error loading timeline data: ${err}`);
-        });
+        ]).catch((err) =>
+            this.logger.error(`Error loading timeline data: ${err}`)
+        );
     }
 
     private isFilterApplied(entryType: EntryType): boolean {
-        const entryTypes: EntryType[] = Array.from(this.filter.entryTypes);
+        const entryTypes = Array.from(this.filter.entryTypes);
         const filterApplied = !!entryTypes.includes(entryType);
         this.logger.debug(
             `Timeline filter entry type: ${entryType} applied: ${filterApplied}`
@@ -621,6 +621,7 @@ hr {
 .sticky-offset {
     background-color: white;
     z-index: 2;
+
     &.header-offset {
         top: $header-height;
     }

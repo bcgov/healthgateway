@@ -51,7 +51,7 @@ namespace HealthGateway.Immunization.Services
             RequestResult<PhsaResult<ImmunizationViewResponse>> delegateResult = await this.immunizationDelegate.GetImmunization(immunizationId).ConfigureAwait(true);
             if (delegateResult.ResultStatus == ResultType.Success)
             {
-                return new RequestResult<ImmunizationEvent>()
+                return new RequestResult<ImmunizationEvent>
                 {
                     ResultStatus = delegateResult.ResultStatus,
                     ResourcePayload = this.autoMapper.Map<ImmunizationEvent>(delegateResult.ResourcePayload!.Result),
@@ -60,14 +60,12 @@ namespace HealthGateway.Immunization.Services
                     TotalResultCount = delegateResult.TotalResultCount,
                 };
             }
-            else
+
+            return new RequestResult<ImmunizationEvent>
             {
-                return new RequestResult<ImmunizationEvent>()
-                {
-                    ResultStatus = delegateResult.ResultStatus,
-                    ResultError = delegateResult.ResultError,
-                };
-            }
+                ResultStatus = delegateResult.ResultStatus,
+                ResultError = delegateResult.ResultError,
+            };
         }
 
         /// <inheritdoc/>
@@ -76,7 +74,7 @@ namespace HealthGateway.Immunization.Services
             RequestResult<PhsaResult<ImmunizationResponse>> delegateResult = await this.immunizationDelegate.GetImmunizations(hdid).ConfigureAwait(true);
             if (delegateResult.ResultStatus == ResultType.Success)
             {
-                return new RequestResult<ImmunizationResult>()
+                return new RequestResult<ImmunizationResult>
                 {
                     ResultStatus = delegateResult.ResultStatus,
                     ResourcePayload = new ImmunizationResult(
@@ -88,14 +86,12 @@ namespace HealthGateway.Immunization.Services
                     TotalResultCount = delegateResult.TotalResultCount,
                 };
             }
-            else
+
+            return new RequestResult<ImmunizationResult>
             {
-                return new RequestResult<ImmunizationResult>()
-                {
-                    ResultStatus = delegateResult.ResultStatus,
-                    ResultError = delegateResult.ResultError,
-                };
-            }
+                ResultStatus = delegateResult.ResultStatus,
+                ResultError = delegateResult.ResultError,
+            };
         }
     }
 }

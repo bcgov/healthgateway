@@ -141,6 +141,7 @@ export class DateWrapper {
             DateTime.fromFormat(param, format || this.defaultFormat)
         );
     }
+
     /**
      * Formats the date using the given a set of tokens
      * See https://moment.github.io/luxon/#/formatting for the rules
@@ -151,7 +152,7 @@ export class DateWrapper {
         return this.internalDate.toFormat(
             formatString || DateWrapper.defaultFormat,
             {
-                locale: locale,
+                locale,
             }
         );
     }

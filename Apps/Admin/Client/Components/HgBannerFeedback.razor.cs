@@ -23,7 +23,10 @@ namespace HealthGateway.Admin.Client.Components
     /// <summary>
     /// Backing logic for the HgBannerFeedback component.
     /// </summary>
-    /// <typeparam name="TResetAction">An action to subscribe to that indicates the banner should be reset to its initial unhidden state.</typeparam>
+    /// <typeparam name="TResetAction">
+    /// An action to subscribe to that indicates the banner should be reset to its initial
+    /// unhidden state.
+    /// </typeparam>
     public partial class HgBannerFeedback<TResetAction> : FluxorComponent
     {
         /// <summary>

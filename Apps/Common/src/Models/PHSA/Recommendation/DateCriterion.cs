@@ -26,7 +26,7 @@ namespace HealthGateway.Common.Models.PHSA.Recommendation
         /// Gets or sets the Date Criterion codes.
         /// </summary>
         [JsonPropertyName("dateCriterionCode")]
-        public DateCriterionCode DateCriterionCode { get; set; } = new DateCriterionCode();
+        public DateCriterionCode DateCriterionCode { get; set; } = new();
 
         /// <summary>
         /// Gets or sets the Date Criterion value.

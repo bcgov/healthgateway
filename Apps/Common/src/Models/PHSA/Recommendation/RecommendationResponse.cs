@@ -51,18 +51,18 @@ namespace HealthGateway.Common.Models.PHSA.Recommendation
         /// Gets or sets the Forecast Status.
         /// </summary>
         [JsonPropertyName("forecastStatus")]
-        public ForecastStatusModel ForecastStatus { get; set; } = new ForecastStatusModel();
+        public ForecastStatusModel ForecastStatus { get; set; } = new();
 
         /// <summary>
         /// Gets or sets the Target Disease.
         /// </summary>
         [JsonPropertyName("targetDisease")]
-        public TargetDiseaseResponse TargetDisease { get; set; } = new TargetDiseaseResponse();
+        public TargetDiseaseResponse TargetDisease { get; set; } = new();
 
         /// <summary>
         /// Gets or sets the Vaccine Code.
         /// </summary>
         [JsonPropertyName("vaccineCode")]
-        public VaccineCode VaccineCode { get; set; } = new VaccineCode();
+        public VaccineCode VaccineCode { get; set; } = new();
     }
 }

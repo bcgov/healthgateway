@@ -50,46 +50,46 @@ export default class HgTimeDropdownComponent extends Vue {
 
     private amPmValues = ["AM", "PM"];
 
-    private mounted() {
+    private mounted(): void {
         this.value = this.model;
     }
 
-    private get getHour() {
+    private get getHour(): ISelectOption[] {
         const hourOptions: ISelectOption[] = [{ value: null, text: "Hour" }];
         for (const value of this.hourValues) {
             hourOptions.push({
-                value: value,
+                value,
                 text: value,
             });
         }
         return hourOptions;
     }
 
-    private get getMinute() {
+    private get getMinute(): ISelectOption[] {
         const minuteOptions: ISelectOption[] = [
             { value: null, text: "Minute" },
         ];
         for (const value of this.minuteValues) {
             minuteOptions.push({
-                value: value,
+                value,
                 text: value,
             });
         }
         return minuteOptions;
     }
 
-    private get getAmPm() {
+    private get getAmPm(): ISelectOption[] {
         const amPmOptions: ISelectOption[] = [{ value: null, text: "AM/PM" }];
         for (const value of this.amPmValues) {
             amPmOptions.push({
-                value: value,
+                value,
                 text: value,
             });
         }
         return amPmOptions;
     }
 
-    private onChange() {
+    private onChange(): void {
         if (this.hour && this.minute && this.amPm) {
             this.value = this.hour + ":" + this.minute + " " + this.amPm;
         } else {
@@ -100,21 +100,21 @@ export default class HgTimeDropdownComponent extends Vue {
     }
 
     @Emit("change")
-    private updateModel() {
+    private updateModel(): string | null {
         return this.value;
     }
 
     @Watch("model")
-    private onModelChanged() {
+    private onModelChanged(): void {
         this.value = this.model;
     }
 
     @Emit("blur")
-    private onBlur() {
+    private onBlur(): void {
         return;
     }
 
-    private getClass() {
+    private getClass(): string {
         if (this.state === true) {
             return "valid";
         } else if (this.state === false) {
@@ -167,9 +167,11 @@ export default class HgTimeDropdownComponent extends Vue {
 
 <style lang="scss" scoped>
 @import "@/assets/scss/_variables.scss";
+
 .valid {
     border-color: $success;
 }
+
 .invalid {
     border-color: $danger;
 }

@@ -24,7 +24,7 @@ namespace HealthGateway.Database.Delegates
     using HealthGateway.Database.Wrapper;
     using Microsoft.Extensions.Logging;
 
-    /// <inheritdoc />
+    /// <inheritdoc/>
     [ExcludeFromCodeCoverage]
     public class DBLegalAgreementDelegate : ILegalAgreementDelegate
     {
@@ -44,9 +44,9 @@ namespace HealthGateway.Database.Delegates
             this.dbContext = dbContext;
         }
 
-        /// <inheritdoc />
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Globalization", "CA1309:Use ordinal stringcomparison", Justification = "Ordinal doesn't work")]
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Globalization", "CA1307:Specify StringComparison", Justification = "Ordinal doesn't work")]
+        /// <inheritdoc/>
+        [SuppressMessage("Globalization", "CA1309:Use ordinal stringcomparison", Justification = "Ordinal doesn't work")]
+        [SuppressMessage("Globalization", "CA1307:Specify StringComparison", Justification = "Ordinal doesn't work")]
         public DBResult<LegalAgreement> GetActiveByAgreementType(LegalAgreementType agreementTypeCode)
         {
             this.logger.LogDebug($"Getting active legal agreement by type {agreementTypeCode}");
@@ -56,7 +56,7 @@ namespace HealthGateway.Database.Delegates
                 .OrderByDescending(la => la.EffectiveDate)
                 .First();
 
-            return new DBResult<LegalAgreement>()
+            return new DBResult<LegalAgreement>
             {
                 Payload = legalAgreement,
                 Status = DBStatusCode.Read,

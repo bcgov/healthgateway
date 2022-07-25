@@ -18,6 +18,7 @@ namespace HealthGateway.Common.Delegates.PHSA
     using System;
     using System.Collections.Generic;
     using System.Diagnostics;
+    using System.Diagnostics.CodeAnalysis;
     using System.Net;
     using System.Net.Http;
     using System.Net.Http.Headers;
@@ -66,13 +67,13 @@ namespace HealthGateway.Common.Delegates.PHSA
             configuration.Bind(PHSAConfigSectionKey, this.phsaConfig);
         }
 
-        private static ActivitySource Source { get; } = new ActivitySource(nameof(RestVaccineStatusDelegate));
+        private static ActivitySource Source { get; } = new(nameof(RestVaccineStatusDelegate));
 
         /// <inheritdoc/>
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Maintainability", "CA1506:Avoid excessive class coupling", Justification = "Team decision")]
+        [SuppressMessage("Maintainability", "CA1506:Avoid excessive class coupling", Justification = "Team decision")]
         public async Task<RequestResult<PhsaResult<VaccineStatusResult>>> GetVaccineStatus(VaccineStatusQuery query, string accessToken, bool isPublicEndpoint)
         {
-            using Activity? activity = Source.StartActivity("GetVaccineStatus");
+            using Activity? activity = Source.StartActivity();
             this.logger.LogDebug($"Getting vaccine status {query.HdId} {query.PersonalHealthNumber} {query.DateOfBirth} {query.DateOfVaccine} {query.IncludeFederalVaccineProof}...");
 
             HttpContent? content = null;
@@ -136,7 +137,7 @@ namespace HealthGateway.Common.Delegates.PHSA
                         }
                         else
                         {
-                            retVal.ResultError = new RequestResultError()
+                            retVal.ResultError = new RequestResultError
                             {
                                 ResultMessage = "Error with JSON data",
                                 ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.PHSA),
@@ -145,14 +146,14 @@ namespace HealthGateway.Common.Delegates.PHSA
 
                         break;
                     case HttpStatusCode.Forbidden:
-                        retVal.ResultError = new RequestResultError()
+                        retVal.ResultError = new RequestResultError
                         {
                             ResultMessage = $"DID Claim is missing or can not resolve PHN, HTTP Error {response.StatusCode}",
                             ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.PHSA),
                         };
                         break;
                     default:
-                        retVal.ResultError = new RequestResultError()
+                        retVal.ResultError = new RequestResultError
                         {
                             ResultMessage = $"Unable to connect to Immunizations/VaccineStatus Endpoint, HTTP Error {response.StatusCode}",
                             ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.PHSA),
@@ -165,7 +166,11 @@ namespace HealthGateway.Common.Delegates.PHSA
             catch (Exception e)
 #pragma warning restore CA1031 // Do not catch general exception types
             {
-                retVal.ResultError = new RequestResultError() { ResultMessage = $"Exception getting vaccine status: {e}", ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.PHSA) };
+                retVal.ResultError = new RequestResultError
+                {
+                    ResultMessage = $"Exception getting vaccine status: {e}",
+                    ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.PHSA),
+                };
                 this.logger.LogError($"Unexpected exception retrieving vaccine status {e}");
             }
             finally
@@ -201,7 +206,7 @@ namespace HealthGateway.Common.Delegates.PHSA
                 attemptCount++;
                 if (refreshInProgress && attemptCount <= this.phsaConfig.MaxRetries)
                 {
-                    this.logger.LogDebug($"Refresh in progress, trying again....");
+                    this.logger.LogDebug("Refresh in progress, trying again....");
                     await Task.Delay(Math.Max(response.ResourcePayload!.LoadState.BackOffMilliseconds, this.phsaConfig.BackOffMilliseconds)).ConfigureAwait(true);
                 }
             }
@@ -209,8 +214,12 @@ namespace HealthGateway.Common.Delegates.PHSA
 
             if (refreshInProgress)
             {
-                this.logger.LogDebug($"Maximum retry attempts reached.");
-                retVal.ResultError = new RequestResultError() { ResultMessage = "Refresh in progress", ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.PHSA) };
+                this.logger.LogDebug("Maximum retry attempts reached.");
+                retVal.ResultError = new RequestResultError
+                {
+                    ResultMessage = "Refresh in progress",
+                    ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.PHSA),
+                };
             }
             else if (response.ResultStatus == ResultType.Success)
             {
@@ -225,10 +234,10 @@ namespace HealthGateway.Common.Delegates.PHSA
         }
 
         /// <inheritdoc/>
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Maintainability", "CA1506:Avoid excessive class coupling", Justification = "Team decision")]
+        [SuppressMessage("Maintainability", "CA1506:Avoid excessive class coupling", Justification = "Team decision")]
         public async Task<RequestResult<PhsaResult<RecordCard>>> GetRecordCard(RecordCardQuery query, string accessToken)
         {
-            using Activity? activity = Source.StartActivity("GetRecordCard");
+            using Activity? activity = Source.StartActivity();
             this.logger.LogDebug($"Getting record card {query.PersonalHealthNumber.Substring(0, 5)} {query.DateOfBirth}...");
             string endpointString = $"{this.phsaConfig.BaseUrl}{this.phsaConfig.RecordCardEndpoint}";
 
@@ -269,7 +278,7 @@ namespace HealthGateway.Common.Delegates.PHSA
                         }
                         else
                         {
-                            retVal.ResultError = new RequestResultError()
+                            retVal.ResultError = new RequestResultError
                             {
                                 ResultMessage = "Error with JSON data",
                                 ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.PHSA),
@@ -279,21 +288,21 @@ namespace HealthGateway.Common.Delegates.PHSA
                         break;
                     case HttpStatusCode.NoContent: // No vaccine status exists for this patient
                         retVal.ResultStatus = ResultType.Success;
-                        retVal.ResourcePayload = new PhsaResult<RecordCard>()
+                        retVal.ResourcePayload = new PhsaResult<RecordCard>
                         {
                             Result = new RecordCard(),
                         };
                         retVal.TotalResultCount = 0;
                         break;
                     case HttpStatusCode.Forbidden:
-                        retVal.ResultError = new RequestResultError()
+                        retVal.ResultError = new RequestResultError
                         {
                             ResultMessage = $"DID Claim is missing or can not resolve PHN, HTTP Error {response.StatusCode}",
                             ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.PHSA),
                         };
                         break;
                     default:
-                        retVal.ResultError = new RequestResultError()
+                        retVal.ResultError = new RequestResultError
                         {
                             ResultMessage = $"Unable to connect to record card Endpoint, HTTP Error {response.StatusCode}",
                             ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.PHSA),
@@ -306,7 +315,11 @@ namespace HealthGateway.Common.Delegates.PHSA
             catch (Exception e)
 #pragma warning restore CA1031 // Do not catch general exception types
             {
-                retVal.ResultError = new RequestResultError() { ResultMessage = $"Exception getting record card: {e}", ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.PHSA) };
+                retVal.ResultError = new RequestResultError
+                {
+                    ResultMessage = $"Exception getting record card: {e}",
+                    ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.PHSA),
+                };
                 this.logger.LogError($"Unexpected exception retrieving record card {e}");
             }
 
@@ -338,7 +351,7 @@ namespace HealthGateway.Common.Delegates.PHSA
                 attemptCount++;
                 if (refreshInProgress && attemptCount <= this.phsaConfig.MaxRetries)
                 {
-                    this.logger.LogDebug($"Refresh in progress, trying again....");
+                    this.logger.LogDebug("Refresh in progress, trying again....");
                     await Task.Delay(Math.Max(response.ResourcePayload!.LoadState.BackOffMilliseconds, this.phsaConfig.BackOffMilliseconds)).ConfigureAwait(true);
                 }
             }
@@ -346,8 +359,12 @@ namespace HealthGateway.Common.Delegates.PHSA
 
             if (refreshInProgress)
             {
-                this.logger.LogDebug($"Maximum retry attempts reached.");
-                retVal.ResultError = new RequestResultError() { ResultMessage = "Refresh in progress", ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.PHSA) };
+                this.logger.LogDebug("Maximum retry attempts reached.");
+                retVal.ResultError = new RequestResultError
+                {
+                    ResultMessage = "Refresh in progress",
+                    ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.PHSA),
+                };
             }
             else if (response.ResultStatus == ResultType.Success)
             {

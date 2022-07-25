@@ -67,8 +67,7 @@ namespace HealthGateway.GatewayApi.Listeners
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
             this.logger.LogInformation("DBChangeListener is starting");
-            stoppingToken.Register(() =>
-                this.logger.LogInformation($"DBChangeListener Shutdown as cancellation requested    "));
+            stoppingToken.Register(() => this.logger.LogInformation("DBChangeListener Shutdown as cancellation requested    "));
             int attempts = 0;
             while (!stoppingToken.IsCancellationRequested)
             {
@@ -111,7 +110,7 @@ namespace HealthGateway.GatewayApi.Listeners
         private void ReceiveEvent(object sender, NpgsqlNotificationEventArgs e)
         {
             this.logger.LogDebug($"Banner Event received on channel {Channel}");
-            var options = new JsonSerializerOptions
+            JsonSerializerOptions options = new()
             {
                 PropertyNameCaseInsensitive = true,
             };
@@ -120,7 +119,7 @@ namespace HealthGateway.GatewayApi.Listeners
             BannerChangeEvent? changeEvent = JsonSerializer.Deserialize<BannerChangeEvent>(e.Payload, options);
             using IServiceScope scope = this.services.CreateScope();
             ICommunicationService cs = scope.ServiceProvider.GetRequiredService<ICommunicationService>();
-            this.logger.LogInformation($"Banner Event received and being processed");
+            this.logger.LogInformation("Banner Event received and being processed");
             cs.ProcessChange(changeEvent);
         }
     }

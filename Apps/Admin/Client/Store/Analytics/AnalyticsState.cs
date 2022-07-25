@@ -15,8 +15,8 @@
 //-------------------------------------------------------------------------
 namespace HealthGateway.Admin.Client.Store.Analytics;
 
-using Fluxor;
 using System.Net.Http;
+using Fluxor;
 
 /// <summary>
 /// The state for the feature.

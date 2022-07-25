@@ -55,21 +55,27 @@ export default class HgIconComponent extends Vue {
 .hg-icon {
     box-sizing: content-box;
     height: 1em;
+
     &.hg-small {
         font-size: 0.875rem;
     }
+
     &.hg-medium {
         font-size: 1rem;
     }
+
     &.hg-large {
         font-size: 1.5rem;
     }
+
     &.hg-extra-large {
         font-size: 2rem;
     }
+
     &.hg-extra-extra-large {
         font-size: 2.81rem;
     }
+
     &.hg-square {
         width: 1em;
     }

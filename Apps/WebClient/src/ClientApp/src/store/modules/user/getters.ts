@@ -35,9 +35,8 @@ export const getters: UserGetters = {
     },
     getPreference:
         (state: UserState) =>
-        (preferenceName: string): UserPreference | undefined => {
-            return state.user.preferences[preferenceName];
-        },
+        (preferenceName: string): UserPreference | undefined =>
+            state.user.preferences[preferenceName],
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     quickLinks(_state: UserState, userGetters: any): QuickLink[] | undefined {
         const preference = userGetters.getPreference(

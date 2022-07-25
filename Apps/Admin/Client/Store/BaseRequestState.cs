@@ -21,7 +21,7 @@ namespace HealthGateway.Admin.Client.Store;
 /// </summary>
 /// <typeparam name="TModel">The type of the model returned by the request.</typeparam>
 public record BaseRequestState<TModel>
-     where TModel : class
+    where TModel : class
 {
     /// <summary>
     /// Gets the result.

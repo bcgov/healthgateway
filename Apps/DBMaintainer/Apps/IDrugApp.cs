@@ -15,10 +15,6 @@
 // -------------------------------------------------------------------------
 namespace HealthGateway.DrugMaintainer.Apps
 {
-    using System;
-    using System.Threading.Tasks;
-    using HealthGateway.Database.Models;
-
     /// <summary>
     /// Common interface for all drug apps.
     /// </summary>

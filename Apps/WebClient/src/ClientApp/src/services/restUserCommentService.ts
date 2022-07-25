@@ -19,7 +19,7 @@ import RequestResultUtil from "@/utility/requestResultUtil";
 
 @injectable()
 export class RestUserCommentService implements IUserCommentService {
-    private logger: ILogger = container.get(SERVICE_IDENTIFIER.Logger);
+    private logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
     private readonly USER_COMMENT_BASE_URI: string = "UserProfile";
     private http!: IHttpDelegate;
     private isEnabled = false;
@@ -53,9 +53,7 @@ export class RestUserCommentService implements IUserCommentService {
                 .getWithCors<RequestResult<UserComment[]>>(
                     `${this.baseUri}${this.USER_COMMENT_BASE_URI}/${hdid}/Comment/Entry?parentEntryId=${parentEntryId}`
                 )
-                .then((entryComments) => {
-                    return resolve(entryComments);
-                })
+                .then((entryComments) => resolve(entryComments))
                 .catch((err: HttpError) => {
                     this.logger.error(
                         `Error in RestUserCommentService.getCommentsForEntry()`
@@ -88,9 +86,7 @@ export class RestUserCommentService implements IUserCommentService {
                 .getWithCors<RequestResult<Dictionary<UserComment[]>>>(
                     `${this.baseUri}${this.USER_COMMENT_BASE_URI}/${hdid}/Comment`
                 )
-                .then((userComments) => {
-                    return resolve(userComments);
-                })
+                .then((userComments) => resolve(userComments))
                 .catch((err: HttpError) => {
                     this.logger.error(
                         `Error in RestUserCommentService.getCommentsForProfile()`
@@ -147,14 +143,17 @@ export class RestUserCommentService implements IUserCommentService {
         hdid: string,
         comment: UserComment
     ): Promise<UserComment> {
-        return new Promise<UserComment>((resolve, reject) => {
+        return new Promise<UserComment>((resolve, reject) =>
             this.http
                 .put<RequestResult<UserComment>>(
                     `${this.baseUri}${this.USER_COMMENT_BASE_URI}/${hdid}/Comment`,
                     comment
                 )
                 .then((requestResult) => {
-                    return RequestResultUtil.handleResult(
+                    this.logger.verbose(
+                        `updateComment result: ${JSON.stringify(requestResult)}`
+                    );
+                    RequestResultUtil.handleResult(
                         requestResult,
                         resolve,
                         reject
@@ -170,24 +169,27 @@ export class RestUserCommentService implements IUserCommentService {
                             ServiceCode.HealthGatewayUser
                         )
                     );
-                });
-        });
+                })
+        );
     }
 
     public deleteComment(hdid: string, comment: UserComment): Promise<void> {
-        return new Promise((resolve, reject) => {
+        return new Promise((resolve, reject) =>
             this.http
                 .delete<RequestResult<void>>(
                     `${this.baseUri}${this.USER_COMMENT_BASE_URI}/${hdid}/Comment`,
                     comment
                 )
-                .then((requestResult) =>
+                .then((requestResult) => {
+                    this.logger.verbose(
+                        `deleteComment result: ${JSON.stringify(requestResult)}`
+                    );
                     RequestResultUtil.handleResult(
                         requestResult,
                         resolve,
                         reject
-                    )
-                )
+                    );
+                })
                 .catch((err: HttpError) => {
                     this.logger.error(
                         `Error in RestUserCommentService.deleteComment()`
@@ -198,7 +200,7 @@ export class RestUserCommentService implements IUserCommentService {
                             ServiceCode.HealthGatewayUser
                         )
                     );
-                });
-        });
+                })
+        );
     }
 }

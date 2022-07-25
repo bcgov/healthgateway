@@ -15,9 +15,6 @@
 // -------------------------------------------------------------------------
 namespace HealthGateway.Common.Constants
 {
-    using System.Runtime.Serialization;
-    using System.Text.Json.Serialization;
-
     /// <summary>
     /// Represents the vaccine proof request status.
     /// </summary>

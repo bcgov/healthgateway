@@ -15,21 +15,16 @@
 //-------------------------------------------------------------------------
 namespace HealthGateway.Admin.Client.Layouts;
 
-using System;
-using System.Net.Http;
-using System.Threading.Tasks;
 using Fluxor;
 using Fluxor.Blazor.Web.Components;
-using HealthGateway.Admin.Client.Store.Analytics;
 using HealthGateway.Admin.Client.Store.Configuration;
 using Microsoft.AspNetCore.Components;
-using Microsoft.JSInterop;
 
 /// <summary>
 /// Backing logic for the Nav Menu Layout.
 /// </summary>
 public partial class NavMenu : FluxorComponent
 {
-        [Inject]
-        private IState<ConfigurationState> ConfigurationState { get; set; } = default!;
+    [Inject]
+    private IState<ConfigurationState> ConfigurationState { get; set; } = default!;
 }

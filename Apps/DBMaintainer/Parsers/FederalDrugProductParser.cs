@@ -54,7 +54,7 @@ namespace HealthGateway.DrugMaintainer
             using CsvReader csv = new(reader, csvConfig);
             TypeConverterOptions options = new()
             {
-                Formats = new[] { "dd-MMM-yyyy", },
+                Formats = new[] { "dd-MMM-yyyy" },
                 DateTimeStyle = DateTimeStyles.AssumeUniversal | DateTimeStyles.AdjustToUniversal,
             };
             csv.Context.TypeConverterOptionsCache.AddOptions<DateTime>(options);
@@ -109,7 +109,7 @@ namespace HealthGateway.DrugMaintainer
             using CsvReader csv = new(reader, csvConfig);
             TypeConverterOptions options = new()
             {
-                Formats = new[] { "dd-MMM-yyyy", },
+                Formats = new[] { "dd-MMM-yyyy" },
                 DateTimeStyle = DateTimeStyles.AssumeUniversal | DateTimeStyles.AdjustToUniversal,
             };
             csv.Context.TypeConverterOptionsCache.AddOptions<DateTime>(options);
@@ -161,7 +161,7 @@ namespace HealthGateway.DrugMaintainer
             {
                 HasHeaderRecord = false,
             };
-            using var csv = new CsvReader(reader, csvConfig);
+            using CsvReader csv = new(reader, csvConfig);
             PharmaceuticalStdMapper mapper = new(drugProducts);
             csv.Context.RegisterClassMap(mapper);
             List<PharmaceuticalStd> records = csv.GetRecords<PharmaceuticalStd>().ToList();

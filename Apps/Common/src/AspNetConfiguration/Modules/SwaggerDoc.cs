@@ -45,22 +45,17 @@ namespace HealthGateway.Common.AspNetConfiguration.Modules
             Assembly executingAssembly = Assembly.GetExecutingAssembly();
 
             // Calling Assembly (Core App) + References + Executing Assembly (Common) References
-            var xmlDocs = new AssemblyName[] { callingAssembly.GetName() }
-                                .Union(callingAssembly.GetReferencedAssemblies())
-                                .Union(executingAssembly.GetReferencedAssemblies())
-                                .Select(a => Path.Combine(xmlPath, $"{a.Name}.xml"))
-                                .Where(f => File.Exists(f)).ToArray();
+            string[] xmlDocs = new[] { callingAssembly.GetName() }
+                .Union(callingAssembly.GetReferencedAssemblies())
+                .Union(executingAssembly.GetReferencedAssemblies())
+                .Select(a => Path.Combine(xmlPath, $"{a.Name}.xml"))
+                .Where(File.Exists)
+                .ToArray();
 
             services
                 .AddApiVersionWithExplorer()
                 .AddSwaggerOptions()
-                .AddSwaggerGen(options =>
-                {
-                    Array.ForEach(xmlDocs, (d) =>
-                    {
-                        options.IncludeXmlComments(d);
-                    });
-                });
+                .AddSwaggerGen(options => Array.ForEach(xmlDocs, d => options.IncludeXmlComments(d)));
         }
 
         /// <summary>

@@ -17,6 +17,7 @@ namespace HealthGateway.GatewayApi.Services
 {
     using System;
     using System.Collections.Generic;
+    using System.Diagnostics.CodeAnalysis;
     using System.Linq;
     using System.Text.Json;
     using System.Threading.Tasks;
@@ -40,7 +41,7 @@ namespace HealthGateway.GatewayApi.Services
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.Logging;
 
-    /// <inheritdoc />
+    /// <inheritdoc/>
     public class UserProfileService : IUserProfileService
     {
         private const string WebClientConfigSection = "WebClient";
@@ -117,7 +118,7 @@ namespace HealthGateway.GatewayApi.Services
             this.autoMapper = autoMapper;
         }
 
-        /// <inheritdoc />
+        /// <inheritdoc/>
         public RequestResult<UserProfileModel> GetUserProfile(string hdid, DateTime jwtAuthTime)
         {
             this.logger.LogTrace($"Getting user profile... {hdid}");
@@ -126,7 +127,7 @@ namespace HealthGateway.GatewayApi.Services
 
             if (retVal.Status == DBStatusCode.NotFound)
             {
-                return new RequestResult<UserProfileModel>()
+                return new RequestResult<UserProfileModel>
                 {
                     ResultStatus = ResultType.Success,
                     ResourcePayload = new UserProfileModel(),
@@ -173,12 +174,12 @@ namespace HealthGateway.GatewayApi.Services
                 userProfile.SMSNumber = smsInvite?.SMSNumber;
             }
 
-            return new RequestResult<UserProfileModel>()
+            return new RequestResult<UserProfileModel>
             {
                 ResultStatus = retVal.Status != DBStatusCode.Error ? ResultType.Success : ResultType.Error,
                 ResultError = retVal.Status != DBStatusCode.Error
                     ? null
-                    : new RequestResultError()
+                    : new RequestResultError
                     {
                         ResultMessage = retVal.Message,
                         ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationInternal, ServiceType.Database),
@@ -187,7 +188,7 @@ namespace HealthGateway.GatewayApi.Services
             };
         }
 
-        /// <inheritdoc />
+        /// <inheritdoc/>
         public async Task<RequestResult<UserProfileModel>> CreateUserProfile(CreateUserRequest createProfileRequest, DateTime jwtAuthTime, string jwtEmailAddress)
         {
             this.logger.LogTrace($"Creating user profile... {JsonSerializer.Serialize(createProfileRequest)}");
@@ -195,10 +196,10 @@ namespace HealthGateway.GatewayApi.Services
             if (this.registrationStatus == RegistrationStatus.Closed)
             {
                 this.logger.LogWarning($"Registration is closed. {JsonSerializer.Serialize(createProfileRequest)}");
-                return new RequestResult<UserProfileModel>()
+                return new RequestResult<UserProfileModel>
                 {
                     ResultStatus = ResultType.Error,
-                    ResultError = new RequestResultError()
+                    ResultError = new RequestResultError
                     {
                         ResultMessage = "Registration is closed",
                         ErrorCode = ErrorTranslator.InternalError(ErrorType.InvalidState),
@@ -211,19 +212,20 @@ namespace HealthGateway.GatewayApi.Services
             PrimitiveRequestResult<bool> isMimimunAgeResult = await this.ValidateMinimumAge(hdid).ConfigureAwait(true);
             if (isMimimunAgeResult.ResultStatus != ResultType.Success)
             {
-                return new RequestResult<UserProfileModel>()
+                return new RequestResult<UserProfileModel>
                 {
                     ResultStatus = isMimimunAgeResult.ResultStatus,
                     ResultError = isMimimunAgeResult.ResultError,
                 };
             }
-            else if (!isMimimunAgeResult.ResourcePayload)
+
+            if (!isMimimunAgeResult.ResourcePayload)
             {
                 this.logger.LogWarning($"Patient under minimum age. {JsonSerializer.Serialize(createProfileRequest)}");
-                return new RequestResult<UserProfileModel>()
+                return new RequestResult<UserProfileModel>
                 {
                     ResultStatus = ResultType.Error,
-                    ResultError = new RequestResultError()
+                    ResultError = new RequestResultError
                     {
                         ResultMessage = "Patient under minimum age",
                         ErrorCode = ErrorTranslator.InternalError(ErrorType.InvalidState),
@@ -273,29 +275,27 @@ namespace HealthGateway.GatewayApi.Services
                 RequestResult<TermsOfServiceModel> termsOfServiceResult = this.GetActiveTermsOfService();
 
                 this.logger.LogDebug($"Finished creating user profile. {JsonSerializer.Serialize(insertResult)}");
-                return new RequestResult<UserProfileModel>()
+                return new RequestResult<UserProfileModel>
                 {
                     ResourcePayload = UserProfileMapUtils.CreateFromDbModel(insertResult.Payload, termsOfServiceResult.ResourcePayload?.Id, this.autoMapper),
                     ResultStatus = ResultType.Success,
                 };
             }
-            else
+
+            this.logger.LogError($"Error creating user profile. {JsonSerializer.Serialize(insertResult)}");
+            return new RequestResult<UserProfileModel>
             {
-                this.logger.LogError($"Error creating user profile. {JsonSerializer.Serialize(insertResult)}");
-                return new RequestResult<UserProfileModel>()
+                ResultStatus = ResultType.Error,
+                ResultError = new RequestResultError
                 {
-                    ResultStatus = ResultType.Error,
-                    ResultError = new RequestResultError()
-                    {
-                        ResultMessage = insertResult.Message,
-                        ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationInternal, ServiceType.Database),
-                    },
-                };
-            }
+                    ResultMessage = insertResult.Message,
+                    ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationInternal, ServiceType.Database),
+                },
+            };
         }
 
-        /// <inheritdoc />
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1054:Uri parameters should not be strings", Justification = "Team decision")]
+        /// <inheritdoc/>
+        [SuppressMessage("Design", "CA1054:Uri parameters should not be strings", Justification = "Team decision")]
         public RequestResult<UserProfileModel> CloseUserProfile(string hdid, Guid userId)
         {
             this.logger.LogTrace($"Closing user profile... {hdid}");
@@ -310,7 +310,7 @@ namespace HealthGateway.GatewayApi.Services
                 if (profile.ClosedDateTime != null)
                 {
                     this.logger.LogTrace("Finished. Profile already Closed");
-                    return new RequestResult<UserProfileModel>()
+                    return new RequestResult<UserProfileModel>
                     {
                         ResourcePayload =
                             UserProfileMapUtils.CreateFromDbModel(profile, termsOfServiceResult.ResourcePayload?.Id, this.autoMapper),
@@ -327,28 +327,26 @@ namespace HealthGateway.GatewayApi.Services
                 }
 
                 this.logger.LogDebug($"Finished closing user profile. {JsonSerializer.Serialize(updateResult)}");
-                return new RequestResult<UserProfileModel>()
+                return new RequestResult<UserProfileModel>
                 {
                     ResourcePayload = UserProfileMapUtils.CreateFromDbModel(updateResult.Payload, termsOfServiceResult.ResourcePayload?.Id, this.autoMapper),
                     ResultStatus = ResultType.Success,
                 };
             }
-            else
+
+            return new RequestResult<UserProfileModel>
             {
-                return new RequestResult<UserProfileModel>()
+                ResultStatus = ResultType.Error,
+                ResultError = new RequestResultError
                 {
-                    ResultStatus = ResultType.Error,
-                    ResultError = new RequestResultError()
-                    {
-                        ResultMessage = retrieveResult.Message,
-                        ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationInternal, ServiceType.Database),
-                    },
-                };
-            }
+                    ResultMessage = retrieveResult.Message,
+                    ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationInternal, ServiceType.Database),
+                },
+            };
         }
 
-        /// <inheritdoc />
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1054:Uri parameters should not be strings", Justification = "Team decision")]
+        /// <inheritdoc/>
+        [SuppressMessage("Design", "CA1054:Uri parameters should not be strings", Justification = "Team decision")]
         public RequestResult<UserProfileModel> RecoverUserProfile(string hdid)
         {
             this.logger.LogTrace($"Recovering user profile... {hdid}");
@@ -362,7 +360,7 @@ namespace HealthGateway.GatewayApi.Services
                 if (profile.ClosedDateTime == null)
                 {
                     this.logger.LogTrace("Finished. Profile already is active, recover not needed.");
-                    return new RequestResult<UserProfileModel>()
+                    return new RequestResult<UserProfileModel>
                     {
                         ResourcePayload =
                             UserProfileMapUtils.CreateFromDbModel(profile, termsOfServiceResult.ResourcePayload?.Id, this.autoMapper),
@@ -380,40 +378,38 @@ namespace HealthGateway.GatewayApi.Services
                 }
 
                 this.logger.LogDebug($"Finished recovering user profile. {JsonSerializer.Serialize(updateResult)}");
-                return new RequestResult<UserProfileModel>()
+                return new RequestResult<UserProfileModel>
                 {
                     ResourcePayload = UserProfileMapUtils.CreateFromDbModel(updateResult.Payload, termsOfServiceResult.ResourcePayload?.Id, this.autoMapper),
                     ResultStatus = ResultType.Success,
                 };
             }
-            else
+
+            return new RequestResult<UserProfileModel>
             {
-                return new RequestResult<UserProfileModel>()
+                ResultStatus = ResultType.Error,
+                ResultError = new RequestResultError
                 {
-                    ResultStatus = ResultType.Error,
-                    ResultError = new RequestResultError()
-                    {
-                        ResultMessage = retrieveResult.Message,
-                        ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationInternal, ServiceType.Database),
-                    },
-                };
-            }
+                    ResultMessage = retrieveResult.Message,
+                    ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationInternal, ServiceType.Database),
+                },
+            };
         }
 
-        /// <inheritdoc />
+        /// <inheritdoc/>
         public RequestResult<TermsOfServiceModel> GetActiveTermsOfService()
         {
-            this.logger.LogDebug($"Getting active terms of service...");
+            this.logger.LogDebug("Getting active terms of service...");
             DBResult<LegalAgreement> retVal =
                 this.legalAgreementDelegate.GetActiveByAgreementType(LegalAgreementType.TermsofService);
 
-            return new RequestResult<TermsOfServiceModel>()
+            return new RequestResult<TermsOfServiceModel>
             {
                 ResultStatus = retVal.Status != DBStatusCode.Error ? ResultType.Success : ResultType.Error,
                 ResourcePayload = this.autoMapper.Map<TermsOfServiceModel>(retVal.Payload),
                 ResultError = retVal.Status != DBStatusCode.Error
                     ? null
-                    : new RequestResultError()
+                    : new RequestResultError
                     {
                         ResultMessage = retVal.Message,
                         ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationInternal, ServiceType.Database),
@@ -421,7 +417,7 @@ namespace HealthGateway.GatewayApi.Services
             };
         }
 
-        /// <inheritdoc />
+        /// <inheritdoc/>
         public RequestResult<UserPreferenceModel> UpdateUserPreference(UserPreferenceModel userPreferenceModel)
         {
             this.logger.LogTrace($"Updating user preference... {userPreferenceModel.Preference}");
@@ -431,13 +427,13 @@ namespace HealthGateway.GatewayApi.Services
             DBResult<UserPreference> dbResult = this.userPreferenceDelegate.UpdateUserPreference(userPreference);
             this.logger.LogDebug($"Finished updating user preference. {JsonSerializer.Serialize(dbResult)}");
 
-            RequestResult<UserPreferenceModel> requestResult = new RequestResult<UserPreferenceModel>()
+            RequestResult<UserPreferenceModel> requestResult = new()
             {
                 ResourcePayload = this.autoMapper.Map<UserPreferenceModel>(dbResult.Payload),
                 ResultStatus = dbResult.Status == DBStatusCode.Updated ? ResultType.Success : ResultType.Error,
                 ResultError = dbResult.Status == DBStatusCode.Updated
                     ? null
-                    : new RequestResultError()
+                    : new RequestResultError
                     {
                         ResultMessage = dbResult.Message,
                         ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationInternal, ServiceType.Database),
@@ -446,7 +442,7 @@ namespace HealthGateway.GatewayApi.Services
             return requestResult;
         }
 
-        /// <inheritdoc />
+        /// <inheritdoc/>
         public RequestResult<UserPreferenceModel> CreateUserPreference(UserPreferenceModel userPreferenceModel)
         {
             this.logger.LogTrace($"Creating user preference... {userPreferenceModel.Preference}");
@@ -454,13 +450,13 @@ namespace HealthGateway.GatewayApi.Services
             DBResult<UserPreference> dbResult = this.userPreferenceDelegate.CreateUserPreference(userPreference);
             this.logger.LogDebug($"Finished creating user preference. {JsonSerializer.Serialize(dbResult)}");
 
-            RequestResult<UserPreferenceModel> requestResult = new RequestResult<UserPreferenceModel>()
+            RequestResult<UserPreferenceModel> requestResult = new()
             {
                 ResourcePayload = this.autoMapper.Map<UserPreferenceModel>(dbResult.Payload),
                 ResultStatus = dbResult.Status == DBStatusCode.Created ? ResultType.Success : ResultType.Error,
                 ResultError = dbResult.Status == DBStatusCode.Created
                     ? null
-                    : new RequestResultError()
+                    : new RequestResultError
                     {
                         ResultMessage = dbResult.Message,
                         ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationInternal, ServiceType.Database),
@@ -469,20 +465,20 @@ namespace HealthGateway.GatewayApi.Services
             return requestResult;
         }
 
-        /// <inheritdoc />
+        /// <inheritdoc/>
         public RequestResult<Dictionary<string, UserPreferenceModel>> GetUserPreferences(string hdid)
         {
             this.logger.LogTrace($"Getting user preference... {hdid}");
             DBResult<IEnumerable<UserPreference>> dbResult = this.userPreferenceDelegate.GetUserPreferences(hdid);
             RequestResult<Dictionary<string, UserPreferenceModel>> requestResult =
-                new RequestResult<Dictionary<string, UserPreferenceModel>>()
+                new()
                 {
                     ResourcePayload = this.autoMapper.Map<IEnumerable<UserPreferenceModel>>(dbResult.Payload)
                         .ToDictionary(x => x.Preference, x => x),
                     ResultStatus = dbResult.Status == DBStatusCode.Read ? ResultType.Success : ResultType.Error,
                     ResultError = dbResult.Status == DBStatusCode.Read
                         ? null
-                        : new RequestResultError()
+                        : new RequestResultError
                         {
                             ResultMessage = dbResult.Message,
                             ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationInternal, ServiceType.Database),
@@ -493,12 +489,16 @@ namespace HealthGateway.GatewayApi.Services
             return requestResult;
         }
 
-        /// <inheritdoc />
+        /// <inheritdoc/>
         public async Task<PrimitiveRequestResult<bool>> ValidateMinimumAge(string hdid)
         {
             if (this.minPatientAge == 0)
             {
-                return new PrimitiveRequestResult<bool>() { ResourcePayload = true, ResultStatus = ResultType.Success };
+                return new PrimitiveRequestResult<bool>
+                {
+                    ResourcePayload = true,
+                    ResultStatus = ResultType.Success,
+                };
             }
 
             RequestResult<PatientModel> patientResult = await this.patientService.GetPatient(hdid).ConfigureAwait(true);
@@ -506,28 +506,26 @@ namespace HealthGateway.GatewayApi.Services
             if (patientResult.ResultStatus != ResultType.Success)
             {
                 this.logger.LogWarning($"Error retrieving patient age. {JsonSerializer.Serialize(patientResult)}");
-                return new PrimitiveRequestResult<bool>()
+                return new PrimitiveRequestResult<bool>
                 {
                     ResultStatus = patientResult.ResultStatus,
                     ResultError = patientResult.ResultError,
                     ResourcePayload = false,
                 };
             }
-            else
+
+            DateTime birthDate = patientResult.ResourcePayload?.Birthdate ?? default(DateTime);
+            return new PrimitiveRequestResult<bool>
             {
-                DateTime birthDate = patientResult.ResourcePayload?.Birthdate ?? default(DateTime);
-                return new PrimitiveRequestResult<bool>()
-                {
-                    ResultStatus = patientResult.ResultStatus,
-                    ResourcePayload = birthDate.AddYears(this.minPatientAge) < DateTime.Now,
-                };
-            }
+                ResultStatus = patientResult.ResultStatus,
+                ResourcePayload = birthDate.AddYears(this.minPatientAge) < DateTime.Now,
+            };
         }
 
-        /// <inheritdoc />
+        /// <inheritdoc/>
         public RequestResult<UserProfileModel> UpdateAcceptedTerms(string hdid, Guid termsOfServiceId)
         {
-            RequestResult<UserProfileModel> requestResult = new RequestResult<UserProfileModel>()
+            RequestResult<UserProfileModel> requestResult = new()
             {
                 ResultStatus = ResultType.Error,
             };
@@ -546,7 +544,7 @@ namespace HealthGateway.GatewayApi.Services
                 }
                 else
                 {
-                    requestResult.ResultError = new RequestResultError()
+                    requestResult.ResultError = new()
                     {
                         ResultMessage = "Unable to update the terms of service: DB Error",
                         ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationInternal, ServiceType.Database),
@@ -555,7 +553,7 @@ namespace HealthGateway.GatewayApi.Services
             }
             else
             {
-                requestResult.ResultError = new RequestResultError()
+                requestResult.ResultError = new()
                 {
                     ResultMessage = "Unable to retrieve user profile",
                     ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationInternal, ServiceType.Database),

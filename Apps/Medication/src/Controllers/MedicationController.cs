@@ -61,9 +61,9 @@ namespace HealthGateway.Medication.Controllers
         {
             // The database requires the dins to be the same size and padded with zeroes on the left
             string paddedDin = drugIdentifier!.PadLeft(8, '0');
-            IDictionary<string, MedicationInformation> medications = this.medicationService.GetMedications(new List<string>() { paddedDin });
+            IDictionary<string, MedicationInformation> medications = this.medicationService.GetMedications(new List<string> { paddedDin });
 
-            RequestResult<MedicationInformation> result = new RequestResult<MedicationInformation>()
+            RequestResult<MedicationInformation> result = new()
             {
                 ResultStatus = ResultType.Success,
                 ResourcePayload = medications.ContainsKey(paddedDin) ? medications[paddedDin] : null,
@@ -83,13 +83,13 @@ namespace HealthGateway.Medication.Controllers
         /// <response code="200">Returns the medication statement bundle.</response>
         [HttpGet("")]
         [Produces("application/json")]
-        public RequestResult<IDictionary<string, MedicationInformation>> GetMedications([FromQuery]IList<string> drugIdentifiers)
+        public RequestResult<IDictionary<string, MedicationInformation>> GetMedications([FromQuery] IList<string> drugIdentifiers)
         {
             // The database requires the dins to be the same size and padded with zeroes on the left
             IList<string> paddedDinList = drugIdentifiers.Select(x => x.PadLeft(8, '0')).ToList();
             IDictionary<string, MedicationInformation> medications = this.medicationService.GetMedications(paddedDinList);
 
-            RequestResult<IDictionary<string, MedicationInformation>> result = new RequestResult<IDictionary<string, MedicationInformation>>()
+            RequestResult<IDictionary<string, MedicationInformation>> result = new()
             {
                 ResultStatus = ResultType.Success,
                 ResourcePayload = medications,

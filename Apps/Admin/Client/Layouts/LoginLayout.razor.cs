@@ -38,8 +38,8 @@ namespace HealthGateway.Admin.Client.Layouts
 
         private MudTheme? CurrentTheme => this.DarkMode ? this.DarkTheme : this.LightTheme;
 
-        /// <inheritdoc />
-        protected async override void OnInitialized()
+        /// <inheritdoc/>
+        protected override async void OnInitialized()
         {
             if (await this.LocalStorage.ContainKeyAsync(DarkThemeKey).ConfigureAwait(true))
             {
@@ -48,7 +48,7 @@ namespace HealthGateway.Admin.Client.Layouts
             }
             else
             {
-                await this.LocalStorage.SetItemAsync<bool>(DarkThemeKey, this.DarkMode).ConfigureAwait(true);
+                await this.LocalStorage.SetItemAsync(DarkThemeKey, this.DarkMode).ConfigureAwait(true);
             }
         }
     }

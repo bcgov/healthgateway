@@ -5,27 +5,27 @@
         <MudText data-testid="average-rating" Class="my-3" Typo="Typo.h4" Style="font-weight:bold">@AverageRating</MudText>
     </MudItem>
     <MudItem xs="6" lg="10">
-         @for (int i = 5; i >= 1; i--)
+        @for (int i = 5; i >= 1; i--)
         {
             int percentage = RatingDetails[i - 1].Percentage;
-            int? count  = RatingDetails[i - 1].Count;
+            int? count = RatingDetails[i - 1].Count;
             int stars = i;
 
             <MudGrid>
-                    <MudItem xs="6" lg="2" Class="d-flex justify-end">
-                        @for (int x = 1; x <= stars; x++)
-                        {
-                            <MudIcon Icon="@Icons.Material.Filled.StarRate" Color="Color.Warning" Size="Size.Small" />
-                        }
-                    </MudItem>
-                    <MudItem xs="6" lg="3" Class="mt-3">
-                        <MudProgressLinear Value="@percentage" />
-                    </MudItem>
-                    <MudItem xs="6" lg="1" Class="d-flex justify-center">
-                        <MudText Typo="Typo.subtitle1" Style="font-weight:bold">@count</MudText>
-                    </MudItem>
-                </MudGrid>
-            }
+                <MudItem xs="6" lg="2" Class="d-flex justify-end">
+                    @for (int x = 1; x <= stars; x++)
+                    {
+                        <MudIcon Icon="@Icons.Material.Filled.StarRate" Color="Color.Warning" Size="Size.Small" />
+                    }
+                </MudItem>
+                <MudItem xs="6" lg="3" Class="mt-3">
+                    <MudProgressLinear Value="@percentage" />
+                </MudItem>
+                <MudItem xs="6" lg="1" Class="d-flex justify-center">
+                    <MudText Typo="Typo.subtitle1" Style="font-weight:bold">@count</MudText>
+                </MudItem>
+            </MudGrid>
+        }
     </MudItem>
 </MudGrid>
 <MudGrid>

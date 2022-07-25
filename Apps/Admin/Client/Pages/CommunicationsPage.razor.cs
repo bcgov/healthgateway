@@ -58,9 +58,7 @@ public partial class CommunicationsPage : FluxorComponent
 
     private bool HasDeleteError => this.CommunicationsState.Value.Delete.Error != null && this.CommunicationsState.Value.Delete.Error.Message.Length > 0;
 
-    private string? ErrorMessage => this.HasLoadError ?
-        this.CommunicationsState.Value.Load.Error?.Message :
-        this.CommunicationsState.Value.Delete.Error?.Message;
+    private string? ErrorMessage => this.HasLoadError ? this.CommunicationsState.Value.Load.Error?.Message : this.CommunicationsState.Value.Delete.Error?.Message;
 
     private bool IsModalShown { get; set; }
 

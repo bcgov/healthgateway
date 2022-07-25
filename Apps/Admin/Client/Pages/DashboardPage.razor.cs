@@ -15,16 +15,16 @@
 //-------------------------------------------------------------------------
 namespace HealthGateway.Admin.Client.Pages;
 
+using System;
+using System.Collections.Generic;
+using System.Globalization;
+using System.Linq;
 using Fluxor;
 using Fluxor.Blazor.Web.Components;
 using HealthGateway.Admin.Client.Store;
 using HealthGateway.Admin.Client.Store.Dashboard;
 using Microsoft.AspNetCore.Components;
 using MudBlazor;
-using System;
-using System.Collections.Generic;
-using System.Globalization;
-using System.Linq;
 
 /// <summary>
 /// Backing logic for the Dashboard page.
@@ -61,11 +61,11 @@ public partial class DashboardPage : FluxorComponent
 
     private MudDateRangePicker SelectedDateRangePicker { get; set; } = default!;
 
-    private DateTime MinimumDateTime { get; set; } = new DateTime(2019, 06, 1);
+    private DateTime MinimumDateTime { get; } = new(2019, 06, 1);
 
-    private DateTime MaximumDateTime { get; set; } = DateTime.Now;
+    private DateTime MaximumDateTime { get; } = DateTime.Now;
 
-    private DateRange DateRange { get; set; } = new DateRange(DateTime.Now.AddDays(-30).Date, DateTime.Now.Date);
+    private DateRange DateRange { get; set; } = new(DateTime.Now.AddDays(-30).Date, DateTime.Now.Date);
 
     private int CurrentUniqueDays { get; set; } = 3;
 
@@ -91,14 +91,16 @@ public partial class DashboardPage : FluxorComponent
 
     private DateRange SelectedDateRange
     {
-        get
-        {
-            return this.DateRange;
-        }
+        get => this.DateRange;
 
         set
         {
-            this.LoadDispatchActions(this.UniqueDays, value.Start?.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture), value.End?.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture), this.TimeOffset, false);
+            this.LoadDispatchActions(
+                this.UniqueDays,
+                value.Start?.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture),
+                value.End?.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture),
+                this.TimeOffset,
+                false);
             this.DateRange = value;
         }
     }
@@ -107,11 +109,11 @@ public partial class DashboardPage : FluxorComponent
     {
         get
         {
-            var test = this.RegisteredUsersHasError ||
-                this.LoggedInUsersHasError ||
-                this.DependentsHasError ||
-                this.RecurringUsersHasError ||
-                this.RatingSummaryHasError;
+            bool test = this.RegisteredUsersHasError ||
+                        this.LoggedInUsersHasError ||
+                        this.DependentsHasError ||
+                        this.RecurringUsersHasError ||
+                        this.RatingSummaryHasError;
             return test;
         }
     }
@@ -153,19 +155,21 @@ public partial class DashboardPage : FluxorComponent
 
     private int UniqueDays
     {
-        get
-        {
-            return this.CurrentUniqueDays;
-        }
+        get => this.CurrentUniqueDays;
 
         set
         {
-            this.Dispatcher.Dispatch(new DashboardActions.LoadRecurringUsersAction(value, this.SelectedDateRange.Start?.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture), this.SelectedDateRange.End?.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture), this.TimeOffset));
+            this.Dispatcher.Dispatch(
+                new DashboardActions.LoadRecurringUsersAction(
+                    value,
+                    this.SelectedDateRange.Start?.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture),
+                    this.SelectedDateRange.End?.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture),
+                    this.TimeOffset));
             this.CurrentUniqueDays = value;
         }
     }
 
-    private int TimeOffset { get; set; } = (int)TimeZoneInfo.Local.GetUtcOffset(DateTime.Now).TotalMinutes;
+    private int TimeOffset { get; } = (int)TimeZoneInfo.Local.GetUtcOffset(DateTime.Now).TotalMinutes;
 
     private int TotalRegisteredUsers => this.RegisteredUsersResult?.Result?.Sum(r => r.Value) ?? 0;
 
@@ -182,10 +186,10 @@ public partial class DashboardPage : FluxorComponent
 
             if (this.RegisteredUsersResult?.Result != null)
             {
-                var registeredUsers = from result in this.RegisteredUsersResult?.Result
-                                        select result;
+                IEnumerable<KeyValuePair<DateTime, int>> registeredUsers = from result in this.RegisteredUsersResult?.Result
+                    select result;
 
-                foreach (var user in registeredUsers)
+                foreach (KeyValuePair<DateTime, int> user in registeredUsers)
                 {
                     DailyDataRow dashboardDailyData = new()
                     {
@@ -199,9 +203,9 @@ public partial class DashboardPage : FluxorComponent
 
             if (this.LoggedInUsersResult?.Result != null)
             {
-                var loggedInUsers = from result in this.LoggedInUsersResult?.Result
-                                 select result;
-                foreach (var loggedInUser in loggedInUsers)
+                IEnumerable<KeyValuePair<DateTime, int>> loggedInUsers = from result in this.LoggedInUsersResult?.Result
+                    select result;
+                foreach (KeyValuePair<DateTime, int> loggedInUser in loggedInUsers)
                 {
                     DailyDataRow dashboardDailyData = new()
                     {
@@ -215,9 +219,9 @@ public partial class DashboardPage : FluxorComponent
 
             if (this.DependentsResult?.Result != null)
             {
-                var dependents = from result in this.DependentsResult?.Result
-                                select result;
-                foreach (var dependent in dependents)
+                IEnumerable<KeyValuePair<DateTime, int>> dependents = from result in this.DependentsResult?.Result
+                    select result;
+                foreach (KeyValuePair<DateTime, int> dependent in dependents)
                 {
                     DailyDataRow dashboardDailyData = new()
                     {
@@ -232,13 +236,14 @@ public partial class DashboardPage : FluxorComponent
             return results
                 .Where(r => startDate <= r.DailyDateTime && r.DailyDateTime <= endDate)
                 .GroupBy(r => r.DailyDateTime)
-                .Select(grp => new DailyDataRow
-                {
-                    DailyDateTime = grp.First().DailyDateTime,
-                    TotalRegisteredUsers = grp.Sum(s => s.TotalRegisteredUsers),
-                    TotalDependents = grp.Sum(d => d.TotalDependents),
-                    TotalLoggedInUsers = grp.Sum(l => l.TotalLoggedInUsers),
-                })
+                .Select(
+                    grp => new DailyDataRow
+                    {
+                        DailyDateTime = grp.First().DailyDateTime,
+                        TotalRegisteredUsers = grp.Sum(s => s.TotalRegisteredUsers),
+                        TotalDependents = grp.Sum(d => d.TotalDependents),
+                        TotalLoggedInUsers = grp.Sum(l => l.TotalLoggedInUsers),
+                    })
                 .OrderByDescending(grp => grp.DailyDateTime);
         }
     }
@@ -265,7 +270,12 @@ public partial class DashboardPage : FluxorComponent
 
     private void ReloadDispatchActions()
     {
-        this.LoadDispatchActions(this.UniqueDays, this.SelectedDateRange.Start?.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture), this.SelectedDateRange.End?.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture), this.TimeOffset, false);
+        this.LoadDispatchActions(
+            this.UniqueDays,
+            this.SelectedDateRange.Start?.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture),
+            this.SelectedDateRange.End?.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture),
+            this.TimeOffset,
+            false);
     }
 
     private void DispatchRatingSummaryAction(string startPeriod, string endPeriod, int timeOffset)

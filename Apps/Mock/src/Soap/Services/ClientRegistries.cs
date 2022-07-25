@@ -29,7 +29,7 @@ namespace HealthGateway.Mock.SOAP.Services
     /// </summary>
     public class ClientRegistries : QUPA_AR101102_PortType
     {
-        /// <inheritdoc />
+        /// <inheritdoc/>
         public Task<HCIM_IN_GetDemographicsResponse1> HCIM_IN_GetDemographicsAsync(HCIM_IN_GetDemographicsRequest request)
         {
             return Task.Run(() =>
@@ -57,13 +57,13 @@ namespace HealthGateway.Mock.SOAP.Services
             });
         }
 
-        /// <inheritdoc />
+        /// <inheritdoc/>
         public Task<HCIM_IN_FindCandidatesResponse1> HCIM_IN_FindCandidatesAsync(HCIM_IN_FindCandidatesRequest request)
         {
             throw new NotImplementedException();
         }
 
-        /// <inheritdoc />
+        /// <inheritdoc/>
         public Task<HCIM_IN_GetRelatedIdentifiersResponse1> HCIM_IN_GetRelatedIdentifiersAsync(HCIM_IN_GetRelatedIdentifiersRequest request)
         {
             throw new NotImplementedException();

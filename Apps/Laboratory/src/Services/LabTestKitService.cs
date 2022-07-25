@@ -55,7 +55,7 @@ namespace HealthGateway.Laboratory.Services
         /// <inheritdoc/>
         public async Task<RequestResult<PublicLabTestKit>> RegisterLabTestKitAsync(PublicLabTestKit testKit)
         {
-            RequestResult<PublicLabTestKit> requestResult = InitializeResult<PublicLabTestKit>(testKit);
+            RequestResult<PublicLabTestKit> requestResult = InitializeResult(testKit);
             testKit.ShortCodeFirst = testKit.ShortCodeFirst?.ToUpper(CultureInfo.InvariantCulture);
             testKit.ShortCodeSecond = testKit.ShortCodeSecond?.ToUpper(CultureInfo.InvariantCulture);
             bool validated;
@@ -83,23 +83,23 @@ namespace HealthGateway.Laboratory.Services
                     {
                         HttpResponseMessage response =
                             await this.labTestKitClient.RegisterLabTest(testKit, accessToken).ConfigureAwait(true);
-                        ProcessResponse<PublicLabTestKit>(requestResult, response);
+                        ProcessResponse(requestResult, response);
                     }
                     catch (HttpRequestException e)
                     {
                         this.logger.LogCritical($"HTTP Request Exception {e}");
-                        requestResult.ResultError = new RequestResultError()
+                        requestResult.ResultError = new()
                         {
-                            ResultMessage = $"Error with HTTP Request",
+                            ResultMessage = "Error with HTTP Request",
                             ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.PHSA),
                         };
                     }
                 }
                 else
                 {
-                    requestResult.ResultError = new RequestResultError()
+                    requestResult.ResultError = new()
                     {
-                        ResultMessage = $"Unable to acquire authentication token",
+                        ResultMessage = "Unable to acquire authentication token",
                         ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.Keycloak),
                     };
                     this.logger.LogError("Unable to acquire authentication token");
@@ -117,20 +117,20 @@ namespace HealthGateway.Laboratory.Services
         /// <inheritdoc/>
         public async Task<RequestResult<LabTestKit>> RegisterLabTestKitAsync(string hdid, LabTestKit testKit)
         {
-            RequestResult<LabTestKit> requestResult = InitializeResult<LabTestKit>(testKit);
+            RequestResult<LabTestKit> requestResult = InitializeResult(testKit);
             string? accessToken = this.authenticationDelegate.FetchAuthenticatedUserToken();
             try
             {
                 HttpResponseMessage response =
                     await this.labTestKitClient.RegisterLabTest(hdid, testKit, accessToken).ConfigureAwait(true);
-                ProcessResponse<LabTestKit>(requestResult, response);
+                ProcessResponse(requestResult, response);
             }
             catch (HttpRequestException e)
             {
                 this.logger.LogCritical($"HTTP Request Exception {e}");
-                requestResult.ResultError = new RequestResultError()
+                requestResult.ResultError = new()
                 {
-                    ResultMessage = $"Error with HTTP Request",
+                    ResultMessage = "Error with HTTP Request",
                     ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.PHSA),
                 };
             }
@@ -168,21 +168,21 @@ namespace HealthGateway.Laboratory.Services
                     requestResult.ResultStatus = ResultType.ActionRequired;
                     break;
                 case HttpStatusCode.Unauthorized:
-                    requestResult.ResultError = new RequestResultError()
+                    requestResult.ResultError = new()
                     {
-                        ResultMessage = $"Request was not authorized",
+                        ResultMessage = "Request was not authorized",
                         ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.PHSA),
                     };
                     break;
                 case HttpStatusCode.Forbidden:
-                    requestResult.ResultError = new RequestResultError()
+                    requestResult.ResultError = new()
                     {
                         ResultMessage = $"DID Claim is missing or can not resolve PHN, HTTP Error {response.StatusCode}",
                         ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.PHSA),
                     };
                     break;
                 default:
-                    requestResult.ResultError = new RequestResultError()
+                    requestResult.ResultError = new()
                     {
                         ResultMessage = $"An unexpected error occurred, HTTP Error {response.StatusCode}",
                         ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.PHSA),

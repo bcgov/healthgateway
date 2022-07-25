@@ -1,12 +1,12 @@
-﻿@{
+﻿@using System.Security.Claims
+@{
     ViewData["Title"] = "Home Page";
 }
 <h2>Authorized</h2>
 <dl>
-@foreach (var claim in User.Claims)
-{    
-    <dt>@claim.Type</dt>
-    <dd>@claim.Value</dd>
-}
+    @foreach (Claim claim in User.Claims)
+    {
+        <dt>@claim.Type</dt>
+        <dd>@claim.Value</dd>
+    }
 </dl>
-

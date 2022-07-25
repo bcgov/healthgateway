@@ -17,14 +17,17 @@ namespace HealthGateway.Common.Swagger
 {
     using System.Diagnostics.CodeAnalysis;
     using System.Linq;
+    using Microsoft.AspNetCore.Mvc.ApiExplorer;
     using Microsoft.OpenApi.Models;
     using Swashbuckle.AspNetCore.SwaggerGen;
 
     /// <summary>
     /// Represents the Swagger/Swashbuckle operation filter used to document the implicit API version parameter.
     /// </summary>
-    /// <remarks>This <see cref="IOperationFilter"/> is only required due to bugs in the <see cref="SwaggerGenerator"/>.
-    /// Once they are fixed and published, this class can be removed.</remarks>
+    /// <remarks>
+    /// This <see cref="IOperationFilter"/> is only required due to bugs in the <see cref="SwaggerGenerator"/>.
+    /// Once they are fixed and published, this class can be removed.
+    /// </remarks>
     [ExcludeFromCodeCoverage]
     public sealed class SwaggerDefaultValues : IOperationFilter
     {
@@ -37,10 +40,10 @@ namespace HealthGateway.Common.Swagger
         {
             if (operation != null && context != null && operation.Parameters != null)
             {
-                foreach (var parameter in operation.Parameters)
+                foreach (OpenApiParameter parameter in operation.Parameters)
                 {
-                    var description = context.ApiDescription.ParameterDescriptions.First(p => p.Name == parameter.Name);
-                    var routeInfo = description.RouteInfo;
+                    ApiParameterDescription description = context.ApiDescription.ParameterDescriptions.First(p => p.Name == parameter.Name);
+                    ApiParameterRouteInfo? routeInfo = description.RouteInfo;
 
                     if (parameter.Description == null)
                     {

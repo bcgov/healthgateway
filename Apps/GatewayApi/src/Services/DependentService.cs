@@ -37,7 +37,7 @@ namespace HealthGateway.GatewayApi.Services
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.Logging;
 
-    /// <inheritdoc />
+    /// <inheritdoc/>
     public class DependentService : IDependentService
     {
         private const string WebClientConfigSection = "WebClient";
@@ -78,7 +78,7 @@ namespace HealthGateway.GatewayApi.Services
             this.autoMapper = autoMapper;
         }
 
-        /// <inheritdoc />
+        /// <inheritdoc/>
         public RequestResult<DependentModel> AddDependent(string delegateHdId, AddDependentRequest addDependentRequest)
         {
             this.logger.LogTrace($"Delegate hdid: {delegateHdId}");
@@ -86,10 +86,14 @@ namespace HealthGateway.GatewayApi.Services
             DateTime minimumBirthDate = DateTime.UtcNow.AddYears(this.maxDependentAge * -1);
             if (addDependentRequest.DateOfBirth < minimumBirthDate)
             {
-                return new RequestResult<DependentModel>()
+                return new RequestResult<DependentModel>
                 {
                     ResultStatus = ResultType.Error,
-                    ResultError = new RequestResultError() { ResultMessage = "Dependent age exceeds the maximum limit", ErrorCode = ErrorTranslator.ServiceError(ErrorType.InvalidState, ServiceType.Patient) },
+                    ResultError = new RequestResultError
+                    {
+                        ResultMessage = "Dependent age exceeds the maximum limit",
+                        ErrorCode = ErrorTranslator.ServiceError(ErrorType.InvalidState, ServiceType.Patient),
+                    },
                 };
             }
 
@@ -97,16 +101,20 @@ namespace HealthGateway.GatewayApi.Services
             RequestResult<PatientModel> patientResult = Task.Run(async () => await this.patientService.GetPatient(addDependentRequest.PHN, PatientIdentifierType.PHN).ConfigureAwait(true)).Result;
             if (patientResult.ResultStatus == ResultType.Error)
             {
-                return new RequestResult<DependentModel>()
+                return new RequestResult<DependentModel>
                 {
                     ResultStatus = ResultType.Error,
-                    ResultError = new RequestResultError() { ResultMessage = "Communication Exception when trying to retrieve the Dependent", ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.Patient) },
+                    ResultError = new RequestResultError
+                    {
+                        ResultMessage = "Communication Exception when trying to retrieve the Dependent",
+                        ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.Patient),
+                    },
                 };
             }
 
             if (patientResult.ResultStatus == ResultType.ActionRequired)
             {
-                return new RequestResult<DependentModel>()
+                return new RequestResult<DependentModel>
                 {
                     ResultStatus = ResultType.ActionRequired,
                     ResultError = ErrorTranslator.ActionRequired(ErrorMessages.DataMismatch, ActionType.DataMismatch),
@@ -118,8 +126,9 @@ namespace HealthGateway.GatewayApi.Services
             // Verify dependent's details entered by user
             if (patientResult.ResourcePayload == null || !this.ValidateDependent(addDependentRequest, patientResult.ResourcePayload))
             {
-                this.logger.LogDebug($"Dependent information does not match request: {JsonSerializer.Serialize(addDependentRequest)} response: {JsonSerializer.Serialize(patientResult.ResourcePayload)}");
-                return new RequestResult<DependentModel>()
+                this.logger.LogDebug(
+                    $"Dependent information does not match request: {JsonSerializer.Serialize(addDependentRequest)} response: {JsonSerializer.Serialize(patientResult.ResourcePayload)}");
+                return new RequestResult<DependentModel>
                 {
                     ResultStatus = ResultType.ActionRequired,
                     ResultError = ErrorTranslator.ActionRequired(ErrorMessages.DataMismatch, ActionType.DataMismatch),
@@ -129,7 +138,7 @@ namespace HealthGateway.GatewayApi.Services
             // Verify dependent has HDID
             if (string.IsNullOrEmpty(patientResult.ResourcePayload.HdId))
             {
-                return new RequestResult<DependentModel>()
+                return new RequestResult<DependentModel>
                 {
                     ResultStatus = ResultType.ActionRequired,
                     ResultError = ErrorTranslator.ActionRequired(ErrorMessages.InvalidServicesCard, ActionType.NoHdId),
@@ -155,25 +164,27 @@ namespace HealthGateway.GatewayApi.Services
                 this.logger.LogTrace("Finished adding dependent");
                 this.UpdateNotificationSettings(dependent.ResourceOwnerHdid, delegateHdId);
 
-                return new RequestResult<DependentModel>()
+                return new RequestResult<DependentModel>
                 {
                     ResourcePayload = this.FromModels(dbDependent.Payload, patientResult.ResourcePayload),
                     ResultStatus = ResultType.Success,
                 };
             }
-            else
+
+            this.logger.LogError("Error adding dependent");
+            return new RequestResult<DependentModel>
             {
-                this.logger.LogError("Error adding dependent");
-                return new RequestResult<DependentModel>()
+                ResourcePayload = new DependentModel(),
+                ResultStatus = ResultType.Error,
+                ResultError = new RequestResultError
                 {
-                    ResourcePayload = new DependentModel(),
-                    ResultStatus = ResultType.Error,
-                    ResultError = new RequestResultError() { ResultMessage = dbDependent.Message, ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationInternal, ServiceType.Database) },
-                };
-            }
+                    ResultMessage = dbDependent.Message,
+                    ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationInternal, ServiceType.Database),
+                },
+            };
         }
 
-        /// <inheritdoc />
+        /// <inheritdoc/>
         public RequestResult<IEnumerable<DependentModel>> GetDependents(string hdId, int page = 0, int pageSize = 500)
         {
             // Get Dependents from database
@@ -181,16 +192,16 @@ namespace HealthGateway.GatewayApi.Services
             DBResult<IEnumerable<ResourceDelegate>> dbResourceDelegates = this.resourceDelegateDelegate.Get(hdId, offset, pageSize);
 
             // Get Dependents Details from Patient service
-            List<DependentModel> dependentModels = new List<DependentModel>();
-            RequestResult<IEnumerable<DependentModel>> result = new RequestResult<IEnumerable<DependentModel>>()
+            List<DependentModel> dependentModels = new();
+            RequestResult<IEnumerable<DependentModel>> result = new()
             {
                 ResultStatus = ResultType.Success,
             };
-            StringBuilder resultErrorMessage = new StringBuilder();
+            StringBuilder resultErrorMessage = new();
             foreach (ResourceDelegate resourceDelegate in dbResourceDelegates.Payload)
             {
                 this.logger.LogDebug($"Getting dependent details for Dependent hdid: {resourceDelegate.ResourceOwnerHdid} ...");
-                RequestResult<PatientModel> patientResult = Task.Run(async () => await this.patientService.GetPatient(resourceDelegate.ResourceOwnerHdid, PatientIdentifierType.HDID).ConfigureAwait(true)).Result;
+                RequestResult<PatientModel> patientResult = Task.Run(async () => await this.patientService.GetPatient(resourceDelegate.ResourceOwnerHdid).ConfigureAwait(true)).Result;
 
                 if (patientResult.ResourcePayload != null)
                 {
@@ -219,27 +230,37 @@ namespace HealthGateway.GatewayApi.Services
             }
             else
             {
-                result.ResultError = new RequestResultError() { ResultMessage = resultErrorMessage.ToString(), ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.Patient) };
+                result.ResultError = new RequestResultError
+                {
+                    ResultMessage = resultErrorMessage.ToString(),
+                    ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.Patient),
+                };
             }
 
             return result;
         }
 
-        /// <inheritdoc />
+        /// <inheritdoc/>
         public RequestResult<DependentModel> Remove(DependentModel dependent)
         {
             DBResult<ResourceDelegate> dbDependent = this.resourceDelegateDelegate.Delete(this.autoMapper.Map<ResourceDelegate>(dependent), true);
 
             if (dbDependent.Status == DBStatusCode.Deleted)
             {
-                this.UpdateNotificationSettings(dependent.OwnerId, dependent.DelegateId, isDelete: true);
+                this.UpdateNotificationSettings(dependent.OwnerId, dependent.DelegateId, true);
             }
 
             RequestResult<DependentModel> result = new()
             {
                 ResourcePayload = new DependentModel(),
                 ResultStatus = dbDependent.Status == DBStatusCode.Deleted ? ResultType.Success : ResultType.Error,
-                ResultError = dbDependent.Status == DBStatusCode.Deleted ? null : new RequestResultError() { ResultMessage = dbDependent.Message, ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationInternal, ServiceType.Database) },
+                ResultError = dbDependent.Status == DBStatusCode.Deleted
+                    ? null
+                    : new RequestResultError
+                    {
+                        ResultMessage = dbDependent.Message,
+                        ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationInternal, ServiceType.Database),
+                    },
             };
             return result;
         }

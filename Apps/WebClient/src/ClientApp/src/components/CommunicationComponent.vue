@@ -55,24 +55,23 @@ export default class CommunicationComponent extends Vue {
     }
 
     @Watch("$route.path")
-    private onRouteChange() {
+    private onRouteChange(): void {
         this.fetchCommunication(CommunicationType.InApp);
     }
 
-    private created() {
+    private created(): void {
         this.logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
     }
 
-    private mounted() {
+    private mounted(): void {
         this.fetchCommunication(CommunicationType.Banner);
         this.fetchCommunication(CommunicationType.InApp);
     }
 
-    private fetchCommunication(type: CommunicationType) {
-        const communicationService: ICommunicationService =
-            container.get<ICommunicationService>(
-                SERVICE_IDENTIFIER.CommunicationService
-            );
+    private fetchCommunication(type: CommunicationType): void {
+        const communicationService = container.get<ICommunicationService>(
+            SERVICE_IDENTIFIER.CommunicationService
+        );
 
         communicationService
             .getActive(type)

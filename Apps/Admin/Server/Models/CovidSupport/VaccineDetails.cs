@@ -64,6 +64,6 @@ namespace HealthGateway.Admin.Server.Models.CovidSupport
         /// Gets or sets the Vaccine Status Result.
         /// </summary>
         [JsonPropertyName("vaccineStatus")]
-        public VaccineStatusResult? VaccineStatusResult { get; set; } = null;
+        public VaccineStatusResult? VaccineStatusResult { get; set; }
     }
 }

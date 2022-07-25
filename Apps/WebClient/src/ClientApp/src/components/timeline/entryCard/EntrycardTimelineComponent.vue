@@ -43,7 +43,7 @@ export default class EntrycardTimelineComponent extends Vue {
         return this.entryIcon ?? "question";
     }
 
-    private get isInteractive() {
+    private get isInteractive(): boolean {
         return (
             (!this.isMobileWidth && this.canShowDetails) ||
             (this.isMobileWidth && !this.isMobileDetails)
@@ -78,19 +78,19 @@ export default class EntrycardTimelineComponent extends Vue {
     }
 
     @Watch("isMobileWidth")
-    private onMobileWidthChanged() {
+    private onMobileWidthChanged(): void {
         if (this.isMobileWidth && !this.isMobileDetails) {
             this.detailsVisible = false;
         }
     }
 
-    private mounted() {
+    private mounted(): void {
         if (this.isMobileDetails) {
             this.detailsVisible = true;
         }
     }
 
-    private handleCardClick() {
+    private handleCardClick(): void {
         if (this.isMobileWidth) {
             if (!this.isMobileDetails) {
                 this.eventBus.$emit(
@@ -198,6 +198,7 @@ export default class EntrycardTimelineComponent extends Vue {
 
 <style lang="scss" scoped>
 @import "@/assets/scss/_variables.scss";
+
 $left-pane-width: 80px;
 $right-pane-width: 90px;
 

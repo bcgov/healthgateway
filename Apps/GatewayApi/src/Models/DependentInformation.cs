@@ -17,7 +17,6 @@ namespace HealthGateway.GatewayApi.Models
 {
     using System;
     using System.Text.Json.Serialization;
-    using HealthGateway.Common.Models;
 
     /// <summary>
     /// Represents a Dependent Information model.

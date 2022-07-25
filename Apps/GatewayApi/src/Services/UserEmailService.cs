@@ -33,7 +33,7 @@ namespace HealthGateway.GatewayApi.Services
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.Logging;
 
-    /// <inheritdoc />
+    /// <inheritdoc/>
     public class UserEmailService : IUserEmailService
     {
         private readonly string webClientConfigSection = "WebClient";
@@ -71,12 +71,12 @@ namespace HealthGateway.GatewayApi.Services
             this.profileDelegate = profileDelegate;
             this.emailQueueService = emailQueueService;
             this.notificationSettingsService = notificationSettingsService;
-            this.emailVerificationExpirySeconds = configuration.GetSection(this.webClientConfigSection).GetValue<int>(this.emailConfigExpirySecondsKey, 5);
+            this.emailVerificationExpirySeconds = configuration.GetSection(this.webClientConfigSection).GetValue(this.emailConfigExpirySecondsKey, 5);
 
             this.httpContextAccessor = httpContextAccessor;
         }
 
-        /// <inheritdoc />
+        /// <inheritdoc/>
         public PrimitiveRequestResult<bool> ValidateEmail(string hdid, Guid inviteKey)
         {
             this.logger.LogTrace($"Validating email... {inviteKey}");
@@ -94,85 +94,85 @@ namespace HealthGateway.GatewayApi.Services
                     this.messageVerificationDelegate.Update(lastEmailVerification);
                 }
 
-                this.logger.LogDebug($"Invalid email verification");
+                this.logger.LogDebug("Invalid email verification");
 
-                return new PrimitiveRequestResult<bool>()
+                return new PrimitiveRequestResult<bool>
                 {
                     ResourcePayload = false,
                     ResultStatus = ResultType.Error,
-                    ResultError = new RequestResultError()
+                    ResultError = new RequestResultError
                     {
                         ResultMessage = "Invalid Email Verification",
                         ErrorCode = ErrorTranslator.InternalError(ErrorType.InvalidState),
                     },
                 };
             }
-            else if (matchingVerification.VerificationAttempts >= this.maxVerificationAttempts ||
-                     matchingVerification.ExpireDate < DateTime.UtcNow)
+
+            if (matchingVerification.VerificationAttempts >= this.maxVerificationAttempts ||
+                matchingVerification.ExpireDate < DateTime.UtcNow)
             {
-                this.logger.LogDebug($"Email verification expired");
+                this.logger.LogDebug("Email verification expired");
 
                 // Verification Expired
-                return new PrimitiveRequestResult<bool>()
+                return new PrimitiveRequestResult<bool>
                 {
                     ResourcePayload = false,
                     ResultStatus = ResultType.ActionRequired,
                     ResultError = ErrorTranslator.ActionRequired("Email Verification Expired", ActionType.Expired),
                 };
             }
-            else if (matchingVerification.Validated)
+
+            if (matchingVerification.Validated)
             {
-                this.logger.LogDebug($"Email already validated");
+                this.logger.LogDebug("Email already validated");
 
                 // Verification already verified
-                return new PrimitiveRequestResult<bool>()
+                return new PrimitiveRequestResult<bool>
                 {
                     ResourcePayload = true,
                     ResultStatus = ResultType.Error,
-                    ResultError = new RequestResultError()
+                    ResultError = new RequestResultError
                     {
                         ResultMessage = "Email Verification Already verified",
                         ErrorCode = ErrorTranslator.InternalError(ErrorType.InvalidState),
                     },
                 };
             }
-            else
+
+            matchingVerification.Validated = true;
+            this.messageVerificationDelegate.Update(matchingVerification);
+            UserProfile userProfile = this.profileDelegate.GetUserProfile(hdid).Payload;
+            userProfile.Email = matchingVerification.Email!.To; // Gets the user email from the email sent.
+            this.profileDelegate.Update(userProfile);
+
+            // Update the notification settings
+            this.notificationSettingsService.QueueNotificationSettings(new NotificationSettingsRequest(userProfile, userProfile.Email, userProfile.SMSNumber));
+
+            this.logger.LogDebug("Email validated");
+
+            // Verification already verified
+            return new PrimitiveRequestResult<bool>
             {
-                matchingVerification.Validated = true;
-                this.messageVerificationDelegate.Update(matchingVerification);
-                UserProfile userProfile = this.profileDelegate.GetUserProfile(hdid).Payload;
-                userProfile.Email = matchingVerification.Email!.To; // Gets the user email from the email sent.
-                this.profileDelegate.Update(userProfile);
-
-                // Update the notification settings
-                this.notificationSettingsService.QueueNotificationSettings(new NotificationSettingsRequest(userProfile, userProfile.Email, userProfile.SMSNumber));
-
-                this.logger.LogDebug($"Email validated");
-
-                // Verification already verified
-                return new PrimitiveRequestResult<bool>()
-                {
-                    ResourcePayload = true,
-                    ResultStatus = ResultType.Success,
-                };
-            }
+                ResourcePayload = true,
+                ResultStatus = ResultType.Success,
+            };
         }
 
-        /// <inheritdoc />
+        /// <inheritdoc/>
         [ExcludeFromCodeCoverage]
         public bool CreateUserEmail(string hdid, string emailAddress, bool isVerified)
         {
-            this.logger.LogTrace($"Creating user email...");
+            this.logger.LogTrace("Creating user email...");
             this.AddVerificationEmail(hdid, emailAddress, Guid.NewGuid(), isVerified);
-            this.logger.LogDebug($"Finished creating user email");
+            this.logger.LogDebug("Finished creating user email");
             return true;
         }
 
-        /// <inheritdoc />
+        /// <inheritdoc/>
         [ExcludeFromCodeCoverage]
         public bool UpdateUserEmail(string hdid, string emailAddress)
         {
-            this.logger.LogTrace($"Updating user email...");
+            this.logger.LogTrace("Updating user email...");
 
             UserProfile userProfile = this.profileDelegate.GetUserProfile(hdid).Payload;
             this.logger.LogInformation($"Removing email from user ${hdid}");
@@ -209,7 +209,7 @@ namespace HealthGateway.GatewayApi.Services
                 this.AddVerificationEmail(hdid, emailAddress, Guid.NewGuid());
             }
 
-            this.logger.LogDebug($"Finished updating user email");
+            this.logger.LogDebug("Finished updating user email");
             return true;
         }
 
@@ -218,11 +218,10 @@ namespace HealthGateway.GatewayApi.Services
         {
             float verificationExpiryHours = (float)this.emailVerificationExpirySeconds / 3600;
 
-            string activationHost = this.httpContextAccessor.HttpContext!.Request
-                                             .GetTypedHeaders()
-                                             .Referer!
-                                             .GetLeftPart(UriPartial.Authority);
-            string hostUrl = activationHost.ToString();
+            string hostUrl = this.httpContextAccessor.HttpContext!.Request
+                .GetTypedHeaders()
+                .Referer!
+                .GetLeftPart(UriPartial.Authority);
 
             Dictionary<string, string> keyValues = new()
             {

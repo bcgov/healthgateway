@@ -18,7 +18,7 @@ import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import { IDependentService } from "@/services/interfaces";
 import PHNValidator from "@/utility/phnValidator";
 
-const validPersonalHealthNumber = (value: string): boolean => {
+const validPersonalHealthNumber = (value: string) => {
     let phn = value.replace(/\D/g, "");
     return PHNValidator.IsValid(phn);
 };
@@ -48,17 +48,17 @@ export default class NewDependentComponent extends Vue {
     };
     private accepted = false;
 
-    private validations() {
+    private validations(): unknown {
         return {
             dependent: {
                 firstName: {
-                    required: required,
+                    required,
                 },
                 lastName: {
-                    required: required,
+                    required,
                 },
                 dateOfBirth: {
-                    required: required,
+                    required,
                     minLength: minLength(10),
                     minValue: (value: string) =>
                         new DateWrapper(value).isAfter(this.minBirthdate),
@@ -66,7 +66,7 @@ export default class NewDependentComponent extends Vue {
                         new DateWrapper(value).isBefore(new DateWrapper()),
                 },
                 testDate: {
-                    required: required,
+                    required,
                     minLength: minLength(10),
                     minValue: (value: string) =>
                         new DateWrapper(value).isAfter(this.minTestDate),
@@ -74,7 +74,7 @@ export default class NewDependentComponent extends Vue {
                         new DateWrapper(value).isBefore(new DateWrapper()),
                 },
                 PHN: {
-                    required: required,
+                    required,
                     minLength: minLength(12),
                     validPersonalHealthNumber,
                 },
@@ -106,14 +106,14 @@ export default class NewDependentComponent extends Vue {
         this.isVisible = false;
     }
 
-    private created() {
+    private created(): void {
         this.dependentService = container.get<IDependentService>(
             SERVICE_IDENTIFIER.DependentService
         );
         this.isLoading = false;
     }
 
-    private handleOk(bvModalEvt: Event) {
+    private handleOk(bvModalEvt: Event): void {
         // Prevent modal from closing
         bvModalEvt.preventDefault();
         this.$v.$touch();
@@ -123,7 +123,7 @@ export default class NewDependentComponent extends Vue {
         }
     }
 
-    private addDependent() {
+    private addDependent(): void {
         this.dependentService
             .addDependent(this.user.hdid, {
                 ...this.dependent,
@@ -139,15 +139,13 @@ export default class NewDependentComponent extends Vue {
     }
 
     @Emit()
-    private handleSubmit() {
+    private handleSubmit(): void {
         this.clear();
         // Hide the modal manually
-        this.$nextTick(() => {
-            this.hideModal();
-        });
+        this.$nextTick(() => this.hideModal());
     }
 
-    private clear() {
+    private clear(): void {
         this.dependent = {
             firstName: "",
             lastName: "",
@@ -293,8 +291,8 @@ export default class NewDependentComponent extends Vue {
                                 </b-col>
                             </b-row>
                             <b-row class="mb-2">
-                                <b-col
-                                    ><b-checkbox
+                                <b-col>
+                                    <b-checkbox
                                         id="termsCheckbox"
                                         v-model="accepted"
                                         data-testid="termsCheckbox"
@@ -360,9 +358,11 @@ export default class NewDependentComponent extends Vue {
 
 <style lang="scss" scoped>
 @import "@/assets/scss/_variables.scss";
+
 .dependentCardDateInput {
     color: #e0e0e0;
 }
+
 ::placeholder {
     color: #e0e0e0;
 }

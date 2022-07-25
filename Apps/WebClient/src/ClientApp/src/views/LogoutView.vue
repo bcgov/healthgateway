@@ -10,7 +10,7 @@ export default class LogoutView extends Vue {
     @Action("signOut", { namespace })
     signOut!: () => void;
 
-    private mounted() {
+    private mounted(): void {
         this.signOut();
     }
 }

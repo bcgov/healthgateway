@@ -35,12 +35,15 @@ namespace HealthGateway.GatewayApi.MapUtils
         /// <returns>A Note.</returns>
         public static Note ToDbModel(UserNote userNote, ICryptoDelegate cryptoDelegate, string key, IMapper autoMapper)
         {
-            Note note = autoMapper.Map<UserNote, Note>(userNote, opts =>
-                opts.AfterMap((src, dest) =>
-                {
-                    dest.Title = !string.IsNullOrEmpty(src.Title) ? cryptoDelegate.Encrypt(key, src.Title) : string.Empty;
-                    dest.Text = !string.IsNullOrEmpty(src.Text) ? cryptoDelegate.Encrypt(key, src.Text) : string.Empty;
-                }));
+            Note note = autoMapper.Map<UserNote, Note>(
+                userNote,
+                opts =>
+                    opts.AfterMap(
+                        (src, dest) =>
+                        {
+                            dest.Title = !string.IsNullOrEmpty(src.Title) ? cryptoDelegate.Encrypt(key, src.Title) : string.Empty;
+                            dest.Text = !string.IsNullOrEmpty(src.Text) ? cryptoDelegate.Encrypt(key, src.Text) : string.Empty;
+                        }));
             return note;
         }
 
@@ -54,12 +57,15 @@ namespace HealthGateway.GatewayApi.MapUtils
         /// <returns>A UserNote.</returns>
         public static UserNote CreateFromDbModel(Note note, ICryptoDelegate cryptoDelegate, string key, IMapper autoMapper)
         {
-            UserNote userNote = autoMapper.Map<Note, UserNote>(note, opts =>
-                opts.AfterMap((src, dest) =>
-                {
-                    dest.Title = !string.IsNullOrEmpty(src.Title) ? cryptoDelegate.Decrypt(key, src.Title) : string.Empty;
-                    dest.Text = !string.IsNullOrEmpty(src.Text) ? cryptoDelegate.Decrypt(key, src.Text) : string.Empty;
-                }));
+            UserNote userNote = autoMapper.Map<Note, UserNote>(
+                note,
+                opts =>
+                    opts.AfterMap(
+                        (src, dest) =>
+                        {
+                            dest.Title = !string.IsNullOrEmpty(src.Title) ? cryptoDelegate.Decrypt(key, src.Title) : string.Empty;
+                            dest.Text = !string.IsNullOrEmpty(src.Text) ? cryptoDelegate.Decrypt(key, src.Text) : string.Empty;
+                        }));
 
             return userNote;
         }

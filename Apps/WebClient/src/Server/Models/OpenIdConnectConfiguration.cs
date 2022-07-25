@@ -17,6 +17,7 @@ namespace HealthGateway.WebClient.Models
 {
     using System;
     using System.Collections.Generic;
+    using System.Diagnostics.CodeAnalysis;
 
     /// <summary>
     /// Configuration to be used for OpenID Connect authentication.
@@ -51,7 +52,7 @@ namespace HealthGateway.WebClient.Models
         /// <summary>
         /// Gets or sets the callback URIs.
         /// </summary>
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "CA2227:Collection properties should be read only", Justification = "Team decision")]
+        [SuppressMessage("Usage", "CA2227:Collection properties should be read only", Justification = "Team decision")]
         public Dictionary<string, Uri>? Callbacks { get; set; }
     }
 }

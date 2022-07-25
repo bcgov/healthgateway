@@ -26,7 +26,7 @@ namespace HealthGateway.Common.Filters
     /// <summary>
     /// The availability middleware class.
     /// Determines if an action should be disabled via config.
-    /// </summary>using Microsoft.AspNetCore.Mvc.Filters
+    /// </summary>
     [ExcludeFromCodeCoverage]
     public class AvailabilityFilter : IAsyncActionFilter
     {
@@ -39,7 +39,7 @@ namespace HealthGateway.Common.Filters
             this.Configuration = configuration;
         }
 
-        private IConfiguration Configuration { get; set; }
+        private IConfiguration Configuration { get; }
 
         /// <inheritdoc/>
         public async Task OnActionExecutionAsync(ActionExecutingContext context, ActionExecutionDelegate next)

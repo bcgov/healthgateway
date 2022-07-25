@@ -44,9 +44,9 @@ export default class MSPVisitsReportComponent extends Vue {
     private readonly headerClass = "encounter-report-table-header";
 
     private get visibleRecords(): Encounter[] {
-        let records = this.patientEncounters.filter((record) => {
-            return this.filter.allowsDate(record.encounterDate);
-        });
+        let records = this.patientEncounters.filter((record) =>
+            this.filter.allowsDate(record.encounterDate)
+        );
         records.sort((a, b) => {
             const firstDate = new DateWrapper(a.encounterDate);
             const secondDate = new DateWrapper(b.encounterDate);
@@ -65,41 +65,39 @@ export default class MSPVisitsReportComponent extends Vue {
         return records;
     }
 
-    private get isEmpty() {
+    private get isEmpty(): boolean {
         return this.visibleRecords.length === 0;
     }
 
     private get items(): EncounterRow[] {
-        return this.visibleRecords.map<EncounterRow>((x) => {
-            return {
-                date: DateWrapper.format(x.encounterDate),
-                specialty_description: x.specialtyDescription,
-                practitioner: x.practitionerName,
-                clinic_practitioner: x.clinic.name,
-            };
-        });
+        return this.visibleRecords.map<EncounterRow>((x) => ({
+            date: DateWrapper.format(x.encounterDate),
+            specialty_description: x.specialtyDescription,
+            practitioner: x.practitionerName,
+            clinic_practitioner: x.clinic.name,
+        }));
     }
 
     @Watch("isLoading")
     @Emit()
-    private onIsLoadingChanged() {
+    private onIsLoadingChanged(): boolean {
         return this.isLoading;
     }
 
     @Watch("isEmpty")
     @Emit()
-    private onIsEmptyChanged() {
+    private onIsEmptyChanged(): boolean {
         return this.isEmpty;
     }
 
-    private created() {
+    private created(): void {
         this.logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
-        this.retrieveEncounters({ hdid: this.user.hdid }).catch((err) => {
-            this.logger.error(`Error loading encounter data: ${err}`);
-        });
+        this.retrieveEncounters({ hdid: this.user.hdid }).catch((err) =>
+            this.logger.error(`Error loading encounter data: ${err}`)
+        );
     }
 
-    private mounted() {
+    private mounted(): void {
         this.onIsEmptyChanged();
     }
 
@@ -107,7 +105,7 @@ export default class MSPVisitsReportComponent extends Vue {
         reportFormatType: ReportFormatType,
         headerData: ReportHeader
     ): Promise<RequestResult<Report>> {
-        const reportService: IReportService = container.get<IReportService>(
+        const reportService = container.get<IReportService>(
             SERVICE_IDENTIFIER.ReportService
         );
 
@@ -174,6 +172,7 @@ export default class MSPVisitsReportComponent extends Vue {
 
 <style lang="scss">
 @import "@/assets/scss/_variables.scss";
+
 .encounter-report-table-header {
     color: $heading_color;
     font-size: 0.8rem;
