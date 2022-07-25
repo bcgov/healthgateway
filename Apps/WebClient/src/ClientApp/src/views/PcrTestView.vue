@@ -65,8 +65,8 @@ export default class PcrTestView extends Vue {
         traceId: string | undefined;
     }) => void;
 
-    @Action("clearError", { namespace: "errorBanner" })
-    clearError!: () => void;
+    @Action("clearErrors", { namespace: "errorBanner" })
+    clearErrors!: () => void;
 
     @Action("signIn", { namespace: "auth" })
     signIn!: (params: {
@@ -329,7 +329,7 @@ export default class PcrTestView extends Vue {
         if (this.$v.$invalid) {
             return;
         }
-        this.clearError();
+        this.clearErrors();
         const shortCodeFirst =
             this.pcrTest.testKitCode.length > 0
                 ? this.pcrTest.testKitCode.split("-")[0]

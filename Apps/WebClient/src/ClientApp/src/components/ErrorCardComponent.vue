@@ -23,10 +23,8 @@ Vue.use(VueClipboard);
     },
 })
 export default class ErrorCardComponent extends Vue {
-    @Action("dismiss", {
-        namespace: "errorBanner",
-    })
-    dismissBanner!: () => void;
+    @Action("clearErrors", { namespace: "errorBanner" })
+    clearErrors!: () => void;
 
     @Getter("user", { namespace: "user" })
     user!: User;
@@ -97,7 +95,7 @@ export default class ErrorCardComponent extends Vue {
             dismissible
             class="no-print"
             :show="isShowing"
-            @dismissed="dismissBanner"
+            @dismissed="clearErrors"
         >
             <div>
                 <div
