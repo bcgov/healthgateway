@@ -2,7 +2,6 @@
 import { Component, Prop, Vue } from "vue-property-decorator";
 
 import BannerFeedbackComponent from "@/components/core/BannerFeedback.vue";
-import CommunicationTable from "@/components/core/CommunicationTable.vue";
 import LoadingComponent from "@/components/core/Loading.vue";
 import { ResultType } from "@/constants/resulttype";
 import BannerFeedback from "@/models/bannerFeedback";
@@ -27,7 +26,6 @@ interface UserSearchRow {
     components: {
         LoadingComponent,
         BannerFeedbackComponent,
-        CommunicationTable,
     },
 })
 export default class SupportView extends Vue {

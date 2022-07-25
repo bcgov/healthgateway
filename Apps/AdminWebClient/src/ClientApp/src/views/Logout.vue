@@ -22,10 +22,12 @@ const namespace = "auth";
     },
 })
 export default class LoginView extends Vue {
-    @Action("logout", { namespace }) private logout!: () => Promise<void>;
-    @Getter("isAuthenticated", { namespace }) private isAuthenticated!: boolean;
+    @Action("logout", { namespace })
+    private logout!: () => Promise<void>;
 
-    public name = "Dashboard";
+    @Getter("isAuthenticated", { namespace })
+    private isAuthenticated!: boolean;
+
     private isLoading = true;
 
     private mounted() {

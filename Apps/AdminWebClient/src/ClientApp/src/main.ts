@@ -16,13 +16,10 @@ import vuetify from "@/plugins/vuetify";
 import router from "@/router";
 import {
     IAuthenticationService,
-    ICommunicationService,
     IConfigService,
     ICovidSupportService,
-    IDashboardService,
     IHttpDelegate,
     ISupportService,
-    IUserFeedbackService,
 } from "@/services/interfaces";
 import store from "@/store/store";
 
@@ -40,9 +37,11 @@ Vue.component("FontAwesomeIcon", FontAwesomeIcon);
 const httpDelegate: IHttpDelegate = container.get(
     DELEGATE_IDENTIFIER.HttpDelegate
 );
+
 const configService: IConfigService = container.get(
     SERVICE_IDENTIFIER.ConfigService
 );
+
 const authenticationService: IAuthenticationService = container.get(
     SERVICE_IDENTIFIER.AuthenticationService
 );
@@ -56,24 +55,11 @@ const covidSupportService: ICovidSupportService = container.get(
 );
 
 configService.initialize(httpDelegate);
-// Initialize the store only then start the app
-store.dispatch("config/initialize").then((config: ExternalConfiguration) => {
-    // Retrieve service interfaces
-    const userFeedbackService: IUserFeedbackService = container.get(
-        SERVICE_IDENTIFIER.UserFeedbackService
-    );
-    const dashboardService: IDashboardService = container.get(
-        SERVICE_IDENTIFIER.DashboardService
-    );
-    const communicationService: ICommunicationService = container.get(
-        SERVICE_IDENTIFIER.CommunicationService
-    );
 
+// Initialize the store only, then start the app
+store.dispatch("config/initialize").then((config: ExternalConfiguration) => {
     // Initialize services
     authenticationService.initialize(httpDelegate, config);
-    userFeedbackService.initialize(httpDelegate);
-    dashboardService.initialize(httpDelegate);
-    communicationService.initialize(httpDelegate);
     supportService.initialize(httpDelegate);
     covidSupportService.initialize(httpDelegate);
     initializeVue();
