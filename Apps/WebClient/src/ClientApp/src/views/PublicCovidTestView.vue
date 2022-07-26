@@ -9,6 +9,7 @@ import { Action, Getter } from "vuex-class";
 
 import LoadingComponent from "@/components/LoadingComponent.vue";
 import HgDateDropdownComponent from "@/components/shared/HgDateDropdownComponent.vue";
+import TooManyRequestsComponent from "@/components/TooManyRequestsComponent.vue";
 import type { WebClientConfiguration } from "@/models/configData";
 import {
     DateWrapper,
@@ -39,6 +40,7 @@ const validPersonalHealthNumber = (value: string) => {
     components: {
         loading: LoadingComponent,
         "hg-date-dropdown": HgDateDropdownComponent,
+        TooManyRequestsComponent,
     },
 })
 export default class PublicCovidTestView extends Vue {
