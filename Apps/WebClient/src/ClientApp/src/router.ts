@@ -484,6 +484,16 @@ const router = new VueRouter({
 
 router.beforeEach(beforeEachGuard);
 
-router.afterEach(() => window.snowplow("trackPageView"));
+router.afterEach(() => {
+    const storeWrapper = container.get<IStoreProvider>(
+        STORE_IDENTIFIER.StoreProvider
+    );
+    const store = storeWrapper.getStore();
+
+    store.dispatch("errorBanner/clearErrors");
+    store.dispatch("errorBanner/clearTooManyRequests");
+
+    window.snowplow("trackPageView");
+});
 
 export default router;

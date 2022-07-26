@@ -7,9 +7,9 @@ import { required } from "vuelidate/lib/validators";
 import { Validation } from "vuelidate/vuelidate";
 import { Action, Getter } from "vuex-class";
 
-import ErrorCardComponent from "@/components/ErrorCardComponent.vue";
 import LoadingComponent from "@/components/LoadingComponent.vue";
 import HgDateDropdownComponent from "@/components/shared/HgDateDropdownComponent.vue";
+import TooManyRequestsComponent from "@/components/TooManyRequestsComponent.vue";
 import type { WebClientConfiguration } from "@/models/configData";
 import {
     DateWrapper,
@@ -38,9 +38,9 @@ const validPersonalHealthNumber = (value: string) => {
 
 @Component({
     components: {
-        "error-card": ErrorCardComponent,
         loading: LoadingComponent,
         "hg-date-dropdown": HgDateDropdownComponent,
+        TooManyRequestsComponent,
     },
 })
 export default class PublicCovidTestView extends Vue {
@@ -445,6 +445,7 @@ export default class PublicCovidTestView extends Vue {
                 @submit.prevent="handleSubmit"
             >
                 <div class="my-2 my-sm-5 px-0 px-sm-5">
+                    <TooManyRequestsComponent location="publicCovidTest" />
                     <div
                         v-if="publicCovidTestResponseResultError !== undefined"
                     >

@@ -352,7 +352,7 @@ export default class NewDependentComponent extends Vue {
                 </div>
             </b-row>
         </template>
-        <LoadingComponent :is-loading="isLoading"></LoadingComponent>
+        <LoadingComponent :is-loading="isLoading" />
     </b-modal>
 </template>
 

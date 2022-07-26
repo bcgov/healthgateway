@@ -71,7 +71,7 @@ export default class TermsOfServiceView extends Vue {
 </script>
 
 <template>
-    <div class="m-3 m-md-4 flex-grow-1 d-flex flex-column">
+    <div>
         <BreadcrumbComponent :items="breadcrumbItems" />
         <LoadingComponent :is-loading="isLoading" />
         <b-row>
@@ -90,11 +90,7 @@ export default class TermsOfServiceView extends Vue {
                 </b-row>
                 <page-title title="Terms of Service" />
                 <div v-if="!isLoading">
-                    <b-row class="mb-3">
-                        <b-col>
-                            <HtmlTextAreaComponent :input="termsOfService" />
-                        </b-col>
-                    </b-row>
+                    <HtmlTextAreaComponent :input="termsOfService" />
                 </div>
             </b-col>
         </b-row>
