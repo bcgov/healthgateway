@@ -36,11 +36,12 @@ import VueTheMask from "vue-the-mask";
 import { Action, Getter } from "vuex-class";
 
 import CommunicationComponent from "@/components/CommunicationComponent.vue";
-import ErrorCard from "@/components/ErrorCardComponent.vue";
+import ErrorCardComponent from "@/components/ErrorCardComponent.vue";
 import IdleComponent from "@/components/modal/IdleComponent.vue";
 import FooterComponent from "@/components/navmenu/FooterComponent.vue";
 import HeaderComponent from "@/components/navmenu/HeaderComponent.vue";
 import SidebarComponent from "@/components/navmenu/SidebarComponent.vue";
+import ResourceCentreComponent from "@/components/ResourceCentreComponent.vue";
 import Process, { EnvironmentType } from "@/constants/process";
 import ScreenWidth from "@/constants/screenWidth";
 import container from "@/plugins/container";
@@ -82,9 +83,10 @@ const logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
         NavHeader: HeaderComponent,
         NavFooter: FooterComponent,
         NavSidebar: SidebarComponent,
-        ErrorCard,
+        ErrorCardComponent,
         IdleComponent,
         CommunicationComponent,
+        ResourceCentreComponent,
     },
 })
 export default class App extends Vue {
@@ -120,7 +122,11 @@ export default class App extends Vue {
     private loginCallbackPath = "/logincallback";
     private registrationPath = "/registration";
     private pcrTestPath = "/pcrtest";
-    private acceptTermsOfServicePath = "/acceptTermsOfService";
+    private acceptTermsOfServicePath = "/accepttermsofservice";
+    private dependentsPath = "/dependents";
+    private reportsPath = "/reports";
+    private timelinePath = "/timeline";
+    private landingPath = "/";
 
     constructor() {
         super();
@@ -170,60 +176,63 @@ export default class App extends Vue {
         }
     }
 
-    private get isPublicDestinationPath(): boolean {
-        const routePath = this.$route.path.toLowerCase();
-        return (
-            routePath === this.vaccineCardPath ||
-            routePath === this.covidTestPath
-        );
+    private currentPathMatches(...paths: string[]): boolean {
+        const currentPath = this.$route.path.toLowerCase();
+        return paths.some((path) => path === currentPath);
     }
 
-    private get isLoginCallbackPath(): boolean {
-        return this.$route.path.toLowerCase() === this.loginCallbackPath;
-    }
-
-    private get isRegistrationPath(): boolean {
-        return this.$route.path.toLowerCase() === this.registrationPath;
-    }
-
-    private get isPcrTestPath(): boolean {
-        return this.$route.path.toLowerCase().startsWith(this.pcrTestPath);
-    }
-
-    private get isAcceptTermsOfServicePath(): boolean {
-        return (
-            this.$route.path.toLowerCase() ===
-            this.acceptTermsOfServicePath.toLowerCase()
+    private get pageHasCustomLayout(): boolean {
+        return this.currentPathMatches(
+            this.vaccineCardPath,
+            this.covidTestPath,
+            this.landingPath
         );
     }
 
     private get isHeaderVisible(): boolean {
-        return !this.isPublicDestinationPath && !this.isLoginCallbackPath;
+        return !this.currentPathMatches(
+            this.loginCallbackPath,
+            this.vaccineCardPath,
+            this.covidTestPath
+        );
     }
 
     private get isFooterVisible(): boolean {
-        return (
-            !this.isPublicDestinationPath &&
-            !this.isLoginCallbackPath &&
-            !this.isRegistrationPath
+        return !this.currentPathMatches(
+            this.loginCallbackPath,
+            this.registrationPath,
+            this.vaccineCardPath,
+            this.covidTestPath
         );
     }
 
     private get isSidebarVisible(): boolean {
         return (
-            !this.isLoginCallbackPath &&
-            !this.isRegistrationPath &&
-            !this.isPcrTestPath &&
-            !this.isAcceptTermsOfServicePath &&
+            !this.currentPathMatches(
+                this.loginCallbackPath,
+                this.registrationPath,
+                this.acceptTermsOfServicePath
+            ) &&
+            !this.$route.path.toLowerCase().startsWith(this.pcrTestPath) &&
             !this.hasTermsOfServiceUpdated
         );
     }
 
     private get isCommunicationVisible(): boolean {
         return (
-            !this.isPublicDestinationPath &&
-            !this.isLoginCallbackPath &&
-            !this.isPcrTestPath
+            !this.currentPathMatches(
+                this.loginCallbackPath,
+                this.vaccineCardPath,
+                this.covidTestPath
+            ) && !this.$route.path.toLowerCase().startsWith(this.pcrTestPath)
+        );
+    }
+
+    private get isResourceCentreVisible(): boolean {
+        return this.currentPathMatches(
+            this.dependentsPath,
+            this.reportsPath,
+            this.timelinePath
         );
     }
 }
@@ -249,9 +258,15 @@ export default class App extends Vue {
                 class="d-print-none sticky-top vh-100"
             />
             <main class="col fill-height d-flex flex-column">
-                <CommunicationComponent v-show="isCommunicationVisible" />
-                <ErrorCard />
-                <router-view />
+                <CommunicationComponent v-if="isCommunicationVisible" />
+
+                <router-view v-if="pageHasCustomLayout" />
+                <div v-else class="m-3 m-md-4">
+                    <ErrorCardComponent />
+                    <router-view />
+                </div>
+
+                <ResourceCentreComponent v-if="isResourceCentreVisible" />
                 <IdleComponent ref="idleModal" />
             </main>
         </b-row>

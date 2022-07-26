@@ -17,11 +17,9 @@ import Vue from "vue";
 import { Component } from "vue-property-decorator";
 import { Action, Getter } from "vuex-class";
 
-import ErrorCardComponent from "@/components/ErrorCardComponent.vue";
 import NoteEditComponent from "@/components/modal/NoteEditComponent.vue";
 import ProtectiveWordComponent from "@/components/modal/ProtectiveWordComponent.vue";
 import BreadcrumbComponent from "@/components/navmenu/BreadcrumbComponent.vue";
-import ResourceCentreComponent from "@/components/ResourceCentreComponent.vue";
 import AddNoteButtonComponent from "@/components/timeline/AddNoteButtonComponent.vue";
 import EntryDetailsComponent from "@/components/timeline/entryCard/EntryDetailsComponent.vue";
 import FilterComponent from "@/components/timeline/FilterComponent.vue";
@@ -78,9 +76,7 @@ enum FilterLabelType {
         NoteEditComponent,
         EntryDetailsComponent,
         LinearTimeline: LinearTimelineComponent,
-        ErrorCard: ErrorCardComponent,
         Filters: FilterComponent,
-        "resource-centre": ResourceCentreComponent,
         "add-note-button": AddNoteButtonComponent,
     },
 })
@@ -488,7 +484,7 @@ export default class TimelineView extends Vue {
 </script>
 
 <template>
-    <div class="m-3 m-md-4 flex-grow-1 d-flex flex-column">
+    <div>
         <b-toast
             id="loading-toast"
             :visible="!isFullyLoaded"
@@ -581,7 +577,6 @@ export default class TimelineView extends Vue {
                 </b-row>
             </b-col>
         </b-row>
-        <resource-centre />
         <ProtectiveWordComponent :is-loading="isMedicationStatementLoading" />
         <NoteEditComponent :is-loading="isNoteLoading" />
         <EntryDetailsComponent />

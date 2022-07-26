@@ -13,7 +13,6 @@ import {
 import { Validation } from "vuelidate/vuelidate";
 import { Action, Getter } from "vuex-class";
 
-import ErrorCardComponent from "@/components/ErrorCardComponent.vue";
 import LoadingComponent from "@/components/LoadingComponent.vue";
 import HgDateDropdownComponent from "@/components/shared/HgDateDropdownComponent.vue";
 import HgTimeDropdownComponent from "@/components/shared/HgTimeDropdownComponent.vue";
@@ -43,7 +42,6 @@ interface ISelectOption {
 @Component({
     components: {
         LoadingComponent,
-        ErrorCard: ErrorCardComponent,
         "hg-date-dropdown": HgDateDropdownComponent,
         "hg-time-dropdown": HgTimeDropdownComponent,
     },
@@ -67,8 +65,8 @@ export default class PcrTestView extends Vue {
         traceId: string | undefined;
     }) => void;
 
-    @Action("clearError", { namespace: "errorBanner" })
-    clearError!: () => void;
+    @Action("clearErrors", { namespace: "errorBanner" })
+    clearErrors!: () => void;
 
     @Action("signIn", { namespace: "auth" })
     signIn!: (params: {
@@ -331,7 +329,7 @@ export default class PcrTestView extends Vue {
         if (this.$v.$invalid) {
             return;
         }
-        this.clearError();
+        this.clearErrors();
         const shortCodeFirst =
             this.pcrTest.testKitCode.length > 0
                 ? this.pcrTest.testKitCode.split("-")[0]
@@ -471,7 +469,7 @@ export default class PcrTestView extends Vue {
                 !registrationComplete && pcrDataSource === DSNONE && !isLoading
             "
         >
-            <b-row class="pt-4">
+            <b-row class="pt-3">
                 <b-col>
                     <strong>
                         Register your COVID-19 test kit using one of the
@@ -532,7 +530,7 @@ export default class PcrTestView extends Vue {
             v-if="!registrationComplete && pcrDataSource !== DSNONE"
             v-show="!isLoading"
         >
-            <b-row id="title" class="mt-4">
+            <b-row id="title" class="mt-3">
                 <b-col>
                     <h1 class="h4 mb-2 font-weight-normal">
                         <strong>Register a Test Kit</strong>

@@ -86,7 +86,7 @@ export interface LaboratoryActions
     ): Promise<PublicCovidTestResponseResult>;
     handlePublicCovidTestsError(
         context: StoreContext,
-        error: ResultError
+        params: { error: ResultError; errorType: ErrorType }
     ): void;
     resetPublicCovidTestResponseResult(context: StoreContext): void;
 }

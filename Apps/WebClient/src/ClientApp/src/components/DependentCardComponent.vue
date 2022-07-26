@@ -1083,7 +1083,7 @@ export default class DependentCardComponent extends Vue {
         <LoadingComponent
             :is-loading="isGeneratingReport"
             :full-screen="false"
-        ></LoadingComponent>
+        />
         <delete-modal-component
             ref="deleteModal"
             title="Remove Dependent"
