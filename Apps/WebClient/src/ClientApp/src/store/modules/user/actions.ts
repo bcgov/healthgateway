@@ -278,18 +278,11 @@ export const actions: UserActions = {
         logger.error(`ERROR: ${JSON.stringify(params.error)}`);
         context.commit("userError", params.error);
 
-        if (
-            params.errorType === ErrorType.Retrieve &&
-            params.error.statusCode === 429
-        ) {
+        if (params.error.statusCode === 429) {
             context.dispatch(
                 "errorBanner/setTooManyRequestsWarning",
-                {
-                    key: "page",
-                },
-                {
-                    root: true,
-                }
+                { key: "page" },
+                { root: true }
             );
         } else {
             context.dispatch(

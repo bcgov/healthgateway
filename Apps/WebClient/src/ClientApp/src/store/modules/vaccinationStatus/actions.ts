@@ -86,18 +86,11 @@ export const actions: VaccinationStatusActions = {
 
         logger.error(`ERROR: ${JSON.stringify(params.error)}`);
 
-        if (
-            params.errorType === ErrorType.Retrieve &&
-            params.error.statusCode === 429
-        ) {
+        if (params.error.statusCode === 429) {
             context.dispatch(
                 setTooManyRequestsWarning,
-                {
-                    key: "publicVaccineCard",
-                },
-                {
-                    root: true,
-                }
+                { key: "publicVaccineCard" },
+                { root: true }
             );
 
             context.commit("publicVaccinationStatusError", undefined);
@@ -190,18 +183,11 @@ export const actions: VaccinationStatusActions = {
 
         logger.error(`ERROR: ${JSON.stringify(params.error)}`);
 
-        if (
-            params.errorType === ErrorType.Retrieve &&
-            params.error.statusCode === 429
-        ) {
+        if (params.error.statusCode === 429) {
             context.dispatch(
                 setTooManyRequestsWarning,
-                {
-                    key: "vaccineCardComponent",
-                },
-                {
-                    root: true,
-                }
+                { key: "vaccineCardComponent" },
+                { root: true }
             );
 
             context.commit("setPublicVaccineRecordError", undefined);
@@ -294,18 +280,11 @@ export const actions: VaccinationStatusActions = {
         logger.error(`ERROR: ${JSON.stringify(params.error)}`);
         context.commit("authenticatedVaccinationStatusError", params.error);
 
-        if (
-            params.errorType === ErrorType.Retrieve &&
-            params.error.statusCode === 429
-        ) {
+        if (params.error.statusCode === 429) {
             context.dispatch(
                 setTooManyRequestsWarning,
-                {
-                    key: "page",
-                },
-                {
-                    root: true,
-                }
+                { key: "page" },
+                { root: true }
             );
         } else {
             context.dispatch(
@@ -392,18 +371,11 @@ export const actions: VaccinationStatusActions = {
         logger.error(`ERROR: ${JSON.stringify(params.error)}`);
         context.commit("setAuthenticatedVaccineRecordError", params.error);
 
-        if (
-            params.errorType === ErrorType.Retrieve &&
-            params.error.statusCode === 429
-        ) {
+        if (params.error.statusCode === 429) {
             context.dispatch(
                 setTooManyRequestsWarning,
-                {
-                    key: "vaccineCardComponent",
-                },
-                {
-                    root: true,
-                }
+                { key: "vaccineCardComponent" },
+                { root: true }
             );
         } else {
             if (params.error.actionCode === ActionType.Invalid) {
