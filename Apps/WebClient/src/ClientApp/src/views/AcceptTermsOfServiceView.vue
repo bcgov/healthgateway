@@ -26,9 +26,6 @@ library.add(faExclamationTriangle);
     },
 })
 export default class AcceptTermsOfServiceView extends Vue {
-    @Action("checkRegistration", { namespace: "user" })
-    checkRegistration!: () => Promise<boolean>;
-
     @Action("updateAcceptedTerms", { namespace: "user" })
     updateAcceptedTerms!: (params: {
         termsOfServiceId: string;
