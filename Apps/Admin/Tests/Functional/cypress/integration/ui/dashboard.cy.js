@@ -1,35 +1,35 @@
-function getLastLoginDate(days) {
-    let lostLoginDate = new Date(new Date().toString());
-    lostLoginDate.setDate(lostLoginDate.getDate() - days);
-    lostLoginDate.setUTCHours(0, 0, 0, 0);
-    cy.log(`Last Login Date: ${lostLoginDate.toISOString()}`);
-    return lostLoginDate.toISOString();
+function getPastDate(daysAgo) {
+    let pastDate = new Date(new Date().toString());
+    pastDate.setDate(pastDate.getDate() - daysAgo);
+    pastDate.setUTCHours(0, 0, 0, 0);
+    cy.log(`Past Date: ${pastDate.toISOString()}`);
+    return pastDate.toISOString();
 }
 
 describe("Dashboard", () => {
     beforeEach(() => {
         cy.intercept("GET", "**/Dashboard/RegisteredCount*", {
             body: {
-                [getLastLoginDate(120)]: 1,
-                [getLastLoginDate(2)]: 1,
-                [getLastLoginDate(1)]: 2,
-                [getLastLoginDate(0)]: 2,
+                [getPastDate(120)]: 1,
+                [getPastDate(2)]: 1,
+                [getPastDate(1)]: 2,
+                [getPastDate(0)]: 2,
             },
         });
 
         cy.intercept("GET", "**/Dashboard/LoggedInCount*", {
             body: {
-                [getLastLoginDate(120)]: 1,
-                [getLastLoginDate(3)]: 1,
-                [getLastLoginDate(2)]: 3,
-                [getLastLoginDate(1)]: 2,
-                [getLastLoginDate(0)]: 6,
+                [getPastDate(120)]: 1,
+                [getPastDate(3)]: 1,
+                [getPastDate(2)]: 3,
+                [getPastDate(1)]: 2,
+                [getPastDate(0)]: 6,
             },
         });
 
         cy.intercept("GET", "**/Dashboard/DependentCount*", {
             body: {
-                [getLastLoginDate(0)]: 2,
+                [getPastDate(0)]: 2,
             },
         });
 
@@ -89,26 +89,26 @@ describe("Dashboard", () => {
         cy.log("Clicking refresh button.");
         cy.intercept("GET", "**/Dashboard/RegisteredCount*", {
             body: {
-                [getLastLoginDate(120)]: 1,
-                [getLastLoginDate(2)]: 1,
-                [getLastLoginDate(1)]: 2,
-                [getLastLoginDate(0)]: 3,
+                [getPastDate(120)]: 1,
+                [getPastDate(2)]: 1,
+                [getPastDate(1)]: 2,
+                [getPastDate(0)]: 3,
             },
         });
 
         cy.intercept("GET", "**/Dashboard/LoggedInCount*", {
             body: {
-                [getLastLoginDate(120)]: 1,
-                [getLastLoginDate(3)]: 1,
-                [getLastLoginDate(2)]: 3,
-                [getLastLoginDate(1)]: 2,
-                [getLastLoginDate(0)]: 7,
+                [getPastDate(120)]: 1,
+                [getPastDate(3)]: 1,
+                [getPastDate(2)]: 3,
+                [getPastDate(1)]: 2,
+                [getPastDate(0)]: 7,
             },
         });
 
         cy.intercept("GET", "**/Dashboard/DependentCount*", {
             body: {
-                [getLastLoginDate(0)]: 3,
+                [getPastDate(0)]: 3,
             },
         });
 
