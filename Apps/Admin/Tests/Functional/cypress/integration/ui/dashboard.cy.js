@@ -1,15 +1,36 @@
+function getLastLoginDate(days) {
+    let lostLoginDate = new Date(new Date().toString());
+    lostLoginDate.setDate(lostLoginDate.getDate() - days);
+    lostLoginDate.setUTCHours(0, 0, 0, 0);
+    cy.log(`Last Login Date: ${lostLoginDate.toISOString()}`);
+    return lostLoginDate.toISOString();
+}
+
 describe("Dashboard", () => {
     beforeEach(() => {
         cy.intercept("GET", "**/Dashboard/RegisteredCount*", {
-            fixture: "DashboardService/registered-count.json",
+            body: {
+                [getLastLoginDate(120)]: 1,
+                [getLastLoginDate(2)]: 1,
+                [getLastLoginDate(1)]: 2,
+                [getLastLoginDate(0)]: 2,
+            },
         });
 
         cy.intercept("GET", "**/Dashboard/LoggedInCount*", {
-            fixture: "DashboardService/logged-in-count.json",
+            body: {
+                [getLastLoginDate(120)]: 1,
+                [getLastLoginDate(3)]: 1,
+                [getLastLoginDate(2)]: 3,
+                [getLastLoginDate(1)]: 2,
+                [getLastLoginDate(0)]: 6,
+            },
         });
 
         cy.intercept("GET", "**/Dashboard/DependentCount*", {
-            fixture: "DashboardService/dependent-count.json",
+            body: {
+                [getLastLoginDate(0)]: 2,
+            },
         });
 
         // used to calculate [data-testid=average-rating]
@@ -67,15 +88,28 @@ describe("Dashboard", () => {
 
         cy.log("Clicking refresh button.");
         cy.intercept("GET", "**/Dashboard/RegisteredCount*", {
-            fixture: "DashboardService/registered-count-refresh.json",
+            body: {
+                [getLastLoginDate(120)]: 1,
+                [getLastLoginDate(2)]: 1,
+                [getLastLoginDate(1)]: 2,
+                [getLastLoginDate(0)]: 3,
+            },
         });
 
         cy.intercept("GET", "**/Dashboard/LoggedInCount*", {
-            fixture: "DashboardService/logged-in-count-refresh.json",
+            body: {
+                [getLastLoginDate(120)]: 1,
+                [getLastLoginDate(3)]: 1,
+                [getLastLoginDate(2)]: 3,
+                [getLastLoginDate(1)]: 2,
+                [getLastLoginDate(0)]: 7,
+            },
         });
 
         cy.intercept("GET", "**/Dashboard/DependentCount*", {
-            fixture: "DashboardService/dependent-count-refresh.json",
+            body: {
+                [getLastLoginDate(0)]: 3,
+            },
         });
 
         cy.intercept("GET", "**/Dashboard/Ratings/Summary*", {
@@ -113,7 +147,6 @@ describe("Dashboard", () => {
         cy.get("[data-testid=skeleton-unique-days]").should("be.visible");
         cy.get("[data-testid=skeleton-user-count]").should("be.visible");
         cy.get("[data-testid=skeleton-rating-summary]").should("be.visible");
-
         cy.log("Dashboard test finished.");
     });
 });
