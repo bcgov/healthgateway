@@ -46,7 +46,7 @@ function clickVaccineCardEnterButton() {
 
 describe("Public Vaccine Card Form", () => {
     beforeEach(() => {
-        cy.enableModules(vaccinationStatusModule);
+        cy.enableModules(["Immunization", "VaccinationStatus"]);
         cy.logout();
         cy.visit(vaccineCardUrl);
     });
@@ -212,6 +212,23 @@ describe("Public Vaccine Card Form", () => {
 
         cy.get(feedbackDovIsRequiredSelector).should("be.visible");
     });
+
+    it("Unsuccessful Response: Too Many Requests", () => {
+        cy.intercept("GET", "**/PublicVaccineStatus", {
+            statusCode: 429,
+        });
+
+        enterVaccineCardPHN(fullyVaccinatedPhn);
+        cy.get(dobYearSelector).select(fullyVaccinatedDobYear);
+        cy.get(dobMonthSelector).select(fullyVaccinatedDobMonth);
+        cy.get(dobDaySelector).select(fullyVaccinatedDobDay);
+        cy.get(dovYearSelector).select(fullyVaccinatedDovYear);
+        cy.get(dovMonthSelector).select(fullyVaccinatedDovMonth);
+        cy.get(dovDaySelector).select(fullyVaccinatedDovDay);
+        clickVaccineCardEnterButton();
+
+        cy.get("[data-testid=too-many-requests-warning]").should("be.visible");
+    });
 });
 
 describe("Public Vaccine Card Downloads", () => {
@@ -252,6 +269,22 @@ describe("Public Vaccine Card Downloads", () => {
         cy.get("[data-testid=genericMessageModal]").should("be.visible");
         cy.get("[data-testid=genericMessageSubmitBtn]").click();
         cy.get("[data-testid=errorTextDescription]").should("be.visible");
+        cy.get("[data-testid=loadingSpinner]").should("not.be.visible");
+    });
+
+    it("Unsuccessful Response: Too Many Requests", () => {
+        cy.intercept("GET", "**/PublicVaccineStatus/pdf", {
+            statusCode: 429,
+        });
+        cy.get("[data-testid=save-dropdown-btn]")
+            .should("be.visible", "be.enabled")
+            .click();
+        cy.get("[data-testid=save-as-pdf-dropdown-item]")
+            .should("be.visible")
+            .click();
+        cy.get("[data-testid=genericMessageModal]").should("be.visible");
+        cy.get("[data-testid=genericMessageSubmitBtn]").click();
+        cy.get("[data-testid=too-many-requests-warning]").should("be.visible");
         cy.get("[data-testid=loadingSpinner]").should("not.be.visible");
     });
 

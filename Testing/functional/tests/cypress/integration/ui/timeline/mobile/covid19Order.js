@@ -187,6 +187,22 @@ describe("COVID-19 Orders", () => {
             });
     });
 
+    it("Unsuccessful Response: Too Many Requests", () => {
+        cy.intercept("GET", "**/Laboratory/Covid19Orders*", {
+            statusCode: 429,
+        });
+        cy.enableModules("Laboratory");
+        cy.viewport("iphone-6");
+        cy.login(
+            Cypress.env("keycloak.username"),
+            Cypress.env("keycloak.password"),
+            AuthMethod.KeyCloak
+        );
+        cy.checkTimelineHasLoaded();
+
+        cy.get("[data-testid=too-many-requests-warning]").should("be.visible");
+    });
+
     it("Validate Download", () => {
         cy.intercept(
             "GET",
