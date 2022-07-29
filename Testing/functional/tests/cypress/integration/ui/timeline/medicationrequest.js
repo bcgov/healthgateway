@@ -20,4 +20,18 @@ describe("Medication Request", () => {
         cy.get("[data-testid=entryCardDetailsTitle]").first().click();
         cy.get("[data-testid=medicationPractitioner]").should("be.visible");
     });
+
+    it("Unsuccessful Response: Too Many Requests", () => {
+        cy.intercept("GET", "**/MedicationRequest/*", {
+            statusCode: 429,
+        });
+        cy.login(
+            Cypress.env("keycloak.username"),
+            Cypress.env("keycloak.password"),
+            AuthMethod.KeyCloak
+        );
+        cy.checkTimelineHasLoaded();
+
+        cy.get("[data-testid=too-many-requests-warning]").should("be.visible");
+    });
 });

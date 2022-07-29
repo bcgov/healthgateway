@@ -107,4 +107,19 @@ describe("Immunization", () => {
 
         cy.get("[data-testid=cardBtn]").should("have.attr", "href", "/covid19");
     });
+
+    it("Unsuccessful Response: Too Many Requests", () => {
+        cy.intercept("GET", "**/Immunization?*", {
+            statusCode: 429,
+        });
+        cy.enableModules("Immunization");
+        cy.login(
+            Cypress.env("keycloak.username"),
+            Cypress.env("keycloak.password"),
+            AuthMethod.KeyCloak
+        );
+        cy.checkTimelineHasLoaded();
+
+        cy.get("[data-testid=too-many-requests-warning]").should("be.visible");
+    });
 });
