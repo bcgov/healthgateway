@@ -17,9 +17,13 @@ namespace HealthGateway.DatabaseTests.Fixtures
 {
     using System;
     using System.IO;
+    using System.Threading.Tasks;
     using HealthGateway.Database.Context;
     using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.Configuration;
+    using Npgsql;
+    using Respawn;
+    using Respawn.Graph;
 
     /// <summary>
     /// Helper methods to support fixture creation.
@@ -27,6 +31,30 @@ namespace HealthGateway.DatabaseTests.Fixtures
     public static class Fixture
     {
         private const string UserSecret = "84e2fe9a-a1f5-4de7-bef6-4518a33fa8b9";
+
+        /// <summary>
+        /// Deletes all data including dependent data from tables specified in parameter.
+        /// </summary>
+        /// <param name="tablesToInclude">An array of Tables to be deleted.</param>
+        /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+        public static async Task<string?> ResetDatabase(Table[] tablesToInclude)
+        {
+            using NpgsqlConnection connection = new(GetConnectionString());
+
+            await connection.OpenAsync().ConfigureAwait(true);
+            Checkpoint checkpoint = new()
+            {
+                TablesToInclude = tablesToInclude,
+                SchemasToInclude = new[]
+                {
+                    "gateway",
+                },
+                DbAdapter = DbAdapter.Postgres,
+            };
+
+            await checkpoint.Reset(connection).ConfigureAwait(true);
+            return checkpoint.DeleteSql;
+        }
 
         /// <summary>
         /// Creates DB Context for Gateway Database.
@@ -47,14 +75,12 @@ namespace HealthGateway.DatabaseTests.Fixtures
         public static string? GetConnectionString()
         {
             string environment = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") ?? "Development";
-            Console.WriteLine($"Directory: {Directory.GetCurrentDirectory()}");
             IConfigurationRoot config = new ConfigurationBuilder()
                 .SetBasePath(Directory.GetCurrentDirectory())
                 .AddJsonFile($"appsettings.{environment}.json", true)
                 .AddUserSecrets(UserSecret)
                 .Build();
             string? connectionString = config.GetConnectionString("GatewayConnection");
-            Console.WriteLine($"Connection String: {connectionString}");
             return connectionString;
         }
     }

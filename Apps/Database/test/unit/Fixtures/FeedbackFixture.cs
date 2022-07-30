@@ -16,8 +16,10 @@
 namespace HealthGateway.DatabaseTests.Fixtures
 {
     using System;
+    using System.Threading.Tasks;
     using HealthGateway.Database.Context;
     using HealthGateway.Database.Models;
+    using Respawn.Graph;
     using Xunit;
 
     /// <summary>
@@ -26,6 +28,12 @@ namespace HealthGateway.DatabaseTests.Fixtures
     public class FeedbackFixture
     {
         private const string Hdid = "P6FFO433A5WPMVTGM7T4ZVWBKCSVNAYGTWTU3J2LWMGUMERKI72A";
+
+        private readonly Table[] tablesToInclude =
+        {
+            "UserFeedback",
+        };
+
         private readonly UserFeedback userFeedback = new()
         {
             CreatedBy = Hdid, CreatedDateTime = DateTime.UtcNow,
@@ -35,22 +43,31 @@ namespace HealthGateway.DatabaseTests.Fixtures
         };
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="FeedbackFixture"/> class and seeds test data in User Feedback table.
+        /// Creates a new instance of FeedbackFixture and seeds data to the database.
         /// </summary>
-        public FeedbackFixture()
+        /// <returns>A new instance of FeedbackFixture.</returns>
+        public static Task<FeedbackFixture> CreateAsyncFeedbackFixture()
         {
-            this.Cleanup();
+            FeedbackFixture feedbackFixture = new();
+            return feedbackFixture.InitializeAsyncFeedbackFixture();
         }
 
         /// <summary>
-        /// Deletes data in User Feedback table and re-seeds test data.
+        /// Deletes data in User Feedback table and then re-seeds original test data.
         /// </summary>
-        public void Cleanup()
+        /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+        public async Task Cleanup()
         {
             using GatewayDbContext context = Fixture.CreateContext();
-            context.UserFeedback.RemoveRange(context.UserFeedback);
-            context.AddRangeAsync(this.userFeedback).ConfigureAwait(true);
+            await Fixture.ResetDatabase(this.tablesToInclude).ConfigureAwait(true);
+            await context.AddRangeAsync(this.userFeedback).ConfigureAwait(true);
             context.SaveChanges();
+        }
+
+        private async Task<FeedbackFixture> InitializeAsyncFeedbackFixture()
+        {
+            await this.Cleanup().ConfigureAwait(true);
+            return this;
         }
     }
 

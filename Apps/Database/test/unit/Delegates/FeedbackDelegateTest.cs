@@ -17,6 +17,7 @@ namespace HealthGateway.DatabaseTests.Delegates
 {
     using System;
     using System.Collections.Generic;
+    using System.Threading.Tasks;
     using HealthGateway.Database.Constants;
     using HealthGateway.Database.Context;
     using HealthGateway.Database.Delegates;
@@ -30,25 +31,24 @@ namespace HealthGateway.DatabaseTests.Delegates
     /// Feedback Delegate unit tests.
     /// </summary>
     [Collection("FeedbackFixtures")]
-    public class FeedbackDelegateTest : IDisposable
+    public class FeedbackDelegateTest : IAsyncDisposable
     {
         private bool disposed;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="FeedbackDelegateTest"/> class.
         /// </summary>
-        /// <param name="feedbackFixture">Instance of FeedbackFixture.</param>
-        public FeedbackDelegateTest(FeedbackFixture feedbackFixture)
+        public FeedbackDelegateTest()
         {
-            this.FeedbackFixture = feedbackFixture;
+            this.FeedbackFixture = FeedbackFixture.CreateAsyncFeedbackFixture().Result;
         }
 
         private FeedbackFixture FeedbackFixture { get; }
 
         /// <inheritdoc/>
-        public void Dispose()
+        public async ValueTask DisposeAsync()
         {
-            this.Dispose(true);
+            await this.DisposeAsyncCore().ConfigureAwait(false);
             GC.SuppressFinalize(this);
         }
 
@@ -58,30 +58,23 @@ namespace HealthGateway.DatabaseTests.Delegates
         [Fact]
         public void ShouldGetFeedback()
         {
+            const int expected = 1;
             using GatewayDbContext context = Fixture.CreateContext();
             DBFeedbackDelegate feedbackDelegate = new(new NullLogger<DBFeedbackDelegate>(), context);
             DBResult<IList<UserFeedback>> result = feedbackDelegate.GetAllUserFeedbackEntries();
             Assert.Equal(DBStatusCode.Read, result.Status);
-            Assert.Equal(1, result.Payload.Count);
+            Assert.Equal(expected, result.Payload.Count);
         }
 
         /// <summary>
-        /// Releases the unmanaged resources used by this class optionally disposes of the managed resources.
+        /// Calling cleanup to delete data from User Feedback and re-seed test original test data.
         /// </summary>
-        /// <param name="disposing">
-        /// If true, releases both managed and unmanaged resources. If false, releases only unmanaged
-        /// resources.
-        /// </param>
-        protected virtual void Dispose(bool disposing)
+        /// <returns>Task.</returns>
+        protected virtual async ValueTask DisposeAsyncCore()
         {
-            if (this.disposed)
+            if (!this.disposed)
             {
-                return;
-            }
-
-            if (disposing)
-            {
-                this.FeedbackFixture.Cleanup();
+                await this.FeedbackFixture.Cleanup().ConfigureAwait(true);
             }
 
             this.disposed = true;
