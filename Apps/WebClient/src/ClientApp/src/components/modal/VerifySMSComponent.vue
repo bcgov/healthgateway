@@ -16,7 +16,8 @@ import { ILogger, IUserProfileService } from "@/services/interfaces";
 @Component({
     components: {
         LoadingComponent,
-        countdown: VueCountdown,
+        VueCountdown,
+        TooManyRequestsComponent,
     },
 })
 export default class VerifySMSComponent extends Vue {
@@ -213,6 +214,7 @@ export default class VerifySMSComponent extends Vue {
         <b-row>
             <b-col>
                 <form>
+                    <TooManyRequestsComponent location="verifySmsModal" />
                     <b-row v-if="error">
                         <b-col class="text-center">
                             An unexpected error has occurred. Please try
@@ -280,7 +282,7 @@ export default class VerifySMSComponent extends Vue {
                     </hg-button>
                 </b-col>
                 <b-col v-if="!allowRetry">
-                    <countdown :time="getTimeout()">
+                    <VueCountdown :time="getTimeout()">
                         <template slot-scope="props"
                             >Your code has been sent. You can resend after
                             <span data-testid="countdownText"
@@ -290,7 +292,7 @@ export default class VerifySMSComponent extends Vue {
                                 {{ props.seconds }}s</span
                             ></template
                         >
-                    </countdown>
+                    </VueCountdown>
                 </b-col>
                 <b-col v-if="tooManyRetries">
                     <hg-button

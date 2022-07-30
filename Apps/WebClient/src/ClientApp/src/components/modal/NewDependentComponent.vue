@@ -8,6 +8,7 @@ import { Getter } from "vuex-class";
 
 import DatePickerComponent from "@/components/DatePickerComponent.vue";
 import LoadingComponent from "@/components/LoadingComponent.vue";
+import TooManyRequestsComponent from "@/components/TooManyRequestsComponent.vue";
 import AddDependentRequest from "@/models/addDependentRequest";
 import type { WebClientConfiguration } from "@/models/configData";
 import { DateWrapper } from "@/models/dateWrapper";
@@ -27,6 +28,7 @@ const validPersonalHealthNumber = (value: string) => {
     components: {
         LoadingComponent,
         DatePickerComponent,
+        TooManyRequestsComponent,
     },
 })
 export default class NewDependentComponent extends Vue {
@@ -177,6 +179,7 @@ export default class NewDependentComponent extends Vue {
         header-text-variant="light"
         centered
     >
+        <TooManyRequestsComponent location="addDependentModal" />
         <b-alert
             data-testid="dependentErrorBanner"
             variant="danger"
