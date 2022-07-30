@@ -5,6 +5,7 @@
     <SonarQubeTestProject>true</SonarQubeTestProject>
     <RootNamespace>HealthGateway.DatabaseTests</RootNamespace>
     <DocumentationFile>bin\$(Configuration)\$(TargetFramework)\$(MSBuildThisFileName).xml</DocumentationFile>
+    <UserSecretsId>84e2fe9a-a1f5-4de7-bef6-4518a33fa8b9</UserSecretsId>
   </PropertyGroup>
   <ItemGroup>
     <AdditionalFiles Include="..\..\..\stylecop.json" />
@@ -25,7 +26,8 @@
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
     <PackageReference Include="DeepEqual" Version="2.0.0" />
-    <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="6.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="7.0.0-preview.6.22324.4" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.UserSecrets" Version="7.0.0-preview.6.22324.4" />
     <PackageReference Include="Microsoft.Extensions.Logging.Console" Version="6.0.0" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.2.0" />
     <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="6.0.5" />
