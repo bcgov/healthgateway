@@ -4,7 +4,7 @@ import Vue from "vue";
 import { Component, Emit } from "vue-property-decorator";
 import { minLength, required, sameAs } from "vuelidate/lib/validators";
 import { Validation } from "vuelidate/vuelidate";
-import { Getter } from "vuex-class";
+import { Action, Getter } from "vuex-class";
 
 import DatePickerComponent from "@/components/DatePickerComponent.vue";
 import LoadingComponent from "@/components/LoadingComponent.vue";
