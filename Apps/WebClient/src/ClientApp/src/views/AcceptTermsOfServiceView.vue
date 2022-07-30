@@ -38,6 +38,12 @@ export default class AcceptTermsOfServiceView extends Vue {
         traceId: string | undefined;
     }) => void;
 
+    @Action("setTooManyRequestsError", { namespace: "errorBanner" })
+    setTooManyRequestsError!: (params: { key: string }) => void;
+
+    @Action("setTooManyRequestsWarning", { namespace: "errorBanner" })
+    setTooManyRequestsWarning!: (params: { key: string }) => void;
+
     @Getter("user", { namespace: "user" })
     user!: User;
 
@@ -89,13 +95,17 @@ export default class AcceptTermsOfServiceView extends Vue {
                 this.termsOfServiceId = result.id;
                 this.termsOfService = result.content;
             })
-            .catch((err) => {
+            .catch((err: ResultError) => {
                 this.logger.error(err);
-                this.addError({
-                    errorType: ErrorType.Retrieve,
-                    source: ErrorSourceType.TermsOfService,
-                    traceId: undefined,
-                });
+                if (err.statusCode === 429) {
+                    this.setTooManyRequestsWarning({ key: "page" });
+                } else {
+                    this.addError({
+                        errorType: ErrorType.Retrieve,
+                        source: ErrorSourceType.TermsOfService,
+                        traceId: undefined,
+                    });
+                }
             })
             .finally(() => {
                 this.loadingTermsOfService = false;
@@ -123,11 +133,15 @@ export default class AcceptTermsOfServiceView extends Vue {
                         err
                     )}`
                 );
-                this.addError({
-                    errorType: ErrorType.Update,
-                    source: ErrorSourceType.Profile,
-                    traceId: err.traceId,
-                });
+                if (err.statusCode === 429) {
+                    this.setTooManyRequestsError({ key: "page" });
+                } else {
+                    this.addError({
+                        errorType: ErrorType.Update,
+                        source: ErrorSourceType.Profile,
+                        traceId: err.traceId,
+                    });
+                }
             })
             .finally(() => {
                 this.loadingTermsOfService = false;

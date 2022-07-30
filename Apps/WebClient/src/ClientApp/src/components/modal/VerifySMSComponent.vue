@@ -7,6 +7,7 @@ import { Action, Getter } from "vuex-class";
 import LoadingComponent from "@/components/LoadingComponent.vue";
 import type { WebClientConfiguration } from "@/models/configData";
 import { DateWrapper } from "@/models/dateWrapper";
+import { ResultError } from "@/models/errors";
 import User from "@/models/user";
 import container from "@/plugins/container";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
@@ -25,6 +26,9 @@ export default class VerifySMSComponent extends Vue {
 
     @Getter("webClient", { namespace: "config" })
     config!: WebClientConfiguration;
+
+    @Action("setTooManyRequestsError", { namespace: "errorBanner" })
+    setTooManyRequestsError!: (params: { key: string }) => void;
 
     @Action("updateSMSResendDateTime", { namespace: "user" })
     updateSMSResendDateTime!: ({
@@ -130,9 +134,13 @@ export default class VerifySMSComponent extends Vue {
                     this.handleSubmit();
                 }
             })
-            .catch((err) => {
+            .catch((err: ResultError) => {
                 this.logger.error(err);
-                this.error = true;
+                if (err.statusCode === 429) {
+                    this.setTooManyRequestsError({ key: "verifySmsModal" });
+                } else {
+                    this.error = true;
+                }
             })
             .finally(() => {
                 this.smsVerificationCode = "";

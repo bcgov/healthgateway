@@ -66,8 +66,6 @@ export class RestUserNoteService implements IUserNoteService {
         });
     }
 
-    NOT_IMPLENTED = "Method not implemented.";
-
     public createNote(
         hdid: string,
         note: UserNote

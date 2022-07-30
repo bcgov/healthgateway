@@ -6,6 +6,7 @@ import HtmlTextAreaComponent from "@/components/HtmlTextAreaComponent.vue";
 import LoadingComponent from "@/components/LoadingComponent.vue";
 import BreadcrumbComponent from "@/components/navmenu/BreadcrumbComponent.vue";
 import BreadcrumbItem from "@/models/breadcrumbItem";
+import { ResultError } from "@/models/errors";
 import container from "@/plugins/container";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import { ILogger, IUserProfileService } from "@/services/interfaces";
@@ -18,6 +19,9 @@ import { ILogger, IUserProfileService } from "@/services/interfaces";
     },
 })
 export default class TermsOfServiceView extends Vue {
+    @Action("setTooManyRequestsWarning", { namespace: "errorBanner" })
+    setTooManyRequestsWarning!: (params: { key: string }) => void;
+
     private logger!: ILogger;
     private userProfileService!: IUserProfileService;
     private isLoading = true;
@@ -53,19 +57,18 @@ export default class TermsOfServiceView extends Vue {
                 );
                 this.termsOfService = result.content;
             })
-            .catch((err) => {
+            .catch((err: ResultError) => {
                 this.logger.error(err);
-                this.handleError("Please refresh your browser.");
+                if (err.statusCode === 429) {
+                    this.setTooManyRequestsWarning({ key: "page" });
+                } else {
+                    this.hasErrors = true;
+                    this.errorMessage = "Please refresh your browser.";
+                }
             })
             .finally(() => {
                 this.isLoading = false;
             });
-    }
-
-    private handleError(error: string): void {
-        this.hasErrors = true;
-        this.errorMessage = error;
-        this.logger.error(error);
     }
 }
 </script>

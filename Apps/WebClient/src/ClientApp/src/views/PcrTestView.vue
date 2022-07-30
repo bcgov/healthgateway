@@ -65,6 +65,9 @@ export default class PcrTestView extends Vue {
         traceId: string | undefined;
     }) => void;
 
+    @Action("setTooManyRequestsError", { namespace: "errorBanner" })
+    setTooManyRequestsError!: (params: { key: string }) => void;
+
     @Action("clearErrors", { namespace: "errorBanner" })
     clearErrors!: () => void;
 
@@ -418,7 +421,9 @@ export default class PcrTestView extends Vue {
 
     private handleError(err: ResultError, domain: string): void {
         this.logger.error(`${domain} Error: ${err}`);
-        if (err.actionCode == ActionType.Processed) {
+        if (err.statusCode === 429) {
+            this.setTooManyRequestsError({ key: "page" });
+        } else if (err.actionCode == ActionType.Processed) {
             this.errorMessage = err.resultMessage;
         } else {
             this.addCustomError({

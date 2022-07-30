@@ -35,6 +35,9 @@ export default class NewDependentComponent extends Vue {
     @Getter("webClient", { namespace: "config" })
     webClientConfig!: WebClientConfiguration;
 
+    @Action("setTooManyRequestsError", { namespace: "errorBanner" })
+    setTooManyRequestsError!: (params: { key: string }) => void;
+
     private dependentService!: IDependentService;
     private isVisible = false;
     private isLoading = true;
@@ -134,7 +137,11 @@ export default class NewDependentComponent extends Vue {
                 this.handleSubmit();
             })
             .catch((err: ResultError) => {
-                this.errorMessage = err.resultMessage;
+                if (err.statusCode === 429) {
+                    this.setTooManyRequestsError({ key: "addDependentModal" });
+                } else {
+                    this.errorMessage = err.resultMessage;
+                }
             });
     }
 
