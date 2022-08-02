@@ -20,7 +20,6 @@ namespace HealthGateway.DatabaseTests.Fixtures
     using HealthGateway.Database.Context;
     using HealthGateway.Database.Models;
     using Respawn.Graph;
-    using Xunit;
 
     /// <summary>
     /// Fixture for tests using UserFeedback table.
@@ -28,13 +27,26 @@ namespace HealthGateway.DatabaseTests.Fixtures
     public class UserFeedbackFixture
     {
         /// <summary>
+        /// Test data value for Name.
+        /// </summary>
+        public const string AdminTagName = "Tag";
+
+        /// <summary>
         /// Test data value for Comment.
         /// </summary>
         public const string UserFeedbackComment = "Unit Test";
         private const string Hdid = "P6FFO433A5WPMVTGM7T4ZVWBKCSVNAYGTWTU3J2LWMGUMERKI72A";
 
+        private readonly AdminTag adminTag = new()
+        {
+            CreatedBy = Hdid, CreatedDateTime = DateTime.UtcNow,
+            UpdatedBy = Hdid, UpdatedDateTime = DateTime.UtcNow,
+            Name = AdminTagName,
+        };
+
         private readonly Table[] tablesToInclude =
         {
+            "AdminTag",
             "UserFeedback",
         };
 
@@ -57,7 +69,7 @@ namespace HealthGateway.DatabaseTests.Fixtures
         }
 
         /// <summary>
-        /// Deletes data in User Feedback table and then re-seeds original test data.
+        /// Deletes data in UserFeedback and AdminTag tables and then re-seeds original test data.
         /// </summary>
         /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
         public async Task Cleanup()
@@ -65,6 +77,7 @@ namespace HealthGateway.DatabaseTests.Fixtures
             using GatewayDbContext context = Fixture.CreateContext();
             await Fixture.ResetDatabase(this.tablesToInclude).ConfigureAwait(true);
             await context.AddRangeAsync(this.userFeedback).ConfigureAwait(true);
+            await context.AddRangeAsync(this.adminTag).ConfigureAwait(true);
             context.SaveChanges();
         }
 
@@ -73,16 +86,5 @@ namespace HealthGateway.DatabaseTests.Fixtures
             await this.Cleanup().ConfigureAwait(true);
             return this;
         }
-    }
-
-    /// <summary>
-    /// Contains a collection of tests implementing FeedbackFixtures.
-    /// This supports multiple tests implementing UserFeedbackFixture running in parallel.
-    /// </summary>
-    [CollectionDefinition("FeedbackFixtures")]
-#pragma warning disable SA1402
-    public class FeedbackCollection : ICollectionFixture<UserFeedbackFixture>
-#pragma warning restore SA1402
-    {
     }
 }
