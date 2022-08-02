@@ -41,7 +41,7 @@ namespace HealthGateway.DatabaseTests.Delegates
         /// </summary>
         public FeedbackDelegateTest()
         {
-            this.UserFeedbackFixture = UserFeedbackFixture.CreateAsyncFeedbackFixture().Result;
+            this.UserFeedbackFixture = UserFeedbackFixture.CreateAsyncUserFeedbackFixture().Result;
         }
 
         private UserFeedbackFixture UserFeedbackFixture { get; }

@@ -62,10 +62,10 @@ namespace HealthGateway.DatabaseTests.Fixtures
         /// Creates a new instance of UserFeedbackFixture and seeds data to the database.
         /// </summary>
         /// <returns>A new instance of UserFeedbackFixture.</returns>
-        public static Task<UserFeedbackFixture> CreateAsyncFeedbackFixture()
+        public static Task<UserFeedbackFixture> CreateAsyncUserFeedbackFixture()
         {
             UserFeedbackFixture userFeedbackFixture = new();
-            return userFeedbackFixture.InitializeAsyncFeedbackFixture();
+            return userFeedbackFixture.InitializeAsyncUserFeedbackFixture();
         }
 
         /// <summary>
@@ -81,7 +81,7 @@ namespace HealthGateway.DatabaseTests.Fixtures
             context.SaveChanges();
         }
 
-        private async Task<UserFeedbackFixture> InitializeAsyncFeedbackFixture()
+        private async Task<UserFeedbackFixture> InitializeAsyncUserFeedbackFixture()
         {
             await this.Cleanup().ConfigureAwait(true);
             return this;
