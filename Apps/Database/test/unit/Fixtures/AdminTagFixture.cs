@@ -23,52 +23,52 @@ namespace HealthGateway.DatabaseTests.Fixtures
     using Xunit;
 
     /// <summary>
-    /// Fixture for tests using User Feedback table.
+    /// Fixture for tests using AdminTag table.
     /// </summary>
-    public class FeedbackFixture
+    public class AdminTagFixture
     {
         /// <summary>
-        /// Test data value for Comment.
+        /// Test data value for Name.
         /// </summary>
-        public const string UserFeedbackComment = "Unit Test";
+        public const string AdminTagName = "Tag";
+
         private const string Hdid = "P6FFO433A5WPMVTGM7T4ZVWBKCSVNAYGTWTU3J2LWMGUMERKI72A";
 
         private readonly Table[] tablesToInclude =
         {
-            "UserFeedback",
+            "AdminTag",
         };
 
-        private readonly UserFeedback userFeedback = new()
+        private readonly AdminTag adminTag = new()
         {
             CreatedBy = Hdid, CreatedDateTime = DateTime.UtcNow,
             UpdatedBy = Hdid, UpdatedDateTime = DateTime.UtcNow,
-            IsSatisfied = false, IsReviewed = false,
-            UserProfileId = Hdid, Comment = UserFeedbackComment,
+            Name = AdminTagName,
         };
 
         /// <summary>
-        /// Creates a new instance of FeedbackFixture and seeds data to the database.
+        /// Creates a new instance of AdminTagFixture and seeds data to the database.
         /// </summary>
-        /// <returns>A new instance of FeedbackFixture.</returns>
-        public static Task<FeedbackFixture> CreateAsyncFeedbackFixture()
+        /// <returns>A new instance of AdminTagFixture.</returns>
+        public static Task<AdminTagFixture> CreateAsyncAdminTagFixture()
         {
-            FeedbackFixture feedbackFixture = new();
-            return feedbackFixture.InitializeAsyncFeedbackFixture();
+            AdminTagFixture adminTagFixture = new();
+            return adminTagFixture.InitializeAsyncAdminTagFixture();
         }
 
         /// <summary>
-        /// Deletes data in User Feedback table and then re-seeds original test data.
+        /// Deletes data in AdminTag table and then re-seeds original test data.
         /// </summary>
         /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
         public async Task Cleanup()
         {
             using GatewayDbContext context = Fixture.CreateContext();
             await Fixture.ResetDatabase(this.tablesToInclude).ConfigureAwait(true);
-            await context.AddRangeAsync(this.userFeedback).ConfigureAwait(true);
+            await context.AddRangeAsync(this.adminTag).ConfigureAwait(true);
             context.SaveChanges();
         }
 
-        private async Task<FeedbackFixture> InitializeAsyncFeedbackFixture()
+        private async Task<AdminTagFixture> InitializeAsyncAdminTagFixture()
         {
             await this.Cleanup().ConfigureAwait(true);
             return this;
@@ -76,12 +76,12 @@ namespace HealthGateway.DatabaseTests.Fixtures
     }
 
     /// <summary>
-    /// Contains a collection of tests implementing FeedbackFixtures.
-    /// This supports multiple tests implementing FeedbackFixture running in parallel.
+    /// Contains a collection of tests implementing AdminTagFixtures.
+    /// This supports multiple tests implementing AdminTagFixture running in parallel.
     /// </summary>
     [CollectionDefinition("FeedbackFixtures")]
 #pragma warning disable SA1402
-    public class FeedbackCollection : ICollectionFixture<FeedbackFixture>
+    public class AdminTagCollection : ICollectionFixture<AdminTagFixture>
 #pragma warning restore SA1402
     {
     }

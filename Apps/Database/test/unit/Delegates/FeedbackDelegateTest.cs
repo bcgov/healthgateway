@@ -17,6 +17,7 @@ namespace HealthGateway.DatabaseTests.Delegates
 {
     using System;
     using System.Collections.Generic;
+    using System.Linq;
     using System.Threading.Tasks;
     using HealthGateway.Database.Constants;
     using HealthGateway.Database.Context;
@@ -41,9 +42,12 @@ namespace HealthGateway.DatabaseTests.Delegates
         public FeedbackDelegateTest()
         {
             this.FeedbackFixture = FeedbackFixture.CreateAsyncFeedbackFixture().Result;
+            this.AdminTagFixture = AdminTagFixture.CreateAsyncAdminTagFixture().Result;
         }
 
         private FeedbackFixture FeedbackFixture { get; }
+
+        private AdminTagFixture AdminTagFixture { get; }
 
         /// <inheritdoc/>
         public async ValueTask DisposeAsync()
@@ -59,11 +63,43 @@ namespace HealthGateway.DatabaseTests.Delegates
         public void ShouldGetFeedback()
         {
             const int expected = 1;
+
+            // Arrange
             using GatewayDbContext context = Fixture.CreateContext();
             DBFeedbackDelegate feedbackDelegate = new(new NullLogger<DBFeedbackDelegate>(), context);
+
+            // Act
             DBResult<IList<UserFeedback>> result = feedbackDelegate.GetAllUserFeedbackEntries();
+
+            // Assert
             Assert.Equal(DBStatusCode.Read, result.Status);
             Assert.Equal(expected, result.Payload.Count);
+        }
+
+        /// <summary>
+        /// Should add Tag association to User Feedback.
+        /// </summary>
+        [Fact]
+        public void ShouldAddTagAssociationToFeedback()
+        {
+            // Arrange
+            using GatewayDbContext context = Fixture.CreateContext();
+            UserFeedback userFeedback = context.UserFeedback.Single(f => f.Comment == FeedbackFixture.UserFeedbackComment);
+            AdminTag tag = context.AdminTag.Single(t => t.Name == AdminTagFixture.AdminTagName);
+            userFeedback.Tags.Add(
+                new UserFeedbackTag
+                {
+                    AdminTag = tag,
+                    UserFeedback = userFeedback,
+                });
+            DBFeedbackDelegate feedbackDelegate = new(new NullLogger<DBFeedbackDelegate>(), context);
+
+            // Act
+            DBResult<UserFeedback> result = feedbackDelegate.UpdateUserFeedbackWithTagAssociations(userFeedback);
+
+            // Assert
+            Assert.Equal(DBStatusCode.Updated, result.Status);
+            Assert.True(result.Payload.Tags.First().AdminTagId != Guid.Empty);
         }
 
         /// <summary>
@@ -75,6 +111,7 @@ namespace HealthGateway.DatabaseTests.Delegates
             if (!this.disposed)
             {
                 await this.FeedbackFixture.Cleanup().ConfigureAwait(true);
+                await this.AdminTagFixture.Cleanup().ConfigureAwait(true);
             }
 
             this.disposed = true;
