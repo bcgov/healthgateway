@@ -333,7 +333,7 @@ export default class RegistrationView extends Vue {
             </div>
             <div v-else>
                 <b-form
-                    v-if="isValid === true"
+                    v-if="isValidAge === true"
                     ref="registrationForm"
                     @submit.prevent="onSubmit"
                 >
@@ -498,7 +498,7 @@ export default class RegistrationView extends Vue {
                         </b-col>
                     </b-row>
                 </b-form>
-                <div v-else-if="isValid === false">
+                <div v-else-if="isValidAge === false">
                     <h1>Minimum age required for registration</h1>
                     <p data-testid="minimumAgeErrorText">
                         You must be <strong>{{ minimumAge }}</strong> years of
