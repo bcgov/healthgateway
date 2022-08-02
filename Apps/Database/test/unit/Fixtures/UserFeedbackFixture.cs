@@ -23,9 +23,9 @@ namespace HealthGateway.DatabaseTests.Fixtures
     using Xunit;
 
     /// <summary>
-    /// Fixture for tests using User Feedback table.
+    /// Fixture for tests using UserFeedback table.
     /// </summary>
-    public class FeedbackFixture
+    public class UserFeedbackFixture
     {
         /// <summary>
         /// Test data value for Comment.
@@ -47,13 +47,13 @@ namespace HealthGateway.DatabaseTests.Fixtures
         };
 
         /// <summary>
-        /// Creates a new instance of FeedbackFixture and seeds data to the database.
+        /// Creates a new instance of UserFeedbackFixture and seeds data to the database.
         /// </summary>
-        /// <returns>A new instance of FeedbackFixture.</returns>
-        public static Task<FeedbackFixture> CreateAsyncFeedbackFixture()
+        /// <returns>A new instance of UserFeedbackFixture.</returns>
+        public static Task<UserFeedbackFixture> CreateAsyncFeedbackFixture()
         {
-            FeedbackFixture feedbackFixture = new();
-            return feedbackFixture.InitializeAsyncFeedbackFixture();
+            UserFeedbackFixture userFeedbackFixture = new();
+            return userFeedbackFixture.InitializeAsyncFeedbackFixture();
         }
 
         /// <summary>
@@ -68,7 +68,7 @@ namespace HealthGateway.DatabaseTests.Fixtures
             context.SaveChanges();
         }
 
-        private async Task<FeedbackFixture> InitializeAsyncFeedbackFixture()
+        private async Task<UserFeedbackFixture> InitializeAsyncFeedbackFixture()
         {
             await this.Cleanup().ConfigureAwait(true);
             return this;
@@ -77,11 +77,11 @@ namespace HealthGateway.DatabaseTests.Fixtures
 
     /// <summary>
     /// Contains a collection of tests implementing FeedbackFixtures.
-    /// This supports multiple tests implementing FeedbackFixture running in parallel.
+    /// This supports multiple tests implementing UserFeedbackFixture running in parallel.
     /// </summary>
     [CollectionDefinition("FeedbackFixtures")]
 #pragma warning disable SA1402
-    public class FeedbackCollection : ICollectionFixture<FeedbackFixture>
+    public class FeedbackCollection : ICollectionFixture<UserFeedbackFixture>
 #pragma warning restore SA1402
     {
     }

@@ -41,11 +41,11 @@ namespace HealthGateway.DatabaseTests.Delegates
         /// </summary>
         public FeedbackDelegateTest()
         {
-            this.FeedbackFixture = FeedbackFixture.CreateAsyncFeedbackFixture().Result;
+            this.UserFeedbackFixture = UserFeedbackFixture.CreateAsyncFeedbackFixture().Result;
             this.AdminTagFixture = AdminTagFixture.CreateAsyncAdminTagFixture().Result;
         }
 
-        private FeedbackFixture FeedbackFixture { get; }
+        private UserFeedbackFixture UserFeedbackFixture { get; }
 
         private AdminTagFixture AdminTagFixture { get; }
 
@@ -57,10 +57,10 @@ namespace HealthGateway.DatabaseTests.Delegates
         }
 
         /// <summary>
-        /// Should get result from User Feedback table.
+        /// Should get result from UserFeedback table.
         /// </summary>
         [Fact]
-        public void ShouldGetFeedback()
+        public void ShouldGetUserFeedback()
         {
             const int expected = 1;
 
@@ -77,14 +77,14 @@ namespace HealthGateway.DatabaseTests.Delegates
         }
 
         /// <summary>
-        /// Should add Tag association to User Feedback.
+        /// Should add Tag association to UserFeedbackTag.
         /// </summary>
         [Fact]
-        public void ShouldAddTagAssociationToFeedback()
+        public void ShouldAddUserFeedbackTag()
         {
             // Arrange
             using GatewayDbContext context = Fixture.CreateContext();
-            UserFeedback userFeedback = context.UserFeedback.Single(f => f.Comment == FeedbackFixture.UserFeedbackComment);
+            UserFeedback userFeedback = context.UserFeedback.Single(f => f.Comment == UserFeedbackFixture.UserFeedbackComment);
             AdminTag tag = context.AdminTag.Single(t => t.Name == AdminTagFixture.AdminTagName);
             userFeedback.Tags.Add(
                 new UserFeedbackTag
@@ -103,14 +103,14 @@ namespace HealthGateway.DatabaseTests.Delegates
         }
 
         /// <summary>
-        /// Calling cleanup to delete data from User Feedback and re-seed test original test data.
+        /// Calling cleanup to delete data from tables defined in fixtures and  to also re-seed original test data.
         /// </summary>
         /// <returns>Task.</returns>
         protected virtual async ValueTask DisposeAsyncCore()
         {
             if (!this.disposed)
             {
-                await this.FeedbackFixture.Cleanup().ConfigureAwait(true);
+                await this.UserFeedbackFixture.Cleanup().ConfigureAwait(true);
                 await this.AdminTagFixture.Cleanup().ConfigureAwait(true);
             }
 
