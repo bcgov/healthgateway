@@ -69,7 +69,7 @@ namespace HealthGateway.Admin.Client.Store.MessageVerification
             }
 
             RequestError error = StoreUtility.FormatRequestError(response.Error, response.Content?.ResultError);
-            this.Logger.LogError($"Error loading messaging verifications, reason: {error.Message}");
+            this.Logger.LogError("Error loading messaging verifications, reason: {ErrorMessage}", error.Message);
             dispatcher.Dispatch(new MessageVerificationActions.LoadFailAction(error));
         }
     }

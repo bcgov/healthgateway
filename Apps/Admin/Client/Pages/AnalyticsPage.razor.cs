@@ -31,6 +31,9 @@ using Microsoft.JSInterop;
 public partial class AnalyticsPage : FluxorComponent
 {
     [Inject]
+    private IJSRuntime JsRuntime { get; set; } = default!;
+
+    [Inject]
     private IDispatcher Dispatcher { get; set; } = default!;
 
     [Inject]
@@ -111,8 +114,8 @@ public partial class AnalyticsPage : FluxorComponent
 
     private async Task DownloadReport(HttpContent content)
     {
-        byte[]? fileBytes = await content.ReadAsByteArrayAsync().ConfigureAwait(true);
-        string? fileName = $"{this.ReportName}_export_{DateTime.Now.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture)}.csv";
-        await this.JSRuntime.InvokeAsync<object>("saveAsFile", fileName, Convert.ToBase64String(fileBytes)).ConfigureAwait(true);
+        byte[] fileBytes = await content.ReadAsByteArrayAsync().ConfigureAwait(true);
+        string fileName = $"{this.ReportName}_export_{DateTime.Now.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture)}.csv";
+        await this.JsRuntime.InvokeAsync<object>("saveAsFile", fileName, Convert.ToBase64String(fileBytes)).ConfigureAwait(true);
     }
 }

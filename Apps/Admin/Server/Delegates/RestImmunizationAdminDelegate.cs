@@ -27,7 +27,7 @@ namespace HealthGateway.Admin.Server.Delegates
     using System.Text.Json;
     using System.Threading.Tasks;
     using HealthGateway.Admin.Server.Models.CovidSupport;
-    using HealthGateway.Admin.Server.Models.CovidSupport.PHSA;
+    using HealthGateway.Admin.Server.Models.Immunization;
     using HealthGateway.Admin.Server.Parsers.Immunization;
     using HealthGateway.Common.Data.Constants;
     using HealthGateway.Common.Data.ViewModels;
@@ -43,7 +43,7 @@ namespace HealthGateway.Admin.Server.Delegates
     /// <inheritdoc/>
     public class RestImmunizationAdminDelegate : IImmunizationAdminDelegate
     {
-        private const string PHSAConfigSectionKey = "PHSA";
+        private const string PhsaConfigSectionKey = "PHSA";
         private readonly ILogger logger;
         private readonly IHttpClientService httpClientService;
         private readonly PhsaConfig phsaConfig;
@@ -66,7 +66,7 @@ namespace HealthGateway.Admin.Server.Delegates
             this.httpClientService = httpClientService;
             this.httpContextAccessor = httpContextAccessor;
             this.phsaConfig = new PhsaConfig();
-            configuration.Bind(PHSAConfigSectionKey, this.phsaConfig);
+            configuration.Bind(PhsaConfigSectionKey, this.phsaConfig);
         }
 
         private static ActivitySource Source { get; } = new(nameof(RestImmunizationAdminDelegate));
@@ -192,12 +192,12 @@ namespace HealthGateway.Admin.Server.Delegates
 
                         HttpResponseMessage response = await client.PostAsync(endpoint, content).ConfigureAwait(true);
                         string payload = await response.Content.ReadAsStringAsync().ConfigureAwait(true);
-                        this.logger.LogTrace($"Response: {response}");
+                        this.logger.LogTrace("Response: {Response}", response);
 
                         switch (response.StatusCode)
                         {
                             case HttpStatusCode.OK:
-                                this.logger.LogTrace($"Response payload: {payload}");
+                                this.logger.LogTrace("Response payload: {Payload}", payload);
                                 PhsaResult<T>? phsaResult = JsonSerializer.Deserialize<PhsaResult<T>>(payload);
                                 if (phsaResult != null && phsaResult.Result != null)
                                 {
@@ -235,7 +235,7 @@ namespace HealthGateway.Admin.Server.Delegates
                                     ResultMessage = $"Unable to connect to Immunizations Endpoint, HTTP Error {response.StatusCode}",
                                     ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.PHSA),
                                 };
-                                this.logger.LogError($"Unable to connect to endpoint {endpoint}, HTTP Error {response.StatusCode}\n{payload}");
+                                this.logger.LogError("Unable to connect to endpoint {Endpoint}, HTTP Error {StatusCode}\\n{Payload}", endpoint, response.StatusCode, payload);
                                 break;
                         }
                     }
@@ -246,7 +246,7 @@ namespace HealthGateway.Admin.Server.Delegates
                             ResultMessage = $"Exception getting Immunization data: {e}",
                             ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.PHSA),
                         };
-                        this.logger.LogError($"Unexpected exception retrieving Immunization data {e}");
+                        this.logger.LogError("Unexpected exception retrieving Immunization data {Exception}", e);
                     }
 
                     return retVal;

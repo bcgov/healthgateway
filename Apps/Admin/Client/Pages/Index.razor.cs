@@ -20,7 +20,6 @@ namespace HealthGateway.Admin.Client.Pages
     using HealthGateway.Admin.Client.Authorization;
     using Microsoft.AspNetCore.Components;
     using Microsoft.AspNetCore.Components.Authorization;
-    using Microsoft.Extensions.Configuration;
 
     /// <summary>
     /// Backing logic for the Index page.
@@ -32,9 +31,6 @@ namespace HealthGateway.Admin.Client.Pages
 
         [Inject]
         private AuthenticationStateProvider AuthenticationStateProvider { get; set; } = default!;
-
-        [Inject]
-        private IConfiguration Configuration { get; set; } = default!;
 
         /// <inheritdoc/>
         protected override async Task OnInitializedAsync()

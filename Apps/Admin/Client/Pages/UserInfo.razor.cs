@@ -43,9 +43,6 @@ namespace HealthGateway.Admin.Client.Pages
         private IJSRuntime JsRuntime { get; set; } = default!;
 
         [Inject]
-        private IDispatcher Dispatcher { get; set; } = default!;
-
-        [Inject]
         private IState<ConfigurationState> ConfigurationState { get; set; } = default!;
 
         private string? AuthMessage { get; set; } = string.Empty;
@@ -80,7 +77,7 @@ namespace HealthGateway.Admin.Client.Pages
 
         private async Task GetClaimsPrincipalData()
         {
-            AuthenticationState? authState = await this.AuthenticationStateProvider.GetAuthenticationStateAsync().ConfigureAwait(true);
+            AuthenticationState authState = await this.AuthenticationStateProvider.GetAuthenticationStateAsync().ConfigureAwait(true);
             ClaimsPrincipal user = authState.User;
 
             if (user.Identity != null && user.Identity.IsAuthenticated)

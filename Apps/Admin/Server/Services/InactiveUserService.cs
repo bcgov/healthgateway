@@ -167,11 +167,12 @@ public class InactiveUserService : IInactiveUserService
     private void AddInactiveUser(List<AdminUserProfileView> inactiveUsers, List<AdminUserProfile> activeUserProfiles, List<UserRepresentation> identityAccessUsers, IdentityAccessRole role)
     {
         this.logger.LogDebug("Keycloak {Role} count: {Count}...", role.ToString(), identityAccessUsers.Count);
-        IEnumerable<UserRepresentation> users = identityAccessUsers.Where(
-            x1 =>
-                !inactiveUsers.Exists(x2 => x1.Username == x2.Username) &&
-                !activeUserProfiles.Exists(x2 => x1.Username == x2.Username));
-        this.logger.LogDebug("Keycloak {Role} users that do not exist in inactiveUsers list - count: {Count}...", role.ToString(), users.Count());
+        List<UserRepresentation> users = identityAccessUsers.Where(
+                x1 =>
+                    !inactiveUsers.Exists(x2 => x1.Username == x2.Username) &&
+                    !activeUserProfiles.Exists(x2 => x1.Username == x2.Username))
+            .ToList();
+        this.logger.LogDebug("Keycloak {Role} users that do not exist in inactiveUsers list - count: {Count}...", role, users.Count);
 
         foreach (UserRepresentation user in users)
         {

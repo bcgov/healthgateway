@@ -47,7 +47,7 @@ namespace HealthGateway.Admin.Server.Services
     /// </summary>
     public class CovidSupportService : ICovidSupportService
     {
-        private const string BCMailPlusConfigSectionKey = "BCMailPlus";
+        private const string BcMailPlusConfigSectionKey = "BCMailPlus";
         private const string VaccineCardConfigSectionKey = "VaccineCard";
         private readonly ILogger<CovidSupportService> logger;
         private readonly IPatientService patientService;
@@ -93,7 +93,7 @@ namespace HealthGateway.Admin.Server.Services
             this.authenticationDelegate = authenticationDelegate;
 
             this.bcmpConfig = new();
-            configuration.Bind(BCMailPlusConfigSectionKey, this.bcmpConfig);
+            configuration.Bind(BcMailPlusConfigSectionKey, this.bcmpConfig);
 
             this.vaccineCardConfig = new();
             configuration.Bind(VaccineCardConfigSectionKey, this.vaccineCardConfig);
@@ -103,8 +103,8 @@ namespace HealthGateway.Admin.Server.Services
         public async Task<RequestResult<CovidInformation>> GetCovidInformation(string phn, bool refresh)
         {
             this.logger.LogDebug("Retrieving covid information");
-            this.logger.LogTrace($"For PHN: {phn}");
-            this.logger.LogDebug($"For Refresh: {refresh}");
+            this.logger.LogTrace("For PHN: {Phn}", phn);
+            this.logger.LogDebug("For Refresh: {Refresh}", refresh);
 
             RequestResult<PatientModel> patientResult = await this.patientService.GetPatient(phn, PatientIdentifierType.PHN, true).ConfigureAwait(true);
 
@@ -163,7 +163,7 @@ namespace HealthGateway.Admin.Server.Services
         public async Task<PrimitiveRequestResult<bool>> MailVaccineCardAsync(MailDocumentRequest request)
         {
             this.logger.LogDebug("Mailing document");
-            this.logger.LogTrace($"For PHN: {request.PersonalHealthNumber}");
+            this.logger.LogTrace("For PHN: {PersonalHealthNumber}", request.PersonalHealthNumber);
 
             RequestResult<PatientModel> patientResult = await this.patientService.GetPatient(request.PersonalHealthNumber, PatientIdentifierType.PHN, true).ConfigureAwait(true);
 
@@ -210,7 +210,7 @@ namespace HealthGateway.Admin.Server.Services
 
             if (vaccineStatusResult.ResultStatus == ResultType.Success && vaccineStatusResult.ResourcePayload != null)
             {
-                this.logger.LogDebug($"Vaccination Status Indicator: {vaccineStatusResult.ResourcePayload.Result!.StatusIndicator}");
+                this.logger.LogDebug("Vaccination Status Indicator: {Indicator}", vaccineStatusResult.ResourcePayload.Result!.StatusIndicator);
 
                 VaccineState state = Enum.Parse<VaccineState>(vaccineStatusResult.ResourcePayload.Result!.StatusIndicator);
                 if (state == VaccineState.NotFound || state == VaccineState.DataMismatch || state == VaccineState.Threshold || state == VaccineState.Blocked)
@@ -237,7 +237,7 @@ namespace HealthGateway.Admin.Server.Services
 
                 if (requestState != VaccinationStatus.Unknown)
                 {
-                    this.logger.LogDebug($"Vaccine Status: {requestState}");
+                    this.logger.LogDebug("Vaccine Status: {RequestState}", requestState);
                     VaccineProofRequest vaccineProofRequest = new()
                     {
                         Status = requestState,
@@ -279,7 +279,7 @@ namespace HealthGateway.Admin.Server.Services
         public async Task<RequestResult<ReportModel>> RetrieveVaccineRecordAsync(string phn)
         {
             this.logger.LogDebug("Retrieving vaccine record");
-            this.logger.LogTrace($"For PHN: {phn}");
+            this.logger.LogTrace("For PHN: {Phn}", phn);
 
             RequestResult<PatientModel> patientResult = await this.patientService.GetPatient(phn, PatientIdentifierType.PHN, true).ConfigureAwait(true);
 
@@ -442,7 +442,7 @@ namespace HealthGateway.Admin.Server.Services
             else
             {
                 this.logger.LogError($"Exception: {response.Error}");
-                this.logger.LogError($"Http Payload: {response.Error.Content}");
+                this.logger.LogError("Http Payload: {ErrorContent}", response.Error.Content);
                 requestResult.ResultError = new()
                 {
                     ResultMessage = "An unexpected error occurred while processing external call",
@@ -454,7 +454,7 @@ namespace HealthGateway.Admin.Server.Services
         private async Task<RequestResult<ReportModel>> RetrieveVaccineCardAsync(string phn, DateTime birthdate, string bearerToken)
         {
             this.logger.LogDebug("Retrieving vaccine card document");
-            this.logger.LogTrace($"For PHN: {phn}");
+            this.logger.LogTrace("For PHN: {Phn}", phn);
             VaccineStatusQuery statusQuery = new()
             {
                 PersonalHealthNumber = phn,

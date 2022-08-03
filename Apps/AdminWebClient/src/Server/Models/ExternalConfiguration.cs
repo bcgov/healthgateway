@@ -15,8 +15,6 @@
 //-------------------------------------------------------------------------
 namespace HealthGateway.Admin.Models
 {
-    using System.Collections.Generic;
-
     /// <summary>
     /// A collection of configuration items for use by Health Gateway and
     /// approved applications.

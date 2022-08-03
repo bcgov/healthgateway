@@ -13,7 +13,7 @@
 //  See the License for the specific language governing permissions and
 //  limitations under the License.
 // -------------------------------------------------------------------------
-namespace HealthGateway.Admin.Server.Models.CovidSupport.PHSA
+namespace HealthGateway.Admin.Server.Models.Immunization
 {
     using System;
     using System.Text.Json.Serialization;

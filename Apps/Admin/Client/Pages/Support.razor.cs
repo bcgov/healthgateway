@@ -36,7 +36,7 @@ namespace HealthGateway.Admin.Client.Pages
     /// </summary>
     public partial class Support : FluxorComponent
     {
-        private static List<UserQueryType> QueryTypes => new() { UserQueryType.PHN, UserQueryType.Email, UserQueryType.SMS, UserQueryType.HDID };
+        private static List<UserQueryType> QueryTypes => new() { UserQueryType.Phn, UserQueryType.Email, UserQueryType.Sms, UserQueryType.Hdid };
 
         [Inject]
         private IDispatcher Dispatcher { get; set; } = default!;
@@ -47,7 +47,7 @@ namespace HealthGateway.Admin.Client.Pages
         [Inject]
         private NavigationManager NavigationManager { get; set; } = default!;
 
-        private UserQueryType QueryType { get; set; } = UserQueryType.PHN;
+        private UserQueryType QueryType { get; set; } = UserQueryType.Phn;
 
         private UserQueryType SelectedQueryType
         {
@@ -69,7 +69,7 @@ namespace HealthGateway.Admin.Client.Pages
 
         private bool MessagingVerificationsLoaded => this.MessageVerificationState.Value.Loaded;
 
-        private bool PhnSelected => this.SelectedQueryType == UserQueryType.PHN;
+        private bool PhnSelected => this.SelectedQueryType == UserQueryType.Phn;
 
         private bool HasError => this.MessageVerificationState.Value.Error != null && this.MessageVerificationState.Value.Error.Message.Length > 0;
 
@@ -85,7 +85,7 @@ namespace HealthGateway.Admin.Client.Pages
                 return "Search parameter is required";
             }
 
-            if (this.SelectedQueryType == UserQueryType.PHN && !PhnValidator.IsValid(StringManipulator.StripWhitespace(parameter)))
+            if (this.SelectedQueryType == UserQueryType.Phn && !PhnValidator.IsValid(StringManipulator.StripWhitespace(parameter)))
             {
                 return "Invalid PHN";
             }
@@ -101,11 +101,11 @@ namespace HealthGateway.Admin.Client.Pages
 
             Uri uri = this.NavigationManager.ToAbsoluteUri(this.NavigationManager.Uri);
 
-            if (QueryHelpers.ParseQuery(uri.Query).TryGetValue(UserQueryType.HDID.ToString(), out StringValues hdid))
+            if (QueryHelpers.ParseQuery(uri.Query).TryGetValue(UserQueryType.Hdid.ToString(), out StringValues hdid))
             {
-                this.Dispatcher.Dispatch(new MessageVerificationActions.LoadAction(UserQueryType.HDID, StringManipulator.StripWhitespace(hdid)));
+                this.Dispatcher.Dispatch(new MessageVerificationActions.LoadAction(UserQueryType.Hdid, StringManipulator.StripWhitespace(hdid)));
                 this.QueryParameter = hdid;
-                this.SelectedQueryType = UserQueryType.HDID;
+                this.SelectedQueryType = UserQueryType.Hdid;
             }
         }
 
