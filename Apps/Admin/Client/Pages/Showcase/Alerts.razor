@@ -16,7 +16,7 @@
     <MudText Class="mt-4 mb-3" Typo="Typo.h4">Snackbar Alerts</MudText>
     <MudGrid>
         <MudItem md="4" xs="12">
-            @foreach ((Severity severity, string message) in Severities)
+            @foreach ((Severity severity, string _) in Severities)
             {
                 <MudAlert Variant="Variant.Filled" Severity="@severity" Dense="true" NoIcon="true" Class="my-3">@severity</MudAlert>
             }

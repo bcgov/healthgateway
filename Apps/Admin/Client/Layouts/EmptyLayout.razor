@@ -1,7 +1,7 @@
 @using HealthGateway.Admin.Client.Theme
 @inherits LayoutComponentBase
 
-<MudThemeProvider Theme="_currentTheme" />
+<MudThemeProvider Theme="currentTheme" />
 <MudSnackbarProvider />
 <MudContainer MaxWidth="MaxWidth.ExtraExtraLarge">
     @Body
@@ -9,5 +9,5 @@
 
 @code
 {
-    private readonly MudTheme _currentTheme = new DarkTheme();
+    private readonly MudTheme currentTheme = new DarkTheme();
 }

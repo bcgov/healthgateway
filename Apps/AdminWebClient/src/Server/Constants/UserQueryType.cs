@@ -21,23 +21,23 @@ namespace HealthGateway.Admin.Constants
     public enum UserQueryType
     {
         /// <summary>
-        /// Query by the Personal Health Number.
+        /// Query by Personal Health Number.
         /// </summary>
-        PHN,
+        Phn,
 
         /// <summary>
-        /// Query by the Email.
+        /// Query by email.
         /// </summary>
         Email,
 
         /// <summary>
-        /// Query by the SMS Phone number.
+        /// Query by SMS phone number.
         /// </summary>
-        SMS,
+        Sms,
 
         /// <summary>
-        /// Query by the users directed identifier.
+        /// Query by Health-Directed identifier.
         /// </summary>
-        HDID,
+        Hdid,
     }
 }

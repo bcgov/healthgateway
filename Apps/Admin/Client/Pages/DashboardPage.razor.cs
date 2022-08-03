@@ -17,11 +17,11 @@ namespace HealthGateway.Admin.Client.Pages;
 
 using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Globalization;
 using System.Linq;
 using Fluxor;
 using Fluxor.Blazor.Web.Components;
-using HealthGateway.Admin.Client.Store;
 using HealthGateway.Admin.Client.Store.Dashboard;
 using Microsoft.AspNetCore.Components;
 using MudBlazor;
@@ -41,13 +41,13 @@ public partial class DashboardPage : FluxorComponent
     [Inject]
     private IState<DashboardState> DashboardState { get; set; } = default!;
 
-    private BaseRequestState<IDictionary<DateTime, int>> RegisteredUsersResult => this.DashboardState.Value.RegisteredUsers ?? default!;
+    private IDictionary<DateTime, int> RegisteredUsersResult => this.DashboardState.Value.RegisteredUsers.Result ?? ImmutableDictionary<DateTime, int>.Empty;
 
-    private BaseRequestState<IDictionary<DateTime, int>> LoggedInUsersResult => this.DashboardState.Value.LoggedInUsers ?? default!;
+    private IDictionary<DateTime, int> LoggedInUsersResult => this.DashboardState.Value.LoggedInUsers.Result ?? ImmutableDictionary<DateTime, int>.Empty;
 
-    private BaseRequestState<IDictionary<DateTime, int>> DependentsResult => this.DashboardState.Value.Dependents ?? default!;
+    private IDictionary<DateTime, int> DependentsResult => this.DashboardState.Value.Dependents.Result ?? ImmutableDictionary<DateTime, int>.Empty;
 
-    private BaseRequestState<RecurringUser> RecurringUsersResult => this.DashboardState.Value.RecurringUsers ?? default!;
+    private int TotalRecurringUsers => this.DashboardState.Value.RecurringUsers.Result?.TotalRecurringUsers ?? 0;
 
     private bool RegisteredUsersLoading => this.DashboardState.Value.RegisteredUsers.IsLoading;
 
@@ -171,66 +171,50 @@ public partial class DashboardPage : FluxorComponent
 
     private int TimeOffset { get; } = (int)TimeZoneInfo.Local.GetUtcOffset(DateTime.Now).TotalMinutes;
 
-    private int TotalRegisteredUsers => this.RegisteredUsersResult?.Result?.Sum(r => r.Value) ?? 0;
+    private int TotalRegisteredUsers => this.RegisteredUsersResult.Sum(r => r.Value);
 
-    private int TotalDependents => this.DependentsResult?.Result?.Sum(r => r.Value) ?? 0;
+    private int TotalDependents => this.DependentsResult.Sum(r => r.Value);
 
-    private IEnumerable<DailyDataRow>? TableData
+    private IEnumerable<DailyDataRow> TableData
     {
         get
         {
-            DateTime? startDate = this.SelectedDateRange?.Start;
-            DateTime? endDate = this.SelectedDateRange?.End;
+            DateTime? startDate = this.SelectedDateRange.Start;
+            DateTime? endDate = this.SelectedDateRange.End;
 
             List<DailyDataRow> results = new();
 
-            if (this.RegisteredUsersResult?.Result != null)
+            foreach (KeyValuePair<DateTime, int> user in this.RegisteredUsersResult)
             {
-                IEnumerable<KeyValuePair<DateTime, int>> registeredUsers = from result in this.RegisteredUsersResult?.Result
-                    select result;
-
-                foreach (KeyValuePair<DateTime, int> user in registeredUsers)
+                DailyDataRow dashboardDailyData = new()
                 {
-                    DailyDataRow dashboardDailyData = new()
-                    {
-                        DailyDateTime = user.Key,
-                        TotalRegisteredUsers = user.Value,
-                    };
+                    DailyDateTime = user.Key,
+                    TotalRegisteredUsers = user.Value,
+                };
 
-                    results.Add(dashboardDailyData);
-                }
+                results.Add(dashboardDailyData);
             }
 
-            if (this.LoggedInUsersResult?.Result != null)
+            foreach (KeyValuePair<DateTime, int> loggedInUser in this.LoggedInUsersResult)
             {
-                IEnumerable<KeyValuePair<DateTime, int>> loggedInUsers = from result in this.LoggedInUsersResult?.Result
-                    select result;
-                foreach (KeyValuePair<DateTime, int> loggedInUser in loggedInUsers)
+                DailyDataRow dashboardDailyData = new()
                 {
-                    DailyDataRow dashboardDailyData = new()
-                    {
-                        DailyDateTime = loggedInUser.Key,
-                        TotalLoggedInUsers = loggedInUser.Value,
-                    };
+                    DailyDateTime = loggedInUser.Key,
+                    TotalLoggedInUsers = loggedInUser.Value,
+                };
 
-                    results.Add(dashboardDailyData);
-                }
+                results.Add(dashboardDailyData);
             }
 
-            if (this.DependentsResult?.Result != null)
+            foreach (KeyValuePair<DateTime, int> dependent in this.DependentsResult)
             {
-                IEnumerable<KeyValuePair<DateTime, int>> dependents = from result in this.DependentsResult?.Result
-                    select result;
-                foreach (KeyValuePair<DateTime, int> dependent in dependents)
+                DailyDataRow dashboardDailyData = new()
                 {
-                    DailyDataRow dashboardDailyData = new()
-                    {
-                        DailyDateTime = dependent.Key,
-                        TotalDependents = dependent.Value,
-                    };
+                    DailyDateTime = dependent.Key,
+                    TotalDependents = dependent.Value,
+                };
 
-                    results.Add(dashboardDailyData);
-                }
+                results.Add(dashboardDailyData);
             }
 
             return results
@@ -247,8 +231,6 @@ public partial class DashboardPage : FluxorComponent
                 .OrderByDescending(grp => grp.DailyDateTime);
         }
     }
-
-    private int TotalUniqueUsers => this.RecurringUsersResult?.Result?.TotalRecurringUsers ?? 0;
 
     /// <inheritdoc/>
     protected override void OnInitialized()

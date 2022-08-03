@@ -48,7 +48,7 @@ namespace HealthGateway.Admin.Client
         /// <returns>A task which represents the exit of the application.</returns>
         public static async Task Main(string[] args)
         {
-            WebAssemblyHostBuilder? builder = WebAssemblyHostBuilder.CreateDefault(args);
+            WebAssemblyHostBuilder builder = WebAssemblyHostBuilder.CreateDefault(args);
             builder.RootComponents.Add<App>("#app");
             builder.RootComponents.Add<HeadOutlet>("head::after");
 
@@ -100,7 +100,7 @@ namespace HealthGateway.Admin.Client
             where T : class
         {
             Uri baseAddress = new(builder.HostEnvironment.BaseAddress);
-            builder.Services.AddTransient(sp => new HttpClient { BaseAddress = baseAddress });
+            builder.Services.AddTransient(_ => new HttpClient { BaseAddress = baseAddress });
 
             Uri address = new(baseAddress, servicePath);
 

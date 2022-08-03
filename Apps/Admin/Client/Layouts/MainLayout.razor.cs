@@ -79,7 +79,7 @@ namespace HealthGateway.Admin.Client.Layouts
 
         private MudTheme DarkTheme { get; } = new DarkTheme();
 
-        private MudTheme? CurrentTheme => this.DarkMode ? this.DarkTheme : this.LightTheme;
+        private MudTheme CurrentTheme => this.DarkMode ? this.DarkTheme : this.LightTheme;
 
         /// <summary>
         /// A method that can be invoked with JavaScript to display the <see cref="InactivityDialog"/>.

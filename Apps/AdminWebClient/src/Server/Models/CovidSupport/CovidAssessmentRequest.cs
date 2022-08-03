@@ -13,12 +13,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //-------------------------------------------------------------------------
-namespace HealthGateway.Admin.Server.Models.CovidSupport;
+namespace HealthGateway.Admin.Models.CovidSupport;
 
 using System;
 using System.Collections.Generic;
 using System.Text.Json.Serialization;
-using HealthGateway.Admin.Server.Constants;
+using HealthGateway.Admin.Constants;
 
 /// <summary>
 /// Model object representing covid therapy assessment submission request.

@@ -36,7 +36,7 @@ namespace HealthGateway.Admin.Client.Layouts
 
         private MudTheme DarkTheme { get; } = new DarkTheme();
 
-        private MudTheme? CurrentTheme => this.DarkMode ? this.DarkTheme : this.LightTheme;
+        private MudTheme CurrentTheme => this.DarkMode ? this.DarkTheme : this.LightTheme;
 
         /// <inheritdoc/>
         protected override async void OnInitialized()

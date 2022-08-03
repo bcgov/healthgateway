@@ -13,7 +13,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //-------------------------------------------------------------------------
-namespace HealthGateway.AdminWebClient.Pages
+namespace HealthGateway.Admin.Pages
 {
     using System.Diagnostics;
     using Microsoft.AspNetCore.Mvc.RazorPages;
