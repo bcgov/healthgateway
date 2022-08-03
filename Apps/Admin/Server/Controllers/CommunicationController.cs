@@ -29,7 +29,7 @@ namespace HealthGateway.Admin.Server.Controllers
     [ApiVersion("1.0")]
     [Route("v{version:apiVersion}/api/[controller]")]
     [Produces("application/json")]
-    [Authorize(Roles = "AdminUser")]
+    [Authorize(Roles = "AdminUser,AdminReviewer")]
     public class CommunicationController
     {
         private readonly ICommunicationService communicationService;

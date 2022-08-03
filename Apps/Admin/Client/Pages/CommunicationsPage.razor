@@ -1,5 +1,5 @@
 @page "/communications"
-@attribute [Authorize(Roles = Roles.Admin)]
+@attribute [Authorize(Roles = $"{Roles.Admin},{Roles.Reviewer}")]
 @using HealthGateway.Admin.Client.Store.Communications
 @inherits Fluxor.Blazor.Web.Components.FluxorComponent
 

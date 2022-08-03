@@ -1,4 +1,5 @@
 ﻿@page "/user-info"
+@attribute [Authorize(Roles = $"{Roles.Admin},{Roles.Reviewer}")]
 @inherits Fluxor.Blazor.Web.Components.FluxorComponent
 
 <PageTitle>User Info</PageTitle>
