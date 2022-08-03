@@ -1,5 +1,5 @@
 @page "/support"
-@attribute [Authorize(Roles = Roles.Admin)]
+@attribute [Authorize(Roles = $"{Roles.Admin},{Roles.Reviewer}")]
 @using HealthGateway.Admin.Client.Store.MessageVerification
 @using HealthGateway.Common.Ui.Constants
 @inherits Fluxor.Blazor.Web.Components.FluxorComponent

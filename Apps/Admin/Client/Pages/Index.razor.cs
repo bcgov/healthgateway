@@ -42,10 +42,6 @@ namespace HealthGateway.Admin.Client.Pages
             {
                 this.Navigation.NavigateTo("dashboard");
             }
-            else if (user.IsInRole(Roles.Support))
-            {
-                this.Navigation.NavigateTo("vaccine-proof");
-            }
         }
     }
 }
