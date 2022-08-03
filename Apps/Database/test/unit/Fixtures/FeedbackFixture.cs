@@ -24,7 +24,7 @@ namespace HealthGateway.DatabaseTests.Fixtures
     /// <summary>
     /// Fixture for tests using UserFeedback table.
     /// </summary>
-    public class UserFeedbackFixture
+    public class FeedbackFixture
     {
         /// <summary>
         /// Test data value for Name.
@@ -34,7 +34,7 @@ namespace HealthGateway.DatabaseTests.Fixtures
         /// <summary>
         /// Test data value for Comment.
         /// </summary>
-        public const string UserFeedbackComment = "Unit Test";
+        public const string Comment = "Unit Test";
         private const string Hdid = "P6FFO433A5WPMVTGM7T4ZVWBKCSVNAYGTWTU3J2LWMGUMERKI72A";
 
         private readonly AdminTag adminTag = new()
@@ -55,17 +55,17 @@ namespace HealthGateway.DatabaseTests.Fixtures
             CreatedBy = Hdid, CreatedDateTime = DateTime.UtcNow,
             UpdatedBy = Hdid, UpdatedDateTime = DateTime.UtcNow,
             IsSatisfied = false, IsReviewed = false,
-            UserProfileId = Hdid, Comment = UserFeedbackComment,
+            UserProfileId = Hdid, Comment = Comment,
         };
 
         /// <summary>
-        /// Creates a new instance of UserFeedbackFixture and seeds data to the database.
+        /// Creates a new instance of FeedbackFixture and seeds data to the database.
         /// </summary>
-        /// <returns>A new instance of UserFeedbackFixture.</returns>
-        public static Task<UserFeedbackFixture> CreateAsyncUserFeedbackFixture()
+        /// <returns>A new instance of FeedbackFixture.</returns>
+        public static Task<FeedbackFixture> CreateAsyncUserFeedbackFixture()
         {
-            UserFeedbackFixture userFeedbackFixture = new();
-            return userFeedbackFixture.InitializeAsyncUserFeedbackFixture();
+            FeedbackFixture feedbackFixture = new();
+            return feedbackFixture.InitializeAsyncUserFeedbackFixture();
         }
 
         /// <summary>
@@ -81,7 +81,7 @@ namespace HealthGateway.DatabaseTests.Fixtures
             context.SaveChanges();
         }
 
-        private async Task<UserFeedbackFixture> InitializeAsyncUserFeedbackFixture()
+        private async Task<FeedbackFixture> InitializeAsyncUserFeedbackFixture()
         {
             await this.Cleanup().ConfigureAwait(true);
             return this;

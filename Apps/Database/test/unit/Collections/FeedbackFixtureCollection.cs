@@ -19,11 +19,11 @@ namespace HealthGateway.DatabaseTests.Collections
     using Xunit;
 
     /// <summary>
-    /// Contains a collection of tests implementing UserFeedbackFixtures.
-    /// This supports multiple tests implementing UserFeedbackFixture running in parallel.
+    /// Contains a collection of tests implementing FeedbackFixtureCollection.
+    /// This supports multiple tests implementing FeedbackFixture running in parallel.
     /// </summary>
-    [CollectionDefinition("UserFeedbackFixtures")]
-    public class UserFeedbackFixtures : ICollectionFixture<UserFeedbackFixture>
+    [CollectionDefinition("FeedbackFixtureCollection")]
+    public class FeedbackFixtureCollection : ICollectionFixture<FeedbackFixture>
     {
     }
 }

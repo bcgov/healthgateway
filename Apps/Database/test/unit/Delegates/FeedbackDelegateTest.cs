@@ -31,7 +31,7 @@ namespace HealthGateway.DatabaseTests.Delegates
     /// <summary>
     /// Feedback Delegate unit tests.
     /// </summary>
-    [Collection("UserFeedbackFixtures")]
+    [Collection("FeedbackFixtureCollection")]
     public class FeedbackDelegateTest : IAsyncDisposable
     {
         private bool disposed;
@@ -41,10 +41,10 @@ namespace HealthGateway.DatabaseTests.Delegates
         /// </summary>
         public FeedbackDelegateTest()
         {
-            this.UserFeedbackFixture = UserFeedbackFixture.CreateAsyncUserFeedbackFixture().Result;
+            this.FeedbackFixture = FeedbackFixture.CreateAsyncUserFeedbackFixture().Result;
         }
 
-        private UserFeedbackFixture UserFeedbackFixture { get; }
+        private FeedbackFixture FeedbackFixture { get; }
 
         /// <inheritdoc/>
         public async ValueTask DisposeAsync()
@@ -81,8 +81,8 @@ namespace HealthGateway.DatabaseTests.Delegates
         {
             // Arrange
             using GatewayDbContext context = Fixture.CreateContext();
-            UserFeedback userFeedback = context.UserFeedback.Single(f => f.Comment == UserFeedbackFixture.UserFeedbackComment);
-            AdminTag tag = context.AdminTag.Single(t => t.Name == UserFeedbackFixture.AdminTagName);
+            UserFeedback userFeedback = context.UserFeedback.Single(f => f.Comment == FeedbackFixture.Comment);
+            AdminTag tag = context.AdminTag.Single(t => t.Name == FeedbackFixture.AdminTagName);
             userFeedback.Tags.Add(
                 new UserFeedbackTag
                 {
@@ -107,7 +107,7 @@ namespace HealthGateway.DatabaseTests.Delegates
         {
             if (!this.disposed)
             {
-                await this.UserFeedbackFixture.Cleanup().ConfigureAwait(true);
+                await this.FeedbackFixture.Cleanup().ConfigureAwait(true);
             }
 
             this.disposed = true;
