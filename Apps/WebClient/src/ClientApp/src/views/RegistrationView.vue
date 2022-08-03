@@ -45,6 +45,12 @@ export default class RegistrationView extends Vue {
         traceId: string | undefined;
     }) => void;
 
+    @Action("setTooManyRequestsError", { namespace: "errorBanner" })
+    setTooManyRequestsError!: (params: { key: string }) => void;
+
+    @Action("setTooManyRequestsWarning", { namespace: "errorBanner" })
+    setTooManyRequestsWarning!: (params: { key: string }) => void;
+
     @Action("checkRegistration", { namespace: "user" })
     checkRegistration!: () => Promise<boolean>;
 
@@ -73,7 +79,7 @@ export default class RegistrationView extends Vue {
     private errorMessage = "";
 
     private logger!: ILogger;
-    private isValidAge = false;
+    private isValidAge?: boolean;
     private minimumAge!: number;
 
     private termsOfService?: TermsOfService;
@@ -142,15 +148,19 @@ export default class RegistrationView extends Vue {
             .then((isValid) => {
                 this.isValidAge = isValid;
             })
-            .catch(() => {
-                this.clientRegistryError = true;
-                this.addCustomError({
-                    title:
-                        "Unable to validate " +
-                        ErrorSourceType.User.toLowerCase(),
-                    source: ErrorSourceType.User,
-                    traceId: undefined,
-                });
+            .catch((err: ResultError) => {
+                if (err.statusCode === 429) {
+                    this.setTooManyRequestsError({ key: "page" });
+                } else {
+                    this.clientRegistryError = true;
+                    this.addCustomError({
+                        title:
+                            "Unable to validate " +
+                            ErrorSourceType.User.toLowerCase(),
+                        source: ErrorSourceType.User,
+                        traceId: undefined,
+                    });
+                }
             })
             .finally(() => {
                 this.loadingUserData = false;
@@ -189,13 +199,17 @@ export default class RegistrationView extends Vue {
                 );
                 this.termsOfService = result;
             })
-            .catch((err) => {
+            .catch((err: ResultError) => {
                 this.logger.error(err);
-                this.addError({
-                    errorType: ErrorType.Retrieve,
-                    source: ErrorSourceType.TermsOfService,
-                    traceId: undefined,
-                });
+                if (err.statusCode === 429) {
+                    this.setTooManyRequestsWarning({ key: "page" });
+                } else {
+                    this.addError({
+                        errorType: ErrorType.Retrieve,
+                        source: ErrorSourceType.TermsOfService,
+                        traceId: undefined,
+                    });
+                }
             })
             .finally(() => {
                 this.loadingTermsOfService = false;
@@ -239,13 +253,17 @@ export default class RegistrationView extends Vue {
                 );
                 this.redirect();
             })
-            .catch((err: ResultError) =>
-                this.addError({
-                    errorType: ErrorType.Create,
-                    source: ErrorSourceType.Profile,
-                    traceId: err.traceId,
-                })
-            )
+            .catch((err: ResultError) => {
+                if (err.statusCode === 429) {
+                    this.setTooManyRequestsError({ key: "page" });
+                } else {
+                    this.addError({
+                        errorType: ErrorType.Create,
+                        source: ErrorSourceType.Profile,
+                        traceId: err.traceId,
+                    });
+                }
+            })
             .finally(() => {
                 this.loadingTermsOfService = false;
             });
@@ -315,7 +333,7 @@ export default class RegistrationView extends Vue {
             </div>
             <div v-else>
                 <b-form
-                    v-if="isValidAge"
+                    v-if="isValidAge === true"
                     ref="registrationForm"
                     @submit.prevent="onSubmit"
                 >
@@ -480,14 +498,14 @@ export default class RegistrationView extends Vue {
                         </b-col>
                     </b-row>
                 </b-form>
-                <div v-else-if="!clientRegistryError">
+                <div v-else-if="isValidAge === false">
                     <h1>Minimum age required for registration</h1>
                     <p data-testid="minimumAgeErrorText">
                         You must be <strong>{{ minimumAge }}</strong> years of
                         age or older to use this application
                     </p>
                 </div>
-                <div v-else>
+                <div v-else-if="clientRegistryError">
                     <h1>Error retrieving user information</h1>
                     <p data-testid="clientRegistryErrorText">
                         There may be an issue in our Client Registry. Please

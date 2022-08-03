@@ -72,18 +72,11 @@ export const actions: ImmunizationActions = {
         logger.error(`ERROR: ${JSON.stringify(params.error)}`);
         context.commit("immunizationError", params.error);
 
-        if (
-            params.errorType === ErrorType.Retrieve &&
-            params.error.statusCode === 429
-        ) {
+        if (params.error.statusCode === 429) {
             context.dispatch(
                 "errorBanner/setTooManyRequestsWarning",
-                {
-                    key: "page",
-                },
-                {
-                    root: true,
-                }
+                { key: "page" },
+                { root: true }
             );
         } else {
             context.dispatch(

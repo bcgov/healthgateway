@@ -1,5 +1,3 @@
-import { Commit } from "vuex";
-
 import { ErrorSourceType, ErrorType } from "@/constants/errorType";
 import { ResultType } from "@/constants/resulttype";
 import UserPreferenceType from "@/constants/userPreferenceType";
@@ -18,15 +16,9 @@ import { QuickLinkUtil } from "@/utility/quickLinkUtil";
 
 import { UserActions } from "./types";
 
-function handleError(commit: Commit, error: Error): void {
-    const logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
-
-    logger.error(`UserProfile ERROR: ${error}`);
-    commit("userError");
-}
-
 export const actions: UserActions = {
     checkRegistration(context): Promise<boolean> {
+        const logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
         const userProfileService = container.get<IUserProfileService>(
             SERVICE_IDENTIFIER.UserProfileService
         );
@@ -35,9 +27,6 @@ export const actions: UserActions = {
             userProfileService
                 .getProfile(context.state.user.hdid)
                 .then((userProfile) => {
-                    const logger = container.get<ILogger>(
-                        SERVICE_IDENTIFIER.Logger
-                    );
                     logger.verbose(
                         `User Profile: ${JSON.stringify(userProfile)}`
                     );
@@ -45,7 +34,7 @@ export const actions: UserActions = {
                     resolve(userProfile.acceptedTermsOfService);
                 })
                 .catch((error) => {
-                    handleError(context.commit, error);
+                    context.commit("userError");
                     reject(error);
                 })
         );
@@ -54,10 +43,10 @@ export const actions: UserActions = {
         context,
         params: { termsOfServiceId: string }
     ): Promise<void> {
+        const logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
         const userProfileService = container.get<IUserProfileService>(
             SERVICE_IDENTIFIER.UserProfileService
         );
-        const logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
 
         return new Promise((resolve, reject) =>
             userProfileService
@@ -75,7 +64,7 @@ export const actions: UserActions = {
                     resolve();
                 })
                 .catch((error) => {
-                    handleError(context.commit, error);
+                    context.commit("userError");
                     reject(error);
                 })
         );
@@ -90,7 +79,7 @@ export const actions: UserActions = {
                 .updateEmail(context.state.user.hdid, params.emailAddress)
                 .then(() => resolve())
                 .catch((error) => {
-                    handleError(context.commit, error);
+                    context.commit("userError");
                     reject(error);
                 })
         );
@@ -102,10 +91,10 @@ export const actions: UserActions = {
         context,
         params: { userPreference: UserPreference }
     ): Promise<void> {
-        const logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
         const userProfileService = container.get<IUserProfileService>(
             SERVICE_IDENTIFIER.UserProfileService
         );
+        const logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
 
         return new Promise((resolve, reject) =>
             userProfileService
@@ -123,7 +112,7 @@ export const actions: UserActions = {
                     resolve();
                 })
                 .catch((error) => {
-                    handleError(context.commit, error);
+                    context.commit("userError");
                     reject(error);
                 })
         );
@@ -153,7 +142,7 @@ export const actions: UserActions = {
                     resolve();
                 })
                 .catch((error) => {
-                    handleError(context.commit, error);
+                    context.commit("userError");
                     reject(error);
                 })
         );
@@ -197,12 +186,13 @@ export const actions: UserActions = {
                     resolve();
                 })
                 .catch((error) => {
-                    handleError(context.commit, error);
+                    context.commit("userError");
                     reject(error);
                 })
         );
     },
     recoverUserAccount(context): Promise<void> {
+        const logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
         const userProfileService = container.get<IUserProfileService>(
             SERVICE_IDENTIFIER.UserProfileService
         );
@@ -211,9 +201,6 @@ export const actions: UserActions = {
             userProfileService
                 .recoverAccount(context.state.user.hdid)
                 .then((userProfile) => {
-                    const logger = container.get<ILogger>(
-                        SERVICE_IDENTIFIER.Logger
-                    );
                     logger.debug(
                         `recoverUserAccount User Profile: ${JSON.stringify(
                             userProfile
@@ -223,7 +210,7 @@ export const actions: UserActions = {
                     resolve();
                 })
                 .catch((error) => {
-                    handleError(context.commit, error);
+                    context.commit("userError");
                     reject(error);
                 })
         );
@@ -278,18 +265,11 @@ export const actions: UserActions = {
         logger.error(`ERROR: ${JSON.stringify(params.error)}`);
         context.commit("userError", params.error);
 
-        if (
-            params.errorType === ErrorType.Retrieve &&
-            params.error.statusCode === 429
-        ) {
+        if (params.error.statusCode === 429) {
             context.dispatch(
                 "errorBanner/setTooManyRequestsWarning",
-                {
-                    key: "page",
-                },
-                {
-                    root: true,
-                }
+                { key: "page" },
+                { root: true }
             );
         } else {
             context.dispatch(

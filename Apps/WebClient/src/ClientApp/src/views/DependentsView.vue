@@ -46,6 +46,9 @@ export default class DependentsView extends Vue {
         traceId: string | undefined;
     }) => void;
 
+    @Action("setTooManyRequestsWarning", { namespace: "errorBanner" })
+    setTooManyRequestsWarning!: (params: { key: string }) => void;
+
     private logger!: ILogger;
     private dependentService!: IDependentService;
 
@@ -79,11 +82,15 @@ export default class DependentsView extends Vue {
             .then((results) => this.setDependents(results))
             .catch((error: ResultError) => {
                 this.logger.error(error.resultMessage);
-                this.addError({
-                    errorType: ErrorType.Retrieve,
-                    source: ErrorSourceType.Dependent,
-                    traceId: error.traceId,
-                });
+                if (err.statusCode === 429) {
+                    this.setTooManyRequestsWarning({ key: "page" });
+                } else {
+                    this.addError({
+                        errorType: ErrorType.Retrieve,
+                        source: ErrorSourceType.Dependent,
+                        traceId: error.traceId,
+                    });
+                }
             })
             .finally(() => {
                 this.isLoading = false;

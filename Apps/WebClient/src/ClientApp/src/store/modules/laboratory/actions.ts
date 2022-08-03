@@ -219,18 +219,11 @@ export const actions: LaboratoryActions = {
                 break;
         }
 
-        if (
-            params.errorType === ErrorType.Retrieve &&
-            params.error.statusCode === 429
-        ) {
+        if (params.error.statusCode === 429) {
             context.dispatch(
                 "errorBanner/setTooManyRequestsWarning",
-                {
-                    key: "page",
-                },
-                {
-                    root: true,
-                }
+                { key: "page" },
+                { root: true }
             );
         } else {
             context.dispatch(
@@ -323,18 +316,11 @@ export const actions: LaboratoryActions = {
 
         logger.error(`ERROR: ${JSON.stringify(params.error)}`);
 
-        if (
-            params.errorType === ErrorType.Retrieve &&
-            params.error.statusCode === 429
-        ) {
+        if (params.error.statusCode === 429) {
             context.dispatch(
                 "errorBanner/setTooManyRequestsWarning",
-                {
-                    key: "publicCovidTest",
-                },
-                {
-                    root: true,
-                }
+                { key: "publicCovidTest" },
+                { root: true }
             );
 
             context.commit("setPublicCovidTestResponseResultError", undefined);
