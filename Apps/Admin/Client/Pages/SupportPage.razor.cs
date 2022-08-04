@@ -61,6 +61,15 @@ namespace HealthGateway.Admin.Client.Pages
             }
         }
 
+        private string FormatQueryType(UserQueryType queryType) =>
+            queryType switch
+            {
+                UserQueryType.Hdid => "HDID",
+                UserQueryType.Phn => "PHN",
+                UserQueryType.Sms => "SMS",
+                _ => queryType.ToString(),
+            };
+
         private string QueryParameter { get; set; } = string.Empty;
 
         private MudForm Form { get; set; } = default!;
