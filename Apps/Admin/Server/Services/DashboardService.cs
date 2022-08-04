@@ -126,7 +126,7 @@ namespace HealthGateway.Admin.Server.Services
             string phn = string.Empty;
             switch (queryType)
             {
-                case UserQueryType.PHN:
+                case UserQueryType.Phn:
                     RequestResult<PatientModel> patientResult = Task.Run(async () => await this.patientService.GetPatient(queryString, PatientIdentifierType.PHN).ConfigureAwait(true)).Result;
                     if (patientResult.ResultStatus == ResultType.Success && patientResult.ResourcePayload != null)
                     {
@@ -143,10 +143,10 @@ namespace HealthGateway.Admin.Server.Services
                 case UserQueryType.Email:
                     dbResult = this.messagingVerificationDelegate.GetUserMessageVerifications(Database.Constants.UserQueryType.Email, queryString);
                     break;
-                case UserQueryType.SMS:
+                case UserQueryType.Sms:
                     dbResult = this.messagingVerificationDelegate.GetUserMessageVerifications(Database.Constants.UserQueryType.SMS, queryString);
                     break;
-                case UserQueryType.HDID:
+                case UserQueryType.Hdid:
                     RequestResult<PatientModel> patientResultHdid = Task.Run(async () => await this.patientService.GetPatient(queryString).ConfigureAwait(true)).Result;
                     if (patientResultHdid.ResultStatus == ResultType.Success && patientResultHdid.ResourcePayload != null)
                     {
@@ -165,19 +165,16 @@ namespace HealthGateway.Admin.Server.Services
             {
                 retVal.ResultStatus = ResultType.Success;
                 List<MessagingVerificationModel> results = new();
-                if (dbResult.Payload != null)
+                results.AddRange(dbResult.Payload.Select(MessagingVerificationModel.CreateFromDbModel));
+                if (queryType == UserQueryType.Hdid || queryType == UserQueryType.Phn)
                 {
-                    results.AddRange(dbResult.Payload.Select(MessagingVerificationModel.CreateFromDbModel));
-                    if (queryType == UserQueryType.HDID || queryType == UserQueryType.PHN)
+                    foreach (MessagingVerificationModel? item in results)
                     {
-                        foreach (MessagingVerificationModel? item in results)
-                        {
-                            item.PersonalHealthNumber = phn;
-                        }
+                        item.PersonalHealthNumber = phn;
                     }
-
-                    retVal.ResourcePayload = results;
                 }
+
+                retVal.ResourcePayload = results;
             }
 
             return retVal;

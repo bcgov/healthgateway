@@ -20,21 +20,17 @@ namespace HealthGateway.Admin.Client.Pages
     using HealthGateway.Admin.Client.Authorization;
     using Microsoft.AspNetCore.Components;
     using Microsoft.AspNetCore.Components.Authorization;
-    using Microsoft.Extensions.Configuration;
 
     /// <summary>
     /// Backing logic for the Index page.
     /// </summary>
-    public partial class Index : ComponentBase
+    public partial class IndexPage : ComponentBase
     {
         [Inject]
         private NavigationManager Navigation { get; set; } = default!;
 
         [Inject]
         private AuthenticationStateProvider AuthenticationStateProvider { get; set; } = default!;
-
-        [Inject]
-        private IConfiguration Configuration { get; set; } = default!;
 
         /// <inheritdoc/>
         protected override async Task OnInitializedAsync()
@@ -45,10 +41,6 @@ namespace HealthGateway.Admin.Client.Pages
             if (user.IsInRole(Roles.Admin) || user.IsInRole(Roles.Reviewer))
             {
                 this.Navigation.NavigateTo("dashboard");
-            }
-            else if (user.IsInRole(Roles.Support))
-            {
-                this.Navigation.NavigateTo("vaccine-proof");
             }
         }
     }

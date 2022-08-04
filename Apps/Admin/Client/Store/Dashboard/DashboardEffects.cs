@@ -67,7 +67,7 @@ public class DashboardEffects
         catch (ApiException ex)
         {
             RequestError error = StoreUtility.FormatRequestError(ex, null);
-            this.Logger.LogError($"Error retrieving registered users, reason: {error.Message}.");
+            this.Logger.LogError("Error retrieving registered users, reason: {ErrorMessage}.", error.Message);
             dispatcher.Dispatch(new DashboardActions.RegisteredUsersFailAction(error));
         }
     }
@@ -92,7 +92,7 @@ public class DashboardEffects
         catch (ApiException ex)
         {
             RequestError error = StoreUtility.FormatRequestError(ex, null);
-            this.Logger.LogError($"Error retrieving logged in users, reason: {error.Message}.");
+            this.Logger.LogError("Error retrieving logged in users, reason: {ErrorMessage}.", error.Message);
             dispatcher.Dispatch(new DashboardActions.LoggedInUsersFailAction(error));
         }
     }
@@ -117,7 +117,7 @@ public class DashboardEffects
         catch (ApiException ex)
         {
             RequestError error = StoreUtility.FormatRequestError(ex, null);
-            this.Logger.LogError($"Error retrieving dependents, reason: {error.Message}.");
+            this.Logger.LogError("Error retrieving dependents, reason: {ErrorMessage}.", error.Message);
             dispatcher.Dispatch(new DashboardActions.DependentsFailAction(error));
         }
     }
@@ -143,7 +143,7 @@ public class DashboardEffects
         catch (ApiException ex)
         {
             RequestError error = StoreUtility.FormatRequestError(ex, null);
-            this.Logger.LogError($"Error retrieving recurring users, reason: {error.Message}.");
+            this.Logger.LogError("Error retrieving recurring users, reason: {ErrorMessage}.", error.Message);
             dispatcher.Dispatch(new DashboardActions.RecurringUsersFailAction(error));
         }
     }
@@ -168,7 +168,7 @@ public class DashboardEffects
         catch (ApiException ex)
         {
             RequestError error = StoreUtility.FormatRequestError(ex, null);
-            this.Logger.LogError($"Error retrieving rating summary, reason: {error.Message}.");
+            this.Logger.LogError("Error retrieving rating summary, reason: {ErrorMessage}.", error.Message);
             dispatcher.Dispatch(new DashboardActions.RatingSummaryFailAction(error));
         }
     }

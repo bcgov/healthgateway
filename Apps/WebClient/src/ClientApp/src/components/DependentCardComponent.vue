@@ -93,6 +93,12 @@ export default class DependentCardComponent extends Vue {
         traceId: string | undefined;
     }) => void;
 
+    @Action("setTooManyRequestsError", { namespace: "errorBanner" })
+    setTooManyRequestsError!: (params: { key: string }) => void;
+
+    @Action("setTooManyRequestsWarning", { namespace: "errorBanner" })
+    setTooManyRequestsWarning!: (params: { key: string }) => void;
+
     @Ref("sensitiveDocumentDownloadModal")
     readonly sensitiveDocumentDownloadModal!: MessageModalComponent;
 
@@ -214,13 +220,17 @@ export default class DependentCardComponent extends Vue {
         this.dependentService
             .removeDependent(this.user.hdid, this.dependent)
             .then(() => this.needsUpdate())
-            .catch((err: ResultError) =>
-                this.addError({
-                    errorType: ErrorType.Delete,
-                    source: ErrorSourceType.Dependent,
-                    traceId: err.traceId,
-                })
-            )
+            .catch((err: ResultError) => {
+                if (err.statusCode === 429) {
+                    this.setTooManyRequestsError({ key: "page" });
+                } else {
+                    this.addError({
+                        errorType: ErrorType.Delete,
+                        source: ErrorSourceType.Dependent,
+                        traceId: err.traceId,
+                    });
+                }
+            })
             .finally(() => {
                 this.isLoading = false;
             });
@@ -250,11 +260,15 @@ export default class DependentCardComponent extends Vue {
             })
             .catch((err: ResultError) => {
                 this.logger.error(err.resultMessage);
-                this.addError({
-                    errorType: ErrorType.Download,
-                    source: ErrorSourceType.Covid19LaboratoryReport,
-                    traceId: err.traceId,
-                });
+                if (err.statusCode === 429) {
+                    this.setTooManyRequestsError({ key: "page" });
+                } else {
+                    this.addError({
+                        errorType: ErrorType.Download,
+                        source: ErrorSourceType.Covid19LaboratoryReport,
+                        traceId: err.traceId,
+                    });
+                }
             })
             .finally(() => {
                 this.isGeneratingReport = false;
@@ -357,11 +371,15 @@ export default class DependentCardComponent extends Vue {
             })
             .catch((err: ResultError) => {
                 this.logger.error(err.resultMessage);
-                this.addError({
-                    errorType: ErrorType.Retrieve,
-                    source: ErrorSourceType.Covid19Laboratory,
-                    traceId: err.traceId,
-                });
+                if (err.statusCode === 429) {
+                    this.setTooManyRequestsWarning({ key: "page" });
+                } else {
+                    this.addError({
+                        errorType: ErrorType.Retrieve,
+                        source: ErrorSourceType.Covid19Laboratory,
+                        traceId: err.traceId,
+                    });
+                }
                 this.isLoading = false;
             });
     }
@@ -419,11 +437,15 @@ export default class DependentCardComponent extends Vue {
             })
             .catch((err: ResultError) => {
                 this.logger.error(err.resultMessage);
-                this.addError({
-                    errorType: ErrorType.Retrieve,
-                    source: ErrorSourceType.Immunization,
-                    traceId: err.traceId,
-                });
+                if (err.statusCode === 429) {
+                    this.setTooManyRequestsWarning({ key: "page" });
+                } else {
+                    this.addError({
+                        errorType: ErrorType.Retrieve,
+                        source: ErrorSourceType.Immunization,
+                        traceId: err.traceId,
+                    });
+                }
                 this.isLoading = false;
             });
     }

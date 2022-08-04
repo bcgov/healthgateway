@@ -13,13 +13,13 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //-------------------------------------------------------------------------
-namespace HealthGateway.AdminWebClient
+namespace HealthGateway.Admin
 {
     using System;
     using System.Diagnostics;
     using System.Threading.Tasks;
-    using HealthGateway.Admin.Server.Api;
-    using HealthGateway.Admin.Server.Delegates;
+    using HealthGateway.Admin.Api;
+    using HealthGateway.Admin.Delegates;
     using HealthGateway.Admin.Services;
     using HealthGateway.Common.AccessManagement.Authentication;
     using HealthGateway.Common.AspNetConfiguration;
@@ -109,7 +109,7 @@ namespace HealthGateway.AdminWebClient
             services.AddControllersWithViews();
 
             // In production, the Vue files will be served from this directory
-            services.AddSpaStaticFiles(configuration => { configuration.RootPath = "ClientApp/dist"; });
+            services.AddSpaStaticFiles(options => { options.RootPath = "ClientApp/dist"; });
 
             // Add API Clients
             PhsaConfig phsaConfig = new();
@@ -258,7 +258,7 @@ namespace HealthGateway.AdminWebClient
                         c.HandleResponse();
                         c.Response.StatusCode = StatusCodes.Status401Unauthorized;
                         c.Response.ContentType = "text/plain";
-                        this.logger.LogError(c.Exception.ToString());
+                        this.logger.LogError("{Exception}", c.Exception);
                         return c.Response.WriteAsync(c.Exception.ToString());
                     },
                 };
@@ -274,7 +274,7 @@ namespace HealthGateway.AdminWebClient
                 basePath = section.GetValue<string>("BasePath");
             }
 
-            this.logger.LogDebug($"basePath = {basePath}");
+            this.logger.LogDebug("basePath = {BasePath}", basePath);
             return basePath;
         }
     }

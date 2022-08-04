@@ -346,6 +346,30 @@ describe("Public COVID-19 Test Results", () => {
         cy.get("[data-testid=error-text-description]").should("be.visible");
     });
 
+    it("Unsuccessful Response: Too Many Requests", () => {
+        const phn = "9735361219 ";
+        const dobYear = "1994";
+        const dobMonth = "June";
+        const dobDay = "9";
+        const collectionDateYear = "2021";
+        const collectionDateMonth = "January";
+        const collectionDateDay = "20";
+
+        cy.intercept("GET", "**/PublicLaboratory/CovidTests", {
+            statusCode: 429,
+        });
+
+        enterCovidTestPHN(phn);
+        cy.get(dobYearSelector).select(dobYear);
+        cy.get(dobMonthSelector).select(dobMonth);
+        cy.get(dobDaySelector).select(dobDay);
+        cy.get(collectionDateYearSelector).select(collectionDateYear);
+        cy.get(collectionDateMonthSelector).select(collectionDateMonth);
+        cy.get(collectionDateDaySelector).select(collectionDateDay);
+        clickCovidTestEnterButton();
+        cy.get("[data-testid=too-many-requests-warning]").should("be.visible");
+    });
+
     it("Check Another Test Button Should Go to Form", () => {
         const phn = "9735361219 ";
         const dobYear = "1994";

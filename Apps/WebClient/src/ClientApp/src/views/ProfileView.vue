@@ -22,6 +22,7 @@ import { ErrorSourceType, ErrorType } from "@/constants/errorType";
 import BreadcrumbItem from "@/models/breadcrumbItem";
 import type { WebClientConfiguration } from "@/models/configData";
 import { DateWrapper } from "@/models/dateWrapper";
+import { ResultError } from "@/models/errors";
 import PatientData, { Address } from "@/models/patientData";
 import User, { OidcUserInfo } from "@/models/user";
 import UserProfile from "@/models/userProfile";
@@ -52,6 +53,9 @@ export default class ProfileView extends Vue {
         source: ErrorSourceType;
         traceId: string | undefined;
     }) => void;
+
+    @Action("setTooManyRequestsError", { namespace: "errorBanner" })
+    setTooManyRequestsError!: (params: { key: string }) => void;
 
     @Action("updateUserEmail", { namespace: "user" })
     updateUserEmail!: ({
@@ -275,13 +279,17 @@ export default class ProfileView extends Vue {
 
                 this.isLoading = false;
             })
-            .catch((err) => {
+            .catch((err: ResultError) => {
                 this.logger.error(`Error loading profile: ${err}`);
-                this.addError({
-                    errorType: ErrorType.Retrieve,
-                    source: ErrorSourceType.Profile,
-                    traceId: undefined,
-                });
+                if (err.statusCode === 429) {
+                    this.setTooManyRequestsError({ key: "page" });
+                } else {
+                    this.addError({
+                        errorType: ErrorType.Retrieve,
+                        source: ErrorSourceType.Profile,
+                        traceId: undefined,
+                    });
+                }
                 this.isLoading = false;
             });
 
@@ -442,11 +450,15 @@ export default class ProfileView extends Vue {
             })
             .catch((err) => {
                 this.logger.error(err);
-                this.addError({
-                    errorType: ErrorType.Update,
-                    source: ErrorSourceType.Profile,
-                    traceId: undefined,
-                });
+                if (err.statusCode === 429) {
+                    this.setTooManyRequestsError({ key: "page" });
+                } else {
+                    this.addError({
+                        errorType: ErrorType.Update,
+                        source: ErrorSourceType.Profile,
+                        traceId: undefined,
+                    });
+                }
             })
             .finally(() => {
                 this.isLoading = false;
@@ -480,15 +492,19 @@ export default class ProfileView extends Vue {
         this.isLoading = true;
         this.recoverUserAccount()
             .then(() => this.logger.verbose("success!"))
-            .catch((err) => {
+            .catch((err: ResultError) => {
                 this.logger.error(err);
-                this.addCustomError({
-                    title:
-                        "Unable to recover " +
-                        ErrorSourceType.Profile.toLowerCase(),
-                    source: ErrorSourceType.Profile,
-                    traceId: undefined,
-                });
+                if (err.statusCode === 429) {
+                    this.setTooManyRequestsError({ key: "page" });
+                } else {
+                    this.addCustomError({
+                        title:
+                            "Unable to recover " +
+                            ErrorSourceType.Profile.toLowerCase(),
+                        source: ErrorSourceType.Profile,
+                        traceId: undefined,
+                    });
+                }
             })
             .finally(() => {
                 this.isLoading = false;
@@ -510,15 +526,19 @@ export default class ProfileView extends Vue {
                 this.logger.verbose("success!");
                 this.showCloseWarning = false;
             })
-            .catch((err) => {
+            .catch((err: ResultError) => {
                 this.logger.error(err);
-                this.addCustomError({
-                    title:
-                        "Unable to close " +
-                        ErrorSourceType.Profile.toLowerCase(),
-                    source: ErrorSourceType.Profile,
-                    traceId: undefined,
-                });
+                if (err.statusCode === 429) {
+                    this.setTooManyRequestsError({ key: "page" });
+                } else {
+                    this.addCustomError({
+                        title:
+                            "Unable to close " +
+                            ErrorSourceType.Profile.toLowerCase(),
+                        source: ErrorSourceType.Profile,
+                        traceId: undefined,
+                    });
+                }
             })
             .finally(() => {
                 this.isLoading = false;

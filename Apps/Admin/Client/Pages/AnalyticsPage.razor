@@ -1,8 +1,8 @@
 @page "/analytics"
+@layout MainLayout
 @attribute [Authorize(Roles = Roles.Admin)]
 @using HealthGateway.Admin.Client.Store.Analytics
 @inherits Fluxor.Blazor.Web.Components.FluxorComponent
-@inject IJSRuntime JSRuntime
 
 <PageTitle>Analytics</PageTitle>
 <HgPageHeading>Analytics</HgPageHeading>

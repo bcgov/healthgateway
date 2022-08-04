@@ -20,13 +20,13 @@ namespace HealthGateway.Admin.Server.Services
     using System.Linq;
     using AutoMapper;
     using HealthGateway.Admin.Common.Models;
+    using HealthGateway.Admin.Server.MapUtils;
     using HealthGateway.Common.Data.Constants;
     using HealthGateway.Common.Data.ViewModels;
     using HealthGateway.Database.Constants;
     using HealthGateway.Database.Delegates;
     using HealthGateway.Database.Models;
     using HealthGateway.Database.Wrapper;
-    using HHealthGateway.Admin.Server.MapUtils;
     using Microsoft.Extensions.Logging;
 
     /// <inheritdoc/>
@@ -144,7 +144,7 @@ namespace HealthGateway.Admin.Server.Services
                 ResultStatus = ResultType.Error,
             };
 
-            this.logger.LogTrace($"Creating new admin tag... {tagName}");
+            this.logger.LogTrace("Creating new admin tag... {TagName}", tagName);
             DBResult<AdminTag> tagResult = this.adminTagDelegate.Add(new() { Name = tagName });
             if (tagResult.Status == DBStatusCode.Created)
             {
@@ -167,7 +167,7 @@ namespace HealthGateway.Admin.Server.Services
                 ResultStatus = ResultType.Error,
             };
 
-            this.logger.LogTrace($"Deleting admin tag... {tag.Name}");
+            this.logger.LogTrace("Deleting admin tag... {TagName}", tag.Name);
             DBResult<AdminTag> tagResult = this.adminTagDelegate.Delete(this.autoMapper.Map<AdminTag>(tag));
             if (tagResult.Status == DBStatusCode.Deleted)
             {

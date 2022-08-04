@@ -13,6 +13,7 @@ import Vue from "vue";
 import { Component, Watch } from "vue-property-decorator";
 import { Action, Getter } from "vuex-class";
 
+import { ResultError } from "@/models/errors";
 import User from "@/models/user";
 import container from "@/plugins/container";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
@@ -25,10 +26,17 @@ const user = "user";
 
 @Component
 export default class FeedbackComponent extends Vue {
-    @Action("toggleSidebar", { namespace: navbar }) toggleSidebar!: () => void;
+    @Action("setTooManyRequestsError", { namespace: "errorBanner" })
+    setTooManyRequestsError!: (params: { key: string }) => void;
 
-    @Getter("isSidebarOpen", { namespace: navbar }) isSidebarOpen!: boolean;
-    @Getter("user", { namespace: user }) user!: User;
+    @Action("toggleSidebar", { namespace: navbar })
+    toggleSidebar!: () => void;
+
+    @Getter("isSidebarOpen", { namespace: navbar })
+    isSidebarOpen!: boolean;
+
+    @Getter("user", { namespace: user })
+    user!: User;
 
     private comment = "";
 
@@ -99,7 +107,10 @@ export default class FeedbackComponent extends Vue {
             .then((result) => {
                 this.isSuccess = result;
             })
-            .catch(() => {
+            .catch((err: ResultError) => {
+                if (err.statusCode === 429) {
+                    this.setTooManyRequestsError({ key: "page" });
+                }
                 this.isSuccess = false;
             })
             .finally(() => {

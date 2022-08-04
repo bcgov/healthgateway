@@ -18,7 +18,6 @@ namespace HealthGateway.Admin.Services
     using System;
     using System.Collections.Generic;
     using System.Diagnostics.Contracts;
-    using System.Globalization;
     using System.Linq;
     using System.Security.Claims;
     using System.Text.Json;
@@ -35,6 +34,7 @@ namespace HealthGateway.Admin.Services
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.Logging;
+    using UserProfile = HealthGateway.Admin.Models.UserProfile;
 
 #pragma warning disable CA1303 // disable literal strings check
 
@@ -107,7 +107,7 @@ namespace HealthGateway.Admin.Services
         /// <param name="redirectPath">The URI to redirect to after logon.</param>
         public AuthenticationProperties GetAuthenticationProperties(string redirectPath)
         {
-            this.logger.LogDebug("Getting Authentication properties with redirectPath={0}", redirectPath);
+            this.logger.LogDebug("Getting Authentication properties with redirectPath={RedirectPath}", redirectPath);
             Contract.Requires(redirectPath != null);
 
             AuthenticationProperties authProps = new AuthenticationProperties()

@@ -5,8 +5,10 @@ import { Component, Emit, Prop, Watch } from "vue-property-decorator";
 import { Action, Getter } from "vuex-class";
 
 import LoadingComponent from "@/components/LoadingComponent.vue";
+import TooManyRequestsComponent from "@/components/TooManyRequestsComponent.vue";
 import type { WebClientConfiguration } from "@/models/configData";
 import { DateWrapper } from "@/models/dateWrapper";
+import { ResultError } from "@/models/errors";
 import User from "@/models/user";
 import container from "@/plugins/container";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
@@ -15,7 +17,8 @@ import { ILogger, IUserProfileService } from "@/services/interfaces";
 @Component({
     components: {
         LoadingComponent,
-        countdown: VueCountdown,
+        VueCountdown,
+        TooManyRequestsComponent,
     },
 })
 export default class VerifySMSComponent extends Vue {
@@ -25,6 +28,9 @@ export default class VerifySMSComponent extends Vue {
 
     @Getter("webClient", { namespace: "config" })
     config!: WebClientConfiguration;
+
+    @Action("setTooManyRequestsError", { namespace: "errorBanner" })
+    setTooManyRequestsError!: (params: { key: string }) => void;
 
     @Action("updateSMSResendDateTime", { namespace: "user" })
     updateSMSResendDateTime!: ({
@@ -130,9 +136,13 @@ export default class VerifySMSComponent extends Vue {
                     this.handleSubmit();
                 }
             })
-            .catch((err) => {
+            .catch((err: ResultError) => {
                 this.logger.error(err);
-                this.error = true;
+                if (err.statusCode === 429) {
+                    this.setTooManyRequestsError({ key: "verifySmsModal" });
+                } else {
+                    this.error = true;
+                }
             })
             .finally(() => {
                 this.smsVerificationCode = "";
@@ -205,6 +215,7 @@ export default class VerifySMSComponent extends Vue {
         <b-row>
             <b-col>
                 <form>
+                    <TooManyRequestsComponent location="verifySmsModal" />
                     <b-row v-if="error">
                         <b-col class="text-center">
                             An unexpected error has occurred. Please try
@@ -272,7 +283,7 @@ export default class VerifySMSComponent extends Vue {
                     </hg-button>
                 </b-col>
                 <b-col v-if="!allowRetry">
-                    <countdown :time="getTimeout()">
+                    <VueCountdown :time="getTimeout()">
                         <template slot-scope="props"
                             >Your code has been sent. You can resend after
                             <span data-testid="countdownText"
@@ -282,7 +293,7 @@ export default class VerifySMSComponent extends Vue {
                                 {{ props.seconds }}s</span
                             ></template
                         >
-                    </countdown>
+                    </VueCountdown>
                 </b-col>
                 <b-col v-if="tooManyRetries">
                     <hg-button

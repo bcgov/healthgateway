@@ -6,6 +6,7 @@ import { Component, Emit, Prop } from "vue-property-decorator";
 import { Action, Getter } from "vuex-class";
 
 import { DateWrapper } from "@/models/dateWrapper";
+import { ResultError } from "@/models/errors";
 import User from "@/models/user";
 import type { UserComment } from "@/models/userComment";
 import container from "@/plugins/container";
@@ -16,15 +17,20 @@ library.add(faArrowCircleUp, faLock);
 
 @Component
 export default class AddCommentComponent extends Vue {
-    @Prop() comment!: UserComment;
+    @Prop()
+    comment!: UserComment;
 
-    @Getter("user", { namespace: "user" }) user!: User;
+    @Getter("user", { namespace: "user" })
+    user!: User;
 
     @Action("createComment", { namespace: "comment" })
     createComment!: (params: {
         hdid: string;
         comment: UserComment;
     }) => Promise<UserComment | undefined>;
+
+    @Action("setTooManyRequestsError", { namespace: "errorBanner" })
+    setTooManyRequestsError!: (params: { key: string }) => void;
 
     private commentInput = "";
     private logger!: ILogger;
@@ -58,13 +64,17 @@ export default class AddCommentComponent extends Vue {
                     this.onCommentAdded(newComment);
                 }
             })
-            .catch((err) =>
+            .catch((err: ResultError) => {
                 this.logger.error(
                     `Error adding comment on entry ${
                         this.comment.parentEntryId
                     }: ${JSON.stringify(err)}`
-                )
-            )
+                );
+                if (err.statusCode === 429) {
+                    this.setTooManyRequestsError({ key: "page" });
+                    window.scrollTo(0, 0);
+                }
+            })
             .finally(() => {
                 this.isSaving = false;
             });

@@ -19,10 +19,9 @@ namespace HealthGateway.AdminWebClientTests.Services.Test
     using System.Collections.Generic;
     using System.Net;
     using System.Net.Http;
-    using System.Threading.Tasks;
-    using HealthGateway.Admin.Server.Api;
-    using HealthGateway.Admin.Server.Delegates;
-    using HealthGateway.Admin.Server.Models.CovidSupport;
+    using HealthGateway.Admin.Api;
+    using HealthGateway.Admin.Delegates;
+    using HealthGateway.Admin.Models.CovidSupport;
     using HealthGateway.Admin.Services;
     using HealthGateway.Common.AccessManagement.Authentication;
     using HealthGateway.Common.Data.Constants;
@@ -32,7 +31,6 @@ namespace HealthGateway.AdminWebClientTests.Services.Test
     using HealthGateway.Common.Delegates.PHSA;
     using HealthGateway.Common.Services;
     using Microsoft.AspNetCore.Http;
-    using Microsoft.AspNetCore.Mvc.Versioning.Conventions;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.Logging;
     using Moq;

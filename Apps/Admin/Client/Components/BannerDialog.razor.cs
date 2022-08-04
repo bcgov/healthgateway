@@ -87,8 +87,8 @@ public partial class BannerDialog : FluxorComponent
     protected override void OnInitialized()
     {
         base.OnInitialized();
-        this.ActionSubscriber.SubscribeToAction<CommunicationsActions.AddSuccessAction>(this, action => this.MudDialog.Close(true));
-        this.ActionSubscriber.SubscribeToAction<CommunicationsActions.UpdateSuccessAction>(this, action => this.MudDialog.Close(true));
+        this.ActionSubscriber.SubscribeToAction<CommunicationsActions.AddSuccessAction>(this, _ => this.MudDialog.Close(true));
+        this.ActionSubscriber.SubscribeToAction<CommunicationsActions.UpdateSuccessAction>(this, _ => this.MudDialog.Close(true));
         this.SetFormValues();
     }
 

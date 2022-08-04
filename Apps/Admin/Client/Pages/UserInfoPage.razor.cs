@@ -29,9 +29,9 @@ namespace HealthGateway.Admin.Client.Pages
     using Microsoft.JSInterop;
 
     /// <summary>
-    /// Backing logic for the Claims page.
+    /// Backing logic for the User Info page.
     /// </summary>
-    public partial class UserInfo : FluxorComponent
+    public partial class UserInfoPage : FluxorComponent
     {
         [Inject]
         private AuthenticationStateProvider AuthenticationStateProvider { get; set; } = default!;
@@ -41,9 +41,6 @@ namespace HealthGateway.Admin.Client.Pages
 
         [Inject]
         private IJSRuntime JsRuntime { get; set; } = default!;
-
-        [Inject]
-        private IDispatcher Dispatcher { get; set; } = default!;
 
         [Inject]
         private IState<ConfigurationState> ConfigurationState { get; set; } = default!;
@@ -80,7 +77,7 @@ namespace HealthGateway.Admin.Client.Pages
 
         private async Task GetClaimsPrincipalData()
         {
-            AuthenticationState? authState = await this.AuthenticationStateProvider.GetAuthenticationStateAsync().ConfigureAwait(true);
+            AuthenticationState authState = await this.AuthenticationStateProvider.GetAuthenticationStateAsync().ConfigureAwait(true);
             ClaimsPrincipal user = authState.User;
 
             if (user.Identity != null && user.Identity.IsAuthenticated)

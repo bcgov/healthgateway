@@ -1,4 +1,4 @@
-// -------------------------------------------------------------------------
+﻿// -------------------------------------------------------------------------
 //  Copyright © 2019 Province of British Columbia
 //
 //  Licensed under the Apache License, Version 2.0 (the "License");
@@ -14,31 +14,26 @@
 //  limitations under the License.
 // -------------------------------------------------------------------------
 
-namespace HealthGateway.Admin.Common.Constants
+namespace HealthGateway.Admin.Client.Pages;
+
+using Microsoft.AspNetCore.Components;
+
+/// <summary>
+/// Backing logic for the authentication page.
+/// </summary>
+public partial class AuthenticationPage : ComponentBase
 {
     /// <summary>
-    /// Represents the type of query being performed.
+    /// Gets or sets the action to perform.
     /// </summary>
-    public enum UserQueryType
+    [Parameter]
+    public string? Action { get; set; }
+
+    [Inject]
+    private NavigationManager NavigationManager { get; set; } = default!;
+
+    private void RedirectToLoginPage()
     {
-        /// <summary>
-        /// Query by Personal Health Number.
-        /// </summary>
-        Phn,
-
-        /// <summary>
-        /// Query by email.
-        /// </summary>
-        Email,
-
-        /// <summary>
-        /// Query by SMS phone number.
-        /// </summary>
-        Sms,
-
-        /// <summary>
-        /// Query by Health-Directed identifier.
-        /// </summary>
-        Hdid,
+        this.NavigationManager.NavigateTo("authentication/login", replace: true);
     }
 }

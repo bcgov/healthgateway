@@ -17,11 +17,11 @@ namespace HealthGateway.Admin.Client.Components;
 
 using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Globalization;
 using System.Linq;
 using Fluxor;
 using Fluxor.Blazor.Web.Components;
-using HealthGateway.Admin.Client.Store;
 using HealthGateway.Admin.Client.Store.Dashboard;
 using Microsoft.AspNetCore.Components;
 
@@ -33,20 +33,17 @@ public partial class RatingSummary : FluxorComponent
     [Inject]
     private IState<DashboardState> DashboardState { get; set; } = default!;
 
-    private BaseRequestState<IDictionary<string, int>> RatingSummaryResult => this.DashboardState.Value.RatingSummary ?? default!;
+    private IDictionary<string, int> RatingSummaryResult => this.DashboardState.Value.RatingSummary.Result ?? ImmutableDictionary<string, int>.Empty;
 
-    private IDictionary<int, int>? Ratings => this.RatingSummaryResult?.Result?.ToDictionary(r => Convert.ToInt32(r.Key, CultureInfo.InvariantCulture), r => r.Value);
+    private IDictionary<int, int> Ratings => this.RatingSummaryResult.ToDictionary(r => Convert.ToInt32(r.Key, CultureInfo.InvariantCulture), r => r.Value);
 
-    private int TotalRatings => this.RatingSummaryResult?.Result?.Select(r => r.Value)?.Sum() ?? 0;
+    private int TotalRatings => this.RatingSummaryResult.Select(r => r.Value).Sum();
 
     private string AverageRating
     {
         get
         {
-            decimal totalScore = this.Ratings
-                ?.Select(r => r.Key * r.Value)
-                ?.Sum() ?? 0;
-
+            decimal totalScore = this.Ratings.Select(r => r.Key * r.Value).Sum();
             return this.TotalRatings != 0 ? (totalScore / this.TotalRatings).ToString("0.00", CultureInfo.InvariantCulture) : "N/A";
         }
     }
@@ -55,7 +52,7 @@ public partial class RatingSummary : FluxorComponent
     {
         get
         {
-            List<(int? Count, int Percentage)>? details = new();
+            List<(int? Count, int Percentage)> details = new();
             for (int stars = 1; stars <= 5; stars++)
             {
                 int percentage = 0;

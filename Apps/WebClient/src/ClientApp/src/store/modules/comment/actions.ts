@@ -128,19 +128,12 @@ export const actions: CommentActions = {
         logger.error(`ERROR: ${JSON.stringify(params.error)}`);
         context.commit("commentError", params.error);
 
-        if (
-            params.errorType === ErrorType.Retrieve &&
-            params.error.statusCode === 429
-        ) {
-            context.dispatch(
-                "errorBanner/setTooManyRequestsWarning",
-                {
-                    key: "page",
-                },
-                {
-                    root: true,
-                }
-            );
+        if (params.error.statusCode === 429) {
+            let action = "errorBanner/setTooManyRequestsError";
+            if (params.errorType === ErrorType.Retrieve) {
+                action = "errorBanner/setTooManyRequestsWarning";
+            }
+            context.dispatch(action, { key: "page" }, { root: true });
         } else {
             context.dispatch(
                 "errorBanner/addError",

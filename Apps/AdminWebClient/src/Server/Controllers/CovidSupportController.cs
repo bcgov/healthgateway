@@ -17,7 +17,6 @@ namespace HealthGateway.Admin.Controllers
 {
     using System.Threading.Tasks;
     using HealthGateway.Admin.Models.CovidSupport;
-    using HealthGateway.Admin.Server.Models.CovidSupport;
     using HealthGateway.Admin.Services;
     using HealthGateway.Common.Data.ViewModels;
     using Microsoft.AspNetCore.Authorization;

@@ -49,13 +49,13 @@ namespace HealthGateway.Admin.Client.Authorization
             }
 
             ClaimsIdentity identity = (ClaimsIdentity)user.Identity;
-            IEnumerable<Claim>? roleClaims = identity.FindAll(claim => claim.Type == "roles");
-            if (roleClaims == null || !roleClaims.Any())
+            List<Claim> roleClaims = identity.FindAll(claim => claim.Type == "roles").ToList();
+            if (!roleClaims.Any())
             {
                 return user;
             }
 
-            foreach (Claim existingClaim in roleClaims.ToArray())
+            foreach (Claim existingClaim in roleClaims)
             {
                 identity.RemoveClaim(existingClaim);
             }

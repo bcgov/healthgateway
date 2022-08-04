@@ -1,4 +1,5 @@
 @page "/dashboard"
+@layout MainLayout
 @attribute [Authorize(Roles = $"{Roles.Admin},{Roles.Reviewer}")]
 @using HealthGateway.Admin.Client.Store.Dashboard
 @inherits Fluxor.Blazor.Web.Components.FluxorComponent
@@ -117,7 +118,7 @@ else
                     <strong>User Count</strong>
                 </MudText>
                 <MudText Align="Align.Center" Typo="Typo.subtitle1" data-testid="total-unique-users">
-                    <strong>@TotalUniqueUsers</strong>
+                    <strong>@TotalRecurringUsers</strong>
                 </MudText>
             </MudPaper>
         </MudItem>

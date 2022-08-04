@@ -1,4 +1,5 @@
 ﻿@page "/feedback"
+@layout MainLayout
 @attribute [Authorize(Roles = $"{Roles.Admin},{Roles.Reviewer}")]
 @using HealthGateway.Admin.Client.Store.Tag
 @using HealthGateway.Admin.Common.Models

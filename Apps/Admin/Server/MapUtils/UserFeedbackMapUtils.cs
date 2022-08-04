@@ -14,7 +14,7 @@
 //  limitations under the License.
 // -------------------------------------------------------------------------
 
-namespace HHealthGateway.Admin.Server.MapUtils
+namespace HealthGateway.Admin.Server.MapUtils
 {
     using AutoMapper;
     using HealthGateway.Admin.Common.Models;
@@ -38,9 +38,7 @@ namespace HHealthGateway.Admin.Server.MapUtils
             UserFeedbackView userFeedbackView = mapper.Map<UserFeedback, UserFeedbackView>(
                 userFeedback,
                 opts =>
-                    opts.AfterMap(
-                        (src, dest) =>
-                            dest.Email = email));
+                    opts.AfterMap((_, dest) => dest.Email = email));
             return userFeedbackView;
         }
     }

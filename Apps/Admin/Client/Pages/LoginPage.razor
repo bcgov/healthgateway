@@ -1,0 +1,23 @@
+@page "/login"
+
+<PageTitle>HG Admin Login</PageTitle>
+<div class="d-flex flex-column mud-width-full align-center">
+    <MudPaper Elevation="25" Class="pa-8 mud-width-full" MaxWidth="500px">
+        <MudHidden Breakpoint="Breakpoint.Xs">
+            <MudText Typo="Typo.h4">Health Gateway Admin</MudText>
+        </MudHidden>
+        <MudHidden Breakpoint="Breakpoint.Xs" Invert="true">
+            <MudText Typo="Typo.h4">HG Admin</MudText>
+        </MudHidden>
+
+        <MudText Class="my-4">
+            You must have explicit, authorized permission to access this system.
+            Unauthorized attempts and actions to access or use this system may result in civil and/or criminal penalties.
+            All activities performed on this system are logged and monitored.
+        </MudText>
+
+        <MudButton Variant="Variant.Filled" Color="Color.Primary" Href="@LogInUrl" Size="Size.Large" FullWidth="true" data-testid="sign-in-btn">
+            Sign In
+        </MudButton>
+    </MudPaper>
+</div>

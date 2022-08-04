@@ -13,10 +13,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //-------------------------------------------------------------------------
-namespace HealthGateway.Admin.Services
+namespace HealthGateway.Admin.Models
 {
     using System.Collections.Generic;
-    using HealthGateway.Admin.Models;
 
     /// <summary>
     /// The authentication data from the ASP.Net Core Authentication cookie.

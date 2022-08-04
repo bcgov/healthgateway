@@ -1,4 +1,4 @@
-// -------------------------------------------------------------------------
+﻿// -------------------------------------------------------------------------
 //  Copyright © 2019 Province of British Columbia
 //
 //  Licensed under the Apache License, Version 2.0 (the "License");
@@ -14,31 +14,22 @@
 //  limitations under the License.
 // -------------------------------------------------------------------------
 
-namespace HealthGateway.Admin.Common.Constants
+namespace HealthGateway.Admin.Client.Pages;
+
+using System;
+using Microsoft.AspNetCore.Components;
+
+/// <summary>
+/// Backing logic for the Login page.
+/// </summary>
+public partial class LoginPage : ComponentBase
 {
     /// <summary>
-    /// Represents the type of query being performed.
+    /// Gets or sets the URL to return to after logging in.
     /// </summary>
-    public enum UserQueryType
-    {
-        /// <summary>
-        /// Query by Personal Health Number.
-        /// </summary>
-        Phn,
+    [Parameter]
+    [SupplyParameterFromQuery(Name = "returnUrl")]
+    public string? ReturnPath { get; set; }
 
-        /// <summary>
-        /// Query by email.
-        /// </summary>
-        Email,
-
-        /// <summary>
-        /// Query by SMS phone number.
-        /// </summary>
-        Sms,
-
-        /// <summary>
-        /// Query by Health-Directed identifier.
-        /// </summary>
-        Hdid,
-    }
+    private string LogInUrl => $"/authentication/login{(this.ReturnPath != null ? $"?returnUrl={Uri.EscapeDataString(this.ReturnPath)}" : string.Empty)}";
 }
