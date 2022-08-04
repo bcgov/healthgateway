@@ -82,11 +82,11 @@ namespace HealthGateway.DatabaseTests.Delegates
             // Arrange
             using GatewayDbContext context = Fixture.CreateContext();
             UserFeedback userFeedback = context.UserFeedback.Single(f => f.Comment == FeedbackFixture.Comment);
-            AdminTag tag = context.AdminTag.Single(t => t.Name == FeedbackFixture.AdminTagName);
+            AdminTag adminTag = context.AdminTag.Single(t => t.Name == FeedbackFixture.AdminTagName);
             userFeedback.Tags.Add(
                 new UserFeedbackTag
                 {
-                    AdminTag = tag,
+                    AdminTag = adminTag,
                     UserFeedback = userFeedback,
                 });
             DBFeedbackDelegate feedbackDelegate = new(new NullLogger<DBFeedbackDelegate>(), context);

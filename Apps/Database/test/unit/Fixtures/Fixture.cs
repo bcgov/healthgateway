@@ -30,6 +30,7 @@ namespace HealthGateway.DatabaseTests.Fixtures
     /// </summary>
     public static class Fixture
     {
+        private const string ConnectionStringKey = "GatewayConnection";
         private const string UserSecret = "84e2fe9a-a1f5-4de7-bef6-4518a33fa8b9";
 
         /// <summary>
@@ -80,8 +81,7 @@ namespace HealthGateway.DatabaseTests.Fixtures
                 .AddJsonFile($"appsettings.{environment}.json", true)
                 .AddUserSecrets(UserSecret)
                 .Build();
-            string? connectionString = config.GetConnectionString("GatewayConnection");
-            return connectionString;
+            return config.GetConnectionString(ConnectionStringKey);
         }
     }
 }
