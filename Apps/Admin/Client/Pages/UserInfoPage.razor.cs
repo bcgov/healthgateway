@@ -29,9 +29,9 @@ namespace HealthGateway.Admin.Client.Pages
     using Microsoft.JSInterop;
 
     /// <summary>
-    /// Backing logic for the Claims page.
+    /// Backing logic for the User Info page.
     /// </summary>
-    public partial class UserInfo : FluxorComponent
+    public partial class UserInfoPage : FluxorComponent
     {
         [Inject]
         private AuthenticationStateProvider AuthenticationStateProvider { get; set; } = default!;
