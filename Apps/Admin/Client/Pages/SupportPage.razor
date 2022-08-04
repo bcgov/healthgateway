@@ -18,18 +18,18 @@
             <HgSelect T="UserQueryType" Label="Query Type" Required="@true" @bind-Value="SelectedQueryType" data-testid="query-type-select">
                 @foreach (UserQueryType queryType in QueryTypes)
                 {
-                    <MudSelectItem Value="@queryType" data-testid="query-type" />
+                    <MudSelectItem Value="@queryType" data-testid="query-type">@FormatQueryType(queryType)</MudSelectItem>
                 }
             </HgSelect>
         </MudItem>
         <MudItem xs="12" sm="9">
             @if (PhnSelected)
             {
-                <HgTextField LeftMargin="Breakpoint.Sm" T="string" Label="@SelectedQueryType.ToString()" Required="@true" Validation="@ValidateQueryParameter" Mask="@(new PatternMask(Mask.PhnMaskTemplate))" @bind-Value="QueryParameter" data-testid="query-input" />
+                <HgTextField LeftMargin="Breakpoint.Sm" T="string" Label="@FormatQueryType(SelectedQueryType)" Required="@true" Validation="@ValidateQueryParameter" Mask="@(new PatternMask(Mask.PhnMaskTemplate))" @bind-Value="QueryParameter" data-testid="query-input" />
             }
             else
             {
-                <HgTextField LeftMargin="Breakpoint.Sm" T="string" Label="@SelectedQueryType.ToString()" Required="@true" Validation="@ValidateQueryParameter" @bind-Value="QueryParameter" data-testid="query-input" />
+                <HgTextField LeftMargin="Breakpoint.Sm" T="string" Label="@FormatQueryType(SelectedQueryType)" Required="@true" Validation="@ValidateQueryParameter" @bind-Value="QueryParameter" data-testid="query-input" />
             }
         </MudItem>
         <MudItem Class="d-flex justify-end" xs="12">
