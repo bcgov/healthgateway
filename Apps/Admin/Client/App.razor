@@ -3,7 +3,7 @@
 <CascadingAuthenticationState>
     <Router AppAssembly="@typeof(App).Assembly">
         <Found Context="routeData">
-            <AuthorizeRouteView RouteData="@routeData" DefaultLayout="@typeof(MainLayout)">
+            <AuthorizeRouteView RouteData="@routeData" DefaultLayout="@typeof(DefaultLayout)">
                 <NotAuthorized>
                     @if (!context.User.Identity!.IsAuthenticated)
                     {
@@ -11,20 +11,18 @@
                     }
                     else
                     {
-                        <p role="alert">You are not authorized to access this resource.</p>
+                        <p class="text-center" role="alert">You are not authorized to access this resource.</p>
                     }
                 </NotAuthorized>
                 <Authorizing>
-                    <p>
-                        Determining session state, please wait...
-                    </p>
+                    <p class="text-center">Determining session state, please wait...</p>
                 </Authorizing>
             </AuthorizeRouteView>
         </Found>
         <NotFound>
-            <PageTitle>Not found</PageTitle>
-            <LayoutView Layout="@typeof(EmptyLayout)">
-                <p role="alert">Sorry, there's nothing at this address.</p>
+            <LayoutView Layout="@typeof(DefaultLayout)">
+                <PageTitle>Not Found</PageTitle>
+                <p class="text-center" role="alert">Sorry, there's nothing at this address.</p>
             </LayoutView>
         </NotFound>
     </Router>

@@ -34,7 +34,7 @@ namespace HealthGateway.Admin.Client.Pages
     /// <summary>
     /// Backing logic for the Support page.
     /// </summary>
-    public partial class Support : FluxorComponent
+    public partial class SupportPage : FluxorComponent
     {
         private static List<UserQueryType> QueryTypes => new() { UserQueryType.Phn, UserQueryType.Email, UserQueryType.Sms, UserQueryType.Hdid };
 

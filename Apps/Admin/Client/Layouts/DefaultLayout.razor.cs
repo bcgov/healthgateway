@@ -16,16 +16,21 @@
 namespace HealthGateway.Admin.Client.Layouts
 {
     using Blazored.LocalStorage;
+    using Fluxor;
+    using HealthGateway.Admin.Client.Store.Configuration;
     using HealthGateway.Admin.Client.Theme;
     using Microsoft.AspNetCore.Components;
     using MudBlazor;
 
     /// <summary>
-    /// Login Layout theming and logic.
+    /// Backing logic for the default (empty) layout.
     /// </summary>
-    public partial class LoginLayout
+    public partial class DefaultLayout
     {
         private const string DarkThemeKey = "DarkMode";
+
+        [Inject]
+        private IDispatcher Dispatcher { get; set; } = default!;
 
         [Inject]
         private ILocalStorageService LocalStorage { get; set; } = default!;
@@ -41,14 +46,12 @@ namespace HealthGateway.Admin.Client.Layouts
         /// <inheritdoc/>
         protected override async void OnInitialized()
         {
+            this.Dispatcher.Dispatch(new ConfigurationActions.LoadAction());
+
             if (await this.LocalStorage.ContainKeyAsync(DarkThemeKey).ConfigureAwait(true))
             {
                 this.DarkMode = await this.LocalStorage.GetItemAsync<bool>(DarkThemeKey).ConfigureAwait(true);
                 this.StateHasChanged();
-            }
-            else
-            {
-                await this.LocalStorage.SetItemAsync(DarkThemeKey, this.DarkMode).ConfigureAwait(true);
             }
         }
     }

@@ -24,7 +24,7 @@ namespace HealthGateway.Admin.Client.Pages
     /// <summary>
     /// Backing logic for the Index page.
     /// </summary>
-    public partial class Index : ComponentBase
+    public partial class IndexPage : ComponentBase
     {
         [Inject]
         private NavigationManager Navigation { get; set; } = default!;

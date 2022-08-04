@@ -1,4 +1,5 @@
 @page "/support"
+@layout MainLayout
 @attribute [Authorize(Roles = $"{Roles.Admin},{Roles.Reviewer}")]
 @using HealthGateway.Admin.Client.Store.MessageVerification
 @using HealthGateway.Common.Ui.Constants
