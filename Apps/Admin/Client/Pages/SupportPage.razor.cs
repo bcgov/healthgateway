@@ -61,15 +61,6 @@ namespace HealthGateway.Admin.Client.Pages
             }
         }
 
-        private string FormatQueryType(UserQueryType queryType) =>
-            queryType switch
-            {
-                UserQueryType.Hdid => "HDID",
-                UserQueryType.Phn => "PHN",
-                UserQueryType.Sms => "SMS",
-                _ => queryType.ToString(),
-            };
-
         private string QueryParameter { get; set; } = string.Empty;
 
         private MudForm Form { get; set; } = default!;
@@ -116,6 +107,17 @@ namespace HealthGateway.Admin.Client.Pages
                 this.QueryParameter = hdid;
                 this.SelectedQueryType = UserQueryType.Hdid;
             }
+        }
+
+        private static string FormatQueryType(UserQueryType queryType)
+        {
+            return queryType switch
+            {
+                UserQueryType.Hdid => "HDID",
+                UserQueryType.Phn => "PHN",
+                UserQueryType.Sms => "SMS",
+                _ => queryType.ToString(),
+            };
         }
 
         /// <summary>
