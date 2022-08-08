@@ -1,4 +1,4 @@
-const { AuthMethod } = require("../../support/constants");
+const { AuthMethod } = require("../../../support/constants");
 
 const vaccineCardUrl = "/vaccinecard";
 const covidTestUrl = "/covidtest";
@@ -192,10 +192,6 @@ describe("Public Vaccine Card Downloads", () => {
 });
 
 describe("Landing Page - Too Many Requests", () => {
-    beforeEach(() => {
-        cy.logout();
-    });
-
     it("Too Many Requests Banner Appears on 429 Response", () => {
         cy.intercept("GET", "**/Communication/*", { statusCode: 429 });
         cy.visit("/");
