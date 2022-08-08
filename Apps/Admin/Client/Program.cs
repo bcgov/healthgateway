@@ -66,8 +66,6 @@ namespace HealthGateway.Admin.Client
             // Enable Mud Blazor component services
             builder.Services.AddMudServices(config => config.SnackbarConfiguration.PositionClass = Defaults.Classes.Position.BottomRight);
 
-            builder.Services.AddScoped(_ => new HttpClient { BaseAddress = new Uri(builder.HostEnvironment.BaseAddress) });
-
             WebAssemblyHost[] app = new WebAssemblyHost[1];
 
             // Configure Authentication and Authorization
