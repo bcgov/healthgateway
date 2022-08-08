@@ -10,7 +10,7 @@ HG_ENV=test HG_KEY=apikey docker compose up
 
 HG_KEY is the Akamai Queue-IT api key to bypass the queue.
 HG_ENV is a choice of dev, test   (for production use the URL setting)
-HG_URL overrides the default url that is build from the environment setting. Use this for testin
+HG_URL overrides the default url that is build from the environment setting. HG_ENV has no effect when this is used.
 
 ### Example CLI call:
 ```bash
