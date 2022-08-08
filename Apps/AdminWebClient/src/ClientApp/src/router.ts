@@ -47,11 +47,7 @@ const routes = [
         component: CovidCardView,
         meta: {
             requiresAuth: true,
-            validRoles: [
-                UserRoles.SupportUser,
-                UserRoles.Reviewer,
-                UserRoles.Admin,
-            ],
+            validRoles: [UserRoles.SupportUser],
         },
     },
     {
