@@ -53,6 +53,7 @@
         <None Remove="Services\" />
         <None Remove="Store\" />
         <None Remove="Theme\" />
+        <None Include="wwwroot\images\health-gateway-logo.svg" />
     </ItemGroup>
     <ItemGroup>
       <Content Update="wwwroot\appsettings.json">
