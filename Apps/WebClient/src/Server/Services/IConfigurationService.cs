@@ -16,6 +16,8 @@
 
 namespace HealthGateway.WebClient.Services
 {
+    using HealthGateway.WebClient.Models;
+
     /// <summary>
     /// Webclient configuration.
     /// </summary>
@@ -25,12 +27,12 @@ namespace HealthGateway.WebClient.Services
         /// Creates and returns Configuration data for clients.
         /// </summary>
         /// <returns>The Config object containing configuration elements useful for client consumption.</returns>
-        Models.ExternalConfiguration GetConfiguration();
+        ExternalConfiguration GetConfiguration();
 
         /// <summary>
         /// Creates and returns mobile Configuration.
         /// </summary>
         /// <returns>The Mobile Configuration.</returns>
-        Models.MobileConfiguration GetMobileConfiguration();
+        MobileConfiguration GetMobileConfiguration();
     }
 }

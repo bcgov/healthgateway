@@ -44,6 +44,8 @@ import {
 } from "@/plugins/inversify";
 
 import router from "@/router";
+
+import { RootState } from "@/store/types";
 import {
     IAuthenticationService,
     ICommunicationService,
@@ -66,8 +68,6 @@ import {
     IUserRatingService,
     IVaccinationStatusService,
 } from "@/services/interfaces";
-
-import { RootState } from "./store/types";
 
 Vue.component("BBreadcrumb", BBreadcrumb);
 Vue.component("BBreadcrumbItem", BBreadcrumbItem);
@@ -92,10 +92,10 @@ Vue.use(VueRouter);
 Vue.use(Vuelidate);
 Vue.use(VueContentPlaceholders);
 
-const httpDelegate: IHttpDelegate = container.get(
+const httpDelegate = container.get<IHttpDelegate>(
     DELEGATE_IDENTIFIER.HttpDelegate
 );
-const configService: IConfigService = container.get(
+const configService = container.get<IConfigService>(
     SERVICE_IDENTIFIER.ConfigService
 );
 
@@ -104,56 +104,56 @@ configService.initialize(httpDelegate);
 // Retrieve configuration and initialize services
 configService.getConfiguration().then((config) => {
     // Retrieve service interfaces
-    const logger: ILogger = container.get(SERVICE_IDENTIFIER.Logger);
-    const authService: IAuthenticationService = container.get(
+    const logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
+    const authService = container.get<IAuthenticationService>(
         SERVICE_IDENTIFIER.AuthenticationService
     );
-    const immunizationService: IImmunizationService = container.get(
+    const immunizationService = container.get<IImmunizationService>(
         SERVICE_IDENTIFIER.ImmunizationService
     );
-    const patientService: IPatientService = container.get(
+    const patientService = container.get<IPatientService>(
         SERVICE_IDENTIFIER.PatientService
     );
-    const medicationService: IMedicationService = container.get(
+    const medicationService = container.get<IMedicationService>(
         SERVICE_IDENTIFIER.MedicationService
     );
-    const laboratoryService: ILaboratoryService = container.get(
+    const laboratoryService = container.get<ILaboratoryService>(
         SERVICE_IDENTIFIER.LaboratoryService
     );
-    const encounterService: IEncounterService = container.get(
+    const encounterService = container.get<IEncounterService>(
         SERVICE_IDENTIFIER.EncounterService
     );
-    const userProfileService: IUserProfileService = container.get(
+    const userProfileService = container.get<IUserProfileService>(
         SERVICE_IDENTIFIER.UserProfileService
     );
-    const userFeedbackService: IUserFeedbackService = container.get(
+    const userFeedbackService = container.get<IUserFeedbackService>(
         SERVICE_IDENTIFIER.UserFeedbackService
     );
-    const userNoteService: IUserNoteService = container.get(
+    const userNoteService = container.get<IUserNoteService>(
         SERVICE_IDENTIFIER.UserNoteService
     );
-    const communicationService: ICommunicationService = container.get(
+    const communicationService = container.get<ICommunicationService>(
         SERVICE_IDENTIFIER.CommunicationService
     );
-    const userCommentService: IUserCommentService = container.get(
+    const userCommentService = container.get<IUserCommentService>(
         SERVICE_IDENTIFIER.UserCommentService
     );
-    const userRatingService: IUserRatingService = container.get(
+    const userRatingService = container.get<IUserRatingService>(
         SERVICE_IDENTIFIER.UserRatingService
     );
-    const dependentService: IDependentService = container.get(
+    const dependentService = container.get<IDependentService>(
         SERVICE_IDENTIFIER.DependentService
     );
-    const reportService: IReportService = container.get(
+    const reportService = container.get<IReportService>(
         SERVICE_IDENTIFIER.ReportService
     );
-    const vaccinationStatusService: IVaccinationStatusService = container.get(
+    const vaccinationStatusService = container.get<IVaccinationStatusService>(
         SERVICE_IDENTIFIER.VaccinationStatusService
     );
-    const storeProvider: IStoreProvider = container.get(
+    const storeProvider = container.get<IStoreProvider>(
         STORE_IDENTIFIER.StoreProvider
     );
-    const pcrTestKitService: IPcrTestService = container.get(
+    const pcrTestKitService = container.get<IPcrTestService>(
         SERVICE_IDENTIFIER.PcrTestService
     );
 

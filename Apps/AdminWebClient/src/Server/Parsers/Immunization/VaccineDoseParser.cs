@@ -16,7 +16,7 @@
 namespace HealthGateway.Admin.Parsers.Immunization
 {
     using System.Collections.Generic;
-    using HealthGateway.Admin.Models.CovidSupport.PHSA;
+    using HealthGateway.Admin.Models.CovidSupport;
     using HealthGateway.Admin.Models.Immunization;
 
     /// <summary>

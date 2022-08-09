@@ -24,6 +24,7 @@ a:not(.btn):focus {
 // Add focus ring to btn-link, highlight as regular link
 .btn.btn-link {
     text-decoration: underline;
+
     &:focus,
     &.focus {
         box-shadow: 0 0 0 $btn-focus-width $btn-link-outline-color;
@@ -41,6 +42,7 @@ a:not(.btn):focus {
 header nav {
     background-color: theme-color(primary-nav);
     border-bottom: 2px solid theme-color(bcgold);
+
     &.shadow {
         box-shadow: 0 3px 3px 1px $header-box-shadow-color;
     }
@@ -79,6 +81,7 @@ footer nav {
 .alert.alert-info {
     border-color: theme-color-level(info, -4);
 }
+
 .alert.alert-warning {
     border-color: theme-color-level(warning, -4);
 }

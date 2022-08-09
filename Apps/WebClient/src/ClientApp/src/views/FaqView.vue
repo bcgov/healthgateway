@@ -22,7 +22,7 @@ export default class FaqView extends Vue {
 }
 </script>
 <template>
-    <div class="m-3 m-md-4 flex-grow-1 d-flex flex-column">
+    <div>
         <BreadcrumbComponent :items="breadcrumbItems" />
         <page-title title="Frequently Asked Questions" />
         <b-row class="mb-1 fluid text-right">
@@ -47,8 +47,8 @@ export default class FaqView extends Vue {
             </b-card-header>
             <b-collapse id="accordion-faqAnswer1" role="tabpanel">
                 <b-card-body>
-                    <b-card-text
-                        ><div data-testid="answerTxt">
+                    <b-card-text>
+                        <div data-testid="answerTxt">
                             <p>
                                 You can learn more about specific lab tests on
                                 the following trusted websites:
@@ -110,8 +110,8 @@ export default class FaqView extends Vue {
                                     </div>
                                 </li>
                             </ul>
-                        </div></b-card-text
-                    >
+                        </div>
+                    </b-card-text>
                 </b-card-body>
             </b-collapse>
         </b-card>
@@ -133,8 +133,8 @@ export default class FaqView extends Vue {
             </b-card-header>
             <b-collapse id="accordion-faqAnswer2" role="tabpanel">
                 <b-card-body>
-                    <b-card-text
-                        ><div data-testid="answerTxt">
+                    <b-card-text>
+                        <div data-testid="answerTxt">
                             <p>
                                 Follow the instructions of your health care
                                 provider regarding your lab test results. Keep
@@ -145,11 +145,12 @@ export default class FaqView extends Vue {
                                 current symptoms, or other diagnostic tests to
                                 arrive at a conclusion.
                             </p>
-                        </div></b-card-text
-                    >
+                        </div>
+                    </b-card-text>
                 </b-card-body>
-            </b-collapse> </b-card
-        ><b-card no-body class="mb-1 border-0">
+            </b-collapse>
+        </b-card>
+        <b-card no-body class="mb-1 border-0">
             <b-card-header
                 header-tag="header"
                 class="p-1 faq-header"
@@ -166,8 +167,8 @@ export default class FaqView extends Vue {
             </b-card-header>
             <b-collapse id="accordion-faqAnswer3" role="tabpanel">
                 <b-card-body>
-                    <b-card-text
-                        ><div data-testid="answerTxt">
+                    <b-card-text>
+                        <div data-testid="answerTxt">
                             <p>
                                 Most lab results are available about 2-3 days
                                 after your test. Pathology tests, like a tissue
@@ -186,8 +187,8 @@ export default class FaqView extends Vue {
                                     >https://www.mypathologyreport.ca/</a
                                 >
                             </p>
-                        </div></b-card-text
-                    >
+                        </div>
+                    </b-card-text>
                 </b-card-body>
             </b-collapse>
         </b-card>
@@ -209,8 +210,8 @@ export default class FaqView extends Vue {
             </b-card-header>
             <b-collapse id="accordion-faqAnswer4" role="tabpanel">
                 <b-card-body>
-                    <b-card-text
-                        ><div data-testid="answerTxt">
+                    <b-card-text>
+                        <div data-testid="answerTxt">
                             <p>
                                 Many laboratory tests include a reference range
                                 to help classify results as “in range” or “out
@@ -236,8 +237,8 @@ export default class FaqView extends Vue {
                                 results in the context of your medical history,
                                 symptoms, and other diagnostic tests.
                             </p>
-                        </div></b-card-text
-                    >
+                        </div>
+                    </b-card-text>
                 </b-card-body>
             </b-collapse>
         </b-card>
@@ -259,8 +260,8 @@ export default class FaqView extends Vue {
             </b-card-header>
             <b-collapse id="accordion-faqAnswer5" role="tabpanel">
                 <b-card-body>
-                    <b-card-text
-                        ><div data-testid="answerTxt">
+                    <b-card-text>
+                        <div data-testid="answerTxt">
                             <p>
                                 For information on booster doses and who is
                                 eligible to receive a second booster dose,
@@ -272,8 +273,8 @@ export default class FaqView extends Vue {
                                     >www.gov.bc.ca/booster</a
                                 >
                             </p>
-                        </div></b-card-text
-                    >
+                        </div>
+                    </b-card-text>
                 </b-card-body>
             </b-collapse>
         </b-card>
@@ -295,8 +296,8 @@ export default class FaqView extends Vue {
             </b-card-header>
             <b-collapse id="accordion-faqAnswer6" role="tabpanel">
                 <b-card-body>
-                    <b-card-text
-                        ><div data-testid="answerTxt">
+                    <b-card-text>
+                        <div data-testid="answerTxt">
                             <p>
                                 Complete the online form at:
                                 <a
@@ -318,8 +319,8 @@ export default class FaqView extends Vue {
                                     >www.immunizebc.ca/finder</a
                                 >
                             </p>
-                        </div></b-card-text
-                    >
+                        </div>
+                    </b-card-text>
                 </b-card-body>
             </b-collapse>
         </b-card>
@@ -341,8 +342,8 @@ export default class FaqView extends Vue {
             </b-card-header>
             <b-collapse id="accordion-faqAnswer7" role="tabpanel">
                 <b-card-body>
-                    <b-card-text
-                        ><div data-testid="answerTxt">
+                    <b-card-text>
+                        <div data-testid="answerTxt">
                             <p>
                                 Complete the online form at:
                                 <a
@@ -352,8 +353,8 @@ export default class FaqView extends Vue {
                                     >www.immunizationrecord.gov.bc.ca</a
                                 >
                             </p>
-                        </div></b-card-text
-                    >
+                        </div>
+                    </b-card-text>
                 </b-card-body>
             </b-collapse>
         </b-card>
@@ -377,8 +378,8 @@ export default class FaqView extends Vue {
             </b-card-header>
             <b-collapse id="accordion-faqAnswer8" role="tabpanel">
                 <b-card-body>
-                    <b-card-text
-                        ><div data-testid="answerTxt">
+                    <b-card-text>
+                        <div data-testid="answerTxt">
                             <p>
                                 Health Gateway only shows your immunization
                                 records from the Provincial Immunization
@@ -405,8 +406,8 @@ export default class FaqView extends Vue {
                                 immunization. If you can’t find an immunization
                                 record, try searching your medications.
                             </p>
-                        </div></b-card-text
-                    >
+                        </div>
+                    </b-card-text>
                 </b-card-body>
             </b-collapse>
         </b-card>
@@ -428,8 +429,8 @@ export default class FaqView extends Vue {
             </b-card-header>
             <b-collapse id="accordion-faqAnswer9" role="tabpanel">
                 <b-card-body>
-                    <b-card-text
-                        ><div data-testid="answerTxt">
+                    <b-card-text>
+                        <div data-testid="answerTxt">
                             <p>
                                 Health Gateway shows your health visits billed
                                 to the BC Medical Services Plan (MSP). Sometimes
@@ -451,8 +452,8 @@ export default class FaqView extends Vue {
                                     </div>
                                 </li>
                             </ul>
-                        </div></b-card-text
-                    >
+                        </div>
+                    </b-card-text>
                 </b-card-body>
             </b-collapse>
         </b-card>
@@ -474,8 +475,8 @@ export default class FaqView extends Vue {
             </b-card-header>
             <b-collapse id="accordion-faqAnswer10" role="tabpanel">
                 <b-card-body>
-                    <b-card-text
-                        ><div data-testid="answerTxt">
+                    <b-card-text>
+                        <div data-testid="answerTxt">
                             <p>
                                 Current processing times for
                                 <a
@@ -512,8 +513,8 @@ export default class FaqView extends Vue {
                                     </div>
                                 </li>
                             </ul>
-                        </div></b-card-text
-                    >
+                        </div>
+                    </b-card-text>
                 </b-card-body>
             </b-collapse>
         </b-card>
@@ -536,8 +537,8 @@ export default class FaqView extends Vue {
             </b-card-header>
             <b-collapse id="accordion-faqAnswer11" role="tabpanel">
                 <b-card-body>
-                    <b-card-text
-                        ><div data-testid="answerTxt">
+                    <b-card-text>
+                        <div data-testid="answerTxt">
                             <p>
                                 To add your child to your Health Gateway
                                 account, make sure:
@@ -574,8 +575,8 @@ export default class FaqView extends Vue {
                                     >HealthGateway@gov.bc.ca</a
                                 >.
                             </p>
-                        </div></b-card-text
-                    >
+                        </div>
+                    </b-card-text>
                 </b-card-body>
             </b-collapse>
         </b-card>
@@ -597,8 +598,8 @@ export default class FaqView extends Vue {
             </b-card-header>
             <b-collapse id="accordion-faqAnswer12" role="tabpanel">
                 <b-card-body>
-                    <b-card-text
-                        ><div data-testid="answerTxt">
+                    <b-card-text>
+                        <div data-testid="answerTxt">
                             <p>
                                 Currently, only parents or guardians can access
                                 COVID-19 test results for their children that
@@ -606,8 +607,8 @@ export default class FaqView extends Vue {
                                 provide more family and caregiver access in the
                                 future.
                             </p>
-                        </div></b-card-text
-                    >
+                        </div>
+                    </b-card-text>
                 </b-card-body>
             </b-collapse>
         </b-card>
@@ -630,8 +631,8 @@ export default class FaqView extends Vue {
             </b-card-header>
             <b-collapse id="accordion-faqAnswer13" role="tabpanel">
                 <b-card-body>
-                    <b-card-text
-                        ><div data-testid="answerTxt">
+                    <b-card-text>
+                        <div data-testid="answerTxt">
                             <p>
                                 Health Gateway is a provincial tool that
                                 provides British Columbians with access to their
@@ -648,8 +649,8 @@ export default class FaqView extends Vue {
                                     >Learn more</a
                                 >
                             </p>
-                        </div></b-card-text
-                    >
+                        </div>
+                    </b-card-text>
                 </b-card-body>
             </b-collapse>
         </b-card>
@@ -670,8 +671,8 @@ export default class FaqView extends Vue {
             </b-card-header>
             <b-collapse id="accordion-faqAnswer14" role="tabpanel">
                 <b-card-body>
-                    <b-card-text
-                        ><div data-testid="answerTxt">
+                    <b-card-text>
+                        <div data-testid="answerTxt">
                             <p>
                                 Health Gateway is updated weekly with new
                                 features and information. We prioritize changes
@@ -681,8 +682,8 @@ export default class FaqView extends Vue {
                                     >HealthGateway@gov.bc.ca</a
                                 >
                             </p>
-                        </div></b-card-text
-                    >
+                        </div>
+                    </b-card-text>
                 </b-card-body>
             </b-collapse>
         </b-card>

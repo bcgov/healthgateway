@@ -4,10 +4,11 @@ import Vue from "vue";
 import { Component, Emit } from "vue-property-decorator";
 import { minLength, required, sameAs } from "vuelidate/lib/validators";
 import { Validation } from "vuelidate/vuelidate";
-import { Getter } from "vuex-class";
+import { Action, Getter } from "vuex-class";
 
 import DatePickerComponent from "@/components/DatePickerComponent.vue";
 import LoadingComponent from "@/components/LoadingComponent.vue";
+import TooManyRequestsComponent from "@/components/TooManyRequestsComponent.vue";
 import AddDependentRequest from "@/models/addDependentRequest";
 import type { WebClientConfiguration } from "@/models/configData";
 import { DateWrapper } from "@/models/dateWrapper";
@@ -18,7 +19,7 @@ import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import { IDependentService } from "@/services/interfaces";
 import PHNValidator from "@/utility/phnValidator";
 
-const validPersonalHealthNumber = (value: string): boolean => {
+const validPersonalHealthNumber = (value: string) => {
     let phn = value.replace(/\D/g, "");
     return PHNValidator.IsValid(phn);
 };
@@ -27,6 +28,7 @@ const validPersonalHealthNumber = (value: string): boolean => {
     components: {
         LoadingComponent,
         DatePickerComponent,
+        TooManyRequestsComponent,
     },
 })
 export default class NewDependentComponent extends Vue {
@@ -34,6 +36,9 @@ export default class NewDependentComponent extends Vue {
 
     @Getter("webClient", { namespace: "config" })
     webClientConfig!: WebClientConfiguration;
+
+    @Action("setTooManyRequestsError", { namespace: "errorBanner" })
+    setTooManyRequestsError!: (params: { key: string }) => void;
 
     private dependentService!: IDependentService;
     private isVisible = false;
@@ -48,17 +53,17 @@ export default class NewDependentComponent extends Vue {
     };
     private accepted = false;
 
-    private validations() {
+    private validations(): unknown {
         return {
             dependent: {
                 firstName: {
-                    required: required,
+                    required,
                 },
                 lastName: {
-                    required: required,
+                    required,
                 },
                 dateOfBirth: {
-                    required: required,
+                    required,
                     minLength: minLength(10),
                     minValue: (value: string) =>
                         new DateWrapper(value).isAfter(this.minBirthdate),
@@ -66,7 +71,7 @@ export default class NewDependentComponent extends Vue {
                         new DateWrapper(value).isBefore(new DateWrapper()),
                 },
                 testDate: {
-                    required: required,
+                    required,
                     minLength: minLength(10),
                     minValue: (value: string) =>
                         new DateWrapper(value).isAfter(this.minTestDate),
@@ -74,7 +79,7 @@ export default class NewDependentComponent extends Vue {
                         new DateWrapper(value).isBefore(new DateWrapper()),
                 },
                 PHN: {
-                    required: required,
+                    required,
                     minLength: minLength(12),
                     validPersonalHealthNumber,
                 },
@@ -106,14 +111,14 @@ export default class NewDependentComponent extends Vue {
         this.isVisible = false;
     }
 
-    private created() {
+    private created(): void {
         this.dependentService = container.get<IDependentService>(
             SERVICE_IDENTIFIER.DependentService
         );
         this.isLoading = false;
     }
 
-    private handleOk(bvModalEvt: Event) {
+    private handleOk(bvModalEvt: Event): void {
         // Prevent modal from closing
         bvModalEvt.preventDefault();
         this.$v.$touch();
@@ -123,7 +128,7 @@ export default class NewDependentComponent extends Vue {
         }
     }
 
-    private addDependent() {
+    private addDependent(): void {
         this.dependentService
             .addDependent(this.user.hdid, {
                 ...this.dependent,
@@ -134,20 +139,22 @@ export default class NewDependentComponent extends Vue {
                 this.handleSubmit();
             })
             .catch((err: ResultError) => {
-                this.errorMessage = err.resultMessage;
+                if (err.statusCode === 429) {
+                    this.setTooManyRequestsError({ key: "addDependentModal" });
+                } else {
+                    this.errorMessage = err.resultMessage;
+                }
             });
     }
 
     @Emit()
-    private handleSubmit() {
+    private handleSubmit(): void {
         this.clear();
         // Hide the modal manually
-        this.$nextTick(() => {
-            this.hideModal();
-        });
+        this.$nextTick(() => this.hideModal());
     }
 
-    private clear() {
+    private clear(): void {
         this.dependent = {
             firstName: "",
             lastName: "",
@@ -172,6 +179,7 @@ export default class NewDependentComponent extends Vue {
         header-text-variant="light"
         centered
     >
+        <TooManyRequestsComponent location="addDependentModal" />
         <b-alert
             data-testid="dependentErrorBanner"
             variant="danger"
@@ -293,8 +301,8 @@ export default class NewDependentComponent extends Vue {
                                 </b-col>
                             </b-row>
                             <b-row class="mb-2">
-                                <b-col
-                                    ><b-checkbox
+                                <b-col>
+                                    <b-checkbox
                                         id="termsCheckbox"
                                         v-model="accepted"
                                         data-testid="termsCheckbox"
@@ -354,15 +362,17 @@ export default class NewDependentComponent extends Vue {
                 </div>
             </b-row>
         </template>
-        <LoadingComponent :is-loading="isLoading"></LoadingComponent>
+        <LoadingComponent :is-loading="isLoading" />
     </b-modal>
 </template>
 
 <style lang="scss" scoped>
 @import "@/assets/scss/_variables.scss";
+
 .dependentCardDateInput {
     color: #e0e0e0;
 }
+
 ::placeholder {
     color: #e0e0e0;
 }

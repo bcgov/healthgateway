@@ -1,5 +1,3 @@
-import { verifyTestingEnvironment } from "../../support/functions/environment";
-
 const suggestionTag = "suggestion";
 const questionTag = "question";
 
@@ -19,20 +17,15 @@ function validateTableRowCount(tableSelector, count) {
         .should("have.length", count);
 }
 
+const rowSelector = "[data-testid=feedback-table] tbody tr.mud-table-row";
+
 describe("Feedback Review", () => {
     beforeEach(() => {
-        verifyTestingEnvironment();
-
-        cy.log("Logging in.");
-        cy.login(Cypress.env("idir_username"), Cypress.env("idir_password"));
-
-        cy.log("Navigating to feedback review page.");
-        cy.visit("/feedback");
-    });
-
-    afterEach(() => {
-        cy.log("Logging out.");
-        cy.logout();
+        cy.login(
+            Cypress.env("keycloak_username"),
+            Cypress.env("keycloak_password"),
+            "/feedback"
+        );
     });
 
     it("Tag and Feedback Table Functionality", () => {
@@ -41,10 +34,24 @@ describe("Feedback Review", () => {
         cy.get("[data-testid=tag-collection-item]").should("not.exist");
         validateTableRowCount("[data-testid=feedback-table]", 2);
 
-        // alias for first row of table
-        cy.get("[data-testid=feedback-table] tbody tr.mud-table-row")
+        cy.log("Reviewing feedback.");
+        cy.get(rowSelector)
             .first()
-            .as("firstRow");
+            .within(() => {
+                cy.get("[data-testid=feedback-review-button]")
+                    .should("be.visible")
+                    .should("have.class", "mud-error-text")
+                    .click();
+            });
+        validateTableLoad("[data-testid=feedback-table]");
+        cy.get(rowSelector)
+            .first()
+            .within(() => {
+                cy.get("[data-testid=feedback-review-button]")
+                    .should("be.visible")
+                    .should("have.class", "mud-success-text")
+                    .click();
+            });
 
         cy.log("Adding tags.");
         cy.get("[data-testid=add-tag-input]").clear().type(suggestionTag);
@@ -57,17 +64,21 @@ describe("Feedback Review", () => {
         cy.get("[data-testid=tag-collection-item]").contains(questionTag);
 
         cy.log("Assigning tags.");
-        cy.get("@firstRow").within(() => {
-            cy.get("[data-testid=feedback-tag-select]").click();
-        });
+        cy.get(rowSelector)
+            .first()
+            .within(() => {
+                cy.get("[data-testid=feedback-tag-select]").click();
+            });
         cy.get("[data-testid=feedback-tag]").contains(suggestionTag).click();
         validateTableLoad("[data-testid=feedback-table]");
-        cy.get("@firstRow").within(() => {
-            cy.get("[data-testid=feedback-tag-select]").should(
-                "have.value",
-                suggestionTag
-            );
-        });
+        cy.get(rowSelector)
+            .first()
+            .within(() => {
+                cy.get("[data-testid=feedback-tag-select]").should(
+                    "have.value",
+                    suggestionTag
+                );
+            });
 
         cy.log("Filtering tags.");
         cy.get("[data-testid=tag-collection-item]")
@@ -89,17 +100,21 @@ describe("Feedback Review", () => {
             .should("be.visible");
 
         cy.log("Unassigning tags.");
-        cy.get("@firstRow").within(() => {
-            cy.get("[data-testid=feedback-tag-select]").click();
-        });
+        cy.get(rowSelector)
+            .first()
+            .within(() => {
+                cy.get("[data-testid=feedback-tag-select]").click();
+            });
         cy.get("[data-testid=feedback-tag]").contains(suggestionTag).click();
         validateTableLoad("[data-testid=feedback-table]");
-        cy.get("@firstRow").within(() => {
-            cy.get("[data-testid=feedback-tag-select]").should(
-                "not.have.value",
-                suggestionTag
-            );
-        });
+        cy.get(rowSelector)
+            .first()
+            .within(() => {
+                cy.get("[data-testid=feedback-tag-select]").should(
+                    "not.have.value",
+                    suggestionTag
+                );
+            });
 
         cy.log("Removing tags.");
         cy.get("[data-testid=tag-collection-item]")
@@ -113,28 +128,19 @@ describe("Feedback Review", () => {
             .click();
         cy.get("[data-testid=tags-updating-indicator").should("be.visible");
         cy.get("[data-testid=tag-collection-item]").should("not.exist");
+    });
 
-        cy.log("Reviewing feedback.");
-        cy.get("@firstRow").within(() => {
-            cy.get("[data-testid=feedback-review-button]")
-                .should("have.class", "mud-error-text")
-                .click();
-        });
-        validateTableLoad("[data-testid=feedback-table]");
-        cy.get("@firstRow").within(() => {
-            cy.get("[data-testid=feedback-review-button]")
-                .should("have.class", "mud-success-text")
-                .click();
-        });
-
+    it("Navigating to Support Page", () => {
         cy.log("Looking up feedback author.");
-        cy.get("@firstRow").within(() => {
-            cy.get("[data-testid=feedback-person-search-button]")
-                .should("be.visible")
-                .click();
-        });
+        cy.get(rowSelector)
+            .first()
+            .within(() => {
+                cy.get("[data-testid=feedback-person-search-button]")
+                    .should("be.visible")
+                    .click();
+            });
         cy.location("pathname").should("eq", "/support");
-        validateTableLoad("[data-testid=message-verification-table]");
+        //validateTableLoad("[data-testid=message-verification-table]");
         validateTableRowCount("[data-testid=message-verification-table]", 1);
     });
 });

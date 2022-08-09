@@ -25,6 +25,6 @@ namespace HealthGateway.GatewayApi.Models
         /// <summary>
         /// Gets or sets the user profile.
         /// </summary>
-        public UserProfile Profile { get; set; } = new UserProfile();
+        public UserProfile Profile { get; set; } = new();
     }
 }

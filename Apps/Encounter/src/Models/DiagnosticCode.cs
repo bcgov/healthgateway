@@ -15,7 +15,6 @@
 //-------------------------------------------------------------------------
 namespace HealthGateway.Encounter.Models
 {
-    using System;
     using System.Text.Json.Serialization;
 
     /// <summary>

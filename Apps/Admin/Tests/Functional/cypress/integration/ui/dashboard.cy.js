@@ -1,19 +1,36 @@
-import { verifyTestingEnvironment } from "../../support/functions/environment";
+function getPastDate(daysAgo) {
+    let pastDate = new Date(new Date().toString());
+    pastDate.setDate(pastDate.getDate() - daysAgo);
+    pastDate.setUTCHours(0, 0, 0, 0);
+    cy.log(`Past Date: ${pastDate.toISOString()}`);
+    return pastDate.toISOString();
+}
 
 describe("Dashboard", () => {
     beforeEach(() => {
-        verifyTestingEnvironment();
-
         cy.intercept("GET", "**/Dashboard/RegisteredCount*", {
-            fixture: "DashboardService/registered-count.json",
+            body: {
+                [getPastDate(120)]: 1,
+                [getPastDate(2)]: 1,
+                [getPastDate(1)]: 2,
+                [getPastDate(0)]: 2,
+            },
         });
 
         cy.intercept("GET", "**/Dashboard/LoggedInCount*", {
-            fixture: "DashboardService/logged-in-count.json",
+            body: {
+                [getPastDate(120)]: 1,
+                [getPastDate(3)]: 1,
+                [getPastDate(2)]: 3,
+                [getPastDate(1)]: 2,
+                [getPastDate(0)]: 6,
+            },
         });
 
         cy.intercept("GET", "**/Dashboard/DependentCount*", {
-            fixture: "DashboardService/dependent-count.json",
+            body: {
+                [getPastDate(0)]: 2,
+            },
         });
 
         // used to calculate [data-testid=average-rating]
@@ -26,13 +43,11 @@ describe("Dashboard", () => {
             body: 2,
         });
 
-        cy.log("Logging in.");
-        cy.login(Cypress.env("idir_username"), Cypress.env("idir_password"));
-    });
-
-    afterEach(() => {
-        cy.log("Logging out.");
-        cy.logout();
+        cy.login(
+            Cypress.env("keycloak_username"),
+            Cypress.env("keycloak_password"),
+            "/"
+        );
     });
 
     it("Verify dashboard counts and skeletons.", () => {
@@ -73,15 +88,28 @@ describe("Dashboard", () => {
 
         cy.log("Clicking refresh button.");
         cy.intercept("GET", "**/Dashboard/RegisteredCount*", {
-            fixture: "DashboardService/registered-count-refresh.json",
+            body: {
+                [getPastDate(120)]: 1,
+                [getPastDate(2)]: 1,
+                [getPastDate(1)]: 2,
+                [getPastDate(0)]: 3,
+            },
         });
 
         cy.intercept("GET", "**/Dashboard/LoggedInCount*", {
-            fixture: "DashboardService/logged-in-count-refresh.json",
+            body: {
+                [getPastDate(120)]: 1,
+                [getPastDate(3)]: 1,
+                [getPastDate(2)]: 3,
+                [getPastDate(1)]: 2,
+                [getPastDate(0)]: 7,
+            },
         });
 
         cy.intercept("GET", "**/Dashboard/DependentCount*", {
-            fixture: "DashboardService/dependent-count-refresh.json",
+            body: {
+                [getPastDate(0)]: 3,
+            },
         });
 
         cy.intercept("GET", "**/Dashboard/Ratings/Summary*", {
@@ -119,7 +147,6 @@ describe("Dashboard", () => {
         cy.get("[data-testid=skeleton-unique-days]").should("be.visible");
         cy.get("[data-testid=skeleton-user-count]").should("be.visible");
         cy.get("[data-testid=skeleton-rating-summary]").should("be.visible");
-
         cy.log("Dashboard test finished.");
     });
 });

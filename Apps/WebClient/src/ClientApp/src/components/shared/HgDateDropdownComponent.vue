@@ -41,11 +41,11 @@ export default class HgDateDropdownComponent extends Vue {
         "December",
     ];
 
-    private mounted() {
+    private mounted(): void {
         this.value = this.model;
     }
 
-    private get getYears() {
+    private get getYears(): ISelectOption[] {
         let minYear = this.minYear;
         let maxYear = 0;
 
@@ -71,7 +71,7 @@ export default class HgDateDropdownComponent extends Vue {
         return yearOptions;
     }
 
-    private get getMonths() {
+    private get getMonths(): ISelectOption[] {
         let start = 1;
         let end = 12;
         if (!this.allowPast && this.year === this.currentYear) {
@@ -92,7 +92,7 @@ export default class HgDateDropdownComponent extends Vue {
         return monthOptions;
     }
 
-    private get getDays() {
+    private get getDays(): ISelectOption[] {
         let day;
         let start = 1;
         let end = 31;
@@ -135,7 +135,7 @@ export default class HgDateDropdownComponent extends Vue {
         return dayOptions;
     }
 
-    private onChange() {
+    private onChange(): void {
         if (this.year && this.month && this.day) {
             this.value = DateWrapper.fromNumerical(
                 this.year,
@@ -150,21 +150,21 @@ export default class HgDateDropdownComponent extends Vue {
     }
 
     @Emit("change")
-    private updateModel() {
+    private updateModel(): string | null {
         return this.value;
     }
 
     @Watch("model")
-    private onModelChanged() {
+    private onModelChanged(): void {
         this.value = this.model;
     }
 
     @Emit("blur")
-    private onBlur() {
+    private onBlur(): void {
         return;
     }
 
-    private getClass() {
+    private getClass(): string {
         if (this.state === true) {
             return "valid";
         } else if (this.state === false) {
@@ -217,9 +217,11 @@ export default class HgDateDropdownComponent extends Vue {
 
 <style lang="scss" scoped>
 @import "@/assets/scss/_variables.scss";
+
 .valid {
     border-color: $success;
 }
+
 .invalid {
     border-color: $danger;
 }

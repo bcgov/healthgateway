@@ -5,7 +5,7 @@ import { ErrorBannerModule, ErrorBannerState } from "./types";
 
 const state: ErrorBannerState = {
     genericErrorBanner: { isShowing: false, errors: [] },
-    tooManyRequestsWarning: false,
+    tooManyRequestsWarning: undefined,
     tooManyRequestsError: undefined,
 };
 

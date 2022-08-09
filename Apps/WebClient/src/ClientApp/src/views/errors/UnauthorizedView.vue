@@ -7,11 +7,11 @@ import { PageError } from "@/models/errors";
 
 @Component({
     components: {
-        ErrorComponent: PageErrorComponent,
+        PageErrorComponent,
     },
 })
 export default class UnauthorizedView extends Vue {
-    public errorDescription: PageError = new PageError(
+    public errorDescription = new PageError(
         "401",
         "Unauthorized",
         "You do not have permission to view this page."
@@ -20,7 +20,5 @@ export default class UnauthorizedView extends Vue {
 </script>
 
 <template>
-    <div>
-        <ErrorComponent :error="errorDescription" />
-    </div>
+    <PageErrorComponent :error="errorDescription" />
 </template>

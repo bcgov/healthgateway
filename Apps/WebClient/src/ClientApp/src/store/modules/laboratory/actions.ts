@@ -25,11 +25,10 @@ export const actions: LaboratoryActions = {
         context,
         params: { hdid: string }
     ): Promise<RequestResult<Covid19LaboratoryOrderResult>> {
-        const logger: ILogger = container.get(SERVICE_IDENTIFIER.Logger);
-        const laboratoryService: ILaboratoryService =
-            container.get<ILaboratoryService>(
-                SERVICE_IDENTIFIER.LaboratoryService
-            );
+        const logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
+        const laboratoryService = container.get<ILaboratoryService>(
+            SERVICE_IDENTIFIER.LaboratoryService
+        );
 
         return new Promise((resolve, reject) => {
             const covid19LaboratoryOrders: Covid19LaboratoryOrder[] =
@@ -114,11 +113,10 @@ export const actions: LaboratoryActions = {
         context,
         params: { hdid: string }
     ): Promise<RequestResult<LaboratoryOrderResult>> {
-        const logger: ILogger = container.get(SERVICE_IDENTIFIER.Logger);
-        const laboratoryService: ILaboratoryService =
-            container.get<ILaboratoryService>(
-                SERVICE_IDENTIFIER.LaboratoryService
-            );
+        const logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
+        const laboratoryService = container.get<ILaboratoryService>(
+            SERVICE_IDENTIFIER.LaboratoryService
+        );
 
         return new Promise((resolve, reject) => {
             const laboratoryOrders: LaboratoryOrder[] =
@@ -206,7 +204,7 @@ export const actions: LaboratoryActions = {
             errorSourceType: ErrorSourceType;
         }
     ) {
-        const logger: ILogger = container.get(SERVICE_IDENTIFIER.Logger);
+        const logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
 
         logger.error(`ERROR: ${JSON.stringify(params.error)}`);
 
@@ -221,15 +219,23 @@ export const actions: LaboratoryActions = {
                 break;
         }
 
-        context.dispatch(
-            "errorBanner/addError",
-            {
-                errorType: params.errorType,
-                source: params.errorSourceType,
-                traceId: params.error.traceId,
-            },
-            { root: true }
-        );
+        if (params.error.statusCode === 429) {
+            context.dispatch(
+                "errorBanner/setTooManyRequestsWarning",
+                { key: "page" },
+                { root: true }
+            );
+        } else {
+            context.dispatch(
+                "errorBanner/addError",
+                {
+                    errorType: params.errorType,
+                    source: params.errorSourceType,
+                    traceId: params.error.traceId,
+                },
+                { root: true }
+            );
+        }
     },
     retrievePublicCovidTests(
         context,
@@ -239,11 +245,10 @@ export const actions: LaboratoryActions = {
             collectionDate: StringISODate;
         }
     ): Promise<PublicCovidTestResponseResult> {
-        const logger: ILogger = container.get(SERVICE_IDENTIFIER.Logger);
-        const laboratoryService: ILaboratoryService =
-            container.get<ILaboratoryService>(
-                SERVICE_IDENTIFIER.LaboratoryService
-            );
+        const logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
+        const laboratoryService = container.get<ILaboratoryService>(
+            SERVICE_IDENTIFIER.LaboratoryService
+        );
 
         return new Promise((resolve, reject) => {
             logger.debug(`Retrieving Public Covid Tests in store.`);
@@ -284,44 +289,65 @@ export const actions: LaboratoryActions = {
                         }, payload.retryin);
                         resolve(payload);
                     } else {
-                        context.dispatch(
-                            "handlePublicCovidTestsError",
-                            result.resultError
-                        );
+                        context.dispatch("handlePublicCovidTestsError", {
+                            error: result.resultError,
+                            errorType: ErrorType.Retrieve,
+                        });
                         reject(result.resultError);
                     }
                 })
                 .catch((error: ResultError) => {
-                    context.dispatch("handlePublicCovidTestsError", error);
+                    context.dispatch("handlePublicCovidTestsError", {
+                        error,
+                        errorType: ErrorType.Retrieve,
+                    });
                     reject(error);
                 });
         });
     },
-    handlePublicCovidTestsError(context, error: ResultError) {
-        const logger: ILogger = container.get(SERVICE_IDENTIFIER.Logger);
-
-        logger.error(`ERROR: ${JSON.stringify(error)}`);
-        const customBannerError: CustomBannerError = {
-            title: "Our Apologies",
-            description:
-                "We've found an issue and the Health Gateway team is working hard to fix it.",
-        };
-
-        if (error.actionCode === ActionType.DataMismatch) {
-            customBannerError.title = "Data Mismatch";
-            customBannerError.description =
-                "The information you entered does not match our records. Please try again.";
-            customBannerError.detail =
-                "Please note that it can take up to 48 hours from the time of test before a result is available. If it has been at least 48 hours since you tested, please contact the COVID-19 Results Line (1‐833‐707‐2792) to investigate the issue.";
+    handlePublicCovidTestsError(
+        context,
+        params: {
+            error: ResultError;
+            errorType: ErrorType;
         }
+    ) {
+        const logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
 
-        context.commit(
-            "setPublicCovidTestResponseResultError",
-            customBannerError
-        );
+        logger.error(`ERROR: ${JSON.stringify(params.error)}`);
+
+        if (params.error.statusCode === 429) {
+            context.dispatch(
+                "errorBanner/setTooManyRequestsWarning",
+                { key: "publicCovidTest" },
+                { root: true }
+            );
+
+            context.commit("setPublicCovidTestResponseResultError", undefined);
+        } else {
+            const customBannerError: CustomBannerError = {
+                title: "Our Apologies",
+                description:
+                    "We've found an issue and the Health Gateway team is working hard to fix it.",
+            };
+
+            if (params.error.actionCode === ActionType.DataMismatch) {
+                customBannerError.title = "Data Mismatch";
+                customBannerError.description =
+                    "The information you entered does not match our records. Please try again.";
+                customBannerError.detail =
+                    "Please note that it can take up to 48 hours from the time of test before a result is available. If it has been at least 48 hours since you tested, please contact the COVID-19 Results Line (1‐833‐707‐2792) to investigate the issue.";
+            }
+
+            context.commit(
+                "setPublicCovidTestResponseResultError",
+                customBannerError
+            );
+        }
     },
     resetPublicCovidTestResponseResult(context) {
-        const logger: ILogger = container.get(SERVICE_IDENTIFIER.Logger);
+        const logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
+
         logger.debug(
             `Resetting Laboratory store module for Public COVID-19 Test response result.`
         );

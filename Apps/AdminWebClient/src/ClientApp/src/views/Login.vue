@@ -4,9 +4,8 @@ import VueRouter from "vue-router";
 import { Action, Getter } from "vuex-class";
 
 import LoadingComponent from "@/components/core/Loading.vue";
-import { UserRoles } from "@/constants/userRoles";
 
-const namespace = "auth";
+const { isNavigationFailure, NavigationFailureType } = VueRouter;
 
 @Component({
     components: {
@@ -14,62 +13,48 @@ const namespace = "auth";
     },
 })
 export default class LoginView extends Vue {
-    public name = "Dashboard";
-    @Action("login", { namespace }) private login!: (params: {
-        redirectPath: string;
-    }) => Promise<void>;
+    @Action("login", { namespace: "auth" })
+    private login!: (params: { redirectPath: string }) => Promise<void>;
 
-    @Getter("isAuthenticated", { namespace }) private isAuthenticated!: boolean;
-    @Getter("roles", { namespace: "auth" })
-    private roles!: string[];
+    @Getter("isAuthenticated", { namespace: "auth" })
+    private isAuthenticated!: boolean;
 
-    private isLoading = true;
-    private redirectPath = "";
     private routeHandler!: VueRouter;
 
-    private get isSupportOnly(): boolean {
-        return (
-            this.roles.length === 1 && this.roles[0] === UserRoles.SupportUser
+    private mounted() {
+        let redirectPath = "/";
+        if (this.$route.query.redirect !== "") {
+            redirectPath = this.$route.query.redirect.toString();
+        }
+
+        this.routeHandler = this.$router;
+        this.redirectIfAuthenticated(redirectPath);
+
+        console.log("Redirect path: " + redirectPath);
+
+        this.login({ redirectPath }).then(() =>
+            this.redirectIfAuthenticated(redirectPath)
         );
     }
 
-    private mounted() {
-        this.isLoading = true;
-        console.log(this.roles);
-
-        if (this.$route.query.redirect && this.$route.query.redirect !== "") {
-            this.redirectPath = this.$route.query.redirect.toString();
-        } else {
-            if (this.isSupportOnly) {
-                this.redirectPath = "/covidcard";
-            } else {
-                this.redirectPath = "/";
-            }
-        }
-        this.routeHandler = this.$router;
+    private redirectIfAuthenticated(path: string): void {
         if (this.isAuthenticated) {
-            this.routeHandler.push({ path: this.redirectPath });
+            this.routeHandler.push({ path }).catch((err) => {
+                if (
+                    !isNavigationFailure(err, NavigationFailureType.redirected)
+                ) {
+                    console.error(err);
+                }
+            });
         }
-
-        console.log("path", this.redirectPath);
-
-        this.login({ redirectPath: this.redirectPath }).then(() => {
-            if (this.isSupportOnly) {
-                this.redirectPath = "/covidcard";
-            }
-
-            if (this.isAuthenticated) {
-                this.routeHandler.push({ path: this.redirectPath });
-            }
-        });
     }
 }
 </script>
 
 <template>
-    <v-layout class="fill-height">
-        <LoadingComponent :is-loading="isLoading"></LoadingComponent>
+    <v-container class="fill-height">
+        <LoadingComponent :is-loading="true" />
 
         <v-row justify="center">Redirecting...</v-row>
-    </v-layout>
+    </v-container>
 </template>

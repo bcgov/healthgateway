@@ -20,7 +20,6 @@ namespace HealthGateway.Common.AccessManagement.Authentication
     using System.Net.Http;
     using System.Text.Json;
     using System.Threading.Tasks;
-
     using HealthGateway.Common.AccessManagement.Authentication.Models;
     using HealthGateway.Common.Services;
     using Microsoft.AspNetCore.Authentication;
@@ -72,7 +71,7 @@ namespace HealthGateway.Common.AccessManagement.Authentication
             this.httpContextAccessor = httpContextAccessor;
 
             IConfigurationSection? configSection = configuration?.GetSection(CacheConfigSectionName);
-            this.tokenCacheMinutes = configSection?.GetValue<int>("TokenCacheExpireMinutes", 0) ?? 0;
+            this.tokenCacheMinutes = configSection?.GetValue("TokenCacheExpireMinutes", 0) ?? 0;
             (this.tokenUri, this.tokenRequest) = this.GetConfiguration(DefaultAuthConfigSectionName);
         }
 
@@ -205,7 +204,7 @@ namespace HealthGateway.Common.AccessManagement.Authentication
                     new KeyValuePair<string?, string?>(@"audience", tokenRequest.Audience),
                     new KeyValuePair<string?, string?>(@"grant_type", @"client_credentials"),
                 };
-                using var content = new FormUrlEncodedContent(oauthParams);
+                using FormUrlEncodedContent content = new(oauthParams);
                 content.Headers.Clear();
                 content.Headers.Add(@"Content-Type", @"application/x-www-form-urlencoded");
 
@@ -246,7 +245,7 @@ namespace HealthGateway.Common.AccessManagement.Authentication
                     new KeyValuePair<string?, string?>(@"password", tokenRequest.Password),
                 };
 
-                using var content = new FormUrlEncodedContent(oauthParams);
+                using FormUrlEncodedContent content = new(oauthParams);
                 content.Headers.Clear();
                 content.Headers.Add(@"Content-Type", @"application/x-www-form-urlencoded");
 

@@ -22,13 +22,12 @@ export let options = common.OptionConfig();
 
 export default function () {
 
-
-    common.groupWithDurationMetric("batch", function () {
-        let webClientBatchResponses = http.batch(
-            common.webClientRequests(user)
-        );
-        common.checkResponses(webClientBatchResponses);
+    common.getConfigurations();
+    
+    common.groupWithDurationMetric("spaBatch", function () {
+        let spaBatchResponses = http.batch(common.spaAssetRequests());
+        common.checkBatchResponses(spaBatchResponses);
     });
 
-    sleep(1);
+    sleep(0.6);
 }

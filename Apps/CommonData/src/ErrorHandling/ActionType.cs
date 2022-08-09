@@ -15,6 +15,7 @@
 // -------------------------------------------------------------------------
 namespace HealthGateway.Common.Data.Models.ErrorHandling
 {
+    using System;
     using System.Diagnostics.CodeAnalysis;
 
     /// <summary>
@@ -31,74 +32,47 @@ namespace HealthGateway.Common.Data.Models.ErrorHandling
         /// <summary>
         /// Gets the protected user error.
         /// </summary>
-        public static ActionType Protected
-        {
-            get { return new ActionType("PROTECTED"); }
-        }
+        public static ActionType Protected => new("PROTECTED");
 
         /// <summary>
         /// Gets the missing hdid user error.
         /// </summary>
-        public static ActionType NoHdId
-        {
-            get { return new ActionType("NOHDID"); }
-        }
+        public static ActionType NoHdId => new("NOHDID");
 
         /// <summary>
         /// Gets the missing name user error.
         /// </summary>
-        public static ActionType InvalidName
-        {
-            get { return new ActionType("INVALIDNAME"); }
-        }
+        public static ActionType InvalidName => new("INVALIDNAME");
 
         /// <summary>
         /// Gets the data mismatch user error.
         /// </summary>
-        public static ActionType DataMismatch
-        {
-            get { return new ActionType("MISMATCH"); }
-        }
+        public static ActionType DataMismatch => new("MISMATCH");
 
         /// <summary>
         /// Gets the expired user error.
         /// </summary>
-        public static ActionType Expired
-        {
-            get { return new ActionType("EXPIRED"); }
-        }
+        public static ActionType Expired => new("EXPIRED");
 
         /// <summary>
         /// Gets the general data validation error.
         /// </summary>
-        public static ActionType Invalid
-        {
-            get { return new ActionType("INVALID"); }
-        }
+        public static ActionType Invalid => new("INVALID");
 
         /// <summary>
         /// Gets the general data validation error.
         /// </summary>
-        public static ActionType Refresh
-        {
-            get { return new ActionType("REFRESH"); }
-        }
+        public static ActionType Refresh => new("REFRESH");
 
         /// <summary>
         /// Gets the general data validation error.
         /// </summary>
-        public static ActionType Validation
-        {
-            get { return new ActionType("VALIDATION"); }
-        }
+        public static ActionType Validation => new("VALIDATION");
 
         /// <summary>
         /// Gets the action that the request was already processed.
         /// </summary>
-        public static ActionType Processed
-        {
-            get { return new ActionType("PROCESSED"); }
-        }
+        public static ActionType Processed => new("PROCESSED");
 
         /// <summary>
         /// Gets or sets the value that holds the internal representation of the ActionType.
@@ -114,7 +88,7 @@ namespace HealthGateway.Common.Data.Models.ErrorHandling
         /// <inheritdoc/>
         public override int GetHashCode()
         {
-            return this.Value.GetHashCode(System.StringComparison.CurrentCulture);
+            return this.Value.GetHashCode(StringComparison.CurrentCulture);
         }
     }
 }

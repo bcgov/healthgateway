@@ -16,7 +16,6 @@
 namespace HealthGateway.Common.AccessManagement.Authentication
 {
     using System;
-    using System.Threading.Tasks;
     using HealthGateway.Common.AccessManagement.Authentication.Models;
 
     /// <summary>

@@ -18,7 +18,7 @@ import RequestResultUtil from "@/utility/requestResultUtil";
 
 @injectable()
 export class RestDependentService implements IDependentService {
-    private logger: ILogger = container.get(SERVICE_IDENTIFIER.Logger);
+    private logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
     private readonly DEPENDENT_BASE_URI: string = "UserProfile";
     private http!: IHttpDelegate;
     private isEnabled = false;
@@ -76,7 +76,7 @@ export class RestDependentService implements IDependentService {
     }
 
     public getAll(hdid: string): Promise<Dependent[]> {
-        return new Promise((resolve, reject) => {
+        return new Promise((resolve, reject) =>
             this.http
                 .getWithCors<RequestResult<Dependent[]>>(
                     `${this.baseUri}${this.DEPENDENT_BASE_URI}/${hdid}/Dependent`
@@ -101,12 +101,12 @@ export class RestDependentService implements IDependentService {
                             ServiceCode.HealthGatewayUser
                         )
                     );
-                });
-        });
+                })
+        );
     }
 
     public removeDependent(hdid: string, dependent: Dependent): Promise<void> {
-        return new Promise((resolve, reject) => {
+        return new Promise((resolve, reject) =>
             this.http
                 .delete<RequestResult<void>>(
                     `${this.baseUri}${this.DEPENDENT_BASE_URI}/${hdid}/Dependent/${dependent.ownerId}`,
@@ -134,7 +134,7 @@ export class RestDependentService implements IDependentService {
                             ServiceCode.HealthGatewayUser
                         )
                     );
-                });
-        });
+                })
+        );
     }
 }

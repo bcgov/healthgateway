@@ -1,5 +1,3 @@
-import { verifyTestingEnvironment } from "../../support/functions/environment";
-
 function getFileName(name) {
     // yyyy-mm-dd
     const today = new Date().toLocaleDateString("en-CA");
@@ -25,16 +23,11 @@ describe("System Analytics", () => {
             "**/CsvExport/GetInactiveUsers?timeOffset=420&inactiveDays=100"
         ).as("getInactiveUsers");
 
-        verifyTestingEnvironment();
-        cy.log("Logging in.");
-        cy.login(Cypress.env("idir_username"), Cypress.env("idir_password"));
-        cy.log("Navigate to analytics page.");
-        cy.visit("/analytics");
-    });
-
-    afterEach(() => {
-        cy.log("Logging out.");
-        cy.logout();
+        cy.login(
+            Cypress.env("keycloak_username"),
+            Cypress.env("keycloak_password"),
+            "/analytics"
+        );
     });
 
     it("Verify system analytics stats downloads.", () => {

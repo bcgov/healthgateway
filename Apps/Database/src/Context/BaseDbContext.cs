@@ -21,7 +21,6 @@ namespace HealthGateway.Database.Context
     using System.Globalization;
     using System.Linq;
     using HealthGateway.Common.Data.Models;
-    using HealthGateway.Database.Models;
     using Microsoft.EntityFrameworkCore;
     using Microsoft.EntityFrameworkCore.ChangeTracking;
 
@@ -43,25 +42,13 @@ namespace HealthGateway.Database.Context
         /// <summary>
         /// Gets the concurrency column that we use in our DB.
         /// </summary>
-        protected virtual string ConcurrencyColumn
-        {
-            get
-            {
-                return "xmin";
-            }
-        }
+        protected virtual string ConcurrencyColumn => "xmin";
 
         /// <summary>
         /// Gets the initial seed date for loading data.
         /// The value returned is the first date of the Health Gateway Project.
         /// </summary>
-        protected virtual DateTime DefaultSeedDate
-        {
-            get
-            {
-                return Convert.ToDateTime("5/1/2019", CultureInfo.InvariantCulture);
-            }
-        }
+        protected virtual DateTime DefaultSeedDate => Convert.ToDateTime("5/1/2019", CultureInfo.InvariantCulture);
 
         /// <summary>
         /// Executes a sql command.
@@ -74,12 +61,12 @@ namespace HealthGateway.Database.Context
             return this.Database.ExecuteSqlRaw(sql, parameters);
         }
 
-        /// <inheritdoc />
+        /// <inheritdoc/>
         public override int SaveChanges()
         {
-            DateTime now = System.DateTime.UtcNow;
+            DateTime now = DateTime.UtcNow;
             IEnumerable<EntityEntry> entities = this.ChangeTracker.Entries()
-                   .Where(x => ((x.Entity is IAuditable || x.Entity is IConcurrencyGuard) && (x.State == EntityState.Added || x.State == EntityState.Modified)));
+                .Where(x => (x.Entity is IAuditable || x.Entity is IConcurrencyGuard) && (x.State == EntityState.Added || x.State == EntityState.Modified));
             foreach (EntityEntry entityEntry in entities)
             {
                 if (entityEntry.Entity is IAuditable)

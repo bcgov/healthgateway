@@ -62,7 +62,10 @@ namespace HealthGateway.GatewayApi.Controllers
         /// <param name="hdid">The owner hdid.</param>
         /// <response code="200">Returns the list of dependents.</response>
         /// <response code="401">the client must authenticate itself to get the requested response.</response>
-        /// <response code="403">The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.</response>
+        /// <response code="403">
+        /// The client does not have access rights to the content; that is, it is unauthorized, so the server
+        /// is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.
+        /// </response>
         [HttpGet]
         [Authorize(Policy = UserProfilePolicy.Read)]
         [Route("{hdid}/[controller]")]
@@ -79,7 +82,10 @@ namespace HealthGateway.GatewayApi.Controllers
         /// <response code="200">The Dependent record was saved.</response>
         /// <response code="400">The Dependent was already inserted.</response>
         /// <response code="401">The client must authenticate itself to get the requested response.</response>
-        /// <response code="403">The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.</response>
+        /// <response code="403">
+        /// The client does not have access rights to the content; that is, it is unauthorized, so the server
+        /// is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.
+        /// </response>
         [HttpPost]
         [Authorize(Policy = UserProfilePolicy.Write)]
         [Route("{hdid}/[controller]")]
@@ -100,7 +106,10 @@ namespace HealthGateway.GatewayApi.Controllers
         /// <response code="200">The Dependent record was deleted.</response>
         /// <response code="400">The request is invalid.</response>
         /// <response code="401">The client must authenticate itself to get the requested response.</response>
-        /// <response code="403">The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.</response>
+        /// <response code="403">
+        /// The client does not have access rights to the content; that is, it is unauthorized, so the server
+        /// is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.
+        /// </response>
         [HttpDelete]
         [Authorize(Policy = UserProfilePolicy.Write)]
         [Route("{hdid}/[controller]/{dependentHdid}")]
@@ -108,7 +117,7 @@ namespace HealthGateway.GatewayApi.Controllers
         {
             if (dependent.OwnerId != dependentHdid || dependent.DelegateId != hdid)
             {
-                this.logger.LogError($"Parameters do not match body of delete.");
+                this.logger.LogError("Parameters do not match body of delete.");
                 return new BadRequestResult();
             }
 

@@ -41,10 +41,10 @@ namespace HealthGateway.Database.Utils
                 FieldInfo? field = typeof(T).GetField(enumString);
                 if (field != null)
                 {
-                    EnumMemberAttribute attr = (EnumMemberAttribute)field.GetCustomAttributes(
-                        typeof(EnumMemberAttribute), false).Single();
+                    EnumMemberAttribute attr = (EnumMemberAttribute)field.GetCustomAttributes(typeof(EnumMemberAttribute), false).Single();
                     if (attr != null)
-                    {// if there's no EnumMember attr, use the default value
+                    {
+                        // if there's no EnumMember attr, use the default value
                         enumString = attr.Value !;
                     }
                 }
@@ -66,7 +66,7 @@ namespace HealthGateway.Database.Utils
             if (useAttribute)
             {
                 Type enumType = typeof(T);
-                foreach (var name in Enum.GetNames(enumType))
+                foreach (string name in Enum.GetNames(enumType))
                 {
                     FieldInfo? field = enumType.GetField(name);
                     if (field != null)

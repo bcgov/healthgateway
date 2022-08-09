@@ -59,20 +59,20 @@ export default class NoteTimelineComponent extends Vue {
                 hdid: this.user.hdid,
                 note: this.entry.toModel(),
             })
-                .catch((err: ResultError) => {
+                .catch((err: ResultError) =>
                     this.addError({
                         errorType: ErrorType.Delete,
                         source: ErrorSourceType.Note,
                         traceId: err.traceId,
-                    });
-                })
+                    })
+                )
                 .finally(() => {
                     this.isSaving = false;
                 });
         }
     }
 
-    private handleEdit() {
+    private handleEdit(): void {
         this.eventBus.$emit(EventMessageName.EditNote, this.entry);
     }
 }
@@ -139,6 +139,7 @@ export default class NoteTimelineComponent extends Vue {
 
 <style lang="scss">
 @import "@/assets/scss/_variables.scss";
+
 .note-icon {
     background-color: $bcgold !important;
 }

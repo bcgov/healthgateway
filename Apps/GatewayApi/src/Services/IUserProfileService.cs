@@ -17,9 +17,9 @@ namespace HealthGateway.GatewayApi.Services
 {
     using System;
     using System.Collections.Generic;
+    using System.Diagnostics.CodeAnalysis;
     using System.Threading.Tasks;
     using HealthGateway.Common.Data.ViewModels;
-    using HealthGateway.Common.Models;
     using HealthGateway.GatewayApi.Models;
 
     /// <summary>
@@ -50,7 +50,7 @@ namespace HealthGateway.GatewayApi.Services
         /// <param name="hdid">The requested user hdid.</param>
         /// <param name="userId">The user id.</param>
         /// <returns>The wrapped user profile.</returns>
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1054:Uri parameters should not be strings", Justification = "Team Decision")]
+        [SuppressMessage("Design", "CA1054:Uri parameters should not be strings", Justification = "Team Decision")]
         RequestResult<UserProfileModel> CloseUserProfile(string hdid, Guid userId);
 
         /// <summary>
@@ -58,7 +58,7 @@ namespace HealthGateway.GatewayApi.Services
         /// </summary>
         /// <param name="hdid">The requested user hdid.</param>
         /// <returns>The wrapped user profile.</returns>
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1054:Uri parameters should not be strings", Justification = "Team Decision")]
+        [SuppressMessage("Design", "CA1054:Uri parameters should not be strings", Justification = "Team Decision")]
         RequestResult<UserProfileModel> RecoverUserProfile(string hdid);
 
         /// <summary>

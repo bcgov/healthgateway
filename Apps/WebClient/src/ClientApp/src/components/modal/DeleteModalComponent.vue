@@ -20,16 +20,16 @@ export default class DeleteModalComponent extends Vue {
     }
 
     @Emit()
-    private submit() {
+    private submit(): void {
         this.isVisible = false;
     }
 
     @Emit()
-    private cancel() {
+    private cancel(): void {
         this.hideModal();
     }
 
-    private handleSubmit(bvModalEvt: Event) {
+    private handleSubmit(bvModalEvt: Event): void {
         // Prevent modal from closing
         bvModalEvt.preventDefault();
 
@@ -37,12 +37,10 @@ export default class DeleteModalComponent extends Vue {
         this.submit();
 
         // Hide the modal manually
-        this.$nextTick(() => {
-            this.hideModal();
-        });
+        this.$nextTick(() => this.hideModal());
     }
 
-    private handleCancel(bvModalEvt: Event) {
+    private handleCancel(bvModalEvt: Event): void {
         // Prevent modal from closing
         bvModalEvt.preventDefault();
 
@@ -50,9 +48,7 @@ export default class DeleteModalComponent extends Vue {
         this.cancel();
 
         // Hide the modal manually
-        this.$nextTick(() => {
-            this.hideModal();
-        });
+        this.$nextTick(() => this.hideModal());
     }
 }
 </script>

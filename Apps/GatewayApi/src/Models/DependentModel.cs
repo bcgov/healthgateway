@@ -15,9 +15,7 @@
 //-------------------------------------------------------------------------
 namespace HealthGateway.GatewayApi.Models
 {
-    using HealthGateway.Common.Models;
     using HealthGateway.Database.Constants;
-    using HealthGateway.Database.Models;
 
     /// <summary>
     /// Represents a Dependent Model.
@@ -27,7 +25,7 @@ namespace HealthGateway.GatewayApi.Models
         /// <summary>
         /// Gets or sets the hdid of the dependent.
         /// </summary>
-        public DependentInformation DependentInformation { get; set; } = new DependentInformation();
+        public DependentInformation DependentInformation { get; set; } = new();
 
         /// <summary>
         /// Gets or sets the owner of the hdid.

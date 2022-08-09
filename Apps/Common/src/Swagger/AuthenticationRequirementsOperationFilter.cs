@@ -15,12 +15,11 @@
 //-------------------------------------------------------------------------
 namespace HealthGateway.Common.Swagger
 {
+    using System;
     using System.Collections.Generic;
     using System.Diagnostics.CodeAnalysis;
     using System.Linq;
     using HealthGateway.Common.AccessManagement.Authorization.Policy;
-    using HealthGateway.Common.AccessManagement.Authorization.Requirements;
-    using Microsoft.AspNetCore.Authentication.JwtBearer;
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Mvc.Controllers;
     using Microsoft.OpenApi.Models;
@@ -71,13 +70,11 @@ namespace HealthGateway.Common.Swagger
                         };
                     }
 
-                    operation.Security.Add(new OpenApiSecurityRequirement
-                    {
+                    operation.Security.Add(
+                        new()
                         {
-                            securityScheme,
-                            System.Array.Empty<string>()
-                        },
-                    });
+                            { securityScheme, Array.Empty<string>() },
+                        });
                 }
             }
         }

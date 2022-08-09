@@ -1,10 +1,10 @@
 @page "/showcase/alerts"
+@layout MainLayout
 
 <PageTitle>Alerts</PageTitle>
 <article>
     <MudText Class="mt-4 mb-3" Typo="Typo.h4">Alerts</MudText>
     <MudGrid>
-           
         <MudItem md="6" xs="12">
             @foreach ((Severity severity, string message) in Severities)
             {
@@ -12,22 +12,22 @@
             }
         </MudItem>
     </MudGrid>
-</article> 
+</article>
 <article>
     <MudText Class="mt-4 mb-3" Typo="Typo.h4">Snackbar Alerts</MudText>
     <MudGrid>
-            <MudItem md="4" xs="12">
-                @foreach ((Severity severity, string message) in Severities)
-                {
-                    <MudAlert Variant="Variant.Filled" Severity="@severity" Dense="true" NoIcon="true" Class="my-3">@severity</MudAlert>
-                }
-            </MudItem>
+        <MudItem md="4" xs="12">
+            @foreach ((Severity severity, string _) in Severities)
+            {
+                <MudAlert Variant="Variant.Filled" Severity="@severity" Dense="true" NoIcon="true" Class="my-3">@severity</MudAlert>
+            }
+        </MudItem>
     </MudGrid>
 </article>
 
 @code
 {
-    public IList<(Severity severity, string message)> Severities { get; } = new List<(Severity severity, string message)>()
+    public IList<(Severity severity, string message)> Severities { get; } = new List<(Severity severity, string message)>
     {
         (Severity.Normal,"The reactor type is RBMK-1000"),
         (Severity.Info,"The reactor was fired up successfully"),

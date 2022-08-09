@@ -90,7 +90,10 @@ export interface VaccinationStatusActions
             dateOfVaccine: StringISODate;
         }
     ): Promise<void>;
-    handlePublicError(context: StoreContext, error: ResultError): void;
+    handlePublicError(
+        context: StoreContext,
+        params: { error: ResultError; errorType: ErrorType }
+    ): void;
     retrievePublicVaccineRecord(
         context: StoreContext,
         params: {
@@ -99,7 +102,10 @@ export interface VaccinationStatusActions
             dateOfVaccine: StringISODate;
         }
     ): Promise<CovidVaccineRecord>;
-    handlePdfError(context: StoreContext, error: ResultError): void;
+    handlePdfError(
+        context: StoreContext,
+        params: { error: ResultError; errorType: ErrorType }
+    ): void;
     retrieveAuthenticatedVaccineStatus(
         context: StoreContext,
         params: {

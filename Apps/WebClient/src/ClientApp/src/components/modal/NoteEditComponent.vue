@@ -51,7 +51,7 @@ export default class NoteEditComponent extends Vue {
     private entry?: NoteTimelineEntry;
     private text = "";
     private title = "";
-    private dateString: string = new DateWrapper().toISODate();
+    private dateString = new DateWrapper().toISODate();
 
     private isSaving = false;
     private errorMessage = "";
@@ -72,7 +72,7 @@ export default class NoteEditComponent extends Vue {
         return this.text === "" && this.title === "";
     }
 
-    private mounted() {
+    private mounted(): void {
         this.clear();
         this.eventBus.$on(EventMessageName.EditNote, this.editNote);
         this.eventBus.$on(EventMessageName.CreateNote, this.newNote);
@@ -80,19 +80,19 @@ export default class NoteEditComponent extends Vue {
         window.addEventListener("beforeunload", this.onBrowserClose);
     }
 
-    private onBrowserClose(event: BeforeUnloadEvent) {
+    private onBrowserClose(event: BeforeUnloadEvent): void {
         if (this.isVisible && !this.isIdleWarningVisible && !this.isBlankNote) {
             event.returnValue = this.unsavedChangesText;
         }
     }
 
-    private validations() {
+    private validations(): unknown {
         return {
             title: {
-                required: required,
+                required,
             },
             dateString: {
-                required: required,
+                required,
             },
         };
     }
@@ -123,7 +123,7 @@ export default class NoteEditComponent extends Vue {
         this.clear();
     }
 
-    private update() {
+    private update(): void {
         let entry = this.entry as NoteTimelineEntry;
         this.isSaving = true;
         this.updateNote({
@@ -149,7 +149,7 @@ export default class NoteEditComponent extends Vue {
             });
     }
 
-    private create() {
+    private create(): void {
         this.isSaving = true;
         this.createNote({
             hdid: this.user.hdid,
@@ -176,12 +176,12 @@ export default class NoteEditComponent extends Vue {
             });
     }
 
-    private onNoteAdded(note: UserNote) {
+    private onNoteAdded(note: UserNote): void {
         this.clearFilter();
         this.setSelectedDate(new DateWrapper(note.journalDate));
     }
 
-    private handleOk(bvModalEvt: Event) {
+    private handleOk(bvModalEvt: Event): void {
         // Prevent modal from closing
         bvModalEvt.preventDefault();
         this.$v.$touch();
@@ -194,14 +194,12 @@ export default class NoteEditComponent extends Vue {
         }
     }
 
-    private handleSubmit() {
+    private handleSubmit(): void {
         // Hide the modal manually
-        this.$nextTick(() => {
-            this.hideModal();
-        });
+        this.$nextTick(() => this.hideModal());
     }
 
-    private clear() {
+    private clear(): void {
         this.entry = undefined;
         this.text = "";
         this.title = "";
@@ -354,6 +352,7 @@ export default class NoteEditComponent extends Vue {
 
 <style lang="scss">
 @import "@/assets/scss/_variables.scss";
+
 .edit-modal-header {
     background-color: $bcgold;
 }

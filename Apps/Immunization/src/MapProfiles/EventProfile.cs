@@ -19,7 +19,6 @@ namespace HealthGateway.Immunization.MapProfiles
     using AutoMapper;
     using HealthGateway.Common.Models.Immunization;
     using HealthGateway.Common.Models.PHSA;
-    using Microsoft.AspNetCore.SignalR;
 
     /// <summary>
     /// An AutoMapper profile class which defines mapping between PHSA Immunization and Common Models.
@@ -33,12 +32,15 @@ namespace HealthGateway.Immunization.MapProfiles
         {
             this.CreateMap<ImmunizationViewResponse, ImmunizationEvent>()
                 .ForMember(dest => dest.DateOfImmunization, opt => opt.MapFrom(src => src.OccurrenceDateTime))
-                .ForMember(dest => dest.Immunization, opt =>
-                    opt.MapFrom((src, dest, _, context) => new ImmunizationDefinition()
-                    {
-                        Name = src.Name,
-                        ImmunizationAgents = context.Mapper.Map<IEnumerable<ImmunizationAgent>>(src.ImmunizationAgents),
-                    }))
+                .ForMember(
+                    dest => dest.Immunization,
+                    opt =>
+                        opt.MapFrom(
+                            (src, dest, _, context) => new ImmunizationDefinition
+                            {
+                                Name = src.Name,
+                                ImmunizationAgents = context.Mapper.Map<IEnumerable<ImmunizationAgent>>(src.ImmunizationAgents),
+                            }))
                 .ForMember(dest => dest.Forecast, opt => opt.MapFrom(src => src.ImmunizationForecast));
         }
     }

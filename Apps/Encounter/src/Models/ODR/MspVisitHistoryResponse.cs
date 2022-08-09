@@ -15,7 +15,6 @@
 // -------------------------------------------------------------------------
 namespace HealthGateway.Encounter.Models.ODR
 {
-    using System;
     using System.Collections.Generic;
     using System.Text.Json.Serialization;
     using HealthGateway.Common.Models.ODR;

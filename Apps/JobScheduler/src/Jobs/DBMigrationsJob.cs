@@ -18,7 +18,6 @@ namespace Healthgateway.JobScheduler.Jobs
     using Hangfire;
     using HealthGateway.Database.Context;
     using Microsoft.EntityFrameworkCore;
-    using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.Logging;
 
     /// <summary>

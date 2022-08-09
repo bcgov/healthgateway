@@ -13,6 +13,7 @@ import Vue from "vue";
 import { Component, Watch } from "vue-property-decorator";
 import { Action, Getter } from "vuex-class";
 
+import { ResultError } from "@/models/errors";
 import User from "@/models/user";
 import container from "@/plugins/container";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
@@ -25,10 +26,17 @@ const user = "user";
 
 @Component
 export default class FeedbackComponent extends Vue {
-    @Action("toggleSidebar", { namespace: navbar }) toggleSidebar!: () => void;
+    @Action("setTooManyRequestsError", { namespace: "errorBanner" })
+    setTooManyRequestsError!: (params: { key: string }) => void;
 
-    @Getter("isSidebarOpen", { namespace: navbar }) isSidebarOpen!: boolean;
-    @Getter("user", { namespace: user }) user!: User;
+    @Action("toggleSidebar", { namespace: navbar })
+    toggleSidebar!: () => void;
+
+    @Getter("isSidebarOpen", { namespace: navbar })
+    isSidebarOpen!: boolean;
+
+    @Getter("user", { namespace: user })
+    user!: User;
 
     private comment = "";
 
@@ -38,7 +46,7 @@ export default class FeedbackComponent extends Vue {
     private isLoading = false;
     private userFeedbackService!: IUserFeedbackService;
 
-    private get isValid() {
+    private get isValid(): boolean {
         return this.comment.length > 1;
     }
 
@@ -69,27 +77,27 @@ export default class FeedbackComponent extends Vue {
     }
 
     @Watch("isSidebarOpen")
-    private onIsSidebarOpen(newValue: boolean) {
+    private onIsSidebarOpen(newValue: boolean): void {
         // Make sure it closes if the sidebar is closing and reset state
         if (!newValue) {
             this.resetFeedback();
         }
     }
 
-    private created() {
+    private created(): void {
         this.userFeedbackService = container.get(
             SERVICE_IDENTIFIER.UserFeedbackService
         );
     }
 
-    private toggleExpanded() {
+    private toggleExpanded(): void {
         this.visible = !this.visible;
         if (!this.isSidebarOpen) {
             this.toggleSidebar();
         }
     }
 
-    private onSubmit(event: Event) {
+    private onSubmit(event: Event): void {
         this.isLoading = true;
 
         this.userFeedbackService
@@ -99,7 +107,10 @@ export default class FeedbackComponent extends Vue {
             .then((result) => {
                 this.isSuccess = result;
             })
-            .catch(() => {
+            .catch((err: ResultError) => {
+                if (err.statusCode === 429) {
+                    this.setTooManyRequestsError({ key: "page" });
+                }
                 this.isSuccess = false;
             })
             .finally(() => {
@@ -110,7 +121,7 @@ export default class FeedbackComponent extends Vue {
         event.preventDefault();
     }
 
-    private resetFeedback() {
+    private resetFeedback(): void {
         this.visible = false;
         this.hasSubmitted = false;
         this.isSuccess = false;
@@ -297,6 +308,7 @@ export default class FeedbackComponent extends Vue {
 
 <style lang="scss" scoped>
 @import "@/assets/scss/_variables.scss";
+
 .feedback {
     background-color: $aquaBlue;
     display: inline;

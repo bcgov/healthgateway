@@ -1,5 +1,3 @@
-import { verifyTestingEnvironment } from "../../support/functions/environment";
-
 const email = "fakeemail@healthgateway.gov.bc.ca";
 const emailNotFound = "fakeemail_noresults@healthgateway.gov.bc.ca";
 const emailHdid = "DEV4FPEGCXG2NB5K2USBL52S66SC3GOUHWRP3GTXR2BTY5HEC4YA";
@@ -35,12 +33,10 @@ function verifyTableResults(queryType) {
 
 describe("Support", () => {
     beforeEach(() => {
-        verifyTestingEnvironment();
-
         // PHN with results
         cy.intercept(
             "GET",
-            "**/Support/Users?queryString=9735353315&queryType=PHN",
+            `**/Support/Users?queryString=${phn}&queryType=PHN`,
             {
                 fixture: "SupportService/users-phn.json",
             }
@@ -49,7 +45,7 @@ describe("Support", () => {
         // HDID with results
         cy.intercept(
             "GET",
-            "**/Support/Users?queryString=P6FFO433A5WPMVTGM7T4ZVWBKCSVNAYGTWTU3J2LWMGUMERKI72A&queryType=HDID",
+            `**/Support/Users?queryString=${hdid}&queryType=HDID`,
             {
                 fixture: "SupportService/users-hdid.json",
             }
@@ -58,7 +54,7 @@ describe("Support", () => {
         // SMS with results
         cy.intercept(
             "GET",
-            "**/Support/Users?queryString=2501234567&queryType=SMS",
+            `**/Support/Users?queryString=${sms}&queryType=SMS`,
             {
                 fixture: "SupportService/users-sms.json",
             }
@@ -67,7 +63,7 @@ describe("Support", () => {
         // Email with results
         cy.intercept(
             "GET",
-            "**/Support/Users?queryString=fakeemail%40healthgateway.gov.bc.ca&queryType=Email",
+            `**/Support/Users?queryString=${email}&queryType=Email`,
             {
                 fixture: "SupportService/users-email.json",
             }
@@ -109,16 +105,11 @@ describe("Support", () => {
             }
         );
 
-        cy.log("Logging in.");
-        cy.login(Cypress.env("idir_username"), Cypress.env("idir_password"));
-
-        cy.log("Navigate to support page.");
-        cy.visit("/support");
-    });
-
-    afterEach(() => {
-        cy.log("Logging out.");
-        cy.logout();
+        cy.login(
+            Cypress.env("keycloak_username"),
+            Cypress.env("keycloak_password"),
+            "/support"
+        );
     });
 
     it("Verify support query.", () => {
@@ -126,28 +117,36 @@ describe("Support", () => {
 
         // Search by PHN
         cy.get("[data-testid=query-type-select]").click();
-        cy.get("[data-testid=query-type]").contains("PHN").click();
+        cy.get("[data-testid=query-type]")
+            .contains("PHN")
+            .click({ force: true });
         cy.get("[data-testid=query-input]").clear().type(phn);
         cy.get("[data-testid=search-btn]").click();
         verifyTableResults("PHN");
 
         // Search by HDID.
         cy.get("[data-testid=query-type-select]").click();
-        cy.get("[data-testid=query-type]").contains("HDID").click();
+        cy.get("[data-testid=query-type]")
+            .contains("HDID")
+            .click({ force: true });
         cy.get("[data-testid=query-input]").clear().type(hdid);
         cy.get("[data-testid=search-btn]").click();
         verifyTableResults("HDID");
 
         // Search by SMS.
         cy.get("[data-testid=query-type-select]").click();
-        cy.get("[data-testid=query-type]").contains("SMS").click();
+        cy.get("[data-testid=query-type]")
+            .contains("SMS")
+            .click({ force: true });
         cy.get("[data-testid=query-input]").clear().type(sms);
         cy.get("[data-testid=search-btn]").click();
         verifyTableResults("SMS");
 
         // Search by Email.
         cy.get("[data-testid=query-type-select]").click();
-        cy.get("[data-testid=query-type]").contains("Email").click();
+        cy.get("[data-testid=query-type]")
+            .contains("Email")
+            .click({ force: true });
         cy.get("[data-testid=query-input]").clear().type(email);
         cy.get("[data-testid=search-btn]").click();
         cy.get("[data-testid=message-verification-table]")
@@ -163,34 +162,33 @@ describe("Support", () => {
         cy.log("Verify support query test finished.");
     });
 
-    it("Verify no results phn query.", () => {
+    it("Verify support no results query errors.", () => {
         cy.log("Verify phn returns no results test started.");
 
-        // Search with PHN not found in client registry.
         cy.get("[data-testid=query-type-select]").click();
-        cy.get("[data-testid=query-type]").contains("PHN").click();
+        cy.get("[data-testid=query-type]")
+            .contains("PHN")
+            .click({ force: true });
         cy.get("[data-testid=query-input]").clear().type(phnNotFound);
         cy.get("[data-testid=search-btn]").click();
         cy.get("[data-testid=banner-feedback-error-message]").should(
             "be.visible"
         );
-        // Expect no results for email.
+
         cy.get("[data-testid=message-verification-table]").should("not.exist");
 
-        // Close banner
         cy.get("[data-testid=banner-feedback-error-message]").within(() => {
             cy.get("button").parent(".mud-alert-close").click();
         });
 
         cy.log("Verify phn returns no results test finished.");
-    });
 
-    it("Verify no results hdid query.", () => {
         cy.log("Verify hdid returns no results test started.");
 
-        // Search with PHN not found in client registry.
         cy.get("[data-testid=query-type-select]").click();
-        cy.get("[data-testid=query-type]").contains("HDID").click();
+        cy.get("[data-testid=query-type]")
+            .contains("HDID")
+            .click({ force: true });
         cy.get("[data-testid=query-input]").clear().type(hdidNotFound);
         cy.get("[data-testid=search-btn]").click();
         cy.get("[data-testid=banner-feedback-error-message]").should(
@@ -198,37 +196,36 @@ describe("Support", () => {
         );
         cy.get("[data-testid=message-verification-table]").should("not.exist");
 
-        // Close banner
         cy.get("[data-testid=banner-feedback-error-message]").within(() => {
             cy.get("button").parent(".mud-alert-close").click();
         });
 
         cy.log("Verify hdid returns no results test finished.");
-    });
 
-    it("Verify no results sms query.", () => {
         cy.log("Verify sms returns no results test started.");
 
-        // Search with SMS not found.
         cy.get("[data-testid=query-type-select]").click();
-        cy.get("[data-testid=query-type]").contains("SMS").click();
+        cy.get("[data-testid=query-type]")
+            .contains("SMS")
+            .click({ force: true });
         cy.get("[data-testid=query-input]").clear().type(smsNotFound);
         cy.get("[data-testid=search-btn]").click();
+
         cy.get("[data-testid=message-verification-table]")
             .find("tr")
             .should("have.length", 1);
 
         cy.log("Verify sms returns no results test finished.");
-    });
 
-    it("Verify no results email query.", () => {
         cy.log("Verify email returns no results test started.");
 
-        // Search with Email not found.
         cy.get("[data-testid=query-type-select]").click();
-        cy.get("[data-testid=query-type]").contains("Email").click();
+        cy.get("[data-testid=query-type]")
+            .contains("Email")
+            .click({ force: true });
         cy.get("[data-testid=query-input]").clear().type(emailNotFound);
         cy.get("[data-testid=search-btn]").click();
+
         cy.get("[data-testid=message-verification-table]")
             .find("tr")
             .should("have.length", 1);
@@ -236,12 +233,20 @@ describe("Support", () => {
         cy.log("Verify email returns no results test finished.");
     });
 
-    it("Verify invalid phn.", () => {
+    it("Verify invalid phn value.", () => {
+        cy.login(
+            Cypress.env("keycloak_username"),
+            Cypress.env("keycloak_password"),
+            "/support"
+        );
+
         cy.log("Verify invalid phn test started.");
 
         // Search by invalid PHN.
         cy.get("[data-testid=query-type-select]").click();
-        cy.get("[data-testid=query-type]").contains("PHN").click();
+        cy.get("[data-testid=query-type]")
+            .contains("PHN")
+            .click({ force: true });
         cy.get("[data-testid=query-input]").clear().type(phnInvalid);
         cy.get("[data-testid=search-btn]").click();
         cy.get(".d-flex").contains("Invalid PHN").should("be.visible");
@@ -250,49 +255,72 @@ describe("Support", () => {
         cy.log("Verify invalid phn test finished.");
     });
 
-    it("Verify required paramater.", () => {
-        cy.log("Verify required parameter test started.");
+    it("Verify parameter value missing.", () => {
+        cy.login(
+            Cypress.env("keycloak_username"),
+            Cypress.env("keycloak_password"),
+            "/support"
+        );
 
-        // Search by empty PHN.
+        cy.log("Verify phn parameter value missing test started.");
+
         cy.get("[data-testid=query-type-select]").click();
-        cy.get("[data-testid=query-type]").contains("PHN").click();
+        cy.get("[data-testid=query-type]")
+            .contains("PHN")
+            .click({ force: true });
         cy.get("[data-testid=query-input]").clear();
         cy.get("[data-testid=search-btn]").click();
-        cy.get(".d-flex")
+
+        cy.get("div")
             .contains("Search parameter is required")
             .should("be.visible");
         cy.get("[data-testid=message-verification-table]").should("not.exist");
 
-        // Search by empty HDID.
+        cy.log("Verify phn parameter value missing test finished.");
+
+        cy.log("Verify hdid parameter value missing test started.");
+
         cy.get("[data-testid=query-type-select]").click();
-        cy.get("[data-testid=query-type]").contains("HDID").click();
+        cy.get("[data-testid=query-type]")
+            .contains("HDID")
+            .click({ force: true });
         cy.get("[data-testid=query-input]").clear();
         cy.get("[data-testid=search-btn]").click();
-        cy.get(".d-flex")
+
+        cy.get("div")
             .contains("Search parameter is required")
             .should("be.visible");
         cy.get("[data-testid=message-verification-table]").should("not.exist");
 
-        // Search by empty SMS.
+        cy.log("Verify hdid parameter value missing test finished.");
+
+        cy.log("Verify sms parameter value missing test started.");
+
         cy.get("[data-testid=query-type-select]").click();
-        cy.get("[data-testid=query-type]").contains("SMS").click();
+        cy.get("[data-testid=query-type]")
+            .contains("SMS")
+            .click({ force: true });
         cy.get("[data-testid=query-input]").clear();
         cy.get("[data-testid=search-btn]").click();
-        cy.get(".d-flex")
+
+        cy.get("div")
+            .contains("Search parameter is required")
+            .should("be.visible");
+
+        cy.log("Verify sms parameter value missing test finished.");
+
+        cy.get("[data-testid=query-type-select]").click();
+        cy.get("[data-testid=query-type]")
+            .contains("Email")
+            .click({ force: true });
+        cy.get("[data-testid=query-input]").clear();
+        cy.get("[data-testid=search-btn]").click();
+
+        cy.get("div")
             .contains("Search parameter is required")
             .should("be.visible");
         cy.get("[data-testid=message-verification-table]").should("not.exist");
 
-        // Search by empty Email.
-        cy.get("[data-testid=query-type-select]").click();
-        cy.get("[data-testid=query-type]").contains("Email").click();
-        cy.get("[data-testid=query-input]").clear();
-        cy.get("[data-testid=search-btn]").click();
-        cy.get(".d-flex")
-            .contains("Search parameter is required")
-            .should("be.visible");
-        cy.get("[data-testid=message-verification-table]").should("not.exist");
-
-        cy.log("Verify required parameter test finished.");
+        cy.log("Verify email parameter value missing test finished.");
     });
 });

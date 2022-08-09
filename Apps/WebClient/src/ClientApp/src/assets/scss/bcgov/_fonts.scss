@@ -7,6 +7,7 @@ $bcgov-font-path: "../fonts/" !default;
         /* Optimized for very modern browsers */
             url("#{$bcgov-font-path}BCSans-Regular.woff") format("woff"); /* Modern Browsers */
 }
+
 @font-face {
     font-family: "BCSans";
     font-style: italic;
@@ -14,6 +15,7 @@ $bcgov-font-path: "../fonts/" !default;
         /* Optimized for very modern browsers */
             url("#{$bcgov-font-path}BCSans-Italic.woff") format("woff"); /* Modern Browsers */
 }
+
 @font-face {
     font-family: "BCSans";
     font-weight: 700;
@@ -21,6 +23,7 @@ $bcgov-font-path: "../fonts/" !default;
         /* Optimized for very modern browsers */
             url("#{$bcgov-font-path}BCSans-Bold.woff") format("woff"); /* Modern Browsers */
 }
+
 @font-face {
     font-family: "BCSans";
     font-style: italic;

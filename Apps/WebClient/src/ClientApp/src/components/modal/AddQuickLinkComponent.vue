@@ -80,16 +80,14 @@ export default class AddQuickLinkComponent extends Vue {
     }
 
     private addQuickLink(submittedQuickLinks: QuickLink[]): Promise<void> {
-        const quickLinks: QuickLink[] = (this.quickLinks ?? []).concat(
-            submittedQuickLinks
-        );
+        const quickLinks = (this.quickLinks ?? []).concat(submittedQuickLinks);
         return this.updateQuickLinks({
             hdid: this.user.hdid,
-            quickLinks: quickLinks,
+            quickLinks,
         });
     }
 
-    private created() {
+    private created(): void {
         this.logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
     }
 
@@ -103,7 +101,7 @@ export default class AddQuickLinkComponent extends Vue {
         );
     }
 
-    private handleCancel(modalEvt: Event) {
+    private handleCancel(modalEvt: Event): void {
         // Prevent modal from closing
         modalEvt.preventDefault();
 
@@ -114,12 +112,10 @@ export default class AddQuickLinkComponent extends Vue {
         this.forceCheckboxComponentRerender();
 
         // Hide the modal manually
-        this.$nextTick(() => {
-            this.hideModal();
-        });
+        this.$nextTick(() => this.hideModal());
     }
 
-    private handleSubmit(modalEvt: Event) {
+    private handleSubmit(modalEvt: Event): void {
         // Prevent modal from closing
         modalEvt.preventDefault();
 
@@ -151,9 +147,7 @@ export default class AddQuickLinkComponent extends Vue {
         this.selectedQuickLinks = [];
 
         // Hide the modal manually
-        this.$nextTick(() => {
-            this.hideModal();
-        });
+        this.$nextTick(() => this.hideModal());
     }
 
     private handleUpdateVaccineCardUserPreference(): void {

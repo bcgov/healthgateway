@@ -71,7 +71,7 @@ namespace HealthGateway.Admin.Server.Models
         /// <returns>The newly created AdminUserProfileView object.</returns>
         public static AdminUserProfileView FromDbModel(AdminUserProfile model)
         {
-            return new AdminUserProfileView()
+            return new AdminUserProfileView
             {
                 AdminUserProfileId = model.AdminUserProfileId,
                 Username = model.Username,
@@ -87,7 +87,7 @@ namespace HealthGateway.Admin.Server.Models
         /// <returns>The newly created AdminUserProfileView object.</returns>
         public static AdminUserProfileView FromKeycloakModel(UserRepresentation model, string realmRoles)
         {
-            return new AdminUserProfileView()
+            return new AdminUserProfileView
             {
                 UserId = model.UserId,
                 Username = model.Username,

@@ -10,6 +10,7 @@ function detectBrowser() {
         unsupportedBrowser.innerHTML = unsupportedBrowserMsg;
     }
 }
+
 window.onload = function () {
     detectBrowser();
 };

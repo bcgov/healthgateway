@@ -16,7 +16,6 @@
 
 namespace HealthGateway.Common.Swagger
 {
-    using System;
     using System.Diagnostics;
     using System.Diagnostics.CodeAnalysis;
     using HealthGateway.Common.AccessManagement.Authorization.Requirements;
@@ -26,7 +25,7 @@ namespace HealthGateway.Common.Swagger
     using Microsoft.OpenApi.Models;
     using Swashbuckle.AspNetCore.SwaggerGen;
 
-    /// <inheritdoc />
+    /// <inheritdoc/>
     /// <summary>
     /// Implementation of IConfigureOptions&lt;SwaggerGenOptions&gt;.
     /// </summary>
@@ -42,7 +41,8 @@ namespace HealthGateway.Common.Swagger
         /// <param name="versionDescriptionProvider">IApiVersionDescriptionProvider.</param>
         /// <param name="swaggerSettings">App Settings for Swagger.</param>
         public ConfigureSwaggerGenOptions(
-            IApiVersionDescriptionProvider versionDescriptionProvider, IOptions<SwaggerSettings> swaggerSettings)
+            IApiVersionDescriptionProvider versionDescriptionProvider,
+            IOptions<SwaggerSettings> swaggerSettings)
         {
             Debug.Assert(versionDescriptionProvider != null, $"{nameof(versionDescriptionProvider)} != null");
             Debug.Assert(swaggerSettings != null, $"{nameof(swaggerSettings)} != null");
@@ -51,31 +51,35 @@ namespace HealthGateway.Common.Swagger
             this.settings = swaggerSettings?.Value ?? new SwaggerSettings();
         }
 
-        /// <inheritdoc />
+        /// <inheritdoc/>
         public void Configure(SwaggerGenOptions options)
         {
             options.OperationFilter<SwaggerDefaultValues>();
             options.IgnoreObsoleteActions();
             options.IgnoreObsoleteProperties();
 
-            options.AddSecurityDefinition("bearer", new OpenApiSecurityScheme
-            {
-                Name = "Authorization",
-                Description = "JWT Authorization header using the Bearer scheme. Example: \"Authorization: Bearer {token}\"",
-                Type = SecuritySchemeType.Http,
-                BearerFormat = "JWT",
-                In = ParameterLocation.Header,
-                Scheme = "bearer",
-            });
+            options.AddSecurityDefinition(
+                "bearer",
+                new OpenApiSecurityScheme
+                {
+                    Name = "Authorization",
+                    Description = "JWT Authorization header using the Bearer scheme. Example: \"Authorization: Bearer {token}\"",
+                    Type = SecuritySchemeType.Http,
+                    BearerFormat = "JWT",
+                    In = ParameterLocation.Header,
+                    Scheme = "bearer",
+                });
 
-            options.AddSecurityDefinition("apikey", new OpenApiSecurityScheme
-            {
-                Name = ApiKeyRequirement.ApiKeyHeaderNameDefault,
-                Description = $"Authorization using the {ApiKeyRequirement.ApiKeyHeaderNameDefault} header. Example: \"{ApiKeyRequirement.ApiKeyHeaderNameDefault} {{apiKey}}\"",
-                Type = SecuritySchemeType.ApiKey,
-                In = ParameterLocation.Header,
-                Scheme = "apikey",
-            });
+            options.AddSecurityDefinition(
+                "apikey",
+                new OpenApiSecurityScheme
+                {
+                    Name = ApiKeyRequirement.ApiKeyHeaderNameDefault,
+                    Description = $"Authorization using the {ApiKeyRequirement.ApiKeyHeaderNameDefault} header. Example: \"{ApiKeyRequirement.ApiKeyHeaderNameDefault} {{apiKey}}\"",
+                    Type = SecuritySchemeType.ApiKey,
+                    In = ParameterLocation.Header,
+                    Scheme = "apikey",
+                });
 
             // Add auth header filter
             options.OperationFilter<AuthenticationRequirementsOperationFilter>();
@@ -85,7 +89,7 @@ namespace HealthGateway.Common.Swagger
 
         private void AddSwaggerDocumentForEachDiscoveredApiVersion(SwaggerGenOptions options)
         {
-            foreach (var description in this.provider.ApiVersionDescriptions)
+            foreach (ApiVersionDescription description in this.provider.ApiVersionDescriptions)
             {
                 this.settings.Info!.Version = description.ApiVersion.ToString();
 

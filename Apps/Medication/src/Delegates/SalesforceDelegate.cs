@@ -31,6 +31,7 @@ namespace HealthGateway.Medication.Delegates
     using HealthGateway.Common.ErrorHandling;
     using HealthGateway.Common.Services;
     using HealthGateway.Medication.Models;
+    using HealthGateway.Medication.Models.Salesforce;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.Logging;
 
@@ -43,7 +44,7 @@ namespace HealthGateway.Medication.Delegates
 
         private readonly ILogger logger;
         private readonly IHttpClientService httpClientService;
-        private readonly Models.Salesforce.Config salesforceConfig;
+        private readonly Config salesforceConfig;
         private readonly IAuthenticationDelegate authDelegate;
 
         /// <summary>
@@ -63,16 +64,16 @@ namespace HealthGateway.Medication.Delegates
             this.httpClientService = httpClientService;
             this.authDelegate = authDelegate;
 
-            this.salesforceConfig = new Models.Salesforce.Config();
+            this.salesforceConfig = new Config();
             configuration.Bind(SalesforceConfigSectionKey, this.salesforceConfig);
         }
 
-        private static ActivitySource Source { get; } = new ActivitySource(nameof(ClientRegistriesDelegate));
+        private static ActivitySource Source { get; } = new(nameof(ClientRegistriesDelegate));
 
         /// <inheritdoc/>
         public async Task<RequestResult<IList<MedicationRequest>>> GetMedicationRequestsAsync(string phn)
         {
-            using (Source.StartActivity("GetMedicationRequestsAsync"))
+            using (Source.StartActivity())
             {
                 RequestResult<IList<MedicationRequest>> retVal = new()
                 {
@@ -84,67 +85,85 @@ namespace HealthGateway.Medication.Delegates
                 {
                     this.logger.LogError($"Authenticated as User System access token is null or emtpy, Error:\n{accessToken}");
                     retVal.ResultStatus = ResultType.Error;
-                    retVal.ResultError = new RequestResultError() { ResultMessage = $"Unable to authenticate to retrieve Medication Requests", ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.SF) };
+                    retVal.ResultError = new RequestResultError
+                    {
+                        ResultMessage = "Unable to authenticate to retrieve Medication Requests",
+                        ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.SF),
+                    };
                     return retVal;
                 }
-                else
-                {
-                    this.logger.LogDebug($"Getting Medication Requests...");
-                    using HttpClient client = this.httpClientService.CreateDefaultHttpClient();
-                    client.DefaultRequestHeaders.Accept.Clear();
-                    client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
-                    client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue(MediaTypeNames.Application.Json));
-                    client.DefaultRequestHeaders.Add("phn", phn);
-                    try
-                    {
-                        Uri endpoint = new Uri(this.salesforceConfig.Endpoint);
-                        HttpResponseMessage response = await client.GetAsync(endpoint).ConfigureAwait(true);
-                        string payload = await response.Content.ReadAsStringAsync().ConfigureAwait(true);
-                        this.logger.LogTrace($"Response: {response}");
-                        switch (response.StatusCode)
-                        {
-                            case HttpStatusCode.OK:
-                                this.logger.LogTrace($"Response payload: {payload}");
-                                Models.Salesforce.ResponseWrapper? replyWrapper = JsonSerializer.Deserialize<Models.Salesforce.ResponseWrapper>(payload);
-                                if (replyWrapper != null)
-                                {
-                                    retVal.ResultStatus = ResultType.Success;
-                                    retVal.ResourcePayload = replyWrapper.ToHGModels();
-                                    retVal.TotalResultCount = replyWrapper.Items.Count;
-                                    retVal.PageSize = replyWrapper.Items.Count;
-                                    retVal.PageIndex = 0;
-                                }
-                                else
-                                {
-                                    retVal.ResultError = new RequestResultError() { ResultMessage = "Error with JSON data", ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.SF) };
-                                }
 
-                                break;
-                            case HttpStatusCode.NoContent: // No Medication Requests exits for this user
-                                retVal.ResultStatus = ResultType.Success;
-                                retVal.ResourcePayload = new List<MedicationRequest>();
-                                retVal.TotalResultCount = 0;
-                                retVal.PageSize = 0;
-                                break;
-                            case HttpStatusCode.Forbidden:
-                                retVal.ResultError = new RequestResultError() { ResultMessage = $"DID Claim is missing or can not resolve PHN, HTTP Error {response.StatusCode}", ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.SF) };
-                                break;
-                            default:
-                                retVal.ResultError = new RequestResultError() { ResultMessage = $"Unable to connect to Medication Requests endpoint, HTTP Error {response.StatusCode}", ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.SF) };
-                                this.logger.LogError($"Unable to connect to endpoint {endpoint}, HTTP Error {response.StatusCode}\n{payload}");
-                                break;
-                        }
-                    }
-#pragma warning disable CA1031 // Do not catch general exception types
-                    catch (Exception e)
-#pragma warning restore CA1031 // Do not catch general exception types
+                this.logger.LogDebug("Getting Medication Requests...");
+                using HttpClient client = this.httpClientService.CreateDefaultHttpClient();
+                client.DefaultRequestHeaders.Accept.Clear();
+                client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
+                client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue(MediaTypeNames.Application.Json));
+                client.DefaultRequestHeaders.Add("phn", phn);
+                try
+                {
+                    Uri endpoint = new(this.salesforceConfig.Endpoint);
+                    HttpResponseMessage response = await client.GetAsync(endpoint).ConfigureAwait(true);
+                    string payload = await response.Content.ReadAsStringAsync().ConfigureAwait(true);
+                    this.logger.LogTrace($"Response: {response}");
+                    switch (response.StatusCode)
                     {
-                        retVal.ResultError = new RequestResultError() { ResultMessage = $"Exception getting Medication Requests: {e}", ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.SF) };
-                        this.logger.LogError($"Unexpected exception in GetMedicationRequestsAsync {e}");
+                        case HttpStatusCode.OK:
+                            this.logger.LogTrace($"Response payload: {payload}");
+                            ResponseWrapper? replyWrapper = JsonSerializer.Deserialize<ResponseWrapper>(payload);
+                            if (replyWrapper != null)
+                            {
+                                retVal.ResultStatus = ResultType.Success;
+                                retVal.ResourcePayload = replyWrapper.ToHGModels();
+                                retVal.TotalResultCount = replyWrapper.Items.Count;
+                                retVal.PageSize = replyWrapper.Items.Count;
+                                retVal.PageIndex = 0;
+                            }
+                            else
+                            {
+                                retVal.ResultError = new RequestResultError
+                                {
+                                    ResultMessage = "Error with JSON data",
+                                    ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.SF),
+                                };
+                            }
+
+                            break;
+                        case HttpStatusCode.NoContent: // No Medication Requests exits for this user
+                            retVal.ResultStatus = ResultType.Success;
+                            retVal.ResourcePayload = new List<MedicationRequest>();
+                            retVal.TotalResultCount = 0;
+                            retVal.PageSize = 0;
+                            break;
+                        case HttpStatusCode.Forbidden:
+                            retVal.ResultError = new RequestResultError
+                            {
+                                ResultMessage = $"DID Claim is missing or can not resolve PHN, HTTP Error {response.StatusCode}",
+                                ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.SF),
+                            };
+                            break;
+                        default:
+                            retVal.ResultError = new RequestResultError
+                            {
+                                ResultMessage = $"Unable to connect to Medication Requests endpoint, HTTP Error {response.StatusCode}",
+                                ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.SF),
+                            };
+                            this.logger.LogError($"Unable to connect to endpoint {endpoint}, HTTP Error {response.StatusCode}\n{payload}");
+                            break;
                     }
                 }
+#pragma warning disable CA1031 // Do not catch general exception types
+                catch (Exception e)
+#pragma warning restore CA1031 // Do not catch general exception types
+                {
+                    retVal.ResultError = new RequestResultError
+                    {
+                        ResultMessage = $"Exception getting Medication Requests: {e}",
+                        ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.SF),
+                    };
+                    this.logger.LogError($"Unexpected exception in GetMedicationRequestsAsync {e}");
+                }
 
-                this.logger.LogDebug($"Finished getting Medication Requests");
+                this.logger.LogDebug("Finished getting Medication Requests");
                 return retVal;
             }
         }

@@ -63,7 +63,7 @@ namespace HealthGateway.Common.Models.Immunization
         /// Gets or sets the Immunization definition.
         /// </summary>
         [JsonPropertyName("immunization")]
-        public ImmunizationDefinition Immunization { get; set; } = new ImmunizationDefinition();
+        public ImmunizationDefinition Immunization { get; set; } = new();
 
         /// <summary>
         /// Gets or sets the Immunization forecast.

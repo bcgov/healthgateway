@@ -16,7 +16,6 @@
 namespace HealthGateway.GatewayApi.Models
 {
     using System;
-    using HealthGateway.Database.Models;
 
     /// <summary>
     /// Object that defines the request for creating a User.

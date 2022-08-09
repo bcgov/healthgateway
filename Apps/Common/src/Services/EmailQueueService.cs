@@ -57,26 +57,26 @@ namespace HealthGateway.Common.Services
             this.environment = environment;
         }
 
-        /// <inheritdoc />
+        /// <inheritdoc/>
         public void QueueNewEmail(string toEmail, string templateName, bool shouldCommit = true)
         {
-            Dictionary<string, string> keyValues = new Dictionary<string, string>();
+            Dictionary<string, string> keyValues = new();
             this.QueueNewEmail(toEmail, templateName, keyValues, shouldCommit);
         }
 
-        /// <inheritdoc />
+        /// <inheritdoc/>
         public void QueueNewEmail(string toEmail, string templateName, Dictionary<string, string> keyValues, bool shouldCommit = true)
         {
             this.QueueNewEmail(toEmail, this.GetEmailTemplate(templateName), keyValues, shouldCommit);
         }
 
-        /// <inheritdoc />
+        /// <inheritdoc/>
         public void QueueNewEmail(string toEmail, EmailTemplate emailTemplate, Dictionary<string, string> keyValues, bool shouldCommit = true)
         {
             this.QueueNewEmail(this.ProcessTemplate(toEmail, emailTemplate, keyValues), shouldCommit);
         }
 
-        /// <inheritdoc />
+        /// <inheritdoc/>
         public void QueueNewEmail(Email email, bool shouldCommit = true)
         {
             if (string.IsNullOrWhiteSpace(email.To))
@@ -84,7 +84,7 @@ namespace HealthGateway.Common.Services
                 throw new ArgumentNullException(nameof(email), "Email To cannot be null or whitespace");
             }
 
-            this.logger.LogTrace($"Queueing email...");
+            this.logger.LogTrace("Queueing email...");
             if (email.Id == Guid.Empty)
             {
                 this.emailDelegate.InsertEmail(email, shouldCommit);
@@ -98,13 +98,13 @@ namespace HealthGateway.Common.Services
             this.logger.LogDebug($"Finished queueing email. {email.Id}");
         }
 
-        /// <inheritdoc />
+        /// <inheritdoc/>
         public void CloneAndQueue(Guid emailId, bool shouldCommit = true)
         {
             Email oldEmail = this.emailDelegate.GetEmail(emailId);
             if (oldEmail != null)
             {
-                Email email = new Email()
+                Email email = new()
                 {
                     From = oldEmail.From,
                     To = oldEmail.To,
@@ -121,28 +121,28 @@ namespace HealthGateway.Common.Services
             }
         }
 
-        /// <inheritdoc />
+        /// <inheritdoc/>
         public EmailTemplate GetEmailTemplate(string templateName)
         {
             this.logger.LogTrace($"Getting email template... {templateName}");
             EmailTemplate retVal = this.emailDelegate.GetEmailTemplate(templateName);
-            this.logger.LogDebug($"Finished getting email template.");
+            this.logger.LogDebug("Finished getting email template.");
             return retVal;
         }
 
-        /// <inheritdoc />
+        /// <inheritdoc/>
         public Email ProcessTemplate(string toEmail, string templateName, Dictionary<string, string> keyValues)
         {
             return this.ProcessTemplate(toEmail, this.GetEmailTemplate(templateName), keyValues);
         }
 
-        /// <inheritdoc />
+        /// <inheritdoc/>
         public Email ProcessTemplate(string toEmail, EmailTemplate emailTemplate, Dictionary<string, string> keyValues)
         {
             this.logger.LogTrace($"Processing template... {emailTemplate.Name}");
             Email email = this.ParseTemplate(emailTemplate, keyValues);
             email.To = toEmail;
-            this.logger.LogDebug($"Finished processing template.");
+            this.logger.LogDebug("Finished processing template.");
             return email;
         }
 
@@ -153,7 +153,7 @@ namespace HealthGateway.Common.Services
                 keyValues.Add(EmailTemplateVariable.Environment, this.environment.IsProduction() ? string.Empty : this.environment.EnvironmentName);
             }
 
-            return new Email()
+            return new Email
             {
                 From = emailTemplate.From,
                 Priority = emailTemplate.Priority,

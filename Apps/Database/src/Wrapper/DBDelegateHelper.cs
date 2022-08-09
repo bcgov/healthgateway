@@ -18,7 +18,6 @@ namespace HealthGateway.Database.Wrapper
     using System.Collections.Generic;
     using System.Linq;
     using HealthGateway.Database.Constants;
-    using HealthGateway.Database.Models;
 
     /// <summary>
     /// Utilities for DBDelegate including paging a LINQ Query.
@@ -37,11 +36,9 @@ namespace HealthGateway.Database.Wrapper
             where T : class
         {
             int offset = page * pageSize;
-            DBResult<IEnumerable<T>> result = new DBResult<IEnumerable<T>>()
+            DBResult<IEnumerable<T>> result = new()
             {
-                Payload = query.Skip(offset)
-                    .Take(pageSize)
-                    .ToList(),
+                Payload = query.Skip(offset).Take(pageSize).ToList(),
             };
             result.Status = result.Payload != null ? DBStatusCode.Read : DBStatusCode.NotFound;
             return result;

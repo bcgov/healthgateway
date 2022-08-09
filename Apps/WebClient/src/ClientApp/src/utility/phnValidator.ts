@@ -1,4 +1,4 @@
-const PHNsigDigits: number[] = [2, 4, 8, 5, 10, 9, 7, 3];
+const PHNsigDigits = [2, 4, 8, 5, 10, 9, 7, 3];
 
 export default abstract class PHNValidator {
     public static IsValid(PHN: string): boolean {

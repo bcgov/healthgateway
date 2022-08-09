@@ -49,7 +49,7 @@ namespace HealthGateway.Immunization.Models
         /// Gets or sets the Load State.
         /// </summary>
         [JsonPropertyName("loadState")]
-        public LoadStateModel LoadState { get; set; } = new LoadStateModel();
+        public LoadStateModel LoadState { get; set; } = new();
 
         /// <summary>
         /// Gets the list of Immunizations events.

@@ -28,8 +28,9 @@ namespace Healthgateway.JobScheduler.Jobs
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.Logging;
     using MimeKit;
+    using MimeKit.Text;
 
-    /// <inheritdoc />
+    /// <inheritdoc/>
     public class EmailJob : IEmailJob
     {
         private const int ConcurrencyTimeout = 5 * 60; // 5 minutes
@@ -48,18 +49,18 @@ namespace Healthgateway.JobScheduler.Jobs
         /// <param name="emailDelegate">The email delegate to use.</param>
         public EmailJob(IConfiguration configuration, ILogger<EmailJob> logger, IEmailDelegate emailDelegate)
         {
-            Contract.Requires((configuration != null) && (emailDelegate != null));
+            Contract.Requires(configuration != null && emailDelegate != null);
             this.logger = logger;
             this.emailDelegate = emailDelegate!;
             IConfigurationSection section = configuration!.GetSection("Smtp");
             this.host = section.GetValue<string>("Host");
             this.port = section.GetValue<int>("Port");
             section = configuration.GetSection("EmailJob");
-            this.maxRetries = section.GetValue<int>("MaxRetries", 9);
-            this.retryFetchSize = section.GetValue<int>("MaxRetryFetchSize", 250);
+            this.maxRetries = section.GetValue("MaxRetries", 9);
+            this.retryFetchSize = section.GetValue("MaxRetryFetchSize", 250);
         }
 
-        /// <inheritdoc />
+        /// <inheritdoc/>
         public void SendEmail(Guid emailId)
         {
             this.logger.LogTrace($"Sending email... {emailId}");
@@ -73,56 +74,56 @@ namespace Healthgateway.JobScheduler.Jobs
                 this.logger.LogInformation($"Email {emailId} was not returned from DB, skipping.");
             }
 
-            this.logger.LogDebug($"Finished sending email.");
+            this.logger.LogDebug("Finished sending email.");
         }
 
-        /// <inheritdoc />
+        /// <inheritdoc/>
         [DisableConcurrentExecution(ConcurrencyTimeout)]
         public void SendLowPriorityEmails()
         {
             this.logger.LogDebug($"Sending low priority emails... Looking for up to {this.retryFetchSize} emails to send");
             IList<Email> resendEmails = this.emailDelegate.GetLowPriorityEmail(this.retryFetchSize);
             this.ProcessEmails(resendEmails);
-            this.logger.LogDebug($"Finished sending low priority emails.");
+            this.logger.LogDebug("Finished sending low priority emails.");
         }
 
-        /// <inheritdoc />
+        /// <inheritdoc/>
         [DisableConcurrentExecution(ConcurrencyTimeout)]
         public void SendStandardPriorityEmails()
         {
             this.logger.LogDebug($"Sending standard priority emails... Looking for up to {this.retryFetchSize} emails to send");
             IList<Email> resendEmails = this.emailDelegate.GetStandardPriorityEmail(this.retryFetchSize);
             this.ProcessEmails(resendEmails);
-            this.logger.LogDebug($"Finished sending standard priority emails.");
+            this.logger.LogDebug("Finished sending standard priority emails.");
         }
 
-        /// <inheritdoc />
+        /// <inheritdoc/>
         [DisableConcurrentExecution(ConcurrencyTimeout)]
         public void SendHighPriorityEmails()
         {
             this.logger.LogDebug($"Sending high priority emails... Looking for up to {this.retryFetchSize} emails to send");
             IList<Email> resendEmails = this.emailDelegate.GetHighPriorityEmail(this.retryFetchSize);
             this.ProcessEmails(resendEmails);
-            this.logger.LogDebug($"Finished sending high priority emails");
+            this.logger.LogDebug("Finished sending high priority emails");
         }
 
-        /// <inheritdoc />
+        /// <inheritdoc/>
         [DisableConcurrentExecution(ConcurrencyTimeout)]
         public void SendUrgentPriorityEmails()
         {
             this.logger.LogDebug($"Sending urgent priority emails... Looking for up to {this.retryFetchSize} emails to send");
             IList<Email> resendEmails = this.emailDelegate.GetUrgentPriorityEmail(this.retryFetchSize);
             this.ProcessEmails(resendEmails);
-            this.logger.LogDebug($"Finished sending urgent priority emails.");
+            this.logger.LogDebug("Finished sending urgent priority emails.");
         }
 
         private static MimeMessage PrepareMessage(Email email)
         {
-            MimeMessage msg = new MimeMessage();
+            MimeMessage msg = new();
             msg.From.Add(new MailboxAddress("Health Gateway", email.From));
             msg.To.Add(MailboxAddress.Parse(email.To));
             msg.Subject = email.Subject;
-            msg.Body = new TextPart(email.FormatCode == EmailFormat.HTML ? MimeKit.Text.TextFormat.Html : MimeKit.Text.TextFormat.Plain)
+            msg.Body = new TextPart(email.FormatCode == EmailFormat.HTML ? TextFormat.Html : TextFormat.Plain)
             {
                 Text = email.Body,
             };
@@ -157,14 +158,14 @@ namespace Healthgateway.JobScheduler.Jobs
             email.Attempts++;
             try
             {
-                using (SmtpClient smtpClient = new SmtpClient())
+                using (SmtpClient smtpClient = new())
                 {
                     try
                     {
                         smtpClient.Connect(this.host, this.port, SecureSocketOptions.None);
                         try
                         {
-                            using MimeMessage message = EmailJob.PrepareMessage(email);
+                            using MimeMessage message = PrepareMessage(email);
                             smtpClient.Send(message);
                             email.SmtpStatusCode = (int)SmtpStatusCode.Ok;
                             email.EmailStatusCode = EmailStatus.Processed;
@@ -199,7 +200,7 @@ namespace Healthgateway.JobScheduler.Jobs
                 email.LastRetryDateTime = DateTime.UtcNow;
                 email.EmailStatusCode = email.Attempts < this.maxRetries ? EmailStatus.Pending : EmailStatus.Error;
 
-                var smtpCommandException = caught as SmtpCommandException;
+                SmtpCommandException? smtpCommandException = caught as SmtpCommandException;
                 if (smtpCommandException != null)
                 {
                     email.SmtpStatusCode = (int)smtpCommandException.StatusCode;

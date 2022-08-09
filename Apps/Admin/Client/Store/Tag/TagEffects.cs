@@ -70,7 +70,7 @@ public class TagEffects
         }
 
         RequestError error = StoreUtility.FormatRequestError(response.Error, response.Content?.ResultError);
-        this.Logger.LogError($"Error adding tag, reason: {error.Message}");
+        this.Logger.LogError("Error adding tag, reason: {ErrorMessage}", error.Message);
         dispatcher.Dispatch(new TagActions.AddFailAction(error));
     }
 
@@ -93,7 +93,7 @@ public class TagEffects
         }
 
         RequestError error = StoreUtility.FormatRequestError(response.Error, response.Content?.ResultError);
-        this.Logger.LogError($"Error loading Tag, reason: {error.Message}");
+        this.Logger.LogError("Error loading Tag, reason: {ErrorMessage}", error.Message);
         dispatcher.Dispatch(new TagActions.LoadFailAction(error));
     }
 
@@ -117,7 +117,7 @@ public class TagEffects
         }
 
         RequestError error = StoreUtility.FormatRequestError(response.Error, response.Content?.ResultError);
-        this.Logger.LogError($"Error deleting tag, reason: {error.Message}");
+        this.Logger.LogError("Error deleting tag, reason: {ErrorMessage}", error.Message);
         dispatcher.Dispatch(new TagActions.DeleteFailAction(error));
     }
 }

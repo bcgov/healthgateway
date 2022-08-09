@@ -57,7 +57,7 @@ public class AnalyticsEffects
 
         HttpResponseMessage response = await this.AnalyticsApi.GetUserProfiles(action.StartDate, action.EndDate).ConfigureAwait(true);
         this.Logger.LogInformation("User profiles report exported successfully!");
-        if (response.IsSuccessStatusCode && response.Content != null)
+        if (response.IsSuccessStatusCode)
         {
             dispatcher.Dispatch(new AnalyticsActions.LoadSuccessAction(response.Content));
             return;
@@ -68,7 +68,7 @@ public class AnalyticsEffects
             Message = "Error exporting user profile report",
         };
 
-        this.Logger.LogError(error.Message);
+        this.Logger.LogError("{ErrorMessage}", error.Message);
         dispatcher.Dispatch(new AnalyticsActions.LoadFailAction(error));
     }
 
@@ -85,7 +85,7 @@ public class AnalyticsEffects
 
         HttpResponseMessage response = await this.AnalyticsApi.GetComments(action.StartDate, action.EndDate).ConfigureAwait(true);
         this.Logger.LogInformation("Comments report exported successfully!");
-        if (response.IsSuccessStatusCode && response.Content != null)
+        if (response.IsSuccessStatusCode)
         {
             dispatcher.Dispatch(new AnalyticsActions.LoadSuccessAction(response.Content));
             return;
@@ -96,7 +96,7 @@ public class AnalyticsEffects
             Message = "Error exporting comments report.",
         };
 
-        this.Logger.LogError(error.Message);
+        this.Logger.LogError("{ErrorMessage}", error.Message);
         dispatcher.Dispatch(new AnalyticsActions.LoadFailAction(error));
     }
 
@@ -113,7 +113,7 @@ public class AnalyticsEffects
 
         HttpResponseMessage response = await this.AnalyticsApi.GetNotes(action.StartDate, action.EndDate).ConfigureAwait(true);
         this.Logger.LogInformation("Notes report exported successfully!");
-        if (response.IsSuccessStatusCode && response.Content != null)
+        if (response.IsSuccessStatusCode)
         {
             dispatcher.Dispatch(new AnalyticsActions.LoadSuccessAction(response.Content));
             return;
@@ -124,7 +124,7 @@ public class AnalyticsEffects
             Message = "Error exporting notes report.",
         };
 
-        this.Logger.LogError(error.Message);
+        this.Logger.LogError("{ErrorMessage}", error.Message);
         dispatcher.Dispatch(new AnalyticsActions.LoadFailAction(error));
     }
 
@@ -141,7 +141,7 @@ public class AnalyticsEffects
 
         HttpResponseMessage response = await this.AnalyticsApi.GetRatings(action.StartDate, action.EndDate).ConfigureAwait(true);
         this.Logger.LogInformation("Ratings report exported successfully!");
-        if (response.IsSuccessStatusCode && response.Content != null)
+        if (response.IsSuccessStatusCode)
         {
             dispatcher.Dispatch(new AnalyticsActions.LoadSuccessAction(response.Content));
             return;
@@ -152,7 +152,7 @@ public class AnalyticsEffects
             Message = "Error exporting rating report.",
         };
 
-        this.Logger.LogError(error.Message);
+        this.Logger.LogError("{ErrorMessage}", error.Message);
         dispatcher.Dispatch(new AnalyticsActions.LoadFailAction(error));
     }
 
@@ -169,7 +169,7 @@ public class AnalyticsEffects
 
         HttpResponseMessage response = await this.AnalyticsApi.GetInactiveUsers(action.InactiveDays, action.TimeOffset).ConfigureAwait(true);
         this.Logger.LogInformation("Inactive users report exported successfully!");
-        if (response.IsSuccessStatusCode && response.Content != null)
+        if (response.IsSuccessStatusCode)
         {
             dispatcher.Dispatch(new AnalyticsActions.LoadSuccessAction(response.Content));
             return;
@@ -180,7 +180,7 @@ public class AnalyticsEffects
             Message = "Error exporting inactive users report.",
         };
 
-        this.Logger.LogError(error.Message);
+        this.Logger.LogError("{ErrorMessage}", error.Message);
         dispatcher.Dispatch(new AnalyticsActions.LoadFailAction(error));
     }
 }

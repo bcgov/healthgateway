@@ -20,7 +20,6 @@ using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using Fluxor;
-using HealthGateway.Admin.Client.Store;
 using HealthGateway.Admin.Common.Models;
 using HealthGateway.Common.Data.ViewModels;
 

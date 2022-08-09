@@ -15,7 +15,6 @@
 //-------------------------------------------------------------------------
 namespace HealthGateway.Laboratory.Controllers
 {
-    using System;
     using System.Diagnostics.CodeAnalysis;
     using System.Threading.Tasks;
     using HealthGateway.Common.AccessManagement.Authorization.Policy;
@@ -63,10 +62,16 @@ namespace HealthGateway.Laboratory.Controllers
         /// Gets a result containing a collection of COVID-19 laboratory orders.
         /// </summary>
         /// <param name="hdid">The hdid resource to request the COVID-19 laboratory orders for.</param>
-        /// <returns>Returns collection of COVID-19 laboratory orders if available and information about whether the orders could be retrieved.</returns>
+        /// <returns>
+        /// Returns collection of COVID-19 laboratory orders if available and information about whether the orders could
+        /// be retrieved.
+        /// </returns>
         /// <response code="200">Returns the result model.</response>
         /// <response code="401">The client must authenticate itself to get the requested response.</response>
-        /// <response code="403">The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.</response>
+        /// <response code="403">
+        /// The client does not have access rights to the content; that is, it is unauthorized, so the server
+        /// is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.
+        /// </response>
         /// <response code="503">The service is unavailable for use.</response>
         [HttpGet]
         [Produces("application/json")]
@@ -74,7 +79,7 @@ namespace HealthGateway.Laboratory.Controllers
         [Authorize(Policy = LaboratoryPolicy.Read)]
         public async Task<RequestResult<Covid19OrderResult>> GetCovid19Orders([FromQuery] string hdid)
         {
-            this.logger.LogDebug($"Getting COVID-19 laboratory orders...");
+            this.logger.LogDebug("Getting COVID-19 laboratory orders...");
             RequestResult<Covid19OrderResult> result = await this.labService.GetCovid19Orders(hdid).ConfigureAwait(true);
             this.logger.LogDebug($"Finished getting COVID-19 laboratory orders from controller for HDID: {hdid}");
             return result;
@@ -84,10 +89,16 @@ namespace HealthGateway.Laboratory.Controllers
         /// Gets a result containing a collection of laboratory orders.
         /// </summary>
         /// <param name="hdid">The hdid resource to request the laboratory orders for.</param>
-        /// <returns>Returns collection of laboratory orders if available and information about whether the orders could be retrieved.</returns>
+        /// <returns>
+        /// Returns collection of laboratory orders if available and information about whether the orders could be
+        /// retrieved.
+        /// </returns>
         /// <response code="200">Returns the result model.</response>
         /// <response code="401">The client must authenticate itself to get the requested response.</response>
-        /// <response code="403">The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.</response>
+        /// <response code="403">
+        /// The client does not have access rights to the content; that is, it is unauthorized, so the server
+        /// is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.
+        /// </response>
         /// <response code="503">The service is unavailable for use.</response>
         [HttpGet]
         [Produces("application/json")]
@@ -95,7 +106,7 @@ namespace HealthGateway.Laboratory.Controllers
         [Authorize(Policy = LaboratoryPolicy.Read)]
         public async Task<RequestResult<LaboratoryOrderResult>> GetLaboratoryOrders([FromQuery] string hdid)
         {
-            this.logger.LogDebug($"Getting laboratory orders...");
+            this.logger.LogDebug("Getting laboratory orders...");
             RequestResult<LaboratoryOrderResult> result = await this.labService.GetLaboratoryOrders(hdid).ConfigureAwait(true);
             this.logger.LogDebug($"Finished getting laboratory orders from controller for HDID: {hdid}");
             return result;
@@ -110,7 +121,10 @@ namespace HealthGateway.Laboratory.Controllers
         /// <returns>A laboratory PDF report wrapped in a request result.</returns>
         /// <response code="200">Returns the specified PDF lab report.</response>
         /// <response code="401">The client must authenticate itself to get the requested response.</response>
-        /// <response code="403">The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.</response>
+        /// <response code="403">
+        /// The client does not have access rights to the content; that is, it is unauthorized, so the server
+        /// is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.
+        /// </response>
         /// <response code="503">The service is unavailable for use.</response>
         [HttpGet]
         [Produces("application/json")]
@@ -132,13 +146,16 @@ namespace HealthGateway.Laboratory.Controllers
         /// <returns>A LabTestKit  Result object wrapped in a request result.</returns>
         /// <response code="200">The LabTestKit was processed.</response>
         /// <response code="401">The client must authenticate itself to get the requested response.</response>
-        /// <response code="403">The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.</response>
+        /// <response code="403">
+        /// The client does not have access rights to the content; that is, it is unauthorized, so the server
+        /// is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.
+        /// </response>
         /// <response code="503">The service is unavailable for use.</response>
         [HttpPost]
         [Produces("application/json")]
         [Route("{hdid}/LabTestKit")]
         [Authorize(Policy = LaboratoryPolicy.Write)]
-        public async Task<RequestResult<LabTestKit>> AddLabTestKit(string hdid, [FromBody]LabTestKit labTestKit)
+        public async Task<RequestResult<LabTestKit>> AddLabTestKit(string hdid, [FromBody] LabTestKit labTestKit)
         {
             this.logger.LogDebug($"Post AddLabTestKit {hdid}");
             RequestResult<LabTestKit> result = await this.labTestKitService.RegisterLabTestKitAsync(hdid, labTestKit).ConfigureAwait(true);

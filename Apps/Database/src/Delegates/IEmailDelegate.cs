@@ -47,19 +47,22 @@ namespace HealthGateway.Database.Delegates
         /// changes the ordinal values above those defined as EmailPriority.Low
         /// but below the ordinal value of EmailPriority.Standard will still be processed
         /// by this job.
-        /// The list will be ordered by the Priority in descending order.</summary>
+        /// The list will be ordered by the Priority in descending order.
+        /// </summary>
         /// <param name="maxRows">The maximum amount of emails to return.</param>
         /// <returns>The list of emails.</returns>
         IList<Email> GetLowPriorityEmail(int maxRows);
 
         /// <summary>
         /// Gets a sorted list of new standard priority emails to process.
-        /// Standard priority for this job is anything less than EmailPriority.High and more than or equal to EmailPriority.Standard
+        /// Standard priority for this job is anything less than EmailPriority.High and more than or equal to
+        /// EmailPriority.Standard
         /// This is to ensure that any manual manipulation in the database that
         /// changes the ordinal values above those defined as EmailPriority.Standard
         /// but below the ordinal value of EmailPriority.Standard will still be processed
         /// by this job.
-        /// The list will be ordered by the Priority in descending order.</summary>
+        /// The list will be ordered by the Priority in descending order.
+        /// </summary>
         /// <param name="maxRows">The maximum amount of emails to return.</param>
         /// <returns>The list of emails.</returns>
         IList<Email> GetStandardPriorityEmail(int maxRows);
@@ -71,7 +74,8 @@ namespace HealthGateway.Database.Delegates
         /// changes the ordinal values above those defined as EmailPriority.High
         /// but below the ordinal value of EmailPriority.High will still be processed
         /// by this job.
-        /// The list will be ordered by the Priority in descending order.</summary>
+        /// The list will be ordered by the Priority in descending order.
+        /// </summary>
         /// <param name="maxRows">The maximum amount of emails to return.</param>
         /// <returns>The list of emails.</returns>
         IList<Email> GetHighPriorityEmail(int maxRows);
@@ -83,7 +87,8 @@ namespace HealthGateway.Database.Delegates
         /// changes the ordinal values above those defined as EmailPriority.Urgent
         /// but below the ordinal value of EmailPriority.Urgent will still be processed
         /// by this job.
-        /// The list will be ordered by the Priority in descending order.</summary>
+        /// The list will be ordered by the Priority in descending order.
+        /// </summary>
         /// <param name="maxRows">The maximum amount of emails to return.</param>
         /// <returns>The list of emails.</returns>
         IList<Email> GetUrgentPriorityEmail(int maxRows);

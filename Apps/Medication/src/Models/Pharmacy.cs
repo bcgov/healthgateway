@@ -82,7 +82,7 @@ namespace HealthGateway.Medication.Models
                 return new Pharmacy();
             }
 
-            return new Pharmacy()
+            return new Pharmacy
             {
                 PharmacyId = model.PharmacyId,
                 Name = model.Name,

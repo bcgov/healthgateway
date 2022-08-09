@@ -16,6 +16,7 @@
 namespace HealthGateway.Common.Services
 {
     using System.Diagnostics;
+    using System.Threading.Tasks;
     using HealthGateway.Common.Constants;
     using HealthGateway.Common.Data.Constants;
     using HealthGateway.Common.Data.Utils;
@@ -23,6 +24,7 @@ namespace HealthGateway.Common.Services
     using HealthGateway.Common.Delegates;
     using HealthGateway.Common.ErrorHandling;
     using HealthGateway.Common.Models;
+    using HealthGateway.Database.Constants;
     using HealthGateway.Database.Delegates;
     using HealthGateway.Database.Models;
     using HealthGateway.Database.Wrapper;
@@ -59,18 +61,22 @@ namespace HealthGateway.Common.Services
             this.logger = logger;
             this.patientDelegate = patientDelegate;
             this.cacheDelegate = genericCacheDelegate;
-            this.cacheTTL = configuration.GetSection("PatientService").GetValue<int>("CacheTTL", 0);
+            this.cacheTTL = configuration.GetSection("PatientService").GetValue("CacheTTL", 0);
         }
 
-        private static ActivitySource Source { get; } = new ActivitySource(nameof(PatientService));
+        private static ActivitySource Source { get; } = new(nameof(PatientService));
 
         /// <inheritdoc/>
-        public async System.Threading.Tasks.Task<RequestResult<string>> GetPatientPHN(string hdid)
+        public async Task<RequestResult<string>> GetPatientPHN(string hdid)
         {
-            using Activity? activity = Source.StartActivity("GetPatientPHN");
-            RequestResult<string> retVal = new RequestResult<string>()
+            using Activity? activity = Source.StartActivity();
+            RequestResult<string> retVal = new()
             {
-                ResultError = new RequestResultError() { ResultMessage = "Error during PHN retrieval", ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.ClientRegistries) },
+                ResultError = new RequestResultError
+                {
+                    ResultMessage = "Error during PHN retrieval",
+                    ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.ClientRegistries),
+                },
                 ResultStatus = ResultType.Error,
             };
             RequestResult<PatientModel> patientResult = await this.GetPatient(hdid).ConfigureAwait(true);
@@ -89,10 +95,10 @@ namespace HealthGateway.Common.Services
         }
 
         /// <inheritdoc/>
-        public async System.Threading.Tasks.Task<RequestResult<PatientModel>> GetPatient(string identifier, PatientIdentifierType identifierType = PatientIdentifierType.HDID, bool disableIdValidation = false)
+        public async Task<RequestResult<PatientModel>> GetPatient(string identifier, PatientIdentifierType identifierType = PatientIdentifierType.HDID, bool disableIdValidation = false)
         {
-            using Activity? activity = Source.StartActivity("GetPatient");
-            RequestResult<PatientModel> requestResult = new RequestResult<PatientModel>();
+            using Activity? activity = Source.StartActivity();
+            RequestResult<PatientModel> requestResult = new();
             PatientModel? patient = this.GetFromCache(identifier, identifierType);
             if (patient == null)
             {
@@ -111,15 +117,23 @@ namespace HealthGateway.Common.Services
                         else
                         {
                             requestResult.ResultStatus = ResultType.ActionRequired;
-                            requestResult.ResultError = new RequestResultError() { ResultMessage = $"Internal Error: PatientIdentifier is invalid '{identifier}'", ErrorCode = ErrorTranslator.InternalError(ErrorType.InvalidState) };
+                            requestResult.ResultError = new()
+                            {
+                                ResultMessage = $"Internal Error: PatientIdentifier is invalid '{identifier}'",
+                                ErrorCode = ErrorTranslator.InternalError(ErrorType.InvalidState),
+                            };
                             this.logger.LogDebug($"The PHN provided is invalid: {identifier}");
                         }
 
                         break;
                     default:
-                        this.logger.LogDebug($"Failed Patient lookup unknown PatientIdentifierType");
+                        this.logger.LogDebug("Failed Patient lookup unknown PatientIdentifierType");
                         requestResult.ResultStatus = ResultType.Error;
-                        requestResult.ResultError = new RequestResultError() { ResultMessage = $"Internal Error: PatientIdentifierType is unknown '{identifierType.ToString()}'", ErrorCode = ErrorTranslator.InternalError(ErrorType.InvalidState) };
+                        requestResult.ResultError = new()
+                        {
+                            ResultMessage = $"Internal Error: PatientIdentifierType is unknown '{identifierType.ToString()}'",
+                            ErrorCode = ErrorTranslator.InternalError(ErrorType.InvalidState),
+                        };
                         break;
                 }
 
@@ -148,18 +162,18 @@ namespace HealthGateway.Common.Services
         /// <returns>The found Patient model or null.</returns>
         private PatientModel? GetFromCache(string identifier, PatientIdentifierType identifierType)
         {
-            using Activity? activity = Source.StartActivity("GetFromCache");
+            using Activity? activity = Source.StartActivity();
             PatientModel? retPatient = null;
             if (this.cacheTTL > 0)
             {
                 switch (identifierType)
                 {
                     case PatientIdentifierType.HDID:
-                        this.logger.LogDebug($"Querying Patient Cache by HDID");
+                        this.logger.LogDebug("Querying Patient Cache by HDID");
                         retPatient = this.cacheDelegate.GetCacheObject<PatientModel>(identifier, PatientCacheDomain);
                         break;
                     case PatientIdentifierType.PHN:
-                        this.logger.LogDebug($"Querying Patient Cache by PHN");
+                        this.logger.LogDebug("Querying Patient Cache by PHN");
                         retPatient = this.cacheDelegate.GetCacheObjectByJSONProperty<PatientModel>("personalhealthnumber", identifier, PatientCacheDomain);
                         break;
                 }
@@ -177,13 +191,13 @@ namespace HealthGateway.Common.Services
         /// <param name="patient">The patient to cache.</param>
         private void CachePatient(PatientModel patient)
         {
-            using Activity? activity = Source.StartActivity("CachePatient");
+            using Activity? activity = Source.StartActivity();
             string hdid = patient.HdId;
             if (this.cacheTTL > 0)
             {
                 this.logger.LogDebug($"Attempting to cache patient: {hdid}");
-                DBResult<GenericCache> dbResult = this.cacheDelegate.CacheObject(patient, hdid, PatientCacheDomain, this.cacheTTL, true);
-                if (dbResult.Status == Database.Constants.DBStatusCode.Created)
+                DBResult<GenericCache> dbResult = this.cacheDelegate.CacheObject(patient, hdid, PatientCacheDomain, this.cacheTTL);
+                if (dbResult.Status == DBStatusCode.Created)
                 {
                     this.logger.LogDebug($"Created cache for patient: {hdid}");
                 }

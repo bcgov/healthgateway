@@ -15,7 +15,9 @@
 //-------------------------------------------------------------------------
 namespace HealthGateway.Medication.Models
 {
+    using System;
     using System.Collections.Generic;
+    using HealthGateway.Medication.Models.ODR;
 
     /// <summary>
     /// The medications statement data model.
@@ -35,7 +37,7 @@ namespace HealthGateway.Medication.Models
         /// <summary>
         /// Gets or sets the date the medication was dispensed.
         /// </summary>
-        public System.DateTime DispensedDate { get; set; }
+        public DateTime DispensedDate { get; set; }
 
         /// <summary>
         /// Gets or sets the Surname of the Practitioner who prescribed the medication.
@@ -50,7 +52,7 @@ namespace HealthGateway.Medication.Models
         /// <summary>
         /// Gets or sets the date the medication was entered.
         /// </summary>
-        public System.DateTime? DateEntered { get; set; }
+        public DateTime? DateEntered { get; set; }
 
         /// <summary>
         /// Gets or sets the pharmacy id.
@@ -60,23 +62,29 @@ namespace HealthGateway.Medication.Models
         /// <summary>
         /// Gets or sets the medication for the current MedicationStatementHistory.
         /// </summary>
-        public MedicationSummary MedicationSummary { get; set; } = new MedicationSummary();
+        public MedicationSummary MedicationSummary { get; set; } = new();
 
         /// <summary>
         /// Gets or sets the dispensing pharmacy for the current MedicationStatementHistory.
         /// </summary>
-        public Pharmacy DispensingPharmacy { get; set; } = new Pharmacy();
+        public Pharmacy DispensingPharmacy { get; set; } = new();
 
         /// <summary>
         /// Creates a Medication statement history object from an ODR model.
         /// </summary>
         /// <param name="model">The medication result to convert.</param>
         /// <returns>The newly created medicationStatementHistory object.</returns>
-        public static MedicationStatementHistory FromODRModel(ODR.MedicationResult model)
+        public static MedicationStatementHistory FromODRModel(MedicationResult model)
         {
-            return new MedicationStatementHistory()
+            return new MedicationStatementHistory
             {
-                MedicationSummary = new MedicationSummary() { DIN = model.DIN, Quantity = model.Quantity, GenericName = model.GenericName, BrandName = "Unknown brand name" },
+                MedicationSummary = new MedicationSummary
+                {
+                    DIN = model.DIN,
+                    Quantity = model.Quantity,
+                    GenericName = model.GenericName,
+                    BrandName = "Unknown brand name",
+                },
                 Directions = model.Directions,
                 DispensedDate = model.DispenseDate,
                 DispensingPharmacy = Pharmacy.FromODRModel(model.DispensingPharmacy),
@@ -90,13 +98,13 @@ namespace HealthGateway.Medication.Models
         /// </summary>
         /// <param name="models">The list of ODR models to convert.</param>
         /// <returns>A list of MedicationStatementHistory objects.</returns>
-        public static IList<MedicationStatementHistory> FromODRModelList(IList<ODR.MedicationResult> models)
+        public static IList<MedicationStatementHistory> FromODRModelList(IList<MedicationResult> models)
         {
             IList<MedicationStatementHistory> objects = new List<MedicationStatementHistory>();
 
-            foreach (ODR.MedicationResult medicationModel in models)
+            foreach (MedicationResult medicationModel in models)
             {
-                objects.Add(MedicationStatementHistory.FromODRModel(medicationModel));
+                objects.Add(FromODRModel(medicationModel));
             }
 
             return objects;

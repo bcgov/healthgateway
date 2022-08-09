@@ -22,7 +22,6 @@ namespace HealthGateway.Common.Delegates
     using HealthGateway.Database.Models.Cacheable;
     using Microsoft.AspNetCore.Cryptography.KeyDerivation;
     using Microsoft.Extensions.Configuration;
-    using Microsoft.Extensions.Logging;
 
     /// <summary>
     /// Delegate to create and validate HMAC hashes.
@@ -60,7 +59,7 @@ namespace HealthGateway.Common.Delegates
             KeyDerivationPrf prf = HmacHashDelegateConfig.DefaultPseudoRandomFunction,
             int iterations = HmacHashDelegateConfig.DefaultIterations)
         {
-            HmacHash retHash = new HmacHash()
+            HmacHash retHash = new()
             {
                 PseudoRandomFunction = HashFunction.HMACSHA512,
                 Iterations = iterations,
@@ -85,12 +84,7 @@ namespace HealthGateway.Common.Delegates
                 }
 
                 retHash.Salt = Convert.ToBase64String(salt);
-                retHash.Hash = Convert.ToBase64String(KeyDerivation.Pbkdf2(
-                                                        password: key,
-                                                        salt: salt,
-                                                        prf: prf,
-                                                        iterationCount: iterations,
-                                                        numBytesRequested: hashLength));
+                retHash.Hash = Convert.ToBase64String(KeyDerivation.Pbkdf2(key, salt, prf, iterations, hashLength));
             }
 
             return retHash;
@@ -136,13 +130,13 @@ namespace HealthGateway.Common.Delegates
             return salt;
         }
 
-        /// <inheritdoc />
+        /// <inheritdoc/>
         public IHash Hash(string? key)
         {
             return this.HMACHash(key);
         }
 
-        /// <inheritdoc />
+        /// <inheritdoc/>
         public bool Compare(string? key, IHash compareHash)
         {
             return Compare(key, compareHash as HmacHash);

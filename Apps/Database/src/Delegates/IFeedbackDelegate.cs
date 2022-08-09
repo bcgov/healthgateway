@@ -17,7 +17,6 @@ namespace HealthGateway.Database.Delegates
 {
     using System;
     using System.Collections.Generic;
-    using System.Threading;
     using HealthGateway.Database.Models;
     using HealthGateway.Database.Wrapper;
 

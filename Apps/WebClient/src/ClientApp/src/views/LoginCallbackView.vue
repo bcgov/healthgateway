@@ -48,9 +48,9 @@ export default class LoginCallbackView extends Vue {
                 await this.checkRegistration();
             }
 
-            this.$router.push({ path: this.redirectPath }).catch((error) => {
-                this.logger.warn(error.message);
-            });
+            this.$router
+                .push({ path: this.redirectPath })
+                .catch((error) => this.logger.warn(error.message));
         } catch (error) {
             // login failed - redirect back to the login page
             this.logger.error(`LoginCallback Error: ${JSON.stringify(error)}`);

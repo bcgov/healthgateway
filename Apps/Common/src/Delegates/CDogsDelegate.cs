@@ -64,7 +64,7 @@ namespace HealthGateway.Common.Delegates
             {
                 string? serviceHost = Environment.GetEnvironmentVariable($"{this.cdogsConfig.ServiceName}{this.cdogsConfig.ServiceHostSuffix}");
                 string? servicePort = Environment.GetEnvironmentVariable($"{this.cdogsConfig.ServiceName}{this.cdogsConfig.ServicePortSuffix}");
-                Dictionary<string, string> replacementData = new Dictionary<string, string>()
+                Dictionary<string, string> replacementData = new()
                 {
                     { "serviceHost", serviceHost! },
                     { "servicePort", servicePort! },
@@ -80,12 +80,12 @@ namespace HealthGateway.Common.Delegates
             logger.LogInformation($"CDogs URL resolved as {this.serviceEndpoint}");
         }
 
-        private static ActivitySource Source { get; } = new ActivitySource(nameof(CDogsDelegate));
+        private static ActivitySource Source { get; } = new(nameof(CDogsDelegate));
 
         /// <inheritdoc/>
         public async Task<RequestResult<ReportModel>> GenerateReportAsync(CDogsRequestModel request)
         {
-            using (Source.StartActivity("GenerateReportAsync"))
+            using (Source.StartActivity())
             {
                 RequestResult<ReportModel> retVal = new()
                 {
@@ -94,10 +94,10 @@ namespace HealthGateway.Common.Delegates
                 using HttpClient client = this.httpClientService.CreateDefaultHttpClient();
                 client.DefaultRequestHeaders.Accept.Clear();
                 client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue(MediaTypeNames.Application.Json));
-                using StringContent httpContent = new StringContent(JsonSerializer.Serialize(request), Encoding.UTF8, MediaTypeNames.Application.Json);
+                using StringContent httpContent = new(JsonSerializer.Serialize(request), Encoding.UTF8, MediaTypeNames.Application.Json);
                 try
                 {
-                    Uri endpoint = new Uri($"{this.serviceEndpoint}template/render");
+                    Uri endpoint = new($"{this.serviceEndpoint}template/render");
                     HttpResponseMessage? response = await client.PostAsync(endpoint, httpContent).ConfigureAwait(true);
                     byte[] payload = await response.Content.ReadAsByteArrayAsync().ConfigureAwait(true);
                     this.logger.LogTrace($"CDogs Response: {JsonSerializer.Serialize(response)}");
@@ -114,7 +114,11 @@ namespace HealthGateway.Common.Delegates
                     }
                     else
                     {
-                        retVal.ResultError = new RequestResultError() { ResultMessage = $"Unable to connect to CDogs API, HTTP Error {response.StatusCode}", ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationInternal, ServiceType.CDogs) };
+                        retVal.ResultError = new RequestResultError
+                        {
+                            ResultMessage = $"Unable to connect to CDogs API, HTTP Error {response.StatusCode}",
+                            ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationInternal, ServiceType.CDogs),
+                        };
                         this.logger.LogError($"Unable to connect to endpoint {endpoint}, HTTP Error {response.StatusCode}\n{payload}");
                     }
                 }
@@ -122,7 +126,11 @@ namespace HealthGateway.Common.Delegates
                 catch (Exception e)
 #pragma warning restore CA1031 // Do not catch general exception types
                 {
-                    retVal.ResultError = new RequestResultError() { ResultMessage = $"Exception generating report: {e}", ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationInternal, ServiceType.CDogs) };
+                    retVal.ResultError = new RequestResultError
+                    {
+                        ResultMessage = $"Exception generating report: {e}",
+                        ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationInternal, ServiceType.CDogs),
+                    };
                     this.logger.LogError($"Unexpected exception in GenerateReport {e}");
                 }
 

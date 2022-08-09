@@ -30,7 +30,7 @@ namespace HealthGateway.Admin.Client.Layouts
     using MudBlazor;
 
     /// <summary>
-    /// Main Layout theming and logic.
+    /// Backing logic for the main layout.
     /// </summary>
     public partial class MainLayout : IDisposable
     {
@@ -48,9 +48,6 @@ namespace HealthGateway.Admin.Client.Layouts
 
         [Inject]
         private IDialogService Dialog { get; set; } = default!;
-
-        [Inject]
-        private IDispatcher Dispatcher { get; set; } = default!;
 
         [Inject]
         private IJSRuntime JsRuntime { get; set; } = default!;
@@ -79,7 +76,7 @@ namespace HealthGateway.Admin.Client.Layouts
 
         private MudTheme DarkTheme { get; } = new DarkTheme();
 
-        private MudTheme? CurrentTheme => this.DarkMode ? this.DarkTheme : this.LightTheme;
+        private MudTheme CurrentTheme => this.DarkMode ? this.DarkTheme : this.LightTheme;
 
         /// <summary>
         /// A method that can be invoked with JavaScript to display the <see cref="InactivityDialog"/>.
@@ -108,7 +105,7 @@ namespace HealthGateway.Admin.Client.Layouts
             this.IsInactivityModalShown = false;
         }
 
-        /// <inheritdoc />
+        /// <inheritdoc/>
         public void Dispose()
         {
             // Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
@@ -119,7 +116,10 @@ namespace HealthGateway.Admin.Client.Layouts
         /// <summary>
         /// Releases the unmanaged resources used by this class optionally disposes of the managed resources.
         /// </summary>
-        /// <param name="disposing">If true, releases both managed and unmanaged resources. If false, releases only unmanaged resources.</param>
+        /// <param name="disposing">
+        /// If true, releases both managed and unmanaged resources. If false, releases only unmanaged
+        /// resources.
+        /// </param>
         protected virtual void Dispose(bool disposing)
         {
             if (!this.disposed)
@@ -133,20 +133,15 @@ namespace HealthGateway.Admin.Client.Layouts
             }
         }
 
-        /// <inheritdoc />
+        /// <inheritdoc/>
         protected override async Task OnInitializedAsync()
         {
             await base.OnInitializedAsync().ConfigureAwait(true);
-            this.Dispatcher.Dispatch(new ConfigurationActions.LoadAction());
 
             if (await this.LocalStorage.ContainKeyAsync(DarkThemeKey).ConfigureAwait(true))
             {
                 this.DarkMode = await this.LocalStorage.GetItemAsync<bool>(DarkThemeKey).ConfigureAwait(true);
                 this.StateHasChanged();
-            }
-            else
-            {
-                await this.LocalStorage.SetItemAsync(DarkThemeKey, this.DarkMode).ConfigureAwait(true);
             }
 
             this.objectReference = DotNetObjectReference.Create(this);

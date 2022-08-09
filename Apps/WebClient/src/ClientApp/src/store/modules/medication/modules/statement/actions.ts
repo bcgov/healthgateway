@@ -17,11 +17,10 @@ export const actions: MedicationStatementActions = {
         context,
         params: { hdid: string; protectiveWord?: string }
     ): Promise<RequestResult<MedicationStatementHistory[]>> {
-        const logger: ILogger = container.get(SERVICE_IDENTIFIER.Logger);
-        const medicationService: IMedicationService =
-            container.get<IMedicationService>(
-                SERVICE_IDENTIFIER.MedicationService
-            );
+        const logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
+        const medicationService = container.get<IMedicationService>(
+            SERVICE_IDENTIFIER.MedicationService
+        );
 
         return new Promise((resolve, reject) => {
             const medicationStatements: MedicationStatementHistory[] =
@@ -83,19 +82,27 @@ export const actions: MedicationStatementActions = {
         context,
         params: { error: ResultError; errorType: ErrorType }
     ) {
-        const logger: ILogger = container.get(SERVICE_IDENTIFIER.Logger);
+        const logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
 
         logger.error(`ERROR: ${JSON.stringify(params.error)}`);
         context.commit("medicationStatementError", params.error);
 
-        context.dispatch(
-            "errorBanner/addError",
-            {
-                errorType: params.errorType,
-                source: ErrorSourceType.MedicationStatements,
-                traceId: params.error.traceId,
-            },
-            { root: true }
-        );
+        if (params.error.statusCode === 429) {
+            context.dispatch(
+                "errorBanner/setTooManyRequestsWarning",
+                { key: "page" },
+                { root: true }
+            );
+        } else {
+            context.dispatch(
+                "errorBanner/addError",
+                {
+                    errorType: params.errorType,
+                    source: ErrorSourceType.MedicationStatements,
+                    traceId: params.error.traceId,
+                },
+                { root: true }
+            );
+        }
     },
 };

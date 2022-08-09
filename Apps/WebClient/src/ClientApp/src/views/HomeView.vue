@@ -222,7 +222,7 @@ export default class HomeView extends Vue {
         );
     }
 
-    private trackClickLink(linkType: string | undefined) {
+    private trackClickLink(linkType: string | undefined): void {
         if (linkType) {
             SnowPlow.trackEvent({
                 action: "click",
@@ -231,7 +231,7 @@ export default class HomeView extends Vue {
         }
     }
 
-    private retrieveVaccinePdf() {
+    private retrieveVaccinePdf(): void {
         this.trackClickLink("federal_proof");
         this.retrieveAuthenticatedVaccineRecord({
             hdid: this.user.hdid,
@@ -307,14 +307,14 @@ export default class HomeView extends Vue {
     }
 
     @Watch("vaccineRecordResultMessage")
-    private vaccineRecordErrorChanged() {
+    private vaccineRecordErrorChanged(): void {
         if (this.vaccineRecordResultMessage.length > 0) {
             this.vaccineRecordResultModal.showModal();
         }
     }
 
     @Watch("vaccineRecord")
-    private saveVaccinePdf() {
+    private saveVaccinePdf(): void {
         if (this.vaccineRecord !== undefined) {
             const mimeType = this.vaccineRecord.document.mediaType;
             const downloadLink = `data:${mimeType};base64,${this.vaccineRecord.document.data}`;
@@ -323,14 +323,12 @@ export default class HomeView extends Vue {
                     action: "click_button",
                     text: "FederalPVC",
                 });
-                res.blob().then((blob) => {
-                    saveAs(blob, "VaccineProof.pdf");
-                });
+                res.blob().then((blob) => saveAs(blob, "VaccineProof.pdf"));
             });
         }
     }
 
-    private showSensitiveDocumentDownloadModal() {
+    private showSensitiveDocumentDownloadModal(): void {
         this.sensitivedocumentDownloadModal.showModal();
     }
 
@@ -341,7 +339,7 @@ export default class HomeView extends Vue {
 </script>
 
 <template>
-    <div class="m-3 m-md-4 flex-grow-1 d-flex flex-column">
+    <div>
         <LoadingComponent
             :is-loading="isLoading"
             :text="loadingStatusMessage"
@@ -587,6 +585,7 @@ export default class HomeView extends Vue {
         &:hover:not([disabled]):not(:active) {
             color: $hg-text-primary;
         }
+
         &:active:not([disabled]) {
             color: white;
         }

@@ -4,13 +4,12 @@ import { faIdCard } from "@fortawesome/free-solid-svg-icons";
 import Vue from "vue";
 import { Component, Prop } from "vue-property-decorator";
 
+import { EntryType, entryTypeMap } from "@/constants/entryType";
 import ImmunizationTimelineEntry from "@/models/immunizationTimelineEntry";
 
-library.add(faIdCard);
-
-import { EntryType, entryTypeMap } from "@/constants/entryType";
-
 import EntrycardTimelineComponent from "./EntrycardTimelineComponent.vue";
+
+library.add(faIdCard);
 
 @Component({
     components: {
@@ -131,6 +130,7 @@ export default class ImmunizationTimelineComponent extends Vue {
     padding: 0px;
     margin: 0px;
 }
+
 .row {
     padding: 0;
     margin: 0px;

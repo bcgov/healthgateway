@@ -17,11 +17,9 @@ import Vue from "vue";
 import { Component } from "vue-property-decorator";
 import { Action, Getter } from "vuex-class";
 
-import ErrorCardComponent from "@/components/ErrorCardComponent.vue";
 import NoteEditComponent from "@/components/modal/NoteEditComponent.vue";
 import ProtectiveWordComponent from "@/components/modal/ProtectiveWordComponent.vue";
 import BreadcrumbComponent from "@/components/navmenu/BreadcrumbComponent.vue";
-import ResourceCentreComponent from "@/components/ResourceCentreComponent.vue";
 import AddNoteButtonComponent from "@/components/timeline/AddNoteButtonComponent.vue";
 import EntryDetailsComponent from "@/components/timeline/entryCard/EntryDetailsComponent.vue";
 import FilterComponent from "@/components/timeline/FilterComponent.vue";
@@ -78,9 +76,7 @@ enum FilterLabelType {
         NoteEditComponent,
         EntryDetailsComponent,
         LinearTimeline: LinearTimelineComponent,
-        ErrorCard: ErrorCardComponent,
         Filters: FilterComponent,
-        "resource-centre": ResourceCentreComponent,
         "add-note-button": AddNoteButtonComponent,
     },
 })
@@ -343,7 +339,7 @@ export default class TimelineView extends Vue {
     }
 
     private get isFilterModuleSelected(): boolean {
-        const entryTypes: EntryType[] = Array.from(this.filter.entryTypes);
+        const entryTypes = Array.from(this.filter.entryTypes);
         this.logger.debug(
             `Number of imeline filter modules selected: ${entryTypes.length}`
         );
@@ -396,12 +392,12 @@ export default class TimelineView extends Vue {
         return labels;
     }
 
-    private created() {
+    private created(): void {
         this.logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
         this.fetchTimelineData();
     }
 
-    private fetchTimelineData() {
+    private fetchTimelineData(): void {
         Promise.all([
             this.retrievePatientData(),
             this.retrieveMedications({ hdid: this.user.hdid }),
@@ -412,13 +408,13 @@ export default class TimelineView extends Vue {
             this.retrieveEncounters({ hdid: this.user.hdid }),
             this.retrieveNotes({ hdid: this.user.hdid }),
             this.retrieveComments({ hdid: this.user.hdid }),
-        ]).catch((err) => {
-            this.logger.error(`Error loading timeline data: ${err}`);
-        });
+        ]).catch((err) =>
+            this.logger.error(`Error loading timeline data: ${err}`)
+        );
     }
 
     private isFilterApplied(entryType: EntryType): boolean {
-        const entryTypes: EntryType[] = Array.from(this.filter.entryTypes);
+        const entryTypes = Array.from(this.filter.entryTypes);
         const filterApplied = !!entryTypes.includes(entryType);
         this.logger.debug(
             `Timeline filter entry type: ${entryType} applied: ${filterApplied}`
@@ -488,7 +484,7 @@ export default class TimelineView extends Vue {
 </script>
 
 <template>
-    <div class="m-3 m-md-4 flex-grow-1 d-flex flex-column">
+    <div>
         <b-toast
             id="loading-toast"
             :visible="!isFullyLoaded"
@@ -581,7 +577,6 @@ export default class TimelineView extends Vue {
                 </b-row>
             </b-col>
         </b-row>
-        <resource-centre />
         <ProtectiveWordComponent :is-loading="isMedicationStatementLoading" />
         <NoteEditComponent :is-loading="isNoteLoading" />
         <EntryDetailsComponent />
@@ -621,6 +616,7 @@ hr {
 .sticky-offset {
     background-color: white;
     z-index: 2;
+
     &.header-offset {
         top: $header-height;
     }

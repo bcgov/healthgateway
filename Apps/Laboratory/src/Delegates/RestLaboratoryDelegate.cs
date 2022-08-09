@@ -18,6 +18,7 @@ namespace HealthGateway.Laboratory.Delegates
     using System;
     using System.Collections.Generic;
     using System.Diagnostics;
+    using System.Diagnostics.CodeAnalysis;
     using System.Linq;
     using System.Net;
     using System.Net.Http;
@@ -71,12 +72,12 @@ namespace HealthGateway.Laboratory.Delegates
             configuration.Bind(LabConfigSectionKey, this.labConfig);
         }
 
-        private static ActivitySource Source { get; } = new ActivitySource(nameof(RestLaboratoryDelegate));
+        private static ActivitySource Source { get; } = new(nameof(RestLaboratoryDelegate));
 
         /// <inheritdoc/>
         public async Task<RequestResult<PhsaResult<List<PhsaCovid19Order>>>> GetCovid19Orders(string bearerToken, string hdid, int pageIndex = 0)
         {
-            using (Source.StartActivity("GetCovid19Orders"))
+            using (Source.StartActivity())
             {
                 RequestResult<PhsaResult<List<PhsaCovid19Order>>> retVal = new()
                 {
@@ -84,12 +85,11 @@ namespace HealthGateway.Laboratory.Delegates
                     PageIndex = pageIndex,
                 };
 
-                this.logger.LogDebug($"Getting covid19 orders...");
+                this.logger.LogDebug("Getting covid19 orders...");
                 using HttpClient client = this.httpClientService.CreateDefaultHttpClient();
                 client.DefaultRequestHeaders.Accept.Clear();
                 client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("bearer", bearerToken);
-                client.DefaultRequestHeaders.Accept.Add(
-                        new MediaTypeWithQualityHeaderValue(MediaTypeNames.Application.Json));
+                client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue(MediaTypeNames.Application.Json));
                 Dictionary<string, string?> query = new()
                 {
                     ["limit"] = this.labConfig.FetchSize,
@@ -118,7 +118,11 @@ namespace HealthGateway.Laboratory.Delegates
                             }
                             else
                             {
-                                retVal.ResultError = new RequestResultError() { ResultMessage = "Error with JSON data", ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.PHSA) };
+                                retVal.ResultError = new RequestResultError
+                                {
+                                    ResultMessage = "Error with JSON data",
+                                    ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.PHSA),
+                                };
                             }
 
                             break;
@@ -131,10 +135,18 @@ namespace HealthGateway.Laboratory.Delegates
 #pragma warning restore CA1305 // Specify IFormatProvider
                             break;
                         case HttpStatusCode.Forbidden:
-                            retVal.ResultError = new RequestResultError() { ResultMessage = $"DID Claim is missing or can not resolve PHN, HTTP Error {response.StatusCode}", ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.PHSA) };
+                            retVal.ResultError = new RequestResultError
+                            {
+                                ResultMessage = $"DID Claim is missing or can not resolve PHN, HTTP Error {response.StatusCode}",
+                                ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.PHSA),
+                            };
                             break;
                         default:
-                            retVal.ResultError = new RequestResultError() { ResultMessage = $"Unable to connect to Labs Endpoint, HTTP Error {response.StatusCode}", ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.PHSA) };
+                            retVal.ResultError = new RequestResultError
+                            {
+                                ResultMessage = $"Unable to connect to Labs Endpoint, HTTP Error {response.StatusCode}",
+                                ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.PHSA),
+                            };
                             this.logger.LogError($"Unable to connect to endpoint {endpoint}, HTTP Error {response.StatusCode}\n{payload}");
                             break;
                     }
@@ -143,11 +155,15 @@ namespace HealthGateway.Laboratory.Delegates
                 catch (Exception e)
 #pragma warning restore CA1031 // Do not catch general exception types
                 {
-                    retVal.ResultError = new RequestResultError() { ResultMessage = $"Exception getting Covid19 Orders: {e}", ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.PHSA) };
+                    retVal.ResultError = new RequestResultError
+                    {
+                        ResultMessage = $"Exception getting Covid19 Orders: {e}",
+                        ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.PHSA),
+                    };
                     this.logger.LogError($"Unexpected exception in Get Covid19 Orders {e}");
                 }
 
-                this.logger.LogDebug($"Finished getting Laboratory Orders");
+                this.logger.LogDebug("Finished getting Laboratory Orders");
                 return retVal;
             }
         }
@@ -155,9 +171,9 @@ namespace HealthGateway.Laboratory.Delegates
         /// <inheritdoc/>
         public async Task<RequestResult<LaboratoryReport>> GetLabReport(string id, string hdid, string bearerToken, bool isCovid19)
         {
-            using (Source.StartActivity("GetLabReport"))
+            using (Source.StartActivity())
             {
-                RequestResult<LaboratoryReport> retVal = new RequestResult<LaboratoryReport>()
+                RequestResult<LaboratoryReport> retVal = new()
                 {
                     ResultStatus = ResultType.Error,
                 };
@@ -166,8 +182,7 @@ namespace HealthGateway.Laboratory.Delegates
                 using HttpClient client = this.httpClientService.CreateDefaultHttpClient();
                 client.DefaultRequestHeaders.Accept.Clear();
                 client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("bearer", bearerToken);
-                client.DefaultRequestHeaders.Accept.Add(
-                new MediaTypeWithQualityHeaderValue(MediaTypeNames.Application.Json));
+                client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue(MediaTypeNames.Application.Json));
                 Dictionary<string, string?> query = new()
                 {
                     ["subjectHdid"] = hdid,
@@ -209,18 +224,34 @@ namespace HealthGateway.Laboratory.Delegates
                             }
                             else
                             {
-                                retVal.ResultError = new RequestResultError() { ResultMessage = "Error with JSON data", ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.PHSA) };
+                                retVal.ResultError = new RequestResultError
+                                {
+                                    ResultMessage = "Error with JSON data",
+                                    ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.PHSA),
+                                };
                             }
 
                             break;
                         case HttpStatusCode.NoContent: // No report found.
-                            retVal.ResultError = new RequestResultError() { ResultMessage = "Report not found.", ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.PHSA) };
+                            retVal.ResultError = new RequestResultError
+                            {
+                                ResultMessage = "Report not found.",
+                                ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.PHSA),
+                            };
                             break;
                         case HttpStatusCode.Forbidden:
-                            retVal.ResultError = new RequestResultError() { ResultMessage = $"DID Claim is missing or can not resolve PHN, HTTP Error {response.StatusCode}", ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.PHSA) };
+                            retVal.ResultError = new RequestResultError
+                            {
+                                ResultMessage = $"DID Claim is missing or can not resolve PHN, HTTP Error {response.StatusCode}",
+                                ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.PHSA),
+                            };
                             break;
                         default:
-                            retVal.ResultError = new RequestResultError() { ResultMessage = $"Unable to connect to Labs Endpoint, HTTP Error {response.StatusCode}", ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.PHSA) };
+                            retVal.ResultError = new RequestResultError
+                            {
+                                ResultMessage = $"Unable to connect to Labs Endpoint, HTTP Error {response.StatusCode}",
+                                ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.PHSA),
+                            };
                             this.logger.LogError($"Unable to connect to endpoint {endpoint}, HTTP Error {response.StatusCode}\n{payload}");
                             break;
                     }
@@ -229,11 +260,15 @@ namespace HealthGateway.Laboratory.Delegates
                 catch (Exception e)
 #pragma warning restore CA1031 // Do not catch general exception types
                 {
-                    retVal.ResultError = new RequestResultError() { ResultMessage = $"Exception getting Lab Report: {e}", ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.PHSA) };
+                    retVal.ResultError = new RequestResultError
+                    {
+                        ResultMessage = $"Exception getting Lab Report: {e}",
+                        ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.PHSA),
+                    };
                     this.logger.LogError($"Unexpected exception in Lab Report {e}");
                 }
 
-                this.logger.LogDebug($"Finished getting Laboratory Report");
+                this.logger.LogDebug("Finished getting Laboratory Report");
                 return retVal;
             }
         }
@@ -248,7 +283,7 @@ namespace HealthGateway.Laboratory.Delegates
                 ResultStatus = ResultType.Error,
             };
 
-            this.logger.LogDebug($"Getting laboratory summary...");
+            this.logger.LogDebug("Getting laboratory summary...");
             using HttpClient client = this.httpClientService.CreateDefaultHttpClient();
             client.DefaultRequestHeaders.Accept.Clear();
             client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("bearer", bearerToken);
@@ -281,7 +316,11 @@ namespace HealthGateway.Laboratory.Delegates
                         }
                         else
                         {
-                            retVal.ResultError = new RequestResultError() { ResultMessage = "Error with JSON data", ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.PHSA) };
+                            retVal.ResultError = new RequestResultError
+                            {
+                                ResultMessage = "Error with JSON data",
+                                ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.PHSA),
+                            };
                         }
 
                         break;
@@ -294,10 +333,18 @@ namespace HealthGateway.Laboratory.Delegates
 #pragma warning restore CA1305 // Specify IFormatProvider
                         break;
                     case HttpStatusCode.Forbidden:
-                        retVal.ResultError = new RequestResultError() { ResultMessage = $"DID Claim is missing or can not resolve PHN, HTTP Error {response.StatusCode}", ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.PHSA) };
+                        retVal.ResultError = new RequestResultError
+                        {
+                            ResultMessage = $"DID Claim is missing or can not resolve PHN, HTTP Error {response.StatusCode}",
+                            ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.PHSA),
+                        };
                         break;
                     default:
-                        retVal.ResultError = new RequestResultError() { ResultMessage = $"Unable to connect to Labs Endpoint, HTTP Error {response.StatusCode}", ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.PHSA) };
+                        retVal.ResultError = new RequestResultError
+                        {
+                            ResultMessage = $"Unable to connect to Labs Endpoint, HTTP Error {response.StatusCode}",
+                            ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.PHSA),
+                        };
                         this.logger.LogError($"Unable to connect to endpoint {endpoint}, HTTP Error {response.StatusCode}\n{payload}");
                         break;
                 }
@@ -306,19 +353,23 @@ namespace HealthGateway.Laboratory.Delegates
             catch (Exception e)
 #pragma warning restore CA1031 // Do not catch general exception types
             {
-                retVal.ResultError = new RequestResultError() { ResultMessage = $"Exception getting laboratory summary: {e}", ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.PHSA) };
+                retVal.ResultError = new RequestResultError
+                {
+                    ResultMessage = $"Exception getting laboratory summary: {e}",
+                    ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.PHSA),
+                };
                 this.logger.LogError($"Unexpected exception in getting laboratory summary {e}");
             }
 
-            this.logger.LogDebug($"Finished getting Laboratory Orders");
+            this.logger.LogDebug("Finished getting Laboratory Orders");
             return retVal;
         }
 
         /// <inheritdoc/>
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Maintainability", "CA1506:Avoid excessive class coupling", Justification = "Team decision")]
+        [SuppressMessage("Maintainability", "CA1506:Avoid excessive class coupling", Justification = "Team decision")]
         public async Task<RequestResult<PhsaResult<IEnumerable<CovidTestResult>>>> GetPublicTestResults(string accessToken, string phn, DateOnly dateOfBirth, DateOnly collectionDate)
         {
-            using Activity? activity = Source.StartActivity("GetPublicTestResults");
+            using Activity? activity = Source.StartActivity();
             this.logger.LogDebug($"Getting public COVID-19 test results {phn} {dateOfBirth} {collectionDate}...");
 
             HttpContext? httpContext = this.httpContextAccessor.HttpContext;
@@ -365,7 +416,7 @@ namespace HealthGateway.Laboratory.Delegates
                         }
                         else
                         {
-                            retVal.ResultError = new RequestResultError()
+                            retVal.ResultError = new RequestResultError
                             {
                                 ResultMessage = "Error with JSON data",
                                 ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.PHSA),
@@ -374,14 +425,14 @@ namespace HealthGateway.Laboratory.Delegates
 
                         break;
                     case HttpStatusCode.Forbidden:
-                        retVal.ResultError = new RequestResultError()
+                        retVal.ResultError = new RequestResultError
                         {
                             ResultMessage = $"DID Claim is missing or can not resolve PHN, HTTP Error {response.StatusCode}",
                             ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.PHSA),
                         };
                         break;
                     default:
-                        retVal.ResultError = new RequestResultError()
+                        retVal.ResultError = new RequestResultError
                         {
                             ResultMessage = $"Unable to connect to Laboratory PublicCovidTestsEndPoint, HTTP Error {response.StatusCode}",
                             ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.PHSA),
@@ -394,7 +445,11 @@ namespace HealthGateway.Laboratory.Delegates
             catch (Exception e)
 #pragma warning restore CA1031 // Do not catch general exception types
             {
-                retVal.ResultError = new RequestResultError() { ResultMessage = $"Exception getting public COVID-19 test results: {e}", ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.PHSA) };
+                retVal.ResultError = new RequestResultError
+                {
+                    ResultMessage = $"Exception getting public COVID-19 test results: {e}",
+                    ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.PHSA),
+                };
                 this.logger.LogError($"Unexpected exception retrieving public COVID-19 test results {e}");
             }
 

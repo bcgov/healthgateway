@@ -30,6 +30,6 @@ namespace HealthGateway.Admin.Server.Models.CovidSupport
         /// <summary>
         /// Gets or sets the address to mail the document.
         /// </summary>
-        public Address MailAddress { get; set; } = new Address();
+        public Address MailAddress { get; set; } = new();
     }
 }

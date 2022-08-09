@@ -1,8 +1,8 @@
 @page "/communications"
-@attribute [Authorize(Roles = Roles.Admin)]
-@inherits Fluxor.Blazor.Web.Components.FluxorComponent
-
+@layout MainLayout
+@attribute [Authorize(Roles = $"{Roles.Admin},{Roles.Reviewer}")]
 @using HealthGateway.Admin.Client.Store.Communications
+@inherits Fluxor.Blazor.Web.Components.FluxorComponent
 
 <PageTitle>Communications</PageTitle>
 <HgPageHeading>Communications</HgPageHeading>
@@ -18,11 +18,11 @@
             @if (SelectedBannerName != null)
             {
                 <HgButton EndIcon="@Icons.Material.Filled.Add"
-                  TopMargin="@Breakpoint.Always"
-                  RightMargin="@Breakpoint.Always"
-                  BottomMargin="@Breakpoint.Always"
-                  @onclick="@CreateBannerAsync"
-                  data-testid="create-banner-btn">
+                          TopMargin="@Breakpoint.Always"
+                          RightMargin="@Breakpoint.Always"
+                          BottomMargin="@Breakpoint.Always"
+                          @onclick="@CreateBannerAsync"
+                          data-testid="create-banner-btn">
                     Create
                 </HgButton>
             }

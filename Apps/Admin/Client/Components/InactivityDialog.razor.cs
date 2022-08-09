@@ -39,7 +39,7 @@ namespace HealthGateway.Admin.Client.Components
         protected override async Task OnInitializedAsync()
         {
             await base.OnInitializedAsync().ConfigureAwait(true);
-            this.timer.Elapsed += new ElapsedEventHandler(this.CountdownTimerTick);
+            this.timer.Elapsed += this.CountdownTimerTick;
             this.timer.AutoReset = true;
             this.timer.Start();
         }

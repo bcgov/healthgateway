@@ -15,8 +15,6 @@
 // -------------------------------------------------------------------------
 namespace HealthGateway.Common.Jobs
 {
-    using HealthGateway.Common.Models;
-
     /// <summary>
     /// A Job to send/retry pushing Notification Settings to PHSA.
     /// </summary>

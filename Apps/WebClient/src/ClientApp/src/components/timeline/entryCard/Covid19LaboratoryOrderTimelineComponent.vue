@@ -11,7 +11,6 @@ import MessageModalComponent from "@/components/modal/MessageModalComponent.vue"
 import { EntryType, entryTypeMap } from "@/constants/entryType";
 import Covid19LaboratoryOrderTimelineEntry from "@/models/covid19LaboratoryOrderTimelineEntry";
 import { DateWrapper } from "@/models/dateWrapper";
-import { LaboratoryReport } from "@/models/laboratory";
 import User from "@/models/user";
 import container from "@/plugins/container";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
@@ -52,7 +51,7 @@ export default class Covid19LaboratoryOrderTimelineComponent extends Vue {
         return this.entry.reportAvailable;
     }
 
-    private created() {
+    private created(): void {
         this.logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
         this.laboratoryService = container.get<ILaboratoryService>(
             SERVICE_IDENTIFIER.LaboratoryService
@@ -78,7 +77,7 @@ export default class Covid19LaboratoryOrderTimelineComponent extends Vue {
         this.messageModal.showModal();
     }
 
-    private getReport() {
+    private getReport(): void {
         SnowPlow.trackEvent({
             action: "download_report",
             text: "COVID Test PDF",
@@ -88,20 +87,18 @@ export default class Covid19LaboratoryOrderTimelineComponent extends Vue {
         this.laboratoryService
             .getReportDocument(this.entry.id, this.user.hdid, true)
             .then((result) => {
-                let dateString =
+                const dateString =
                     this.entry.displayDate.format("yyyy_MM_dd-HH_mm");
-                let report: LaboratoryReport = result.resourcePayload;
+                const report = result.resourcePayload;
                 fetch(
                     `data:${report.mediaType};${report.encoding},${report.data}`
                 )
                     .then((response) => response.blob())
-                    .then((blob) => {
-                        saveAs(blob, `COVID_Result_${dateString}.pdf`);
-                    });
+                    .then((blob) =>
+                        saveAs(blob, `COVID_Result_${dateString}.pdf`)
+                    );
             })
-            .catch((err) => {
-                this.logger.error(err);
-            })
+            .catch((err) => this.logger.error(err))
             .finally(() => {
                 this.isLoadingDocument = false;
             });
@@ -227,6 +224,7 @@ export default class Covid19LaboratoryOrderTimelineComponent extends Vue {
     padding: 0px;
     margin: 0px;
 }
+
 .row {
     padding: 0;
     margin: 0px;

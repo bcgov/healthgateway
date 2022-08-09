@@ -20,18 +20,19 @@ namespace HealthGateway.Admin.Server.Services
     using System.Globalization;
     using System.Linq;
     using System.Threading.Tasks;
-    using HealthGateway.Admin.Common.Constants;
     using HealthGateway.Common.Constants;
     using HealthGateway.Common.Data.Constants;
     using HealthGateway.Common.Data.Models;
     using HealthGateway.Common.Data.ViewModels;
     using HealthGateway.Common.Models;
     using HealthGateway.Common.Services;
+    using HealthGateway.Database.Constants;
     using HealthGateway.Database.Delegates;
     using HealthGateway.Database.Wrapper;
     using Microsoft.Extensions.Logging;
+    using UserQueryType = HealthGateway.Admin.Common.Constants.UserQueryType;
 
-    /// <inheritdoc />
+    /// <inheritdoc/>
     public class DashboardService : IDashboardService
     {
         private readonly ILogger logger;
@@ -66,28 +67,28 @@ namespace HealthGateway.Admin.Server.Services
             this.ratingDelegate = ratingDelegate;
         }
 
-        /// <inheritdoc />
+        /// <inheritdoc/>
         public IDictionary<DateTime, int> GetDailyRegisteredUsersCount(int timeOffset)
         {
             TimeSpan ts = new(0, timeOffset, 0);
             return this.userProfileDelegate.GetDailyRegisteredUsersCount(ts);
         }
 
-        /// <inheritdoc />
+        /// <inheritdoc/>
         public IDictionary<DateTime, int> GetDailyLoggedInUsersCount(int timeOffset)
         {
             TimeSpan ts = new(0, timeOffset, 0);
             return this.userProfileDelegate.GetDailyLoggedInUsersCount(ts);
         }
 
-        /// <inheritdoc />
+        /// <inheritdoc/>
         public IDictionary<DateTime, int> GetDailyDependentCount(int timeOffset)
         {
             TimeSpan ts = new(0, timeOffset, 0);
             return this.dependentDelegate.GetDailyDependentCount(ts);
         }
 
-        /// <inheritdoc />
+        /// <inheritdoc/>
         public int GetRecurrentUserCount(int dayCount, string startPeriod, string endPeriod, int timeOffset)
         {
             int offset = GetOffset(timeOffset);
@@ -112,7 +113,7 @@ namespace HealthGateway.Admin.Server.Services
             return this.userProfileDelegate.GetRecurrentUserCount(dayCount, startDate, endDate);
         }
 
-        /// <inheritdoc />
+        /// <inheritdoc/>
         public RequestResult<IEnumerable<MessagingVerificationModel>> GetMessageVerifications(UserQueryType queryType, string queryString)
         {
             RequestResult<IEnumerable<MessagingVerificationModel>> retVal = new()
@@ -125,7 +126,7 @@ namespace HealthGateway.Admin.Server.Services
             string phn = string.Empty;
             switch (queryType)
             {
-                case UserQueryType.PHN:
+                case UserQueryType.Phn:
                     RequestResult<PatientModel> patientResult = Task.Run(async () => await this.patientService.GetPatient(queryString, PatientIdentifierType.PHN).ConfigureAwait(true)).Result;
                     if (patientResult.ResultStatus == ResultType.Success && patientResult.ResourcePayload != null)
                     {
@@ -142,10 +143,10 @@ namespace HealthGateway.Admin.Server.Services
                 case UserQueryType.Email:
                     dbResult = this.messagingVerificationDelegate.GetUserMessageVerifications(Database.Constants.UserQueryType.Email, queryString);
                     break;
-                case UserQueryType.SMS:
+                case UserQueryType.Sms:
                     dbResult = this.messagingVerificationDelegate.GetUserMessageVerifications(Database.Constants.UserQueryType.SMS, queryString);
                     break;
-                case UserQueryType.HDID:
+                case UserQueryType.Hdid:
                     RequestResult<PatientModel> patientResultHdid = Task.Run(async () => await this.patientService.GetPatient(queryString).ConfigureAwait(true)).Result;
                     if (patientResultHdid.ResultStatus == ResultType.Success && patientResultHdid.ResourcePayload != null)
                     {
@@ -160,29 +161,26 @@ namespace HealthGateway.Admin.Server.Services
                     break;
             }
 
-            if (dbResult != null && dbResult.Status == Database.Constants.DBStatusCode.Read)
+            if (dbResult != null && dbResult.Status == DBStatusCode.Read)
             {
                 retVal.ResultStatus = ResultType.Success;
                 List<MessagingVerificationModel> results = new();
-                if (dbResult.Payload != null)
+                results.AddRange(dbResult.Payload.Select(MessagingVerificationModel.CreateFromDbModel));
+                if (queryType == UserQueryType.Hdid || queryType == UserQueryType.Phn)
                 {
-                    results.AddRange(dbResult.Payload.Select(MessagingVerificationModel.CreateFromDbModel));
-                    if (queryType == UserQueryType.HDID || queryType == UserQueryType.PHN)
+                    foreach (MessagingVerificationModel? item in results)
                     {
-                        foreach (MessagingVerificationModel? item in results)
-                        {
-                            item.PersonalHealthNumber = phn;
-                        }
+                        item.PersonalHealthNumber = phn;
                     }
-
-                    retVal.ResourcePayload = results;
                 }
+
+                retVal.ResourcePayload = results;
             }
 
             return retVal;
         }
 
-        /// <inheritdoc />
+        /// <inheritdoc/>
         public IDictionary<string, int> GetRatingSummary(string startPeriod, string endPeriod, int timeOffset)
         {
             TimeSpan ts = new(0, GetOffset(timeOffset), 0);

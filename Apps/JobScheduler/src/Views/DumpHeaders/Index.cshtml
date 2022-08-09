@@ -1,9 +1,10 @@
+@using Microsoft.Extensions.Primitives
 @{
     ViewData["Title"] = "Dump Headers";
     <h2>Headers</h2>
-    foreach (var key in Context.Request.Headers.Keys)
+    foreach (string key in Context.Request.Headers.Keys)
     {
-        var val = Context.Request.Headers[key];
+        StringValues val = Context.Request.Headers[key];
         @:@key: @val <br />
     }
     <h2>Request Information</h2>

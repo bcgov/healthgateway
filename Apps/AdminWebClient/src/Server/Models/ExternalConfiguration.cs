@@ -15,8 +15,6 @@
 //-------------------------------------------------------------------------
 namespace HealthGateway.Admin.Models
 {
-    using System.Collections.Generic;
-
     /// <summary>
     /// A collection of configuration items for use by Health Gateway and
     /// approved applications.
@@ -32,12 +30,6 @@ namespace HealthGateway.Admin.Models
         /// Gets or sets the Health Gateway Webclient specific configuration.
         /// </summary>
         public AdminConfiguration Admin { get; set; } = new AdminConfiguration();
-
-        /// <summary>
-        /// Gets or sets the Service Endpoints.
-        /// </summary>
-#pragma warning disable CA2227 //disable read-only Dictionary
-        public Dictionary<string, System.Uri> ServiceEndpoints { get; set; } = new Dictionary<string, System.Uri>();
 
         /// <summary>
         /// Gets or sets the forward proxies configuration.

@@ -16,9 +16,9 @@
 
 namespace HealthGateway.Admin.Client.Store.Dashboard;
 
-using Fluxor;
 using System;
 using System.Collections.Generic;
+using Fluxor;
 
 /// <summary>
 /// The state for the feature.

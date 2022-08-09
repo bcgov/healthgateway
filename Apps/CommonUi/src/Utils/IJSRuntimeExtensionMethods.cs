@@ -28,7 +28,10 @@ namespace HealthGateway.Common.Ui.Utils
         /// </summary>
         /// <typeparam name="T">The type of the dotnet object that will be passed to the JavaScript function.</typeparam>
         /// <param name="js">The instance of the <see cref="IJSRuntime"/> class.</param>
-        /// <param name="dotNetObjectReference">A reference to the instance of the dotnet object to pass to the JavaScript function.</param>
+        /// <param name="dotNetObjectReference">
+        /// A reference to the instance of the dotnet object to pass to the JavaScript
+        /// function.
+        /// </param>
         /// <returns>A <see cref="ValueTask"/> representing the asynchronous operation.</returns>
         public static async ValueTask InitializeInactivityTimer<T>(this IJSRuntime js, DotNetObjectReference<T> dotNetObjectReference)
             where T : class

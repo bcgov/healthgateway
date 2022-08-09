@@ -16,11 +16,11 @@
 namespace HealthGateway.Common.Delegates
 {
     using System;
+    using System.Diagnostics.CodeAnalysis;
     using System.IO;
     using System.Security.Cryptography;
     using HealthGateway.Common.Models;
     using Microsoft.Extensions.Configuration;
-    using Microsoft.Extensions.Logging;
 
     /// <summary>
     /// Delegate to encrypt/decrypt using AES.
@@ -45,7 +45,7 @@ namespace HealthGateway.Common.Delegates
         /// </summary>
         public AesCryptoDelegateConfig AESConfig { get; set; }
 
-        /// <inheritdoc />
+        /// <inheritdoc/>
         public string Encrypt(string key, string plainText)
         {
             return this.Encrypt(key, this.AESConfig.Iv, plainText);
@@ -58,7 +58,7 @@ namespace HealthGateway.Common.Delegates
         /// <param name="iv">The base64 encoded initialization vector.</param>
         /// <param name="plainText">The text to encrypt.</param>
         /// <returns>The encrypted text.</returns>
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Security", "CA5401:Do not use CreateEncryptor with non-default Iv", Justification = "Team decision")]
+        [SuppressMessage("Security", "CA5401:Do not use CreateEncryptor with non-default Iv", Justification = "Team decision")]
         public string Encrypt(string key, string? iv, string plainText)
         {
             using Aes aes = Aes.Create();
@@ -66,16 +66,16 @@ namespace HealthGateway.Common.Delegates
             aes.Key = Convert.FromBase64String(key);
             aes.IV = iv != null ? Convert.FromBase64String(iv) : new byte[16];
             ICryptoTransform encryptor = aes.CreateEncryptor(aes.Key, aes.IV);
-            using MemoryStream msEncrypt = new MemoryStream();
-            using CryptoStream csEncrypt = new CryptoStream(msEncrypt, encryptor, CryptoStreamMode.Write);
-            using StreamWriter swEncrypt = new StreamWriter(csEncrypt);
+            using MemoryStream msEncrypt = new();
+            using CryptoStream csEncrypt = new(msEncrypt, encryptor, CryptoStreamMode.Write);
+            using StreamWriter swEncrypt = new(csEncrypt);
             swEncrypt.Write(plainText);
             swEncrypt.Close();
             byte[] encryptedBytes = msEncrypt.ToArray();
             return Convert.ToBase64String(encryptedBytes);
         }
 
-        /// <inheritdoc />
+        /// <inheritdoc/>
         public string Decrypt(string key, string encryptedText)
         {
             return this.Decrypt(key, this.AESConfig.Iv, encryptedText);
@@ -97,14 +97,14 @@ namespace HealthGateway.Common.Delegates
             aes.Key = Convert.FromBase64String(key);
             aes.IV = iv != null ? Convert.FromBase64String(iv) : new byte[16];
             ICryptoTransform decryptor = aes.CreateDecryptor(aes.Key, aes.IV);
-            using MemoryStream msDecrypt = new MemoryStream(encryptedBytes);
-            using CryptoStream csDecrypt = new CryptoStream(msDecrypt, decryptor, CryptoStreamMode.Read);
-            using StreamReader srDecrypt = new StreamReader(csDecrypt);
+            using MemoryStream msDecrypt = new(encryptedBytes);
+            using CryptoStream csDecrypt = new(msDecrypt, decryptor, CryptoStreamMode.Read);
+            using StreamReader srDecrypt = new(csDecrypt);
             plaintext = srDecrypt.ReadToEnd();
             return plaintext;
         }
 
-        /// <inheritdoc />
+        /// <inheritdoc/>
         public string GenerateKey()
         {
             using Aes aes = Aes.Create();

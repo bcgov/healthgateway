@@ -15,6 +15,7 @@
 // -------------------------------------------------------------------------
 namespace HealthGateway.Admin.Controllers
 {
+    using HealthGateway.Admin.Models;
     using HealthGateway.Admin.Services;
     using HealthGateway.Common.Authorization.Admin;
     using Microsoft.AspNetCore.Authentication.OpenIdConnect;
@@ -79,14 +80,16 @@ namespace HealthGateway.Admin.Controllers
 
             this.authenticationService.SetLastLoginDateTime();
 
-            this.logger.LogDebug("Redirecting to dashboard");
+            this.logger.LogDebug("Redirecting to application");
             string basePath = this.httpContextAccessor.HttpContext?.Request.PathBase.Value ?? string.Empty;
+
+            string path = "/";
             if (this.Url.IsLocalUrl(basePath))
             {
-                return new RedirectResult($"{basePath}/");
+                path = $"{basePath}/";
             }
 
-            return new RedirectResult("/");
+            return new RedirectResult(path);
         }
 
         /// <summary>

@@ -1,5 +1,3 @@
-import { Commit } from "vuex";
-
 import { ErrorSourceType, ErrorType } from "@/constants/errorType";
 import { ResultType } from "@/constants/resulttype";
 import UserPreferenceType from "@/constants/userPreferenceType";
@@ -18,26 +16,17 @@ import { QuickLinkUtil } from "@/utility/quickLinkUtil";
 
 import { UserActions } from "./types";
 
-function handleError(commit: Commit, error: Error) {
-    const logger: ILogger = container.get(SERVICE_IDENTIFIER.Logger);
-    logger.error(`UserProfile ERROR: ${error}`);
-    commit("userError");
-}
-
 export const actions: UserActions = {
     checkRegistration(context): Promise<boolean> {
-        const userProfileService: IUserProfileService =
-            container.get<IUserProfileService>(
-                SERVICE_IDENTIFIER.UserProfileService
-            );
+        const logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
+        const userProfileService = container.get<IUserProfileService>(
+            SERVICE_IDENTIFIER.UserProfileService
+        );
 
-        return new Promise((resolve, reject) => {
-            return userProfileService
+        return new Promise((resolve, reject) =>
+            userProfileService
                 .getProfile(context.state.user.hdid)
                 .then((userProfile) => {
-                    const logger: ILogger = container.get(
-                        SERVICE_IDENTIFIER.Logger
-                    );
                     logger.verbose(
                         `User Profile: ${JSON.stringify(userProfile)}`
                     );
@@ -45,22 +34,21 @@ export const actions: UserActions = {
                     resolve(userProfile.acceptedTermsOfService);
                 })
                 .catch((error) => {
-                    handleError(context.commit, error);
+                    context.commit("userError");
                     reject(error);
-                });
-        });
+                })
+        );
     },
     updateAcceptedTerms(
         context,
         params: { termsOfServiceId: string }
     ): Promise<void> {
-        const userProfileService: IUserProfileService =
-            container.get<IUserProfileService>(
-                SERVICE_IDENTIFIER.UserProfileService
-            );
-        const logger: ILogger = container.get(SERVICE_IDENTIFIER.Logger);
+        const logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
+        const userProfileService = container.get<IUserProfileService>(
+            SERVICE_IDENTIFIER.UserProfileService
+        );
 
-        return new Promise((resolve, reject) => {
+        return new Promise((resolve, reject) =>
             userProfileService
                 .updateAcceptedTerms(
                     context.state.user.hdid,
@@ -76,28 +64,25 @@ export const actions: UserActions = {
                     resolve();
                 })
                 .catch((error) => {
-                    handleError(context.commit, error);
+                    context.commit("userError");
                     reject(error);
-                });
-        });
+                })
+        );
     },
     updateUserEmail(context, params: { emailAddress: string }): Promise<void> {
-        const userProfileService: IUserProfileService =
-            container.get<IUserProfileService>(
-                SERVICE_IDENTIFIER.UserProfileService
-            );
+        const userProfileService = container.get<IUserProfileService>(
+            SERVICE_IDENTIFIER.UserProfileService
+        );
 
-        return new Promise((resolve, reject) => {
+        return new Promise((resolve, reject) =>
             userProfileService
                 .updateEmail(context.state.user.hdid, params.emailAddress)
-                .then(() => {
-                    resolve();
-                })
+                .then(() => resolve())
                 .catch((error) => {
-                    handleError(context.commit, error);
+                    context.commit("userError");
                     reject(error);
-                });
-        });
+                })
+        );
     },
     updateSMSResendDateTime(context, params: { dateTime: DateWrapper }): void {
         context.commit("setSMSResendDateTime", params.dateTime);
@@ -106,13 +91,12 @@ export const actions: UserActions = {
         context,
         params: { userPreference: UserPreference }
     ): Promise<void> {
-        const logger: ILogger = container.get(SERVICE_IDENTIFIER.Logger);
-        const userProfileService: IUserProfileService =
-            container.get<IUserProfileService>(
-                SERVICE_IDENTIFIER.UserProfileService
-            );
+        const userProfileService = container.get<IUserProfileService>(
+            SERVICE_IDENTIFIER.UserProfileService
+        );
+        const logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
 
-        return new Promise((resolve, reject) => {
+        return new Promise((resolve, reject) =>
             userProfileService
                 .updateUserPreference(
                     context.state.user.hdid,
@@ -128,22 +112,21 @@ export const actions: UserActions = {
                     resolve();
                 })
                 .catch((error) => {
-                    handleError(context.commit, error);
+                    context.commit("userError");
                     reject(error);
-                });
-        });
+                })
+        );
     },
     createUserPreference(
         context,
         params: { userPreference: UserPreference }
     ): Promise<void> {
-        const logger: ILogger = container.get(SERVICE_IDENTIFIER.Logger);
-        const userProfileService: IUserProfileService =
-            container.get<IUserProfileService>(
-                SERVICE_IDENTIFIER.UserProfileService
-            );
+        const logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
+        const userProfileService = container.get<IUserProfileService>(
+            SERVICE_IDENTIFIER.UserProfileService
+        );
 
-        return new Promise((resolve, reject) => {
+        return new Promise((resolve, reject) =>
             userProfileService
                 .createUserPreference(
                     context.state.user.hdid,
@@ -159,10 +142,10 @@ export const actions: UserActions = {
                     resolve();
                 })
                 .catch((error) => {
-                    handleError(context.commit, error);
+                    context.commit("userError");
                     reject(error);
-                });
-        });
+                })
+        );
     },
     updateQuickLinks(
         context,
@@ -191,12 +174,11 @@ export const actions: UserActions = {
         return context.dispatch("updateUserPreference", { userPreference });
     },
     closeUserAccount(context): Promise<void> {
-        const userProfileService: IUserProfileService =
-            container.get<IUserProfileService>(
-                SERVICE_IDENTIFIER.UserProfileService
-            );
+        const userProfileService = container.get<IUserProfileService>(
+            SERVICE_IDENTIFIER.UserProfileService
+        );
 
-        return new Promise((resolve, reject) => {
+        return new Promise((resolve, reject) =>
             userProfileService
                 .closeAccount(context.state.user.hdid)
                 .then((userProfile) => {
@@ -204,24 +186,21 @@ export const actions: UserActions = {
                     resolve();
                 })
                 .catch((error) => {
-                    handleError(context.commit, error);
+                    context.commit("userError");
                     reject(error);
-                });
-        });
+                })
+        );
     },
     recoverUserAccount(context): Promise<void> {
-        const userProfileService: IUserProfileService =
-            container.get<IUserProfileService>(
-                SERVICE_IDENTIFIER.UserProfileService
-            );
+        const logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
+        const userProfileService = container.get<IUserProfileService>(
+            SERVICE_IDENTIFIER.UserProfileService
+        );
 
-        return new Promise((resolve, reject) => {
+        return new Promise((resolve, reject) =>
             userProfileService
                 .recoverAccount(context.state.user.hdid)
                 .then((userProfile) => {
-                    const logger: ILogger = container.get(
-                        SERVICE_IDENTIFIER.Logger
-                    );
                     logger.debug(
                         `recoverUserAccount User Profile: ${JSON.stringify(
                             userProfile
@@ -231,16 +210,17 @@ export const actions: UserActions = {
                     resolve();
                 })
                 .catch((error) => {
-                    handleError(context.commit, error);
+                    context.commit("userError");
                     reject(error);
-                });
-        });
+                })
+        );
     },
     retrievePatientData(context): Promise<void> {
-        const logger: ILogger = container.get(SERVICE_IDENTIFIER.Logger);
-        const patientService: IPatientService = container.get<IPatientService>(
+        const logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
+        const patientService = container.get<IPatientService>(
             SERVICE_IDENTIFIER.PatientService
         );
+
         return new Promise((resolve, reject) => {
             if (context.getters.patientData.hdid !== undefined) {
                 logger.debug(`Patient data found stored, not querying!`);
@@ -280,18 +260,27 @@ export const actions: UserActions = {
         });
     },
     handleError(context, params: { error: ResultError; errorType: ErrorType }) {
-        const logger: ILogger = container.get(SERVICE_IDENTIFIER.Logger);
+        const logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
+
         logger.error(`ERROR: ${JSON.stringify(params.error)}`);
         context.commit("userError", params.error);
 
-        context.dispatch(
-            "errorBanner/addError",
-            {
-                errorType: params.errorType,
-                source: ErrorSourceType.Patient,
-                traceId: params.error.traceId,
-            },
-            { root: true }
-        );
+        if (params.error.statusCode === 429) {
+            context.dispatch(
+                "errorBanner/setTooManyRequestsWarning",
+                { key: "page" },
+                { root: true }
+            );
+        } else {
+            context.dispatch(
+                "errorBanner/addError",
+                {
+                    errorType: params.errorType,
+                    source: ErrorSourceType.Patient,
+                    traceId: params.error.traceId,
+                },
+                { root: true }
+            );
+        }
     },
 };

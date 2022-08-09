@@ -27,7 +27,7 @@ namespace HealthGateway.GatewayApi.Services
     using HealthGateway.Database.Wrapper;
     using Microsoft.Extensions.Logging;
 
-    /// <inheritdoc />
+    /// <inheritdoc/>
     public class UserFeedbackService : IUserFeedbackService
     {
         private readonly ILogger logger;
@@ -44,7 +44,12 @@ namespace HealthGateway.GatewayApi.Services
         /// <param name="ratingDelegate">The rating delegate to perform the work.</param>
         /// <param name="profileDelegate">The user profile delegate to use.</param>
         /// <param name="jobClient">The JobScheduler queue client.</param>
-        public UserFeedbackService(ILogger<UserFeedbackService> logger, IFeedbackDelegate feedbackDelegate, IRatingDelegate ratingDelegate, IUserProfileDelegate profileDelegate, IBackgroundJobClient jobClient)
+        public UserFeedbackService(
+            ILogger<UserFeedbackService> logger,
+            IFeedbackDelegate feedbackDelegate,
+            IRatingDelegate ratingDelegate,
+            IUserProfileDelegate profileDelegate,
+            IBackgroundJobClient jobClient)
         {
             this.logger = logger;
             this.feedbackDelegate = feedbackDelegate;
@@ -53,10 +58,10 @@ namespace HealthGateway.GatewayApi.Services
             this.jobClient = jobClient;
         }
 
-        /// <inheritdoc />
+        /// <inheritdoc/>
         public DBResult<UserFeedback> CreateUserFeedback(UserFeedback userFeedback)
         {
-            this.logger.LogTrace($"Creating user feedback...");
+            this.logger.LogTrace("Creating user feedback...");
             DBResult<UserFeedback> retVal = this.feedbackDelegate.InsertUserFeedback(userFeedback);
             DBResult<UserProfile> dbResult = this.profileDelegate.GetUserProfile(userFeedback.UserProfileId);
             if (dbResult.Status == DBStatusCode.Read)
@@ -64,7 +69,7 @@ namespace HealthGateway.GatewayApi.Services
                 string? clientEmail = dbResult.Payload.Email;
                 if (!string.IsNullOrWhiteSpace(clientEmail))
                 {
-                    this.logger.LogTrace($"Queueing Admin Feedback job");
+                    this.logger.LogTrace("Queueing Admin Feedback job");
                     ClientFeedback clientFeedback = new()
                     {
                         UserFeedbackId = userFeedback.Id,
@@ -74,22 +79,26 @@ namespace HealthGateway.GatewayApi.Services
                 }
             }
 
-            this.logger.LogDebug($"Finished creating user feedback.");
+            this.logger.LogDebug("Finished creating user feedback.");
             return retVal;
         }
 
-        /// <inheritdoc />
+        /// <inheritdoc/>
         public RequestResult<Rating> CreateRating(Rating rating)
         {
-            this.logger.LogTrace($"Creating rating...");
+            this.logger.LogTrace("Creating rating...");
             DBResult<Rating> dbRating = this.ratingDelegate.InsertRating(rating);
-            this.logger.LogDebug($"Finished creating user feedback.");
+            this.logger.LogDebug("Finished creating user feedback.");
 
-            RequestResult<Rating> result = new RequestResult<Rating>()
+            RequestResult<Rating> result = new()
             {
                 ResourcePayload = dbRating.Payload,
                 ResultStatus = dbRating.Status == DBStatusCode.Created ? ResultType.Success : ResultType.Error,
-                ResultError = new RequestResultError() { ResultMessage = dbRating.Message, ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationInternal, ServiceType.Database) },
+                ResultError = new RequestResultError
+                {
+                    ResultMessage = dbRating.Message,
+                    ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationInternal, ServiceType.Database),
+                },
             };
             return result;
         }

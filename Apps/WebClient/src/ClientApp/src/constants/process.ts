@@ -4,6 +4,6 @@ export const enum EnvironmentType {
 }
 
 export default abstract class Process {
-    public static NODE_ENV: string =
+    public static NODE_ENV =
         process.env.NODE_ENV || EnvironmentType.development;
 }

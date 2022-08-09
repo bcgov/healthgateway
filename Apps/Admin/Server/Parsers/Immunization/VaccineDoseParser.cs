@@ -16,7 +16,7 @@
 namespace HealthGateway.Admin.Server.Parsers.Immunization
 {
     using System.Collections.Generic;
-    using HealthGateway.Admin.Server.Models.CovidSupport.PHSA;
+    using HealthGateway.Admin.Server.Models.CovidSupport;
     using HealthGateway.Admin.Server.Models.Immunization;
 
     /// <summary>
@@ -31,7 +31,7 @@ namespace HealthGateway.Admin.Server.Parsers.Immunization
         /// <returns>The newly created ImmunizationEvent object.</returns>
         public static VaccineDose FromPHSAModel(VaccineDoseResponse model)
         {
-            return new VaccineDose()
+            return new VaccineDose
             {
                 Date = model.Date,
                 Location = model.Location,

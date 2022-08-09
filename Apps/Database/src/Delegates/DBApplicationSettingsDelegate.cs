@@ -21,8 +21,6 @@ namespace HealthGateway.Database.Delegates
     using HealthGateway.Database.Context;
     using HealthGateway.Database.Models;
     using Microsoft.Extensions.Logging;
-    using Npgsql;
-    using NpgsqlTypes;
 
     /// <summary>
     /// Entity framework based implementation of the Application Settings delegate.
@@ -46,40 +44,42 @@ namespace HealthGateway.Database.Delegates
             this.dbContext = dbContext;
         }
 
-        /// <inheritdoc />
+        /// <inheritdoc/>
         public void DeleteApplicationSetting(ApplicationSetting appSetting)
         {
             this.dbContext.Remove(appSetting);
         }
 
-        /// <inheritdoc />
+        /// <inheritdoc/>
         public ApplicationSetting? GetApplicationSetting(string application, string component, string key)
         {
             this.logger.LogTrace($"Getting application setting for {application}/{component}/{key} from DB...");
             ApplicationSetting? retVal = this.dbContext.ApplicationSetting
-                .Where(p => p.Application == application &&
-                            p.Component == component &&
-                            p.Key == key)
-                .FirstOrDefault<ApplicationSetting>();
+                .Where(
+                    p => p.Application == application &&
+                         p.Component == component &&
+                         p.Key == key)
+                .FirstOrDefault();
             this.logger.LogDebug($"Finished getting application setting for {application}/{component}/{key} from DB...");
 
             return retVal;
         }
 
-        /// <inheritdoc />
+        /// <inheritdoc/>
         public IList<ApplicationSetting> GetApplicationSettings(string application, string component)
         {
             this.logger.LogTrace($"Getting application setting for {application}/{component} from DB...");
             IList<ApplicationSetting> retVal = this.dbContext.ApplicationSetting
-                .Where(p => p.Application == application &&
-                            p.Component == component)
-                .ToList<ApplicationSetting>();
+                .Where(
+                    p => p.Application == application &&
+                         p.Component == component)
+                .ToList();
             this.logger.LogDebug($"Finished getting application setting for {application}/{component} from DB...");
 
             return retVal;
         }
 
-        /// <inheritdoc />
+        /// <inheritdoc/>
         public void AddApplicationSetting(ApplicationSetting appSetting)
         {
             this.logger.LogTrace($"Adding {appSetting.Application}/{appSetting.Component}/{appSetting.Key} to {appSetting.Value}");
@@ -87,7 +87,7 @@ namespace HealthGateway.Database.Delegates
             this.logger.LogTrace($"Finished Adding {appSetting.Application}/{appSetting.Component}/{appSetting.Key} to {appSetting.Value}");
         }
 
-        /// <inheritdoc />
+        /// <inheritdoc/>
         public void UpdateApplicationSetting(ApplicationSetting appSetting)
         {
             this.logger.LogTrace($"Updating {appSetting.Application}/{appSetting.Component}/{appSetting.Key} to {appSetting.Value}");

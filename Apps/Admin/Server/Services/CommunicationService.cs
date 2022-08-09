@@ -27,7 +27,7 @@ namespace HealthGateway.Admin.Server.Services
     using HealthGateway.Database.Wrapper;
     using Microsoft.Extensions.Logging;
 
-    /// <inheritdoc />
+    /// <inheritdoc/>
     public class CommunicationService : ICommunicationService
     {
         private readonly ILogger logger;
@@ -47,7 +47,7 @@ namespace HealthGateway.Admin.Server.Services
             this.autoMapper = autoMapper;
         }
 
-        /// <inheritdoc />
+        /// <inheritdoc/>
         public RequestResult<Communication> Add(Communication communication)
         {
             this.logger.LogTrace($"Communication received:  {JsonSerializer.Serialize(communication)}");
@@ -56,25 +56,33 @@ namespace HealthGateway.Admin.Server.Services
             {
                 this.logger.LogTrace($"Adding communication... {JsonSerializer.Serialize(communication)}");
                 DBResult<Database.Models.Communication> dbResult = this.communicationDelegate.Add(this.autoMapper.Map<Database.Models.Communication>(communication));
-                return new RequestResult<Communication>()
+                return new RequestResult<Communication>
                 {
                     ResourcePayload = this.autoMapper.Map<Communication>(dbResult.Payload),
                     ResultStatus = dbResult.Status == DBStatusCode.Created ? ResultType.Success : ResultType.Error,
-                    ResultError = dbResult.Status == DBStatusCode.Created ? null : new RequestResultError() { ResultMessage = dbResult.Message, ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationInternal, ServiceType.Database) },
+                    ResultError = dbResult.Status == DBStatusCode.Created
+                        ? null
+                        : new RequestResultError
+                        {
+                            ResultMessage = dbResult.Message,
+                            ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationInternal, ServiceType.Database),
+                        },
                 };
             }
-            else
+
+            return new RequestResult<Communication>
             {
-                return new RequestResult<Communication>()
+                ResourcePayload = null,
+                ResultStatus = ResultType.Error,
+                ResultError = new RequestResultError
                 {
-                    ResourcePayload = null,
-                    ResultStatus = ResultType.Error,
-                    ResultError = new RequestResultError() { ResultMessage = "Effective Date should be before Expiry Date.", ErrorCode = ErrorTranslator.InternalError(ErrorType.InvalidState) },
-                };
-            }
+                    ResultMessage = "Effective Date should be before Expiry Date.",
+                    ErrorCode = ErrorTranslator.InternalError(ErrorType.InvalidState),
+                },
+            };
         }
 
-        /// <inheritdoc />
+        /// <inheritdoc/>
         public RequestResult<Communication> Update(Communication communication)
         {
             if (communication.EffectiveDateTime < communication.ExpiryDateTime)
@@ -82,25 +90,33 @@ namespace HealthGateway.Admin.Server.Services
                 this.logger.LogTrace($"Updating communication... {JsonSerializer.Serialize(communication)}");
 
                 DBResult<Database.Models.Communication> dbResult = this.communicationDelegate.Update(this.autoMapper.Map<Database.Models.Communication>(communication));
-                return new RequestResult<Communication>()
+                return new RequestResult<Communication>
                 {
                     ResourcePayload = this.autoMapper.Map<Communication>(dbResult.Payload),
                     ResultStatus = dbResult.Status == DBStatusCode.Updated ? ResultType.Success : ResultType.Error,
-                    ResultError = dbResult.Status == DBStatusCode.Updated ? null : new RequestResultError() { ResultMessage = dbResult.Message, ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationInternal, ServiceType.Database) },
+                    ResultError = dbResult.Status == DBStatusCode.Updated
+                        ? null
+                        : new RequestResultError
+                        {
+                            ResultMessage = dbResult.Message,
+                            ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationInternal, ServiceType.Database),
+                        },
                 };
             }
-            else
+
+            return new RequestResult<Communication>
             {
-                return new RequestResult<Communication>()
+                ResourcePayload = null,
+                ResultStatus = ResultType.Error,
+                ResultError = new RequestResultError
                 {
-                    ResourcePayload = null,
-                    ResultStatus = ResultType.Error,
-                    ResultError = new RequestResultError() { ResultMessage = "Effective Date should be before Expiry Date.", ErrorCode = ErrorTranslator.InternalError(ErrorType.InvalidState) },
-                };
-            }
+                    ResultMessage = "Effective Date should be before Expiry Date.",
+                    ErrorCode = ErrorTranslator.InternalError(ErrorType.InvalidState),
+                },
+            };
         }
 
-        /// <inheritdoc />
+        /// <inheritdoc/>
         public RequestResult<IEnumerable<Communication>> GetAll()
         {
             this.logger.LogTrace("Getting communication entries...");
@@ -109,21 +125,31 @@ namespace HealthGateway.Admin.Server.Services
             {
                 ResourcePayload = this.autoMapper.Map<IEnumerable<Communication>>(dbResult.Payload),
                 ResultStatus = dbResult.Status == DBStatusCode.Read ? ResultType.Success : ResultType.Error,
-                ResultError = dbResult.Status == DBStatusCode.Read ? null : new RequestResultError() { ResultMessage = dbResult.Message, ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationInternal, ServiceType.Database) },
+                ResultError = dbResult.Status == DBStatusCode.Read
+                    ? null
+                    : new RequestResultError
+                    {
+                        ResultMessage = dbResult.Message,
+                        ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationInternal, ServiceType.Database),
+                    },
             };
             return requestResult;
         }
 
-        /// <inheritdoc />
+        /// <inheritdoc/>
         public RequestResult<Communication> Delete(Communication communication)
         {
             if (communication.CommunicationStatusCode == CommunicationStatus.Processed)
             {
                 this.logger.LogError("Processed communication can't be deleted.");
-                return new RequestResult<Communication>()
+                return new RequestResult<Communication>
                 {
                     ResultStatus = ResultType.Error,
-                    ResultError = new RequestResultError() { ResultMessage = "Processed communication can't be deleted.", ErrorCode = ErrorTranslator.InternalError(ErrorType.InvalidState) },
+                    ResultError = new RequestResultError
+                    {
+                        ResultMessage = "Processed communication can't be deleted.",
+                        ErrorCode = ErrorTranslator.InternalError(ErrorType.InvalidState),
+                    },
                 };
             }
 
@@ -132,7 +158,13 @@ namespace HealthGateway.Admin.Server.Services
             {
                 ResourcePayload = this.autoMapper.Map<Communication>(dbResult.Payload),
                 ResultStatus = dbResult.Status == DBStatusCode.Deleted ? ResultType.Success : ResultType.Error,
-                ResultError = dbResult.Status == DBStatusCode.Deleted ? null : new RequestResultError() { ResultMessage = dbResult.Message, ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationInternal, ServiceType.Database) },
+                ResultError = dbResult.Status == DBStatusCode.Deleted
+                    ? null
+                    : new RequestResultError
+                    {
+                        ResultMessage = dbResult.Message,
+                        ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationInternal, ServiceType.Database),
+                    },
             };
             return result;
         }

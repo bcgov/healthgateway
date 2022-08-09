@@ -15,7 +15,6 @@
 // -------------------------------------------------------------------------
 namespace HealthGateway.Database.Delegates
 {
-    using System;
     using System.Collections.Generic;
     using System.Diagnostics.CodeAnalysis;
     using System.Linq;
@@ -26,7 +25,7 @@ namespace HealthGateway.Database.Delegates
     using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.Logging;
 
-    /// <inheritdoc />
+    /// <inheritdoc/>
     [ExcludeFromCodeCoverage]
     public class DBUserPreferenceDelegate : IUserPreferenceDelegate
     {
@@ -46,11 +45,11 @@ namespace HealthGateway.Database.Delegates
             this.dbContext = dbContext;
         }
 
-        /// <inheritdoc />
+        /// <inheritdoc/>
         public DBResult<UserPreference> CreateUserPreference(UserPreference userPreference, bool commit = true)
         {
-            this.logger.LogTrace($"Creating new User Preference in DB...");
-            DBResult<UserPreference> result = new DBResult<UserPreference>()
+            this.logger.LogTrace("Creating new User Preference in DB...");
+            DBResult<UserPreference> result = new()
             {
                 Payload = userPreference,
                 Status = DBStatusCode.Deferred,
@@ -80,11 +79,11 @@ namespace HealthGateway.Database.Delegates
             return result;
         }
 
-        /// <inheritdoc />
+        /// <inheritdoc/>
         public DBResult<UserPreference> UpdateUserPreference(UserPreference userPreference, bool commit = true)
         {
-            this.logger.LogTrace($"Updating User Preference in DB...");
-            DBResult<UserPreference> result = new DBResult<UserPreference>()
+            this.logger.LogTrace("Updating User Preference in DB...");
+            DBResult<UserPreference> result = new()
             {
                 Payload = userPreference,
                 Status = DBStatusCode.Deferred,
@@ -115,13 +114,13 @@ namespace HealthGateway.Database.Delegates
             return result;
         }
 
-        /// <inheritdoc />
+        /// <inheritdoc/>
         public DBResult<IEnumerable<UserPreference>> GetUserPreferences(string hdid)
         {
-            DBResult<IEnumerable<UserPreference>> result = new DBResult<IEnumerable<UserPreference>>();
+            DBResult<IEnumerable<UserPreference>> result = new();
             result.Payload = this.dbContext.UserPreference
-                                .Where(p => p.HdId == hdid)
-                                .ToList();
+                .Where(p => p.HdId == hdid)
+                .ToList();
             result.Status = DBStatusCode.Read;
             return result;
         }

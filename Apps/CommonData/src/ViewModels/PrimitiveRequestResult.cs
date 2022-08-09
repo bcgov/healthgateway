@@ -31,7 +31,7 @@ namespace HealthGateway.Common.Data.ViewModels
         /// Gets or sets the result payload.
         /// </summary>
         [JsonPropertyName("resourcePayload")]
-        public T ResourcePayload { get; set; } = default(T);
+        public T ResourcePayload { get; set; }
 
         /// <summary>
         /// Gets or sets the total result count for the request for pagination.

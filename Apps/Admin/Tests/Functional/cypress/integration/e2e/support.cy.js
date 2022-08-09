@@ -1,10 +1,7 @@
-import { verifyTestingEnvironment } from "../../support/functions/environment";
-
 const email = "fakeemail@healthgateway.gov.bc.ca";
 const emailNotFound = "fakeemail_noresults@healthgateway.gov.bc.ca";
 const emailHdid = "DEV4FPEGCXG2NB5K2USBL52S66SC3GOUHWRP3GTXR2BTY5HEC4YA";
 const phn = "9735353315";
-const phnNotFound = "9735361219";
 const hdid = "P6FFO433A5WPMVTGM7T4ZVWBKCSVNAYGTWTU3J2LWMGUMERKI72A";
 const hdidNotFound = "P123456789";
 const sms = "2501234567";
@@ -34,17 +31,11 @@ function verifyTableResults(queryType) {
 
 describe("Support", () => {
     beforeEach(() => {
-        verifyTestingEnvironment();
-        cy.log("Logging in.");
-        cy.login(Cypress.env("idir_username"), Cypress.env("idir_password"));
-
-        cy.log("Navigate to support page.");
-        cy.visit("/support");
-    });
-
-    afterEach(() => {
-        cy.log("Logging out.");
-        cy.logout();
+        cy.login(
+            Cypress.env("keycloak_username"),
+            Cypress.env("keycloak_password"),
+            "/support"
+        );
     });
 
     it("Verify support query.", () => {
@@ -52,28 +43,36 @@ describe("Support", () => {
 
         // Search by PHN
         cy.get("[data-testid=query-type-select]").click();
-        cy.get("[data-testid=query-type]").contains("PHN").click();
+        cy.get("[data-testid=query-type]")
+            .contains("PHN")
+            .click({ force: true });
         cy.get("[data-testid=query-input]").clear().type(phn);
         cy.get("[data-testid=search-btn]").click();
         verifyTableResults("PHN");
 
         // Search by HDID.
         cy.get("[data-testid=query-type-select]").click();
-        cy.get("[data-testid=query-type]").contains("HDID").click();
+        cy.get("[data-testid=query-type]")
+            .contains("HDID")
+            .click({ force: true });
         cy.get("[data-testid=query-input]").clear().type(hdid);
         cy.get("[data-testid=search-btn]").click();
         verifyTableResults("HDID");
 
         // Search by SMS.
         cy.get("[data-testid=query-type-select]").click();
-        cy.get("[data-testid=query-type]").contains("SMS").click();
+        cy.get("[data-testid=query-type]")
+            .contains("SMS")
+            .click({ force: true });
         cy.get("[data-testid=query-input]").clear().type(sms);
         cy.get("[data-testid=search-btn]").click();
         verifyTableResults("SMS");
 
         // Search by Email.
         cy.get("[data-testid=query-type-select]").click();
-        cy.get("[data-testid=query-type]").contains("Email").click();
+        cy.get("[data-testid=query-type]")
+            .contains("Email")
+            .click({ force: true });
         cy.get("[data-testid=query-input]").clear().type(email);
         cy.get("[data-testid=search-btn]").click();
         cy.get("[data-testid=message-verification-table]")
@@ -89,42 +88,20 @@ describe("Support", () => {
         cy.log("Verify support query test finished.");
     });
 
-    it("Verify no results phn query.", () => {
-        cy.log("Verify phn returns no results test started.");
-
-        // Search with PHN not found in client registry.
-        cy.get("[data-testid=query-type-select]").click();
-        cy.get("[data-testid=query-type]").contains("PHN").click();
-        cy.get("[data-testid=query-input]").clear().type(phnNotFound);
-        cy.get("[data-testid=search-btn]").click();
-        cy.get("[data-testid=banner-feedback-error-message]").should(
-            "be.visible"
-        );
-        // Expect no results for email.
-        cy.get("[data-testid=message-verification-table]").should("not.exist");
-
-        // Close banner
-        cy.get("[data-testid=banner-feedback-error-message]").within(() => {
-            cy.get("button").parent(".mud-alert-close").click();
-        });
-
-        cy.log("Verify phn returns no results test finished.");
-    });
-
     it("Verify no results hdid query.", () => {
         cy.log("Verify hdid returns no results test started.");
 
-        // Search with PHN not found in client registry.
         cy.get("[data-testid=query-type-select]").click();
-        cy.get("[data-testid=query-type]").contains("HDID").click();
+        cy.get("[data-testid=query-type]")
+            .contains("HDID")
+            .click({ force: true });
         cy.get("[data-testid=query-input]").clear().type(hdidNotFound);
         cy.get("[data-testid=search-btn]").click();
         cy.get("[data-testid=banner-feedback-error-message]").should(
             "be.visible"
         );
-        cy.get("[data-testid=message-verification-table]").should("not.exist");
 
-        // Close banner
+        cy.get("[data-testid=message-verification-table]").should("not.exist");
         cy.get("[data-testid=banner-feedback-error-message]").within(() => {
             cy.get("button").parent(".mud-alert-close").click();
         });
@@ -135,9 +112,10 @@ describe("Support", () => {
     it("Verify no results sms query.", () => {
         cy.log("Verify sms returns no results test started.");
 
-        // Search with SMS not found..
         cy.get("[data-testid=query-type-select]").click();
-        cy.get("[data-testid=query-type]").contains("SMS").click();
+        cy.get("[data-testid=query-type]")
+            .contains("SMS")
+            .click({ force: true });
         cy.get("[data-testid=query-input]").clear().type(smsNotFound);
         cy.get("[data-testid=search-btn]").click();
         cy.get("[data-testid=message-verification-table]")
@@ -150,9 +128,10 @@ describe("Support", () => {
     it("Verify no results email query.", () => {
         cy.log("Verify email returns no results test started.");
 
-        // Search with Email not found.
         cy.get("[data-testid=query-type-select]").click();
-        cy.get("[data-testid=query-type]").contains("Email").click();
+        cy.get("[data-testid=query-type]")
+            .contains("Email")
+            .click({ force: true });
         cy.get("[data-testid=query-input]").clear().type(emailNotFound);
         cy.get("[data-testid=search-btn]").click();
         cy.get("[data-testid=message-verification-table]")

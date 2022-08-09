@@ -29,21 +29,21 @@ export default class ValidateEmailView extends Vue {
     private validatedValue = false;
     private resultStatus: ResultType | null = null;
 
-    private get isVerified() {
+    private get isVerified(): boolean {
         return this.resultStatus === ResultType.Success && this.validatedValue;
     }
 
-    private get isAlreadyVerified() {
+    private get isAlreadyVerified(): boolean {
         return this.resultStatus === ResultType.Error && this.validatedValue;
     }
 
-    private mounted() {
+    private mounted(): void {
         this.verifyEmail();
     }
 
-    private verifyEmail() {
+    private verifyEmail(): void {
         this.isLoading = true;
-        const userProfileService: IUserProfileService = container.get(
+        const userProfileService = container.get<IUserProfileService>(
             SERVICE_IDENTIFIER.UserProfileService
         );
         userProfileService
@@ -63,74 +63,71 @@ export default class ValidateEmailView extends Vue {
 </script>
 
 <template>
-    <b-container>
-        <b-row class="pt-5">
-            <b-col class="text-center mb-5 title">
-                <h4 v-if="isLoading" data-testid="verifingInvite">
-                    We are verifying your email...
-                </h4>
-                <div v-else-if="isVerified">
-                    <hg-icon
-                        icon="check-circle"
-                        size="extra-large"
-                        aria-hidden="true"
-                        class="text-success"
-                    />
-                    <h4 data-testid="verifiedInvite">
-                        Your email address has been verified
-                    </h4>
-                    <hg-button
-                        data-testid="continueButton"
-                        variant="primary"
-                        to="/home"
-                    >
-                        Continue
-                    </hg-button>
-                </div>
-                <div v-else-if="isAlreadyVerified">
-                    <hg-icon
-                        icon="check-circle"
-                        size="extra-large"
-                        aria-hidden="true"
-                        class="text-success"
-                    />
-                    <h4 data-testid="alreadyVerifiedInvite">
-                        Your email address is already verified
-                    </h4>
-                    <hg-button
-                        data-testid="continueButton"
-                        variant="primary"
-                        to="/home"
-                    >
-                        Continue
-                    </hg-button>
-                </div>
-                <div v-else>
-                    <hg-icon
-                        icon="times-circle"
-                        size="large"
-                        aria-hidden="true"
-                        class="text-danger"
-                    />
-                    <h4 data-testid="expiredInvite">
-                        Your link is expired or incorrect. Please resend
-                        verification email from your profile page
-                    </h4>
-                    <hg-button
-                        data-testid="continueButton"
-                        variant="primary"
-                        @click="$router.push({ path: '/profile' })"
-                    >
-                        Continue
-                    </hg-button>
-                </div>
-            </b-col>
-        </b-row>
+    <b-container class="text-center title pt-4">
+        <h4 v-if="isLoading" data-testid="verifingInvite">
+            We are verifying your email...
+        </h4>
+        <div v-else-if="isVerified">
+            <hg-icon
+                icon="check-circle"
+                size="extra-large"
+                aria-hidden="true"
+                class="text-success"
+            />
+            <h4 data-testid="verifiedInvite">
+                Your email address has been verified
+            </h4>
+            <hg-button
+                data-testid="continueButton"
+                variant="primary"
+                to="/home"
+            >
+                Continue
+            </hg-button>
+        </div>
+        <div v-else-if="isAlreadyVerified">
+            <hg-icon
+                icon="check-circle"
+                size="extra-large"
+                aria-hidden="true"
+                class="text-success"
+            />
+            <h4 data-testid="alreadyVerifiedInvite">
+                Your email address is already verified
+            </h4>
+            <hg-button
+                data-testid="continueButton"
+                variant="primary"
+                to="/home"
+            >
+                Continue
+            </hg-button>
+        </div>
+        <div v-else>
+            <hg-icon
+                icon="times-circle"
+                size="large"
+                aria-hidden="true"
+                class="text-danger"
+            />
+            <h4 data-testid="expiredInvite">
+                Your link is expired or incorrect. Please resend verification
+                email from your profile page
+            </h4>
+            <hg-button
+                data-testid="continueButton"
+                variant="primary"
+                @click="$router.push({ path: '/profile' })"
+            >
+                Continue
+            </hg-button>
+        </div>
     </b-container>
 </template>
 
 <style lang="scss" scoped>
 @import "@/assets/scss/_variables.scss";
+
 .title {
     color: $primary;
     font-size: 2.1em;

@@ -44,9 +44,9 @@ export default class LaboratoryReportComponent extends Vue {
     private readonly headerClass = "laboratory-test-report-table-header";
 
     private get visibleRecords(): LaboratoryOrder[] {
-        let records = this.laboratoryOrders.filter((record) => {
-            return this.filter.allowsDate(record.timelineDateTime);
-        });
+        let records = this.laboratoryOrders.filter((record) =>
+            this.filter.allowsDate(record.timelineDateTime)
+        );
         records.sort((a, b) => {
             const firstDate = new DateWrapper(a.timelineDateTime);
             const secondDate = new DateWrapper(b.timelineDateTime);
@@ -65,44 +65,42 @@ export default class LaboratoryReportComponent extends Vue {
         return records;
     }
 
-    private get isEmpty() {
+    private get isEmpty(): boolean {
         return this.visibleRecords.length === 0;
     }
 
     private get items(): LabTestRow[] {
         return this.visibleRecords.flatMap<LabTestRow>((x) => {
             const timelineDateTime = DateWrapper.format(x.timelineDateTime);
-            return x.laboratoryTests.map<LabTestRow>((y) => {
-                return {
-                    date: timelineDateTime,
-                    test: y.batteryType || "",
-                    result: y.result,
-                    status: y.filteredTestStatus,
-                };
-            });
+            return x.laboratoryTests.map<LabTestRow>((y) => ({
+                date: timelineDateTime,
+                test: y.batteryType || "",
+                result: y.result,
+                status: y.filteredTestStatus,
+            }));
         });
     }
 
     @Watch("isLaboratoryLoading")
     @Emit()
-    private onIsLoadingChanged() {
+    private onIsLoadingChanged(): boolean {
         return this.isLaboratoryLoading;
     }
 
     @Watch("isEmpty")
     @Emit()
-    private onIsEmptyChanged() {
+    private onIsEmptyChanged(): boolean {
         return this.isEmpty;
     }
 
-    private created() {
+    private created(): void {
         this.logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
-        this.retrieveLaboratoryOrders({ hdid: this.user.hdid }).catch((err) => {
-            this.logger.error(`Error loading Laboratory data: ${err}`);
-        });
+        this.retrieveLaboratoryOrders({ hdid: this.user.hdid }).catch((err) =>
+            this.logger.error(`Error loading Laboratory data: ${err}`)
+        );
     }
 
-    private mounted() {
+    private mounted(): void {
         this.onIsEmptyChanged();
     }
 
@@ -110,7 +108,7 @@ export default class LaboratoryReportComponent extends Vue {
         reportFormatType: ReportFormatType,
         headerData: ReportHeader
     ): Promise<RequestResult<Report>> {
-        const reportService: IReportService = container.get<IReportService>(
+        const reportService = container.get<IReportService>(
             SERVICE_IDENTIFIER.ReportService
         );
 
@@ -176,6 +174,7 @@ export default class LaboratoryReportComponent extends Vue {
 
 <style lang="scss">
 @import "@/assets/scss/_variables.scss";
+
 .laboratory-test-report-table-header {
     color: $heading_color;
     font-size: 0.8rem;

@@ -15,7 +15,6 @@
 // -------------------------------------------------------------------------
 namespace HealthGateway.Database.Delegates
 {
-    using System.Collections.Generic;
     using HealthGateway.Database.Constants;
     using HealthGateway.Database.Models;
     using HealthGateway.Database.Wrapper;

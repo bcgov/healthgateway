@@ -4,9 +4,6 @@ import ErrorTranslator from "@/utility/errorTranslator";
 import { ErrorBannerActions } from "./types";
 
 export const actions: ErrorBannerActions = {
-    dismiss(context) {
-        context.commit("dismiss");
-    },
     show(context) {
         context.commit("show");
     },
@@ -40,11 +37,16 @@ export const actions: ErrorBannerActions = {
         );
         context.commit("addError", bannerError);
     },
-    clearError(context) {
-        context.commit("clearError");
+    clearErrors(context) {
+        context.commit("clearErrors");
     },
-    setTooManyRequestsWarning(context) {
-        context.commit("setTooManyRequestsWarning");
+    setTooManyRequestsWarning(
+        context,
+        params: {
+            key: string;
+        }
+    ) {
+        context.commit("setTooManyRequestsWarning", params.key);
     },
     setTooManyRequestsError(
         context,

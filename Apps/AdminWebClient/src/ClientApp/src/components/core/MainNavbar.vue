@@ -8,13 +8,19 @@ import MenuItem from "@/models/menuItem";
 export default class MainNavbar extends Vue {
     @Action("setState", { namespace: "drawer" })
     private setDrawerState!: (params: { isDrawerOpen: boolean }) => void;
-    @Getter("isOpen", { namespace: "drawer" }) private isDrawerOpen!: boolean;
+
+    @Getter("isOpen", { namespace: "drawer" })
+    private isDrawerOpen!: boolean;
+
     @Getter("isAuthorized", { namespace: "auth" })
     private isAuthorized!: boolean;
+
     @Getter("isReviewer", { namespace: "auth" })
     private isUserReviewer!: boolean;
+
     @Getter("isSuperAdmin", { namespace: "auth" })
     private isUserAdmin!: boolean;
+
     @Getter("isSupportUser", { namespace: "auth" })
     private isUserSupportUser!: boolean;
 
@@ -35,46 +41,16 @@ export default class MainNavbar extends Vue {
     private loadMenuItems() {
         this.items = [
             {
-                title: "Dashboard",
-                icon: "view_quilt",
-                to: "/",
-                visible: this.isUserReviewer || this.isUserAdmin,
-            },
-            {
-                title: "JobScheduler",
-                icon: "schedule",
-                to: "/job-scheduler",
-                visible: this.isUserAdmin,
-            },
-            {
-                title: "Communications",
-                icon: "email",
-                to: "/communication",
-                visible: this.isUserAdmin,
-            },
-            {
-                title: "Feedback Review",
-                icon: "comment",
-                to: "/user-feedback",
-                visible: this.isUserReviewer || this.isUserAdmin,
-            },
-            {
-                title: "System Analytics",
-                icon: "fa-download",
-                to: "/stats",
-                visible: this.isUserAdmin,
+                title: "BC Vaccine Card",
+                icon: "fa-address-card",
+                to: "/covidcard",
+                visible: this.isUserSupportUser,
             },
             {
                 title: "Support",
                 icon: "support",
                 to: "/support",
-                visible: this.isUserAdmin,
-            },
-            {
-                title: "BC Vaccine Card",
-                icon: "fa-address-card",
-                to: "/covidcard",
-                visible: this.isUserSupportUser,
+                visible: this.isUserReviewer || this.isUserAdmin,
             },
         ];
     }

@@ -46,7 +46,7 @@ namespace HealthGateway.Medication.Services
             this.medicationRequestDelegate = medicationRequestDelegate;
         }
 
-        private static ActivitySource Source { get; } = new ActivitySource(nameof(MedicationRequestService));
+        private static ActivitySource Source { get; } = new(nameof(MedicationRequestService));
 
         /// <inheritdoc/>
         public async Task<RequestResult<IList<MedicationRequest>>> GetMedicationRequests(string hdid)
@@ -59,7 +59,7 @@ namespace HealthGateway.Medication.Services
                 RequestResult<IList<MedicationRequest>> delegateResult = await this.medicationRequestDelegate.GetMedicationRequestsAsync(patient.PersonalHealthNumber).ConfigureAwait(true);
                 if (delegateResult.ResultStatus == ResultType.Success)
                 {
-                    return new RequestResult<IList<MedicationRequest>>()
+                    return new RequestResult<IList<MedicationRequest>>
                     {
                         ResultStatus = delegateResult.ResultStatus,
                         ResourcePayload = delegateResult.ResourcePayload,
@@ -68,22 +68,18 @@ namespace HealthGateway.Medication.Services
                         TotalResultCount = delegateResult.TotalResultCount,
                     };
                 }
-                else
+
+                return new RequestResult<IList<MedicationRequest>>
                 {
-                    return new RequestResult<IList<MedicationRequest>>()
-                    {
-                        ResultStatus = delegateResult.ResultStatus,
-                        ResultError = delegateResult.ResultError,
-                    };
-                }
-            }
-            else
-            {
-                return new RequestResult<IList<MedicationRequest>>()
-                {
-                    ResultError = patientResult.ResultError,
+                    ResultStatus = delegateResult.ResultStatus,
+                    ResultError = delegateResult.ResultError,
                 };
             }
+
+            return new RequestResult<IList<MedicationRequest>>
+            {
+                ResultError = patientResult.ResultError,
+            };
         }
     }
 }

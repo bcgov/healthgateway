@@ -30,7 +30,7 @@ namespace HealthGateway.Admin.Server.Services
     using HealthGateway.Database.Models;
     using HealthGateway.Database.Wrapper;
 
-    /// <inheritdoc />
+    /// <inheritdoc/>
     public class CsvExportService : ICsvExportService
     {
         private const int PageSize = 100000;
@@ -63,35 +63,35 @@ namespace HealthGateway.Admin.Server.Services
             this.inactiveUserService = inactiveUserService;
         }
 
-        /// <inheritdoc />
+        /// <inheritdoc/>
         public Stream GetComments(DateTime? startDate, DateTime? endDate)
         {
             DBResult<IEnumerable<Comment>> comments = this.commentDelegate.GetAll(Page, PageSize);
             return GetStream<Comment, CommentCsvMap>(comments.Payload);
         }
 
-        /// <inheritdoc />
+        /// <inheritdoc/>
         public Stream GetNotes(DateTime? startDate, DateTime? endDate)
         {
             DBResult<IEnumerable<Note>> notes = this.noteDelegate.GetAll(Page, PageSize);
             return GetStream<Note, NoteCsvMap>(notes.Payload);
         }
 
-        /// <inheritdoc />
+        /// <inheritdoc/>
         public Stream GetUserProfiles(DateTime? startDate, DateTime? endDate)
         {
             DBResult<IEnumerable<UserProfile>> profiles = this.userProfileDelegate.GetAll(Page, PageSize);
             return GetStream<UserProfile, UserProfileCsvMap>(profiles.Payload);
         }
 
-        /// <inheritdoc />
+        /// <inheritdoc/>
         public Stream GetRatings(DateTime? startDate, DateTime? endDate)
         {
             DBResult<IEnumerable<Rating>> profiles = this.ratingDelegate.GetAll(Page, PageSize);
             return GetStream<Rating, UserProfileCsvMap>(profiles.Payload);
         }
 
-        /// <inheritdoc />
+        /// <inheritdoc/>
         public async Task<Stream> GetInactiveUsers(int inactiveDays, int timeOffset)
         {
             RequestResult<List<AdminUserProfileView>> inactiveUsersResult = await this.inactiveUserService.GetInactiveUsers(inactiveDays, timeOffset).ConfigureAwait(true);
@@ -111,7 +111,7 @@ namespace HealthGateway.Admin.Server.Services
             using (StreamWriter writeFile = new(stream, leaveOpen: true))
             {
 #pragma warning disable CA2000 // Dispose objects before losing scope
-                CsvWriter csv = new(writeFile, CultureInfo.CurrentCulture, leaveOpen: true);
+                CsvWriter csv = new(writeFile, CultureInfo.CurrentCulture, true);
 #pragma warning restore CA2000 // Dispose objects before losing scope
                 csv.Context.RegisterClassMap<TMap>();
                 csv.WriteRecords(obj);

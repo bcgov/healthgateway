@@ -17,9 +17,6 @@ namespace HealthGateway.Admin.Models.CovidSupport
 {
     using System.Collections.Generic;
     using System.Text.Json.Serialization;
-    using HealthGateway.Admin.Models.Immunization;
-    using HealthGateway.Common.Models;
-    using HealthGateway.Common.Models.Immunization;
     using HealthGateway.Common.Models.PHSA;
 
     /// <summary>
@@ -66,6 +63,6 @@ namespace HealthGateway.Admin.Models.CovidSupport
         /// Gets or sets the Vaccine Status Result.
         /// </summary>
         [JsonPropertyName("vaccineStatus")]
-        public VaccineStatusResult? VaccineStatusResult { get; set; } = null;
+        public VaccineStatusResult? VaccineStatusResult { get; set; }
     }
 }

@@ -15,7 +15,6 @@
 //-------------------------------------------------------------------------
 namespace HealthGateway.Admin.Client.Store.Configuration
 {
-    using System;
     using System.Threading.Tasks;
     using Fluxor;
     using HealthGateway.Admin.Client.Services;
@@ -66,7 +65,7 @@ namespace HealthGateway.Admin.Client.Store.Configuration
             catch (ApiException ex)
             {
                 RequestError error = StoreUtility.FormatRequestError(ex, null);
-                this.Logger.LogError($"Error loading external configuration, reason: {error.Message}");
+                this.Logger.LogError("Error loading external configuration, reason: {ErrorMessage}", error.Message);
                 dispatcher.Dispatch(new ConfigurationActions.LoadFailAction(error));
             }
         }

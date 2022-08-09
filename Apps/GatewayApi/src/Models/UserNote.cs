@@ -16,8 +16,6 @@
 namespace HealthGateway.GatewayApi.Models
 {
     using System;
-    using System.Collections.Generic;
-    using HealthGateway.Common.Delegates;
 
     /// <summary>
     /// Model that provides a user representation of an user profile database model.

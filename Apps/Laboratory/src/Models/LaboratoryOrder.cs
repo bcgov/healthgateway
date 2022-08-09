@@ -16,8 +16,8 @@
 namespace HealthGateway.Laboratory.Models;
 
 using System;
-using System.Linq;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text.Json.Serialization;
 using HealthGateway.Laboratory.Models.PHSA;
 

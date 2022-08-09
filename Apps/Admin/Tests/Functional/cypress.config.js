@@ -2,6 +2,7 @@ const { defineConfig } = require("cypress");
 const { isFileExist, findFiles } = require("cy-verify-downloads");
 
 module.exports = defineConfig({
+    projectId: "rccf87",
     e2e: {
         baseUrl: "https://dev-admin.healthgateway.gov.bc.ca",
         defaultCommandTimeout: 30000,
@@ -16,6 +17,8 @@ module.exports = defineConfig({
         env: {
             idir_username: "hgateway",
             idir_password: "",
+            keycloak_username: "blazoradmin",
+            keycloak_password: "",
         },
         trashAssetsBeforeRuns: true,
         setupNodeEvents(on, config) {

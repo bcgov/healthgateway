@@ -27,7 +27,7 @@ namespace HealthGateway.GatewayApi.Services
     using Microsoft.Extensions.Caching.Memory;
     using Microsoft.Extensions.Logging;
 
-    /// <inheritdoc />
+    /// <inheritdoc/>
     public class CommunicationService : ICommunicationService
     {
         private const string BannerCacheKey = "BannerCacheKey";
@@ -52,7 +52,7 @@ namespace HealthGateway.GatewayApi.Services
             this.memoryCache = memoryCache;
         }
 
-        /// <inheritdoc />
+        /// <inheritdoc/>
         public RequestResult<Communication?> GetActiveBanner(CommunicationType communicationType)
         {
             if (communicationType != CommunicationType.Banner && communicationType != CommunicationType.InApp)
@@ -97,7 +97,7 @@ namespace HealthGateway.GatewayApi.Services
             return cacheEntry;
         }
 
-        /// <inheritdoc />
+        /// <inheritdoc/>
         public void ProcessChange(BannerChangeEvent changeEvent)
         {
             Communication? communication = changeEvent.Data;

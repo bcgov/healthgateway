@@ -1,12 +1,13 @@
 version: '3.4'
 services:
   k6:
-    image: loadimpact/k6:latest
+    image: grafana/k6:latest
     command: run /services/laboratory/k6_laboratory.js
     volumes:
       - ../../services/laboratory:/services/laboratory
       - ../../inc:/inc
     environment: 
+      - "HG_URL=${HG_URL}"
       - "HG_TYPE=${HG_TYPE}"
       - "HG_ENV=${HG_ENV}"
       - "HG_VUS=${HG_VUS}"

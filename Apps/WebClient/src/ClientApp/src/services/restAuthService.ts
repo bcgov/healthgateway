@@ -12,7 +12,7 @@ const REFRESH_CUSHION = 30;
 
 @injectable()
 export class RestAuthenticationService implements IAuthenticationService {
-    private logger: ILogger = container.get(SERVICE_IDENTIFIER.Logger);
+    private logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
 
     private keycloak!: Keycloak;
     private scope!: string;
@@ -32,31 +32,23 @@ export class RestAuthenticationService implements IAuthenticationService {
         };
         this.keycloak = new Keycloak(keycloakConfig);
 
-        this.keycloak.onReady = () => {
-            this.logger.verbose("Keycloak: onReady");
-        };
-        this.keycloak.onAuthSuccess = () => {
+        this.keycloak.onReady = () => this.logger.verbose("Keycloak: onReady");
+        this.keycloak.onAuthSuccess = () =>
             this.logger.verbose("Keycloak: onAuthSuccess");
-        };
         this.keycloak.onAuthError = (error) => {
             this.logger.verbose(`Keycloak: onAuthError - ${error.error}`);
             this.logger.error(error.error_description);
         };
-        this.keycloak.onAuthRefreshSuccess = () => {
+        this.keycloak.onAuthRefreshSuccess = () =>
             this.logger.verbose("Keycloak: onAuthRefreshSuccess");
-        };
-        this.keycloak.onAuthRefreshError = () => {
+        this.keycloak.onAuthRefreshError = () =>
             this.logger.verbose("Keycloak: onAuthRefreshError");
-        };
-        this.keycloak.onAuthLogout = () => {
+        this.keycloak.onAuthLogout = () =>
             this.logger.verbose("Keycloak: onAuthLogout");
-        };
-        this.keycloak.onTokenExpired = () => {
+        this.keycloak.onTokenExpired = () =>
             this.logger.verbose("Keycloak: onTokenExpired");
-        };
-        this.keycloak.onActionUpdate = (status) => {
+        this.keycloak.onActionUpdate = (status) =>
             this.logger.verbose(`Keycloak: onActionUpdate - ${status}`);
-        };
 
         await this.keycloak.init({
             onLoad: "check-sso",
@@ -83,7 +75,7 @@ export class RestAuthenticationService implements IAuthenticationService {
         await this.keycloak.login({
             scope: this.scope,
             redirectUri: callbackUri,
-            idpHint: idpHint,
+            idpHint,
         });
 
         // if keycloak.login() doesn't cause a redirect, something is terribly wrong

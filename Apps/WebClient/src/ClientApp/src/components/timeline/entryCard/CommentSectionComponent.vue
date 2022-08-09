@@ -49,11 +49,11 @@ export default class CommentSectionComponent extends Vue {
         version: 0,
     };
 
-    private created() {
+    private created(): void {
         this.logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
     }
 
-    private mounted() {
+    private mounted(): void {
         // Some comments dont have entry type. This code updates them if they dont.
         let commentsToUpdate: UserComment[] = [];
         if (this.parentEntry.comments !== null) {
@@ -88,11 +88,11 @@ export default class CommentSectionComponent extends Vue {
             : false;
     }
 
-    private onAdd() {
+    private onAdd(): void {
         this.showComments = true;
     }
 
-    private onSectionExpand(event: Event) {
+    private onSectionExpand(event: Event): void {
         if (this.isMobileDetails && this.showComments) {
             let commentsSection = (
                 this.$refs["entryComments" + this.parentEntry.id] as Vue
@@ -182,6 +182,7 @@ export default class CommentSectionComponent extends Vue {
     padding: 0px;
     margin: 0px;
 }
+
 .row {
     padding: 0;
     margin: 0px;
@@ -191,6 +192,7 @@ export default class CommentSectionComponent extends Vue {
 :not(.collapsed) > .when-closed {
     display: none;
 }
+
 .comment-input {
     border-top: 1px $primary solid;
     background-color: white;

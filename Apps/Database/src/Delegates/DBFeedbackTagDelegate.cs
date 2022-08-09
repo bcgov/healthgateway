@@ -26,7 +26,7 @@ namespace HealthGateway.Database.Delegates
     using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.Logging;
 
-    /// <inheritdoc />
+    /// <inheritdoc/>
     [ExcludeFromCodeCoverage]
     public class DBFeedbackTagDelegate : IFeedbackTagDelegate
     {
@@ -46,11 +46,11 @@ namespace HealthGateway.Database.Delegates
             this.dbContext = dbContext;
         }
 
-        /// <inheritdoc />
+        /// <inheritdoc/>
         public DBResult<UserFeedbackTag> Add(UserFeedbackTag feedbackTag, bool commit = true)
         {
-            this.logger.LogTrace($"Adding UserFeedbackTag to DB...");
-            DBResult<UserFeedbackTag> result = new DBResult<UserFeedbackTag>()
+            this.logger.LogTrace("Adding UserFeedbackTag to DB...");
+            DBResult<UserFeedbackTag> result = new()
             {
                 Payload = feedbackTag,
                 Status = DBStatusCode.Deferred,
@@ -71,15 +71,15 @@ namespace HealthGateway.Database.Delegates
                 }
             }
 
-            this.logger.LogDebug($"Finished adding UserFeedbackTag to DB");
+            this.logger.LogDebug("Finished adding UserFeedbackTag to DB");
             return result;
         }
 
-        /// <inheritdoc />
+        /// <inheritdoc/>
         public DBResult<UserFeedbackTag> Delete(UserFeedbackTag feedbackTag, bool commit = true)
         {
-            this.logger.LogTrace($"Deleting UserFeedbackTag from DB...");
-            DBResult<UserFeedbackTag> result = new DBResult<UserFeedbackTag>()
+            this.logger.LogTrace("Deleting UserFeedbackTag from DB...");
+            DBResult<UserFeedbackTag> result = new()
             {
                 Payload = feedbackTag,
                 Status = DBStatusCode.Deferred,
@@ -100,15 +100,15 @@ namespace HealthGateway.Database.Delegates
                 }
             }
 
-            this.logger.LogDebug($"Finished deleting UserFeedbackTag in DB");
+            this.logger.LogDebug("Finished deleting UserFeedbackTag in DB");
             return result;
         }
 
-        /// <inheritdoc />
+        /// <inheritdoc/>
         public DBResult<IEnumerable<UserFeedbackTag>> GetUserFeedbackTagsByFeedbackId(Guid feedbackId)
         {
             this.logger.LogTrace("Getting user feedback tags from DB for Feedback Id: {FeedbackId}", feedbackId.ToString());
-            DBResult<IEnumerable<UserFeedbackTag>> result = new DBResult<IEnumerable<UserFeedbackTag>>();
+            DBResult<IEnumerable<UserFeedbackTag>> result = new();
             result.Payload = this.dbContext.UserFeedbackTag.Where(t => t.UserFeedbackId == feedbackId).ToList();
             result.Status = DBStatusCode.Read;
             return result;

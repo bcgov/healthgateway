@@ -9,7 +9,6 @@ import DependentCardComponent from "@/components/DependentCardComponent.vue";
 import LoadingComponent from "@/components/LoadingComponent.vue";
 import NewDependentComponent from "@/components/modal/NewDependentComponent.vue";
 import BreadcrumbComponent from "@/components/navmenu/BreadcrumbComponent.vue";
-import ResourceCentreComponent from "@/components/ResourceCentreComponent.vue";
 import { ErrorSourceType, ErrorType } from "@/constants/errorType";
 import BreadcrumbItem from "@/models/breadcrumbItem";
 import type { WebClientConfiguration } from "@/models/configData";
@@ -29,7 +28,6 @@ library.add(faUserPlus);
         LoadingComponent,
         DependentCardComponent,
         NewDependentComponent,
-        "resource-centre": ResourceCentreComponent,
     },
 })
 export default class DependentsView extends Vue {
@@ -48,6 +46,9 @@ export default class DependentsView extends Vue {
         traceId: string | undefined;
     }) => void;
 
+    @Action("setTooManyRequestsWarning", { namespace: "errorBanner" })
+    setTooManyRequestsWarning!: (params: { key: string }) => void;
+
     private logger!: ILogger;
     private dependentService!: IDependentService;
 
@@ -63,31 +64,33 @@ export default class DependentsView extends Vue {
         },
     ];
 
-    private created() {
+    private created(): void {
         this.logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
     }
 
-    private mounted() {
+    private mounted(): void {
         this.dependentService = container.get<IDependentService>(
             SERVICE_IDENTIFIER.DependentService
         );
         this.fetchDependents();
     }
 
-    private fetchDependents() {
+    private fetchDependents(): void {
         this.isLoading = true;
         this.dependentService
             .getAll(this.user.hdid)
-            .then((results) => {
-                this.setDependents(results);
-            })
+            .then((results) => this.setDependents(results))
             .catch((error: ResultError) => {
                 this.logger.error(error.resultMessage);
-                this.addError({
-                    errorType: ErrorType.Retrieve,
-                    source: ErrorSourceType.Dependent,
-                    traceId: error.traceId,
-                });
+                if (err.statusCode === 429) {
+                    this.setTooManyRequestsWarning({ key: "page" });
+                } else {
+                    this.addError({
+                        errorType: ErrorType.Retrieve,
+                        source: ErrorSourceType.Dependent,
+                        traceId: error.traceId,
+                    });
+                }
             })
             .finally(() => {
                 this.isLoading = false;
@@ -116,21 +119,21 @@ export default class DependentsView extends Vue {
         });
     }
 
-    private showModal() {
+    private showModal(): void {
         this.newDependentModal.showModal();
     }
 
-    private hideModal() {
+    private hideModal(): void {
         this.newDependentModal.hideModal();
     }
 
-    private needsUpdate() {
+    private needsUpdate(): void {
         this.fetchDependents();
     }
 }
 </script>
 <template>
-    <div class="m-3 m-md-4 flex-grow-1 d-flex flex-column">
+    <div>
         <BreadcrumbComponent :items="breadcrumbItems" />
         <LoadingComponent :is-loading="isLoading" />
         <b-row>
@@ -173,7 +176,6 @@ export default class DependentsView extends Vue {
                 </b-row>
             </b-col>
         </b-row>
-        <resource-centre />
         <NewDependentComponent
             ref="newDependentModal"
             @show="showModal"

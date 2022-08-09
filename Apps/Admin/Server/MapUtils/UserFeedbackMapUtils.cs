@@ -14,9 +14,8 @@
 //  limitations under the License.
 // -------------------------------------------------------------------------
 
-namespace HHealthGateway.Admin.Server.MapUtils
+namespace HealthGateway.Admin.Server.MapUtils
 {
-    using System;
     using AutoMapper;
     using HealthGateway.Admin.Common.Models;
     using HealthGateway.Database.Models;
@@ -36,9 +35,10 @@ namespace HHealthGateway.Admin.Server.MapUtils
         /// <returns>The UserProfileModel.</returns>
         public static UserFeedbackView ToUiModel(UserFeedback userFeedback, string email, IMapper mapper)
         {
-            UserFeedbackView userFeedbackView = mapper.Map<UserFeedback, UserFeedbackView>(userFeedback, opts =>
-                opts.AfterMap((src, dest) =>
-                    dest.Email = email));
+            UserFeedbackView userFeedbackView = mapper.Map<UserFeedback, UserFeedbackView>(
+                userFeedback,
+                opts =>
+                    opts.AfterMap((_, dest) => dest.Email = email));
             return userFeedbackView;
         }
     }

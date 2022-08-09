@@ -1,15 +1,10 @@
-import { verifyTestingEnvironment } from "../../support/functions/environment";
-
 describe("Dashboard", () => {
     beforeEach(() => {
-        verifyTestingEnvironment();
-        cy.log("Logging in.");
-        cy.login(Cypress.env("idir_username"), Cypress.env("idir_password"));
-    });
-
-    afterEach(() => {
-        cy.log("Logging out.");
-        cy.logout();
+        cy.login(
+            Cypress.env("keycloak_username"),
+            Cypress.env("keycloak_password"),
+            "/"
+        );
     });
 
     it("Verify dashboards counts.", () => {

@@ -37,17 +37,19 @@ namespace HealthGateway.Common.Swagger
         public static IServiceCollection AddApiVersionWithExplorer(this IServiceCollection services)
         {
             return services
-                .AddVersionedApiExplorer(options =>
-                {
-                    options.GroupNameFormat = "'v'VVV";
-                    options.SubstituteApiVersionInUrl = true;
-                })
-                .AddApiVersioning(options =>
-                {
-                    options.AssumeDefaultVersionWhenUnspecified = true;
-                    options.ReportApiVersions = true;
-                    options.DefaultApiVersion = new ApiVersion(1, 0);
-                });
+                .AddVersionedApiExplorer(
+                    options =>
+                    {
+                        options.GroupNameFormat = "'v'VVV";
+                        options.SubstituteApiVersionInUrl = true;
+                    })
+                .AddApiVersioning(
+                    options =>
+                    {
+                        options.AssumeDefaultVersionWhenUnspecified = true;
+                        options.ReportApiVersions = true;
+                        options.DefaultApiVersion = new ApiVersion(1, 0);
+                    });
         }
 
         /// <summary>

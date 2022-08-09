@@ -75,19 +75,19 @@ namespace HealthGateway.JobScheduler
             string requiredUserRole = this.configuration.GetValue<string>("OpenIdConnect:UserRole");
             string userRoleClaimType = this.configuration.GetValue<string>("OpenIdConnect:RolesClaim");
 
-            services.AddAuthorization(options =>
-            {
-                options.AddPolicy("AdminUserPolicy", policy =>
-                    {
-                        policy.AddAuthenticationSchemes(OpenIdConnectDefaults.AuthenticationScheme);
-                        policy.RequireAuthenticatedUser();
-                        policy.RequireClaim(userRoleClaimType, requiredUserRole);
-                        policy.RequireAssertion(ctx =>
+            services.AddAuthorization(
+                options =>
+                {
+                    options.AddPolicy(
+                        "AdminUserPolicy",
+                        policy =>
                         {
-                            return ctx.User.HasClaim(userRoleClaimType, requiredUserRole);
+                            policy.AddAuthenticationSchemes(OpenIdConnectDefaults.AuthenticationScheme);
+                            policy.RequireAuthenticatedUser();
+                            policy.RequireClaim(userRoleClaimType, requiredUserRole);
+                            policy.RequireAssertion(ctx => ctx.User.HasClaim(userRoleClaimType, requiredUserRole));
                         });
-                    });
-            });
+                });
 
             // Add Delegates and services for jobs
             services.AddTransient<IFileDownloadService, FileDownloadService>();
@@ -142,19 +142,22 @@ namespace HealthGateway.JobScheduler
                 app.UseResponseCompression();
             }
 
-            app.UseEndpoints(endpoints =>
-            {
-                endpoints.MapDefaultControllerRoute();
-                endpoints.MapRazorPages();
-                endpoints.MapControllers();
-                endpoints.MapHangfireDashboard(string.Empty, new DashboardOptions
+            app.UseEndpoints(
+                endpoints =>
                 {
-                    DashboardTitle = this.configuration.GetValue<string>("DashboardTitle", "Hangfire Dashboard"),
-                    AppPath = $"{this.configuration.GetValue<string>("JobScheduler:AdminHome")}",
-                    Authorization = new List<IDashboardAuthorizationFilter> { }, // Very important to set this, or Authorization won't work.
-                })
-                .RequireAuthorization("AdminUserPolicy");
-            });
+                    endpoints.MapDefaultControllerRoute();
+                    endpoints.MapRazorPages();
+                    endpoints.MapControllers();
+                    endpoints.MapHangfireDashboard(
+                            string.Empty,
+                            new DashboardOptions
+                            {
+                                DashboardTitle = this.configuration.GetValue<string>("DashboardTitle", "Hangfire Dashboard"),
+                                AppPath = $"{this.configuration.GetValue<string>("JobScheduler:AdminHome")}",
+                                Authorization = new List<IDashboardAuthorizationFilter>(), // Very important to set this, or Authorization won't work.
+                            })
+                        .RequireAuthorization("AdminUserPolicy");
+                });
 
             // Schedule Health Gateway Jobs
             BackgroundJob.Enqueue<DBMigrationsJob>(j => j.Migrate());

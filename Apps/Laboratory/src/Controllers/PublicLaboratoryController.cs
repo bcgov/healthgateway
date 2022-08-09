@@ -70,7 +70,10 @@ namespace HealthGateway.Laboratory.Controllers
         /// <returns>The wrapped collection of COVID-19 test results or an appropriate error.</returns>
         /// <response code="200">Returns the collection of COVID-19 test results or an appropriate error.</response>
         /// <response code="401">The client must authenticate itself to get the requested response.</response>
-        /// <response code="403">The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.</response>
+        /// <response code="403">
+        /// The client does not have access rights to the content; that is, it is unauthorized, so the server
+        /// is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.
+        /// </response>
         /// <response code="503">The service is unavailable for use.</response>
         [HttpGet]
         [Route("CovidTests")]
@@ -91,12 +94,15 @@ namespace HealthGateway.Laboratory.Controllers
         /// <returns>A LabTestKit  Result object wrapped in a request result.</returns>
         /// <response code="200">The LabTestKit was processed.</response>
         /// <response code="401">The client must authenticate itself to get the requested response.</response>
-        /// <response code="403">The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.</response>
+        /// <response code="403">
+        /// The client does not have access rights to the content; that is, it is unauthorized, so the server
+        /// is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.
+        /// </response>
         /// <response code="503">The service is unavailable for use.</response>
         [HttpPost]
         [Produces("application/json")]
         [Route("LabTestKit")]
-        public async Task<RequestResult<PublicLabTestKit>> AddLabTestKit([FromBody]PublicLabTestKit labTestKit)
+        public async Task<RequestResult<PublicLabTestKit>> AddLabTestKit([FromBody] PublicLabTestKit labTestKit)
         {
             return await this.labTestKitService.RegisterLabTestKitAsync(labTestKit).ConfigureAwait(true);
         }

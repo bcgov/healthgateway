@@ -26,11 +26,11 @@ export default class DatePickerComponent extends Vue {
     private value = "";
     private inputValue = "";
 
-    private mounted() {
+    private mounted(): void {
         this.value = this.model;
     }
 
-    private onFocus() {
+    private onFocus(): void {
         // This makes the calendar popup when the input receives focus
         // Currently disabled since it seems glitchy
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -38,7 +38,7 @@ export default class DatePickerComponent extends Vue {
     }
 
     @Watch("value")
-    private onValueChanged() {
+    private onValueChanged(): void {
         this.inputValue = this.value
             ? new DateWrapper(this.value).format().toUpperCase()
             : "";
@@ -46,11 +46,11 @@ export default class DatePickerComponent extends Vue {
     }
 
     @Watch("model")
-    private onModelChanged() {
+    private onModelChanged(): void {
         this.value = this.model;
     }
 
-    private onInputChanged() {
+    private onInputChanged(): void {
         this.$v.inputValue.$touch();
         if (this.isValid(this.$v.inputValue)) {
             this.value = this.inputValue
@@ -60,16 +60,16 @@ export default class DatePickerComponent extends Vue {
     }
 
     @Emit("change")
-    private updateModel() {
+    private updateModel(): string {
         return this.value;
     }
 
     @Emit("blur")
-    private onBlur() {
+    private onBlur(): void {
         return;
     }
 
-    private get getState() {
+    private get getState(): boolean | undefined {
         let isValid = this.isValid(this.$v.inputValue);
         if (isValid || isValid == undefined) {
             return this.state;
@@ -77,7 +77,7 @@ export default class DatePickerComponent extends Vue {
         return isValid;
     }
 
-    private validations() {
+    private validations(): unknown {
         return {
             inputValue: {
                 minValue: (value: string) =>

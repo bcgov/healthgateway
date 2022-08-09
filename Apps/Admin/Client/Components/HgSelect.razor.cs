@@ -15,12 +15,14 @@
 // -------------------------------------------------------------------------
 namespace HealthGateway.Admin.Client.Components
 {
+    using System.Diagnostics.CodeAnalysis;
     using MudBlazor;
 
     /// <summary>
     /// Backing logic for the HgSelect component.
     /// </summary>
     /// <typeparam name="T">The type of data to store in the field.</typeparam>
+    [SuppressMessage("Major Code Smell", "S2326:Unused type parameters should be removed", Justification = "Used in .razor file")]
     public partial class HgSelect<T> : HgComponentBase
     {
         /// <summary>
