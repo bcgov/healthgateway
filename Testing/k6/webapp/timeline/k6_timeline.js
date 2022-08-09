@@ -15,7 +15,7 @@
 //-------------------------------------------------------------------------
 
 import http from "k6/http";
-import { check, group, sleep } from "k6";
+import { sleep } from "k6";
 import * as common from "../../inc/common.js";
 
 export let options = common.OptionConfig();
@@ -26,11 +26,21 @@ export default function () {
     common.getConfigurations();
     common.getOpenIdConfigurations();
     common.authorizeUser(user);
-    let response = http.get(
-        common.ServiceEndpoints.Laboratory + "Laboratory/LaboratoryOrders/?hdid=" + user.hdid,
-        common.params(user)
-    );
-    common.checkResponse(response);
-    common.checkForRequestResult(response);
+
+    common.groupWithDurationMetric("spaBatch", function () {
+        let spaBatchResponses = http.batch(
+            common.spaAssetRequests(),
+        );
+        common.checkBatchResponses(spaBatchResponses);
+    });
+
+    common.groupWithDurationMetric("timelineBatch", function () {
+        let webClientBatchResponses = http.batch(common.webClientRequests(user));
+        let timelineBatchResponses = http.batch(common.timelineRequests(user));
+
+        common.checkBatchResponses(webClientBatchResponses);
+        common.checkBatchResponses(timelineBatchResponses);
+    });
+
     sleep(1);
 }

@@ -15,22 +15,31 @@
 //-------------------------------------------------------------------------
 
 import http from "k6/http";
-import { check, group, sleep } from "k6";
+import { sleep } from "k6";
 import * as common from "../../inc/common.js";
 
 export let options = common.OptionConfig();
 
 export default function () {
-    let user = common.users[__VU % common.users.length];
 
     common.getConfigurations();
-    common.getOpenIdConfigurations();
-    common.authorizeUser(user);
-    let response = http.get(
-        common.ServiceEndpoints.Laboratory + "Laboratory/LaboratoryOrders/?hdid=" + user.hdid,
-        common.params(user)
-    );
-    common.checkResponse(response);
-    common.checkForRequestResult(response);
+
+    const url = common.BaseSiteUrl;
+    const params = {
+        headers: {
+            'User-Agent': 'Grafana/k6',
+            'X-API-KEY': common.SpecialHeaderKey,
+            'Access-Control-Request-Headers': 'Content-Type',
+            'Access-Control-Request-Method' : 'POST',
+            'Connection' : 'Keep-Alive',
+            'Accept': 'text/html, application/json',
+            'Origin': 'http://localhost',
+            'Accept-Encoding': 'gzip, deflate',
+            'Accept-Language': 'en-US, en;q=0.5'
+        }
+    }
+    let res = http.options(url, null, params);
+    common.checkResponse(res, 204);
     sleep(1);
 }
+

@@ -1,4 +1,4 @@
-# Service Testing of various test types.
+# HG load testing for various test types.
 
 ## Running (macos or linux)
 

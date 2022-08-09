@@ -2,5 +2,5 @@
 #
 # pulling down k6 into docker
 #
-docker pull loadimpact/k6
+docker pull grafana/k6
 

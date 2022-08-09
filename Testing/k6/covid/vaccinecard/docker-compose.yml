@@ -1,13 +1,14 @@
 version: '3.4'
 services:
   k6:
-    image: loadimpact/k6:latest
-    command: run /k6_card.js
+    image: grafana/k6:latest
+    command: run /covid/vaccinecard/k6_card.js
     volumes:
       - ./k6_card.js:/k6_card.js
-      - ./papaparse.js:/papaparse.js
-      - ./data.csv:/data.csv
-    environment: 
+      - ../../covid/vaccinecard:/covid/vaccinecard
+      - ../../inc:/inc
+    environment:       
+      - "HG_URL=${HG_URL}"
       - "HG_TYPE=${HG_TYPE}"
       - "HG_ENV=${HG_ENV}"
       - "HG_KEY=${HG_KEY}"

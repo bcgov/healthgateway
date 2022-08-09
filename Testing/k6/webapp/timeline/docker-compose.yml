@@ -2,11 +2,11 @@ version: '3.4'
 services:
   k6:
     image: grafana/k6:latest
-    command: run /webapp/spa/k6_spa.js
+    command: run /webapp/timeline/k6_timeline.js
     volumes:
-      - ../../webapp/spa:/webapp/spa
+      - ../../webapp/timeline:/webapp/timeline
       - ../../inc:/inc
-    environment: 
+    environment:
       - "HG_URL=${HG_URL}"
       - "HG_ENV=${HG_ENV}"
       - "HG_KEY=${HG_KEY}"
