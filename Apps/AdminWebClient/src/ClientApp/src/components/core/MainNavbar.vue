@@ -44,10 +44,7 @@ export default class MainNavbar extends Vue {
                 title: "BC Vaccine Card",
                 icon: "fa-address-card",
                 to: "/covidcard",
-                visible:
-                    this.isUserSupportUser ||
-                    this.isUserReviewer ||
-                    this.isUserAdmin,
+                visible: this.isUserSupportUser,
             },
             {
                 title: "Support",

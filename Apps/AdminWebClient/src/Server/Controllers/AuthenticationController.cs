@@ -80,14 +80,16 @@ namespace HealthGateway.Admin.Controllers
 
             this.authenticationService.SetLastLoginDateTime();
 
-            this.logger.LogDebug("Redirecting to COVID-19 support page");
+            this.logger.LogDebug("Redirecting to application");
             string basePath = this.httpContextAccessor.HttpContext?.Request.PathBase.Value ?? string.Empty;
+
+            string path = "/";
             if (this.Url.IsLocalUrl(basePath))
             {
-                return new RedirectResult($"{basePath}/covidcard");
+                path = $"{basePath}/";
             }
 
-            return new RedirectResult("/covidcard");
+            return new RedirectResult(path);
         }
 
         /// <summary>
