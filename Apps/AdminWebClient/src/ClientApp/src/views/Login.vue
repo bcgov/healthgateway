@@ -52,9 +52,9 @@ export default class LoginView extends Vue {
 </script>
 
 <template>
-    <v-layout class="fill-height">
+    <v-container class="fill-height">
         <LoadingComponent :is-loading="true" />
 
         <v-row justify="center">Redirecting...</v-row>
-    </v-layout>
+    </v-container>
 </template>
