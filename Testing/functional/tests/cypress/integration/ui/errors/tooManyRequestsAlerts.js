@@ -2,6 +2,7 @@ const { AuthMethod } = require("../../../support/constants");
 
 const vaccineCardUrl = "/vaccinecard";
 const covidTestUrl = "/covidtest";
+const HDID = "P6FFO433A5WPMVTGM7T4ZVWBKCSVNAYGTWTU3J2LWMGUMERKI72A";
 
 const dobYearSelector =
     "[data-testid=dateOfBirthInput] [data-testid=formSelectYear]";
@@ -338,5 +339,114 @@ describe("Mobile - Laboratory Orders", () => {
         cy.checkTimelineHasLoaded();
 
         cy.get("[data-testid=too-many-requests-warning]").should("be.visible");
+    });
+});
+
+describe("User Profile - Verify SMS number", () => {
+    it("Unsuccessful Response: Too Many Requests Error", () => {
+        cy.intercept("GET", `**/UserProfile/${HDID}`, {
+            fixture: "UserProfileService/userProfile.json",
+        });
+        cy.intercept("PUT", `**/UserProfile/${HDID}/sms`, {
+            statusCode: 200,
+            body: true,
+        });
+        cy.intercept("GET", `**/UserProfile/${HDID}/sms/validate/*`, {
+            statusCode: 429,
+        });
+        cy.login(
+            Cypress.env("keycloak.username"),
+            Cypress.env("keycloak.password"),
+            AuthMethod.KeyCloak,
+            "/profile"
+        );
+
+        cy.log("Verify SMS number");
+        cy.intercept("GET", `**/UserProfile/${HDID}`, {
+            fixture: "UserProfileService/userProfile.json",
+        });
+        cy.get("[data-testid=smsStatusNotVerified]").should("be.visible");
+        cy.get("[data-testid=verifySMSBtn]")
+            .should("be.visible")
+            .should("be.enabled")
+            .click();
+
+        cy.get("[data-testid=verifySMSModalCodeInput]")
+            .should("be.visible")
+            .should("have.focus")
+            .type("123456");
+
+        cy.get("[data-testid=too-many-requests-error]").should("be.visible");
+    });
+});
+
+describe.only("Add Dependent Modal - Too Many Requests Error", () => {
+    const validDependent = {
+        firstName: "Sam ", // Aooend space to ensure field is trimmed
+        lastName: "Testfive ", // Aooend space to ensure field is trimmed
+        wrongLastName: "Testfive2",
+        invalidDoB: "2007-Aug-05",
+        doB: "2014-Mar-15",
+        testDate: "2020-Mar-21",
+        phn: "9874307168",
+        hdid: "645645767756756767",
+    };
+
+    const noHdidDependent = {
+        firstName: "Baby Girl",
+        lastName: "Reid",
+        doB: "2018-Feb-04",
+        testDate: "2020-Mar-21",
+        phn: "9879187222",
+    };
+
+    const validDependentHdid = "162346565465464564565463257";
+
+    beforeEach(() => {
+        cy.intercept("GET", "**/Laboratory/Covid19Orders*", {
+            fixture: "LaboratoryService/covid19Orders.json",
+        });
+        cy.intercept("GET", "**/UserProfile/*/Dependent", {
+            fixture: "UserProfileService/dependent.json",
+        });
+        cy.enableModules([
+            "CovidLabResults",
+            "Immunization",
+            "Laboratory",
+            "Dependent",
+            "DependentImmunizationTab",
+        ]);
+        cy.login(
+            Cypress.env("keycloak.username"),
+            Cypress.env("keycloak.password"),
+            AuthMethod.KeyCloak,
+            "/dependents"
+        );
+    });
+
+    it("Unsuccessful Response: Too Many Requests Error", () => {
+        cy.intercept("GET", "**/UserProfile/*/Dependent", {
+            statusCode: 429,
+        });
+        cy.get("[data-testid=addNewDependentBtn]").click();
+
+        cy.get("[data-testid=firstNameInput]")
+            .clear()
+            .type(validDependent.firstName);
+        cy.get("[data-testid=lastNameInput]")
+            .clear()
+            .type(validDependent.lastName);
+        cy.get("[data-testid=dateOfBirthInput] input")
+            .clear()
+            .type(validDependent.doB);
+        cy.get("[data-testid=testDateInput] input")
+            .clear()
+            .type(validDependent.testDate);
+        cy.get("[data-testid=phnInput]").clear().type(validDependent.phn);
+        cy.get("[data-testid=termsCheckbox]").check({ force: true });
+
+        cy.get("[data-testid=registerDependentBtn]").click();
+
+        cy.get("[data-testid=too-many-requests-error]").should("be.visible");
     });
 });
