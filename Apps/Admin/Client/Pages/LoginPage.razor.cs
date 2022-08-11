@@ -17,7 +17,9 @@
 namespace HealthGateway.Admin.Client.Pages;
 
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Components;
+using Microsoft.AspNetCore.Components.Authorization;
 
 /// <summary>
 /// Backing logic for the Login page.
@@ -32,6 +34,9 @@ public partial class LoginPage : ComponentBase
     public string? ReturnPath { get; set; }
 
     [Inject]
+    private AuthenticationStateProvider AuthenticationStateProvider { get; set; } = default!;
+
+    [Inject]
     private NavigationManager NavigationManager { get; set; } = default!;
 
     private string LogInUrl => this.NavigationManager.GetUriWithQueryParameters(
@@ -40,4 +45,14 @@ public partial class LoginPage : ComponentBase
         {
             ["returnUrl"] = this.ReturnPath,
         });
+
+    /// <inheritdoc/>
+    protected override async Task OnInitializedAsync()
+    {
+        AuthenticationState authState = await this.AuthenticationStateProvider.GetAuthenticationStateAsync().ConfigureAwait(true);
+        if (authState.User.Identity is { IsAuthenticated: true })
+        {
+            this.NavigationManager.NavigateTo(this.ReturnPath ?? "/", replace: true);
+        }
+    }
 }
