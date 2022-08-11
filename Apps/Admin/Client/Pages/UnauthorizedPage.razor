@@ -1,0 +1,12 @@
+@page "/unauthorized"
+@layout AuthenticationLayout
+
+<PageTitle>Unauthorized</PageTitle>
+
+<MudText Align="Align.Center" Class="my-4 pa-4">
+    You are unauthorized to access this application. Please contact your administrator to get access to Health Gateway Admin.
+</MudText>
+
+<MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="@LogOutAsync" Size="Size.Large" FullWidth="true" data-testid="log-out-button">
+    Log Out
+</MudButton>
