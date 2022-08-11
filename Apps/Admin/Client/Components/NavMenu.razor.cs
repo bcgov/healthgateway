@@ -13,7 +13,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //-------------------------------------------------------------------------
-namespace HealthGateway.Admin.Client.Layouts;
+namespace HealthGateway.Admin.Client.Components;
 
 using Fluxor;
 using Fluxor.Blazor.Web.Components;
@@ -21,10 +21,14 @@ using HealthGateway.Admin.Client.Store.Configuration;
 using Microsoft.AspNetCore.Components;
 
 /// <summary>
-/// Backing logic for the Nav Menu Layout.
+/// Backing logic for the navigation menu.
 /// </summary>
 public partial class NavMenu : FluxorComponent
 {
     [Inject]
     private IState<ConfigurationState> ConfigurationState { get; set; } = default!;
+
+    private string JobSchedulerUrl => this.ConfigurationState.Value.Result?.ServiceEndpoints.ContainsKey("JobScheduler") == true
+        ? this.ConfigurationState.Value.Result.ServiceEndpoints["JobScheduler"].ToString()
+        : string.Empty;
 }

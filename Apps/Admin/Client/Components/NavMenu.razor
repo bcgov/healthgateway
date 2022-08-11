@@ -1,4 +1,5 @@
 ﻿@inherits Fluxor.Blazor.Web.Components.FluxorComponent
+
 <MudNavMenu>
     @if (ConfigurationState.Value.Result?.Features["Showcase"] ?? false)
     {
@@ -22,9 +23,12 @@
     <AuthorizeView Roles="@($"{Roles.Admin},{Roles.Reviewer}")">
         <MudNavLink Href="dashboard" Icon="@Icons.Material.Filled.ViewQuilt">Dashboard</MudNavLink>
     </AuthorizeView>
-    <AuthorizeView Roles="@Roles.Admin">
-        <MudNavLink Href="@(ConfigurationState.Value.Result?.ServiceEndpoints["JobScheduler"].ToString())" Icon="@Icons.Material.Filled.Schedule">Job Scheduler</MudNavLink>
-    </AuthorizeView>
+    @if (JobSchedulerUrl.Length > 0)
+    {
+        <AuthorizeView Roles="@Roles.Admin">
+            <MudNavLink Href="@JobSchedulerUrl" Icon="@Icons.Material.Filled.Schedule">Job Scheduler</MudNavLink>
+        </AuthorizeView>
+    }
     <AuthorizeView Roles="@($"{Roles.Admin},{Roles.Reviewer}")">
         <MudNavLink Href="communications" Icon="@Icons.Material.Filled.Announcement">Communications</MudNavLink>
     </AuthorizeView>

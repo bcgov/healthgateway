@@ -1,0 +1,17 @@
+@inherits LayoutComponentBase
+@layout DefaultLayout
+
+<div class="d-flex flex-column mud-width-full align-center">
+    <MudPaper Elevation="25" Class="pa-8 mud-width-full" MaxWidth="500px">
+        <div class="d-flex justify-center mb-4">
+            <MudImage Src="images/health-gateway-logo.svg" title="Health Gateway Logo" />
+        </div>
+        <MudHidden Breakpoint="Breakpoint.Xs">
+            <MudText Typo="Typo.h4" Align="Align.Center">Health Gateway Admin</MudText>
+        </MudHidden>
+        <MudHidden Breakpoint="Breakpoint.Xs" Invert="true">
+            <MudText Typo="Typo.h4" Align="Align.Center">HG Admin</MudText>
+        </MudHidden>
+        @Body
+    </MudPaper>
+</div>

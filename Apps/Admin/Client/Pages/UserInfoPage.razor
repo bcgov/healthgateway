@@ -3,7 +3,8 @@
 @attribute [Authorize(Roles = $"{Roles.Admin},{Roles.Reviewer}")]
 @inherits Fluxor.Blazor.Web.Components.FluxorComponent
 
-<PageTitle>User Info</PageTitle>
+<PageTitle>Health Gateway Admin User Info</PageTitle>
+
 <MudHidden Invert="@(!ConfigurationState.Value.IsLoading)">
     <MudProgressLinear Color="Color.Primary" Indeterminate="@(ConfigurationState.Value.IsLoading)" Class="my-7" />
 </MudHidden>

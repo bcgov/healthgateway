@@ -159,7 +159,7 @@ namespace HealthGateway.Admin.Client.Layouts
             if (!activityDetected)
             {
                 // sign out
-                await this.BeginSignOut().ConfigureAwait(true);
+                await this.LogOutAsync().ConfigureAwait(true);
                 return;
             }
 
@@ -185,7 +185,7 @@ namespace HealthGateway.Admin.Client.Layouts
             this.DrawerOpen = !this.DrawerOpen;
         }
 
-        private async Task BeginSignOut()
+        private async Task LogOutAsync()
         {
             await this.SignOutManager.SetSignOutState().ConfigureAwait(true);
             this.NavigationManager.NavigateTo("authentication/logout");

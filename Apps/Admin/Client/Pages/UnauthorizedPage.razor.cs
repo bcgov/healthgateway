@@ -16,43 +16,38 @@
 
 namespace HealthGateway.Admin.Client.Pages;
 
-using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Authorization;
+using Microsoft.AspNetCore.Components.WebAssembly.Authentication;
 
 /// <summary>
-/// Backing logic for the Login page.
+/// Backing logic for the unauthorized page.
 /// </summary>
-public partial class LoginPage : ComponentBase
+public partial class UnauthorizedPage : ComponentBase
 {
-    /// <summary>
-    /// Gets or sets the URL to return to after logging in.
-    /// </summary>
-    [Parameter]
-    [SupplyParameterFromQuery(Name = "returnUrl")]
-    public string? ReturnPath { get; set; }
-
     [Inject]
     private AuthenticationStateProvider AuthenticationStateProvider { get; set; } = default!;
 
     [Inject]
     private NavigationManager NavigationManager { get; set; } = default!;
 
-    private string LogInUrl => this.NavigationManager.GetUriWithQueryParameters(
-        "/authentication/login",
-        new Dictionary<string, object?>
-        {
-            ["returnUrl"] = this.ReturnPath,
-        });
+    [Inject]
+    private SignOutSessionStateManager SignOutManager { get; set; } = default!;
 
     /// <inheritdoc/>
     protected override async Task OnInitializedAsync()
     {
         AuthenticationState authState = await this.AuthenticationStateProvider.GetAuthenticationStateAsync().ConfigureAwait(true);
-        if (authState.User.Identity is { IsAuthenticated: true })
+        if (authState.User.Identity is not { IsAuthenticated: true })
         {
-            this.NavigationManager.NavigateTo(this.ReturnPath ?? "/", replace: true);
+            this.NavigationManager.NavigateTo("/login", replace: true);
         }
+    }
+
+    private async Task LogOutAsync()
+    {
+        await this.SignOutManager.SetSignOutState().ConfigureAwait(true);
+        this.NavigationManager.NavigateTo("authentication/logout", replace: true);
     }
 }

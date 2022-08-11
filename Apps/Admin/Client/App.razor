@@ -1,5 +1,9 @@
-@inject NavigationManager Navigation;
+@inject NavigationManager NavigationManager;
+
 <Fluxor.Blazor.Web.StoreInitializer />
+
+<PageTitle>Health Gateway Admin</PageTitle>
+
 <CascadingAuthenticationState>
     <Router AppAssembly="@typeof(App).Assembly">
         <Found Context="routeData">
@@ -7,11 +11,17 @@
                 <NotAuthorized>
                     @if (!context.User.Identity!.IsAuthenticated)
                     {
-                        Navigation.NavigateTo($"/login?returnUrl={Uri.EscapeDataString(Navigation.Uri)}");
+                        NavigationManager.NavigateTo(
+                            NavigationManager.GetUriWithQueryParameters(
+                                "/login",
+                                new Dictionary<string, object?>
+                                {
+                                    ["returnUrl"] = NavigationManager.Uri,
+                                }), replace: true);
                     }
                     else
                     {
-                        <p class="text-center" role="alert">You are not authorized to access this resource.</p>
+                        NavigationManager.NavigateTo("/unauthorized");
                     }
                 </NotAuthorized>
                 <Authorizing>
