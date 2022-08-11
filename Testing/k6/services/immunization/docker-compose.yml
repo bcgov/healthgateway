@@ -1,0 +1,15 @@
+version: '3.4'
+services:
+  k6:
+    image: grafana/k6:latest
+    command: run /services/immunization/k6_immunization.js
+    volumes:
+      - ../../services/immunization:/services/immunization
+      - ../../inc:/inc
+    environment: 
+      - "HG_URL=${HG_URL}"
+      - "HG_TYPE=${HG_TYPE}"
+      - "HG_ENV=${HG_ENV}"
+      - "HG_VUS=${HG_VUS}"
+      - "HG_KEY=${HG_KEY}"
+      - "HG_PASSWORD=${HG_PASSWORD}"

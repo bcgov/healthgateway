@@ -10,8 +10,10 @@ trigger:
   paths:
     include:
       - Testing/functional
+      - Apps/Admin/Tests/Functional
 variables:
   Tests.Path: $(Build.SourcesDirectory)/Testing/functional/tests
+  Admin.Path: $(Build.SourcesDirectory)/Apps/Admin/Tests/Functional
 
 jobs:
   - job: "PackageTests"
@@ -23,14 +25,22 @@ jobs:
           set -e
           echo Creating Artifact
           echo `date` > $(Build.ArtifactStagingDirectory)/$(Build.BuildNumber).txt
+          mkdir $(Build.ArtifactStagingDirectory)/admin $(Build.ArtifactStagingDirectory)/gateway
         displayName: "Create Trigger Build Artifact"
 
       - task: CopyFiles@2
-        displayName: "Copying Functional Tests to Staging"
+        displayName: "Copying Gateway Functional Tests to Staging"
         inputs:
           SourceFolder: "$(Tests.Path)"
           Contents: "**"
-          TargetFolder: "$(Build.ArtifactStagingDirectory)"
+          TargetFolder: "$(Build.ArtifactStagingDirectory)/gateway"
+
+      - task: CopyFiles@2
+        displayName: "Copying Admin Functional Tests to Staging"
+        inputs:
+          SourceFolder: "$(Admin.Path)"
+          Contents: "**"
+          TargetFolder: "$(Build.ArtifactStagingDirectory)/admin"
 
       - task: PublishPipelineArtifact@0
         displayName: "Publishing Functional Tests"

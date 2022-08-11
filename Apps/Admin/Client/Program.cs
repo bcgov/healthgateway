@@ -24,12 +24,15 @@ namespace HealthGateway.Admin.Client
     using Fluxor;
     using HealthGateway.Admin.Client.Authorization;
     using HealthGateway.Admin.Client.Services;
+    using Microsoft.AspNetCore.Components;
     using Microsoft.AspNetCore.Components.Web;
     using Microsoft.AspNetCore.Components.WebAssembly.Authentication;
     using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
+    using Microsoft.AspNetCore.WebUtilities;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Logging;
+    using Microsoft.Extensions.Primitives;
     using MudBlazor;
     using MudBlazor.Services;
     using Refit;
@@ -63,10 +66,21 @@ namespace HealthGateway.Admin.Client
             // Enable Mud Blazor component services
             builder.Services.AddMudServices(config => config.SnackbarConfiguration.PositionClass = Defaults.Classes.Position.BottomRight);
 
+            WebAssemblyHost[] app = new WebAssemblyHost[1];
+
             // Configure Authentication and Authorization
             builder.Services.AddOidcAuthentication(
                     options =>
                     {
+                        NavigationManager navigationManager = app[0].Services.GetRequiredService<NavigationManager>();
+                        Uri uri = navigationManager.ToAbsoluteUri(navigationManager.Uri);
+
+                        // If there is an authProvider query string value then set the hint.
+                        if (QueryHelpers.ParseQuery(uri.Query).TryGetValue("authProvider", out StringValues authProvider))
+                        {
+                            options.ProviderOptions.AdditionalProviderParameters.Add("kc_idp_hint", authProvider.ToString());
+                        }
+
                         builder.Configuration.Bind("Oidc", options.ProviderOptions);
                         options.ProviderOptions.ResponseType = "code";
                         options.UserOptions.RoleClaim = "role";
@@ -82,7 +96,8 @@ namespace HealthGateway.Admin.Client
 
             builder.Services.AddBlazoredLocalStorage();
 
-            await builder.Build().RunAsync().ConfigureAwait(true);
+            app[0] = builder.Build();
+            await app[0].RunAsync().ConfigureAwait(true);
         }
 
         private static void RegisterRefitClients(this WebAssemblyHostBuilder builder)

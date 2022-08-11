@@ -22,6 +22,8 @@ export let options = common.OptionConfig();
 export default function () {
     let user = common.users[__VU % common.users.length];
 
+    common.getConfigurations();
+    common.getOpenIdConfigurations();
     let loginRes = common.authenticateUser(user);
     check(loginRes, {
         "Authenticated successfully": loginRes === 200,
