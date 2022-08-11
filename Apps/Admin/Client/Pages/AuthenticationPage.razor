@@ -1,4 +1,6 @@
 @page "/authentication/{action}"
 @using Microsoft.AspNetCore.Components.WebAssembly.Authentication
 
+<PageTitle>Health Gateway Admin</PageTitle>
+
 <RemoteAuthenticatorView Action="@Action" OnLogOutSucceeded="@RedirectToLoginPage" />
