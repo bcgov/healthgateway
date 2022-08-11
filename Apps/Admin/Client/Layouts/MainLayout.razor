@@ -24,7 +24,7 @@
                                 @(context.User.Identity?.Name ?? "Unknown")
                             </MudNavLink>
                         </AuthorizeView>
-                        <MudNavLink Icon="@Icons.Material.Outlined.Login" OnClick="@LogOutAsync" data-testid="logout-text-link">Log Out</MudNavLink>
+                        <MudNavLink Icon="@Icons.Material.Outlined.Logout" OnClick="@LogOutAsync" data-testid="logout-text-link">Log Out</MudNavLink>
                     </ChildContent>
                 </MudMenu>
             </Authorized>
