@@ -1,4 +1,4 @@
-@inject NavigationManager Navigation;
+@inject NavigationManager NavigationManager;
 
 <Fluxor.Blazor.Web.StoreInitializer />
 
@@ -11,11 +11,17 @@
                 <NotAuthorized>
                     @if (!context.User.Identity!.IsAuthenticated)
                     {
-                        Navigation.NavigateTo($"/login?returnUrl={Uri.EscapeDataString(Navigation.Uri)}");
+                        NavigationManager.NavigateTo(
+                            NavigationManager.GetUriWithQueryParameters(
+                                "/login",
+                                new Dictionary<string, object?>
+                                {
+                                    ["returnUrl"] = NavigationManager.Uri,
+                                }), replace: true);
                     }
                     else
                     {
-                        Navigation.NavigateTo("/unauthorized");
+                        NavigationManager.NavigateTo("/unauthorized");
                     }
                 </NotAuthorized>
                 <Authorizing>
