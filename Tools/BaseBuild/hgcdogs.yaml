@@ -38,13 +38,13 @@ objects:
             - imagePullPolicy: Always
               name: ${NAME}
               ports:
-                - containerPort: 8000
+                - containerPort: 3000
                   protocol: TCP
               readinessProbe:
                 failureThreshold: 3
                 httpGet:
-                  path: /health
-                  port: 8000
+                  path: /api/v2/health
+                  port: 3000
                   scheme: HTTP
                 initialDelaySeconds: 5
                 periodSeconds: 10
@@ -100,10 +100,10 @@ objects:
       name: ${NAME}
     spec:
       ports:
-        - name: 8000-tcp
-          port: 8000
+        - name: 3000-tcp
+          port: 3000
           protocol: TCP
-          targetPort: 8000
+          targetPort: 3000
       selector:
         deploymentconfig: ${NAME}
       sessionAffinity: None
