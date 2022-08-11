@@ -70,7 +70,7 @@ export default class ToolbarComponent extends Vue {
                     to="/signoff"
                     color="tertiary"
                 >
-                    Logout
+                    Log Out
                     <v-icon>mdi-logout</v-icon>
                 </router-link>
                 <router-link
@@ -80,7 +80,7 @@ export default class ToolbarComponent extends Vue {
                     to="/"
                     color="tertiary"
                 >
-                    Login
+                    Log In
                     <v-icon>mdi-login</v-icon>
                 </router-link>
             </v-flex>
