@@ -27,4 +27,8 @@ public partial class NavMenu : FluxorComponent
 {
     [Inject]
     private IState<ConfigurationState> ConfigurationState { get; set; } = default!;
+
+    private string JobSchedulerUrl => this.ConfigurationState.Value.Result?.ServiceEndpoints.ContainsKey("JobScheduler") == true
+        ? this.ConfigurationState.Value.Result.ServiceEndpoints["JobScheduler"].ToString()
+        : string.Empty;
 }
