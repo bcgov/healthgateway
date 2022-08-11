@@ -97,7 +97,7 @@ namespace HealthGateway.Common.Delegates
                 using StringContent httpContent = new(JsonSerializer.Serialize(request), Encoding.UTF8, MediaTypeNames.Application.Json);
                 try
                 {
-                    Uri endpoint = new($"{this.serviceEndpoint}template/render");
+                    Uri endpoint = new($"{this.serviceEndpoint}api/v2/template/render");
                     HttpResponseMessage? response = await client.PostAsync(endpoint, httpContent).ConfigureAwait(true);
                     byte[] payload = await response.Content.ReadAsByteArrayAsync().ConfigureAwait(true);
                     this.logger.LogTrace($"CDogs Response: {JsonSerializer.Serialize(response)}");
