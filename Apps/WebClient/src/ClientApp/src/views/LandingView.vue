@@ -491,7 +491,7 @@ export default class LandingView extends Vue {
                         </b-card>
                     </b-col>
                 </b-row>
-                <b-row>
+                <b-row align-v="center">
                     <b-col cols="12" lg="6">
                         <div class="text-center">
                             <img
@@ -504,7 +504,7 @@ export default class LandingView extends Vue {
                     </b-col>
                     <b-col cols="12" lg="6">
                         <div class="text-center">
-                            <h1 class="mt-4 mb-4">Try the mobile app.</h1>
+                            <h1 class="mb-4">Try the mobile app.</h1>
                             <p class="mb-4">
                                 You can download it for free to your phone,
                                 tablet or iPad.
