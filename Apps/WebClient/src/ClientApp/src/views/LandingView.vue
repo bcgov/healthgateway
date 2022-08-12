@@ -209,6 +209,10 @@ export default class LandingView extends Vue {
             `preview-device-button-${deviceName}`
         );
     }
+
+    private handleClick(urlLink: string): void {
+        window.open(urlLink, "_blank");
+    }
 }
 </script>
 
@@ -485,6 +489,47 @@ export default class LandingView extends Vue {
                                 most. Filter or search to find what you need.
                             </p>
                         </b-card>
+                    </b-col>
+                </b-row>
+                <b-row>
+                    <b-col cols="12" lg="6">
+                        <div class="text-center">
+                            <img
+                                class="img-fluid"
+                                src="@/assets/images/landing/splash-page-app.png"
+                                alt="Health Gateway Splash Page App"
+                                data-testid="spash-page-app"
+                            />
+                        </div>
+                    </b-col>
+                    <b-col cols="12" lg="6">
+                        <div class="text-center">
+                            <h1 class="mt-4 mb-4">Try the mobile app.</h1>
+                            <p class="mb-4">
+                                You can download it for free to your phone,
+                                tablet or iPad.
+                            </p>
+                            <img
+                                class="img-fluid"
+                                src="@/assets/images/landing/google-play-badge.png"
+                                alt="Go to Google Play"
+                                @click="
+                                    handleClick(
+                                        'https://play.google.com/store/apps/details?id=ca.bc.gov.myhealth&hl=en_CA&gl=US'
+                                    )
+                                "
+                            />
+                            <img
+                                class="img-fluid"
+                                src="@/assets/images/landing/apple-badge.png"
+                                alt="Go to App Store"
+                                @click="
+                                    handleClick(
+                                        'https://apps.apple.com/ca/app/health-gateway/id1590009068'
+                                    )
+                                "
+                            />
+                        </div>
                     </b-col>
                 </b-row>
             </div>
