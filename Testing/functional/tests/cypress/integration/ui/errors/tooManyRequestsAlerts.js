@@ -54,7 +54,7 @@ describe("Authenticated Vaccine Card Downloads", () => {
             AuthMethod.KeyCloak,
             "/covid19"
         );
-        cy.get("[data-testid=loadingSpinner]").should("not.be.visible");
+
         cy.get("[data-testid=too-many-requests-warning]").should("be.visible");
     });
 
@@ -74,7 +74,6 @@ describe("Authenticated Vaccine Card Downloads", () => {
             AuthMethod.KeyCloak,
             "/covid19"
         );
-        cy.get("[data-testid=loadingSpinner]").should("not.be.visible");
 
         cy.get("[data-testid=save-dropdown-btn] .dropdown-toggle")
             .should("be.enabled", "be.visible")
@@ -82,8 +81,8 @@ describe("Authenticated Vaccine Card Downloads", () => {
         cy.get("[data-testid=save-as-pdf-dropdown-item]")
             .should("be.visible")
             .click();
-        cy.get("[data-testid=genericMessageModal]").should("be.visible");
         cy.get("[data-testid=genericMessageSubmitBtn]").click();
+
         cy.get("[data-testid=too-many-requests-warning]").should("be.visible");
     });
 });
@@ -119,6 +118,7 @@ describe("Public COVID-19 Test Results", () => {
         cy.get("[data-testid=btnEnter]")
             .should("be.enabled", "be.visible")
             .click();
+
         cy.get("[data-testid=too-many-requests-warning]").should("be.visible");
     });
 });
@@ -167,7 +167,6 @@ describe("Public Vaccine Card Downloads", () => {
         cy.get(dovYearSelector).select(fullyVaccinatedDovYear);
         cy.get(dovMonthSelector).select(fullyVaccinatedDovMonth);
         cy.get(dovDaySelector).select(fullyVaccinatedDovDay);
-
         clickVaccineCardEnterButton();
 
         cy.intercept("GET", "**/PublicVaccineStatus/pdf", {
@@ -179,10 +178,9 @@ describe("Public Vaccine Card Downloads", () => {
         cy.get("[data-testid=save-as-pdf-dropdown-item]")
             .should("be.visible")
             .click();
-        cy.get("[data-testid=genericMessageModal]").should("be.visible");
         cy.get("[data-testid=genericMessageSubmitBtn]").click();
+
         cy.get("[data-testid=too-many-requests-warning]").should("be.visible");
-        cy.get("[data-testid=loadingSpinner]").should("not.be.visible");
     });
 });
 
@@ -225,7 +223,6 @@ describe("Immunization", () => {
             Cypress.env("keycloak.password"),
             AuthMethod.KeyCloak
         );
-        cy.checkTimelineHasLoaded();
 
         cy.get("[data-testid=too-many-requests-warning]").should("be.visible");
     });
@@ -235,16 +232,6 @@ describe("Medication Request", () => {
     it("Unsuccessful Response: Too Many Requests", () => {
         cy.enableModules("MedicationRequest");
         cy.intercept("GET", "**/MedicationRequest/*", {
-            fixture: "MedicationService/medicationRequest.json",
-        });
-        cy.login(
-            Cypress.env("keycloak.username"),
-            Cypress.env("keycloak.password"),
-            AuthMethod.KeyCloak
-        );
-        cy.checkTimelineHasLoaded();
-
-        cy.intercept("GET", "**/MedicationRequest/*", {
             statusCode: 429,
         });
         cy.login(
@@ -252,7 +239,6 @@ describe("Medication Request", () => {
             Cypress.env("keycloak.password"),
             AuthMethod.KeyCloak
         );
-        cy.checkTimelineHasLoaded();
 
         cy.get("[data-testid=too-many-requests-warning]").should("be.visible");
     });
@@ -261,18 +247,6 @@ describe("Medication Request", () => {
 describe("Mobile - COVID-19 Orders", () => {
     it("Unsuccessful Response: Too Many Requests", () => {
         cy.intercept("GET", "**/Laboratory/Covid19Orders*", {
-            fixture: "LaboratoryService/covid19Orders.json",
-        });
-        cy.enableModules("Laboratory");
-        cy.viewport("iphone-6");
-        cy.login(
-            Cypress.env("keycloak.username"),
-            Cypress.env("keycloak.password"),
-            AuthMethod.KeyCloak
-        );
-        cy.checkTimelineHasLoaded();
-
-        cy.intercept("GET", "**/Laboratory/Covid19Orders*", {
             statusCode: 429,
         });
         cy.enableModules("Laboratory");
@@ -282,7 +256,6 @@ describe("Mobile - COVID-19 Orders", () => {
             Cypress.env("keycloak.password"),
             AuthMethod.KeyCloak
         );
-        cy.checkTimelineHasLoaded();
 
         cy.get("[data-testid=too-many-requests-warning]").should("be.visible");
     });
@@ -300,7 +273,6 @@ describe("Mobile - Immunization: Unsuccessful Response", () => {
             Cypress.env("keycloak.password"),
             AuthMethod.KeyCloak
         );
-        cy.checkTimelineHasLoaded();
 
         cy.get("[data-testid=too-many-requests-warning]").should("be.visible");
     });
@@ -318,7 +290,6 @@ describe("Mobile - Laboratory Orders", () => {
             Cypress.env("keycloak.password"),
             AuthMethod.KeyCloak
         );
-        cy.checkTimelineHasLoaded();
 
         cy.intercept("GET", "**/Laboratory/LaboratoryOrders*", {
             statusCode: 429,
@@ -330,7 +301,6 @@ describe("Mobile - Laboratory Orders", () => {
             Cypress.env("keycloak.password"),
             AuthMethod.KeyCloak
         );
-        cy.checkTimelineHasLoaded();
 
         cy.get("[data-testid=too-many-requests-warning]").should("be.visible");
     });
@@ -375,7 +345,6 @@ describe("User Profile", () => {
         cy.intercept("GET", `**/UserProfile/${HDID}`, {
             fixture: "UserProfileService/userProfile.json",
         });
-        cy.get("[data-testid=smsStatusNotVerified]").should("be.visible");
         cy.get("[data-testid=verifySMSBtn]")
             .should("be.visible")
             .should("be.enabled")
@@ -474,14 +443,11 @@ describe("Comments", () => {
             Cypress.env("keycloak.password"),
             AuthMethod.KeyCloak
         );
-        cy.checkTimelineHasLoaded();
         cy.intercept("POST", "**/UserProfile/*/Comment", {
             statusCode: 429,
         });
 
         var testComment = "Test Add Comment";
-        cy.get("[data-testid=commentIcon]").should("not.exist");
-        cy.get("[data-testid=commentCount]").should("not.exist");
 
         cy.get("[data-testid=entryCardDetailsTitle]").first().click();
 
