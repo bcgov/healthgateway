@@ -510,7 +510,7 @@ export default class LandingView extends Vue {
                                 tablet or iPad.
                             </p>
                             <img
-                                class="img-fluid"
+                                class="img-fluid mr-3"
                                 src="@/assets/images/landing/google-play-badge.png"
                                 alt="Go to Google Play"
                                 @click="
