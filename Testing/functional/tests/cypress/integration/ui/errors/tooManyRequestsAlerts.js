@@ -42,17 +42,6 @@ function clickVaccineCardEnterButton() {
     cy.get("[data-testid=btnEnter]").should("be.enabled", "be.visible").click();
 }
 
-function enterCovidTestPHN(phn) {
-    cy.get("[data-testid=phnInput]")
-        .should("be.visible", "be.enabled")
-        .clear()
-        .type(phn);
-}
-
-function clickCovidTestEnterButton() {
-    cy.get("[data-testid=btnEnter]").should("be.enabled", "be.visible").click();
-}
-
 describe("Authenticated Vaccine Card Downloads", () => {
     it("Unsuccessful Response: Too Many Requests", () => {
         cy.intercept("GET", "**/AuthenticatedVaccineStatus?hdid=*", {
@@ -117,14 +106,19 @@ describe("Public COVID-19 Test Results", () => {
             statusCode: 429,
         });
 
-        enterCovidTestPHN(phn);
+        cy.get("[data-testid=phnInput]")
+            .should("be.visible", "be.enabled")
+            .clear()
+            .type(phn);
         cy.get(dobYearSelector).select(dobYear);
         cy.get(dobMonthSelector).select(dobMonth);
         cy.get(dobDaySelector).select(dobDay);
         cy.get(collectionDateYearSelector).select(collectionDateYear);
         cy.get(collectionDateMonthSelector).select(collectionDateMonth);
         cy.get(collectionDateDaySelector).select(collectionDateDay);
-        clickCovidTestEnterButton();
+        cy.get("[data-testid=btnEnter]")
+            .should("be.enabled", "be.visible")
+            .click();
         cy.get("[data-testid=too-many-requests-warning]").should("be.visible");
     });
 });
@@ -342,8 +336,8 @@ describe("Mobile - Laboratory Orders", () => {
     });
 });
 
-describe("User Profile - Verify SMS number", () => {
-    it("Unsuccessful Response: Too Many Requests Error", () => {
+describe("User Profile", () => {
+    beforeEach(() => {
         cy.intercept("GET", `**/UserProfile/${HDID}`, {
             fixture: "UserProfileService/userProfile.json",
         });
@@ -351,15 +345,31 @@ describe("User Profile - Verify SMS number", () => {
             statusCode: 200,
             body: true,
         });
-        cy.intercept("GET", `**/UserProfile/${HDID}/sms/validate/*`, {
-            statusCode: 429,
-        });
         cy.login(
             Cypress.env("keycloak.username"),
             Cypress.env("keycloak.password"),
             AuthMethod.KeyCloak,
             "/profile"
         );
+    });
+
+    it("Edit email address: Too Many Requests Error", () => {
+        cy.intercept("PUT", `**/UserProfile/${HDID}/email`, {
+            statusCode: 429,
+        });
+
+        cy.log("Edit email address");
+        cy.get("[data-testid=editEmailBtn]").click();
+        cy.get("[data-testid=emailInput]").type(Cypress.env("emailAddress"));
+        cy.get("[data-testid=editEmailSaveBtn]").click();
+
+        cy.get("[data-testid=too-many-requests-error]").should("be.visible");
+    });
+
+    it("Verify SMS number: Too Many Requests Error", () => {
+        cy.intercept("GET", `**/UserProfile/${HDID}/sms/validate/*`, {
+            statusCode: 429,
+        });
 
         cy.log("Verify SMS number");
         cy.intercept("GET", `**/UserProfile/${HDID}`, {
@@ -380,10 +390,10 @@ describe("User Profile - Verify SMS number", () => {
     });
 });
 
-describe.only("Add Dependent Modal - Too Many Requests Error", () => {
+describe("Dependents - Too Many Requests Error", () => {
     const validDependent = {
-        firstName: "Sam ", // Aooend space to ensure field is trimmed
-        lastName: "Testfive ", // Aooend space to ensure field is trimmed
+        firstName: "Sam ", // Add end space to ensure field is trimmed
+        lastName: "Testfive ", // Add end space to ensure field is trimmed
         wrongLastName: "Testfive2",
         invalidDoB: "2007-Aug-05",
         doB: "2014-Mar-15",
@@ -391,16 +401,6 @@ describe.only("Add Dependent Modal - Too Many Requests Error", () => {
         phn: "9874307168",
         hdid: "645645767756756767",
     };
-
-    const noHdidDependent = {
-        firstName: "Baby Girl",
-        lastName: "Reid",
-        doB: "2018-Feb-04",
-        testDate: "2020-Mar-21",
-        phn: "9879187222",
-    };
-
-    const validDependentHdid = "162346565465464564565463257";
 
     beforeEach(() => {
         cy.intercept("GET", "**/Laboratory/Covid19Orders*", {
@@ -424,8 +424,23 @@ describe.only("Add Dependent Modal - Too Many Requests Error", () => {
         );
     });
 
-    it("Unsuccessful Response: Too Many Requests Error", () => {
-        cy.intercept("GET", "**/UserProfile/*/Dependent", {
+    it("Delete Dependent", () => {
+        cy.intercept("DELETE", "**/UserProfile/*/Dependent/*", {
+            statusCode: 429,
+        });
+        cy.get(`[data-testid=dependent-card-${validDependent.phn}]`).within(
+            () => {
+                cy.get("[data-testid=dependentMenuBtn]").click();
+                cy.get("[data-testid=deleteDependentMenuBtn]").click();
+            }
+        );
+        cy.get("[data-testid=confirmDeleteBtn]").click();
+
+        cy.get("[data-testid=too-many-requests-error]").should("be.visible");
+    });
+
+    it("Add Dependent Modal", () => {
+        cy.intercept("POST", "**/UserProfile/*/Dependent", {
             statusCode: 429,
         });
         cy.get("[data-testid=addNewDependentBtn]").click();
@@ -447,6 +462,34 @@ describe.only("Add Dependent Modal - Too Many Requests Error", () => {
 
         cy.get("[data-testid=registerDependentBtn]").click();
 
+        cy.get("[data-testid=too-many-requests-error]").should("be.visible");
+    });
+});
+
+describe("Comments", () => {
+    it("Validate Add: Too Many Requests Error", () => {
+        cy.enableModules(["Laboratory", "Comment"]);
+        cy.login(
+            Cypress.env("keycloak.username"),
+            Cypress.env("keycloak.password"),
+            AuthMethod.KeyCloak
+        );
+        cy.checkTimelineHasLoaded();
+        cy.intercept("POST", "**/UserProfile/*/Comment", {
+            statusCode: 429,
+        });
+
+        var testComment = "Test Add Comment";
+        cy.get("[data-testid=commentIcon]").should("not.exist");
+        cy.get("[data-testid=commentCount]").should("not.exist");
+
+        cy.get("[data-testid=entryCardDetailsTitle]").first().click();
+
+        // Add comment
+        cy.get("[data-testid=addCommentTextArea]").first().type(testComment);
+        cy.get("[data-testid=postCommentBtn]").first().click();
+
+        // Verify
         cy.get("[data-testid=too-many-requests-error]").should("be.visible");
     });
 });
