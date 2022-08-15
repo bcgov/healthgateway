@@ -15,19 +15,34 @@
 // -------------------------------------------------------------------------
 namespace HealthGateway.DatabaseTests.Delegates
 {
+    using System;
     using HealthGateway.Database.Constants;
+    using HealthGateway.Database.Context;
     using HealthGateway.Database.Delegates;
     using HealthGateway.Database.Models;
     using HealthGateway.Database.Wrapper;
     using HealthGateway.DatabaseTests.Utils;
     using Microsoft.Extensions.Logging;
+    using Respawn.Graph;
     using Xunit;
+    using Xunit.Abstractions;
 
     /// <summary>
     /// Tests for the DBProfileDelegate.
     /// </summary>
     public class DBProfileDelegateTests : DatabaseTest
     {
+        private readonly ITestOutputHelper testOutputHelper;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="DBProfileDelegateTests"/> class.
+        /// </summary>
+        /// <param name="testOutputHelper">Instance of TestOutputHelper.</param>
+        public DBProfileDelegateTests(ITestOutputHelper testOutputHelper)
+        {
+            this.testOutputHelper = testOutputHelper;
+        }
+
         /// <summary>
         /// Verifies database reads.
         /// </summary>
@@ -41,10 +56,28 @@ namespace HealthGateway.DatabaseTests.Delegates
             Assert.True(profileResult.Status == DBStatusCode.Read);
         }
 
-        /// <inheritdoc />
+        /// <inheritdoc/>
         protected override string SeedSql()
         {
             return ReadSeedData("HealthGateway.DatabaseTests.SeedData.seed.sql");
+        }
+
+        /// <inheritdoc/>
+        protected override Table[] TablesToReset()
+        {
+            return Array.Empty<Table>();
+        }
+
+        /// <inheritdoc/>
+        protected override void SetupDatabase(GatewayDbContext context)
+        {
+            // Do nothing.
+        }
+
+        /// <inheritdoc/>
+        protected override void Log(string message)
+        {
+            this.testOutputHelper.WriteLine($"Database Test: {message}");
         }
     }
 }

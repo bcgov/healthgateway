@@ -26,6 +26,8 @@ namespace HealthGateway.DatabaseTests.Utils
     using HealthGateway.Database.Context;
     using Microsoft.EntityFrameworkCore;
     using Npgsql;
+    using Respawn;
+    using Respawn.Graph;
     using Xunit;
 
     /// <summary>
@@ -64,6 +66,13 @@ namespace HealthGateway.DatabaseTests.Utils
             command.Connection = conn;
             command.CommandText = this.SeedSql();
             await command.ExecuteReaderAsync().ConfigureAwait(true);
+
+            // Delete any pre-existing data related to tests implementing Fixture.
+            string? deleteSql = await this.ResetDatabase(this.TablesToReset()).ConfigureAwait(true);
+            this.Log(deleteSql);
+
+            // Set up data related to tests implementing Fixture.
+            this.SetupDatabase(this.DbContext);
         }
 
         /// <inheritdoc/>
@@ -98,5 +107,54 @@ namespace HealthGateway.DatabaseTests.Utils
         /// </summary>
         /// <returns>The SQL to run on the DB prior to test execution.</returns>
         protected abstract string SeedSql();
+
+        /// <summary>
+        /// Returns a list of Table objects containing tables to be truncated.
+        /// </summary>
+        /// <returns>A list of Table objects.</returns>
+        protected abstract Table[] TablesToReset();
+
+        /// <summary>
+        /// Test data to be created in the database.
+        /// </summary>
+        /// <param name="context">Contains an instance of GatewayDbContext.</param>
+        protected abstract void SetupDatabase(GatewayDbContext context);
+
+        /// <summary>
+        /// Log message string.
+        /// </summary>
+        /// <param name="message">Contains message string to log.</param>
+        protected abstract void Log(string message);
+
+        /// <summary>
+        /// Deletes all data including dependent data from tables specified in parameter.
+        /// Delete is using Respawn package.
+        /// Note: Kept protection level to protected say if at test level, Reset Database is required.
+        /// </summary>
+        /// <param name="tablesToInclude">An array of Tables to be deleted.</param>
+        /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+        protected async Task<string?> ResetDatabase(Table[] tablesToInclude)
+        {
+            if (tablesToInclude.Length > 0)
+            {
+                using NpgsqlConnection connection = new(this.dbContainer.ConnectionString);
+
+                await connection.OpenAsync().ConfigureAwait(true);
+                Checkpoint checkpoint = new()
+                {
+                    TablesToInclude = tablesToInclude,
+                    SchemasToInclude = new[]
+                    {
+                        "gateway",
+                    },
+                    DbAdapter = DbAdapter.Postgres,
+                };
+
+                await checkpoint.Reset(connection).ConfigureAwait(true);
+                return checkpoint.DeleteSql;
+            }
+
+            return string.Empty;
+        }
     }
 }
