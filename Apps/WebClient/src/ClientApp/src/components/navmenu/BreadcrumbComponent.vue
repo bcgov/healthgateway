@@ -37,10 +37,6 @@ export default class BreadcrumbComponent extends Vue {
     private get displayBreadcrumbs(): boolean {
         return this.isAuthenticated && this.isValidIdentityProvider;
     }
-
-    private visitLink(link: string): void {
-        window.open(link, "_self");
-    }
 }
 </script>
 
@@ -57,7 +53,6 @@ export default class BreadcrumbComponent extends Vue {
             :to="item.to"
             :active="item.active"
             :data-testid="item.dataTestId"
-            @click="visitLink(item.href)"
         >
             {{ item.text }}
         </b-breadcrumb-item>
