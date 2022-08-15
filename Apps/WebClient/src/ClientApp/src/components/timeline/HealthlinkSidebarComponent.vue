@@ -64,32 +64,29 @@ export default class HealthlinkSidebarComponent extends Vue {
     private get cardDelay(): number {
         return this.cardIndex === 0 ? 25000 : 7000;
     }
-
-    private handleClick(urlLink: string): void {
-        window.open(urlLink, "_blank");
-    }
 }
 </script>
 
 <template>
-    <b-card
-        class="box d-none d-lg-block mx-auto bg-white border-0 rounded shadow"
-        no-body
-    >
-        <b-card-body @click="handleClick(currentCard.urlLink)">
-            <img
-                class="img-fluid mx-auto d-block card-image"
-                :src="currentCard.imageSrc"
-                width="auto"
-                height="auto"
-                :alt="currentCard.title"
-            />
-            <a></a>
-            <b-card-text class="mt-3">{{
-                currentCard.description
-            }}</b-card-text>
-        </b-card-body>
-    </b-card>
+    <a :href="currentCard.urlLink" rel="noopener" target="_blank">
+        <b-card
+            class="box d-none d-lg-block mx-auto bg-white border-0 rounded shadow"
+            no-body
+        >
+            <b-card-body>
+                <img
+                    class="img-fluid mx-auto d-block card-image"
+                    :src="currentCard.imageSrc"
+                    width="auto"
+                    height="auto"
+                    :alt="currentCard.title"
+                />
+                <b-card-text class="mt-3">
+                    {{ currentCard.description }}
+                </b-card-text>
+            </b-card-body>
+        </b-card>
+    </a>
 </template>
 
 <style lang="scss" scoped>

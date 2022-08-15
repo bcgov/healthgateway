@@ -209,10 +209,6 @@ export default class LandingView extends Vue {
             `preview-device-button-${deviceName}`
         );
     }
-
-    private handleClick(urlLink: string): void {
-        window.open(urlLink, "_blank");
-    }
 }
 </script>
 
@@ -509,26 +505,28 @@ export default class LandingView extends Vue {
                         You can download it for free to your phone, tablet or
                         iPad.
                     </p>
-                    <img
-                        class="img-fluid mr-3"
-                        src="@/assets/images/landing/google-play-badge.png"
-                        alt="Go to Google Play"
-                        @click="
-                            handleClick(
-                                'https://play.google.com/store/apps/details?id=ca.bc.gov.myhealth&hl=en_CA&gl=US'
-                            )
-                        "
-                    />
-                    <img
-                        class="img-fluid"
-                        src="@/assets/images/landing/apple-badge.png"
-                        alt="Go to App Store"
-                        @click="
-                            handleClick(
-                                'https://apps.apple.com/ca/app/health-gateway/id1590009068'
-                            )
-                        "
-                    />
+                    <a
+                        href="https://play.google.com/store/apps/details?id=ca.bc.gov.myhealth&hl=en_CA&gl=US"
+                        rel="noopener"
+                        target="_blank"
+                    >
+                        <img
+                            class="img-fluid mr-3"
+                            src="@/assets/images/landing/google-play-badge.png"
+                            alt="Go to Google Play"
+                        />
+                    </a>
+                    <a
+                        href="https://apps.apple.com/ca/app/health-gateway/id1590009068"
+                        rel="noopener"
+                        target="_blank"
+                    >
+                        <img
+                            class="img-fluid"
+                            src="@/assets/images/landing/apple-badge.png"
+                            alt="Go to App Store"
+                        />
+                    </a>
                 </b-col>
             </b-row>
         </b-container>
