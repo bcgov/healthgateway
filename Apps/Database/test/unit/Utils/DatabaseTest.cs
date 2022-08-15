@@ -103,30 +103,6 @@ namespace HealthGateway.DatabaseTests.Utils
         }
 
         /// <summary>
-        /// SQL script that will be executed on initialization.
-        /// </summary>
-        /// <returns>The SQL to run on the DB prior to test execution.</returns>
-        protected abstract string SeedSql();
-
-        /// <summary>
-        /// Returns a list of Table objects containing tables to be truncated.
-        /// </summary>
-        /// <returns>A list of Table objects.</returns>
-        protected abstract Table[] TablesToReset();
-
-        /// <summary>
-        /// Test data to be created in the database.
-        /// </summary>
-        /// <param name="context">Contains an instance of GatewayDbContext.</param>
-        protected abstract void SetupDatabase(GatewayDbContext context);
-
-        /// <summary>
-        /// Log message string.
-        /// </summary>
-        /// <param name="message">Contains message string to log.</param>
-        protected abstract void Log(string message);
-
-        /// <summary>
         /// Deletes all data including dependent data from tables specified in parameter.
         /// Delete is using Respawn package.
         /// Note: Kept protection level to protected say if at test level, Reset Database is required.
@@ -156,5 +132,29 @@ namespace HealthGateway.DatabaseTests.Utils
 
             return string.Empty;
         }
+
+        /// <summary>
+        /// SQL script that will be executed on initialization.
+        /// </summary>
+        /// <returns>The SQL to run on the DB prior to test execution.</returns>
+        protected abstract string SeedSql();
+
+        /// <summary>
+        /// Returns a list of Table objects containing tables to be truncated.
+        /// </summary>
+        /// <returns>A list of Table objects.</returns>
+        protected abstract Table[] TablesToReset();
+
+        /// <summary>
+        /// Test data to be created in the database.
+        /// </summary>
+        /// <param name="context">Contains an instance of GatewayDbContext.</param>
+        protected abstract void SetupDatabase(GatewayDbContext context);
+
+        /// <summary>
+        /// Log message string.
+        /// </summary>
+        /// <param name="message">Contains message string to log.</param>
+        protected abstract void Log(string message);
     }
 }
