@@ -89,35 +89,21 @@ describe("Authenticated Vaccine Card Downloads", () => {
 
 describe("Public COVID-19 Test Results", () => {
     it("Unsuccessful Response: Too Many Requests", () => {
-        const phn = "9735361219 ";
-        const dobYear = "1994";
-        const dobMonth = "June";
-        const dobDay = "9";
-        const collectionDateYear = "2021";
-        const collectionDateMonth = "January";
-        const collectionDateDay = "20";
-
+        cy.intercept("GET", "**/PublicLaboratory/CovidTests", {
+            statusCode: 429,
+        });
         cy.enableModules(["Laboratory", "PublicLaboratoryResult"]);
         cy.logout();
         cy.visit(covidTestUrl);
 
-        cy.intercept("GET", "**/PublicLaboratory/CovidTests", {
-            statusCode: 429,
-        });
-
-        cy.get("[data-testid=phnInput]")
-            .should("be.visible", "be.enabled")
-            .clear()
-            .type(phn);
-        cy.get(dobYearSelector).select(dobYear);
-        cy.get(dobMonthSelector).select(dobMonth);
-        cy.get(dobDaySelector).select(dobDay);
-        cy.get(collectionDateYearSelector).select(collectionDateYear);
-        cy.get(collectionDateMonthSelector).select(collectionDateMonth);
-        cy.get(collectionDateDaySelector).select(collectionDateDay);
-        cy.get("[data-testid=btnEnter]")
-            .should("be.enabled", "be.visible")
-            .click();
+        enterVaccineCardPHN(fullyVaccinatedPhn);
+        cy.get(dobYearSelector).select(fullyVaccinatedDobYear);
+        cy.get(dobMonthSelector).select(fullyVaccinatedDobMonth);
+        cy.get(dobDaySelector).select(fullyVaccinatedDobDay);
+        cy.get(collectionDateYearSelector).select(fullyVaccinatedDovYear);
+        cy.get(collectionDateMonthSelector).select(fullyVaccinatedDovMonth);
+        cy.get(collectionDateDaySelector).select(fullyVaccinatedDovDay);
+        clickVaccineCardEnterButton();
 
         cy.get("[data-testid=too-many-requests-warning]").should("be.visible");
     });
@@ -125,13 +111,12 @@ describe("Public COVID-19 Test Results", () => {
 
 describe("Public Vaccine Card Form", () => {
     it("Unsuccessful Response: Too Many Requests", () => {
-        cy.enableModules(["Immunization", "VaccinationStatus"]);
-        cy.logout();
-        cy.visit(vaccineCardUrl);
-
         cy.intercept("GET", "**/PublicVaccineStatus", {
             statusCode: 429,
         });
+        cy.enableModules(["Immunization", "VaccinationStatus"]);
+        cy.logout();
+        cy.visit(vaccineCardUrl);
 
         enterVaccineCardPHN(fullyVaccinatedPhn);
         cy.get(dobYearSelector).select(fullyVaccinatedDobYear);
@@ -148,6 +133,12 @@ describe("Public Vaccine Card Form", () => {
 
 describe("Public Vaccine Card Downloads", () => {
     it("Unsuccessful Response: Too Many Requests", () => {
+        cy.intercept("GET", "**/PublicVaccineStatus", {
+            fixture: "ImmunizationService/publicVaccineStatusLoaded.json",
+        });
+        cy.intercept("GET", "**/PublicVaccineStatus/pdf", {
+            statusCode: 429,
+        });
         cy.enableModules([
             "Immunization",
             "VaccinationStatus",
@@ -155,9 +146,6 @@ describe("Public Vaccine Card Downloads", () => {
             "PublicVaccineDownloadPdf",
         ]);
         cy.logout();
-        cy.intercept("GET", "**/PublicVaccineStatus", {
-            fixture: "ImmunizationService/publicVaccineStatusLoaded.json",
-        });
         cy.visit(vaccineCardUrl);
 
         enterVaccineCardPHN(fullyVaccinatedPhn);
@@ -169,9 +157,6 @@ describe("Public Vaccine Card Downloads", () => {
         cy.get(dovDaySelector).select(fullyVaccinatedDovDay);
         clickVaccineCardEnterButton();
 
-        cy.intercept("GET", "**/PublicVaccineStatus/pdf", {
-            statusCode: 429,
-        });
         cy.get("[data-testid=save-dropdown-btn]")
             .should("be.visible", "be.enabled")
             .click();
@@ -230,10 +215,10 @@ describe("Immunization", () => {
 
 describe("Medication Request", () => {
     it("Unsuccessful Response: Too Many Requests", () => {
-        cy.enableModules("MedicationRequest");
         cy.intercept("GET", "**/MedicationRequest/*", {
             statusCode: 429,
         });
+        cy.enableModules("MedicationRequest");
         cy.login(
             Cypress.env("keycloak.username"),
             Cypress.env("keycloak.password"),
@@ -340,8 +325,6 @@ describe("User Profile", () => {
         cy.intercept("GET", `**/UserProfile/${HDID}/sms/validate/*`, {
             statusCode: 429,
         });
-
-        cy.log("Verify SMS number");
         cy.intercept("GET", `**/UserProfile/${HDID}`, {
             fixture: "UserProfileService/userProfile.json",
         });
@@ -437,16 +420,15 @@ describe("Dependents - Too Many Requests Error", () => {
 
 describe("Comments", () => {
     it("Validate Add: Too Many Requests Error", () => {
+        cy.intercept("POST", "**/UserProfile/*/Comment", {
+            statusCode: 429,
+        });
         cy.enableModules(["Laboratory", "Comment"]);
         cy.login(
             Cypress.env("keycloak.username"),
             Cypress.env("keycloak.password"),
             AuthMethod.KeyCloak
         );
-        cy.intercept("POST", "**/UserProfile/*/Comment", {
-            statusCode: 429,
-        });
-
         var testComment = "Test Add Comment";
 
         cy.get("[data-testid=entryCardDetailsTitle]").first().click();
