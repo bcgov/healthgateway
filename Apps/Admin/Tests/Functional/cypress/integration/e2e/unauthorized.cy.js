@@ -1,6 +1,6 @@
 import { skipOn } from "@cypress/skip-test";
 
-const username = Cypress.env("unauthorized_keycloak_username");
+const username = Cypress.env("keycloak_unauthorized_username");
 const password = Cypress.env("keycloak_password");
 
 describe("Unauthorized", () => {
