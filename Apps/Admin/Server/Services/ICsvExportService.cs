@@ -63,5 +63,11 @@ namespace HealthGateway.Admin.Server.Services
         /// <param name="timeOffset">The clients offset to get to UTC.</param>
         /// <returns>returns a stream representing a CSV of inactive users.</returns>
         Task<Stream> GetInactiveUsers(int inactiveDays, int timeOffset);
+
+        /// <summary>
+        /// Retrieves a stream of User Feedback in CSV format inclusive of the dates provided.
+        /// </summary>
+        /// <returns>returns a stream representing a CSV of the User Feedback.</returns>
+        Stream GetUserFeedback();
     }
 }
