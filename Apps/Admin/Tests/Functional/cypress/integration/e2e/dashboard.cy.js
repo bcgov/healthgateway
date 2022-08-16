@@ -7,7 +7,7 @@ describe("Dashboard", () => {
         );
     });
 
-    it("Verify dashboards counts.", () => {
+    it("Verify dashboard counts from seeded data.", () => {
         cy.log("Dashboard test started.");
         cy.get("[data-testid=total-registered-users]").contains(6);
         cy.get("[data-testid=total-dependents]").contains(2);

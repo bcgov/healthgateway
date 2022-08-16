@@ -1,13 +1,25 @@
+// UTC midnight on 2022-07-02, the middle of the year
+const theDay = new Date(Date.UTC(2022, 7 - 1, 2));
+
 function getPastDate(daysAgo) {
-    let pastDate = new Date(new Date().toString());
-    pastDate.setDate(pastDate.getDate() - daysAgo);
-    pastDate.setUTCHours(0, 0, 0, 0);
-    cy.log(`Past Date: ${pastDate.toISOString()}`);
-    return pastDate.toISOString();
+    // initialize date to theDay minus a number of days
+    const date = new Date(theDay);
+    date.setDate(date.getDate() - daysAgo);
+
+    // the calculated date may be 1 hour off because of Daylight Savings
+    // the value will be positive (+1) so long as theDate is in the summer
+    // resetting the hours to 0 will fix this, since the day boundary hasn't been crossed
+    date.setUTCHours(0);
+
+    cy.log(`"${daysAgo} days ago" was ${date.toISOString()}`);
+    return date.toISOString();
 }
 
 describe("Dashboard", () => {
     beforeEach(() => {
+        cy.clock(theDay);
+        cy.log(`"Today" is ${theDay.toISOString()}`);
+
         cy.intercept("GET", "**/Dashboard/RegisteredCount*", {
             body: {
                 [getPastDate(120)]: 1,
@@ -58,6 +70,7 @@ describe("Dashboard", () => {
         cy.get("[data-testid=total-unique-users]").contains(2);
 
         cy.get("[data-testid=daily-data-table]")
+            .find("tbody tr.mud-table-row")
             .first()
             .within(() => {
                 cy.get(
@@ -127,6 +140,7 @@ describe("Dashboard", () => {
         cy.get("[data-testid=total-unique-users]").contains(10);
 
         cy.get("[data-testid=daily-data-table]")
+            .find("tbody tr.mud-table-row")
             .first()
             .within(() => {
                 cy.get(
