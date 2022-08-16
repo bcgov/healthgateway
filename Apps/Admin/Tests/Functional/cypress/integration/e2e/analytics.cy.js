@@ -24,6 +24,8 @@ describe("System Analytics", () => {
             "getInactiveUsers"
         );
 
+        cy.intercept("GET", "**/CsvExport/GetUserFeedback").as("getUserFeedback");
+
         cy.login(
             Cypress.env("keycloak_username"),
             Cypress.env("keycloak_password"),
@@ -64,6 +66,12 @@ describe("System Analytics", () => {
             .click();
         cy.wait("@getInactiveUsers", { timeout });
         cy.verifyDownload(getFileName("InactiveUsers"));
+
+        cy.get("[data-testid=user-feedback-download-btn]")
+            .should("be.visible")
+            .click();
+        cy.wait("@getUserFeedback", { timeout });
+        cy.verifyDownload(getFileName("UserFeedback"));
 
         cy.log("System Analytics stats download test finished.");
     });
