@@ -3,11 +3,11 @@ describe("Dashboard", () => {
         cy.login(
             Cypress.env("keycloak_username"),
             Cypress.env("keycloak_password"),
-            "/"
+            "/dashboard"
         );
     });
 
-    it("Verify dashboards counts.", () => {
+    it("Verify dashboard counts from seeded data.", () => {
         cy.log("Dashboard test started.");
         cy.get("[data-testid=total-registered-users]").contains(6);
         cy.get("[data-testid=total-dependents]").contains(2);

@@ -116,7 +116,7 @@ describe("Support", () => {
         cy.log("Verify support query test started.");
 
         // Search by PHN
-        cy.get("[data-testid=query-type-select]").click();
+        cy.get("[data-testid=query-type-select]").click({ force: true });
         cy.get("[data-testid=query-type]")
             .contains("PHN")
             .click({ force: true });
@@ -125,7 +125,7 @@ describe("Support", () => {
         verifyTableResults("PHN");
 
         // Search by HDID.
-        cy.get("[data-testid=query-type-select]").click();
+        cy.get("[data-testid=query-type-select]").click({ force: true });
         cy.get("[data-testid=query-type]")
             .contains("HDID")
             .click({ force: true });
@@ -134,7 +134,7 @@ describe("Support", () => {
         verifyTableResults("HDID");
 
         // Search by SMS.
-        cy.get("[data-testid=query-type-select]").click();
+        cy.get("[data-testid=query-type-select]").click({ force: true });
         cy.get("[data-testid=query-type]")
             .contains("SMS")
             .click({ force: true });
@@ -143,7 +143,7 @@ describe("Support", () => {
         verifyTableResults("SMS");
 
         // Search by Email.
-        cy.get("[data-testid=query-type-select]").click();
+        cy.get("[data-testid=query-type-select]").click({ force: true });
         cy.get("[data-testid=query-type]")
             .contains("Email")
             .click({ force: true });
@@ -165,7 +165,7 @@ describe("Support", () => {
     it("Verify support no results query errors.", () => {
         cy.log("Verify phn returns no results test started.");
 
-        cy.get("[data-testid=query-type-select]").click();
+        cy.get("[data-testid=query-type-select]").click({ force: true });
         cy.get("[data-testid=query-type]")
             .contains("PHN")
             .click({ force: true });
@@ -185,7 +185,7 @@ describe("Support", () => {
 
         cy.log("Verify hdid returns no results test started.");
 
-        cy.get("[data-testid=query-type-select]").click();
+        cy.get("[data-testid=query-type-select]").click({ force: true });
         cy.get("[data-testid=query-type]")
             .contains("HDID")
             .click({ force: true });
@@ -204,7 +204,7 @@ describe("Support", () => {
 
         cy.log("Verify sms returns no results test started.");
 
-        cy.get("[data-testid=query-type-select]").click();
+        cy.get("[data-testid=query-type-select]").click({ force: true });
         cy.get("[data-testid=query-type]")
             .contains("SMS")
             .click({ force: true });
@@ -219,7 +219,7 @@ describe("Support", () => {
 
         cy.log("Verify email returns no results test started.");
 
-        cy.get("[data-testid=query-type-select]").click();
+        cy.get("[data-testid=query-type-select]").click({ force: true });
         cy.get("[data-testid=query-type]")
             .contains("Email")
             .click({ force: true });
@@ -234,16 +234,10 @@ describe("Support", () => {
     });
 
     it("Verify invalid phn value.", () => {
-        cy.login(
-            Cypress.env("keycloak_username"),
-            Cypress.env("keycloak_password"),
-            "/support"
-        );
-
         cy.log("Verify invalid phn test started.");
 
         // Search by invalid PHN.
-        cy.get("[data-testid=query-type-select]").click();
+        cy.get("[data-testid=query-type-select]").click({ force: true });
         cy.get("[data-testid=query-type]")
             .contains("PHN")
             .click({ force: true });
@@ -256,15 +250,9 @@ describe("Support", () => {
     });
 
     it("Verify parameter value missing.", () => {
-        cy.login(
-            Cypress.env("keycloak_username"),
-            Cypress.env("keycloak_password"),
-            "/support"
-        );
-
         cy.log("Verify phn parameter value missing test started.");
 
-        cy.get("[data-testid=query-type-select]").click();
+        cy.get("[data-testid=query-type-select]").click({ force: true });
         cy.get("[data-testid=query-type]")
             .contains("PHN")
             .click({ force: true });
@@ -280,7 +268,7 @@ describe("Support", () => {
 
         cy.log("Verify hdid parameter value missing test started.");
 
-        cy.get("[data-testid=query-type-select]").click();
+        cy.get("[data-testid=query-type-select]").click({ force: true });
         cy.get("[data-testid=query-type]")
             .contains("HDID")
             .click({ force: true });
@@ -296,7 +284,7 @@ describe("Support", () => {
 
         cy.log("Verify sms parameter value missing test started.");
 
-        cy.get("[data-testid=query-type-select]").click();
+        cy.get("[data-testid=query-type-select]").click({ force: true });
         cy.get("[data-testid=query-type]")
             .contains("SMS")
             .click({ force: true });
@@ -309,7 +297,7 @@ describe("Support", () => {
 
         cy.log("Verify sms parameter value missing test finished.");
 
-        cy.get("[data-testid=query-type-select]").click();
+        cy.get("[data-testid=query-type-select]").click({ force: true });
         cy.get("[data-testid=query-type]")
             .contains("Email")
             .click({ force: true });

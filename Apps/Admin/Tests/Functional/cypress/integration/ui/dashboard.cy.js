@@ -1,13 +1,25 @@
+// midnight on 2022-07-02, the middle of the year
+const utcDate = new Date(Date.UTC(2022, 7 - 1, 2));
+const localDate = new Date(2022, 7 - 1, 2);
+
 function getPastDate(daysAgo) {
-    let pastDate = new Date(new Date().toString());
-    pastDate.setDate(pastDate.getDate() - daysAgo);
-    pastDate.setUTCHours(0, 0, 0, 0);
-    cy.log(`Past Date: ${pastDate.toISOString()}`);
-    return pastDate.toISOString();
+    // initialize date to utcDate minus a number of days
+    const date = new Date(utcDate);
+    date.setDate(date.getDate() - daysAgo);
+
+    // the calculated date may be 1 hour off because of Daylight Savings
+    // the value will be positive (+1) so long as theDate is in the summer
+    // resetting the hours to 0 will fix this, since the day boundary hasn't been crossed
+    date.setUTCHours(0);
+
+    cy.log(`"${daysAgo} days ago" was ${date.toISOString()}`);
+    return date.toISOString();
 }
 
 describe("Dashboard", () => {
     beforeEach(() => {
+        cy.log(`"Today" is ${utcDate.toISOString()}`);
+
         cy.intercept("GET", "**/Dashboard/RegisteredCount*", {
             body: {
                 [getPastDate(120)]: 1,
@@ -46,8 +58,14 @@ describe("Dashboard", () => {
         cy.login(
             Cypress.env("keycloak_username"),
             Cypress.env("keycloak_password"),
-            "/"
+            "/analytics"
         );
+
+        // changing the date must be done after logging in
+        cy.clock(localDate, ["Date"]);
+
+        // the dashboard page must be loaded (or reloaded) after the date is changed
+        cy.visit("/dashboard");
     });
 
     it("Verify dashboard counts and skeletons.", () => {
@@ -58,6 +76,7 @@ describe("Dashboard", () => {
         cy.get("[data-testid=total-unique-users]").contains(2);
 
         cy.get("[data-testid=daily-data-table]")
+            .find("tbody tr.mud-table-row")
             .first()
             .within(() => {
                 cy.get(
@@ -127,6 +146,7 @@ describe("Dashboard", () => {
         cy.get("[data-testid=total-unique-users]").contains(10);
 
         cy.get("[data-testid=daily-data-table]")
+            .find("tbody tr.mud-table-row")
             .first()
             .within(() => {
                 cy.get(
