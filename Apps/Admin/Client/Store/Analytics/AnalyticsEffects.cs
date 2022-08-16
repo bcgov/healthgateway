@@ -185,7 +185,7 @@ public class AnalyticsEffects
     }
 
     /// <summary>
-    /// Handler that calls the user feedback service and dispatch the actions.
+    /// Handler that calls the user feedback service and dispatches the actions.
     /// </summary>
     /// <param name="action">Load the initial action.</param>
     /// <param name="dispatcher">Dispatch the actions.</param>
