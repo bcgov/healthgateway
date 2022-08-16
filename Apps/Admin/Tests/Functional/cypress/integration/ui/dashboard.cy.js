@@ -1,9 +1,10 @@
-// UTC midnight on 2022-07-02, the middle of the year
-const theDay = new Date(Date.UTC(2022, 7 - 1, 2));
+// midnight on 2022-07-02, the middle of the year
+const utcDate = new Date(Date.UTC(2022, 7 - 1, 2));
+const localDate = new Date(2022, 7 - 1, 2);
 
 function getPastDate(daysAgo) {
-    // initialize date to theDay minus a number of days
-    const date = new Date(theDay);
+    // initialize date to utcDate minus a number of days
+    const date = new Date(utcDate);
     date.setDate(date.getDate() - daysAgo);
 
     // the calculated date may be 1 hour off because of Daylight Savings
@@ -17,8 +18,7 @@ function getPastDate(daysAgo) {
 
 describe("Dashboard", () => {
     beforeEach(() => {
-        cy.clock(theDay);
-        cy.log(`"Today" is ${theDay.toISOString()}`);
+        cy.log(`"Today" is ${utcDate.toISOString()}`);
 
         cy.intercept("GET", "**/Dashboard/RegisteredCount*", {
             body: {
@@ -58,8 +58,14 @@ describe("Dashboard", () => {
         cy.login(
             Cypress.env("keycloak_username"),
             Cypress.env("keycloak_password"),
-            "/"
+            "/analytics"
         );
+
+        // changing the date must be done after logging in
+        cy.clock(localDate, ["Date"]);
+
+        // the dashboard page must be loaded (or reloaded) after the date is changed
+        cy.visit("/dashboard");
     });
 
     it("Verify dashboard counts and skeletons.", () => {

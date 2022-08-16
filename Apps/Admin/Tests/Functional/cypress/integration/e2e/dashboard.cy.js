@@ -3,7 +3,7 @@ describe("Dashboard", () => {
         cy.login(
             Cypress.env("keycloak_username"),
             Cypress.env("keycloak_password"),
-            "/"
+            "/dashboard"
         );
     });
 
