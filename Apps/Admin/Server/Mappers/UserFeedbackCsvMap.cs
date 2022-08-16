@@ -18,7 +18,6 @@ namespace HealthGateway.Admin.Server.Mappers
     using System.Globalization;
     using System.Linq;
     using CsvHelper.Configuration;
-    using HealthGateway.Common.Utils;
     using HealthGateway.Database.Models;
 
     /// <summary>
