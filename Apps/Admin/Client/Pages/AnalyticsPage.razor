@@ -29,6 +29,6 @@
         <HgTextField T="int" Label="Days Inactive" Required="@true" @bind-Value="InactiveDays" Disabled="@AnalyticsState.Value.IsLoading" data-testid="days-inactive-input" />
     </MudItem>
         <MudItem xs="6" lg="3">
-            <HgButton TopMargin="Breakpoint.Always" Disabled="@AnalyticsState.Value.IsLoading" EndIcon="@Icons.Material.Filled.Download" FullWidth="@true" Variant="Variant.Filled" Color="Color.Primary" @onclick="GetUserFeedbackData" data-testid="user-feedbacks-download-btn">User Feedbacks</HgButton>
+            <HgButton TopMargin="Breakpoint.Always" Disabled="@AnalyticsState.Value.IsLoading" EndIcon="@Icons.Material.Filled.Download" FullWidth="@true" Variant="Variant.Filled" Color="Color.Primary" @onclick="GetUserFeedbackData" data-testid="user-feedback-download-btn">User Feedback</HgButton>
         </MudItem>
 </MudGrid>
