@@ -40,7 +40,7 @@ namespace HealthGateway.Admin.Server.Mappers
             this.Map(m => m.IsReviewed).Ignore();
             this.Map(m => m.Version).Ignore();
             this.Map(m => m.UserProfileId).Ignore();
-            this.Map(m => m.CreatedDateTime).Name("Created Date");
+            this.Map(m => m.CreatedDateTime).Name("Created Datetime");
             this.Map(m => m.Comment);
             this.Map(m => m.Tags)
                 .Convert(

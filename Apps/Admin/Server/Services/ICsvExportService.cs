@@ -65,7 +65,7 @@ namespace HealthGateway.Admin.Server.Services
         Task<Stream> GetInactiveUsers(int inactiveDays, int timeOffset);
 
         /// <summary>
-        /// Retrieves a stream of User Feedback in CSV format inclusive of the dates provided.
+        /// Retrieves a stream of UserFeedback in CSV format.
         /// </summary>
         /// <returns>returns a stream representing a CSV of the User Feedback.</returns>
         Stream GetUserFeedback();
