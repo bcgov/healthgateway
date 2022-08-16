@@ -74,6 +74,6 @@ public interface IAnalyticsApi
     /// Retrieves a list of User Feedback.
     /// </summary>
     /// <returns>HttpResponseMessage.</returns>
-    [Get("/GetUserfeedback")]
+    [Get("/GetUserFeedback")]
     Task<HttpResponseMessage> GetUserFeedback();
 }
