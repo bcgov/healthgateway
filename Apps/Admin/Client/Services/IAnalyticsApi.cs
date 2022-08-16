@@ -69,4 +69,11 @@ public interface IAnalyticsApi
     /// <returns>HttpResponseMessage.</returns>
     [Get("/GetInactiveUsers?inactiveDays={inactiveDays}&timeOffset={timeOffset}")]
     Task<HttpResponseMessage> GetInactiveUsers(int inactiveDays, int timeOffset);
+
+    /// <summary>
+    /// Retrieves a list of User Feedback.
+    /// </summary>
+    /// <returns>HttpResponseMessage.</returns>
+    [Get("/GetUserfeedback")]
+    Task<HttpResponseMessage> GetUserFeedback();
 }

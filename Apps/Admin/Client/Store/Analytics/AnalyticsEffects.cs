@@ -183,4 +183,32 @@ public class AnalyticsEffects
         this.Logger.LogError("{ErrorMessage}", error.Message);
         dispatcher.Dispatch(new AnalyticsActions.LoadFailAction(error));
     }
+
+    /// <summary>
+    /// Handler that calls the user feedback service and dispatch the actions.
+    /// </summary>
+    /// <param name="action">Load the initial action.</param>
+    /// <param name="dispatcher">Dispatch the actions.</param>
+    /// <returns>A <see cref="Task"/> representing the result of the asynchronous operation.</returns>
+    [EffectMethod]
+    public async Task HandleLoadAction(AnalyticsActions.LoadUserFeedbackAction action, IDispatcher dispatcher)
+    {
+        this.Logger.LogInformation("Loading user feedback report");
+
+        HttpResponseMessage response = await this.AnalyticsApi.GetUserFeedback().ConfigureAwait(true);
+        this.Logger.LogInformation("User Feedback report exported successfully!");
+        if (response.IsSuccessStatusCode)
+        {
+            dispatcher.Dispatch(new AnalyticsActions.LoadSuccessAction(response.Content));
+            return;
+        }
+
+        RequestError error = new()
+        {
+            Message = "Error exporting user feedback report.",
+        };
+
+        this.Logger.LogError("{ErrorMessage}", error.Message);
+        dispatcher.Dispatch(new AnalyticsActions.LoadFailAction(error));
+    }
 }
