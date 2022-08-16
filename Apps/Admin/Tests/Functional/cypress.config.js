@@ -19,6 +19,7 @@ module.exports = defineConfig({
             idir_password: "",
             keycloak_username: "blazoradmin",
             keycloak_password: "",
+            keycloak_unauthorized_username: "healthgateway",
         },
         trashAssetsBeforeRuns: true,
         setupNodeEvents(on, config) {
