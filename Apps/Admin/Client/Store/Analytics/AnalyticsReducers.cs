@@ -93,6 +93,20 @@ public static class AnalyticsReducers
     }
 
     /// <summary>
+    /// The Reducer for the load user feedback action.
+    /// </summary>
+    /// <param name="state">The user feedback state.</param>
+    /// <returns>The new user feedback state.</returns>
+    [ReducerMethod(typeof(AnalyticsActions.LoadUserFeedbackAction))]
+    public static AnalyticsState ReduceLoadUserFeedbackAction(AnalyticsState state)
+    {
+        return state with
+        {
+            IsLoading = true,
+        };
+    }
+
+    /// <summary>
     /// The Reducer for the load success action.
     /// </summary>
     /// <param name="state">The analytics state.</param>

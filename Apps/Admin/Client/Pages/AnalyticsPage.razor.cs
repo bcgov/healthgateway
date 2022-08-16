@@ -102,6 +102,13 @@ public partial class AnalyticsPage : FluxorComponent
         this.Dispatcher.Dispatch(new AnalyticsActions.LoadInactiveUsersAction(this.InactiveDays, this.TimeOffset));
     }
 
+    private void GetUserFeedbackData()
+    {
+        this.ResetAnalyticsState();
+        this.ReportName = "UserFeedback";
+        this.Dispatcher.Dispatch(new AnalyticsActions.LoadUserFeedbackAction());
+    }
+
     private void DownloadAnalyticsReport(AnalyticsActions.LoadSuccessAction action)
     {
         Task.Run(async () => await this.DownloadReport(this.AnalyticsStateData).ConfigureAwait(true));

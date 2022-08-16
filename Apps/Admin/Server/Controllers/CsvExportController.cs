@@ -145,6 +145,24 @@ namespace HealthGateway.Admin.Server.Controllers
             return SendContentResponse("Ratings", this.dataExportService.GetRatings(startDate, endDate));
         }
 
+        /// <summary>
+        /// Retrieves a list of User Feedback.
+        /// </summary>
+        /// <returns>A CSV of User Feedback.</returns>
+        /// <response code="200">Returns the list of user feedback.</response>
+        /// <response code="401">the client must authenticate itself to get the requested response.</response>
+        /// <response code="403">
+        /// The client does not have access rights to the content; that is, it is unauthorized, so the server
+        /// is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.
+        /// </response>
+        [HttpGet]
+        [Route("GetUserFeedback")]
+        [Produces("text/csv")]
+        public IActionResult GetUserFeedback()
+        {
+            return SendContentResponse("UserFeedback", this.dataExportService.GetUserFeedback());
+        }
+
         private static FileStreamResult SendContentResponse(string name, Stream csvStream)
         {
             csvStream.Seek(0, SeekOrigin.Begin);
