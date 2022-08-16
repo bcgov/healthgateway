@@ -234,12 +234,6 @@ describe("Support", () => {
     });
 
     it("Verify invalid phn value.", () => {
-        cy.login(
-            Cypress.env("keycloak_username"),
-            Cypress.env("keycloak_password"),
-            "/support"
-        );
-
         cy.log("Verify invalid phn test started.");
 
         // Search by invalid PHN.
@@ -256,12 +250,6 @@ describe("Support", () => {
     });
 
     it("Verify parameter value missing.", () => {
-        cy.login(
-            Cypress.env("keycloak_username"),
-            Cypress.env("keycloak_password"),
-            "/support"
-        );
-
         cy.log("Verify phn parameter value missing test started.");
 
         cy.get("[data-testid=query-type-select]").click({ force: true });
