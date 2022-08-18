@@ -33,8 +33,8 @@ export default class TooManyRequestsComponent extends Vue {
             class="no-print"
             :show="showWarning"
         >
-            We are unable to get your health records because the site is too
-            busy. Please try again later.
+            We are unable to complete all actions because the site is too busy.
+            Please try again later.
         </b-alert>
         <b-alert
             data-testid="too-many-requests-error"
