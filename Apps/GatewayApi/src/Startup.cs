@@ -19,6 +19,7 @@ namespace HealthGateway.GatewayApi
     using System.Diagnostics.CodeAnalysis;
     using HealthGateway.Common.AccessManagement.Authentication;
     using HealthGateway.Common.AspNetConfiguration;
+    using HealthGateway.Common.CacheProviders;
     using HealthGateway.Common.Delegates;
     using HealthGateway.Common.Delegates.PHSA;
     using HealthGateway.Common.Services;
@@ -72,6 +73,8 @@ namespace HealthGateway.GatewayApi
 
             // Add services
             services.AddMemoryCache();
+            services.AddSingleton<ICacheProvider, MemoryCacheProvider>();
+
             services.AddTransient<IUserProfileService, UserProfileService>();
             services.AddTransient<IUserEmailService, UserEmailService>();
             services.AddTransient<IEmailQueueService, EmailQueueService>();
