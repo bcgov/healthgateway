@@ -169,7 +169,7 @@ export const actions: UserActions = {
             return context.dispatch("createUserPreference", { userPreference });
         }
 
-        userPreference.value = jsonString;
+        userPreference = { ...userPreference, value: jsonString };
 
         return context.dispatch("updateUserPreference", { userPreference });
     },

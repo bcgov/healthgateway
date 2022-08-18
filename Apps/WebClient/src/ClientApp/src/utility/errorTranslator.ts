@@ -2,7 +2,7 @@ import { ErrorSourceType, ErrorType } from "@/constants/errorType";
 import { ServiceCode } from "@/constants/serviceCodes";
 import { BannerError, HttpError, ResultError } from "@/models/errors";
 
-export default class ErrorTranslator {
+export default abstract class ErrorTranslator {
     public static toBannerError(
         errorType: ErrorType,
         source: ErrorSourceType,
