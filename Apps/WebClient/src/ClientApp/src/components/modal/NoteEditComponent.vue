@@ -9,6 +9,7 @@ import { Action, Getter } from "vuex-class";
 
 import DatePickerComponent from "@/components/DatePickerComponent.vue";
 import LoadingComponent from "@/components/LoadingComponent.vue";
+import TooManyRequestsComponent from "@/components/TooManyRequestsComponent.vue";
 import EventBus, { EventMessageName } from "@/eventbus";
 import { DateWrapper } from "@/models/dateWrapper";
 import NoteTimelineEntry from "@/models/noteTimelineEntry";
@@ -21,6 +22,7 @@ library.add(faEdit);
     components: {
         LoadingComponent,
         DatePickerComponent,
+        TooManyRequestsComponent,
     },
 })
 export default class NoteEditComponent extends Vue {
@@ -38,6 +40,9 @@ export default class NoteEditComponent extends Vue {
 
     @Action("setSelectedDate", { namespace: "timeline" })
     setSelectedDate!: (date: DateWrapper) => void;
+
+    @Action("setTooManyRequestsError", { namespace: "errorBanner" })
+    setTooManyRequestsError!: (params: { key: string }) => void;
 
     @Action("clearFilter", { namespace: "timeline" })
     clearFilter!: () => void;
@@ -141,8 +146,12 @@ export default class NoteEditComponent extends Vue {
                 this.errorMessage = "";
                 this.handleSubmit();
             })
-            .catch((err) => {
-                this.errorMessage = err;
+            .catch((error: ResultError) => {
+                if (error.statusCode === 429) {
+                    this.setTooManyRequestsError({ key: "noteEditModal" });
+                } else {
+                    this.errorMessage = error.resultMessage;
+                }
             })
             .finally(() => {
                 this.isSaving = false;
@@ -168,8 +177,12 @@ export default class NoteEditComponent extends Vue {
                     this.handleSubmit();
                 }
             })
-            .catch((err) => {
-                this.errorMessage = err;
+            .catch((err: ResultError) => {
+                if (err.statusCode === 429) {
+                    this.setTooManyRequestsError({ key: "noteEditModal" });
+                } else {
+                    this.errorMessage = err.resultMessage;
+                }
             })
             .finally(() => {
                 this.isSaving = false;
@@ -224,6 +237,7 @@ export default class NoteEditComponent extends Vue {
         centered
         @hidden="clear"
     >
+        <TooManyRequestsComponent location="noteEditModal" />
         <b-alert
             data-testid="noteEditErrorBanner"
             variant="danger"

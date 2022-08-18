@@ -342,7 +342,7 @@ describe("User Profile", () => {
     });
 });
 
-describe("Dependents - Too Many Requests Error", () => {
+describe("Dependents", () => {
     const validDependent = {
         firstName: "Sam ", // Add end space to ensure field is trimmed
         lastName: "Testfive ", // Add end space to ensure field is trimmed
@@ -376,7 +376,7 @@ describe("Dependents - Too Many Requests Error", () => {
         );
     });
 
-    it("Delete Dependent", () => {
+    it("Delete Dependent: Too Many Requests Error", () => {
         cy.intercept("DELETE", "**/UserProfile/*/Dependent/*", {
             statusCode: 429,
         });
@@ -391,7 +391,7 @@ describe("Dependents - Too Many Requests Error", () => {
         cy.get("[data-testid=too-many-requests-error]").should("be.visible");
     });
 
-    it("Add Dependent Modal", () => {
+    it("Add Dependent: Too Many Requests Error", () => {
         cy.intercept("POST", "**/UserProfile/*/Dependent", {
             statusCode: 429,
         });
@@ -419,7 +419,7 @@ describe("Dependents - Too Many Requests Error", () => {
 });
 
 describe("Comments", () => {
-    it("Validate Add: Too Many Requests Error", () => {
+    it("Add Comment: Too Many Requests Error", () => {
         cy.intercept("POST", "**/UserProfile/*/Comment", {
             statusCode: 429,
         });
@@ -436,6 +436,77 @@ describe("Comments", () => {
         // Add comment
         cy.get("[data-testid=addCommentTextArea]").first().type(testComment);
         cy.get("[data-testid=postCommentBtn]").first().click();
+
+        // Verify
+        cy.get("[data-testid=too-many-requests-error]").should("be.visible");
+    });
+});
+
+describe("Notes", () => {
+    it("Add Note: Too Many Requests Error", () => {
+        cy.intercept("POST", "**/Note/*", {
+            statusCode: 429,
+        });
+        cy.enableModules("Note");
+        cy.login(
+            Cypress.env("keycloak.username"),
+            Cypress.env("keycloak.password"),
+            AuthMethod.KeyCloak
+        );
+
+        cy.get("[data-testid=addNoteBtn]").click();
+        cy.get("[data-testid=noteTitleInput]").type("Note Title!");
+        cy.get("[data-testid=noteDateInput] input")
+            .focus()
+            .clear()
+            .type("1950-Jan-01");
+        cy.get("[data-testid=noteTextInput]").type("Test");
+        cy.get("[data-testid=saveNoteBtn]").click();
+
+        // Verify
+        cy.get("[data-testid=too-many-requests-error]").should("be.visible");
+    });
+
+    it("Edit Note: Too Many Requests Error", () => {
+        cy.intercept("GET", "**/Note/*", {
+            fixture: "NoteService/notes-test-note.json",
+        });
+        cy.intercept("PUT", "**/Note/*", {
+            statusCode: 429,
+        });
+        cy.enableModules("Note");
+        cy.login(
+            Cypress.env("keycloak.username"),
+            Cypress.env("keycloak.password"),
+            AuthMethod.KeyCloak
+        );
+
+        cy.log("Editing Note.");
+        cy.get("[data-testid=noteMenuBtn]").first().click();
+        cy.get("[data-testid=editNoteMenuBtn]").first().click();
+        cy.get("[data-testid=noteTitleInput]").clear().type("Test Edit");
+        cy.get("[data-testid=saveNoteBtn]").click();
+
+        // Verify
+        cy.get("[data-testid=too-many-requests-error]").should("be.visible");
+    });
+
+    it("Delete Note: Too Many Requests Error", () => {
+        cy.intercept("GET", "**/Note/*", {
+            fixture: "NoteService/notes-test-note.json",
+        });
+        cy.intercept("DELETE", "**/Note/*", {
+            statusCode: 429,
+        });
+        cy.enableModules("Note");
+        cy.login(
+            Cypress.env("keycloak.username"),
+            Cypress.env("keycloak.password"),
+            AuthMethod.KeyCloak
+        );
+
+        cy.get("[data-testid=noteMenuBtn]").last().click();
+        cy.get("[data-testid=deleteNoteMenuBtn]").last().click();
 
         // Verify
         cy.get("[data-testid=too-many-requests-error]").should("be.visible");

@@ -59,13 +59,15 @@ export default class NoteTimelineComponent extends Vue {
                 hdid: this.user.hdid,
                 note: this.entry.toModel(),
             })
-                .catch((err: ResultError) =>
-                    this.addError({
-                        errorType: ErrorType.Delete,
-                        source: ErrorSourceType.Note,
-                        traceId: err.traceId,
-                    })
-                )
+                .catch((err: ResultError) => {
+                    if (err.statusCode !== 429) {
+                        this.addError({
+                            errorType: ErrorType.Delete,
+                            source: ErrorSourceType.Note,
+                            traceId: err.traceId,
+                        });
+                    }
+                })
                 .finally(() => {
                     this.isSaving = false;
                 });

@@ -137,11 +137,25 @@ export const actions: NoteActions = {
         context.commit("noteError", params.error);
 
         if (params.error.statusCode === 429) {
-            let action = "errorBanner/setTooManyRequestsError";
             if (params.errorType === ErrorType.Retrieve) {
-                action = "errorBanner/setTooManyRequestsWarning";
+                context.dispatch(
+                    "errorBanner/setTooManyRequestsWarning",
+                    { key: "page" },
+                    { root: true }
+                );
+            } else if (params.errorType === ErrorType.Delete) {
+                context.dispatch(
+                    "errorBanner/setTooManyRequestsError",
+                    { key: "page" },
+                    { root: true }
+                );
+            } else {
+                context.dispatch(
+                    "errorBanner/setTooManyRequestsError",
+                    { key: "noteEditModal" },
+                    { root: true }
+                );
             }
-            context.dispatch(action, { key: "page" }, { root: true });
         } else {
             context.dispatch(
                 "errorBanner/addError",
