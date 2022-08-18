@@ -22,6 +22,7 @@ namespace HealthGateway.JobScheduler
     using HealthGateway.Common.AccessManagement.Administration;
     using HealthGateway.Common.AccessManagement.Authentication;
     using HealthGateway.Common.AspNetConfiguration;
+    using HealthGateway.Common.CacheProviders;
     using HealthGateway.Common.Delegates.PHSA;
     using HealthGateway.Common.FileDownload;
     using HealthGateway.Common.Jobs;
@@ -88,6 +89,10 @@ namespace HealthGateway.JobScheduler
                             policy.RequireAssertion(ctx => ctx.User.HasClaim(userRoleClaimType, requiredUserRole));
                         });
                 });
+
+            // Add Services
+            services.AddMemoryCache();
+            services.AddSingleton<ICacheProvider, MemoryCacheProvider>();
 
             // Add Delegates and services for jobs
             services.AddTransient<IFileDownloadService, FileDownloadService>();

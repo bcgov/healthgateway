@@ -43,8 +43,8 @@ namespace HealthGateway.Common.AccessManagement.Authentication
 
         private readonly ILogger<IAuthenticationDelegate> logger;
         private readonly IHttpClientService httpClientService;
-        private readonly IConfiguration? configuration;
-        private readonly ICacheProvider? cacheProvider;
+        private readonly IConfiguration configuration;
+        private readonly ICacheProvider cacheProvider;
         private readonly int tokenCacheMinutes;
         private readonly IHttpContextAccessor? httpContextAccessor;
         private readonly ClientCredentialsTokenRequest tokenRequest;
@@ -61,8 +61,8 @@ namespace HealthGateway.Common.AccessManagement.Authentication
         public AuthenticationDelegate(
             ILogger<IAuthenticationDelegate> logger,
             IHttpClientService httpClientService,
-            IConfiguration? configuration,
-            ICacheProvider? cacheProvider,
+            IConfiguration configuration,
+            ICacheProvider cacheProvider,
             IHttpContextAccessor? httpContextAccessor)
         {
             this.logger = logger;
@@ -71,7 +71,7 @@ namespace HealthGateway.Common.AccessManagement.Authentication
             this.cacheProvider = cacheProvider;
             this.httpContextAccessor = httpContextAccessor;
 
-            IConfigurationSection? configSection = configuration?.GetSection(CacheConfigSectionName);
+            IConfigurationSection? configSection = configuration.GetSection(CacheConfigSectionName);
             this.tokenCacheMinutes = configSection?.GetValue("TokenCacheExpireMinutes", 0) ?? 0;
             (this.tokenUri, this.tokenRequest) = this.GetConfiguration(DefaultAuthConfigSectionName);
         }
@@ -136,7 +136,7 @@ namespace HealthGateway.Common.AccessManagement.Authentication
             JwtModel? jwtModel = null;
             if (cacheEnabled && this.tokenCacheMinutes > 0)
             {
-                jwtModel = this.cacheProvider?.GetItem<JwtModel>(cacheKey);
+                jwtModel = this.cacheProvider.GetItem<JwtModel>(cacheKey);
             }
 
             if (jwtModel != null)
@@ -153,7 +153,7 @@ namespace HealthGateway.Common.AccessManagement.Authentication
                     if (cacheEnabled && this.tokenCacheMinutes > 0)
                     {
                         this.logger.LogDebug("Attempting to store Access token in cache");
-                        this.cacheProvider?.AddItem(cacheKey, jwtModel, TimeSpan.FromMinutes(this.tokenCacheMinutes));
+                        this.cacheProvider.AddItem(cacheKey, jwtModel, TimeSpan.FromMinutes(this.tokenCacheMinutes));
                     }
                     else
                     {
@@ -182,7 +182,7 @@ namespace HealthGateway.Common.AccessManagement.Authentication
 
         private (Uri TokenUri, ClientCredentialsTokenRequest TokenRequest) GetConfiguration(string sectionName)
         {
-            IConfigurationSection? configSection = this.configuration?.GetSection(sectionName);
+            IConfigurationSection? configSection = this.configuration.GetSection(sectionName);
             Uri configUri = configSection.GetValue<Uri>(@"TokenUri");
             ClientCredentialsTokenRequest configTokenRequest = new();
             configSection.Bind(configTokenRequest); // Client ID, Client Secret, Audience, Username, Password

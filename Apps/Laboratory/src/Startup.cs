@@ -18,6 +18,7 @@ namespace HealthGateway.Laboratory
     using System.Diagnostics.CodeAnalysis;
     using HealthGateway.Common.AccessManagement.Authentication;
     using HealthGateway.Common.AspNetConfiguration;
+    using HealthGateway.Common.CacheProviders;
     using HealthGateway.Laboratory.Delegates;
     using HealthGateway.Laboratory.Factories;
     using HealthGateway.Laboratory.Models;
@@ -63,6 +64,8 @@ namespace HealthGateway.Laboratory
             this.startupConfig.ConfigureAccessControl(services);
 
             // Add services
+            services.AddMemoryCache();
+            services.AddSingleton<ICacheProvider, MemoryCacheProvider>();
             services.AddSingleton<ILaboratoryDelegateFactory, LaboratoryDelegateFactory>();
             services.AddTransient<ILaboratoryService, LaboratoryService>();
             services.AddTransient<ILabTestKitService, LabTestKitService>();
