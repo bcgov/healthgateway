@@ -73,9 +73,8 @@ namespace HealthGateway.GatewayApi
             this.startupConfig.ConfigureAccessControl(services);
 
             // Add services
-            services.AddSingleton<IConnectionMultiplexer>(x =>
-                ConnectionMultiplexer.Connect(this.configuration.GetValue<string>("RedisConnection")));
-            services.AddSingleton<ICacheProvider, RedisCacheProvider>();
+            services.AddMemoryCache();
+            services.AddSingleton<ICacheProvider, MemoryCacheProvider>();
 
             services.AddTransient<IUserProfileService, UserProfileService>();
             services.AddTransient<IUserEmailService, UserEmailService>();
