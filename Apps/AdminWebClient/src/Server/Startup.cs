@@ -24,6 +24,7 @@ namespace HealthGateway.Admin
     using HealthGateway.Common.AccessManagement.Authentication;
     using HealthGateway.Common.AspNetConfiguration;
     using HealthGateway.Common.Authorization.Admin;
+    using HealthGateway.Common.CacheProviders;
     using HealthGateway.Common.Delegates;
     using HealthGateway.Common.Delegates.PHSA;
     using HealthGateway.Common.Models.PHSA;
@@ -92,6 +93,9 @@ namespace HealthGateway.Admin
             this.startupConfig.ConfigurePatientAccess(services);
 
             // Add services
+            services.AddMemoryCache();
+            services.AddSingleton<ICacheProvider, MemoryCacheProvider>();
+
             services.AddTransient<IConfigurationService, ConfigurationService>();
             services.AddTransient<IAuthenticationService, AuthenticationService>();
             services.AddTransient<ISupportService, SupportService>();

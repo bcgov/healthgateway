@@ -32,6 +32,7 @@ namespace HealthGateway.GatewayApi
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
+    using StackExchange.Redis;
 
     /// <summary>
     /// Configures the application during startup.
@@ -72,8 +73,9 @@ namespace HealthGateway.GatewayApi
             this.startupConfig.ConfigureAccessControl(services);
 
             // Add services
-            services.AddMemoryCache();
-            services.AddSingleton<ICacheProvider, MemoryCacheProvider>();
+            services.AddSingleton<IConnectionMultiplexer>(x =>
+                ConnectionMultiplexer.Connect(this.configuration.GetValue<string>("RedisConnection")));
+            services.AddSingleton<ICacheProvider, RedisCacheProvider>();
 
             services.AddTransient<IUserProfileService, UserProfileService>();
             services.AddTransient<IUserEmailService, UserEmailService>();

@@ -38,7 +38,13 @@ namespace HealthGateway.Common.CacheProviders
         /// <param name="value">The cache value.</param>
         /// <param name="expiry">The expiry timespan of the cache item.</param>
         /// <typeparam name="T">The class type to cache.</typeparam>
-        void AddItem<T>(string key, T value, TimeSpan expiry)
+        void AddItem<T>(string key, T value, TimeSpan? expiry = null)
             where T : class;
+
+        /// <summary>
+        /// Removes an item from the cache.
+        /// </summary>
+        /// <param name="key">The key to remove.</param>
+        void RemoveItem(string key);
     }
 }
