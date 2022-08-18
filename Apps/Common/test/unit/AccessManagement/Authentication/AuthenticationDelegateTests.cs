@@ -25,6 +25,7 @@ namespace HealthGateway.CommonTests.AccessManagement.Administration
     using DeepEqual.Syntax;
     using HealthGateway.Common.AccessManagement.Authentication;
     using HealthGateway.Common.AccessManagement.Authentication.Models;
+    using HealthGateway.Common.CacheProviders;
     using HealthGateway.Common.Services;
     using Microsoft.Extensions.Caching.Memory;
     using Microsoft.Extensions.Configuration;
@@ -61,6 +62,7 @@ namespace HealthGateway.CommonTests.AccessManagement.Administration
             };
 
             using IMemoryCache memoryCache = new MemoryCache(new MemoryCacheOptions());
+            ICacheProvider cacheProvider = new MemoryCacheProvider(memoryCache);
 
             string json = @"{ ""access_token"":""token"", ""expires_in"":500, ""refresh_expires_in"":0, ""refresh_token"":""refresh_token"", ""token_type"":""bearer"", ""not-before-policy"":25, ""session_state"":""session_state"", ""scope"":""scope"" }";
             JwtModel? expected = JsonSerializer.Deserialize<JwtModel>(json);
@@ -83,7 +85,7 @@ namespace HealthGateway.CommonTests.AccessManagement.Administration
             Mock<IHttpClientService> mockHttpClientService = new();
             mockHttpClientService.Setup(s => s.CreateDefaultHttpClient()).Returns(() => new HttpClient(handlerMock.Object));
 
-            IAuthenticationDelegate authDelegate = new AuthenticationDelegate(logger, mockHttpClientService.Object, configuration, memoryCache, null);
+            IAuthenticationDelegate authDelegate = new AuthenticationDelegate(logger, mockHttpClientService.Object, configuration, cacheProvider, null);
             JwtModel actualModel = authDelegate.AuthenticateAsUser(tokenUri, tokenRequest, false);
             expected.ShouldDeepEqual(actualModel);
 
