@@ -211,7 +211,16 @@ configService
                     try {
                         await store.dispatch("user/checkRegistration");
                     } catch (error) {
-                        initializeVueError(false);
+                        let busy = false;
+                        if (
+                            instanceOfResultError(error) &&
+                            error.statusCode === 429
+                        ) {
+                            busy = true;
+                        }
+
+                        initializeVueError(busy);
+                        return;
                     }
                 }
             }

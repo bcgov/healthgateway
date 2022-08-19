@@ -9,6 +9,7 @@ import { Component, Prop } from "vue-property-decorator";
 import { Action, Getter } from "vuex-class";
 
 import { ResultType } from "@/constants/resulttype";
+import { instanceOfResultError } from "@/models/errors";
 import User from "@/models/user";
 import container from "@/plugins/container";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
@@ -27,6 +28,9 @@ export default class ValidateEmailView extends Vue {
         source: ErrorSourceType;
         traceId: string | undefined;
     }) => void;
+
+    @Action("setTooManyRequestsWarning", { namespace: "errorBanner" })
+    setTooManyRequestsWarning!: (params: { key: string }) => void;
 
     @Action("checkRegistration", { namespace: "user" })
     checkRegistration!: () => Promise<boolean>;
@@ -61,12 +65,19 @@ export default class ValidateEmailView extends Vue {
                 this.validatedValue = result.resourcePayload;
                 this.resultStatus = result.resultStatus;
                 if (this.resultStatus == ResultType.Success) {
-                    this.checkRegistration().catch(() => {
-                        this.addError({
-                            errorType: ErrorType.Retrieve,
-                            source: ErrorSourceType.Profile,
-                            traceId: undefined,
-                        });
+                    this.checkRegistration().catch((error) => {
+                        if (
+                            instanceOfResultError(error) &&
+                            error.statusCode === 429
+                        ) {
+                            this.setTooManyRequestsWarning({ key: "page" });
+                        } else {
+                            this.addError({
+                                errorType: ErrorType.Retrieve,
+                                source: ErrorSourceType.Profile,
+                                traceId: undefined,
+                            });
+                        }
                     });
                 }
             })

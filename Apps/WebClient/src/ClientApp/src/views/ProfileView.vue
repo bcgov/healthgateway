@@ -22,7 +22,7 @@ import { ErrorSourceType, ErrorType } from "@/constants/errorType";
 import BreadcrumbItem from "@/models/breadcrumbItem";
 import type { WebClientConfiguration } from "@/models/configData";
 import { DateWrapper } from "@/models/dateWrapper";
-import { ResultError } from "@/models/errors";
+import { instanceOfResultError, ResultError } from "@/models/errors";
 import PatientData, { Address } from "@/models/patientData";
 import User, { OidcUserInfo } from "@/models/user";
 import UserProfile from "@/models/userProfile";
@@ -56,6 +56,9 @@ export default class ProfileView extends Vue {
 
     @Action("setTooManyRequestsError", { namespace: "errorBanner" })
     setTooManyRequestsError!: (params: { key: string }) => void;
+
+    @Action("setTooManyRequestsWarning", { namespace: "errorBanner" })
+    setTooManyRequestsWarning!: (params: { key: string }) => void;
 
     @Action("updateUserEmail", { namespace: "user" })
     updateUserEmail!: ({
@@ -279,9 +282,9 @@ export default class ProfileView extends Vue {
 
                 this.isLoading = false;
             })
-            .catch((err: ResultError) => {
+            .catch((error) => {
                 this.logger.error(`Error loading profile: ${err}`);
-                if (err.statusCode === 429) {
+                if (instanceOfResultError(error) && error.statusCode === 429) {
                     this.setTooManyRequestsError({ key: "page" });
                 } else {
                     this.addError({
@@ -433,12 +436,16 @@ export default class ProfileView extends Vue {
             .then(() => {
                 this.smsVerified = this.user.verifiedSMS;
             })
-            .catch(() => {
-                this.addError({
-                    errorType: ErrorType.Retrieve,
-                    source: ErrorSourceType.Profile,
-                    traceId: undefined,
-                });
+            .catch((error) => {
+                if (instanceOfResultError(error) && error.statusCode === 429) {
+                    this.setTooManyRequestsWarning({ key: "page" });
+                } else {
+                    this.addError({
+                        errorType: ErrorType.Retrieve,
+                        source: ErrorSourceType.Profile,
+                        traceId: undefined,
+                    });
+                }
             });
     }
 
@@ -455,12 +462,19 @@ export default class ProfileView extends Vue {
                 this.tempEmail = "";
                 this.$v.$reset();
                 this.showCheckEmailAlert = !this.isEmptyEmail;
-                this.checkRegistration().catch(() => {
-                    this.addError({
-                        errorType: ErrorType.Retrieve,
-                        source: ErrorSourceType.Profile,
-                        traceId: undefined,
-                    });
+                this.checkRegistration().catch((error) => {
+                    if (
+                        instanceOfResultError(error) &&
+                        error.statusCode === 429
+                    ) {
+                        this.setTooManyRequestsWarning({ key: "page" });
+                    } else {
+                        this.addError({
+                            errorType: ErrorType.Retrieve,
+                            source: ErrorSourceType.Profile,
+                            traceId: undefined,
+                        });
+                    }
                 });
             })
             .catch((err) => {
@@ -503,12 +517,19 @@ export default class ProfileView extends Vue {
                 }
                 this.$v.$reset();
 
-                this.checkRegistration().catch(() => {
-                    this.addError({
-                        errorType: ErrorType.Retrieve,
-                        source: ErrorSourceType.Profile,
-                        traceId: undefined,
-                    });
+                this.checkRegistration().catch((error) => {
+                    if (
+                        instanceOfResultError(error) &&
+                        error.statusCode === 429
+                    ) {
+                        this.setTooManyRequestsWarning({ key: "page" });
+                    } else {
+                        this.addError({
+                            errorType: ErrorType.Retrieve,
+                            source: ErrorSourceType.Profile,
+                            traceId: undefined,
+                        });
+                    }
                 });
             })
             .catch(() => {
