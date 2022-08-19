@@ -106,6 +106,13 @@ Deploy the service
 oc process -f ./hgcdogs.yaml -p ENV=[dev/test/production] | oc apply -f -
 ```
 
+### Deploy Redis
+
+```console
+oc project 0bd5ad-[project]
+helm install redis redis
+```
+
 ### Pod Disruption Budget
 
 A pod disruption budget should be created for each of the deploy configs (excluding Hangfire)
