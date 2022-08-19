@@ -36,6 +36,7 @@ import HgIconComponent from "@/components/shared/HgIconComponent.vue";
 import PageTitleComponent from "@/components/shared/PageTitleComponent.vue";
 import StatusLabelComponent from "@/components/shared/StatusLabelComponent.vue";
 
+import { instanceOfResultError } from "@/models/errors";
 import User from "@/models/user";
 import {
     DELEGATE_IDENTIFIER,
@@ -210,7 +211,7 @@ configService
                     try {
                         await store.dispatch("user/checkRegistration");
                     } catch (error) {
-                        initializeVueError();
+                        initializeVueError(false);
                     }
                 }
             }
@@ -218,8 +219,13 @@ configService
             initializeVue(store);
         });
     })
-    .catch(() => {
-        initializeVueError();
+    .catch((error) => {
+        let busy = false;
+        if (instanceOfResultError(error) && error.statusCode === 429) {
+            busy = true;
+        }
+
+        initializeVueError(busy);
     });
 
 function initializeVue(store: Store<RootState>): Vue {
@@ -232,13 +238,13 @@ function initializeVue(store: Store<RootState>): Vue {
     });
 }
 
-function initializeVueError(): Vue {
+function initializeVueError(busy: boolean): Vue {
     const AppErrorView = () =>
         import(
             /* webpackChunkName: "error" */ "./views/errors/AppErrorView.vue"
         );
     return new Vue({
         el: "#app-root",
-        render: (h) => h(AppErrorView),
+        render: (h) => h(AppErrorView, { props: { busy } }),
     });
 }
