@@ -12,7 +12,4 @@ export default interface AddDependentRequest {
 
     // Dependent PHN.
     PHN: string;
-
-    // The dependent's COVID-19 test date.
-    testDate: StringISODate;
 }

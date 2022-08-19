@@ -145,17 +145,14 @@ namespace HealthGateway.GatewayApi.Services
                 };
             }
 
-            string json = JsonSerializer.Serialize(addDependentRequest.TestDate, addDependentRequest.TestDate.GetType());
-            JsonDocument jsonDoc = JsonDocument.Parse(json);
-
             // Insert Dependent to database
             ResourceDelegate dependent = new()
             {
                 ResourceOwnerHdid = patientResult.ResourcePayload.HdId,
                 ProfileHdid = delegateHdId,
-                ReasonCode = ResourceDelegateReason.COVIDLab,
-                ReasonObjectType = addDependentRequest.TestDate.GetType().AssemblyQualifiedName,
-                ReasonObject = jsonDoc,
+                ReasonCode = ResourceDelegateReason.Guardian,
+                ReasonObjectType = null,
+                ReasonObject = null,
             };
             DBResult<ResourceDelegate> dbDependent = this.resourceDelegateDelegate.Insert(dependent, true);
 
