@@ -34,10 +34,19 @@ export interface ResultError {
     errorCode: string;
     // The trace id associated to the request
     traceId: string;
-    // The action code associated to the request
-    actionCode?: ActionType;
     // The message associated to the error request
     resultMessage: string;
+    // The action code associated to the request
+    actionCode?: ActionType;
     // The HTTP status code returned by the request
     statusCode?: number;
+}
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export function instanceOfResultError(object: any): object is ResultError {
+    return (
+        "errorCode" in object &&
+        "traceId" in object &&
+        "resultMessage" in object
+    );
 }

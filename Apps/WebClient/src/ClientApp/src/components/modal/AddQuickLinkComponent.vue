@@ -7,7 +7,7 @@ import { EntryType, entryTypeMap } from "@/constants/entryType";
 import { ErrorSourceType, ErrorType } from "@/constants/errorType";
 import UserPreferenceType from "@/constants/userPreferenceType";
 import type { WebClientConfiguration } from "@/models/configData";
-import { BannerError } from "@/models/errors";
+import { BannerError, instanceOfResultError } from "@/models/errors";
 import { QuickLink } from "@/models/quickLink";
 import User from "@/models/user";
 import { UserPreference } from "@/models/userPreference";
@@ -26,11 +26,11 @@ interface QuickLinkFilter {
     components: {},
 })
 export default class AddQuickLinkComponent extends Vue {
-    @Getter("user", { namespace: "user" })
-    user!: User;
+    @Action("setTooManyRequestsError", { namespace: "errorBanner" })
+    setTooManyRequestsError!: (params: { key: string }) => void;
 
-    @Getter("webClient", { namespace: "config" })
-    webClientConfig!: WebClientConfiguration;
+    @Action("clearTooManyRequests", { namespace: "errorBanner" })
+    clearTooManyRequests!: () => void;
 
     @Action("updateQuickLinks", { namespace: "user" })
     updateQuickLinks!: (params: {
@@ -43,8 +43,14 @@ export default class AddQuickLinkComponent extends Vue {
         userPreference: UserPreference;
     }) => Promise<void>;
 
+    @Getter("webClient", { namespace: "config" })
+    webClientConfig!: WebClientConfiguration;
+
     @Getter("quickLinks", { namespace: "user" })
     quickLinks!: QuickLink[] | undefined;
+
+    @Getter("user", { namespace: "user" })
+    user!: User;
 
     private logger!: ILogger;
     private checkboxComponentKey = 0;
@@ -95,6 +101,7 @@ export default class AddQuickLinkComponent extends Vue {
 
     private handleCancel(modalEvt: Event): void {
         this.bannerError = null;
+        this.clearTooManyRequests();
 
         // Prevent modal from closing
         modalEvt.preventDefault();
@@ -111,6 +118,7 @@ export default class AddQuickLinkComponent extends Vue {
 
     private async handleSubmit(modalEvt: Event): Promise<void> {
         this.bannerError = null;
+        this.clearTooManyRequests();
 
         // Prevent modal from closing
         modalEvt.preventDefault();
@@ -161,11 +169,15 @@ export default class AddQuickLinkComponent extends Vue {
             await this.$nextTick();
             this.hideModal();
         } catch (error) {
-            this.bannerError = ErrorTranslator.toBannerError(
-                ErrorType.Update,
-                ErrorSourceType.QuickLinks,
-                undefined
-            );
+            if (instanceOfResultError(error) && error.statusCode === 429) {
+                this.setTooManyRequestsError({ key: "addQuickLinkModal" });
+            } else {
+                this.bannerError = ErrorTranslator.toBannerError(
+                    ErrorType.Update,
+                    ErrorSourceType.QuickLinks,
+                    undefined
+                );
+            }
         } finally {
             // Force checkbox component to re-render
             this.forceCheckboxComponentRerender();
@@ -198,6 +210,7 @@ export default class AddQuickLinkComponent extends Vue {
         @close="handleCancel"
     >
         <form data-testid="quick-link-modal-text">
+            <TooManyRequestsComponent location="addQuickLinkModal" />
             <b-alert
                 v-if="bannerError"
                 data-testid="quick-link-modal-error"
