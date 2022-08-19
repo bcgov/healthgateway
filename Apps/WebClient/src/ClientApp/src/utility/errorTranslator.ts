@@ -82,6 +82,12 @@ export default abstract class ErrorTranslator {
         switch (source) {
             case ErrorSourceType.MedicationRequests:
                 return "special authorities";
+            case ErrorSourceType.Patient:
+                return "patient";
+            case ErrorSourceType.Profile:
+                return "profile";
+            case ErrorSourceType.QuickLinks:
+                return "quick links";
             case ErrorSourceType.TermsOfService:
                 return "terms of service";
             default:

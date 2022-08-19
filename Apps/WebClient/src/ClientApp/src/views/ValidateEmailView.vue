@@ -18,12 +18,21 @@ library.add(faCheckCircle, faTimesCircle);
 
 @Component
 export default class ValidateEmailView extends Vue {
-    @Prop() inviteKey!: string;
+    @Prop()
+    inviteKey!: string;
 
-    @Getter("user", { namespace: "user" }) user!: User;
+    @Action("addError", { namespace: "errorBanner" })
+    addError!: (params: {
+        errorType: ErrorType;
+        source: ErrorSourceType;
+        traceId: string | undefined;
+    }) => void;
 
     @Action("checkRegistration", { namespace: "user" })
     checkRegistration!: () => Promise<boolean>;
+
+    @Getter("user", { namespace: "user" })
+    user!: User;
 
     private isLoading = true;
     private validatedValue = false;
@@ -52,7 +61,13 @@ export default class ValidateEmailView extends Vue {
                 this.validatedValue = result.resourcePayload;
                 this.resultStatus = result.resultStatus;
                 if (this.resultStatus == ResultType.Success) {
-                    this.checkRegistration();
+                    this.checkRegistration().catch(() => {
+                        this.addError({
+                            errorType: ErrorType.Retrieve,
+                            source: ErrorSourceType.Profile,
+                            traceId: undefined,
+                        });
+                    });
                 }
             })
             .finally(() => {

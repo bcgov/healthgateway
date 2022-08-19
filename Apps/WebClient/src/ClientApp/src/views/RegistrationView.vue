@@ -271,8 +271,9 @@ export default class RegistrationView extends Vue {
         event.preventDefault();
     }
 
-    private redirect(): void {
-        this.checkRegistration().then((isRegistered: boolean) => {
+    private async redirect(): void {
+        try {
+            const isRegistered = await this.checkRegistration();
             if (!isRegistered) {
                 this.addError({
                     errorType: ErrorType.Create,
@@ -298,7 +299,13 @@ export default class RegistrationView extends Vue {
                     toVerifyEmail: this.email === "" ? "false" : "true",
                 },
             });
-        });
+        } catch (error) {
+            this.addError({
+                errorType: ErrorType.Retrieve,
+                source: ErrorSourceType.Profile,
+                traceId: undefined,
+            });
+        }
     }
 
     private onEmailOptout(isChecked: boolean): void {

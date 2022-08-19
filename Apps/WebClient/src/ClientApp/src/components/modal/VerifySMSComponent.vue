@@ -22,12 +22,8 @@ import { ILogger, IUserProfileService } from "@/services/interfaces";
     },
 })
 export default class VerifySMSComponent extends Vue {
-    @Prop() smsNumber!: string;
-
-    @Getter("user", { namespace: "user" }) user!: User;
-
-    @Getter("webClient", { namespace: "config" })
-    config!: WebClientConfiguration;
+    @Prop()
+    smsNumber!: string;
 
     @Action("setTooManyRequestsError", { namespace: "errorBanner" })
     setTooManyRequestsError!: (params: { key: string }) => void;
@@ -41,8 +37,14 @@ export default class VerifySMSComponent extends Vue {
         dateTime: DateWrapper;
     }) => void;
 
+    @Getter("webClient", { namespace: "config" })
+    config!: WebClientConfiguration;
+
     @Getter("smsResendDateTime", { namespace: "user" })
     smsResendDateTime?: DateWrapper;
+
+    @Getter("user", { namespace: "user" })
+    user!: User;
 
     private logger!: ILogger;
     private userProfileService!: IUserProfileService;

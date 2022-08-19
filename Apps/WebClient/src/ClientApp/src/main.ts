@@ -207,7 +207,11 @@ configService
                 const user: User = store.getters["user/user"];
 
                 if (user.hdid && isValidIdentityProvider) {
-                    await store.dispatch("user/checkRegistration");
+                    try {
+                        await store.dispatch("user/checkRegistration");
+                    } catch (error) {
+                        initializeVueError();
+                    }
                 }
             }
 

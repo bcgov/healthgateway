@@ -429,8 +429,17 @@ export default class ProfileView extends Vue {
     }
 
     private onVerifySMSSubmit(): void {
-        this.checkRegistration();
-        this.smsVerified = true;
+        this.checkRegistration()
+            .then(() => {
+                this.smsVerified = this.user.verifiedSMS;
+            })
+            .catch(() => {
+                this.addError({
+                    errorType: ErrorType.Retrieve,
+                    source: ErrorSourceType.Profile,
+                    traceId: undefined,
+                });
+            });
     }
 
     private sendUserEmailUpdate(): void {
@@ -444,9 +453,15 @@ export default class ProfileView extends Vue {
                 this.emailVerified = false;
                 this.emailVerificationSent = true;
                 this.tempEmail = "";
-                this.checkRegistration();
                 this.$v.$reset();
                 this.showCheckEmailAlert = !this.isEmptyEmail;
+                this.checkRegistration().catch(() => {
+                    this.addError({
+                        errorType: ErrorType.Retrieve,
+                        source: ErrorSourceType.Profile,
+                        traceId: undefined,
+                    });
+                });
             })
             .catch((err) => {
                 this.logger.error(err);
@@ -469,10 +484,12 @@ export default class ProfileView extends Vue {
         this.logger.debug(
             `Updating ${this.smsNumber ? this.smsNumber : "sms number..."}`
         );
+
         // Reset timer when user submits their SMS number
         this.updateSMSResendDateTime({
             dateTime: new DateWrapper(),
         });
+
         // Send update to backend
         this.userProfileService
             .updateSMSNumber(this.user.hdid, this.smsNumber)
@@ -480,11 +497,19 @@ export default class ProfileView extends Vue {
                 this.isSMSEditable = false;
                 this.smsVerified = false;
                 this.tempSMS = "";
-                this.checkRegistration();
+
                 if (this.smsNumber) {
                     this.verifySMS();
                 }
                 this.$v.$reset();
+
+                this.checkRegistration().catch(() => {
+                    this.addError({
+                        errorType: ErrorType.Retrieve,
+                        source: ErrorSourceType.Profile,
+                        traceId: undefined,
+                    });
+                });
             });
     }
 
