@@ -163,9 +163,13 @@ export default class VerifySMSComponent extends Vue {
             .then(() =>
                 setTimeout(() => (this.smsVerificationSent = false), 5000)
             )
-            .catch((err) =>
-                this.logger.error(`updateSMSNumber with error: ${err}`)
-            );
+            .catch(() => {
+                this.addError({
+                    errorType: ErrorType.Update,
+                    source: ErrorSourceType.Profile,
+                    traceId: undefined,
+                });
+            });
     }
 
     private getTimeout(): number {

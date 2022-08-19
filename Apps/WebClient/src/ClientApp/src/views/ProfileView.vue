@@ -510,6 +510,13 @@ export default class ProfileView extends Vue {
                         traceId: undefined,
                     });
                 });
+            })
+            .catch(() => {
+                this.addError({
+                    errorType: ErrorType.Update,
+                    source: ErrorSourceType.Profile,
+                    traceId: undefined,
+                });
             });
     }
 
