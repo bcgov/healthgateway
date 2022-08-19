@@ -30,8 +30,8 @@ namespace HealthGateway.GatewayApi.Services
     /// <inheritdoc/>
     public class CommunicationService : ICommunicationService
     {
-        private const string BannerCacheKey = "Communication:Banner";
-        private const string InAppCacheKey = "Communication:InApp";
+        public const string BannerCacheKey = "Communication:Banner";
+        public const string InAppCacheKey = "Communication:InApp";
         private const string Update = "UPDATE";
         private const string Insert = "INSERT";
 

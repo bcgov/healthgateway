@@ -36,11 +36,9 @@ namespace HealthGateway.GatewayApi.Test.Services
     /// </summary>
     public class CommunicationServiceTests
     {
-        private const string BannerCacheKey = "BannerCacheKey";
-        private const string InAppCacheKey = "InAppCacheKey";
-        private const string Delete = "DELETE";
         private const string Update = "UPDATE";
         private const string Insert = "INSERT";
+        private const string Delete = "DELETE";
 
         /// <summary>
         /// Validates the Communication is pulled from the MemoryCache.
@@ -73,7 +71,7 @@ namespace HealthGateway.GatewayApi.Test.Services
             }
 
             RequestResult<Communication?> commResult = GetCommResult(communication, ResultType.Success);
-            IMemoryCache memoryCache = CreateCache(commResult, BannerCacheKey, options);
+            IMemoryCache memoryCache = CreateCache(commResult, CommunicationService.BannerCacheKey, options);
             ICacheProvider cacheProvider = new MemoryCacheProvider(memoryCache);
 
             Mock<ICommunicationDelegate> communicationDelegateMock = new();
@@ -224,7 +222,7 @@ namespace HealthGateway.GatewayApi.Test.Services
                     TotalResultCount = 1,
                 };
 
-                memoryCache = CreateCache(cacheEntry, BannerCacheKey);
+                memoryCache = CreateCache(cacheEntry, CommunicationService.BannerCacheKey);
             }
             else
             {
@@ -240,7 +238,7 @@ namespace HealthGateway.GatewayApi.Test.Services
                 cacheProvider);
 
             service.ProcessChange(changeEvent);
-            string cacheKey = commType == CommunicationType.Banner ? BannerCacheKey : InAppCacheKey;
+            string cacheKey = commType == CommunicationType.Banner ? CommunicationService.BannerCacheKey : CommunicationService.InAppCacheKey;
             RequestResult<Communication>? cacheResult = cacheProvider.GetItem<RequestResult<Communication>>(cacheKey);
             switch (scenario)
             {
