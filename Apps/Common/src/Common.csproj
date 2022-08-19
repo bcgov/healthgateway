@@ -13,7 +13,7 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="11.0.0" />
-    <PackageReference Include="Hangfire.AspNetCore" Version="1.7.30" />
+    <PackageReference Include="Hangfire.AspNetCore" Version="1.7.31" />
     <PackageReference Include="Hangfire.PostgreSql" Version="1.9.8" />
     <PackageReference Include="Macross.Json.Extensions" Version="3.0.0" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="6.0.8" />
