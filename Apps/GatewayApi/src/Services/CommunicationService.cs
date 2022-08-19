@@ -16,6 +16,7 @@
 namespace HealthGateway.GatewayApi.Services
 {
     using System;
+    using HealthGateway.Common.CacheProviders;
     using HealthGateway.Common.Data.Constants;
     using HealthGateway.Common.Data.ViewModels;
     using HealthGateway.Common.ErrorHandling;
@@ -24,7 +25,6 @@ namespace HealthGateway.GatewayApi.Services
     using HealthGateway.Database.Models;
     using HealthGateway.Database.Wrapper;
     using HealthGateway.GatewayApi.Models;
-    using Microsoft.Extensions.Caching.Memory;
     using Microsoft.Extensions.Logging;
 
     /// <inheritdoc/>
@@ -37,19 +37,19 @@ namespace HealthGateway.GatewayApi.Services
 
         private readonly ILogger logger;
         private readonly ICommunicationDelegate communicationDelegate;
-        private readonly IMemoryCache memoryCache;
+        private readonly ICacheProvider cacheProvider;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="CommunicationService"/> class.
         /// </summary>
         /// <param name="logger">Injected Logger Provider.</param>
         /// <param name="communicationDelegate">Injected Note delegate.</param>
-        /// <param name="memoryCache">The cache to use to reduce lookups.</param>
-        public CommunicationService(ILogger<CommunicationService> logger, ICommunicationDelegate communicationDelegate, IMemoryCache memoryCache)
+        /// <param name="cacheProvider">The cache to use to reduce lookups.</param>
+        public CommunicationService(ILogger<CommunicationService> logger, ICommunicationDelegate communicationDelegate, ICacheProvider cacheProvider)
         {
             this.logger = logger;
             this.communicationDelegate = communicationDelegate;
-            this.memoryCache = memoryCache;
+            this.cacheProvider = cacheProvider;
         }
 
         /// <inheritdoc/>
@@ -151,13 +151,13 @@ namespace HealthGateway.GatewayApi.Services
         private void RemoveCommunicationFromCache(CommunicationType cacheType)
         {
             string cacheKey = cacheType == CommunicationType.Banner ? BannerCacheKey : InAppCacheKey;
-            this.memoryCache.Remove(cacheKey);
+            this.cacheProvider.RemoveItem(cacheKey);
         }
 
         private RequestResult<Communication?>? GetCommunicationFromCache(CommunicationType cacheType)
         {
             string cacheKey = cacheType == CommunicationType.Banner ? BannerCacheKey : InAppCacheKey;
-            this.memoryCache.TryGetValue(cacheKey, out RequestResult<Communication?> cacheEntry);
+            RequestResult<Communication?>? cacheEntry = this.cacheProvider.GetItem<RequestResult<Communication?>>(cacheKey);
             return cacheEntry;
         }
 
@@ -169,19 +169,19 @@ namespace HealthGateway.GatewayApi.Services
                 ResultStatus = ResultType.Success,
                 TotalResultCount = 0,
             };
-            MemoryCacheEntryOptions cacheEntryOptions = new();
             DateTime now = DateTime.UtcNow;
+            TimeSpan? expiry = null;
             if (communication != null && now < communication.ExpiryDateTime)
             {
                 if (now < communication.EffectiveDateTime)
                 {
                     this.logger.LogInformation($"Communication {communication.Id} is not effective, cached empty communication until {communication.EffectiveDateTime}");
-                    cacheEntryOptions.AbsoluteExpiration = new DateTimeOffset(communication.EffectiveDateTime);
+                    expiry = communication.EffectiveDateTime - now;
                 }
                 else
                 {
                     this.logger.LogInformation($"Caching communication {communication.Id} until {communication.ExpiryDateTime}");
-                    cacheEntryOptions.AbsoluteExpiration = new DateTimeOffset(communication.ExpiryDateTime);
+                    expiry = communication.ExpiryDateTime - now;
                     cacheEntry.TotalResultCount = 1;
                 }
             }
@@ -192,7 +192,7 @@ namespace HealthGateway.GatewayApi.Services
             }
 
             string cacheKey = cacheType == CommunicationType.Banner ? BannerCacheKey : InAppCacheKey;
-            this.memoryCache.Set(cacheKey, cacheEntry, cacheEntryOptions);
+            this.cacheProvider.AddItem(cacheKey, cacheEntry, expiry);
             return cacheEntry;
         }
     }

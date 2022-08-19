@@ -43,7 +43,7 @@ namespace HealthGateway.Common.CacheProviders
         }
 
         /// <inheritdoc/>
-        public void AddItem<T>(string key, T value, TimeSpan expiry)
+        public void AddItem<T>(string key, T value, TimeSpan? expiry = null)
             where T : class
         {
             MemoryCacheEntryOptions cacheEntryOptions = new()
@@ -51,6 +51,12 @@ namespace HealthGateway.Common.CacheProviders
                 AbsoluteExpirationRelativeToNow = expiry,
             };
             this.memoryCache.Set(key, value, cacheEntryOptions);
+        }
+
+        /// <inheritdoc/>
+        public void RemoveItem(string key)
+        {
+            this.memoryCache.Remove(key);
         }
     }
 }

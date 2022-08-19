@@ -32,6 +32,7 @@ namespace HealthGateway.GatewayApi
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
+    using StackExchange.Redis;
 
     /// <summary>
     /// Configures the application during startup.

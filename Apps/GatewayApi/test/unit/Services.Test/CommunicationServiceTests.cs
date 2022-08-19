@@ -17,6 +17,7 @@ namespace HealthGateway.GatewayApi.Test.Services
 {
     using System;
     using DeepEqual.Syntax;
+    using HealthGateway.Common.CacheProviders;
     using HealthGateway.Common.Data.Constants;
     using HealthGateway.Common.Data.ViewModels;
     using HealthGateway.Database.Constants;
@@ -73,12 +74,13 @@ namespace HealthGateway.GatewayApi.Test.Services
 
             RequestResult<Communication?> commResult = GetCommResult(communication, ResultType.Success);
             IMemoryCache memoryCache = CreateCache(commResult, BannerCacheKey, options);
+            ICacheProvider cacheProvider = new MemoryCacheProvider(memoryCache);
 
             Mock<ICommunicationDelegate> communicationDelegateMock = new();
             ICommunicationService service = new CommunicationService(
                 new Mock<ILogger<CommunicationService>>().Object,
                 communicationDelegateMock.Object,
-                memoryCache);
+                cacheProvider);
 
             RequestResult<Communication?> actualResult = service.GetActiveBanner(CommunicationType.Banner);
 
@@ -124,34 +126,36 @@ namespace HealthGateway.GatewayApi.Test.Services
             };
 
             IMemoryCache memoryCache = CreateCache();
+            ICacheProvider cacheProvider = new MemoryCacheProvider(memoryCache);
+
             Mock<ICommunicationDelegate> communicationDelegateMock = new();
             communicationDelegateMock.Setup(s => s.GetNext(It.IsAny<CommunicationType>())).Returns(dbResult);
 
             ICommunicationService service = new CommunicationService(
                 new Mock<ILogger<CommunicationService>>().Object,
                 communicationDelegateMock.Object,
-                memoryCache);
+                cacheProvider);
 
             RequestResult<Communication?> actualResult = service.GetActiveBanner(CommunicationType.Banner);
 
             if (dbStatusCode == DBStatusCode.Read || dbStatusCode == DBStatusCode.NotFound)
             {
                 Assert.True(actualResult != null);
-                Assert.True(actualResult?.ResultStatus == ResultType.Success);
+                Assert.True(actualResult.ResultStatus == ResultType.Success);
                 if (dbStatusCode == DBStatusCode.Read)
                 {
-                    Assert.True(dbResult.Payload.IsDeepEqual(actualResult?.ResourcePayload));
-                    Assert.True(actualResult?.TotalResultCount == 1);
+                    Assert.True(dbResult.Payload.IsDeepEqual(actualResult.ResourcePayload));
+                    Assert.True(actualResult.TotalResultCount == 1);
                 }
                 else
                 {
-                    Assert.True(actualResult?.TotalResultCount == 0);
+                    Assert.True(actualResult.TotalResultCount == 0);
                 }
             }
             else
             {
                 Assert.True(actualResult.ResultStatus == ResultType.Error);
-                Assert.True(actualResult?.ResultError?.ErrorCode.EndsWith("-CI-DB", StringComparison.InvariantCulture));
+                Assert.True(actualResult.ResultError?.ErrorCode.EndsWith("-CI-DB", StringComparison.InvariantCulture));
             }
 
             memoryCache.Dispose();
@@ -227,38 +231,39 @@ namespace HealthGateway.GatewayApi.Test.Services
                 memoryCache = CreateCache();
             }
 
+            ICacheProvider cacheProvider = new MemoryCacheProvider(memoryCache);
             Mock<ICommunicationDelegate> communicationDelegateMock = new();
 
             ICommunicationService service = new CommunicationService(
                 new Mock<ILogger<CommunicationService>>().Object,
                 communicationDelegateMock.Object,
-                memoryCache);
+                cacheProvider);
 
             service.ProcessChange(changeEvent);
             string cacheKey = commType == CommunicationType.Banner ? BannerCacheKey : InAppCacheKey;
-            RequestResult<Communication> cacheResult = memoryCache.Get<RequestResult<Communication>>(cacheKey);
+            RequestResult<Communication>? cacheResult = cacheProvider.GetItem<RequestResult<Communication>>(cacheKey);
             switch (scenario)
             {
                 case Scenario.Active:
                     if (!cached || (cached && !cacheMiss))
                     {
-                        Assert.Same(communication, cacheResult.ResourcePayload);
+                        Assert.Same(communication, cacheResult?.ResourcePayload);
                     }
                     else
                     {
-                        Assert.True(communication.Id != cacheResult.ResourcePayload?.Id);
+                        Assert.True(communication.Id != cacheResult?.ResourcePayload?.Id);
                     }
 
                     break;
                 case Scenario.Expired:
-                    Assert.True(cacheResult.ResultStatus == ResultType.Success);
+                    Assert.True(cacheResult?.ResultStatus == ResultType.Success);
                     Assert.True(cacheResult.TotalResultCount == 0);
                     break;
                 case Scenario.Deleted:
                     Assert.True(cacheResult is null);
                     break;
                 case Scenario.Future:
-                    Assert.Same(communication, cacheResult.ResourcePayload);
+                    Assert.Same(communication, cacheResult?.ResourcePayload);
                     break;
             }
 
@@ -274,7 +279,7 @@ namespace HealthGateway.GatewayApi.Test.Services
             ICommunicationService service = new CommunicationService(
                 new Mock<ILogger<CommunicationService>>().Object,
                 new Mock<ICommunicationDelegate>().Object,
-                new Mock<IMemoryCache>().Object);
+                new Mock<ICacheProvider>().Object);
             Assert.Throws<ArgumentOutOfRangeException>(() => service.GetActiveBanner(CommunicationType.Email));
         }
 

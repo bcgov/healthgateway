@@ -22,6 +22,7 @@ namespace HealthGateway.Admin.Server
     using HealthGateway.Common.AccessManagement.Authentication;
     using HealthGateway.Common.AspNetConfiguration;
     using HealthGateway.Common.AspNetConfiguration.Modules;
+    using HealthGateway.Common.CacheProviders;
     using HealthGateway.Common.Delegates;
     using HealthGateway.Common.Delegates.PHSA;
     using HealthGateway.Database.Delegates;
@@ -64,6 +65,10 @@ namespace HealthGateway.Admin.Server
 
             // Add services to the container.
             services.AddControllersWithViews();
+
+            // Add Services
+            services.AddMemoryCache();
+            services.AddSingleton<ICacheProvider, MemoryCacheProvider>();
 
             // Add HG Services
             services.AddTransient<IConfigurationService, ConfigurationService>();

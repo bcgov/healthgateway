@@ -54,13 +54,19 @@ namespace HealthGateway.Common.CacheProviders
         }
 
         /// <inheritdoc/>
-        public void AddItem<T>(string key, T value, TimeSpan expiry)
+        public void AddItem<T>(string key, T value, TimeSpan? expiry = null)
             where T : class
         {
             this.Add(key, JsonSerializer.Serialize(value), expiry);
         }
 
-        private void Add(string key, string value, TimeSpan expiry)
+        /// <inheritdoc/>
+        public void RemoveItem(string key)
+        {
+            this.connectionMultiplexer.GetDatabase().KeyDelete(key, flags: CommandFlags.FireAndForget);
+        }
+
+        private void Add(string key, string value, TimeSpan? expiry = null)
         {
             this.connectionMultiplexer.GetDatabase().StringSet(key, value, expiry, flags: CommandFlags.FireAndForget);
         }
