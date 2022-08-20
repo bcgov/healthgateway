@@ -53,7 +53,6 @@ namespace HealthGateway.Admin.Server
             ILogger logger = ProgramConfiguration.GetInitialLogger(configuration);
             IWebHostEnvironment environment = builder.Environment;
 
-            GatewayCache.ConfigureCaching(services, logger, configuration);
             HttpWeb.ConfigureForwardHeaders(services, logger, configuration);
             Db.ConfigureDatabaseServices(services, logger, configuration);
             HttpWeb.ConfigureHttpServices(services, logger);

@@ -54,7 +54,6 @@ namespace HealthGateway.Laboratory
         /// <param name="services">The injected services provider.</param>
         public void ConfigureServices(IServiceCollection services)
         {
-            GatewayCache.ConfigureCaching(services, this.startupConfig.Logger, this.startupConfig.Configuration);
             this.startupConfig.ConfigureForwardHeaders(services);
             this.startupConfig.ConfigureDatabaseServices(services);
             this.startupConfig.ConfigureHttpServices(services);
@@ -64,9 +63,9 @@ namespace HealthGateway.Laboratory
             this.startupConfig.ConfigureSwaggerServices(services);
             this.startupConfig.ConfigureTracing(services);
             this.startupConfig.ConfigureAccessControl(services);
+            GatewayCache.ConfigureCaching(services, this.startupConfig.Logger, this.startupConfig.Configuration);
 
             // Add services
-            services.AddSingleton<ICacheProvider, MemoryCacheProvider>();
             services.AddSingleton<ILaboratoryDelegateFactory, LaboratoryDelegateFactory>();
             services.AddTransient<ILaboratoryService, LaboratoryService>();
             services.AddTransient<ILabTestKitService, LabTestKitService>();

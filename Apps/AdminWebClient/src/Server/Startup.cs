@@ -82,8 +82,6 @@ namespace HealthGateway.Admin
             IdentityModelEventSource.ShowPII = true;
 
             this.logger.LogDebug("Configure Services...");
-
-            GatewayCache.ConfigureCaching(services, this.startupConfig.Logger, this.startupConfig.Configuration);
             this.startupConfig.ConfigureForwardHeaders(services);
             this.startupConfig.ConfigureDatabaseServices(services);
             this.startupConfig.ConfigureHttpServices(services);

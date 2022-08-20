@@ -34,13 +34,15 @@ namespace HealthGateway.Medication.Delegates
     using HealthGateway.Common.Delegates;
     using HealthGateway.Common.ErrorHandling;
     using HealthGateway.Common.Models;
+    using HealthGateway.Common.Models.Cacheable;
     using HealthGateway.Common.Models.ODR;
     using HealthGateway.Common.Services;
-    using HealthGateway.Database.Models.Cacheable;
     using HealthGateway.Medication.Constants;
     using HealthGateway.Medication.Models.ODR;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.Logging;
+    using Newtonsoft.Json;
+    using JsonSerializer = System.Text.Json.JsonSerializer;
 
     /// <summary>
     /// ODR Implementation for Rest Medication Statements.
@@ -211,7 +213,7 @@ namespace HealthGateway.Medication.Delegates
                     this.logger.LogDebug("Attempting to fetch Protective Word from Cache");
                     using (Source.StartActivity("GetCacheObject"))
                     {
-                        cacheHash = this.cacheProvider.GetItem<IHash>($"{ProtectiveWordCacheDomain}:{hdid}");
+                        cacheHash = this.cacheProvider.GetItem<HmacHash>($"{ProtectiveWordCacheDomain}:{hdid}");
                     }
                 }
 

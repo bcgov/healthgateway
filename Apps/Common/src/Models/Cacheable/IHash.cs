@@ -13,12 +13,12 @@
 //  See the License for the specific language governing permissions and
 //  limitations under the License.
 // -------------------------------------------------------------------------
-namespace HealthGateway.Database.Models.Cacheable
+namespace HealthGateway.Common.Models.Cacheable
 {
     /// <summary>
     /// Represents a generic hash object.
     /// </summary>
-    public interface IHash
+    public class IHash
     {
         /// <summary>
         /// Gets or sets the base64 encoded hash.

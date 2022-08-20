@@ -31,9 +31,9 @@ namespace HealthGateway.MedicationTests.Delegates
     using HealthGateway.Common.Data.ViewModels;
     using HealthGateway.Common.Delegates;
     using HealthGateway.Common.Models;
+    using HealthGateway.Common.Models.Cacheable;
     using HealthGateway.Common.Models.ODR;
     using HealthGateway.Common.Services;
-    using HealthGateway.Database.Models.Cacheable;
     using HealthGateway.Medication.Constants;
     using HealthGateway.Medication.Delegates;
     using HealthGateway.Medication.Models.ODR;

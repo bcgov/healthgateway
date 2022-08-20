@@ -21,7 +21,7 @@ namespace HealthGateway.CommonTests.Delegates
     using DeepEqual.Syntax;
     using HealthGateway.Common.Delegates;
     using HealthGateway.Common.Models;
-    using HealthGateway.Database.Models.Cacheable;
+    using HealthGateway.Common.Models.Cacheable;
     using Microsoft.AspNetCore.Cryptography.KeyDerivation;
     using Microsoft.Extensions.Configuration;
     using Xunit;
