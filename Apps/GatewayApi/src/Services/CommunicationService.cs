@@ -30,8 +30,16 @@ namespace HealthGateway.GatewayApi.Services
     /// <inheritdoc/>
     public class CommunicationService : ICommunicationService
     {
+        /// <summary>
+        /// The Cache key used to store Communication Banners.
+        /// </summary>
         public const string BannerCacheKey = "Communication:Banner";
+
+        /// <summary>
+        /// The Cache key used to store Communication InApp Banners.
+        /// </summary>
         public const string InAppCacheKey = "Communication:InApp";
+
         private const string Update = "UPDATE";
         private const string Insert = "INSERT";
 
