@@ -36,5 +36,8 @@ namespace HealthGateway.Common.Models.Cacheable
         /// Gets or sets the base64 salt that was used in generating the hash.
         /// </summary>
         public string? Salt { get; set; }
+
+        /// <inheritdoc />
+        public string? Hash { get; set; }
     }
 }
