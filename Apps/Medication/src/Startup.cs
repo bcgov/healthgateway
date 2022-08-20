@@ -53,7 +53,6 @@ namespace HealthGateway.Medication
         /// <param name="services">The injected services provider.</param>
         public void ConfigureServices(IServiceCollection services)
         {
-            GatewayCache.ConfigureCaching(services, this.startupConfig.Logger, this.startupConfig.Configuration);
             this.startupConfig.ConfigureForwardHeaders(services);
             this.startupConfig.ConfigureDatabaseServices(services);
             this.startupConfig.ConfigureHttpServices(services);
@@ -87,7 +86,6 @@ namespace HealthGateway.Medication
             services.AddTransient<IDrugLookupDelegate, DBDrugLookupDelegate>();
             services.AddTransient<IAuthenticationDelegate, AuthenticationDelegate>();
             services.AddTransient<IMedStatementDelegate, RestMedStatementDelegate>();
-            services.AddTransient<IGenericCacheDelegate, DBGenericCacheDelegate>();
             services.AddTransient<IHashDelegate, HmacHashDelegate>();
             services.AddTransient<IMedicationRequestDelegate, SalesforceDelegate>();
             services.AddTransient<IAuthenticationDelegate, AuthenticationDelegate>();

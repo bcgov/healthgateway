@@ -25,6 +25,7 @@ namespace HealthGateway.Medication.Delegates
     using System.Text.Json;
     using System.Text.Json.Serialization;
     using System.Threading.Tasks;
+    using HealthGateway.Common.CacheProviders;
     using HealthGateway.Common.Constants;
     using HealthGateway.Common.Data.Constants;
     using HealthGateway.Common.Data.Models.ErrorHandling;
@@ -35,7 +36,6 @@ namespace HealthGateway.Medication.Delegates
     using HealthGateway.Common.Models;
     using HealthGateway.Common.Models.ODR;
     using HealthGateway.Common.Services;
-    using HealthGateway.Database.Delegates;
     using HealthGateway.Database.Models.Cacheable;
     using HealthGateway.Medication.Constants;
     using HealthGateway.Medication.Models.ODR;
@@ -52,7 +52,7 @@ namespace HealthGateway.Medication.Delegates
 
         private readonly ILogger logger;
         private readonly IHttpClientService httpClientService;
-        private readonly IGenericCacheDelegate genericCacheDelegate;
+        private readonly ICacheProvider cacheProvider;
         private readonly IHashDelegate hashDelegate;
         private readonly OdrConfig odrConfig;
         private readonly Uri baseURL;
@@ -63,18 +63,18 @@ namespace HealthGateway.Medication.Delegates
         /// <param name="logger">Injected Logger Provider.</param>
         /// <param name="httpClientService">The injected http client service.</param>
         /// <param name="configuration">The injected configuration provider.</param>
-        /// <param name="genericCacheDelegate">The delegate responsible for caching.</param>
+        /// <param name="cacheProvider">The provider responsible for caching.</param>
         /// <param name="hashDelegate">The delegate responsible for hashing.</param>
         public RestMedStatementDelegate(
             ILogger<RestMedStatementDelegate> logger,
             IHttpClientService httpClientService,
             IConfiguration configuration,
-            IGenericCacheDelegate genericCacheDelegate,
+            ICacheProvider cacheProvider,
             IHashDelegate hashDelegate)
         {
             this.logger = logger;
             this.httpClientService = httpClientService;
-            this.genericCacheDelegate = genericCacheDelegate;
+            this.cacheProvider = cacheProvider;
             this.hashDelegate = hashDelegate;
             this.odrConfig = new OdrConfig();
             configuration.Bind(ODRConfigSectionKey, this.odrConfig);
@@ -211,7 +211,7 @@ namespace HealthGateway.Medication.Delegates
                     this.logger.LogDebug("Attempting to fetch Protective Word from Cache");
                     using (Source.StartActivity("GetCacheObject"))
                     {
-                        cacheHash = this.genericCacheDelegate.GetCacheObject<IHash>(hdid, ProtectiveWordCacheDomain);
+                        cacheHash = this.cacheProvider.GetItem<IHash>($"{ProtectiveWordCacheDomain}:{hdid}");
                     }
                 }
 
@@ -226,7 +226,7 @@ namespace HealthGateway.Medication.Delegates
                         this.logger.LogDebug("Storing a copy of the Protective Word in the Cache");
                         using (Source.StartActivity("CacheObject"))
                         {
-                            this.genericCacheDelegate.CacheObject(hash, hdid, ProtectiveWordCacheDomain, this.odrConfig.CacheTTL);
+                            this.cacheProvider.AddItem($"{ProtectiveWordCacheDomain}:{hdid}", hash, TimeSpan.FromMinutes(this.odrConfig.CacheTTL));
                         }
                     }
 
