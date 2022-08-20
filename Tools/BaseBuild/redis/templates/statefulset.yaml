@@ -1,0 +1,110 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: {{ include "redis.fullname" . }}
+  labels:
+    {{- include "redis.labels" . | nindent 4 }}
+spec:
+  podManagementPolicy: Parallel
+  replicas: {{ .Values.replicaCount }}
+  updateStrategy:
+    type: RollingUpdate
+  selector:
+    matchLabels:
+      {{- include "redis.selectorLabels" . | nindent 6 }}
+  serviceName: {{ include "redis.fullname" . }}
+  template:
+    metadata:
+      {{- with .Values.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        {{- include "redis.selectorLabels" . | nindent 8 }}
+    spec:
+      containers:
+        - name: {{ .Chart.Name }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          command:
+            - /script/update-ip.sh
+            - redis-server
+            - /conf/redis.conf
+          env:
+            - name: POD_IP
+              valueFrom:
+                fieldRef:
+                  fieldPath: status.podIP
+            - name: REDISCLI_AUTH
+              valueFrom:
+                secretKeyRef:
+                  key: password
+                  name: {{ include "redis.fullname" . }}
+          lifecycle:
+            preStop:
+              exec:
+                command:
+                  - /bin/sh
+                  - -c
+                  - redis-cli -h $HOSTNAME shutdown save
+          livenessProbe:
+            exec:
+              command:
+                - /bin/sh
+                - -c
+                - test "$(redis-cli -h $HOSTNAME ping)" = "PONG"
+            initialDelaySeconds: 10
+            timeoutSeconds: 1
+            failureThreshold: 3
+          ports:
+            - containerPort: {{ .Values.service.redis.port }}
+              name: redis
+            - containerPort: {{ .Values.service.gossip.port }}
+              name: gossip
+          readinessProbe:
+            exec:
+              command:
+                - /bin/sh
+                - -c
+                - test "$(redis-cli -h $HOSTNAME ping)" = "PONG"
+            initialDelaySeconds: 15
+            timeoutSeconds: 1
+            failureThreshold: 3
+          resources:
+            requests:
+              cpu: {{ .Values.resources.requests.cpu }}
+              memory: {{ .Values.resources.requests.memory }}
+            limits:
+              cpu: {{ .Values.resources.limits.cpu }}
+              memory: {{ .Values.resources.limits.memory }}
+          volumeMounts:
+            - name: conf
+              mountPath: /conf
+              readOnly: false
+            - name: redis-data
+              mountPath: /data
+              readOnly: false
+            - name: script
+              mountPath: /script
+              readOnly: false
+      volumes:
+        - name: conf
+          secret:
+            secretName: {{ include "redis.fullname" . }}
+        - name: script
+          configMap:
+            name: {{ include "redis.fullname" . }}
+            defaultMode: 0755
+  volumeClaimTemplates:
+    - kind: PersistentVolumeClaim
+      metadata:
+        name: {{ include "redis.fullname" . }}-data
+        annotations:
+          volume.beta.kubernetes.io/storage-class: netapp-file-standard
+      spec:
+        storageClassName: netapp-file-standard
+        accessModes:
+          - ReadWriteOnce
+        resources:
+          requests:
+            storage: {{ .Values.resources.requests.storage }}

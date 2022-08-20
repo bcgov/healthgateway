@@ -1,0 +1,2 @@
+1. Redis has been deployed to OpenShift
+
