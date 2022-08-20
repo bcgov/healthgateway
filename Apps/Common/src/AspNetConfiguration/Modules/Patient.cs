@@ -18,6 +18,7 @@ namespace HealthGateway.Common.AspNetConfiguration.Modules
     using System;
     using System.Diagnostics.CodeAnalysis;
     using System.IO;
+    using System.Runtime.CompilerServices;
     using System.Security.Cryptography.X509Certificates;
     using System.ServiceModel;
     using System.ServiceModel.Description;
@@ -28,6 +29,7 @@ namespace HealthGateway.Common.AspNetConfiguration.Modules
     using HealthGateway.Database.Delegates;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
+    using Microsoft.Extensions.Logging;
     using ServiceReference;
 
     /// <summary>
@@ -40,8 +42,9 @@ namespace HealthGateway.Common.AspNetConfiguration.Modules
         /// Configures the ability to use Patient services.
         /// </summary>
         /// <param name="services">The service collection to add forward proxies into.</param>
+        /// <param name="logger">The logger to use.</param>
         /// <param name="configuration">The configuration to use for values.</param>
-        public static void ConfigurePatientAccess(IServiceCollection services, IConfiguration configuration)
+        public static void ConfigurePatientAccess(IServiceCollection services, ILogger logger, IConfiguration configuration)
         {
             services.AddTransient<IEndpointBehavior, LoggingEndpointBehaviour>();
             services.AddTransient<IClientMessageInspector, LoggingMessageInspector>();
@@ -78,7 +81,7 @@ namespace HealthGateway.Common.AspNetConfiguration.Modules
 
             services.AddTransient<IClientRegistriesDelegate, ClientRegistriesDelegate>();
             services.AddTransient<IPatientService, PatientService>();
-            services.AddTransient<IGenericCacheDelegate, DBGenericCacheDelegate>();
+            GatewayCache.ConfigureCaching(services, logger, configuration);
         }
     }
 }

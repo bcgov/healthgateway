@@ -53,6 +53,7 @@ namespace HealthGateway.Admin.Server
             ILogger logger = ProgramConfiguration.GetInitialLogger(configuration);
             IWebHostEnvironment environment = builder.Environment;
 
+            GatewayCache.ConfigureCaching(services, logger, configuration);
             HttpWeb.ConfigureForwardHeaders(services, logger, configuration);
             Db.ConfigureDatabaseServices(services, logger, configuration);
             HttpWeb.ConfigureHttpServices(services, logger);
@@ -61,14 +62,10 @@ namespace HealthGateway.Admin.Server
             Auth.ConfigureAuthorizationServices(services, logger, configuration);
             SwaggerDoc.ConfigureSwaggerServices(services, configuration);
             JobScheduler.ConfigureHangfireQueue(services, configuration);
-            Patient.ConfigurePatientAccess(services, configuration);
+            Patient.ConfigurePatientAccess(services, logger, configuration);
 
             // Add services to the container.
             services.AddControllersWithViews();
-
-            // Add Services
-            services.AddMemoryCache();
-            services.AddSingleton<ICacheProvider, MemoryCacheProvider>();
 
             // Add HG Services
             services.AddTransient<IConfigurationService, ConfigurationService>();
