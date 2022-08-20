@@ -3,7 +3,7 @@ kind: StatefulSet
 metadata:
   name: {{ include "redis.fullname" . }}
   labels:
-    {{- include "redis.labels" . | nindent 4 }}
+    app: {{ include "redis.fullname" . }}
 spec:
   podManagementPolicy: Parallel
   replicas: {{ .Values.replicaCount }}
@@ -11,7 +11,7 @@ spec:
     type: RollingUpdate
   selector:
     matchLabels:
-      {{- include "redis.selectorLabels" . | nindent 6 }}
+      app: {{ include "redis.fullname" . }}
   serviceName: {{ include "redis.fullname" . }}
   template:
     metadata:
@@ -20,7 +20,7 @@ spec:
         {{- toYaml . | nindent 8 }}
       {{- end }}
       labels:
-        {{- include "redis.selectorLabels" . | nindent 8 }}
+        app: {{ include "redis.fullname" . }}
     spec:
       containers:
         - name: {{ .Chart.Name }}

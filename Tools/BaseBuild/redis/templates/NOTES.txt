@@ -1,2 +1,13 @@
-1. Redis has been deployed to OpenShift
+Redis has been deployed to OpenShift
 
+You will need to initialize the cluster:
+
+Take note of the pod IP addresses from:
+oc get pods -l app=redis -o wide
+
+Go into OpenShift terminal on one of the redis pods and run:
+
+redis-cli --cluster create [IP1:6379] [IP2:6379] [IP3:6379]
+
+Validate cluster
+redis-cli --cluster check redis
