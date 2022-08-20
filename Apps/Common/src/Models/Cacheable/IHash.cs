@@ -18,11 +18,11 @@ namespace HealthGateway.Common.Models.Cacheable
     /// <summary>
     /// Represents a generic hash object.
     /// </summary>
-    public class IHash
+    public interface IHash
     {
         /// <summary>
         /// Gets or sets the base64 encoded hash.
         /// </summary>
-        public string? Hash { get; set; }
+        string? Hash { get; set; }
     }
 }
