@@ -142,7 +142,7 @@ namespace HealthGateway.Common.Services
             TokenSwapResponse? tokenResponse = null;
             if (this.tokenCacheMinutes > 0)
             {
-                string cacheKey = $"{hdid}-{TokenSwapCacheDomain}";
+                string cacheKey = $"{TokenSwapCacheDomain}:HDID:{hdid}";
                 tokenResponse = this.cacheProvider.GetItem<TokenSwapResponse>(cacheKey);
                 this.logger.LogDebug("Cache key: {CacheKey} was {Found} found in cache.", cacheKey, tokenResponse == null ? "not" : string.Empty);
             }
