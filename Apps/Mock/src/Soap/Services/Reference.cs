@@ -8,6 +8,7 @@
 //------------------------------------------------------------------------------
 
 #pragma warning disable CS1591 //disable XML comment
+#pragma warning disable CS0108 //disable Use the new keyword if hiding was intended.
 
 namespace HealthGateway.Mock.ServiceReference
 {
@@ -9898,7 +9899,7 @@ namespace HealthGateway.Mock.ServiceReference
     public interface QUPA_AR101102_PortTypeChannel : ServiceReference.QUPA_AR101102_PortType, System.ServiceModel.IClientChannel
     {
     }
-    
+
     //[System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.Tools.ServiceModel.Svcutil", "2.0.1")]
     [ExcludeFromCodeCoverage]
