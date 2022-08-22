@@ -22,7 +22,7 @@ import { ErrorSourceType, ErrorType } from "@/constants/errorType";
 import BreadcrumbItem from "@/models/breadcrumbItem";
 import type { WebClientConfiguration } from "@/models/configData";
 import { DateWrapper } from "@/models/dateWrapper";
-import { ResultError } from "@/models/errors";
+import { instanceOfResultError, ResultError } from "@/models/errors";
 import PatientData, { Address } from "@/models/patientData";
 import User, { OidcUserInfo } from "@/models/user";
 import UserProfile from "@/models/userProfile";
@@ -56,6 +56,9 @@ export default class ProfileView extends Vue {
 
     @Action("setTooManyRequestsError", { namespace: "errorBanner" })
     setTooManyRequestsError!: (params: { key: string }) => void;
+
+    @Action("setTooManyRequestsWarning", { namespace: "errorBanner" })
+    setTooManyRequestsWarning!: (params: { key: string }) => void;
 
     @Action("updateUserEmail", { namespace: "user" })
     updateUserEmail!: ({
@@ -279,9 +282,9 @@ export default class ProfileView extends Vue {
 
                 this.isLoading = false;
             })
-            .catch((err: ResultError) => {
+            .catch((error) => {
                 this.logger.error(`Error loading profile: ${err}`);
-                if (err.statusCode === 429) {
+                if (instanceOfResultError(error) && error.statusCode === 429) {
                     this.setTooManyRequestsError({ key: "page" });
                 } else {
                     this.addError({
@@ -429,8 +432,21 @@ export default class ProfileView extends Vue {
     }
 
     private onVerifySMSSubmit(): void {
-        this.checkRegistration();
-        this.smsVerified = true;
+        this.checkRegistration()
+            .then(() => {
+                this.smsVerified = this.user.verifiedSMS;
+            })
+            .catch((error) => {
+                if (instanceOfResultError(error) && error.statusCode === 429) {
+                    this.setTooManyRequestsWarning({ key: "page" });
+                } else {
+                    this.addError({
+                        errorType: ErrorType.Retrieve,
+                        source: ErrorSourceType.Profile,
+                        traceId: undefined,
+                    });
+                }
+            });
     }
 
     private sendUserEmailUpdate(): void {
@@ -444,9 +460,22 @@ export default class ProfileView extends Vue {
                 this.emailVerified = false;
                 this.emailVerificationSent = true;
                 this.tempEmail = "";
-                this.checkRegistration();
                 this.$v.$reset();
                 this.showCheckEmailAlert = !this.isEmptyEmail;
+                this.checkRegistration().catch((error) => {
+                    if (
+                        instanceOfResultError(error) &&
+                        error.statusCode === 429
+                    ) {
+                        this.setTooManyRequestsWarning({ key: "page" });
+                    } else {
+                        this.addError({
+                            errorType: ErrorType.Retrieve,
+                            source: ErrorSourceType.Profile,
+                            traceId: undefined,
+                        });
+                    }
+                });
             })
             .catch((err) => {
                 this.logger.error(err);
@@ -469,10 +498,12 @@ export default class ProfileView extends Vue {
         this.logger.debug(
             `Updating ${this.smsNumber ? this.smsNumber : "sms number..."}`
         );
+
         // Reset timer when user submits their SMS number
         this.updateSMSResendDateTime({
             dateTime: new DateWrapper(),
         });
+
         // Send update to backend
         this.userProfileService
             .updateSMSNumber(this.user.hdid, this.smsNumber)
@@ -480,11 +511,37 @@ export default class ProfileView extends Vue {
                 this.isSMSEditable = false;
                 this.smsVerified = false;
                 this.tempSMS = "";
-                this.checkRegistration();
+
                 if (this.smsNumber) {
                     this.verifySMS();
                 }
                 this.$v.$reset();
+
+                this.checkRegistration().catch((error) => {
+                    if (
+                        instanceOfResultError(error) &&
+                        error.statusCode === 429
+                    ) {
+                        this.setTooManyRequestsWarning({ key: "page" });
+                    } else {
+                        this.addError({
+                            errorType: ErrorType.Retrieve,
+                            source: ErrorSourceType.Profile,
+                            traceId: undefined,
+                        });
+                    }
+                });
+            })
+            .catch((error) => {
+                if (instanceOfResultError(error) && error.statusCode === 429) {
+                    this.setTooManyRequestsWarning({ key: "page" });
+                } else {
+                    this.addError({
+                        errorType: ErrorType.Update,
+                        source: ErrorSourceType.Profile,
+                        traceId: undefined,
+                    });
+                }
             });
     }
 

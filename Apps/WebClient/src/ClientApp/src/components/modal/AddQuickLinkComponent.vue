@@ -4,14 +4,18 @@ import { Component } from "vue-property-decorator";
 import { Action, Getter } from "vuex-class";
 
 import { EntryType, entryTypeMap } from "@/constants/entryType";
+import { ErrorSourceType, ErrorType } from "@/constants/errorType";
 import UserPreferenceType from "@/constants/userPreferenceType";
 import type { WebClientConfiguration } from "@/models/configData";
+import { BannerError, instanceOfResultError } from "@/models/errors";
 import { QuickLink } from "@/models/quickLink";
 import User from "@/models/user";
 import { UserPreference } from "@/models/userPreference";
 import container from "@/plugins/container";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import { ILogger } from "@/services/interfaces";
+import ErrorTranslator from "@/utility/errorTranslator";
+import PromiseUtility from "@/utility/promiseUtility";
 
 interface QuickLinkFilter {
     name: string;
@@ -22,10 +26,11 @@ interface QuickLinkFilter {
     components: {},
 })
 export default class AddQuickLinkComponent extends Vue {
-    @Getter("user", { namespace: "user" }) user!: User;
+    @Action("setTooManyRequestsError", { namespace: "errorBanner" })
+    setTooManyRequestsError!: (params: { key: string }) => void;
 
-    @Getter("webClient", { namespace: "config" })
-    webClientConfig!: WebClientConfiguration;
+    @Action("clearTooManyRequests", { namespace: "errorBanner" })
+    clearTooManyRequests!: () => void;
 
     @Action("updateQuickLinks", { namespace: "user" })
     updateQuickLinks!: (params: {
@@ -38,13 +43,20 @@ export default class AddQuickLinkComponent extends Vue {
         userPreference: UserPreference;
     }) => Promise<void>;
 
-    @Getter("quickLinks", { namespace: "user" }) quickLinks!:
-        | QuickLink[]
-        | undefined;
+    @Getter("webClient", { namespace: "config" })
+    webClientConfig!: WebClientConfiguration;
+
+    @Getter("quickLinks", { namespace: "user" })
+    quickLinks!: QuickLink[] | undefined;
+
+    @Getter("user", { namespace: "user" })
+    user!: User;
 
     private logger!: ILogger;
     private checkboxComponentKey = 0;
     private isVisible = false;
+    private bannerError: BannerError | null = null;
+    private isLoading = false;
 
     private selectedQuickLinks: string[] = [];
     private quickLinkFilter: QuickLinkFilter[] = [...entryTypeMap.values()].map(
@@ -67,24 +79,16 @@ export default class AddQuickLinkComponent extends Vue {
     }
 
     private get isAddButtonEnabled(): boolean {
-        return this.selectedQuickLinks.length > 0;
+        return this.selectedQuickLinks.length > 0 && !this.isLoading;
     }
 
     private get showVaccineCard(): boolean {
-        const preferenceName = UserPreferenceType.HideVaccineCardQuickLink;
-        let hideVaccineCard = this.user.preferences[preferenceName];
+        const preference =
+            this.user.preferences[UserPreferenceType.HideVaccineCardQuickLink];
         return (
-            hideVaccineCard?.value === "true" &&
+            preference?.value === "true" &&
             this.webClientConfig.modules["VaccinationStatus"]
         );
-    }
-
-    private addQuickLink(submittedQuickLinks: QuickLink[]): Promise<void> {
-        const quickLinks = (this.quickLinks ?? []).concat(submittedQuickLinks);
-        return this.updateQuickLinks({
-            hdid: this.user.hdid,
-            quickLinks,
-        });
     }
 
     private created(): void {
@@ -92,16 +96,13 @@ export default class AddQuickLinkComponent extends Vue {
     }
 
     private forceCheckboxComponentRerender(): void {
-        this.logger.debug(
-            `Checkbox Component Key before force re-render: ${this.checkboxComponentKey}`
-        );
         this.checkboxComponentKey++;
-        this.logger.debug(
-            `Checkbox Component Key after force re-render: ${this.checkboxComponentKey}`
-        );
     }
 
     private handleCancel(modalEvt: Event): void {
+        this.bannerError = null;
+        this.clearTooManyRequests();
+
         // Prevent modal from closing
         modalEvt.preventDefault();
 
@@ -115,7 +116,10 @@ export default class AddQuickLinkComponent extends Vue {
         this.$nextTick(() => this.hideModal());
     }
 
-    private handleSubmit(modalEvt: Event): void {
+    private async handleSubmit(modalEvt: Event): Promise<void> {
+        this.bannerError = null;
+        this.clearTooManyRequests();
+
         // Prevent modal from closing
         modalEvt.preventDefault();
 
@@ -123,12 +127,8 @@ export default class AddQuickLinkComponent extends Vue {
             this.logger.debug(`Adding quick link:  ${element}`)
         );
 
-        // Update quick link preferences in store
-        const quickLinks: QuickLink[] = [];
+        const quickLinks: QuickLink[] = this.quickLinks ?? [];
         this.selectedQuickLinks.forEach((module) => {
-            if (module === "bc-vaccine-card") {
-                this.handleUpdateVaccineCardUserPreference();
-            }
             const details = entryTypeMap.get(module as EntryType);
             if (details) {
                 quickLinks.push({
@@ -138,24 +138,52 @@ export default class AddQuickLinkComponent extends Vue {
             }
         });
 
-        this.addQuickLink(quickLinks);
+        try {
+            this.isLoading = true;
 
-        // Force checkbox component to re-render
-        this.forceCheckboxComponentRerender();
+            const promises = [
+                this.updateQuickLinks({ hdid: this.user.hdid, quickLinks }),
+            ];
 
-        // Clear selected quick links
-        this.selectedQuickLinks = [];
+            if (this.selectedQuickLinks.includes("bc-vaccine-card")) {
+                const userPreference = {
+                    ...this.user.preferences[
+                        UserPreferenceType.HideVaccineCardQuickLink
+                    ],
+                    value: "false",
+                };
 
-        // Hide the modal manually
-        this.$nextTick(() => this.hideModal());
-    }
+                promises.push(
+                    this.updateUserPreference({ userPreference }).then(() => {
+                        this.selectedQuickLinks =
+                            this.selectedQuickLinks.filter(
+                                (link) => link !== "bc-vaccine-card"
+                            );
+                    })
+                );
+            }
 
-    private handleUpdateVaccineCardUserPreference(): void {
-        const preferenceName = UserPreferenceType.HideVaccineCardQuickLink;
-        this.user.preferences[preferenceName].value = "false";
-        this.updateUserPreference({
-            userPreference: this.user.preferences[preferenceName],
-        });
+            await PromiseUtility.withMinimumDelay(Promise.all(promises), 1000);
+
+            // Hide the modal manually
+            await this.$nextTick();
+            this.hideModal();
+        } catch (error) {
+            if (instanceOfResultError(error) && error.statusCode === 429) {
+                this.setTooManyRequestsError({ key: "addQuickLinkModal" });
+            } else {
+                this.bannerError = ErrorTranslator.toBannerError(
+                    ErrorType.Update,
+                    ErrorSourceType.QuickLinks,
+                    undefined
+                );
+            }
+        } finally {
+            // Force checkbox component to re-render
+            this.forceCheckboxComponentRerender();
+
+            this.isLoading = false;
+        }
     }
 
     public showModal(): void {
@@ -182,6 +210,20 @@ export default class AddQuickLinkComponent extends Vue {
         @close="handleCancel"
     >
         <form data-testid="quick-link-modal-text">
+            <TooManyRequestsComponent location="addQuickLinkModal" />
+            <b-alert
+                v-if="bannerError"
+                data-testid="quick-link-modal-error"
+                variant="danger"
+                dismissible
+                show
+            >
+                <p>{{ bannerError.title }}</p>
+                <span>
+                    If you continue to have issues, please contact
+                    HealthGateway@gov.bc.ca.
+                </span>
+            </b-alert>
             <b-row
                 v-for="quickLink in enabledQuickLinkFilter"
                 :key="quickLink.module"
@@ -230,8 +272,10 @@ export default class AddQuickLinkComponent extends Vue {
                         variant="primary"
                         :disabled="!isAddButtonEnabled"
                         @click="handleSubmit"
-                        >Add to Home</hg-button
                     >
+                        <b-spinner v-if="isLoading" small class="mr-2" />
+                        <span>Add to Home</span>
+                    </hg-button>
                 </div>
             </b-row>
         </template>

@@ -2,7 +2,7 @@ import { ErrorSourceType, ErrorType } from "@/constants/errorType";
 import { ServiceCode } from "@/constants/serviceCodes";
 import { BannerError, HttpError, ResultError } from "@/models/errors";
 
-export default class ErrorTranslator {
+export default abstract class ErrorTranslator {
     public static toBannerError(
         errorType: ErrorType,
         source: ErrorSourceType,
@@ -82,6 +82,12 @@ export default class ErrorTranslator {
         switch (source) {
             case ErrorSourceType.MedicationRequests:
                 return "special authorities";
+            case ErrorSourceType.Patient:
+                return "patient";
+            case ErrorSourceType.Profile:
+                return "profile";
+            case ErrorSourceType.QuickLinks:
+                return "quick links";
             case ErrorSourceType.TermsOfService:
                 return "terms of service";
             default:
