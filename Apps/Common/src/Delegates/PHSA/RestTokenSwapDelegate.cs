@@ -104,7 +104,7 @@ namespace HealthGateway.Common.Delegates.PHSA
                 {
                     case HttpStatusCode.OK:
                         requestResult.ResultStatus = ResultType.Success;
-                        requestResult.ResourcePayload = response!.Content;
+                        requestResult.ResourcePayload = response.Content;
                         requestResult.TotalResultCount = 1;
                         break;
                     default:

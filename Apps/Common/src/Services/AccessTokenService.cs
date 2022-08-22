@@ -32,11 +32,6 @@ namespace HealthGateway.Common.Services
     public class AccessTokenService : IAccessTokenService
     {
         /// <summary>
-        /// Configuration section to retrieve PHSA information from.
-        /// </summary>
-        public const string PhsaConfigSectionName = "PHSA";
-
-        /// <summary>
         /// Configuration section to retrieve cache information from.
         /// </summary>
         private const string CacheConfigSectionName = "AuthCache";
@@ -49,7 +44,6 @@ namespace HealthGateway.Common.Services
         private readonly IAuthenticationDelegate authenticationDelegate;
         private readonly ICacheProvider cacheProvider;
         private readonly ILogger<AccessTokenService> logger;
-        private readonly PhsaConfig phsaConfig;
         private readonly int tokenCacheMinutes;
         private readonly ITokenSwapDelegate tokenSwapDelegate;
 
@@ -72,8 +66,6 @@ namespace HealthGateway.Common.Services
             this.tokenSwapDelegate = tokenSwapDelegate;
             this.cacheProvider = cacheProvider;
             this.authenticationDelegate = authenticationDelegate;
-            this.phsaConfig = new();
-            configuration.Bind(PhsaConfigSectionName, this.phsaConfig);
 
             IConfigurationSection? configSection = configuration.GetSection(CacheConfigSectionName);
             this.tokenCacheMinutes = configSection?.GetValue("TokenCacheExpireMinutes", 0) ?? 0;
