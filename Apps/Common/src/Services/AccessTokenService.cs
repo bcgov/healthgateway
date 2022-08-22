@@ -117,7 +117,7 @@ namespace HealthGateway.Common.Services
         private void CacheAccessToken(string hdid, TokenSwapResponse tokenSwapResponse)
         {
             using Activity? activity = Source.StartActivity();
-            string cacheKey = $"{hdid}-{TokenSwapCacheDomain}";
+            string cacheKey = $"{TokenSwapCacheDomain}:HDID:{hdid}";
             if (this.tokenCacheMinutes > 0)
             {
                 this.logger.LogDebug("Attempting to cache access token for cache key: {Key}", cacheKey);
