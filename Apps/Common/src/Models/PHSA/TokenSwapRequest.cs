@@ -56,20 +56,13 @@ namespace HealthGateway.Common.Models.PHSA
         /// <summary>
         /// Gets the form parameters to swap tokens.
         /// </summary>
-        public IEnumerable<KeyValuePair<string, string>> FormParameters
+        public IEnumerable<KeyValuePair<string, string>> FormParameters => new Dictionary<string, string>
         {
-            get
-            {
-                IEnumerable<KeyValuePair<string, string>> formParameters = new[]
-                {
-                    new KeyValuePair<string, string>("client_id", this.ClientId),
-                    new KeyValuePair<string, string>("client_secret", this.ClientSecret),
-                    new KeyValuePair<string, string>("grant_type", this.GrantType),
-                    new KeyValuePair<string, string>("scope", this.Scope),
-                    new KeyValuePair<string, string>("token", this.Token),
-                };
-                return formParameters;
-            }
-        }
+            ["client_id"] = this.ClientId,
+            ["client_secret"] = this.ClientSecret,
+            ["grant_type"] = this.GrantType,
+            ["scope"] = this.Scope,
+            ["token"] = this.Token,
+        };
     }
 }
