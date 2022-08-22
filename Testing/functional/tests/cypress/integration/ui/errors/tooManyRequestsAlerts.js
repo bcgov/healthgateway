@@ -406,9 +406,6 @@ describe("Dependents", () => {
         cy.get("[data-testid=dateOfBirthInput] input")
             .clear()
             .type(validDependent.doB);
-        cy.get("[data-testid=testDateInput] input")
-            .clear()
-            .type(validDependent.testDate);
         cy.get("[data-testid=phnInput]").clear().type(validDependent.phn);
         cy.get("[data-testid=termsCheckbox]").check({ force: true });
 

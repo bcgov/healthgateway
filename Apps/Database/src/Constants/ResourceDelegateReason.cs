@@ -24,5 +24,10 @@ namespace HealthGateway.Database.Constants
         /// Represents a delegation for Covid Laboratory.
         /// </summary>
         COVIDLab,
+
+        /// <summary>
+        /// Represents a delegation for attested access to youth data.
+        /// </summary>
+        Guardian,
     }
 }

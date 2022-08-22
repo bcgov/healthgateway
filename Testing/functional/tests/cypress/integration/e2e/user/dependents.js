@@ -7,7 +7,6 @@ describe("dependents", () => {
         wrongLastName: "Testfive2",
         invalidDoB: "2007-Aug-05",
         doB: "2014-Mar-15",
-        testDate: "2020-Mar-21",
         phn: "9874307168",
         hdid: "645645767756756767",
     };
@@ -16,7 +15,6 @@ describe("dependents", () => {
         firstName: "Baby Girl",
         lastName: "Reid",
         doB: "2018-Feb-04",
-        testDate: "2020-Mar-21",
         phn: "9879187222",
     };
 
@@ -69,9 +67,6 @@ describe("dependents", () => {
             .blur()
             .should("have.class", "is-invalid");
 
-        // Validate tesDate Input
-        cy.get("[data-testid=testDateInput] input").should("be.enabled");
-
         // Validate Cancel out of the form
         cy.get("[data-testid=cancelRegistrationBtn]")
             .should("be.enabled", "be.visible")
@@ -91,9 +86,6 @@ describe("dependents", () => {
         cy.get("[data-testid=lastNameInput]").type(validDependent.lastName);
         cy.get("[data-testid=dateOfBirthInput] input").type(
             validDependent.invalidDoB
-        );
-        cy.get("[data-testid=testDateInput] input").type(
-            validDependent.testDate
         );
         cy.get("[data-testid=phnInput]").type(validDependent.phn);
         cy.get("[data-testid=termsCheckbox]").check({ force: true });
@@ -123,9 +115,6 @@ describe("dependents", () => {
         cy.get("[data-testid=dateOfBirthInput] input")
             .clear()
             .type(validDependent.doB);
-        cy.get("[data-testid=testDateInput] input")
-            .clear()
-            .type(validDependent.testDate);
         cy.get("[data-testid=phnInput]").clear().type(validDependent.phn);
         cy.get("[data-testid=termsCheckbox]").check({ force: true });
 
@@ -158,9 +147,6 @@ describe("dependents", () => {
         cy.get("[data-testid=dateOfBirthInput] input")
             .clear()
             .type(noHdidDependent.doB);
-        cy.get("[data-testid=testDateInput] input")
-            .clear()
-            .type(noHdidDependent.testDate);
         cy.get("[data-testid=phnInput]").clear().type(noHdidDependent.phn);
         cy.get("[data-testid=termsCheckbox]").check({ force: true });
 
@@ -366,9 +352,6 @@ describe("dependents", () => {
         cy.get("[data-testid=dateOfBirthInput] input")
             .clear()
             .type(validDependent.doB);
-        cy.get("[data-testid=testDateInput] input")
-            .clear()
-            .type(validDependent.testDate);
         cy.get("[data-testid=phnInput]").clear().type(validDependent.phn);
         cy.get("[data-testid=termsCheckbox]").check({ force: true });
 
@@ -449,9 +432,6 @@ describe("dependents", () => {
         cy.get("[data-testid=dateOfBirthInput] input")
             .clear()
             .type(validDependent.doB);
-        cy.get("[data-testid=testDateInput] input")
-            .clear()
-            .type(validDependent.testDate);
         cy.get("[data-testid=phnInput]").clear().type(validDependent.phn);
         cy.get("[data-testid=termsCheckbox]").check({ force: true });
 
