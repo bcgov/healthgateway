@@ -249,7 +249,7 @@ namespace HealthGateway.Common.AspNetConfiguration.Modules
 
             services.AddScoped<IAuthorizationHandler, FhirResourceDelegateAuthorizationHandler>();
             ConfigureAuthorizationServices(services, logger, configuration);
-            Patient.ConfigurePatientAccess(services, configuration);
+            Patient.ConfigurePatientAccess(services, logger, configuration);
             services.AddTransient<IResourceDelegateDelegate, DBResourceDelegateDelegate>();
         }
 

@@ -13,16 +13,31 @@
 //  See the License for the specific language governing permissions and
 //  limitations under the License.
 // -------------------------------------------------------------------------
-namespace HealthGateway.Database.Models.Cacheable
+namespace HealthGateway.Common.Models.Cacheable
 {
+    using HealthGateway.Common.Constants;
+
     /// <summary>
-    /// Represents a generic hash object.
+    /// A hash of something.
     /// </summary>
-    public interface IHash
+    public class HmacHash : IHash
     {
         /// <summary>
-        /// Gets or sets the base64 encoded hash.
+        /// Gets or sets the pseudo random function that was used to generate this hash.
         /// </summary>
+        public HashFunction PseudoRandomFunction { get; set; } = HashFunction.HMACSHA512;
+
+        /// <summary>
+        /// Gets or sets the iterations used to generate this hash.
+        /// </summary>
+        public int Iterations { get; set; }
+
+        /// <summary>
+        /// Gets or sets the base64 salt that was used in generating the hash.
+        /// </summary>
+        public string? Salt { get; set; }
+
+        /// <inheritdoc />
         public string? Hash { get; set; }
     }
 }

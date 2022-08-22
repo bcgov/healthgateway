@@ -19,7 +19,7 @@ namespace HealthGateway.Medication
     using System.Diagnostics.CodeAnalysis;
     using HealthGateway.Common.AccessManagement.Authentication;
     using HealthGateway.Common.AspNetConfiguration;
-    using HealthGateway.Common.CacheProviders;
+    using HealthGateway.Common.AspNetConfiguration.Modules;
     using HealthGateway.Common.Delegates;
     using HealthGateway.Database.Delegates;
     using HealthGateway.Medication.Delegates;
@@ -78,9 +78,6 @@ namespace HealthGateway.Medication
                 });
 
             // Add services
-            services.AddMemoryCache();
-            services.AddSingleton<ICacheProvider, MemoryCacheProvider>();
-
             services.AddTransient<IMedicationService, RestMedicationService>();
             services.AddTransient<IMedicationStatementService, RestMedicationStatementService>();
             services.AddTransient<IMedicationRequestService, MedicationRequestService>();
@@ -89,7 +86,6 @@ namespace HealthGateway.Medication
             services.AddTransient<IDrugLookupDelegate, DBDrugLookupDelegate>();
             services.AddTransient<IAuthenticationDelegate, AuthenticationDelegate>();
             services.AddTransient<IMedStatementDelegate, RestMedStatementDelegate>();
-            services.AddTransient<IGenericCacheDelegate, DBGenericCacheDelegate>();
             services.AddTransient<IHashDelegate, HmacHashDelegate>();
             services.AddTransient<IMedicationRequestDelegate, SalesforceDelegate>();
             services.AddTransient<IAuthenticationDelegate, AuthenticationDelegate>();

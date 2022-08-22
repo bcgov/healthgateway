@@ -3,7 +3,7 @@ kind: Service
 metadata:
   name: {{ include "redis.fullname" . }}
   labels:
-    {{- include "redis.labels" . | nindent 4 }}
+    app: {{ include "redis.fullname" . }}
 spec:
   type: {{ .Values.service.type }}
   ports:
@@ -16,4 +16,4 @@ spec:
       targetPort: {{ .Values.service.gossip.port }}
       protocol: TCP
   selector:
-    {{- include "redis.selectorLabels" . | nindent 4 }}
+    app: {{ include "redis.fullname" . }}

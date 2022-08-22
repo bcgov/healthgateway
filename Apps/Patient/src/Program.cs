@@ -52,7 +52,7 @@ namespace HealthGateway.HGAdmin.Server
             Auth.ConfigureAuthServicesForJwtBearer(services, logger, configuration, environment);
             Auth.ConfigureAuthorizationServices(services, logger, configuration);
             SwaggerDoc.ConfigureSwaggerServices(services, configuration);
-            Patient.ConfigurePatientAccess(services, configuration);
+            Patient.ConfigurePatientAccess(services, logger, configuration);
             Utility.ConfigureTracing(services, logger, configuration);
 
             WebApplication app = builder.Build();

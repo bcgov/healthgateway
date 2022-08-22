@@ -22,7 +22,6 @@ namespace HealthGateway.Admin.Server
     using HealthGateway.Common.AccessManagement.Authentication;
     using HealthGateway.Common.AspNetConfiguration;
     using HealthGateway.Common.AspNetConfiguration.Modules;
-    using HealthGateway.Common.CacheProviders;
     using HealthGateway.Common.Delegates;
     using HealthGateway.Common.Delegates.PHSA;
     using HealthGateway.Database.Delegates;
@@ -61,14 +60,10 @@ namespace HealthGateway.Admin.Server
             Auth.ConfigureAuthorizationServices(services, logger, configuration);
             SwaggerDoc.ConfigureSwaggerServices(services, configuration);
             JobScheduler.ConfigureHangfireQueue(services, configuration);
-            Patient.ConfigurePatientAccess(services, configuration);
+            Patient.ConfigurePatientAccess(services, logger, configuration);
 
             // Add services to the container.
             services.AddControllersWithViews();
-
-            // Add Services
-            services.AddMemoryCache();
-            services.AddSingleton<ICacheProvider, MemoryCacheProvider>();
 
             // Add HG Services
             services.AddTransient<IConfigurationService, ConfigurationService>();

@@ -13,26 +13,16 @@
 //  See the License for the specific language governing permissions and
 //  limitations under the License.
 // -------------------------------------------------------------------------
-namespace HealthGateway.Database.Constants
+namespace HealthGateway.Common.Models.Cacheable
 {
     /// <summary>
-    /// The enumeration of Hash functions.
+    /// Represents a generic hash object.
     /// </summary>
-    public enum HashFunction
+    public interface IHash
     {
         /// <summary>
-        /// The HMAC algorithm (RFC 2104) using the SHA-1 hash function (FIPS 180-4).
+        /// Gets or sets the base64 encoded hash.
         /// </summary>
-        HMACSHA1 = 0,
-
-        /// <summary>
-        /// The HMAC algorithm (RFC 2104) using the SHA-256 hash function (FIPS 180-4).
-        /// </summary>
-        HMACSHA256 = 1,
-
-        /// <summary>
-        /// The HMAC algorithm (RFC 2104) using the SHA-512 hash function (FIPS 180-4).
-        /// </summary>
-        HMACSHA512 = 2,
+        string? Hash { get; set; }
     }
 }

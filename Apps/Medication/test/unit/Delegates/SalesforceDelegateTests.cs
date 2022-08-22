@@ -13,7 +13,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //-------------------------------------------------------------------------
-namespace HealthGateway.Medication.Delegates.Test
+namespace HealthGateway.MedicationTests.Delegates
 {
     using System;
     using System.Collections.Generic;
@@ -28,6 +28,7 @@ namespace HealthGateway.Medication.Delegates.Test
     using HealthGateway.Common.Data.Constants;
     using HealthGateway.Common.Data.ViewModels;
     using HealthGateway.Common.Services;
+    using HealthGateway.Medication.Delegates;
     using HealthGateway.Medication.Models;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.Logging;

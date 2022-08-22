@@ -15,8 +15,10 @@
 //-------------------------------------------------------------------------
 namespace HealthGateway.Common.Services
 {
+    using System;
     using System.Diagnostics;
     using System.Threading.Tasks;
+    using HealthGateway.Common.CacheProviders;
     using HealthGateway.Common.Constants;
     using HealthGateway.Common.Data.Constants;
     using HealthGateway.Common.Data.Utils;
@@ -24,10 +26,6 @@ namespace HealthGateway.Common.Services
     using HealthGateway.Common.Delegates;
     using HealthGateway.Common.ErrorHandling;
     using HealthGateway.Common.Models;
-    using HealthGateway.Database.Constants;
-    using HealthGateway.Database.Delegates;
-    using HealthGateway.Database.Models;
-    using HealthGateway.Database.Wrapper;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.Logging;
 
@@ -46,8 +44,8 @@ namespace HealthGateway.Common.Services
         /// </summary>
         private readonly ILogger<PatientService> logger;
         private readonly IClientRegistriesDelegate patientDelegate;
-        private readonly IGenericCacheDelegate cacheDelegate;
-        private readonly int cacheTTL;
+        private readonly ICacheProvider cacheProvider;
+        private readonly int cacheTtl;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="PatientService"/> class.
@@ -55,13 +53,13 @@ namespace HealthGateway.Common.Services
         /// <param name="logger">The service Logger.</param>
         /// <param name="configuration">The Configuration to use.</param>
         /// <param name="patientDelegate">The injected client registries delegate.</param>
-        /// <param name="genericCacheDelegate">The delegate responsible for caching.</param>
-        public PatientService(ILogger<PatientService> logger, IConfiguration configuration, IClientRegistriesDelegate patientDelegate, IGenericCacheDelegate genericCacheDelegate)
+        /// <param name="cacheProvider">The provider responsible for caching.</param>
+        public PatientService(ILogger<PatientService> logger, IConfiguration configuration, IClientRegistriesDelegate patientDelegate, ICacheProvider cacheProvider)
         {
             this.logger = logger;
             this.patientDelegate = patientDelegate;
-            this.cacheDelegate = genericCacheDelegate;
-            this.cacheTTL = configuration.GetSection("PatientService").GetValue("CacheTTL", 0);
+            this.cacheProvider = cacheProvider;
+            this.cacheTtl = configuration.GetSection("PatientService").GetValue("CacheTTL", 0);
         }
 
         private static ActivitySource Source { get; } = new(nameof(PatientService));
@@ -164,17 +162,17 @@ namespace HealthGateway.Common.Services
         {
             using Activity? activity = Source.StartActivity();
             PatientModel? retPatient = null;
-            if (this.cacheTTL > 0)
+            if (this.cacheTtl > 0)
             {
                 switch (identifierType)
                 {
                     case PatientIdentifierType.HDID:
                         this.logger.LogDebug("Querying Patient Cache by HDID");
-                        retPatient = this.cacheDelegate.GetCacheObject<PatientModel>(identifier, PatientCacheDomain);
+                        retPatient = this.cacheProvider.GetItem<PatientModel>($"{PatientCacheDomain}:HDID:{identifier}");
                         break;
                     case PatientIdentifierType.PHN:
                         this.logger.LogDebug("Querying Patient Cache by PHN");
-                        retPatient = this.cacheDelegate.GetCacheObjectByJSONProperty<PatientModel>("personalhealthnumber", identifier, PatientCacheDomain);
+                        retPatient = this.cacheProvider.GetItem<PatientModel>($"{PatientCacheDomain}:PHN:{identifier}");
                         break;
                 }
 
@@ -193,17 +191,18 @@ namespace HealthGateway.Common.Services
         {
             using Activity? activity = Source.StartActivity();
             string hdid = patient.HdId;
-            if (this.cacheTTL > 0)
+            if (this.cacheTtl > 0)
             {
                 this.logger.LogDebug($"Attempting to cache patient: {hdid}");
-                DBResult<GenericCache> dbResult = this.cacheDelegate.CacheObject(patient, hdid, PatientCacheDomain, this.cacheTTL);
-                if (dbResult.Status == DBStatusCode.Created)
+                TimeSpan expiry = TimeSpan.FromMinutes(this.cacheTtl);
+                if (patient.HdId != null)
                 {
-                    this.logger.LogDebug($"Created cache for patient: {hdid}");
+                    this.cacheProvider.AddItem($"{PatientCacheDomain}:HDID:{patient.HdId}", patient, expiry);
                 }
-                else
+
+                if (patient.PersonalHealthNumber != null)
                 {
-                    this.logger.LogWarning($"Unable to cache patient: {hdid}, Status: {dbResult.Status.ToString()}, Message = {dbResult.Message}");
+                    this.cacheProvider.AddItem($"{PatientCacheDomain}:PHN:{patient.PersonalHealthNumber}", patient, expiry);
                 }
             }
             else

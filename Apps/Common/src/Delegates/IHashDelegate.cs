@@ -16,7 +16,8 @@
 
 namespace HealthGateway.Common.Delegates
 {
-    using HealthGateway.Database.Models.Cacheable;
+    using System;
+    using HealthGateway.Common.Models.Cacheable;
 
     /// <summary>
     /// A delegate to generate a hash.

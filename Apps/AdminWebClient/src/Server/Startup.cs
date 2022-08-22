@@ -23,8 +23,8 @@ namespace HealthGateway.Admin
     using HealthGateway.Admin.Services;
     using HealthGateway.Common.AccessManagement.Authentication;
     using HealthGateway.Common.AspNetConfiguration;
+    using HealthGateway.Common.AspNetConfiguration.Modules;
     using HealthGateway.Common.Authorization.Admin;
-    using HealthGateway.Common.CacheProviders;
     using HealthGateway.Common.Delegates;
     using HealthGateway.Common.Delegates.PHSA;
     using HealthGateway.Common.Models.PHSA;
@@ -82,7 +82,6 @@ namespace HealthGateway.Admin
             IdentityModelEventSource.ShowPII = true;
 
             this.logger.LogDebug("Configure Services...");
-
             this.startupConfig.ConfigureForwardHeaders(services);
             this.startupConfig.ConfigureDatabaseServices(services);
             this.startupConfig.ConfigureHttpServices(services);
@@ -91,10 +90,6 @@ namespace HealthGateway.Admin
             this.startupConfig.ConfigureSwaggerServices(services);
             this.startupConfig.ConfigureHangfireQueue(services);
             this.startupConfig.ConfigurePatientAccess(services);
-
-            // Add services
-            services.AddMemoryCache();
-            services.AddSingleton<ICacheProvider, MemoryCacheProvider>();
 
             services.AddTransient<IConfigurationService, ConfigurationService>();
             services.AddTransient<IAuthenticationService, AuthenticationService>();
