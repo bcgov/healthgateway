@@ -13,12 +13,12 @@
 //  See the License for the specific language governing permissions and
 //  limitations under the License.
 // -------------------------------------------------------------------------
-namespace HealthGateway.GatewayApi.Services
+namespace HealthGateway.Common.Services
 {
     using HealthGateway.Common.Data.Constants;
     using HealthGateway.Common.Data.ViewModels;
+    using HealthGateway.Common.Models;
     using HealthGateway.Database.Models;
-    using HealthGateway.GatewayApi.Models;
 
     /// <summary>
     /// Service to interact with the Communication Delegate.
@@ -38,5 +38,10 @@ namespace HealthGateway.GatewayApi.Services
         /// </summary>
         /// <param name="changeEvent">The change event that was triggered.</param>
         void ProcessChange(BannerChangeEvent changeEvent);
+
+        /// <summary>
+        /// Removes any items that have been stored in the cache.
+        /// </summary>
+        void ClearCache();
     }
 }

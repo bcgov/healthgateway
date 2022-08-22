@@ -19,21 +19,17 @@ namespace HealthGateway.GatewayApi
     using System.Diagnostics.CodeAnalysis;
     using HealthGateway.Common.AccessManagement.Authentication;
     using HealthGateway.Common.AspNetConfiguration;
-    using HealthGateway.Common.AspNetConfiguration.Modules;
-    using HealthGateway.Common.CacheProviders;
     using HealthGateway.Common.Delegates;
     using HealthGateway.Common.Delegates.PHSA;
     using HealthGateway.Common.Services;
     using HealthGateway.Common.Utils;
     using HealthGateway.Database.Delegates;
-    using HealthGateway.GatewayApi.Listeners;
     using HealthGateway.GatewayApi.Services;
     using Microsoft.AspNetCore.Builder;
     using Microsoft.AspNetCore.Hosting;
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
-    using StackExchange.Redis;
 
     /// <summary>
     /// Configures the application during startup.
@@ -105,8 +101,6 @@ namespace HealthGateway.GatewayApi
             services.AddTransient<IResourceDelegateDelegate, DBResourceDelegateDelegate>();
             services.AddTransient<ICDogsDelegate, CDogsDelegate>();
 
-            // Add Background Services
-            services.AddHostedService<BannerListener>();
             services.Configure<ApiBehaviorOptions>(options => options.SuppressModelStateInvalidFilter = true);
 
             services.AddControllers().AddJsonOptions(options => options.JsonSerializerOptions.Converters.Add(new DateOnlyJsonConverter()));

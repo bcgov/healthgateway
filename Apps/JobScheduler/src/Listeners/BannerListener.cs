@@ -13,7 +13,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //-------------------------------------------------------------------------
-namespace HealthGateway.GatewayApi.Listeners
+namespace HealthGateway.JobScheduler.Listeners
 {
     using System;
     using System.Data;
@@ -22,10 +22,10 @@ namespace HealthGateway.GatewayApi.Listeners
     using System.Text.Json.Serialization;
     using System.Threading;
     using System.Threading.Tasks;
+    using HealthGateway.Common.Converters;
+    using HealthGateway.Common.Models;
+    using HealthGateway.Common.Services;
     using HealthGateway.Database.Context;
-    using HealthGateway.GatewayApi.Converters;
-    using HealthGateway.GatewayApi.Models;
-    using HealthGateway.GatewayApi.Services;
     using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Hosting;
@@ -66,8 +66,9 @@ namespace HealthGateway.GatewayApi.Listeners
         [SuppressMessage("Security", "CA2100:Review SQL queries for security vulnerabilities", Justification = "Abstract class property")]
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
-            this.logger.LogInformation("DBChangeListener is starting");
-            stoppingToken.Register(() => this.logger.LogInformation("DBChangeListener Shutdown as cancellation requested    "));
+            this.logger.LogInformation("Banner Listener is starting");
+            stoppingToken.Register(() => this.logger.LogInformation("Banner Listener Shutdown as cancellation requested    "));
+            this.ClearCache();
             int attempts = 0;
             while (!stoppingToken.IsCancellationRequested)
             {
@@ -103,8 +104,16 @@ namespace HealthGateway.GatewayApi.Listeners
                     }
                 }
 
-                this.logger.LogWarning($"DBChangeListener on {Channel} exiting...");
+                this.logger.LogWarning($"Banner Listener on {Channel} exiting...");
             }
+        }
+
+        private void ClearCache()
+        {
+            using IServiceScope scope = this.services.CreateScope();
+            ICommunicationService cs = scope.ServiceProvider.GetRequiredService<ICommunicationService>();
+            this.logger.LogInformation("Clearing Banner and InApp Cache");
+            cs.ClearCache();
         }
 
         private void ReceiveEvent(object sender, NpgsqlNotificationEventArgs e)
