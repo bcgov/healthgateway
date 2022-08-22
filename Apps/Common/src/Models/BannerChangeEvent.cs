@@ -13,7 +13,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //-------------------------------------------------------------------------
-namespace HealthGateway.GatewayApi.Models
+namespace HealthGateway.Common.Models
 {
     using HealthGateway.Database.Models;
 

@@ -13,31 +13,27 @@
 //  See the License for the specific language governing permissions and
 //  limitations under the License.
 // -------------------------------------------------------------------------
-namespace HealthGateway.GatewayApi.Test.Services
+namespace HealthGateway.Common.Converters
 {
+    using System;
+    using System.Text.Json;
+    using System.Text.Json.Serialization;
+
     /// <summary>
-    /// Scenario enum to use for testing purposes.
+    /// Json Converter to put Postgres +00 dates into c# UTC DateTimes.
     /// </summary>
-    public enum Scenario
+    public class DateTimeConverter : JsonConverter<DateTime>
     {
-        /// <summary>
-        /// The communication is Active.
-        /// </summary>
-        Active,
+        /// <inheritdoc/>
+        public override DateTime Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+        {
+            return reader.GetDateTime().ToUniversalTime();
+        }
 
-        /// <summary>
-        /// The communication is expired.
-        /// </summary>
-        Expired,
-
-        /// <summary>
-        /// The communication should be removed.
-        /// </summary>
-        Deleted,
-
-        /// <summary>
-        /// The communication should be future effective dated.
-        /// </summary>
-        Future,
+        /// <inheritdoc/>
+        public override void Write(Utf8JsonWriter writer, DateTime value, JsonSerializerOptions options)
+        {
+            writer.WriteStringValue(value.ToUniversalTime());
+        }
     }
 }

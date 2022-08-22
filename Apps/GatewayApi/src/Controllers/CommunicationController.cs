@@ -17,8 +17,8 @@ namespace HealthGateway.GatewayApi.Controllers
 {
     using HealthGateway.Common.Data.Constants;
     using HealthGateway.Common.Data.ViewModels;
+    using HealthGateway.Common.Services;
     using HealthGateway.Database.Models;
-    using HealthGateway.GatewayApi.Services;
     using Microsoft.AspNetCore.Mvc;
 
     /// <summary>

@@ -13,18 +13,18 @@
 //  See the License for the specific language governing permissions and
 //  limitations under the License.
 // -------------------------------------------------------------------------
-namespace HealthGateway.GatewayApi.Services
+namespace HealthGateway.Common.Services
 {
     using System;
     using HealthGateway.Common.CacheProviders;
     using HealthGateway.Common.Data.Constants;
     using HealthGateway.Common.Data.ViewModels;
     using HealthGateway.Common.ErrorHandling;
+    using HealthGateway.Common.Models;
     using HealthGateway.Database.Constants;
     using HealthGateway.Database.Delegates;
     using HealthGateway.Database.Models;
     using HealthGateway.Database.Wrapper;
-    using HealthGateway.GatewayApi.Models;
     using Microsoft.Extensions.Logging;
 
     /// <inheritdoc/>
@@ -154,6 +154,13 @@ namespace HealthGateway.GatewayApi.Services
                     }
                 }
             }
+        }
+
+        /// <inheritdoc/>
+        public void ClearCache()
+        {
+            this.RemoveCommunicationFromCache(CommunicationType.Banner);
+            this.RemoveCommunicationFromCache(CommunicationType.InApp);
         }
 
         private void RemoveCommunicationFromCache(CommunicationType cacheType)

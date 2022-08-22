@@ -18,11 +18,9 @@ namespace HealthGateway.GatewayApi.Test.Controllers
     using DeepEqual.Syntax;
     using HealthGateway.Common.Data.Constants;
     using HealthGateway.Common.Data.ViewModels;
-    using HealthGateway.Database.Constants;
+    using HealthGateway.Common.Services;
     using HealthGateway.Database.Models;
     using HealthGateway.GatewayApi.Controllers;
-    using HealthGateway.GatewayApi.Services;
-    using Microsoft.AspNetCore.Mvc;
     using Moq;
     using Xunit;
 

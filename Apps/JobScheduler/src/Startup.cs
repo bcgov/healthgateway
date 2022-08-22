@@ -30,6 +30,7 @@ namespace HealthGateway.JobScheduler
     using HealthGateway.Database.Delegates;
     using HealthGateway.DrugMaintainer;
     using Healthgateway.JobScheduler.Jobs;
+    using HealthGateway.JobScheduler.Listeners;
     using Healthgateway.JobScheduler.Utils;
     using Microsoft.AspNetCore.Authentication.OpenIdConnect;
     using Microsoft.AspNetCore.Builder;
@@ -106,6 +107,7 @@ namespace HealthGateway.JobScheduler
             services.AddTransient<IResourceDelegateDelegate, DBResourceDelegateDelegate>();
             services.AddTransient<IEventLogDelegate, DBEventLogDelegate>();
             services.AddTransient<IFeedbackDelegate, DBFeedbackDelegate>();
+            services.AddTransient<ICommunicationService, CommunicationService>();
 
             // Add injection for KeyCloak User Admin
             services.AddTransient<IAuthenticationDelegate, AuthenticationDelegate>();
@@ -123,6 +125,9 @@ namespace HealthGateway.JobScheduler
 
             // Add processing server as IHostedService
             services.AddHangfireServer();
+
+            // Add Background Services
+            services.AddHostedService<BannerListener>();
         }
 
         /// <summary>
