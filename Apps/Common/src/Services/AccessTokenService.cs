@@ -94,7 +94,7 @@ namespace HealthGateway.Common.Services
                     requestResult.ResultStatus = ResultType.Error;
                     requestResult.ResultError = new()
                     {
-                        ResultMessage = $"Internal Error: Unable to get authenticated user token from context for hdid: '{hdid}'",
+                        ResultMessage = $"Internal Error: Unable to get authenticated user token from context for hdid: {hdid}",
                         ErrorCode = ErrorTranslator.InternalError(ErrorType.InvalidState),
                     };
                 }
