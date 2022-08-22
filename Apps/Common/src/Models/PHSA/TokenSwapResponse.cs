@@ -13,37 +13,37 @@
 //  See the License for the specific language governing permissions and
 //  limitations under the License.
 // -------------------------------------------------------------------------
-namespace HealthGateway.Laboratory.Models.PHSA
+namespace HealthGateway.Common.Models.PHSA
 {
     using System.Text.Json.Serialization;
 
     /// <summary>
-    /// Model object representing an authenticated lab test kit.
+    /// Model object representing an access token.
     /// </summary>
-    public class LabTestKit
+    public class TokenSwapResponse
     {
         /// <summary>
-        /// Gets or sets when the test was used.
+        /// Gets or sets the access token.
         /// </summary>
-        [JsonPropertyName("testTakenMinutesAgo")]
-        public int TestTakenMinutesAgo { get; set; }
+        [JsonPropertyName("access_token")]
+        public string AccessToken { get; set; } = string.Empty;
 
         /// <summary>
-        /// Gets or sets the test kit id.
+        /// Gets or sets the expires on for the token.
         /// </summary>
-        [JsonPropertyName("testKitCid")]
-        public string? TestKitId { get; set; }
+        [JsonPropertyName("expires_on")]
+        public int ExpiresIn { get; set; }
 
         /// <summary>
-        /// Gets or sets first portion of the short code.
+        /// Gets or sets the token type for the token.
         /// </summary>
-        [JsonPropertyName("shortCodeFirst")]
-        public string? ShortCodeFirst { get; set; }
+        [JsonPropertyName("token_type")]
+        public string TokenType { get; set; } = string.Empty;
 
         /// <summary>
-        /// Gets or sets the second portion of the short code.
+        /// Gets or sets the scope for the token.
         /// </summary>
-        [JsonPropertyName("shortCodeSecond")]
-        public string? ShortCodeSecond { get; set; }
+        [JsonPropertyName("scope")]
+        public string Scope { get; set; } = string.Empty;
     }
 }
