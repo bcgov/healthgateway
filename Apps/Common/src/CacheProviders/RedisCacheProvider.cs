@@ -57,7 +57,7 @@ namespace HealthGateway.Common.CacheProviders
         public void AddItem<T>(string key, T value, TimeSpan? expiry = null)
             where T : class
         {
-            this.Add(key, JsonSerializer.Serialize(value), expiry);
+            this.Add(key, JsonSerializer.Serialize(value, value.GetType()), expiry);
         }
 
         /// <inheritdoc/>
