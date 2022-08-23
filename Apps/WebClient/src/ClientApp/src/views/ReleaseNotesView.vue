@@ -29,6 +29,19 @@ export default class ReleaseNotesView extends Vue {
         <BreadcrumbComponent :items="breadcrumbItems" />
         <page-title title="Health Gateway Release Notes" />
         <release-note
+            date="August 23, 2022"
+            version="v2022.6.5"
+            title="Guardian Access to Immunizations"
+        >
+            <ul>
+                <li>
+                    We expanded dependent access to include immunizations from
+                    the Provincial Immunization Registry so you can view your
+                    child's vaccine records.
+                </li>
+            </ul>
+        </release-note>
+        <release-note
             date="July 5, 2022"
             version="v2022.6.2"
             title="Filter badges, Pagination buttons"
