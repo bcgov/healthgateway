@@ -35,7 +35,9 @@ export default class ReleaseNotesView extends Vue {
         >
             <ul>
                 <li>
-                    We expanded dependent access to immunizations from the Provincial Immunization Registry so you can view your child's vaccine records. 
+                    We expanded dependent access to immunizations from the
+                    Provincial Immunization Registry so you can view your
+                    child's vaccine records.
                 </li>
             </ul>
         </release-note>
