@@ -3,6 +3,7 @@ import Vue from "vue";
 import { Component } from "vue-property-decorator";
 import { Action, Getter } from "vuex-class";
 
+import TooManyRequestsComponent from "@/components/TooManyRequestsComponent.vue";
 import { EntryType, entryTypeMap } from "@/constants/entryType";
 import { ErrorSourceType, ErrorType } from "@/constants/errorType";
 import UserPreferenceType from "@/constants/userPreferenceType";
@@ -23,7 +24,9 @@ interface QuickLinkFilter {
 }
 
 @Component({
-    components: {},
+    components: {
+        TooManyRequestsComponent,
+    },
 })
 export default class AddQuickLinkComponent extends Vue {
     @Action("setTooManyRequestsError", { namespace: "errorBanner" })
