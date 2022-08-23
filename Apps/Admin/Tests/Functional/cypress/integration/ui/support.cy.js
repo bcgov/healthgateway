@@ -36,7 +36,7 @@ describe("Support", () => {
         // PHN with results
         cy.intercept(
             "GET",
-            `**/Support/Users?queryString=${phn}&queryType=PHN`,
+            `**/Support/Users?queryString=${phn}&queryType=Phn`,
             {
                 fixture: "SupportService/users-phn.json",
             }
@@ -72,7 +72,7 @@ describe("Support", () => {
         // PHN no results
         cy.intercept(
             "GET",
-            "**/Support/Users?queryString=9735361219&queryType=PHN",
+            `**/Support/Users?queryString=${phnNotFound}&queryType=Phn`,
             {
                 fixture: "SupportService/users-phn-no-results.json",
             }
@@ -81,7 +81,7 @@ describe("Support", () => {
         // HDID no results
         cy.intercept(
             "GET",
-            "**/Support/Users?queryString=P123456789&queryType=HDID",
+            `**/Support/Users?queryString=${hdidNotFound}&queryType=HDID`,
             {
                 fixture: "SupportService/users-hdid-no-results.json",
             }
@@ -90,7 +90,7 @@ describe("Support", () => {
         // SMS no results
         cy.intercept(
             "GET",
-            "**/Support/Users?queryString=5551234567&queryType=SMS",
+            `**/Support/Users?queryString=${smsNotFound}&queryType=SMS`,
             {
                 fixture: "SupportService/users-sms-no-results.json",
             }
@@ -99,7 +99,7 @@ describe("Support", () => {
         // Email no results
         cy.intercept(
             "GET",
-            "**/Support/Users?queryString=fakeemail_noresults%40healthgateway.gov.bc.ca&queryType=Email",
+            `**/Support/Users?queryString=${emailNotFound}&queryType=Email`,
             {
                 fixture: "SupportService/users-email-no-results.json",
             }
