@@ -7,34 +7,32 @@
         "smsNumber": "2501234567",
         "isSMSNumberVerified": true,
         "hasTermsOfServiceUpdated": false,
-        "lastLoginDateTime": "2021-11-24T19:46:26Z",
+        "lastLoginDateTime": "2021-11-23T05:55:14Z",
         "lastLoginDateTimes": [
-            "2021-11-24T19:46:26Z",
-            "2021-11-24T19:18:40Z",
-            "2021-11-24T18:04:08Z",
-            "2021-11-24T17:18:51Z",
-            "2021-11-24T17:18:16Z"
+            "2021-11-23T05:55:14Z",
+            "2021-11-22T05:49:47Z",
+            "2021-11-21T05:49:16Z"
         ],
         "closedDateTime": null,
         "preferences": {
-            "tutorialMenuNote": {
-                "hdId": "P6FFO433A5WPMVTGM7T4ZVWBKCSVNAYGTWTU3J2LWMGUMERKI72A",
-                "preference": "tutorialMenuNote",
-                "value": "false",
-                "version": 17468603,
-                "createdDateTime": "2021-11-24T01:41:30.123405Z",
-                "createdBy": "System",
-                "updatedDateTime": "2021-11-24T01:41:30.123405Z",
-                "updatedBy": "System"
-            },
             "tutorialMenuExport": {
                 "hdId": "P6FFO433A5WPMVTGM7T4ZVWBKCSVNAYGTWTU3J2LWMGUMERKI72A",
                 "preference": "tutorialMenuExport",
                 "value": "false",
-                "version": 17468604,
-                "createdDateTime": "2021-11-24T01:41:30.124287Z",
+                "version": 3177,
+                "createdDateTime": "2021-10-14T16:15:40.794376Z",
                 "createdBy": "System",
-                "updatedDateTime": "2021-11-24T01:41:30.124287Z",
+                "updatedDateTime": "2021-10-14T16:15:40.794376Z",
+                "updatedBy": "System"
+            },
+            "tutorialMenuNote": {
+                "hdId": "P6FFO433A5WPMVTGM7T4ZVWBKCSVNAYGTWTU3J2LWMGUMERKI72A",
+                "preference": "tutorialMenuNote",
+                "value": "false",
+                "version": 3177,
+                "createdDateTime": "2021-10-14T16:15:40.794376Z",
+                "createdBy": "System",
+                "updatedDateTime": "2021-10-14T16:15:40.794376Z",
                 "updatedBy": "System"
             }
         }
