@@ -68,7 +68,7 @@ namespace HealthGateway.Common.AccessManagement.Authorization.Handlers
                 }
                 else
                 {
-                    this.logger.LogWarning($"Non-owner access to {resourceHDID} rejected; Supports delegation: {requirement.SupportsSystemDelegation}");
+                    this.logger.LogDebug($"Non-owner access to {resourceHDID} rejected; Supports delegation: {requirement.SupportsSystemDelegation}");
                 }
             }
 
