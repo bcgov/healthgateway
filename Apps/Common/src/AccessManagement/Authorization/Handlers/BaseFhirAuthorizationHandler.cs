@@ -89,7 +89,7 @@ namespace HealthGateway.Common.AccessManagement.Authorization.Handlers
             }
             else
             {
-                this.logger.LogInformation($"Unable to validate resource owner for {resourceHDID} as no HDID claims present");
+                this.logger.LogDebug($"Unable to validate resource owner for {resourceHDID} as no HDID claims present");
             }
 
             return retVal;

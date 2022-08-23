@@ -85,12 +85,12 @@ namespace HealthGateway.Common.AccessManagement.Authorization.Handlers
                         }
                         else
                         {
-                            this.logger.LogWarning($"Non-owner access to {resourceHDID} rejected");
+                            this.logger.LogDebug($"Non-owner access to {resourceHDID} rejected");
                         }
                     }
                     else
                     {
-                        this.logger.LogWarning($"Non-owner access to {resourceHDID} rejected as user delegation is disabled");
+                        this.logger.LogDebug($"Non-owner access to {resourceHDID} rejected as user delegation is disabled");
                     }
                 }
                 else
