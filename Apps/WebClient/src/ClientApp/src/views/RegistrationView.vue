@@ -12,7 +12,7 @@ import LoadingComponent from "@/components/LoadingComponent.vue";
 import { ErrorSourceType, ErrorType } from "@/constants/errorType";
 import { RegistrationStatus } from "@/constants/registrationStatus";
 import type { WebClientConfiguration } from "@/models/configData";
-import { ResultError } from "@/models/errors";
+import { instanceOfResultError, ResultError } from "@/models/errors";
 import { TermsOfService } from "@/models/termsOfService";
 import type { OidcUserInfo } from "@/models/user";
 import container from "@/plugins/container";
@@ -271,8 +271,9 @@ export default class RegistrationView extends Vue {
         event.preventDefault();
     }
 
-    private redirect(): void {
-        this.checkRegistration().then((isRegistered: boolean) => {
+    private async redirect(): void {
+        try {
+            const isRegistered = await this.checkRegistration();
             if (!isRegistered) {
                 this.addError({
                     errorType: ErrorType.Create,
@@ -298,7 +299,17 @@ export default class RegistrationView extends Vue {
                     toVerifyEmail: this.email === "" ? "false" : "true",
                 },
             });
-        });
+        } catch (error) {
+            if (instanceOfResultError(error) && error.statusCode === 429) {
+                this.setTooManyRequestsWarning({ key: "page" });
+            } else {
+                this.addError({
+                    errorType: ErrorType.Retrieve,
+                    source: ErrorSourceType.Profile,
+                    traceId: undefined,
+                });
+            }
+        }
     }
 
     private onEmailOptout(isChecked: boolean): void {

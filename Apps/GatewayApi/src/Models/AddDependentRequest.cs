@@ -41,10 +41,5 @@ namespace HealthGateway.GatewayApi.Models
         /// Gets or sets the dependent's PHN.
         /// </summary>
         public string PHN { get; set; } = string.Empty;
-
-        /// <summary>
-        /// Gets or sets the TestDate.
-        /// </summary>
-        public DateTime TestDate { get; set; }
     }
 }

@@ -1,24 +1,12 @@
 @page "/login"
+@layout AuthenticationLayout
 
-<PageTitle>HG Admin Login</PageTitle>
-<div class="d-flex flex-column mud-width-full align-center">
-    <MudPaper Elevation="25" Class="pa-8 mud-width-full" MaxWidth="500px">
-        <div class="d-flex justify-center mb-4">
-            <MudImage Src="images/health-gateway-logo.svg" title="Health Gateway Logo" />
-        </div>
-        <MudHidden Breakpoint="Breakpoint.Xs">
-            <MudText Typo="Typo.h4" Align="Align.Center">Health Gateway Admin</MudText>
-        </MudHidden>
-        <MudHidden Breakpoint="Breakpoint.Xs" Invert="true">
-            <MudText Typo="Typo.h4" Align="Align.Center">HG Admin</MudText>
-        </MudHidden>
+<PageTitle>Health Gateway Admin Login</PageTitle>
 
-        <MudText Align="Align.Center" Class="my-4 pa-4">
-            This application is only for authorized Health Gateway support team members. If you do not have access after login, please contact your administrator.
-        </MudText>
+<MudText Align="Align.Center" Class="my-4 pa-4">
+    This application is only for authorized Health Gateway support team members. If you do not have access after login, please contact your administrator.
+</MudText>
 
-        <MudButton Variant="Variant.Filled" Color="Color.Primary" Href="@LogInUrl" Size="Size.Large" FullWidth="true" data-testid="sign-in-btn">
-            Sign In
-        </MudButton>
-    </MudPaper>
-</div>
+<MudButton Variant="Variant.Filled" Color="Color.Primary" Href="@LogInUrl" Size="Size.Large" FullWidth="true" data-testid="sign-in-btn">
+    Log In
+</MudButton>

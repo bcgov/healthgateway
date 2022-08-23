@@ -150,7 +150,7 @@ namespace HealthGateway.Common.AspNetConfiguration
         /// <param name="services">The service collection to add forward proxies into.</param>
         public void ConfigurePatientAccess(IServiceCollection services)
         {
-            Patient.ConfigurePatientAccess(services, this.Configuration);
+            Patient.ConfigurePatientAccess(services, this.Logger, this.Configuration);
         }
 
         /// <summary>

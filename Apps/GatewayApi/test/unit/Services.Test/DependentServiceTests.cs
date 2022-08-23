@@ -45,7 +45,6 @@ namespace HealthGateway.GatewayApi.Test.Services
         private readonly string mockPHN = "MockPHN";
         private readonly string mockFirstName = "MockFirstName";
         private readonly string mockLastName = "MockLastName";
-        private readonly DateTime mockTestDate = new(2020, 1, 10);
         private readonly DateTime mockDateOfBirth = new(2010, 10, 10);
         private readonly string mockGender = "Male";
         private readonly string mockHdId = "MockHdId";
@@ -418,7 +417,6 @@ namespace HealthGateway.GatewayApi.Test.Services
                 PHN = this.mockPHN,
                 FirstName = this.mockFirstName,
                 LastName = this.mockLastName,
-                TestDate = this.mockTestDate,
                 DateOfBirth = this.mockDateOfBirth,
             };
         }

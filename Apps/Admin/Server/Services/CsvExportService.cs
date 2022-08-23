@@ -40,6 +40,7 @@ namespace HealthGateway.Admin.Server.Services
         private readonly ICommentDelegate commentDelegate;
         private readonly IRatingDelegate ratingDelegate;
         private readonly IInactiveUserService inactiveUserService;
+        private readonly IFeedbackDelegate feedbackDelegate;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="CsvExportService"/> class.
@@ -49,18 +50,21 @@ namespace HealthGateway.Admin.Server.Services
         /// <param name="commentDelegate">The comment delegate to interact with the DB.</param>
         /// <param name="ratingDelegate">The rating delegate to interact with the DB.</param>
         /// <param name="inactiveUserService">The inactive user service to get match db and keycloak inactive users.</param>
+        /// <param name="feedbackDelegate">The feedback delegate to interact with the DB.</param>
         public CsvExportService(
             INoteDelegate noteDelegate,
             IUserProfileDelegate userProfileDelegate,
             ICommentDelegate commentDelegate,
             IRatingDelegate ratingDelegate,
-            IInactiveUserService inactiveUserService)
+            IInactiveUserService inactiveUserService,
+            IFeedbackDelegate feedbackDelegate)
         {
             this.noteDelegate = noteDelegate;
             this.userProfileDelegate = userProfileDelegate;
             this.commentDelegate = commentDelegate;
             this.ratingDelegate = ratingDelegate;
             this.inactiveUserService = inactiveUserService;
+            this.feedbackDelegate = feedbackDelegate;
         }
 
         /// <inheritdoc/>
@@ -102,6 +106,13 @@ namespace HealthGateway.Admin.Server.Services
             }
 
             return GetStream<AdminUserProfileView, AdminUserProfileViewCsvMap>(new List<AdminUserProfileView>());
+        }
+
+        /// <inheritdoc/>
+        public Stream GetUserFeedback()
+        {
+            DBResult<IList<UserFeedback>> feedback = this.feedbackDelegate.GetAllUserFeedbackEntries();
+            return GetStream<UserFeedback, UserFeedbackCsvMap>(feedback.Payload);
         }
 
         private static Stream GetStream<TModel, TMap>(IEnumerable<TModel> obj)

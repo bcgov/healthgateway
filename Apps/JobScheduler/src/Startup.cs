@@ -22,6 +22,7 @@ namespace HealthGateway.JobScheduler
     using HealthGateway.Common.AccessManagement.Administration;
     using HealthGateway.Common.AccessManagement.Authentication;
     using HealthGateway.Common.AspNetConfiguration;
+    using HealthGateway.Common.AspNetConfiguration.Modules;
     using HealthGateway.Common.Delegates.PHSA;
     using HealthGateway.Common.FileDownload;
     using HealthGateway.Common.Jobs;
@@ -29,6 +30,7 @@ namespace HealthGateway.JobScheduler
     using HealthGateway.Database.Delegates;
     using HealthGateway.DrugMaintainer;
     using Healthgateway.JobScheduler.Jobs;
+    using HealthGateway.JobScheduler.Listeners;
     using Healthgateway.JobScheduler.Utils;
     using Microsoft.AspNetCore.Authentication.OpenIdConnect;
     using Microsoft.AspNetCore.Builder;
@@ -65,6 +67,7 @@ namespace HealthGateway.JobScheduler
         /// <param name="services">The passed in Service Collection.</param>
         public void ConfigureServices(IServiceCollection services)
         {
+            GatewayCache.ConfigureCaching(services, this.startupConfig.Logger, this.startupConfig.Configuration);
             this.startupConfig.ConfigureForwardHeaders(services);
             this.startupConfig.ConfigureDatabaseServices(services);
             this.startupConfig.ConfigureHttpServices(services);
@@ -104,6 +107,7 @@ namespace HealthGateway.JobScheduler
             services.AddTransient<IResourceDelegateDelegate, DBResourceDelegateDelegate>();
             services.AddTransient<IEventLogDelegate, DBEventLogDelegate>();
             services.AddTransient<IFeedbackDelegate, DBFeedbackDelegate>();
+            services.AddTransient<ICommunicationService, CommunicationService>();
 
             // Add injection for KeyCloak User Admin
             services.AddTransient<IAuthenticationDelegate, AuthenticationDelegate>();
@@ -121,6 +125,9 @@ namespace HealthGateway.JobScheduler
 
             // Add processing server as IHostedService
             services.AddHangfireServer();
+
+            // Add Background Services
+            services.AddHostedService<BannerListener>();
         }
 
         /// <summary>
@@ -172,7 +179,6 @@ namespace HealthGateway.JobScheduler
             SchedulerHelper.ScheduleDrugLoadJob<ProvincialDrugJob>(this.configuration, "PharmaCareDrugFile");
             SchedulerHelper.ScheduleJob<CloseAccountJob>(this.configuration, "CloseAccounts", j => j.Process());
             SchedulerHelper.ScheduleJob<OneTimeJob>(this.configuration, "OneTime", j => j.Process());
-            SchedulerHelper.ScheduleJob<CleanCacheJob>(this.configuration, "CleanCache", j => j.Process());
             SchedulerHelper.ScheduleJob<DeleteEmailJob>(this.configuration, "DeleteEmailJob", j => j.DeleteOldEmails());
         }
     }

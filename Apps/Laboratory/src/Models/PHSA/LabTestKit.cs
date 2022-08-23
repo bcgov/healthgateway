@@ -41,7 +41,7 @@ namespace HealthGateway.Laboratory.Models.PHSA
         public string? ShortCodeFirst { get; set; }
 
         /// <summary>
-        /// Gets or sets the second partion of the short code.
+        /// Gets or sets the second portion of the short code.
         /// </summary>
         [JsonPropertyName("shortCodeSecond")]
         public string? ShortCodeSecond { get; set; }

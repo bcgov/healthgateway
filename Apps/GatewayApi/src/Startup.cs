@@ -24,7 +24,6 @@ namespace HealthGateway.GatewayApi
     using HealthGateway.Common.Services;
     using HealthGateway.Common.Utils;
     using HealthGateway.Database.Delegates;
-    using HealthGateway.GatewayApi.Listeners;
     using HealthGateway.GatewayApi.Services;
     using Microsoft.AspNetCore.Builder;
     using Microsoft.AspNetCore.Hosting;
@@ -71,7 +70,6 @@ namespace HealthGateway.GatewayApi
             this.startupConfig.ConfigureAccessControl(services);
 
             // Add services
-            services.AddMemoryCache();
             services.AddTransient<IUserProfileService, UserProfileService>();
             services.AddTransient<IUserEmailService, UserEmailService>();
             services.AddTransient<IEmailQueueService, EmailQueueService>();
@@ -103,8 +101,6 @@ namespace HealthGateway.GatewayApi
             services.AddTransient<IResourceDelegateDelegate, DBResourceDelegateDelegate>();
             services.AddTransient<ICDogsDelegate, CDogsDelegate>();
 
-            // Add Background Services
-            services.AddHostedService<BannerListener>();
             services.Configure<ApiBehaviorOptions>(options => options.SuppressModelStateInvalidFilter = true);
 
             services.AddControllers().AddJsonOptions(options => options.JsonSerializerOptions.Converters.Add(new DateOnlyJsonConverter()));

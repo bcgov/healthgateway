@@ -5,7 +5,7 @@ import { ILogger } from "@/services/interfaces";
 
 @injectable()
 export class WinstonLogger implements ILogger {
-    private logger!: Logger;
+    private logger: Logger | undefined;
 
     public initialize(logLevel?: string): void {
         this.logger = createLogger({
@@ -20,7 +20,7 @@ export class WinstonLogger implements ILogger {
     }
 
     public log(level: string, message: string): void {
-        this.logger.log({
+        this.logger?.log({
             level,
             message,
         });

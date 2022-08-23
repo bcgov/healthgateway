@@ -117,6 +117,19 @@ public static class AnalyticsActions
     }
 
     /// <summary>
+    /// The action representing the initiation of the user feedback load action.
+    /// </summary>
+    public class LoadUserFeedbackAction
+    {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="LoadUserFeedbackAction"/> class.
+        /// </summary>
+        public LoadUserFeedbackAction()
+        {
+        }
+    }
+
+    /// <summary>
     /// The action representing a successful load action.
     /// </summary>
     public class LoadSuccessAction : BaseSuccessAction<HttpContent>

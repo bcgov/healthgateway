@@ -64,7 +64,6 @@ namespace HealthGateway.Encounter
             services.AddTransient<IEncounterService, EncounterService>();
 
             // Add Delegates
-            services.AddTransient<IGenericCacheDelegate, DBGenericCacheDelegate>();
             services.AddTransient<IMspVisitDelegate, RestMspVisitDelegate>();
         }
 

@@ -1,3 +1,5 @@
+const timeout = 45000;
+
 function getFileName(name) {
     // yyyy-mm-dd
     const today = new Date().toLocaleDateString("en-CA");
@@ -18,10 +20,11 @@ describe("System Analytics", () => {
 
         cy.intercept("GET", "**/CsvExport/GetRatings").as("getRatings");
 
-        cy.intercept(
-            "GET",
-            "**/CsvExport/GetInactiveUsers?timeOffset=420&inactiveDays=100"
-        ).as("getInactiveUsers");
+        cy.intercept("GET", "**/CsvExport/GetInactiveUsers*").as(
+            "getInactiveUsers"
+        );
+
+        cy.intercept("GET", "**/CsvExport/GetUserFeedback").as("getUserFeedback");
 
         cy.login(
             Cypress.env("keycloak_username"),
@@ -36,33 +39,39 @@ describe("System Analytics", () => {
         cy.get("[data-testid=user-profile-download-btn]")
             .should("be.visible")
             .click();
-        cy.wait("@getUserProfiles");
+        cy.wait("@getUserProfiles", { timeout });
         cy.verifyDownload(getFileName("UserProfile"));
 
         cy.get("[data-testid=user-comments-download-btn]")
             .should("be.visible")
             .click();
-        cy.wait("@getComments");
+        cy.wait("@getComments", { timeout });
         cy.verifyDownload(getFileName("Comments"));
 
         cy.get("[data-testid=user-notes-download-btn]")
             .should("be.visible")
             .click();
-        cy.wait("@getNotes");
+        cy.wait("@getNotes", { timeout });
         cy.verifyDownload(getFileName("Notes"));
 
         cy.get("[data-testid=user-ratings-download-btn]")
             .should("be.visible")
             .click();
-        cy.wait("@getRatings");
+        cy.wait("@getRatings", { timeout });
         cy.verifyDownload(getFileName("Ratings"));
 
         cy.get("[data-testid=days-inactive-input]").clear().type(100);
         cy.get("[data-testid=inactive-users-download-btn]")
             .should("be.visible")
             .click();
-        cy.wait("@getInactiveUsers");
+        cy.wait("@getInactiveUsers", { timeout });
         cy.verifyDownload(getFileName("InactiveUsers"));
+
+        cy.get("[data-testid=user-feedback-download-btn]")
+            .should("be.visible")
+            .click();
+        cy.wait("@getUserFeedback", { timeout });
+        cy.verifyDownload(getFileName("UserFeedback"));
 
         cy.log("System Analytics stats download test finished.");
     });

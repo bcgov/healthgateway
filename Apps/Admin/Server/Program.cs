@@ -60,7 +60,7 @@ namespace HealthGateway.Admin.Server
             Auth.ConfigureAuthorizationServices(services, logger, configuration);
             SwaggerDoc.ConfigureSwaggerServices(services, configuration);
             JobScheduler.ConfigureHangfireQueue(services, configuration);
-            Patient.ConfigurePatientAccess(services, configuration);
+            Patient.ConfigurePatientAccess(services, logger, configuration);
 
             // Add services to the container.
             services.AddControllersWithViews();

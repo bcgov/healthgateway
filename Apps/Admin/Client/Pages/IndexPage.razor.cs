@@ -40,7 +40,7 @@ namespace HealthGateway.Admin.Client.Pages
 
             if (user.IsInRole(Roles.Admin) || user.IsInRole(Roles.Reviewer))
             {
-                this.Navigation.NavigateTo("dashboard");
+                this.Navigation.NavigateTo("dashboard", replace: true);
             }
         }
     }

@@ -49,7 +49,6 @@ export default class NewDependentComponent extends Vue {
         lastName: "",
         dateOfBirth: "",
         PHN: "",
-        testDate: "",
     };
     private accepted = false;
 
@@ -67,14 +66,6 @@ export default class NewDependentComponent extends Vue {
                     minLength: minLength(10),
                     minValue: (value: string) =>
                         new DateWrapper(value).isAfter(this.minBirthdate),
-                    maxValue: (value: string) =>
-                        new DateWrapper(value).isBefore(new DateWrapper()),
-                },
-                testDate: {
-                    required,
-                    minLength: minLength(10),
-                    minValue: (value: string) =>
-                        new DateWrapper(value).isAfter(this.minTestDate),
                     maxValue: (value: string) =>
                         new DateWrapper(value).isBefore(new DateWrapper()),
                 },
@@ -96,10 +87,6 @@ export default class NewDependentComponent extends Vue {
         return new DateWrapper().subtract(
             Duration.fromObject({ years: this.webClientConfig.maxDependentAge })
         );
-    }
-
-    private get minTestDate(): DateWrapper {
-        return new DateWrapper("2019-12-31");
     }
 
     public showModal(): void {
@@ -160,7 +147,6 @@ export default class NewDependentComponent extends Vue {
             lastName: "",
             dateOfBirth: "",
             PHN: "",
-            testDate: "",
         };
         this.accepted = false;
     }
@@ -281,24 +267,6 @@ export default class NewDependentComponent extends Vue {
                                         Valid PHN is required
                                     </b-form-invalid-feedback>
                                 </b-col>
-                                <b-col class="col-12 col-lg-4 col-md-6 mb-3">
-                                    <label for="testDate"
-                                        >COVID-19 Test Date</label
-                                    >
-                                    <DatePickerComponent
-                                        id="testDate"
-                                        v-model="dependent.testDate"
-                                        data-testid="testDateInput"
-                                        :state="isValid($v.dependent.testDate)"
-                                        @blur="$v.dependent.testDate.$touch()"
-                                    />
-                                    <b-form-invalid-feedback
-                                        :state="isValid($v.dependent.testDate)"
-                                    >
-                                        Date must be after Jan 1st 2020 and
-                                        before Today
-                                    </b-form-invalid-feedback>
-                                </b-col>
                             </b-row>
                             <b-row class="mb-2">
                                 <b-col>
@@ -310,13 +278,12 @@ export default class NewDependentComponent extends Vue {
                                     >
                                         <p>
                                             By providing the child’s name, date
-                                            of birth, personal health number and
-                                            date of COVID-19 test, I declare
-                                            that I am the child’s guardian and
-                                            that I have the authority to request
-                                            and receive health information
-                                            respecting the child from third
-                                            parties.
+                                            of birth, and personal health
+                                            number, I declare that I am the
+                                            child’s guardian and that I have the
+                                            authority to request and receive
+                                            health information respecting the
+                                            child from third parties.
                                         </p>
                                         <p>
                                             If I either: (a) cease to be
@@ -330,9 +297,9 @@ export default class NewDependentComponent extends Vue {
                                         </p>
                                         <p>
                                             I understand that I will no longer
-                                            be able to access my child’s
-                                            COVID-19 test results once they are
-                                            12 years of age.
+                                            be able to access my child’s health
+                                            records once they are 12 years of
+                                            age.
                                         </p>
                                     </b-checkbox>
                                 </b-col>

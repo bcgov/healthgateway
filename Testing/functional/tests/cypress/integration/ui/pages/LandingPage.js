@@ -117,35 +117,3 @@ describe("Landing Page", () => {
         cy.get("footer > .navbar").should("not.visible");
     });
 });
-
-describe("Landing Page - Too Many Requests", () => {
-    beforeEach(() => {
-        cy.logout();
-    });
-
-    it("Too Many Requests Banner Appears on 429 Response", () => {
-        cy.intercept("GET", "**/Communication/*", { statusCode: 429 });
-        cy.visit("/");
-
-        cy.contains(
-            "[data-testid=communicationBanner]",
-            "higher than usual site traffic"
-        ).should("be.visible");
-    });
-
-    it("Too Many Requests Banner Doesn't Appear on 200 Response", () => {
-        cy.intercept("GET", "**/Communication/*", { statusCode: 200 }).as(
-            "getCommunication"
-        );
-        cy.visit("/");
-
-        // wait for both Communication calls to complete
-        cy.wait("@getCommunication");
-        cy.wait("@getCommunication");
-
-        cy.contains(
-            "[data-testid=communicationBanner]",
-            "higher than usual site traffic"
-        ).should("not.exist");
-    });
-});
