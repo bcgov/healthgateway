@@ -74,7 +74,6 @@ namespace HealthGateway.Database.Context
         public DbSet<ApplicationSetting> ApplicationSetting { get; set; } = null!;
         public DbSet<UserProfileHistory> UserProfileHistory { get; set; } = null!;
         public DbSet<Note> Note { get; set; } = null!;
-        public DbSet<GenericCache> GenericCache { get; set; } = null!;
         public DbSet<Comment> Comment { get; set; } = null!;
         public DbSet<Communication> Communication { get; set; } = null!;
         public DbSet<Rating> Rating { get; set; } = null!;
@@ -320,11 +319,6 @@ namespace HealthGateway.Database.Context
             modelBuilder.Entity<ResourceDelegateHistory>()
                 .Property(e => e.ReasonCode)
                 .HasConversion(resourceDelegateReasonCodeConverter);
-
-            // Create HDID index on GenericCache
-            modelBuilder!.Entity<GenericCache>()
-                .HasIndex(i => new { i.HdId, i.Domain })
-                .IsUnique();
 
             // Create Foreign keys for Comment
             modelBuilder.Entity<Comment>()
