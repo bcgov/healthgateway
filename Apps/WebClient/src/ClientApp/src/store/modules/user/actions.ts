@@ -6,6 +6,7 @@ import { ResultError } from "@/models/errors";
 import { QuickLink } from "@/models/quickLink";
 import RequestResult from "@/models/requestResult";
 import { UserPreference } from "@/models/userPreference";
+import { CreateUserRequest } from "@/models/userProfile";
 import container from "@/plugins/container";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import {
@@ -18,6 +19,35 @@ import { QuickLinkUtil } from "@/utility/quickLinkUtil";
 import { UserActions } from "./types";
 
 export const actions: UserActions = {
+    createProfile(
+        context,
+        params: { request: CreateUserRequest }
+    ): Promise<void> {
+        const logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
+        const userProfileService = container.get<IUserProfileService>(
+            SERVICE_IDENTIFIER.UserProfileService
+        );
+
+        return new Promise((resolve, reject) =>
+            userProfileService
+                .createProfile(params.request)
+                .then((userProfile) => {
+                    logger.verbose(
+                        `User Profile: ${JSON.stringify(userProfile)}`
+                    );
+                    context.commit("setProfileUserData", userProfile);
+                    resolve();
+                })
+                .catch((error: ResultError) => {
+                    context.dispatch("handleError", {
+                        error,
+                        errorType: ErrorType.Create,
+                        source: ErrorSourceType.Profile,
+                    });
+                    reject(error);
+                })
+        );
+    },
     checkRegistration(context): Promise<boolean> {
         const logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
         const userProfileService = container.get<IUserProfileService>(
@@ -302,11 +332,11 @@ export const actions: UserActions = {
         context.commit("userError", params.error);
 
         if (params.error.statusCode === 429) {
-            context.dispatch(
-                "errorBanner/setTooManyRequestsWarning",
-                { key: "page" },
-                { root: true }
-            );
+            let action = "errorBanner/setTooManyRequestsError";
+            if (params.errorType === ErrorType.Retrieve) {
+                action = "errorBanner/setTooManyRequestsWarning";
+            }
+            context.dispatch(action, { key: "page" }, { root: true });
         } else {
             context.dispatch(
                 "errorBanner/addError",

@@ -68,7 +68,7 @@ export class RestUserProfileService implements IUserProfileService {
     public createProfile(
         createRequest: CreateUserRequest
     ): Promise<UserProfile> {
-        return new Promise((resolve, reject) =>
+        return new Promise((resolve, reject) => {
             this.http
                 .post<RequestResult<UserProfile>>(
                     `${this.baseUri}${this.USER_PROFILE_BASE_URI}/${createRequest.profile.hdid}`,
@@ -92,8 +92,8 @@ export class RestUserProfileService implements IUserProfileService {
                             ServiceCode.HealthGatewayUser
                         )
                     );
-                })
-        );
+                });
+        });
     }
 
     public closeAccount(hdid: string): Promise<UserProfile> {
