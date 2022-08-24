@@ -4,6 +4,7 @@ import UserPreferenceType from "@/constants/userPreferenceType";
 import { DateWrapper } from "@/models/dateWrapper";
 import { ResultError } from "@/models/errors";
 import { QuickLink } from "@/models/quickLink";
+import RequestResult from "@/models/requestResult";
 import { UserPreference } from "@/models/userPreference";
 import container from "@/plugins/container";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
@@ -173,6 +174,33 @@ export const actions: UserActions = {
 
         return context.dispatch("updateUserPreference", { userPreference });
     },
+    validateEmail(
+        context,
+        params: { inviteKey: string }
+    ): Promise<RequestResult<boolean>> {
+        const userProfileService = container.get<IUserProfileService>(
+            SERVICE_IDENTIFIER.UserProfileService
+        );
+
+        return new Promise((resolve, reject) => {
+            userProfileService
+                .validateEmail(context.state.user.hdid, params.inviteKey)
+                .then((result) => {
+                    if (result.resourcePayload === true) {
+                        context.commit("setEmailVerified");
+                    }
+                    resolve(result);
+                })
+                .catch((error: ResultError) => {
+                    context.dispatch("handleError", {
+                        error,
+                        errorType: ErrorType.Update,
+                        source: ErrorSourceType.User,
+                    });
+                    reject(error);
+                });
+        });
+    },
     closeUserAccount(context): Promise<void> {
         const userProfileService = container.get<IUserProfileService>(
             SERVICE_IDENTIFIER.UserProfileService
@@ -253,13 +281,21 @@ export const actions: UserActions = {
                         context.dispatch("handleError", {
                             error,
                             errorType: ErrorType.Retrieve,
+                            source: ErrorSourceType.Patient,
                         });
                         reject(error);
                     });
             }
         });
     },
-    handleError(context, params: { error: ResultError; errorType: ErrorType }) {
+    handleError(
+        context,
+        params: {
+            error: ResultError;
+            errorType: ErrorType;
+            source: ErrorSourceType;
+        }
+    ) {
         const logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
 
         logger.error(`ERROR: ${JSON.stringify(params.error)}`);
@@ -276,7 +312,7 @@ export const actions: UserActions = {
                 "errorBanner/addError",
                 {
                     errorType: params.errorType,
-                    source: ErrorSourceType.Patient,
+                    source: params.source,
                     traceId: params.error.traceId,
                 },
                 { root: true }
