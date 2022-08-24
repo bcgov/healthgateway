@@ -12,7 +12,7 @@ import LoadingComponent from "@/components/LoadingComponent.vue";
 import { ErrorSourceType, ErrorType } from "@/constants/errorType";
 import { RegistrationStatus } from "@/constants/registrationStatus";
 import type { WebClientConfiguration } from "@/models/configData";
-import { instanceOfResultError, ResultError } from "@/models/errors";
+import { ResultError } from "@/models/errors";
 import { TermsOfService } from "@/models/termsOfService";
 import type { OidcUserInfo } from "@/models/user";
 import container from "@/plugins/container";
@@ -28,8 +28,11 @@ library.add(faExclamationTriangle);
     },
 })
 export default class RegistrationView extends Vue {
-    @Prop() inviteKey?: string;
-    @Prop() inviteEmail?: string;
+    @Prop()
+    inviteKey?: string;
+
+    @Prop()
+    inviteEmail?: string;
 
     @Action("addError", { namespace: "errorBanner" })
     addError!: (params: {
@@ -53,6 +56,9 @@ export default class RegistrationView extends Vue {
 
     @Action("checkRegistration", { namespace: "user" })
     checkRegistration!: () => Promise<boolean>;
+
+    @Action("createProfile", { namespace: "user" })
+    createProfile!: (params: { request: CreateUserRequest }) => Promise<void>;
 
     @Getter("webClient", { namespace: "config" })
     webClientConfig!: WebClientConfiguration;
@@ -79,7 +85,7 @@ export default class RegistrationView extends Vue {
     private errorMessage = "";
 
     private logger!: ILogger;
-    private isValidAge?: boolean;
+    private isValidAge: boolean | null = null;
     private minimumAge!: number;
 
     private termsOfService?: TermsOfService;
@@ -233,8 +239,8 @@ export default class RegistrationView extends Vue {
             this.smsNumber = this.smsNumber.replace(/\D+/g, "");
         }
         this.loadingTermsOfService = true;
-        this.userProfileService
-            .createProfile({
+        this.createProfile({
+            request: {
                 profile: {
                     hdid: this.oidcUserInfo.hdid,
                     termsOfServiceId: this.termsOfService?.id || "",
@@ -246,23 +252,16 @@ export default class RegistrationView extends Vue {
                     preferences: {},
                 },
                 inviteCode: this.inviteKey || "",
-            })
+            },
+        })
             .then((result) => {
                 this.logger.debug(
                     `Create Profile result: ${JSON.stringify(result)}`
                 );
                 this.redirect();
             })
-            .catch((err: ResultError) => {
-                if (err.statusCode === 429) {
-                    this.setTooManyRequestsError({ key: "page" });
-                } else {
-                    this.addError({
-                        errorType: ErrorType.Create,
-                        source: ErrorSourceType.Profile,
-                        traceId: err.traceId,
-                    });
-                }
+            .catch(() => {
+                this.logger.warn("Error while registering.");
             })
             .finally(() => {
                 this.loadingTermsOfService = false;
@@ -271,45 +270,21 @@ export default class RegistrationView extends Vue {
         event.preventDefault();
     }
 
-    private async redirect(): void {
-        try {
-            const isRegistered = await this.checkRegistration();
-            if (!isRegistered) {
-                this.addError({
-                    errorType: ErrorType.Create,
-                    source: ErrorSourceType.Profile,
-                    traceId: undefined,
-                });
-                return;
-            }
+    private redirect(): void {
+        const defaultRoute = this.webClientConfig.modules["VaccinationStatus"]
+            ? "/home"
+            : "/timeline";
 
-            const defaultRoute = this.webClientConfig.modules[
-                "VaccinationStatus"
-            ]
-                ? "/home"
-                : "/timeline";
-
-            this.$router.push({
-                path:
-                    this.smsNumber === "" && this.email === ""
-                        ? defaultRoute
-                        : "/profile",
-                query: {
-                    toVerifyPhone: this.smsNumber === "" ? "false" : "true",
-                    toVerifyEmail: this.email === "" ? "false" : "true",
-                },
-            });
-        } catch (error) {
-            if (instanceOfResultError(error) && error.statusCode === 429) {
-                this.setTooManyRequestsWarning({ key: "page" });
-            } else {
-                this.addError({
-                    errorType: ErrorType.Retrieve,
-                    source: ErrorSourceType.Profile,
-                    traceId: undefined,
-                });
-            }
-        }
+        this.$router.push({
+            path:
+                this.smsNumber === "" && this.email === ""
+                    ? defaultRoute
+                    : "/profile",
+            query: {
+                toVerifyPhone: this.smsNumber === "" ? "false" : "true",
+                toVerifyEmail: this.email === "" ? "false" : "true",
+            },
+        });
     }
 
     private onEmailOptout(isChecked: boolean): void {
@@ -523,6 +498,7 @@ export default class RegistrationView extends Vue {
                         contact <strong>HealthGateway@gov.bc.ca</strong>
                     </p>
                 </div>
+                <div v-else><h1>WTF</h1></div>
             </div>
         </b-container>
     </div>

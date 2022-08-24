@@ -15,7 +15,7 @@ import RequestResult from "@/models/requestResult";
 import { LoadStatus } from "@/models/storeOperations";
 import User, { OidcUserInfo } from "@/models/user";
 import { UserPreference } from "@/models/userPreference";
-import UserProfile from "@/models/userProfile";
+import UserProfile, { CreateUserRequest } from "@/models/userProfile";
 import { RootState } from "@/store/types";
 
 export interface UserState {
@@ -46,6 +46,10 @@ export interface UserGetters extends GetterTree<UserState, RootState> {
 
 type StoreContext = ActionContext<UserState, RootState>;
 export interface UserActions extends ActionTree<UserState, RootState> {
+    createProfile(
+        context: StoreContext,
+        params: { request: CreateUserRequest }
+    ): Promise<void>;
     checkRegistration(context: StoreContext): Promise<boolean>;
     updateUserEmail(
         context: StoreContext,
