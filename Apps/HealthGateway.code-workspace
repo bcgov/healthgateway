@@ -14,6 +14,9 @@
         {
             "path": "AdminWebClient"
         },
+	{
+	    "path": "ClinicalDocument"
+	},
         {
             "path": "Common"
         },
