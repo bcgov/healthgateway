@@ -1,6 +1,7 @@
 {
     "env": {
-        "cypress/globals": true
+        "cypress/globals": true,
+        "es2021": true
     },
     "plugins": ["cypress", "chai-friendly"],
     "extends": [
