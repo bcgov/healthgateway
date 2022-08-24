@@ -82,7 +82,7 @@ export default class DependentsView extends Vue {
             .then((results) => this.setDependents(results))
             .catch((error: ResultError) => {
                 this.logger.error(error.resultMessage);
-                if (err.statusCode === 429) {
+                if (error.statusCode === 429) {
                     this.setTooManyRequestsWarning({ key: "page" });
                 } else {
                     this.addError({

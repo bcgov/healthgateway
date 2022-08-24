@@ -389,7 +389,7 @@ export default class DependentCardComponent extends Vue {
         this.logger.debug(`Fetching Patient Immunizations for Hdid: ${hdid}`);
         this.logger.debug(`Logged in user Hdid: ${this.user.hdid}`);
         this.logger.debug(
-            `Fetching Patient Immunizations - immunization data laoded: ${this.isImmunizationDataLoaded}`
+            `Fetching Patient Immunizations - immunization data loaded: ${this.isImmunizationDataLoaded}`
         );
 
         if (this.isImmunizationDataLoaded) {
@@ -888,7 +888,10 @@ export default class DependentCardComponent extends Vue {
                                         <b-col
                                             :data-testid="`immunization-history-no-rows-found-${dependent.ownerId}`"
                                         >
-                                            No records found.
+                                            No records found. If this is your
+                                            first time checking for records,
+                                            please try refreshing the page in a
+                                            few minutes.
                                         </b-col>
                                     </b-row>
                                     <table
