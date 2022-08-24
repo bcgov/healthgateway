@@ -77,7 +77,7 @@ namespace HealthGateway.Encounter.Delegates
                 this.baseURL = new Uri(this.odrConfig.BaseEndpoint);
             }
 
-            logger.LogInformation($"ODR Proxy URL resolved as {this.baseURL}");
+            logger.LogDebug($"ODR Proxy URL resolved as {this.baseURL}");
         }
 
         private static ActivitySource Source { get; } = new(nameof(RestMspVisitDelegate));
