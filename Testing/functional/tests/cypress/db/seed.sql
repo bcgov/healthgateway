@@ -8,7 +8,6 @@ TRUNCATE gateway."UserPreference" CASCADE;
 TRUNCATE gateway."Comment" CASCADE;
 TRUNCATE gateway."MessagingVerification" CASCADE;
 TRUNCATE gateway."Note" CASCADE;
-TRUNCATE gateway."GenericCache" CASCADE;
 TRUNCATE gateway."Rating" CASCADE;
 TRUNCATE gateway."Email" CASCADE;
 TRUNCATE gateway."AdminTag" CASCADE;
