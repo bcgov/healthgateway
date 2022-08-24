@@ -51,7 +51,7 @@ describe("Authentication", () => {
         cy.get("[data-testid=logoutBtn]").click();
         cy.get("[data-testid=ratingModalSkipBtn]").click();
         cy.contains("h3", "You signed out of your account");
-        cy.get("[data-testid=loginBtn]")
+        cy.get("[data-testid=loginBtn] a")
             .should("be.visible")
             .should("not.be.disabled")
             .should("have.attr", "href", "/login");
