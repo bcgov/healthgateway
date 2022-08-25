@@ -261,7 +261,7 @@ export default class RegistrationView extends Vue {
                 this.redirect();
             })
             .catch(() => {
-                this.logger.warn("Error while registering.");
+                this.logger.error("Error while registering.");
             })
             .finally(() => {
                 this.loadingTermsOfService = false;
