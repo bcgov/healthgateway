@@ -27,7 +27,7 @@ function testGetProfileErrorOnLoad(statusCode = serverErrorStatusCode) {
         AuthMethod.KeyCloak,
         "/home"
     );
-    cy.intercept("GET", "/UserProfile/*", {
+    cy.intercept("GET", "**/UserProfile/*", {
         statusCode,
     });
     cy.reload();
@@ -41,10 +41,10 @@ function testGetProfileErrorOnLoad(statusCode = serverErrorStatusCode) {
 
 function testRegisterError(statusCode = serverErrorStatusCode) {
     const hdid = "S22BPV6WHS5TRLBL4XKGQDBVDUKLPIRSBGYSEJAHYMYRP22SP2TA";
-    cy.intercept("GET", `/UserProfile/${hdid}`, {
+    cy.intercept("GET", `**/UserProfile/${hdid}`, {
         fixture: "UserProfileService/userProfileUnregistered.json",
     });
-    cy.intercept("GET", `/UserProfile/${hdid}/Validate`, {
+    cy.intercept("GET", `**/UserProfile/${hdid}/Validate`, {
         body: {
             resourcePayload: true,
             totalResultCount: 1,
@@ -53,7 +53,7 @@ function testRegisterError(statusCode = serverErrorStatusCode) {
             resultStatus: 1, // success
         },
     });
-    cy.intercept("POST", `/UserProfile/${hdid}`, {
+    cy.intercept("POST", `**/UserProfile/${hdid}`, {
         statusCode,
     });
     cy.login(
@@ -91,7 +91,7 @@ function testRegisterError(statusCode = serverErrorStatusCode) {
 
 function testValidateEmailError(statusCode = serverErrorStatusCode) {
     cy.enableModules([]);
-    cy.intercept("GET", "/UserProfile/*/email/validate/dummyinvitekey", {
+    cy.intercept("GET", "**/UserProfile/*/email/validate/dummyinvitekey", {
         statusCode,
     }).as("validateEmail");
     cy.login(
@@ -109,10 +109,10 @@ function testValidateEmailError(statusCode = serverErrorStatusCode) {
 }
 
 function testAddQuickLinkError(statusCode = serverErrorStatusCode) {
-    cy.intercept("PUT", "/UserProfile/*/preference", {
+    cy.intercept("PUT", "**/UserProfile/*/preference", {
         statusCode,
     });
-    cy.intercept("POST", "/UserProfile/*/preference", {
+    cy.intercept("POST", "**/UserProfile/*/preference", {
         statusCode,
     });
     cy.login(
