@@ -32,7 +32,7 @@ namespace HealthGateway.Common.Auditing
     /// <summary>
     /// The Abstract Audit Logger service.
     /// </summary>
-    public abstract class AAuditLogger : IAuditLogger
+    public abstract class AuditLogger : IAuditLogger
     {
         /// <inheritdoc/>
         public abstract void WriteAuditEvent(AuditEvent auditEvent);

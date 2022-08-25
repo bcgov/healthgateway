@@ -25,7 +25,7 @@ namespace HealthGateway.Common.Auditing
     /// <summary>
     /// A Postgres Database Audit Logger.
     /// </summary>
-    public class DbAuditLogger : AAuditLogger
+    public class DbAuditLogger : AuditLogger
     {
         private readonly ILogger<DbAuditLogger> logger;
         private readonly IWriteAuditEventDelegate writeEventDelegate;
