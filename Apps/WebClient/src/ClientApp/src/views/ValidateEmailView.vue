@@ -9,7 +9,11 @@ import { Component, Prop } from "vue-property-decorator";
 import { Action, Getter } from "vuex-class";
 
 import { ResultType } from "@/constants/resulttype";
+import RequestResult from "@/models/requestResult";
 import User from "@/models/user";
+import container from "@/plugins/container";
+import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
+import { ILogger } from "@/services/interfaces";
 
 library.add(faCheckCircle, faTimesCircle);
 
@@ -26,16 +30,23 @@ export default class ValidateEmailView extends Vue {
     @Getter("user", { namespace: "user" })
     user!: User;
 
+    private logger!: ILogger;
     private isLoading = true;
-    private validatedValue: boolean?;
-    private resultStatus: ResultType?;
+    private validatedValue?: boolean;
+    private resultStatus?: ResultType;
 
     private get isVerified(): boolean {
-        return this.resultStatus === ResultType.Success && this.validatedValue;
+        return (
+            this.resultStatus === ResultType.Success &&
+            this.validatedValue === true
+        );
     }
 
     private get isAlreadyVerified(): boolean {
-        return this.resultStatus === ResultType.Error && this.validatedValue;
+        return (
+            this.resultStatus === ResultType.Error &&
+            this.validatedValue === true
+        );
     }
 
     private get validationFailed(): boolean {
@@ -43,6 +54,8 @@ export default class ValidateEmailView extends Vue {
     }
 
     private mounted(): void {
+        this.logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
+
         this.verifyEmail();
     }
 
@@ -52,6 +65,9 @@ export default class ValidateEmailView extends Vue {
             .then((result) => {
                 this.validatedValue = result.resourcePayload;
                 this.resultStatus = result.resultStatus;
+            })
+            .catch(() => {
+                this.logger.error("Error while validating email.");
             })
             .finally(() => {
                 this.isLoading = false;
