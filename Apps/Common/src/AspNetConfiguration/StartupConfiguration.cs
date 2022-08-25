@@ -105,7 +105,7 @@ namespace HealthGateway.Common.AspNetConfiguration
         /// <param name="services">The services collection provider.</param>
         public void ConfigureAuditServices(IServiceCollection services)
         {
-            Audit.ConfigureAuditServices(services, this.Logger);
+            Audit.ConfigureAuditServices(services, this.Logger, this.Configuration);
         }
 
         /// <summary>

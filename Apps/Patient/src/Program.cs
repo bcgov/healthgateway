@@ -48,7 +48,7 @@ namespace HealthGateway.HGAdmin.Server
             HttpWeb.ConfigureForwardHeaders(services, logger, configuration);
             Db.ConfigureDatabaseServices(services, logger, configuration);
             HttpWeb.ConfigureHttpServices(services, logger);
-            Audit.ConfigureAuditServices(services, logger);
+            Audit.ConfigureAuditServices(services, logger, configuration);
             Auth.ConfigureAuthServicesForJwtBearer(services, logger, configuration, environment);
             Auth.ConfigureAuthorizationServices(services, logger, configuration);
             SwaggerDoc.ConfigureSwaggerServices(services, configuration);
