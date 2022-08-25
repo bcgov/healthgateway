@@ -18,6 +18,7 @@ parameters:
       - CommonUi
       - CommonData
       - GatewayApi
+      - ClinicalDocument
       - NotSpecified
 
   - name: ImageName
