@@ -15,24 +15,41 @@
 //-------------------------------------------------------------------------
 namespace HealthGateway.ClinicalDocument.Services
 {
+    using System;
+    using System.Collections.Generic;
     using System.Diagnostics;
+    using System.Threading.Tasks;
+    using HealthGateway.ClinicalDocument.Models;
+    using HealthGateway.Common.Data.ViewModels;
+    using HealthGateway.Common.Models.PHSA;
     using Microsoft.Extensions.Logging;
 
     /// <inheritdoc/>
     public class ClinicalDocumentService : IClinicalDocumentService
     {
-        private readonly ILogger logger;
+        private readonly ILogger<ClinicalDocumentService> logger;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ClinicalDocumentService"/> class.
         /// </summary>
-        /// <param name="logger">Injected Logger Provider.</param>
-        public ClinicalDocumentService(
-            ILogger<ClinicalDocumentService> logger)
+        /// <param name="logger">Injected logger.</param>
+        public ClinicalDocumentService(ILogger<ClinicalDocumentService> logger)
         {
             this.logger = logger;
         }
 
         private static ActivitySource Source { get; } = new(nameof(ClinicalDocumentService));
+
+        /// <inheritdoc/>
+        public async Task<RequestResult<IEnumerable<ClinicalDocumentRecord>>> GetRecordsAsync(string hdid)
+        {
+            throw new NotImplementedException();
+        }
+
+        /// <inheritdoc/>
+        public async Task<RequestResult<EncodedMedia>> GetFileAsync(string hdid, string fileId)
+        {
+            throw new NotImplementedException();
+        }
     }
 }
