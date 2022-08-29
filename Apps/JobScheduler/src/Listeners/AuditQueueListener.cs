@@ -82,7 +82,7 @@ namespace HealthGateway.JobScheduler.Listeners
                     .ConfigureAwait(true);
                 if (auditValue.HasValue)
                 {
-                    processAuditEvent(redisDb, auditValue);
+                    await this.ProcessAuditEvent(redisDb, auditValue).ConfigureAwait(true);
                 }
                 else
                 {
@@ -93,7 +93,7 @@ namespace HealthGateway.JobScheduler.Listeners
             this.logger.LogInformation("Audit Queue Listener has stopped");
         }
 
-        private async Task processAuditEvent(IDatabase redisDb, RedisValue auditValue)
+        private async Task ProcessAuditEvent(IDatabase redisDb, RedisValue auditValue)
         {
             AuditEvent? auditEvent = JsonSerializer.Deserialize<AuditEvent>(auditValue.ToString());
             if (auditEvent != null)
