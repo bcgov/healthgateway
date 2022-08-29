@@ -803,7 +803,7 @@ export default class DependentCardComponent extends Vue {
                         </hg-button>
                     </div>
                     <div v-if="!isLoading && testRows.length != 0" class="m-2">
-                        <h5>Test results</h5>
+                        <h4>COVID-19 Test</h4>
                     </div>
                     <template #title>
                         <div data-testid="covid19TabTitle">COVID-19</div>
@@ -824,9 +824,9 @@ export default class DependentCardComponent extends Vue {
                         aria-describedby="COVID-19 Test Results"
                     >
                         <tr>
-                            <th scope="col">COVID-19 Test Date</th>
+                            <th scope="col">Date</th>
                             <th scope="col" class="d-none d-sm-table-cell">
-                                Test Type
+                                Type
                             </th>
                             <th scope="col" class="d-none d-sm-table-cell">
                                 Status
