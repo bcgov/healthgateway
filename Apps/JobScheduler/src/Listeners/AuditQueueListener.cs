@@ -70,6 +70,7 @@ namespace HealthGateway.JobScheduler.Listeners
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
             this.logger.LogInformation("Audit Queue Listener is starting");
+            stoppingToken.Register(() => this.logger.LogInformation("AuditQueue Listener Shutdown as cancellation requested    "));
             while (!stoppingToken.IsCancellationRequested)
             {
                 IDatabase redisDb = this.connectionMultiplexer.GetDatabase();
