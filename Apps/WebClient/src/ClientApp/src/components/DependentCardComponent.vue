@@ -784,7 +784,7 @@ export default class DependentCardComponent extends Vue {
                 >
                     <div
                         data-testid="download-proof-of-vaccination-div"
-                        class="d-flex justify-content-center"
+                        class="d-flex justify-content-center py-3"
                     >
                         <hg-button
                             id="download-proof-of-vaccination-btn"
