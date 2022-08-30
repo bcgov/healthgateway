@@ -21,31 +21,35 @@ namespace HealthGateway.ClinicalDocument.Services
     using System.Threading.Tasks;
     using HealthGateway.ClinicalDocument.Models;
     using HealthGateway.Common.Data.ViewModels;
+    using HealthGateway.Common.Models;
     using HealthGateway.Common.Models.PHSA;
+    using HealthGateway.Common.Services;
     using Microsoft.Extensions.Logging;
 
     /// <inheritdoc/>
     public class ClinicalDocumentService : IClinicalDocumentService
     {
         private readonly ILogger<ClinicalDocumentService> logger;
+        private readonly IPersonalAccountsService personalAccountsService;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ClinicalDocumentService"/> class.
         /// </summary>
         /// <param name="logger">Injected logger.</param>
-        public ClinicalDocumentService(ILogger<ClinicalDocumentService> logger)
+        /// <param name="personalAccountsService">The injected personal accounts service.</param>
+        public ClinicalDocumentService(ILogger<ClinicalDocumentService> logger, IPersonalAccountsService personalAccountsService)
         {
             this.logger = logger;
+            this.personalAccountsService = personalAccountsService;
         }
 
         private static ActivitySource Source { get; } = new(nameof(ClinicalDocumentService));
 
         /// <inheritdoc/>
-#pragma warning disable CS1998
         public async Task<RequestResult<IEnumerable<ClinicalDocumentRecord>>> GetRecordsAsync(string hdid)
-#pragma warning restore CS1998
         {
-            throw new NotImplementedException();
+            RequestResult<PatientAccount?> acctResponse = await this.personalAccountsService.GetPatientAccountAsync(hdid).ConfigureAwait(true);
+            return new RequestResult<IEnumerable<ClinicalDocumentRecord>>();
         }
 
         /// <inheritdoc/>

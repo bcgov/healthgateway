@@ -15,15 +15,16 @@
 //-------------------------------------------------------------------------
 namespace HealthGateway.Common.Delegates.PHSA
 {
+    using System.Collections.Generic;
     using System.Diagnostics;
     using System.Net;
     using System.Net.Http;
     using System.Threading.Tasks;
+    using HealthGateway.Common.Api;
     using HealthGateway.Common.Data.Constants;
     using HealthGateway.Common.Data.ViewModels;
     using HealthGateway.Common.ErrorHandling;
     using HealthGateway.Common.Models.PHSA;
-    using HealthGateway.Common.Services;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.Logging;
     using Refit;
@@ -36,10 +37,9 @@ namespace HealthGateway.Common.Delegates.PHSA
         /// <summary>
         /// Configuration section key for PHSA values.
         /// </summary>
-        public const string TokenSwapConfigSectionName = "TokenSwap";
         private readonly ILogger logger;
         private readonly ITokenSwapApi tokenSwapApi;
-        private readonly TokenSwapRequest tokenSwapRequest;
+        private readonly PhsaConfigV2 phsaConfigV2;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="RestTokenSwapDelegate"/> class.
@@ -54,11 +54,23 @@ namespace HealthGateway.Common.Delegates.PHSA
         {
             this.logger = logger;
             this.tokenSwapApi = tokenSwapApi;
-            this.tokenSwapRequest = new TokenSwapRequest();
-            configuration.Bind(TokenSwapConfigSectionName, this.tokenSwapRequest); // Initializes ClientId, ClientSecret, GrantType and Scope.
+            this.phsaConfigV2 = new PhsaConfigV2();
+            configuration.Bind(PhsaConfigV2.ConfigurationSectionKey, this.phsaConfigV2); // Initializes ClientId, ClientSecret, GrantType and Scope.
         }
 
         private static ActivitySource Source { get; } = new(nameof(RestTokenSwapDelegate));
+
+        /// <summary>
+        /// Gets the form parameters to swap tokens.
+        /// </summary>
+        private IEnumerable<KeyValuePair<string, string>> FormParameters(string accessToken) => new Dictionary<string, string>
+        {
+            ["client_id"] = this.phsaConfigV2.ClientId,
+            ["client_secret"] = this.phsaConfigV2.ClientSecret,
+            ["grant_type"] = this.phsaConfigV2.GrantType,
+            ["scope"] = this.phsaConfigV2.Scope,
+            ["token"] = accessToken,
+        };
 
         /// <inheritdoc/>
         public async Task<RequestResult<TokenSwapResponse>> SwapToken(string accessToken)
@@ -72,8 +84,7 @@ namespace HealthGateway.Common.Delegates.PHSA
 
             try
             {
-                this.tokenSwapRequest.Token = accessToken;
-                using FormUrlEncodedContent content = new(this.tokenSwapRequest.FormParameters);
+                using FormUrlEncodedContent content = new(this.FormParameters(accessToken));
                 content.Headers.Clear();
                 content.Headers.Add(@"Content-Type", @"application/x-www-form-urlencoded");
 

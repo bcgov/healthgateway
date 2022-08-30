@@ -25,5 +25,9 @@
   <ItemGroup>
       <Folder Include="Controllers\" />
       <Folder Include="Models\" />
+  </ItemGroup>
+  
+  <ItemGroup>
+    <PackageReference Include="Refit.HttpClientFactory" Version="6.3.2" />
   </ItemGroup>  
 </Project>

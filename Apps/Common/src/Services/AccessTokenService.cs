@@ -32,11 +32,6 @@ namespace HealthGateway.Common.Services
     public class AccessTokenService : IAccessTokenService
     {
         /// <summary>
-        /// Configuration section to retrieve cache information from.
-        /// </summary>
-        private const string CacheConfigSectionName = "AuthCache";
-
-        /// <summary>
         /// The generic cache domain to store access token against.
         /// </summary>
         private const string TokenSwapCacheDomain = "TokenSwap";
@@ -44,7 +39,7 @@ namespace HealthGateway.Common.Services
         private readonly IAuthenticationDelegate authenticationDelegate;
         private readonly ICacheProvider cacheProvider;
         private readonly ILogger<AccessTokenService> logger;
-        private readonly int tokenCacheMinutes;
+        private readonly PhsaConfigV2 phsaConfigV2;
         private readonly ITokenSwapDelegate tokenSwapDelegate;
 
         /// <summary>
@@ -67,16 +62,17 @@ namespace HealthGateway.Common.Services
             this.cacheProvider = cacheProvider;
             this.authenticationDelegate = authenticationDelegate;
 
-            IConfigurationSection? configSection = configuration.GetSection(CacheConfigSectionName);
-            this.tokenCacheMinutes = configSection?.GetValue("TokenCacheExpireMinutes", 0) ?? 0;
+            this.phsaConfigV2 = new PhsaConfigV2();
+            configuration.Bind(PhsaConfigV2.ConfigurationSectionKey, this.phsaConfigV2); // Initializes ClientId, ClientSecret, GrantType and Scope.
         }
 
         private static ActivitySource Source { get; } = new(nameof(AccessTokenService));
 
         /// <inheritdoc/>
-        public async Task<RequestResult<TokenSwapResponse>> GetPhsaAccessToken(string hdid)
+        public async Task<RequestResult<TokenSwapResponse>> GetPhsaAccessToken()
         {
             using Activity? activity = Source.StartActivity();
+            string? hdid = this.authenticationDelegate.FetchAuthenticatedUserHdid();
             RequestResult<TokenSwapResponse> requestResult = new();
             TokenSwapResponse? cachedAccessToken = this.GetFromCache(hdid);
 
@@ -118,10 +114,11 @@ namespace HealthGateway.Common.Services
         {
             using Activity? activity = Source.StartActivity();
             string cacheKey = $"{TokenSwapCacheDomain}:HDID:{hdid}";
-            if (this.tokenCacheMinutes > 0)
+            if (this.phsaConfigV2.TokenCacheEnabled)
             {
                 this.logger.LogDebug("Attempting to cache access token for cache key: {Key}", cacheKey);
-                this.cacheProvider.AddItem(cacheKey, tokenSwapResponse, TimeSpan.FromMinutes(this.tokenCacheMinutes));
+                TimeSpan? expires = tokenSwapResponse.ExpiresIn > 0 ? TimeSpan.FromMinutes(tokenSwapResponse.ExpiresIn) : null;
+                this.cacheProvider.AddItem(cacheKey, tokenSwapResponse, expires);
             }
             else
             {
@@ -140,7 +137,7 @@ namespace HealthGateway.Common.Services
         {
             using Activity? activity = Source.StartActivity();
             TokenSwapResponse? tokenResponse = null;
-            if (this.tokenCacheMinutes > 0)
+            if (this.phsaConfigV2.TokenCacheEnabled)
             {
                 string cacheKey = $"{TokenSwapCacheDomain}:HDID:{hdid}";
                 tokenResponse = this.cacheProvider.GetItem<TokenSwapResponse>(cacheKey);

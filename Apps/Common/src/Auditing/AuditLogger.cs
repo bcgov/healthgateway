@@ -161,6 +161,8 @@ namespace HealthGateway.Common.Auditing
                     return ApplicationType.Laboratory;
                 case "Encounter":
                     return ApplicationType.Encounter;
+                case "ClinicalDocument":
+                    return ApplicationType.ClinicalDocument;
                 case "ReSharperTestRunner":
                 case "testhost":
                     return ApplicationType.Configuration;
