@@ -25,6 +25,9 @@ namespace HealthGateway.Common.Services
     using Microsoft.Extensions.Logging;
     using Refit;
 
+    /// <summary>
+    /// Server to fetch Personal Account information from PHSA.
+    /// </summary>
     public class PersonalAccountsService : IPersonalAccountsService
     {
         private readonly ILogger<PersonalAccountsService> logger;
@@ -54,7 +57,8 @@ namespace HealthGateway.Common.Services
         /// <inheritdoc />
         public async Task<RequestResult<PatientAccount?>> GetPatientAccountAsync(string hdid)
         {
-            IApiResponse<PersonalAccount> accountResponse = await this.personalAccountsApi.AccountLookupByHdid(hdid).ConfigureAwait(true);
+            IApiResponse<PersonalAccount> response = await this.personalAccountsApi.AccountLookupByHdid(hdid).ConfigureAwait(true);
+            this.logger.LogTrace("{Response}", response);
             return new RequestResult<PatientAccount?>();
         }
 

@@ -48,16 +48,17 @@ namespace HealthGateway.ClinicalDocument.Services
         /// <inheritdoc/>
         public async Task<RequestResult<IEnumerable<ClinicalDocumentRecord>>> GetRecordsAsync(string hdid)
         {
-            RequestResult<PatientAccount?> acctResponse = await this.personalAccountsService.GetPatientAccountAsync(hdid).ConfigureAwait(true);
+            RequestResult<PatientAccount?> response = await this.personalAccountsService.GetPatientAccountAsync(hdid).ConfigureAwait(true);
+            this.logger.LogTrace("{Response}", response);
             return new RequestResult<IEnumerable<ClinicalDocumentRecord>>();
         }
 
         /// <inheritdoc/>
-#pragma warning disable CS1998
         public async Task<RequestResult<EncodedMedia>> GetFileAsync(string hdid, string fileId)
-#pragma warning restore CS1998
         {
-            throw new NotImplementedException();
+            RequestResult<PatientAccount?> response = await this.personalAccountsService.GetPatientAccountAsync(hdid).ConfigureAwait(true);
+            this.logger.LogTrace("{Response}", response);
+            return new RequestResult<EncodedMedia>();
         }
     }
 }

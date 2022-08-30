@@ -28,14 +28,14 @@ namespace HealthGateway.Common.Services
         /// Gets the Patient Account information from PHSA using the supplied HDID.
         /// </summary>
         /// <param name="hdid">The Hdid to lookup.</param>
-        /// <returns>The PatientAccount wrapped in a RequestResult</returns>
+        /// <returns>The PatientAccount wrapped in a RequestResult.</returns>
         Task<RequestResult<PatientAccount?>> GetPatientAccountAsync(string hdid);
 
         /// <summary>
         /// Gets the Patient Account information from PHSA using the supplied HDID.
         /// </summary>
         /// <param name="hdid">The Hdid to lookup.</param>
-        /// <returns>The PatientAccount wrapped in a RequestResult</returns>
+        /// <returns>The PatientAccount wrapped in a RequestResult.</returns>
         RequestResult<PatientAccount?> GetPatientAccount(string hdid);
     }
 }

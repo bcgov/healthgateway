@@ -60,18 +60,6 @@ namespace HealthGateway.Common.Delegates.PHSA
 
         private static ActivitySource Source { get; } = new(nameof(RestTokenSwapDelegate));
 
-        /// <summary>
-        /// Gets the form parameters to swap tokens.
-        /// </summary>
-        private IEnumerable<KeyValuePair<string, string>> FormParameters(string accessToken) => new Dictionary<string, string>
-        {
-            ["client_id"] = this.phsaConfigV2.ClientId,
-            ["client_secret"] = this.phsaConfigV2.ClientSecret,
-            ["grant_type"] = this.phsaConfigV2.GrantType,
-            ["scope"] = this.phsaConfigV2.Scope,
-            ["token"] = accessToken,
-        };
-
         /// <inheritdoc/>
         public async Task<RequestResult<TokenSwapResponse>> SwapToken(string accessToken)
         {
@@ -105,6 +93,18 @@ namespace HealthGateway.Common.Delegates.PHSA
 
             return requestResult;
         }
+
+        /// <summary>
+        /// Gets the form parameters to swap tokens.
+        /// </summary>
+        private IEnumerable<KeyValuePair<string, string>> FormParameters(string accessToken) => new Dictionary<string, string>
+        {
+            ["client_id"] = this.phsaConfigV2.ClientId,
+            ["client_secret"] = this.phsaConfigV2.ClientSecret,
+            ["grant_type"] = this.phsaConfigV2.GrantType,
+            ["scope"] = this.phsaConfigV2.Scope,
+            ["token"] = accessToken,
+        };
 
         private void ProcessResponse<T>(RequestResult<T> requestResult, IApiResponse<T> response)
             where T : class
