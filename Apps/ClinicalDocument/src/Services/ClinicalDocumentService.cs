@@ -41,13 +41,17 @@ namespace HealthGateway.ClinicalDocument.Services
         private static ActivitySource Source { get; } = new(nameof(ClinicalDocumentService));
 
         /// <inheritdoc/>
+#pragma warning disable CS1998
         public async Task<RequestResult<IEnumerable<ClinicalDocumentRecord>>> GetRecordsAsync(string hdid)
+#pragma warning restore CS1998
         {
             throw new NotImplementedException();
         }
 
         /// <inheritdoc/>
+#pragma warning disable CS1998
         public async Task<RequestResult<EncodedMedia>> GetFileAsync(string hdid, string fileId)
+#pragma warning restore CS1998
         {
             throw new NotImplementedException();
         }
