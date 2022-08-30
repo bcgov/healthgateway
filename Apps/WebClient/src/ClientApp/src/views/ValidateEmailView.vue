@@ -9,11 +9,11 @@ import { Component, Prop } from "vue-property-decorator";
 import { Action, Getter } from "vuex-class";
 
 import { ResultType } from "@/constants/resulttype";
-import { instanceOfResultError } from "@/models/errors";
+import RequestResult from "@/models/requestResult";
 import User from "@/models/user";
 import container from "@/plugins/container";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
-import { IUserProfileService } from "@/services/interfaces";
+import { ILogger } from "@/services/interfaces";
 
 library.add(faCheckCircle, faTimesCircle);
 
@@ -22,64 +22,52 @@ export default class ValidateEmailView extends Vue {
     @Prop()
     inviteKey!: string;
 
-    @Action("addError", { namespace: "errorBanner" })
-    addError!: (params: {
-        errorType: ErrorType;
-        source: ErrorSourceType;
-        traceId: string | undefined;
-    }) => void;
-
-    @Action("setTooManyRequestsWarning", { namespace: "errorBanner" })
-    setTooManyRequestsWarning!: (params: { key: string }) => void;
-
-    @Action("checkRegistration", { namespace: "user" })
-    checkRegistration!: () => Promise<boolean>;
+    @Action("validateEmail", { namespace: "user" })
+    validateEmail!: (params: {
+        inviteKey: string;
+    }) => Promise<RequestResult<boolean>>;
 
     @Getter("user", { namespace: "user" })
     user!: User;
 
+    private logger!: ILogger;
     private isLoading = true;
-    private validatedValue = false;
-    private resultStatus: ResultType | null = null;
+    private validatedValue?: boolean;
+    private resultStatus?: ResultType;
 
     private get isVerified(): boolean {
-        return this.resultStatus === ResultType.Success && this.validatedValue;
+        return (
+            this.resultStatus === ResultType.Success &&
+            this.validatedValue === true
+        );
     }
 
     private get isAlreadyVerified(): boolean {
-        return this.resultStatus === ResultType.Error && this.validatedValue;
+        return (
+            this.resultStatus === ResultType.Error &&
+            this.validatedValue === true
+        );
+    }
+
+    private get validationFailed(): boolean {
+        return this.validatedValue === false;
     }
 
     private mounted(): void {
+        this.logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
+
         this.verifyEmail();
     }
 
     private verifyEmail(): void {
         this.isLoading = true;
-        const userProfileService = container.get<IUserProfileService>(
-            SERVICE_IDENTIFIER.UserProfileService
-        );
-        userProfileService
-            .validateEmail(this.user.hdid, this.inviteKey)
+        this.validateEmail({ inviteKey: this.inviteKey })
             .then((result) => {
                 this.validatedValue = result.resourcePayload;
                 this.resultStatus = result.resultStatus;
-                if (this.resultStatus == ResultType.Success) {
-                    this.checkRegistration().catch((error) => {
-                        if (
-                            instanceOfResultError(error) &&
-                            error.statusCode === 429
-                        ) {
-                            this.setTooManyRequestsWarning({ key: "page" });
-                        } else {
-                            this.addError({
-                                errorType: ErrorType.Retrieve,
-                                source: ErrorSourceType.Profile,
-                                traceId: undefined,
-                            });
-                        }
-                    });
-                }
+            })
+            .catch(() => {
+                this.logger.error("Error while validating email.");
             })
             .finally(() => {
                 this.isLoading = false;
@@ -129,7 +117,7 @@ export default class ValidateEmailView extends Vue {
                 Continue
             </hg-button>
         </div>
-        <div v-else>
+        <div v-else-if="validationFailed">
             <hg-icon
                 icon="times-circle"
                 size="large"

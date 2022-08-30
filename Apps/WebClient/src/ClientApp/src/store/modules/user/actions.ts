@@ -4,7 +4,9 @@ import UserPreferenceType from "@/constants/userPreferenceType";
 import { DateWrapper } from "@/models/dateWrapper";
 import { ResultError } from "@/models/errors";
 import { QuickLink } from "@/models/quickLink";
+import RequestResult from "@/models/requestResult";
 import { UserPreference } from "@/models/userPreference";
+import { CreateUserRequest } from "@/models/userProfile";
 import container from "@/plugins/container";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import {
@@ -17,6 +19,35 @@ import { QuickLinkUtil } from "@/utility/quickLinkUtil";
 import { UserActions } from "./types";
 
 export const actions: UserActions = {
+    createProfile(
+        context,
+        params: { request: CreateUserRequest }
+    ): Promise<void> {
+        const logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
+        const userProfileService = container.get<IUserProfileService>(
+            SERVICE_IDENTIFIER.UserProfileService
+        );
+
+        return new Promise((resolve, reject) =>
+            userProfileService
+                .createProfile(params.request)
+                .then((userProfile) => {
+                    logger.verbose(
+                        `User Profile: ${JSON.stringify(userProfile)}`
+                    );
+                    context.commit("setProfileUserData", userProfile);
+                    resolve();
+                })
+                .catch((error: ResultError) => {
+                    context.dispatch("handleError", {
+                        error,
+                        errorType: ErrorType.Create,
+                        source: ErrorSourceType.Profile,
+                    });
+                    reject(error);
+                })
+        );
+    },
     checkRegistration(context): Promise<boolean> {
         const logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
         const userProfileService = container.get<IUserProfileService>(
@@ -173,6 +204,33 @@ export const actions: UserActions = {
 
         return context.dispatch("updateUserPreference", { userPreference });
     },
+    validateEmail(
+        context,
+        params: { inviteKey: string }
+    ): Promise<RequestResult<boolean>> {
+        const userProfileService = container.get<IUserProfileService>(
+            SERVICE_IDENTIFIER.UserProfileService
+        );
+
+        return new Promise((resolve, reject) => {
+            userProfileService
+                .validateEmail(context.state.user.hdid, params.inviteKey)
+                .then((result) => {
+                    if (result.resourcePayload === true) {
+                        context.commit("setEmailVerified");
+                    }
+                    resolve(result);
+                })
+                .catch((error: ResultError) => {
+                    context.dispatch("handleError", {
+                        error,
+                        errorType: ErrorType.Update,
+                        source: ErrorSourceType.User,
+                    });
+                    reject(error);
+                });
+        });
+    },
     closeUserAccount(context): Promise<void> {
         const userProfileService = container.get<IUserProfileService>(
             SERVICE_IDENTIFIER.UserProfileService
@@ -253,30 +311,38 @@ export const actions: UserActions = {
                         context.dispatch("handleError", {
                             error,
                             errorType: ErrorType.Retrieve,
+                            source: ErrorSourceType.Patient,
                         });
                         reject(error);
                     });
             }
         });
     },
-    handleError(context, params: { error: ResultError; errorType: ErrorType }) {
+    handleError(
+        context,
+        params: {
+            error: ResultError;
+            errorType: ErrorType;
+            source: ErrorSourceType;
+        }
+    ) {
         const logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
 
         logger.error(`ERROR: ${JSON.stringify(params.error)}`);
         context.commit("userError", params.error);
 
         if (params.error.statusCode === 429) {
-            context.dispatch(
-                "errorBanner/setTooManyRequestsWarning",
-                { key: "page" },
-                { root: true }
-            );
+            let action = "errorBanner/setTooManyRequestsError";
+            if (params.errorType === ErrorType.Retrieve) {
+                action = "errorBanner/setTooManyRequestsWarning";
+            }
+            context.dispatch(action, { key: "page" }, { root: true });
         } else {
             context.dispatch(
                 "errorBanner/addError",
                 {
                     errorType: params.errorType,
-                    source: ErrorSourceType.Patient,
+                    source: params.source,
                     traceId: params.error.traceId,
                 },
                 { root: true }

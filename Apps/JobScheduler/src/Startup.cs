@@ -74,6 +74,7 @@ namespace HealthGateway.JobScheduler
             services.AddRazorPages();
             this.startupConfig.ConfigureOpenIdConnectServices(services);
             this.startupConfig.ConfigureAccessControl(services);
+            this.startupConfig.ConfigureTracing(services);
 
             string requiredUserRole = this.configuration.GetValue<string>("OpenIdConnect:UserRole");
             string userRoleClaimType = this.configuration.GetValue<string>("OpenIdConnect:RolesClaim");
@@ -108,6 +109,7 @@ namespace HealthGateway.JobScheduler
             services.AddTransient<IEventLogDelegate, DBEventLogDelegate>();
             services.AddTransient<IFeedbackDelegate, DBFeedbackDelegate>();
             services.AddTransient<ICommunicationService, CommunicationService>();
+            services.AddTransient<IWriteAuditEventDelegate, DBWriteAuditEventDelegate>();
 
             // Add injection for KeyCloak User Admin
             services.AddTransient<IAuthenticationDelegate, AuthenticationDelegate>();

@@ -13,7 +13,7 @@ describe("Login Page", () => {
     });
 
     it("Menu Login", () => {
-        cy.get('[data-testid="loginBtn"]')
+        cy.get("[data-testid=loginBtn] a")
             .should("be.visible")
             .should("have.attr", "href", "/login")
             .should("have.text", "Log In");

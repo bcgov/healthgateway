@@ -280,26 +280,28 @@ export default class HeaderComponent extends Vue {
                         <span>Log Out</span>
                     </b-dropdown-item-button>
                 </b-nav-item-dropdown>
-                <router-link
+                <b-nav-item
                     v-else-if="isLogInButtonShown"
                     id="menuBtnLogin"
                     data-testid="loginBtn"
-                    class="nav-link d-flex align-items-center"
+                    class="nav-link"
+                    link-classes="d-flex align-items-center"
                     to="/login"
                 >
                     <hg-icon icon="sign-in-alt" size="large" class="mr-2" />
                     <span>Log In</span>
-                </router-link>
-                <router-link
+                </b-nav-item>
+                <b-nav-item
                     v-else-if="isLogOutButtonShown"
                     id="header-log-out-button"
                     data-testid="header-log-out-button"
-                    class="nav-link d-flex align-items-center"
+                    class="nav-link"
+                    link-classes="d-flex align-items-center"
                     to="/logout"
                 >
                     <hg-icon icon="sign-out-alt" size="large" class="mr-2" />
                     <span>Log Out</span>
-                </router-link>
+                </b-nav-item>
             </b-navbar-nav>
 
             <RatingComponent
