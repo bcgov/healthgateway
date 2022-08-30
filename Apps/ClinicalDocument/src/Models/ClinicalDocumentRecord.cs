@@ -39,25 +39,25 @@ namespace HealthGateway.ClinicalDocument.Models
         /// Gets or sets the name.
         /// </summary>
         [JsonPropertyName("name")]
-        public string Name { get; set; }
+        public string Name { get; set; } = string.Empty;
 
         /// <summary>
         /// Gets or sets the type.
         /// </summary>
         [JsonPropertyName("type")]
-        public string Type { get; set; }
+        public string Type { get; set; } = string.Empty;
 
         /// <summary>
         /// Gets or sets the facility name.
         /// </summary>
         [JsonPropertyName("facilityName")]
-        public string FacilityName { get; set; }
+        public string FacilityName { get; set; } = string.Empty;
 
         /// <summary>
         /// Gets or sets the discipline.
         /// </summary>
         [JsonPropertyName("discipline")]
-        public string Discipline { get; set; }
+        public string Discipline { get; set; } = string.Empty;
 
         /// <summary>
         /// Gets or sets the service date.
