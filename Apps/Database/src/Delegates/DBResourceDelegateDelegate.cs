@@ -83,7 +83,8 @@ namespace HealthGateway.Database.Delegates
             this.logger.LogTrace($"Getting resource delegates from DB... {delegateId}");
             DBResult<IEnumerable<ResourceDelegate>> result = DBDelegateHelper.GetPagedDBResult(
                 this.dbContext.ResourceDelegate
-                    .Where(resourceDelegate => resourceDelegate.ProfileHdid == delegateId),
+                    .Where(resourceDelegate => resourceDelegate.ProfileHdid == delegateId)
+                    .OrderBy(resourceDelegate => resourceDelegate.CreatedDateTime),
                 page,
                 pageSize);
             this.logger.LogTrace($"Finished getting resource delegates from DB... {JsonSerializer.Serialize(result)}");
