@@ -73,6 +73,8 @@ namespace HealthGateway.Admin.Client.Pages
 
         private bool HasError => this.MessageVerificationState.Value.Error != null && this.MessageVerificationState.Value.Error.Message.Length > 0;
 
+        private bool HasWarning => this.MessageVerificationState.Value.WarningMessage != null && this.MessageVerificationState.Value.WarningMessage.Length > 0;
+
         private IEnumerable<MessagingVerificationModel> MessagingVerifications =>
             this.MessageVerificationState.Value.Result?.ResourcePayload ?? Enumerable.Empty<MessagingVerificationModel>();
 

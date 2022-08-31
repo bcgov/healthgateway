@@ -38,6 +38,10 @@
     </MudGrid>
 </MudForm>
 
+<HgBannerFeedback Severity="@Severity.Normal" IsEnabled="HasWarning" TResetAction="MessageVerificationActions.ResetStateAction">
+    @MessageVerificationState.Value.WarningMessage
+</HgBannerFeedback>
+
 @if (MessagingVerificationsLoaded || MessagingVerificationsLoading)
 {
     <MudTable Class="mt-3" Items="MessagingVerificationRows" Loading="MessagingVerificationsLoading" Breakpoint="Breakpoint.Md" HorizontalScrollbar="true" Striped="true" Dense="true" data-testid="message-verification-table">
