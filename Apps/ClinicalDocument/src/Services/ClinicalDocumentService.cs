@@ -15,45 +15,79 @@
 //-------------------------------------------------------------------------
 namespace HealthGateway.ClinicalDocument.Services
 {
-    using System;
     using System.Collections.Generic;
     using System.Diagnostics;
     using System.Threading.Tasks;
     using HealthGateway.ClinicalDocument.Models;
+    using HealthGateway.Common.Data.Constants;
     using HealthGateway.Common.Data.ViewModels;
     using HealthGateway.Common.Models.PHSA;
+    using HealthGateway.Common.Services;
     using Microsoft.Extensions.Logging;
 
     /// <inheritdoc/>
     public class ClinicalDocumentService : IClinicalDocumentService
     {
         private readonly ILogger<ClinicalDocumentService> logger;
+        private readonly IPersonalAccountsService personalAccountsService;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ClinicalDocumentService"/> class.
         /// </summary>
         /// <param name="logger">Injected logger.</param>
-        public ClinicalDocumentService(ILogger<ClinicalDocumentService> logger)
+        /// <param name="personalAccountsService">The injected personal accounts service.</param>
+        public ClinicalDocumentService(ILogger<ClinicalDocumentService> logger, IPersonalAccountsService personalAccountsService)
         {
             this.logger = logger;
+            this.personalAccountsService = personalAccountsService;
         }
 
         private static ActivitySource Source { get; } = new(nameof(ClinicalDocumentService));
 
         /// <inheritdoc/>
-#pragma warning disable CS1998
         public async Task<RequestResult<IEnumerable<ClinicalDocumentRecord>>> GetRecordsAsync(string hdid)
-#pragma warning restore CS1998
         {
-            throw new NotImplementedException();
+            RequestResult<IEnumerable<ClinicalDocumentRecord>> requestResult = new()
+            {
+                ResultStatus = ResultType.Error,
+                PageSize = 0,
+            };
+            using Activity? activity = Source.StartActivity();
+            RequestResult<PersonalAccount?> response = await this.personalAccountsService.GetPatientAccountAsync(hdid).ConfigureAwait(true);
+            if (response.ResultStatus == ResultType.Success)
+            {
+                this.logger.LogDebug("PID Fetched: {Pid}", response.ResourcePayload?.PatientIdentity?.Pid);
+            }
+            else
+            {
+                requestResult.ResultError = response.ResultError;
+            }
+
+            activity?.Stop();
+            return requestResult;
         }
 
         /// <inheritdoc/>
-#pragma warning disable CS1998
         public async Task<RequestResult<EncodedMedia>> GetFileAsync(string hdid, string fileId)
-#pragma warning restore CS1998
         {
-            throw new NotImplementedException();
+            RequestResult<EncodedMedia> requestResult = new()
+            {
+                ResultStatus = ResultType.Error,
+                PageSize = 0,
+            };
+            using Activity? activity = Source.StartActivity();
+            RequestResult<PersonalAccount?> response = await this.personalAccountsService.GetPatientAccountAsync(hdid).ConfigureAwait(true);
+            if (response.ResultStatus == ResultType.Success)
+            {
+                this.logger.LogDebug("PID Fetched: {Pid}", response.ResourcePayload?.PatientIdentity?.Pid);
+            }
+            else
+            {
+                requestResult.ResultError = response.ResultError;
+            }
+
+            activity?.Stop();
+            return requestResult;
         }
     }
 }

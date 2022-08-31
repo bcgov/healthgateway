@@ -13,37 +13,29 @@
 //  See the License for the specific language governing permissions and
 //  limitations under the License.
 // -------------------------------------------------------------------------
-namespace HealthGateway.Common.Models.PHSA
+namespace HealthGateway.Common.Services
 {
-    using System.Text.Json.Serialization;
+    using System.Threading.Tasks;
+    using HealthGateway.Common.Data.ViewModels;
+    using HealthGateway.Common.Models.PHSA;
 
     /// <summary>
-    /// Model object representing an access token.
+    /// Caching Personal Account Service.
     /// </summary>
-    public class TokenSwapResponse
+    public interface IPersonalAccountsService
     {
         /// <summary>
-        /// Gets or sets the access token.
+        /// Gets the Personal Account information from PHSA using the supplied HDID.
         /// </summary>
-        [JsonPropertyName("access_token")]
-        public string AccessToken { get; set; } = string.Empty;
+        /// <param name="hdid">The Hdid to lookup.</param>
+        /// <returns>The PHSA PersonalAccount wrapped in a RequestResult.</returns>
+        Task<RequestResult<PersonalAccount?>> GetPatientAccountAsync(string hdid);
 
         /// <summary>
-        /// Gets or sets the number of seconds before the token expires.
+        /// Gets the Personal Account information from PHSA using the supplied HDID.
         /// </summary>
-        [JsonPropertyName("expires_in")]
-        public int ExpiresIn { get; set; }
-
-        /// <summary>
-        /// Gets or sets the token type for the token.
-        /// </summary>
-        [JsonPropertyName("token_type")]
-        public string TokenType { get; set; } = string.Empty;
-
-        /// <summary>
-        /// Gets or sets the scope for the token.
-        /// </summary>
-        [JsonPropertyName("scope")]
-        public string Scope { get; set; } = string.Empty;
+        /// <param name="hdid">The Hdid to lookup.</param>
+        /// <returns>The PHSA PersonalAccount wrapped in a RequestResult.</returns>
+        RequestResult<PersonalAccount?> GetPatientAccount(string hdid);
     }
 }

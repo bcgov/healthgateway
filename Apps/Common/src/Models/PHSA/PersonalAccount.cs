@@ -15,35 +15,48 @@
 // -------------------------------------------------------------------------
 namespace HealthGateway.Common.Models.PHSA
 {
+    using System;
     using System.Text.Json.Serialization;
 
     /// <summary>
-    /// Model object representing an access token.
+    /// Model representing a PHSA Personal Account.
     /// </summary>
-    public class TokenSwapResponse
+    public class PersonalAccount
     {
         /// <summary>
-        /// Gets or sets the access token.
+        /// Gets or sets the id.
         /// </summary>
-        [JsonPropertyName("access_token")]
-        public string AccessToken { get; set; } = string.Empty;
+        [JsonPropertyName("id")]
+        public Guid Id { get; set; }
 
         /// <summary>
-        /// Gets or sets the number of seconds before the token expires.
+        /// Gets or sets a value indicating whether this account is active.
         /// </summary>
-        [JsonPropertyName("expires_in")]
-        public int ExpiresIn { get; set; }
+        [JsonPropertyName("active")]
+        public bool Active { get; set; }
 
         /// <summary>
-        /// Gets or sets the token type for the token.
+        /// Gets or sets the display name.
         /// </summary>
-        [JsonPropertyName("token_type")]
-        public string TokenType { get; set; } = string.Empty;
+        [JsonPropertyName("displayName")]
+        public string? DisplayName { get; set; }
 
         /// <summary>
-        /// Gets or sets the scope for the token.
+        /// Gets or sets the created datetime in UTC.
         /// </summary>
-        [JsonPropertyName("scope")]
-        public string Scope { get; set; } = string.Empty;
+        [JsonPropertyName("creationTimeStampUtc")]
+        public DateTime CreationTimeStampUtc { get; set; }
+
+        /// <summary>
+        /// Gets or sets the modified datetime in UTC.
+        /// </summary>
+        [JsonPropertyName("modifyTimeStampUtc")]
+        public DateTime ModifyTimeStampUtc { get; set; }
+
+        /// <summary>
+        /// Gets or sets the Patient Identity.
+        /// </summary>
+        [JsonPropertyName("patientIdentity")]
+        public PatientIdentity? PatientIdentity { get; set; }
     }
 }

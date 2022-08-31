@@ -55,7 +55,7 @@ namespace HealthGateway.CommonTests.Services
             IAccessTokenService accessTokenService = GetAccessTokenService(expectedTokenSwapResponse, true, false);
 
             // Act
-            RequestResult<TokenSwapResponse> actualResult = accessTokenService.GetPhsaAccessToken(It.IsAny<string>()).Result;
+            RequestResult<TokenSwapResponse> actualResult = accessTokenService.GetPhsaAccessToken().Result;
 
             // Assert
             Assert.Equal(ResultType.Success, actualResult.ResultStatus);
@@ -81,7 +81,7 @@ namespace HealthGateway.CommonTests.Services
             IAccessTokenService accessTokenService = GetAccessTokenService(expectedTokenSwapResponse, true, true);
 
             // Act
-            RequestResult<TokenSwapResponse> actualResult = accessTokenService.GetPhsaAccessToken(It.IsAny<string>()).Result;
+            RequestResult<TokenSwapResponse> actualResult = accessTokenService.GetPhsaAccessToken().Result;
 
             // Assert
             Assert.Equal(ResultType.Success, actualResult.ResultStatus);
@@ -107,7 +107,7 @@ namespace HealthGateway.CommonTests.Services
             IAccessTokenService accessTokenService = GetAccessTokenService(expectedTokenSwapResponse, false, true);
 
             // Act
-            RequestResult<TokenSwapResponse> actualResult = accessTokenService.GetPhsaAccessToken(Hdid).Result;
+            RequestResult<TokenSwapResponse> actualResult = accessTokenService.GetPhsaAccessToken().Result;
 
             // Assert
             Assert.Equal(ResultType.Error, actualResult.ResultStatus);
@@ -140,6 +140,7 @@ namespace HealthGateway.CommonTests.Services
 
             Mock<IAuthenticationDelegate> mockAuthenticationDelegate = new();
             mockAuthenticationDelegate.Setup(a => a.FetchAuthenticatedUserToken()).Returns(isAccessTokenFound ? AccessToken : null);
+            mockAuthenticationDelegate.Setup(a => a.FetchAuthenticatedUserHdid()).Returns(Hdid);
 
             Mock<ITokenSwapDelegate> mockTokenSwapDelegate = new();
             mockTokenSwapDelegate.Setup(s => s.SwapToken(It.IsAny<string>())).ReturnsAsync(requestResult);

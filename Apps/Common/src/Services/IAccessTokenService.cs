@@ -25,10 +25,9 @@ namespace HealthGateway.Common.Services
     public interface IAccessTokenService
     {
         /// <summary>
-        /// Gets an access token from PHSA after authenticating with a Health Gateway access token.
+        /// Gets an access token from PHSA for the currently authenticated user..
         /// </summary>
-        /// <param name="hdid">The hdid associated with the access token.</param>
-        /// <returns>The newly swapped access token.</returns>
-        Task<RequestResult<TokenSwapResponse>> GetPhsaAccessToken(string hdid);
+        /// <returns>The PHSA Access Token.</returns>
+        Task<RequestResult<TokenSwapResponse>> GetPhsaAccessToken();
     }
 }
