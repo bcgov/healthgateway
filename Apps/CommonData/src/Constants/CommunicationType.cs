@@ -37,5 +37,10 @@ namespace HealthGateway.Common.Data.Constants
         /// Communication inside the app.
         /// </summary>
         InApp,
+
+        /// <summary>
+        /// Communication for the mobile app.
+        /// </summary>
+        Mobile,
     }
 }
