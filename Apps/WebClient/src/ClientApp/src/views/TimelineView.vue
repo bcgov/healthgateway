@@ -4,6 +4,7 @@ import {
     faCheckCircle,
     faEdit,
     faFileMedical,
+    faFileWaveform,
     faMicroscope,
     faPills,
     faQuestion,
@@ -26,6 +27,8 @@ import FilterComponent from "@/components/timeline/FilterComponent.vue";
 import LinearTimelineComponent from "@/components/timeline/LinearTimelineComponent.vue";
 import { EntryType, entryTypeMap } from "@/constants/entryType";
 import BreadcrumbItem from "@/models/breadcrumbItem";
+import ClinicalDocument from "@/models/clinicalDocument";
+import ClinicalDocumentTimelineEntry from "@/models/clinicalDocumentTimelineEntry";
 import type { WebClientConfiguration } from "@/models/configData";
 import Covid19LaboratoryOrderTimelineEntry from "@/models/covid19LaboratoryOrderTimelineEntry";
 import { DateWrapper } from "@/models/dateWrapper";
@@ -53,6 +56,7 @@ library.add(
     faCheckCircle,
     faEdit,
     faFileMedical,
+    faFileWaveform,
     faMicroscope,
     faPills,
     faQuestion,
@@ -113,6 +117,9 @@ export default class TimelineView extends Vue {
     @Action("retrieveMedicationRequests", { namespace: "medication" })
     retrieveMedicationRequests!: (params: { hdid: string }) => Promise<void>;
 
+    @Action("retrieve", { namespace: "clinicalDocument" })
+    retrieveClinicalDocuments!: (params: { hdid: string }) => Promise<void>;
+
     @Action("retrieve", { namespace: "comment" })
     retrieveComments!: (params: { hdid: string }) => Promise<void>;
 
@@ -169,6 +176,9 @@ export default class TimelineView extends Vue {
 
     @Getter("laboratoryOrders", { namespace: "laboratory" })
     laboratoryOrders!: LaboratoryOrder[];
+
+    @Getter("records", { namespace: "clinicalDocument" })
+    clinicalDocuments!: ClinicalDocument[];
 
     @Getter("notes", { namespace: "note" })
     userNotes!: UserNote[];
@@ -236,6 +246,16 @@ export default class TimelineView extends Vue {
         for (const encounter of this.patientEncounters) {
             timelineEntries.push(
                 new EncounterTimelineEntry(encounter, this.getEntryComments)
+            );
+        }
+
+        // Add the clinical document entries to the timeline list
+        for (const clinicalDocument of this.clinicalDocuments) {
+            timelineEntries.push(
+                new ClinicalDocumentTimelineEntry(
+                    clinicalDocument,
+                    this.getEntryComments
+                )
             );
         }
 
@@ -406,6 +426,7 @@ export default class TimelineView extends Vue {
             this.retrieveCovid19LaboratoryOrders({ hdid: this.user.hdid }),
             this.retrieveLaboratoryOrders({ hdid: this.user.hdid }),
             this.retrieveEncounters({ hdid: this.user.hdid }),
+            this.retrieveClinicalDocuments({ hdid: this.user.hdid }),
             this.retrieveNotes({ hdid: this.user.hdid }),
             this.retrieveComments({ hdid: this.user.hdid }),
         ]).catch((err) =>

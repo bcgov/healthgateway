@@ -547,6 +547,15 @@ namespace HealthGateway.Database.Context
                         CreatedDateTime = this.DefaultSeedDate,
                         UpdatedBy = UserId.DefaultUser,
                         UpdatedDateTime = this.DefaultSeedDate,
+                    },
+                    new ProgramTypeCode
+                    {
+                        ProgramCode = ApplicationType.ClinicalDocument,
+                        Description = "Clinical Document Service",
+                        CreatedBy = UserId.DefaultUser,
+                        CreatedDateTime = this.DefaultSeedDate.ToUniversalTime(),
+                        UpdatedBy = UserId.DefaultUser,
+                        UpdatedDateTime = this.DefaultSeedDate.ToUniversalTime(),
                     });
         }
 
@@ -971,6 +980,15 @@ namespace HealthGateway.Database.Context
                         CreatedDateTime = this.DefaultSeedDate,
                         UpdatedBy = UserId.DefaultUser,
                         UpdatedDateTime = this.DefaultSeedDate,
+                    },
+                    new CommentEntryTypeCode
+                    {
+                        CommentEntryCode = CommentEntryType.ClinicalDocuments,
+                        Description = "Comment for Clinical Documents Entry",
+                        CreatedBy = UserId.DefaultUser,
+                        CreatedDateTime = this.DefaultSeedDate.ToUniversalTime(),
+                        UpdatedBy = UserId.DefaultUser,
+                        UpdatedDateTime = this.DefaultSeedDate.ToUniversalTime(),
                     });
         }
     }
