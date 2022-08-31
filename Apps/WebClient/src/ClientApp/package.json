@@ -47,7 +47,7 @@
         "@chenfengyuan/vue-countdown": "^1.1.5",
         "@fortawesome/fontawesome-svg-core": "^6.1.2",
         "@fortawesome/free-regular-svg-icons": "^6.1.2",
-        "@fortawesome/free-solid-svg-icons": "^6.1.2",
+        "@fortawesome/free-solid-svg-icons": "^6.2.0",
         "@fortawesome/vue-fontawesome": "^2.0.8",
         "@types/file-saver": "^2.0.5",
         "@types/vue-clickaway": "^2.2.0",
