@@ -81,7 +81,7 @@ namespace HealthGateway.CommonTests.Services
                 communicationDelegateMock.Object,
                 cacheProvider);
 
-            RequestResult<Communication?> actualResult = service.GetActiveBanner(CommunicationType.Banner);
+            RequestResult<Communication?> actualResult = service.GetActiveCommunication(CommunicationType.Banner);
 
             switch (scenario)
             {
@@ -135,7 +135,7 @@ namespace HealthGateway.CommonTests.Services
                 communicationDelegateMock.Object,
                 cacheProvider);
 
-            RequestResult<Communication?> actualResult = service.GetActiveBanner(CommunicationType.Banner);
+            RequestResult<Communication?> actualResult = service.GetActiveCommunication(CommunicationType.Banner);
 
             if (dbStatusCode == DBStatusCode.Read || dbStatusCode == DBStatusCode.NotFound)
             {
@@ -183,7 +183,7 @@ namespace HealthGateway.CommonTests.Services
         [InlineData(Insert, Scenario.Future, false)]
         public void ShouldProcessChangeEvent(string action, Scenario scenario, bool cached, CommunicationType commType = CommunicationType.Banner, bool cacheMiss = false)
         {
-            Communication communication = new Communication()
+            Communication communication = new()
             {
                 Id = Guid.NewGuid(),
                 CommunicationTypeCode = commType,
@@ -216,10 +216,12 @@ namespace HealthGateway.CommonTests.Services
                 RequestResult<Communication?> cacheEntry = new()
                 {
                     ResultStatus = ResultType.Success,
-                    ResourcePayload = !cacheMiss ? communication : new()
-                    {
-                        Id = Guid.NewGuid(),
-                    },
+                    ResourcePayload = !cacheMiss
+                        ? communication
+                        : new()
+                        {
+                            Id = Guid.NewGuid(),
+                        },
                     TotalResultCount = 1,
                 };
 
@@ -279,7 +281,7 @@ namespace HealthGateway.CommonTests.Services
                 new Mock<ILogger<CommunicationService>>().Object,
                 new Mock<ICommunicationDelegate>().Object,
                 new Mock<ICacheProvider>().Object);
-            Assert.Throws<ArgumentOutOfRangeException>(() => service.GetActiveBanner(CommunicationType.Email));
+            Assert.Throws<ArgumentOutOfRangeException>(() => service.GetActiveCommunication(CommunicationType.Email));
         }
 
         private static IMemoryCache CreateCache(RequestResult<Communication?>? cacheEntry = null, string? cacheKey = null, MemoryCacheEntryOptions? options = null)
