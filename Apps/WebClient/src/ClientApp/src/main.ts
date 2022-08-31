@@ -49,6 +49,7 @@ import router from "@/router";
 import { RootState } from "@/store/types";
 import {
     IAuthenticationService,
+    IClinicalDocumentService,
     ICommunicationService,
     IConfigService,
     IDependentService,
@@ -127,6 +128,9 @@ configService
         const encounterService = container.get<IEncounterService>(
             SERVICE_IDENTIFIER.EncounterService
         );
+        const clinicalDocumentService = container.get<IClinicalDocumentService>(
+            SERVICE_IDENTIFIER.ClinicalDocumentService
+        );
         const userProfileService = container.get<IUserProfileService>(
             SERVICE_IDENTIFIER.UserProfileService
         );
@@ -176,6 +180,7 @@ configService
         medicationService.initialize(config, httpDelegate);
         laboratoryService.initialize(config, httpDelegate);
         encounterService.initialize(config, httpDelegate);
+        clinicalDocumentService.initialize(config, httpDelegate);
         userProfileService.initialize(config, httpDelegate);
         userFeedbackService.initialize(config, httpDelegate);
         userNoteService.initialize(config, httpDelegate);

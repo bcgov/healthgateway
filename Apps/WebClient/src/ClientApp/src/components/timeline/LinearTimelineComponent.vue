@@ -11,6 +11,7 @@ import container from "@/plugins/container";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import { ILogger } from "@/services/interfaces";
 
+import ClinicalDocumentTimelineComponent from "./entryCard/ClinicalDocumentTimelineComponent.vue";
 import Covid19LaboratoryOrderTimelineComponent from "./entryCard/Covid19LaboratoryOrderTimelineComponent.vue";
 import EncounterTimelineComponent from "./entryCard/EncounterTimelineComponent.vue";
 import ImmunizationTimelineComponent from "./entryCard/ImmunizationTimelineComponent.vue";
@@ -29,6 +30,7 @@ import NoteTimelineComponent from "./entryCard/NoteTimelineComponent.vue";
         LaboratoryOrderComponent: LaboratoryOrderTimelineComponent,
         EncounterComponent: EncounterTimelineComponent,
         NoteComponent: NoteTimelineComponent,
+        ClinicalDocumentComponent: ClinicalDocumentTimelineComponent,
     },
 })
 export default class LinearTimelineComponent extends Vue {
@@ -74,6 +76,9 @@ export default class LinearTimelineComponent extends Vue {
     @Getter("isLoading", { namespace: "note" })
     isNoteLoading!: boolean;
 
+    @Getter("isLoading", { namespace: "clinicalDocument" })
+    isClinicalDocumentLoading!: boolean;
+
     @Getter("isDeferredLoad", { namespace: "immunization" })
     isImmunizationDeferred!: boolean;
 
@@ -95,6 +100,7 @@ export default class LinearTimelineComponent extends Vue {
             !this.isCovid19LaboratoryLoading &&
             !this.isLaboratoryLoading &&
             !this.isEncounterLoading &&
+            !this.isClinicalDocumentLoading &&
             !this.isNoteLoading &&
             !this.isCommentLoading;
         this.logger.debug(`Linear Timeline is fully loaded: ${fullyLoaded}`);
@@ -142,6 +148,13 @@ export default class LinearTimelineComponent extends Vue {
             this.isSelectedFilterModuleLoading(
                 EntryType.Encounter,
                 this.isEncounterLoading
+            )
+        );
+
+        filtersLoaded.push(
+            this.isSelectedFilterModuleLoading(
+                EntryType.ClinicalDocument,
+                this.isClinicalDocumentLoading
             )
         );
 

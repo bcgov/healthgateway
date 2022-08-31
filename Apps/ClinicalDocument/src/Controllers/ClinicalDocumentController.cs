@@ -69,7 +69,7 @@ namespace HealthGateway.ClinicalDocument.Controllers
         [Produces("application/json")]
         [Route("{hdid}")]
         [Authorize(Policy = LaboratoryPolicy.Read)]
-        public async Task<RequestResult<IEnumerable<ClinicalDocumentRecord>>> GetRecords([FromQuery] string hdid)
+        public async Task<RequestResult<IEnumerable<ClinicalDocumentRecord>>> GetRecords(string hdid)
         {
             this.logger.LogDebug("Getting clinical document records for HDID: {Hdid}", hdid);
             RequestResult<IEnumerable<ClinicalDocumentRecord>> result = await this.clinicalDocumentService.GetRecordsAsync(hdid).ConfigureAwait(true);
