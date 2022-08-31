@@ -15,13 +15,12 @@
 //-------------------------------------------------------------------------
 namespace HealthGateway.ClinicalDocument.Services
 {
-    using System;
     using System.Collections.Generic;
     using System.Diagnostics;
     using System.Threading.Tasks;
     using HealthGateway.ClinicalDocument.Models;
+    using HealthGateway.Common.Data.Constants;
     using HealthGateway.Common.Data.ViewModels;
-    using HealthGateway.Common.Models;
     using HealthGateway.Common.Models.PHSA;
     using HealthGateway.Common.Services;
     using Microsoft.Extensions.Logging;
@@ -48,17 +47,47 @@ namespace HealthGateway.ClinicalDocument.Services
         /// <inheritdoc/>
         public async Task<RequestResult<IEnumerable<ClinicalDocumentRecord>>> GetRecordsAsync(string hdid)
         {
-            RequestResult<PatientAccount?> response = await this.personalAccountsService.GetPatientAccountAsync(hdid).ConfigureAwait(true);
-            this.logger.LogTrace("{Response}", response);
-            return new RequestResult<IEnumerable<ClinicalDocumentRecord>>();
+            RequestResult<IEnumerable<ClinicalDocumentRecord>> requestResult = new()
+            {
+                ResultStatus = ResultType.Error,
+                PageSize = 0,
+            };
+            using Activity? activity = Source.StartActivity();
+            RequestResult<PersonalAccount?> response = await this.personalAccountsService.GetPatientAccountAsync(hdid).ConfigureAwait(true);
+            if (response.ResultStatus == ResultType.Success)
+            {
+                this.logger.LogDebug("PID Fetched: {Pid}", response.ResourcePayload?.PatientIdentity?.Pid);
+            }
+            else
+            {
+                requestResult.ResultError = response.ResultError;
+            }
+
+            activity?.Stop();
+            return requestResult;
         }
 
         /// <inheritdoc/>
         public async Task<RequestResult<EncodedMedia>> GetFileAsync(string hdid, string fileId)
         {
-            RequestResult<PatientAccount?> response = await this.personalAccountsService.GetPatientAccountAsync(hdid).ConfigureAwait(true);
-            this.logger.LogTrace("{Response}", response);
-            return new RequestResult<EncodedMedia>();
+            RequestResult<EncodedMedia> requestResult = new()
+            {
+                ResultStatus = ResultType.Error,
+                PageSize = 0,
+            };
+            using Activity? activity = Source.StartActivity();
+            RequestResult<PersonalAccount?> response = await this.personalAccountsService.GetPatientAccountAsync(hdid).ConfigureAwait(true);
+            if (response.ResultStatus == ResultType.Success)
+            {
+                this.logger.LogDebug("PID Fetched: {Pid}", response.ResourcePayload?.PatientIdentity?.Pid);
+            }
+            else
+            {
+                requestResult.ResultError = response.ResultError;
+            }
+
+            activity?.Stop();
+            return requestResult;
         }
     }
 }

@@ -15,11 +15,15 @@
 // -------------------------------------------------------------------------
 namespace HealthGateway.Common.Services
 {
+    using System;
+    using System.Diagnostics;
+    using System.Net.Http;
     using System.Threading.Tasks;
     using HealthGateway.Common.Api;
     using HealthGateway.Common.CacheProviders;
+    using HealthGateway.Common.Data.Constants;
     using HealthGateway.Common.Data.ViewModels;
-    using HealthGateway.Common.Models;
+    using HealthGateway.Common.ErrorHandling;
     using HealthGateway.Common.Models.PHSA;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.Logging;
@@ -30,10 +34,15 @@ namespace HealthGateway.Common.Services
     /// </summary>
     public class PersonalAccountsService : IPersonalAccountsService
     {
+        /// <summary>
+        /// The generic cache domain to store the Personal Account.
+        /// </summary>
+        private const string CacheDomain = "PersonalAccount";
+
         private readonly ILogger<PersonalAccountsService> logger;
-        private readonly IConfiguration configuration;
         private readonly ICacheProvider cacheProvider;
         private readonly IPersonalAccountsApi personalAccountsApi;
+        private readonly PhsaConfigV2 phsaConfig;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="PersonalAccountsService"/> class.
@@ -49,23 +58,111 @@ namespace HealthGateway.Common.Services
             IPersonalAccountsApi personalAccountsApi)
         {
             this.logger = logger;
-            this.configuration = configuration;
             this.cacheProvider = cacheProvider;
             this.personalAccountsApi = personalAccountsApi;
+
+            this.phsaConfig = new PhsaConfigV2();
+            configuration.Bind(PhsaConfigV2.ConfigurationSectionKey, this.phsaConfig); // Initializes ClientId, ClientSecret, GrantType and Scope.
         }
 
+        private static ActivitySource Source { get; } = new(nameof(PersonalAccountsService));
+
         /// <inheritdoc />
-        public async Task<RequestResult<PatientAccount?>> GetPatientAccountAsync(string hdid)
+        public async Task<RequestResult<PersonalAccount?>> GetPatientAccountAsync(string hdid)
         {
-            IApiResponse<PersonalAccount> response = await this.personalAccountsApi.AccountLookupByHdid(hdid).ConfigureAwait(true);
-            this.logger.LogTrace("{Response}", response);
-            return new RequestResult<PatientAccount?>();
+            RequestResult<PersonalAccount?> requestResult = new()
+            {
+                ResultStatus = ResultType.Error,
+                PageSize = 0,
+            };
+            PersonalAccount? account = this.GetFromCache(hdid);
+            if (account is null)
+            {
+                try
+                {
+                    IApiResponse<PersonalAccount> response = await this.personalAccountsApi.AccountLookupByHdid(hdid).ConfigureAwait(true);
+                    if (response.IsSuccessStatusCode)
+                    {
+                        account = response.Content;
+                        this.PutCache(hdid, account);
+                    }
+                    else
+                    {
+                        this.logger.LogCritical("API Exception {Error}", response.Error?.ToString());
+                        requestResult.ResultError = new()
+                        {
+                            ResultMessage = $"API Exception {response.Error}",
+                            ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.PHSA),
+                        };
+                    }
+                }
+                catch (HttpRequestException e)
+                {
+                    this.logger.LogCritical("HTTP Request Exception {Error}", e.ToString());
+                    requestResult.ResultError = new()
+                    {
+                        ResultMessage = "Error with HTTP Request for Personal Accounts",
+                        ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.PHSA),
+                    };
+                }
+            }
+
+            if (account != null)
+            {
+                requestResult.ResultStatus = ResultType.Success;
+                requestResult.ResourcePayload = account;
+                requestResult.TotalResultCount = 1;
+            }
+
+            return requestResult;
         }
 
         /// <inheritdoc />
-        public RequestResult<PatientAccount?> GetPatientAccount(string hdid)
+        public RequestResult<PersonalAccount?> GetPatientAccount(string hdid)
         {
             return this.GetPatientAccountAsync(hdid).Result;
+        }
+
+        /// <summary>
+        /// Caches the Personal Account if enabled.
+        /// </summary>
+        /// <param name="hdid">The hdid to use to retrieve the Personal Account.</param>
+        /// <param name="personalAccount">The Personal Account to be cached.</param>
+        private void PutCache(string hdid, PersonalAccount personalAccount)
+        {
+            using Activity? activity = Source.StartActivity();
+            string cacheKey = $"{CacheDomain}:HDID:{hdid}";
+            if (this.phsaConfig.PersonalAccountsCacheTtl > 0)
+            {
+                this.logger.LogDebug("Attempting to cache Personal Account for cache key: {Key}", cacheKey);
+                this.cacheProvider.AddItem(cacheKey, personalAccount, TimeSpan.FromMinutes(this.phsaConfig.PersonalAccountsCacheTtl));
+            }
+            else
+            {
+                this.logger.LogDebug("PersonalAccount caching is disabled; will not cache for cache key: {Key}", cacheKey);
+            }
+
+            activity?.Stop();
+        }
+
+        /// <summary>
+        /// Attempts to get the Personal Account from the cache.
+        /// </summary>
+        /// <param name="hdid">The hdid used to create the key to retrieve.</param>
+        /// <returns>The Personal Account or null.</returns>
+        private PersonalAccount? GetFromCache(string hdid)
+        {
+            using Activity? activity = Source.StartActivity();
+            PersonalAccount? cacheItem = null;
+            if (this.phsaConfig.PersonalAccountsCacheTtl > 0)
+            {
+                string cacheKey = $"{CacheDomain}:HDID:{hdid}";
+                cacheItem = this.cacheProvider.GetItem<PersonalAccount>(cacheKey);
+                this.logger.LogDebug("Cache key: {CacheKey} was {Found} found in cache.", cacheKey, cacheItem == null ? "not" : string.Empty);
+            }
+
+            activity?.Stop();
+            return cacheItem;
         }
     }
 }

@@ -17,7 +17,7 @@ namespace HealthGateway.Common.Services
 {
     using System.Threading.Tasks;
     using HealthGateway.Common.Data.ViewModels;
-    using HealthGateway.Common.Models;
+    using HealthGateway.Common.Models.PHSA;
 
     /// <summary>
     /// Caching Personal Account Service.
@@ -25,17 +25,17 @@ namespace HealthGateway.Common.Services
     public interface IPersonalAccountsService
     {
         /// <summary>
-        /// Gets the Patient Account information from PHSA using the supplied HDID.
+        /// Gets the Personal Account information from PHSA using the supplied HDID.
         /// </summary>
         /// <param name="hdid">The Hdid to lookup.</param>
-        /// <returns>The PatientAccount wrapped in a RequestResult.</returns>
-        Task<RequestResult<PatientAccount?>> GetPatientAccountAsync(string hdid);
+        /// <returns>The PHSA PersonalAccount wrapped in a RequestResult.</returns>
+        Task<RequestResult<PersonalAccount?>> GetPatientAccountAsync(string hdid);
 
         /// <summary>
-        /// Gets the Patient Account information from PHSA using the supplied HDID.
+        /// Gets the Personal Account information from PHSA using the supplied HDID.
         /// </summary>
         /// <param name="hdid">The Hdid to lookup.</param>
-        /// <returns>The PatientAccount wrapped in a RequestResult.</returns>
-        RequestResult<PatientAccount?> GetPatientAccount(string hdid);
+        /// <returns>The PHSA PersonalAccount wrapped in a RequestResult.</returns>
+        RequestResult<PersonalAccount?> GetPatientAccount(string hdid);
     }
 }

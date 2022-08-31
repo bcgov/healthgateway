@@ -117,7 +117,7 @@ namespace HealthGateway.Common.Services
             if (this.phsaConfigV2.TokenCacheEnabled)
             {
                 this.logger.LogDebug("Attempting to cache access token for cache key: {Key}", cacheKey);
-                TimeSpan? expires = tokenSwapResponse.ExpiresIn > 0 ? TimeSpan.FromMinutes(tokenSwapResponse.ExpiresIn) : null;
+                TimeSpan? expires = tokenSwapResponse.ExpiresIn > 0 ? TimeSpan.FromSeconds(tokenSwapResponse.ExpiresIn) : null;
                 this.cacheProvider.AddItem(cacheKey, tokenSwapResponse, expires);
             }
             else

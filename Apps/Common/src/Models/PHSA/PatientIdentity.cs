@@ -21,25 +21,55 @@ namespace HealthGateway.Common.Models.PHSA
     /// <summary>
     /// Model representing a PHSA Personal Account.
     /// </summary>
-    public class PersonalAccount
+    public class PatientIdentity
     {
         /// <summary>
-        /// Gets or sets the id.
+        /// Gets or sets PHSA patient identifier.
         /// </summary>
-        [JsonPropertyName("id")]
-        public Guid Id { get; set; }
+        [JsonPropertyName("pid")]
+        public Guid Pid { get; set; }
 
         /// <summary>
-        /// Gets or sets a value indicating whether this account is active.
+        /// Gets or sets the personal health number.
         /// </summary>
-        [JsonPropertyName("active")]
-        public bool Active { get; set; }
+        [JsonPropertyName("phn")]
+        public string? Phn { get; set; }
 
         /// <summary>
-        /// Gets or sets the display name.
+        /// Gets or sets the hdid.
         /// </summary>
-        [JsonPropertyName("displayName")]
-        public string? DisplayName { get; set; }
+        [JsonPropertyName("hdid")]
+        public string? HdId { get; set; }
+
+        /// <summary>
+        /// Gets or sets the given name.
+        /// </summary>
+        [JsonPropertyName("firstname")]
+        public string? FirstName { get; set; }
+
+        /// <summary>
+        /// Gets or sets the surname.
+        /// </summary>
+        [JsonPropertyName("lastname")]
+        public string? LastName { get; set; }
+
+        /// <summary>
+        /// Gets or sets the birthdate.
+        /// </summary>
+        [JsonPropertyName("birthdate")]
+        public DateTime BirthDate { get; set; }
+
+        /// <summary>
+        /// Gets or sets the email address.
+        /// </summary>
+        [JsonPropertyName("email")]
+        public string? Email { get; set; }
+
+        /// <summary>
+        /// Gets or sets the gender.
+        /// </summary>
+        [JsonPropertyName("gender")]
+        public string? Gender { get; set; }
 
         /// <summary>
         /// Gets or sets the created datetime in UTC.
@@ -52,11 +82,5 @@ namespace HealthGateway.Common.Models.PHSA
         /// </summary>
         [JsonPropertyName("modifyTimeStampUtc")]
         public DateTime ModifyTimeStampUtc { get; set; }
-
-        /// <summary>
-        /// Gets or sets the Patient Identity.
-        /// </summary>
-        [JsonPropertyName("patientIdentity")]
-        public PatientIdentity? PatientIdentity { get; set; }
     }
 }

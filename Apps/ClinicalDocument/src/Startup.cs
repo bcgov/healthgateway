@@ -80,7 +80,7 @@ namespace HealthGateway.ClinicalDocument
             PhsaConfigV2 phsaConfig = new();
             this.startupConfig.Configuration.Bind(PhsaConfigV2.ConfigurationSectionKey, phsaConfig);
             services.AddRefitClient<ITokenSwapApi>()
-                .ConfigureHttpClient(c => c.BaseAddress = phsaConfig.BaseUrl);
+                .ConfigureHttpClient(c => c.BaseAddress = phsaConfig.TokenBaseUrl);
             services.AddRefitClient<IPersonalAccountsApi>()
                 .ConfigureHttpClient(c => c.BaseAddress = phsaConfig.BaseUrl)
                 .AddHttpMessageHandler<AuthHeaderHandler>();
