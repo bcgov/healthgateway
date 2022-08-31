@@ -8,6 +8,7 @@ import {
     faDesktop,
     faEdit,
     faFileMedical,
+    faFileWaveform,
     faMagnifyingGlass,
     faMicroscope,
     faMobileScreenButton,
@@ -37,6 +38,7 @@ library.add(
     faDesktop,
     faEdit,
     faFileMedical,
+    faFileWaveform,
     faMagnifyingGlass,
     faMicroscope,
     faMobileScreenButton,
@@ -91,6 +93,7 @@ export default class LandingView extends Vue {
         EntryType.Encounter,
         EntryType.Immunization,
         EntryType.MedicationRequest,
+        EntryType.ClinicalDocument,
     ];
 
     private tiles: Tile[] = [];

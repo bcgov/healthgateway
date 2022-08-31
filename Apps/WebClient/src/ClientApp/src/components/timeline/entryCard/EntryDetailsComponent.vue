@@ -11,6 +11,7 @@ import { Operation } from "@/models/storeOperations";
 import TimelineEntry from "@/models/timelineEntry";
 import User from "@/models/user";
 
+import ClinicalDocumentTimelineComponent from "./ClinicalDocumentTimelineComponent.vue";
 import Covid19LaboratoryOrderTimelineComponent from "./Covid19LaboratoryOrderTimelineComponent.vue";
 import EncounterTimelineComponent from "./EncounterTimelineComponent.vue";
 import ImmunizationTimelineComponent from "./ImmunizationTimelineComponent.vue";
@@ -31,6 +32,7 @@ library.add(faArrowLeft);
         LaboratoryOrderComponent: LaboratoryOrderTimelineComponent,
         EncounterComponent: EncounterTimelineComponent,
         NoteComponent: NoteTimelineComponent,
+        ClinicalDocumentComponent: ClinicalDocumentTimelineComponent,
     },
 })
 export default class EntryDetailsComponent extends Vue {
