@@ -34,6 +34,9 @@
             <MudTabPanel Text="In-App Banners">
                 <CommunicationsTable Data="@InAppCommunications" IsLoading="@CommunicationsLoading" OnEditCallback="EditBannerAsync" />
             </MudTabPanel>
+            <MudTabPanel Text="Mobile">
+                <CommunicationsTable Data="@MobileCommunications" IsLoading="@CommunicationsLoading" OnEditCallback="EditBannerAsync" />
+            </MudTabPanel>
         </ChildContent>
     </HgTabs>
 }

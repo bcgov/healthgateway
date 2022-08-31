@@ -73,11 +73,15 @@ public partial class CommunicationsPage : FluxorComponent
     private IEnumerable<ExtendedCommunication> InAppCommunications =>
         this.AllCommunications.Where(c => c.CommunicationTypeCode == CommunicationType.InApp);
 
+    private IEnumerable<ExtendedCommunication> MobileCommunications =>
+        this.AllCommunications.Where(c => c.CommunicationTypeCode == CommunicationType.Mobile);
+
     private CommunicationType? SelectedCommunicationType =>
         this.Tabs?.MudComponent.ActivePanelIndex switch
         {
             0 => CommunicationType.Banner,
             1 => CommunicationType.InApp,
+            2 => CommunicationType.Mobile,
             _ => null,
         };
 
@@ -86,6 +90,7 @@ public partial class CommunicationsPage : FluxorComponent
         {
             CommunicationType.Banner => "Public",
             CommunicationType.InApp => "In-App",
+            CommunicationType.Mobile => "Mobile",
             _ => null,
         };
 
@@ -114,6 +119,11 @@ public partial class CommunicationsPage : FluxorComponent
         }
 
         string title = $"Create {this.SelectedBannerName} Banner";
+        if (this.SelectedCommunicationType == CommunicationType.Mobile)
+        {
+            title = "Create Mobile Communication";
+        }
+
         Communication communication = new()
         {
             CommunicationTypeCode = type.Value,
