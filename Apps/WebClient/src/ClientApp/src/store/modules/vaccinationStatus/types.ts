@@ -11,6 +11,7 @@ import CovidVaccineRecord from "@/models/covidVaccineRecord";
 import { StringISODate } from "@/models/dateWrapper";
 import { CustomBannerError, ResultError } from "@/models/errors";
 import { LoadStatus } from "@/models/storeOperations";
+import VaccinationRecord from "@/models/vaccinationRecord";
 import VaccinationStatus from "@/models/vaccinationStatus";
 import { RootState } from "@/store/types";
 
@@ -34,11 +35,9 @@ export interface VaccinationStatusState {
         statusMessage: string;
     };
     authenticatedVaccineRecord: {
-        vaccinationRecord?: CovidVaccineRecord;
-        error?: ResultError;
-        status: LoadStatus;
-        statusMessage: string;
-        resultMessage: string;
+        activeHdid: string;
+        statusChanges: number;
+        vaccinationRecords: Map<string, VaccinationRecord>;
     };
 }
 
@@ -64,19 +63,13 @@ export interface VaccinationStatusGetters
     authenticatedIsLoading(state: VaccinationStatusState): boolean;
     authenticatedError(state: VaccinationStatusState): ResultError | undefined;
     authenticatedStatusMessage(state: VaccinationStatusState): string;
-    authenticatedVaccineRecord(
+    authenticatedVaccineRecords(
         state: VaccinationStatusState
-    ): CovidVaccineRecord | undefined;
-    authenticatedVaccineRecordIsLoading(state: VaccinationStatusState): boolean;
-    authenticatedVaccineRecordError(
+    ): Map<string, VaccinationRecord>;
+    authenticatedVaccineRecordStatusChanges(
         state: VaccinationStatusState
-    ): ResultError | undefined;
-    authenticatedVaccineRecordStatusMessage(
-        state: VaccinationStatusState
-    ): string;
-    authenticatedVaccineRecordResultMessage(
-        state: VaccinationStatusState
-    ): string;
+    ): number;
+    authenticatedVaccineRecordActiveHdid(state: VaccinationStatusState): string;
 }
 
 type StoreContext = ActionContext<VaccinationStatusState, RootState>;
@@ -124,7 +117,11 @@ export interface VaccinationStatusActions
     ): Promise<CovidVaccineRecord>;
     handleAuthenticatedPdfError(
         context: StoreContext,
-        params: { error: ResultError; errorType: ErrorType }
+        params: { hdid: string; error: ResultError; errorType: ErrorType }
+    ): void;
+    stopAuthenticatedVaccineRecordDownload(
+        context: StoreContext,
+        params: { hdid: string }
     ): void;
 }
 
@@ -169,22 +166,29 @@ export interface VaccinationStatusMutations
         state: VaccinationStatusState,
         statusMessage: string
     ): void;
-    setAuthenticatedVaccineRecordRequested(state: VaccinationStatusState): void;
+    setAuthenticatedVaccineRecordRequested(
+        state: VaccinationStatusState,
+        params: { hdid: string }
+    ): void;
     setAuthenticatedVaccineRecord(
         state: VaccinationStatusState,
-        vaccineRecord: CovidVaccineRecord
+        params: { hdid: string; vaccinationRecord: CovidVaccineRecord }
     ): void;
     setAuthenticatedVaccineRecordError(
         state: VaccinationStatusState,
-        error: ResultError
+        params: { hdid: string; error: ResultError }
     ): void;
     setAuthenticatedVaccineRecordStatusMessage(
         state: VaccinationStatusState,
-        statusMessage: string
+        params: { hdid: string; statusMessage: string }
     ): void;
     setAuthenticatedVaccineRecordResultMessage(
         state: VaccinationStatusState,
-        resultMessage: string
+        params: { hdid: string; resultMessage: string }
+    ): void;
+    setAuthenticatedVaccineRecordDownload(
+        state: VaccinationStatusState,
+        params: { hdid: string; download: boolean }
     ): void;
 }
 
