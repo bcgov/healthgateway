@@ -65,10 +65,28 @@ namespace HealthGateway.Common.Services
             this.cacheProvider = cacheProvider;
         }
 
+        /// <summary>
+        /// Retrieves the key for the cache associated with a given CommunicationType. Only Banner, InApp, and Mobile
+        /// CommunicationTypes are supported.
+        /// </summary>
+        /// <param name="communicationType">The CommunicationType to retrieve the key for.</param>
+        /// <returns>The key for the cache associated with the given CommunicationType.</returns>
+        public static string GetCacheKey(CommunicationType communicationType)
+        {
+            string cacheKey = communicationType switch
+            {
+                CommunicationType.Banner => BannerCacheKey,
+                CommunicationType.InApp => InAppCacheKey,
+                CommunicationType.Mobile => MobileCacheKey,
+                _ => string.Empty,
+            };
+            return cacheKey;
+        }
+
         /// <inheritdoc/>
         public RequestResult<Communication?> GetActiveCommunication(CommunicationType communicationType)
         {
-            if (communicationType is not CommunicationType.Banner or CommunicationType.InApp or CommunicationType.Mobile)
+            if (communicationType is not (CommunicationType.Banner or CommunicationType.InApp or CommunicationType.Mobile))
             {
                 throw new ArgumentOutOfRangeException(nameof(communicationType), "Communication Type must be Banner, InApp, or Mobile");
             }
@@ -165,18 +183,6 @@ namespace HealthGateway.Common.Services
             this.RemoveCommunicationFromCache(CommunicationType.Banner);
             this.RemoveCommunicationFromCache(CommunicationType.InApp);
             this.RemoveCommunicationFromCache(CommunicationType.Mobile);
-        }
-
-        private static string GetCacheKey(CommunicationType communicationType)
-        {
-            string cacheKey = communicationType switch
-            {
-                CommunicationType.Banner => BannerCacheKey,
-                CommunicationType.InApp => InAppCacheKey,
-                CommunicationType.Mobile => MobileCacheKey,
-                _ => string.Empty,
-            };
-            return cacheKey;
         }
 
         private void RemoveCommunicationFromCache(CommunicationType communicationType)
