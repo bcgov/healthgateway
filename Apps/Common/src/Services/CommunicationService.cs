@@ -68,7 +68,7 @@ namespace HealthGateway.Common.Services
         /// <inheritdoc/>
         public RequestResult<Communication?> GetActiveCommunication(CommunicationType communicationType)
         {
-            if (communicationType is not CommunicationType.Banner or CommunicationType.InApp or CommunicationType.Mobile)
+            if (communicationType is not (CommunicationType.Banner or CommunicationType.InApp or CommunicationType.Mobile))
             {
                 throw new ArgumentOutOfRangeException(nameof(communicationType), "Communication Type must be Banner, InApp, or Mobile");
             }
