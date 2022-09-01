@@ -32,7 +32,9 @@ import Report from "@/models/report";
 import ReportHeader from "@/models/reportHeader";
 import { ReportFormatType, TemplateType } from "@/models/reportRequest";
 import RequestResult from "@/models/requestResult";
+import { LoadStatus } from "@/models/storeOperations";
 import User from "@/models/user";
+import VaccinationRecord from "@/models/vaccinationRecord";
 import container from "@/plugins/container";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import {
@@ -102,23 +104,23 @@ export default class DependentCardComponent extends Vue {
         hdid: string;
     }) => Promise<CovidVaccineRecord>;
 
-    @Getter("authenticatedVaccineRecordResultMessage", {
+    @Action("stopAuthenticatedVaccineRecordDownload", {
         namespace: "vaccinationStatus",
     })
-    vaccineRecordResultMessage!: string;
+    stopAuthenticatedVaccineRecordDownload!: (params: { hdid: string }) => void;
 
-    @Getter("authenticatedVaccineRecord", { namespace: "vaccinationStatus" })
-    vaccineRecord!: CovidVaccineRecord | undefined;
-
-    @Getter("authenticatedVaccineRecordIsLoading", {
+    @Getter("authenticatedVaccineRecordStatusChanges", {
         namespace: "vaccinationStatus",
     })
-    isLoadingVaccineRecord!: boolean;
+    vaccineRecordStatusChanges!: number;
 
-    @Getter("authenticatedVaccineRecordStatusMessage", {
+    @Getter("authenticatedVaccineRecordActiveHdid", {
         namespace: "vaccinationStatus",
     })
-    vaccineRecordStatusMessage!: string;
+    vaccineRecordActiveHdid!: string;
+
+    @Getter("authenticatedVaccineRecords", { namespace: "vaccinationStatus" })
+    vaccineRecords!: Map<string, VaccinationRecord>;
 
     @Action("setTooManyRequestsError", { namespace: "errorBanner" })
     setTooManyRequestsError!: (params: { key: string }) => void;
@@ -185,8 +187,46 @@ export default class DependentCardComponent extends Vue {
         };
     }
 
-    private get isDocumentLoading(): boolean {
-        return this.isLoadingVaccineRecord;
+    private get isVaccineRecordDownloading(): boolean {
+        if (
+            this.vaccineRecordActiveHdid === this.dependent.ownerId &&
+            this.vaccineRecordStatusChanges > 0
+        ) {
+            const vaccinationRecord: VaccinationRecord | undefined =
+                this.getVaccinationRecord();
+            if (vaccinationRecord !== undefined) {
+                return vaccinationRecord.status === LoadStatus.REQUESTED;
+            }
+        }
+        return false;
+    }
+
+    private get vaccineRecordStatusMessage(): string {
+        if (
+            this.vaccineRecordActiveHdid === this.dependent.ownerId &&
+            this.vaccineRecordStatusChanges > 0
+        ) {
+            const vaccinationRecord: VaccinationRecord | undefined =
+                this.getVaccinationRecord();
+            if (vaccinationRecord !== undefined) {
+                return vaccinationRecord.statusMessage;
+            }
+        }
+        return "";
+    }
+
+    private get vaccineRecordResultMessage(): string {
+        if (
+            this.vaccineRecordActiveHdid === this.dependent.ownerId &&
+            this.vaccineRecordStatusChanges > 0
+        ) {
+            const vaccinationRecord: VaccinationRecord | undefined =
+                this.getVaccinationRecord();
+            if (vaccinationRecord !== undefined) {
+                return vaccinationRecord.resultMessage;
+            }
+        }
+        return "";
     }
 
     private get isDownloadImmunizationReportButtonDisabled(): boolean {
@@ -227,10 +267,6 @@ export default class DependentCardComponent extends Vue {
                 x.immunization.immunizationAgents
             ),
         }));
-    }
-
-    private get loadingStatusMessage(): string {
-        return this.vaccineRecordStatusMessage;
     }
 
     private get recommendationItems(): RecommendationRow[] {
@@ -346,10 +382,7 @@ export default class DependentCardComponent extends Vue {
     private downloadDocument(): void {
         if (this.isReport) {
             this.logger.debug(
-                `Download document from dependent tab: ${this.dependentTab}`
-            );
-            this.logger.debug(
-                `Downlaod report format type: ${this.reportFormatType}`
+                `Download document from dependent tab: ${this.dependentTab} and report format: ${this.reportFormatType}`
             );
             if (this.dependentTab === 1) {
                 this.downloadCovid19Report();
@@ -362,7 +395,10 @@ export default class DependentCardComponent extends Vue {
     }
 
     private downloadVaccinePdf(): void {
-        this.trackClickLink("click", "federal_proof");
+        this.logger.debug(
+            `Downloading vaccine PDF for hdid: ${this.dependent.ownerId}`
+        );
+        this.trackClickLink("Click Button", "Dependent Proof");
         this.retrieveAuthenticatedVaccineRecord({
             hdid: this.dependent.ownerId,
         });
@@ -567,6 +603,10 @@ export default class DependentCardComponent extends Vue {
         return productNames.join(", ");
     }
 
+    private getVaccinationRecord(): VaccinationRecord | undefined {
+        return this.vaccineRecords.get(this.dependent.ownerId);
+    }
+
     private setImmunizations(immunizations: ImmunizationEvent[]): void {
         this.immunizations = immunizations;
 
@@ -667,7 +707,7 @@ export default class DependentCardComponent extends Vue {
         if (linkType) {
             SnowPlow.trackEvent({
                 action: `${action}`,
-                text: `dependent_covid19_${linkType}`,
+                text: `${linkType}`,
             });
         }
     }
@@ -681,21 +721,41 @@ export default class DependentCardComponent extends Vue {
         EventTracker.downloadReport(eventName);
     }
 
-    @Watch("vaccineRecordResultMessage")
-    private vaccineRecordErrorChanged(): void {
-        if (this.vaccineRecordResultMessage.length > 0) {
-            this.vaccineRecordResultModal.showModal();
+    @Watch("vaccineRecordStatusChanges")
+    private showVaccineRecordResultModal(): void {
+        if (this.vaccineRecordActiveHdid === this.dependent.ownerId) {
+            const vaccinationRecord: VaccinationRecord | undefined =
+                this.getVaccinationRecord();
+            if (
+                vaccinationRecord !== undefined &&
+                vaccinationRecord.resultMessage.length > 0
+            ) {
+                this.vaccineRecordResultModal.showModal();
+            }
         }
     }
 
-    @Watch("vaccineRecord")
+    @Watch("vaccineRecordStatusChanges")
     private saveVaccinePdf(): void {
-        if (this.vaccineRecord !== undefined) {
-            const mimeType = this.vaccineRecord.document.mediaType;
-            const downloadLink = `data:${mimeType};base64,${this.vaccineRecord.document.data}`;
-            fetch(downloadLink).then((res) => {
-                res.blob().then((blob) => saveAs(blob, "VaccineProof.pdf"));
-            });
+        if (this.vaccineRecordActiveHdid === this.dependent.ownerId) {
+            const vaccinationRecord: VaccinationRecord | undefined =
+                this.getVaccinationRecord();
+            if (
+                vaccinationRecord !== undefined &&
+                vaccinationRecord.hdid === this.dependent.ownerId &&
+                vaccinationRecord.status === LoadStatus.LOADED &&
+                vaccinationRecord.download
+            ) {
+                const mimeType = vaccinationRecord.record.document.mediaType;
+                const downloadLink = `data:${mimeType};base64,${vaccinationRecord.record.document.data}`;
+                fetch(downloadLink).then((res) => {
+                    this.trackClickLink("Download Card", "Dependent Proof");
+                    res.blob().then((blob) => saveAs(blob, "VaccineProof.pdf"));
+                });
+                this.stopAuthenticatedVaccineRecordDownload({
+                    hdid: this.dependent.ownerId,
+                });
+            }
         }
     }
 }
@@ -1218,8 +1278,8 @@ export default class DependentCardComponent extends Vue {
             :full-screen="false"
         />
         <LoadingComponent
-            :is-loading="isDocumentLoading"
-            :text="loadingStatusMessage"
+            :is-loading="isVaccineRecordDownloading"
+            :text="vaccineRecordStatusMessage"
             :full-screen="false"
         />
         <delete-modal-component
