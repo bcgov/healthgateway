@@ -153,7 +153,7 @@ export default class DependentsView extends Vue {
                     You can add your dependents under the age of
                     {{ webClientConfig.maxDependentAge }} to view their health
                     records. Make sure you include all given names exactly as
-                    shown on their BC Services Card. 
+                    shown on their BC Services Card.
                 </h5>
                 <b-row
                     v-for="dependent in dependents"
