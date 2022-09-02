@@ -188,3 +188,237 @@ describe("COVID-19 - Vaccine Proof download", () => {
             .click({ force: true });
     });
 });
+
+describe("Dependents - Immuniazation Tab - Enabled", () => {
+    const dependentHdid = "645645767756756767";
+    beforeEach(() => {
+        cy.intercept("GET", "**/UserProfile/*/Dependent", {
+            fixture: "UserProfileService/dependent.json",
+        });
+
+        cy.enableModules([
+            "Dependent",
+            "Immunization",
+            "DependentImmunizationTab",
+        ]);
+        cy.login(
+            Cypress.env("keycloak.username"),
+            Cypress.env("keycloak.password"),
+            AuthMethod.KeyCloak,
+            "/dependents"
+        );
+    });
+
+    it("Immunization - History - Tab - Configuration Enabled", () => {
+        cy.intercept("GET", "**/Immunization?hdid=*", {
+            fixture: "ImmunizationService/dependentImmunization.json",
+        });
+
+        cy.log("Validating Immunization Tab - configuration enabled");
+
+        cy.get("[data-testid=immunization-tab-title-" + dependentHdid + "]")
+            .parent()
+            .click();
+
+        // History tab
+        cy.log("Validating History Tab");
+        cy.get(
+            "[data-testid=immunization-tab-div-" + dependentHdid + "]"
+        ).within(() => {
+            cy.contains("a", "History").click();
+        });
+        cy.get(
+            "[data-testid=immunization-history-table-" + dependentHdid + "]"
+        ).should("be.visible");
+
+        // Click download dropdown under History tab
+        cy.get(
+            "[data-testid=download-immunization-history-report-btn-" +
+                dependentHdid +
+                "]"
+        ).click();
+
+        // Click PDF
+        cy.get(
+            "[data-testid=download-immunization-history-report-pdf-btn-" +
+                dependentHdid +
+                "]"
+        ).click();
+
+        // Confirmation modal
+        cy.get("[data-testid=genericMessageModal]").should("be.visible");
+        cy.get("[data-testid=genericMessageSubmitBtn]").click();
+
+        cy.verifyDownload("HealthGatewayDependentImmunizationReport.pdf");
+
+        // Click download dropdown
+        cy.get(
+            "[data-testid=download-immunization-history-report-btn-" +
+                dependentHdid +
+                "]"
+        ).click();
+
+        // Click CSV
+        cy.get(
+            "[data-testid=download-immunization-history-report-csv-btn-" +
+                dependentHdid +
+                "]"
+        ).click();
+
+        // Confirmation modal
+        cy.get("[data-testid=genericMessageModal]").should("be.visible");
+        cy.get("[data-testid=genericMessageSubmitBtn]").click();
+
+        cy.verifyDownload("HealthGatewayDependentImmunizationReport.csv");
+
+        // Click download dropdown
+        cy.get(
+            "[data-testid=download-immunization-history-report-btn-" +
+                dependentHdid +
+                "]"
+        ).click();
+
+        // Click XLSX
+        cy.get(
+            "[data-testid=download-immunization-history-report-xlsx-btn-" +
+                dependentHdid +
+                "]"
+        ).click();
+
+        // Confirmation modal
+        cy.get("[data-testid=genericMessageModal]").should("be.visible");
+        cy.get("[data-testid=genericMessageSubmitBtn]").click();
+
+        cy.verifyDownload("HealthGatewayDependentImmunizationReport.xlsx");
+    });
+
+    it("Immunization - Forecast - Tab - Configuration Enabled", () => {
+        cy.intercept("GET", "**/Immunization?hdid=*", {
+            fixture: "ImmunizationService/dependentImmunization.json",
+        });
+
+        cy.log("Validating Immunization Tab - configuration enabled");
+
+        cy.get("[data-testid=immunization-tab-title-" + dependentHdid + "]")
+            .parent()
+            .click();
+
+        // Click download dropdown under Forecasts tab
+        cy.log("Validating Forecasts Tab");
+        cy.get(
+            "[data-testid=download-immunization-forecast-report-btn-" +
+                dependentHdid +
+                "]"
+        ).click({ force: true });
+
+        // Click PDF
+        cy.get(
+            "[data-testid=download-immunization-forecast-report-pdf-btn-" +
+                dependentHdid +
+                "]"
+        ).click({ force: true });
+
+        // Confirmation modal
+        cy.get("[data-testid=genericMessageModal]").should("be.visible");
+        cy.get("[data-testid=genericMessageSubmitBtn]").click();
+
+        cy.verifyDownload("HealthGatewayDependentImmunizationReport.pdf");
+
+        // Click download dropdown
+        cy.get(
+            "[data-testid=download-immunization-forecast-report-btn-" +
+                dependentHdid +
+                "]"
+        ).click({ force: true });
+
+        // Click CSV
+        cy.get(
+            "[data-testid=download-immunization-forecast-report-csv-btn-" +
+                dependentHdid +
+                "]"
+        ).click({ force: true });
+
+        // Confirmation modal
+        cy.get("[data-testid=genericMessageModal]").should("be.visible");
+        cy.get("[data-testid=genericMessageSubmitBtn]").click();
+
+        cy.verifyDownload("HealthGatewayDependentImmunizationReport.csv");
+
+        // Click download dropdown
+        cy.get(
+            "[data-testid=download-immunization-forecast-report-btn-" +
+                dependentHdid +
+                "]"
+        ).click({ force: true });
+
+        // Click XLSX
+        cy.get(
+            "[data-testid=download-immunization-forecast-report-xlsx-btn-" +
+                dependentHdid +
+                "]"
+        ).click({ force: true });
+
+        // Confirmation modal
+        cy.get("[data-testid=genericMessageModal]").should("be.visible");
+        cy.get("[data-testid=genericMessageSubmitBtn]").click();
+
+        cy.verifyDownload("HealthGatewayDependentImmunizationReport.xlsx");
+    });
+
+    it("Immunization tab - No Data Found", () => {
+        cy.intercept("GET", "**/Immunization?hdid=*", {
+            fixture: "ImmunizationService/immunizationNoRecords.json",
+        });
+
+        cy.log("Validating Immunization Tab - No Data Found");
+
+        cy.get("[data-testid=immunization-tab-title-" + dependentHdid + "]")
+            .parent()
+            .click();
+        cy.get(
+            "[data-testid=immunization-history-no-rows-found-" +
+                dependentHdid +
+                "]"
+        ).should("be.visible");
+        cy.get(
+            "[data-testid=download-immunization-history-report-btn-" +
+                dependentHdid +
+                "]"
+        ).should("not.exist");
+        cy.get(
+            "[data-testid=immunization-tab-div-" + dependentHdid + "]"
+        ).within(() => {
+            cy.contains("a", "Forecasts").click();
+        });
+        cy.get(
+            "[data-testid=immunization-forecast-no-rows-found-" +
+                dependentHdid +
+                "]"
+        ).should("be.visible");
+        cy.get(
+            "[data-testid=download-immunization-forecast-report-btn-" +
+                dependentHdid +
+                "]"
+        ).should("not.exist");
+    });
+});
+
+describe("Dependents - Immuniazation Tab - Disabled", () => {
+    const dependentHdid = "645645767756756767";
+    beforeEach(() => {
+        cy.enableModules(["Dependent"]);
+        cy.login(
+            Cypress.env("keycloak.username"),
+            Cypress.env("keycloak.password"),
+            AuthMethod.KeyCloak,
+            "/dependents"
+        );
+    });
+
+    it("Immunization Tab - Configuration Disabled", () => {
+        cy.log("Validating Immunization Tab - configuration disabled");
+        cy.get("[data-testid=immunization-tab-" + dependentHdid + "]").should(
+            "not.exist"
+        );
+    });
+});
