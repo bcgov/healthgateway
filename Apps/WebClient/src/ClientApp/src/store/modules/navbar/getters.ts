@@ -36,6 +36,9 @@ export const getters: NavbarGetters = {
         }
         return _state.isSidebarOpen;
     },
+    isSidebarAnimating(state: NavbarState): boolean {
+        return state.isSidebarAnimating;
+    },
     isSidebarAvailable: (
         _state: NavbarState,
         // eslint-disable-next-line

@@ -51,11 +51,14 @@ export default class SidebarComponent extends Vue {
     @Action("toggleSidebar", { namespace: "navbar" })
     toggleSidebar!: () => void;
 
-    @Action("setSidebarState", { namespace: "navbar" })
-    setSidebarState!: (isOpen: boolean) => void;
+    @Action("setSidebarStoppedAnimating", { namespace: "navbar" })
+    setSidebarStoppedAnimating!: () => void;
 
     @Getter("isSidebarOpen", { namespace: "navbar" })
     isOpen!: boolean;
+
+    @Getter("isSidebarAnimating", { namespace: "navbar" })
+    isAnimating!: boolean;
 
     @Getter("isSidebarAvailable", { namespace: "navbar" })
     isSidebarAvailable!: boolean;
@@ -105,15 +108,7 @@ export default class SidebarComponent extends Vue {
 
             // re-enable popover when transition ends
             this.isExportTutorialEnabled = true;
-
-            // toggle text display for nav links only after the transition ends
-            sidebar?.querySelectorAll(".button-text")?.forEach((button) => {
-                if (sidebar?.classList?.contains("collapsed")) {
-                    button.classList.add("d-none");
-                } else {
-                    button.classList.remove("d-none");
-                }
-            });
+            this.setSidebarStoppedAnimating();
         });
     }
 
@@ -162,6 +157,10 @@ export default class SidebarComponent extends Vue {
 
     private set showExportTutorial(value: boolean) {
         this.isExportTutorialEnabled = value;
+    }
+
+    private get isFullyOpen(): boolean {
+        return this.isOpen && !this.isAnimating;
     }
 
     private get isOverlayVisible(): boolean {
@@ -215,7 +214,7 @@ export default class SidebarComponent extends Vue {
             :class="{ collapsed: !isOpen }"
             aria-label="Side Nav"
         >
-            <b-row class="row-container">
+            <b-row class="row-container" no-gutters>
                 <b-col>
                     <!-- Home button -->
                     <hg-button
@@ -224,17 +223,17 @@ export default class SidebarComponent extends Vue {
                         data-testid="menu-btn-home-link"
                         to="/home"
                         variant="nav"
-                        class="my-3"
+                        class="my-3 px-3 px-md-4"
                         :class="{ selected: isHome }"
                     >
-                        <b-row class="align-items-center">
-                            <b-col title="Home" :class="{ 'col-3': isOpen }">
-                                <hg-icon icon="home" size="large" />
+                        <b-row class="align-items-center" no-gutters>
+                            <b-col title="Home" cols="auto" class="pr-md-4">
+                                <hg-icon icon="home" size="large" square />
                             </b-col>
                             <b-col
-                                v-show="isOpen"
+                                v-show="isFullyOpen"
                                 data-testid="homeLabel"
-                                class="button-text"
+                                class="button-text pl-3"
                             >
                                 <span>Home</span>
                             </b-col>
@@ -247,20 +246,17 @@ export default class SidebarComponent extends Vue {
                         data-testid="menu-btn-time-line-link"
                         to="/timeline"
                         variant="nav"
-                        class="my-3"
+                        class="my-3 px-3 px-md-4"
                         :class="{ selected: isTimeline }"
                     >
-                        <b-row class="align-items-center">
-                            <b-col
-                                title="Timeline"
-                                :class="{ 'col-3': isOpen }"
-                            >
-                                <hg-icon icon="stream" size="large" />
+                        <b-row class="align-items-center" no-gutters>
+                            <b-col title="Timeline" cols="auto" class="pr-md-4">
+                                <hg-icon icon="stream" size="large" square />
                             </b-col>
                             <b-col
-                                v-show="isOpen"
+                                v-show="isFullyOpen"
                                 data-testid="timelineLabel"
-                                class="button-text"
+                                class="button-text pl-3"
                             >
                                 <span>Timeline</span>
                             </b-col>
@@ -273,20 +269,21 @@ export default class SidebarComponent extends Vue {
                         data-testid="menu-btn-covid19-link"
                         to="/covid19"
                         variant="nav"
-                        class="my-3"
+                        class="my-3 px-3 px-md-4"
                         :class="{ selected: isCovid19 }"
                     >
-                        <b-row class="align-items-center">
-                            <b-col
-                                title="COVID-19"
-                                :class="{ 'col-3': isOpen }"
-                            >
-                                <hg-icon icon="check-circle" size="large" />
+                        <b-row class="align-items-center" no-gutters>
+                            <b-col title="COVID-19" cols="auto" class="pr-md-4">
+                                <hg-icon
+                                    icon="check-circle"
+                                    size="large"
+                                    square
+                                />
                             </b-col>
                             <b-col
-                                v-show="isOpen"
+                                v-show="isFullyOpen"
                                 data-testid="covid19Label"
-                                class="button-text"
+                                class="button-text pl-3"
                             >
                                 <span>COVID-19</span>
                             </b-col>
@@ -299,14 +296,21 @@ export default class SidebarComponent extends Vue {
                         data-testid="menu-btn-dependents-link"
                         to="/dependents"
                         variant="nav"
-                        class="my-3"
+                        class="my-3 px-3 px-md-4"
                         :class="{ selected: isDependents }"
                     >
-                        <b-row class="align-items-center">
-                            <b-col title="Reports" :class="{ 'col-3': isOpen }">
-                                <hg-icon icon="user-friends" size="large" />
+                        <b-row class="align-items-center" no-gutters>
+                            <b-col title="Reports" cols="auto" class="pr-md-4">
+                                <hg-icon
+                                    icon="user-friends"
+                                    size="large"
+                                    square
+                                />
                             </b-col>
-                            <b-col v-show="isOpen" class="button-text">
+                            <b-col
+                                v-show="isFullyOpen"
+                                class="button-text pl-3"
+                            >
                                 <span>Dependents</span>
                             </b-col>
                         </b-row>
@@ -318,23 +322,29 @@ export default class SidebarComponent extends Vue {
                         data-testid="menu-btn-reports-link"
                         to="/reports"
                         variant="nav"
-                        class="my-3"
+                        class="mt-3 px-3 px-md-4"
                         :class="{ selected: isReports }"
                     >
                         <b-row
                             id="export-records-row"
                             class="align-items-center"
+                            no-gutters
                         >
                             <b-col
                                 title="Export Records"
-                                :class="{ 'col-3': isOpen }"
+                                cols="auto"
+                                class="pr-md-4"
                             >
-                                <hg-icon icon="clipboard-list" size="large" />
+                                <hg-icon
+                                    icon="clipboard-list"
+                                    size="large"
+                                    square
+                                />
                             </b-col>
                             <b-col
-                                v-show="isOpen"
+                                v-show="isFullyOpen"
                                 id="export-records-col"
-                                class="button-text"
+                                class="button-text pl-3"
                             >
                                 <span>Export Records</span>
                             </b-col>
@@ -377,15 +387,16 @@ export default class SidebarComponent extends Vue {
                 </b-col>
             </b-row>
 
-            <b-row class="sidebar-footer m-0 p-0">
-                <b-col class="m-0 p-0">
+            <b-row class="sidebar-footer" no-gutters>
+                <b-col>
                     <!-- Collapse Button -->
                     <span v-show="!isMobileWidth">
                         <hr />
                         <hg-button variant="nav" @click="toggleOpen">
                             <b-row
                                 class="align-items-center"
-                                :class="[isOpen ? 'mx-2' : '']"
+                                :class="{ 'mx-2': isOpen }"
+                                no-gutters
                             >
                                 <b-col
                                     :title="`${
@@ -438,8 +449,8 @@ export default class SidebarComponent extends Vue {
     flex-direction: column;
 
     &.collapsed {
-        min-width: 80px;
-        max-width: 80px;
+        min-width: 72px;
+        max-width: 72px;
     }
 
     /* Small devices */
@@ -451,7 +462,7 @@ export default class SidebarComponent extends Vue {
         position: fixed;
         top: 0px;
         padding-top: 80px;
-        overflow-y: scroll;
+        overflow-y: auto;
 
         &.collapsed {
             min-width: 0px !important;
