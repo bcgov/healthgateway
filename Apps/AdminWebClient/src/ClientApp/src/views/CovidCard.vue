@@ -221,7 +221,7 @@ export default class CovidCardView extends Vue {
                     const message =
                         this.searchResult.patient.responseCode.split("|")[1];
                     this.showBannerFeedback({
-                        type: FeedbackType.Success,
+                        type: FeedbackType.Info,
                         title: "Info",
                         message: message,
                     });

@@ -171,10 +171,9 @@ export default class SupportView extends Vue {
             .then((result) => {
                 this.emailList = result.resourcePayload;
                 if (result.resultError) {
-                    debugger;
                     this.showFeedback = true;
                     this.bannerFeedback = {
-                        type: FeedbackType.Success,
+                        type: FeedbackType.Info,
                         title: "Info",
                         message: result.resultError.resultMessage,
                     };
