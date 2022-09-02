@@ -234,6 +234,17 @@ namespace HealthGateway.Common.Delegates
                 };
             }
 
+            if (responseCode.Contains("BCHCIM.GD.0.0019", StringComparison.InvariantCulture) ||
+                responseCode.Contains("BCHCIM.GD.0.0021", StringComparison.InvariantCulture) ||
+                responseCode.Contains("BCHCIM.GD.0.0022", StringComparison.InvariantCulture) ||
+                responseCode.Contains("BCHCIM.GD.0.0023", StringComparison.InvariantCulture))
+            {
+                return new RequestResult<PatientModel>
+                {
+                    ResultStatus = ResultType.Success,
+                };
+            }
+
             // Verify that the reply contains a result
             if (!responseCode.Contains("BCHCIM.GD.0.0013", StringComparison.InvariantCulture))
             {
@@ -330,6 +341,14 @@ namespace HealthGateway.Common.Delegates
                 {
                     patient.PhysicalAddress = MapAddress(addresses.FirstOrDefault(a => a.use.Any(u => u == cs_PostalAddressUse.PHYS)));
                     patient.PostalAddress = MapAddress(addresses.FirstOrDefault(a => a.use.Any(u => u == cs_PostalAddressUse.PST)));
+                }
+
+                if (responseCode.Contains("BCHCIM.GD.0.0019", StringComparison.InvariantCulture) ||
+                    responseCode.Contains("BCHCIM.GD.0.0021", StringComparison.InvariantCulture) ||
+                    responseCode.Contains("BCHCIM.GD.0.0022", StringComparison.InvariantCulture) ||
+                    responseCode.Contains("BCHCIM.GD.0.0023", StringComparison.InvariantCulture))
+                {
+                    patient.ResponseCode = responseCode;
                 }
 
                 return new RequestResult<PatientModel>
