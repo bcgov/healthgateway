@@ -860,7 +860,7 @@ export default class DependentCardComponent extends Vue {
                         </hg-button>
                     </div>
                     <div v-if="!isLoading && testRows.length != 0" class="m-2">
-                        <h4>COVID-19 Test</h4>
+                        <h4>COVID-19 Test Results</h4>
                     </div>
                     <template #title>
                         <div data-testid="covid19TabTitle">COVID-19</div>
