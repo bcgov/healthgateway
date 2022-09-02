@@ -18,11 +18,11 @@ namespace HealthGateway.CommonTests.Delegates
     using System.Collections.Generic;
     using System.Net;
     using System.Net.Http;
+    using HealthGateway.Common.Api;
     using HealthGateway.Common.Data.Constants;
     using HealthGateway.Common.Data.ViewModels;
     using HealthGateway.Common.Delegates.PHSA;
     using HealthGateway.Common.Models.PHSA;
-    using HealthGateway.Common.Services;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.Logging;
     using Moq;

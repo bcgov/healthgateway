@@ -10,6 +10,7 @@ import {
 import HttpDelegate from "@/services/httpDelegate";
 import {
     IAuthenticationService,
+    IClinicalDocumentService,
     ICommunicationService,
     IConfigService,
     IDependentService,
@@ -31,6 +32,7 @@ import {
     IVaccinationStatusService,
 } from "@/services/interfaces";
 import { RestAuthenticationService } from "@/services/restAuthService";
+import { RestClinicalDocumentService } from "@/services/restClinicalDocumentService";
 import { RestCommunicationService } from "@/services/restCommunicationService";
 import { RestConfigService } from "@/services/restConfigService";
 import { RestDependentService } from "@/services/restDependentService";
@@ -84,6 +86,10 @@ container
 container
     .bind<ILaboratoryService>(SERVICE_IDENTIFIER.LaboratoryService)
     .to(RestLaboratoryService)
+    .inSingletonScope();
+container
+    .bind<IClinicalDocumentService>(SERVICE_IDENTIFIER.ClinicalDocumentService)
+    .to(RestClinicalDocumentService)
     .inSingletonScope();
 container
     .bind<IUserProfileService>(SERVICE_IDENTIFIER.UserProfileService)

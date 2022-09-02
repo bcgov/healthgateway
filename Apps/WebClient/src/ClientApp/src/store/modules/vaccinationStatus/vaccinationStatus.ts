@@ -1,4 +1,5 @@
 import { LoadStatus } from "@/models/storeOperations";
+import VaccinationRecord from "@/models/vaccinationRecord";
 
 import { actions } from "./actions";
 import { getters } from "./getters";
@@ -25,11 +26,9 @@ const state: VaccinationStatusState = {
         statusMessage: "",
     },
     authenticatedVaccineRecord: {
-        vaccinationRecord: undefined,
-        error: undefined,
-        status: LoadStatus.NONE,
-        statusMessage: "",
-        resultMessage: "",
+        activeHdid: "",
+        statusChanges: 0,
+        vaccinationRecords: new Map<string, VaccinationRecord>(),
     },
 };
 

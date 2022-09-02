@@ -2,6 +2,7 @@ import CovidVaccineRecord from "@/models/covidVaccineRecord";
 import { DateWrapper } from "@/models/dateWrapper";
 import { CustomBannerError, ResultError } from "@/models/errors";
 import { LoadStatus } from "@/models/storeOperations";
+import VaccinationRecord from "@/models/vaccinationRecord";
 import VaccinationStatus from "@/models/vaccinationStatus";
 
 import { VaccinationStatusMutations, VaccinationStatusState } from "./types";
@@ -96,38 +97,97 @@ export const mutations: VaccinationStatusMutations = {
     ) {
         state.authenticated.statusMessage = statusMessage;
     },
-    setAuthenticatedVaccineRecordRequested(state: VaccinationStatusState) {
-        state.authenticatedVaccineRecord.error = undefined;
-        state.authenticatedVaccineRecord.status = LoadStatus.REQUESTED;
-        state.authenticatedVaccineRecord.statusMessage = "";
-        state.authenticatedVaccineRecord.resultMessage = "";
+    setAuthenticatedVaccineRecordRequested(
+        state: VaccinationStatusState,
+        params: { hdid: string }
+    ) {
+        const vaccinationRecord: VaccinationRecord = {
+            hdid: params.hdid,
+            download: true,
+            error: undefined,
+            status: LoadStatus.REQUESTED,
+            statusMessage: "",
+            resultMessage: "",
+        };
+
+        state.authenticatedVaccineRecord.vaccinationRecords.set(
+            params.hdid,
+            vaccinationRecord
+        );
+        state.authenticatedVaccineRecord.activeHdid = params.hdid;
+        state.authenticatedVaccineRecord.statusChanges++;
     },
     setAuthenticatedVaccineRecord(
         state: VaccinationStatusState,
-        vaccineRecord: CovidVaccineRecord
+        params: { hdid: string; vaccinationRecord: CovidVaccineRecord }
     ) {
-        state.authenticatedVaccineRecord.vaccinationRecord = vaccineRecord;
-        state.authenticatedVaccineRecord.status = LoadStatus.LOADED;
-        state.authenticatedVaccineRecord.statusMessage = "";
-        state.authenticatedVaccineRecord.error = undefined;
+        const vaccinationRecord: VaccinationRecord | undefined =
+            state.authenticatedVaccineRecord.vaccinationRecords.get(
+                params.hdid
+            );
+
+        if (vaccinationRecord !== undefined) {
+            vaccinationRecord.record = params.vaccinationRecord;
+            vaccinationRecord.status = LoadStatus.LOADED;
+            vaccinationRecord.statusMessage = "";
+            vaccinationRecord.error = undefined;
+        }
+        state.authenticatedVaccineRecord.statusChanges++;
     },
     setAuthenticatedVaccineRecordError(
         state: VaccinationStatusState,
-        error: ResultError
+        params: { hdid: string; error: ResultError }
     ) {
-        state.authenticatedVaccineRecord.error = error;
-        state.authenticatedVaccineRecord.status = LoadStatus.ERROR;
+        const vaccinationRecord: VaccinationRecord | undefined =
+            state.authenticatedVaccineRecord.vaccinationRecords.get(
+                params.hdid
+            );
+
+        if (vaccinationRecord !== undefined) {
+            vaccinationRecord.error = params.error;
+            vaccinationRecord.status = LoadStatus.ERROR;
+        }
+        state.authenticatedVaccineRecord.statusChanges++;
     },
     setAuthenticatedVaccineRecordStatusMessage(
         state: VaccinationStatusState,
-        statusMessage: string
+        params: { hdid: string; statusMessage: string }
     ) {
-        state.authenticatedVaccineRecord.statusMessage = statusMessage;
+        const vaccinationRecord: VaccinationRecord | undefined =
+            state.authenticatedVaccineRecord.vaccinationRecords.get(
+                params.hdid
+            );
+        if (vaccinationRecord !== undefined) {
+            vaccinationRecord.statusMessage = params.statusMessage;
+        }
+        state.authenticatedVaccineRecord.statusChanges++;
     },
     setAuthenticatedVaccineRecordResultMessage(
         state: VaccinationStatusState,
-        resultMessage: string
+        params: { hdid: string; resultMessage: string }
     ) {
-        state.authenticatedVaccineRecord.resultMessage = resultMessage;
+        const vaccinationRecord: VaccinationRecord | undefined =
+            state.authenticatedVaccineRecord.vaccinationRecords.get(
+                params.hdid
+            );
+
+        if (vaccinationRecord !== undefined) {
+            vaccinationRecord.resultMessage = params.resultMessage;
+        }
+        state.authenticatedVaccineRecord.statusChanges++;
+    },
+    setAuthenticatedVaccineRecordDownload(
+        state: VaccinationStatusState,
+        params: { hdid: string; download: boolean }
+    ) {
+        const vaccinationRecord: VaccinationRecord | undefined =
+            state.authenticatedVaccineRecord.vaccinationRecords.get(
+                params.hdid
+            );
+
+        if (vaccinationRecord !== undefined) {
+            vaccinationRecord.download = params.download;
+        }
+        state.authenticatedVaccineRecord.statusChanges++;
     },
 };

@@ -2,6 +2,7 @@ import { injectable } from "inversify";
 import { ActionContext } from "vuex";
 
 import { auth } from "./modules/auth/auth";
+import { clinicalDocument } from "./modules/clinicalDocument/clinicalDocument";
 import { comment } from "./modules/comment/comment";
 import { config } from "./modules/config/config";
 import { encounter } from "./modules/encounter/encounter";
@@ -48,6 +49,7 @@ export class StoreOptions implements GatewayStoreOptions {
         comment,
         immunization,
         encounter,
+        clinicalDocument,
         note,
         navbar,
         idle,

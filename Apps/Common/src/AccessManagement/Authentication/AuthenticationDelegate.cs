@@ -18,6 +18,7 @@ namespace HealthGateway.Common.AccessManagement.Authentication
     using System;
     using System.Collections.Generic;
     using System.Net.Http;
+    using System.Security.Claims;
     using System.Text.Json;
     using System.Threading.Tasks;
     using HealthGateway.Common.AccessManagement.Authentication.Models;
@@ -25,7 +26,6 @@ namespace HealthGateway.Common.AccessManagement.Authentication
     using HealthGateway.Common.Services;
     using Microsoft.AspNetCore.Authentication;
     using Microsoft.AspNetCore.Http;
-    using Microsoft.Extensions.Caching.Memory;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.Logging;
 
@@ -176,8 +176,14 @@ namespace HealthGateway.Common.AccessManagement.Authentication
         public string? FetchAuthenticatedUserToken()
         {
             HttpContext? httpContext = this.httpContextAccessor?.HttpContext;
-            string? accessToken = httpContext.GetTokenAsync("access_token").Result;
-            return accessToken;
+            return httpContext.GetTokenAsync("access_token").Result;
+        }
+
+        /// <inheritdoc/>
+        public string? FetchAuthenticatedUserHdid()
+        {
+            ClaimsPrincipal? user = this.httpContextAccessor?.HttpContext?.User;
+            return user?.FindFirst("hdid")?.Value;
         }
 
         private (Uri TokenUri, ClientCredentialsTokenRequest TokenRequest) GetConfiguration(string sectionName)

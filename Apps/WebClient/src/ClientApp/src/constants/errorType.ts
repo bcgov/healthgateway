@@ -16,6 +16,7 @@ export enum ErrorSourceType {
     Covid19Laboratory = "COVID‑19 test",
     MedicationRequests = "special authority",
     MedicationStatements = "medication",
+    ClinicalDocument = "clinical document",
     Note = "note",
     Patient = "patient",
     VaccineCard = "vaccine card",
