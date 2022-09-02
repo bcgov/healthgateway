@@ -9,4 +9,5 @@ export default interface PatientData {
     birthdate: StringISODate;
     physicalAddress: Address | null;
     postalAddress: Address | null;
+    responseCode: string;
 }
