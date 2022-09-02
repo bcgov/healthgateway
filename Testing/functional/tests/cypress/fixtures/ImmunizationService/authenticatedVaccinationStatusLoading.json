@@ -1,0 +1,22 @@
+{
+    "resourcePayload": {
+        "loaded": false,
+        "retryin": 10000,
+        "document": {
+            "mediaType": null,
+            "encoding": null,
+            "data": null
+        },
+        "qrCode": null
+    },
+    "totalResultCount": null,
+    "pageIndex": null,
+    "pageSize": null,
+    "resultStatus": 2,
+    "resultError": {
+        "resultMessage": "Vaccine status refresh in progress",
+        "errorCode": "ImmunizationServer-I",
+        "traceId": "c9eca1813a2827c12bf4627087aa1401",
+        "actionCode": "REFRESH"
+    }
+}
