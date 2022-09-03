@@ -47,7 +47,7 @@ namespace HealthGateway.GatewayApi.Controllers
         /// <returns>The active communication or null if not found.</returns>
         /// <response code="200">Returns the communication json.</response>
         [HttpGet]
-        [Route("{bannerType}")]
+        [Route("{communicationType}")]
         public RequestResult<Communication?> Get(CommunicationType communicationType = CommunicationType.Banner)
         {
             return this.communicationService.GetActiveCommunication(communicationType);
