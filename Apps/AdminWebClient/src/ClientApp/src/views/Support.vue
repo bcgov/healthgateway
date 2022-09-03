@@ -3,7 +3,7 @@ import { Component, Prop, Vue } from "vue-property-decorator";
 
 import BannerFeedbackComponent from "@/components/core/BannerFeedback.vue";
 import LoadingComponent from "@/components/core/Loading.vue";
-import { ResultType } from "@/constants/resulttype";
+import { FeedbackType } from "@/constants/feedbacktype";
 import BannerFeedback from "@/models/bannerFeedback";
 import { DateWrapper, StringISODateTime } from "@/models/dateWrapper";
 import MessageVerification, { Email } from "@/models/messageVerification";
@@ -34,7 +34,7 @@ export default class SupportView extends Vue {
     private isLoading = false;
     private showFeedback = false;
     private bannerFeedback: BannerFeedback = {
-        type: ResultType.NONE,
+        type: FeedbackType.NONE,
         title: "",
         message: "",
     };
@@ -157,7 +157,7 @@ export default class SupportView extends Vue {
                 this.emailList = [];
                 this.showFeedback = true;
                 this.bannerFeedback = {
-                    type: ResultType.Error,
+                    type: FeedbackType.Error,
                     title: "Validation error",
                     message: "Invalid PHN",
                 };
@@ -169,12 +169,20 @@ export default class SupportView extends Vue {
         this.supportService
             .getMessageVerifications(this.selectedQueryType, searchText)
             .then((result) => {
-                this.emailList = result;
+                this.emailList = result.resourcePayload;
+                if (result.resultError) {
+                    this.showFeedback = true;
+                    this.bannerFeedback = {
+                        type: FeedbackType.Info,
+                        title: "Info",
+                        message: result.resultError.resultMessage,
+                    };
+                }
             })
             .catch((err) => {
                 this.showFeedback = true;
                 this.bannerFeedback = {
-                    type: ResultType.Error,
+                    type: FeedbackType.Error,
                     title: "Error:" + err.errorCode,
                     message: "Message: " + err.resultMessage,
                 };

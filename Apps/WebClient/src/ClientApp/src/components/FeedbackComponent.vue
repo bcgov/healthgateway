@@ -328,10 +328,6 @@ export default class FeedbackComponent extends Vue {
     border: 0px;
 }
 
-.description-container {
-    height: 70px;
-}
-
 .submit-button-container {
     height: 36px;
     overflow: hidden;

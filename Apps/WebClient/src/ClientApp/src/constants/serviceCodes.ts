@@ -10,4 +10,5 @@ export const enum ServiceCode {
     Patient = "PAT",
     PHSA = "PHSA",
     Report = "REP",
+    ClinicalDocument = "CDO",
 }

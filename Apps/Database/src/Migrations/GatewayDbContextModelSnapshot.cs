@@ -733,6 +733,16 @@ namespace HealthGateway.Database.Migrations
                             UpdatedBy = "System",
                             UpdatedDateTime = new DateTime(2019, 5, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Version = 0u
+                        },
+                        new
+                        {
+                            CommentEntryCode = "CDO",
+                            CreatedBy = "System",
+                            CreatedDateTime = new DateTime(2019, 5, 1, 7, 0, 0, 0, DateTimeKind.Utc),
+                            Description = "Comment for Clinical Documents Entry",
+                            UpdatedBy = "System",
+                            UpdatedDateTime = new DateTime(2019, 5, 1, 7, 0, 0, 0, DateTimeKind.Utc),
+                            Version = 0u
                         });
                 });
 
@@ -2310,6 +2320,16 @@ namespace HealthGateway.Database.Migrations
                             Description = "Job Scheduler",
                             UpdatedBy = "System",
                             UpdatedDateTime = new DateTime(2019, 5, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Version = 0u
+                        },
+                        new
+                        {
+                            ProgramCode = "CDO",
+                            CreatedBy = "System",
+                            CreatedDateTime = new DateTime(2019, 5, 1, 7, 0, 0, 0, DateTimeKind.Utc),
+                            Description = "Clinical Document Service",
+                            UpdatedBy = "System",
+                            UpdatedDateTime = new DateTime(2019, 5, 1, 7, 0, 0, 0, DateTimeKind.Utc),
                             Version = 0u
                         });
                 });

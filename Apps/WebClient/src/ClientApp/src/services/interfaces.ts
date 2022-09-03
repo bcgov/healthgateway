@@ -2,6 +2,7 @@ import { Store } from "vuex";
 
 import AddDependentRequest from "@/models/addDependentRequest";
 import { Dictionary } from "@/models/baseTypes";
+import ClinicalDocument from "@/models/clinicalDocument";
 import Communication, { CommunicationType } from "@/models/communication";
 import {
     ExternalConfiguration,
@@ -10,6 +11,7 @@ import {
 import CovidVaccineRecord from "@/models/covidVaccineRecord";
 import { StringISODate } from "@/models/dateWrapper";
 import type { Dependent } from "@/models/dependent";
+import EncodedMedia from "@/models/encodedMedia";
 import Encounter from "@/models/encounter";
 import type ImmunizationResult from "@/models/immunizationResult";
 import {
@@ -112,6 +114,12 @@ export interface ILaboratoryService {
         hdid: string,
         isCovid19: boolean
     ): Promise<RequestResult<LaboratoryReport>>;
+}
+
+export interface IClinicalDocumentService {
+    initialize(config: ExternalConfiguration, http: IHttpDelegate): void;
+    getRecords(hdid: string): Promise<RequestResult<ClinicalDocument[]>>;
+    getFile(fileId: string, hdid: string): Promise<RequestResult<EncodedMedia>>;
 }
 
 export interface IConfigService {

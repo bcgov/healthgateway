@@ -21,10 +21,20 @@ namespace HealthGateway.Common.Models.PHSA
     /// <summary>
     /// Model object representing form parameter values when posting for an access token.
     /// </summary>
-    public class TokenSwapRequest
+    public class PhsaConfigV2
     {
         /// <summary>
-        /// Gets or sets the phsa base endpoint.
+        /// The section key to use when binding this object.
+        /// </summary>
+        public const string ConfigurationSectionKey = "PhsaV2";
+
+        /// <summary>
+        /// Gets or sets the phsa base endpoint for tokens.
+        /// </summary>
+        public Uri TokenBaseUrl { get; set; } = null!;
+
+        /// <summary>
+        /// Gets or sets the phsa base endpoint for data.
         /// </summary>
         public Uri BaseUrl { get; set; } = null!;
 
@@ -49,20 +59,13 @@ namespace HealthGateway.Common.Models.PHSA
         public string Scope { get; set; } = string.Empty;
 
         /// <summary>
-        /// Gets or sets the token being swapped for.
+        /// Gets or sets a value indicating whether to cache the PHSA token.
         /// </summary>
-        public string Token { get; set; } = string.Empty;
+        public bool TokenCacheEnabled { get; set; }
 
         /// <summary>
-        /// Gets the form parameters to swap tokens.
+        /// Gets or sets the number of minutes to cache Personal Accounts.
         /// </summary>
-        public IEnumerable<KeyValuePair<string, string>> FormParameters => new Dictionary<string, string>
-        {
-            ["client_id"] = this.ClientId,
-            ["client_secret"] = this.ClientSecret,
-            ["grant_type"] = this.GrantType,
-            ["scope"] = this.Scope,
-            ["token"] = this.Token,
-        };
+        public int PersonalAccountsCacheTtl { get; set; } = 90;
     }
 }

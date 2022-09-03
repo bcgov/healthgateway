@@ -15,18 +15,21 @@
 // -------------------------------------------------------------------------
 namespace HealthGateway.Admin.Services
 {
+    using System;
     using System.Collections.Generic;
     using System.Linq;
     using System.Threading.Tasks;
     using HealthGateway.Common.Constants;
     using HealthGateway.Common.Data.Constants;
     using HealthGateway.Common.Data.Models;
+    using HealthGateway.Common.Data.Models.ErrorHandling;
     using HealthGateway.Common.Data.ViewModels;
     using HealthGateway.Common.Models;
     using HealthGateway.Common.Services;
     using HealthGateway.Database.Constants;
     using HealthGateway.Database.Delegates;
     using HealthGateway.Database.Wrapper;
+    using Microsoft.IdentityModel.Tokens;
     using UserQueryType = HealthGateway.Admin.Constants.UserQueryType;
 
     /// <inheritdoc />
@@ -68,6 +71,10 @@ namespace HealthGateway.Admin.Services
                         string hdid = patientResult.ResourcePayload.HdId;
                         phn = patientResult.ResourcePayload.PersonalHealthNumber;
                         dbResult = this.messagingVerificationDelegate.GetUserMessageVerifications(Database.Constants.UserQueryType.HDID, hdid);
+                        if (!patientResult.ResourcePayload.ResponseCode.IsNullOrEmpty())
+                        {
+                            retVal.ResultError = GetWarningMessageForResponseCode(patientResult.ResourcePayload.ResponseCode);
+                        }
                     }
                     else
                     {
@@ -87,6 +94,10 @@ namespace HealthGateway.Admin.Services
                     {
                         phn = patientResultHdid.ResourcePayload.PersonalHealthNumber;
                         dbResult = this.messagingVerificationDelegate.GetUserMessageVerifications(Database.Constants.UserQueryType.HDID, queryString);
+                        if (!patientResultHdid.ResourcePayload.ResponseCode.IsNullOrEmpty())
+                        {
+                            retVal.ResultError = GetWarningMessageForResponseCode(patientResultHdid.ResourcePayload.ResponseCode);
+                        }
                     }
                     else
                     {
@@ -99,6 +110,11 @@ namespace HealthGateway.Admin.Services
             if (dbResult != null && dbResult.Status == DBStatusCode.Read)
             {
                 retVal.ResultStatus = ResultType.Success;
+                if (retVal.ResultError != null)
+                {
+                    retVal.ResultStatus = ResultType.ActionRequired;
+                }
+
                 List<MessagingVerificationModel> results = new();
                 results.AddRange(dbResult.Payload.Select(MessagingVerificationModel.CreateFromDbModel));
                 if (queryType == UserQueryType.Hdid || queryType == UserQueryType.Phn)
@@ -113,6 +129,20 @@ namespace HealthGateway.Admin.Services
             }
 
             return retVal;
+        }
+
+        private static RequestResultError GetWarningMessageForResponseCode(string resourcePayloadResponseCode)
+        {
+            string[] messageParts = resourcePayloadResponseCode.Split('|', StringSplitOptions.TrimEntries);
+
+            RequestResultError error = new()
+            {
+                ErrorCode = messageParts[0],
+                ResultMessage = messageParts[1],
+                ActionCode = ActionType.Warning,
+            };
+
+            return error;
         }
     }
 }
