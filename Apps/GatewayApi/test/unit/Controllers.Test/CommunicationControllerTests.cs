@@ -37,7 +37,7 @@ namespace HealthGateway.GatewayApi.Test.Controllers
         {
             RequestResult<Communication?> expectedResult = new()
             {
-                ResourcePayload = new Communication()
+                ResourcePayload = new Communication
                 {
                     Subject = "Mocked Subject",
                     Text = "Mocked Text",
@@ -46,7 +46,7 @@ namespace HealthGateway.GatewayApi.Test.Controllers
             };
 
             Mock<ICommunicationService> communicationServiceMock = new();
-            communicationServiceMock.Setup(s => s.GetActiveBanner(CommunicationType.Banner)).Returns(expectedResult);
+            communicationServiceMock.Setup(s => s.GetActiveCommunication(CommunicationType.Banner)).Returns(expectedResult);
 
             CommunicationController controller = new(communicationServiceMock.Object);
             RequestResult<Communication?> actualResult = controller.Get();
