@@ -840,6 +840,15 @@ namespace HealthGateway.Database.Context
                         CreatedDateTime = this.DefaultSeedDate,
                         UpdatedBy = UserId.DefaultUser,
                         UpdatedDateTime = this.DefaultSeedDate,
+                    },
+                    new CommunicationTypeCode
+                    {
+                        StatusCode = CommunicationType.Mobile,
+                        Description = "Mobile communication type",
+                        CreatedBy = UserId.DefaultUser,
+                        CreatedDateTime = this.DefaultSeedDate.ToUniversalTime(),
+                        UpdatedBy = UserId.DefaultUser,
+                        UpdatedDateTime = this.DefaultSeedDate.ToUniversalTime(),
                     });
 
             modelBuilder.Entity<CommunicationStatusCode>()
