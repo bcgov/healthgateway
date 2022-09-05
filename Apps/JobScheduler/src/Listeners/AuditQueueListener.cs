@@ -36,11 +36,6 @@ namespace HealthGateway.JobScheduler.Listeners
     [ExcludeFromCodeCoverage]
     public class AuditQueueListener : BackgroundService
     {
-        /// <summary>
-        /// The queue name where we store AuditEvents while processing them.
-        /// </summary>
-        public const string AuditQueueProcessing = "Queue:Audit:Processing";
-
         private const int SleepDuration = 1000;
         private readonly ILogger<AuditQueueListener> logger;
         private readonly IServiceProvider services;
@@ -75,12 +70,10 @@ namespace HealthGateway.JobScheduler.Listeners
             {
                 IDatabase redisDb = this.connectionMultiplexer.GetDatabase();
                 RedisValue auditValue = await redisDb.ListMoveAsync(
-                        RedisAuditLogger.AuditQueue,
-                        AuditQueueProcessing,
+                        $"{RedisAuditLogger.AuditQueuePrefix}:{RedisAuditLogger.ActiveQueueName}",
+                        $"{RedisAuditLogger.AuditQueuePrefix}:{RedisAuditLogger.ProcessingQueueName}",
                         ListSide.Left,
-                        ListSide.Right,
-                        CommandFlags.None)
-                    .ConfigureAwait(true);
+                        ListSide.Right).ConfigureAwait(true);
                 if (auditValue.HasValue)
                 {
                     await this.ProcessAuditEvent(redisDb, auditValue).ConfigureAwait(true);
@@ -96,6 +89,7 @@ namespace HealthGateway.JobScheduler.Listeners
 
         private async Task ProcessAuditEvent(IDatabase redisDb, RedisValue auditValue)
         {
+            this.logger.LogTrace("Start Processing Audit Event...");
             AuditEvent? auditEvent = JsonSerializer.Deserialize<AuditEvent>(auditValue.ToString());
             if (auditEvent != null)
             {
@@ -104,13 +98,15 @@ namespace HealthGateway.JobScheduler.Listeners
                     using IServiceScope scope = this.services.CreateScope();
                     IWriteAuditEventDelegate writeAuditEventDelegate = scope.ServiceProvider.GetRequiredService<IWriteAuditEventDelegate>();
                     writeAuditEventDelegate.WriteAuditEvent(auditEvent);
-                    await redisDb.ListRemoveAsync(AuditQueueProcessing, auditValue).ConfigureAwait(true);
+                    await redisDb.ListRemoveAsync($"{RedisAuditLogger.AuditQueuePrefix}:{RedisAuditLogger.ProcessingQueueName}", auditValue).ConfigureAwait(true);
                 }
                 catch (DataException e)
                 {
-                    this.logger.LogError($"Error writing to DB:\n{e.StackTrace}");
+                    this.logger.LogError("Error writing to DB:\n{@Exception}", e);
                 }
             }
+
+            this.logger.LogTrace("Completed Audit Event Processing...");
         }
     }
 }
