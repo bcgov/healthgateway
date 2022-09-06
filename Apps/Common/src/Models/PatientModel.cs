@@ -34,6 +34,7 @@ namespace HealthGateway.Common.Models
             this.FirstName = string.Empty;
             this.LastName = string.Empty;
             this.Gender = string.Empty;
+            this.ResponseCode = string.Empty;
         }
 
         /// <summary>
@@ -81,5 +82,10 @@ namespace HealthGateway.Common.Models
         /// Gets or sets the postal address for the patient.
         /// </summary>
         public Address? PostalAddress { get; set; }
+
+        /// <summary>
+        /// Gets or sets the response code for the patient.
+        /// </summary>
+        public string ResponseCode { get; set; }
     }
 }

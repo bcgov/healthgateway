@@ -544,6 +544,37 @@ INSERT INTO gateway."Communication"(
 	null
 );
 
+/* Mobile Communication */
+INSERT INTO gateway."Communication"(
+	"CommunicationId", 
+	"CreatedBy", 
+	"CreatedDateTime", 
+	"UpdatedBy", 
+	"UpdatedDateTime", 
+	"Text", 
+	"Subject", 
+	"EffectiveDateTime", 
+	"ExpiryDateTime", 
+	"CommunicationStatusCode", 
+	"CommunicationTypeCode", 
+	"Priority", 
+	"ScheduledDateTime"
+) VALUES (
+	'70e79659-70c7-4021-85eb-dc6b46a874de',	
+	'System',
+	current_timestamp,	
+	'System',
+	current_timestamp,	
+	'<p>Mobile Communication - <a href="healthgateway@gov.bc.ca" rel="noopener noreferrer nofollow">healthgateway@gov.bc.ca</a></p>',
+	'Seeded Mobile Comm',
+	current_timestamp,
+	current_timestamp + INTERVAL '1 day',
+	'New',
+	'Mobile',
+	10,
+	null
+);
+
 /* User Preferences */
 INSERT INTO gateway."UserPreference"(
 	"UserProfileId", 

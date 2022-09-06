@@ -363,7 +363,7 @@ export const actions: VaccinationStatusActions = {
                             error: result.resultError,
                             errorType: ErrorType.Retrieve,
                         });
-                        reject(result.resultError);
+                        resolve(payload);
                     }
                 })
                 .catch((error: ResultError) => {

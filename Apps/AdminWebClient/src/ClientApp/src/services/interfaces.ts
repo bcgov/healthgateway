@@ -8,6 +8,7 @@ import CovidTreatmentAssessmentDetails from "@/models/covidTreatmentAssessmentDe
 import CovidTreatmentAssessmentRequest from "@/models/covidTreatmentAssessmentRequest";
 import ExternalConfiguration from "@/models/externalConfiguration";
 import MessageVerification from "@/models/messageVerification";
+import RequestResult from "@/models/requestResult";
 import { QueryType } from "@/models/userQuery";
 
 export interface IConfigService {
@@ -28,7 +29,7 @@ export interface ISupportService {
     getMessageVerifications(
         type: QueryType,
         query: string
-    ): Promise<MessageVerification[]>;
+    ): Promise<RequestResult<MessageVerification[]>>;
 }
 
 export interface ICovidSupportService {

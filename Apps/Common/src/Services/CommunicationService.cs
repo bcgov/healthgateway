@@ -31,14 +31,19 @@ namespace HealthGateway.Common.Services
     public class CommunicationService : ICommunicationService
     {
         /// <summary>
-        /// The Cache key used to store Communication Banners.
+        /// The Cache key used to store public banner communications.
         /// </summary>
         public const string BannerCacheKey = "Communication:Banner";
 
         /// <summary>
-        /// The Cache key used to store Communication InApp Banners.
+        /// The Cache key used to store in-app banner communications.
         /// </summary>
         public const string InAppCacheKey = "Communication:InApp";
+
+        /// <summary>
+        /// The Cache key used to store mobile communications.
+        /// </summary>
+        public const string MobileCacheKey = "Communication:Mobile";
 
         private const string Update = "UPDATE";
         private const string Insert = "INSERT";
@@ -60,12 +65,30 @@ namespace HealthGateway.Common.Services
             this.cacheProvider = cacheProvider;
         }
 
-        /// <inheritdoc/>
-        public RequestResult<Communication?> GetActiveBanner(CommunicationType communicationType)
+        /// <summary>
+        /// Retrieves the key for the cache associated with a given CommunicationType. Only Banner, InApp, and Mobile
+        /// CommunicationTypes are supported.
+        /// </summary>
+        /// <param name="communicationType">The CommunicationType to retrieve the key for.</param>
+        /// <returns>The key for the cache associated with the given CommunicationType.</returns>
+        public static string GetCacheKey(CommunicationType communicationType)
         {
-            if (communicationType != CommunicationType.Banner && communicationType != CommunicationType.InApp)
+            string cacheKey = communicationType switch
             {
-                throw new ArgumentOutOfRangeException(nameof(communicationType), "Communication Type must be Banner or InApp");
+                CommunicationType.Banner => BannerCacheKey,
+                CommunicationType.InApp => InAppCacheKey,
+                CommunicationType.Mobile => MobileCacheKey,
+                _ => string.Empty,
+            };
+            return cacheKey;
+        }
+
+        /// <inheritdoc/>
+        public RequestResult<Communication?> GetActiveCommunication(CommunicationType communicationType)
+        {
+            if (communicationType is not (CommunicationType.Banner or CommunicationType.InApp or CommunicationType.Mobile))
+            {
+                throw new ArgumentOutOfRangeException(nameof(communicationType), "Communication Type must be Banner, InApp, or Mobile");
             }
 
             RequestResult<Communication?>? cacheEntry = this.GetCommunicationFromCache(communicationType);
@@ -73,7 +96,7 @@ namespace HealthGateway.Common.Services
             {
                 this.logger.LogInformation("Active Communication not found in cache, getting from DB...");
                 DBResult<Communication?> dbResult = this.communicationDelegate.GetNext(communicationType);
-                if (dbResult.Status == DBStatusCode.Read || dbResult.Status == DBStatusCode.NotFound)
+                if (dbResult.Status is DBStatusCode.Read or DBStatusCode.NotFound)
                 {
                     cacheEntry = this.AddCommunicationToCache(dbResult.Payload, communicationType);
                 }
@@ -109,9 +132,7 @@ namespace HealthGateway.Common.Services
         public void ProcessChange(BannerChangeEvent changeEvent)
         {
             Communication? communication = changeEvent.Data;
-            if (communication is not null &&
-                (communication.CommunicationTypeCode == CommunicationType.Banner ||
-                 communication.CommunicationTypeCode == CommunicationType.InApp))
+            if (communication?.CommunicationTypeCode is CommunicationType.Banner or CommunicationType.InApp or CommunicationType.Mobile)
             {
                 RequestResult<Communication?>? cacheEntry = this.GetCommunicationFromCache(communication.CommunicationTypeCode);
                 if (cacheEntry?.ResourcePayload != null)
@@ -121,7 +142,7 @@ namespace HealthGateway.Common.Services
                     {
                         this.logger.LogInformation($"{changeEvent.Action} ChangeEvent for Communication {communication.Id} found in Cache");
                         this.RemoveCommunicationFromCache(communication.CommunicationTypeCode);
-                        if (changeEvent.Action == Insert || changeEvent.Action == Update)
+                        if (changeEvent.Action is Insert or Update)
                         {
                             this.AddCommunicationToCache(communication, communication.CommunicationTypeCode);
                         }
@@ -148,7 +169,7 @@ namespace HealthGateway.Common.Services
                 else
                 {
                     this.logger.LogInformation($"No Communications in the Cache, processing {changeEvent.Action} for communication {communication.Id}");
-                    if (changeEvent.Action == Insert || changeEvent.Action == Update)
+                    if (changeEvent.Action is Insert or Update)
                     {
                         this.AddCommunicationToCache(communication, communication.CommunicationTypeCode);
                     }
@@ -161,22 +182,23 @@ namespace HealthGateway.Common.Services
         {
             this.RemoveCommunicationFromCache(CommunicationType.Banner);
             this.RemoveCommunicationFromCache(CommunicationType.InApp);
+            this.RemoveCommunicationFromCache(CommunicationType.Mobile);
         }
 
-        private void RemoveCommunicationFromCache(CommunicationType cacheType)
+        private void RemoveCommunicationFromCache(CommunicationType communicationType)
         {
-            string cacheKey = cacheType == CommunicationType.Banner ? BannerCacheKey : InAppCacheKey;
+            string cacheKey = GetCacheKey(communicationType);
             this.cacheProvider.RemoveItem(cacheKey);
         }
 
-        private RequestResult<Communication?>? GetCommunicationFromCache(CommunicationType cacheType)
+        private RequestResult<Communication?>? GetCommunicationFromCache(CommunicationType communicationType)
         {
-            string cacheKey = cacheType == CommunicationType.Banner ? BannerCacheKey : InAppCacheKey;
+            string cacheKey = GetCacheKey(communicationType);
             RequestResult<Communication?>? cacheEntry = this.cacheProvider.GetItem<RequestResult<Communication?>>(cacheKey);
             return cacheEntry;
         }
 
-        private RequestResult<Communication?> AddCommunicationToCache(Communication? communication, CommunicationType cacheType)
+        private RequestResult<Communication?> AddCommunicationToCache(Communication? communication, CommunicationType communicationType)
         {
             RequestResult<Communication?> cacheEntry = new()
             {
@@ -206,7 +228,7 @@ namespace HealthGateway.Common.Services
                 cacheEntry.ResourcePayload = null;
             }
 
-            string cacheKey = cacheType == CommunicationType.Banner ? BannerCacheKey : InAppCacheKey;
+            string cacheKey = GetCacheKey(communicationType);
             this.cacheProvider.AddItem(cacheKey, cacheEntry, expiry);
             return cacheEntry;
         }
