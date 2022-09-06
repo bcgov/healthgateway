@@ -190,7 +190,7 @@ export default class FeedbackComponent extends Vue {
                     />
                 </b-col>
             </b-row>
-            <b-row v-show="hasSubmitted">
+            <b-row v-show="hasSubmitted" no-gutters>
                 <b-col>
                     <hg-icon
                         :icon="resultIcon"
