@@ -29,6 +29,18 @@ export default class ReleaseNotesView extends Vue {
         <BreadcrumbComponent :items="breadcrumbItems" />
         <page-title title="Health Gateway Release Notes" />
         <release-note
+            date="September 6, 2022"
+            version="v2022.6.6"
+            title="Guardian Access to Federal Proof of Vaccination"
+        >
+            <ul>
+                <li>
+                    We added a feature that provides guardian access to the
+                    federal proof of vaccination for their dependents.
+                </li>
+            </ul>
+        </release-note>
+        <release-note
             date="August 23, 2022"
             version="v2022.6.5"
             title="Guardian Access to Immunizations"
