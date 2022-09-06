@@ -17,11 +17,19 @@ namespace HealthGateway.ClinicalDocument
 {
     using System.Diagnostics.CodeAnalysis;
     using HealthGateway.ClinicalDocument.Services;
+    using HealthGateway.Common.AccessManagement.Authentication;
+    using HealthGateway.Common.Api;
     using HealthGateway.Common.AspNetConfiguration;
+    using HealthGateway.Common.AspNetConfiguration.Modules;
+    using HealthGateway.Common.Delegates.PHSA;
+    using HealthGateway.Common.Models.PHSA;
+    using HealthGateway.Common.Services;
+    using HealthGateway.Common.Utils.Phsa;
     using Microsoft.AspNetCore.Builder;
     using Microsoft.AspNetCore.Hosting;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
+    using Refit;
 
     /// <summary>
     /// Configures the application during startup.
@@ -60,6 +68,22 @@ namespace HealthGateway.ClinicalDocument
 
             // Add services
             services.AddTransient<IClinicalDocumentService, ClinicalDocumentService>();
+
+            // Enable V2 PHSA Services
+            GatewayCache.ConfigureCaching(services, this.startupConfig.Logger, this.startupConfig.Configuration);
+            services.AddAutoMapper(typeof(Startup));
+            services.AddTransient<IAuthenticationDelegate, AuthenticationDelegate>();
+            services.AddTransient<IAccessTokenService, AccessTokenService>();
+            services.AddTransient<ITokenSwapDelegate, RestTokenSwapDelegate>();
+            services.AddTransient<AuthHeaderHandler>();
+            services.AddTransient<IPersonalAccountsService, PersonalAccountsService>();
+            PhsaConfigV2 phsaConfig = new();
+            this.startupConfig.Configuration.Bind(PhsaConfigV2.ConfigurationSectionKey, phsaConfig);
+            services.AddRefitClient<ITokenSwapApi>()
+                .ConfigureHttpClient(c => c.BaseAddress = phsaConfig.TokenBaseUrl);
+            services.AddRefitClient<IPersonalAccountsApi>()
+                .ConfigureHttpClient(c => c.BaseAddress = phsaConfig.BaseUrl)
+                .AddHttpMessageHandler<AuthHeaderHandler>();
         }
 
         /// <summary>

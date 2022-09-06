@@ -26,15 +26,15 @@ namespace HealthGateway.Common.Services
     public interface ICommunicationService
     {
         /// <summary>
-        /// Gets the active communication banner based on type from the backend.
-        /// Only Banner and In-App values are supported.
+        /// Gets the active communication based on type from the backend.
+        /// Only Banner, In-App, and Mobile values are supported.
         /// </summary>
-        /// <param name="communicationType">The type of communication banner to retrieve.</param>
+        /// <param name="communicationType">The type of communication to retrieve.</param>
         /// <returns>The active communication wrapped in a RequestResult.</returns>
-        RequestResult<Communication?> GetActiveBanner(CommunicationType communicationType);
+        RequestResult<Communication?> GetActiveCommunication(CommunicationType communicationType);
 
         /// <summary>
-        /// Processes a change event from the DB for Communication banners.
+        /// Processes a change event from the DB for communications.
         /// </summary>
         /// <param name="changeEvent">The change event that was triggered.</param>
         void ProcessChange(BannerChangeEvent changeEvent);

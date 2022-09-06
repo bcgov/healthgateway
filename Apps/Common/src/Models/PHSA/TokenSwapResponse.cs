@@ -29,9 +29,9 @@ namespace HealthGateway.Common.Models.PHSA
         public string AccessToken { get; set; } = string.Empty;
 
         /// <summary>
-        /// Gets or sets the expires on for the token.
+        /// Gets or sets the number of seconds before the token expires.
         /// </summary>
-        [JsonPropertyName("expires_on")]
+        [JsonPropertyName("expires_in")]
         public int ExpiresIn { get; set; }
 
         /// <summary>

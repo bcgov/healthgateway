@@ -173,6 +173,7 @@ namespace HealthGateway.Database.Delegates
                     email => email.EmailStatusCode == EmailStatus.Processed &&
                              email.CreatedDateTime <= GatewayDbContext.DateTrunc("days", DateTime.UtcNow.AddDays(daysAgo * -1)))
                 .Where(email => !this.dbContext.MessagingVerification.Any(msgVerification => msgVerification.EmailId == email.Id))
+                .OrderBy(email => email.CreatedDateTime)
                 .Select(email => new Email { Id = email.Id, Version = email.Version })
                 .Take(maxRows)
                 .ToList();

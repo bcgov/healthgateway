@@ -674,7 +674,7 @@ export default class FaqView extends Vue {
                     <b-card-text>
                         <div data-testid="answerTxt">
                             <p>
-                                Health Gateway is updated weekly with new
+                                Health Gateway is updated bi-weekly with new
                                 features and information. We prioritize changes
                                 based on your feedback. Send us your
                                 suggestions:

@@ -28,9 +28,9 @@ namespace HealthGateway.CommonTests.Auditing
     using Xunit;
 
     /// <summary>
-    /// AuditLogger's Unit Tests.
+    /// DbAuditLogger's Unit Tests.
     /// </summary>
-    public class AuditLoggerTests
+    public class DbAuditLoggerTests
     {
         /// <summary>
         /// PopulateWithHttpContext - Happy Path.
@@ -50,12 +50,12 @@ namespace HealthGateway.CommonTests.Auditing
                 TransactionVersion = string.Empty,
             };
 
-            Mock<ILogger<IAuditLogger>> logger = new();
+            Mock<ILogger<DbAuditLogger>> logger = new();
             Mock<IWriteAuditEventDelegate> dbContext = new();
-            AuditLogger auditLogger = new(logger.Object, dbContext.Object);
+            DbAuditLogger dbAuditLogger = new(logger.Object, dbContext.Object);
 
             AuditEvent actual = new();
-            auditLogger.PopulateWithHttpContext(ctx, actual);
+            dbAuditLogger.PopulateWithHttpContext(ctx, actual);
 
             expected.ShouldDeepEqual(actual);
         }
@@ -79,12 +79,12 @@ namespace HealthGateway.CommonTests.Auditing
                 TransactionVersion = string.Empty,
             };
 
-            Mock<ILogger<IAuditLogger>> logger = new();
+            Mock<ILogger<DbAuditLogger>> logger = new();
             Mock<IWriteAuditEventDelegate> dbContext = new();
-            AuditLogger auditLogger = new(logger.Object, dbContext.Object);
+            DbAuditLogger dbAuditLogger = new(logger.Object, dbContext.Object);
 
             AuditEvent actual = new();
-            auditLogger.PopulateWithHttpContext(ctx, actual);
+            dbAuditLogger.PopulateWithHttpContext(ctx, actual);
 
             Assert.True(actual.TransactionResultCode == AuditTransactionResult.Unauthorized);
             expected.IsDeepEqual(actual);
@@ -109,12 +109,12 @@ namespace HealthGateway.CommonTests.Auditing
                 TransactionVersion = string.Empty,
             };
 
-            Mock<ILogger<IAuditLogger>> logger = new();
+            Mock<ILogger<DbAuditLogger>> logger = new();
             Mock<IWriteAuditEventDelegate> dbContext = new();
-            AuditLogger auditLogger = new(logger.Object, dbContext.Object);
+            DbAuditLogger dbAuditLogger = new(logger.Object, dbContext.Object);
 
             AuditEvent actual = new();
-            auditLogger.PopulateWithHttpContext(ctx, actual);
+            dbAuditLogger.PopulateWithHttpContext(ctx, actual);
 
             Assert.True(actual.TransactionResultCode == AuditTransactionResult.Failure);
             expected.IsDeepEqual(actual);
@@ -138,11 +138,11 @@ namespace HealthGateway.CommonTests.Auditing
                 TransactionVersion = string.Empty,
             };
 
-            Mock<ILogger<IAuditLogger>> logger = new();
+            Mock<ILogger<DbAuditLogger>> logger = new();
             Mock<IWriteAuditEventDelegate> dbContext = new();
-            AuditLogger auditLogger = new(logger.Object, dbContext.Object);
+            DbAuditLogger dbAuditLogger = new(logger.Object, dbContext.Object);
 
-            auditLogger.WriteAuditEvent(expected);
+            dbAuditLogger.WriteAuditEvent(expected);
 
             Assert.True(expected.TransactionResultCode == AuditTransactionResult.Success);
             logger.Verify(
@@ -173,12 +173,12 @@ namespace HealthGateway.CommonTests.Auditing
                 TransactionVersion = string.Empty,
             };
 
-            Mock<ILogger<IAuditLogger>> logger = new();
+            Mock<ILogger<DbAuditLogger>> logger = new();
             Mock<IWriteAuditEventDelegate> dbContext = new();
             dbContext.Setup(e => e.WriteAuditEvent(It.IsAny<AuditEvent>())).Throws(new IOException());
-            AuditLogger auditLogger = new(logger.Object, dbContext.Object);
+            DbAuditLogger dbAuditLogger = new(logger.Object, dbContext.Object);
 
-            auditLogger.WriteAuditEvent(expected);
+            dbAuditLogger.WriteAuditEvent(expected);
 
             logger.Verify(
                 m => m.Log(

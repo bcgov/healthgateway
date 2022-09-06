@@ -45,10 +45,15 @@ namespace HealthGateway.CommonTests.Services
         /// Validates the Communication is pulled from the MemoryCache.
         /// </summary>
         /// <param name="scenario">The scenario the test is executing.</param>
+        /// <param name="communicationType">The type of Communication to retrieve.</param>
         [Theory]
-        [InlineData(Scenario.Active)]
-        [InlineData(Scenario.Future)]
-        public void ShouldGetActiveCommunicationFromCache(Scenario scenario)
+        [InlineData(Scenario.Active, CommunicationType.Banner)]
+        [InlineData(Scenario.Future, CommunicationType.Banner)]
+        [InlineData(Scenario.Active, CommunicationType.InApp)]
+        [InlineData(Scenario.Future, CommunicationType.InApp)]
+        [InlineData(Scenario.Active, CommunicationType.Mobile)]
+        [InlineData(Scenario.Future, CommunicationType.Mobile)]
+        public void ShouldGetActiveCommunicationFromCache(Scenario scenario, CommunicationType communicationType)
         {
             MemoryCacheEntryOptions options = new()
             {
@@ -58,21 +63,18 @@ namespace HealthGateway.CommonTests.Services
             Communication communication = new()
             {
                 Id = Guid.NewGuid(),
+                CommunicationTypeCode = communicationType,
                 ExpiryDateTime = DateTime.UtcNow.AddDays(10),
+                EffectiveDateTime = scenario switch
+                {
+                    Scenario.Future => DateTime.UtcNow.AddDays(3),
+                    _ => DateTime.UtcNow,
+                },
             };
 
-            switch (scenario)
-            {
-                case Scenario.Future:
-                    communication.EffectiveDateTime = DateTime.UtcNow.AddDays(3);
-                    break;
-                default:
-                    communication.EffectiveDateTime = DateTime.UtcNow;
-                    break;
-            }
-
             RequestResult<Communication?> commResult = GetCommResult(communication, ResultType.Success);
-            IMemoryCache memoryCache = CreateCache(commResult, CommunicationService.BannerCacheKey, options);
+            string cacheKey = CommunicationService.GetCacheKey(communicationType);
+            IMemoryCache memoryCache = CreateCache(commResult, cacheKey, options);
             ICacheProvider cacheProvider = new MemoryCacheProvider(memoryCache);
 
             Mock<ICommunicationDelegate> communicationDelegateMock = new();
@@ -81,13 +83,13 @@ namespace HealthGateway.CommonTests.Services
                 communicationDelegateMock.Object,
                 cacheProvider);
 
-            RequestResult<Communication?> actualResult = service.GetActiveBanner(CommunicationType.Banner);
+            RequestResult<Communication?> actualResult = service.GetActiveCommunication(communicationType);
 
             switch (scenario)
             {
                 case Scenario.Future:
                     Assert.NotSame(commResult, actualResult);
-                    Assert.True(actualResult.ResultStatus == ResultType.Success);
+                    Assert.Equal(ResultType.Success, actualResult.ResultStatus);
                     break;
                 default:
                     Assert.Same(commResult, actualResult);
@@ -101,11 +103,18 @@ namespace HealthGateway.CommonTests.Services
         /// Get the communication data directly from the DB.
         /// </summary>
         /// <param name="dbStatusCode">The status returned from the DB Delegate.</param>
+        /// <param name="communicationType">The type of Communication to retrieve.</param>
         [Theory]
-        [InlineData(DBStatusCode.Read)]
-        [InlineData(DBStatusCode.NotFound)]
-        [InlineData(DBStatusCode.Error)]
-        public void ShouldGetActiveCommunicationFromDb(DBStatusCode dbStatusCode)
+        [InlineData(DBStatusCode.Read, CommunicationType.Banner)]
+        [InlineData(DBStatusCode.NotFound, CommunicationType.Banner)]
+        [InlineData(DBStatusCode.Error, CommunicationType.Banner)]
+        [InlineData(DBStatusCode.Read, CommunicationType.InApp)]
+        [InlineData(DBStatusCode.NotFound, CommunicationType.InApp)]
+        [InlineData(DBStatusCode.Error, CommunicationType.InApp)]
+        [InlineData(DBStatusCode.Read, CommunicationType.Mobile)]
+        [InlineData(DBStatusCode.NotFound, CommunicationType.Mobile)]
+        [InlineData(DBStatusCode.Error, CommunicationType.Mobile)]
+        public void ShouldGetActiveCommunicationFromDb(DBStatusCode dbStatusCode, CommunicationType communicationType)
         {
             Communication? communication = null;
             if (dbStatusCode == DBStatusCode.Read)
@@ -113,6 +122,7 @@ namespace HealthGateway.CommonTests.Services
                 communication = new()
                 {
                     Id = Guid.NewGuid(),
+                    CommunicationTypeCode = communicationType,
                     EffectiveDateTime = DateTime.Now,
                     ExpiryDateTime = DateTime.Now.AddDays(1),
                 };
@@ -135,26 +145,26 @@ namespace HealthGateway.CommonTests.Services
                 communicationDelegateMock.Object,
                 cacheProvider);
 
-            RequestResult<Communication?> actualResult = service.GetActiveBanner(CommunicationType.Banner);
+            RequestResult<Communication?> actualResult = service.GetActiveCommunication(communicationType);
 
-            if (dbStatusCode == DBStatusCode.Read || dbStatusCode == DBStatusCode.NotFound)
+            if (dbStatusCode is DBStatusCode.Read or DBStatusCode.NotFound)
             {
-                Assert.True(actualResult != null);
-                Assert.True(actualResult.ResultStatus == ResultType.Success);
+                Assert.NotNull(actualResult);
+                Assert.Equal(ResultType.Success, actualResult.ResultStatus);
                 if (dbStatusCode == DBStatusCode.Read)
                 {
                     Assert.True(dbResult.Payload.IsDeepEqual(actualResult.ResourcePayload));
-                    Assert.True(actualResult.TotalResultCount == 1);
+                    Assert.Equal(1, actualResult.TotalResultCount);
                 }
                 else
                 {
-                    Assert.True(actualResult.TotalResultCount == 0);
+                    Assert.Equal(0, actualResult.TotalResultCount);
                 }
             }
             else
             {
-                Assert.True(actualResult.ResultStatus == ResultType.Error);
-                Assert.True(actualResult.ResultError?.ErrorCode.EndsWith("-CI-DB", StringComparison.InvariantCulture));
+                Assert.Equal(ResultType.Error, actualResult.ResultStatus);
+                Assert.EndsWith("-CI-DB", actualResult.ResultError?.ErrorCode, StringComparison.InvariantCulture);
             }
 
             memoryCache.Dispose();
@@ -166,12 +176,13 @@ namespace HealthGateway.CommonTests.Services
         /// <param name="action">The action to perform for the test.</param>
         /// <param name="scenario">The scenario to to initialize data.</param>
         /// <param name="cached">Put the initial communication into the cache.</param>
-        /// <param name="commType">The optional communication type to use.</param>
+        /// <param name="communicationType">The optional communication type to use.</param>
         /// <param name="cacheMiss">If true, the cached item will be an empty communication with a unique guid.</param>
         [Theory]
         [InlineData(Insert, Scenario.Active, false)]
         [InlineData(Insert, Scenario.Active, false, CommunicationType.InApp)]
         [InlineData(Insert, Scenario.Expired, false)]
+        [InlineData(Insert, Scenario.Expired, false, CommunicationType.Mobile)]
         [InlineData(Update, Scenario.Active, false)]
         [InlineData(Update, Scenario.Expired, false)]
         [InlineData(Insert, Scenario.Active, true)]
@@ -181,12 +192,12 @@ namespace HealthGateway.CommonTests.Services
         [InlineData(Delete, Scenario.Deleted, true)]
         [InlineData(Insert, Scenario.Active, true, CommunicationType.Banner, true)]
         [InlineData(Insert, Scenario.Future, false)]
-        public void ShouldProcessChangeEvent(string action, Scenario scenario, bool cached, CommunicationType commType = CommunicationType.Banner, bool cacheMiss = false)
+        public void ShouldProcessChangeEvent(string action, Scenario scenario, bool cached, CommunicationType communicationType = CommunicationType.Banner, bool cacheMiss = false)
         {
-            Communication communication = new Communication()
+            Communication communication = new()
             {
                 Id = Guid.NewGuid(),
-                CommunicationTypeCode = commType,
+                CommunicationTypeCode = communicationType,
             };
             switch (scenario)
             {
@@ -210,20 +221,23 @@ namespace HealthGateway.CommonTests.Services
                 Data = communication,
             };
 
+            string cacheKey = CommunicationService.GetCacheKey(communicationType);
             IMemoryCache memoryCache;
             if (cached)
             {
                 RequestResult<Communication?> cacheEntry = new()
                 {
                     ResultStatus = ResultType.Success,
-                    ResourcePayload = !cacheMiss ? communication : new()
-                    {
-                        Id = Guid.NewGuid(),
-                    },
+                    ResourcePayload = !cacheMiss
+                        ? communication
+                        : new()
+                        {
+                            Id = Guid.NewGuid(),
+                        },
                     TotalResultCount = 1,
                 };
 
-                memoryCache = CreateCache(cacheEntry, CommunicationService.BannerCacheKey);
+                memoryCache = CreateCache(cacheEntry, cacheKey);
             }
             else
             {
@@ -239,7 +253,6 @@ namespace HealthGateway.CommonTests.Services
                 cacheProvider);
 
             service.ProcessChange(changeEvent);
-            string cacheKey = commType == CommunicationType.Banner ? CommunicationService.BannerCacheKey : CommunicationService.InAppCacheKey;
             RequestResult<Communication>? cacheResult = cacheProvider.GetItem<RequestResult<Communication>>(cacheKey);
             switch (scenario)
             {
@@ -250,16 +263,16 @@ namespace HealthGateway.CommonTests.Services
                     }
                     else
                     {
-                        Assert.True(communication.Id != cacheResult?.ResourcePayload?.Id);
+                        Assert.NotEqual(communication.Id, cacheResult?.ResourcePayload?.Id);
                     }
 
                     break;
                 case Scenario.Expired:
-                    Assert.True(cacheResult?.ResultStatus == ResultType.Success);
-                    Assert.True(cacheResult.TotalResultCount == 0);
+                    Assert.Equal(ResultType.Success, cacheResult?.ResultStatus);
+                    Assert.Equal(0, cacheResult?.TotalResultCount);
                     break;
                 case Scenario.Deleted:
-                    Assert.True(cacheResult is null);
+                    Assert.Null(cacheResult);
                     break;
                 case Scenario.Future:
                     Assert.Same(communication, cacheResult?.ResourcePayload);
@@ -279,7 +292,7 @@ namespace HealthGateway.CommonTests.Services
                 new Mock<ILogger<CommunicationService>>().Object,
                 new Mock<ICommunicationDelegate>().Object,
                 new Mock<ICacheProvider>().Object);
-            Assert.Throws<ArgumentOutOfRangeException>(() => service.GetActiveBanner(CommunicationType.Email));
+            Assert.Throws<ArgumentOutOfRangeException>(() => service.GetActiveCommunication(CommunicationType.Email));
         }
 
         private static IMemoryCache CreateCache(RequestResult<Communication?>? cacheEntry = null, string? cacheKey = null, MemoryCacheEntryOptions? options = null)

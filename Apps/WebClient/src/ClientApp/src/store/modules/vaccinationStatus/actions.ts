@@ -312,26 +312,35 @@ export const actions: VaccinationStatusActions = {
 
         return new Promise((resolve, reject) => {
             logger.debug(`Retrieving Vaccination Record`);
-            context.commit("setAuthenticatedVaccineRecordRequested");
+            context.commit("setAuthenticatedVaccineRecordRequested", {
+                hdid: params.hdid,
+            });
             vaccinationStatusService
                 .getAuthenticatedVaccineRecord(params.hdid)
                 .then((result) => {
                     const payload = result.resourcePayload;
                     if (result.resultStatus === ResultType.Success) {
-                        context.commit(
-                            "setAuthenticatedVaccineRecord",
-                            payload
-                        );
+                        logger.info("Vaccination Record loaded");
+                        context.commit("setAuthenticatedVaccineRecord", {
+                            hdid: params.hdid,
+                            vaccinationRecord: payload,
+                        });
                         resolve(payload);
                     } else if (
                         result.resultError?.actionCode === ActionType.Refresh &&
                         !payload.loaded &&
                         payload.retryin > 0
                     ) {
-                        logger.info("Vaccination Record not loaded");
+                        logger.info(
+                            "Vaccination Record not loaded but will try again"
+                        );
                         context.commit(
                             "setAuthenticatedVaccineRecordStatusMessage",
-                            "We're busy but will continue to try to download the Vaccine Record...."
+                            {
+                                hdid: params.hdid,
+                                statusMessage:
+                                    "We're busy but will continue to try to download the Vaccine Record....",
+                            }
                         );
                         setTimeout(() => {
                             logger.info(
@@ -346,15 +355,23 @@ export const actions: VaccinationStatusActions = {
                         }, payload.retryin);
                         resolve(payload);
                     } else {
+                        logger.error(
+                            "Vaccination Record not loaded due to error"
+                        );
                         context.dispatch("handleAuthenticatedPdfError", {
+                            hdid: params.hdid,
                             error: result.resultError,
                             errorType: ErrorType.Retrieve,
                         });
-                        reject(result.resultError);
+                        resolve(payload);
                     }
                 })
                 .catch((error: ResultError) => {
+                    logger.error(
+                        "Vaccination Record not loaded due to unexpected error"
+                    );
                     context.dispatch("handleAuthenticatedPdfError", {
+                        hdid: params.hdid,
                         error,
                         errorType: ErrorType.Retrieve,
                     });
@@ -364,12 +381,15 @@ export const actions: VaccinationStatusActions = {
     },
     handleAuthenticatedPdfError(
         context,
-        params: { error: ResultError; errorType: ErrorType }
+        params: { hdid: string; error: ResultError; errorType: ErrorType }
     ) {
         const logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
 
         logger.error(`ERROR: ${JSON.stringify(params.error)}`);
-        context.commit("setAuthenticatedVaccineRecordError", params.error);
+        context.commit("setAuthenticatedVaccineRecordError", {
+            hdid: params.hdid,
+            error: params.error,
+        });
 
         if (params.error.statusCode === 429) {
             context.dispatch(
@@ -379,10 +399,10 @@ export const actions: VaccinationStatusActions = {
             );
         } else {
             if (params.error.actionCode === ActionType.Invalid) {
-                context.commit(
-                    "setAuthenticatedVaccineRecordResultMessage",
-                    "No records found"
-                );
+                context.commit("setAuthenticatedVaccineRecordResultMessage", {
+                    hdid: params.hdid,
+                    resultMessage: "No records found",
+                });
             } else {
                 context.dispatch(
                     "errorBanner/addError",
@@ -395,5 +415,11 @@ export const actions: VaccinationStatusActions = {
                 );
             }
         }
+    },
+    stopAuthenticatedVaccineRecordDownload(context, params: { hdid: string }) {
+        context.commit("setAuthenticatedVaccineRecordDownload", {
+            hdid: params.hdid,
+            download: false,
+        });
     },
 };

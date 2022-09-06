@@ -86,6 +86,9 @@ export const mutations: UserMutation = {
             state.status = LoadStatus.PARTIALLY_LOADED;
         }
     },
+    setEmailVerified(state: UserState) {
+        Vue.set(state.user, "verifiedEmail", true);
+    },
     setSMSResendDateTime(state: UserState, dateTime: DateWrapper) {
         state.smsResendDateTime = dateTime;
         state.error = false;

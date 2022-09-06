@@ -16,9 +16,11 @@
 namespace HealthGateway.Common.AspNetConfiguration.Modules
 {
     using System.Diagnostics.CodeAnalysis;
+    using System.Runtime.CompilerServices;
     using HealthGateway.Common.Auditing;
     using HealthGateway.Common.Filters;
     using HealthGateway.Database.Delegates;
+    using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Logging;
 
@@ -33,13 +35,25 @@ namespace HealthGateway.Common.AspNetConfiguration.Modules
         /// </summary>
         /// <param name="services">The services collection provider.</param>
         /// <param name="logger">The logger to use.</param>
-        public static void ConfigureAuditServices(IServiceCollection services, ILogger logger)
+        /// <param name="configuration">The configuration to use.</param>
+        public static void ConfigureAuditServices(IServiceCollection services, ILogger logger, IConfiguration configuration)
         {
-            logger.LogDebug("ConfigureAuditServices...");
-
+            logger.LogDebug("Configuring Audit Services...");
             services.AddMvc(options => options.Filters.Add(typeof(AuditFilter)));
-            services.AddScoped<IAuditLogger, AuditLogger>();
-            services.AddTransient<IWriteAuditEventDelegate, DBWriteAuditEventDelegate>();
+
+            bool redisAuditing = configuration.GetValue<bool>("RedisAuditing", false);
+            if (redisAuditing)
+            {
+                logger.LogInformation("Configuring Auditing to use Redis");
+                services.AddScoped<IAuditLogger, RedisAuditLogger>();
+                GatewayCache.EnableRedis(services, logger, configuration);
+            }
+            else
+            {
+                logger.LogInformation("Configuring Auditing to use Database");
+                services.AddScoped<IAuditLogger, DbAuditLogger>();
+                services.AddTransient<IWriteAuditEventDelegate, DBWriteAuditEventDelegate>();
+            }
         }
     }
 }

@@ -35,12 +35,11 @@ Create a cypress.env.json and update with passwords or any other environment var
 While creating and debugging tests you will want to run Cypress interactively.
 
 ```bash
-export CYPRESS_BASE_URL=https://mock-admin.healthgateway.gov.bc.ca
+export CYPRESS_BASE_URL=http://localhost:5027
 npx cypress open
 ```
 
 If you want to verify the tests against https://dev-admin.healthgateway.gov.bc.ca, then do not set the CYPRESS_BASE_URL environment variable.
-Note: you cannot run cypress tests locally i.e., http://localhost:5027 because Admin uses IDIR authentication, which cannot be used locally.
 
 e2e: contains tests that will be run in the dev environment only.
 ui: contains tests that are either stubbed or cosmetic only and can be run in any environment

@@ -22,8 +22,10 @@ import CovidVaccineRecord from "@/models/covidVaccineRecord";
 import { DateWrapper } from "@/models/dateWrapper";
 import { ResultError } from "@/models/errors";
 import { ImmunizationEvent } from "@/models/immunizationModel";
+import { LoadStatus } from "@/models/storeOperations";
 import TimelineEntry from "@/models/timelineEntry";
 import User from "@/models/user";
+import VaccinationRecord from "@/models/vaccinationRecord";
 import VaccinationStatus from "@/models/vaccinationStatus";
 import container from "@/plugins/container";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
@@ -64,6 +66,11 @@ export default class Covid19View extends Vue {
         hdid: string;
     }) => Promise<CovidVaccineRecord>;
 
+    @Action("stopAuthenticatedVaccineRecordDownload", {
+        namespace: "vaccinationStatus",
+    })
+    stopAuthenticatedVaccineRecordDownload!: (params: { hdid: string }) => void;
+
     @Getter("webClient", { namespace: "config" })
     config!: WebClientConfiguration;
 
@@ -81,9 +88,6 @@ export default class Covid19View extends Vue {
     @Getter("authenticatedError", { namespace: "vaccinationStatus" })
     vaccinationStatusError!: ResultError | undefined;
 
-    @Getter("authenticatedStatusMessage", { namespace: "vaccinationStatus" })
-    vaccinationStatusMessage!: string;
-
     @Getter("isLoading", { namespace: "immunization" })
     isImmunizationLoading!: boolean;
 
@@ -96,18 +100,13 @@ export default class Covid19View extends Vue {
     @Getter("error", { namespace: "immunization" })
     immunizationError!: ResultError | undefined;
 
-    @Getter("authenticatedVaccineRecord", { namespace: "vaccinationStatus" })
-    vaccineRecord!: CovidVaccineRecord | undefined;
+    @Getter("authenticatedVaccineRecords", { namespace: "vaccinationStatus" })
+    vaccineRecords!: Map<string, VaccinationRecord>;
 
-    @Getter("authenticatedVaccineRecordIsLoading", {
+    @Getter("authenticatedVaccineRecordStatusChanges", {
         namespace: "vaccinationStatus",
     })
-    vaccineRecordIsLoading!: boolean;
-
-    @Getter("authenticatedVaccineRecordStatusMessage", {
-        namespace: "vaccinationStatus",
-    })
-    vaccineRecordStatusMessage!: string;
+    vaccineRecordStatusChanges!: number;
 
     @Ref("vaccineCardMessageModal")
     readonly vaccineCardMessageModal!: MessageModalComponent;
@@ -149,6 +148,17 @@ export default class Covid19View extends Vue {
         return this.vaccinationState === VaccinationState.PartiallyVaccinated;
     }
 
+    private get isVaccineRecordDownloading(): boolean {
+        if (this.vaccineRecordStatusChanges > 0) {
+            const vaccinationRecord: VaccinationRecord | undefined =
+                this.getVaccinationRecord();
+            if (vaccinationRecord !== undefined) {
+                return vaccinationRecord.status === LoadStatus.REQUESTED;
+            }
+        }
+        return false;
+    }
+
     private get isVaccinationNotFound(): boolean {
         return this.vaccinationState === VaccinationState.NotFound;
     }
@@ -158,11 +168,17 @@ export default class Covid19View extends Vue {
             return "Downloading....";
         }
 
-        if (this.vaccineRecordIsLoading) {
-            return this.vaccineRecordStatusMessage;
+        const vaccinationRecord: VaccinationRecord | undefined =
+            this.getVaccinationRecord();
+
+        if (
+            this.isVaccineRecordDownloading &&
+            vaccinationRecord !== undefined
+        ) {
+            return vaccinationRecord.statusMessage;
         }
 
-        return this.vaccinationStatusMessage;
+        return "";
     }
 
     private get downloadButtonShown(): boolean {
@@ -191,7 +207,7 @@ export default class Covid19View extends Vue {
         return (
             this.isVaccinationStatusLoading ||
             this.isHistoryLoading ||
-            this.vaccineRecordIsLoading ||
+            this.isVaccineRecordDownloading ||
             this.isDownloading
         );
     }
@@ -251,11 +267,23 @@ export default class Covid19View extends Vue {
         );
     }
 
-    @Watch("vaccineRecord")
+    private getVaccinationRecord(): VaccinationRecord | undefined {
+        return this.vaccineRecords.get(this.user.hdid);
+    }
+
+    @Watch("vaccineRecordStatusChanges")
     private saveVaccinePdf(): void {
-        if (this.vaccineRecord !== undefined) {
-            const mimeType = this.vaccineRecord.document.mediaType;
-            const downloadLink = `data:${mimeType};base64,${this.vaccineRecord.document.data}`;
+        this.logger.info(`Downloading PDF for hdid: ${this.user.hdid}`);
+        const vaccinationRecord: VaccinationRecord | undefined =
+            this.getVaccinationRecord();
+        if (
+            vaccinationRecord !== undefined &&
+            vaccinationRecord.hdid === this.user.hdid &&
+            vaccinationRecord.status === LoadStatus.LOADED &&
+            vaccinationRecord.download
+        ) {
+            const mimeType = vaccinationRecord.record.document.mediaType;
+            const downloadLink = `data:${mimeType};base64,${vaccinationRecord.record.document.data}`;
             fetch(downloadLink).then((res) => {
                 SnowPlow.trackEvent({
                     action: "download_card",
@@ -264,6 +292,9 @@ export default class Covid19View extends Vue {
                 res.blob().then((blob) =>
                     saveAs(blob, "ProvincialVaccineProof.pdf")
                 );
+            });
+            this.stopAuthenticatedVaccineRecordDownload({
+                hdid: this.user.hdid,
             });
         }
     }

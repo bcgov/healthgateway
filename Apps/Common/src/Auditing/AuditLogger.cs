@@ -22,51 +22,20 @@ namespace HealthGateway.Common.Auditing
     using System.Security.Claims;
     using HealthGateway.Common.Data.Constants;
     using HealthGateway.Database.Constants;
-    using HealthGateway.Database.Delegates;
     using HealthGateway.Database.Models;
     using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Routing;
-    using Microsoft.Extensions.Logging;
     using Microsoft.Extensions.Primitives;
 
 #pragma warning disable CA1303 // Do not pass literals as localized parameters
 
     /// <summary>
-    /// The Authorization service.
+    /// The Abstract Audit Logger service.
     /// </summary>
-    public class AuditLogger : IAuditLogger
+    public abstract class AuditLogger : IAuditLogger
     {
-        private readonly ILogger<IAuditLogger> logger;
-
-        private readonly IWriteAuditEventDelegate writeEventDelegate;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="AuditLogger"/> class.
-        /// </summary>
-        /// <param name="logger">The logger.</param>
-        /// <param name="writeEventDelegate">The audit event delegate.</param>
-        public AuditLogger(ILogger<IAuditLogger> logger, IWriteAuditEventDelegate writeEventDelegate)
-        {
-            this.logger = logger;
-            this.writeEventDelegate = writeEventDelegate;
-        }
-
         /// <inheritdoc/>
-        public void WriteAuditEvent(AuditEvent auditEvent)
-        {
-#pragma warning disable CA1031 // Modify 'WriteAuditEvent' to catch a more specific exception type, or rethrow the exception.
-            this.logger.LogDebug(@"Begin WriteAuditEvent(auditEvent)");
-            try
-            {
-                this.writeEventDelegate.WriteAuditEvent(auditEvent);
-                this.logger.LogDebug(@"Saved AuditEvent");
-            }
-            catch (Exception ex)
-            {
-                this.logger.LogError(ex, @"In WriteAuditEvent");
-            }
-#pragma warning restore CA1303
-        }
+        public abstract void WriteAuditEvent(AuditEvent auditEvent);
 
         /// <inheritdoc/>
         public void PopulateWithHttpContext(HttpContext context, AuditEvent auditEvent)
@@ -161,6 +130,8 @@ namespace HealthGateway.Common.Auditing
                     return ApplicationType.Laboratory;
                 case "Encounter":
                     return ApplicationType.Encounter;
+                case "ClinicalDocument":
+                    return ApplicationType.ClinicalDocument;
                 case "ReSharperTestRunner":
                 case "testhost":
                     return ApplicationType.Configuration;

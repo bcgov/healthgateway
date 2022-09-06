@@ -50,6 +50,7 @@ namespace HealthGateway.Admin.Client.Store.MessageVerification
                 IsLoading = false,
                 Result = action.Data,
                 Error = null,
+                WarningMessage = action.Data.ResultError?.ResultMessage,
             };
         }
 
