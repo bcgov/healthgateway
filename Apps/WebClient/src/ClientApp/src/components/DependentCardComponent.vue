@@ -859,7 +859,7 @@ export default class DependentCardComponent extends Vue {
                             Download Proof of Vaccination
                         </hg-button>
                     </div>
-                    <div v-if="!isLoading && testRows.length != 0" class="m-2">
+                    <div v-if="!isLoading" class="m-2">
                         <h4>COVID-19 Test Results</h4>
                     </div>
                     <template #title>
