@@ -14,17 +14,6 @@ describe("Registration Page", () => {
         cy.get("[data-testid=minimumAgeErrorText]").should("be.visible");
     });
 
-    it("Client Registration error", () => {
-        cy.enableModules("Medication");
-        cy.login(
-            Cypress.env("keycloak.healthgateway12.username"),
-            Cypress.env("keycloak.password"),
-            AuthMethod.KeyCloak
-        );
-        cy.location("pathname").should("eq", registrationPath);
-        cy.get("[data-testid=clientRegistryErrorText]").should("be.visible");
-    });
-
     it("No sidebar or footer", () => {
         cy.enableModules("Medication");
         cy.login(
