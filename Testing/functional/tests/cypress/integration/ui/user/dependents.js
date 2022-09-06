@@ -2,6 +2,7 @@ const { AuthMethod } = require("../../../support/constants");
 
 const sensitiveDocMessage =
     " The file that you are downloading contains personal information. If you are on a public computer, please ensure that the file is deleted before you log off. ";
+const validHdid = "645645767756756767";
 
 describe("COVID-19", () => {
     beforeEach(() => {
@@ -77,6 +78,114 @@ describe("COVID-19", () => {
             .contains("td", "2020-Oct-02")
             .siblings("[data-testid=dependentCovidTestStatus]")
             .contains("SomeOtherState");
+    });
+});
+
+describe("COVID-19 - Vaccine Proof download", () => {
+    it("Validate successful vaccine proof download", () => {
+        let isLoading = false;
+        cy.intercept(
+            "GET",
+            "**/AuthenticatedVaccineStatus/pdf?hdid*",
+            (req) => {
+                if (!isLoading) {
+                    req.reply({
+                        fixture:
+                            "ImmunizationService/vaccineProofNotLoaded.json",
+                    });
+                } else {
+                    req.reply({
+                        fixture: "ImmunizationService/vaccineProofLoaded.json",
+                    });
+                }
+                isLoading = !isLoading;
+            }
+        );
+
+        cy.intercept("GET", "**/Laboratory/Covid19Orders*", {
+            fixture: "LaboratoryService/covid19Orders.json",
+        });
+        cy.intercept("GET", "**/UserProfile/*/Dependent", {
+            fixture: "UserProfileService/dependent.json",
+        });
+        cy.enableModules([
+            "CovidLabResults",
+            "Laboratory",
+            "Dependent",
+            "Immunization",
+        ]);
+
+        cy.login(
+            Cypress.env("keycloak.username"),
+            Cypress.env("keycloak.password"),
+            AuthMethod.KeyCloak,
+            "/dependents"
+        );
+
+        cy.get("[data-testid=covid19TabTitle]").last().parent().click();
+        cy.get(
+            `[data-testid=download-proof-of-vaccination-btn-${validHdid}]`
+        ).click({ force: true });
+        cy.get("[data-testid=genericMessageModal]").should("be.visible");
+        cy.get("[data-testid=genericMessageSubmitBtn]").click();
+        cy.get("[data-testid=loadingSpinner]").should("be.visible");
+        cy.wait(1000);
+        cy.get("[data-testid=loadingSpinner]").should("not.be.visible");
+        cy.verifyDownload("VaccineProof.pdf");
+    });
+
+    it("Validate no records found modal", () => {
+        let isLoading = false;
+        cy.intercept(
+            "GET",
+            "**/AuthenticatedVaccineStatus/pdf?hdid=*",
+            (req) => {
+                if (!isLoading) {
+                    req.reply({
+                        fixture:
+                            "ImmunizationService/vaccineProofNotLoaded.json",
+                    });
+                } else {
+                    req.reply({
+                        fixture:
+                            "ImmunizationService/vaccineProofNotAvailable.json",
+                    });
+                }
+                isLoading = !isLoading;
+            }
+        );
+
+        cy.intercept("GET", "**/Laboratory/Covid19Orders*", {
+            fixture: "LaboratoryService/covid19Orders.json",
+        });
+        cy.intercept("GET", "**/UserProfile/*/Dependent", {
+            fixture: "UserProfileService/dependent.json",
+        });
+        cy.enableModules([
+            "CovidLabResults",
+            "Laboratory",
+            "Dependent",
+            "Immunization",
+        ]);
+
+        cy.login(
+            Cypress.env("keycloak.username"),
+            Cypress.env("keycloak.password"),
+            AuthMethod.KeyCloak,
+            "/dependents"
+        );
+
+        cy.get("[data-testid=covid19TabTitle]").last().parent().click();
+        cy.get(
+            `[data-testid=download-proof-of-vaccination-btn-${validHdid}]`
+        ).click({ force: true });
+        cy.get("[data-testid=genericMessageModal]").should("be.visible");
+        cy.get("[data-testid=genericMessageSubmitBtn]").click();
+        cy.get("[data-testid=loadingSpinner]").should("be.visible");
+        cy.get("[data-testid=genericMessageModal]").should("be.visible");
+        cy.get("[data-testid=genericMessageOkBtn]")
+            .should("be.visible")
+            .click({ force: true });
     });
 });
 

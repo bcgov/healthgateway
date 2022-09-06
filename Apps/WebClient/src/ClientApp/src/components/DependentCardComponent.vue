@@ -680,7 +680,7 @@ export default class DependentCardComponent extends Vue {
 
     private showVaccineProofDownloadConfirmaationModal(): void {
         this.isReport = false;
-        this.vaccineProofDownloadModal.showModal();
+        this.reportDownloadModal.showModal();
     }
 
     private showCovid19DownloadConfirmationModal(
@@ -842,15 +842,12 @@ export default class DependentCardComponent extends Vue {
                     class="tableTab mt-2"
                     @click="fetchCovid19LaboratoryTests"
                 >
-                    <div
-                        data-testid="download-proof-of-vaccination-div"
-                        class="d-flex justify-content-center py-3"
-                    >
+                    <div class="d-flex justify-content-center py-3">
                         <hg-button
-                            id="download-proof-of-vaccination-btn"
-                            data-testid="download-proof-of-vaccination-btn"
+                            :id="`download-proof-of-vaccination-btn-id-${dependent.ownerId}`"
+                            :data-testid="`download-proof-of-vaccination-btn-${dependent.ownerId}`"
                             variant="secondary"
-                            @click="downloadVaccinePdf"
+                            @click="showVaccineProofDownloadConfirmaationModal"
                         >
                             <hg-icon
                                 icon="check-circle"
@@ -862,8 +859,8 @@ export default class DependentCardComponent extends Vue {
                             Download Proof of Vaccination
                         </hg-button>
                     </div>
-                    <div v-if="!isLoading && testRows.length != 0" class="m-2">
-                        <h4>COVID-19 Test</h4>
+                    <div v-if="!isLoading" class="m-2">
+                        <h4>COVID-19 Test Results</h4>
                     </div>
                     <template #title>
                         <div data-testid="covid19TabTitle">COVID-19</div>

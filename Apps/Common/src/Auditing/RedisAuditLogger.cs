@@ -30,9 +30,20 @@ namespace HealthGateway.Common.Auditing
     public class RedisAuditLogger : AuditLogger
     {
         /// <summary>
-        /// The name of the Redis Audit Queue.
+        /// The Prefix name of the Redis Audit Queue which should be used as the hash key for Redis.
         /// </summary>
-        public const string AuditQueue = "Queue:Audit:Active";
+        public const string AuditQueuePrefix = "{Queue:Audit}";
+
+        /// <summary>
+        /// The queue name for active audit records
+        /// Active are those written to the queue but not recorded in the db.
+        /// </summary>
+        public const string ActiveQueueName = "Active";
+
+        /// <summary>
+        /// The queue name to use to store audit records while being written to the db.
+        /// </summary>
+        public const string ProcessingQueueName = "Processing";
 
         private readonly ILogger<DbAuditLogger> logger;
         private readonly IConnectionMultiplexer connectionMultiplexer;
@@ -59,7 +70,7 @@ namespace HealthGateway.Common.Auditing
             auditEvent.CreatedDateTime = DateTime.UtcNow;
             auditEvent.UpdatedDateTime = auditEvent.CreatedDateTime;
             string auditJson = JsonSerializer.Serialize(auditEvent);
-            this.connectionMultiplexer.GetDatabase().ListRightPush(AuditQueue, auditJson, flags: CommandFlags.FireAndForget);
+            this.connectionMultiplexer.GetDatabase().ListRightPush($"{AuditQueuePrefix}:{ActiveQueueName}", auditJson, flags: CommandFlags.FireAndForget);
             activity?.Stop();
         }
     }
