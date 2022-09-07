@@ -312,3 +312,117 @@ describe("Support", () => {
         cy.log("Verify email parameter value missing test finished.");
     });
 });
+
+describe("Support - Client registry task handling", () => {
+    beforeEach(() => {
+        cy.login(
+            Cypress.env("keycloak_username"),
+            Cypress.env("keycloak_password"),
+            "/support"
+        );
+    });
+
+    it("Verify Phn user subject of overlay.", () => {
+        const phn = "9873967163";
+        cy.intercept(
+            "GET",
+            `**/Support/Users?queryString=${phn}&queryType=Phn`,
+            {
+                fixture: "SupportService/users-phn-overlay.json",
+            }
+        );
+
+        cy.log("Verify Phn user subject of overlay started.");
+
+        // Search by PHN
+        cy.get("[data-testid=query-type-select]").click({ force: true });
+        cy.get("[data-testid=query-type]")
+            .contains("PHN")
+            .click({ force: true });
+        cy.get("[data-testid=query-input]").clear().type(phn);
+        cy.get("[data-testid=search-btn]").click();
+        cy.get("[data-testid=banner-feedback-warning-message]").should(
+            "be.visible"
+        );
+
+        cy.log("Verify Phn user subject of overlay finished.");
+    });
+
+    it("Verify Phn user subject of potential duplicate.", () => {
+        const phn = "9874359198";
+        cy.intercept(
+            "GET",
+            `**/Support/Users?queryString=${phn}&queryType=Phn`,
+            {
+                fixture: "SupportService/users-phn-potential-duplicate.json",
+            }
+        );
+
+        cy.log("Verify Phn user subject of potential duplicate started.");
+
+        // Search by PHN
+        cy.get("[data-testid=query-type-select]").click({ force: true });
+        cy.get("[data-testid=query-type]")
+            .contains("PHN")
+            .click({ force: true });
+        cy.get("[data-testid=query-input]").clear().type(phn);
+        cy.get("[data-testid=search-btn]").click();
+        cy.get("[data-testid=banner-feedback-warning-message]").should(
+            "be.visible"
+        );
+
+        cy.log("Verify Phn user subject of potential duplicate finished.");
+    });
+
+    it("Verify Phn user subject of potential linkage.", () => {
+        const phn = "9698653896";
+        cy.intercept(
+            "GET",
+            `**/Support/Users?queryString=${phn}&queryType=Phn`,
+            {
+                fixture: "SupportService/users-phn-potential-linkage.json",
+            }
+        );
+
+        cy.log("Verify Phn user subject of potential linkage started.");
+
+        // Search by PHN
+        cy.get("[data-testid=query-type-select]").click({ force: true });
+        cy.get("[data-testid=query-type]")
+            .contains("PHN")
+            .click({ force: true });
+        cy.get("[data-testid=query-input]").clear().type(phn);
+        cy.get("[data-testid=search-btn]").click();
+        cy.get("[data-testid=banner-feedback-warning-message]").should(
+            "be.visible"
+        );
+
+        cy.log("Verify Phn user subject of potential linkage finished.");
+    });
+
+    it("Verify Phn user subject of review identifier.", () => {
+        const phn = "9874166257";
+        cy.intercept(
+            "GET",
+            `**/Support/Users?queryString=${phn}&queryType=Phn`,
+            {
+                fixture: "SupportService/users-phn-review-identifier.json",
+            }
+        );
+
+        cy.log("Verify Phn user subject of review identifier started.");
+
+        // Search by PHN
+        cy.get("[data-testid=query-type-select]").click({ force: true });
+        cy.get("[data-testid=query-type]")
+            .contains("PHN")
+            .click({ force: true });
+        cy.get("[data-testid=query-input]").clear().type(phn);
+        cy.get("[data-testid=search-btn]").click();
+        cy.get("[data-testid=banner-feedback-warning-message]").should(
+            "be.visible"
+        );
+
+        cy.log("Verify Phn user subject of review identifier finished.");
+    });
+});
