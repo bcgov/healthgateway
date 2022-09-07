@@ -38,7 +38,7 @@
     </MudGrid>
 </MudForm>
 
-<HgBannerFeedback Severity="@Severity.Info" IsEnabled="HasWarning" TResetAction="MessageVerificationActions.ResetStateAction">
+<HgBannerFeedback Severity="@Severity.Info" IsEnabled="HasWarning" TResetAction="MessageVerificationActions.ResetStateAction" DataTestId="banner-feedback-warning-message">
     @MessageVerificationState.Value.WarningMessage
 </HgBannerFeedback>
 
