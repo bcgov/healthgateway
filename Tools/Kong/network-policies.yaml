@@ -1,6 +1,26 @@
 kind: NetworkPolicy
 apiVersion: networking.k8s.io/v1
 metadata:
+  name: allow-kong-to-clinicaldocument
+spec:
+  podSelector:
+    matchLabels:
+      app: clinicaldocument
+  ingress:
+    - from:
+        - namespaceSelector:
+            matchLabels:
+              environment: test
+              name: 264e6f
+    - from:
+        - namespaceSelector:
+            matchLabels:
+              environment: prod
+              name: 264e6f
+---
+kind: NetworkPolicy
+apiVersion: networking.k8s.io/v1
+metadata:
   name: allow-kong-to-encounter
 spec:
   podSelector:
