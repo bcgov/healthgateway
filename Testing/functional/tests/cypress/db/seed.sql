@@ -1,4 +1,5 @@
 /* Data Cleanup */
+TRUNCATE gateway."AuditEvent";
 TRUNCATE gateway."UserProfile" CASCADE;
 TRUNCATE gateway."UserProfileHistory" CASCADE;
 TRUNCATE gateway."Communication" CASCADE;
