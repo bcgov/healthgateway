@@ -97,7 +97,7 @@ namespace HealthGateway.GatewayApi.Controllers
             {
                 ClaimsPrincipal user = httpContext.User;
                 DateTime jwtAuthTime = ClaimsPrincipalReader.GetAuthDateTime(user);
-                string jwtEmailAddress = user.FindFirstValue(ClaimTypes.Email);
+                string? jwtEmailAddress = user.FindFirstValue(ClaimTypes.Email);
                 return await this.userProfileService.CreateUserProfile(createUserRequest, jwtAuthTime, jwtEmailAddress).ConfigureAwait(true);
             }
 
