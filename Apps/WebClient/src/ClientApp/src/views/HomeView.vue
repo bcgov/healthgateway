@@ -393,7 +393,7 @@ export default class HomeView extends Vue {
         />
         <b-alert
             v-if="unverifiedEmail || unverifiedSMS"
-            id="incomplete-profile-banner"
+            data-testid="incomplete-profile-banner"
             show
             dismissible
             variant="info"
