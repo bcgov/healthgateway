@@ -209,17 +209,17 @@ namespace HealthGateway.GatewayApi.Services
 
             // Validate registration age
             string hdid = createProfileRequest.Profile.HdId;
-            PrimitiveRequestResult<bool> isMimimunAgeResult = await this.ValidateMinimumAge(hdid).ConfigureAwait(true);
-            if (isMimimunAgeResult.ResultStatus != ResultType.Success)
+            PrimitiveRequestResult<bool> isMinimumAgeResult = await this.ValidateMinimumAge(hdid).ConfigureAwait(true);
+            if (isMinimumAgeResult.ResultStatus != ResultType.Success)
             {
                 return new RequestResult<UserProfileModel>
                 {
-                    ResultStatus = isMimimunAgeResult.ResultStatus,
-                    ResultError = isMimimunAgeResult.ResultError,
+                    ResultStatus = isMinimumAgeResult.ResultStatus,
+                    ResultError = isMinimumAgeResult.ResultError,
                 };
             }
 
-            if (!isMimimunAgeResult.ResourcePayload)
+            if (!isMinimumAgeResult.ResourcePayload)
             {
                 this.logger.LogWarning($"Patient under minimum age. {JsonSerializer.Serialize(createProfileRequest)}");
                 return new RequestResult<UserProfileModel>
