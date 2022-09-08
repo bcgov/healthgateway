@@ -189,7 +189,7 @@ namespace HealthGateway.GatewayApi.Services
         }
 
         /// <inheritdoc/>
-        public async Task<RequestResult<UserProfileModel>> CreateUserProfile(CreateUserRequest createProfileRequest, DateTime jwtAuthTime, string jwtEmailAddress)
+        public async Task<RequestResult<UserProfileModel>> CreateUserProfile(CreateUserRequest createProfileRequest, DateTime jwtAuthTime, string? jwtEmailAddress)
         {
             this.logger.LogTrace($"Creating user profile... {JsonSerializer.Serialize(createProfileRequest)}");
 
@@ -262,8 +262,10 @@ namespace HealthGateway.GatewayApi.Services
                 // Add email verification
                 if (!string.IsNullOrWhiteSpace(requestedEmail))
                 {
-                    this.userEmailService.CreateUserEmail(hdid, requestedEmail, requestedEmail.Equals(jwtEmailAddress, StringComparison.OrdinalIgnoreCase));
+                    bool isEmailVerified = requestedEmail.Equals(jwtEmailAddress, StringComparison.OrdinalIgnoreCase);
+                    this.userEmailService.CreateUserEmail(hdid, requestedEmail, isEmailVerified);
                     userProfileModel.Email = requestedEmail;
+                    userProfileModel.IsEmailVerified = isEmailVerified;
                 }
 
                 // Add SMS verification

@@ -42,7 +42,7 @@ namespace HealthGateway.GatewayApi.Services
         /// <param name="jwtAuthTime">The date of last jwt authorization time.</param>
         /// <param name="jwtEmailAddress">The email address contained by the jwt.</param>
         /// <returns>The wrapped user profile.</returns>
-        Task<RequestResult<UserProfileModel>> CreateUserProfile(CreateUserRequest createProfileRequest, DateTime jwtAuthTime, string jwtEmailAddress);
+        Task<RequestResult<UserProfileModel>> CreateUserProfile(CreateUserRequest createProfileRequest, DateTime jwtAuthTime, string? jwtEmailAddress);
 
         /// <summary>
         /// Closed the user profile.
