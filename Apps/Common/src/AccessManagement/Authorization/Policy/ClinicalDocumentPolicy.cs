@@ -18,16 +18,16 @@ namespace HealthGateway.Common.AccessManagement.Authorization.Policy
     /// <summary>
     /// The set of claims to access ClinicalDocuments data.
     /// </summary>
-    public static class ClinicalDocumentsPolicy
+    public static class ClinicalDocumentPolicy
     {
         /// <summary>
         /// Policy which allows the reading of the identified Clinical Documents.
         /// </summary>
-        public const string Read = "ClinicalDocumentsRead";
+        public const string Read = "ClinicalDocumentRead";
 
         /// <summary>
         /// Policy which allows writing of the identified Clinical Documents.
         /// </summary>
-        public const string Write = "ClinicalDocumentsWrite";
+        public const string Write = "ClinicalDocumentWrite";
     }
 }

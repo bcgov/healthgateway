@@ -232,7 +232,7 @@ namespace HealthGateway.Common.AspNetConfiguration.Modules
                         });
 
                     options.AddPolicy(
-                        ClinicalDocumentsPolicy.Read,
+                        ClinicalDocumentPolicy.Read,
                         policy =>
                         {
                             policy.AuthenticationSchemes.Add(JwtBearerDefaults.AuthenticationScheme);
