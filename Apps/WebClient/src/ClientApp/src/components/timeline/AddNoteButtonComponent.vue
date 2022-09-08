@@ -23,42 +23,39 @@ export default class AddNoteButtonComponent extends Vue {
 
     private eventBus = EventBus;
 
-    private isNoteTutorialEnabled = true;
-
-    private UserPreferenceType = UserPreferenceType;
-
     private logger!: ILogger;
+
+    private isNoteTutorialHidden = false;
 
     private get showNoteTutorial(): boolean {
         return (
             this.isPreferenceActive(
                 this.user.preferences[UserPreferenceType.TutorialMenuNote]
-            ) && this.isNoteTutorialEnabled
+            ) && !this.isNoteTutorialHidden
         );
     }
 
-    private set showNoteTutorial(value: boolean) {
-        this.isNoteTutorialEnabled = value;
+    private isPreferenceActive(preference: UserPreference): boolean {
+        return preference?.value === "true";
     }
 
-    private isPreferenceActive(tutorialPopover: UserPreference): boolean {
-        return tutorialPopover?.value === "true";
+    private dismissNoteTutorial(): void {
+        this.logger.debug("Dismissing note tutorial");
+
+        this.isNoteTutorialHidden = true;
+
+        const preferenceType = UserPreferenceType.TutorialMenuNote;
+        const preference = this.user.preferences[preferenceType];
+        preference.value = "false";
+        this.savePreference(preference);
     }
 
-    private dismissTutorial(userPreference: UserPreference): void {
-        this.logger.debug(
-            `Dismissing tutorial ${userPreference.preference}...`
-        );
-        userPreference.value = "false";
+    private savePreference(userPreference: UserPreference) {
         if (userPreference.hdId != undefined) {
-            this.updateUserPreference({
-                userPreference,
-            });
+            this.updateUserPreference({ userPreference });
         } else {
             userPreference.hdId = this.user.hdid;
-            this.createUserPreference({
-                userPreference,
-            });
+            this.createUserPreference({ userPreference });
         }
     }
 
@@ -85,9 +82,8 @@ export default class AddNoteButtonComponent extends Vue {
         </hg-button>
         <b-popover
             triggers="manual"
-            :show.sync="showNoteTutorial"
+            :show="showNoteTutorial"
             target="addNoteBtn"
-            custom-class="popover-style"
             placement="bottom"
             boundary="viewport"
         >
@@ -95,13 +91,7 @@ export default class AddNoteButtonComponent extends Vue {
                 <hg-button
                     class="float-right text-dark p-0 ml-2"
                     variant="icon"
-                    @click="
-                        dismissTutorial(
-                            user.preferences[
-                                UserPreferenceType.TutorialMenuNote
-                            ]
-                        )
-                    "
+                    @click="dismissNoteTutorial()"
                     >×</hg-button
                 >
             </div>
