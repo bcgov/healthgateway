@@ -277,8 +277,6 @@ export default class ProfileView extends Vue {
                 }
 
                 this.setAddresses();
-                this.checkToVerifyPhone();
-                this.checkToVerifyEmail();
 
                 this.isLoading = false;
             })
@@ -301,32 +299,6 @@ export default class ProfileView extends Vue {
             () => this.calculateTimeForDeletion(),
             1000
         );
-    }
-
-    private checkToVerifyPhone(): void {
-        let toVerifyPhone = this.$route.query.toVerifyPhone;
-        this.logger.debug(
-            `toVerifyPhone: ${toVerifyPhone}; smsVerified: ${this.smsVerified}`
-        );
-        if (toVerifyPhone === "true" && !this.smsVerified) {
-            this.logger.debug(`display Verifying SMS popup`);
-            this.verifySMS();
-        }
-    }
-
-    private checkToVerifyEmail(): void {
-        let toVerifyEmail = this.$route.query.toVerifyEmail;
-        this.logger.debug(
-            `toVerifyEmail: ${toVerifyEmail}; emailVerified: ${this.emailVerified}`
-        );
-        if (
-            toVerifyEmail === "true" &&
-            !this.emailVerified &&
-            !this.isEmptyEmail
-        ) {
-            this.logger.debug(`display Verification Email`);
-            this.showCheckEmailAlert = true;
-        }
     }
 
     private validations(): unknown {
