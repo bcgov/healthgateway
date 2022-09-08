@@ -89,7 +89,6 @@ export default class AddNoteButtonComponent extends Vue {
             target="addNoteBtn"
             custom-class="popover-style"
             placement="bottom"
-            variant="dark"
             boundary="viewport"
         >
             <div>
@@ -107,8 +106,8 @@ export default class AddNoteButtonComponent extends Vue {
                 >
             </div>
             <div data-testid="notesPopover">
-                Add Notes to track your important health events e.g. Broke ankle
-                in Cuba
+                Add your own notes to track important details, such as health
+                visit reason, medication side effect, etc.
             </div>
         </b-popover>
     </div>

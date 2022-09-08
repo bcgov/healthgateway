@@ -356,7 +356,6 @@ export default class SidebarComponent extends Vue {
                             custom-class="popover-style"
                             fallback-placement="clockwise"
                             placement="right"
-                            variant="dark"
                             boundary="viewport"
                         >
                             <div>
@@ -378,8 +377,8 @@ export default class SidebarComponent extends Vue {
                                 data-testid="exportRecordsPopover"
                                 class="popover-content"
                             >
-                                Download a pdf of your records. e.g. COVID-19
-                                test proof for employers.
+                                Download and print health records, such as your
+                                immunization history and more.
                             </div>
                         </b-popover>
                     </hg-button>
