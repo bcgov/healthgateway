@@ -16,13 +16,18 @@
 namespace HealthGateway.Common.AccessManagement.Authorization.Policy
 {
     /// <summary>
-    /// Policy for API Key Access.
+    /// The set of claims to access ClinicalDocuments data.
     /// </summary>
-    public static class ApiKeyPolicy
+    public static class ClinicalDocumentPolicy
     {
         /// <summary>
-        /// Policy which allows writing using API Key access.
+        /// Policy which allows the reading of the identified Clinical Documents.
         /// </summary>
-        public const string Write = "ApiKeyPolicyWrite";
+        public const string Read = "ClinicalDocumentRead";
+
+        /// <summary>
+        /// Policy which allows writing of the identified Clinical Documents.
+        /// </summary>
+        public const string Write = "ClinicalDocumentWrite";
     }
 }

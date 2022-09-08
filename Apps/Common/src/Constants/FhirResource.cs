@@ -63,6 +63,13 @@ namespace HealthGateway.Common.Constants
         public const string Encounter = "Encounter";
 
         /// <summary>
+        /// A clinical document is focused on documents related to the provision of care process, where the subject is a patient, a group of patients, or a closely related concept.
+        /// A clinical document has additional requirements around confidentiality that do not apply in the same way to other kinds of documents.
+        /// See <a href="https://www.hl7.org/fhir/stu3/clinicaldocument.html"/>.
+        /// </summary>
+        public const string ClinicalDocuments = "ClinicalDocuments";
+
+        /// <summary>
         /// The Health Gateway specific resource that represents a UserProfile.
         /// </summary>
         public const string UserProfile = "UserProfile";
