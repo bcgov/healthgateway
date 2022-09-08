@@ -65,7 +65,6 @@ namespace HealthGateway.Common.AspNetConfiguration.Modules
 
             services.AddScoped<IAuthorizationHandler, UserAuthorizationHandler>();
             services.AddScoped<IAuthorizationHandler, FhirResourceAuthorizationHandler>();
-            services.AddScoped<IAuthorizationHandler, ApiKeyAuthorizationHandler>();
 
             services.AddAuthorization(
                 options =>
@@ -232,8 +231,14 @@ namespace HealthGateway.Common.AspNetConfiguration.Modules
                             policy.Requirements.Add(new FhirRequirement(FhirResource.Encounter, FhirAccessType.Write));
                         });
 
-                    // API Key Policy
-                    options.AddPolicy(ApiKeyPolicy.Write, policy => policy.Requirements.Add(new ApiKeyRequirement(configuration)));
+                    options.AddPolicy(
+                        ClinicalDocumentsPolicy.Read,
+                        policy =>
+                        {
+                            policy.AuthenticationSchemes.Add(JwtBearerDefaults.AuthenticationScheme);
+                            policy.RequireAuthenticatedUser();
+                            policy.Requirements.Add(new FhirRequirement(FhirResource.ClinicalDocuments, FhirAccessType.Write));
+                        });
                 });
         }
 

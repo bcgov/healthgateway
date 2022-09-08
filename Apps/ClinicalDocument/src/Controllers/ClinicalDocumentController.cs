@@ -68,7 +68,7 @@ namespace HealthGateway.ClinicalDocument.Controllers
         [HttpGet]
         [Produces("application/json")]
         [Route("{hdid}")]
-        [Authorize(Policy = LaboratoryPolicy.Read)]
+        [Authorize(Policy = ClinicalDocumentsPolicy.Read)]
         public async Task<RequestResult<IEnumerable<ClinicalDocumentRecord>>> GetRecords(string hdid)
         {
             this.logger.LogDebug("Getting clinical document records for HDID: {Hdid}", hdid);
@@ -93,7 +93,7 @@ namespace HealthGateway.ClinicalDocument.Controllers
         [HttpGet]
         [Produces("application/json")]
         [Route("{hdid}/file/{fileId}")]
-        [Authorize(Policy = LaboratoryPolicy.Read)]
+        [Authorize(Policy = ClinicalDocumentsPolicy.Read)]
         public async Task<RequestResult<EncodedMedia>> GetFile(string hdid, string fileId)
         {
             this.logger.LogDebug("Getting clinical document file for Hdid: {Hdid} with file ID: {FileId}", hdid, fileId);
