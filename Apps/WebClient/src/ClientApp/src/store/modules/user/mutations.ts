@@ -10,6 +10,7 @@ import UserProfile from "@/models/userProfile";
 import container from "@/plugins/container";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import { ILogger } from "@/services/interfaces";
+import PreferenceUtil from "@/utility/preferenceUtil";
 
 import { UserMutation, UserState } from "./types";
 
@@ -28,27 +29,17 @@ export const mutations: UserMutation = {
         const logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
 
         if (userProfile) {
-            const notePreference = UserPreferenceType.TutorialMenuNote;
-            // If there are no preferences, set the default popover state
-            if (userProfile.preferences[notePreference] === undefined) {
-                userProfile.preferences[notePreference] = {
-                    hdId: userProfile.hdid,
-                    preference: notePreference,
-                    value: "true",
-                    version: 0,
-                    createdDateTime: new DateWrapper().toISO(),
-                };
-            }
-            const exportPreference = UserPreferenceType.TutorialMenuExport;
-            if (userProfile.preferences[exportPreference] === undefined) {
-                userProfile.preferences[exportPreference] = {
-                    hdId: userProfile.hdid,
-                    preference: exportPreference,
-                    value: "true",
-                    version: 0,
-                    createdDateTime: new DateWrapper().toISO(),
-                };
-            }
+            // If there are no preferences, set the default states for tutorial popovers
+            PreferenceUtil.setDefaultValue(
+                userProfile.preferences,
+                UserPreferenceType.TutorialMenuNote,
+                "true"
+            );
+            PreferenceUtil.setDefaultValue(
+                userProfile.preferences,
+                UserPreferenceType.TutorialMenuExport,
+                "true"
+            );
         }
 
         Vue.set(
