@@ -12,8 +12,11 @@ import { Action, Getter } from "vuex-class";
 
 import DatePickerComponent from "@/components/DatePickerComponent.vue";
 import { EntryType, entryTypeMap } from "@/constants/entryType";
+import UserPreferenceType from "@/constants/userPreferenceType";
 import type { WebClientConfiguration } from "@/models/configData";
 import TimelineFilter, { TimelineFilterBuilder } from "@/models/timelineFilter";
+import User from "@/models/user";
+import { UserPreference } from "@/models/userPreference";
 import container from "@/plugins/container";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import { ILogger } from "@/services/interfaces";
@@ -34,6 +37,12 @@ interface EntryTypeFilter {
 export default class FilterComponent extends Vue {
     @Action("setFilter", { namespace: "timeline" })
     setFilter!: (filterBuilder: TimelineFilterBuilder) => void;
+
+    @Action("createUserPreference", { namespace: "user" })
+    createUserPreference!: (params: { userPreference: UserPreference }) => void;
+
+    @Action("updateUserPreference", { namespace: "user" })
+    updateUserPreference!: (params: { userPreference: UserPreference }) => void;
 
     @Getter("webClient", { namespace: "config" })
     config!: WebClientConfiguration;
@@ -71,9 +80,13 @@ export default class FilterComponent extends Vue {
     @Getter("filter", { namespace: "timeline" })
     activeFilter!: TimelineFilter;
 
+    @Getter("user", { namespace: "user" })
+    user!: User;
+
     private logger!: ILogger;
     private isModalVisible = false;
     private isMenuVisible = false;
+    private isFilterTutorialHidden = false;
 
     private startDate = "";
     private endDate = "";
@@ -91,6 +104,14 @@ export default class FilterComponent extends Vue {
 
     private get hasFilterSelected(): boolean {
         return this.activeFilter.hasActiveFilter();
+    }
+
+    private get showFilterTutorial(): boolean {
+        return (
+            this.isPreferenceActive(
+                this.user.preferences[UserPreferenceType.TutorialTimelineFilter]
+            ) && !this.isFilterTutorialHidden
+        );
     }
 
     private mounted(): void {
@@ -182,6 +203,30 @@ export default class FilterComponent extends Vue {
               ).toString() + "K"
             : num.toString();
     }
+
+    private isPreferenceActive(preference: UserPreference): boolean {
+        return preference?.value === "true";
+    }
+
+    private dismissFilterTutorial(): void {
+        this.logger.debug("Dismissing timeline filter tutorial");
+
+        this.isFilterTutorialHidden = true;
+
+        const preferenceType = UserPreferenceType.TutorialTimelineFilter;
+        const preference = this.user.preferences[preferenceType];
+        preference.value = "false";
+        this.savePreference(preference);
+    }
+
+    private savePreference(userPreference: UserPreference) {
+        if (userPreference.hdId != undefined) {
+            this.updateUserPreference({ userPreference });
+        } else {
+            userPreference.hdId = this.user.hdid;
+            this.createUserPreference({ userPreference });
+        }
+    }
 }
 </script>
 
@@ -211,6 +256,26 @@ export default class FilterComponent extends Vue {
                     class="ml-2"
                 />
             </hg-button>
+            <b-popover
+                triggers="manual"
+                :show="showFilterTutorial"
+                target="filterBtn"
+                placement="right"
+                boundary="viewport"
+            >
+                <div>
+                    <hg-button
+                        class="float-right text-dark p-0 ml-2"
+                        variant="icon"
+                        @click="dismissFilterTutorial()"
+                        >×</hg-button
+                    >
+                </div>
+                <div data-testid="filter-tutorial-popover">
+                    Filter by health record type, date or keyword to find what
+                    you need.
+                </div>
+            </b-popover>
             <b-popover
                 target="filterBtn"
                 :show.sync="isMenuVisible"

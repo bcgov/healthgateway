@@ -40,6 +40,21 @@ export const mutations: UserMutation = {
                 UserPreferenceType.TutorialMenuExport,
                 "true"
             );
+            PreferenceUtil.setDefaultValue(
+                userProfile.preferences,
+                UserPreferenceType.TutorialAddDependent,
+                "true"
+            );
+            PreferenceUtil.setDefaultValue(
+                userProfile.preferences,
+                UserPreferenceType.TutorialAddQuickLink,
+                "true"
+            );
+            PreferenceUtil.setDefaultValue(
+                userProfile.preferences,
+                UserPreferenceType.TutorialTimelineFilter,
+                "true"
+            );
         }
 
         Vue.set(

@@ -33,6 +33,9 @@ import { TimelineFilterBuilder } from "@/models/timelineFilter";
 import User from "@/models/user";
 import { UserPreference } from "@/models/userPreference";
 import VaccinationRecord from "@/models/vaccinationRecord";
+import container from "@/plugins/container";
+import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
+import { ILogger } from "@/services/interfaces";
 import SnowPlow from "@/utility/snowPlow";
 
 library.add(
@@ -124,6 +127,17 @@ export default class HomeView extends Vue {
 
     @Ref("addQuickLinkModal")
     readonly addQuickLinkModal!: AddQuickLinkComponent;
+
+    private logger!: ILogger;
+    private isAddQuickLinkTutorialHidden = false;
+
+    private get showAddQuickLinkTutorial(): boolean {
+        return (
+            this.isPreferenceActive(
+                this.user.preferences[UserPreferenceType.TutorialAddQuickLink]
+            ) && !this.isAddQuickLinkTutorialHidden
+        );
+    }
 
     private get isVaccineRecordDownloading(): boolean {
         const vaccinationRecord: VaccinationRecord | undefined =
@@ -249,6 +263,10 @@ export default class HomeView extends Vue {
         );
     }
 
+    private created(): void {
+        this.logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
+    }
+
     private trackClickLink(linkType: string | undefined): void {
         if (linkType) {
             SnowPlow.trackEvent({
@@ -279,6 +297,30 @@ export default class HomeView extends Vue {
 
     private getVaccinationRecord(): VaccinationRecord | undefined {
         return this.vaccineRecords.get(this.user.hdid);
+    }
+
+    private isPreferenceActive(preference: UserPreference): boolean {
+        return preference?.value === "true";
+    }
+
+    private dismissAddQuickLinkTutorial(): void {
+        this.logger.debug("Dismissing add quick link tutorial");
+
+        this.isAddQuickLinkTutorialHidden = true;
+
+        const preferenceType = UserPreferenceType.TutorialAddQuickLink;
+        const preference = this.user.preferences[preferenceType];
+        preference.value = "false";
+        this.savePreference(preference);
+    }
+
+    private savePreference(userPreference: UserPreference) {
+        if (userPreference.hdId != undefined) {
+            this.updateUserPreference({ userPreference });
+        } else {
+            userPreference.hdId = this.user.hdid;
+            this.createUserPreference({ userPreference });
+        }
     }
 
     private handleClickHealthRecords(): void {
@@ -429,8 +471,9 @@ export default class HomeView extends Vue {
         </b-alert>
         <page-title title="Home">
             <hg-button
-                :disabled="isAddQuickLinkButtonDisabled"
+                id="add-quick-link-button"
                 data-testid="add-quick-link-button"
+                :disabled="isAddQuickLinkButtonDisabled"
                 class="float-right"
                 variant="secondary"
                 @click="showAddQuickLinkModal"
@@ -438,6 +481,26 @@ export default class HomeView extends Vue {
                 <hg-icon icon="plus" size="medium" class="mr-2" />
                 <span>Add Quick Link</span>
             </hg-button>
+            <b-popover
+                triggers="manual"
+                :show="showAddQuickLinkTutorial"
+                target="add-quick-link-button"
+                placement="left"
+                boundary="viewport"
+            >
+                <div>
+                    <hg-button
+                        class="float-right text-dark p-0 ml-2"
+                        variant="icon"
+                        @click="dismissAddQuickLinkTutorial()"
+                        >×</hg-button
+                    >
+                </div>
+                <div data-testid="add-quick-link-tutorial-popover">
+                    Add a quick link to easily access a health record type from
+                    your home screen.
+                </div>
+            </b-popover>
         </page-title>
         <h2>What do you want to focus on today?</h2>
         <b-row cols="1" cols-lg="2" cols-xl="3">
