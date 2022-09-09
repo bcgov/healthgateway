@@ -72,9 +72,10 @@ namespace HealthGateway.Common.Services
         public async Task<RequestResult<TokenSwapResponse>> GetPhsaAccessToken()
         {
             using Activity? activity = Source.StartActivity();
-            string? hdid = this.authenticationDelegate.FetchAuthenticatedUserHdid();
+            string? identifier = this.authenticationDelegate.FetchAuthenticatedUserIdentifier();
             RequestResult<TokenSwapResponse> requestResult = new();
-            TokenSwapResponse? cachedAccessToken = this.GetFromCache(hdid);
+            string cacheKey = $"{TokenSwapCacheDomain}:Identifier:{identifier}";
+            TokenSwapResponse? cachedAccessToken = this.GetFromCache(cacheKey);
 
             if (cachedAccessToken == null)
             {
@@ -82,15 +83,15 @@ namespace HealthGateway.Common.Services
 
                 if (accessToken != null)
                 {
-                    requestResult = await this.SwapToken(hdid, accessToken).ConfigureAwait(true);
+                    requestResult = await this.SwapToken(identifier, accessToken).ConfigureAwait(true);
                 }
                 else
                 {
-                    this.logger.LogError("Unable to get authenticated user token from context for hdid: {Hdid}", hdid);
+                    this.logger.LogError("Unable to get authenticated user token from context for {CacheKey}", cacheKey);
                     requestResult.ResultStatus = ResultType.Error;
                     requestResult.ResultError = new()
                     {
-                        ResultMessage = $"Internal Error: Unable to get authenticated user token from context for hdid: {hdid}",
+                        ResultMessage = $"Internal Error: Unable to get authenticated user token from context for {cacheKey}",
                         ErrorCode = ErrorTranslator.InternalError(ErrorType.InvalidState),
                     };
                 }
@@ -108,12 +109,11 @@ namespace HealthGateway.Common.Services
         /// <summary>
         /// Caches the Access Token if enabled.
         /// </summary>
-        /// <param name="hdid">The hdid associated with the token swap response to be cached.</param>
+        /// <param name="cacheKey">The key to retrieve the token response from cache.</param>
         /// <param name="tokenSwapResponse">The token swap response to be cached.</param>
-        private void CacheAccessToken(string hdid, TokenSwapResponse tokenSwapResponse)
+        private void CacheAccessToken(string cacheKey, TokenSwapResponse tokenSwapResponse)
         {
             using Activity? activity = Source.StartActivity();
-            string cacheKey = $"{TokenSwapCacheDomain}:HDID:{hdid}";
             if (this.phsaConfigV2.TokenCacheEnabled)
             {
                 this.logger.LogDebug("Attempting to cache access token for cache key: {Key}", cacheKey);
@@ -131,15 +131,14 @@ namespace HealthGateway.Common.Services
         /// <summary>
         /// Attempts to get the token response from cache.
         /// </summary>
-        /// <param name="hdid">The hdid used to create the key to retrieve the token response from cache.</param>
+        /// <param name="cacheKey">The key to retrieve the token response from cache.</param>
         /// <returns>The found token response or null.</returns>
-        private TokenSwapResponse? GetFromCache(string hdid)
+        private TokenSwapResponse? GetFromCache(string cacheKey)
         {
             using Activity? activity = Source.StartActivity();
             TokenSwapResponse? tokenResponse = null;
             if (this.phsaConfigV2.TokenCacheEnabled)
             {
-                string cacheKey = $"{TokenSwapCacheDomain}:HDID:{hdid}";
                 tokenResponse = this.cacheProvider.GetItem<TokenSwapResponse>(cacheKey);
                 this.logger.LogDebug("Cache key: {CacheKey} was {Found} found in cache.", cacheKey, tokenResponse == null ? "not" : string.Empty);
             }
@@ -151,16 +150,16 @@ namespace HealthGateway.Common.Services
         /// <summary>
         /// Attempts to get the token response from cache.
         /// </summary>
-        /// <param name="hdid">The hdid used to create the key to use to cache the token response.</param>
+        /// <param name="cacheKey">The key to retrieve the token response from cache.</param>
         /// <param name="accessToken">The access token to swap for a new token.</param>
         /// <returns>The token response wrapped in a request result.</returns>
-        private async Task<RequestResult<TokenSwapResponse>> SwapToken(string hdid, string accessToken)
+        private async Task<RequestResult<TokenSwapResponse>> SwapToken(string cacheKey, string accessToken)
         {
             RequestResult<TokenSwapResponse> requestResult = await this.tokenSwapDelegate.SwapToken(accessToken).ConfigureAwait(true);
 
             if (requestResult.ResultStatus == ResultType.Success)
             {
-                this.CacheAccessToken(hdid, requestResult.ResourcePayload);
+                this.CacheAccessToken(cacheKey, requestResult.ResourcePayload);
             }
 
             return requestResult;
