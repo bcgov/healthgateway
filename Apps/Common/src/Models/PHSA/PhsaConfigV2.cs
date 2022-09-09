@@ -16,7 +16,6 @@
 namespace HealthGateway.Common.Models.PHSA
 {
     using System;
-    using System.Collections.Generic;
 
     /// <summary>
     /// Model object representing form parameter values when posting for an access token.
@@ -37,6 +36,11 @@ namespace HealthGateway.Common.Models.PHSA
         /// Gets or sets the phsa base endpoint for data.
         /// </summary>
         public Uri BaseUrl { get; set; } = null!;
+
+        /// <summary>
+        /// Gets or sets the phsa base endpoint for admin data.
+        /// </summary>
+        public Uri AdminBaseUrl { get; set; } = null!;
 
         /// <summary>
         /// Gets or sets the client id of the token being used to swap.
