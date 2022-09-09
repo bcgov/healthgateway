@@ -72,9 +72,9 @@ namespace HealthGateway.Common.Services
         public async Task<RequestResult<TokenSwapResponse>> GetPhsaAccessToken()
         {
             using Activity? activity = Source.StartActivity();
-            string? identifier = this.authenticationDelegate.FetchAuthenticatedUserIdentifier();
+            string? userId = this.authenticationDelegate.FetchAuthenticatedUserIdentifier();
             RequestResult<TokenSwapResponse> requestResult = new();
-            string cacheKey = $"{TokenSwapCacheDomain}:Identifier:{identifier}";
+            string cacheKey = $"{TokenSwapCacheDomain}:{userId}";
             TokenSwapResponse? cachedAccessToken = this.GetFromCache(cacheKey);
 
             if (cachedAccessToken == null)
@@ -83,7 +83,7 @@ namespace HealthGateway.Common.Services
 
                 if (accessToken != null)
                 {
-                    requestResult = await this.SwapToken(identifier, accessToken).ConfigureAwait(true);
+                    requestResult = await this.SwapToken(userId, accessToken).ConfigureAwait(true);
                 }
                 else
                 {
