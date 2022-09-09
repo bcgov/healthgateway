@@ -51,7 +51,7 @@ namespace HealthGateway.Common.Models.PHSA
         /// Gets or sets the action url.
         /// </summary>
         [JsonPropertyName("actionUrl")]
-        public string? ActionUrl { get; set; }
+        public Uri? ActionUrl { get; set; }
 
         /// <summary>
         /// Gets or sets the action text.
