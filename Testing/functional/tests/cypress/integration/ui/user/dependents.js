@@ -249,7 +249,10 @@ describe("Dependents - Immuniazation Tab - Enabled", () => {
         cy.get("[data-testid=genericMessageModal]").should("be.visible");
         cy.get("[data-testid=genericMessageSubmitBtn]").click();
 
-        cy.verifyDownload("HealthGatewayDependentImmunizationReport.pdf");
+        cy.verifyDownload("HealthGatewayDependentImmunizationReport.pdf", {
+            timeout: 60000,
+            interval: 5000,
+        });
 
         // Click download dropdown
         cy.get(
@@ -269,7 +272,10 @@ describe("Dependents - Immuniazation Tab - Enabled", () => {
         cy.get("[data-testid=genericMessageModal]").should("be.visible");
         cy.get("[data-testid=genericMessageSubmitBtn]").click();
 
-        cy.verifyDownload("HealthGatewayDependentImmunizationReport.csv");
+        cy.verifyDownload("HealthGatewayDependentImmunizationReport.csv", {
+            timeout: 60000,
+            interval: 5000,
+        });
 
         // Click download dropdown
         cy.get(
@@ -289,7 +295,10 @@ describe("Dependents - Immuniazation Tab - Enabled", () => {
         cy.get("[data-testid=genericMessageModal]").should("be.visible");
         cy.get("[data-testid=genericMessageSubmitBtn]").click();
 
-        cy.verifyDownload("HealthGatewayDependentImmunizationReport.xlsx");
+        cy.verifyDownload("HealthGatewayDependentImmunizationReport.xlsx", {
+            timeout: 60000,
+            interval: 5000,
+        });
     });
 
     it("Immunization - Forecast - Tab - Configuration Enabled", () => {
@@ -322,7 +331,10 @@ describe("Dependents - Immuniazation Tab - Enabled", () => {
         cy.get("[data-testid=genericMessageModal]").should("be.visible");
         cy.get("[data-testid=genericMessageSubmitBtn]").click();
 
-        cy.verifyDownload("HealthGatewayDependentImmunizationReport.pdf");
+        cy.verifyDownload("HealthGatewayDependentImmunizationReport.pdf", {
+            timeout: 60000,
+            interval: 5000,
+        });
 
         // Click download dropdown
         cy.get(
@@ -342,7 +354,10 @@ describe("Dependents - Immuniazation Tab - Enabled", () => {
         cy.get("[data-testid=genericMessageModal]").should("be.visible");
         cy.get("[data-testid=genericMessageSubmitBtn]").click();
 
-        cy.verifyDownload("HealthGatewayDependentImmunizationReport.csv");
+        cy.verifyDownload("HealthGatewayDependentImmunizationReport.csv", {
+            timeout: 60000,
+            interval: 5000,
+        });
 
         // Click download dropdown
         cy.get(
@@ -362,7 +377,10 @@ describe("Dependents - Immuniazation Tab - Enabled", () => {
         cy.get("[data-testid=genericMessageModal]").should("be.visible");
         cy.get("[data-testid=genericMessageSubmitBtn]").click();
 
-        cy.verifyDownload("HealthGatewayDependentImmunizationReport.xlsx");
+        cy.verifyDownload("HealthGatewayDependentImmunizationReport.xlsx", {
+            timeout: 60000,
+            interval: 5000,
+        });
     });
 
     it("Immunization tab - No Data Found", () => {
