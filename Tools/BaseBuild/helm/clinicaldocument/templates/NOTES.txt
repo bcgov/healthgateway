@@ -1,0 +1,14 @@
+{{ include "clinicaldocument.fullname" . }} has been deployed
+
+No routes have been configured and you will need the following to create one:
+    caCertificate.pem
+    HealthGatewayPrivateKey.pem
+
+If you have those please run:
+./route.sh [ENV] clinicaldocument clinicaldocument "/api/clinicaldocumentservice"
+
+Where ENV is one of dev, mock, test or production
+
+Example:
+    ./route.sh dev clinicaldocument clinicaldocument "/api/clinicaldocumentservice"
+
