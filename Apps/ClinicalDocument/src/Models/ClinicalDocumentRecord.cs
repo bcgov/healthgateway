@@ -26,13 +26,13 @@ namespace HealthGateway.ClinicalDocument.Models
         /// <summary>
         /// Gets or sets the ID.
         /// </summary>
-        [JsonPropertyName("id")]
+        [JsonPropertyName("healthDataId")]
         public string Id { get; set; } = string.Empty;
 
         /// <summary>
         /// Gets or sets the file ID.
         /// </summary>
-        [JsonPropertyName("fileId")]
+        [JsonPropertyName("healthDataFileId")]
         public string FileId { get; set; } = string.Empty;
 
         /// <summary>
