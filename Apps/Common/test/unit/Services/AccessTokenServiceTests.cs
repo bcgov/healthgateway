@@ -34,8 +34,10 @@ namespace HealthGateway.CommonTests.Services
     public class AccessTokenServiceTests
     {
         private const string AccessToken = "access_token";
-        private const string Hdid = "hdid";
-        private const string AccessTokenNotFoundMessage = $"Internal Error: Unable to get authenticated user token from context for hdid: {Hdid}";
+        private const string UserId = "userid";
+        private const string TokenSwapCacheDomain = "TokenSwap";
+        private const string CacheKey = $"{TokenSwapCacheDomain}:{UserId}";
+        private const string AccessTokenNotFoundMessage = $"Internal Error: Unable to get authenticated user token from context for: {CacheKey}";
 
         /// <summary>
         /// Get PHSA access token.
@@ -140,7 +142,7 @@ namespace HealthGateway.CommonTests.Services
 
             Mock<IAuthenticationDelegate> mockAuthenticationDelegate = new();
             mockAuthenticationDelegate.Setup(a => a.FetchAuthenticatedUserToken()).Returns(isAccessTokenFound ? AccessToken : null);
-            mockAuthenticationDelegate.Setup(a => a.FetchAuthenticatedUserHdid()).Returns(Hdid);
+            mockAuthenticationDelegate.Setup(a => a.FetchAuthenticatedUserId()).Returns(UserId);
 
             Mock<ITokenSwapDelegate> mockTokenSwapDelegate = new();
             mockTokenSwapDelegate.Setup(s => s.SwapToken(It.IsAny<string>())).ReturnsAsync(requestResult);

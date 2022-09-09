@@ -72,7 +72,7 @@ namespace HealthGateway.Common.Services
         public async Task<RequestResult<TokenSwapResponse>> GetPhsaAccessToken()
         {
             using Activity? activity = Source.StartActivity();
-            string? userId = this.authenticationDelegate.FetchAuthenticatedUserIdentifier();
+            string? userId = this.authenticationDelegate.FetchAuthenticatedUserId();
             RequestResult<TokenSwapResponse> requestResult = new();
             string cacheKey = $"{TokenSwapCacheDomain}:{userId}";
             TokenSwapResponse? cachedAccessToken = this.GetFromCache(cacheKey);
@@ -91,7 +91,7 @@ namespace HealthGateway.Common.Services
                     requestResult.ResultStatus = ResultType.Error;
                     requestResult.ResultError = new()
                     {
-                        ResultMessage = $"Internal Error: Unable to get authenticated user token from context for {cacheKey}",
+                        ResultMessage = $"Internal Error: Unable to get authenticated user token from context for: {cacheKey}",
                         ErrorCode = ErrorTranslator.InternalError(ErrorType.InvalidState),
                     };
                 }

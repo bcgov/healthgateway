@@ -87,9 +87,9 @@ namespace HealthGateway.Common.AccessManagement.Authentication
         string? FetchAuthenticatedUserHdid();
 
         /// <summary>
-        /// Fetches the identifier for the authenticated user from the http context.
+        /// Fetches the id for the authenticated user from the http context.
         /// </summary>
-        /// <returns>The user's identifier.</returns>
-        string? FetchAuthenticatedUserIdentifier();
+        /// <returns>The user's id.</returns>
+        string? FetchAuthenticatedUserId();
     }
 }

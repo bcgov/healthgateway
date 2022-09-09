@@ -187,7 +187,7 @@ namespace HealthGateway.Common.AccessManagement.Authentication
         }
 
         /// <inheritdoc/>
-        public string? FetchAuthenticatedUserIdentifier()
+        public string? FetchAuthenticatedUserId()
         {
             ClaimsPrincipal? user = this.httpContextAccessor?.HttpContext?.User;
             return user?.FindFirst(ClaimTypes.NameIdentifier)!.Value;
