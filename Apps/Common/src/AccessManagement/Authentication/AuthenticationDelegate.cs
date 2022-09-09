@@ -40,13 +40,13 @@ namespace HealthGateway.Common.AccessManagement.Authentication
         public const string DefaultAuthConfigSectionName = "ClientAuthentication";
 
         private const string CacheConfigSectionName = "AuthCache";
+        private readonly ICacheProvider cacheProvider;
+        private readonly IConfiguration configuration;
+        private readonly IHttpClientService httpClientService;
+        private readonly IHttpContextAccessor? httpContextAccessor;
 
         private readonly ILogger<IAuthenticationDelegate> logger;
-        private readonly IHttpClientService httpClientService;
-        private readonly IConfiguration configuration;
-        private readonly ICacheProvider cacheProvider;
         private readonly int tokenCacheMinutes;
-        private readonly IHttpContextAccessor? httpContextAccessor;
         private readonly ClientCredentialsTokenRequest tokenRequest;
         private readonly Uri tokenUri;
 
@@ -184,6 +184,13 @@ namespace HealthGateway.Common.AccessManagement.Authentication
         {
             ClaimsPrincipal? user = this.httpContextAccessor?.HttpContext?.User;
             return user?.FindFirst("hdid")?.Value;
+        }
+
+        /// <inheritdoc/>
+        public string? FetchAuthenticatedUserIdentifier()
+        {
+            ClaimsPrincipal? user = this.httpContextAccessor?.HttpContext?.User;
+            return user?.FindFirst(ClaimTypes.NameIdentifier)!.Value;
         }
 
         private (Uri TokenUri, ClientCredentialsTokenRequest TokenRequest) GetConfiguration(string sectionName)
