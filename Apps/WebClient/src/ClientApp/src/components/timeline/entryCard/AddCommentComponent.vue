@@ -89,20 +89,22 @@ export default class AddCommentComponent extends Vue {
 
 <template>
     <b-row>
-        <b-col cols="auto" class="pl-0 pr-2 align-self-center">
-            <div :id="'tooltip-' + comment.parentEntryId" class="tooltip-info">
-                <hg-icon icon="lock" size="small" />
-            </div>
-            <b-tooltip
-                variant="secondary"
-                :target="'tooltip-' + comment.parentEntryId"
-                placement="left"
-                triggers="hover"
-            >
-                Only you can see comments added to your medical records.
-            </b-tooltip>
+        <b-col
+            :id="'tooltip-' + comment.parentEntryId"
+            cols="auto"
+            class="px-0 py-1 align-self-center"
+        >
+            <hg-icon icon="lock" size="small" />
         </b-col>
-        <b-col>
+        <b-tooltip
+            variant="secondary"
+            :target="'tooltip-' + comment.parentEntryId"
+            placement="left"
+            triggers="hover"
+        >
+            Only you can see comments added to your medical records.
+        </b-tooltip>
+        <b-col class="ml-2">
             <b-input-group>
                 <b-form-textarea
                     :id="'comment-input-' + comment.parentEntryId"

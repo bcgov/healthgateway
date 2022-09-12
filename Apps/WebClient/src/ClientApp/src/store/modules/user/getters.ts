@@ -29,6 +29,9 @@ export const getters: UserGetters = {
     smsResendDateTime(state: UserState): DateWrapper | undefined {
         return state.smsResendDateTime;
     },
+    seenTutorialComment: function (state: UserState): boolean {
+        return state.seenTutorialComment;
+    },
     hasTermsOfServiceUpdated(state: UserState): boolean {
         const { user } = state;
         return user === undefined ? false : user.hasTermsOfServiceUpdated;

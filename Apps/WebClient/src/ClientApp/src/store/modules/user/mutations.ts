@@ -55,6 +55,11 @@ export const mutations: UserMutation = {
                 UserPreferenceType.TutorialTimelineFilter,
                 "true"
             );
+            PreferenceUtil.setDefaultValue(
+                userProfile.preferences,
+                UserPreferenceType.TutorialComment,
+                "true"
+            );
         }
 
         Vue.set(
@@ -137,5 +142,8 @@ export const mutations: UserMutation = {
         state.error = true;
         state.statusMessage = errorMessage;
         state.status = LoadStatus.ERROR;
+    },
+    setSeenTutorialComment: function (state: UserState, value: boolean): void {
+        state.seenTutorialComment = value;
     },
 };

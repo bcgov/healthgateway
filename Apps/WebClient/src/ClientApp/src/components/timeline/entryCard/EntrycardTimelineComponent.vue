@@ -4,12 +4,18 @@ import { faComment as farComment } from "@fortawesome/free-regular-svg-icons";
 import { faPaperclip } from "@fortawesome/free-solid-svg-icons";
 import Vue from "vue";
 import { Component, Prop, Watch } from "vue-property-decorator";
-import { Getter } from "vuex-class";
+import { Action, Getter } from "vuex-class";
 
+import UserPreferenceType from "@/constants/userPreferenceType";
 import EventBus, { EventMessageName } from "@/eventbus";
 import type { WebClientConfiguration } from "@/models/configData";
 import { DateWrapper } from "@/models/dateWrapper";
 import TimelineEntry from "@/models/timelineEntry";
+import User from "@/models/user";
+import { UserPreference } from "@/models/userPreference";
+import container from "@/plugins/container";
+import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
+import { ILogger } from "@/services/interfaces";
 
 import CommentSectionComponent from "./CommentSectionComponent.vue";
 
@@ -31,13 +37,32 @@ export default class EntrycardTimelineComponent extends Vue {
     @Prop({ default: true }) canShowDetails!: boolean;
     @Prop({ default: false }) isMobileDetails!: boolean;
     @Prop({ default: false }) hasAttachment!: boolean;
-    @Getter("isMobile") isMobileWidth!: boolean;
+
+    @Action("createUserPreference", { namespace: "user" })
+    createUserPreference!: (params: { userPreference: UserPreference }) => void;
+
+    @Action("updateUserPreference", { namespace: "user" })
+    updateUserPreference!: (params: { userPreference: UserPreference }) => void;
+
+    @Action("setSeenTutorialComment", { namespace: "user" })
+    setSeenTutorialComment!: (params: { value: boolean }) => void;
+
+    @Getter("isMobile")
+    isMobileWidth!: boolean;
 
     @Getter("webClient", { namespace: "config" })
     config!: WebClientConfiguration;
 
+    @Getter("seenTutorialComment", { namespace: "user" })
+    seenTutorialComment!: boolean;
+
+    @Getter("user", { namespace: "user" })
+    user!: User;
+
+    private logger!: ILogger;
     private eventBus = EventBus;
     private detailsVisible = false;
+    private isCommentTutorialHidden = true;
 
     private get icon(): string {
         return this.entryIcon ?? "question";
@@ -77,6 +102,14 @@ export default class EntrycardTimelineComponent extends Vue {
         return this.entry.comments !== null ? this.entry.comments.length : 0;
     }
 
+    private get showCommentTutorial(): boolean {
+        return (
+            this.isPreferenceActive(
+                this.user.preferences[UserPreferenceType.TutorialComment]
+            ) && !this.isCommentTutorialHidden
+        );
+    }
+
     @Watch("isMobileWidth")
     private onMobileWidthChanged(): void {
         if (this.isMobileWidth && !this.isMobileDetails) {
@@ -84,7 +117,21 @@ export default class EntrycardTimelineComponent extends Vue {
         }
     }
 
+    @Watch("detailsVisible")
+    private onDetailsVisibleChanged(): void {
+        if (
+            this.detailsVisible &&
+            this.allowComment &&
+            this.isCommentEnabled &&
+            !this.seenTutorialComment
+        ) {
+            this.isCommentTutorialHidden = false;
+            this.setSeenTutorialComment({ value: true });
+        }
+    }
+
     private mounted(): void {
+        this.logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
         if (this.isMobileDetails) {
             this.detailsVisible = true;
         }
@@ -102,6 +149,28 @@ export default class EntrycardTimelineComponent extends Vue {
             if (this.canShowDetails) {
                 this.detailsVisible = !this.detailsVisible;
             }
+        }
+    }
+
+    private isPreferenceActive(preference: UserPreference): boolean {
+        return preference?.value === "true";
+    }
+
+    private dismissCommentTutorial(): void {
+        this.logger.debug("Dismissing comment tutorial");
+        this.isCommentTutorialHidden = true;
+        const preferenceType = UserPreferenceType.TutorialComment;
+        const preference = this.user.preferences[preferenceType];
+        preference.value = "false";
+        this.savePreference(preference);
+    }
+
+    private savePreference(userPreference: UserPreference) {
+        if (userPreference.hdId != undefined) {
+            this.updateUserPreference({ userPreference });
+        } else {
+            userPreference.hdId = this.user.hdid;
+            this.createUserPreference({ userPreference });
         }
     }
 }
@@ -189,6 +258,26 @@ export default class EntrycardTimelineComponent extends Vue {
                             :parent-entry="entry"
                             :is-mobile-details="isMobileDetails"
                         />
+                        <b-popover
+                            triggers="manual"
+                            :show="showCommentTutorial"
+                            :target="'tooltip-' + entry.id"
+                            placement="topright"
+                            boundary="viewport"
+                        >
+                            <div>
+                                <hg-button
+                                    class="float-right text-dark p-0 ml-2"
+                                    variant="icon"
+                                    @click="dismissCommentTutorial()"
+                                    >×</hg-button
+                                >
+                            </div>
+                            <div data-testid="comment-tutorial-popover">
+                                You can add comments to help you keep track of
+                                important health details. Only you can see them.
+                            </div>
+                        </b-popover>
                     </b-col>
                 </b-row>
             </b-collapse>
