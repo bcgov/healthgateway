@@ -59,7 +59,7 @@ namespace HealthGateway.Common.AccessManagement.Authentication
         /// <param name="cacheProvider">The injected cache provider.</param>
         /// <param name="httpContextAccessor">The Http Context accessor.</param>
         public AuthenticationDelegate(
-            ILogger<IAuthenticationDelegate> logger,
+            ILogger<AuthenticationDelegate> logger,
             IHttpClientService httpClientService,
             IConfiguration configuration,
             ICacheProvider cacheProvider,
