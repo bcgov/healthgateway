@@ -167,7 +167,7 @@ namespace HealthGateway.GatewayApi.Test.Controllers
         [Fact]
         public async Task ShouldValidateAge()
         {
-            PrimitiveRequestResult<bool> expected = new() {ResultStatus = ResultType.Success, ResourcePayload = true};
+            PrimitiveRequestResult<bool> expected = new() { ResultStatus = ResultType.Success, ResourcePayload = true };
             Mock<IHttpContextAccessor> httpContextAccessorMock = CreateValidHttpContext(this.token, this.userId, this.hdid);
 
             Mock<IUserProfileService> userProfileServiceMock = new();
@@ -523,8 +523,8 @@ namespace HealthGateway.GatewayApi.Test.Controllers
         {
             IHeaderDictionary headerDictionary = new HeaderDictionary
             {
-                {"Authorization", token},
-                {"referer", "http://localhost/"},
+                { "Authorization", token },
+                { "referer", "http://localhost/" },
             };
             Mock<HttpRequest> httpRequestMock = new();
             httpRequestMock.Setup(s => s.Headers).Returns(headerDictionary);
@@ -550,7 +550,7 @@ namespace HealthGateway.GatewayApi.Test.Controllers
             authResult.Properties.StoreTokens(
                 new[]
                 {
-                    new AuthenticationToken {Name = "access_token", Value = token},
+                    new AuthenticationToken { Name = "access_token", Value = token },
                 });
             authenticationMock
                 .Setup(x => x.AuthenticateAsync(httpContextAccessorMock.Object.HttpContext, It.IsAny<string>()))
@@ -590,7 +590,7 @@ namespace HealthGateway.GatewayApi.Test.Controllers
             userProfileServiceMock.Setup(s => s.GetUserPreferences(this.hdid))
                 .Returns(
                     new RequestResult<Dictionary<string, UserPreferenceModel>>
-                        {ResourcePayload = userPreferencePayloadMock});
+                        { ResourcePayload = userPreferencePayloadMock });
 
             Mock<IUserEmailService> emailServiceMock = new();
             Mock<IUserSMSService> smsServiceMock = new();

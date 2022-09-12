@@ -50,7 +50,7 @@ namespace HealthGateway.CommonTests.AccessManagement.Administration
             Uri tokenUri = new("http://testsite");
             Dictionary<string, string> configurationParams = new()
             {
-                {"AuthCache:TokenCacheExpireMinutes", "20"},
+                { "AuthCache:TokenCacheExpireMinutes", "20" },
             };
             IConfiguration configuration = CreateConfiguration(configurationParams);
 
