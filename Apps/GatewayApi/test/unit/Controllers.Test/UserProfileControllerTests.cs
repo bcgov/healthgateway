@@ -20,6 +20,7 @@ namespace HealthGateway.GatewayApi.Test.Controllers
     using System.Security.Claims;
     using System.Threading.Tasks;
     using DeepEqual.Syntax;
+    using HealthGateway.Common.AccessManagement.Authentication;
     using HealthGateway.Common.Data.Constants;
     using HealthGateway.Common.Data.ViewModels;
     using HealthGateway.Database.Models;
@@ -52,7 +53,7 @@ namespace HealthGateway.GatewayApi.Test.Controllers
         public void ShouldGetUserProfile()
         {
             RequestResult<UserProfileModel> expected = this.GetUserProfileExpectedRequestResultMock(ResultType.Success);
-            RequestResult<UserProfileModel> actualResult = this.GetUserProfile(expected, new Dictionary<string, UserPreferenceModel>() { });
+            RequestResult<UserProfileModel> actualResult = this.GetUserProfile(expected, new Dictionary<string, UserPreferenceModel>());
 
             expected.ShouldDeepEqual(actualResult);
         }
@@ -109,7 +110,8 @@ namespace HealthGateway.GatewayApi.Test.Controllers
                 userProfileServiceMock.Object,
                 httpContextAccessorMock.Object,
                 emailServiceMock.Object,
-                smsServiceMock.Object);
+                smsServiceMock.Object,
+                new Mock<IAuthenticationDelegate>().Object);
 
             ActionResult<RequestResult<UserProfileModel>> actualResult = await service.CreateUserProfile(this.hdid, createUserRequest).ConfigureAwait(true);
             expected.ShouldDeepEqual(actualResult.Value);
@@ -151,7 +153,8 @@ namespace HealthGateway.GatewayApi.Test.Controllers
                 userProfileServiceMock.Object,
                 httpContextAccessorMock.Object,
                 emailServiceMock.Object,
-                smsServiceMock.Object);
+                smsServiceMock.Object,
+                new Mock<IAuthenticationDelegate>().Object);
 
             ActionResult<RequestResult<UserProfileModel>> actualResult = await service.CreateUserProfile(this.hdid, createUserRequest).ConfigureAwait(true);
             Assert.IsType<BadRequestResult>(actualResult.Result);
@@ -175,7 +178,8 @@ namespace HealthGateway.GatewayApi.Test.Controllers
                 userProfileServiceMock.Object,
                 httpContextAccessorMock.Object,
                 new Mock<IUserEmailService>().Object,
-                new Mock<IUserSMSService>().Object);
+                new Mock<IUserSMSService>().Object,
+                new Mock<IAuthenticationDelegate>().Object);
 
             PrimitiveRequestResult<bool> actualResult = await controller.Validate(this.hdid).ConfigureAwait(true);
 
@@ -316,7 +320,8 @@ namespace HealthGateway.GatewayApi.Test.Controllers
                 userProfileServiceMock.Object,
                 httpContextAccessorMock.Object,
                 emailServiceMock.Object,
-                smsServiceMock.Object);
+                smsServiceMock.Object,
+                new Mock<IAuthenticationDelegate>().Object);
 
             RequestResult<TermsOfServiceModel> actualResult = service.GetLastTermsOfService();
             expectedResult.ShouldDeepEqual(actualResult);
@@ -337,7 +342,8 @@ namespace HealthGateway.GatewayApi.Test.Controllers
                 new Mock<IUserProfileService>().Object,
                 httpContextAccessorMock.Object,
                 emailServiceMock.Object,
-                new Mock<IUserSMSService>().Object);
+                new Mock<IUserSMSService>().Object,
+                new Mock<IAuthenticationDelegate>().Object);
 
             bool actualResult = controller.UpdateUserEmail(this.hdid, "emailadd@hgw.ca");
 
@@ -367,7 +373,8 @@ namespace HealthGateway.GatewayApi.Test.Controllers
                 new Mock<IUserProfileService>().Object,
                 httpContextAccessorMock.Object,
                 emailServiceMock.Object,
-                new Mock<IUserSMSService>().Object);
+                new Mock<IUserSMSService>().Object,
+                new Mock<IAuthenticationDelegate>().Object);
 
             ActionResult<PrimitiveRequestResult<bool>> actualResult = await controller.ValidateEmail(this.hdid, Guid.NewGuid()).ConfigureAwait(true);
             Assert.Equal(ResultType.Success, actualResult.Value?.ResultStatus);
@@ -395,7 +402,8 @@ namespace HealthGateway.GatewayApi.Test.Controllers
                 new Mock<IUserProfileService>().Object,
                 httpContextAccessorMock.Object,
                 emailServiceMock.Object,
-                new Mock<IUserSMSService>().Object);
+                new Mock<IUserSMSService>().Object,
+                new Mock<IAuthenticationDelegate>().Object);
 
             ActionResult<PrimitiveRequestResult<bool>> actualResult = await controller.ValidateEmail(this.hdid, Guid.NewGuid()).ConfigureAwait(true);
             Assert.Equal(ResultType.Error, actualResult.Value?.ResultStatus);
@@ -416,7 +424,8 @@ namespace HealthGateway.GatewayApi.Test.Controllers
                 new Mock<IUserProfileService>().Object,
                 httpContextAccessorMock.Object,
                 new Mock<IUserEmailService>().Object,
-                smsServiceMock.Object);
+                smsServiceMock.Object,
+                new Mock<IAuthenticationDelegate>().Object);
 
             bool actualResult = controller.UpdateUserSMSNumber(this.hdid, "250 123 456");
             Assert.True(actualResult);
@@ -443,7 +452,8 @@ namespace HealthGateway.GatewayApi.Test.Controllers
                 new Mock<IUserProfileService>().Object,
                 httpContextAccessorMock.Object,
                 new Mock<IUserEmailService>().Object,
-                smsServiceMock.Object);
+                smsServiceMock.Object,
+                new Mock<IAuthenticationDelegate>().Object);
 
             ActionResult<PrimitiveRequestResult<bool>> actualResult = Task.Run(async () => await controller.ValidateSMS(this.hdid, "205 123 4567").ConfigureAwait(true)).Result;
 
@@ -473,7 +483,8 @@ namespace HealthGateway.GatewayApi.Test.Controllers
                 new Mock<IUserProfileService>().Object,
                 httpContextAccessorMock.Object,
                 new Mock<IUserEmailService>().Object,
-                smsServiceMock.Object);
+                smsServiceMock.Object,
+                new Mock<IAuthenticationDelegate>().Object);
 
             ActionResult<PrimitiveRequestResult<bool>> actualResult = Task.Run(async () => await controller.ValidateSMS(this.hdid, "205 123 4567").ConfigureAwait(true)).Result;
 
@@ -501,7 +512,8 @@ namespace HealthGateway.GatewayApi.Test.Controllers
                 userProfileServiceMock.Object,
                 httpContextAccessorMock.Object,
                 new Mock<IUserEmailService>().Object,
-                new Mock<IUserSMSService>().Object);
+                new Mock<IUserSMSService>().Object,
+                new Mock<IAuthenticationDelegate>().Object);
 
             RequestResult<UserProfileModel> actualResult = controller.UpdateAcceptedTerms(this.hdid, Guid.Empty);
             expected.ShouldDeepEqual(actualResult);
@@ -535,10 +547,11 @@ namespace HealthGateway.GatewayApi.Test.Controllers
             httpContextAccessorMock.Setup(s => s.HttpContext).Returns(httpContextMock.Object);
             Mock<IAuthenticationService> authenticationMock = new();
             AuthenticateResult authResult = AuthenticateResult.Success(new AuthenticationTicket(claimsPrincipal, JwtBearerDefaults.AuthenticationScheme));
-            authResult.Properties.StoreTokens(new[]
-            {
-                new AuthenticationToken { Name = "access_token", Value = token },
-            });
+            authResult.Properties.StoreTokens(
+                new[]
+                {
+                    new AuthenticationToken { Name = "access_token", Value = token },
+                });
             authenticationMock
                 .Setup(x => x.AuthenticateAsync(httpContextAccessorMock.Object.HttpContext, It.IsAny<string>()))
                 .ReturnsAsync(authResult);
@@ -574,7 +587,10 @@ namespace HealthGateway.GatewayApi.Test.Controllers
             Mock<IUserProfileService> userProfileServiceMock = new();
             userProfileServiceMock.Setup(s => s.GetUserProfile(this.hdid, It.IsAny<DateTime>())).Returns(expected);
             userProfileServiceMock.Setup(s => s.GetActiveTermsOfService()).Returns(new RequestResult<TermsOfServiceModel>());
-            userProfileServiceMock.Setup(s => s.GetUserPreferences(this.hdid)).Returns(new RequestResult<Dictionary<string, UserPreferenceModel>>() { ResourcePayload = userPreferencePayloadMock });
+            userProfileServiceMock.Setup(s => s.GetUserPreferences(this.hdid))
+                .Returns(
+                    new RequestResult<Dictionary<string, UserPreferenceModel>>
+                        { ResourcePayload = userPreferencePayloadMock });
 
             Mock<IUserEmailService> emailServiceMock = new();
             Mock<IUserSMSService> smsServiceMock = new();
@@ -584,7 +600,8 @@ namespace HealthGateway.GatewayApi.Test.Controllers
                 userProfileServiceMock.Object,
                 httpContextAccessorMock.Object,
                 emailServiceMock.Object,
-                smsServiceMock.Object);
+                smsServiceMock.Object,
+                new Mock<IAuthenticationDelegate>().Object);
             return service.GetUserProfile(this.hdid);
         }
 
@@ -610,7 +627,8 @@ namespace HealthGateway.GatewayApi.Test.Controllers
                 userProfileServiceMock.Object,
                 httpContextAccessorMock.Object,
                 emailServiceMock.Object,
-                smsServiceMock.Object);
+                smsServiceMock.Object,
+                new Mock<IAuthenticationDelegate>().Object);
             return service.UpdateUserPreference(this.hdid, userPref);
         }
 
@@ -636,7 +654,8 @@ namespace HealthGateway.GatewayApi.Test.Controllers
                 userProfileServiceMock.Object,
                 httpContextAccessorMock.Object,
                 emailServiceMock.Object,
-                smsServiceMock.Object);
+                smsServiceMock.Object,
+                new Mock<IAuthenticationDelegate>().Object);
             return service.CreateUserPreference(this.hdid, userPref);
         }
     }

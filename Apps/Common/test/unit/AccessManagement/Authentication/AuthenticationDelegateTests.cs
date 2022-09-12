@@ -17,6 +17,7 @@ namespace HealthGateway.CommonTests.AccessManagement.Administration
 {
     using System;
     using System.Collections.Generic;
+    using System.Diagnostics.CodeAnalysis;
     using System.Net;
     using System.Net.Http;
     using System.Text.Json;
@@ -43,7 +44,7 @@ namespace HealthGateway.CommonTests.AccessManagement.Administration
         /// AuthenticateAsUser - Happy Path.
         /// </summary>
         [Fact]
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Maintainability", "CA1506:Avoid excessive class coupling", Justification = "Team decision")]
+        [SuppressMessage("Maintainability", "CA1506:Avoid excessive class coupling", Justification = "Team decision")]
         public void ShouldAuthenticateAsUser()
         {
             Uri tokenUri = new("http://testsite");
@@ -64,10 +65,11 @@ namespace HealthGateway.CommonTests.AccessManagement.Administration
             using IMemoryCache memoryCache = new MemoryCache(new MemoryCacheOptions());
             ICacheProvider cacheProvider = new MemoryCacheProvider(memoryCache);
 
-            string json = @"{ ""access_token"":""token"", ""expires_in"":500, ""refresh_expires_in"":0, ""refresh_token"":""refresh_token"", ""token_type"":""bearer"", ""not-before-policy"":25, ""session_state"":""session_state"", ""scope"":""scope"" }";
+            string json =
+                @"{ ""access_token"":""token"", ""expires_in"":500, ""refresh_expires_in"":0, ""refresh_token"":""refresh_token"", ""token_type"":""bearer"", ""not-before-policy"":25, ""session_state"":""session_state"", ""scope"":""scope"" }";
             JwtModel? expected = JsonSerializer.Deserialize<JwtModel>(json);
             using ILoggerFactory loggerFactory = LoggerFactory.Create(builder => builder.AddConsole());
-            ILogger<IAuthenticationDelegate> logger = loggerFactory.CreateLogger<IAuthenticationDelegate>();
+            ILogger<AuthenticationDelegate> logger = loggerFactory.CreateLogger<AuthenticationDelegate>();
             Mock<HttpMessageHandler> handlerMock = new();
             using HttpResponseMessage httpResponseMessage = new()
             {
@@ -75,18 +77,18 @@ namespace HealthGateway.CommonTests.AccessManagement.Administration
                 Content = new StringContent(json),
             };
             handlerMock
-               .Protected()
-               .Setup<Task<HttpResponseMessage>>(
-                  "SendAsync",
-                  ItExpr.IsAny<HttpRequestMessage>(),
-                  ItExpr.IsAny<CancellationToken>())
-               .ReturnsAsync(httpResponseMessage)
-               .Verifiable();
+                .Protected()
+                .Setup<Task<HttpResponseMessage>>(
+                    "SendAsync",
+                    ItExpr.IsAny<HttpRequestMessage>(),
+                    ItExpr.IsAny<CancellationToken>())
+                .ReturnsAsync(httpResponseMessage)
+                .Verifiable();
             Mock<IHttpClientService> mockHttpClientService = new();
             mockHttpClientService.Setup(s => s.CreateDefaultHttpClient()).Returns(() => new HttpClient(handlerMock.Object));
 
             IAuthenticationDelegate authDelegate = new AuthenticationDelegate(logger, mockHttpClientService.Object, configuration, cacheProvider, null);
-            JwtModel actualModel = authDelegate.AuthenticateAsUser(tokenUri, tokenRequest, false);
+            JwtModel actualModel = authDelegate.AuthenticateAsUser(tokenUri, tokenRequest);
             expected.ShouldDeepEqual(actualModel);
 
             (_, bool cached) = authDelegate.AuthenticateUser(tokenUri, tokenRequest, true);
@@ -108,10 +110,11 @@ namespace HealthGateway.CommonTests.AccessManagement.Administration
                 ClientId = "CLIENT_ID",
                 ClientSecret = "SOME_SECRET",
             };
-            string json = @"{ ""access_token"":""token"", ""expires_in"":500, ""refresh_expires_in"":0, ""refresh_token"":""refresh_token"", ""token_type"":""bearer"", ""not-before-policy"":25, ""session_state"":""session_state"", ""scope"":""scope"" }";
+            string json =
+                @"{ ""access_token"":""token"", ""expires_in"":500, ""refresh_expires_in"":0, ""refresh_token"":""refresh_token"", ""token_type"":""bearer"", ""not-before-policy"":25, ""session_state"":""session_state"", ""scope"":""scope"" }";
             JwtModel? expected = JsonSerializer.Deserialize<JwtModel>(json);
             using ILoggerFactory loggerFactory = LoggerFactory.Create(builder => builder.AddConsole());
-            ILogger<IAuthenticationDelegate> logger = loggerFactory.CreateLogger<IAuthenticationDelegate>();
+            ILogger<AuthenticationDelegate> logger = loggerFactory.CreateLogger<AuthenticationDelegate>();
             Mock<HttpMessageHandler> handlerMock = new();
             using HttpResponseMessage httpResponseMessage = new()
             {
@@ -120,13 +123,13 @@ namespace HealthGateway.CommonTests.AccessManagement.Administration
             };
 
             handlerMock
-               .Protected()
-               .Setup<Task<HttpResponseMessage>>(
-                  "SendAsync",
-                  ItExpr.IsAny<HttpRequestMessage>(),
-                  ItExpr.IsAny<CancellationToken>())
-               .ReturnsAsync(httpResponseMessage)
-               .Verifiable();
+                .Protected()
+                .Setup<Task<HttpResponseMessage>>(
+                    "SendAsync",
+                    ItExpr.IsAny<HttpRequestMessage>(),
+                    ItExpr.IsAny<CancellationToken>())
+                .ReturnsAsync(httpResponseMessage)
+                .Verifiable();
             Mock<IHttpClientService> mockHttpClientService = new();
             mockHttpClientService.Setup(s => s.CreateDefaultHttpClient()).Returns(() => new HttpClient(handlerMock.Object));
             Dictionary<string, string> extraConfig = new();
@@ -138,9 +141,9 @@ namespace HealthGateway.CommonTests.AccessManagement.Administration
         private static IConfiguration CreateConfiguration(Dictionary<string, string> configParams)
         {
             return new ConfigurationBuilder()
-                .AddJsonFile("appsettings.json", optional: true)
-                .AddJsonFile("appsettings.Development.json", optional: true)
-                .AddJsonFile("appsettings.local.json", optional: true)
+                .AddJsonFile("appsettings.json", true)
+                .AddJsonFile("appsettings.Development.json", true)
+                .AddJsonFile("appsettings.local.json", true)
                 .AddInMemoryCollection(configParams)
                 .Build();
         }
