@@ -28,4 +28,6 @@ export enum ErrorSourceType {
     TermsOfService = "terms of service",
     TestKit = "test kit",
     QuickLinks = "quick links",
+    DependentImmunizationReport = "Dependent Immunization Report",
+    ExportRecords = "Export Records",
 }

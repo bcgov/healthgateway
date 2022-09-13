@@ -18,9 +18,11 @@ import MedicationHistoryReportComponent from "@/components/report/MedicationHist
 import MedicationRequestReportComponent from "@/components/report/MedicationRequestReportComponent.vue";
 import MSPVisitsReportComponent from "@/components/report/MSPVisitsReportComponent.vue";
 import NotesReportComponent from "@/components/report/NotesReportComponent.vue";
+import { ErrorSourceType, ErrorType } from "@/constants/errorType";
 import BreadcrumbItem from "@/models/breadcrumbItem";
 import type { WebClientConfiguration } from "@/models/configData";
 import { DateWrapper, StringISODate } from "@/models/dateWrapper";
+import { ResultError } from "@/models/errors";
 import MedicationStatementHistory from "@/models/medicationStatementHistory";
 import MedicationSummary from "@/models/medicationSummary";
 import PatientData from "@/models/patientData";
@@ -81,8 +83,18 @@ export default class ReportsView extends Vue {
         ) => Promise<RequestResult<Report>>;
     };
 
+    @Action("addError", { namespace: "errorBanner" })
+    addError!: (params: {
+        errorType: ErrorType;
+        source: ErrorSourceType;
+        traceId: string | undefined;
+    }) => void;
+
     @Action("retrievePatientData", { namespace: "user" })
     retrievePatientData!: () => Promise<void>;
+
+    @Action("setTooManyRequestsError", { namespace: "errorBanner" })
+    setTooManyRequestsError!: (params: { key: string }) => void;
 
     private ReportFormatType: unknown = ReportFormatType;
     private isLoading = false;
@@ -280,6 +292,18 @@ export default class ReportsView extends Vue {
                             saveAs(blob, result.resourcePayload.fileName)
                         )
                 );
+            })
+            .catch((err: ResultError) => {
+                this.logger.error(err.resultMessage);
+                if (err.statusCode === 429) {
+                    this.setTooManyRequestsError({ key: "page" });
+                } else {
+                    this.addError({
+                        errorType: ErrorType.Download,
+                        source: ErrorSourceType.ExportRecords,
+                        traceId: err.traceId,
+                    });
+                }
             })
             .finally(() => {
                 this.isGeneratingReport = false;
