@@ -32,7 +32,7 @@ export const mutations: UserMutation = {
             // If there are no preferences, set the default states for tutorial popovers
             PreferenceUtil.setDefaultValue(
                 userProfile.preferences,
-                UserPreferenceType.TutorialMenuNote,
+                UserPreferenceType.TutorialNote,
                 "true"
             );
             PreferenceUtil.setDefaultValue(

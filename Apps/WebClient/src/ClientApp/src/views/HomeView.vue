@@ -92,14 +92,9 @@ export default class HomeView extends Vue {
         quickLinks: QuickLink[];
     }) => Promise<void>;
 
-    @Action("updateUserPreference", { namespace: "user" })
-    updateUserPreference!: (params: {
-        userPreference: UserPreference;
-    }) => Promise<void>;
-
-    @Action("createUserPreference", { namespace: "user" })
-    createUserPreference!: (params: {
-        userPreference: UserPreference;
+    @Action("setUserPreference", { namespace: "user" })
+    setUserPreference!: (params: {
+        preference: UserPreference;
     }) => Promise<void>;
 
     @Getter("webClient", { namespace: "config" })
@@ -132,10 +127,10 @@ export default class HomeView extends Vue {
     private isAddQuickLinkTutorialHidden = false;
 
     private get showAddQuickLinkTutorial(): boolean {
+        const preferenceType = UserPreferenceType.TutorialAddQuickLink;
         return (
-            this.isPreferenceActive(
-                this.user.preferences[UserPreferenceType.TutorialAddQuickLink]
-            ) && !this.isAddQuickLinkTutorialHidden
+            this.user.preferences[preferenceType]?.value === "true" &&
+            !this.isAddQuickLinkTutorialHidden
         );
     }
 
@@ -299,28 +294,15 @@ export default class HomeView extends Vue {
         return this.vaccineRecords.get(this.user.hdid);
     }
 
-    private isPreferenceActive(preference: UserPreference): boolean {
-        return preference?.value === "true";
-    }
-
     private dismissAddQuickLinkTutorial(): void {
         this.logger.debug("Dismissing add quick link tutorial");
-
         this.isAddQuickLinkTutorialHidden = true;
 
-        const preferenceType = UserPreferenceType.TutorialAddQuickLink;
-        const preference = this.user.preferences[preferenceType];
-        preference.value = "false";
-        this.savePreference(preference);
-    }
-
-    private savePreference(userPreference: UserPreference) {
-        if (userPreference.hdId != undefined) {
-            this.updateUserPreference({ userPreference });
-        } else {
-            userPreference.hdId = this.user.hdid;
-            this.createUserPreference({ userPreference });
-        }
+        const preference = {
+            ...this.user.preferences[UserPreferenceType.TutorialAddQuickLink],
+            value: "false",
+        };
+        this.setUserPreference({ preference });
     }
 
     private handleClickHealthRecords(): void {
@@ -335,29 +317,28 @@ export default class HomeView extends Vue {
     }
 
     private handleClickRemoveQuickLink(index: number): void {
+        this.logger.debug("Removing quick link");
         const quickLink = this.enabledQuickLinks[index];
         this.removeQuickLink(quickLink);
     }
 
     private handleClickRemoveVaccineCardQuickLink(): void {
-        const preferenceName = UserPreferenceType.HideVaccineCardQuickLink;
-        if (this.user.preferences[preferenceName] != undefined) {
-            this.user.preferences[preferenceName].value = "true";
-            this.updateUserPreference({
-                userPreference: this.user.preferences[preferenceName],
-            });
-        } else {
-            this.user.preferences[preferenceName] = {
-                hdId: this.user.hdid,
-                preference: preferenceName,
+        this.logger.debug("Removing vaccine card quick link");
+        const preferenceType = UserPreferenceType.HideVaccineCardQuickLink;
+
+        let preference = this.user.preferences[preferenceType];
+        if (preference === undefined) {
+            preference = {
+                preference: preferenceType,
                 value: "true",
                 version: 0,
                 createdDateTime: new DateWrapper().toISO(),
             };
-            this.createUserPreference({
-                userPreference: this.user.preferences[preferenceName],
-            });
+        } else {
+            preference = { ...preference, value: "true" };
         }
+
+        this.setUserPreference({ preference });
     }
 
     private handleClickQuickLink(index: number): void {

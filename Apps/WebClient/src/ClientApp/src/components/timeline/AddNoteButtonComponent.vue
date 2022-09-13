@@ -13,13 +13,11 @@ import { ILogger } from "@/services/interfaces";
 
 @Component
 export default class AddNoteButtonComponent extends Vue {
-    @Getter("user", { namespace: "user" }) user!: User;
+    @Action("setUserPreference", { namespace: "user" })
+    setUserPreference!: (params: { preference: UserPreference }) => void;
 
-    @Action("updateUserPreference", { namespace: "user" })
-    updateUserPreference!: (params: { userPreference: UserPreference }) => void;
-
-    @Action("createUserPreference", { namespace: "user" })
-    createUserPreference!: (params: { userPreference: UserPreference }) => void;
+    @Getter("user", { namespace: "user" })
+    user!: User;
 
     private eventBus = EventBus;
 
@@ -28,35 +26,22 @@ export default class AddNoteButtonComponent extends Vue {
     private isNoteTutorialHidden = false;
 
     private get showNoteTutorial(): boolean {
+        const preferenceType = UserPreferenceType.TutorialNote;
         return (
-            this.isPreferenceActive(
-                this.user.preferences[UserPreferenceType.TutorialMenuNote]
-            ) && !this.isNoteTutorialHidden
+            this.user.preferences[preferenceType]?.value === "true" &&
+            !this.isNoteTutorialHidden
         );
-    }
-
-    private isPreferenceActive(preference: UserPreference): boolean {
-        return preference?.value === "true";
     }
 
     private dismissNoteTutorial(): void {
         this.logger.debug("Dismissing note tutorial");
-
         this.isNoteTutorialHidden = true;
 
-        const preferenceType = UserPreferenceType.TutorialMenuNote;
-        const preference = this.user.preferences[preferenceType];
-        preference.value = "false";
-        this.savePreference(preference);
-    }
-
-    private savePreference(userPreference: UserPreference) {
-        if (userPreference.hdId != undefined) {
-            this.updateUserPreference({ userPreference });
-        } else {
-            userPreference.hdId = this.user.hdid;
-            this.createUserPreference({ userPreference });
-        }
+        const preference = {
+            ...this.user.preferences[UserPreferenceType.TutorialNote],
+            value: "false",
+        };
+        this.setUserPreference({ preference });
     }
 
     private createNote(): void {

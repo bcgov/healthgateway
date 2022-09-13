@@ -43,11 +43,10 @@ export default class DependentsView extends Vue {
     @Action("setTooManyRequestsWarning", { namespace: "errorBanner" })
     setTooManyRequestsWarning!: (params: { key: string }) => void;
 
-    @Action("createUserPreference", { namespace: "user" })
-    createUserPreference!: (params: { userPreference: UserPreference }) => void;
-
-    @Action("updateUserPreference", { namespace: "user" })
-    updateUserPreference!: (params: { userPreference: UserPreference }) => void;
+    @Action("setUserPreference", { namespace: "user" })
+    setUserPreference!: (params: {
+        preference: UserPreference;
+    }) => Promise<void>;
 
     @Getter("user", { namespace: "user" })
     user!: User;
@@ -76,10 +75,10 @@ export default class DependentsView extends Vue {
     private isAddDependentTutorialHidden = false;
 
     private get showAddDependentTutorial(): boolean {
+        const preferenceType = UserPreferenceType.TutorialAddDependent;
         return (
-            this.isPreferenceActive(
-                this.user.preferences[UserPreferenceType.TutorialAddDependent]
-            ) && !this.isAddDependentTutorialHidden
+            this.user.preferences[preferenceType]?.value === "true" &&
+            !this.isAddDependentTutorialHidden
         );
     }
 
@@ -138,28 +137,15 @@ export default class DependentsView extends Vue {
         });
     }
 
-    private isPreferenceActive(preference: UserPreference): boolean {
-        return preference?.value === "true";
-    }
-
     private dismissAddDependentTutorial(): void {
         this.logger.debug("Dismissing add dependent tutorial");
-
         this.isAddDependentTutorialHidden = true;
 
-        const preferenceType = UserPreferenceType.TutorialAddDependent;
-        const preference = this.user.preferences[preferenceType];
-        preference.value = "false";
-        this.savePreference(preference);
-    }
-
-    private savePreference(userPreference: UserPreference) {
-        if (userPreference.hdId != undefined) {
-            this.updateUserPreference({ userPreference });
-        } else {
-            userPreference.hdId = this.user.hdid;
-            this.createUserPreference({ userPreference });
-        }
+        const preference = {
+            ...this.user.preferences[UserPreferenceType.TutorialAddDependent],
+            value: "false",
+        };
+        this.setUserPreference({ preference });
     }
 
     private showModal(): void {

@@ -36,11 +36,10 @@ library.add(
     },
 })
 export default class SidebarComponent extends Vue {
-    @Action("updateUserPreference", { namespace: "user" })
-    updateUserPreference!: (params: { userPreference: UserPreference }) => void;
-
-    @Action("createUserPreference", { namespace: "user" })
-    createUserPreference!: (params: { userPreference: UserPreference }) => void;
+    @Action("setUserPreference", { namespace: "user" })
+    setUserPreference!: (params: {
+        preference: UserPreference;
+    }) => Promise<void>;
 
     @Getter("isMobile")
     isMobileWidth!: boolean;
@@ -112,33 +111,19 @@ export default class SidebarComponent extends Vue {
 
     private dismissExportTutorial(): void {
         this.logger.debug("Dismissing export tutorial");
-
         this.isExportTutorialHidden = true;
 
-        const preferenceType = UserPreferenceType.TutorialMenuExport;
-        const preference = this.user.preferences[preferenceType];
-        preference.value = "false";
-        this.savePreference(preference);
-    }
-
-    private savePreference(userPreference: UserPreference) {
-        if (userPreference.hdId != undefined) {
-            this.updateUserPreference({ userPreference });
-        } else {
-            userPreference.hdId = this.user.hdid;
-            this.createUserPreference({ userPreference });
-        }
-    }
-
-    private isPreferenceActive(preference: UserPreference): boolean {
-        return preference?.value === "true";
+        const preference = {
+            ...this.user.preferences[UserPreferenceType.TutorialMenuExport],
+            value: "false",
+        };
+        this.setUserPreference({ preference });
     }
 
     private get showExportTutorial(): boolean {
+        const preferenceType = UserPreferenceType.TutorialMenuExport;
         return (
-            this.isPreferenceActive(
-                this.user.preferences[UserPreferenceType.TutorialMenuExport]
-            ) &&
+            this.user.preferences[preferenceType]?.value === "true" &&
             !this.isExportTutorialHidden &&
             (this.isOpen || !this.isMobileWidth) &&
             !this.isAnimating

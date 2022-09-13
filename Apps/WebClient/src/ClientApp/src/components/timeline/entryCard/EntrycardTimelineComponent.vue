@@ -38,11 +38,10 @@ export default class EntrycardTimelineComponent extends Vue {
     @Prop({ default: false }) isMobileDetails!: boolean;
     @Prop({ default: false }) hasAttachment!: boolean;
 
-    @Action("createUserPreference", { namespace: "user" })
-    createUserPreference!: (params: { userPreference: UserPreference }) => void;
-
-    @Action("updateUserPreference", { namespace: "user" })
-    updateUserPreference!: (params: { userPreference: UserPreference }) => void;
+    @Action("setUserPreference", { namespace: "user" })
+    setUserPreference!: (params: {
+        preference: UserPreference;
+    }) => Promise<void>;
 
     @Action("setSeenTutorialComment", { namespace: "user" })
     setSeenTutorialComment!: (params: { value: boolean }) => void;
@@ -103,10 +102,10 @@ export default class EntrycardTimelineComponent extends Vue {
     }
 
     private get showCommentTutorial(): boolean {
+        const preferenceType = UserPreferenceType.TutorialComment;
         return (
-            this.isPreferenceActive(
-                this.user.preferences[UserPreferenceType.TutorialComment]
-            ) && !this.isCommentTutorialHidden
+            this.user.preferences[preferenceType]?.value === "true" &&
+            !this.isCommentTutorialHidden
         );
     }
 
@@ -152,26 +151,15 @@ export default class EntrycardTimelineComponent extends Vue {
         }
     }
 
-    private isPreferenceActive(preference: UserPreference): boolean {
-        return preference?.value === "true";
-    }
-
     private dismissCommentTutorial(): void {
         this.logger.debug("Dismissing comment tutorial");
         this.isCommentTutorialHidden = true;
-        const preferenceType = UserPreferenceType.TutorialComment;
-        const preference = this.user.preferences[preferenceType];
-        preference.value = "false";
-        this.savePreference(preference);
-    }
 
-    private savePreference(userPreference: UserPreference) {
-        if (userPreference.hdId != undefined) {
-            this.updateUserPreference({ userPreference });
-        } else {
-            userPreference.hdId = this.user.hdid;
-            this.createUserPreference({ userPreference });
-        }
+        const preference = {
+            ...this.user.preferences[UserPreferenceType.TutorialComment],
+            value: "false",
+        };
+        this.setUserPreference({ preference });
     }
 }
 </script>

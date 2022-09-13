@@ -1,5 +1,5 @@
 export default abstract class UserPreferenceType {
-    public static TutorialMenuNote = "tutorialMenuNote";
+    public static TutorialNote = "tutorialMenuNote";
     public static TutorialMenuExport = "tutorialMenuExport";
     public static TutorialAddDependent = "tutorialAddDependent";
     public static TutorialAddQuickLink = "tutorialAddQuickLink";

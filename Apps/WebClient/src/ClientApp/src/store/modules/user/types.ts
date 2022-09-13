@@ -37,9 +37,6 @@ export interface UserGetters extends GetterTree<UserState, RootState> {
     smsResendDateTime(state: UserState): DateWrapper | undefined;
     seenTutorialComment(state: UserState): boolean;
     hasTermsOfServiceUpdated(state: UserState): boolean;
-    getPreference: (
-        state: UserState
-    ) => (preferenceName: string) => UserPreference | undefined;
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     quickLinks(state: UserState, getters: any): QuickLink[] | undefined;
     patientData(state: UserState): PatientData;
@@ -61,13 +58,9 @@ export interface UserActions extends ActionTree<UserState, RootState> {
         context: StoreContext,
         params: { dateTime: DateWrapper }
     ): void;
-    updateUserPreference(
+    setUserPreference(
         context: StoreContext,
-        params: { userPreference: UserPreference }
-    ): Promise<void>;
-    createUserPreference(
-        context: StoreContext,
-        params: { userPreference: UserPreference }
+        params: { preference: UserPreference }
     ): Promise<void>;
     updateQuickLinks(
         context: StoreContext,

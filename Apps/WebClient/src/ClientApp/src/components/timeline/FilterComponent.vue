@@ -38,11 +38,8 @@ export default class FilterComponent extends Vue {
     @Action("setFilter", { namespace: "timeline" })
     setFilter!: (filterBuilder: TimelineFilterBuilder) => void;
 
-    @Action("createUserPreference", { namespace: "user" })
-    createUserPreference!: (params: { userPreference: UserPreference }) => void;
-
-    @Action("updateUserPreference", { namespace: "user" })
-    updateUserPreference!: (params: { userPreference: UserPreference }) => void;
+    @Action("setUserPreference", { namespace: "user" })
+    setUserPreference!: (params: { preference: UserPreference }) => void;
 
     @Getter("webClient", { namespace: "config" })
     config!: WebClientConfiguration;
@@ -107,10 +104,10 @@ export default class FilterComponent extends Vue {
     }
 
     private get showFilterTutorial(): boolean {
+        const preferenceType = UserPreferenceType.TutorialTimelineFilter;
         return (
-            this.isPreferenceActive(
-                this.user.preferences[UserPreferenceType.TutorialTimelineFilter]
-            ) && !this.isFilterTutorialHidden
+            this.user.preferences[preferenceType]?.value === "true" &&
+            !this.isFilterTutorialHidden
         );
     }
 
@@ -204,28 +201,15 @@ export default class FilterComponent extends Vue {
             : num.toString();
     }
 
-    private isPreferenceActive(preference: UserPreference): boolean {
-        return preference?.value === "true";
-    }
-
     private dismissFilterTutorial(): void {
         this.logger.debug("Dismissing timeline filter tutorial");
-
         this.isFilterTutorialHidden = true;
 
-        const preferenceType = UserPreferenceType.TutorialTimelineFilter;
-        const preference = this.user.preferences[preferenceType];
-        preference.value = "false";
-        this.savePreference(preference);
-    }
-
-    private savePreference(userPreference: UserPreference) {
-        if (userPreference.hdId != undefined) {
-            this.updateUserPreference({ userPreference });
-        } else {
-            userPreference.hdId = this.user.hdid;
-            this.createUserPreference({ userPreference });
-        }
+        const preference = {
+            ...this.user.preferences[UserPreferenceType.TutorialTimelineFilter],
+            value: "false",
+        };
+        this.setUserPreference({ preference });
     }
 }
 </script>
