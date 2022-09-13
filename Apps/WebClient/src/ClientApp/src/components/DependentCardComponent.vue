@@ -374,6 +374,18 @@ export default class DependentCardComponent extends Vue {
                         )
                 );
             })
+            .catch((err: ResultError) => {
+                this.logger.error(err.resultMessage);
+                if (err.statusCode === 429) {
+                    this.setTooManyRequestsError({ key: "page" });
+                } else {
+                    this.addError({
+                        errorType: ErrorType.Download,
+                        source: ErrorSourceType.DependentImmunizationReport,
+                        traceId: err.traceId,
+                    });
+                }
+            })
             .finally(() => {
                 this.isReportDownloading = false;
             });
