@@ -16,6 +16,7 @@
 namespace HealthGateway.ClinicalDocument
 {
     using System.Diagnostics.CodeAnalysis;
+    using HealthGateway.ClinicalDocument.Api;
     using HealthGateway.ClinicalDocument.Services;
     using HealthGateway.Common.AccessManagement.Authentication;
     using HealthGateway.Common.Api;
@@ -82,6 +83,9 @@ namespace HealthGateway.ClinicalDocument
             services.AddRefitClient<ITokenSwapApi>()
                 .ConfigureHttpClient(c => c.BaseAddress = phsaConfig.TokenBaseUrl);
             services.AddRefitClient<IPersonalAccountsApi>()
+                .ConfigureHttpClient(c => c.BaseAddress = phsaConfig.BaseUrl)
+                .AddHttpMessageHandler<AuthHeaderHandler>();
+            services.AddRefitClient<IClinicalDocumentsApi>()
                 .ConfigureHttpClient(c => c.BaseAddress = phsaConfig.BaseUrl)
                 .AddHttpMessageHandler<AuthHeaderHandler>();
         }

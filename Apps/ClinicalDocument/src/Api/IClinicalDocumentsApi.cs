@@ -15,9 +15,9 @@
 // -------------------------------------------------------------------------
 namespace HealthGateway.ClinicalDocument.Api
 {
-    using System.Collections.Generic;
     using System.Threading.Tasks;
-    using HealthGateway.ClinicalDocument.Models;
+    using HealthGateway.ClinicalDocument.Models.PHSA;
+    using HealthGateway.Common.Models.PHSA;
     using Refit;
 
     /// <summary>
@@ -28,9 +28,18 @@ namespace HealthGateway.ClinicalDocument.Api
         /// <summary>
         /// Retrieves clinical document records by patient identifier.
         /// </summary>
-        /// <param name="pid">The pid to get clinical document records.</param>
+        /// <param name="pid">The patient id to get clinical document records.</param>
         /// <returns>The clinical document records for the patient identifier.</returns>
-        [Get("/patient/{pid}/health-data")]
-        Task<IApiResponse<IEnumerable<ClinicalDocumentRecord>>> GetClinicalDocumentRecordsByPid(string pid);
+        [Get("/patient/{pid}/health-data?Categories=4")]
+        Task<IApiResponse<PhsaHealthDataResponse>> GetClinicalDocumentRecords(string pid);
+
+        /// <summary>
+        /// Retrieves clinical document file by patient identifier and file id.
+        /// </summary>
+        /// <param name="pid">The patient id to get a clinical document file.</param>
+        /// <param name="id">The file id to get a clinical document file.</param>
+        /// <returns>The clinical document file for the patient identifier and file id.</returns>
+        [Get("/patient/{pid}/health-data/file/{id}")]
+        Task<IApiResponse<EncodedMedia>> GetClinicalDocumentFile(string pid, string id);
     }
 }
