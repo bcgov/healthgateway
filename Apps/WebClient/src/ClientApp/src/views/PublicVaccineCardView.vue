@@ -604,6 +604,7 @@ export default class PublicVaccineCardView extends Vue {
                         target="privacy-statement"
                         triggers="hover focus"
                         placement="topright"
+                        boundary="viewport"
                     >
                         Your information is being collected to provide you with
                         your COVID-19 vaccination status under s. 26(c) of the

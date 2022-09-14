@@ -58,6 +58,18 @@ describe("Laboratory Orders", () => {
                 cy.get("[data-testid=reporting-lab-information-text]").should(
                     "be.visible"
                 );
+                cy.get("[data-testid=other-resources-info-button]")
+                    .should("be.visible")
+                    .click();
+                cy.get("[data-testid=other-resources-info-popover]").should(
+                    "be.visible"
+                );
+                cy.get("[data-testid=result-info-button]")
+                    .should("be.visible")
+                    .click();
+                cy.get("[data-testid=result-info-popover]").should(
+                    "be.visible"
+                );
 
                 cy.log("Verifying partial status");
                 cy.get("[data-testid=laboratoryResultTable]").within(() => {

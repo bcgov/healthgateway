@@ -269,6 +269,7 @@ export default class FilterComponent extends Vue {
                 data-testid="filterContainer"
                 placement="bottom"
                 fallback-placement="clockwise"
+                boundary="viewport"
                 menu-class="z-index-large w-100"
             >
                 <div class="px-1">

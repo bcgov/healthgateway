@@ -635,6 +635,7 @@ export default class PublicCovidTestView extends Vue {
                         target="privacy-statement"
                         triggers="hover focus"
                         placement="topright"
+                        boundary="viewport"
                     >
                         Your information is being collected to provide you with
                         your COVID-19 test result under s. 26(c) of the
