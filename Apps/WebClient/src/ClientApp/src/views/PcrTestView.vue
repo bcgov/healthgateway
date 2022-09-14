@@ -740,6 +740,7 @@ export default class PcrTestView extends Vue {
                                         :target="'pcr-no-phn-info-button'"
                                         triggers="hover focus"
                                         placement="bottomleft"
+                                        boundary="viewport"
                                         data-testid="pcr-no-phn-info-popover"
                                     >
                                         You can find your personal health number
@@ -1011,6 +1012,7 @@ export default class PcrTestView extends Vue {
                                     target="privacy-statement"
                                     triggers="hover focus"
                                     placement="topright"
+                                    boundary="viewport"
                                 >
                                     Your information is being collected to
                                     provide you with your COVID-19 test result
