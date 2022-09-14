@@ -13,26 +13,32 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //-------------------------------------------------------------------------
-namespace HealthGateway.ClinicalDocument.Models
+namespace HealthGateway.ClinicalDocument.Models.PHSA
 {
     using System;
     using System.Text.Json.Serialization;
 
     /// <summary>
-    /// Represents a clinical document record.
+    /// Represents the PHSA model for a clinical document record.
     /// </summary>
-    public class ClinicalDocumentRecord
+    public class PhsaClinicalDocumentRecord
     {
         /// <summary>
         /// Gets or sets the id.
         /// </summary>
-        [JsonPropertyName("id")]
+        [JsonPropertyName("healthDataId")]
         public string Id { get; set; } = string.Empty;
+
+        /// <summary>
+        /// Gets or sets the data type.
+        /// </summary>
+        [JsonPropertyName("healthDataType")]
+        public string DataType { get; set; } = string.Empty;
 
         /// <summary>
         /// Gets or sets the file id.
         /// </summary>
-        [JsonPropertyName("fileId")]
+        [JsonPropertyName("healthDataFileId")]
         public string FileId { get; set; } = string.Empty;
 
         /// <summary>
@@ -64,5 +70,11 @@ namespace HealthGateway.ClinicalDocument.Models
         /// </summary>
         [JsonPropertyName("serviceDate")]
         public DateTime ServiceDate { get; set; }
+
+        /// <summary>
+        /// Gets or sets the source system id.
+        /// </summary>
+        [JsonPropertyName("sourceSystemId")]
+        public string SourceSystemId { get; set; } = string.Empty;
     }
 }

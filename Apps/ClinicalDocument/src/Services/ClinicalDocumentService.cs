@@ -19,8 +19,10 @@ namespace HealthGateway.ClinicalDocument.Services
     using System.Diagnostics;
     using System.Linq;
     using System.Threading.Tasks;
+    using AutoMapper;
     using HealthGateway.ClinicalDocument.Api;
     using HealthGateway.ClinicalDocument.Models;
+    using HealthGateway.ClinicalDocument.Models.PHSA;
     using HealthGateway.Common.Data.Constants;
     using HealthGateway.Common.Data.ViewModels;
     using HealthGateway.Common.ErrorHandling;
@@ -32,9 +34,10 @@ namespace HealthGateway.ClinicalDocument.Services
     /// <inheritdoc/>
     public class ClinicalDocumentService : IClinicalDocumentService
     {
+        private readonly IMapper autoMapper;
+        private readonly IClinicalDocumentsApi clinicalDocumentsApi;
         private readonly ILogger<ClinicalDocumentService> logger;
         private readonly IPersonalAccountsService personalAccountsService;
-        private readonly IClinicalDocumentsApi clinicalDocumentsApi;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ClinicalDocumentService"/> class.
@@ -42,14 +45,17 @@ namespace HealthGateway.ClinicalDocument.Services
         /// <param name="logger">Injected logger.</param>
         /// <param name="personalAccountsService">The injected personal accounts service.</param>
         /// <param name="clinicalDocumentsApi">The injected clinical documents api.</param>
+        /// <param name="autoMapper">The injected automapper provider.</param>
         public ClinicalDocumentService(
             ILogger<ClinicalDocumentService> logger,
             IPersonalAccountsService personalAccountsService,
-            IClinicalDocumentsApi clinicalDocumentsApi)
+            IClinicalDocumentsApi clinicalDocumentsApi,
+            IMapper autoMapper)
         {
             this.logger = logger;
             this.personalAccountsService = personalAccountsService;
             this.clinicalDocumentsApi = clinicalDocumentsApi;
+            this.autoMapper = autoMapper;
         }
 
         private static ActivitySource Source { get; } = new(nameof(ClinicalDocumentService));
@@ -67,13 +73,14 @@ namespace HealthGateway.ClinicalDocument.Services
             if (response.ResultStatus == ResultType.Success)
             {
                 this.logger.LogDebug("PID Fetched: {Pid}", response.ResourcePayload?.PatientIdentity?.Pid);
-                IApiResponse<IEnumerable<ClinicalDocumentRecord>> apiResponse =
-                    await this.clinicalDocumentsApi.GetClinicalDocumentRecordsByPid(response.ResourcePayload?.PatientIdentity?.Pid.ToString()).ConfigureAwait(true);
+                IApiResponse<PhsaHealthDataResponse> apiResponse =
+                    await this.clinicalDocumentsApi.GetClinicalDocumentRecords(response.ResourcePayload?.PatientIdentity?.Pid.ToString()).ConfigureAwait(true);
                 if (apiResponse.IsSuccessStatusCode)
                 {
+                    IList<ClinicalDocumentRecord> clinicalDocuments = this.autoMapper.Map<IList<ClinicalDocumentRecord>>(apiResponse.Content?.Data);
                     requestResult.ResultStatus = ResultType.Success;
-                    requestResult.ResourcePayload = apiResponse.Content;
-                    requestResult.TotalResultCount = apiResponse.Content.Count();
+                    requestResult.ResourcePayload = clinicalDocuments;
+                    requestResult.TotalResultCount = apiResponse.Content?.Data.Count();
                 }
                 else
                 {
@@ -106,7 +113,24 @@ namespace HealthGateway.ClinicalDocument.Services
             RequestResult<PersonalAccount?> response = await this.personalAccountsService.GetPatientAccountAsync(hdid).ConfigureAwait(true);
             if (response.ResultStatus == ResultType.Success)
             {
+                string? pid = response.ResourcePayload?.PatientIdentity?.Pid.ToString();
                 this.logger.LogDebug("PID Fetched: {Pid}", response.ResourcePayload?.PatientIdentity?.Pid);
+                IApiResponse<EncodedMedia> apiResponse =
+                    await this.clinicalDocumentsApi.GetClinicalDocumentFile(pid, fileId).ConfigureAwait(true);
+                if (apiResponse.IsSuccessStatusCode)
+                {
+                    requestResult.ResultStatus = ResultType.Success;
+                    requestResult.ResourcePayload = apiResponse.Content;
+                }
+                else
+                {
+                    this.logger.LogCritical("API Exception {Error}", apiResponse.Error?.ToString());
+                    requestResult.ResultError = new()
+                    {
+                        ResultMessage = $"API Exception {apiResponse.Error}",
+                        ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.PHSA),
+                    };
+                }
             }
             else
             {

@@ -45,7 +45,7 @@ namespace HealthGateway.Admin.Server.Services
         /// <param name="feedbackDelegate">The feedback delegate to interact with the DB.</param>
         /// <param name="adminTagDelegate">The admin tag delegate to interact with the DB.</param>
         /// <param name="userProfileDelegate">The user profile delegate to interact with the DB.</param>
-        /// <param name="autoMapper">The inject automapper provider.</param>
+        /// <param name="autoMapper">The injected automapper provider.</param>
         public UserFeedbackService(
             ILogger<UserFeedbackService> logger,
             IFeedbackDelegate feedbackDelegate,
