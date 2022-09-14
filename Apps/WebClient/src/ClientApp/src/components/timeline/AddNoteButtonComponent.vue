@@ -13,53 +13,35 @@ import { ILogger } from "@/services/interfaces";
 
 @Component
 export default class AddNoteButtonComponent extends Vue {
-    @Getter("user", { namespace: "user" }) user!: User;
+    @Action("setUserPreference", { namespace: "user" })
+    setUserPreference!: (params: { preference: UserPreference }) => void;
 
-    @Action("updateUserPreference", { namespace: "user" })
-    updateUserPreference!: (params: { userPreference: UserPreference }) => void;
-
-    @Action("createUserPreference", { namespace: "user" })
-    createUserPreference!: (params: { userPreference: UserPreference }) => void;
+    @Getter("user", { namespace: "user" })
+    user!: User;
 
     private eventBus = EventBus;
 
-    private isNoteTutorialEnabled = true;
-
-    private UserPreferenceType = UserPreferenceType;
-
     private logger!: ILogger;
 
+    private isNoteTutorialHidden = false;
+
     private get showNoteTutorial(): boolean {
+        const preferenceType = UserPreferenceType.TutorialNote;
         return (
-            this.isPreferenceActive(
-                this.user.preferences[UserPreferenceType.TutorialMenuNote]
-            ) && this.isNoteTutorialEnabled
+            this.user.preferences[preferenceType]?.value === "true" &&
+            !this.isNoteTutorialHidden
         );
     }
 
-    private set showNoteTutorial(value: boolean) {
-        this.isNoteTutorialEnabled = value;
-    }
+    private dismissNoteTutorial(): void {
+        this.logger.debug("Dismissing note tutorial");
+        this.isNoteTutorialHidden = true;
 
-    private isPreferenceActive(tutorialPopover: UserPreference): boolean {
-        return tutorialPopover?.value === "true";
-    }
-
-    private dismissTutorial(userPreference: UserPreference): void {
-        this.logger.debug(
-            `Dismissing tutorial ${userPreference.preference}...`
-        );
-        userPreference.value = "false";
-        if (userPreference.hdId != undefined) {
-            this.updateUserPreference({
-                userPreference,
-            });
-        } else {
-            userPreference.hdId = this.user.hdid;
-            this.createUserPreference({
-                userPreference,
-            });
-        }
+        const preference = {
+            ...this.user.preferences[UserPreferenceType.TutorialNote],
+            value: "false",
+        };
+        this.setUserPreference({ preference });
     }
 
     private createNote(): void {
@@ -85,30 +67,22 @@ export default class AddNoteButtonComponent extends Vue {
         </hg-button>
         <b-popover
             triggers="manual"
-            :show.sync="showNoteTutorial"
+            :show="showNoteTutorial"
             target="addNoteBtn"
-            custom-class="popover-style"
             placement="bottom"
-            variant="dark"
             boundary="viewport"
         >
             <div>
                 <hg-button
                     class="float-right text-dark p-0 ml-2"
                     variant="icon"
-                    @click="
-                        dismissTutorial(
-                            user.preferences[
-                                UserPreferenceType.TutorialMenuNote
-                            ]
-                        )
-                    "
+                    @click="dismissNoteTutorial()"
                     >×</hg-button
                 >
             </div>
             <div data-testid="notesPopover">
-                Add Notes to track your important health events e.g. Broke ankle
-                in Cuba
+                Add your own notes to track important details, such as health
+                visit reason, medication side effect, etc.
             </div>
         </b-popover>
     </div>

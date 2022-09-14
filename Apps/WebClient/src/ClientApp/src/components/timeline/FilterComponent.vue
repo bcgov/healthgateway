@@ -12,8 +12,11 @@ import { Action, Getter } from "vuex-class";
 
 import DatePickerComponent from "@/components/DatePickerComponent.vue";
 import { EntryType, entryTypeMap } from "@/constants/entryType";
+import UserPreferenceType from "@/constants/userPreferenceType";
 import type { WebClientConfiguration } from "@/models/configData";
 import TimelineFilter, { TimelineFilterBuilder } from "@/models/timelineFilter";
+import User from "@/models/user";
+import { UserPreference } from "@/models/userPreference";
 import container from "@/plugins/container";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import { ILogger } from "@/services/interfaces";
@@ -34,6 +37,9 @@ interface EntryTypeFilter {
 export default class FilterComponent extends Vue {
     @Action("setFilter", { namespace: "timeline" })
     setFilter!: (filterBuilder: TimelineFilterBuilder) => void;
+
+    @Action("setUserPreference", { namespace: "user" })
+    setUserPreference!: (params: { preference: UserPreference }) => void;
 
     @Getter("webClient", { namespace: "config" })
     config!: WebClientConfiguration;
@@ -71,9 +77,13 @@ export default class FilterComponent extends Vue {
     @Getter("filter", { namespace: "timeline" })
     activeFilter!: TimelineFilter;
 
+    @Getter("user", { namespace: "user" })
+    user!: User;
+
     private logger!: ILogger;
     private isModalVisible = false;
     private isMenuVisible = false;
+    private isFilterTutorialHidden = false;
 
     private startDate = "";
     private endDate = "";
@@ -91,6 +101,14 @@ export default class FilterComponent extends Vue {
 
     private get hasFilterSelected(): boolean {
         return this.activeFilter.hasActiveFilter();
+    }
+
+    private get showFilterTutorial(): boolean {
+        const preferenceType = UserPreferenceType.TutorialTimelineFilter;
+        return (
+            this.user.preferences[preferenceType]?.value === "true" &&
+            !this.isFilterTutorialHidden
+        );
     }
 
     private mounted(): void {
@@ -182,6 +200,17 @@ export default class FilterComponent extends Vue {
               ).toString() + "K"
             : num.toString();
     }
+
+    private dismissFilterTutorial(): void {
+        this.logger.debug("Dismissing timeline filter tutorial");
+        this.isFilterTutorialHidden = true;
+
+        const preference = {
+            ...this.user.preferences[UserPreferenceType.TutorialTimelineFilter],
+            value: "false",
+        };
+        this.setUserPreference({ preference });
+    }
 }
 </script>
 
@@ -211,6 +240,26 @@ export default class FilterComponent extends Vue {
                     class="ml-2"
                 />
             </hg-button>
+            <b-popover
+                triggers="manual"
+                :show="showFilterTutorial"
+                target="filterBtn"
+                placement="right"
+                boundary="viewport"
+            >
+                <div>
+                    <hg-button
+                        class="float-right text-dark p-0 ml-2"
+                        variant="icon"
+                        @click="dismissFilterTutorial()"
+                        >×</hg-button
+                    >
+                </div>
+                <div data-testid="filter-tutorial-popover">
+                    Filter by health record type, date or keyword to find what
+                    you need.
+                </div>
+            </b-popover>
             <b-popover
                 target="filterBtn"
                 :show.sync="isMenuVisible"
