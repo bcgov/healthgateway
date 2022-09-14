@@ -146,11 +146,58 @@ export default class LaboratoryOrderTimelineComponent extends Vue {
             </div>
             <div class="my-2">
                 <div data-testid="reporting-lab-information-text">
-                    <span
-                        ><router-link to="/faq">Find resources</router-link> to
-                        learn about your lab test and what the results
-                        mean.</span
+                    <span>Find resources about your lab tests.</span>
+                    <hg-button
+                        :id="`resources-${index}-${datekey}`"
+                        aria-label="Other Resources"
+                        href="#"
+                        variant="link"
+                        data-testid="other-resources-info-button"
+                        class="shadow-none align-baseline p-0 ml-1"
                     >
+                        <hg-icon icon="info-circle" size="small" />
+                    </hg-button>
+                    <b-popover
+                        :target="`resources-${index}-${datekey}`"
+                        triggers="hover focus"
+                        placement="topright"
+                        boundary="viewport"
+                        data-testid="other-resources-info-popover"
+                    >
+                        <p>
+                            Use these websites to learn about specific types of
+                            lab tests:
+                        </p>
+                        <ul class="mb-0">
+                            <li>
+                                <a
+                                    href="https://www.healthlinkbc.ca/tests-treatments-medications/medical-tests"
+                                    target="_blank"
+                                    rel="noopener"
+                                >
+                                    HealthLink BC
+                                </a>
+                            </li>
+                            <li>
+                                <a
+                                    href="https://www.mayocliniclabs.com/"
+                                    target="_blank"
+                                    rel="noopener"
+                                >
+                                    Mayo Clinic Laboratories
+                                </a>
+                            </li>
+                            <li>
+                                <a
+                                    href="https://www.mypathologyreport.ca/"
+                                    target="_blank"
+                                    rel="noopener"
+                                >
+                                    For pathology tests (like a biopsy)
+                                </a>
+                            </li>
+                        </ul>
+                    </b-popover>
                 </div>
             </div>
             <b-row class="my-3">
@@ -196,6 +243,42 @@ export default class LaboratoryOrderTimelineComponent extends Vue {
                         {{ data.value }}
                     </strong>
                 </template>
+                <template #head(result)="data">
+                    <span>{{ data.label }}</span>
+                    <hg-button
+                        :id="`result-info-${index}-${datekey}`"
+                        aria-label="Other Resources"
+                        href="#"
+                        variant="link"
+                        data-testid="result-info-button"
+                        class="shadow-none align-baseline p-0 ml-1"
+                    >
+                        <hg-icon icon="info-circle" size="small" />
+                    </hg-button>
+                    <b-popover
+                        :target="`result-info-${index}-${datekey}`"
+                        triggers="hover focus"
+                        placement="topright"
+                        boundary="viewport"
+                        data-testid="result-info-popover"
+                    >
+                        <p>
+                            Follow the instructions from your health care
+                            provider. When needed, they can explain what your
+                            results mean. Remember:
+                        </p>
+                        <ul class="mb-0">
+                            <li>
+                                <strong>Ranges</strong> are different between
+                                laboratories
+                            </li>
+                            <li>
+                                <strong>“Out of range”</strong> results may be
+                                <strong>normal</strong> for you
+                            </li>
+                        </ul>
+                    </b-popover>
+                </template>
                 <template #cell(status)="data">
                     <span class="mr-1">{{ data.value }}</span>
                     <hg-button
@@ -214,6 +297,7 @@ export default class LaboratoryOrderTimelineComponent extends Vue {
                         :target="getStatusInfoId(entry.labPdfId, data.index)"
                         triggers="hover focus"
                         :placement="isMobileDetails ? 'bottom' : 'left'"
+                        boundary="viewport"
                         :data-testid="`${getStatusInfoId(
                             entry.labPdfId,
                             data.index
