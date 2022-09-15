@@ -4,15 +4,13 @@ import { faComment as farComment } from "@fortawesome/free-regular-svg-icons";
 import { faPaperclip } from "@fortawesome/free-solid-svg-icons";
 import Vue from "vue";
 import { Component, Prop, Watch } from "vue-property-decorator";
-import { Action, Getter } from "vuex-class";
+import { Getter } from "vuex-class";
 
-import UserPreferenceType from "@/constants/userPreferenceType";
 import EventBus, { EventMessageName } from "@/eventbus";
 import type { WebClientConfiguration } from "@/models/configData";
 import { DateWrapper } from "@/models/dateWrapper";
 import TimelineEntry from "@/models/timelineEntry";
 import User from "@/models/user";
-import { UserPreference } from "@/models/userPreference";
 import container from "@/plugins/container";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import { ILogger } from "@/services/interfaces";
@@ -23,7 +21,7 @@ library.add(farComment, faPaperclip);
 
 @Component({
     components: {
-        CommentSection: CommentSectionComponent,
+        CommentSectionComponent,
     },
 })
 export default class EntrycardTimelineComponent extends Vue {
@@ -38,22 +36,11 @@ export default class EntrycardTimelineComponent extends Vue {
     @Prop({ default: false }) isMobileDetails!: boolean;
     @Prop({ default: false }) hasAttachment!: boolean;
 
-    @Action("setUserPreference", { namespace: "user" })
-    setUserPreference!: (params: {
-        preference: UserPreference;
-    }) => Promise<void>;
-
-    @Action("setSeenTutorialComment", { namespace: "user" })
-    setSeenTutorialComment!: (params: { value: boolean }) => void;
-
     @Getter("isMobile")
     isMobileWidth!: boolean;
 
     @Getter("webClient", { namespace: "config" })
     config!: WebClientConfiguration;
-
-    @Getter("seenTutorialComment", { namespace: "user" })
-    seenTutorialComment!: boolean;
 
     @Getter("user", { namespace: "user" })
     user!: User;
@@ -61,7 +48,6 @@ export default class EntrycardTimelineComponent extends Vue {
     private logger!: ILogger;
     private eventBus = EventBus;
     private detailsVisible = false;
-    private isCommentTutorialHidden = true;
 
     private get icon(): string {
         return this.entryIcon ?? "question";
@@ -101,31 +87,10 @@ export default class EntrycardTimelineComponent extends Vue {
         return this.entry.comments !== null ? this.entry.comments.length : 0;
     }
 
-    private get showCommentTutorial(): boolean {
-        const preferenceType = UserPreferenceType.TutorialComment;
-        return (
-            this.user.preferences[preferenceType]?.value === "true" &&
-            !this.isCommentTutorialHidden
-        );
-    }
-
     @Watch("isMobileWidth")
     private onMobileWidthChanged(): void {
         if (this.isMobileWidth && !this.isMobileDetails) {
             this.detailsVisible = false;
-        }
-    }
-
-    @Watch("detailsVisible")
-    private onDetailsVisibleChanged(): void {
-        if (
-            this.detailsVisible &&
-            this.allowComment &&
-            this.isCommentEnabled &&
-            !this.seenTutorialComment
-        ) {
-            this.isCommentTutorialHidden = false;
-            this.setSeenTutorialComment({ value: true });
         }
     }
 
@@ -149,17 +114,6 @@ export default class EntrycardTimelineComponent extends Vue {
                 this.detailsVisible = !this.detailsVisible;
             }
         }
-    }
-
-    private dismissCommentTutorial(): void {
-        this.logger.debug("Dismissing comment tutorial");
-        this.isCommentTutorialHidden = true;
-
-        const preference = {
-            ...this.user.preferences[UserPreferenceType.TutorialComment],
-            value: "false",
-        };
-        this.setUserPreference({ preference });
     }
 }
 </script>
@@ -242,30 +196,11 @@ export default class EntrycardTimelineComponent extends Vue {
                 <b-row v-if="allowComment && isCommentEnabled">
                     <b-col class="leftPane d-none d-md-block" />
                     <b-col class="pb-1 pt-1 px-3">
-                        <CommentSection
+                        <CommentSectionComponent
                             :parent-entry="entry"
                             :is-mobile-details="isMobileDetails"
+                            :visible="detailsVisible"
                         />
-                        <b-popover
-                            triggers="manual"
-                            :show="showCommentTutorial"
-                            :target="'tooltip-' + entry.id"
-                            placement="topright"
-                            boundary="viewport"
-                        >
-                            <div>
-                                <hg-button
-                                    class="float-right text-dark p-0 ml-2"
-                                    variant="icon"
-                                    @click="dismissCommentTutorial()"
-                                    >×</hg-button
-                                >
-                            </div>
-                            <div data-testid="comment-tutorial-popover">
-                                You can add comments to help you keep track of
-                                important health details. Only you can see them.
-                            </div>
-                        </b-popover>
                     </b-col>
                 </b-row>
             </b-collapse>
