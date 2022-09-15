@@ -324,7 +324,7 @@ export default class SidebarComponent extends Vue {
                             triggers="manual"
                             :show="showExportTutorial"
                             target="export-records-row"
-                            custom-class="popover-style"
+                            custom-class="elevation-1"
                             fallback-placement="clockwise"
                             placement="right"
                             boundary="viewport"
@@ -506,7 +506,7 @@ hr {
 <style lang="scss">
 @import "@/assets/scss/_variables.scss";
 
-.popover-style {
-    z-index: $z_popover;
+.popover.elevation-1 {
+    z-index: calc($z_popover + 1);
 }
 </style>
