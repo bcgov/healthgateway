@@ -48,6 +48,9 @@ export default class DependentsView extends Vue {
         preference: UserPreference;
     }) => Promise<void>;
 
+    @Getter("isMobile")
+    isMobileView!: boolean;
+
     @Getter("user", { namespace: "user" })
     user!: User;
 
@@ -182,7 +185,7 @@ export default class DependentsView extends Vue {
                         triggers="manual"
                         :show="showAddDependentTutorial"
                         target="add-dependent-button"
-                        placement="left"
+                        :placement="isMobileView ? 'bottom' : 'left'"
                         boundary="viewport"
                     >
                         <div>
