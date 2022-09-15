@@ -332,4 +332,8 @@ label.hg-label {
 .is-invalid .hg-label {
     color: $danger;
 }
+
+.popover {
+    z-index: $z_popover;
+}
 </style>
