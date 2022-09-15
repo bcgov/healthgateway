@@ -260,7 +260,7 @@ export default class FilterComponent extends Vue {
             triggers="manual"
             :show="showFilterTutorial"
             target="filter-button-container"
-            placement="right"
+            placement="bottom"
             boundary="viewport"
         >
             <div>

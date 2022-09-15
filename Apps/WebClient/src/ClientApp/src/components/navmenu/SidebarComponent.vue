@@ -296,11 +296,7 @@ export default class SidebarComponent extends Vue {
                         class="mt-3 px-3 px-md-4"
                         :class="{ selected: isReports }"
                     >
-                        <b-row
-                            id="export-records-row"
-                            class="align-items-center"
-                            no-gutters
-                        >
+                        <b-row class="align-items-center" no-gutters>
                             <b-col
                                 title="Export Records"
                                 cols="auto"
@@ -323,7 +319,7 @@ export default class SidebarComponent extends Vue {
                         <b-popover
                             triggers="manual"
                             :show="showExportTutorial"
-                            target="export-records-row"
+                            target="menuBtnReports"
                             custom-class="elevation-1"
                             fallback-placement="clockwise"
                             placement="right"

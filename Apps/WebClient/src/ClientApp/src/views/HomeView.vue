@@ -97,6 +97,9 @@ export default class HomeView extends Vue {
         preference: UserPreference;
     }) => Promise<void>;
 
+    @Getter("isMobile")
+    isMobileView!: boolean;
+
     @Getter("webClient", { namespace: "config" })
     config!: WebClientConfiguration;
 
@@ -466,7 +469,7 @@ export default class HomeView extends Vue {
                 triggers="manual"
                 :show="showAddQuickLinkTutorial"
                 target="add-quick-link-button"
-                placement="left"
+                :placement="isMobileView ? 'bottom' : 'left'"
                 boundary="viewport"
             >
                 <div>
