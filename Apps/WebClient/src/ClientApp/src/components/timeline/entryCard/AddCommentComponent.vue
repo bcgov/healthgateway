@@ -2,13 +2,15 @@
 import { library } from "@fortawesome/fontawesome-svg-core";
 import { faArrowCircleUp, faLock } from "@fortawesome/free-solid-svg-icons";
 import Vue from "vue";
-import { Component, Emit, Prop } from "vue-property-decorator";
+import { Component, Emit, Prop, Watch } from "vue-property-decorator";
 import { Action, Getter } from "vuex-class";
 
+import UserPreferenceType from "@/constants/userPreferenceType";
 import { DateWrapper } from "@/models/dateWrapper";
 import { ResultError } from "@/models/errors";
 import User from "@/models/user";
 import type { UserComment } from "@/models/userComment";
+import { UserPreference } from "@/models/userPreference";
 import container from "@/plugins/container";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import { ILogger } from "@/services/interfaces";
@@ -20,8 +22,11 @@ export default class AddCommentComponent extends Vue {
     @Prop()
     comment!: UserComment;
 
-    @Getter("user", { namespace: "user" })
-    user!: User;
+    @Prop({ default: false })
+    visible!: boolean;
+
+    @Prop({ default: false })
+    isMobileDetails!: boolean;
 
     @Action("createComment", { namespace: "comment" })
     createComment!: (params: {
@@ -32,9 +37,38 @@ export default class AddCommentComponent extends Vue {
     @Action("setTooManyRequestsError", { namespace: "errorBanner" })
     setTooManyRequestsError!: (params: { key: string }) => void;
 
+    @Action("setSeenTutorialComment", { namespace: "user" })
+    setSeenTutorialComment!: (params: { value: boolean }) => void;
+
+    @Action("setUserPreference", { namespace: "user" })
+    setUserPreference!: (params: {
+        preference: UserPreference;
+    }) => Promise<void>;
+
+    @Getter("seenTutorialComment", { namespace: "user" })
+    seenTutorialComment!: boolean;
+
+    @Getter("user", { namespace: "user" })
+    user!: User;
+
     private commentInput = "";
     private logger!: ILogger;
     private isSaving = false;
+    private isCommentTutorialHidden = true;
+
+    private get showCommentTutorial(): boolean {
+        const preferenceType = UserPreferenceType.TutorialComment;
+        return (
+            this.visible &&
+            this.user.preferences[preferenceType]?.value === "true" &&
+            !this.isCommentTutorialHidden
+        );
+    }
+
+    private get privacyInfoId(): string {
+        const id = `privacy-icon-${this.comment.parentEntryId}`;
+        return this.isMobileDetails ? id + "-mobile" : id;
+    }
 
     private created(): void {
         this.logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
@@ -80,9 +114,36 @@ export default class AddCommentComponent extends Vue {
             });
     }
 
+    @Watch("visible")
+    private async onVisibleChanged(): Promise<void> {
+        if (
+            this.visible &&
+            (!this.seenTutorialComment || this.isMobileDetails)
+        ) {
+            // wait 2 ticks for animations to complete
+            await this.$nextTick();
+            await this.$nextTick();
+
+            // enable popover
+            this.isCommentTutorialHidden = false;
+            this.setSeenTutorialComment({ value: true });
+        }
+    }
+
     @Emit()
     private onCommentAdded(comment: UserComment): UserComment {
         return comment;
+    }
+
+    private dismissCommentTutorial(): void {
+        this.logger.debug("Dismissing comment tutorial");
+        this.isCommentTutorialHidden = true;
+
+        const preference = {
+            ...this.user.preferences[UserPreferenceType.TutorialComment],
+            value: "false",
+        };
+        this.setUserPreference({ preference });
     }
 }
 </script>
@@ -90,7 +151,7 @@ export default class AddCommentComponent extends Vue {
 <template>
     <b-row>
         <b-col
-            :id="'tooltip-' + comment.parentEntryId"
+            :id="privacyInfoId"
             cols="auto"
             class="px-0 py-1 align-self-center"
         >
@@ -98,12 +159,32 @@ export default class AddCommentComponent extends Vue {
         </b-col>
         <b-tooltip
             variant="secondary"
-            :target="'tooltip-' + comment.parentEntryId"
+            :target="privacyInfoId"
             placement="left"
             triggers="hover"
         >
             Only you can see comments added to your medical records.
         </b-tooltip>
+        <b-popover
+            triggers="manual"
+            :show="showCommentTutorial"
+            :target="privacyInfoId"
+            placement="topright"
+            boundary="viewport"
+        >
+            <div>
+                <hg-button
+                    class="float-right text-dark p-0 ml-2"
+                    variant="icon"
+                    @click="dismissCommentTutorial()"
+                    >×</hg-button
+                >
+            </div>
+            <div data-testid="comment-tutorial-popover">
+                You can add comments to help you keep track of important health
+                details. Only you can see them.
+            </div>
+        </b-popover>
         <b-col class="ml-2">
             <b-input-group>
                 <b-form-textarea
