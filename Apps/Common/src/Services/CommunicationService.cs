@@ -102,7 +102,7 @@ namespace HealthGateway.Common.Services
                 }
                 else
                 {
-                    this.logger.LogInformation($"Error getting Communication from DB {dbResult.Message}");
+                    this.logger.LogInformation("Error getting Communication from DB {Message}", dbResult.Message);
                     cacheEntry = new()
                     {
                         ResultStatus = ResultType.Error,
@@ -131,8 +131,8 @@ namespace HealthGateway.Common.Services
         /// <inheritdoc/>
         public void ProcessChange(BannerChangeEvent changeEvent)
         {
-            Communication? communication = changeEvent.Data;
-            if (communication?.CommunicationTypeCode is CommunicationType.Banner or CommunicationType.InApp or CommunicationType.Mobile)
+            Communication communication = changeEvent.Data;
+            if (communication.CommunicationTypeCode is CommunicationType.Banner or CommunicationType.InApp or CommunicationType.Mobile)
             {
                 RequestResult<Communication?>? cacheEntry = this.GetCommunicationFromCache(communication.CommunicationTypeCode);
                 if (cacheEntry?.ResourcePayload != null)
@@ -140,7 +140,7 @@ namespace HealthGateway.Common.Services
                     Communication cachedComm = cacheEntry.ResourcePayload;
                     if (cachedComm.Id == communication.Id)
                     {
-                        this.logger.LogInformation($"{changeEvent.Action} ChangeEvent for Communication {communication.Id} found in Cache");
+                        this.logger.LogInformation("{Action} ChangeEvent for Communication {Id} found in Cache", changeEvent.Action, communication.Id);
                         this.RemoveCommunicationFromCache(communication.CommunicationTypeCode);
                         if (changeEvent.Action is Insert or Update)
                         {
@@ -149,7 +149,7 @@ namespace HealthGateway.Common.Services
                         else
                         {
                             // Delete: We don't cache the empty result as a future dated comm may exist and the next call to GetActiveBanner will find it.
-                            this.logger.LogInformation($"{changeEvent.Action} ChangeEvent for Communication {communication.Id} was processed and removed from Cache");
+                            this.logger.LogInformation("{Action} ChangeEvent for Communication {Id} was processed and removed from Cache", changeEvent.Action, communication.Id);
                         }
                     }
                     else
@@ -157,18 +157,18 @@ namespace HealthGateway.Common.Services
                         // Check the new comm to see if it is effective earlier and not expired
                         if (DateTime.UtcNow < communication.ExpiryDateTime && communication.EffectiveDateTime < cachedComm.EffectiveDateTime)
                         {
-                            this.logger.LogInformation($"{changeEvent.Action} ChangeEvent for Communication {communication.Id} replacing {cachedComm.Id}");
+                            this.logger.LogInformation("{Action} ChangeEvent for Communication {Id} replacing {CachedId}", changeEvent.Action, communication.Id, cachedComm.Id);
                             this.AddCommunicationToCache(communication, communication.CommunicationTypeCode);
                         }
                         else
                         {
-                            this.logger.LogInformation($"{changeEvent.Action} ChangeEvent for Communication {communication.Id} being ignored");
+                            this.logger.LogInformation("{Action} ChangeEvent for Communication {Id} being ignored", changeEvent.Action, communication.Id);
                         }
                     }
                 }
                 else
                 {
-                    this.logger.LogInformation($"No Communications in the Cache, processing {changeEvent.Action} for communication {communication.Id}");
+                    this.logger.LogInformation("No Communications in the Cache, processing {Action} for communication {Id}", changeEvent.Action, communication.Id);
                     if (changeEvent.Action is Insert or Update)
                     {
                         this.AddCommunicationToCache(communication, communication.CommunicationTypeCode);
@@ -212,12 +212,12 @@ namespace HealthGateway.Common.Services
             {
                 if (now < communication.EffectiveDateTime)
                 {
-                    this.logger.LogInformation($"Communication {communication.Id} is not effective, cached empty communication until {communication.EffectiveDateTime}");
+                    this.logger.LogInformation("Communication {Id} is not effective, cached empty communication until {EffectiveDateTime}", communication.Id, communication.EffectiveDateTime);
                     expiry = communication.EffectiveDateTime - now;
                 }
                 else
                 {
-                    this.logger.LogInformation($"Caching communication {communication.Id} until {communication.ExpiryDateTime}");
+                    this.logger.LogInformation("Caching communication {Id} until {ExpiryDateTime}", communication.Id, communication.EffectiveDateTime);
                     expiry = communication.ExpiryDateTime - now;
                     cacheEntry.TotalResultCount = 1;
                 }
