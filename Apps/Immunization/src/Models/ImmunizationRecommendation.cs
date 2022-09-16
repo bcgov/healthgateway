@@ -72,6 +72,12 @@ namespace HealthGateway.Immunization.Models
         public string Status { get; set; } = string.Empty;
 
         /// <summary>
+        /// Gets or sets the Recommended Vaccinations.
+        /// </summary>
+        [JsonPropertyName("recommendedVaccinations")]
+        public string RecommendedVaccinations { get; set; } = string.Empty;
+
+        /// <summary>
         /// Gets the Target Diseases.
         /// </summary>
         [JsonPropertyName("targetDiseases")]
