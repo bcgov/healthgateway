@@ -104,8 +104,8 @@ export default class ImmunizationHistoryReportComponent extends Vue {
     }
 
     private get visibleRecomendations(): Recommendation[] {
-        let records = this.patientRecommendations.filter((x) =>
-            x.targetDiseases.some((y) => y.name)
+        let records = this.patientRecommendations.filter(
+            (x) => x.recommendedVaccinations
         );
 
         records.sort((a, b) => {
@@ -144,12 +144,15 @@ export default class ImmunizationHistoryReportComponent extends Vue {
     }
 
     private get recomendationItems(): RecomendationRow[] {
+        this.logger.debug(
+            "Recoomendations: " + JSON.stringify(this.visibleRecomendations)
+        );
         return this.visibleRecomendations.map<RecomendationRow>((x) => ({
-            immunization: x.targetDiseases.find((y) => y.name)?.name ?? "",
+            immunization: x.recommendedVaccinations,
             due_date:
-                x.diseaseDueDate === undefined || x.diseaseDueDate === null
+                x.agentDueDate === undefined || x.dagentDueDate === null
                     ? ""
-                    : DateWrapper.format(x.diseaseDueDate),
+                    : DateWrapper.format(x.dagentDueDate),
             status: x.status || "",
         }));
     }

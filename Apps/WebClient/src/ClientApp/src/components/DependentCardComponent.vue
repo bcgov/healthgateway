@@ -271,11 +271,11 @@ export default class DependentCardComponent extends Vue {
 
     private get recommendationItems(): RecommendationRow[] {
         return this.recommendations.map<RecommendationRow>((x) => ({
-            immunization: x.targetDiseases.find((y) => y.name)?.name ?? "",
+            immunization: x.recommendedVaccinations,
             due_date:
-                x.diseaseDueDate === undefined || x.diseaseDueDate === null
+                x.agentDueDate === undefined || x.dagentDueDate === null
                     ? ""
-                    : DateWrapper.format(x.diseaseDueDate),
+                    : DateWrapper.format(x.dagentDueDate),
             status: x.status || "",
         }));
     }
@@ -639,8 +639,8 @@ export default class DependentCardComponent extends Vue {
     }
 
     private setRecommendations(recommendations: Recommendation[]): void {
-        this.recommendations = recommendations.filter((x) =>
-            x.targetDiseases.some((y) => y.name)
+        this.recommendations = recommendations.filter(
+            (x) => x.recommendedVaccinations
         );
 
         this.recommendations.sort((a, b) => {

@@ -17,6 +17,7 @@ namespace HealthGateway.ImmunizationTests.Services.Test
 {
     using System;
     using System.Collections.Generic;
+    using System.Diagnostics.CodeAnalysis;
     using System.Globalization;
     using System.Linq;
     using System.Threading.Tasks;
@@ -38,16 +39,16 @@ namespace HealthGateway.ImmunizationTests.Services.Test
     /// <summary>
     /// ImmunizationService's Unit Tests.
     /// </summary>
-    [System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1506:Avoid excessive class coupling", Justification = "Unit Test")]
-    [System.Diagnostics.CodeAnalysis.SuppressMessage("Major Code Smell", "S125:Sections of code should not be commented out", Justification = "Ignore broken tests")]
+    [SuppressMessage("Design", "CA1506:Avoid excessive class coupling", Justification = "Unit Test")]
+    [SuppressMessage("Major Code Smell", "S125:Sections of code should not be commented out", Justification = "Ignore broken tests")]
     public class ImmunizationServiceTests
     {
-        private readonly string recomendationSetId = "set-recomendation-id";
-        private readonly string diseaseEligibleDateString = "2021-02-02";
-        private readonly string diseaseName = "Human papillomavirus infection";
-        private readonly string vaccineName = "Human Papillomavirus-HPV9 Vaccine";
         private readonly string antigenName = "HPV-9";
         private readonly IMapper autoMapper = MapperUtil.InitializeAutoMapper();
+        private readonly string diseaseEligibleDateString = "2021-02-02";
+        private readonly string diseaseName = "Human papillomavirus infection";
+        private readonly string recomendationSetId = "set-recomendation-id";
+        private readonly string vaccineName = "Human Papillomavirus-HPV9 Vaccine";
 
         /// <summary>
         /// GetImmunizations - Happy Path.
@@ -59,13 +60,14 @@ namespace HealthGateway.ImmunizationTests.Services.Test
             RequestResult<PhsaResult<ImmunizationResponse>> delegateResult = new()
             {
                 ResultStatus = ResultType.Success,
-                ResourcePayload = new PhsaResult<ImmunizationResponse>()
+                ResourcePayload = new PhsaResult<ImmunizationResponse>
                 {
-                    LoadState = new PhsaLoadState() { RefreshInProgress = false, },
+                    LoadState = new PhsaLoadState
+                        { RefreshInProgress = false },
                     Result = new ImmunizationResponse(
                         new List<ImmunizationViewResponse>
                         {
-                            new ImmunizationViewResponse()
+                            new()
                             {
                                 Id = Guid.NewGuid(),
                                 Name = "MockImmunization",
@@ -109,10 +111,11 @@ namespace HealthGateway.ImmunizationTests.Services.Test
             RequestResult<PhsaResult<ImmunizationViewResponse>> delegateResult = new()
             {
                 ResultStatus = ResultType.Success,
-                ResourcePayload = new PhsaResult<ImmunizationViewResponse>()
+                ResourcePayload = new PhsaResult<ImmunizationViewResponse>
                 {
-                    LoadState = new PhsaLoadState() { RefreshInProgress = false, },
-                    Result = new ImmunizationViewResponse()
+                    LoadState = new PhsaLoadState
+                        { RefreshInProgress = false },
+                    Result = new ImmunizationViewResponse
                     {
                         Id = Guid.NewGuid(),
                         Name = "MockImmunization",
@@ -146,7 +149,7 @@ namespace HealthGateway.ImmunizationTests.Services.Test
         /// GetImmunizations - Happy Path (With Recommendations).
         /// </summary>
         [Fact]
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Maintainability", "CA1506:Avoid excessive class coupling", Justification = "Team decision")]
+        [SuppressMessage("Maintainability", "CA1506:Avoid excessive class coupling", Justification = "Team decision")]
         public void ShouldGetRecommendation()
         {
             ImmunizationRecommendationResponse immzRecommendationResponse = this.GetImmzRecommendationResponse();
@@ -198,7 +201,7 @@ namespace HealthGateway.ImmunizationTests.Services.Test
             RequestResult<PhsaResult<ImmunizationResponse>> delegateResult = new()
             {
                 ResultStatus = ResultType.Error,
-                ResultError = new RequestResultError()
+                ResultError = new RequestResultError
                 {
                     ResultMessage = "Mock Error",
                     ErrorCode = "MOCK_BAD_ERROR",
@@ -581,12 +584,12 @@ namespace HealthGateway.ImmunizationTests.Services.Test
 
         private static RequestResult<PhsaResult<ImmunizationResponse>> GetPHSAResult(ImmunizationRecommendationResponse immzRecommendationResponse)
         {
-            return new RequestResult<PhsaResult<ImmunizationResponse>>()
+            return new RequestResult<PhsaResult<ImmunizationResponse>>
             {
                 ResultStatus = ResultType.Success,
-                ResourcePayload = new PhsaResult<ImmunizationResponse>()
+                ResourcePayload = new PhsaResult<ImmunizationResponse>
                 {
-                    LoadState = new() { RefreshInProgress = false, },
+                    LoadState = new() { RefreshInProgress = false },
                     Result = new(
                         new List<ImmunizationViewResponse>(),
                         new List<ImmunizationRecommendationResponse>
@@ -663,30 +666,33 @@ namespace HealthGateway.ImmunizationTests.Services.Test
 
             RecommendationResponse recommendationResponse = new();
             recommendationResponse.ForecastStatus.ForecastStatusText = "Eligible";
-            recommendationResponse.TargetDisease.TargetDiseaseCodes.Add(new SystemCode()
-            {
-                Code = "240532009",
-                CommonType = "DiseaseCode",
-                Display = this.diseaseName,
-                System = "https://ehealthbc.ca/NamingSystem/ca-bc-panorama-immunization-disease-code",
-            });
-            recommendationResponse.VaccineCode.VaccineCodeText = this.vaccineName;
-            recommendationResponse.VaccineCode.VaccineCodes.Add(new SystemCode()
-            {
-                Code = "BCYSCT_AN032",
-                CommonType = "AntiGenCode",
-                Display = this.antigenName,
-                System = "https://ehealthbc.ca/NamingSystem/ca-bc-panorama-immunization-antigen-code",
-            });
-
-            recommendationResponse.DateCriterions.Add(new DateCriterion()
-            {
-                DateCriterionCode = new DateCriterionCode()
+            recommendationResponse.TargetDisease?.TargetDiseaseCodes.Add(
+                new SystemCode
                 {
-                    Text = "Forecast by Disease Eligible Date",
-                },
-                Value = this.diseaseEligibleDateString,
-            });
+                    Code = "240532009",
+                    CommonType = "DiseaseCode",
+                    Display = this.diseaseName,
+                    System = "https://ehealthbc.ca/NamingSystem/ca-bc-panorama-immunization-disease-code",
+                });
+            recommendationResponse.VaccineCode.VaccineCodeText = this.vaccineName;
+            recommendationResponse.VaccineCode.VaccineCodes.Add(
+                new SystemCode
+                {
+                    Code = "BCYSCT_AN032",
+                    CommonType = "AntiGenCode",
+                    Display = this.antigenName,
+                    System = "https://ehealthbc.ca/NamingSystem/ca-bc-panorama-immunization-antigen-code",
+                });
+
+            recommendationResponse.DateCriterions.Add(
+                new DateCriterion
+                {
+                    DateCriterionCode = new DateCriterionCode
+                    {
+                        Text = "Forecast by Disease Eligible Date",
+                    },
+                    Value = this.diseaseEligibleDateString,
+                });
 
             immzRecommendationResponse.Recommendations.Add(recommendationResponse);
             return immzRecommendationResponse;
