@@ -627,6 +627,60 @@ VALUES (
 	current_timestamp, 
 	'System', 
 	current_timestamp, 
+	'tutorialAddDependent', 
+	'false'
+);
+
+INSERT INTO gateway."UserPreference"(
+	"UserProfileId", 
+	"CreatedBy", 
+	"CreatedDateTime", 
+	"UpdatedBy", 
+	"UpdatedDateTime", 
+	"Preference", 
+	"Value")
+VALUES (
+	'P6FFO433A5WPMVTGM7T4ZVWBKCSVNAYGTWTU3J2LWMGUMERKI72A',	
+	'System', 
+	current_timestamp, 
+	'System', 
+	current_timestamp, 
+	'tutorialAddQuickLink', 
+	'false'
+);
+
+INSERT INTO gateway."UserPreference"(
+	"UserProfileId", 
+	"CreatedBy", 
+	"CreatedDateTime", 
+	"UpdatedBy", 
+	"UpdatedDateTime", 
+	"Preference", 
+	"Value")
+VALUES (
+	'P6FFO433A5WPMVTGM7T4ZVWBKCSVNAYGTWTU3J2LWMGUMERKI72A',	
+	'System', 
+	current_timestamp, 
+	'System', 
+	current_timestamp, 
+	'tutorialTimelineFilter', 
+	'false'
+);
+
+INSERT INTO gateway."UserPreference"(
+	"UserProfileId", 
+	"CreatedBy", 
+	"CreatedDateTime", 
+	"UpdatedBy", 
+	"UpdatedDateTime", 
+	"Preference", 
+	"Value")
+VALUES (
+	'P6FFO433A5WPMVTGM7T4ZVWBKCSVNAYGTWTU3J2LWMGUMERKI72A',	
+	'System', 
+	current_timestamp, 
+	'System', 
+	current_timestamp, 
 	'quickLinks', 
 	'[{"name":"Medications","filter":{"modules":["Medication"]}},{"name":"My Notes","filter":{"modules":["Note"]}}]'
 );
