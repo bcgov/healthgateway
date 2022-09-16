@@ -73,7 +73,7 @@ namespace HealthGateway.JobScheduler.Listeners
             while (!stoppingToken.IsCancellationRequested)
             {
                 attempts++;
-                this.logger.LogInformation($"Registering Channel Notification on channel {Channel}, attempts = {attempts}");
+                this.logger.LogInformation("Registering Channel Notification on channel {Channel}, attempts = {Attempts}", Channel, attempts);
                 try
                 {
                     using IServiceScope scope = this.services.CreateScope();
@@ -97,7 +97,7 @@ namespace HealthGateway.JobScheduler.Listeners
                 }
                 catch (NpgsqlException e)
                 {
-                    this.logger.LogError($"DB Error encountered in WaitChannelNotification: {Channel}\n{e}");
+                    this.logger.LogError("DB Error encountered in WaitChannelNotification: {Channel}\n{Exception}", Channel, e.ToString());
                     if (!stoppingToken.IsCancellationRequested)
                     {
                         await Task.Delay(SleepDuration, stoppingToken).ConfigureAwait(true);
