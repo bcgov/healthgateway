@@ -39,11 +39,18 @@ namespace HealthGateway.Immunization.MapUtils
         public static IList<ImmunizationRecommendation> FromPHSAModelList(IEnumerable<ImmunizationRecommendationResponse> models, IMapper autoMapper)
         {
             List<ImmunizationRecommendation> recommendations = new();
-            ImmunizationRecommendationResponse? recommendationSet = models.FirstOrDefault();
-            if (recommendationSet != null)
-            {
-                recommendations.AddRange(recommendationSet.Recommendations.Select(model => FromPHSAModel(recommendationSet.RecommendationId, model, autoMapper)));
-            }
+            models.ToList()
+                .ForEach(
+                    model =>
+                    {
+                        string? vaccineGroup = model.Recommendations.FirstOrDefault(r => r.TargetDisease == null)?.VaccineCode.VaccineCodes.FirstOrDefault()?.Display;
+                        List<string> vaccinations = model.Recommendations.Where(r => r.TargetDisease != null).Select(v => v.VaccineCode.VaccineCodeText).ToList();
+                        string recommendedVaccinations = $"{vaccineGroup}({string.Join(", ", vaccinations)})";
+
+                        recommendations.AddRange(
+                            model.Recommendations.Select(
+                                recommendation => FromPHSAModel(model.RecommendationId, recommendation, autoMapper, recommendedVaccinations)));
+                    });
 
             return recommendations;
         }
@@ -54,8 +61,9 @@ namespace HealthGateway.Immunization.MapUtils
         /// <param name="recommendationSetId">The recommendation set id of the source system.</param>
         /// <param name="model">The recommendation object to convert.</param>
         /// <param name="autoMapper">The automapper to use.</param>
+        /// <param name="recommendedVaccinations">The recommended vaccinations.</param>
         /// <returns>The newly created ImmunizationEvent object.</returns>
-        private static ImmunizationRecommendation FromPHSAModel(string recommendationSetId, RecommendationResponse model, IMapper autoMapper)
+        private static ImmunizationRecommendation FromPHSAModel(string recommendationSetId, RecommendationResponse model, IMapper autoMapper, string recommendedVaccinations)
         {
             DateCriterion? diseaseEligible = model.DateCriterions.FirstOrDefault(x => x.DateCriterionCode.Text == "Forecast by Disease Eligible Date");
             DateCriterion? diseaseDue = model.DateCriterions.FirstOrDefault(x => x.DateCriterionCode.Text == "Forecast by Disease Due Date");
@@ -65,6 +73,7 @@ namespace HealthGateway.Immunization.MapUtils
             IList<TargetDisease> targetDiseases = model.TargetDisease != null ? autoMapper.Map<IList<TargetDisease>>(model.TargetDisease.TargetDiseaseCodes) : new List<TargetDisease>();
             return new ImmunizationRecommendation(targetDiseases)
             {
+                RecommendedVaccinations = model.TargetDisease == null ? recommendedVaccinations : string.Empty,
                 RecommendationSetId = recommendationSetId,
                 DiseaseEligibleDate = diseaseEligible != null ? DateTime.Parse(diseaseEligible.Value, CultureInfo.CurrentCulture) : null,
                 DiseaseDueDate = diseaseDue != null ? DateTime.Parse(diseaseDue.Value, CultureInfo.CurrentCulture) : null,
