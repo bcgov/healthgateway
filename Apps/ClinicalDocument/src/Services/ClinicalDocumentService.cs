@@ -17,7 +17,7 @@ namespace HealthGateway.ClinicalDocument.Services
 {
     using System.Collections.Generic;
     using System.Diagnostics;
-    using System.Linq;
+    using System.Net.Http;
     using System.Threading.Tasks;
     using AutoMapper;
     using HealthGateway.ClinicalDocument.Api;
@@ -69,32 +69,45 @@ namespace HealthGateway.ClinicalDocument.Services
                 PageSize = 0,
             };
             using Activity? activity = Source.StartActivity();
-            RequestResult<PersonalAccount?> response = await this.personalAccountsService.GetPatientAccountAsync(hdid).ConfigureAwait(true);
-            if (response.ResultStatus == ResultType.Success)
+            try
             {
-                this.logger.LogDebug("PID Fetched: {Pid}", response.ResourcePayload?.PatientIdentity?.Pid);
-                IApiResponse<PhsaHealthDataResponse> apiResponse =
-                    await this.clinicalDocumentsApi.GetClinicalDocumentRecords(response.ResourcePayload?.PatientIdentity?.Pid.ToString()).ConfigureAwait(true);
-                if (apiResponse.IsSuccessStatusCode)
+                RequestResult<PersonalAccount?> patientAccountResponse = await this.personalAccountsService.GetPatientAccountAsync(hdid).ConfigureAwait(true);
+                if (patientAccountResponse.ResultStatus == ResultType.Success)
                 {
-                    IList<ClinicalDocumentRecord> clinicalDocuments = this.autoMapper.Map<IList<ClinicalDocumentRecord>>(apiResponse.Content?.Data);
-                    requestResult.ResultStatus = ResultType.Success;
-                    requestResult.ResourcePayload = clinicalDocuments;
-                    requestResult.TotalResultCount = apiResponse.Content?.Data.Count();
+                    string? pid = patientAccountResponse.ResourcePayload?.PatientIdentity?.Pid.ToString();
+                    this.logger.LogDebug("PID Fetched: {Pid}", pid);
+                    IApiResponse<PhsaHealthDataResponse> apiResponse =
+                        await this.clinicalDocumentsApi.GetClinicalDocumentRecords(pid).ConfigureAwait(true);
+                    if (apiResponse.IsSuccessStatusCode)
+                    {
+                        IList<ClinicalDocumentRecord> clinicalDocuments = this.autoMapper.Map<IList<ClinicalDocumentRecord>>(apiResponse.Content?.Data);
+                        requestResult.ResultStatus = ResultType.Success;
+                        requestResult.ResourcePayload = clinicalDocuments;
+                        requestResult.TotalResultCount = clinicalDocuments.Count;
+                    }
+                    else
+                    {
+                        this.logger.LogCritical("API Exception {Error}", apiResponse.Error?.ToString());
+                        requestResult.ResultError = new()
+                        {
+                            ResultMessage = $"API Exception {apiResponse.Error}",
+                            ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.PHSA),
+                        };
+                    }
                 }
                 else
                 {
-                    this.logger.LogCritical("API Exception {Error}", apiResponse.Error?.ToString());
-                    requestResult.ResultError = new()
-                    {
-                        ResultMessage = $"API Exception {apiResponse.Error}",
-                        ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.PHSA),
-                    };
+                    requestResult.ResultError = patientAccountResponse.ResultError;
                 }
             }
-            else
+            catch (HttpRequestException e)
             {
-                requestResult.ResultError = response.ResultError;
+                this.logger.LogCritical("HTTP Request Exception {Error}", e.ToString());
+                requestResult.ResultError = new()
+                {
+                    ResultMessage = "Error with HTTP Request for Clinical Documents",
+                    ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.PHSA),
+                };
             }
 
             activity?.Stop();
@@ -110,31 +123,43 @@ namespace HealthGateway.ClinicalDocument.Services
                 PageSize = 0,
             };
             using Activity? activity = Source.StartActivity();
-            RequestResult<PersonalAccount?> response = await this.personalAccountsService.GetPatientAccountAsync(hdid).ConfigureAwait(true);
-            if (response.ResultStatus == ResultType.Success)
+            try
             {
-                string? pid = response.ResourcePayload?.PatientIdentity?.Pid.ToString();
-                this.logger.LogDebug("PID Fetched: {Pid}", response.ResourcePayload?.PatientIdentity?.Pid);
-                IApiResponse<EncodedMedia> apiResponse =
-                    await this.clinicalDocumentsApi.GetClinicalDocumentFile(pid, fileId).ConfigureAwait(true);
-                if (apiResponse.IsSuccessStatusCode)
+                RequestResult<PersonalAccount?> response = await this.personalAccountsService.GetPatientAccountAsync(hdid).ConfigureAwait(true);
+                if (response.ResultStatus == ResultType.Success)
                 {
-                    requestResult.ResultStatus = ResultType.Success;
-                    requestResult.ResourcePayload = apiResponse.Content;
+                    string? pid = response.ResourcePayload?.PatientIdentity?.Pid.ToString();
+                    this.logger.LogDebug("PID Fetched: {Pid}", pid);
+                    IApiResponse<EncodedMedia> apiResponse =
+                        await this.clinicalDocumentsApi.GetClinicalDocumentFile(pid, fileId).ConfigureAwait(true);
+                    if (apiResponse.IsSuccessStatusCode)
+                    {
+                        requestResult.ResultStatus = ResultType.Success;
+                        requestResult.ResourcePayload = apiResponse.Content;
+                    }
+                    else
+                    {
+                        this.logger.LogCritical("API Exception {Error}", apiResponse.Error?.ToString());
+                        requestResult.ResultError = new()
+                        {
+                            ResultMessage = $"API Exception {apiResponse.Error}",
+                            ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.PHSA),
+                        };
+                    }
                 }
                 else
                 {
-                    this.logger.LogCritical("API Exception {Error}", apiResponse.Error?.ToString());
-                    requestResult.ResultError = new()
-                    {
-                        ResultMessage = $"API Exception {apiResponse.Error}",
-                        ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.PHSA),
-                    };
+                    requestResult.ResultError = response.ResultError;
                 }
             }
-            else
+            catch (HttpRequestException e)
             {
-                requestResult.ResultError = response.ResultError;
+                this.logger.LogCritical("HTTP Request Exception {Error}", e.ToString());
+                requestResult.ResultError = new()
+                {
+                    ResultMessage = "Error with HTTP Request for Clinical Document file",
+                    ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.PHSA),
+                };
             }
 
             activity?.Stop();
