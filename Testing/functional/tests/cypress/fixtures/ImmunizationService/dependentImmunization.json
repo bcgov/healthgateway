@@ -5,25 +5,47 @@
         },
         "recommendations": [
             {
-                "recommendationSetId": "5513119_138378891",
-                "disseaseEligibleDate": "2020-12-30T00:00:00",
-                "diseaseDueDate": "2021-02-02T00:00:00",
+                "recommendationSetId": "50001020_168682388",
+                "diseaseEligibleDate": "2011-08-20T00:00:00",
+                "diseaseDueDate": "2011-08-20T00:00:00",
                 "agentEligibleDate": null,
                 "agentDueDate": null,
-                "status": "Eligible",
+                "status": "Overdue",
+                "recommendedVaccinations": "",
                 "targetDiseases": [
                     {
-                        "code": "240532009",
-                        "name": "Human papillomavirus infection"
+                        "code": "BCY_DIS163",
+                        "name": "Meningococcal disease (invasive)"
                     }
                 ],
                 "immunization": {
-                    "name": "Human Papillomavirus-HPV9",
+                    "name": "Meningococcal-C Conjugate",
                     "immunizationAgents": [
                         {
-                            "code": "BCYSCT_AN032",
-                            "name": "HPV-9",
-                            "lotNumber": "Lot 1",
+                            "code": "SCT_AN0010",
+                            "name": "Men-C-C",
+                            "lotNumber": "",
+                            "productName": ""
+                        }
+                    ]
+                }
+            },
+            {
+                "recommendationSetId": "50001020_168682388",
+                "diseaseEligibleDate": null,
+                "diseaseDueDate": null,
+                "agentEligibleDate": "2011-08-20T00:00:00",
+                "agentDueDate": "2011-08-20T00:00:00",
+                "status": "Overdue",
+                "recommendedVaccinations": "Men-C-C (Meningococcal-C Conjugate)",
+                "targetDiseases": [],
+                "immunization": {
+                    "name": null,
+                    "immunizationAgents": [
+                        {
+                            "code": "359068008",
+                            "name": "Men-C-C",
+                            "lotNumber": "",
                             "productName": ""
                         }
                     ]

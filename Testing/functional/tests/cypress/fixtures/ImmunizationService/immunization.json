@@ -5,24 +5,20 @@
         },
         "recommendations": [
             {
-                "recommendationSetId": "5513119_138378891",
-                "disseaseEligibleDate": "2020-12-30T00:00:00",
-                "diseaseDueDate": "2021-02-02T00:00:00",
-                "agentEligibleDate": null,
-                "agentDueDate": null,
-                "status": "Eligible",
-                "targetDiseases": [
-                    {
-                        "code": "240532009",
-                        "name": "Human papillomavirus infection"
-                    }
-                ],
+                "recommendationSetId": "5588010_145363248",
+                "diseaseEligibleDate": null,
+                "diseaseDueDate": null,
+                "agentEligibleDate": "2021-07-22T00:00:00",
+                "agentDueDate": "2021-08-01T00:00:00",
+                "status": "Overdue",
+                "recommendedVaccinations": "COVID-19 mRNA ()",
+                "targetDiseases": [],
                 "immunization": {
-                    "name": "Human Papillomavirus-HPV9",
+                    "name": null,
                     "immunizationAgents": [
                         {
-                            "code": "BCYSCT_AN032",
-                            "name": "HPV-9",
+                            "code": "1119349007",
+                            "name": "COVID-19 mRNA",
                             "lotNumber": "",
                             "productName": ""
                         }
@@ -30,19 +26,25 @@
                 }
             },
             {
-                "recommendationSetId": "5513119_138378891",
-                "disseaseEligibleDate": null,
-                "diseaseDueDate": null,
-                "agentEligibleDate": "2020-12-30T00:00:00",
-                "agentDueDate": "2020-12-30T00:00:00",
-                "status": "Eligible",
-                "targetDiseases": [],
+                "recommendationSetId": "5588010_145363248",
+                "diseaseEligibleDate": "2021-07-22T00:00:00",
+                "diseaseDueDate": "2021-08-01T00:00:00",
+                "agentEligibleDate": null,
+                "agentDueDate": null,
+                "status": "Overdue",
+                "recommendedVaccinations": "",
+                "targetDiseases": [
+                    {
+                        "code": "186747009",
+                        "name": "Coronavirus infection"
+                    }
+                ],
                 "immunization": {
-                    "name": "",
+                    "name": null,
                     "immunizationAgents": [
                         {
-                            "code": "BCYSCT_AG082",
-                            "name": "HPV-9",
+                            "code": "840536004",
+                            "name": "COVID-19 mRNA",
                             "lotNumber": "",
                             "productName": ""
                         }

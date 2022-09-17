@@ -73,6 +73,54 @@
                 "agentEligibleDate": null,
                 "agentDueDate": null,
                 "status": "Eligible",
+                "recommendedVaccinations": "COVID-19 mRNA ()",
+                "targetDiseases": [],
+                "immunization": {
+                    "name": null,
+                    "immunizationAgents": [
+                        {
+                            "code": "1119349007",
+                            "name": "COVID-19 mRNA",
+                            "lotNumber": "",
+                            "productName": ""
+                        }
+                    ]
+                }
+            },
+            {
+                "recommendationSetId": "5513119_138378891",
+                "disseaseEligibleDate": "2020-12-30T00:00:00",
+                "diseaseDueDate": "2021-02-02T00:00:00",
+                "agentEligibleDate": null,
+                "agentDueDate": null,
+                "status": "Eligible",
+                "recommendedVaccinations": "",
+                "targetDiseases": [
+                    {
+                        "code": "186747009",
+                        "name": "Coronavirus infection"
+                    }
+                ],
+                "immunization": {
+                    "name": null,
+                    "immunizationAgents": [
+                        {
+                            "code": "840536004",
+                            "name": "COVID-19 mRNA",
+                            "lotNumber": "",
+                            "productName": ""
+                        }
+                    ]
+                }
+            },
+            {
+                "recommendationSetId": "5513119_138378894",
+                "disseaseEligibleDate": "2020-11-30T00:00:00",
+                "diseaseDueDate": "2021-04-02T00:00:00",
+                "agentEligibleDate": "2020-11-30T00:00:00",
+                "agentDueDate": "2022-11-30T00:00:00",
+                "status": "Eligible",
+                "recommendedVaccinations": "",
                 "targetDiseases": [
                     {
                         "code": "240532009",
@@ -96,16 +144,12 @@
                 "disseaseEligibleDate": "2020-11-30T00:00:00",
                 "diseaseDueDate": "2021-04-02T00:00:00",
                 "agentEligibleDate": "2020-11-30T00:00:00",
-                "agentDueDate": "2020-11-30T00:00:00",
+                "agentDueDate": "2022-11-30T00:00:00",
                 "status": "Eligible",
-                "targetDiseases": [
-                    {
-                        "code": "240532009",
-                        "name": "Human papillomavirus infection 2"
-                    }
-                ],
+                "recommendedVaccinations": "HPV-9 (Human Papillomavirus-HPV9)",
+                "targetDiseases": [],
                 "immunization": {
-                    "name": "Test",
+                    "name": null,
                     "immunizationAgents": [
                         {
                             "code": "BCYSCT_AG082",
@@ -123,18 +167,40 @@
                 "agentEligibleDate": "2020-11-30T00:00:00",
                 "agentDueDate": "2020-11-30T00:00:00",
                 "status": "Eligible",
+                "recommendedVaccinations": "",
                 "targetDiseases": [
                     {
-                        "code": "240532009",
-                        "name": "Human papillomavirus infection 2"
+                        "code": "397428000",
+                        "name": "Diphtheria"
                     }
                 ],
                 "immunization": {
-                    "name": "Test 2",
+                    "name": "Diphtheria",
                     "immunizationAgents": [
                         {
-                            "code": "BCYSCT_AG082",
-                            "name": "HPV-9",
+                            "code": "SCT_AN0061",
+                            "name": "Diphtheria-d",
+                            "lotNumber": "",
+                            "productName": ""
+                        }
+                    ]
+                }
+            },
+            {
+                "recommendationSetId": "5513119_138378894",
+                "disseaseEligibleDate": "2020-11-30T00:00:00",
+                "diseaseDueDate": "2021-06-02T00:00:00",
+                "agentEligibleDate": "2020-11-30T00:00:00",
+                "agentDueDate": "2020-11-30T00:00:00",
+                "status": "Eligible",
+                "recommendedVaccinations": "Tdap-IPV (Tetanus, Polio, Pertussis, Diphtheria)",
+                "targetDiseases": [],
+                "immunization": {
+                    "name": null,
+                    "immunizationAgents": [
+                        {
+                            "code": "BCYSCT_AG066",
+                            "name": "Tdap-IPV",
                             "lotNumber": "",
                             "productName": ""
                         }
