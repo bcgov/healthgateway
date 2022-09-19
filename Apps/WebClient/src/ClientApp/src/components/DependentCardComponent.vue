@@ -645,9 +645,9 @@ export default class DependentCardComponent extends Vue {
 
         this.recommendations.sort((a, b) => {
             const firstDateEmpty =
-                a.diseaseDueDate === null || a.diseaseDueDate === undefined;
+                a.agentDueDate === null || a.agentDueDate === undefined;
             const secondDateEmpty =
-                b.diseaseDueDate === null || b.diseaseDueDate === undefined;
+                b.agentDueDate === null || b.agentDueDate === undefined;
 
             if (firstDateEmpty && secondDateEmpty) {
                 return 0;
@@ -661,15 +661,15 @@ export default class DependentCardComponent extends Vue {
                 return -1;
             }
 
-            const firstDate = new DateWrapper(a.diseaseDueDate);
-            const secondDate = new DateWrapper(b.diseaseDueDate);
+            const firstDate = new DateWrapper(a.agentDueDate);
+            const secondDate = new DateWrapper(b.agentDueDate);
 
             if (firstDate.isBefore(secondDate)) {
-                return -1;
+                return 1;
             }
 
             if (firstDate.isAfter(secondDate)) {
-                return 1;
+                return -1;
             }
 
             return 0;
