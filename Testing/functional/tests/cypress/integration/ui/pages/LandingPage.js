@@ -118,6 +118,12 @@ describe("Landing Page", () => {
     });
 
     it("Validate active tiles", () => {
+        cy.enableModules("");
+        cy.get("[data-testid=active-tile-ClinicalDocument]").should(
+            "not.exist"
+        );
+
+        cy.enableModules("ClinicalDocument");
         cy.get("[data-testid=active-tile-ClinicalDocument]").should(
             "be.visible"
         );
