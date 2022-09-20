@@ -30,13 +30,23 @@ export default class ErrorCardComponent extends Vue {
     user!: User;
 
     @Getter("isShowing", { namespace: "errorBanner" })
-    isShowing!: boolean;
+    isShowingInStore!: boolean;
 
     @Getter("errors", { namespace: "errorBanner" })
     errors!: BannerError[];
 
     @Ref("copyToClipBoardModal")
     readonly copyToClipBoardModal!: MessageModalComponent;
+
+    private get isShowing(): boolean {
+        return this.isShowingInStore;
+    }
+
+    private set isShowing(value: boolean) {
+        if (value === false) {
+            this.clearErrors();
+        }
+    }
 
     public get haveError(): boolean {
         return this.errors !== undefined && this.errors.length > 0;
@@ -90,12 +100,11 @@ export default class ErrorCardComponent extends Vue {
     <div>
         <TooManyRequestsComponent />
         <b-alert
+            v-model="isShowing"
             data-testid="errorBanner"
             variant="danger"
             dismissible
             class="no-print"
-            :show="isShowing"
-            @dismissed="clearErrors"
         >
             <div>
                 <div

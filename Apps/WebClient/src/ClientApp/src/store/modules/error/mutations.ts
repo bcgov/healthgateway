@@ -20,8 +20,10 @@ export const mutations: ErrorBannerMutations = {
     setTooManyRequestsError(state: ErrorBannerState, key: string) {
         state.tooManyRequestsError = key;
     },
-    clearTooManyRequests(state: ErrorBannerState) {
+    clearTooManyRequestsWarning(state: ErrorBannerState) {
         state.tooManyRequestsWarning = undefined;
+    },
+    clearTooManyRequestsError(state: ErrorBannerState) {
         state.tooManyRequestsError = undefined;
     },
 };
