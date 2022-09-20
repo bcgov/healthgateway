@@ -57,7 +57,7 @@ namespace HealthGateway.Common.Utils.Phsa
             }
             else
             {
-                this.logger.LogError($"Error while retrieving PHSA Token {phsaTokenResponse.ResultError?.ResultMessage}");
+                this.logger.LogError("Error while retrieving PHSA Token {ErrorMessage}", phsaTokenResponse.ResultError?.ResultMessage);
                 throw new HttpRequestException(phsaTokenResponse.ResultError?.ResultMessage);
             }
         }
