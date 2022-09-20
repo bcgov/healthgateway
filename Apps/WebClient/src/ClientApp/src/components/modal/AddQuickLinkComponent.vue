@@ -32,8 +32,8 @@ export default class AddQuickLinkComponent extends Vue {
     @Action("setTooManyRequestsError", { namespace: "errorBanner" })
     setTooManyRequestsError!: (params: { key: string }) => void;
 
-    @Action("clearTooManyRequests", { namespace: "errorBanner" })
-    clearTooManyRequests!: () => void;
+    @Action("clearTooManyRequestsError", { namespace: "errorBanner" })
+    clearTooManyRequestsError!: () => void;
 
     @Action("updateQuickLinks", { namespace: "user" })
     updateQuickLinks!: (params: {
@@ -48,6 +48,9 @@ export default class AddQuickLinkComponent extends Vue {
 
     @Getter("webClient", { namespace: "config" })
     webClientConfig!: WebClientConfiguration;
+
+    @Getter("tooManyRequestsError", { namespace: "errorBanner" })
+    tooManyRequestsError!: string | undefined;
 
     @Getter("quickLinks", { namespace: "user" })
     quickLinks!: QuickLink[] | undefined;
@@ -102,9 +105,15 @@ export default class AddQuickLinkComponent extends Vue {
         this.checkboxComponentKey++;
     }
 
-    private handleCancel(modalEvt: Event): void {
+    private clearErrors(): void {
         this.bannerError = null;
-        this.clearTooManyRequests();
+        if (this.tooManyRequestsError === "addQuickLinkModal") {
+            this.clearTooManyRequestsError();
+        }
+    }
+
+    private handleCancel(modalEvt: Event): void {
+        this.clearErrors();
 
         // Prevent modal from closing
         modalEvt.preventDefault();
@@ -120,8 +129,7 @@ export default class AddQuickLinkComponent extends Vue {
     }
 
     private async handleSubmit(modalEvt: Event): Promise<void> {
-        this.bannerError = null;
-        this.clearTooManyRequests();
+        this.clearErrors();
 
         // Prevent modal from closing
         modalEvt.preventDefault();

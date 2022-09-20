@@ -491,7 +491,8 @@ router.afterEach(() => {
     const store = storeWrapper.getStore();
 
     store.dispatch("errorBanner/clearErrors");
-    store.dispatch("errorBanner/clearTooManyRequests");
+    store.dispatch("errorBanner/clearTooManyRequestsWarning");
+    store.dispatch("errorBanner/clearTooManyRequestsError");
 
     window.snowplow("trackPageView");
 });
