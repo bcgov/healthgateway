@@ -40,7 +40,7 @@ export default class ReleaseNotesView extends Vue {
                     the first time.
                 </li>
                 <li>
-                    We updated the resource pop-overs for lab results to include
+                    We updated the resource popovers for lab results to include
                     links to reputable information about lab tests.
                 </li>
             </ul>
