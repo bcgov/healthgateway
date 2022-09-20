@@ -4,11 +4,12 @@ import { faDownload } from "@fortawesome/free-solid-svg-icons";
 import { saveAs } from "file-saver";
 import Vue from "vue";
 import { Component, Prop, Ref } from "vue-property-decorator";
-import { Getter } from "vuex-class";
+import { Action, Getter } from "vuex-class";
 
 import Covid19LaboratoryTestDescriptionComponent from "@/components/laboratory/Covid19LaboratoryTestDescriptionComponent.vue";
 import MessageModalComponent from "@/components/modal/MessageModalComponent.vue";
 import { EntryType, entryTypeMap } from "@/constants/entryType";
+import { ErrorSourceType, ErrorType } from "@/constants/errorType";
 import Covid19LaboratoryOrderTimelineEntry from "@/models/covid19LaboratoryOrderTimelineEntry";
 import { DateWrapper } from "@/models/dateWrapper";
 import User from "@/models/user";
@@ -37,6 +38,16 @@ export default class Covid19LaboratoryOrderTimelineComponent extends Vue {
 
     @Ref("messageModal")
     readonly messageModal!: MessageModalComponent;
+
+    @Action("addError", { namespace: "errorBanner" })
+    addError!: (params: {
+        errorType: ErrorType;
+        source: ErrorSourceType;
+        traceId: string | undefined;
+    }) => void;
+
+    @Action("setTooManyRequestsError", { namespace: "errorBanner" })
+    setTooManyRequestsError!: (params: { key: string }) => void;
 
     private laboratoryService!: ILaboratoryService;
 
@@ -98,7 +109,18 @@ export default class Covid19LaboratoryOrderTimelineComponent extends Vue {
                         saveAs(blob, `COVID_Result_${dateString}.pdf`)
                     );
             })
-            .catch((err) => this.logger.error(err))
+            .catch((err: ResultError) => {
+                this.logger.error(err.resultMessage);
+                if (err.statusCode === 429) {
+                    this.setTooManyRequestsError({ key: "page" });
+                } else {
+                    this.addError({
+                        errorType: ErrorType.Download,
+                        source: ErrorSourceType.Covid19LaboratoryReport,
+                        traceId: err.traceId,
+                    });
+                }
+            })
             .finally(() => {
                 this.isLoadingDocument = false;
             });
