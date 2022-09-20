@@ -29,6 +29,23 @@ export default class ReleaseNotesView extends Vue {
         <BreadcrumbComponent :items="breadcrumbItems" />
         <page-title title="Health Gateway Release Notes" />
         <release-note
+            date="September 20, 2022"
+            version="v2022.6.7"
+            title="Tutorial Messages, Lab Test Resources"
+        >
+            <ul>
+                <li>
+                    We updated and added more tutorial messages that provide
+                    helpful information when you log in to Health Gateway for
+                    the first time.
+                </li>
+                <li>
+                    We updated the resource pop-overs for lab results to include
+                    links to reputable information about lab tests.
+                </li>
+            </ul>
+        </release-note>
+        <release-note
             date="September 6, 2022"
             version="v2022.6.6"
             title="Guardian Access to Federal Proof of Vaccination"
