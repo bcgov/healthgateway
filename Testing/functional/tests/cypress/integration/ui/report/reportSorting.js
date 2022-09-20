@@ -1,7 +1,7 @@
 const { AuthMethod } = require("../../../support/constants");
 const HDID = "P6FFO433A5WPMVTGM7T4ZVWBKCSVNAYGTWTU3J2LWMGUMERKI72A";
 
-function getDueDate(value) {
+function getDate(value) {
     return new Date(value && value.trim().length !== 0 ? value.trim() : 0);
 }
 
@@ -92,19 +92,19 @@ describe("Reports - Medication", () => {
             .first()
             .then(($dateItem) => {
                 // Column date in the 1st row in the table
-                const firstDate = getDueDate($dateItem.text());
+                const firstDate = getDate($dateItem.text());
                 cy.get("[data-testid=recommendationDateItem]")
                     .eq(1)
                     .then(($dateItem) => {
                         // Column date in the 2nd row in the table
-                        const secondDate = getDueDate($dateItem.text());
+                        const secondDate = getDate($dateItem.text());
                         expect(firstDate).to.be.gte(secondDate);
                         // Column date in the last row in the table
                         cy.get("[data-testid=recommendationDateItem]")
                             .eq(4)
                             .then(($dateItem) => {
                                 // Column date in the last row in the table
-                                const lastDate = getDueDate($dateItem.text());
+                                const lastDate = getDate($dateItem.text());
                                 expect(firstDate).to.be.gte(lastDate);
                                 expect(secondDate).to.be.gte(lastDate);
                             });
