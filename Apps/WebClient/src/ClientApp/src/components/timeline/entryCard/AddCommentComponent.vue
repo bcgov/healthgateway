@@ -107,7 +107,7 @@ export default class AddCommentComponent extends Vue {
                 if (err.statusCode === 429) {
                     this.setTooManyRequestsError({ key: "page" });
                 }
-                window.scrollTo(0, 0);
+                window.scrollTo({ top: 0, behavior: "smooth" });
             })
             .finally(() => (this.isSaving = false));
     }

@@ -129,7 +129,7 @@ export default class PublicCovidTestView extends Vue {
         // Reset input components when changing between div tags
         this.$nextTick(() => this.$v.$reset());
         // Depending on where button is clicked on page, we need to ensure that top of page is displayed on the changed DIV
-        window.scrollTo(0, 0);
+        window.scrollTo({ top: 0, behavior: "smooth" });
     }
 
     private created(): void {
