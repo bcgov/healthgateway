@@ -4,7 +4,7 @@ const sensitiveDocMessage =
     " The file that you are downloading contains personal information. If you are on a public computer, please ensure that the file is deleted before you log off. ";
 const validHdid = "645645767756756767";
 
-function getDueDate(value) {
+function getDate(value) {
     return new Date(value && value.trim().length !== 0 ? value.trim() : 0);
 }
 
@@ -330,19 +330,19 @@ describe("Dependents - Immuniazation Tab - Enabled", () => {
         cy.get(`[data-testid=forecast-due-date-${dependentHdid}-0]`).then(
             ($dateItem) => {
                 // Column date in the 1st row in the table
-                const firstDate = getDueDate($dateItem.text());
+                const firstDate = getDate($dateItem.text());
                 cy.get(
                     `[data-testid=forecast-due-date-${dependentHdid}-1]`
                 ).then(($dateItem) => {
                     // Column date in the 2nd row in the table
-                    const secondDate = getDueDate($dateItem.text());
+                    const secondDate = getDate($dateItem.text());
                     expect(firstDate).to.be.gte(secondDate);
                     // Column date in the last row in the table
                     cy.get(
                         `[data-testid=forecast-due-date-${dependentHdid}-4]`
                     ).then(($dateItem) => {
                         // Column date in the last row in the table
-                        const lastDate = getDueDate($dateItem.text());
+                        const lastDate = getDate($dateItem.text());
                         expect(firstDate).to.be.gte(lastDate);
                         expect(secondDate).to.be.gte(lastDate);
                     });
