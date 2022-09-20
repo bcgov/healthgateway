@@ -116,4 +116,10 @@ describe("Landing Page", () => {
         cy.get("#menuBtnLogin").should("not.exist");
         cy.get("footer > .navbar").should("not.visible");
     });
+
+    it("Validate active tiles", () => {
+        cy.get("[data-testid=active-tile-ClinicalDocument]").should(
+            "be.visible"
+        );
+    });
 });
