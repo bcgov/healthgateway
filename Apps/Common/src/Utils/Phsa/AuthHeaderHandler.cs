@@ -53,13 +53,13 @@ namespace HealthGateway.Common.Utils.Phsa
                 this.logger.LogTrace($"Fetched Token for hdid");
                 string? token = phsaTokenResponse.ResourcePayload?.AccessToken;
                 request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
+                return await base.SendAsync(request, cancellationToken).ConfigureAwait(false);
             }
             else
             {
-                this.logger.LogError($"Error while retrieving PHSA Token {phsaTokenResponse.ResultError}");
+                this.logger.LogError($"Error while retrieving PHSA Token {phsaTokenResponse.ResultError?.ResultMessage}");
+                throw new HttpRequestException(phsaTokenResponse.ResultError?.ResultMessage);
             }
-
-            return await base.SendAsync(request, cancellationToken).ConfigureAwait(false);
         }
     }
 }
