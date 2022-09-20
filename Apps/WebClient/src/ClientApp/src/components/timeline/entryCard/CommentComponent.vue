@@ -72,12 +72,15 @@ export default class CommentComponent extends Vue {
                 version: this.comment.version,
             },
         })
-            .then(() => this.logger.info("Comment Updated"))
-            .catch((err) => this.logger.error(JSON.stringify(err)))
-            .finally(() => {
+            .then(() => {
+                this.logger.info("Comment Updated");
                 this.isEditMode = false;
-                this.isLoading = false;
-            });
+            })
+            .catch((err) => {
+                this.logger.error(JSON.stringify(err));
+                window.scrollTo(0, 0);
+            })
+            .finally(() => (this.isLoading = false));
     }
 
     private removeComment(): void {
@@ -85,10 +88,11 @@ export default class CommentComponent extends Vue {
             this.isLoading = true;
             this.deleteComment({ hdid: this.user.hdid, comment: this.comment })
                 .then(() => this.logger.info("Comment removed"))
-                .catch((err) => this.logger.error(JSON.stringify(err)))
-                .finally(() => {
-                    this.isLoading = false;
-                });
+                .catch((err) => {
+                    this.logger.error(JSON.stringify(err));
+                    window.scrollTo(0, 0);
+                })
+                .finally(() => (this.isLoading = false));
         }
     }
 }
