@@ -416,7 +416,7 @@ export default class PcrTestView extends Vue {
         this.resetForm();
         this.loading = false;
         this.registrationComplete = true;
-        window.scrollTo(0, 0);
+        window.scrollTo({ top: 0, behavior: "smooth" });
     }
 
     private handleError(err: ResultError, domain: string): void {
@@ -433,13 +433,13 @@ export default class PcrTestView extends Vue {
             });
         }
         this.loading = false;
-        window.scrollTo(0, 0);
+        window.scrollTo({ top: 0, behavior: "smooth" });
     }
 
     private handleCancel(): void {
         this.resetForm();
         this.dataSource = PcrDataSource.None;
-        window.scrollTo(0, 0);
+        window.scrollTo({ top: 0, behavior: "smooth" });
     }
 
     private resetForm(): void {

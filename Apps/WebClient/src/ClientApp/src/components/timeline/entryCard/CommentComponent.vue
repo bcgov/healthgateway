@@ -78,7 +78,7 @@ export default class CommentComponent extends Vue {
             })
             .catch((err) => {
                 this.logger.error(JSON.stringify(err));
-                window.scrollTo(0, 0);
+                window.scrollTo({ top: 0, behavior: "smooth" });
             })
             .finally(() => (this.isLoading = false));
     }
@@ -90,7 +90,7 @@ export default class CommentComponent extends Vue {
                 .then(() => this.logger.info("Comment removed"))
                 .catch((err) => {
                     this.logger.error(JSON.stringify(err));
-                    window.scrollTo(0, 0);
+                    window.scrollTo({ top: 0, behavior: "smooth" });
                 })
                 .finally(() => (this.isLoading = false));
         }
