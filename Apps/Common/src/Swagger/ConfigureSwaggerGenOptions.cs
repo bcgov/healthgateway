@@ -70,17 +70,6 @@ namespace HealthGateway.Common.Swagger
                     Scheme = "bearer",
                 });
 
-            options.AddSecurityDefinition(
-                "apikey",
-                new OpenApiSecurityScheme
-                {
-                    Name = ApiKeyRequirement.ApiKeyHeaderNameDefault,
-                    Description = $"Authorization using the {ApiKeyRequirement.ApiKeyHeaderNameDefault} header. Example: \"{ApiKeyRequirement.ApiKeyHeaderNameDefault} {{apiKey}}\"",
-                    Type = SecuritySchemeType.ApiKey,
-                    In = ParameterLocation.Header,
-                    Scheme = "apikey",
-                });
-
             // Add auth header filter
             options.OperationFilter<AuthenticationRequirementsOperationFilter>();
 

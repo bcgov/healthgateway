@@ -1,0 +1,13 @@
+{
+    "resourcePayload": [],
+    "totalResultCount": null,
+    "pageIndex": null,
+    "pageSize": null,
+    "resultStatus": 2,
+    "resultError": {
+        "resultMessage": "Warning: The person returned is the subject of an potential duplicate",
+        "errorCode": "BCHCIM.GD.0.0021",
+        "traceId": "beb0fde2de3c599e1570bd0cb49162e7",
+        "actionCode": "WARNING"
+    }
+}

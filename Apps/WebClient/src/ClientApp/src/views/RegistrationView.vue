@@ -275,16 +275,7 @@ export default class RegistrationView extends Vue {
             ? "/home"
             : "/timeline";
 
-        this.$router.push({
-            path:
-                this.smsNumber === "" && this.email === ""
-                    ? defaultRoute
-                    : "/profile",
-            query: {
-                toVerifyPhone: this.smsNumber === "" ? "false" : "true",
-                toVerifyEmail: this.email === "" ? "false" : "true",
-            },
-        });
+        this.$router.push({ path: defaultRoute });
     }
 
     private onEmailOptout(isChecked: boolean): void {

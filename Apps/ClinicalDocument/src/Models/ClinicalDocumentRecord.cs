@@ -16,7 +16,6 @@
 namespace HealthGateway.ClinicalDocument.Models
 {
     using System;
-    using System.Text.Json.Serialization;
 
     /// <summary>
     /// Represents a clinical document record.
@@ -24,45 +23,38 @@ namespace HealthGateway.ClinicalDocument.Models
     public class ClinicalDocumentRecord
     {
         /// <summary>
-        /// Gets or sets the ID.
+        /// Gets or sets the id.
         /// </summary>
-        [JsonPropertyName("id")]
         public string Id { get; set; } = string.Empty;
 
         /// <summary>
-        /// Gets or sets the file ID.
+        /// Gets or sets the file id.
         /// </summary>
-        [JsonPropertyName("fileId")]
         public string FileId { get; set; } = string.Empty;
 
         /// <summary>
         /// Gets or sets the name.
         /// </summary>
-        [JsonPropertyName("name")]
         public string Name { get; set; } = string.Empty;
 
         /// <summary>
         /// Gets or sets the type.
         /// </summary>
-        [JsonPropertyName("type")]
         public string Type { get; set; } = string.Empty;
 
         /// <summary>
         /// Gets or sets the facility name.
         /// </summary>
-        [JsonPropertyName("facilityName")]
         public string FacilityName { get; set; } = string.Empty;
 
         /// <summary>
         /// Gets or sets the discipline.
         /// </summary>
-        [JsonPropertyName("discipline")]
         public string Discipline { get; set; } = string.Empty;
 
         /// <summary>
         /// Gets or sets the service date.
         /// </summary>
-        [JsonPropertyName("serviceDate")]
         public DateTime ServiceDate { get; set; }
     }
 }

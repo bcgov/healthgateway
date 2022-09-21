@@ -13,16 +13,20 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //-------------------------------------------------------------------------
-namespace HealthGateway.Common.AccessManagement.Authorization.Policy
+namespace HealthGateway.ClinicalDocument.Models.PHSA
 {
+    using System.Collections.Generic;
+    using System.Text.Json.Serialization;
+
     /// <summary>
-    /// Policy for API Key Access.
+    /// Represents the health data response for clinical document records.
     /// </summary>
-    public static class ApiKeyPolicy
+    public class PhsaHealthDataResponse
     {
         /// <summary>
-        /// Policy which allows writing using API Key access.
+        /// Gets or sets the data.
         /// </summary>
-        public const string Write = "ApiKeyPolicyWrite";
+        [JsonPropertyName("data")]
+        public IEnumerable<PhsaClinicalDocumentRecord> Data { get; set; } = new List<PhsaClinicalDocumentRecord>();
     }
 }

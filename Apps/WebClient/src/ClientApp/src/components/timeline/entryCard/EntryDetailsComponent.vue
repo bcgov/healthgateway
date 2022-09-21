@@ -36,15 +36,20 @@ library.add(faArrowLeft);
     },
 })
 export default class EntryDetailsComponent extends Vue {
-    @Action("setHeaderState", { namespace: "navbar" }) setHeaderState!: (
-        isOpen: boolean
-    ) => void;
+    @Action("setHeaderState", { namespace: "navbar" })
+    setHeaderState!: (isOpen: boolean) => void;
 
-    @Getter("isMobile") isMobile!: boolean;
-    @Getter("user", { namespace: "user" }) user!: User;
-    @Getter("isVisible", { namespace: "idle" }) isIdleWarningVisible!: boolean;
+    @Getter("isMobile")
+    isMobile!: boolean;
+
+    @Getter("isVisible", { namespace: "idle" })
+    isIdleWarningVisible!: boolean;
+
     @Getter("lastOperation", { namespace: "note" })
     lastNoteOperation!: Operation | null;
+
+    @Getter("user", { namespace: "user" })
+    user!: User;
 
     private entry: TimelineEntry | null = null;
     private entryDate = "";

@@ -271,11 +271,11 @@ export default class DependentCardComponent extends Vue {
 
     private get recommendationItems(): RecommendationRow[] {
         return this.recommendations.map<RecommendationRow>((x) => ({
-            immunization: x.targetDiseases.find((y) => y.name)?.name ?? "",
+            immunization: x.recommendedVaccinations,
             due_date:
-                x.diseaseDueDate === undefined || x.diseaseDueDate === null
+                x.agentDueDate === undefined || x.agentDueDate === null
                     ? ""
-                    : DateWrapper.format(x.diseaseDueDate),
+                    : DateWrapper.format(x.agentDueDate),
             status: x.status || "",
         }));
     }
@@ -373,6 +373,18 @@ export default class DependentCardComponent extends Vue {
                             saveAs(blob, result.resourcePayload.fileName)
                         )
                 );
+            })
+            .catch((err: ResultError) => {
+                this.logger.error(err.resultMessage);
+                if (err.statusCode === 429) {
+                    this.setTooManyRequestsError({ key: "page" });
+                } else {
+                    this.addError({
+                        errorType: ErrorType.Download,
+                        source: ErrorSourceType.DependentImmunizationReport,
+                        traceId: err.traceId,
+                    });
+                }
             })
             .finally(() => {
                 this.isReportDownloading = false;
@@ -627,15 +639,15 @@ export default class DependentCardComponent extends Vue {
     }
 
     private setRecommendations(recommendations: Recommendation[]): void {
-        this.recommendations = recommendations.filter((x) =>
-            x.targetDiseases.some((y) => y.name)
+        this.recommendations = recommendations.filter(
+            (x) => x.recommendedVaccinations
         );
 
         this.recommendations.sort((a, b) => {
             const firstDateEmpty =
-                a.diseaseDueDate === null || a.diseaseDueDate === undefined;
+                a.agentDueDate === null || a.agentDueDate === undefined;
             const secondDateEmpty =
-                b.diseaseDueDate === null || b.diseaseDueDate === undefined;
+                b.agentDueDate === null || b.agentDueDate === undefined;
 
             if (firstDateEmpty && secondDateEmpty) {
                 return 0;
@@ -649,15 +661,15 @@ export default class DependentCardComponent extends Vue {
                 return -1;
             }
 
-            const firstDate = new DateWrapper(a.diseaseDueDate);
-            const secondDate = new DateWrapper(b.diseaseDueDate);
+            const firstDate = new DateWrapper(a.agentDueDate);
+            const secondDate = new DateWrapper(b.agentDueDate);
 
             if (firstDate.isBefore(secondDate)) {
-                return -1;
+                return 1;
             }
 
             if (firstDate.isAfter(secondDate)) {
-                return 1;
+                return -1;
             }
 
             return 0;
@@ -943,6 +955,7 @@ export default class DependentCardComponent extends Vue {
                                         "
                                         triggers="hover focus"
                                         placement="bottomleft"
+                                        boundary="viewport"
                                         data-testid="dependent-covid-test-info-popover"
                                     >
                                         <Covid19LaboratoryTestDescriptionComponent

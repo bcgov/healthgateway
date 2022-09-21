@@ -33,6 +33,9 @@ import { TimelineFilterBuilder } from "@/models/timelineFilter";
 import User from "@/models/user";
 import { UserPreference } from "@/models/userPreference";
 import VaccinationRecord from "@/models/vaccinationRecord";
+import container from "@/plugins/container";
+import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
+import { ILogger } from "@/services/interfaces";
 import SnowPlow from "@/utility/snowPlow";
 
 library.add(
@@ -89,15 +92,13 @@ export default class HomeView extends Vue {
         quickLinks: QuickLink[];
     }) => Promise<void>;
 
-    @Action("updateUserPreference", { namespace: "user" })
-    updateUserPreference!: (params: {
-        userPreference: UserPreference;
+    @Action("setUserPreference", { namespace: "user" })
+    setUserPreference!: (params: {
+        preference: UserPreference;
     }) => Promise<void>;
 
-    @Action("createUserPreference", { namespace: "user" })
-    createUserPreference!: (params: {
-        userPreference: UserPreference;
-    }) => Promise<void>;
+    @Getter("isMobile")
+    isMobileView!: boolean;
 
     @Getter("webClient", { namespace: "config" })
     config!: WebClientConfiguration;
@@ -124,6 +125,17 @@ export default class HomeView extends Vue {
 
     @Ref("addQuickLinkModal")
     readonly addQuickLinkModal!: AddQuickLinkComponent;
+
+    private logger!: ILogger;
+    private isAddQuickLinkTutorialHidden = false;
+
+    private get showAddQuickLinkTutorial(): boolean {
+        const preferenceType = UserPreferenceType.TutorialAddQuickLink;
+        return (
+            this.user.preferences[preferenceType]?.value === "true" &&
+            !this.isAddQuickLinkTutorialHidden
+        );
+    }
 
     private get isVaccineRecordDownloading(): boolean {
         const vaccinationRecord: VaccinationRecord | undefined =
@@ -249,6 +261,10 @@ export default class HomeView extends Vue {
         );
     }
 
+    private created(): void {
+        this.logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
+    }
+
     private trackClickLink(linkType: string | undefined): void {
         if (linkType) {
             SnowPlow.trackEvent({
@@ -281,6 +297,17 @@ export default class HomeView extends Vue {
         return this.vaccineRecords.get(this.user.hdid);
     }
 
+    private dismissAddQuickLinkTutorial(): void {
+        this.logger.debug("Dismissing add quick link tutorial");
+        this.isAddQuickLinkTutorialHidden = true;
+
+        const preference = {
+            ...this.user.preferences[UserPreferenceType.TutorialAddQuickLink],
+            value: "false",
+        };
+        this.setUserPreference({ preference });
+    }
+
     private handleClickHealthRecords(): void {
         this.trackClickLink("all_records");
         this.clearFilter();
@@ -293,29 +320,28 @@ export default class HomeView extends Vue {
     }
 
     private handleClickRemoveQuickLink(index: number): void {
+        this.logger.debug("Removing quick link");
         const quickLink = this.enabledQuickLinks[index];
         this.removeQuickLink(quickLink);
     }
 
     private handleClickRemoveVaccineCardQuickLink(): void {
-        const preferenceName = UserPreferenceType.HideVaccineCardQuickLink;
-        if (this.user.preferences[preferenceName] != undefined) {
-            this.user.preferences[preferenceName].value = "true";
-            this.updateUserPreference({
-                userPreference: this.user.preferences[preferenceName],
-            });
-        } else {
-            this.user.preferences[preferenceName] = {
-                hdId: this.user.hdid,
-                preference: preferenceName,
+        this.logger.debug("Removing vaccine card quick link");
+        const preferenceType = UserPreferenceType.HideVaccineCardQuickLink;
+
+        let preference = this.user.preferences[preferenceType];
+        if (preference === undefined) {
+            preference = {
+                preference: preferenceType,
                 value: "true",
                 version: 0,
                 createdDateTime: new DateWrapper().toISO(),
             };
-            this.createUserPreference({
-                userPreference: this.user.preferences[preferenceName],
-            });
+        } else {
+            preference = { ...preference, value: "true" };
         }
+
+        this.setUserPreference({ preference });
     }
 
     private handleClickQuickLink(index: number): void {
@@ -393,7 +419,7 @@ export default class HomeView extends Vue {
         />
         <b-alert
             v-if="unverifiedEmail || unverifiedSMS"
-            id="incomplete-profile-banner"
+            data-testid="incomplete-profile-banner"
             show
             dismissible
             variant="info"
@@ -429,8 +455,9 @@ export default class HomeView extends Vue {
         </b-alert>
         <page-title title="Home">
             <hg-button
-                :disabled="isAddQuickLinkButtonDisabled"
+                id="add-quick-link-button"
                 data-testid="add-quick-link-button"
+                :disabled="isAddQuickLinkButtonDisabled"
                 class="float-right"
                 variant="secondary"
                 @click="showAddQuickLinkModal"
@@ -438,6 +465,26 @@ export default class HomeView extends Vue {
                 <hg-icon icon="plus" size="medium" class="mr-2" />
                 <span>Add Quick Link</span>
             </hg-button>
+            <b-popover
+                triggers="manual"
+                :show="showAddQuickLinkTutorial"
+                target="add-quick-link-button"
+                :placement="isMobileView ? 'bottom' : 'left'"
+                boundary="viewport"
+            >
+                <div>
+                    <hg-button
+                        class="float-right text-dark p-0 ml-2"
+                        variant="icon"
+                        @click="dismissAddQuickLinkTutorial()"
+                        >×</hg-button
+                    >
+                </div>
+                <div data-testid="add-quick-link-tutorial-popover">
+                    Add a quick link to easily access a health record type from
+                    your home screen.
+                </div>
+            </b-popover>
         </page-title>
         <h2>What do you want to focus on today?</h2>
         <b-row cols="1" cols-lg="2" cols-xl="3">

@@ -1,4 +1,5 @@
 /* Data Cleanup */
+TRUNCATE gateway."AuditEvent";
 TRUNCATE gateway."UserProfile" CASCADE;
 TRUNCATE gateway."UserProfileHistory" CASCADE;
 TRUNCATE gateway."Communication" CASCADE;
@@ -609,6 +610,60 @@ VALUES (
 	'System', 
 	current_timestamp, 
 	'tutorialMenuExport', 
+	'false'
+);
+
+INSERT INTO gateway."UserPreference"(
+	"UserProfileId", 
+	"CreatedBy", 
+	"CreatedDateTime", 
+	"UpdatedBy", 
+	"UpdatedDateTime", 
+	"Preference", 
+	"Value")
+VALUES (
+	'P6FFO433A5WPMVTGM7T4ZVWBKCSVNAYGTWTU3J2LWMGUMERKI72A',	
+	'System', 
+	current_timestamp, 
+	'System', 
+	current_timestamp, 
+	'tutorialAddDependent', 
+	'false'
+);
+
+INSERT INTO gateway."UserPreference"(
+	"UserProfileId", 
+	"CreatedBy", 
+	"CreatedDateTime", 
+	"UpdatedBy", 
+	"UpdatedDateTime", 
+	"Preference", 
+	"Value")
+VALUES (
+	'P6FFO433A5WPMVTGM7T4ZVWBKCSVNAYGTWTU3J2LWMGUMERKI72A',	
+	'System', 
+	current_timestamp, 
+	'System', 
+	current_timestamp, 
+	'tutorialAddQuickLink', 
+	'false'
+);
+
+INSERT INTO gateway."UserPreference"(
+	"UserProfileId", 
+	"CreatedBy", 
+	"CreatedDateTime", 
+	"UpdatedBy", 
+	"UpdatedDateTime", 
+	"Preference", 
+	"Value")
+VALUES (
+	'P6FFO433A5WPMVTGM7T4ZVWBKCSVNAYGTWTU3J2LWMGUMERKI72A',	
+	'System', 
+	current_timestamp, 
+	'System', 
+	current_timestamp, 
+	'tutorialTimelineFilter', 
 	'false'
 );
 

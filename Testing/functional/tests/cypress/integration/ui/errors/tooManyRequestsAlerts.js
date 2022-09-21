@@ -2,6 +2,7 @@ const { AuthMethod } = require("../../../support/constants");
 
 const vaccineCardUrl = "/vaccinecard";
 const covidTestUrl = "/covidtest";
+const dependentHdid = "645645767756756767";
 const HDID = "P6FFO433A5WPMVTGM7T4ZVWBKCSVNAYGTWTU3J2LWMGUMERKI72A";
 
 const dobYearSelector =
@@ -291,6 +292,158 @@ describe("Mobile - Laboratory Orders", () => {
     });
 });
 
+describe("Mobile - Laboratory Orders Report Download", () => {
+    beforeEach(() => {
+        cy.intercept("GET", "**/Laboratory/LaboratoryOrders*", {
+            fixture: "LaboratoryService/laboratoryOrders.json",
+        });
+
+        cy.enableModules("AllLaboratory");
+        cy.viewport("iphone-6");
+        cy.login(
+            Cypress.env("keycloak.username"),
+            Cypress.env("keycloak.password"),
+            AuthMethod.KeyCloak
+        );
+        cy.checkTimelineHasLoaded();
+    });
+    it("Unsuccessful Response: Too Many Requests", () => {
+        cy.intercept("GET", "**/Laboratory/*/Report*", {
+            statusCode: 429,
+        });
+
+        cy.log(
+            "Verifying Laboratory Report Download returns Too Many Requests Error"
+        );
+        cy.get("[data-testid=timelineCard]").last().scrollIntoView().click();
+
+        cy.get("[data-testid=entryDetailsModal]")
+            .children()
+            .should("be.visible")
+            .within(() => {
+                cy.get("[data-testid=laboratory-report-download-btn]")
+                    .should("be.visible")
+                    .click({ force: true });
+            });
+
+        // Confirmation modal
+        cy.get("[data-testid=genericMessageModal]").should("be.visible");
+        cy.get("[data-testid=genericMessageSubmitBtn]")
+            .should("be.visible")
+            .click({ force: true });
+
+        cy.get("[data-testid=too-many-requests-error]").should("be.visible");
+        cy.get("[data-testid=backBtn]").click({ force: true });
+    });
+
+    it("Unsuccessful Response: Internal Server Error", () => {
+        cy.intercept("GET", "**/Laboratory/*/Report*", {
+            statusCode: 500,
+        });
+
+        cy.log(
+            "Verifying Laboratory Report Download returns Internal Server Error"
+        );
+        cy.get("[data-testid=timelineCard]").last().scrollIntoView().click();
+
+        cy.get("[data-testid=entryDetailsModal]")
+            .children()
+            .should("be.visible")
+            .within(() => {
+                cy.get("[data-testid=laboratory-report-download-btn]")
+                    .should("be.visible")
+                    .click({ force: true });
+            });
+
+        // Confirmation modal
+        cy.get("[data-testid=genericMessageModal]").should("be.visible");
+        cy.get("[data-testid=genericMessageSubmitBtn]")
+            .should("be.visible")
+            .click({ force: true });
+
+        cy.get("[data-testid=singleErrorHeader]").contains(
+            "Unable to download laboratory report"
+        );
+        cy.get("[data-testid=backBtn]").click({ force: true });
+    });
+});
+
+describe("Mobile - Covid19 Orders Report Download", () => {
+    beforeEach(() => {
+        cy.intercept("GET", "**/Laboratory/Covid19Orders*", {
+            fixture: "LaboratoryService/covid19Orders.json",
+        });
+        cy.enableModules("Laboratory");
+        cy.viewport("iphone-6");
+        cy.login(
+            Cypress.env("keycloak.username"),
+            Cypress.env("keycloak.password"),
+            AuthMethod.KeyCloak
+        );
+        cy.checkTimelineHasLoaded();
+    });
+
+    it("Unsuccessful Response: Too Many Requests", () => {
+        cy.intercept("GET", "**/Laboratory/*/Report?hdid=*", {
+            statusCode: 429,
+        });
+
+        cy.log(
+            "Verifying Covid19 Orders Report Download returns Too Many Requests Error"
+        );
+        cy.get("[data-testid=timelineCard]").last().scrollIntoView().click();
+
+        cy.get("[data-testid=entryDetailsModal]")
+            .children()
+            .should("be.visible")
+            .within(() => {
+                cy.get("[data-testid=covid-result-download-btn]")
+                    .should("be.visible")
+                    .click({ force: true });
+            });
+
+        // Confirmation modal
+        cy.get("[data-testid=genericMessageModal]").should("be.visible");
+        cy.get("[data-testid=genericMessageSubmitBtn]")
+            .should("be.visible")
+            .click({ force: true });
+
+        cy.get("[data-testid=too-many-requests-error]").should("be.visible");
+        cy.get("[data-testid=backBtn]").click({ force: true });
+    });
+
+    it("Unsuccessful Response: Internal Server Error", () => {
+        cy.intercept("GET", "**/Laboratory/*/Report?hdid=*&isCovid19=true", {
+            statusCode: 500,
+        });
+
+        cy.log(
+            "Verifying Covid19 Orders Report Download returns Internal Server Error"
+        );
+        cy.get("[data-testid=timelineCard]").last().scrollIntoView().click();
+
+        cy.get("[data-testid=entryDetailsModal]")
+            .children()
+            .should("be.visible")
+            .within(() => {
+                cy.get("[data-testid=covid-result-download-btn]")
+                    .should("be.visible")
+                    .click({ force: true });
+            });
+
+        // Confirmation modal
+        cy.get("[data-testid=genericMessageModal]").should("be.visible");
+        cy.get("[data-testid=genericMessageSubmitBtn]")
+            .should("be.visible")
+            .click({ force: true });
+
+        cy.get("[data-testid=singleErrorHeader]").contains(
+            "Unable to download COVID‑19 laboratory report"
+        );
+        cy.get("[data-testid=backBtn]").click({ force: true });
+    });
+});
+
 describe("User Profile", () => {
     beforeEach(() => {
         cy.intercept("GET", `**/UserProfile/${HDID}`, {
@@ -415,6 +568,106 @@ describe("Dependents", () => {
     });
 });
 
+describe("Dependent - Immunizaation History Tab - report download error handling", () => {
+    beforeEach(() => {
+        cy.intercept("GET", "**/UserProfile/*/Dependent", {
+            fixture: "UserProfileService/dependent.json",
+        });
+        cy.intercept("GET", "**/Immunization?hdid=*", {
+            fixture: "ImmunizationService/dependentImmunization.json",
+        });
+        cy.enableModules([
+            "Dependent",
+            "Immunization",
+            "DependentImmunizationTab",
+        ]);
+        cy.login(
+            Cypress.env("keycloak.username"),
+            Cypress.env("keycloak.password"),
+            AuthMethod.KeyCloak,
+            "/dependents"
+        );
+    });
+
+    it("Unsuccessful Response: Too Many Requests", () => {
+        cy.intercept("POST", "**/Report", {
+            statusCode: 429,
+        });
+
+        cy.get(`[data-testid=immunization-tab-title-${dependentHdid}]`)
+            .parent()
+            .click();
+
+        // History tab
+        cy.get(`[data-testid=immunization-tab-div-${dependentHdid}]`).within(
+            () => {
+                cy.contains("a", "History").click();
+            }
+        );
+        cy.get(
+            `[data-testid=immunization-history-table-${dependentHdid}]`
+        ).should("be.visible");
+
+        // Click download dropdown under History tab
+        cy.log("Validating download history report button.");
+        cy.get(
+            `[data-testid=download-immunization-history-report-btn-${dependentHdid}]`
+        ).click();
+
+        // Click PDF
+        cy.log("Selecting PDF as download report type.");
+        cy.get(
+            `[data-testid=download-immunization-history-report-pdf-btn-${dependentHdid}]`
+        ).click();
+
+        // Confirmation modal
+        cy.get("[data-testid=genericMessageModal]").should("be.visible");
+        cy.get("[data-testid=genericMessageSubmitBtn]").click();
+
+        cy.get("[data-testid=too-many-requests-error]").should("be.visible");
+    });
+
+    it("Unsuccessful Response: Internal Server Error", () => {
+        cy.intercept("POST", "**/Report", {
+            statusCode: 500,
+        });
+
+        cy.get(`[data-testid=immunization-tab-title-${dependentHdid}]`)
+            .parent()
+            .click();
+
+        // History tab
+        cy.get(`[data-testid=immunization-tab-div-${dependentHdid}]`).within(
+            () => {
+                cy.contains("a", "History").click();
+            }
+        );
+        cy.get(
+            `[data-testid=immunization-history-table-${dependentHdid}]`
+        ).should("be.visible");
+
+        // Click download dropdown under History tab
+        cy.log("Validating download history report button.");
+        cy.get(
+            `[data-testid=download-immunization-history-report-btn-${dependentHdid}]`
+        ).click();
+
+        // Click PDF
+        cy.log("Selecting PDF as download report type.");
+        cy.get(
+            `[data-testid=download-immunization-history-report-pdf-btn-${dependentHdid}]`
+        ).click();
+
+        // Confirmation modal
+        cy.get("[data-testid=genericMessageModal]").should("be.visible");
+        cy.get("[data-testid=genericMessageSubmitBtn]").click();
+
+        cy.get("[data-testid=singleErrorHeader]").contains(
+            "Unable to download Dependent Immunization Report"
+        );
+    });
+});
+
 describe("Comments", () => {
     it("Add Comment: Too Many Requests Error", () => {
         cy.intercept("POST", "**/UserProfile/*/Comment", {
@@ -507,5 +760,68 @@ describe("Notes", () => {
 
         // Verify
         cy.get("[data-testid=too-many-requests-error]").should("be.visible");
+    });
+
+    describe("Export Records - Immunizaation - report download error handling", () => {
+        beforeEach(() => {
+            cy.intercept("GET", "**/Immunization?hdid=*", {
+                fixture: "ImmunizationService/immunization.json",
+            });
+            cy.enableModules("Immunization");
+            cy.login(
+                Cypress.env("keycloak.username"),
+                Cypress.env("keycloak.password"),
+                AuthMethod.KeyCloak,
+                "/reports"
+            );
+        });
+
+        it("Unsuccessful Response: Too Many Requests", () => {
+            cy.intercept("POST", "**/Report", {
+                statusCode: 429,
+            });
+
+            cy.get("[data-testid=reportType]").select("Immunizations");
+
+            // Click download button
+            cy.get("[data-testid=exportRecordBtn] button")
+                .should("be.enabled", "be.visible")
+                .click();
+
+            // Select and click first option
+            cy.get("[data-testid=exportRecordBtn] a").first().click();
+
+            // Confirmation modal
+            cy.get("[data-testid=genericMessageModal]").should("be.visible");
+            cy.get("[data-testid=genericMessageSubmitBtn]").click();
+
+            cy.get("[data-testid=too-many-requests-error]").should(
+                "be.visible"
+            );
+        });
+
+        it("Unsuccessful Response: Internal Server Error", () => {
+            cy.intercept("POST", "**/Report", {
+                statusCode: 500,
+            });
+
+            cy.get("[data-testid=reportType]").select("Immunizations");
+
+            // Click download button
+            cy.get("[data-testid=exportRecordBtn] button")
+                .should("be.enabled", "be.visible")
+                .click();
+
+            // Select and click first option
+            cy.get("[data-testid=exportRecordBtn] a").first().click();
+
+            // Confirmation modal
+            cy.get("[data-testid=genericMessageModal]").should("be.visible");
+            cy.get("[data-testid=genericMessageSubmitBtn]").click();
+
+            cy.get("[data-testid=singleErrorHeader]").contains(
+                "Unable to download Export Records"
+            );
+        });
     });
 });

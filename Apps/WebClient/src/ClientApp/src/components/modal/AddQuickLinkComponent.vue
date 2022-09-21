@@ -41,9 +41,9 @@ export default class AddQuickLinkComponent extends Vue {
         quickLinks: QuickLink[];
     }) => Promise<void>;
 
-    @Action("updateUserPreference", { namespace: "user" })
-    updateUserPreference!: (params: {
-        userPreference: UserPreference;
+    @Action("setUserPreference", { namespace: "user" })
+    setUserPreference!: (params: {
+        preference: UserPreference;
     }) => Promise<void>;
 
     @Getter("webClient", { namespace: "config" })
@@ -149,7 +149,7 @@ export default class AddQuickLinkComponent extends Vue {
             ];
 
             if (this.selectedQuickLinks.includes("bc-vaccine-card")) {
-                const userPreference = {
+                const preference = {
                     ...this.user.preferences[
                         UserPreferenceType.HideVaccineCardQuickLink
                     ],
@@ -157,7 +157,7 @@ export default class AddQuickLinkComponent extends Vue {
                 };
 
                 promises.push(
-                    this.updateUserPreference({ userPreference }).then(() => {
+                    this.setUserPreference({ preference }).then(() => {
                         this.selectedQuickLinks =
                             this.selectedQuickLinks.filter(
                                 (link) => link !== "bc-vaccine-card"

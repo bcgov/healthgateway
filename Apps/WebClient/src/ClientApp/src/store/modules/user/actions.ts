@@ -118,24 +118,35 @@ export const actions: UserActions = {
     updateSMSResendDateTime(context, params: { dateTime: DateWrapper }): void {
         context.commit("setSMSResendDateTime", params.dateTime);
     },
-    updateUserPreference(
+    setUserPreference(
         context,
-        params: { userPreference: UserPreference }
+        params: { preference: UserPreference }
     ): Promise<void> {
         const userProfileService = container.get<IUserProfileService>(
             SERVICE_IDENTIFIER.UserProfileService
         );
         const logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
 
-        return new Promise((resolve, reject) =>
-            userProfileService
-                .updateUserPreference(
+        return new Promise((resolve, reject) => {
+            let setPreferencePromise: Promise<UserPreference>;
+            if (params.preference.hdId == undefined) {
+                logger.debug(`setUserPreference: creating new preference`);
+                setPreferencePromise = userProfileService.createUserPreference(
                     context.state.user.hdid,
-                    params.userPreference
-                )
+                    { ...params.preference, hdId: context.state.user.hdid }
+                );
+            } else {
+                logger.debug(`setUserPreference: updating existing preference`);
+                setPreferencePromise = userProfileService.updateUserPreference(
+                    context.state.user.hdid,
+                    params.preference
+                );
+            }
+
+            return setPreferencePromise
                 .then((result) => {
                     logger.debug(
-                        `updateUserPreference: ${JSON.stringify(result)}`
+                        `setUserPreference: ${JSON.stringify(result)}`
                     );
                     if (result) {
                         context.commit("setUserPreference", result);
@@ -145,38 +156,8 @@ export const actions: UserActions = {
                 .catch((error) => {
                     context.commit("userError");
                     reject(error);
-                })
-        );
-    },
-    createUserPreference(
-        context,
-        params: { userPreference: UserPreference }
-    ): Promise<void> {
-        const logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
-        const userProfileService = container.get<IUserProfileService>(
-            SERVICE_IDENTIFIER.UserProfileService
-        );
-
-        return new Promise((resolve, reject) =>
-            userProfileService
-                .createUserPreference(
-                    context.state.user.hdid,
-                    params.userPreference
-                )
-                .then((result) => {
-                    logger.debug(
-                        `createUserPreference: ${JSON.stringify(result)}`
-                    );
-                    if (result) {
-                        context.commit("setUserPreference", result);
-                    }
-                    resolve();
-                })
-                .catch((error) => {
-                    context.commit("userError");
-                    reject(error);
-                })
-        );
+                });
+        });
     },
     updateQuickLinks(
         context,
@@ -184,25 +165,21 @@ export const actions: UserActions = {
     ): Promise<void> {
         const jsonString = QuickLinkUtil.toString(params.quickLinks);
 
-        let userPreference: UserPreference = context.getters.getPreference(
-            UserPreferenceType.QuickLinks
-        );
+        let preference: UserPreference =
+            context.getters.user.preferences[UserPreferenceType.QuickLinks];
 
-        if (userPreference === undefined) {
-            userPreference = {
-                hdId: params.hdid,
+        if (preference === undefined) {
+            preference = {
                 preference: UserPreferenceType.QuickLinks,
                 value: jsonString,
                 version: 0,
                 createdDateTime: new DateWrapper().toISO(),
             };
-
-            return context.dispatch("createUserPreference", { userPreference });
+        } else {
+            preference = { ...preference, value: jsonString };
         }
 
-        userPreference = { ...userPreference, value: jsonString };
-
-        return context.dispatch("updateUserPreference", { userPreference });
+        return context.dispatch("setUserPreference", { preference });
     },
     validateEmail(
         context,
@@ -348,5 +325,11 @@ export const actions: UserActions = {
                 { root: true }
             );
         }
+    },
+    setSeenTutorialComment: function (
+        context,
+        params: { value: boolean }
+    ): void {
+        context.commit("setSeenTutorialComment", params.value);
     },
 };

@@ -20,6 +20,7 @@ namespace HealthGateway.GatewayApi.Controllers
     using System.Diagnostics.CodeAnalysis;
     using System.Security.Claims;
     using System.Threading.Tasks;
+    using HealthGateway.Common.AccessManagement.Authentication;
     using HealthGateway.Common.AccessManagement.Authorization.Policy;
     using HealthGateway.Common.Data.ViewModels;
     using HealthGateway.Common.Utils;
@@ -40,11 +41,12 @@ namespace HealthGateway.GatewayApi.Controllers
     [ApiController]
     public class UserProfileController : ControllerBase
     {
-        private readonly ILogger logger;
-        private readonly IUserProfileService userProfileService;
+        private readonly IAuthenticationDelegate authenticationDelegate;
         private readonly IHttpContextAccessor httpContextAccessor;
+        private readonly ILogger logger;
         private readonly IUserEmailService userEmailService;
-        private readonly IUserSMSService userSMSService;
+        private readonly IUserProfileService userProfileService;
+        private readonly IUserSMSService userSmsService;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="UserProfileController"/> class.
@@ -53,19 +55,22 @@ namespace HealthGateway.GatewayApi.Controllers
         /// <param name="userProfileService">The injected user profile service.</param>
         /// <param name="httpContextAccessor">The injected http context accessor provider.</param>
         /// <param name="userEmailService">The injected user email service.</param>
-        /// <param name="userSMSService">The injected user sms service.</param>
+        /// <param name="userSmsService">The injected user sms service.</param>
+        /// <param name="authenticationDelegate">The injected authentication delegate.</param>
         public UserProfileController(
             ILogger<UserProfileController> logger,
             IUserProfileService userProfileService,
             IHttpContextAccessor httpContextAccessor,
             IUserEmailService userEmailService,
-            IUserSMSService userSMSService)
+            IUserSMSService userSmsService,
+            IAuthenticationDelegate authenticationDelegate)
         {
             this.logger = logger;
             this.userProfileService = userProfileService;
             this.httpContextAccessor = httpContextAccessor;
             this.userEmailService = userEmailService;
-            this.userSMSService = userSMSService;
+            this.userSmsService = userSmsService;
+            this.authenticationDelegate = authenticationDelegate;
         }
 
         /// <summary>
@@ -97,7 +102,7 @@ namespace HealthGateway.GatewayApi.Controllers
             {
                 ClaimsPrincipal user = httpContext.User;
                 DateTime jwtAuthTime = ClaimsPrincipalReader.GetAuthDateTime(user);
-                string jwtEmailAddress = user.FindFirstValue(ClaimTypes.Email);
+                string? jwtEmailAddress = user.FindFirstValue(ClaimTypes.Email);
                 return await this.userProfileService.CreateUserProfile(createUserRequest, jwtAuthTime, jwtEmailAddress).ConfigureAwait(true);
             }
 
@@ -166,8 +171,7 @@ namespace HealthGateway.GatewayApi.Controllers
         public RequestResult<UserProfileModel> CloseUserProfile(string hdid)
         {
             // Retrieve the user identity id from the claims
-            ClaimsPrincipal user = this.httpContextAccessor.HttpContext!.User;
-            Guid userId = new(user.FindFirst(ClaimTypes.NameIdentifier)!.Value);
+            Guid userId = new(this.authenticationDelegate.FetchAuthenticatedUserId());
 
             return this.userProfileService.CloseUserProfile(hdid, userId);
         }
@@ -256,7 +260,7 @@ namespace HealthGateway.GatewayApi.Controllers
             HttpContext? httpContext = this.httpContextAccessor.HttpContext;
             if (httpContext != null)
             {
-                PrimitiveRequestResult<bool> result = this.userSMSService.ValidateSMS(hdid, validationCode);
+                PrimitiveRequestResult<bool> result = this.userSmsService.ValidateSMS(hdid, validationCode);
                 if (!result.ResourcePayload)
                 {
                     await Task.Delay(5000).ConfigureAwait(true);
@@ -305,7 +309,7 @@ namespace HealthGateway.GatewayApi.Controllers
         [Authorize(Policy = UserProfilePolicy.Write)]
         public bool UpdateUserSMSNumber(string hdid, [FromBody] string smsNumber)
         {
-            return this.userSMSService.UpdateUserSMS(hdid, smsNumber);
+            return this.userSmsService.UpdateUserSMS(hdid, smsNumber);
         }
 
         /// <summary>

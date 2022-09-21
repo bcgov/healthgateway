@@ -104,15 +104,15 @@ export default class ImmunizationHistoryReportComponent extends Vue {
     }
 
     private get visibleRecomendations(): Recommendation[] {
-        let records = this.patientRecommendations.filter((x) =>
-            x.targetDiseases.some((y) => y.name)
+        let records = this.patientRecommendations.filter(
+            (x) => x.recommendedVaccinations
         );
 
         records.sort((a, b) => {
             const firstDateEmpty =
-                a.diseaseDueDate === null || a.diseaseDueDate === undefined;
+                a.agentDueDate === null || a.agentDueDate === undefined;
             const secondDateEmpty =
-                b.diseaseDueDate === null || b.diseaseDueDate === undefined;
+                b.agentDueDate === null || b.agentDueDate === undefined;
 
             if (firstDateEmpty && secondDateEmpty) {
                 return 0;
@@ -126,8 +126,8 @@ export default class ImmunizationHistoryReportComponent extends Vue {
                 return -1;
             }
 
-            const firstDate = new DateWrapper(a.diseaseDueDate);
-            const secondDate = new DateWrapper(b.diseaseDueDate);
+            const firstDate = new DateWrapper(a.agentDueDate);
+            const secondDate = new DateWrapper(b.agentDueDate);
 
             if (firstDate.isBefore(secondDate)) {
                 return 1;
@@ -144,12 +144,15 @@ export default class ImmunizationHistoryReportComponent extends Vue {
     }
 
     private get recomendationItems(): RecomendationRow[] {
+        this.logger.debug(
+            "Recoomendations: " + JSON.stringify(this.visibleRecomendations)
+        );
         return this.visibleRecomendations.map<RecomendationRow>((x) => ({
-            immunization: x.targetDiseases.find((y) => y.name)?.name ?? "",
+            immunization: x.recommendedVaccinations,
             due_date:
-                x.diseaseDueDate === undefined || x.diseaseDueDate === null
+                x.agentDueDate === undefined || x.agentDueDate === null
                     ? ""
-                    : DateWrapper.format(x.diseaseDueDate),
+                    : DateWrapper.format(x.agentDueDate),
             status: x.status || "",
         }));
     }

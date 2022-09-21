@@ -36,11 +36,10 @@ library.add(
     },
 })
 export default class SidebarComponent extends Vue {
-    @Action("updateUserPreference", { namespace: "user" })
-    updateUserPreference!: (params: { userPreference: UserPreference }) => void;
-
-    @Action("createUserPreference", { namespace: "user" })
-    createUserPreference!: (params: { userPreference: UserPreference }) => void;
+    @Action("setUserPreference", { namespace: "user" })
+    setUserPreference!: (params: {
+        preference: UserPreference;
+    }) => Promise<void>;
 
     @Getter("isMobile")
     isMobileWidth!: boolean;
@@ -69,23 +68,13 @@ export default class SidebarComponent extends Vue {
     @Getter("userIsActive", { namespace: "user" })
     isActiveProfile!: boolean;
 
-    private UserPreferenceType = UserPreferenceType;
-
     private logger!: ILogger;
 
-    private isExportTutorialEnabled = true;
+    private isExportTutorialHidden = false;
 
     @Watch("$route")
     private onRouteChanged(): void {
         this.clearOverlay();
-    }
-
-    @Watch("isOpen")
-    private onIsOpen(val: boolean): void {
-        this.logger.verbose(`isOpen: ${val}`);
-
-        // disable popover when transition starts
-        this.isExportTutorialEnabled = false;
     }
 
     private created(): void {
@@ -106,8 +95,6 @@ export default class SidebarComponent extends Vue {
                 return;
             }
 
-            // re-enable popover when transition ends
-            this.isExportTutorialEnabled = true;
             this.setSidebarStoppedAnimating();
         });
     }
@@ -122,41 +109,25 @@ export default class SidebarComponent extends Vue {
         }
     }
 
-    private dismissTutorial(userPreference: UserPreference): void {
-        this.logger.debug(
-            `Dismissing tutorial ${userPreference.preference}...`
-        );
-        userPreference.value = "false";
-        if (userPreference.hdId != undefined) {
-            this.updateUserPreference({
-                userPreference,
-            });
-        } else {
-            userPreference.hdId = this.user.hdid;
-            this.createUserPreference({
-                userPreference,
-            });
-        }
-    }
+    private dismissExportTutorial(): void {
+        this.logger.debug("Dismissing export tutorial");
+        this.isExportTutorialHidden = true;
 
-    private isPreferenceActive(tutorialPopover: UserPreference): boolean {
-        if (this.isMobileWidth) {
-            return tutorialPopover?.value === "true" && this.isOpen;
-        } else {
-            return tutorialPopover?.value === "true";
-        }
+        const preference = {
+            ...this.user.preferences[UserPreferenceType.TutorialMenuExport],
+            value: "false",
+        };
+        this.setUserPreference({ preference });
     }
 
     private get showExportTutorial(): boolean {
+        const preferenceType = UserPreferenceType.TutorialMenuExport;
         return (
-            this.isPreferenceActive(
-                this.user.preferences[UserPreferenceType.TutorialMenuExport]
-            ) && this.isExportTutorialEnabled
+            this.user.preferences[preferenceType]?.value === "true" &&
+            !this.isExportTutorialHidden &&
+            (this.isOpen || !this.isMobileWidth) &&
+            !this.isAnimating
         );
-    }
-
-    private set showExportTutorial(value: boolean) {
-        this.isExportTutorialEnabled = value;
     }
 
     private get isFullyOpen(): boolean {
@@ -325,11 +296,7 @@ export default class SidebarComponent extends Vue {
                         class="mt-3 px-3 px-md-4"
                         :class="{ selected: isReports }"
                     >
-                        <b-row
-                            id="export-records-row"
-                            class="align-items-center"
-                            no-gutters
-                        >
+                        <b-row class="align-items-center" no-gutters>
                             <b-col
                                 title="Export Records"
                                 cols="auto"
@@ -351,26 +318,18 @@ export default class SidebarComponent extends Vue {
                         </b-row>
                         <b-popover
                             triggers="manual"
-                            :show.sync="showExportTutorial"
-                            target="export-records-row"
-                            custom-class="popover-style"
+                            :show="showExportTutorial"
+                            target="menuBtnReports"
+                            custom-class="elevation-1"
                             fallback-placement="clockwise"
                             placement="right"
-                            variant="dark"
                             boundary="viewport"
                         >
                             <div>
                                 <hg-button
                                     class="float-right text-dark p-0 ml-2"
                                     variant="icon"
-                                    @click="
-                                        dismissTutorial(
-                                            user.preferences[
-                                                UserPreferenceType
-                                                    .TutorialMenuExport
-                                            ]
-                                        )
-                                    "
+                                    @click="dismissExportTutorial()"
                                     >×</hg-button
                                 >
                             </div>
@@ -378,8 +337,8 @@ export default class SidebarComponent extends Vue {
                                 data-testid="exportRecordsPopover"
                                 class="popover-content"
                             >
-                                Download a pdf of your records. e.g. COVID-19
-                                test proof for employers.
+                                Download and print health records, such as your
+                                immunization history and more.
                             </div>
                         </b-popover>
                     </hg-button>
@@ -543,7 +502,7 @@ hr {
 <style lang="scss">
 @import "@/assets/scss/_variables.scss";
 
-.popover-style {
-    z-index: $z_popover;
+.popover.elevation-1 {
+    z-index: calc($z_popover + 1);
 }
 </style>

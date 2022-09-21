@@ -8,9 +8,9 @@
   <ItemGroup>
     <PackageReference Include="Hangfire.AspNetCore" Version="1.7.31" />
     <PackageReference Include="Hangfire.MaximumConcurrentExecutions" Version="1.1.0" />
-    <PackageReference Include="Hangfire.Postgresql" Version="1.9.8" />
-    <PackageReference Include="mailkit" Version="3.3.0" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="6.0.8">
+    <PackageReference Include="Hangfire.Postgresql" Version="1.9.9" />
+    <PackageReference Include="mailkit" Version="3.4.1" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="6.0.9">
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>

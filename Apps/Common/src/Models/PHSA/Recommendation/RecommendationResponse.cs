@@ -57,7 +57,7 @@ namespace HealthGateway.Common.Models.PHSA.Recommendation
         /// Gets or sets the Target Disease.
         /// </summary>
         [JsonPropertyName("targetDisease")]
-        public TargetDiseaseResponse TargetDisease { get; set; } = new();
+        public TargetDiseaseResponse? TargetDisease { get; set; }
 
         /// <summary>
         /// Gets or sets the Vaccine Code.

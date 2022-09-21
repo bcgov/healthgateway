@@ -189,7 +189,7 @@ namespace HealthGateway.GatewayApi.Services
         }
 
         /// <inheritdoc/>
-        public async Task<RequestResult<UserProfileModel>> CreateUserProfile(CreateUserRequest createProfileRequest, DateTime jwtAuthTime, string jwtEmailAddress)
+        public async Task<RequestResult<UserProfileModel>> CreateUserProfile(CreateUserRequest createProfileRequest, DateTime jwtAuthTime, string? jwtEmailAddress)
         {
             this.logger.LogTrace($"Creating user profile... {JsonSerializer.Serialize(createProfileRequest)}");
 
@@ -209,17 +209,17 @@ namespace HealthGateway.GatewayApi.Services
 
             // Validate registration age
             string hdid = createProfileRequest.Profile.HdId;
-            PrimitiveRequestResult<bool> isMimimunAgeResult = await this.ValidateMinimumAge(hdid).ConfigureAwait(true);
-            if (isMimimunAgeResult.ResultStatus != ResultType.Success)
+            PrimitiveRequestResult<bool> isMinimumAgeResult = await this.ValidateMinimumAge(hdid).ConfigureAwait(true);
+            if (isMinimumAgeResult.ResultStatus != ResultType.Success)
             {
                 return new RequestResult<UserProfileModel>
                 {
-                    ResultStatus = isMimimunAgeResult.ResultStatus,
-                    ResultError = isMimimunAgeResult.ResultError,
+                    ResultStatus = isMinimumAgeResult.ResultStatus,
+                    ResultError = isMinimumAgeResult.ResultError,
                 };
             }
 
-            if (!isMimimunAgeResult.ResourcePayload)
+            if (!isMinimumAgeResult.ResourcePayload)
             {
                 this.logger.LogWarning($"Patient under minimum age. {JsonSerializer.Serialize(createProfileRequest)}");
                 return new RequestResult<UserProfileModel>
@@ -250,17 +250,22 @@ namespace HealthGateway.GatewayApi.Services
 
             if (insertResult.Status == DBStatusCode.Created)
             {
-                UserProfile createdProfile = insertResult.Payload;
+                UserProfile dbModel = insertResult.Payload;
                 string? requestedSMSNumber = createProfileRequest.Profile.SMSNumber;
                 string? requestedEmail = createProfileRequest.Profile.Email;
 
-                NotificationSettingsRequest notificationRequest =
-                    new(createdProfile, requestedEmail, requestedSMSNumber);
+                RequestResult<TermsOfServiceModel> termsOfServiceResult = this.GetActiveTermsOfService();
+                UserProfileModel userProfileModel = UserProfileMapUtils.CreateFromDbModel(dbModel, termsOfServiceResult.ResourcePayload?.Id, this.autoMapper);
+
+                NotificationSettingsRequest notificationRequest = new(dbModel, requestedEmail, requestedSMSNumber);
 
                 // Add email verification
                 if (!string.IsNullOrWhiteSpace(requestedEmail))
                 {
-                    this.userEmailService.CreateUserEmail(hdid, requestedEmail, requestedEmail.Equals(jwtEmailAddress, StringComparison.OrdinalIgnoreCase));
+                    bool isEmailVerified = requestedEmail.Equals(jwtEmailAddress, StringComparison.OrdinalIgnoreCase);
+                    this.userEmailService.CreateUserEmail(hdid, requestedEmail, isEmailVerified);
+                    userProfileModel.Email = requestedEmail;
+                    userProfileModel.IsEmailVerified = isEmailVerified;
                 }
 
                 // Add SMS verification
@@ -268,16 +273,15 @@ namespace HealthGateway.GatewayApi.Services
                 {
                     MessagingVerification smsVerification = this.userSMSService.CreateUserSMS(hdid, requestedSMSNumber);
                     notificationRequest.SMSVerificationCode = smsVerification.SMSValidationCode;
+                    userProfileModel.SMSNumber = requestedSMSNumber;
                 }
 
                 this.notificationSettingsService.QueueNotificationSettings(notificationRequest);
 
-                RequestResult<TermsOfServiceModel> termsOfServiceResult = this.GetActiveTermsOfService();
-
                 this.logger.LogDebug($"Finished creating user profile. {JsonSerializer.Serialize(insertResult)}");
                 return new RequestResult<UserProfileModel>
                 {
-                    ResourcePayload = UserProfileMapUtils.CreateFromDbModel(insertResult.Payload, termsOfServiceResult.ResourcePayload?.Id, this.autoMapper),
+                    ResourcePayload = userProfileModel,
                     ResultStatus = ResultType.Success,
                 };
             }
