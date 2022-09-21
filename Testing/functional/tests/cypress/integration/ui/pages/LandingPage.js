@@ -117,15 +117,17 @@ describe("Landing Page", () => {
         cy.get("footer > .navbar").should("not.visible");
     });
 
-    it("Validate active tiles", () => {
-        cy.enableModules("");
-        cy.get("[data-testid=active-tile-ClinicalDocument]").should(
-            "not.exist"
-        );
-
-        cy.enableModules("ClinicalDocument");
+    it("Validate clinical doc tile when module enabled", () => {
+        cy.enableModules(["ClinicalDocument"]);
         cy.get("[data-testid=active-tile-ClinicalDocument]").should(
             "be.visible"
+        );
+    });
+
+    it("Validate no clinical doc tile when module not enabled", () => {
+        cy.enableModules([""]);
+        cy.get("[data-testid=active-tile-ClinicalDocument]").should(
+            "not.exist"
         );
     });
 });
