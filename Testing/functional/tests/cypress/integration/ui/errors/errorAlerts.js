@@ -142,6 +142,37 @@ function testAddQuickLinkError(statusCode = serverErrorStatusCode) {
     }
 }
 
+function testAddCommentError(statusCode = serverErrorStatusCode) {
+    cy.enableModules(["Comment", "AllLaboratory"]);
+    cy.intercept("POST", "**/UserProfile/*/Comment", {
+        statusCode,
+    });
+    cy.intercept("GET", "**/Laboratory/LaboratoryOrders*", {
+        fixture: "LaboratoryService/laboratoryOrders.json",
+    });
+    cy.login(
+        Cypress.env("keycloak.username"),
+        Cypress.env("keycloak.password"),
+        AuthMethod.KeyCloak
+    );
+    cy.checkTimelineHasLoaded();
+
+    cy.get("[data-testid=timelineCard]")
+        .first()
+        .scrollIntoView()
+        .click()
+        .within(() => {
+            cy.get("[data-testid=addCommentTextArea]").type("Test Comment");
+            cy.get("[data-testid=postCommentBtn]").click();
+        });
+
+    if (statusCode === tooManyRequestsStatusCode) {
+        cy.get("[data-testid=too-many-requests-error]").should("be.visible");
+    } else {
+        cy.get("[data-testid=errorBanner]").should("be.visible");
+    }
+}
+
 describe("Error Alerts", () => {
     it("Error Retrieving Configuration", () => {
         testGetConfigurationError();
@@ -161,6 +192,10 @@ describe("Error Alerts", () => {
 
     it("Error Adding Quick Link", () => {
         testAddQuickLinkError();
+    });
+
+    it("Error Adding Comment", () => {
+        testAddCommentError();
     });
 });
 
@@ -183,5 +218,9 @@ describe("429 Alerts", () => {
 
     it("429 Error Adding Quick Link", () => {
         testAddQuickLinkError(429);
+    });
+
+    it("429 Error Adding Comment", () => {
+        testAddCommentError(429);
     });
 });
