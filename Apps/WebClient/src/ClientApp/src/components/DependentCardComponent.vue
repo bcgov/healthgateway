@@ -1144,57 +1144,88 @@ export default class DependentCardComponent extends Vue {
                                     </table>
                                 </b-tab>
                                 <b-tab title="Forecasts">
-                                    <b-dropdown
-                                        v-if="recommendationItems.length != 0"
-                                        id="download-immunization-forecast-report-btn"
-                                        text="Download"
-                                        class="p-4 float-right"
-                                        variant="outline-dark"
-                                        :data-testid="`download-immunization-forecast-report-btn-${dependent.ownerId}`"
-                                        :disabled="
-                                            isDownloadImmunizationReportButtonDisabled
-                                        "
-                                    >
-                                        <b-dropdown-item
-                                            :data-testid="`download-immunization-forecast-report-pdf-btn-${dependent.ownerId}`"
-                                            @click="
-                                                showImmunizationDownloadConfirmationModal(
-                                                    ReportFormatType.PDF
-                                                )
+                                    <div class="p-3">
+                                        <b-row align-h="end" no-gutters>
+                                            <b-col cols="12" :md="true">
+                                                <p class="mb-md-0">
+                                                    School-aged children are
+                                                    offered most immunizations
+                                                    in their school,
+                                                    particularly in grades 6 and
+                                                    9. The school can let you
+                                                    know which vaccines are
+                                                    offered. You need to book an
+                                                    appointment to get your
+                                                    child vaccinated against
+                                                    COVID‑19.
+                                                    <a
+                                                        href="https://www2.gov.bc.ca/gov/content/covid-19/vaccine"
+                                                        rel="noopener"
+                                                        target="_blank"
+                                                        >Find out how.</a
+                                                    >
+                                                </p>
+                                            </b-col>
+                                            <b-col
+                                                v-if="
+                                                    recommendationItems.length >
+                                                    0
+                                                "
+                                                cols="auto"
+                                                align-self="center"
+                                                class="pl-3"
+                                            >
+                                                <b-dropdown
+                                                    id="download-immunization-forecast-report-btn"
+                                                    text="Download"
+                                                    variant="outline-dark"
+                                                    :data-testid="`download-immunization-forecast-report-btn-${dependent.ownerId}`"
+                                                    :disabled="
+                                                        isDownloadImmunizationReportButtonDisabled
+                                                    "
+                                                >
+                                                    <b-dropdown-item
+                                                        :data-testid="`download-immunization-forecast-report-pdf-btn-${dependent.ownerId}`"
+                                                        @click="
+                                                            showImmunizationDownloadConfirmationModal(
+                                                                ReportFormatType.PDF
+                                                            )
+                                                        "
+                                                        >PDF</b-dropdown-item
+                                                    >
+                                                    <b-dropdown-item
+                                                        :data-testid="`download-immunization-forecast-report-csv-btn-${dependent.ownerId}`"
+                                                        @click="
+                                                            showImmunizationDownloadConfirmationModal(
+                                                                ReportFormatType.CSV
+                                                            )
+                                                        "
+                                                        >CSV</b-dropdown-item
+                                                    >
+                                                    <b-dropdown-item
+                                                        :data-testid="`download-immunization-forecast-report-xlsx-btn-${dependent.ownerId}`"
+                                                        @click="
+                                                            showImmunizationDownloadConfirmationModal(
+                                                                ReportFormatType.XLSX
+                                                            )
+                                                        "
+                                                        >XLSX</b-dropdown-item
+                                                    >
+                                                </b-dropdown>
+                                            </b-col>
+                                        </b-row>
+                                        <div
+                                            v-if="
+                                                recommendationItems.length === 0
                                             "
-                                            >PDF</b-dropdown-item
-                                        >
-                                        <b-dropdown-item
-                                            :data-testid="`download-immunization-forecast-report-csv-btn-${dependent.ownerId}`"
-                                            @click="
-                                                showImmunizationDownloadConfirmationModal(
-                                                    ReportFormatType.CSV
-                                                )
-                                            "
-                                            >CSV</b-dropdown-item
-                                        >
-                                        <b-dropdown-item
-                                            :data-testid="`download-immunization-forecast-report-xlsx-btn-${dependent.ownerId}`"
-                                            @click="
-                                                showImmunizationDownloadConfirmationModal(
-                                                    ReportFormatType.XLSX
-                                                )
-                                            "
-                                            >XLSX</b-dropdown-item
-                                        >
-                                    </b-dropdown>
-                                    <b-row
-                                        v-if="recommendationItems.length == 0"
-                                        class="m-2"
-                                    >
-                                        <b-col
+                                            class="pt-3"
                                             :data-testid="`immunization-forecast-no-rows-found-${dependent.ownerId}`"
                                         >
                                             No records found.
-                                        </b-col>
-                                    </b-row>
+                                        </div>
+                                    </div>
                                     <table
-                                        v-else
+                                        v-if="recommendationItems.length > 0"
                                         class="w-100"
                                         aria-describedby="Immunization Forecast"
                                         :data-testid="`immunization-forecast-table-${dependent.ownerId}`"
