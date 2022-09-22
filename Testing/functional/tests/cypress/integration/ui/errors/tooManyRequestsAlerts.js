@@ -384,7 +384,7 @@ describe("Mobile - Covid19 Orders Report Download", () => {
     });
 
     it("Unsuccessful Response: Too Many Requests", () => {
-        cy.intercept("GET", "**/Laboratory/*/Report?hdid=*", {
+        cy.intercept("GET", "**/Laboratory/*/Report*", {
             statusCode: 429,
         });
 
@@ -413,7 +413,7 @@ describe("Mobile - Covid19 Orders Report Download", () => {
     });
 
     it("Unsuccessful Response: Internal Server Error", () => {
-        cy.intercept("GET", "**/Laboratory/*/Report?hdid=*&isCovid19=true", {
+        cy.intercept("GET", "**/Laboratory/*/Report*", {
             statusCode: 500,
         });
 
