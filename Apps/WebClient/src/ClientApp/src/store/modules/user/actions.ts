@@ -153,8 +153,12 @@ export const actions: UserActions = {
                     }
                     resolve();
                 })
-                .catch((error) => {
-                    context.commit("userError");
+                .catch((error: ResultError) => {
+                    context.dispatch("handleError", {
+                        error,
+                        errorType: ErrorType.Update,
+                        source: ErrorSourceType.User,
+                    });
                     reject(error);
                 });
         });

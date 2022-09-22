@@ -281,7 +281,7 @@ export default class ProfileView extends Vue {
                 this.isLoading = false;
             })
             .catch((error) => {
-                this.logger.error(`Error loading profile: ${err}`);
+                this.logger.error(`Error loading profile: ${error}`);
                 if (instanceOfResultError(error) && error.statusCode === 429) {
                     this.setTooManyRequestsError({ key: "page" });
                 } else {
