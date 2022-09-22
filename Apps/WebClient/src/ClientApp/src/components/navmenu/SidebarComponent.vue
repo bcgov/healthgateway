@@ -271,7 +271,11 @@ export default class SidebarComponent extends Vue {
                         :class="{ selected: isDependents }"
                     >
                         <b-row class="align-items-center" no-gutters>
-                            <b-col title="Reports" cols="auto" class="pr-md-4">
+                            <b-col
+                                title="Dependents"
+                                cols="auto"
+                                class="pr-md-4"
+                            >
                                 <hg-icon
                                     icon="user-friends"
                                     size="large"
