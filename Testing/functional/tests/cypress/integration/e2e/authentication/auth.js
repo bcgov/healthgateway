@@ -94,6 +94,17 @@ describe("Authentication", () => {
             .should("not.be.disabled");
     });
 
+    it("KeyCloak Deceased Login", () => {
+        cy.login(
+            Cypress.env("keycloak.deceased.username"),
+            Cypress.env("keycloak.password"),
+            AuthMethod.KeyCloak,
+            "/home"
+        );
+        cy.url().should("include", "/registration");
+        cy.get("[data-testid=clientRegistryErrorText]").should("be.visible");
+    });
+
     // it('Idle Timeout', () => {
     // // Work in Progress, clock not working correctly.
     //     cy.server()
