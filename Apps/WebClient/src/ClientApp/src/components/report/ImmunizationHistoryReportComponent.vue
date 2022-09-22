@@ -324,7 +324,8 @@ export default class ImmunizationHistoryReportComponent extends Vue {
                                     searching your medications, too.
                                 </p>
                                 <p class="mb-0">
-                                    You can add or update immunizations at
+                                    You can add or update immunizations by
+                                    visiting
                                     <a
                                         href="https://www.immunizationrecord.gov.bc.ca"
                                         target="_blank"
