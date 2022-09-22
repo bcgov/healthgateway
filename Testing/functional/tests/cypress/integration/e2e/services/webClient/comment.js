@@ -59,7 +59,7 @@ describe("WebClient Comment Service", () => {
                 }).should((response) => {
                     expect(response.status).to.eq(200);
                     expect(response.body).to.not.be.null;
-                    expect(response.body.resourcePayload).to.be.an("object").that.is
+                    expect(response.body.resourcePayload).to.be.an("object")
                         .empty;
                     expect(response.body.totalResultCount).to.eq(0);
                     expect(response.body.resultStatus).to.eq(1);
