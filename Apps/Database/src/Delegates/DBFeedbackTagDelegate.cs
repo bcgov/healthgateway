@@ -65,7 +65,7 @@ namespace HealthGateway.Database.Delegates
                 }
                 catch (DbUpdateException e)
                 {
-                    this.logger.LogError($"Unable to save UserFeedbackTag to DB {e}");
+                    this.logger.LogError("Unable to save UserFeedbackTag to DB {Exception}", e.ToString());
                     result.Status = DBStatusCode.Error;
                     result.Message = e.Message;
                 }
