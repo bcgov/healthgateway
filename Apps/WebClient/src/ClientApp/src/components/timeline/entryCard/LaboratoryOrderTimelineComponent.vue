@@ -67,17 +67,6 @@ export default class LaboratoryOrderTimelineComponent extends Vue {
         return date.format("yyyy-MMM-dd, t");
     }
 
-    private getResultClasses(result: string): string[] {
-        switch (result?.toUpperCase()) {
-            case "OUT OF RANGE":
-                return ["text-danger"];
-            case "IN RANGE":
-                return ["text-success"];
-            default:
-                return [];
-        }
-    }
-
     private getStatusInfoId(labPdfId: string, index: number): string {
         const isModalIndicator: string = this.isMobileDetails ? "1" : "0";
         return `laboratory-test-status-info-${labPdfId}-${index}-${isModalIndicator}`;
@@ -261,9 +250,9 @@ export default class LaboratoryOrderTimelineComponent extends Vue {
                 data-testid="laboratoryResultTable"
             >
                 <template #cell(result)="data">
-                    <strong :class="getResultClasses(data.value)">
+                    <span>
                         {{ data.value }}
-                    </strong>
+                    </span>
                 </template>
                 <template #head(result)="data">
                     <span>{{ data.label }}</span>
