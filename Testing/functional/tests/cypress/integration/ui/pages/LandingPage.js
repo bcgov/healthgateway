@@ -125,7 +125,7 @@ describe("Landing Page", () => {
     });
 
     it("Validate no clinical doc tile when module not enabled", () => {
-        cy.enableModules([""]);
+        cy.enableModules([]);
         cy.get("[data-testid=active-tile-ClinicalDocument]").should(
             "not.exist"
         );
