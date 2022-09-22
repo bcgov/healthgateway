@@ -229,7 +229,7 @@ describe("Reports - Notes", () => {
         cy.setupDownloads();
         cy.enableModules(["Note"]);
         cy.login(
-            Cypress.env("keycloak.invaliddoses.username"),
+            Cypress.env("keycloak.hthgtwy20.username"),
             Cypress.env("keycloak.password"),
             AuthMethod.KeyCloak,
             "/reports"
