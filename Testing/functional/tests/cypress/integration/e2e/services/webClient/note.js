@@ -5,7 +5,7 @@ describe("WebClient Note Service", () => {
     beforeEach(() => {
         cy.readConfig().as("config");
         cy.getTokens(
-            Cypress.env("keycloak.invaliddoses.username"),
+            Cypress.env("keycloak.hthgtwy20.username"),
             Cypress.env("keycloak.password")
         ).as("tokens");
     });
@@ -60,7 +60,7 @@ describe("WebClient Note Service", () => {
                     expect(response.status).to.eq(200);
                     expect(response.body).to.not.be.null;
                     expect(response.body.resourcePayload).to.be.an("array").that
-                        .not.empty;
+                        .is.not.empty;
                     expect(response.body.totalResultCount).to.eq(3);
                     expect(response.body.resultStatus).to.eq(1);
                     expect(response.body.resultError).to.eq(null);

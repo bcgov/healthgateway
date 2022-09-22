@@ -4,6 +4,10 @@ const sensitiveDocMessage =
     " The file that you are downloading contains personal information. If you are on a public computer, please ensure that the file is deleted before you log off. ";
 const validHdid = "645645767756756767";
 
+function getDate(value) {
+    return new Date(value && value.trim().length !== 0 ? value.trim() : 0);
+}
+
 describe("COVID-19", () => {
     beforeEach(() => {
         cy.intercept("GET", "**/Laboratory/Covid19Orders*", {
@@ -209,40 +213,51 @@ describe("Dependents - Immuniazation Tab - Enabled", () => {
         );
     });
 
-    it("Immunization - History - Tab - Configuration Enabled", () => {
+    it("Immunization - History - Tab - Verify sort and download", () => {
         cy.intercept("GET", "**/Immunization?hdid=*", {
             fixture: "ImmunizationService/dependentImmunization.json",
         });
 
         cy.log("Validating Immunization Tab - configuration enabled");
 
-        cy.get("[data-testid=immunization-tab-title-" + dependentHdid + "]")
+        cy.get(`[data-testid=immunization-tab-title-${dependentHdid}]`)
             .parent()
             .click();
 
         // History tab
         cy.log("Validating History Tab");
+        cy.get(`[data-testid=immunization-tab-div-${dependentHdid}]`).within(
+            () => {
+                cy.contains("a", "History").click();
+            }
+        );
         cy.get(
-            "[data-testid=immunization-tab-div-" + dependentHdid + "]"
-        ).within(() => {
-            cy.contains("a", "History").click();
-        });
-        cy.get(
-            "[data-testid=immunization-history-table-" + dependentHdid + "]"
+            `[data-testid=immunization-history-table-${dependentHdid}]`
         ).should("be.visible");
+
+        // Verify history table has been sorted by due date descending
+        cy.get(
+            `[data-testid=history-immunization-date-${dependentHdid}-0]`
+        ).then(($dateItem) => {
+            // Column date in the 1st row in the table
+            const firstDate = new Date($dateItem.text().trim());
+            cy.get(
+                `[data-testid=history-immunization-date-${dependentHdid}-1]`
+            ).then(($dateItem) => {
+                // Column date in the 2nd row in the table
+                const secondDate = new Date($dateItem.text().trim());
+                expect(firstDate).to.be.gte(secondDate);
+            });
+        });
 
         // Click download dropdown under History tab
         cy.get(
-            "[data-testid=download-immunization-history-report-btn-" +
-                dependentHdid +
-                "]"
+            `[data-testid=download-immunization-history-report-btn-${dependentHdid}]`
         ).click();
 
         // Click PDF
         cy.get(
-            "[data-testid=download-immunization-history-report-pdf-btn-" +
-                dependentHdid +
-                "]"
+            `[data-testid=download-immunization-history-report-pdf-btn-${dependentHdid}]`
         ).click();
 
         // Confirmation modal
@@ -256,16 +271,12 @@ describe("Dependents - Immuniazation Tab - Enabled", () => {
 
         // Click download dropdown
         cy.get(
-            "[data-testid=download-immunization-history-report-btn-" +
-                dependentHdid +
-                "]"
+            `[data-testid=download-immunization-history-report-btn-${dependentHdid}]`
         ).click();
 
         // Click CSV
         cy.get(
-            "[data-testid=download-immunization-history-report-csv-btn-" +
-                dependentHdid +
-                "]"
+            `[data-testid=download-immunization-history-report-csv-btn-${dependentHdid}]`
         ).click();
 
         // Confirmation modal
@@ -279,16 +290,12 @@ describe("Dependents - Immuniazation Tab - Enabled", () => {
 
         // Click download dropdown
         cy.get(
-            "[data-testid=download-immunization-history-report-btn-" +
-                dependentHdid +
-                "]"
+            `[data-testid=download-immunization-history-report-btn-${dependentHdid}]`
         ).click();
 
         // Click XLSX
         cy.get(
-            "[data-testid=download-immunization-history-report-xlsx-btn-" +
-                dependentHdid +
-                "]"
+            `[data-testid=download-immunization-history-report-xlsx-btn-${dependentHdid}]`
         ).click();
 
         // Confirmation modal
@@ -301,30 +308,51 @@ describe("Dependents - Immuniazation Tab - Enabled", () => {
         });
     });
 
-    it("Immunization - Forecast - Tab - Configuration Enabled", () => {
+    it("Immunization - Forecast - Tab - Verify sort and download", () => {
         cy.intercept("GET", "**/Immunization?hdid=*", {
             fixture: "ImmunizationService/dependentImmunization.json",
         });
 
         cy.log("Validating Immunization Tab - configuration enabled");
 
-        cy.get("[data-testid=immunization-tab-title-" + dependentHdid + "]")
+        cy.get(`[data-testid=immunization-tab-title-${dependentHdid}]`)
             .parent()
             .click();
 
         // Click download dropdown under Forecasts tab
         cy.log("Validating Forecasts Tab");
         cy.get(
-            "[data-testid=download-immunization-forecast-report-btn-" +
-                dependentHdid +
-                "]"
+            `[data-testid=download-immunization-forecast-report-btn-${dependentHdid}]`
         ).click({ force: true });
+
+        // Verify forecast table has been sorted by due date descending
+
+        cy.get(`[data-testid=forecast-due-date-${dependentHdid}-0]`).then(
+            ($dateItem) => {
+                // Column date in the 1st row in the table
+                const firstDate = getDate($dateItem.text());
+                cy.get(
+                    `[data-testid=forecast-due-date-${dependentHdid}-1]`
+                ).then(($dateItem) => {
+                    // Column date in the 2nd row in the table
+                    const secondDate = getDate($dateItem.text());
+                    expect(firstDate).to.be.gte(secondDate);
+                    // Column date in the last row in the table
+                    cy.get(
+                        `[data-testid=forecast-due-date-${dependentHdid}-4]`
+                    ).then(($dateItem) => {
+                        // Column date in the last row in the table
+                        const lastDate = getDate($dateItem.text());
+                        expect(firstDate).to.be.gte(lastDate);
+                        expect(secondDate).to.be.gte(lastDate);
+                    });
+                });
+            }
+        );
 
         // Click PDF
         cy.get(
-            "[data-testid=download-immunization-forecast-report-pdf-btn-" +
-                dependentHdid +
-                "]"
+            `[data-testid=download-immunization-forecast-report-pdf-btn-${dependentHdid}]`
         ).click({ force: true });
 
         // Confirmation modal
@@ -338,16 +366,12 @@ describe("Dependents - Immuniazation Tab - Enabled", () => {
 
         // Click download dropdown
         cy.get(
-            "[data-testid=download-immunization-forecast-report-btn-" +
-                dependentHdid +
-                "]"
+            `[data-testid=download-immunization-forecast-report-btn-${dependentHdid}]`
         ).click({ force: true });
 
         // Click CSV
         cy.get(
-            "[data-testid=download-immunization-forecast-report-csv-btn-" +
-                dependentHdid +
-                "]"
+            `[data-testid=download-immunization-forecast-report-csv-btn-${dependentHdid}]`
         ).click({ force: true });
 
         // Confirmation modal
@@ -361,16 +385,12 @@ describe("Dependents - Immuniazation Tab - Enabled", () => {
 
         // Click download dropdown
         cy.get(
-            "[data-testid=download-immunization-forecast-report-btn-" +
-                dependentHdid +
-                "]"
+            `[data-testid=download-immunization-forecast-report-btn-${dependentHdid}]`
         ).click({ force: true });
 
         // Click XLSX
         cy.get(
-            "[data-testid=download-immunization-forecast-report-xlsx-btn-" +
-                dependentHdid +
-                "]"
+            `[data-testid=download-immunization-forecast-report-xlsx-btn-${dependentHdid}]`
         ).click({ force: true });
 
         // Confirmation modal
@@ -390,33 +410,25 @@ describe("Dependents - Immuniazation Tab - Enabled", () => {
 
         cy.log("Validating Immunization Tab - No Data Found");
 
-        cy.get("[data-testid=immunization-tab-title-" + dependentHdid + "]")
+        cy.get(`[data-testid=immunization-tab-title-${dependentHdid}]`)
             .parent()
             .click();
         cy.get(
-            "[data-testid=immunization-history-no-rows-found-" +
-                dependentHdid +
-                "]"
+            `[data-testid=immunization-history-no-rows-found-${dependentHdid}]`
         ).should("be.visible");
         cy.get(
-            "[data-testid=download-immunization-history-report-btn-" +
-                dependentHdid +
-                "]"
+            `[data-testid=download-immunization-history-report-btn-${dependentHdid}]`
         ).should("not.exist");
+        cy.get(`[data-testid=immunization-tab-div-${dependentHdid}]`).within(
+            () => {
+                cy.contains("a", "Forecasts").click();
+            }
+        );
         cy.get(
-            "[data-testid=immunization-tab-div-" + dependentHdid + "]"
-        ).within(() => {
-            cy.contains("a", "Forecasts").click();
-        });
-        cy.get(
-            "[data-testid=immunization-forecast-no-rows-found-" +
-                dependentHdid +
-                "]"
+            `[data-testid=immunization-forecast-no-rows-found-${dependentHdid}]`
         ).should("be.visible");
         cy.get(
-            "[data-testid=download-immunization-forecast-report-btn-" +
-                dependentHdid +
-                "]"
+            `[data-testid=download-immunization-forecast-report-btn-${dependentHdid}]`
         ).should("not.exist");
     });
 });

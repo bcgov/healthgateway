@@ -2,9 +2,12 @@ const { AuthMethod } = require("../../../support/constants");
 
 describe("Timeline - Immunization - Invalid Doses", () => {
     beforeEach(() => {
-        cy.enableModules("Immunization");
+        cy.intercept("GET", "**/Immunization?*", {
+            fixture: "ImmunizationService/immunizationInvalidDoses.json",
+        });
+        cy.enableModules(["Immunization"]);
         cy.login(
-            Cypress.env("keycloak.invaliddoses.username"),
+            Cypress.env("keycloak.username"),
             Cypress.env("keycloak.password"),
             AuthMethod.KeyCloak,
             "/timeline"

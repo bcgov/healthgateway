@@ -28,6 +28,7 @@ export interface ImmunizationEvent {
 }
 
 export interface Recommendation {
+    recommendedVaccinations: string;
     recommendationSetId: string;
     diseaseEligibleDate?: StringISODate;
     diseaseDueDate?: StringISODate;
