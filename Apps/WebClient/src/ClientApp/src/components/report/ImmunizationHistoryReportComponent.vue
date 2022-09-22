@@ -317,14 +317,21 @@ export default class ImmunizationHistoryReportComponent extends Vue {
                     <b-row>
                         <b-col>
                             <div id="disclaimer">
-                                DISCLAIMER: Provincial Immunization Registry
-                                record only. Immunization history displayed may
-                                not portray the client’s complete immunization
-                                history and may impact forecasted vaccines. For
-                                information on recommended immunizations, please
-                                visit
-                                <a>https://www.immunizebc.ca</a> or contact your
-                                local Public Health Unit.
+                                <p>
+                                    Health Gateway shows immunizations from
+                                    public health clinics and pharmacies in B.C.
+                                    If you got vaccinated at a pharmacy, try
+                                    searching your medications, too.
+                                </p>
+                                <p class="mb-0">
+                                    You can add or update immunizations at
+                                    <a
+                                        href="https://www.immunizationrecord.gov.bc.ca"
+                                        target="_blank"
+                                        rel="noopener"
+                                        >immunizationrecord.gov.bc.ca</a
+                                    >.
+                                </p>
                             </div>
                         </b-col>
                     </b-row>
