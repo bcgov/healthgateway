@@ -145,10 +145,30 @@ else
         </MudText>
         <MudTable Class="mt-3" Loading="@(RegisteredUsersLoading || LoggedInUsersLoading || DependentsLoading)" data-testid="daily-data-table" Items="@TableData" HorizontalScrollbar="true" Striped="true" Dense="true" RowsPerPage="25">
             <HeaderContent>
-                <MudTh>Date</MudTh>
-                <MudTh>Registered</MudTh>
-                <MudTh>Logged In</MudTh>
-                <MudTh>Dependents</MudTh>
+                <MudTh>
+                    <MudTableSortLabel SortBy="new Func<DailyDataRow, object>(x => x.DailyDateTime)"
+                                       InitialDirection="@SortDirection.Descending">
+                        Date
+                    </MudTableSortLabel>
+                </MudTh>
+                <MudTh>
+                    <MudTableSortLabel SortBy="new Func<DailyDataRow, object>(x => x.TotalRegisteredUsers)"
+                                       InitialDirection="@SortDirection.Descending">
+                        Registered
+                    </MudTableSortLabel>
+                </MudTh>
+                <MudTh>
+                    <MudTableSortLabel SortBy="new Func<DailyDataRow, object>(x => x.TotalLoggedInUsers)"
+                                       InitialDirection="@SortDirection.Descending">
+                        Logged In
+                    </MudTableSortLabel>
+                </MudTh>
+                <MudTh>
+                    <MudTableSortLabel SortBy="new Func<DailyDataRow, object>(x => x.TotalDependents)"
+                                       InitialDirection="@SortDirection.Descending">
+                        Dependents
+                    </MudTableSortLabel>
+                </MudTh>
             </HeaderContent>
             <RowTemplate>
                 <MudTd data-testid="daily-data-date" DataLabel="Date">@context.DailyDateTime.ToString("yyyy-MM-dd")</MudTd>
@@ -157,7 +177,7 @@ else
                 <MudTd data-testid="daily-data-dependents" DataLabel="Dependents">@context.TotalDependents</MudTd>
             </RowTemplate>
             <PagerContent>
-                <MudTablePager />
+                <MudTablePager PageSizeOptions="new int[]{10, 25, 50, 100, 200}" />
             </PagerContent>
         </MudTable>
     </MudItem>
