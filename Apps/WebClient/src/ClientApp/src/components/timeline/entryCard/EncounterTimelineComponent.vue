@@ -73,7 +73,6 @@ export default class EncounterTimelineComponent extends Vue {
                         variant="warning"
                         class="no-print mt-3 mb-0"
                         data-testid="encounterRolloffAlert"
-                        @dismissed="showCheckEmailAlert = false"
                     >
                         <span>
                             Health visits are shown for the past 6 years only.
