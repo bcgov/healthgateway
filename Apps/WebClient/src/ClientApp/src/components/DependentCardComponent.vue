@@ -1027,6 +1027,24 @@ export default class DependentCardComponent extends Vue {
                             Immunization
                         </div>
                     </template>
+                    <div id="disclaimer">
+                        <b-alert
+                            :show="immunizationItems.length != 0"
+                            variant="info"
+                            class="mt-3 mb-1 mx-3"
+                            data-testid="dependent-immunization-disclaimer-alert"
+                        >
+                            <span>
+                                You can add or update immunizations by visiting
+                                <a
+                                    href="https://www.immunizationrecord.gov.bc.ca"
+                                    target="_blank"
+                                    rel="noopener"
+                                    >immunizationrecord.gov.bc.ca</a
+                                >.
+                            </span>
+                        </b-alert>
+                    </div>
                     <b-spinner v-if="isLoading" class="m-3" />
                     <div
                         v-else
