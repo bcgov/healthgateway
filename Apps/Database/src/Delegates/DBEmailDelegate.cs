@@ -146,7 +146,7 @@ namespace HealthGateway.Database.Delegates
                 .EmailTemplate
                 .Where(p => p.Name == templateName)
                 .First();
-            this.logger.LogDebug("Finished getting email {TemplateName }template from DB", templateName);
+            this.logger.LogDebug("Finished getting email {TemplateName} template from DB", templateName);
 
             return retVal;
         }
