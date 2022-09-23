@@ -70,7 +70,7 @@ namespace HealthGateway.Database.Delegates
                 }
                 catch (DbUpdateException e)
                 {
-                    this.logger.LogError($"Unable to create UserPreference to DB {e}");
+                    this.logger.LogError("Unable to create UserPreference to DB {Exception}", e.ToString());
                     result.Status = DBStatusCode.Error;
                     result.Message = e.Message;
                 }
@@ -105,7 +105,7 @@ namespace HealthGateway.Database.Delegates
                 }
                 catch (DbUpdateException e)
                 {
-                    this.logger.LogError($"Unable to update UserPreference to DB {e}");
+                    this.logger.LogError("Unable to update UserPreference to DB {Exception}", e.ToString());
                     result.Status = DBStatusCode.Error;
                     result.Message = e.Message;
                 }

@@ -91,7 +91,7 @@ namespace HealthGateway.Database.Delegates
                 }
                 catch (DbUpdateException e)
                 {
-                    this.logger.LogError($"Unable to save Communication to DB {e}");
+                    this.logger.LogError("Unable to save Communication to DB {Exception}", e.ToString());
                     result.Status = DBStatusCode.Error;
                     result.Message = IsUniqueConstraintDbError(e) ? BannerCommunicationOverlapMessage : e.Message;
                 }
@@ -132,13 +132,13 @@ namespace HealthGateway.Database.Delegates
                 }
                 catch (DbUpdateConcurrencyException e)
                 {
-                    this.logger.LogError($"Unable to update Communication to DB {e}");
+                    this.logger.LogError("Unable to update Communication to DB {Exception}", e.ToString());
                     result.Status = DBStatusCode.Concurrency;
                     result.Message = e.Message;
                 }
                 catch (DbUpdateException e)
                 {
-                    this.logger.LogError($"Unable to update Communication to DB {e}");
+                    this.logger.LogError("Unable to update Communication to DB {Exception}", e.ToString());
                     result.Status = DBStatusCode.Error;
                     result.Message = IsUniqueConstraintDbError(e) ? BannerCommunicationOverlapMessage : e.Message;
                 }

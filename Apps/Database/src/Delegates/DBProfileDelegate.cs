@@ -50,7 +50,7 @@ namespace HealthGateway.Database.Delegates
         /// <inheritdoc/>
         public DBResult<UserProfile> InsertUserProfile(UserProfile profile)
         {
-            this.logger.LogTrace($"Inserting user profile to DB... {JsonSerializer.Serialize(profile)}");
+            this.logger.LogTrace("Inserting user profile to DB...");
             DBResult<UserProfile> result = new();
             this.dbContext.Add(profile);
             try
@@ -65,14 +65,14 @@ namespace HealthGateway.Database.Delegates
                 result.Message = e.Message;
             }
 
-            this.logger.LogDebug($"Finished inserting user profile to DB. {JsonSerializer.Serialize(result)}");
+            this.logger.LogDebug("Finished inserting user profile to DB");
             return result;
         }
 
         /// <inheritdoc/>
         public DBResult<UserProfile> Update(UserProfile profile, bool commit = true)
         {
-            this.logger.LogTrace($"Updating user profile in DB... {JsonSerializer.Serialize(profile)}");
+            this.logger.LogTrace("Updating user profile in DB");
             DBResult<UserProfile> result = this.GetUserProfile(profile.HdId);
             if (result.Status == DBStatusCode.Read)
             {
@@ -97,14 +97,14 @@ namespace HealthGateway.Database.Delegates
                     }
                     catch (DbUpdateException e)
                     {
-                        this.logger.LogError($"Unable to update UserProfile to DB {e}");
+                        this.logger.LogError("Unable to update UserProfile to DB {Exception}", e.ToString());
                         result.Status = DBStatusCode.Error;
                         result.Message = e.Message;
                     }
                 }
             }
 
-            this.logger.LogDebug($"Finished updating user profile in DB. {JsonSerializer.Serialize(result)}");
+            this.logger.LogDebug("Finished updating user profile in DB");
             return result;
         }
 
@@ -117,7 +117,7 @@ namespace HealthGateway.Database.Delegates
                 Payload = profile,
             };
 
-            this.logger.LogTrace($"Updating user profile in DB... {JsonSerializer.Serialize(profile)}");
+            this.logger.LogTrace("Updating user profile in DB...");
             this.dbContext.UserProfile.Update(profile);
             if (commit)
             {
@@ -133,20 +133,20 @@ namespace HealthGateway.Database.Delegates
                 }
                 catch (DbUpdateException e)
                 {
-                    this.logger.LogError($"Unable to update UserProfile to DB {e}");
+                    this.logger.LogError("Unable to update UserProfile to DB {Exception}", e.ToString());
                     result.Status = DBStatusCode.Error;
                     result.Message = e.Message;
                 }
             }
 
-            this.logger.LogDebug($"Finished updating user profile in DB. {JsonSerializer.Serialize(result)}");
+            this.logger.LogDebug("Finished updating user profile in DB");
             return result;
         }
 
         /// <inheritdoc/>
         public DBResult<UserProfile> GetUserProfile(string hdId)
         {
-            this.logger.LogTrace($"Getting user profile from DB... {hdId}");
+            this.logger.LogTrace("Getting user profile from DB... {HdId}", hdId);
             DBResult<UserProfile> result = new();
             UserProfile? profile = this.dbContext.UserProfile.Find(hdId);
             if (profile != null)
@@ -156,25 +156,25 @@ namespace HealthGateway.Database.Delegates
             }
             else
             {
-                this.logger.LogInformation($"Unable to find User by HDID {hdId}");
+                this.logger.LogInformation("Unable to find User by HDID {HdId}", hdId);
                 result.Status = DBStatusCode.NotFound;
             }
 
-            this.logger.LogDebug($"Finished getting user profile from DB. {JsonSerializer.Serialize(result)}");
+            this.logger.LogDebug("Finished getting user profile from DB");
             return result;
         }
 
         /// <inheritdoc/>
         public DBResult<List<UserProfile>> GetUserProfiles(IList<string> hdIds)
         {
-            this.logger.LogTrace($"Getting user profiles from DB... {JsonSerializer.Serialize(hdIds)}");
+            this.logger.LogTrace("Getting user profiles from DB...");
             DBResult<List<UserProfile>> result = new();
             result.Payload = this.dbContext.UserProfile
                 .Where(p => hdIds.Contains(p.HdId))
                 .ToList();
 
             result.Status = DBStatusCode.Read;
-            this.logger.LogDebug($"Finished getting user profiles from DB. {JsonSerializer.Serialize(result)}");
+            this.logger.LogDebug("Finished getting user profiles from DB");
             return result;
         }
 
@@ -241,7 +241,7 @@ namespace HealthGateway.Database.Delegates
         /// <inheritdoc/>
         public DBResult<IEnumerable<UserProfile>> GetAll(int page, int pageSize)
         {
-            this.logger.LogTrace($"Retrieving all the user profiles for the page #{page} with pageSize: {pageSize}...");
+            this.logger.LogTrace("Retrieving all the user profiles for the page #{Page} with pageSize: {PageSize}...", page, pageSize);
             return DBDelegateHelper.GetPagedDBResult(
                 this.dbContext.UserProfile
                     .OrderBy(userProfile => userProfile.CreatedDateTime),
@@ -252,7 +252,7 @@ namespace HealthGateway.Database.Delegates
         /// <inheritdoc/>
         public int GetRecurrentUserCount(int dayCount, DateTime startDate, DateTime endDate)
         {
-            this.logger.LogTrace($"Retrieving recurring user count for {dayCount} days between {startDate} and {endDate}...");
+            this.logger.LogTrace("Retrieving recurring user count for {DayCount} days between {StartDate} and {EndDate}...", dayCount, startDate, endDate);
 
             int recurrentCount = this.dbContext.UserProfile
                 .Select(x => new { x.HdId, x.LastLoginDateTime })

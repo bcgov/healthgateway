@@ -51,7 +51,7 @@ namespace HealthGateway.Database.Delegates
         /// <inheritdoc/>
         public DBResult<Rating> InsertRating(Rating rating)
         {
-            this.logger.LogTrace($"Inserting rating to DB... {JsonSerializer.Serialize(rating)}");
+            this.logger.LogTrace($"Inserting rating to DB");
             DBResult<Rating> result = new();
             this.dbContext.Add(rating);
             try
@@ -65,14 +65,14 @@ namespace HealthGateway.Database.Delegates
                 result.Message = e.Message;
             }
 
-            this.logger.LogDebug($"Finished inserting rating to DB... {JsonSerializer.Serialize(result)}");
+            this.logger.LogDebug("Finished inserting rating {Rating} to DB..", rating.Id);
             return result;
         }
 
         /// <inheritdoc/>
         public DBResult<IEnumerable<Rating>> GetAll(int page, int pageSize)
         {
-            this.logger.LogTrace($"Retrieving all the ratings for the page #{page} with pageSize: {pageSize}...");
+            this.logger.LogTrace("Retrieving all the ratings for the page #{Page} with pageSize: {PageSize}...", page, pageSize);
             return DBDelegateHelper.GetPagedDBResult(
                 this.dbContext.Rating
                     .OrderBy(rating => rating.CreatedDateTime),
@@ -83,7 +83,7 @@ namespace HealthGateway.Database.Delegates
         /// <inheritdoc/>
         public IDictionary<string, int> GetSummary(DateTime startDate, DateTime endDate)
         {
-            this.logger.LogTrace($"Retrieving the ratings summary between {startDate} and {endDate}...");
+            this.logger.LogTrace("Retrieving the ratings summary between {StartDate} and {EndDate}...", startDate, endDate);
             return this.dbContext.Rating
                 .Where(r => r.CreatedDateTime >= startDate && r.CreatedDateTime <= endDate && !r.Skip)
                 .GroupBy(x => x.RatingValue)
