@@ -1030,7 +1030,7 @@ export default class DependentCardComponent extends Vue {
                     <div id="disclaimer">
                         <b-alert
                             :show="immunizationItems.length != 0"
-                            variant="warning"
+                            variant="info"
                             class="mt-3 mb-1 mx-3"
                             data-testid="dependent-immunization-disclaimer-alert"
                         >
