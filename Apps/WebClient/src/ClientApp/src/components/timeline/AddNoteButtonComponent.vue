@@ -14,9 +14,7 @@ import { ILogger } from "@/services/interfaces";
 @Component
 export default class AddNoteButtonComponent extends Vue {
     @Action("setUserPreference", { namespace: "user" })
-    setUserPreference!: (params: {
-        preference: UserPreference;
-    }) => Promise<void>;
+    setUserPreference!: (params: { preference: UserPreference }) => void;
 
     @Getter("user", { namespace: "user" })
     user!: User;

@@ -39,9 +39,7 @@ export default class FilterComponent extends Vue {
     setFilter!: (filterBuilder: TimelineFilterBuilder) => void;
 
     @Action("setUserPreference", { namespace: "user" })
-    setUserPreference!: (params: {
-        preference: UserPreference;
-    }) => Promise<void>;
+    setUserPreference!: (params: { preference: UserPreference }) => void;
 
     @Getter("webClient", { namespace: "config" })
     config!: WebClientConfiguration;
