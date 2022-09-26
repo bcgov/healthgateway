@@ -68,6 +68,16 @@ interface QuickLinkCard {
     },
 })
 export default class HomeView extends Vue {
+    @Action("addError", { namespace: "errorBanner" })
+    addError!: (params: {
+        errorType: ErrorType;
+        source: ErrorSourceType;
+        traceId: string | undefined;
+    }) => void;
+
+    @Action("setTooManyRequestsError", { namespace: "errorBanner" })
+    setTooManyRequestsError!: (params: { key: string }) => void;
+
     @Action("retrieveAuthenticatedVaccineRecord", {
         namespace: "vaccinationStatus",
     })
@@ -94,6 +104,11 @@ export default class HomeView extends Vue {
 
     @Action("setUserPreference", { namespace: "user" })
     setUserPreference!: (params: {
+        preference: UserPreference;
+    }) => Promise<void>;
+
+    @Action("setDismissTutorialUserPreference", { namespace: "user" })
+    setDismissTutorialUserPreference!: (params: {
         preference: UserPreference;
     }) => Promise<void>;
 
@@ -290,6 +305,17 @@ export default class HomeView extends Vue {
         return this.updateQuickLinks({
             hdid: this.user.hdid,
             quickLinks: updatedLinks,
+        }).catch((error) => {
+            this.logger.error(error);
+            if (error.statusCode === 429) {
+                this.setTooManyRequestsError({ key: "page" });
+            } else {
+                this.addError({
+                    errorType: ErrorType.Update,
+                    source: ErrorSourceType.Profile,
+                    traceId: undefined,
+                });
+            }
         });
     }
 
@@ -299,13 +325,14 @@ export default class HomeView extends Vue {
 
     private dismissAddQuickLinkTutorial(): void {
         this.logger.debug("Dismissing add quick link tutorial");
-        this.isAddQuickLinkTutorialHidden = true;
 
         const preference = {
             ...this.user.preferences[UserPreferenceType.TutorialAddQuickLink],
             value: "false",
         };
-        this.setUserPreference({ preference });
+        this.setDismissTutorialUserPreference({ preference }).then(() => {
+            this.isAddQuickLinkTutorialHidden = true;
+        });
     }
 
     private handleClickHealthRecords(): void {
@@ -341,7 +368,18 @@ export default class HomeView extends Vue {
             preference = { ...preference, value: "true" };
         }
 
-        this.setUserPreference({ preference });
+        this.setUserPreference({ preference }).catch((error) => {
+            this.logger.error(error);
+            if (error.statusCode === 429) {
+                this.setTooManyRequestsError({ key: "page" });
+            } else {
+                this.addError({
+                    errorType: ErrorType.Update,
+                    source: ErrorSourceType.Profile,
+                    traceId: undefined,
+                });
+            }
+        });
     }
 
     private handleClickQuickLink(index: number): void {

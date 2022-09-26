@@ -153,6 +153,20 @@ export const actions: UserActions = {
                     }
                     resolve();
                 })
+                .catch((error) => {
+                    context.commit("userError");
+                    reject(error);
+                });
+        });
+    },
+    setDismissTutorialUserPreference(
+        context,
+        params: { preference: UserPreference }
+    ): Promise<void> {
+        return new Promise((resolve, reject) => {
+            context
+                .dispatch("setUserPreference", params)
+                .then(() => resolve())
                 .catch((error: ResultError) => {
                     context.dispatch("handleError", {
                         error,

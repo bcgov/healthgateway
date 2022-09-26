@@ -13,8 +13,10 @@ import { ILogger } from "@/services/interfaces";
 
 @Component
 export default class AddNoteButtonComponent extends Vue {
-    @Action("setUserPreference", { namespace: "user" })
-    setUserPreference!: (params: { preference: UserPreference }) => void;
+    @Action("setDismissTutorialUserPreference", { namespace: "user" })
+    setDismissTutorialUserPreference!: (params: {
+        preference: UserPreference;
+    }) => Promise<void>;
 
     @Getter("user", { namespace: "user" })
     user!: User;
@@ -35,13 +37,14 @@ export default class AddNoteButtonComponent extends Vue {
 
     private dismissNoteTutorial(): void {
         this.logger.debug("Dismissing note tutorial");
-        this.isNoteTutorialHidden = true;
 
         const preference = {
             ...this.user.preferences[UserPreferenceType.TutorialNote],
             value: "false",
         };
-        this.setUserPreference({ preference });
+        this.setDismissTutorialUserPreference({ preference }).then(() => {
+            this.isNoteTutorialHidden = true;
+        });
     }
 
     private createNote(): void {
