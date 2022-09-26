@@ -695,7 +695,7 @@ export default class PublicCovidTestView extends Vue {
 
 .vaccine-card-form {
     color: $hg-text-primary;
-    color-adjust: exact;
+    print-color-adjust: exact;
     max-width: 600px;
 }
 

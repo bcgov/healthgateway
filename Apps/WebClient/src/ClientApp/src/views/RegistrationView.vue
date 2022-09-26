@@ -15,6 +15,7 @@ import type { WebClientConfiguration } from "@/models/configData";
 import { ResultError } from "@/models/errors";
 import { TermsOfService } from "@/models/termsOfService";
 import type { OidcUserInfo } from "@/models/user";
+import { CreateUserRequest } from "@/models/userProfile";
 import container from "@/plugins/container";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import { ILogger, IUserProfileService } from "@/services/interfaces";
@@ -209,7 +210,7 @@ export default class RegistrationView extends Vue {
                 this.termsOfService = result;
             })
             .catch((err: ResultError) => {
-                this.logger.error(err);
+                this.logger.error(err.resultMessage);
                 if (err.statusCode === 429) {
                     this.setTooManyRequestsWarning({ key: "page" });
                 } else {

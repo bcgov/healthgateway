@@ -281,7 +281,7 @@ div[class*=" row"] {
 .icon {
     background-color: $primary;
     color: white;
-    color-adjust: exact;
+    print-color-adjust: exact;
     text-align: center;
     border-radius: 50%;
     height: 60px;

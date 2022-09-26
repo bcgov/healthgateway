@@ -99,7 +99,7 @@ export default class AcceptTermsOfServiceView extends Vue {
                 this.termsOfService = result.content;
             })
             .catch((err: ResultError) => {
-                this.logger.error(err);
+                this.logger.error(err.resultMessage);
                 if (err.statusCode === 429) {
                     this.setTooManyRequestsWarning({ key: "page" });
                 } else {

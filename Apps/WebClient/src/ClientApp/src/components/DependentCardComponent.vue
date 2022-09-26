@@ -756,7 +756,7 @@ export default class DependentCardComponent extends Vue {
             const vaccinationRecord: VaccinationRecord | undefined =
                 this.getVaccinationRecord();
             if (
-                vaccinationRecord !== undefined &&
+                vaccinationRecord?.record !== undefined &&
                 vaccinationRecord.hdid === this.dependent.ownerId &&
                 vaccinationRecord.status === LoadStatus.LOADED &&
                 vaccinationRecord.download

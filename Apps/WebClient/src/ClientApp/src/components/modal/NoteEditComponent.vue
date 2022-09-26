@@ -12,6 +12,7 @@ import LoadingComponent from "@/components/LoadingComponent.vue";
 import TooManyRequestsComponent from "@/components/TooManyRequestsComponent.vue";
 import EventBus, { EventMessageName } from "@/eventbus";
 import { DateWrapper } from "@/models/dateWrapper";
+import { ResultError } from "@/models/errors";
 import NoteTimelineEntry from "@/models/noteTimelineEntry";
 import User from "@/models/user";
 import UserNote from "@/models/userNote";

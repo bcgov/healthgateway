@@ -707,7 +707,7 @@ export default class PublicVaccineCardView extends Vue {
 
 .vaccine-card-form {
     color: $hg-text-primary;
-    color-adjust: exact;
+    print-color-adjust: exact;
     max-width: 600px;
 }
 
@@ -727,7 +727,7 @@ export default class PublicVaccineCardView extends Vue {
 
 .vaccine-card {
     max-width: 438px;
-    color-adjust: exact;
+    print-color-adjust: exact;
 
     .actions {
         border-bottom-left-radius: 0.25rem;

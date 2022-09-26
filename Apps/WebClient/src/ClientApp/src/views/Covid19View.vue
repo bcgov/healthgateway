@@ -280,7 +280,7 @@ export default class Covid19View extends Vue {
         const vaccinationRecord: VaccinationRecord | undefined =
             this.getVaccinationRecord();
         if (
-            vaccinationRecord !== undefined &&
+            vaccinationRecord?.record !== undefined &&
             vaccinationRecord.hdid === this.user.hdid &&
             vaccinationRecord.status === LoadStatus.LOADED &&
             vaccinationRecord.download
@@ -557,7 +557,7 @@ export default class Covid19View extends Vue {
 
 .vaccine-card {
     max-width: 438px;
-    color-adjust: exact;
+    print-color-adjust: exact;
 
     .actions {
         border-bottom-left-radius: 0.25rem;

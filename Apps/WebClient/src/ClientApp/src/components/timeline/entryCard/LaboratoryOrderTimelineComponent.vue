@@ -10,6 +10,7 @@ import MessageModalComponent from "@/components/modal/MessageModalComponent.vue"
 import { EntryType, entryTypeMap } from "@/constants/entryType";
 import { ErrorSourceType, ErrorType } from "@/constants/errorType";
 import { DateWrapper } from "@/models/dateWrapper";
+import { ResultError } from "@/models/errors";
 import LaboratoryOrderTimelineEntry from "@/models/laboratoryOrderTimelineEntry";
 import User from "@/models/user";
 import container from "@/plugins/container";

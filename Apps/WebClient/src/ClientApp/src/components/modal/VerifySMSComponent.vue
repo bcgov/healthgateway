@@ -6,6 +6,7 @@ import { Action, Getter } from "vuex-class";
 
 import LoadingComponent from "@/components/LoadingComponent.vue";
 import TooManyRequestsComponent from "@/components/TooManyRequestsComponent.vue";
+import { ErrorSourceType, ErrorType } from "@/constants/errorType";
 import type { WebClientConfiguration } from "@/models/configData";
 import { DateWrapper } from "@/models/dateWrapper";
 import { instanceOfResultError, ResultError } from "@/models/errors";
@@ -27,6 +28,13 @@ const options: any = {
 export default class VerifySMSComponent extends Vue {
     @Prop()
     smsNumber!: string;
+
+    @Action("addError", { namespace: "errorBanner" })
+    addError!: (params: {
+        errorType: ErrorType;
+        source: ErrorSourceType;
+        traceId: string | undefined;
+    }) => void;
 
     @Action("setTooManyRequestsError", { namespace: "errorBanner" })
     setTooManyRequestsError!: (params: { key: string }) => void;
@@ -145,7 +153,7 @@ export default class VerifySMSComponent extends Vue {
                 }
             })
             .catch((err: ResultError) => {
-                this.logger.error(err);
+                this.logger.error(err.resultMessage);
                 if (err.statusCode === 429) {
                     this.setTooManyRequestsError({ key: "verifySmsModal" });
                 } else {

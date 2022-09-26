@@ -384,7 +384,7 @@ export default class HomeView extends Vue {
             this.getVaccinationRecord();
 
         if (
-            vaccinationRecord !== undefined &&
+            vaccinationRecord?.record !== undefined &&
             vaccinationRecord.hdid === this.user.hdid &&
             vaccinationRecord.status === LoadStatus.LOADED &&
             vaccinationRecord.download
