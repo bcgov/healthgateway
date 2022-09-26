@@ -32,13 +32,16 @@ import { ILogger, IUserProfileService } from "@/services/interfaces";
 
 library.add(faExclamationTriangle);
 
-@Component({
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const options: any = {
     components: {
         BreadcrumbComponent,
         LoadingComponent,
         VerifySMSComponent,
     },
-})
+};
+
+@Component(options)
 export default class ProfileView extends Vue {
     @Action("addError", { namespace: "errorBanner" })
     addError!: (params: {

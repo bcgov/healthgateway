@@ -8,11 +8,14 @@ import PhoneUtil from "@/utility/phoneUtil";
 
 import EntrycardTimelineComponent from "./EntrycardTimelineComponent.vue";
 
-@Component({
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const options: any = {
     components: {
         EntryCard: EntrycardTimelineComponent,
     },
-})
+};
+
+@Component(options)
 export default class MedicationTimelineComponent extends Vue {
     @Prop() entry!: MedicationTimelineEntry;
     @Prop() index!: number;

@@ -20,7 +20,8 @@ import MedicationRequestTimelineComponent from "./entryCard/MedicationRequestTim
 import MedicationTimelineComponent from "./entryCard/MedicationTimelineComponent.vue";
 import NoteTimelineComponent from "./entryCard/NoteTimelineComponent.vue";
 
-@Component({
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const options: any = {
     components: {
         MedicationRequestComponent: MedicationRequestTimelineComponent,
         MedicationComponent: MedicationTimelineComponent,
@@ -32,7 +33,9 @@ import NoteTimelineComponent from "./entryCard/NoteTimelineComponent.vue";
         NoteComponent: NoteTimelineComponent,
         ClinicalDocumentComponent: ClinicalDocumentTimelineComponent,
     },
-})
+};
+
+@Component(options)
 export default class LinearTimelineComponent extends Vue {
     @Action("setLinearDate", { namespace: "timeline" })
     setLinearDate!: (linearDate: DateWrapper) => void;

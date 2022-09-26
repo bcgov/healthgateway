@@ -36,13 +36,16 @@ const validPersonalHealthNumber = (value: string) => {
     return PHNValidator.IsValid(phn);
 };
 
-@Component({
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const options: any = {
     components: {
         loading: LoadingComponent,
         "hg-date-dropdown": HgDateDropdownComponent,
         TooManyRequestsComponent,
     },
-})
+};
+
+@Component(options)
 export default class PublicCovidTestView extends Vue {
     @Action("retrievePublicCovidTests", { namespace: "laboratory" })
     retrievePublicCovidTests!: (params: {

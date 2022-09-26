@@ -19,12 +19,15 @@ import SnowPlow from "@/utility/snowPlow";
 
 import EntrycardTimelineComponent from "./EntrycardTimelineComponent.vue";
 
-@Component({
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const options: any = {
     components: {
         EntryCard: EntrycardTimelineComponent,
         MessageModalComponent,
     },
-})
+};
+
+@Component(options)
 export default class ClinicalDocumentTimelineComponent extends Vue {
     @Prop()
     entry!: ClinicalDocumentTimelineEntry;

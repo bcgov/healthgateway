@@ -14,13 +14,16 @@ import container from "@/plugins/container";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import { ILogger, IUserProfileService } from "@/services/interfaces";
 
-@Component({
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const options: any = {
     components: {
         LoadingComponent,
         VueCountdown,
         TooManyRequestsComponent,
     },
-})
+};
+
+@Component(options)
 export default class VerifySMSComponent extends Vue {
     @Prop()
     smsNumber!: string;

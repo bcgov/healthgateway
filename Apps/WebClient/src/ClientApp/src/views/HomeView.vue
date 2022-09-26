@@ -60,13 +60,16 @@ interface QuickLinkCard {
     icon: string;
 }
 
-@Component({
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const options: any = {
     components: {
         LoadingComponent,
         MessageModalComponent,
         AddQuickLinkComponent,
     },
-})
+};
+
+@Component(options)
 export default class HomeView extends Vue {
     @Action("retrieveAuthenticatedVaccineRecord", {
         namespace: "vaccinationStatus",

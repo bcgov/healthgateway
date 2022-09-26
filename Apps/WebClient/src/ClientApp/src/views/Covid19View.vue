@@ -42,14 +42,17 @@ interface Dose {
     provider: string;
 }
 
-@Component({
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const options: any = {
     components: {
         BreadcrumbComponent,
         loading: LoadingComponent,
         "vaccine-card": VaccineCardComponent,
         "message-modal": MessageModalComponent,
     },
-})
+};
+
+@Component(options)
 export default class Covid19View extends Vue {
     @Action("retrieve", { namespace: "immunization" })
     retrieveImmunizations!: (params: { hdid: string }) => Promise<void>;

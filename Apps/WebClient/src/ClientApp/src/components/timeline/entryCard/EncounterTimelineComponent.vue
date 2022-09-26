@@ -11,11 +11,14 @@ import EntrycardTimelineComponent from "./EntrycardTimelineComponent.vue";
 
 library.add(faInfoCircle);
 
-@Component({
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const options: any = {
     components: {
         EntryCard: EntrycardTimelineComponent,
     },
-})
+};
+
+@Component(options)
 export default class EncounterTimelineComponent extends Vue {
     @Prop() entry!: EncounterTimelineEntry;
     @Prop() index!: number;

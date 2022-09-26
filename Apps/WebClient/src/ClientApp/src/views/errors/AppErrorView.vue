@@ -3,10 +3,13 @@ import { BAlert } from "bootstrap-vue";
 import Vue from "vue";
 import { Component, Prop } from "vue-property-decorator";
 
-@Component({ components: { BAlert } })
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const options: any = { components: { BAlert } };
+
+@Component(options)
 export default class AppErrorView extends Vue {
     @Prop({ type: Boolean, default: false })
-    busy: boolean;
+    busy = false;
 }
 </script>
 

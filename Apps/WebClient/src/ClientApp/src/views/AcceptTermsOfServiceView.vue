@@ -19,12 +19,15 @@ import { ILogger, IUserProfileService } from "@/services/interfaces";
 
 library.add(faExclamationTriangle);
 
-@Component({
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const options: any = {
     components: {
         LoadingComponent,
         HtmlTextAreaComponent,
     },
-})
+};
+
+@Component(options)
 export default class AcceptTermsOfServiceView extends Vue {
     @Action("updateAcceptedTerms", { namespace: "user" })
     updateAcceptedTerms!: (params: {

@@ -22,7 +22,8 @@ import NoteTimelineComponent from "./NoteTimelineComponent.vue";
 
 library.add(faArrowLeft);
 
-@Component({
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const options: any = {
     components: {
         MedicationRequestComponent: MedicationRequestTimelineComponent,
         MedicationComponent: MedicationTimelineComponent,
@@ -34,7 +35,9 @@ library.add(faArrowLeft);
         NoteComponent: NoteTimelineComponent,
         ClinicalDocumentComponent: ClinicalDocumentTimelineComponent,
     },
-})
+};
+
+@Component(options)
 export default class EntryDetailsComponent extends Vue {
     @Action("setHeaderState", { namespace: "navbar" })
     setHeaderState!: (isOpen: boolean) => void;

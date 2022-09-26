@@ -34,7 +34,8 @@ const validPersonalHealthNumber = (value: string) => {
     return PHNValidator.IsValid(phn);
 };
 
-@Component({
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const options: any = {
     components: {
         "vaccine-card": VaccineCardComponent,
         loading: LoadingComponent,
@@ -42,7 +43,9 @@ const validPersonalHealthNumber = (value: string) => {
         "hg-date-dropdown": HgDateDropdownComponent,
         TooManyRequestsComponent,
     },
-})
+};
+
+@Component(options)
 export default class PublicVaccineCardView extends Vue {
     private vaccinationStatusService!: IVaccinationStatusService;
 

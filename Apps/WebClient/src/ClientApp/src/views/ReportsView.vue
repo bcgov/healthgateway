@@ -44,7 +44,8 @@ const medicationRequestReport = "medication-request-report";
 const noteReport = "note-report";
 const laboratoryReport = "laboratory-report";
 
-@Component({
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const options: any = {
     components: {
         BreadcrumbComponent,
         LoadingComponent,
@@ -59,7 +60,9 @@ const laboratoryReport = "laboratory-report";
         noteReport: NotesReportComponent,
         laboratoryReport: LaboratoryReportComponent,
     },
-})
+};
+
+@Component(options)
 export default class ReportsView extends Vue {
     @Getter("webClient", { namespace: "config" })
     config!: WebClientConfiguration;

@@ -18,13 +18,16 @@ import UserNote from "@/models/userNote";
 
 library.add(faEdit);
 
-@Component({
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const options: any = {
     components: {
         LoadingComponent,
         DatePickerComponent,
         TooManyRequestsComponent,
     },
-})
+};
+
+@Component(options)
 export default class NoteEditComponent extends Vue {
     @Action("createNote", { namespace: "note" })
     createNote!: (params: {

@@ -22,13 +22,16 @@ import EntrycardTimelineComponent from "./EntrycardTimelineComponent.vue";
 
 library.add(faDownload);
 
-@Component({
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const options: any = {
     components: {
         MessageModalComponent,
         EntryCard: EntrycardTimelineComponent,
         Covid19LaboratoryTestDescriptionComponent,
     },
-})
+};
+
+@Component(options)
 export default class Covid19LaboratoryOrderTimelineComponent extends Vue {
     @Prop() entry!: Covid19LaboratoryOrderTimelineEntry;
     @Prop() index!: number;

@@ -72,7 +72,8 @@ interface RecommendationRow {
     status: string;
 }
 
-@Component({
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const options: any = {
     components: {
         BTabs,
         BTab,
@@ -81,7 +82,9 @@ interface RecommendationRow {
         DeleteModalComponent,
         Covid19LaboratoryTestDescriptionComponent,
     },
-})
+};
+
+@Component(options)
 export default class DependentCardComponent extends Vue {
     @Prop() dependent!: Dependent;
 

@@ -19,11 +19,14 @@ import CommentSectionComponent from "./CommentSectionComponent.vue";
 
 library.add(farComment, faPaperclip);
 
-@Component({
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const options: any = {
     components: {
         CommentSectionComponent,
     },
-})
+};
+
+@Component(options)
 export default class EntrycardTimelineComponent extends Vue {
     @Prop() entry!: TimelineEntry;
     @Prop() cardId!: string;
