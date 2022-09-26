@@ -38,8 +38,8 @@ export default class FilterComponent extends Vue {
     @Action("setFilter", { namespace: "timeline" })
     setFilter!: (filterBuilder: TimelineFilterBuilder) => void;
 
-    @Action("setDismissTutorialUserPreference", { namespace: "user" })
-    setDismissTutorialUserPreference!: (params: {
+    @Action("setUserPreference", { namespace: "user" })
+    setUserPreference!: (params: {
         preference: UserPreference;
     }) => Promise<void>;
 
@@ -205,14 +205,13 @@ export default class FilterComponent extends Vue {
 
     private dismissFilterTutorial(): void {
         this.logger.debug("Dismissing timeline filter tutorial");
+        this.isFilterTutorialHidden = true;
 
         const preference = {
             ...this.user.preferences[UserPreferenceType.TutorialTimelineFilter],
             value: "false",
         };
-        this.setDismissTutorialUserPreference({ preference }).then(() => {
-            this.isFilterTutorialHidden = true;
-        });
+        this.setUserPreference({ preference });
     }
 }
 </script>

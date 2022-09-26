@@ -40,8 +40,8 @@ export default class AddCommentComponent extends Vue {
     @Action("setSeenTutorialComment", { namespace: "user" })
     setSeenTutorialComment!: (params: { value: boolean }) => void;
 
-    @Action("setDismissTutorialUserPreference", { namespace: "user" })
-    setDismissTutorialUserPreference!: (params: {
+    @Action("setUserPreference", { namespace: "user" })
+    setUserPreference!: (params: {
         preference: UserPreference;
     }) => Promise<void>;
 
@@ -135,14 +135,13 @@ export default class AddCommentComponent extends Vue {
 
     private dismissCommentTutorial(): void {
         this.logger.debug("Dismissing comment tutorial");
+        this.isCommentTutorialHidden = true;
 
         const preference = {
             ...this.user.preferences[UserPreferenceType.TutorialComment],
             value: "false",
         };
-        this.setDismissTutorialUserPreference({ preference }).then(() => {
-            this.isCommentTutorialHidden = true;
-        });
+        this.setUserPreference({ preference });
     }
 }
 </script>

@@ -43,8 +43,8 @@ export default class DependentsView extends Vue {
     @Action("setTooManyRequestsWarning", { namespace: "errorBanner" })
     setTooManyRequestsWarning!: (params: { key: string }) => void;
 
-    @Action("setDismissTutorialUserPreference", { namespace: "user" })
-    setDismissTutorialUserPreference!: (params: {
+    @Action("setUserPreference", { namespace: "user" })
+    setUserPreference!: (params: {
         preference: UserPreference;
     }) => Promise<void>;
 
@@ -142,14 +142,13 @@ export default class DependentsView extends Vue {
 
     private dismissAddDependentTutorial(): void {
         this.logger.debug("Dismissing add dependent tutorial");
+        this.isAddDependentTutorialHidden = true;
 
         const preference = {
             ...this.user.preferences[UserPreferenceType.TutorialAddDependent],
             value: "false",
         };
-        this.setDismissTutorialUserPreference({ preference }).then(() => {
-            this.isAddDependentTutorialHidden = true;
-        });
+        this.setUserPreference({ preference });
     }
 
     private showModal(): void {

@@ -159,24 +159,6 @@ export const actions: UserActions = {
                 });
         });
     },
-    setDismissTutorialUserPreference(
-        context,
-        params: { preference: UserPreference }
-    ): Promise<void> {
-        return new Promise((resolve, reject) => {
-            context
-                .dispatch("setUserPreference", params)
-                .then(() => resolve())
-                .catch((error: ResultError) => {
-                    context.dispatch("handleError", {
-                        error,
-                        errorType: ErrorType.Update,
-                        source: ErrorSourceType.User,
-                    });
-                    reject(error);
-                });
-        });
-    },
     updateQuickLinks(
         context,
         params: { hdid: string; quickLinks: QuickLink[] }

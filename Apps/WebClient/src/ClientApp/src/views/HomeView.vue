@@ -107,11 +107,6 @@ export default class HomeView extends Vue {
         preference: UserPreference;
     }) => Promise<void>;
 
-    @Action("setDismissTutorialUserPreference", { namespace: "user" })
-    setDismissTutorialUserPreference!: (params: {
-        preference: UserPreference;
-    }) => Promise<void>;
-
     @Getter("isMobile")
     isMobileView!: boolean;
 
@@ -325,14 +320,13 @@ export default class HomeView extends Vue {
 
     private dismissAddQuickLinkTutorial(): void {
         this.logger.debug("Dismissing add quick link tutorial");
+        this.isAddQuickLinkTutorialHidden = true;
 
         const preference = {
             ...this.user.preferences[UserPreferenceType.TutorialAddQuickLink],
             value: "false",
         };
-        this.setDismissTutorialUserPreference({ preference }).then(() => {
-            this.isAddQuickLinkTutorialHidden = true;
-        });
+        this.setUserPreference({ preference });
     }
 
     private handleClickHealthRecords(): void {

@@ -36,8 +36,8 @@ library.add(
     },
 })
 export default class SidebarComponent extends Vue {
-    @Action("setDismissTutorialUserPreference", { namespace: "user" })
-    setDismissTutorialUserPreference!: (params: {
+    @Action("setUserPreference", { namespace: "user" })
+    setUserPreference!: (params: {
         preference: UserPreference;
     }) => Promise<void>;
 
@@ -111,14 +111,13 @@ export default class SidebarComponent extends Vue {
 
     private dismissExportTutorial(): void {
         this.logger.debug("Dismissing export tutorial");
+        this.isExportTutorialHidden = true;
 
         const preference = {
             ...this.user.preferences[UserPreferenceType.TutorialMenuExport],
             value: "false",
         };
-        this.setDismissTutorialUserPreference({ preference }).then(() => {
-            this.isExportTutorialHidden = true;
-        });
+        this.setUserPreference({ preference });
     }
 
     private get showExportTutorial(): boolean {
