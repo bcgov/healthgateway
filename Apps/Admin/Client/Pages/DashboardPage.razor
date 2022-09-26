@@ -143,7 +143,15 @@ else
         <MudText Class="mt-3" Typo="Typo.subtitle1">
             <strong>Daily Data</strong>
         </MudText>
-        <MudTable Class="mt-3" Loading="@(RegisteredUsersLoading || LoggedInUsersLoading || DependentsLoading)" data-testid="daily-data-table" Items="@TableData" HorizontalScrollbar="true" Striped="true" Dense="true" RowsPerPage="25">
+        <MudTable Class="mt-3"
+                  Loading="@(RegisteredUsersLoading || LoggedInUsersLoading || DependentsLoading)"
+                  Items="@TableData"
+                  AllowUnsorted="false"
+                  HorizontalScrollbar="true"
+                  Striped="true"
+                  Dense="true"
+                  RowsPerPage="25"
+                  data-testid="daily-data-table">
             <HeaderContent>
                 <MudTh>
                     <MudTableSortLabel SortBy="new Func<DailyDataRow, object>(x => x.DailyDateTime)"
@@ -152,20 +160,17 @@ else
                     </MudTableSortLabel>
                 </MudTh>
                 <MudTh>
-                    <MudTableSortLabel SortBy="new Func<DailyDataRow, object>(x => x.TotalRegisteredUsers)"
-                                       InitialDirection="@SortDirection.Descending">
+                    <MudTableSortLabel SortBy="new Func<DailyDataRow, object>(x => x.TotalRegisteredUsers)">
                         Registered
                     </MudTableSortLabel>
                 </MudTh>
                 <MudTh>
-                    <MudTableSortLabel SortBy="new Func<DailyDataRow, object>(x => x.TotalLoggedInUsers)"
-                                       InitialDirection="@SortDirection.Descending">
+                    <MudTableSortLabel SortBy="new Func<DailyDataRow, object>(x => x.TotalLoggedInUsers)">
                         Logged In
                     </MudTableSortLabel>
                 </MudTh>
                 <MudTh>
-                    <MudTableSortLabel SortBy="new Func<DailyDataRow, object>(x => x.TotalDependents)"
-                                       InitialDirection="@SortDirection.Descending">
+                    <MudTableSortLabel SortBy="new Func<DailyDataRow, object>(x => x.TotalDependents)">
                         Dependents
                     </MudTableSortLabel>
                 </MudTh>
@@ -177,7 +182,7 @@ else
                 <MudTd data-testid="daily-data-dependents" DataLabel="Dependents">@context.TotalDependents</MudTd>
             </RowTemplate>
             <PagerContent>
-                <MudTablePager PageSizeOptions="new int[]{10, 25, 50, 100, 200}" />
+                <MudTablePager PageSizeOptions="new[]{10, 25, 50, 100, 200}" />
             </PagerContent>
         </MudTable>
     </MudItem>

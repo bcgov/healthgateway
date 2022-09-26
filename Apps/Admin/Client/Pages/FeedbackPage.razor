@@ -76,6 +76,7 @@ else
         <MudTable Class="mt-3"
                   Items="@FeedbackRows"
                   Loading="@(FeedbackLoading || FeedbackUpdating)"
+                  AllowUnsorted="false"
                   Breakpoint="@Breakpoint.Md"
                   HorizontalScrollbar="true"
                   Striped="true"
@@ -153,7 +154,7 @@ else
                 </MudTd>
             </RowTemplate>
             <PagerContent>
-                <MudTablePager data-testid="feedback-table-pagination" PageSizeOptions="new int[]{10, 25, 50, 100, 200}" />
+                <MudTablePager data-testid="feedback-table-pagination" PageSizeOptions="new[]{10, 25, 50, 100, 200}" />
             </PagerContent>
         </MudTable>
     </MudForm>
