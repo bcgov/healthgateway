@@ -172,12 +172,9 @@ export default class LinearTimelineComponent extends Vue {
     }
 
     private get isImmunization(): boolean {
-        const isImmunization = this.timelineEntries.some(
+        return this.timelineEntries.some(
             (x) => x.type === EntryType.Immunization
         );
-
-        this.logger.debug(`Is Immunization: ${isImmunization}`);
-        return isImmunization;
     }
 
     private get numberOfPages(): number {
