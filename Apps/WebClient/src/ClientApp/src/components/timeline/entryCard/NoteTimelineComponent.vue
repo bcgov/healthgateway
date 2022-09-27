@@ -17,11 +17,14 @@ import EntrycardTimelineComponent from "./EntrycardTimelineComponent.vue";
 
 library.add(faEllipsisV);
 
-@Component({
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const options: any = {
     components: {
         EntryCard: EntrycardTimelineComponent,
     },
-})
+};
+
+@Component(options)
 export default class NoteTimelineComponent extends Vue {
     @Action("addError", { namespace: "errorBanner" })
     addError!: (params: {

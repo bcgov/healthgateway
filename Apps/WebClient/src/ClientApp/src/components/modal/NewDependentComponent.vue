@@ -24,13 +24,16 @@ const validPersonalHealthNumber = (value: string) => {
     return PHNValidator.IsValid(phn);
 };
 
-@Component({
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const options: any = {
     components: {
         LoadingComponent,
         DatePickerComponent,
         TooManyRequestsComponent,
     },
-})
+};
+
+@Component(options)
 export default class NewDependentComponent extends Vue {
     @Getter("user", { namespace: "user" }) user!: User;
 

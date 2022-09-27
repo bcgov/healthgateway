@@ -15,11 +15,14 @@ import { IdentityProviderConfiguration } from "@/models/configData";
 
 library.add(faAddressCard, faUser, faUserSecret); // icons listed in config
 
-@Component({
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const options: any = {
     components: {
         LoadingComponent,
     },
-})
+};
+
+@Component(options)
 export default class LoginView extends Vue {
     @Prop() isRetry?: boolean;
 

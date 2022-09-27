@@ -72,7 +72,8 @@ interface RecommendationRow {
     status: string;
 }
 
-@Component({
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const options: any = {
     components: {
         BTabs,
         BTab,
@@ -81,7 +82,9 @@ interface RecommendationRow {
         DeleteModalComponent,
         Covid19LaboratoryTestDescriptionComponent,
     },
-})
+};
+
+@Component(options)
 export default class DependentCardComponent extends Vue {
     @Prop() dependent!: Dependent;
 
@@ -753,7 +756,7 @@ export default class DependentCardComponent extends Vue {
             const vaccinationRecord: VaccinationRecord | undefined =
                 this.getVaccinationRecord();
             if (
-                vaccinationRecord !== undefined &&
+                vaccinationRecord?.record !== undefined &&
                 vaccinationRecord.hdid === this.dependent.ownerId &&
                 vaccinationRecord.status === LoadStatus.LOADED &&
                 vaccinationRecord.download

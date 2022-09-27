@@ -14,11 +14,14 @@ import { Component, Prop } from "vue-property-decorator";
 
 library.add(faEdit, faMicroscope, faPills, faSyringe);
 
-@Component({
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const options: any = {
     components: {
         Loading,
     },
-})
+};
+
+@Component(options)
 export default class LoadingComponent extends Vue {
     @Prop() isLoading!: boolean;
     @Prop() isCustom!: boolean;

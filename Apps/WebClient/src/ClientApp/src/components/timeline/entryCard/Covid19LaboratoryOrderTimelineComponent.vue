@@ -12,6 +12,7 @@ import { EntryType, entryTypeMap } from "@/constants/entryType";
 import { ErrorSourceType, ErrorType } from "@/constants/errorType";
 import Covid19LaboratoryOrderTimelineEntry from "@/models/covid19LaboratoryOrderTimelineEntry";
 import { DateWrapper } from "@/models/dateWrapper";
+import { ResultError } from "@/models/errors";
 import User from "@/models/user";
 import container from "@/plugins/container";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
@@ -22,13 +23,16 @@ import EntrycardTimelineComponent from "./EntrycardTimelineComponent.vue";
 
 library.add(faDownload);
 
-@Component({
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const options: any = {
     components: {
         MessageModalComponent,
         EntryCard: EntrycardTimelineComponent,
         Covid19LaboratoryTestDescriptionComponent,
     },
-})
+};
+
+@Component(options)
 export default class Covid19LaboratoryOrderTimelineComponent extends Vue {
     @Prop() entry!: Covid19LaboratoryOrderTimelineEntry;
     @Prop() index!: number;

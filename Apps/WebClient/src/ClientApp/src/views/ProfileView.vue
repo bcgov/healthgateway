@@ -32,13 +32,16 @@ import { ILogger, IUserProfileService } from "@/services/interfaces";
 
 library.add(faExclamationTriangle);
 
-@Component({
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const options: any = {
     components: {
         BreadcrumbComponent,
         LoadingComponent,
         VerifySMSComponent,
     },
-})
+};
+
+@Component(options)
 export default class ProfileView extends Vue {
     @Action("addError", { namespace: "errorBanner" })
     addError!: (params: {
@@ -280,8 +283,10 @@ export default class ProfileView extends Vue {
 
                 this.isLoading = false;
             })
-            .catch((error) => {
-                this.logger.error(`Error loading profile: ${error}`);
+            .catch((error: ResultError) => {
+                this.logger.error(
+                    `Error loading profile: ${error.resultMessage}`
+                );
                 if (instanceOfResultError(error) && error.statusCode === 429) {
                     this.setTooManyRequestsError({ key: "page" });
                 } else {
@@ -522,7 +527,7 @@ export default class ProfileView extends Vue {
         this.recoverUserAccount()
             .then(() => this.logger.verbose("success!"))
             .catch((err: ResultError) => {
-                this.logger.error(err);
+                this.logger.error(err.resultMessage);
                 if (err.statusCode === 429) {
                     this.setTooManyRequestsError({ key: "page" });
                 } else {
@@ -556,7 +561,7 @@ export default class ProfileView extends Vue {
                 this.showCloseWarning = false;
             })
             .catch((err: ResultError) => {
-                this.logger.error(err);
+                this.logger.error(err.resultMessage);
                 if (err.statusCode === 429) {
                     this.setTooManyRequestsError({ key: "page" });
                 } else {

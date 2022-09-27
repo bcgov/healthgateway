@@ -34,7 +34,8 @@ const validPersonalHealthNumber = (value: string) => {
     return PHNValidator.IsValid(phn);
 };
 
-@Component({
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const options: any = {
     components: {
         "vaccine-card": VaccineCardComponent,
         loading: LoadingComponent,
@@ -42,7 +43,9 @@ const validPersonalHealthNumber = (value: string) => {
         "hg-date-dropdown": HgDateDropdownComponent,
         TooManyRequestsComponent,
     },
-})
+};
+
+@Component(options)
 export default class PublicVaccineCardView extends Vue {
     private vaccinationStatusService!: IVaccinationStatusService;
 
@@ -704,7 +707,7 @@ export default class PublicVaccineCardView extends Vue {
 
 .vaccine-card-form {
     color: $hg-text-primary;
-    color-adjust: exact;
+    print-color-adjust: exact;
     max-width: 600px;
 }
 
@@ -724,7 +727,7 @@ export default class PublicVaccineCardView extends Vue {
 
 .vaccine-card {
     max-width: 438px;
-    color-adjust: exact;
+    print-color-adjust: exact;
 
     .actions {
         border-bottom-left-radius: 0.25rem;

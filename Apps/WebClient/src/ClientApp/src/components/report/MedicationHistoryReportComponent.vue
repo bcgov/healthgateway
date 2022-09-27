@@ -29,11 +29,14 @@ interface MedicationRow {
     manufacturer: string;
 }
 
-@Component({
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const options: any = {
     components: {
         ProtectiveWordComponent,
     },
-})
+};
+
+@Component(options)
 export default class MedicationHistoryReportComponent extends Vue {
     @Prop() private filter!: ReportFilter;
 

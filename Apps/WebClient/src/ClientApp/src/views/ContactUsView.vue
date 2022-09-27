@@ -6,12 +6,15 @@ import BreadcrumbComponent from "@/components/navmenu/BreadcrumbComponent.vue";
 import HealthlinkSidebarComponent from "@/components/timeline/HealthlinkSidebarComponent.vue";
 import BreadcrumbItem from "@/models/breadcrumbItem";
 
-@Component({
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const options: any = {
     components: {
         BreadcrumbComponent,
         HealthlinkComponent: HealthlinkSidebarComponent,
     },
-})
+};
+
+@Component(options)
 export default class ContactUsView extends Vue {
     private breadcrumbItems: BreadcrumbItem[] = [
         {

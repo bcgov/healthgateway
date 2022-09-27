@@ -24,14 +24,17 @@ import { IDependentService, ILogger } from "@/services/interfaces";
 
 library.add(faUserPlus);
 
-@Component({
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const options: any = {
     components: {
         BreadcrumbComponent,
         LoadingComponent,
         DependentCardComponent,
         NewDependentComponent,
     },
-})
+};
+
+@Component(options)
 export default class DependentsView extends Vue {
     @Action("addError", { namespace: "errorBanner" })
     addError!: (params: {

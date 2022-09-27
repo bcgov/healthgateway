@@ -60,13 +60,16 @@ interface QuickLinkCard {
     icon: string;
 }
 
-@Component({
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const options: any = {
     components: {
         LoadingComponent,
         MessageModalComponent,
         AddQuickLinkComponent,
     },
-})
+};
+
+@Component(options)
 export default class HomeView extends Vue {
     @Action("addError", { namespace: "errorBanner" })
     addError!: (params: {
@@ -413,7 +416,7 @@ export default class HomeView extends Vue {
             this.getVaccinationRecord();
 
         if (
-            vaccinationRecord !== undefined &&
+            vaccinationRecord?.record !== undefined &&
             vaccinationRecord.hdid === this.user.hdid &&
             vaccinationRecord.status === LoadStatus.LOADED &&
             vaccinationRecord.download

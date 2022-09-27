@@ -16,12 +16,15 @@ import User from "@/models/user";
 library.add(faChevronDown, faChevronUp, farCopy);
 Vue.use(VueClipboard);
 
-@Component({
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const options: any = {
     components: {
         MessageModalComponent,
         TooManyRequestsComponent,
     },
-})
+};
+
+@Component(options)
 export default class ErrorCardComponent extends Vue {
     @Action("clearErrors", { namespace: "errorBanner" })
     clearErrors!: () => void;

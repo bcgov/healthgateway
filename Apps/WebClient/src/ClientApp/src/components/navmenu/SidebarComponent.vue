@@ -30,11 +30,14 @@ library.add(
     faUserFriends
 );
 
-@Component({
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const options: any = {
     components: {
         FeedbackComponent,
     },
-})
+};
+
+@Component(options)
 export default class SidebarComponent extends Vue {
     @Action("setUserPreference", { namespace: "user" })
     setUserPreference!: (params: {

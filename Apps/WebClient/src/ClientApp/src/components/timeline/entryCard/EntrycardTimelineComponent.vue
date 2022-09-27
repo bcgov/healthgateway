@@ -19,11 +19,14 @@ import CommentSectionComponent from "./CommentSectionComponent.vue";
 
 library.add(farComment, faPaperclip);
 
-@Component({
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const options: any = {
     components: {
         CommentSectionComponent,
     },
-})
+};
+
+@Component(options)
 export default class EntrycardTimelineComponent extends Vue {
     @Prop() entry!: TimelineEntry;
     @Prop() cardId!: string;
@@ -278,7 +281,7 @@ div[class*=" row"] {
 .icon {
     background-color: $primary;
     color: white;
-    color-adjust: exact;
+    print-color-adjust: exact;
     text-align: center;
     border-radius: 50%;
     height: 60px;
