@@ -171,6 +171,10 @@ export default class LinearTimelineComponent extends Vue {
         return filterLoading;
     }
 
+    private get isImmunization(): boolean {
+        return this.isFilterApplied(EntryType.Immunization);
+    }
+
     private get numberOfPages(): number {
         let pageCount = 1;
         if (this.timelineEntries.length > this.pageSize) {
@@ -322,6 +326,24 @@ export default class LinearTimelineComponent extends Vue {
                 {{ timelineEntryCount }} records
             </b-col>
         </b-row>
+        <div id="linear-timeline-immunization-disclaimer" class="containter">
+            <b-alert
+                :show="isImmunization"
+                variant="info"
+                class="mt-0 mb-1"
+                data-testid="linear-timeline-immunization-disclaimer-alert"
+            >
+                <span>
+                    You can add or update immunizations by visiting
+                    <a
+                        href="https://www.immunizationrecord.gov.bc.ca"
+                        target="_blank"
+                        rel="noopener"
+                        >immunizationrecord.gov.bc.ca</a
+                    >.
+                </span>
+            </b-alert>
+        </div>
         <div id="timeData" data-testid="linearTimelineData">
             <div
                 v-for="dateGroup in dateGroups"
