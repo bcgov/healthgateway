@@ -1027,7 +1027,7 @@ export default class DependentCardComponent extends Vue {
                             Immunization
                         </div>
                     </template>
-                    <div id="disclaimer">
+                    <div id="dependent-immunization-disclaimer">
                         <b-alert
                             :show="immunizationItems.length != 0"
                             variant="info"
