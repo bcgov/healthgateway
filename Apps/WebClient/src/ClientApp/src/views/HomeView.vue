@@ -23,6 +23,7 @@ import LoadingComponent from "@/components/LoadingComponent.vue";
 import AddQuickLinkComponent from "@/components/modal/AddQuickLinkComponent.vue";
 import MessageModalComponent from "@/components/modal/MessageModalComponent.vue";
 import { EntryType, entryTypeMap } from "@/constants/entryType";
+import { ErrorSourceType, ErrorType } from "@/constants/errorType";
 import UserPreferenceType from "@/constants/userPreferenceType";
 import type { WebClientConfiguration } from "@/models/configData";
 import CovidVaccineRecord from "@/models/covidVaccineRecord";
