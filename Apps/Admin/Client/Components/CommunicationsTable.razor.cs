@@ -25,6 +25,7 @@ namespace HealthGateway.Admin.Client.Components
     using HealthGateway.Admin.Client.Store.Communications;
     using HealthGateway.Common.Data.Utils;
     using Microsoft.AspNetCore.Components;
+    using MudBlazor;
 
     /// <summary>
     /// Backing logic for the CommunicationsTable component.
@@ -55,6 +56,9 @@ namespace HealthGateway.Admin.Client.Components
         [Inject]
         private IDispatcher Dispatcher { get; set; } = default!;
 
+        [Inject]
+        private IDialogService DialogService { get; set; } = default!;
+
         private IEnumerable<CommunicationRow> Rows => this.Data.Select(c => new CommunicationRow(c));
 
         private void ToggleExpandRow(Guid id)
@@ -71,12 +75,20 @@ namespace HealthGateway.Admin.Client.Components
             }
         }
 
-        private void DeleteCommunication(Guid id)
+        private async Task DeleteCommunication(Guid id)
         {
-            ExtendedCommunication? communication = this.Data.FirstOrDefault(c => c.Id == id);
-            if (communication != null)
+            bool? delete = await this.DialogService.ShowMessageBox(
+                "Delete Notification",
+                "Are you sure you want to delete this?",
+                yesText: "Delete Anyways",
+                cancelText: "Cancel").ConfigureAwait(true);
+            if (delete is true)
             {
-                this.Dispatcher.Dispatch(new CommunicationsActions.DeleteAction(communication));
+                ExtendedCommunication? communication = this.Data.FirstOrDefault(c => c.Id == id);
+                if (communication != null)
+                {
+                    this.Dispatcher.Dispatch(new CommunicationsActions.DeleteAction(communication));
+                }
             }
         }
 
