@@ -28,6 +28,10 @@ export default class EncounterTimelineComponent extends Vue {
     private get entryIcon(): string | undefined {
         return entryTypeMap.get(EntryType.Encounter)?.icon;
     }
+
+    private get showEncounterRolloffAlert(): boolean {
+        return this.entry.showRollOffWarning();
+    }
 }
 </script>
 
@@ -65,6 +69,20 @@ export default class EncounterTimelineComponent extends Vue {
                 </div>
                 <div data-testid="encounterClinicName">
                     {{ entry.clinic.name }}
+                </div>
+                <div>
+                    <b-alert
+                        :show="showEncounterRolloffAlert"
+                        variant="warning"
+                        class="no-print mt-3 mb-0"
+                        data-testid="encounterRolloffAlert"
+                    >
+                        <span>
+                            Health visits are shown for the past 6 years only.
+                            You may wish to export and save older records so you
+                            still have them when the calendar year changes.
+                        </span>
+                    </b-alert>
                 </div>
             </b-col>
         </b-row>
