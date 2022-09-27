@@ -1,3 +1,5 @@
+import { Duration } from "luxon";
+
 import { EntryType } from "@/constants/entryType";
 import Clinic from "@/models/clinic";
 import { DateWrapper } from "@/models/dateWrapper";
@@ -39,6 +41,12 @@ export default class EncounterTimelineEntry extends TimelineEntry {
             this.clinic.name;
         text = text.toUpperCase();
         return text.includes(keyword.toUpperCase());
+    }
+
+    public showRollOffWarning(): boolean {
+        const duration = Duration.fromObject({ years: 6 });
+        const warningDate = new DateWrapper().subtract(duration);
+        return this.date.isBeforeOrSame(warningDate);
     }
 }
 
