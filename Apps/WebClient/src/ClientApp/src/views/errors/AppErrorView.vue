@@ -8,8 +8,7 @@ const options: any = { components: { BAlert } };
 
 @Component(options)
 export default class AppErrorView extends Vue {
-    @Prop({ type: Boolean, default: false })
-    busy = false;
+    @Prop({ default: false }) busy!: boolean;
 }
 </script>
 
