@@ -65,4 +65,26 @@ describe("Filters", () => {
             unfilteredRecordsMessage
         );
     });
+
+    it("Verify immunization record alert appears when only immunization is selected", () => {
+        cy.get(
+            "[data-testid=linear-timeline-immunization-disclaimer-alert]"
+        ).should("not.be.visible");
+
+        cy.get("[data-testid=filterDropdown]").click();
+        cy.get("[data-testid=Immunization-filter]").click({ force: true });
+        cy.get("[data-testid=btnFilterApply]").click();
+
+        cy.get(
+            "[data-testid=linear-timeline-immunization-disclaimer-alert]"
+        ).should("be.visible");
+
+        cy.get("[data-testid=filterDropdown]").click();
+        cy.get("[data-testid=Encounter-filter]").click({ force: true });
+        cy.get("[data-testid=btnFilterApply]").click();
+
+        cy.get(
+            "[data-testid=linear-timeline-immunization-disclaimer-alert]"
+        ).should("not.be.visible");
+    });
 });

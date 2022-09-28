@@ -7,4 +7,6 @@ export default abstract class UserPreferenceType {
     public static TutorialComment = "tutorialComment";
     public static QuickLinks = "quickLinks";
     public static HideVaccineCardQuickLink = "hideVaccineCardQuickLink";
+    public static HideImmunizationRecordQuickLink =
+        "hideImmunizationRecordQuickLink";
 }
