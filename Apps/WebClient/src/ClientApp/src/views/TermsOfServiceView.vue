@@ -82,7 +82,7 @@ export default class TermsOfServiceView extends Vue {
         <BreadcrumbComponent :items="breadcrumbItems" />
         <LoadingComponent :is-loading="isLoading" />
         <b-row>
-            <b-col class="col-12 col-lg-9 column-wrapper">
+            <b-col class="column-wrapper">
                 <b-row>
                     <b-col>
                         <b-alert :show="hasErrors" dismissible variant="danger">
