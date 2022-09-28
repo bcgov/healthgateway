@@ -174,8 +174,11 @@ export default class LinearTimelineComponent extends Vue {
         return filterLoading;
     }
 
-    private get isImmunization(): boolean {
-        return this.isFilterApplied(EntryType.Immunization);
+    private get isOnlyImmunizationSelected(): boolean {
+        return (
+            this.filter.entryTypes.size === 1 &&
+            this.filter.entryTypes.has(EntryType.Immunization)
+        );
     }
 
     private get numberOfPages(): number {
@@ -293,20 +296,11 @@ export default class LinearTimelineComponent extends Vue {
         return entryTypeMap.get(entryType)?.component ?? "";
     }
 
-    private isFilterApplied(entryType: EntryType): boolean {
-        const entryTypes = Array.from(this.filter.entryTypes);
-        const filterApplied = !!entryTypes.includes(entryType);
-        this.logger.debug(
-            `Timeline filter entry type: ${entryType} applied: ${filterApplied}`
-        );
-        return filterApplied;
-    }
-
     private isSelectedFilterModuleLoading(
         entryType: EntryType,
         loading: boolean
     ): boolean {
-        const filterApplied = this.isFilterApplied(entryType);
+        const filterApplied = this.filter.entryTypes.has(entryType);
         const isLoading = filterApplied && loading;
         this.logger.debug(
             `Timeline filter entry type: ${entryType} applied: ${filterApplied} - filter loading: ${loading} and filter isLoading: ${isLoading}`
@@ -329,9 +323,13 @@ export default class LinearTimelineComponent extends Vue {
                 {{ timelineEntryCount }} records
             </b-col>
         </b-row>
-        <div id="linear-timeline-immunization-disclaimer" class="containter">
+        <div
+            v-show="isOnlyImmunizationSelected"
+            id="linear-timeline-immunization-disclaimer"
+            class="pb-2"
+        >
             <b-alert
-                :show="isImmunization"
+                show
                 variant="info"
                 class="mt-0 mb-1"
                 data-testid="linear-timeline-immunization-disclaimer-alert"
