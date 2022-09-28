@@ -59,6 +59,8 @@ namespace HealthGateway.Admin.Client.Components
         [Inject]
         private IDialogService DialogService { get; set; } = default!;
 
+        private MudMessageBox DeleteConfirmation { get; set; } = default!;
+
         private IEnumerable<CommunicationRow> Rows => this.Data.Select(c => new CommunicationRow(c));
 
         private void ToggleExpandRow(Guid id)
@@ -77,11 +79,7 @@ namespace HealthGateway.Admin.Client.Components
 
         private async Task DeleteCommunication(Guid id)
         {
-            bool? delete = await this.DialogService.ShowMessageBox(
-                "Delete Notification",
-                "Are you sure you want to delete this?",
-                yesText: "Delete Anyways",
-                cancelText: "Cancel").ConfigureAwait(true);
+            bool? delete = await this.DeleteConfirmation.Show().ConfigureAwait(true);
             if (delete is true)
             {
                 ExtendedCommunication? communication = this.Data.FirstOrDefault(c => c.Id == id);

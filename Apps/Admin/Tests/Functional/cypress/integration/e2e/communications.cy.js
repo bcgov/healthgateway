@@ -84,6 +84,12 @@ describe("Communications", () => {
         cy.log("Validate delete communication.");
 
         cy.get("[data-testid=comm-table-delete-btn]").click();
+        cy.get("[data-testid=confirm-delete-message]").should("be.visible");
+        cy.get("[data-testid=confirm-cancel-btn]").click();
+        cy.get("[data-testid=confirm-delete-message]").should("not.exist");
+        cy.get("[data-testid=comm-table-delete-btn]").click();
+        cy.get("[data-testid=confirm-delete-btn]").click();
+        cy.get("[data-testid=confirm-delete-message]").should("not.exist");
         cy.get("[data-testid=comm-table-subject]").should("not.exist");
 
         cy.log("Validate delete communication finished.");
