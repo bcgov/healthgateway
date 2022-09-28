@@ -110,38 +110,34 @@ export default class LoginView extends Vue {
             <h3 slot="header">Log In</h3>
             <b-card-body v-if="hasMultipleProviders || isRetry">
                 <div v-for="provider in identityProviders" :key="provider.id">
-                    <b-row>
-                        <b-col>
-                            <hg-button
-                                :id="`${provider.id}Btn`"
-                                :data-testid="`${provider.id}Btn`"
-                                :disabled="provider.disabled"
-                                variant="primary"
-                                block
-                                @click="signInAndRedirect(provider.hint)"
-                            >
-                                <b-row>
-                                    <b-col class="col-2">
-                                        <hg-icon
-                                            :icon="`${provider.icon}`"
-                                            size="medium"
-                                        />
-                                    </b-col>
-                                    <b-col class="text-left">
-                                        <span>{{ provider.name }}</span>
-                                    </b-col>
-                                </b-row>
-                            </hg-button>
-                        </b-col>
-                    </b-row>
-                    <b-row
+                    <hg-button
+                        :id="`${provider.id}Btn`"
+                        :data-testid="`${provider.id}Btn`"
+                        :disabled="provider.disabled"
+                        variant="primary"
+                        block
+                        @click="signInAndRedirect(provider.hint)"
+                    >
+                        <b-row>
+                            <b-col class="col-2">
+                                <hg-icon
+                                    :icon="`${provider.icon}`"
+                                    size="medium"
+                                />
+                            </b-col>
+                            <b-col class="text-left">
+                                <span>{{ provider.name }}</span>
+                            </b-col>
+                        </b-row>
+                    </hg-button>
+                    <div
                         v-if="
                             identityProviders.indexOf(provider) <
                             identityProviders.length - 1
                         "
                     >
-                        <b-col>or</b-col>
-                    </b-row>
+                        or
+                    </div>
                 </div>
             </b-card-body>
             <b-card-body v-else>

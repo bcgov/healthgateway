@@ -81,26 +81,13 @@ export default class TermsOfServiceView extends Vue {
     <div>
         <BreadcrumbComponent :items="breadcrumbItems" />
         <LoadingComponent :is-loading="isLoading" />
-        <b-row>
-            <b-col class="column-wrapper">
-                <b-row>
-                    <b-col>
-                        <b-alert :show="hasErrors" dismissible variant="danger">
-                            <h4>Error</h4>
-                            <p>
-                                An unexpected error occured while processing the
-                                request:
-                            </p>
-                            <span>{{ errorMessage }}</span>
-                        </b-alert>
-                    </b-col>
-                </b-row>
-                <page-title title="Terms of Service" />
-                <div v-if="!isLoading">
-                    <HtmlTextAreaComponent :input="termsOfService" />
-                </div>
-            </b-col>
-        </b-row>
+        <b-alert :show="hasErrors" dismissible variant="danger">
+            <h4>Error</h4>
+            <p>An unexpected error occured while processing the request:</p>
+            <span>{{ errorMessage }}</span>
+        </b-alert>
+        <page-title title="Terms of Service" />
+        <HtmlTextAreaComponent v-if="!isLoading" :input="termsOfService" />
     </div>
 </template>
 

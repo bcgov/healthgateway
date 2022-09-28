@@ -33,91 +33,59 @@ export default class ContactUsView extends Vue {
             <b-col>
                 <BreadcrumbComponent :items="breadcrumbItems" />
                 <page-title title="Contact Us" />
-                <b-row>
-                    <b-col>
-                        <b-row>
-                            <b-col>
-                                <h4>BC Vaccine Card</h4>
-                            </b-col>
-                        </b-row>
-                        <b-row class="pb-2">
-                            <b-col>
-                                If you have questions about the BC Vaccine Card,
-                                please contact
-                                <a href="tel:18338382323">1-833-838-2323</a>.
-                                Service is available every day: 7 am to 7 pm or
-                                9 am to 5 pm on holidays.
-                            </b-col>
-                        </b-row>
-                        <b-row class="pb-4"></b-row>
-                        <b-row>
-                            <b-col>
-                                <h4>Health Gateway</h4>
-                            </b-col>
-                        </b-row>
-                        <b-row class="pb-2">
-                            <b-col>
-                                If you have any questions about the Health
-                                Gateway or information provided within, please
-                                contact us at the email below.
-                            </b-col>
-                        </b-row>
-                        <b-row class="pb-4">
-                            <b-col>
-                                <strong>Email: </strong
-                                ><a href="mailto:healthgateway@gov.bc.ca"
-                                    >healthgateway@gov.bc.ca</a
-                                >
-                            </b-col>
-                        </b-row>
-                        <b-row class="pb-2">
-                            <b-col>
-                                <h4>Other Available Resources</h4>
-                            </b-col>
-                        </b-row>
-                        <b-row class="pb-2">
-                            <b-col>
-                                <strong>
-                                    <a
-                                        rel="noopener"
-                                        href="https://www.healthlinkbc.ca/"
-                                        target="_blank"
-                                        >HealthLink BC</a
-                                    >
-                                </strong>
-                            </b-col>
-                        </b-row>
-                        <b-row class="pb-2">
-                            <b-col>
-                                By dialing 8-1-1 toll-free in British Columbia,
-                                you can speak with a person who can help you
-                                connect with a health professional.
-                            </b-col>
-                        </b-row>
-                        <b-row class="pb-2">
-                            <b-col>
-                                <strong>
-                                    <a
-                                        rel="noopener"
-                                        href="http://www.bccdc.ca/health-info/diseases-conditions/covid-19/testing/testing-information"
-                                        target="_blank"
-                                    >
-                                        COVID-19 Testing Information
-                                    </a>
-                                </strong>
-                            </b-col>
-                        </b-row>
-                        <b-row class="pb-2">
-                            <b-col>
-                                Non-medical information about COVID-19 is
-                                available 7:30am-8pm, 7 days a week at
-                                1-888-COVID19 (1-888-268-4319).
-                            </b-col>
-                        </b-row>
-                    </b-col>
-                </b-row>
+                <div class="pb-3">
+                    <h4>BC Vaccine Card</h4>
+                    <p>
+                        If you have questions about the BC Vaccine Card, please
+                        contact
+                        <a href="tel:18338382323">1-833-838-2323</a>. Service is
+                        available every day: 7 am to 7 pm or 9 am to 5 pm on
+                        holidays.
+                    </p>
+                </div>
+                <div class="pb-3">
+                    <h4>Health Gateway</h4>
+                    <p>
+                        If you have any questions about the Health Gateway or
+                        information provided within, please contact us at the
+                        email below.
+                    </p>
+                    <p>
+                        <strong>Email: </strong>
+                        <a href="mailto:healthgateway@gov.bc.ca"
+                            >healthgateway@gov.bc.ca</a
+                        >
+                    </p>
+                </div>
+                <h4 class="mb-3">Other Available Resources</h4>
+                <h5>
+                    <a
+                        rel="noopener"
+                        href="https://www.healthlinkbc.ca/"
+                        target="_blank"
+                        >HealthLink BC</a
+                    >
+                </h5>
+                <p>
+                    By dialing 8-1-1 toll-free in British Columbia, you can
+                    speak with a person who can help you connect with a health
+                    professional.
+                </p>
+                <h5>
+                    <a
+                        rel="noopener"
+                        href="http://www.bccdc.ca/health-info/diseases-conditions/covid-19/testing/testing-information"
+                        target="_blank"
+                    >
+                        COVID-19 Testing Information
+                    </a>
+                </h5>
+                <p>
+                    Non-medical information about COVID-19 is available
+                    7:30am-8pm, 7 days a week at 1-888-COVID19 (1-888-268-4319).
+                </p>
             </b-col>
-            <b-col class="my-3 col-3 col-lg-3 column-wrapper no-print">
+            <b-col class="my-3 col-3 col-lg-3 no-print">
                 <HealthlinkComponent />
             </b-col>
         </b-row>

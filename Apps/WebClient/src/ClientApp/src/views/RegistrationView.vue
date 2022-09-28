@@ -319,165 +319,127 @@ export default class RegistrationView extends Vue {
                     @submit.prevent="onSubmit"
                 >
                     <page-title title="Registration" />
-                    <b-row class="mb-2">
-                        <b-col>
-                            <h4 class="subheading">
-                                Communication Preferences (Optional)
-                            </h4>
-                        </b-col>
-                    </b-row>
-                    <b-row class="mb-3">
-                        <b-col>
-                            <b-row class="d-flex">
-                                <b-col class="d-flex pr-0">
-                                    <b-form-checkbox
-                                        id="emailCheckbox"
-                                        v-model="isEmailChecked"
-                                        data-testid="emailCheckbox"
-                                        @change="onEmailOptout($event)"
-                                    >
-                                        Email Notifications
-                                    </b-form-checkbox>
-                                </b-col>
-                            </b-row>
-                            <b-row class="d-flex">
-                                <b-col class="d-flex pr-0">
-                                    <em class="small">
-                                        Receive application and health record
-                                        updates
-                                    </em>
-                                </b-col>
-                            </b-row>
-                            <b-form-input
-                                id="emailInput"
-                                v-model="$v.email.$model"
-                                data-testid="emailInput"
-                                type="email"
-                                placeholder="Your email address"
-                                :disabled="isPredefinedEmail || !isEmailChecked"
-                                :state="isValid($v.email)"
-                            />
-                            <b-form-invalid-feedback :state="isValid($v.email)">
-                                Valid email is required
-                            </b-form-invalid-feedback>
-                        </b-col>
-                    </b-row>
-                    <b-row v-if="!isPredefinedEmail" class="mb-3">
-                        <b-col>
-                            <b-form-input
-                                id="emailConfirmationInput"
-                                v-model="$v.emailConfirmation.$model"
-                                data-testid="emailConfirmationInput"
-                                type="email"
-                                placeholder="Confirm your email address"
-                                :disabled="!isEmailChecked"
-                                :state="isValid($v.emailConfirmation)"
-                            />
-                            <b-form-invalid-feedback
-                                :state="$v.emailConfirmation.sameAsEmail"
-                            >
-                                Emails must match
-                            </b-form-invalid-feedback>
-                        </b-col>
-                    </b-row>
+                    <h4 class="subheading mb-3">
+                        Communication Preferences (Optional)
+                    </h4>
+                    <div class="mb-3">
+                        <b-form-checkbox
+                            id="emailCheckbox"
+                            v-model="isEmailChecked"
+                            data-testid="emailCheckbox"
+                            @change="onEmailOptout($event)"
+                        >
+                            Email Notifications
+                        </b-form-checkbox>
+                        <div>
+                            <em class="small">
+                                Receive application and health record updates
+                            </em>
+                        </div>
+                        <b-form-input
+                            id="emailInput"
+                            v-model="$v.email.$model"
+                            data-testid="emailInput"
+                            type="email"
+                            placeholder="Your email address"
+                            :disabled="isPredefinedEmail || !isEmailChecked"
+                            :state="isValid($v.email)"
+                        />
+                        <b-form-invalid-feedback :state="isValid($v.email)">
+                            Valid email is required
+                        </b-form-invalid-feedback>
+                    </div>
+                    <div v-if="!isPredefinedEmail" class="mb-3">
+                        <b-form-input
+                            id="emailConfirmationInput"
+                            v-model="$v.emailConfirmation.$model"
+                            data-testid="emailConfirmationInput"
+                            type="email"
+                            placeholder="Confirm your email address"
+                            :disabled="!isEmailChecked"
+                            :state="isValid($v.emailConfirmation)"
+                        />
+                        <b-form-invalid-feedback
+                            :state="$v.emailConfirmation.sameAsEmail"
+                        >
+                            Emails must match
+                        </b-form-invalid-feedback>
+                    </div>
                     <!-- SMS section -->
-                    <b-row class="mb-3">
-                        <b-col>
-                            <b-row class="d-flex">
-                                <b-col class="d-flex pr-0">
-                                    <b-form-checkbox
-                                        id="smsCheckbox"
-                                        v-model="isSMSNumberChecked"
-                                        @change="onSMSOptout($event)"
-                                    >
-                                        Text Notifications
-                                    </b-form-checkbox>
-                                </b-col>
-                            </b-row>
-                            <b-row class="d-flex">
-                                <b-col class="d-flex pr-0">
-                                    <em class="small">
-                                        Receive health record updates only
-                                    </em>
-                                </b-col>
-                            </b-row>
-                            <b-form-input
-                                id="smsNumberInput"
-                                v-model="$v.smsNumber.$model"
-                                v-mask="'(###) ###-####'"
-                                type="tel"
-                                data-testid="smsNumberInput"
-                                class="d-flex"
-                                placeholder="Your phone number"
-                                :state="isValid($v.smsNumber)"
-                                :disabled="!isSMSNumberChecked"
-                            >
-                            </b-form-input>
-                            <b-form-invalid-feedback
-                                :state="isValid($v.smsNumber)"
-                            >
-                                Valid sms number is required
-                            </b-form-invalid-feedback>
-                        </b-col>
-                    </b-row>
-                    <b-row v-if="!isEmailChecked && !isSMSNumberChecked">
-                        <b-col class="font-weight-bold text-primary">
-                            <hg-icon
-                                icon="exclamation-triangle"
-                                size="medium"
-                                aria-hidden="true"
-                                class="mr-2"
-                            />
-                            <span
-                                >You won't receive notifications from the Health
-                                Gateway. You can update this from your Profile
-                                Page later.</span
-                            >
-                        </b-col>
-                    </b-row>
-                    <b-row class="mt-4">
-                        <b-col>
-                            <h4 class="subheading">Terms of Service</h4>
-                        </b-col>
-                    </b-row>
-                    <b-row class="mb-3">
-                        <b-col>
-                            <HtmlTextAreaComponent
-                                class="termsOfService"
-                                :input="termsOfService.content"
-                            />
-                        </b-col>
-                    </b-row>
-                    <b-row class="mb-3">
-                        <b-col>
-                            <b-form-checkbox
-                                id="accept"
-                                v-model="accepted"
-                                data-testid="acceptCheckbox"
-                                class="accept"
-                                :state="isValid($v.accepted)"
-                            >
-                                I agree to the terms of service above
-                            </b-form-checkbox>
-                            <b-form-invalid-feedback
-                                :state="isValid($v.accepted)"
-                            >
-                                You must accept the terms of service.
-                            </b-form-invalid-feedback>
-                        </b-col>
-                    </b-row>
-                    <b-row class="mb-5">
-                        <b-col class="justify-content-right">
-                            <hg-button
-                                class="px-5 float-right"
-                                type="submit"
-                                data-testid="registerButton"
-                                variant="primary"
-                                :disabled="!accepted"
-                                >Register</hg-button
-                            >
-                        </b-col>
-                    </b-row>
+                    <div class="mb-3">
+                        <b-form-checkbox
+                            id="smsCheckbox"
+                            v-model="isSMSNumberChecked"
+                            @change="onSMSOptout($event)"
+                        >
+                            Text Notifications
+                        </b-form-checkbox>
+                        <div>
+                            <em class="small">
+                                Receive health record updates only
+                            </em>
+                        </div>
+                        <b-form-input
+                            id="smsNumberInput"
+                            v-model="$v.smsNumber.$model"
+                            v-mask="'(###) ###-####'"
+                            type="tel"
+                            data-testid="smsNumberInput"
+                            class="d-flex"
+                            placeholder="Your phone number"
+                            :state="isValid($v.smsNumber)"
+                            :disabled="!isSMSNumberChecked"
+                        >
+                        </b-form-input>
+                        <b-form-invalid-feedback :state="isValid($v.smsNumber)">
+                            Valid sms number is required
+                        </b-form-invalid-feedback>
+                    </div>
+                    <div
+                        v-if="!isEmailChecked && !isSMSNumberChecked"
+                        class="font-weight-bold text-primary"
+                    >
+                        <hg-icon
+                            icon="exclamation-triangle"
+                            size="medium"
+                            aria-hidden="true"
+                            class="mr-2"
+                        />
+                        <span
+                            >You won't receive notifications from the Health
+                            Gateway. You can update this from your Profile Page
+                            later.</span
+                        >
+                    </div>
+                    <h4 class="subheading mt-4">Terms of Service</h4>
+                    <HtmlTextAreaComponent
+                        class="termsOfService mb-3"
+                        :input="termsOfService.content"
+                    />
+                    <div class="mb-3">
+                        <b-form-checkbox
+                            id="accept"
+                            v-model="accepted"
+                            data-testid="acceptCheckbox"
+                            class="accept"
+                            :state="isValid($v.accepted)"
+                        >
+                            I agree to the terms of service above
+                        </b-form-checkbox>
+                        <b-form-invalid-feedback :state="isValid($v.accepted)">
+                            You must accept the terms of service.
+                        </b-form-invalid-feedback>
+                    </div>
+                    <div class="mb-3 text-right">
+                        <hg-button
+                            class="px-5"
+                            type="submit"
+                            data-testid="registerButton"
+                            variant="primary"
+                            :disabled="!accepted"
+                            >Register</hg-button
+                        >
+                    </div>
                 </b-form>
                 <div v-else-if="isValidAge === false">
                     <h1>Minimum age required for registration</h1>

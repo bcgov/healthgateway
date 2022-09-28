@@ -170,45 +170,35 @@ export default class AcceptTermsOfServiceView extends Vue {
                         title="Update to our Terms of Service"
                         data-testid="tos-page-title"
                     />
-                    <b-row class="mb-3">
-                        <b-col>
-                            <HtmlTextAreaComponent
-                                class="termsOfService"
-                                :input="termsOfService"
-                                data-testid="tos-text-area-component"
-                            />
-                        </b-col>
-                    </b-row>
-                    <b-row class="mb-3">
-                        <b-col>
-                            <b-form-checkbox
-                                id="accept-tos-checkbox"
-                                v-model="accepted"
-                                data-testid="accept-tos-checkbox"
-                                class="accept"
-                                :state="isValid($v.accepted)"
-                            >
-                                I agree to the terms of service above
-                            </b-form-checkbox>
-                            <b-form-invalid-feedback
-                                :state="isValid($v.accepted)"
-                            >
-                                You must accept the terms of service.
-                            </b-form-invalid-feedback>
-                        </b-col>
-                    </b-row>
-                    <b-row class="mb-5">
-                        <b-col class="justify-content-right">
-                            <hg-button
-                                class="px-5 float-right"
-                                type="submit"
-                                data-testid="continue-btn"
-                                variant="primary"
-                                :disabled="!accepted"
-                                >Continue</hg-button
-                            >
-                        </b-col>
-                    </b-row>
+                    <HtmlTextAreaComponent
+                        class="termsOfService mb-3"
+                        :input="termsOfService"
+                        data-testid="tos-text-area-component"
+                    />
+                    <div class="mb-3">
+                        <b-form-checkbox
+                            id="accept-tos-checkbox"
+                            v-model="accepted"
+                            data-testid="accept-tos-checkbox"
+                            class="accept"
+                            :state="isValid($v.accepted)"
+                        >
+                            I agree to the terms of service above
+                        </b-form-checkbox>
+                        <b-form-invalid-feedback :state="isValid($v.accepted)">
+                            You must accept the terms of service.
+                        </b-form-invalid-feedback>
+                    </div>
+                    <div class="mb-3 text-right">
+                        <hg-button
+                            class="px-5"
+                            type="submit"
+                            data-testid="continue-btn"
+                            variant="primary"
+                            :disabled="!accepted"
+                            >Continue</hg-button
+                        >
+                    </div>
                 </b-form>
             </div>
         </b-container>
