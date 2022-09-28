@@ -38,7 +38,7 @@ namespace HealthGateway.Medication.Models.ODR
         /// Gets or sets the address for the pharmacy.
         /// </summary>
         [JsonPropertyName("siteAddress")]
-        public Address Address { get; set; } = new Address();
+        public Address Address { get; set; } = new();
 
         /// <summary>
         /// Gets or sets the Pharmacy's Phone number.

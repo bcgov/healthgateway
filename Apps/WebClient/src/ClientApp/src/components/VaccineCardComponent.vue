@@ -9,14 +9,19 @@ import {
 import Vue from "vue";
 import { Component, Emit, Prop } from "vue-property-decorator";
 
+import TooManyRequestsComponent from "@/components/TooManyRequestsComponent.vue";
 import { VaccinationState } from "@/constants/vaccinationState";
-import BannerError from "@/models/bannerError";
 import { DateWrapper } from "@/models/dateWrapper";
+import { BannerError } from "@/models/errors";
 import VaccinationStatus from "@/models/vaccinationStatus";
 
 library.add(faCheckCircle, faChevronLeft, faChevronRight, faHandPointer);
 
-@Component
+@Component({
+    components: {
+        TooManyRequestsComponent,
+    },
+})
 export default class VaccineCardComponent extends Vue {
     @Prop({ required: true }) status!: VaccinationStatus | undefined;
     @Prop({ required: false, default: undefined }) previousAction!:
@@ -32,12 +37,12 @@ export default class VaccineCardComponent extends Vue {
         | undefined;
 
     @Emit("clickPreviousButton")
-    private onClickPreviousButton() {
+    private onClickPreviousButton(): void {
         return;
     }
 
     @Emit("clickNextButton")
-    private onClickNextButton() {
+    private onClickNextButton(): void {
         return;
     }
 
@@ -89,7 +94,7 @@ export default class VaccineCardComponent extends Vue {
         return this.$listeners.clickNextButton !== undefined;
     }
 
-    private handleCloseQrModal() {
+    private handleCloseQrModal(): void {
         this.$bvModal.hide("big-qr");
     }
 }
@@ -234,6 +239,7 @@ export default class VaccineCardComponent extends Vue {
                 </hg-button>
             </b-col>
         </b-row>
+        <TooManyRequestsComponent location="vaccineCardComponent" />
         <div v-if="error !== undefined" class="container d-print-none">
             <b-alert
                 variant="danger"
@@ -266,9 +272,11 @@ export default class VaccineCardComponent extends Vue {
     &.fully-vaccinated {
         background-color: $hg-state-success;
     }
+
     &.partially-vaccinated {
         background-color: $hg-background-navigation;
     }
+
     &.not-found {
         background-color: #6c757d;
     }

@@ -6,9 +6,6 @@ export default class ExternalConfiguration {
     // Gets or sets the Health Gateway Admin specific configuration.
     public admin!: AdminClientConfiguration;
 
-    // Gets or sets the Service Endpoints.
-    public serviceEndpoints!: { [id: string]: string };
-
     public forwardProxies!: ForwardProxiesConfiguration;
 }
 

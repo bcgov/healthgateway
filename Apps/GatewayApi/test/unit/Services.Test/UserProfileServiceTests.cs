@@ -18,6 +18,7 @@ namespace HealthGateway.GatewayApi.Test.Services
     using System;
     using System.Collections.Generic;
     using System.Threading.Tasks;
+    using AutoMapper;
     using HealthGateway.Common.Data.Constants;
     using HealthGateway.Common.Data.Models;
     using HealthGateway.Common.Data.ViewModels;
@@ -30,8 +31,10 @@ namespace HealthGateway.GatewayApi.Test.Services
     using HealthGateway.Database.Models;
     using HealthGateway.Database.Wrapper;
     using HealthGateway.GatewayApi.Constants;
+    using HealthGateway.GatewayApi.MapUtils;
     using HealthGateway.GatewayApi.Models;
     using HealthGateway.GatewayApi.Services;
+    using HealthGateway.GatewayApi.Test.Services.Utils;
     using HealthGateway.GatewayApiTests.Services.Test.Constants;
     using HealthGateway.GatewayApiTests.Services.Test.Mock;
     using Microsoft.AspNetCore.Http;
@@ -122,7 +125,7 @@ namespace HealthGateway.GatewayApi.Test.Services
                 Status = DBStatusCode.Read,
             };
 
-            UserProfileModel expected = UserProfileModel.CreateFromDbModel(userProfile, Guid.Empty);
+            UserProfileModel expected = UserProfileMapUtils.CreateFromDbModel(userProfile, Guid.Empty, MapperUtil.InitializeAutoMapper());
 
             IUserProfileService service = new UserProfileServiceMock(this.hdid, dBStatus, userProfile, userProfileDBResult, readResult, termsOfService, GetIConfigurationRoot(null), userProfileHistoryDBResult).UserProfileServiceMockInstance();
 
@@ -185,9 +188,25 @@ namespace HealthGateway.GatewayApi.Test.Services
                 Status = updatedStatus,
             };
 
+            DBResult<LegalAgreement> tosDbResult = new()
+            {
+                Status = DBStatusCode.Read,
+                Payload = new LegalAgreement()
+                {
+                    Id = Guid.Empty,
+                    CreatedBy = "MockData",
+                    CreatedDateTime = DateTime.UtcNow,
+                    EffectiveDate = DateTime.UtcNow,
+                    LegalAgreementCode = LegalAgreementType.TermsofService,
+                    LegalText = "Mock Terms of Service",
+                },
+            };
+
+            Mock<ILegalAgreementDelegate> mockLegalAgreementDelegate = new Mock<ILegalAgreementDelegate>();
+            mockLegalAgreementDelegate.Setup(s => s.GetActiveByAgreementType(LegalAgreementType.TermsofService)).Returns(tosDbResult);
             Mock<IUserProfileDelegate> mockUserProfileDelegate = new();
             mockUserProfileDelegate.Setup(s => s.GetUserProfile(It.IsAny<string>())).Returns(readProfileDBResult);
-            mockUserProfileDelegate.Setup(s => s.UpdateComplete(It.IsAny<UserProfile>(), true)).Returns(updatedProfileDBResult);
+            mockUserProfileDelegate.Setup(s => s.Update(It.IsAny<UserProfile>(), true)).Returns(updatedProfileDBResult);
             IUserProfileService service = new UserProfileService(
                                                         new Mock<ILogger<UserProfileService>>().Object,
                                                         new Mock<IPatientService>().Object,
@@ -197,11 +216,12 @@ namespace HealthGateway.GatewayApi.Test.Services
                                                         new Mock<INotificationSettingsService>().Object,
                                                         mockUserProfileDelegate.Object,
                                                         new Mock<IUserPreferenceDelegate>().Object,
-                                                        new Mock<ILegalAgreementDelegate>().Object,
+                                                        mockLegalAgreementDelegate.Object,
                                                         new Mock<IMessagingVerificationDelegate>().Object,
                                                         new Mock<ICryptoDelegate>().Object,
                                                         new Mock<IHttpContextAccessor>().Object,
-                                                        GetIConfigurationRoot(null));
+                                                        GetIConfigurationRoot(null),
+                                                        Utils.MapperUtil.InitializeAutoMapper());
             RequestResult<UserProfileModel> actualResult = service.UpdateAcceptedTerms(this.hdid, Guid.Empty);
 
             Assert.True(actualResult.ResultStatus == resultStatus);
@@ -280,7 +300,7 @@ namespace HealthGateway.GatewayApi.Test.Services
                 Status = DBStatusCode.Created,
             };
 
-            UserProfileModel expected = UserProfileModel.CreateFromDbModel(userProfile, userProfile.TermsOfServiceId);
+            UserProfileModel expected = UserProfileMapUtils.CreateFromDbModel(userProfile, userProfile.TermsOfServiceId, MapperUtil.InitializeAutoMapper());
 
             Dictionary<string, string> localConfig = new()
             {
@@ -366,7 +386,9 @@ namespace HealthGateway.GatewayApi.Test.Services
             userPreferences.Add(userPreferenceModel);
 
             List<UserPreference> dbUserPreferences = new();
-            dbUserPreferences.Add(userPreferenceModel.ToDbModel());
+            IMapper autoMapper = MapperUtil.InitializeAutoMapper();
+            UserPreference userPreference = autoMapper.Map<UserPreference>(userPreferenceModel);
+            dbUserPreferences.Add(userPreference);
 
             DBResult<IEnumerable<UserPreference>> readResult = new()
             {
@@ -410,9 +432,11 @@ namespace HealthGateway.GatewayApi.Test.Services
                 Preference = "TutorialPopover",
                 Value = "mocked value",
             };
+            IMapper autoMapper = MapperUtil.InitializeAutoMapper();
+            UserPreference userPreference = autoMapper.Map<UserPreference>(userPreferenceModel);
             DBResult<UserPreference> readResult = new()
             {
-                Payload = userPreferenceModel.ToDbModel(),
+                Payload = userPreference,
                 Status = dBStatusCode,
             };
 
@@ -450,9 +474,11 @@ namespace HealthGateway.GatewayApi.Test.Services
                 Preference = "TutorialPopover",
                 Value = "mocked value",
             };
+            IMapper autoMapper = MapperUtil.InitializeAutoMapper();
+            UserPreference userPreference = autoMapper.Map<UserPreference>(userPreferenceModel);
             DBResult<UserPreference> readResult = new()
             {
-                Payload = userPreferenceModel.ToDbModel(),
+                Payload = userPreference,
                 Status = dBStatusCode,
             };
 

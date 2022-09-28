@@ -33,12 +33,12 @@ namespace HealthGateway.Common.Models.CDogs
         /// Gets or sets the options.
         /// </summary>
         [JsonPropertyName("options")]
-        public CDogsOptionsModel Options { get; set; } = new CDogsOptionsModel();
+        public CDogsOptionsModel Options { get; set; } = new();
 
         /// <summary>
         /// Gets or sets the template.
         /// </summary>
         [JsonPropertyName("template")]
-        public CDogsTemplateModel Template { get; set; } = new CDogsTemplateModel();
+        public CDogsTemplateModel Template { get; set; } = new();
     }
 }

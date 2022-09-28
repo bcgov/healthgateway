@@ -5,7 +5,7 @@ k6 is a modern load testing tool, building on Load Impact's years of experience 
 ## Install
 
 ```bash
-docker pull loadimpact/k6`
+docker pull grafana/k6`
 ```
 
 ### See also
@@ -17,7 +17,7 @@ docker pull loadimpact/k6`
 Once installed in docker, you can run an ES6 JavaScript load test by executing this way:
 
 ```code
-docker run -v <local_path>:<in_docker_path> -a STDOUT -a STDERR -i loadimpact/k6 run -e <env_variable> <k6_script>.js
+docker run -v <local_path>:<in_docker_path> -a STDOUT -a STDERR -i grafana/k6 run -e <env_variable> <k6_script>.js
 ```
 
 ### See also

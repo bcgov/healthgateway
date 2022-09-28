@@ -16,7 +16,6 @@
 namespace HealthGateway.Common.AccessManagement.Authentication
 {
     using System;
-    using System.Threading.Tasks;
     using HealthGateway.Common.AccessManagement.Authentication.Models;
 
     /// <summary>
@@ -80,5 +79,17 @@ namespace HealthGateway.Common.AccessManagement.Authentication
         /// </summary>
         /// <returns>The access token for the user.</returns>
         string? FetchAuthenticatedUserToken();
+
+        /// <summary>
+        /// Fetches the HDID for the authenticated user from the http context.
+        /// </summary>
+        /// <returns>The users HDID.</returns>
+        string? FetchAuthenticatedUserHdid();
+
+        /// <summary>
+        /// Fetches the id for the authenticated user from the http context.
+        /// </summary>
+        /// <returns>The user's id.</returns>
+        string? FetchAuthenticatedUserId();
     }
 }

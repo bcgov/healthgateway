@@ -48,13 +48,11 @@ namespace HealthGateway.Database.Models
         /// Gets or sets the ReasonObject type.
         /// This value is used by code to reconstruct the JSON POCO.
         /// </summary>
-        [Required]
-        public string? ReasonObjectType { get; set; } = string.Empty;
+        public string? ReasonObjectType { get; set; }
 
         /// <summary>
         /// Gets or sets the resource delegation Reason object.
         /// </summary>
-        [Required]
-        public JsonDocument? ReasonObject { get; set; } = null;
+        public JsonDocument? ReasonObject { get; set; }
     }
 }

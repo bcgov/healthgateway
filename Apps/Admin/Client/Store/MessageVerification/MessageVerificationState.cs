@@ -18,7 +18,6 @@ namespace HealthGateway.Admin.Client.Store.MessageVerification
 {
     using System.Collections.Generic;
     using Fluxor;
-    using HealthGateway.Admin.Client.Store;
     using HealthGateway.Common.Data.ViewModels;
 
     /// <summary>
@@ -28,5 +27,9 @@ namespace HealthGateway.Admin.Client.Store.MessageVerification
     [FeatureState]
     public record MessageVerificationState : BaseRequestState<RequestResult<IEnumerable<MessagingVerificationModel>>>
     {
+        /// <summary>
+        /// Gets the warning message for display.
+        /// </summary>
+        public string? WarningMessage { get; init; }
     }
 }

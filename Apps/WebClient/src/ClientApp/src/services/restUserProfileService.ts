@@ -1,9 +1,10 @@
 import { injectable } from "inversify";
 
 import { ResultType } from "@/constants/resulttype";
+import { ServiceCode } from "@/constants/serviceCodes";
 import { Dictionary } from "@/models/baseTypes";
 import { ExternalConfiguration } from "@/models/configData";
-import { ServiceName } from "@/models/errorInterfaces";
+import { HttpError } from "@/models/errors";
 import RequestResult from "@/models/requestResult";
 import { TermsOfService } from "@/models/termsOfService";
 import type { UserPreference } from "@/models/userPreference";
@@ -20,12 +21,10 @@ import RequestResultUtil from "@/utility/requestResultUtil";
 
 @injectable()
 export class RestUserProfileService implements IUserProfileService {
-    private logger: ILogger = container.get(SERVICE_IDENTIFIER.Logger);
+    private logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
     private readonly APPLICATION_JSON: string =
         "application/json; charset=utf-8";
     private readonly CONTENT_TYPE: string = "Content-Type";
-    private readonly FETCH_ERROR: string = "Fetch error:";
-    private readonly UPDATE_ERROR: string = "Update error:";
     private readonly USER_PROFILE_BASE_URI: string = "UserProfile";
     private http!: IHttpDelegate;
     private baseUri = "";
@@ -39,7 +38,7 @@ export class RestUserProfileService implements IUserProfileService {
     }
 
     public getProfile(hdid: string): Promise<UserProfile> {
-        return new Promise((resolve, reject) => {
+        return new Promise((resolve, reject) =>
             this.http
                 .getWithCors<RequestResult<UserProfile>>(
                     `${this.baseUri}${this.USER_PROFILE_BASE_URI}/${hdid}`
@@ -52,16 +51,18 @@ export class RestUserProfileService implements IUserProfileService {
                         reject
                     );
                 })
-                .catch((err) => {
-                    this.logger.error(`getProfile ${this.FETCH_ERROR}: ${err}`);
+                .catch((err: HttpError) => {
+                    this.logger.error(
+                        `Error in RestUserProfileService.getProfile()`
+                    );
                     reject(
                         ErrorTranslator.internalNetworkError(
                             err,
-                            ServiceName.HealthGatewayUser
+                            ServiceCode.HealthGatewayUser
                         )
                     );
-                });
-        });
+                })
+        );
     }
 
     public createProfile(
@@ -81,14 +82,14 @@ export class RestUserProfileService implements IUserProfileService {
                         reject
                     );
                 })
-                .catch((err) => {
+                .catch((err: HttpError) => {
                     this.logger.error(
-                        `createProfile ${this.FETCH_ERROR}: ${err}`
+                        `Error in RestUserProfileService.createProfile()`
                     );
                     reject(
                         ErrorTranslator.internalNetworkError(
                             err,
-                            ServiceName.HealthGatewayUser
+                            ServiceCode.HealthGatewayUser
                         )
                     );
                 });
@@ -96,7 +97,7 @@ export class RestUserProfileService implements IUserProfileService {
     }
 
     public closeAccount(hdid: string): Promise<UserProfile> {
-        return new Promise((resolve, reject) => {
+        return new Promise((resolve, reject) =>
             this.http
                 .delete<RequestResult<UserProfile>>(
                     `${this.baseUri}${this.USER_PROFILE_BASE_URI}/${hdid}`
@@ -109,22 +110,22 @@ export class RestUserProfileService implements IUserProfileService {
                         reject
                     );
                 })
-                .catch((err) => {
+                .catch((err: HttpError) => {
                     this.logger.error(
-                        `closeAccount ${this.FETCH_ERROR}: ${err}`
+                        `Error in RestUserProfileService.closeAccount()`
                     );
                     reject(
                         ErrorTranslator.internalNetworkError(
                             err,
-                            ServiceName.HealthGatewayUser
+                            ServiceCode.HealthGatewayUser
                         )
                     );
-                });
-        });
+                })
+        );
     }
 
     public recoverAccount(hdid: string): Promise<UserProfile> {
-        return new Promise((resolve, reject) => {
+        return new Promise((resolve, reject) =>
             this.http
                 .get<RequestResult<UserProfile>>(
                     `${this.baseUri}${this.USER_PROFILE_BASE_URI}/${hdid}/recover`
@@ -137,22 +138,22 @@ export class RestUserProfileService implements IUserProfileService {
                         reject
                     );
                 })
-                .catch((err) => {
+                .catch((err: HttpError) => {
                     this.logger.error(
-                        `recoverAccount ${this.FETCH_ERROR}: ${err}`
+                        `Error in RestUserProfileService.recoverAccount()`
                     );
                     reject(
                         ErrorTranslator.internalNetworkError(
                             err,
-                            ServiceName.HealthGatewayUser
+                            ServiceCode.HealthGatewayUser
                         )
                     );
-                });
-        });
+                })
+        );
     }
 
     public validateAge(hdid: string): Promise<boolean> {
-        return new Promise((resolve, reject) => {
+        return new Promise((resolve, reject) =>
             this.http
                 .get<RequestResult<boolean>>(
                     `${this.baseUri}${this.USER_PROFILE_BASE_URI}/${hdid}/Validate`
@@ -165,22 +166,22 @@ export class RestUserProfileService implements IUserProfileService {
                         reject
                     );
                 })
-                .catch((err) => {
+                .catch((err: HttpError) => {
                     this.logger.error(
-                        `validateAge ${this.FETCH_ERROR}: ${err}`
+                        `Error in RestUserProfileService.validateAge()`
                     );
                     reject(
                         ErrorTranslator.internalNetworkError(
                             err,
-                            ServiceName.HealthGatewayUser
+                            ServiceCode.HealthGatewayUser
                         )
                     );
-                });
-        });
+                })
+        );
     }
 
     public getTermsOfService(): Promise<TermsOfService> {
-        return new Promise((resolve, reject) => {
+        return new Promise((resolve, reject) =>
             this.http
                 .get<RequestResult<TermsOfService>>(
                     `${this.baseUri}${this.USER_PROFILE_BASE_URI}/termsofservice`
@@ -193,46 +194,46 @@ export class RestUserProfileService implements IUserProfileService {
                         reject
                     );
                 })
-                .catch((err) => {
+                .catch((err: HttpError) => {
                     this.logger.error(
-                        `getTermsOfService ${this.FETCH_ERROR}: ${err}`
+                        `Error in RestUserProfileService.getTermsOfService()`
                     );
                     reject(
                         ErrorTranslator.internalNetworkError(
                             err,
-                            ServiceName.HealthGatewayUser
+                            ServiceCode.HealthGatewayUser
                         )
                     );
-                });
-        });
+                })
+        );
     }
 
     public validateEmail(
         hdid: string,
         inviteKey: string
     ): Promise<RequestResult<boolean>> {
-        return new Promise((resolve, reject) => {
+        return new Promise((resolve, reject) =>
             this.http
                 .get<RequestResult<boolean>>(
                     `${this.baseUri}${this.USER_PROFILE_BASE_URI}/${hdid}/email/validate/${inviteKey}`
                 )
-                .then((requestResult) => {
-                    return resolve(requestResult);
-                })
-                .catch((err) => {
-                    this.logger.error(`validateEmail error: ${err}`);
+                .then((requestResult) => resolve(requestResult))
+                .catch((err: HttpError) => {
+                    this.logger.error(
+                        `Error in RestUserProfileService.validateEmail()`
+                    );
                     reject(
                         ErrorTranslator.internalNetworkError(
                             err,
-                            ServiceName.HealthGatewayUser
+                            ServiceCode.HealthGatewayUser
                         )
                     );
-                });
-        });
+                })
+        );
     }
 
     public validateSMS(hdid: string, digit: string): Promise<boolean> {
-        return new Promise((resolve, reject) => {
+        return new Promise((resolve, reject) =>
             this.http
                 .get<RequestResult<boolean>>(
                     `${this.baseUri}${this.USER_PROFILE_BASE_URI}/${hdid}/sms/validate/${digit}`
@@ -244,16 +245,18 @@ export class RestUserProfileService implements IUserProfileService {
                         return reject(requestResult.resultError);
                     }
                 })
-                .catch((err) => {
-                    this.logger.error(`validateSMS error: ${err}`);
+                .catch((err: HttpError) => {
+                    this.logger.error(
+                        `Error in RestUserProfileService.validateSMS()`
+                    );
                     reject(
                         ErrorTranslator.internalNetworkError(
                             err,
-                            ServiceName.HealthGatewayUser
+                            ServiceCode.HealthGatewayUser
                         )
                     );
-                });
-        });
+                })
+        );
     }
 
     public updateEmail(hdid: string, email: string): Promise<boolean> {
@@ -267,17 +270,15 @@ export class RestUserProfileService implements IUserProfileService {
                     JSON.stringify(email),
                     headers
                 )
-                .then(() => {
-                    return resolve(true);
-                })
-                .catch((err) => {
+                .then(() => resolve(true))
+                .catch((err: HttpError) => {
                     this.logger.error(
-                        `updateEmail ${this.FETCH_ERROR}: ${err}`
+                        `Error in RestUserProfileService.updateEmail()`
                     );
                     reject(
                         ErrorTranslator.internalNetworkError(
                             err,
-                            ServiceName.HealthGatewayUser
+                            ServiceCode.HealthGatewayUser
                         )
                     );
                 });
@@ -295,17 +296,15 @@ export class RestUserProfileService implements IUserProfileService {
                     JSON.stringify(smsNumber),
                     headers
                 )
-                .then(() => {
-                    return resolve(true);
-                })
-                .catch((err) => {
+                .then(() => resolve(true))
+                .catch((err: HttpError) => {
                     this.logger.error(
-                        `updateSMSNumber  ${this.FETCH_ERROR}: ${err}`
+                        `Error in RestUserProfileService.updateSMSNumber()`
                     );
                     reject(
                         ErrorTranslator.internalNetworkError(
                             err,
-                            ServiceName.HealthGatewayUser
+                            ServiceCode.HealthGatewayUser
                         )
                     );
                 });
@@ -316,7 +315,7 @@ export class RestUserProfileService implements IUserProfileService {
         hdid: string,
         userPreference: UserPreference
     ): Promise<UserPreference> {
-        return new Promise<UserPreference>((resolve, reject) => {
+        return new Promise<UserPreference>((resolve, reject) =>
             this.http
                 .put<RequestResult<UserPreference>>(
                     `${this.baseUri}${this.USER_PROFILE_BASE_URI}/${hdid}/preference`,
@@ -334,16 +333,18 @@ export class RestUserProfileService implements IUserProfileService {
                         reject
                     );
                 })
-                .catch((err) => {
-                    this.logger.error(`${this.FETCH_ERROR}: ${err}`);
+                .catch((err: HttpError) => {
+                    this.logger.error(
+                        `Error in RestUserProfileService.updateUserPreference()`
+                    );
                     reject(
                         ErrorTranslator.internalNetworkError(
                             err,
-                            ServiceName.HealthGatewayUser
+                            ServiceCode.HealthGatewayUser
                         )
                     );
-                });
-        });
+                })
+        );
     }
 
     public updateAcceptedTerms(
@@ -371,14 +372,14 @@ export class RestUserProfileService implements IUserProfileService {
                         reject
                     );
                 })
-                .catch((err) => {
+                .catch((err: HttpError) => {
                     this.logger.error(
-                        ` updateAcceptedTerms  ${this.UPDATE_ERROR}: ${err}`
+                        `Error in RestUserProfileService.updateAcceptedTerms()`
                     );
                     reject(
                         ErrorTranslator.internalNetworkError(
                             err,
-                            ServiceName.HealthGatewayUser
+                            ServiceCode.HealthGatewayUser
                         )
                     );
                 });
@@ -389,7 +390,7 @@ export class RestUserProfileService implements IUserProfileService {
         hdid: string,
         userPreference: UserPreference
     ): Promise<UserPreference> {
-        return new Promise<UserPreference>((resolve, reject) => {
+        return new Promise<UserPreference>((resolve, reject) =>
             this.http
                 .post<RequestResult<UserPreference>>(
                     `${this.baseUri}${this.USER_PROFILE_BASE_URI}/${hdid}/preference`,
@@ -407,17 +408,17 @@ export class RestUserProfileService implements IUserProfileService {
                         reject
                     );
                 })
-                .catch((err) => {
+                .catch((err: HttpError) => {
                     this.logger.error(
-                        `createUserPreference ${this.FETCH_ERROR}: ${err}`
+                        `Error in RestUserProfileService.createUserPreference()`
                     );
                     reject(
                         ErrorTranslator.internalNetworkError(
                             err,
-                            ServiceName.HealthGatewayUser
+                            ServiceCode.HealthGatewayUser
                         )
                     );
-                });
-        });
+                })
+        );
     }
 }

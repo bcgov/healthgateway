@@ -16,7 +16,6 @@
 namespace HealthGateway.Immunization.Models
 {
     using System.Text.Json.Serialization;
-    using HealthGateway.Common.Models.PHSA;
 
     /// <summary>
     /// The Load State record data model.
@@ -28,17 +27,5 @@ namespace HealthGateway.Immunization.Models
         /// </summary>
         [JsonPropertyName("refreshInProgress")]
         public bool RefreshInProgress { get; set; }
-
-        /// <summary>
-        /// Creates a Load State Model object from a PHSA model.
-        /// </summary>
-        /// <param name="model">The Load State to convert.</param>
-        /// <returns>A LoadStateModel object.</returns>
-        public static LoadStateModel FromPHSAModel(PhsaLoadState model)
-        {
-            LoadStateModel returnValue = new LoadStateModel();
-            returnValue.RefreshInProgress = model.RefreshInProgress;
-            return returnValue;
-        }
     }
 }

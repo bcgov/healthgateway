@@ -25,11 +25,11 @@ namespace HealthGateway.Common.AspNetConfiguration.Modules
     using Microsoft.AspNetCore.Hosting;
     using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.HttpOverrides;
-    using Microsoft.AspNetCore.ResponseCompression;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Hosting;
     using Microsoft.Extensions.Logging;
+    using Microsoft.Net.Http.Headers;
 
     /// <summary>
     /// Provides ASP.Net Services related to Http.
@@ -47,10 +47,7 @@ namespace HealthGateway.Common.AspNetConfiguration.Modules
         {
             logger.LogDebug("Configure Http Services...");
 
-            services.AddResponseCompression(options =>
-            {
-                options.EnableForHttps = true;
-            });
+            services.AddResponseCompression(options => options.EnableForHttps = true);
 
             services.AddHttpClient<IHttpClientService, HttpClientService>();
             services.AddTransient<IHttpClientService, HttpClientService>();
@@ -68,10 +65,7 @@ namespace HealthGateway.Common.AspNetConfiguration.Modules
 
             services
                 .AddRazorPages()
-                .AddJsonOptions(options =>
-                {
-                    options.JsonSerializerOptions.WriteIndented = true;
-                });
+                .AddJsonOptions(options => options.JsonSerializerOptions.WriteIndented = true);
         }
 
         /// <summary>
@@ -97,27 +91,28 @@ namespace HealthGateway.Common.AspNetConfiguration.Modules
             }
             else
             {
-                app.UseStaticFiles(new StaticFileOptions
-                {
-                    OnPrepareResponse = context =>
+                app.UseStaticFiles(
+                    new StaticFileOptions
                     {
-                        if (context.File.Name == "service-worker-assets.js")
+                        OnPrepareResponse = context =>
                         {
-                            context.Context.Response.Headers.Add("Cache-Control", "no-cache, no-store");
-                            context.Context.Response.Headers.Add("Expires", "-1");
-                        }
-
-                        if (context.File.Name == "blazor.boot.json")
-                        {
-                            if (context.Context.Response.Headers.ContainsKey("blazor-environment"))
+                            if (context.File.Name == "service-worker-assets.js")
                             {
-                                context.Context.Response.Headers.Remove("blazor-environment");
+                                context.Context.Response.Headers.Add("Cache-Control", "no-cache, no-store");
+                                context.Context.Response.Headers.Add("Expires", "-1");
                             }
 
-                            context.Context.Response.Headers.Add("blazor-environment", environment.EnvironmentName);
-                        }
-                    },
-                });
+                            if (context.File.Name == "blazor.boot.json")
+                            {
+                                if (context.Context.Response.Headers.ContainsKey("blazor-environment"))
+                                {
+                                    context.Context.Response.Headers.Remove("blazor-environment");
+                                }
+
+                                context.Context.Response.Headers.Add("blazor-environment", environment.EnvironmentName);
+                            }
+                        },
+                    });
             }
 
             app.UseRouting();
@@ -126,25 +121,27 @@ namespace HealthGateway.Common.AspNetConfiguration.Modules
             app.UseHealthChecks("/health");
 
             // Enable CORS
-            string enableCors = configuration.GetValue<string>("AllowOrigins", string.Empty);
+            string enableCors = configuration.GetValue("AllowOrigins", string.Empty);
             if (!string.IsNullOrEmpty(enableCors))
             {
-                app.UseCors(builder =>
-                {
-                    builder
-                        .WithOrigins(enableCors)
-                        .AllowAnyHeader()
-                        .AllowAnyMethod();
-                });
+                app.UseCors(
+                    builder =>
+                    {
+                        builder
+                            .WithOrigins(enableCors)
+                            .AllowAnyHeader()
+                            .AllowAnyMethod();
+                    });
             }
 
             // Setup response secure headers
-            app.Use(async (context, next) =>
-            {
-                context.Response.Headers.Add("X-Content-Type-Options", "nosniff");
-                context.Response.Headers.Add("X-Xss-Protection", "1; mode=block");
-                await next().ConfigureAwait(true);
-            });
+            app.Use(
+                async (context, next) =>
+                {
+                    context.Response.Headers.Add("X-Content-Type-Options", "nosniff");
+                    context.Response.Headers.Add("X-Xss-Protection", "1; mode=block");
+                    await next().ConfigureAwait(true);
+                });
 
             // Enable Cache control and set defaults
             UseResponseCaching(app, logger);
@@ -158,10 +155,7 @@ namespace HealthGateway.Common.AspNetConfiguration.Modules
         public static void UseRest(IApplicationBuilder app, ILogger logger)
         {
             logger.LogDebug("Use Rest...");
-            app.UseEndpoints(routes =>
-            {
-                routes.MapControllers();
-            });
+            app.UseEndpoints(routes => routes.MapControllers());
         }
 
         /// <summary>
@@ -179,18 +173,19 @@ namespace HealthGateway.Common.AspNetConfiguration.Modules
             {
                 logger.LogDebug("Configuring Forward Headers");
                 IPAddress[] proxyIPs = section.GetSection("KnownProxies").Get<IPAddress[]>() ?? Array.Empty<IPAddress>();
-                services.Configure<ForwardedHeadersOptions>(options =>
-                {
-                    options.ForwardedHeaders = ForwardedHeaders.All;
-                    options.RequireHeaderSymmetry = false;
-                    options.ForwardLimit = null;
-                    options.KnownNetworks.Clear();
-                    options.KnownProxies.Clear();
-                    foreach (IPAddress ip in proxyIPs)
+                services.Configure<ForwardedHeadersOptions>(
+                    options =>
                     {
-                        options.KnownProxies.Add(ip);
-                    }
-                });
+                        options.ForwardedHeaders = ForwardedHeaders.All;
+                        options.RequireHeaderSymmetry = false;
+                        options.ForwardLimit = null;
+                        options.KnownNetworks.Clear();
+                        options.KnownProxies.Clear();
+                        foreach (IPAddress ip in proxyIPs)
+                        {
+                            options.KnownProxies.Add(ip);
+                        }
+                    });
             }
         }
 
@@ -213,11 +208,12 @@ namespace HealthGateway.Common.AspNetConfiguration.Modules
                 {
                     logger.LogInformation($"Forward BasePath is set to {basePath}, setting PathBase for app");
                     app.UsePathBase(basePath);
-                    app.Use(async (context, next) =>
-                    {
-                        context.Request.PathBase = basePath;
-                        await next.Invoke().ConfigureAwait(true);
-                    });
+                    app.Use(
+                        async (context, next) =>
+                        {
+                            context.Request.PathBase = basePath;
+                            await next.Invoke().ConfigureAwait(true);
+                        });
                     app.UsePathBase(basePath);
                 }
 
@@ -235,16 +231,7 @@ namespace HealthGateway.Common.AspNetConfiguration.Modules
         {
             logger.LogDebug("Configure Access Control...");
 
-            services.AddCors(options =>
-            {
-                options.AddPolicy("allowAny", policy =>
-                {
-                    policy
-                        .AllowAnyOrigin()
-                        .AllowAnyMethod()
-                        .AllowAnyHeader();
-                });
-            });
+            services.AddCors(options => options.AddPolicy("allowAny", policy => policy.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader()));
         }
 
         /// <summary>
@@ -257,11 +244,12 @@ namespace HealthGateway.Common.AspNetConfiguration.Modules
             ContentSecurityPolicyConfig cspConfig = new();
             configuration.GetSection("ContentSecurityPolicy").Bind(cspConfig);
             string csp = cspConfig.ContentSecurityPolicy();
-            app.Use(async (context, next) =>
-            {
-                context.Response.Headers.Add("Content-Security-Policy", csp);
-                await next().ConfigureAwait(true);
-            });
+            app.Use(
+                async (context, next) =>
+                {
+                    context.Response.Headers.Add("Content-Security-Policy", csp);
+                    await next().ConfigureAwait(true);
+                });
         }
 
         /// <summary>
@@ -274,19 +262,19 @@ namespace HealthGateway.Common.AspNetConfiguration.Modules
             logger.LogDebug("Setting up Response Cache");
             app.UseResponseCaching();
 
-            app.Use(async (context, next) =>
-            {
-                context.Response.GetTypedHeaders().CacheControl =
-                    new Microsoft.Net.Http.Headers.CacheControlHeaderValue()
-                    {
-                        NoCache = true,
-                        NoStore = true,
-                        MustRevalidate = true,
-                    };
-                context.Response.Headers[Microsoft.Net.Http.Headers.HeaderNames.Pragma] =
-                    new string[] { "no-cache" };
-                await next().ConfigureAwait(true);
-            });
+            app.Use(
+                async (context, next) =>
+                {
+                    context.Response.GetTypedHeaders().CacheControl =
+                        new CacheControlHeaderValue
+                        {
+                            NoCache = true,
+                            NoStore = true,
+                            MustRevalidate = true,
+                        };
+                    context.Response.Headers[HeaderNames.Pragma] = new[] { "no-cache" };
+                    await next().ConfigureAwait(true);
+                });
         }
     }
 }

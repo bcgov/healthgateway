@@ -35,10 +35,7 @@ namespace HealthGateway.Common.Models.ODR
         /// Gets the FormattedStartDate.
         /// </summary>
         [JsonPropertyName("startDate")]
-        public string FormattedStartDate
-        {
-            get { return DateTimeFormatter.FormatDate(this.StartDate); }
-        }
+        public string FormattedStartDate => DateTimeFormatter.FormatDate(this.StartDate);
 
         /// <summary>
         /// Gets or sets the End date of the request.
@@ -50,10 +47,7 @@ namespace HealthGateway.Common.Models.ODR
         /// Gets the FormattedEndDate.
         /// </summary>
         [JsonPropertyName("endDate")]
-        public string FormattedEndDate
-        {
-            get { return DateTimeFormatter.FormatDate(this.EndDate); }
-        }
+        public string FormattedEndDate => DateTimeFormatter.FormatDate(this.EndDate);
 
         /// <summary>
         /// Gets or sets the PHN for the request.

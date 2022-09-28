@@ -5,7 +5,7 @@ function initializeInactivityTimer(dotnetHelper) {
 
     function resetTimer() {
         clearTimeout(timer);
-        timer = setTimeout(openInactivityDialog, 300000);
+        timer = setTimeout(openInactivityDialog, 10800000);
     }
 
     function openInactivityDialog() {

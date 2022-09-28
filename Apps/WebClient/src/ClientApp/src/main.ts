@@ -36,6 +36,7 @@ import HgIconComponent from "@/components/shared/HgIconComponent.vue";
 import PageTitleComponent from "@/components/shared/PageTitleComponent.vue";
 import StatusLabelComponent from "@/components/shared/StatusLabelComponent.vue";
 
+import { instanceOfResultError } from "@/models/errors";
 import User from "@/models/user";
 import {
     DELEGATE_IDENTIFIER,
@@ -44,8 +45,11 @@ import {
 } from "@/plugins/inversify";
 
 import router from "@/router";
+
+import { RootState } from "@/store/types";
 import {
     IAuthenticationService,
+    IClinicalDocumentService,
     ICommunicationService,
     IConfigService,
     IDependentService,
@@ -67,13 +71,11 @@ import {
     IVaccinationStatusService,
 } from "@/services/interfaces";
 
-import { RootState } from "./store/types";
-
+Vue.component("BBadge", BBadge);
 Vue.component("BBreadcrumb", BBreadcrumb);
 Vue.component("BBreadcrumbItem", BBreadcrumbItem);
-Vue.component("BPopover", BPopover);
-Vue.component("BBadge", BBadge);
 Vue.component("BCard", BCard);
+Vue.component("BPopover", BPopover);
 Vue.component("BDropdown", BDropdown);
 Vue.component("BDropdownDivider", BDropdownDivider);
 Vue.component("BDropdownItem", BDropdownItem);
@@ -81,6 +83,7 @@ Vue.component("BDropdownItemButton", BDropdownItemButton);
 Vue.component("BDropdownText", BDropdownText);
 Vue.component("BFormTags", BFormTags);
 Vue.component("BFormTag", BFormTag);
+
 Vue.component("HgButton", HgButtonComponent);
 Vue.component("HgCardButton", HgCardButtonComponent);
 Vue.component("HgDropdown", HgDropdownComponent);
@@ -92,130 +95,170 @@ Vue.use(VueRouter);
 Vue.use(Vuelidate);
 Vue.use(VueContentPlaceholders);
 
-const httpDelegate: IHttpDelegate = container.get(
+const httpDelegate = container.get<IHttpDelegate>(
     DELEGATE_IDENTIFIER.HttpDelegate
 );
-const configService: IConfigService = container.get(
+const configService = container.get<IConfigService>(
     SERVICE_IDENTIFIER.ConfigService
 );
 
 configService.initialize(httpDelegate);
 
 // Retrieve configuration and initialize services
-configService.getConfiguration().then((config) => {
-    // Retrieve service interfaces
-    const logger: ILogger = container.get(SERVICE_IDENTIFIER.Logger);
-    const authService: IAuthenticationService = container.get(
-        SERVICE_IDENTIFIER.AuthenticationService
-    );
-    const immunizationService: IImmunizationService = container.get(
-        SERVICE_IDENTIFIER.ImmunizationService
-    );
-    const patientService: IPatientService = container.get(
-        SERVICE_IDENTIFIER.PatientService
-    );
-    const medicationService: IMedicationService = container.get(
-        SERVICE_IDENTIFIER.MedicationService
-    );
-    const laboratoryService: ILaboratoryService = container.get(
-        SERVICE_IDENTIFIER.LaboratoryService
-    );
-    const encounterService: IEncounterService = container.get(
-        SERVICE_IDENTIFIER.EncounterService
-    );
-    const userProfileService: IUserProfileService = container.get(
-        SERVICE_IDENTIFIER.UserProfileService
-    );
-    const userFeedbackService: IUserFeedbackService = container.get(
-        SERVICE_IDENTIFIER.UserFeedbackService
-    );
-    const userNoteService: IUserNoteService = container.get(
-        SERVICE_IDENTIFIER.UserNoteService
-    );
-    const communicationService: ICommunicationService = container.get(
-        SERVICE_IDENTIFIER.CommunicationService
-    );
-    const userCommentService: IUserCommentService = container.get(
-        SERVICE_IDENTIFIER.UserCommentService
-    );
-    const userRatingService: IUserRatingService = container.get(
-        SERVICE_IDENTIFIER.UserRatingService
-    );
-    const dependentService: IDependentService = container.get(
-        SERVICE_IDENTIFIER.DependentService
-    );
-    const reportService: IReportService = container.get(
-        SERVICE_IDENTIFIER.ReportService
-    );
-    const vaccinationStatusService: IVaccinationStatusService = container.get(
-        SERVICE_IDENTIFIER.VaccinationStatusService
-    );
-    const storeProvider: IStoreProvider = container.get(
-        STORE_IDENTIFIER.StoreProvider
-    );
-    const pcrTestKitService: IPcrTestService = container.get(
-        SERVICE_IDENTIFIER.PcrTestService
-    );
+configService
+    .getConfiguration()
+    .then((config) => {
+        // Retrieve service interfaces
+        const logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
+        const authService = container.get<IAuthenticationService>(
+            SERVICE_IDENTIFIER.AuthenticationService
+        );
+        const immunizationService = container.get<IImmunizationService>(
+            SERVICE_IDENTIFIER.ImmunizationService
+        );
+        const patientService = container.get<IPatientService>(
+            SERVICE_IDENTIFIER.PatientService
+        );
+        const medicationService = container.get<IMedicationService>(
+            SERVICE_IDENTIFIER.MedicationService
+        );
+        const laboratoryService = container.get<ILaboratoryService>(
+            SERVICE_IDENTIFIER.LaboratoryService
+        );
+        const encounterService = container.get<IEncounterService>(
+            SERVICE_IDENTIFIER.EncounterService
+        );
+        const clinicalDocumentService = container.get<IClinicalDocumentService>(
+            SERVICE_IDENTIFIER.ClinicalDocumentService
+        );
+        const userProfileService = container.get<IUserProfileService>(
+            SERVICE_IDENTIFIER.UserProfileService
+        );
+        const userFeedbackService = container.get<IUserFeedbackService>(
+            SERVICE_IDENTIFIER.UserFeedbackService
+        );
+        const userNoteService = container.get<IUserNoteService>(
+            SERVICE_IDENTIFIER.UserNoteService
+        );
+        const communicationService = container.get<ICommunicationService>(
+            SERVICE_IDENTIFIER.CommunicationService
+        );
+        const userCommentService = container.get<IUserCommentService>(
+            SERVICE_IDENTIFIER.UserCommentService
+        );
+        const userRatingService = container.get<IUserRatingService>(
+            SERVICE_IDENTIFIER.UserRatingService
+        );
+        const dependentService = container.get<IDependentService>(
+            SERVICE_IDENTIFIER.DependentService
+        );
+        const reportService = container.get<IReportService>(
+            SERVICE_IDENTIFIER.ReportService
+        );
+        const vaccinationStatusService =
+            container.get<IVaccinationStatusService>(
+                SERVICE_IDENTIFIER.VaccinationStatusService
+            );
+        const storeProvider = container.get<IStoreProvider>(
+            STORE_IDENTIFIER.StoreProvider
+        );
+        const pcrTestKitService = container.get<IPcrTestService>(
+            SERVICE_IDENTIFIER.PcrTestService
+        );
 
-    const store = storeProvider.getStore();
-    store.dispatch("config/initialize", config);
+        const store = storeProvider.getStore();
+        store.dispatch("config/initialize", config);
 
-    logger.initialize(config.webClient.logLevel);
+        logger.initialize(config.webClient.logLevel);
 
-    // Initialize services
-    const authInitializePromise = authService.initialize(config.openIdConnect);
-    immunizationService.initialize(config, httpDelegate);
-    patientService.initialize(config, httpDelegate);
-    medicationService.initialize(config, httpDelegate);
-    laboratoryService.initialize(config, httpDelegate);
-    encounterService.initialize(config, httpDelegate);
-    userProfileService.initialize(config, httpDelegate);
-    userFeedbackService.initialize(config, httpDelegate);
-    userNoteService.initialize(config, httpDelegate);
-    communicationService.initialize(config, httpDelegate);
-    userCommentService.initialize(config, httpDelegate);
-    userRatingService.initialize(config, httpDelegate);
-    dependentService.initialize(config, httpDelegate);
-    pcrTestKitService.initialize(config, httpDelegate);
-    reportService.initialize(config, httpDelegate);
-    vaccinationStatusService.initialize(config, httpDelegate);
+        // Initialize services
+        const authInitializePromise = authService.initialize(
+            config.openIdConnect
+        );
+        immunizationService.initialize(config, httpDelegate);
+        patientService.initialize(config, httpDelegate);
+        medicationService.initialize(config, httpDelegate);
+        laboratoryService.initialize(config, httpDelegate);
+        encounterService.initialize(config, httpDelegate);
+        clinicalDocumentService.initialize(config, httpDelegate);
+        userProfileService.initialize(config, httpDelegate);
+        userFeedbackService.initialize(config, httpDelegate);
+        userNoteService.initialize(config, httpDelegate);
+        communicationService.initialize(config, httpDelegate);
+        userCommentService.initialize(config, httpDelegate);
+        userRatingService.initialize(config, httpDelegate);
+        dependentService.initialize(config, httpDelegate);
+        pcrTestKitService.initialize(config, httpDelegate);
+        reportService.initialize(config, httpDelegate);
+        vaccinationStatusService.initialize(config, httpDelegate);
 
-    authInitializePromise.then(async () => {
-        Vue.use(IdleVue, {
-            eventEmitter: new Vue(),
-            idleTime: config.webClient.timeouts.idle,
-            store,
-            startAtIdle: false,
+        authInitializePromise.then(async () => {
+            Vue.use(IdleVue, {
+                eventEmitter: new Vue(),
+                idleTime: config.webClient.timeouts.idle,
+                store,
+                startAtIdle: false,
+            });
+
+            if (window.location.pathname !== "/loginCallback") {
+                const signedIn = await store.dispatch("auth/checkStatus");
+                if (signedIn) {
+                    logger.verbose("User is signed in");
+                } else {
+                    logger.verbose("User is not signed in");
+                }
+
+                const isValidIdentityProvider: boolean =
+                    store.getters["auth/isValidIdentityProvider"];
+                const user: User = store.getters["user/user"];
+
+                if (user.hdid && isValidIdentityProvider) {
+                    try {
+                        await store.dispatch("user/checkRegistration");
+                    } catch (error) {
+                        let busy = false;
+                        if (
+                            instanceOfResultError(error) &&
+                            error.statusCode === 429
+                        ) {
+                            busy = true;
+                        }
+
+                        initializeVueError(busy);
+                        return;
+                    }
+                }
+            }
+
+            initializeVue(store);
         });
-
-        if (window.location.pathname !== "/loginCallback") {
-            const signedIn = await store.dispatch("auth/checkStatus");
-            if (signedIn) {
-                logger.verbose("User is signed in");
-            } else {
-                logger.verbose("User is not signed in");
-            }
-
-            const isValidIdentityProvider: boolean =
-                store.getters["auth/isValidIdentityProvider"];
-            const user: User = store.getters["user/user"];
-
-            if (user.hdid && isValidIdentityProvider) {
-                await store.dispatch("user/checkRegistration");
-            }
+    })
+    .catch((error) => {
+        let busy = false;
+        if (instanceOfResultError(error) && error.statusCode === 429) {
+            busy = true;
         }
 
-        initializeVue(store);
+        initializeVueError(busy);
     });
-});
 
-const App = () => import(/* webpackChunkName: "entry" */ "./app.vue");
-
-function initializeVue(store: Store<RootState>) {
+function initializeVue(store: Store<RootState>): Vue {
+    const App = () => import(/* webpackChunkName: "entry" */ "./app.vue");
     return new Vue({
         el: "#app-root",
         store,
         router,
         render: (h) => h(App),
+    });
+}
+
+function initializeVueError(busy: boolean): Vue {
+    const AppErrorView = () =>
+        import(
+            /* webpackChunkName: "error" */ "./views/errors/AppErrorView.vue"
+        );
+    return new Vue({
+        el: "#app-root",
+        render: (h) => h(AppErrorView, { props: { busy } }),
     });
 }

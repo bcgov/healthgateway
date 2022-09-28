@@ -31,17 +31,17 @@ export default class LoadingComponent extends Vue {
         return ".".padEnd(this.step + 1, ".");
     }
 
-    private mounted() {
+    private mounted(): void {
         if (this.isCustom) {
             this.resetTimeout();
         }
     }
 
-    private destroyed() {
+    private destroyed(): void {
         window.clearInterval(this.intervalId);
     }
 
-    private resetTimeout() {
+    private resetTimeout(): void {
         this.intervalId = window.setInterval(() => {
             this.step++;
             if (this.step >= 4) {
@@ -55,7 +55,7 @@ export default class LoadingComponent extends Vue {
     }
 
     private resetAnimation(elementId: string): boolean {
-        var el: HTMLElement | null = document.getElementById(elementId);
+        let el = document.getElementById(elementId);
         if (el == null) {
             return false;
         }
@@ -110,6 +110,7 @@ export default class LoadingComponent extends Vue {
 
 <style lang="scss" scoped>
 @import "@/assets/scss/_variables.scss";
+
 .fullScreen {
     position: fixed;
     z-index: $z_loading_overlay;
@@ -121,6 +122,7 @@ export default class LoadingComponent extends Vue {
     display: table;
     transition: opacity 0.3s ease;
 }
+
 .block {
     position: absolute;
     z-index: $z_loading_overlay;
@@ -132,6 +134,7 @@ export default class LoadingComponent extends Vue {
     display: table;
     transition: opacity 0.3s ease;
 }
+
 .spinner {
     width: 60px;
     height: 60px;
@@ -143,6 +146,7 @@ export default class LoadingComponent extends Vue {
     margin-top: -30px;
     margin-left: -30px;
 }
+
 .text {
     color: $primary;
     width: 280px;
@@ -177,18 +181,23 @@ export default class LoadingComponent extends Vue {
     animation-play-state: running;
     animation-fill-mode: none;
 }
+
 #first {
     animation-delay: 0s;
 }
+
 #second {
     animation-delay: 2s;
 }
+
 #third {
     animation-delay: 4s;
 }
+
 #fourth {
     animation-delay: 6s;
 }
+
 @keyframes sk-bounce {
     0% {
         opacity: 1;

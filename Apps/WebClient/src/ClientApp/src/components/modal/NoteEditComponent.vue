@@ -9,6 +9,7 @@ import { Action, Getter } from "vuex-class";
 
 import DatePickerComponent from "@/components/DatePickerComponent.vue";
 import LoadingComponent from "@/components/LoadingComponent.vue";
+import TooManyRequestsComponent from "@/components/TooManyRequestsComponent.vue";
 import EventBus, { EventMessageName } from "@/eventbus";
 import { DateWrapper } from "@/models/dateWrapper";
 import NoteTimelineEntry from "@/models/noteTimelineEntry";
@@ -21,32 +22,41 @@ library.add(faEdit);
     components: {
         LoadingComponent,
         DatePickerComponent,
+        TooManyRequestsComponent,
     },
 })
 export default class NoteEditComponent extends Vue {
-    @Action("createNote", { namespace: "note" }) createNote!: (params: {
+    @Action("createNote", { namespace: "note" })
+    createNote!: (params: {
         hdid: string;
         note: UserNote;
     }) => Promise<UserNote>;
-    @Action("updateNote", { namespace: "note" }) updateNote!: (params: {
+
+    @Action("updateNote", { namespace: "note" })
+    updateNote!: (params: {
         hdid: string;
         note: UserNote;
     }) => Promise<UserNote>;
 
-    @Action("setSelectedDate", { namespace: "timeline" }) setSelectedDate!: (
-        date: DateWrapper
-    ) => void;
+    @Action("setSelectedDate", { namespace: "timeline" })
+    setSelectedDate!: (date: DateWrapper) => void;
 
-    @Action("clearFilter", { namespace: "timeline" }) clearFilter!: () => void;
+    @Action("setTooManyRequestsError", { namespace: "errorBanner" })
+    setTooManyRequestsError!: (params: { key: string }) => void;
 
-    @Getter("user", { namespace: "user" }) user!: User;
+    @Action("clearFilter", { namespace: "timeline" })
+    clearFilter!: () => void;
 
-    @Getter("isVisible", { namespace: "idle" }) isIdleWarningVisible!: boolean;
+    @Getter("user", { namespace: "user" })
+    user!: User;
+
+    @Getter("isVisible", { namespace: "idle" })
+    isIdleWarningVisible!: boolean;
 
     private entry?: NoteTimelineEntry;
     private text = "";
     private title = "";
-    private dateString: string = new DateWrapper().toISODate();
+    private dateString = new DateWrapper().toISODate();
 
     private isSaving = false;
     private errorMessage = "";
@@ -67,7 +77,7 @@ export default class NoteEditComponent extends Vue {
         return this.text === "" && this.title === "";
     }
 
-    private mounted() {
+    private mounted(): void {
         this.clear();
         this.eventBus.$on(EventMessageName.EditNote, this.editNote);
         this.eventBus.$on(EventMessageName.CreateNote, this.newNote);
@@ -75,19 +85,19 @@ export default class NoteEditComponent extends Vue {
         window.addEventListener("beforeunload", this.onBrowserClose);
     }
 
-    private onBrowserClose(event: BeforeUnloadEvent) {
+    private onBrowserClose(event: BeforeUnloadEvent): void {
         if (this.isVisible && !this.isIdleWarningVisible && !this.isBlankNote) {
             event.returnValue = this.unsavedChangesText;
         }
     }
 
-    private validations() {
+    private validations(): unknown {
         return {
             title: {
-                required: required,
+                required,
             },
             dateString: {
-                required: required,
+                required,
             },
         };
     }
@@ -118,7 +128,7 @@ export default class NoteEditComponent extends Vue {
         this.clear();
     }
 
-    private update() {
+    private update(): void {
         let entry = this.entry as NoteTimelineEntry;
         this.isSaving = true;
         this.updateNote({
@@ -136,15 +146,19 @@ export default class NoteEditComponent extends Vue {
                 this.errorMessage = "";
                 this.handleSubmit();
             })
-            .catch((err) => {
-                this.errorMessage = err;
+            .catch((error: ResultError) => {
+                if (error.statusCode === 429) {
+                    this.setTooManyRequestsError({ key: "noteEditModal" });
+                } else {
+                    this.errorMessage = error.resultMessage;
+                }
             })
             .finally(() => {
                 this.isSaving = false;
             });
     }
 
-    private create() {
+    private create(): void {
         this.isSaving = true;
         this.createNote({
             hdid: this.user.hdid,
@@ -163,20 +177,24 @@ export default class NoteEditComponent extends Vue {
                     this.handleSubmit();
                 }
             })
-            .catch((err) => {
-                this.errorMessage = err;
+            .catch((err: ResultError) => {
+                if (err.statusCode === 429) {
+                    this.setTooManyRequestsError({ key: "noteEditModal" });
+                } else {
+                    this.errorMessage = err.resultMessage;
+                }
             })
             .finally(() => {
                 this.isSaving = false;
             });
     }
 
-    private onNoteAdded(note: UserNote) {
+    private onNoteAdded(note: UserNote): void {
         this.clearFilter();
         this.setSelectedDate(new DateWrapper(note.journalDate));
     }
 
-    private handleOk(bvModalEvt: Event) {
+    private handleOk(bvModalEvt: Event): void {
         // Prevent modal from closing
         bvModalEvt.preventDefault();
         this.$v.$touch();
@@ -189,14 +207,12 @@ export default class NoteEditComponent extends Vue {
         }
     }
 
-    private handleSubmit() {
+    private handleSubmit(): void {
         // Hide the modal manually
-        this.$nextTick(() => {
-            this.hideModal();
-        });
+        this.$nextTick(() => this.hideModal());
     }
 
-    private clear() {
+    private clear(): void {
         this.entry = undefined;
         this.text = "";
         this.title = "";
@@ -221,6 +237,7 @@ export default class NoteEditComponent extends Vue {
         centered
         @hidden="clear"
     >
+        <TooManyRequestsComponent location="noteEditModal" />
         <b-alert
             data-testid="noteEditErrorBanner"
             variant="danger"
@@ -349,6 +366,7 @@ export default class NoteEditComponent extends Vue {
 
 <style lang="scss">
 @import "@/assets/scss/_variables.scss";
+
 .edit-modal-header {
     background-color: $bcgold;
 }

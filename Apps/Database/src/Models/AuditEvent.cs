@@ -83,7 +83,6 @@ namespace HealthGateway.Database.Models
         /// <summary>
         /// Gets or sets the trace value for the audit event.
         /// </summary>
-        ///
         [MaxLength(200)]
         public string? Trace { get; set; }
 

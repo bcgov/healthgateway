@@ -13,7 +13,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //-------------------------------------------------------------------------
-namespace HealthGateway.Admin.Server.Delegates
+namespace HealthGateway.Admin.Delegates
 {
     using System.Threading.Tasks;
     using HealthGateway.Admin.Models.CovidSupport;

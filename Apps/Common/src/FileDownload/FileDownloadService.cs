@@ -16,7 +16,6 @@
 namespace HealthGateway.Common.FileDownload
 {
     using System;
-    using System.Diagnostics.Contracts;
     using System.IO;
     using System.Net.Http;
     using System.Security.Cryptography;
@@ -48,7 +47,7 @@ namespace HealthGateway.Common.FileDownload
         /// <inheritdoc/>
         public async Task<FileDownload> GetFileFromUrl(Uri fileUrl, string targetFolder, bool isRelativePath)
         {
-            FileDownload fd = new FileDownload();
+            FileDownload fd = new();
 
             if (isRelativePath)
             {
@@ -81,7 +80,7 @@ namespace HealthGateway.Common.FileDownload
                     using (SHA256 mySHA256 = SHA256.Create())
                     {
                         byte[] hashValue = mySHA256.ComputeHash(hashStream);
-                        fd.Hash = System.Convert.ToBase64String(hashValue);
+                        fd.Hash = Convert.ToBase64String(hashValue);
                     }
                 }
             }

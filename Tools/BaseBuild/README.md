@@ -74,6 +74,14 @@ To create the services for a given namespace do the following
 ./deploy_services.sh NAMESPACE ENVIRONMENT ASPNETCORE_ENVIRONMENT
 ```
 
+We have started to migrate to Helm, to deploy clinical documents:
+
+```console
+cd helm
+oc project 0bd5ad-[project]
+helm install clinicaldocument clinicaldocument -f clinicaldocument/[project]-values.yaml
+```
+
 #### Deloying CDOGs within Health Gateway
 
 Import the image from the bcgov docker hub repo. We have setup an Azure pipline to automate this but manually
@@ -104,6 +112,14 @@ Deploy the service
 
 ```console
 oc process -f ./hgcdogs.yaml -p ENV=[dev/test/production] | oc apply -f -
+```
+
+### Deploy Redis
+
+```console
+cd helm
+oc project 0bd5ad-[project]
+helm install redis redis
 ```
 
 ### Pod Disruption Budget

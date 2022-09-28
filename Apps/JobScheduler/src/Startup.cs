@@ -22,6 +22,7 @@ namespace HealthGateway.JobScheduler
     using HealthGateway.Common.AccessManagement.Administration;
     using HealthGateway.Common.AccessManagement.Authentication;
     using HealthGateway.Common.AspNetConfiguration;
+    using HealthGateway.Common.AspNetConfiguration.Modules;
     using HealthGateway.Common.Delegates.PHSA;
     using HealthGateway.Common.FileDownload;
     using HealthGateway.Common.Jobs;
@@ -29,6 +30,7 @@ namespace HealthGateway.JobScheduler
     using HealthGateway.Database.Delegates;
     using HealthGateway.DrugMaintainer;
     using Healthgateway.JobScheduler.Jobs;
+    using HealthGateway.JobScheduler.Listeners;
     using Healthgateway.JobScheduler.Utils;
     using Microsoft.AspNetCore.Authentication.OpenIdConnect;
     using Microsoft.AspNetCore.Builder;
@@ -65,29 +67,31 @@ namespace HealthGateway.JobScheduler
         /// <param name="services">The passed in Service Collection.</param>
         public void ConfigureServices(IServiceCollection services)
         {
+            GatewayCache.ConfigureCaching(services, this.startupConfig.Logger, this.startupConfig.Configuration);
             this.startupConfig.ConfigureForwardHeaders(services);
             this.startupConfig.ConfigureDatabaseServices(services);
             this.startupConfig.ConfigureHttpServices(services);
             services.AddRazorPages();
             this.startupConfig.ConfigureOpenIdConnectServices(services);
             this.startupConfig.ConfigureAccessControl(services);
+            this.startupConfig.ConfigureTracing(services);
 
             string requiredUserRole = this.configuration.GetValue<string>("OpenIdConnect:UserRole");
             string userRoleClaimType = this.configuration.GetValue<string>("OpenIdConnect:RolesClaim");
 
-            services.AddAuthorization(options =>
-            {
-                options.AddPolicy("AdminUserPolicy", policy =>
-                    {
-                        policy.AddAuthenticationSchemes(OpenIdConnectDefaults.AuthenticationScheme);
-                        policy.RequireAuthenticatedUser();
-                        policy.RequireClaim(userRoleClaimType, requiredUserRole);
-                        policy.RequireAssertion(ctx =>
+            services.AddAuthorization(
+                options =>
+                {
+                    options.AddPolicy(
+                        "AdminUserPolicy",
+                        policy =>
                         {
-                            return ctx.User.HasClaim(userRoleClaimType, requiredUserRole);
+                            policy.AddAuthenticationSchemes(OpenIdConnectDefaults.AuthenticationScheme);
+                            policy.RequireAuthenticatedUser();
+                            policy.RequireClaim(userRoleClaimType, requiredUserRole);
+                            policy.RequireAssertion(ctx => ctx.User.HasClaim(userRoleClaimType, requiredUserRole));
                         });
-                    });
-            });
+                });
 
             // Add Delegates and services for jobs
             services.AddTransient<IFileDownloadService, FileDownloadService>();
@@ -104,6 +108,8 @@ namespace HealthGateway.JobScheduler
             services.AddTransient<IResourceDelegateDelegate, DBResourceDelegateDelegate>();
             services.AddTransient<IEventLogDelegate, DBEventLogDelegate>();
             services.AddTransient<IFeedbackDelegate, DBFeedbackDelegate>();
+            services.AddTransient<ICommunicationService, CommunicationService>();
+            services.AddTransient<IWriteAuditEventDelegate, DBWriteAuditEventDelegate>();
 
             // Add injection for KeyCloak User Admin
             services.AddTransient<IAuthenticationDelegate, AuthenticationDelegate>();
@@ -121,6 +127,12 @@ namespace HealthGateway.JobScheduler
 
             // Add processing server as IHostedService
             services.AddHangfireServer();
+
+            // Add Background Services
+            services.AddHostedService<BannerListener>();
+
+            GatewayCache.EnableRedis(services, this.logger, this.configuration);
+            services.AddHostedService<AuditQueueListener>();
         }
 
         /// <summary>
@@ -142,19 +154,22 @@ namespace HealthGateway.JobScheduler
                 app.UseResponseCompression();
             }
 
-            app.UseEndpoints(endpoints =>
-            {
-                endpoints.MapDefaultControllerRoute();
-                endpoints.MapRazorPages();
-                endpoints.MapControllers();
-                endpoints.MapHangfireDashboard(string.Empty, new DashboardOptions
+            app.UseEndpoints(
+                endpoints =>
                 {
-                    DashboardTitle = this.configuration.GetValue<string>("DashboardTitle", "Hangfire Dashboard"),
-                    AppPath = $"{this.configuration.GetValue<string>("JobScheduler:AdminHome")}",
-                    Authorization = new List<IDashboardAuthorizationFilter> { }, // Very important to set this, or Authorization won't work.
-                })
-                .RequireAuthorization("AdminUserPolicy");
-            });
+                    endpoints.MapDefaultControllerRoute();
+                    endpoints.MapRazorPages();
+                    endpoints.MapControllers();
+                    endpoints.MapHangfireDashboard(
+                            string.Empty,
+                            new DashboardOptions
+                            {
+                                DashboardTitle = this.configuration.GetValue<string>("DashboardTitle", "Hangfire Dashboard"),
+                                AppPath = $"{this.configuration.GetValue<string>("JobScheduler:AdminHome")}",
+                                Authorization = new List<IDashboardAuthorizationFilter>(), // Very important to set this, or Authorization won't work.
+                            })
+                        .RequireAuthorization("AdminUserPolicy");
+                });
 
             // Schedule Health Gateway Jobs
             BackgroundJob.Enqueue<DBMigrationsJob>(j => j.Migrate());
@@ -169,7 +184,6 @@ namespace HealthGateway.JobScheduler
             SchedulerHelper.ScheduleDrugLoadJob<ProvincialDrugJob>(this.configuration, "PharmaCareDrugFile");
             SchedulerHelper.ScheduleJob<CloseAccountJob>(this.configuration, "CloseAccounts", j => j.Process());
             SchedulerHelper.ScheduleJob<OneTimeJob>(this.configuration, "OneTime", j => j.Process());
-            SchedulerHelper.ScheduleJob<CleanCacheJob>(this.configuration, "CleanCache", j => j.Process());
             SchedulerHelper.ScheduleJob<DeleteEmailJob>(this.configuration, "DeleteEmailJob", j => j.DeleteOldEmails());
         }
     }

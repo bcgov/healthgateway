@@ -1,7 +1,7 @@
 import { EntryType } from "@/constants/entryType";
 import { ErrorSourceType, ErrorType } from "@/constants/errorType";
 import { ResultType } from "@/constants/resulttype";
-import { ResultError } from "@/models/requestResult";
+import { ResultError } from "@/models/errors";
 import { LoadStatus } from "@/models/storeOperations";
 import container from "@/plugins/container";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
@@ -12,11 +12,10 @@ import { ImmunizationActions } from "./types";
 
 export const actions: ImmunizationActions = {
     retrieve(context, params: { hdid: string }): Promise<void> {
-        const logger: ILogger = container.get(SERVICE_IDENTIFIER.Logger);
-        const immunizationService: IImmunizationService =
-            container.get<IImmunizationService>(
-                SERVICE_IDENTIFIER.ImmunizationService
-            );
+        const logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
+        const immunizationService = container.get<IImmunizationService>(
+            SERVICE_IDENTIFIER.ImmunizationService
+        );
 
         return new Promise((resolve, reject) => {
             if (context.state.status === LoadStatus.LOADED) {
@@ -68,19 +67,27 @@ export const actions: ImmunizationActions = {
         });
     },
     handleError(context, params: { error: ResultError; errorType: ErrorType }) {
-        const logger: ILogger = container.get(SERVICE_IDENTIFIER.Logger);
+        const logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
 
         logger.error(`ERROR: ${JSON.stringify(params.error)}`);
         context.commit("immunizationError", params.error);
 
-        context.dispatch(
-            "errorBanner/addError",
-            {
-                errorType: params.errorType,
-                source: ErrorSourceType.Immunization,
-                traceId: params.error.traceId,
-            },
-            { root: true }
-        );
+        if (params.error.statusCode === 429) {
+            context.dispatch(
+                "errorBanner/setTooManyRequestsWarning",
+                { key: "page" },
+                { root: true }
+            );
+        } else {
+            context.dispatch(
+                "errorBanner/addError",
+                {
+                    errorType: params.errorType,
+                    source: ErrorSourceType.Immunization,
+                    traceId: params.error.traceId,
+                },
+                { root: true }
+            );
+        }
     },
 };

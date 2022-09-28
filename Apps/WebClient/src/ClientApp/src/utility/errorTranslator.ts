@@ -1,9 +1,8 @@
 import { ErrorSourceType, ErrorType } from "@/constants/errorType";
-import BannerError from "@/models/bannerError";
-import { ServiceName } from "@/models/errorInterfaces";
-import { ResultError } from "@/models/requestResult";
+import { ServiceCode } from "@/constants/serviceCodes";
+import { BannerError, HttpError, ResultError } from "@/models/errors";
 
-export default class ErrorTranslator {
+export default abstract class ErrorTranslator {
     public static toBannerError(
         errorType: ErrorType,
         source: ErrorSourceType,
@@ -34,17 +33,18 @@ export default class ErrorTranslator {
     }
 
     public static internalNetworkError(
-        resultMessage: string,
-        service: ServiceName
+        error: HttpError,
+        service: ServiceCode
     ): ResultError {
         return {
             errorCode: "ClientApp-CI-" + service,
-            resultMessage: resultMessage,
+            resultMessage: error.message,
             traceId: "",
+            statusCode: error.statusCode,
         };
     }
 
-    public static moduleDisabledError(service: ServiceName): ResultError {
+    public static moduleDisabledError(service: ServiceCode): ResultError {
         return {
             errorCode: "ClientApp-I-" + service,
             resultMessage: "Module Disabled",
@@ -78,10 +78,16 @@ export default class ErrorTranslator {
         }
     }
 
-    private static pluralizeErrorSourceType(source: ErrorSourceType) {
+    private static pluralizeErrorSourceType(source: ErrorSourceType): string {
         switch (source) {
             case ErrorSourceType.MedicationRequests:
                 return "special authorities";
+            case ErrorSourceType.Patient:
+                return "patient";
+            case ErrorSourceType.Profile:
+                return "profile";
+            case ErrorSourceType.QuickLinks:
+                return "quick links";
             case ErrorSourceType.TermsOfService:
                 return "terms of service";
             default:
@@ -93,7 +99,7 @@ export default class ErrorTranslator {
         source: ErrorSourceType,
         pluralize: boolean,
         simplify: boolean
-    ) {
+    ): string {
         let formattedSource: string = source;
         if (pluralize) {
             formattedSource = this.pluralizeErrorSourceType(source);

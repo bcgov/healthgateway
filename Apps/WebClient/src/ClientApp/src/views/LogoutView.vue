@@ -10,18 +10,18 @@ export default class LogoutView extends Vue {
     @Action("signOut", { namespace })
     signOut!: () => void;
 
-    private mounted() {
+    private mounted(): void {
         this.signOut();
     }
 }
 </script>
 
 <template>
-    <div class="row justify-content-center h-100 pt-5">
-        <div class="col-lg-6 col-md-6 pt-2">
-            <div>
+    <b-row class="justify-content-center h-100 pt-5">
+        <b-col md="6">
+            <div class="p-3 mb-5">
                 <h3>Signing out...</h3>
             </div>
-        </div>
-    </div>
+        </b-col>
+    </b-row>
 </template>

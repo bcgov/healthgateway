@@ -2,7 +2,7 @@
 import Vue from "vue";
 import { Component, Prop } from "vue-property-decorator";
 
-import { ResultType } from "@/constants/resulttype";
+import { FeedbackType } from "@/constants/feedbacktype";
 import { SnackbarPosition } from "@/constants/snackbarPosition";
 import type BannerFeedback from "@/models/bannerFeedback";
 
@@ -33,14 +33,17 @@ export default class BannerFeedbackComponent extends Vue {
 
     private get vuetifyType(): string {
         switch (this.feedback.type) {
-            case ResultType.Success: {
+            case FeedbackType.Success: {
                 return "success";
             }
-            case ResultType.Error: {
+            case FeedbackType.Error: {
                 return "error";
             }
-            case ResultType.Warning: {
+            case FeedbackType.Warning: {
                 return "warning";
+            }
+            case FeedbackType.Info: {
+                return "info";
             }
             default: {
                 return "NONE";

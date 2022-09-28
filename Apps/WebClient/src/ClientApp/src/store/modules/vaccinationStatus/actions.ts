@@ -1,16 +1,17 @@
 import { ActionType } from "@/constants/actionType";
 import { ErrorSourceType, ErrorType } from "@/constants/errorType";
 import { ResultType } from "@/constants/resulttype";
-import { CustomBannerError } from "@/models/bannerError";
 import CovidVaccineRecord from "@/models/covidVaccineRecord";
 import { StringISODate } from "@/models/dateWrapper";
-import { ResultError } from "@/models/requestResult";
+import { CustomBannerError, ResultError } from "@/models/errors";
 import { LoadStatus } from "@/models/storeOperations";
 import container from "@/plugins/container";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import { ILogger, IVaccinationStatusService } from "@/services/interfaces";
 
 import { VaccinationStatusActions } from "./types";
+
+const setTooManyRequestsWarning = "errorBanner/setTooManyRequestsWarning";
 
 export const actions: VaccinationStatusActions = {
     retrievePublicVaccineStatus(
@@ -21,8 +22,8 @@ export const actions: VaccinationStatusActions = {
             dateOfVaccine: StringISODate;
         }
     ): Promise<void> {
-        const logger: ILogger = container.get(SERVICE_IDENTIFIER.Logger);
-        const vaccinationStatusService: IVaccinationStatusService =
+        const logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
+        const vaccinationStatusService =
             container.get<IVaccinationStatusService>(
                 SERVICE_IDENTIFIER.VaccinationStatusService
             );
@@ -61,35 +62,52 @@ export const actions: VaccinationStatusActions = {
                         }, payload.retryin);
                         resolve();
                     } else {
-                        context.dispatch(
-                            "handlePublicError",
-                            result.resultError
-                        );
+                        context.dispatch("handlePublicError", {
+                            error: result.resultError,
+                            errorType: ErrorType.Retrieve,
+                        });
                         reject(result.resultError);
                     }
                 })
                 .catch((error: ResultError) => {
-                    context.dispatch("handlePublicError", error);
+                    context.dispatch("handlePublicError", {
+                        error,
+                        errorType: ErrorType.Retrieve,
+                    });
                     reject(error);
                 });
         });
     },
-    handlePublicError(context, error: ResultError) {
-        const logger: ILogger = container.get(SERVICE_IDENTIFIER.Logger);
+    handlePublicError(
+        context,
+        params: { error: ResultError; errorType: ErrorType }
+    ) {
+        const logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
 
-        logger.error(`ERROR: ${JSON.stringify(error)}`);
-        const customBannerError: CustomBannerError = {
-            title: "Our Apologies",
-            description:
-                "We've found an issue and the Health Gateway team is working hard to fix it.",
-        };
+        logger.error(`ERROR: ${JSON.stringify(params.error)}`);
 
-        if (error.actionCode === ActionType.DataMismatch) {
-            customBannerError.title = "Data Mismatch";
-            customBannerError.description = error.resultMessage;
+        if (params.error.statusCode === 429) {
+            context.dispatch(
+                setTooManyRequestsWarning,
+                { key: "publicVaccineCard" },
+                { root: true }
+            );
+
+            context.commit("publicVaccinationStatusError", undefined);
+        } else {
+            const customBannerError: CustomBannerError = {
+                title: "Our Apologies",
+                description:
+                    "We've found an issue and the Health Gateway team is working hard to fix it.",
+            };
+
+            if (params.error.actionCode === ActionType.DataMismatch) {
+                customBannerError.title = "Data Mismatch";
+                customBannerError.description = params.error.resultMessage;
+            }
+
+            context.commit("publicVaccinationStatusError", customBannerError);
         }
-
-        context.commit("publicVaccinationStatusError", customBannerError);
     },
     retrievePublicVaccineRecord(
         context,
@@ -99,15 +117,15 @@ export const actions: VaccinationStatusActions = {
             dateOfVaccine: StringISODate;
         }
     ): Promise<CovidVaccineRecord> {
-        const logger: ILogger = container.get(SERVICE_IDENTIFIER.Logger);
-        logger.debug(`Retrieving Vaccination Record`);
-        context.commit("setPublicVaccineRecordRequested");
-        const vaccinationStatusService: IVaccinationStatusService =
+        const logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
+        const vaccinationStatusService =
             container.get<IVaccinationStatusService>(
                 SERVICE_IDENTIFIER.VaccinationStatusService
             );
 
-        return new Promise((resolve, reject) => {
+        logger.debug(`Retrieving Vaccination Record`);
+        context.commit("setPublicVaccineRecordRequested");
+        return new Promise((resolve, reject) =>
             vaccinationStatusService
                 .getPublicVaccineStatusPdf(
                     params.phn,
@@ -141,27 +159,47 @@ export const actions: VaccinationStatusActions = {
                         }, payload.retryin);
                         resolve(payload);
                     } else {
-                        context.dispatch("handlePdfError", result.resultError);
+                        context.dispatch("handlePdfError", {
+                            error: result.resultError,
+                            errorType: ErrorType.Retrieve,
+                        });
                         reject(result.resultError);
                     }
                 })
                 .catch((error: ResultError) => {
-                    context.dispatch("handlePdfError", error);
+                    context.dispatch("handlePdfError", {
+                        error,
+                        errorType: ErrorType.Retrieve,
+                    });
                     reject(error);
-                });
-        });
+                })
+        );
     },
-    handlePdfError(context, error: ResultError) {
-        const logger: ILogger = container.get(SERVICE_IDENTIFIER.Logger);
+    handlePdfError(
+        context,
+        params: { error: ResultError; errorType: ErrorType }
+    ) {
+        const logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
 
-        logger.error(`ERROR: ${JSON.stringify(error)}`);
-        const customBannerError: CustomBannerError = {
-            title: "Our Apologies",
-            description:
-                "We've found an issue and the Health Gateway team is working hard to fix it.",
-        };
+        logger.error(`ERROR: ${JSON.stringify(params.error)}`);
 
-        context.commit("setPublicVaccineRecordError", customBannerError);
+        if (params.error.statusCode === 429) {
+            context.dispatch(
+                setTooManyRequestsWarning,
+                { key: "vaccineCardComponent" },
+                { root: true }
+            );
+
+            context.commit("setPublicVaccineRecordError", undefined);
+        } else {
+            const customBannerError: CustomBannerError = {
+                title: "Our Apologies",
+                description:
+                    "We've found an issue and the Health Gateway team is working hard to fix it.",
+            };
+
+            context.commit("setPublicVaccineRecordError", customBannerError);
+        }
     },
     retrieveAuthenticatedVaccineStatus(
         context,
@@ -169,8 +207,8 @@ export const actions: VaccinationStatusActions = {
             hdid: string;
         }
     ): Promise<void> {
-        const logger: ILogger = container.get(SERVICE_IDENTIFIER.Logger);
-        const vaccinationStatusService: IVaccinationStatusService =
+        const logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
+        const vaccinationStatusService =
             container.get<IVaccinationStatusService>(
                 SERVICE_IDENTIFIER.VaccinationStatusService
             );
@@ -237,20 +275,28 @@ export const actions: VaccinationStatusActions = {
         context,
         params: { error: ResultError; errorType: ErrorType }
     ) {
-        const logger: ILogger = container.get(SERVICE_IDENTIFIER.Logger);
+        const logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
 
         logger.error(`ERROR: ${JSON.stringify(params.error)}`);
         context.commit("authenticatedVaccinationStatusError", params.error);
 
-        context.dispatch(
-            "errorBanner/addError",
-            {
-                errorType: params.errorType,
-                source: ErrorSourceType.VaccineCard,
-                traceId: params.error.traceId,
-            },
-            { root: true }
-        );
+        if (params.error.statusCode === 429) {
+            context.dispatch(
+                setTooManyRequestsWarning,
+                { key: "page" },
+                { root: true }
+            );
+        } else {
+            context.dispatch(
+                "errorBanner/addError",
+                {
+                    errorType: params.errorType,
+                    source: ErrorSourceType.VaccineCard,
+                    traceId: params.error.traceId,
+                },
+                { root: true }
+            );
+        }
     },
     retrieveAuthenticatedVaccineRecord(
         context,
@@ -258,34 +304,43 @@ export const actions: VaccinationStatusActions = {
             hdid: string;
         }
     ): Promise<CovidVaccineRecord> {
-        const logger: ILogger = container.get(SERVICE_IDENTIFIER.Logger);
-        const vaccinationStatusService: IVaccinationStatusService =
+        const logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
+        const vaccinationStatusService =
             container.get<IVaccinationStatusService>(
                 SERVICE_IDENTIFIER.VaccinationStatusService
             );
 
         return new Promise((resolve, reject) => {
             logger.debug(`Retrieving Vaccination Record`);
-            context.commit("setAuthenticatedVaccineRecordRequested");
+            context.commit("setAuthenticatedVaccineRecordRequested", {
+                hdid: params.hdid,
+            });
             vaccinationStatusService
                 .getAuthenticatedVaccineRecord(params.hdid)
                 .then((result) => {
                     const payload = result.resourcePayload;
                     if (result.resultStatus === ResultType.Success) {
-                        context.commit(
-                            "setAuthenticatedVaccineRecord",
-                            payload
-                        );
+                        logger.info("Vaccination Record loaded");
+                        context.commit("setAuthenticatedVaccineRecord", {
+                            hdid: params.hdid,
+                            vaccinationRecord: payload,
+                        });
                         resolve(payload);
                     } else if (
                         result.resultError?.actionCode === ActionType.Refresh &&
                         !payload.loaded &&
                         payload.retryin > 0
                     ) {
-                        logger.info("Vaccination Record not loaded");
+                        logger.info(
+                            "Vaccination Record not loaded but will try again"
+                        );
                         context.commit(
                             "setAuthenticatedVaccineRecordStatusMessage",
-                            "We're busy but will continue to try to download the Vaccine Record...."
+                            {
+                                hdid: params.hdid,
+                                statusMessage:
+                                    "We're busy but will continue to try to download the Vaccine Record....",
+                            }
                         );
                         setTimeout(() => {
                             logger.info(
@@ -300,43 +355,71 @@ export const actions: VaccinationStatusActions = {
                         }, payload.retryin);
                         resolve(payload);
                     } else {
-                        context.dispatch(
-                            "handleAuthenticatedPdfError",
-                            result.resultError
+                        logger.error(
+                            "Vaccination Record not loaded due to error"
                         );
-                        reject(result.resultError);
+                        context.dispatch("handleAuthenticatedPdfError", {
+                            hdid: params.hdid,
+                            error: result.resultError,
+                            errorType: ErrorType.Retrieve,
+                        });
+                        resolve(payload);
                     }
                 })
                 .catch((error: ResultError) => {
-                    context.dispatch("handleAuthenticatedPdfError", error);
+                    logger.error(
+                        "Vaccination Record not loaded due to unexpected error"
+                    );
+                    context.dispatch("handleAuthenticatedPdfError", {
+                        hdid: params.hdid,
+                        error,
+                        errorType: ErrorType.Retrieve,
+                    });
                     reject(error);
                 });
         });
     },
     handleAuthenticatedPdfError(
         context,
-        params: { error: ResultError; errorType: ErrorType }
+        params: { hdid: string; error: ResultError; errorType: ErrorType }
     ) {
-        const logger: ILogger = container.get(SERVICE_IDENTIFIER.Logger);
+        const logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
 
         logger.error(`ERROR: ${JSON.stringify(params.error)}`);
-        context.commit("setAuthenticatedVaccineRecordError", params.error);
+        context.commit("setAuthenticatedVaccineRecordError", {
+            hdid: params.hdid,
+            error: params.error,
+        });
 
-        if (params.error.actionCode === ActionType.Invalid) {
-            context.commit(
-                "setAuthenticatedVaccineRecordResultMessage",
-                "No records found"
-            );
-        } else {
+        if (params.error.statusCode === 429) {
             context.dispatch(
-                "errorBanner/addError",
-                {
-                    errorType: params.errorType,
-                    source: ErrorSourceType.VaccineRecord,
-                    traceId: params.error.traceId,
-                },
+                setTooManyRequestsWarning,
+                { key: "vaccineCardComponent" },
                 { root: true }
             );
+        } else {
+            if (params.error.actionCode === ActionType.Invalid) {
+                context.commit("setAuthenticatedVaccineRecordResultMessage", {
+                    hdid: params.hdid,
+                    resultMessage: "No records found",
+                });
+            } else {
+                context.dispatch(
+                    "errorBanner/addError",
+                    {
+                        errorType: params.errorType,
+                        source: ErrorSourceType.VaccineRecord,
+                        traceId: params.error.traceId,
+                    },
+                    { root: true }
+                );
+            }
         }
+    },
+    stopAuthenticatedVaccineRecordDownload(context, params: { hdid: string }) {
+        context.commit("setAuthenticatedVaccineRecordDownload", {
+            hdid: params.hdid,
+            download: false,
+        });
     },
 };

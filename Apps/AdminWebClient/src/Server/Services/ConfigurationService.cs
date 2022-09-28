@@ -17,26 +17,20 @@ namespace HealthGateway.Admin.Services
 {
     using HealthGateway.Admin.Models;
     using Microsoft.Extensions.Configuration;
-    using Microsoft.Extensions.Logging;
 
     /// <summary>
     /// Provides external configuration data.
     /// </summary>
     public class ConfigurationService : IConfigurationService
     {
-        private readonly ILogger logger;
         private readonly ExternalConfiguration config;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ConfigurationService"/> class.
         /// </summary>
-        /// <param name="logger">Injected Logger Provider.</param>
         /// <param name="configuration">Injected Configuration Provider.</param>
-        public ConfigurationService(
-            ILogger<ConfigurationService> logger,
-            IConfiguration configuration)
+        public ConfigurationService(IConfiguration configuration)
         {
-            this.logger = logger;
             this.config = new ExternalConfiguration();
             this.config = configuration.Get<ExternalConfiguration>();
         }

@@ -29,7 +29,7 @@ namespace HealthGateway.Admin.Client.Theme
         {
             Typography typography = new();
 
-            string[] fontFamily = new[] { "BCSans", "Verdana", "Arial", "sans-serif" };
+            string[] fontFamily = { "BCSans", "Verdana", "Arial", "sans-serif" };
 
             typography.Default.FontFamily = fontFamily;
             typography.H1.FontFamily = fontFamily;

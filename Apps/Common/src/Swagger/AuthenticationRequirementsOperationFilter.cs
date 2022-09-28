@@ -15,12 +15,10 @@
 //-------------------------------------------------------------------------
 namespace HealthGateway.Common.Swagger
 {
+    using System;
     using System.Collections.Generic;
     using System.Diagnostics.CodeAnalysis;
     using System.Linq;
-    using HealthGateway.Common.AccessManagement.Authorization.Policy;
-    using HealthGateway.Common.AccessManagement.Authorization.Requirements;
-    using Microsoft.AspNetCore.Authentication.JwtBearer;
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Mvc.Controllers;
     using Microsoft.OpenApi.Models;
@@ -39,13 +37,9 @@ namespace HealthGateway.Common.Swagger
         [ExcludeFromCodeCoverage]
         public void Apply(OpenApiOperation operation, OperationFilterContext context)
         {
-            if (operation.Security == null)
-            {
-                operation.Security = new List<OpenApiSecurityRequirement>();
-            }
+            operation.Security ??= new List<OpenApiSecurityRequirement>();
 
-            ControllerActionDescriptor? cad = context.ApiDescription.ActionDescriptor as ControllerActionDescriptor;
-            if (cad != null)
+            if (context.ApiDescription.ActionDescriptor is ControllerActionDescriptor cad)
             {
                 bool controllerAuth = cad.ControllerTypeInfo.GetCustomAttributes(true).Any(t => t is AuthorizeAttribute);
                 bool methodAuth = cad.MethodInfo.GetCustomAttributes(false).Any(t => t is AuthorizeAttribute);
@@ -53,31 +47,16 @@ namespace HealthGateway.Common.Swagger
 
                 if ((controllerAuth && !methodAnonymous) || (!controllerAuth && methodAuth))
                 {
-                    bool controllerApiAuth = cad.ControllerTypeInfo.GetCustomAttributes(true).Any(t => t is AuthorizeAttribute attribute && attribute.Policy == ApiKeyPolicy.Write);
-                    bool methodApiAuth = cad.MethodInfo.GetCustomAttributes(true).Any(t => t is AuthorizeAttribute attribute && attribute.Policy == ApiKeyPolicy.Write);
-                    OpenApiSecurityScheme securityScheme;
-                    if (controllerApiAuth || methodApiAuth)
+                    OpenApiSecurityScheme securityScheme = new()
                     {
-                        securityScheme = new()
-                        {
-                            Reference = new OpenApiReference { Type = ReferenceType.SecurityScheme, Id = "apikey" },
-                        };
-                    }
-                    else
-                    {
-                        securityScheme = new()
-                        {
-                            Reference = new OpenApiReference { Type = ReferenceType.SecurityScheme, Id = "bearer" },
-                        };
-                    }
+                        Reference = new OpenApiReference { Type = ReferenceType.SecurityScheme, Id = "bearer" },
+                    };
 
-                    operation.Security.Add(new OpenApiSecurityRequirement
-                    {
+                    operation.Security.Add(
+                        new()
                         {
-                            securityScheme,
-                            System.Array.Empty<string>()
-                        },
-                    });
+                            { securityScheme, Array.Empty<string>() },
+                        });
                 }
             }
         }

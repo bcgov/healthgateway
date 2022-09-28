@@ -7,16 +7,12 @@ export default class Covid19LaboratoryTestDescriptionComponent extends Vue {
     @Prop({ required: true }) description!: string[];
     @Prop({ required: true }) link!: string;
 
-    private isLastEntry(index: number) {
+    private isLastEntry(index: number): boolean {
         return index + 1 === this.description.length;
     }
 
-    private shouldDisplayLink(index: number) {
+    private shouldDisplayLink(index: number): boolean {
         return this.isLastEntry(index) && this.link;
-    }
-
-    private visitLink() {
-        window.open(this.link, "_blank");
     }
 }
 </script>
@@ -30,7 +26,12 @@ export default class Covid19LaboratoryTestDescriptionComponent extends Vue {
         >
             <span>{{ paragraph }}</span>
             <span v-if="shouldDisplayLink(index)">
-                <a data-testid="result-link" class="link" @click="visitLink"
+                <a
+                    data-testid="result-link"
+                    class="link"
+                    :href="link"
+                    rel="noopener"
+                    target="_blank"
                     >this page</a
                 >.
             </span>

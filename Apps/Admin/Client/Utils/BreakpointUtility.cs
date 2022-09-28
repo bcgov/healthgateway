@@ -55,7 +55,10 @@ namespace HealthGateway.Admin.Client.Utils
         /// Retrieves the infix code that must be overridden to satisfy a particular breakpoint.
         /// </summary>
         /// <param name="breakpoint">The breakpoint to retrieve the override code for.</param>
-        /// <returns>A string containing the override code for the breakpoint or null if the breakpoint has no associated override code.</returns>
+        /// <returns>
+        /// A string containing the override code for the breakpoint or null if the breakpoint has no associated override
+        /// code.
+        /// </returns>
         public static string? GetOverrideCode(this Breakpoint breakpoint)
         {
             return breakpoint switch

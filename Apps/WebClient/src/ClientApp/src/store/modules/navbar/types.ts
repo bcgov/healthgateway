@@ -10,6 +10,7 @@ import { RootState } from "@/store/types";
 
 export interface NavbarState {
     isSidebarOpen: boolean | null;
+    isSidebarAnimating: boolean;
     isHeaderShown: boolean;
 }
 
@@ -31,6 +32,7 @@ export interface NavbarGetters extends GetterTree<NavbarState, RootState> {
         // eslint-disable-next-line
         rootGetters: any
     ): boolean;
+    isSidebarAnimating(state: NavbarState): boolean;
     isSidebarAvailable(
         _state: NavbarState,
         // eslint-disable-next-line
@@ -44,13 +46,13 @@ export interface NavbarGetters extends GetterTree<NavbarState, RootState> {
 type StoreContext = ActionContext<NavbarState, RootState>;
 export interface NavbarActions extends ActionTree<NavbarState, RootState> {
     toggleSidebar(context: StoreContext): void;
-    setSidebarState(context: StoreContext, isOpen: boolean): void;
+    setSidebarStoppedAnimating(context: StoreContext): void;
     setHeaderState(context: StoreContext, isOpen: boolean): void;
 }
 
 export interface NavbarMutations extends MutationTree<NavbarState> {
-    toggleSidebar(state: NavbarState): void;
     setSidebarState(state: NavbarState, isOpen: boolean): void;
+    setSidebarStoppedAnimating(state: NavbarState): void;
     setHeaderState(state: NavbarState, isOpen: boolean): void;
 }
 

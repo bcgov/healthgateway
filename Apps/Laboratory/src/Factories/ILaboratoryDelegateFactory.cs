@@ -15,9 +15,7 @@
 // -------------------------------------------------------------------------
 namespace HealthGateway.Laboratory.Factories
 {
-    using System;
     using HealthGateway.Laboratory.Delegates;
-    using Microsoft.Extensions.Configuration;
 
     /// <summary>
     /// Creates the Laboratory Delegate dynamically.

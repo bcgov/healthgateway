@@ -1,0 +1,12 @@
+@page "/login"
+@layout AuthenticationLayout
+
+<PageTitle>Health Gateway Admin Login</PageTitle>
+
+<MudText Align="Align.Center" Class="my-4 pa-4">
+    This application is only for authorized Health Gateway support team members. If you do not have access after login, please contact your administrator.
+</MudText>
+
+<MudButton Variant="Variant.Filled" Color="Color.Primary" Href="@LogInUrl" Size="Size.Large" FullWidth="true" data-testid="sign-in-btn">
+    Log In
+</MudButton>

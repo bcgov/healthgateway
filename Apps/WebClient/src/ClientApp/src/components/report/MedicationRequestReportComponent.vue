@@ -46,14 +46,14 @@ export default class MedicationRequestReportComponent extends Vue {
 
     private readonly headerClass = "medication-request-report-table-header";
 
-    private get isEmpty() {
+    private get isEmpty(): boolean {
         return this.visibleRecords.length === 0;
     }
 
     private get visibleRecords(): MedicationRequest[] {
-        let records = this.medicationRequests.filter((record) => {
-            return this.filter.allowsDate(record.requestedDate);
-        });
+        let records = this.medicationRequests.filter((record) =>
+            this.filter.allowsDate(record.requestedDate)
+        );
         records.sort((a, b) => {
             const firstDate = new DateWrapper(a.requestedDate);
             const secondDate = new DateWrapper(b.requestedDate);
@@ -73,49 +73,47 @@ export default class MedicationRequestReportComponent extends Vue {
     }
 
     private get items(): MedicationRequestRow[] {
-        return this.visibleRecords.map<MedicationRequestRow>((x) => {
-            return {
-                date: DateWrapper.format(x.requestedDate),
-                requested_drug_name: x.drugName || "",
-                status: x.requestStatus || "",
-                prescriber_name: this.prescriberName(x),
-                effective_date:
-                    x.effectiveDate === undefined
-                        ? ""
-                        : DateWrapper.format(x.effectiveDate),
-                expiry_date:
-                    x.expiryDate === undefined
-                        ? ""
-                        : DateWrapper.format(x.expiryDate),
-                reference_number: x.referenceNumber,
-            };
-        });
+        return this.visibleRecords.map<MedicationRequestRow>((x) => ({
+            date: DateWrapper.format(x.requestedDate),
+            requested_drug_name: x.drugName || "",
+            status: x.requestStatus || "",
+            prescriber_name: this.prescriberName(x),
+            effective_date:
+                x.effectiveDate === undefined
+                    ? ""
+                    : DateWrapper.format(x.effectiveDate),
+            expiry_date:
+                x.expiryDate === undefined
+                    ? ""
+                    : DateWrapper.format(x.expiryDate),
+            reference_number: x.referenceNumber,
+        }));
     }
 
     @Watch("isLoading")
     @Emit()
-    private onIsLoadingChanged() {
+    private onIsLoadingChanged(): boolean {
         return this.isLoading;
     }
 
     @Watch("isEmpty")
     @Emit()
-    private onIsEmptyChanged() {
+    private onIsEmptyChanged(): boolean {
         return this.isEmpty;
     }
 
-    private created() {
+    private created(): void {
         this.logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
-        this.retrieve({ hdid: this.user.hdid }).catch((err) => {
-            this.logger.error(`Error loading medication requests data: ${err}`);
-        });
+        this.retrieve({ hdid: this.user.hdid }).catch((err) =>
+            this.logger.error(`Error loading medication requests data: ${err}`)
+        );
     }
 
-    private mounted() {
+    private mounted(): void {
         this.onIsEmptyChanged();
     }
 
-    private prescriberName(medication: MedicationRequest) {
+    private prescriberName(medication: MedicationRequest): string {
         return (
             (medication.prescriberFirstName || " ") +
             " " +
@@ -127,7 +125,7 @@ export default class MedicationRequestReportComponent extends Vue {
         reportFormatType: ReportFormatType,
         headerData: ReportHeader
     ): Promise<RequestResult<Report>> {
-        const reportService: IReportService = container.get<IReportService>(
+        const reportService = container.get<IReportService>(
             SERVICE_IDENTIFIER.ReportService
         );
 
@@ -209,6 +207,7 @@ export default class MedicationRequestReportComponent extends Vue {
 
 <style lang="scss">
 @import "@/assets/scss/_variables.scss";
+
 .medication-request-report-table-header {
     color: $heading_color;
     font-size: 0.8rem;

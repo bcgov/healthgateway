@@ -16,7 +16,6 @@
 namespace HealthGateway.GatewayApi.Models
 {
     using System;
-    using System.Collections.Generic;
 
     /// <summary>
     /// Model that provides a user preference.
@@ -66,60 +65,5 @@ namespace HealthGateway.GatewayApi.Models
         /// This is generally set by the baseDbContext.
         /// </summary>
         public string UpdatedBy { get; set; } = null!;
-
-        /// <summary>
-        /// Constructs a UserPreferenceModel model from a UserPreference database model.
-        /// </summary>
-        /// <param name="model">The user preference database model.</param>
-        /// <returns>The user comment model.</returns>
-        public static UserPreferenceModel CreateFromDbModel(Database.Models.UserPreference model)
-        {
-            return new UserPreferenceModel()
-            {
-                HdId = model.HdId,
-                Preference = model.Preference,
-                Value = model.Value,
-                Version = model.Version,
-                CreatedDateTime = model.CreatedDateTime,
-                CreatedBy = model.CreatedBy,
-                UpdatedDateTime = model.UpdatedDateTime,
-                UpdatedBy = model.UpdatedBy,
-            };
-        }
-
-        /// <summary>
-        /// Constructs a List of UserPreference models from a List of User Preference database models.
-        /// </summary>
-        /// <param name="models">The list of user preference database model.</param>
-        /// <returns>A list of use comments.</returns>
-        public static IEnumerable<UserPreferenceModel> CreateListFromDbModel(IEnumerable<Database.Models.UserPreference> models)
-        {
-            List<UserPreferenceModel> newList = new List<UserPreferenceModel>();
-            foreach (Database.Models.UserPreference model in models)
-            {
-                newList.Add(UserPreferenceModel.CreateFromDbModel(model));
-            }
-
-            return newList;
-        }
-
-        /// <summary>
-        /// Constructs a database comment model from a user preference model.
-        /// </summary>
-        /// <returns>The database user preference model.</returns>
-        public Database.Models.UserPreference ToDbModel()
-        {
-            return new Database.Models.UserPreference()
-            {
-                HdId = this.HdId,
-                Preference = this.Preference,
-                Value = this.Value,
-                Version = this.Version,
-                CreatedDateTime = this.CreatedDateTime,
-                CreatedBy = this.CreatedBy,
-                UpdatedDateTime = this.UpdatedDateTime,
-                UpdatedBy = this.UpdatedBy,
-            };
-        }
     }
 }

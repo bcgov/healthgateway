@@ -18,11 +18,9 @@ namespace HealthGateway.GatewayApi.Test.Controllers
     using DeepEqual.Syntax;
     using HealthGateway.Common.Data.Constants;
     using HealthGateway.Common.Data.ViewModels;
-    using HealthGateway.Database.Constants;
+    using HealthGateway.Common.Services;
     using HealthGateway.Database.Models;
     using HealthGateway.GatewayApi.Controllers;
-    using HealthGateway.GatewayApi.Services;
-    using Microsoft.AspNetCore.Mvc;
     using Moq;
     using Xunit;
 
@@ -37,9 +35,9 @@ namespace HealthGateway.GatewayApi.Test.Controllers
         [Fact]
         public void ShouldGetCommunication()
         {
-            RequestResult<Communication> expectedResult = new()
+            RequestResult<Communication?> expectedResult = new()
             {
-                ResourcePayload = new Communication()
+                ResourcePayload = new Communication
                 {
                     Subject = "Mocked Subject",
                     Text = "Mocked Text",
@@ -48,10 +46,10 @@ namespace HealthGateway.GatewayApi.Test.Controllers
             };
 
             Mock<ICommunicationService> communicationServiceMock = new();
-            communicationServiceMock.Setup(s => s.GetActiveBanner(CommunicationType.Banner)).Returns(expectedResult);
+            communicationServiceMock.Setup(s => s.GetActiveCommunication(CommunicationType.Banner)).Returns(expectedResult);
 
             CommunicationController controller = new(communicationServiceMock.Object);
-            RequestResult<Communication> actualResult = controller.Get();
+            RequestResult<Communication?> actualResult = controller.Get();
 
             expectedResult.ShouldDeepEqual(actualResult);
         }

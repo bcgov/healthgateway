@@ -17,9 +17,7 @@ namespace HealthGateway.GatewayApi.Models
 {
     using System;
     using System.Collections.Generic;
-    using System.Linq;
     using System.Text.Json.Serialization;
-    using HealthGateway.Database.Models;
 
     /// <summary>
     /// Model that provides a user representation of an user profile database model.
@@ -105,28 +103,5 @@ namespace HealthGateway.GatewayApi.Models
         /// Gets the user preference.
         /// </summary>
         public IDictionary<string, UserPreferenceModel> Preferences { get; } = new Dictionary<string, UserPreferenceModel>();
-
-        /// <summary>
-        /// Constructs a UserProfile model from a UserProfile database model.
-        /// </summary>
-        /// <param name="model">The user profile database model.</param>
-        /// <param name="latestTermsOfServiceId">The GUID corresponding to the most recent terms of service.</param>
-        /// <returns>The user profile model.</returns>
-        public static UserProfileModel CreateFromDbModel(UserProfile model, Guid? latestTermsOfServiceId)
-        {
-            return new UserProfileModel()
-            {
-                HdId = model.HdId,
-                TermsOfServiceId = model.TermsOfServiceId,
-                Email = model.Email,
-                IsEmailVerified = !string.IsNullOrEmpty(model.Email),
-                SMSNumber = model.SMSNumber,
-                IsSMSNumberVerified = !string.IsNullOrEmpty(model.SMSNumber),
-                LastLoginDateTime = model.LastLoginDateTime,
-                ClosedDateTime = model.ClosedDateTime,
-                AcceptedTermsOfService = model.TermsOfServiceId != Guid.Empty,
-                HasTermsOfServiceUpdated = model.TermsOfServiceId != latestTermsOfServiceId,
-            };
-        }
     }
 }

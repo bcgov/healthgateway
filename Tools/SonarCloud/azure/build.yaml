@@ -28,7 +28,6 @@ jobs:
       - script: |
           dotnet tool install --global dotnet-sonarscanner --version $(SONARSCANNER_VERSION)
           dotnet test \
-            -s .runsettings
             /p:CollectCoverage=true \
             /p:CoverletOutputFormat=opencover \
             --logger:"xunit;LogFileName=results.xml"

@@ -12,5 +12,18 @@ services:
     volumes:
       - ./backups:/backups
       - ./scripts:/scripts
-      - ./pgdata:/var/lib/postgresql/data
+      - gatewaydb:/var/lib/postgresql/data
       - ./init://docker-entrypoint-initdb.d
+  gatewaycache:
+    container_name: gatewaycache
+    image: redis:6.2
+    ports:
+      - "6379:6379"
+    restart: unless-stopped
+    volumes:
+      - gatewaycache:/data
+volumes:
+  gatewaydb:
+    name: gatewaydb.local
+  gatewaycache:
+    name: gatewaycache.local

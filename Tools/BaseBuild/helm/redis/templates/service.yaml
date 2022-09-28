@@ -1,0 +1,19 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "redis.fullname" . }}
+  labels:
+    app: {{ include "redis.fullname" . }}
+spec:
+  type: {{ .Values.service.type }}
+  ports:
+    - name:  {{ include "redis.fullname" . }} 
+      port: {{ .Values.service.redis.port }}
+      targetPort: {{ .Values.service.redis.port }}
+      protocol: TCP
+    - name: gossip
+      port: {{ .Values.service.gossip.port }}
+      targetPort: {{ .Values.service.gossip.port }}
+      protocol: TCP
+  selector:
+    app: {{ include "redis.fullname" . }}

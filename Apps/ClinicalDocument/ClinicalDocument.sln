@@ -1,0 +1,22 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ClinicalDocumentTests", "test\unit\ClinicalDocumentTests.csproj", "{0A7ADE35-E655-4261-A67C-A90900BFE1DC}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ClinicalDocument", "src\ClinicalDocument.csproj", "{804E755F-9401-4025-82C1-EF624E0F3DE0}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{0A7ADE35-E655-4261-A67C-A90900BFE1DC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0A7ADE35-E655-4261-A67C-A90900BFE1DC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0A7ADE35-E655-4261-A67C-A90900BFE1DC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0A7ADE35-E655-4261-A67C-A90900BFE1DC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{804E755F-9401-4025-82C1-EF624E0F3DE0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{804E755F-9401-4025-82C1-EF624E0F3DE0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{804E755F-9401-4025-82C1-EF624E0F3DE0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{804E755F-9401-4025-82C1-EF624E0F3DE0}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal

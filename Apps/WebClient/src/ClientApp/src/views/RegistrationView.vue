@@ -12,7 +12,7 @@ import LoadingComponent from "@/components/LoadingComponent.vue";
 import { ErrorSourceType, ErrorType } from "@/constants/errorType";
 import { RegistrationStatus } from "@/constants/registrationStatus";
 import type { WebClientConfiguration } from "@/models/configData";
-import { ResultError } from "@/models/requestResult";
+import { ResultError } from "@/models/errors";
 import { TermsOfService } from "@/models/termsOfService";
 import type { OidcUserInfo } from "@/models/user";
 import container from "@/plugins/container";
@@ -28,8 +28,11 @@ library.add(faExclamationTriangle);
     },
 })
 export default class RegistrationView extends Vue {
-    @Prop() inviteKey?: string;
-    @Prop() inviteEmail?: string;
+    @Prop()
+    inviteKey?: string;
+
+    @Prop()
+    inviteEmail?: string;
 
     @Action("addError", { namespace: "errorBanner" })
     addError!: (params: {
@@ -45,8 +48,17 @@ export default class RegistrationView extends Vue {
         traceId: string | undefined;
     }) => void;
 
+    @Action("setTooManyRequestsError", { namespace: "errorBanner" })
+    setTooManyRequestsError!: (params: { key: string }) => void;
+
+    @Action("setTooManyRequestsWarning", { namespace: "errorBanner" })
+    setTooManyRequestsWarning!: (params: { key: string }) => void;
+
     @Action("checkRegistration", { namespace: "user" })
     checkRegistration!: () => Promise<boolean>;
+
+    @Action("createProfile", { namespace: "user" })
+    createProfile!: (params: { request: CreateUserRequest }) => Promise<void>;
 
     @Getter("webClient", { namespace: "config" })
     webClientConfig!: WebClientConfiguration;
@@ -73,7 +85,7 @@ export default class RegistrationView extends Vue {
     private errorMessage = "";
 
     private logger!: ILogger;
-    private isValidAge = false;
+    private isValidAge: boolean | null = null;
     private minimumAge!: number;
 
     private termsOfService?: TermsOfService;
@@ -94,7 +106,8 @@ export default class RegistrationView extends Vue {
             this.webClientConfig.registrationStatus == RegistrationStatus.Closed
         );
     }
-    private get isPredefinedEmail() {
+
+    private get isPredefinedEmail(): boolean {
         if (
             this.webClientConfig.registrationStatus != RegistrationStatus.Open
         ) {
@@ -103,7 +116,7 @@ export default class RegistrationView extends Vue {
         return false;
     }
 
-    private mounted() {
+    private mounted(): void {
         this.logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
         this.minimumAge = this.webClientConfig.minPatientAge;
 
@@ -141,15 +154,19 @@ export default class RegistrationView extends Vue {
             .then((isValid) => {
                 this.isValidAge = isValid;
             })
-            .catch(() => {
-                this.clientRegistryError = true;
-                this.addCustomError({
-                    title:
-                        "Unable to validate " +
-                        ErrorSourceType.User.toLowerCase(),
-                    source: ErrorSourceType.User,
-                    traceId: undefined,
-                });
+            .catch((err: ResultError) => {
+                if (err.statusCode === 429) {
+                    this.setTooManyRequestsError({ key: "page" });
+                } else {
+                    this.clientRegistryError = true;
+                    this.addCustomError({
+                        title:
+                            "Unable to validate " +
+                            ErrorSourceType.User.toLowerCase(),
+                        source: ErrorSourceType.User,
+                        traceId: undefined,
+                    });
+                }
             })
             .finally(() => {
                 this.loadingUserData = false;
@@ -158,25 +175,19 @@ export default class RegistrationView extends Vue {
         this.loadTermsOfService();
     }
 
-    private validations() {
+    private validations(): unknown {
         const sms = helpers.regex("sms", /^\D?(\d{3})\D?\D?(\d{3})\D?(\d{4})$/);
         return {
             smsNumber: {
-                required: requiredIf(() => {
-                    return this.isSMSNumberChecked;
-                }),
+                required: requiredIf(() => this.isSMSNumberChecked),
                 sms,
             },
             email: {
-                required: requiredIf(() => {
-                    return this.isEmailChecked;
-                }),
+                required: requiredIf(() => this.isEmailChecked),
                 email,
             },
             emailConfirmation: {
-                required: requiredIf(() => {
-                    return this.isEmailChecked;
-                }),
+                required: requiredIf(() => this.isEmailChecked),
                 sameAsEmail: sameAs("email"),
                 email,
             },
@@ -194,13 +205,17 @@ export default class RegistrationView extends Vue {
                 );
                 this.termsOfService = result;
             })
-            .catch((err) => {
+            .catch((err: ResultError) => {
                 this.logger.error(err);
-                this.addError({
-                    errorType: ErrorType.Retrieve,
-                    source: ErrorSourceType.TermsOfService,
-                    traceId: undefined,
-                });
+                if (err.statusCode === 429) {
+                    this.setTooManyRequestsWarning({ key: "page" });
+                } else {
+                    this.addError({
+                        errorType: ErrorType.Retrieve,
+                        source: ErrorSourceType.TermsOfService,
+                        traceId: undefined,
+                    });
+                }
             })
             .finally(() => {
                 this.loadingTermsOfService = false;
@@ -211,7 +226,7 @@ export default class RegistrationView extends Vue {
         return param.$dirty ? !param.$invalid : undefined;
     }
 
-    private onSubmit(event: Event) {
+    private onSubmit(event: Event): void {
         this.$v.$touch();
         if (this.$v.$invalid || this.oidcUserInfo === undefined) {
             this.submitStatus = "ERROR";
@@ -224,8 +239,8 @@ export default class RegistrationView extends Vue {
             this.smsNumber = this.smsNumber.replace(/\D+/g, "");
         }
         this.loadingTermsOfService = true;
-        this.userProfileService
-            .createProfile({
+        this.createProfile({
+            request: {
                 profile: {
                     hdid: this.oidcUserInfo.hdid,
                     termsOfServiceId: this.termsOfService?.id || "",
@@ -237,19 +252,16 @@ export default class RegistrationView extends Vue {
                     preferences: {},
                 },
                 inviteCode: this.inviteKey || "",
-            })
+            },
+        })
             .then((result) => {
                 this.logger.debug(
                     `Create Profile result: ${JSON.stringify(result)}`
                 );
                 this.redirect();
             })
-            .catch((err: ResultError) => {
-                this.addError({
-                    errorType: ErrorType.Create,
-                    source: ErrorSourceType.Profile,
-                    traceId: err.traceId,
-                });
+            .catch(() => {
+                this.logger.error("Error while registering.");
             })
             .finally(() => {
                 this.loadingTermsOfService = false;
@@ -259,33 +271,11 @@ export default class RegistrationView extends Vue {
     }
 
     private redirect(): void {
-        this.checkRegistration().then((isRegistered: boolean) => {
-            if (!isRegistered) {
-                this.addError({
-                    errorType: ErrorType.Create,
-                    source: ErrorSourceType.Profile,
-                    traceId: undefined,
-                });
-                return;
-            }
+        const defaultRoute = this.webClientConfig.modules["VaccinationStatus"]
+            ? "/home"
+            : "/timeline";
 
-            const defaultRoute = this.webClientConfig.modules[
-                "VaccinationStatus"
-            ]
-                ? "/home"
-                : "/timeline";
-
-            this.$router.push({
-                path:
-                    this.smsNumber === "" && this.email === ""
-                        ? defaultRoute
-                        : "/profile",
-                query: {
-                    toVerifyPhone: this.smsNumber === "" ? "false" : "true",
-                    toVerifyEmail: this.email === "" ? "false" : "true",
-                },
-            });
-        });
+        this.$router.push({ path: defaultRoute });
     }
 
     private onEmailOptout(isChecked: boolean): void {
@@ -308,7 +298,7 @@ export default class RegistrationView extends Vue {
 </script>
 
 <template>
-    <div class="m-3 m-md-4 flex-grow-1 d-flex flex-column">
+    <div>
         <LoadingComponent :is-loading="isLoading" />
         <b-container v-if="termsOfServiceLoaded">
             <div v-if="isRegistrationClosed">
@@ -320,7 +310,7 @@ export default class RegistrationView extends Vue {
             </div>
             <div v-else>
                 <b-form
-                    v-if="isValidAge"
+                    v-if="isValidAge === true"
                     ref="registrationForm"
                     @submit.prevent="onSubmit"
                 >
@@ -485,20 +475,21 @@ export default class RegistrationView extends Vue {
                         </b-col>
                     </b-row>
                 </b-form>
-                <div v-else-if="!clientRegistryError">
+                <div v-else-if="isValidAge === false">
                     <h1>Minimum age required for registration</h1>
                     <p data-testid="minimumAgeErrorText">
                         You must be <strong>{{ minimumAge }}</strong> years of
                         age or older to use this application
                     </p>
                 </div>
-                <div v-else>
+                <div v-else-if="clientRegistryError">
                     <h1>Error retrieving user information</h1>
                     <p data-testid="clientRegistryErrorText">
                         There may be an issue in our Client Registry. Please
                         contact <strong>HealthGateway@gov.bc.ca</strong>
                     </p>
                 </div>
+                <div v-else><h1>WTF</h1></div>
             </div>
         </b-container>
     </div>

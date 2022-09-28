@@ -1,0 +1,13 @@
+{{- if .Values.autoscaling.enabled }}
+kind: PodDisruptionBudget
+apiVersion: policy/v1
+metadata:
+  name: {{ include "clinicaldocument.fullname" . }}
+  labels:
+    {{- include "clinicaldocument.labels" . | nindent 4 }}
+spec:
+  minAvailable: {{ .Values.autoscaling.podDisruptionMin }} 
+  selector:  
+    matchLabels:
+      deploymentconfig: {{ include "clinicaldocument.fullname" . }}
+{{- end }}

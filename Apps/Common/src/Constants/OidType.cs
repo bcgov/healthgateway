@@ -36,18 +36,12 @@ namespace HealthGateway.Common.Constants
         /// <summary>
         /// Gets an OID representing hdid.
         /// </summary>
-        public static OidType HDID
-        {
-            get { return new OidType("2.16.840.1.113883.3.51.1.1.6"); }
-        }
+        public static OidType HDID => new("2.16.840.1.113883.3.51.1.1.6");
 
         /// <summary>
         /// Gets an OID representing hdid.
         /// </summary>
-        public static OidType PHN
-        {
-            get { return new OidType("2.16.840.1.113883.3.51.1.1.6.1"); }
-        }
+        public static OidType PHN => new("2.16.840.1.113883.3.51.1.1.6.1");
 
         /// <summary>
         /// Determines whether two specified types have the same value.
@@ -59,9 +53,9 @@ namespace HealthGateway.Common.Constants
         public static bool operator ==(OidType lhs, OidType rhs)
         {
             // Check for null on left side.
-            if (object.ReferenceEquals(lhs, null))
+            if (ReferenceEquals(lhs, null))
             {
-                if (object.ReferenceEquals(rhs, null))
+                if (ReferenceEquals(rhs, null))
                 {
                     // null == null = true.
                     return true;
@@ -94,7 +88,7 @@ namespace HealthGateway.Common.Constants
         [ExcludeFromCodeCoverage]
         public override int GetHashCode()
         {
-            return this.value.GetHashCode(System.StringComparison.InvariantCulture);
+            return this.value.GetHashCode(StringComparison.InvariantCulture);
         }
 
         /// <summary>
@@ -116,14 +110,12 @@ namespace HealthGateway.Common.Constants
         public override bool Equals(object? obj)
         {
             // Check for null and compare run-time types.
-            if ((obj == null) || !this.GetType().Equals(obj.GetType()))
+            if (obj == null || !this.GetType().Equals(obj.GetType()))
             {
                 return false;
             }
-            else
-            {
-                return this.Equals((OidType)obj);
-            }
+
+            return this.Equals((OidType)obj);
         }
 
         /// <summary>

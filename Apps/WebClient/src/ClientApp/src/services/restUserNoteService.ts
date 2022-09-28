@@ -1,9 +1,10 @@
 import { injectable } from "inversify";
 
 import { ResultType } from "@/constants/resulttype";
+import { ServiceCode } from "@/constants/serviceCodes";
 import { Dictionary } from "@/models/baseTypes";
 import { ExternalConfiguration } from "@/models/configData";
-import { ServiceName } from "@/models/errorInterfaces";
+import { HttpError } from "@/models/errors";
 import RequestResult from "@/models/requestResult";
 import UserNote from "@/models/userNote";
 import container from "@/plugins/container";
@@ -18,7 +19,7 @@ import RequestResultUtil from "@/utility/requestResultUtil";
 
 @injectable()
 export class RestUserNoteService implements IUserNoteService {
-    private logger: ILogger = container.get(SERVICE_IDENTIFIER.Logger);
+    private logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
     private readonly USER_NOTE_BASE_URI: string = "Note";
     private http!: IHttpDelegate;
     private isEnabled = false;
@@ -50,22 +51,20 @@ export class RestUserNoteService implements IUserNoteService {
                 .getWithCors<RequestResult<UserNote[]>>(
                     `${this.baseUri}${this.USER_NOTE_BASE_URI}/${hdid}`
                 )
-                .then((requestResult) => {
-                    return resolve(requestResult);
-                })
-                .catch((err) => {
-                    this.logger.error(`getNotes error: ${err}`);
+                .then((requestResult) => resolve(requestResult))
+                .catch((err: HttpError) => {
+                    this.logger.error(
+                        `Error in RestUserNoteService.getNotes()`
+                    );
                     return reject(
                         ErrorTranslator.internalNetworkError(
                             err,
-                            ServiceName.HealthGatewayUser
+                            ServiceCode.HealthGatewayUser
                         )
                     );
                 });
         });
     }
-
-    NOT_IMPLENTED = "Method not implemented.";
 
     public createNote(
         hdid: string,
@@ -91,12 +90,14 @@ export class RestUserNoteService implements IUserNoteService {
                         reject
                     )
                 )
-                .catch((err) => {
-                    this.logger.error(`createNote error: ${err}`);
+                .catch((err: HttpError) => {
+                    this.logger.error(
+                        `Error in RestUserNoteService.createNote()`
+                    );
                     return reject(
                         ErrorTranslator.internalNetworkError(
                             err,
-                            ServiceName.HealthGatewayUser
+                            ServiceCode.HealthGatewayUser
                         )
                     );
                 });
@@ -104,7 +105,7 @@ export class RestUserNoteService implements IUserNoteService {
     }
 
     public updateNote(hdid: string, note: UserNote): Promise<UserNote> {
-        return new Promise((resolve, reject) => {
+        return new Promise((resolve, reject) =>
             this.http
                 .put<RequestResult<UserNote>>(
                     `${this.baseUri}${this.USER_NOTE_BASE_URI}/${hdid}`,
@@ -118,16 +119,18 @@ export class RestUserNoteService implements IUserNoteService {
                         reject
                     );
                 })
-                .catch((err) => {
-                    this.logger.error(`updateNote error: ${err}`);
+                .catch((err: HttpError) => {
+                    this.logger.error(
+                        `Error in RestUserNoteService.updateNote()`
+                    );
                     return reject(
                         ErrorTranslator.internalNetworkError(
                             err,
-                            ServiceName.HealthGatewayUser
+                            ServiceCode.HealthGatewayUser
                         )
                     );
-                });
-        });
+                })
+        );
     }
 
     public deleteNote(hdid: string, note: UserNote): Promise<void> {
@@ -149,12 +152,14 @@ export class RestUserNoteService implements IUserNoteService {
                         reject
                     );
                 })
-                .catch((err) => {
-                    this.logger.error(`deleteNote error: ${err}`);
+                .catch((err: HttpError) => {
+                    this.logger.error(
+                        `Error in RestUserNoteService.deleteNote()`
+                    );
                     return reject(
                         ErrorTranslator.internalNetworkError(
                             err,
-                            ServiceName.HealthGatewayUser
+                            ServiceCode.HealthGatewayUser
                         )
                     );
                 });

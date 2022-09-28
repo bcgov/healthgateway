@@ -15,6 +15,7 @@
 // -------------------------------------------------------------------------
 namespace HealthGateway.Common.Models.PHSA
 {
+    using System.Diagnostics.CodeAnalysis;
     using System.Text.Json.Serialization;
 
     /// <summary>
@@ -27,13 +28,13 @@ namespace HealthGateway.Common.Models.PHSA
         /// Gets or sets the LoadState.
         /// </summary>
         [JsonPropertyName("loadState")]
-        public PhsaLoadState LoadState { get; set; } = new PhsaLoadState();
+        public PhsaLoadState LoadState { get; set; } = new();
 
         /// <summary>
         /// Gets or sets the result section.
         /// </summary>
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "CA2227:Collection properties should be read only", Justification = "Team decision")]
+        [SuppressMessage("Usage", "CA2227:Collection properties should be read only", Justification = "Team decision")]
         [JsonPropertyName("result")]
-        public T? Result { get; set; } = default(T);
+        public T? Result { get; set; }
     }
 }

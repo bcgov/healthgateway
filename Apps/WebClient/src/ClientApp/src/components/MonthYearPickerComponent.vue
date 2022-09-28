@@ -19,7 +19,7 @@ class MonthToDisplay {
 
 @Component({
     directives: {
-        onClickaway: onClickaway,
+        onClickaway,
     },
 })
 export default class MonthYearPickerComponent extends Vue {
@@ -28,9 +28,9 @@ export default class MonthYearPickerComponent extends Vue {
 
     public isYearOpen = false;
     public isMonthOpen = false;
-    public selectedYear: number = new DateWrapper().year();
-    public selectedMonth: number = new DateWrapper().month();
-    private selectedDate: DateWrapper = new DateWrapper();
+    public selectedYear = new DateWrapper().year();
+    public selectedMonth = new DateWrapper().month();
+    private selectedDate = new DateWrapper();
     private years: number[] = [];
 
     @Watch("currentMonth")
@@ -42,12 +42,12 @@ export default class MonthYearPickerComponent extends Vue {
     @Watch("availableMonths")
     public onAvailableMonths(): void {
         this.availableMonths.forEach((date) => {
-            var year: number = date.year();
+            const year = date.year();
             if (!this.years.some((y) => y == year)) {
                 this.years.push(year);
             }
         });
-        var currentYear: number = this.selectedDate.year();
+        const currentYear = this.selectedDate.year();
         if (!this.years.some((y) => y == currentYear)) {
             this.years.push(currentYear);
         }
@@ -76,7 +76,7 @@ export default class MonthYearPickerComponent extends Vue {
         ];
         availableMonthsOfSelectedYear.forEach((date) => {
             // Months are indexed 0-11
-            let monthIndex: number = date.month() - 1;
+            const monthIndex = date.month() - 1;
             monthsToDisplay[monthIndex].hasData = true;
         });
         return monthsToDisplay;
@@ -111,6 +111,7 @@ export default class MonthYearPickerComponent extends Vue {
         this.selectedYear =
             this.years[this.years.indexOf(this.selectedYear) + 1];
     }
+
     private nextYear(): void {
         this.selectedYear =
             this.years[this.years.indexOf(this.selectedYear) - 1];

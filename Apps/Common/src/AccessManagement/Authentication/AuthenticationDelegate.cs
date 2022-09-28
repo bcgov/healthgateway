@@ -18,14 +18,14 @@ namespace HealthGateway.Common.AccessManagement.Authentication
     using System;
     using System.Collections.Generic;
     using System.Net.Http;
+    using System.Security.Claims;
     using System.Text.Json;
     using System.Threading.Tasks;
-
     using HealthGateway.Common.AccessManagement.Authentication.Models;
+    using HealthGateway.Common.CacheProviders;
     using HealthGateway.Common.Services;
     using Microsoft.AspNetCore.Authentication;
     using Microsoft.AspNetCore.Http;
-    using Microsoft.Extensions.Caching.Memory;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.Logging;
 
@@ -40,13 +40,13 @@ namespace HealthGateway.Common.AccessManagement.Authentication
         public const string DefaultAuthConfigSectionName = "ClientAuthentication";
 
         private const string CacheConfigSectionName = "AuthCache";
+        private readonly ICacheProvider cacheProvider;
+        private readonly IConfiguration configuration;
+        private readonly IHttpClientService httpClientService;
+        private readonly IHttpContextAccessor? httpContextAccessor;
 
         private readonly ILogger<IAuthenticationDelegate> logger;
-        private readonly IHttpClientService httpClientService;
-        private readonly IConfiguration? configuration;
-        private readonly IMemoryCache? memoryCache;
         private readonly int tokenCacheMinutes;
-        private readonly IHttpContextAccessor? httpContextAccessor;
         private readonly ClientCredentialsTokenRequest tokenRequest;
         private readonly Uri tokenUri;
 
@@ -56,23 +56,23 @@ namespace HealthGateway.Common.AccessManagement.Authentication
         /// <param name="logger">The injected logger provider.</param>
         /// <param name="httpClientService">The injected http client service.</param>
         /// <param name="configuration">The injected configuration provider.</param>
-        /// <param name="memoryCache">The injected memory cache provider.</param>
+        /// <param name="cacheProvider">The injected cache provider.</param>
         /// <param name="httpContextAccessor">The Http Context accessor.</param>
         public AuthenticationDelegate(
-            ILogger<IAuthenticationDelegate> logger,
+            ILogger<AuthenticationDelegate> logger,
             IHttpClientService httpClientService,
-            IConfiguration? configuration,
-            IMemoryCache? memoryCache,
+            IConfiguration configuration,
+            ICacheProvider cacheProvider,
             IHttpContextAccessor? httpContextAccessor)
         {
             this.logger = logger;
             this.httpClientService = httpClientService;
             this.configuration = configuration;
-            this.memoryCache = memoryCache;
+            this.cacheProvider = cacheProvider;
             this.httpContextAccessor = httpContextAccessor;
 
-            IConfigurationSection? configSection = configuration?.GetSection(CacheConfigSectionName);
-            this.tokenCacheMinutes = configSection?.GetValue<int>("TokenCacheExpireMinutes", 0) ?? 0;
+            IConfigurationSection? configSection = configuration.GetSection(CacheConfigSectionName);
+            this.tokenCacheMinutes = configSection?.GetValue("TokenCacheExpireMinutes", 0) ?? 0;
             (this.tokenUri, this.tokenRequest) = this.GetConfiguration(DefaultAuthConfigSectionName);
         }
 
@@ -100,8 +100,8 @@ namespace HealthGateway.Common.AccessManagement.Authentication
         /// <inheritdoc/>
         public string? AccessTokenAsUser(string sectionName)
         {
-            (Uri tokenUri, ClientCredentialsTokenRequest tokenRequest) = this.GetConfiguration(sectionName);
-            return this.AccessTokenAsUser(tokenUri, tokenRequest);
+            (Uri tUri, ClientCredentialsTokenRequest tRequest) = this.GetConfiguration(sectionName);
+            return this.AccessTokenAsUser(tUri, tRequest);
         }
 
         /// <inheritdoc/>
@@ -136,7 +136,7 @@ namespace HealthGateway.Common.AccessManagement.Authentication
             JwtModel? jwtModel = null;
             if (cacheEnabled && this.tokenCacheMinutes > 0)
             {
-                this.memoryCache.TryGetValue(cacheKey, out jwtModel);
+                jwtModel = this.cacheProvider.GetItem<JwtModel>(cacheKey);
             }
 
             if (jwtModel != null)
@@ -153,9 +153,7 @@ namespace HealthGateway.Common.AccessManagement.Authentication
                     if (cacheEnabled && this.tokenCacheMinutes > 0)
                     {
                         this.logger.LogDebug("Attempting to store Access token in cache");
-                        MemoryCacheEntryOptions cacheEntryOptions = new();
-                        cacheEntryOptions.AbsoluteExpiration = new DateTimeOffset(DateTime.Now.AddMinutes(this.tokenCacheMinutes));
-                        this.memoryCache.Set(cacheKey, jwtModel, cacheEntryOptions);
+                        this.cacheProvider.AddItem(cacheKey, jwtModel, TimeSpan.FromMinutes(this.tokenCacheMinutes));
                     }
                     else
                     {
@@ -178,13 +176,26 @@ namespace HealthGateway.Common.AccessManagement.Authentication
         public string? FetchAuthenticatedUserToken()
         {
             HttpContext? httpContext = this.httpContextAccessor?.HttpContext;
-            string? accessToken = httpContext.GetTokenAsync("access_token").Result;
-            return accessToken;
+            return httpContext.GetTokenAsync("access_token").Result;
+        }
+
+        /// <inheritdoc/>
+        public string? FetchAuthenticatedUserHdid()
+        {
+            ClaimsPrincipal? user = this.httpContextAccessor?.HttpContext?.User;
+            return user?.FindFirst("hdid")?.Value;
+        }
+
+        /// <inheritdoc/>
+        public string? FetchAuthenticatedUserId()
+        {
+            ClaimsPrincipal? user = this.httpContextAccessor?.HttpContext?.User;
+            return user?.FindFirst(ClaimTypes.NameIdentifier)!.Value;
         }
 
         private (Uri TokenUri, ClientCredentialsTokenRequest TokenRequest) GetConfiguration(string sectionName)
         {
-            IConfigurationSection? configSection = this.configuration?.GetSection(sectionName);
+            IConfigurationSection? configSection = this.configuration.GetSection(sectionName);
             Uri configUri = configSection.GetValue<Uri>(@"TokenUri");
             ClientCredentialsTokenRequest configTokenRequest = new();
             configSection.Bind(configTokenRequest); // Client ID, Client Secret, Audience, Username, Password
@@ -205,7 +216,7 @@ namespace HealthGateway.Common.AccessManagement.Authentication
                     new KeyValuePair<string?, string?>(@"audience", tokenRequest.Audience),
                     new KeyValuePair<string?, string?>(@"grant_type", @"client_credentials"),
                 };
-                using var content = new FormUrlEncodedContent(oauthParams);
+                using FormUrlEncodedContent content = new(oauthParams);
                 content.Headers.Clear();
                 content.Headers.Add(@"Content-Type", @"application/x-www-form-urlencoded");
 
@@ -246,7 +257,7 @@ namespace HealthGateway.Common.AccessManagement.Authentication
                     new KeyValuePair<string?, string?>(@"password", tokenRequest.Password),
                 };
 
-                using var content = new FormUrlEncodedContent(oauthParams);
+                using FormUrlEncodedContent content = new(oauthParams);
                 content.Headers.Clear();
                 content.Headers.Add(@"Content-Type", @"application/x-www-form-urlencoded");
 

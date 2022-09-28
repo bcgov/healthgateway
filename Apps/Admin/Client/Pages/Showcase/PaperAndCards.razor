@@ -1,4 +1,5 @@
 @page "/showcase/paper-and-cards"
+@layout MainLayout
 
 <PageTitle>Paper and Cards</PageTitle>
 
@@ -6,15 +7,21 @@
     <MudItem xs="12" sm="6">
         <article>
             <MudText Class="mt-4 mb-3" Typo="Typo.h4">Paper</MudText>
-            <MudPaper Class="my-2 pa-4"><MudText Typo="Typo.body1">Content</MudText></MudPaper>
+            <MudPaper Class="my-2 pa-4">
+                <MudText Typo="Typo.body1">Content</MudText>
+            </MudPaper>
         </article>
     </MudItem>
     <MudItem xs="12" sm="6">
         <article>
             <MudText Class="mt-4 mb-3" Typo="Typo.h4">Card</MudText>
             <MudCard Class="my-2">
-                <MudCardHeader><MudText Typo="Typo.h5">Header</MudText></MudCardHeader>
-                <MudCardContent><MudText Typo="Typo.body1">Content</MudText></MudCardContent>
+                <MudCardHeader>
+                    <MudText Typo="Typo.h5">Header</MudText>
+                </MudCardHeader>
+                <MudCardContent>
+                    <MudText Typo="Typo.body1">Content</MudText>
+                </MudCardContent>
                 <MudCardActions>
                     <MudButton Color="Color.Primary" Class="mr-2">Action</MudButton>
                     <MudButton Color="Color.Primary">Action 2</MudButton>
@@ -25,15 +32,21 @@
     <MudItem xs="12" sm="6">
         <article>
             <MudText Class="mt-4 mb-3" Typo="Typo.h4">Outlined Paper</MudText>
-            <MudPaper Class="my-2 pa-4" Outlined="true"><MudText Typo="Typo.body1">Content</MudText></MudPaper>
+            <MudPaper Class="my-2 pa-4" Outlined="true">
+                <MudText Typo="Typo.body1">Content</MudText>
+            </MudPaper>
         </article>
     </MudItem>
     <MudItem xs="12" sm="6">
         <article>
             <MudText Class="mt-4 mb-3" Typo="Typo.h4">Outlined Card</MudText>
             <MudCard Class="my-2" Outlined="true">
-                <MudCardHeader><MudText Typo="Typo.h5">Header</MudText></MudCardHeader>
-                <MudCardContent><MudText Typo="Typo.body1">Content</MudText></MudCardContent>
+                <MudCardHeader>
+                    <MudText Typo="Typo.h5">Header</MudText>
+                </MudCardHeader>
+                <MudCardContent>
+                    <MudText Typo="Typo.body1">Content</MudText>
+                </MudCardContent>
                 <MudCardActions>
                     <MudButton Color="Color.Tertiary" Class="mr-2">Action</MudButton>
                     <MudButton Color="Color.Tertiary">Action 2</MudButton>

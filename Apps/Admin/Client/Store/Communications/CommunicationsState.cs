@@ -19,7 +19,6 @@ namespace HealthGateway.Admin.Client.Store.Communications;
 using System.Collections.Generic;
 using Fluxor;
 using HealthGateway.Admin.Client.Models;
-using HealthGateway.Admin.Client.Store;
 using HealthGateway.Admin.Common.Models;
 using HealthGateway.Common.Data.ViewModels;
 

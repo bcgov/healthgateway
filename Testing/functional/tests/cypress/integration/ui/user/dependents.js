@@ -2,6 +2,7 @@ const { AuthMethod } = require("../../../support/constants");
 
 const sensitiveDocMessage =
     " The file that you are downloading contains personal information. If you are on a public computer, please ensure that the file is deleted before you log off. ";
+const validHdid = "645645767756756767";
 
 describe("COVID-19", () => {
     beforeEach(() => {
@@ -80,6 +81,114 @@ describe("COVID-19", () => {
     });
 });
 
+describe("COVID-19 - Vaccine Proof download", () => {
+    it("Validate successful vaccine proof download", () => {
+        let isLoading = false;
+        cy.intercept(
+            "GET",
+            "**/AuthenticatedVaccineStatus/pdf?hdid*",
+            (req) => {
+                if (!isLoading) {
+                    req.reply({
+                        fixture:
+                            "ImmunizationService/vaccineProofNotLoaded.json",
+                    });
+                } else {
+                    req.reply({
+                        fixture: "ImmunizationService/vaccineProofLoaded.json",
+                    });
+                }
+                isLoading = !isLoading;
+            }
+        );
+
+        cy.intercept("GET", "**/Laboratory/Covid19Orders*", {
+            fixture: "LaboratoryService/covid19Orders.json",
+        });
+        cy.intercept("GET", "**/UserProfile/*/Dependent", {
+            fixture: "UserProfileService/dependent.json",
+        });
+        cy.enableModules([
+            "CovidLabResults",
+            "Laboratory",
+            "Dependent",
+            "Immunization",
+        ]);
+
+        cy.login(
+            Cypress.env("keycloak.username"),
+            Cypress.env("keycloak.password"),
+            AuthMethod.KeyCloak,
+            "/dependents"
+        );
+
+        cy.get("[data-testid=covid19TabTitle]").last().parent().click();
+        cy.get(
+            `[data-testid=download-proof-of-vaccination-btn-${validHdid}]`
+        ).click({ force: true });
+        cy.get("[data-testid=genericMessageModal]").should("be.visible");
+        cy.get("[data-testid=genericMessageSubmitBtn]").click();
+        cy.get("[data-testid=loadingSpinner]").should("be.visible");
+        cy.wait(1000);
+        cy.get("[data-testid=loadingSpinner]").should("not.be.visible");
+        cy.verifyDownload("VaccineProof.pdf");
+    });
+
+    it("Validate no records found modal", () => {
+        let isLoading = false;
+        cy.intercept(
+            "GET",
+            "**/AuthenticatedVaccineStatus/pdf?hdid=*",
+            (req) => {
+                if (!isLoading) {
+                    req.reply({
+                        fixture:
+                            "ImmunizationService/vaccineProofNotLoaded.json",
+                    });
+                } else {
+                    req.reply({
+                        fixture:
+                            "ImmunizationService/vaccineProofNotAvailable.json",
+                    });
+                }
+                isLoading = !isLoading;
+            }
+        );
+
+        cy.intercept("GET", "**/Laboratory/Covid19Orders*", {
+            fixture: "LaboratoryService/covid19Orders.json",
+        });
+        cy.intercept("GET", "**/UserProfile/*/Dependent", {
+            fixture: "UserProfileService/dependent.json",
+        });
+        cy.enableModules([
+            "CovidLabResults",
+            "Laboratory",
+            "Dependent",
+            "Immunization",
+        ]);
+
+        cy.login(
+            Cypress.env("keycloak.username"),
+            Cypress.env("keycloak.password"),
+            AuthMethod.KeyCloak,
+            "/dependents"
+        );
+
+        cy.get("[data-testid=covid19TabTitle]").last().parent().click();
+        cy.get(
+            `[data-testid=download-proof-of-vaccination-btn-${validHdid}]`
+        ).click({ force: true });
+        cy.get("[data-testid=genericMessageModal]").should("be.visible");
+        cy.get("[data-testid=genericMessageSubmitBtn]").click();
+        cy.get("[data-testid=loadingSpinner]").should("be.visible");
+        cy.get("[data-testid=genericMessageModal]").should("be.visible");
+        cy.get("[data-testid=genericMessageOkBtn]")
+            .should("be.visible")
+            .click({ force: true });
+    });
+});
+
 describe("Dependents - Immuniazation Tab - Enabled", () => {
     const dependentHdid = "645645767756756767";
     beforeEach(() => {
@@ -140,7 +249,10 @@ describe("Dependents - Immuniazation Tab - Enabled", () => {
         cy.get("[data-testid=genericMessageModal]").should("be.visible");
         cy.get("[data-testid=genericMessageSubmitBtn]").click();
 
-        cy.verifyDownload("HealthGatewayDependentImmunizationReport.pdf");
+        cy.verifyDownload("HealthGatewayDependentImmunizationReport.pdf", {
+            timeout: 60000,
+            interval: 5000,
+        });
 
         // Click download dropdown
         cy.get(
@@ -160,7 +272,10 @@ describe("Dependents - Immuniazation Tab - Enabled", () => {
         cy.get("[data-testid=genericMessageModal]").should("be.visible");
         cy.get("[data-testid=genericMessageSubmitBtn]").click();
 
-        cy.verifyDownload("HealthGatewayDependentImmunizationReport.csv");
+        cy.verifyDownload("HealthGatewayDependentImmunizationReport.csv", {
+            timeout: 60000,
+            interval: 5000,
+        });
 
         // Click download dropdown
         cy.get(
@@ -180,7 +295,10 @@ describe("Dependents - Immuniazation Tab - Enabled", () => {
         cy.get("[data-testid=genericMessageModal]").should("be.visible");
         cy.get("[data-testid=genericMessageSubmitBtn]").click();
 
-        cy.verifyDownload("HealthGatewayDependentImmunizationReport.xlsx");
+        cy.verifyDownload("HealthGatewayDependentImmunizationReport.xlsx", {
+            timeout: 60000,
+            interval: 5000,
+        });
     });
 
     it("Immunization - Forecast - Tab - Configuration Enabled", () => {
@@ -213,7 +331,10 @@ describe("Dependents - Immuniazation Tab - Enabled", () => {
         cy.get("[data-testid=genericMessageModal]").should("be.visible");
         cy.get("[data-testid=genericMessageSubmitBtn]").click();
 
-        cy.verifyDownload("HealthGatewayDependentImmunizationReport.pdf");
+        cy.verifyDownload("HealthGatewayDependentImmunizationReport.pdf", {
+            timeout: 60000,
+            interval: 5000,
+        });
 
         // Click download dropdown
         cy.get(
@@ -233,7 +354,10 @@ describe("Dependents - Immuniazation Tab - Enabled", () => {
         cy.get("[data-testid=genericMessageModal]").should("be.visible");
         cy.get("[data-testid=genericMessageSubmitBtn]").click();
 
-        cy.verifyDownload("HealthGatewayDependentImmunizationReport.csv");
+        cy.verifyDownload("HealthGatewayDependentImmunizationReport.csv", {
+            timeout: 60000,
+            interval: 5000,
+        });
 
         // Click download dropdown
         cy.get(
@@ -253,7 +377,10 @@ describe("Dependents - Immuniazation Tab - Enabled", () => {
         cy.get("[data-testid=genericMessageModal]").should("be.visible");
         cy.get("[data-testid=genericMessageSubmitBtn]").click();
 
-        cy.verifyDownload("HealthGatewayDependentImmunizationReport.xlsx");
+        cy.verifyDownload("HealthGatewayDependentImmunizationReport.xlsx", {
+            timeout: 60000,
+            interval: 5000,
+        });
     });
 
     it("Immunization tab - No Data Found", () => {

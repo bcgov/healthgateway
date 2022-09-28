@@ -8,13 +8,14 @@ import {
 
 import { ErrorType } from "@/constants/errorType";
 import { DateWrapper } from "@/models/dateWrapper";
+import { ResultError } from "@/models/errors";
 import PatientData from "@/models/patientData";
 import { QuickLink } from "@/models/quickLink";
-import { ResultError } from "@/models/requestResult";
+import RequestResult from "@/models/requestResult";
 import { LoadStatus } from "@/models/storeOperations";
 import User, { OidcUserInfo } from "@/models/user";
 import { UserPreference } from "@/models/userPreference";
-import UserProfile from "@/models/userProfile";
+import UserProfile, { CreateUserRequest } from "@/models/userProfile";
 import { RootState } from "@/store/types";
 
 export interface UserState {
@@ -45,6 +46,10 @@ export interface UserGetters extends GetterTree<UserState, RootState> {
 
 type StoreContext = ActionContext<UserState, RootState>;
 export interface UserActions extends ActionTree<UserState, RootState> {
+    createProfile(
+        context: StoreContext,
+        params: { request: CreateUserRequest }
+    ): Promise<void>;
     checkRegistration(context: StoreContext): Promise<boolean>;
     updateUserEmail(
         context: StoreContext,
@@ -66,6 +71,10 @@ export interface UserActions extends ActionTree<UserState, RootState> {
         context: StoreContext,
         params: { hdid: string; quickLinks: QuickLink[] }
     ): Promise<void>;
+    validateEmail(
+        context: StoreContext,
+        params: { inviteKey: string }
+    ): Promise<RequestResult<boolean>>;
     closeUserAccount(context: StoreContext): Promise<void>;
     recoverUserAccount(context: StoreContext): Promise<void>;
     retrievePatientData(context: StoreContext): Promise<void>;
@@ -78,6 +87,7 @@ export interface UserActions extends ActionTree<UserState, RootState> {
 export interface UserMutation extends MutationTree<UserState> {
     setOidcUserInfo(state: UserState, userInfo: OidcUserInfo): void;
     setProfileUserData(state: UserState, userProfile: UserProfile): void;
+    setEmailVerified(state: UserState): void;
     setSMSResendDateTime(state: UserState, dateTime: DateWrapper): void;
     setUserPreference(state: UserState, userPreference: UserPreference): void;
     setPatientData(state: UserState, patientData: PatientData): void;

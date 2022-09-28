@@ -22,52 +22,22 @@ namespace HealthGateway.Common.Auditing
     using System.Security.Claims;
     using HealthGateway.Common.Data.Constants;
     using HealthGateway.Database.Constants;
-    using HealthGateway.Database.Delegates;
     using HealthGateway.Database.Models;
     using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Routing;
-    using Microsoft.Extensions.Logging;
+    using Microsoft.Extensions.Primitives;
 
-    #pragma warning disable CA1303 // Do not pass literals as localized parameters
+#pragma warning disable CA1303 // Do not pass literals as localized parameters
 
     /// <summary>
-    /// The Authorization service.
+    /// The Abstract Audit Logger service.
     /// </summary>
-    public class AuditLogger : IAuditLogger
+    public abstract class AuditLogger : IAuditLogger
     {
-        private readonly ILogger<IAuditLogger> logger;
+        /// <inheritdoc/>
+        public abstract void WriteAuditEvent(AuditEvent auditEvent);
 
-        private readonly IWriteAuditEventDelegate writeEventDelegate;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="AuditLogger"/> class.
-        /// </summary>
-        /// <param name="logger">The logger.</param>
-        /// <param name="writeEventDelegate">The audit event delegate.</param>
-        public AuditLogger(ILogger<IAuditLogger> logger, IWriteAuditEventDelegate writeEventDelegate)
-        {
-            this.logger = logger;
-            this.writeEventDelegate = writeEventDelegate;
-        }
-
-        /// <inheritdoc />
-        public void WriteAuditEvent(AuditEvent auditEvent)
-        {
-            #pragma warning disable CA1031 // Modify 'WriteAuditEvent' to catch a more specific exception type, or rethrow the exception.
-            this.logger.LogDebug(@"Begin WriteAuditEvent(auditEvent)");
-            try
-            {
-                this.writeEventDelegate.WriteAuditEvent(auditEvent);
-                this.logger.LogDebug(@"Saved AuditEvent");
-            }
-            catch (Exception ex)
-            {
-                this.logger.LogError(ex, @"In WriteAuditEvent");
-            }
-            #pragma warning restore CA1303
-        }
-
-        /// <inheritdoc />
+        /// <inheritdoc/>
         public void PopulateWithHttpContext(HttpContext context, AuditEvent auditEvent)
         {
             ClaimsIdentity? claimsIdentity = context.User.Identity as ClaimsIdentity;
@@ -78,13 +48,17 @@ namespace HealthGateway.Common.Auditing
             string? idir = idirClaim?.Value;
 
             // Query PHN header for Admin WebClient CovidCard actions
-            context.Request.Headers.TryGetValue("phn", out var phnHeader);
+            context.Request.Headers.TryGetValue("phn", out StringValues phnHeader);
             string? subjectPhn = phnHeader.FirstOrDefault();
+
+            // Query Request Parameters for queryString for AdminWebClient Support actions
+            context.Request.Query.TryGetValue("queryString", out StringValues queryString);
+            string? subjectQuery = queryString.FirstOrDefault();
 
             auditEvent.ApplicationType = GetApplicationType();
             auditEvent.TransactionResultCode = GetTransactionResultType(context.Response.StatusCode);
 
-            auditEvent.ApplicationSubject = hdid ?? subjectPhn;
+            auditEvent.ApplicationSubject = hdid ?? subjectPhn ?? subjectQuery;
             auditEvent.CreatedBy = hdid ?? idir ?? UserId.DefaultUser;
 
             RouteValueDictionary routeValues = context.Request.RouteValues;
@@ -95,8 +69,7 @@ namespace HealthGateway.Common.Auditing
             RouteData routeData = context.GetRouteData();
 
             // Some routes might not have the version
-            auditEvent.TransactionVersion = routeData?.Values["version"] != null ?
-                routeData.Values["version"]?.ToString() : string.Empty;
+            auditEvent.TransactionVersion = routeData?.Values["version"] != null ? routeData.Values["version"]?.ToString() : string.Empty;
         }
 
         /// <summary>
@@ -157,6 +130,8 @@ namespace HealthGateway.Common.Auditing
                     return ApplicationType.Laboratory;
                 case "Encounter":
                     return ApplicationType.Encounter;
+                case "ClinicalDocument":
+                    return ApplicationType.ClinicalDocument;
                 case "ReSharperTestRunner":
                 case "testhost":
                     return ApplicationType.Configuration;
@@ -166,5 +141,5 @@ namespace HealthGateway.Common.Auditing
         }
     }
 
-    #pragma warning restore CA1303 // Do not pass literals as localized parameters
+#pragma warning restore CA1303 // Do not pass literals as localized parameters
 }

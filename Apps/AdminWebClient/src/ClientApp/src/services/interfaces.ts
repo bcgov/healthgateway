@@ -1,6 +1,5 @@
 import { Dictionary } from "vue-router/types/router";
 
-import Communication from "@/models/adminCommunication";
 import AuthenticationData from "@/models/authenticationData";
 import CovidCardDocumentResult from "@/models/covidCardDocumentResult";
 import CovidCardMailRequest from "@/models/covidCardMailRequest";
@@ -9,7 +8,7 @@ import CovidTreatmentAssessmentDetails from "@/models/covidTreatmentAssessmentDe
 import CovidTreatmentAssessmentRequest from "@/models/covidTreatmentAssessmentRequest";
 import ExternalConfiguration from "@/models/externalConfiguration";
 import MessageVerification from "@/models/messageVerification";
-import UserFeedback, { AdminTag, UserFeedbackTag } from "@/models/userFeedback";
+import RequestResult from "@/models/requestResult";
 import { QueryType } from "@/models/userQuery";
 
 export interface IConfigService {
@@ -25,46 +24,12 @@ export interface IAuthenticationService {
     destroyToken(): Promise<void>;
 }
 
-export interface IUserFeedbackService {
-    initialize(http: IHttpDelegate): void;
-    getFeedbackList(): Promise<UserFeedback[]>;
-    toggleReviewed(feedback: UserFeedback): Promise<boolean>;
-    getAllTags(): Promise<AdminTag[]>;
-    createTag(feedbackId: string, tagName: string): Promise<UserFeedbackTag>;
-    associateTag(feedbackId: string, tag: AdminTag): Promise<UserFeedbackTag>;
-    removeTag(feedbackId: string, tag: UserFeedbackTag): Promise<boolean>;
-}
-
-export interface IDashboardService {
-    initialize(http: IHttpDelegate): void;
-    getRegisteredUsersCount(): Promise<{ [key: string]: number }>;
-    getLoggedInUsersCount(): Promise<{ [key: string]: number }>;
-    getDependentCount(): Promise<{ [key: string]: number }>;
-    getRecurrentUserCount(
-        days: number,
-        startPeriodDate: string,
-        endPeriodDate: string
-    ): Promise<number>;
-    getRatings(
-        startPeriodDate: string,
-        endPeriodDate: string
-    ): Promise<{ [key: string]: number }>;
-}
-
-export interface ICommunicationService {
-    initialize(http: IHttpDelegate): void;
-    add(communication: Communication): Promise<Communication>;
-    update(communication: Communication): Promise<void>;
-    getAll(): Promise<Communication[]>;
-    delete(communication: Communication): Promise<void>;
-}
-
 export interface ISupportService {
     initialize(http: IHttpDelegate): void;
     getMessageVerifications(
         type: QueryType,
         query: string
-    ): Promise<MessageVerification[]>;
+    ): Promise<RequestResult<MessageVerification[]>>;
 }
 
 export interface ICovidSupportService {

@@ -18,7 +18,6 @@ import MedicationHistoryReportComponent from "@/components/report/MedicationHist
 import MedicationRequestReportComponent from "@/components/report/MedicationRequestReportComponent.vue";
 import MSPVisitsReportComponent from "@/components/report/MSPVisitsReportComponent.vue";
 import NotesReportComponent from "@/components/report/NotesReportComponent.vue";
-import ResourceCentreComponent from "@/components/ResourceCentreComponent.vue";
 import BreadcrumbItem from "@/models/breadcrumbItem";
 import type { WebClientConfiguration } from "@/models/configData";
 import { DateWrapper, StringISODate } from "@/models/dateWrapper";
@@ -26,7 +25,7 @@ import MedicationStatementHistory from "@/models/medicationStatementHistory";
 import MedicationSummary from "@/models/medicationSummary";
 import PatientData from "@/models/patientData";
 import Report from "@/models/report";
-import ReportFilter, { ReportFilterBuilder } from "@/models/reportFilter";
+import { ReportFilterBuilder } from "@/models/reportFilter";
 import ReportHeader from "@/models/reportHeader";
 import { ReportFormatType } from "@/models/reportRequest";
 import RequestResult from "@/models/requestResult";
@@ -55,7 +54,6 @@ const laboratoryReport = "laboratory-report";
         medicationRequestReport: MedicationRequestReportComponent,
         "hg-date-picker": DatePickerComponent,
         MultiSelectComponent,
-        "resource-centre": ResourceCentreComponent,
         noteReport: NotesReportComponent,
         laboratoryReport: LaboratoryReportComponent,
     },
@@ -99,7 +97,7 @@ export default class ReportsView extends Vue {
 
     private hasRecords = false;
 
-    private reportFilter: ReportFilter = ReportFilterBuilder.create().build();
+    private reportFilter = ReportFilterBuilder.create().build();
 
     private logger!: ILogger;
 
@@ -125,14 +123,14 @@ export default class ReportsView extends Vue {
         };
     }
 
-    private get isMedicationReport() {
+    private get isMedicationReport(): boolean {
         return this.reportComponentName === medicationReport;
     }
 
     private get medicationOptions(): SelectOption[] {
-        var medications = this.medicationStatements.reduce<MedicationSummary[]>(
+        let medications = this.medicationStatements.reduce<MedicationSummary[]>(
             (acumulator: MedicationSummary[], current) => {
-                var med = current.medicationSummary;
+                let med = current.medicationSummary;
                 if (
                     acumulator.findIndex((x) => x.brandName === med.brandName) <
                     0
@@ -146,12 +144,10 @@ export default class ReportsView extends Vue {
 
         medications.sort((a, b) => a.brandName.localeCompare(b.brandName));
 
-        return medications.map<SelectOption>((x) => {
-            return {
-                text: x.brandName,
-                value: x.brandName,
-            };
-        });
+        return medications.map<SelectOption>((x) => ({
+            text: x.brandName,
+            value: x.brandName,
+        }));
     }
 
     private get isDownloadDisabled(): boolean {
@@ -175,7 +171,7 @@ export default class ReportsView extends Vue {
         return DateWrapper.format(date);
     }
 
-    private created() {
+    private created(): void {
         this.logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
         this.retrievePatientData();
 
@@ -223,34 +219,34 @@ export default class ReportsView extends Vue {
         }
     }
 
-    private clearFilter() {
+    private clearFilter(): void {
         this.selectedStartDate = null;
         this.selectedEndDate = null;
         this.selectedMedicationOptions = [];
         this.updateFilter();
     }
 
-    private clearFilterDates() {
+    private clearFilterDates(): void {
         this.selectedStartDate = null;
         this.selectedEndDate = null;
         this.updateFilter();
     }
 
-    private clearFilterMedication(medicationName: string) {
-        var index = this.selectedMedicationOptions.indexOf(medicationName);
+    private clearFilterMedication(medicationName: string): void {
+        let index = this.selectedMedicationOptions.indexOf(medicationName);
         if (index >= 0) {
             this.selectedMedicationOptions.splice(index, 1);
             this.updateFilter();
         }
     }
 
-    private cancelFilter() {
+    private cancelFilter(): void {
         this.selectedStartDate = this.reportFilter.startDate;
         this.selectedEndDate = this.reportFilter.endDate;
         this.selectedMedicationOptions = this.reportFilter.medications;
     }
 
-    private updateFilter() {
+    private updateFilter(): void {
         this.reportFilter = ReportFilterBuilder.create()
             .withStartDate(this.selectedStartDate)
             .withEndDate(this.selectedEndDate)
@@ -258,12 +254,12 @@ export default class ReportsView extends Vue {
             .build();
     }
 
-    private showConfirmationModal(reportFormatType: ReportFormatType) {
+    private showConfirmationModal(reportFormatType: ReportFormatType): void {
         this.reportFormatType = reportFormatType;
         this.messageModal.showModal();
     }
 
-    private downloadReport() {
+    private downloadReport(): void {
         if (this.reportComponentName === "") {
             return;
         }
@@ -277,18 +273,20 @@ export default class ReportsView extends Vue {
             .then((result: RequestResult<Report>) => {
                 const mimeType = this.getMimeType(this.reportFormatType);
                 const downloadLink = `data:${mimeType};base64,${result.resourcePayload.data}`;
-                fetch(downloadLink).then((res) => {
-                    res.blob().then((blob) => {
-                        saveAs(blob, result.resourcePayload.fileName);
-                    });
-                });
+                fetch(downloadLink).then((res) =>
+                    res
+                        .blob()
+                        .then((blob) =>
+                            saveAs(blob, result.resourcePayload.fileName)
+                        )
+                );
             })
             .finally(() => {
                 this.isGeneratingReport = false;
             });
     }
 
-    private getMimeType(reportFormatType: ReportFormatType) {
+    private getMimeType(reportFormatType: ReportFormatType): string {
         switch (reportFormatType) {
             case ReportFormatType.PDF:
                 return "application/pdf";
@@ -337,7 +335,7 @@ export default class ReportsView extends Vue {
 </script>
 
 <template>
-    <div class="m-3 m-md-4 flex-grow-1 d-flex flex-column">
+    <div>
         <BreadcrumbComponent :items="breadcrumbItems" />
         <b-alert
             v-if="showLaboratoryOrderQueuedMessage"
@@ -521,7 +519,7 @@ export default class ReportsView extends Vue {
             :is-loading="isLoading || isGeneratingReport"
             :is-custom="!isGeneratingReport"
             :full-screen="false"
-        ></LoadingComponent>
+        />
         <div
             v-if="reportComponentName"
             data-testid="reportSample"
@@ -557,7 +555,6 @@ export default class ReportsView extends Vue {
             </b-row>
         </div>
 
-        <resource-centre />
         <message-modal
             ref="messageModal"
             data-testid="messageModal"
@@ -570,6 +567,7 @@ export default class ReportsView extends Vue {
 
 <style lang="scss" scoped>
 @import "@/assets/scss/_variables.scss";
+
 .column-wrapper {
     border: 1px;
 }
@@ -580,11 +578,13 @@ export default class ReportsView extends Vue {
     overflow-y: scroll;
     overflow-x: scroll;
 }
+
 .form {
     background-color: $soft_background;
     border: $lightGrey solid 1px;
     border-radius: 5px 5px 5px 5px;
 }
+
 .filter-selected {
     background-color: $aquaBlue;
     color: white;

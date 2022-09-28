@@ -8,8 +8,8 @@ import { Action, Getter } from "vuex-class";
 import { EntryType, entryTypeMap } from "@/constants/entryType";
 import { ErrorSourceType, ErrorType } from "@/constants/errorType";
 import EventBus, { EventMessageName } from "@/eventbus";
+import { ResultError } from "@/models/errors";
 import NoteTimelineEntry from "@/models/noteTimelineEntry";
-import { ResultError } from "@/models/requestResult";
 import User from "@/models/user";
 import UserNote from "@/models/userNote";
 
@@ -60,11 +60,13 @@ export default class NoteTimelineComponent extends Vue {
                 note: this.entry.toModel(),
             })
                 .catch((err: ResultError) => {
-                    this.addError({
-                        errorType: ErrorType.Delete,
-                        source: ErrorSourceType.Note,
-                        traceId: err.traceId,
-                    });
+                    if (err.statusCode !== 429) {
+                        this.addError({
+                            errorType: ErrorType.Delete,
+                            source: ErrorSourceType.Note,
+                            traceId: err.traceId,
+                        });
+                    }
                 })
                 .finally(() => {
                     this.isSaving = false;
@@ -72,7 +74,7 @@ export default class NoteTimelineComponent extends Vue {
         }
     }
 
-    private handleEdit() {
+    private handleEdit(): void {
         this.eventBus.$emit(EventMessageName.EditNote, this.entry);
     }
 }
@@ -139,6 +141,7 @@ export default class NoteTimelineComponent extends Vue {
 
 <style lang="scss">
 @import "@/assets/scss/_variables.scss";
+
 .note-icon {
     background-color: $bcgold !important;
 }

@@ -1,0 +1,13 @@
+{
+    "resourcePayload": [],
+    "totalResultCount": null,
+    "pageIndex": null,
+    "pageSize": null,
+    "resultStatus": 0,
+    "resultError": {
+        "resultMessage": "Client Registry did not find any records",
+        "errorCode": "Admin.ServerServer-CE-CR",
+        "traceId": "dcefcce28a1a4e378b2beddb2df13934",
+        "actionCode": null
+    }
+}

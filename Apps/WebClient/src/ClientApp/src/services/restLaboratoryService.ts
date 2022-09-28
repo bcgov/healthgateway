@@ -1,9 +1,10 @@
 import { injectable } from "inversify";
 
 import { ResultType } from "@/constants/resulttype";
+import { ServiceCode } from "@/constants/serviceCodes";
 import { Dictionary } from "@/models/baseTypes";
 import { ExternalConfiguration } from "@/models/configData";
-import { ServiceName } from "@/models/errorInterfaces";
+import { HttpError } from "@/models/errors";
 import {
     Covid19LaboratoryOrderResult,
     LaboratoryOrderResult,
@@ -22,7 +23,7 @@ import ErrorTranslator from "@/utility/errorTranslator";
 
 @injectable()
 export class RestLaboratoryService implements ILaboratoryService {
-    private logger: ILogger = container.get(SERVICE_IDENTIFIER.Logger);
+    private logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
     private readonly LABORATORY_BASE_URI: string = "Laboratory";
     private readonly PUBLIC_LABORATORY_BASE_URI: string = "PublicLaboratory";
     private baseUri = "";
@@ -48,7 +49,7 @@ export class RestLaboratoryService implements ILaboratoryService {
         return new Promise((resolve, reject) => {
             if (!this.isCovid19Enabled) {
                 reject(
-                    ErrorTranslator.moduleDisabledError(ServiceName.Laboratory)
+                    ErrorTranslator.moduleDisabledError(ServiceCode.Laboratory)
                 );
                 return;
             }
@@ -61,15 +62,15 @@ export class RestLaboratoryService implements ILaboratoryService {
                     `${this.baseUri}${this.PUBLIC_LABORATORY_BASE_URI}/CovidTests`,
                     headers
                 )
-                .then((requestResult) => {
-                    resolve(requestResult);
-                })
-                .catch((err) => {
-                    this.logger.error(`getCovidTests Fetch error: ${err}`);
+                .then((requestResult) => resolve(requestResult))
+                .catch((err: HttpError) => {
+                    this.logger.error(
+                        `Error in RestLaboratoryService.getPublicCovid19Tests()`
+                    );
                     reject(
                         ErrorTranslator.internalNetworkError(
                             err,
-                            ServiceName.Laboratory
+                            ServiceCode.Laboratory
                         )
                     );
                 });
@@ -94,15 +95,15 @@ export class RestLaboratoryService implements ILaboratoryService {
                 .getWithCors<RequestResult<Covid19LaboratoryOrderResult>>(
                     `${this.baseUri}${this.LABORATORY_BASE_URI}/Covid19Orders?hdid=${hdid}`
                 )
-                .then((requestResult) => {
-                    resolve(requestResult);
-                })
-                .catch((err) => {
-                    this.logger.error(`getOrders Fetch error: ${err}`);
+                .then((requestResult) => resolve(requestResult))
+                .catch((err: HttpError) => {
+                    this.logger.error(
+                        `Error in RestLaboratoryService.getCovid19LaboratoryOrders()`
+                    );
                     reject(
                         ErrorTranslator.internalNetworkError(
                             err,
-                            ServiceName.Laboratory
+                            ServiceCode.Laboratory
                         )
                     );
                 });
@@ -132,17 +133,15 @@ export class RestLaboratoryService implements ILaboratoryService {
                 .getWithCors<RequestResult<LaboratoryOrderResult>>(
                     `${this.baseUri}${this.LABORATORY_BASE_URI}/LaboratoryOrders?hdid=${hdid}`
                 )
-                .then((requestResult) => {
-                    resolve(requestResult);
-                })
-                .catch((err) => {
+                .then((requestResult) => resolve(requestResult))
+                .catch((err: HttpError) => {
                     this.logger.error(
-                        `getLaboratoryOrders Fetch error: ${err}`
+                        `Error in RestLaboratoryService.getLaboratoryOrders()`
                     );
                     reject(
                         ErrorTranslator.internalNetworkError(
                             err,
-                            ServiceName.Laboratory
+                            ServiceCode.Laboratory
                         )
                     );
                 });
@@ -172,15 +171,15 @@ export class RestLaboratoryService implements ILaboratoryService {
                 .getWithCors<RequestResult<LaboratoryReport>>(
                     `${this.baseUri}${this.LABORATORY_BASE_URI}/${reportId}/Report?hdid=${hdid}&isCovid19=${isCovid19}`
                 )
-                .then((requestResult) => {
-                    resolve(requestResult);
-                })
-                .catch((err) => {
-                    this.logger.error(`getReportDocument Fetch error: ${err}`);
+                .then((requestResult) => resolve(requestResult))
+                .catch((err: HttpError) => {
+                    this.logger.error(
+                        `Error in RestLaboratoryService.getReportDocument()`
+                    );
                     reject(
                         ErrorTranslator.internalNetworkError(
                             err,
-                            ServiceName.Laboratory
+                            ServiceCode.Laboratory
                         )
                     );
                 });

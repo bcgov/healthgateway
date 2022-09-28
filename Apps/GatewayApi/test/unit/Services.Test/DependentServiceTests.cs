@@ -45,7 +45,6 @@ namespace HealthGateway.GatewayApi.Test.Services
         private readonly string mockPHN = "MockPHN";
         private readonly string mockFirstName = "MockFirstName";
         private readonly string mockLastName = "MockLastName";
-        private readonly DateTime mockTestDate = new(2020, 1, 10);
         private readonly DateTime mockDateOfBirth = new(2010, 10, 10);
         private readonly string mockGender = "Male";
         private readonly string mockHdId = "MockHdId";
@@ -250,7 +249,8 @@ namespace HealthGateway.GatewayApi.Test.Services
                 mockUserProfileDelegate.Object,
                 new Mock<IPatientService>().Object,
                 mockNotificationSettingsService.Object,
-                mockDependentDelegate.Object);
+                mockDependentDelegate.Object,
+                Utils.MapperUtil.InitializeAutoMapper());
 
             RequestResult<DependentModel> actualResult = service.Remove(delegateModel);
 
@@ -280,7 +280,8 @@ namespace HealthGateway.GatewayApi.Test.Services
                 mockUserProfileDelegate.Object,
                 mockPatientService.Object,
                 mockNotificationSettingsService.Object,
-                mockDependentDelegate.Object);
+                mockDependentDelegate.Object,
+                Utils.MapperUtil.InitializeAutoMapper());
         }
 
         private IEnumerable<ResourceDelegate> GenerateMockResourceDelegatesList()
@@ -405,7 +406,8 @@ namespace HealthGateway.GatewayApi.Test.Services
                 mockUserProfileDelegate.Object,
                 mockPatientService.Object,
                 mockNotificationSettingsService.Object,
-                mockDependentDelegate.Object);
+                mockDependentDelegate.Object,
+                Utils.MapperUtil.InitializeAutoMapper());
         }
 
         private AddDependentRequest SetupMockInput()
@@ -415,7 +417,6 @@ namespace HealthGateway.GatewayApi.Test.Services
                 PHN = this.mockPHN,
                 FirstName = this.mockFirstName,
                 LastName = this.mockLastName,
-                TestDate = this.mockTestDate,
                 DateOfBirth = this.mockDateOfBirth,
             };
         }

@@ -28,6 +28,9 @@ namespace HealthGateway.WebClient.Controllers
         /// The default page for the home controller.
         /// </summary>
         /// <returns>The default view.</returns>
-        public IActionResult Index() => this.View();
+        public IActionResult Index()
+        {
+            return this.View();
+        }
     }
 }

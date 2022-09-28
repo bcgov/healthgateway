@@ -89,7 +89,7 @@ namespace HealthGateway.Common.AccessManagement.Authorization.Handlers
             }
             else
             {
-                this.logger.LogInformation($"Unable to validate resource owner for {resourceHDID} as no HDID claims present");
+                this.logger.LogDebug($"Unable to validate resource owner for {resourceHDID} as no HDID claims present");
             }
 
             return retVal;
@@ -131,7 +131,7 @@ namespace HealthGateway.Common.AccessManagement.Authorization.Handlers
         /// <returns>An array of acceptable scopes.</returns>
         private static string[] GetAcceptedScopes(string type, FhirRequirement requirement)
         {
-            string[] acceptedScopes = new string[]
+            string[] acceptedScopes =
             {
                 $"{type}/{FhirResource.Wildcard}.{FhirAccessType.Wildcard}",
                 $"{type}/{FhirResource.Wildcard}.{requirement.AccessType}",

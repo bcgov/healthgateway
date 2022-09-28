@@ -6,6 +6,7 @@ import { Component, Emit, Prop } from "vue-property-decorator";
 import { Action, Getter } from "vuex-class";
 
 import { DateWrapper } from "@/models/dateWrapper";
+import { ResultError } from "@/models/errors";
 import User from "@/models/user";
 import type { UserComment } from "@/models/userComment";
 import container from "@/plugins/container";
@@ -16,9 +17,11 @@ library.add(faArrowCircleUp, faLock);
 
 @Component
 export default class AddCommentComponent extends Vue {
-    @Prop() comment!: UserComment;
+    @Prop()
+    comment!: UserComment;
 
-    @Getter("user", { namespace: "user" }) user!: User;
+    @Getter("user", { namespace: "user" })
+    user!: User;
 
     @Action("createComment", { namespace: "comment" })
     createComment!: (params: {
@@ -26,11 +29,14 @@ export default class AddCommentComponent extends Vue {
         comment: UserComment;
     }) => Promise<UserComment | undefined>;
 
+    @Action("setTooManyRequestsError", { namespace: "errorBanner" })
+    setTooManyRequestsError!: (params: { key: string }) => void;
+
     private commentInput = "";
     private logger!: ILogger;
     private isSaving = false;
 
-    private created() {
+    private created(): void {
         this.logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
     }
 
@@ -58,12 +64,16 @@ export default class AddCommentComponent extends Vue {
                     this.onCommentAdded(newComment);
                 }
             })
-            .catch((err) => {
+            .catch((err: ResultError) => {
                 this.logger.error(
                     `Error adding comment on entry ${
                         this.comment.parentEntryId
                     }: ${JSON.stringify(err)}`
                 );
+                if (err.statusCode === 429) {
+                    this.setTooManyRequestsError({ key: "page" });
+                    window.scrollTo(0, 0);
+                }
             })
             .finally(() => {
                 this.isSaving = false;
@@ -71,7 +81,7 @@ export default class AddCommentComponent extends Vue {
     }
 
     @Emit()
-    private onCommentAdded(comment: UserComment) {
+    private onCommentAdded(comment: UserComment): UserComment {
         return comment;
     }
 }
@@ -132,19 +142,24 @@ export default class AddCommentComponent extends Vue {
 
 <style lang="scss" scoped>
 @import "@/assets/scss/_variables.scss";
+
 .col {
     padding: 0px;
     margin: 0px;
 }
+
 .row {
     padding: 0;
     margin: 0px;
 }
+
 .comment-input {
     border-right: 0px;
+
     &.faded {
         background-color: $soft-background;
     }
+
     &.single-line {
         height: 38px !important;
     }

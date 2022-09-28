@@ -29,7 +29,7 @@ export interface ImmunizationEvent {
 
 export interface Recommendation {
     recommendationSetId: string;
-    disseaseEligibleDate?: StringISODate;
+    diseaseEligibleDate?: StringISODate;
     diseaseDueDate?: StringISODate;
     agentEligibleDate?: StringISODate;
     agentDueDate?: StringISODate;

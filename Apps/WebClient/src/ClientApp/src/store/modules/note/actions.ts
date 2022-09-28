@@ -1,6 +1,7 @@
 import { ErrorSourceType, ErrorType } from "@/constants/errorType";
 import { ResultType } from "@/constants/resulttype";
-import RequestResult, { ResultError } from "@/models/requestResult";
+import { ResultError } from "@/models/errors";
+import RequestResult from "@/models/requestResult";
 import { LoadStatus } from "@/models/storeOperations";
 import UserNote from "@/models/userNote";
 import container from "@/plugins/container";
@@ -14,8 +15,8 @@ export const actions: NoteActions = {
         context,
         params: { hdid: string }
     ): Promise<RequestResult<UserNote[]>> {
-        const logger: ILogger = container.get(SERVICE_IDENTIFIER.Logger);
-        const noteService: IUserNoteService = container.get<IUserNoteService>(
+        const logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
+        const noteService = container.get<IUserNoteService>(
             SERVICE_IDENTIFIER.UserNoteService
         );
 
@@ -61,11 +62,11 @@ export const actions: NoteActions = {
         context,
         params: { hdid: string; note: UserNote }
     ): Promise<UserNote | undefined> {
-        const noteService: IUserNoteService = container.get<IUserNoteService>(
+        const noteService = container.get<IUserNoteService>(
             SERVICE_IDENTIFIER.UserNoteService
         );
 
-        return new Promise((resolve, reject) => {
+        return new Promise((resolve, reject) =>
             noteService
                 .createNote(params.hdid, params.note)
                 .then((result) => {
@@ -78,17 +79,18 @@ export const actions: NoteActions = {
                         errorType: ErrorType.Create,
                     });
                     reject(error);
-                });
-        });
+                })
+        );
     },
     updateNote(
         context,
         params: { hdid: string; note: UserNote }
     ): Promise<UserNote> {
-        const noteService: IUserNoteService = container.get<IUserNoteService>(
+        const noteService = container.get<IUserNoteService>(
             SERVICE_IDENTIFIER.UserNoteService
         );
-        return new Promise<UserNote>((resolve, reject) => {
+
+        return new Promise<UserNote>((resolve, reject) =>
             noteService
                 .updateNote(params.hdid, params.note)
                 .then((result) => {
@@ -101,17 +103,18 @@ export const actions: NoteActions = {
                         errorType: ErrorType.Update,
                     });
                     reject(error);
-                });
-        });
+                })
+        );
     },
     deleteNote(
         context,
         params: { hdid: string; note: UserNote }
     ): Promise<void> {
-        const noteService: IUserNoteService = container.get<IUserNoteService>(
+        const noteService = container.get<IUserNoteService>(
             SERVICE_IDENTIFIER.UserNoteService
         );
-        return new Promise((resolve, reject) => {
+
+        return new Promise((resolve, reject) =>
             noteService
                 .deleteNote(params.hdid, params.note)
                 .then(() => {
@@ -124,22 +127,45 @@ export const actions: NoteActions = {
                         errorType: ErrorType.Delete,
                     });
                     reject(error);
-                });
-        });
+                })
+        );
     },
     handleError(context, params: { error: ResultError; errorType: ErrorType }) {
-        const logger: ILogger = container.get(SERVICE_IDENTIFIER.Logger);
+        const logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
 
         logger.error(`ERROR: ${JSON.stringify(params.error)}`);
         context.commit("noteError", params.error);
-        context.dispatch(
-            "errorBanner/addError",
-            {
-                errorType: params.errorType,
-                source: ErrorSourceType.Note,
-                traceId: params.error.traceId,
-            },
-            { root: true }
-        );
+
+        if (params.error.statusCode === 429) {
+            if (params.errorType === ErrorType.Retrieve) {
+                context.dispatch(
+                    "errorBanner/setTooManyRequestsWarning",
+                    { key: "page" },
+                    { root: true }
+                );
+            } else if (params.errorType === ErrorType.Delete) {
+                context.dispatch(
+                    "errorBanner/setTooManyRequestsError",
+                    { key: "page" },
+                    { root: true }
+                );
+            } else {
+                context.dispatch(
+                    "errorBanner/setTooManyRequestsError",
+                    { key: "noteEditModal" },
+                    { root: true }
+                );
+            }
+        } else {
+            context.dispatch(
+                "errorBanner/addError",
+                {
+                    errorType: params.errorType,
+                    source: ErrorSourceType.Note,
+                    traceId: params.error.traceId,
+                },
+                { root: true }
+            );
+        }
     },
 };

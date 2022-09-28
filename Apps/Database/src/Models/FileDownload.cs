@@ -19,9 +19,8 @@ namespace HealthGateway.Database.Models
     using System.ComponentModel.DataAnnotations;
     using System.ComponentModel.DataAnnotations.Schema;
     using HealthGateway.Common.Data.Models;
-    using HealthGateway.Database.Constants;
 
-    /// <inheritdoc />
+    /// <inheritdoc/>
     public class FileDownload : AuditableEntity
     {
         /// <summary>

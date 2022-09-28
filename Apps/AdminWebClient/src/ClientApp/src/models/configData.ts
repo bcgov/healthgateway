@@ -8,9 +8,6 @@ export class ExternalConfiguration {
 
     // Gets or sets the Health Gateway Webclient specific configuration.
     public webClient!: WebClientConfiguration;
-
-    // Gets or sets the Service Endpoints.
-    public serviceEndpoints!: { [id: string]: string };
 }
 
 // An object representing a configured Health Gateway IdentityProvider.

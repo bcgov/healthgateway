@@ -5,9 +5,9 @@
     <DocumentationFile>bin\$(Configuration)\$(TargetFramework)\$(MSBuildThisFileName).xml</DocumentationFile>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="Macross.Json.Extensions" Version="2.2.0" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="6.0.5" />
-    <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="6.0.4" />
+    <PackageReference Include="Macross.Json.Extensions" Version="3.0.0" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="6.0.8" />
+    <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="6.0.6" />
   </ItemGroup>
 
   <ItemGroup>
@@ -26,7 +26,6 @@
 
   <ItemGroup>
     <Folder Include="Wrapper\" />
-    <Folder Include="Models\Cacheable\" />
   </ItemGroup>
 
 
@@ -44,6 +43,7 @@
     <EmbeddedResource Include="Assets\Legal\TermsOfService.20201224.html" />
     <EmbeddedResource Include="Assets\docs\AdminFeedback.html" />
     <EmbeddedResource Include="Assets\Legal\TermsOfService.20220519.html" />
+    <EmbeddedResource Include="Assets\Legal\TermsOfService.20220607.html" />
   </ItemGroup>
   <ItemGroup>
     <None Remove="Assets\Legal\TermsOfService.20191206.html" />

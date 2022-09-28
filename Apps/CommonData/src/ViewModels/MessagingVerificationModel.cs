@@ -100,7 +100,7 @@ namespace HealthGateway.Common.Data.ViewModels
 
         public static MessagingVerificationModel CreateFromDbModel(MessagingVerification model)
         {
-            return new MessagingVerificationModel()
+            return new MessagingVerificationModel
             {
                 Id = model.Id,
                 UserProfileId = model.UserProfileId,

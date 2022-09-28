@@ -1,0 +1,13 @@
+{
+    "resourcePayload": [],
+    "totalResultCount": null,
+    "pageIndex": null,
+    "pageSize": null,
+    "resultStatus": 2,
+    "resultError": {
+        "resultMessage": "Warning: The person returned is the subject of an potential linkage",
+        "errorCode": "BCHCIM.GD.0.0022",
+        "traceId": "318f18b697a9c22964d9da1ac0975a73",
+        "actionCode": "WARNING"
+    }
+}

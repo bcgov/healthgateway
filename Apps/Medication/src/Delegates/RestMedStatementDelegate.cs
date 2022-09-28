@@ -18,12 +18,14 @@ namespace HealthGateway.Medication.Delegates
     using System;
     using System.Collections.Generic;
     using System.Diagnostics;
+    using System.Diagnostics.CodeAnalysis;
     using System.Net.Http;
     using System.Net.Http.Headers;
     using System.Net.Mime;
     using System.Text.Json;
     using System.Text.Json.Serialization;
     using System.Threading.Tasks;
+    using HealthGateway.Common.CacheProviders;
     using HealthGateway.Common.Constants;
     using HealthGateway.Common.Data.Constants;
     using HealthGateway.Common.Data.Models.ErrorHandling;
@@ -32,13 +34,15 @@ namespace HealthGateway.Medication.Delegates
     using HealthGateway.Common.Delegates;
     using HealthGateway.Common.ErrorHandling;
     using HealthGateway.Common.Models;
+    using HealthGateway.Common.Models.Cacheable;
     using HealthGateway.Common.Models.ODR;
     using HealthGateway.Common.Services;
-    using HealthGateway.Database.Delegates;
-    using HealthGateway.Database.Models.Cacheable;
+    using HealthGateway.Medication.Constants;
     using HealthGateway.Medication.Models.ODR;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.Logging;
+    using Newtonsoft.Json;
+    using JsonSerializer = System.Text.Json.JsonSerializer;
 
     /// <summary>
     /// ODR Implementation for Rest Medication Statements.
@@ -50,7 +54,7 @@ namespace HealthGateway.Medication.Delegates
 
         private readonly ILogger logger;
         private readonly IHttpClientService httpClientService;
-        private readonly IGenericCacheDelegate genericCacheDelegate;
+        private readonly ICacheProvider cacheProvider;
         private readonly IHashDelegate hashDelegate;
         private readonly OdrConfig odrConfig;
         private readonly Uri baseURL;
@@ -61,18 +65,18 @@ namespace HealthGateway.Medication.Delegates
         /// <param name="logger">Injected Logger Provider.</param>
         /// <param name="httpClientService">The injected http client service.</param>
         /// <param name="configuration">The injected configuration provider.</param>
-        /// <param name="genericCacheDelegate">The delegate responsible for caching.</param>
+        /// <param name="cacheProvider">The provider responsible for caching.</param>
         /// <param name="hashDelegate">The delegate responsible for hashing.</param>
         public RestMedStatementDelegate(
             ILogger<RestMedStatementDelegate> logger,
             IHttpClientService httpClientService,
             IConfiguration configuration,
-            IGenericCacheDelegate genericCacheDelegate,
+            ICacheProvider cacheProvider,
             IHashDelegate hashDelegate)
         {
             this.logger = logger;
             this.httpClientService = httpClientService;
-            this.genericCacheDelegate = genericCacheDelegate;
+            this.cacheProvider = cacheProvider;
             this.hashDelegate = hashDelegate;
             this.odrConfig = new OdrConfig();
             configuration.Bind(ODRConfigSectionKey, this.odrConfig);
@@ -80,7 +84,7 @@ namespace HealthGateway.Medication.Delegates
             {
                 string? serviceHost = Environment.GetEnvironmentVariable($"{this.odrConfig.ServiceName}{this.odrConfig.ServiceHostSuffix}");
                 string? servicePort = Environment.GetEnvironmentVariable($"{this.odrConfig.ServiceName}{this.odrConfig.ServicePortSuffix}");
-                Dictionary<string, string> replacementData = new Dictionary<string, string>()
+                Dictionary<string, string> replacementData = new()
                 {
                     { "serviceHost", serviceHost! },
                     { "servicePort", servicePort! },
@@ -93,18 +97,18 @@ namespace HealthGateway.Medication.Delegates
                 this.baseURL = new Uri(this.odrConfig.BaseEndpoint);
             }
 
-            logger.LogInformation($"ODR Proxy URL resolved as {this.baseURL.ToString()}");
+            logger.LogInformation($"ODR Proxy URL resolved as {this.baseURL}");
         }
 
-        private static ActivitySource Source { get; } = new ActivitySource(nameof(ClientRegistriesDelegate));
+        private static ActivitySource Source { get; } = new(nameof(ClientRegistriesDelegate));
 
         /// <inheritdoc/>
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1031:Do not catch general exception types", Justification = "Catch all required")]
+        [SuppressMessage("Design", "CA1031:Do not catch general exception types", Justification = "Catch all required")]
         public async Task<RequestResult<MedicationHistoryResponse>> GetMedicationStatementsAsync(OdrHistoryQuery query, string? protectiveWord, string hdid, string ipAddress)
         {
-            using (Source.StartActivity("GetMedicationStatementsAsync"))
+            using (Source.StartActivity())
             {
-                RequestResult<MedicationHistoryResponse> retVal = new RequestResult<MedicationHistoryResponse>();
+                RequestResult<MedicationHistoryResponse> retVal = new();
                 try
                 {
                     if (this.ValidateProtectiveWord(query.PHN, protectiveWord, hdid, ipAddress))
@@ -117,9 +121,9 @@ namespace HealthGateway.Medication.Delegates
                             client.DefaultRequestHeaders.Accept.Clear();
                             client.DefaultRequestHeaders.Accept.Add(
                                 new MediaTypeWithQualityHeaderValue(MediaTypeNames.Application.Json));
-                            MedicationHistory request = new MedicationHistory()
+                            MedicationHistory request = new()
                             {
-                                Id = System.Guid.NewGuid(),
+                                Id = Guid.NewGuid(),
                                 RequestorHDID = hdid,
                                 RequestorIP = ipAddress,
                                 Query = query,
@@ -127,7 +131,7 @@ namespace HealthGateway.Medication.Delegates
 
                             string json = JsonSerializer.Serialize(request);
                             using HttpContent content = new StringContent(json, null, MediaTypeNames.Application.Json);
-                            Uri endpoint = new Uri(this.baseURL, this.odrConfig.PatientProfileEndpoint);
+                            Uri endpoint = new(this.baseURL, this.odrConfig.PatientProfileEndpoint);
                             HttpResponseMessage response = await client.PostAsync(endpoint, content).ConfigureAwait(true);
                             string payload = await response.Content.ReadAsStringAsync().ConfigureAwait(true);
                             if (response.IsSuccessStatusCode)
@@ -141,23 +145,31 @@ namespace HealthGateway.Medication.Delegates
                                 else
                                 {
                                     retVal.ResultStatus = ResultType.Error;
-                                    retVal.ResultError = new RequestResultError() { ResultMessage = $"Unable to deserialize ODR response", ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.ODRRecords) };
+                                    retVal.ResultError = new RequestResultError
+                                    {
+                                        ResultMessage = "Unable to deserialize ODR response",
+                                        ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.ODRRecords),
+                                    };
                                     this.logger.LogError(retVal.ResultError.ResultMessage);
                                 }
                             }
                             else
                             {
                                 retVal.ResultStatus = ResultType.Error;
-                                retVal.ResultError = new RequestResultError() { ResultMessage = $"Invalid HTTP Response code of ${response.StatusCode} from ODR with reason ${response.ReasonPhrase}", ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.ODRRecords) };
+                                retVal.ResultError = new RequestResultError
+                                {
+                                    ResultMessage = $"Invalid HTTP Response code of ${response.StatusCode} from ODR with reason ${response.ReasonPhrase}",
+                                    ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.ODRRecords),
+                                };
                                 this.logger.LogError(retVal.ResultError.ResultMessage);
                             }
 
-                            this.logger.LogDebug($"Finished getting medication statements");
+                            this.logger.LogDebug("Finished getting medication statements");
                         }
                     }
                     else
                     {
-                        this.logger.LogInformation($"Invalid protected word");
+                        this.logger.LogInformation("Invalid protected word");
                         retVal.ResultStatus = ResultType.ActionRequired;
                         retVal.ResultError = ErrorTranslator.ActionRequired(ErrorMessages.ProtectiveWordErrorMessage, ActionType.Protected);
                     }
@@ -165,7 +177,11 @@ namespace HealthGateway.Medication.Delegates
                 catch (Exception e)
                 {
                     retVal.ResultStatus = ResultType.Error;
-                    retVal.ResultError = new RequestResultError() { ResultMessage = e.ToString(), ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.ODRRecords) };
+                    retVal.ResultError = new RequestResultError
+                    {
+                        ResultMessage = e.ToString(),
+                        ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.ODRRecords),
+                    };
                     this.logger.LogError($"Error with Medication Service: {e}");
                 }
 
@@ -188,7 +204,7 @@ namespace HealthGateway.Medication.Delegates
         /// <inheritdoc/>
         public bool ValidateProtectiveWord(string phn, string? protectiveWord, string hdid, string ipAddress)
         {
-            using (Source.StartActivity("ValidateProtectiveWord"))
+            using (Source.StartActivity())
             {
                 bool isValid = false;
                 IHash? cacheHash = null;
@@ -197,7 +213,7 @@ namespace HealthGateway.Medication.Delegates
                     this.logger.LogDebug("Attempting to fetch Protective Word from Cache");
                     using (Source.StartActivity("GetCacheObject"))
                     {
-                        cacheHash = this.genericCacheDelegate.GetCacheObject<IHash>(hdid, ProtectiveWordCacheDomain);
+                        cacheHash = this.cacheProvider.GetItem<HmacHash>($"{ProtectiveWordCacheDomain}:{hdid}");
                     }
                 }
 
@@ -206,14 +222,13 @@ namespace HealthGateway.Medication.Delegates
                     this.logger.LogDebug("Unable to find Protective Word in Cache, fetching from source");
 
                     // The hash isn't in the cache, get Protective word hash from source
-                    IHash? hash = Task.Run(async () => await this.GetProtectiveWord(phn, hdid, ipAddress)
-                                                                                .ConfigureAwait(true)).Result;
+                    IHash? hash = Task.Run(async () => await this.GetProtectiveWord(phn, hdid, ipAddress).ConfigureAwait(true)).Result;
                     if (this.odrConfig.CacheTTL > 0)
                     {
                         this.logger.LogDebug("Storing a copy of the Protective Word in the Cache");
                         using (Source.StartActivity("CacheObject"))
                         {
-                            this.genericCacheDelegate.CacheObject(hash, hdid, ProtectiveWordCacheDomain, this.odrConfig.CacheTTL);
+                            this.cacheProvider.AddItem($"{ProtectiveWordCacheDomain}:{hdid}", hash, TimeSpan.FromMinutes(this.odrConfig.CacheTTL));
                         }
                     }
 
@@ -238,7 +253,7 @@ namespace HealthGateway.Medication.Delegates
         /// <returns>The hash of the protective word response or null if not set.</returns>
         private async Task<IHash> GetProtectiveWord(string phn, string hdid, string ipAddress)
         {
-            using (Source.StartActivity("GetProtectiveWord"))
+            using (Source.StartActivity())
             {
                 this.logger.LogTrace($"Getting Protective word for {phn.Substring(0, 3)}");
 
@@ -247,25 +262,25 @@ namespace HealthGateway.Medication.Delegates
                 client.DefaultRequestHeaders.Accept.Clear();
                 client.DefaultRequestHeaders.Accept.Add(
                     new MediaTypeWithQualityHeaderValue(MediaTypeNames.Application.Json));
-                ProtectiveWord request = new ProtectiveWord()
+                ProtectiveWord request = new()
                 {
-                    Id = System.Guid.NewGuid(),
+                    Id = Guid.NewGuid(),
                     RequestorHDID = hdid,
                     RequestorIP = ipAddress,
-                    QueryResponse = new ProtectiveWordQueryResponse()
+                    QueryResponse = new ProtectiveWordQueryResponse
                     {
                         PHN = phn,
-                        Operator = Constants.ProtectiveWordOperator.Get,
+                        Operator = ProtectiveWordOperator.Get,
                     },
                 };
-                JsonSerializerOptions? options = new JsonSerializerOptions
+                JsonSerializerOptions? options = new()
                 {
                     PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
                     DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
                     WriteIndented = true,
                 };
                 string json = JsonSerializer.Serialize(request, options);
-                Uri endpoint = new Uri(this.baseURL, this.odrConfig.ProtectiveWordEndpoint);
+                Uri endpoint = new(this.baseURL, this.odrConfig.ProtectiveWordEndpoint);
                 using HttpContent content = new StringContent(json, null, MediaTypeNames.Application.Json);
                 HttpResponseMessage response = await client.PostAsync(endpoint, content).ConfigureAwait(true);
                 string payload = await response.Content.ReadAsStringAsync().ConfigureAwait(true);

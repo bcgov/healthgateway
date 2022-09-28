@@ -13,7 +13,6 @@ import {
 import { Validation } from "vuelidate/vuelidate";
 import { Action, Getter } from "vuex-class";
 
-import ErrorCardComponent from "@/components/ErrorCardComponent.vue";
 import LoadingComponent from "@/components/LoadingComponent.vue";
 import HgDateDropdownComponent from "@/components/shared/HgDateDropdownComponent.vue";
 import HgTimeDropdownComponent from "@/components/shared/HgTimeDropdownComponent.vue";
@@ -22,10 +21,10 @@ import { ErrorSourceType, ErrorType } from "@/constants/errorType";
 import { PcrDataSource } from "@/constants/pcrTestDataSource";
 import { IdentityProviderConfiguration } from "@/models/configData";
 import { DateWrapper } from "@/models/dateWrapper";
+import { ResultError } from "@/models/errors";
 import PcrTestData from "@/models/pcrTestData";
 import RegisterTestKitPublicRequest from "@/models/registerTestKitPublicRequest";
 import RegisterTestKitRequest from "@/models/registerTestKitRequest";
-import { ResultError } from "@/models/requestResult";
 import User, { OidcUserInfo } from "@/models/user";
 import container from "@/plugins/container";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
@@ -43,7 +42,6 @@ interface ISelectOption {
 @Component({
     components: {
         LoadingComponent,
-        ErrorCard: ErrorCardComponent,
         "hg-date-dropdown": HgDateDropdownComponent,
         "hg-time-dropdown": HgTimeDropdownComponent,
     },
@@ -67,8 +65,11 @@ export default class PcrTestView extends Vue {
         traceId: string | undefined;
     }) => void;
 
-    @Action("clearError", { namespace: "errorBanner" })
-    clearError!: () => void;
+    @Action("setTooManyRequestsError", { namespace: "errorBanner" })
+    setTooManyRequestsError!: (params: { key: string }) => void;
+
+    @Action("clearErrors", { namespace: "errorBanner" })
+    clearErrors!: () => void;
 
     @Action("signIn", { namespace: "auth" })
     signIn!: (params: {
@@ -142,17 +143,17 @@ export default class PcrTestView extends Vue {
     private DSMANUAL = PcrDataSource.Manual;
 
     // Set this to none initially to show options
-    private dataSource: PcrDataSource = this.DSNONE;
+    private dataSource = this.DSNONE;
 
     // ### Lifecycle ###
-    private created() {
+    private created(): void {
         this.logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
         this.pcrTestService = container.get<IPcrTestService>(
             SERVICE_IDENTIFIER.PcrTestService
         );
     }
 
-    private mounted() {
+    private mounted(): void {
         if (!this.serialNumber || this.serialNumber === "") {
             this.noSerialNumber = true;
             this.noTestKitCode = true;
@@ -162,7 +163,7 @@ export default class PcrTestView extends Vue {
     }
 
     @Watch("oidcIsAuthenticated")
-    private oidcIsAuthenticatedChanged() {
+    private oidcIsAuthenticatedChanged(): void {
         if (this.oidcIsAuthenticated) {
             this.dataSource = this.DSKEYCLOAK;
         }
@@ -193,12 +194,12 @@ export default class PcrTestView extends Vue {
     }
 
     // Redirect back to serial number path if user had it before logging in
-    private get oidcRedirectPath() {
+    private get oidcRedirectPath(): string {
         return this.noSerialNumber ? "/pcrtest" : this.redirectPath;
     }
 
     // ### Setters ###
-    private setHasNoPhn(value: boolean) {
+    private setHasNoPhn(value: boolean): void {
         this.noPhn = value;
         const phnField = this.$v.pcrTest.phn;
         if (phnField) {
@@ -208,7 +209,7 @@ export default class PcrTestView extends Vue {
     }
 
     // Sets the data source to either NONE (landing), KEYCLOAK (login), or MANUAL (registration)
-    private setDataSource(dataSource: PcrDataSource) {
+    private setDataSource(dataSource: PcrDataSource): void {
         if (
             dataSource === PcrDataSource.Keycloak &&
             !this.oidcIsAuthenticated
@@ -254,7 +255,7 @@ export default class PcrTestView extends Vue {
             `Data Source: ${this.dataSource}, PHN: ${this.noPhn}`
         );
         if (this.dataSource === this.DSMANUAL && !this.noPhn) {
-            var phn = value.replace(/\D/g, "");
+            let phn = value.replace(/\D/g, "");
             return PHNValidator.IsValid(phn);
         } else {
             return true;
@@ -266,7 +267,7 @@ export default class PcrTestView extends Vue {
         return pattern.test(value);
     }
 
-    private validations() {
+    private validations(): unknown {
         return {
             pcrTest: {
                 firstName: {
@@ -309,7 +310,7 @@ export default class PcrTestView extends Vue {
                     minLength: minLength(7),
                 },
                 testTakenMinutesAgo: {
-                    required: required,
+                    required,
                     minValue: minValue(0),
                 },
                 testKitCode: {
@@ -325,13 +326,13 @@ export default class PcrTestView extends Vue {
     }
 
     // ### Form Actions ###
-    private handleSubmit() {
+    private handleSubmit(): void {
         this.$v.$touch();
         this.errorMessage = "";
         if (this.$v.$invalid) {
             return;
         }
-        this.clearError();
+        this.clearErrors();
         const shortCodeFirst =
             this.pcrTest.testKitCode.length > 0
                 ? this.pcrTest.testKitCode.split("-")[0]
@@ -345,7 +346,7 @@ export default class PcrTestView extends Vue {
         switch (this.dataSource) {
             // ### Submitted through OIDC
             case this.DSKEYCLOAK:
-                var testKitRequest: RegisterTestKitRequest = {
+                let testKitRequest: RegisterTestKitRequest = {
                     hdid: this.oidcUserInfo?.hdid,
                     testTakenMinutesAgo: this.pcrTest.testTakenMinutesAgo,
                     testKitCid: this.pcrTest.testKitCid,
@@ -366,15 +367,15 @@ export default class PcrTestView extends Vue {
                         );
                         this.displaySuccess();
                     })
-                    .catch((err: ResultError) => {
-                        this.handleError(err, "registerTestKit");
-                    });
+                    .catch((err: ResultError) =>
+                        this.handleError(err, "registerTestKit")
+                    );
                 break;
             // ### Submitted through manual input
             case this.DSMANUAL:
                 const phnDigits = this.pcrTest.phn;
                 const phoneDigits = this.pcrTest.contactPhoneNumber;
-                var testKitPublicRequest: RegisterTestKitPublicRequest = {
+                let testKitPublicRequest: RegisterTestKitPublicRequest = {
                     firstName: this.pcrTest.firstName,
                     lastName: this.pcrTest.lastName,
                     phn: phnDigits ? phnDigits.replace(/\D/g, "") : "",
@@ -402,9 +403,9 @@ export default class PcrTestView extends Vue {
                         );
                         this.displaySuccess();
                     })
-                    .catch((err: ResultError) => {
-                        this.handleError(err, "registerTestKitPublic");
-                    });
+                    .catch((err: ResultError) =>
+                        this.handleError(err, "registerTestKitPublic")
+                    );
                 break;
             default:
                 break;
@@ -418,9 +419,11 @@ export default class PcrTestView extends Vue {
         window.scrollTo(0, 0);
     }
 
-    private handleError(err: ResultError, domain: string) {
+    private handleError(err: ResultError, domain: string): void {
         this.logger.error(`${domain} Error: ${err}`);
-        if (err.actionCode == ActionType.Processed) {
+        if (err.statusCode === 429) {
+            this.setTooManyRequestsError({ key: "page" });
+        } else if (err.actionCode == ActionType.Processed) {
             this.errorMessage = err.resultMessage;
         } else {
             this.addCustomError({
@@ -433,13 +436,13 @@ export default class PcrTestView extends Vue {
         window.scrollTo(0, 0);
     }
 
-    private handleCancel() {
+    private handleCancel(): void {
         this.resetForm();
         this.dataSource = PcrDataSource.None;
         window.scrollTo(0, 0);
     }
 
-    private resetForm() {
+    private resetForm(): void {
         this.pcrTest = {
             firstName: "",
             lastName: "",
@@ -471,7 +474,7 @@ export default class PcrTestView extends Vue {
                 !registrationComplete && pcrDataSource === DSNONE && !isLoading
             "
         >
-            <b-row class="pt-4">
+            <b-row class="pt-3">
                 <b-col>
                     <strong>
                         Register your COVID-19 test kit using one of the
@@ -499,11 +502,15 @@ export default class PcrTestView extends Vue {
                         </b-col>
                     </b-row>
                     <b-row class="my-3 no-gutters align-items-center">
-                        <b-col><hr /></b-col>
+                        <b-col>
+                            <hr />
+                        </b-col>
                         <b-col cols="auto">
                             <h3 class="h5 m-0 px-3 text-muted">OR</h3>
                         </b-col>
-                        <b-col><hr /></b-col>
+                        <b-col>
+                            <hr />
+                        </b-col>
                     </b-row>
                     <b-row align="center">
                         <b-col>
@@ -528,7 +535,7 @@ export default class PcrTestView extends Vue {
             v-if="!registrationComplete && pcrDataSource !== DSNONE"
             v-show="!isLoading"
         >
-            <b-row id="title" class="mt-4">
+            <b-row id="title" class="mt-3">
                 <b-col>
                     <h1 class="h4 mb-2 font-weight-normal">
                         <strong>Register a Test Kit</strong>
@@ -1108,6 +1115,7 @@ export default class PcrTestView extends Vue {
     background-color: #1a5a95 !important;
     border-color: #1a5a95 !important;
 }
+
 .phn-info {
     color: #636363 !important;
 }

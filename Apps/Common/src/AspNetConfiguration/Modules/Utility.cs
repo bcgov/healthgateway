@@ -22,6 +22,7 @@ namespace HealthGateway.Common.AspNetConfiguration.Modules
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Logging;
+    using Npgsql;
     using OpenTelemetry.Resources;
     using OpenTelemetry.Trace;
 
@@ -44,31 +45,25 @@ namespace HealthGateway.Common.AspNetConfiguration.Modules
             configuration.GetSection("OpenTelemetry").Bind(config);
             if (config.Enabled)
             {
-                services.AddOpenTelemetryTracing(builder =>
-                {
-                    builder.SetResourceBuilder(ResourceBuilder.CreateDefault().AddService(config.ServiceName))
-                           .AddAspNetCoreInstrumentation(options =>
-                           {
-                               options.Filter = (httpContext) =>
-                               {
-                                   return !config.IgnorePathPrefixes.Any(s => httpContext.Request.Path.ToString().StartsWith(s, StringComparison.OrdinalIgnoreCase));
-                               };
-                           })
-                           .AddHttpClientInstrumentation()
-                           .AddSource(config.Sources);
-                    if (config.ZipkinEnabled)
+                services.AddOpenTelemetryTracing(
+                    builder =>
                     {
-                        builder.AddZipkinExporter(options =>
+                        builder.SetResourceBuilder(ResourceBuilder.CreateDefault().AddService(config.ServiceName))
+                            .AddAspNetCoreInstrumentation(
+                                options => options.Filter = httpContext => !config.IgnorePathPrefixes.Any(s => httpContext.Request.Path.ToString().StartsWith(s, StringComparison.OrdinalIgnoreCase)))
+                            .AddHttpClientInstrumentation()
+                            .AddNpgsql()
+                            .AddSource(config.Sources);
+                        if (config.ZipkinEnabled)
                         {
-                            options.Endpoint = config.ZipkinUri;
-                        });
-                    }
+                            builder.AddZipkinExporter(options => options.Endpoint = config.ZipkinUri);
+                        }
 
-                    if (config.ConsoleEnabled)
-                    {
-                        builder.AddConsoleExporter();
-                    }
-                });
+                        if (config.ConsoleEnabled)
+                        {
+                            builder.AddConsoleExporter();
+                        }
+                    });
             }
         }
 
@@ -82,7 +77,7 @@ namespace HealthGateway.Common.AspNetConfiguration.Modules
         {
             string basePath = string.Empty;
             IConfigurationSection section = configuration.GetSection("ForwardProxies");
-            if (section.GetValue<bool>("Enabled", false))
+            if (section.GetValue("Enabled", false))
             {
                 basePath = section.GetValue<string>("BasePath");
             }

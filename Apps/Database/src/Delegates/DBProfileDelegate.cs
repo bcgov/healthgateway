@@ -27,7 +27,7 @@ namespace HealthGateway.Database.Delegates
     using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.Logging;
 
-    /// <inheritdoc />
+    /// <inheritdoc/>
     [ExcludeFromCodeCoverage]
     public class DBProfileDelegate : IUserProfileDelegate
     {
@@ -47,12 +47,12 @@ namespace HealthGateway.Database.Delegates
             this.dbContext = dbContext;
         }
 
-        /// <inheritdoc />
+        /// <inheritdoc/>
         public DBResult<UserProfile> InsertUserProfile(UserProfile profile)
         {
             this.logger.LogTrace($"Inserting user profile to DB... {JsonSerializer.Serialize(profile)}");
-            DBResult<UserProfile> result = new DBResult<UserProfile>();
-            this.dbContext.Add<UserProfile>(profile);
+            DBResult<UserProfile> result = new();
+            this.dbContext.Add(profile);
             try
             {
                 this.dbContext.SaveChanges();
@@ -69,7 +69,7 @@ namespace HealthGateway.Database.Delegates
             return result;
         }
 
-        /// <inheritdoc />
+        /// <inheritdoc/>
         public DBResult<UserProfile> Update(UserProfile profile, bool commit = true)
         {
             this.logger.LogTrace($"Updating user profile in DB... {JsonSerializer.Serialize(profile)}");
@@ -108,7 +108,7 @@ namespace HealthGateway.Database.Delegates
             return result;
         }
 
-        /// <inheritdoc />
+        /// <inheritdoc/>
         public DBResult<UserProfile> UpdateComplete(UserProfile profile, bool commit = true)
         {
             DBResult<UserProfile> result = new()
@@ -143,11 +143,11 @@ namespace HealthGateway.Database.Delegates
             return result;
         }
 
-        /// <inheritdoc />
+        /// <inheritdoc/>
         public DBResult<UserProfile> GetUserProfile(string hdId)
         {
             this.logger.LogTrace($"Getting user profile from DB... {hdId}");
-            DBResult<UserProfile> result = new DBResult<UserProfile>();
+            DBResult<UserProfile> result = new();
             UserProfile? profile = this.dbContext.UserProfile.Find(hdId);
             if (profile != null)
             {
@@ -164,51 +164,64 @@ namespace HealthGateway.Database.Delegates
             return result;
         }
 
-        /// <inheritdoc />
+        /// <inheritdoc/>
+        public DBResult<List<UserProfile>> GetUserProfiles(IList<string> hdIds)
+        {
+            this.logger.LogTrace($"Getting user profiles from DB... {JsonSerializer.Serialize(hdIds)}");
+            DBResult<List<UserProfile>> result = new();
+            result.Payload = this.dbContext.UserProfile
+                .Where(p => hdIds.Contains(p.HdId))
+                .ToList();
+
+            result.Status = DBStatusCode.Read;
+            this.logger.LogDebug($"Finished getting user profiles from DB. {JsonSerializer.Serialize(result)}");
+            return result;
+        }
+
+        /// <inheritdoc/>
         public DBResult<List<UserProfile>> GetAllUserProfilesAfter(DateTime filterDateTime, int page = 0, int pagesize = 500)
         {
-            DBResult<List<UserProfile>> result = new DBResult<List<UserProfile>>();
+            DBResult<List<UserProfile>> result = new();
             int offset = page * pagesize;
             result.Payload = this.dbContext.UserProfile
-                                .Where(p => (p.LastLoginDateTime < filterDateTime) &&
-                                             p.ClosedDateTime == null &&
-                                             !string.IsNullOrWhiteSpace(p.Email))
-                                .OrderBy(o => o.CreatedDateTime)
-                                .Skip(offset)
-                                .Take(pagesize)
-                                .ToList();
-            result.Status = result.Payload != null ? DBStatusCode.Read : DBStatusCode.NotFound;
+                .Where(p => p.LastLoginDateTime < filterDateTime && p.ClosedDateTime == null && !string.IsNullOrWhiteSpace(p.Email))
+                .OrderBy(o => o.CreatedDateTime)
+                .Skip(offset)
+                .Take(pagesize)
+                .ToList();
+            result.Status = DBStatusCode.Read;
             return result;
         }
 
-        /// <inheritdoc />
+        /// <inheritdoc/>
         public DBResult<List<UserProfile>> GetClosedProfiles(DateTime filterDateTime, int page = 0, int pagesize = 500)
         {
-            DBResult<List<UserProfile>> result = new DBResult<List<UserProfile>>();
+            DBResult<List<UserProfile>> result = new();
             int offset = page * pagesize;
             result.Payload = this.dbContext.UserProfile
-                                .Where(p => p.ClosedDateTime != null && p.ClosedDateTime < filterDateTime)
-                                .OrderBy(o => o.ClosedDateTime)
-                                .Skip(offset)
-                                .Take(pagesize)
-                                .ToList();
-            result.Status = result.Payload != null ? DBStatusCode.Read : DBStatusCode.NotFound;
+                .Where(p => p.ClosedDateTime != null && p.ClosedDateTime < filterDateTime)
+                .OrderBy(o => o.ClosedDateTime)
+                .Skip(offset)
+                .Take(pagesize)
+                .ToList();
+            result.Status = DBStatusCode.Read;
             return result;
         }
 
-        /// <inheritdoc />
+        /// <inheritdoc/>
         public IDictionary<DateTime, int> GetDailyRegisteredUsersCount(TimeSpan offset)
         {
             Dictionary<DateTime, int> dateCount = this.dbContext.UserProfile
-                            .Select(x => new { x.HdId, createdDate = GatewayDbContext.DateTrunc("days", x.CreatedDateTime.AddMinutes(offset.TotalMinutes)) })
-                            .GroupBy(x => x.createdDate).Select(x => new { createdDate = x.Key, count = x.Count() })
-                            .OrderBy(x => x.createdDate)
-                            .ToDictionary(x => x.createdDate, x => x.count);
+                .Select(x => new { x.HdId, createdDate = GatewayDbContext.DateTrunc("days", x.CreatedDateTime.AddMinutes(offset.TotalMinutes)) })
+                .GroupBy(x => x.createdDate)
+                .Select(x => new { createdDate = x.Key, count = x.Count() })
+                .OrderBy(x => x.createdDate)
+                .ToDictionary(x => x.createdDate, x => x.count);
 
             return dateCount;
         }
 
-        /// <inheritdoc />
+        /// <inheritdoc/>
         public IDictionary<DateTime, int> GetDailyLoggedInUsersCount(TimeSpan offset)
         {
             Dictionary<DateTime, int> dateCount = this.dbContext.UserProfile
@@ -217,14 +230,15 @@ namespace HealthGateway.Database.Delegates
                     this.dbContext.UserProfileHistory.Select(x => new { x.HdId, x.LastLoginDateTime }))
                 .Select(x => new { x.HdId, lastLoginDate = GatewayDbContext.DateTrunc("days", x.LastLoginDateTime.AddMinutes(offset.TotalMinutes)) })
                 .Distinct()
-                .GroupBy(x => x.lastLoginDate).Select(x => new { lastLoginDate = x.Key, count = x.Count() })
+                .GroupBy(x => x.lastLoginDate)
+                .Select(x => new { lastLoginDate = x.Key, count = x.Count() })
                 .OrderBy(x => x.lastLoginDate)
                 .ToDictionary(x => x.lastLoginDate, x => x.count);
 
             return dateCount;
         }
 
-        /// <inheritdoc />
+        /// <inheritdoc/>
         public DBResult<IEnumerable<UserProfile>> GetAll(int page, int pageSize)
         {
             this.logger.LogTrace($"Retrieving all the user profiles for the page #{page} with pageSize: {pageSize}...");
@@ -235,7 +249,7 @@ namespace HealthGateway.Database.Delegates
                 pageSize);
         }
 
-        /// <inheritdoc />
+        /// <inheritdoc/>
         public int GetRecurrentUserCount(int dayCount, DateTime startDate, DateTime endDate)
         {
             this.logger.LogTrace($"Retrieving recurring user count for {dayCount} days between {startDate} and {endDate}...");
@@ -245,21 +259,23 @@ namespace HealthGateway.Database.Delegates
                 .Concat(
                     this.dbContext.UserProfileHistory.Select(x => new { x.HdId, x.LastLoginDateTime }))
                 .Where(x => x.LastLoginDateTime >= startDate && x.LastLoginDateTime <= endDate)
+                .Select(x => new { x.HdId, lastLoginDate = GatewayDbContext.DateTrunc("days", x.LastLoginDateTime) })
                 .Distinct()
-                .GroupBy(x => x.HdId).Select(x => new { HdId = x.Key, count = x.Count() })
-                .Where(x => x.count >= dayCount).Count();
+                .GroupBy(x => x.HdId)
+                .Select(x => new { HdId = x.Key, count = x.Count() })
+                .Count(x => x.count >= dayCount);
 
             return recurrentCount;
         }
 
-        /// <inheritdoc />
+        /// <inheritdoc/>
         public DBResult<IEnumerable<UserProfileHistory>> GetUserProfileHistories(string hdid, int limit)
         {
-            DBResult<IEnumerable<UserProfileHistory>> result = new DBResult<IEnumerable<UserProfileHistory>>();
+            DBResult<IEnumerable<UserProfileHistory>> result = new();
             result.Payload = this.dbContext.UserProfileHistory
-                                .Where(p => p.HdId == hdid)
-                                .OrderByDescending(p => p.LastLoginDateTime)
-                                .Take(limit);
+                .Where(p => p.HdId == hdid)
+                .OrderByDescending(p => p.LastLoginDateTime)
+                .Take(limit);
             result.Status = DBStatusCode.Read;
             return result;
         }

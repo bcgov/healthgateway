@@ -16,7 +16,6 @@
 namespace HealthGateway.GatewayApi.Models
 {
     using System;
-    using HealthGateway.Database.Models;
 
     /// <summary>
     /// Model that provides Terms of service model.
@@ -37,20 +36,5 @@ namespace HealthGateway.GatewayApi.Models
         /// Gets or sets the date the terms of service becomes active.
         /// </summary>
         public DateTime? EffectiveDate { get; set; }
-
-        /// <summary>
-        /// Constructs a TermsOfService model from a LegalAgreement database model.
-        /// </summary>
-        /// <param name="model">The legal agreement database model.</param>
-        /// <returns>The terms of service model.</returns>
-        public static TermsOfServiceModel CreateFromDbModel(LegalAgreement model)
-        {
-            return new TermsOfServiceModel()
-            {
-                Id = model?.Id,
-                EffectiveDate = model?.EffectiveDate!.Value,
-                Content = model?.LegalText,
-            };
-        }
     }
 }

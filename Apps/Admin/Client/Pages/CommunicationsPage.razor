@@ -1,10 +1,10 @@
 @page "/communications"
-@attribute [Authorize(Roles = Roles.Admin)]
+@layout MainLayout
+@attribute [Authorize(Roles = $"{Roles.Admin},{Roles.Reviewer}")]
+@using HealthGateway.Admin.Client.Store.Communications
 @inherits Fluxor.Blazor.Web.Components.FluxorComponent
 
-@using HealthGateway.Admin.Client.Store.Communications
-
-<PageTitle>Communications</PageTitle>
+<PageTitle>Health Gateway Admin Communications</PageTitle>
 <HgPageHeading>Communications</HgPageHeading>
 
 <HgBannerFeedback Severity="@Severity.Error" IsEnabled="@(HasLoadError || HasDeleteError)" TResetAction="@CommunicationsActions.ResetStateAction">
@@ -13,15 +13,16 @@
 
 @if (CommunicationsLoaded || CommunicationsLoading)
 {
-    <HgTabs @ref="@Tabs">
+    <HgTabs @ref="@Tabs" data-testid="banner-tabs">
         <Header>
             @if (SelectedBannerName != null)
             {
                 <HgButton EndIcon="@Icons.Material.Filled.Add"
-                  TopMargin="@Breakpoint.Always"
-                  RightMargin="@Breakpoint.Always"
-                  BottomMargin="@Breakpoint.Always"
-                  @onclick="@CreateBannerAsync">
+                          TopMargin="@Breakpoint.Always"
+                          RightMargin="@Breakpoint.Always"
+                          BottomMargin="@Breakpoint.Always"
+                          @onclick="@CreateBannerAsync"
+                          data-testid="create-banner-btn">
                     Create
                 </HgButton>
             }
@@ -32,6 +33,9 @@
             </MudTabPanel>
             <MudTabPanel Text="In-App Banners">
                 <CommunicationsTable Data="@InAppCommunications" IsLoading="@CommunicationsLoading" OnEditCallback="EditBannerAsync" />
+            </MudTabPanel>
+            <MudTabPanel Text="Mobile">
+                <CommunicationsTable Data="@MobileCommunications" IsLoading="@CommunicationsLoading" OnEditCallback="EditBannerAsync" />
             </MudTabPanel>
         </ChildContent>
     </HgTabs>

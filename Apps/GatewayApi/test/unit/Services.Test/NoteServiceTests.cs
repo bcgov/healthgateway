@@ -18,6 +18,7 @@ namespace HealthGateway.GatewayApi.Test.Services
     using System;
     using System.Collections.Generic;
     using System.Linq;
+    using AutoMapper;
     using DeepEqual.Syntax;
     using HealthGateway.Common.Data.Constants;
     using HealthGateway.Common.Data.ViewModels;
@@ -27,8 +28,10 @@ namespace HealthGateway.GatewayApi.Test.Services
     using HealthGateway.Database.Delegates;
     using HealthGateway.Database.Models;
     using HealthGateway.Database.Wrapper;
+    using HealthGateway.GatewayApi.MapUtils;
     using HealthGateway.GatewayApi.Models;
     using HealthGateway.GatewayApi.Services;
+    using HealthGateway.GatewayApi.Test.Services.Utils;
     using Microsoft.Extensions.Logging;
     using Moq;
     using Xunit;
@@ -177,7 +180,8 @@ namespace HealthGateway.GatewayApi.Test.Services
                 new Mock<ILogger<NoteService>>().Object,
                 new Mock<INoteDelegate>().Object,
                 profileDelegateMock.Object,
-                new Mock<ICryptoDelegate>().Object);
+                new Mock<ICryptoDelegate>().Object,
+                Utils.MapperUtil.InitializeAutoMapper());
 
             RequestResult<UserNote> actualResult = service.CreateNote(userNote);
 
@@ -211,7 +215,8 @@ namespace HealthGateway.GatewayApi.Test.Services
                 new Mock<ILogger<NoteService>>().Object,
                 new Mock<INoteDelegate>().Object,
                 profileDelegateMock.Object,
-                new Mock<ICryptoDelegate>().Object);
+                new Mock<ICryptoDelegate>().Object,
+                Utils.MapperUtil.InitializeAutoMapper());
 
             RequestResult<UserNote> actualResult = service.UpdateNote(userNote);
 
@@ -245,7 +250,8 @@ namespace HealthGateway.GatewayApi.Test.Services
                 new Mock<ILogger<NoteService>>().Object,
                 new Mock<INoteDelegate>().Object,
                 profileDelegateMock.Object,
-                new Mock<ICryptoDelegate>().Object);
+                new Mock<ICryptoDelegate>().Object,
+                Utils.MapperUtil.InitializeAutoMapper());
 
             RequestResult<UserNote> actualResult = service.DeleteNote(userNote);
 
@@ -284,9 +290,10 @@ namespace HealthGateway.GatewayApi.Test.Services
                 },
             };
             List<UserNote>? userNoteList = null;
+            IMapper autoMapper = MapperUtil.InitializeAutoMapper();
             if (encryptionKey != null)
             {
-                userNoteList = UserNote.CreateListFromDbModel(noteList, cryptoDelegateMock.Object, encryptionKey).ToList();
+                userNoteList = noteList.Select(c => NoteMapUtils.CreateFromDbModel(c, cryptoDelegateMock.Object, encryptionKey, autoMapper)).ToList();
             }
 
             DBResult<IEnumerable<Note>> notesDBResult = new()
@@ -302,7 +309,8 @@ namespace HealthGateway.GatewayApi.Test.Services
                 new Mock<ILogger<NoteService>>().Object,
                 noteDelegateMock.Object,
                 profileDelegateMock.Object,
-                cryptoDelegateMock.Object);
+                cryptoDelegateMock.Object,
+                autoMapper);
 
             RequestResult<IEnumerable<UserNote>> actualResult = service.GetNotes(this.hdid, 0, 500);
 
@@ -331,7 +339,8 @@ namespace HealthGateway.GatewayApi.Test.Services
                 Text = "Inserted Note text",
                 CreatedDateTime = new DateTime(2020, 1, 1),
             };
-            Note note = userNote.ToDbModel(cryptoDelegateMock.Object, encryptionKey);
+            IMapper autoMapper = MapperUtil.InitializeAutoMapper();
+            Note note = NoteMapUtils.ToDbModel(userNote, cryptoDelegateMock.Object, encryptionKey, autoMapper);
 
             DBResult<Note> insertResult = new()
             {
@@ -346,7 +355,8 @@ namespace HealthGateway.GatewayApi.Test.Services
                 new Mock<ILogger<NoteService>>().Object,
                 noteDelegateMock.Object,
                 profileDelegateMock.Object,
-                cryptoDelegateMock.Object);
+                cryptoDelegateMock.Object,
+                autoMapper);
 
             RequestResult<UserNote> actualResult = service.CreateNote(userNote);
             return (actualResult, userNote);
@@ -375,7 +385,8 @@ namespace HealthGateway.GatewayApi.Test.Services
                 CreatedDateTime = new DateTime(2020, 1, 1),
             };
 
-            Note note = userNote.ToDbModel(cryptoDelegateMock.Object, encryptionKey);
+            IMapper autoMapper = MapperUtil.InitializeAutoMapper();
+            Note note = NoteMapUtils.ToDbModel(userNote, cryptoDelegateMock.Object, encryptionKey, autoMapper);
 
             DBResult<Note> updateResult = new()
             {
@@ -390,7 +401,8 @@ namespace HealthGateway.GatewayApi.Test.Services
                 new Mock<ILogger<NoteService>>().Object,
                 noteDelegateMock.Object,
                 profileDelegateMock.Object,
-                cryptoDelegateMock.Object);
+                cryptoDelegateMock.Object,
+                autoMapper);
 
             RequestResult<UserNote> actualResult = service.UpdateNote(userNote);
             return (actualResult, userNote);
@@ -418,7 +430,8 @@ namespace HealthGateway.GatewayApi.Test.Services
                 Text = "Deleted Note text",
                 CreatedDateTime = new DateTime(2020, 1, 1),
             };
-            Note note = userNote.ToDbModel(cryptoDelegateMock.Object, encryptionKey);
+            IMapper autoMapper = MapperUtil.InitializeAutoMapper();
+            Note note = NoteMapUtils.ToDbModel(userNote, cryptoDelegateMock.Object, encryptionKey, autoMapper);
 
             DBResult<Note> deleteResult = new()
             {
@@ -433,7 +446,8 @@ namespace HealthGateway.GatewayApi.Test.Services
                 new Mock<ILogger<NoteService>>().Object,
                 noteDelegateMock.Object,
                 profileDelegateMock.Object,
-                cryptoDelegateMock.Object);
+                cryptoDelegateMock.Object,
+                autoMapper);
 
             RequestResult<UserNote> actualResult = service.DeleteNote(userNote);
             return (actualResult, userNote);

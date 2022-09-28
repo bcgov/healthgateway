@@ -28,42 +28,27 @@ namespace HealthGateway.Common.ErrorHandling
         /// <summary>
         /// Gets the Data concurrency error.
         /// </summary>
-        public static ErrorType Concurrency
-        {
-            get { return new ErrorType("C"); }
-        }
+        public static ErrorType Concurrency => new("C");
 
         /// <summary>
         /// Gets the External Communication error.
         /// </summary>
-        public static ErrorType CommunicationExternal
-        {
-            get { return new ErrorType("CE"); }
-        }
+        public static ErrorType CommunicationExternal => new("CE");
 
         /// <summary>
         /// Gets the Internal Communication error.
         /// </summary>
-        public static ErrorType CommunicationInternal
-        {
-            get { return new ErrorType("CI"); }
-        }
+        public static ErrorType CommunicationInternal => new("CI");
 
         /// <summary>
         /// Gets the invalid state error.
         /// </summary>
-        public static ErrorType InvalidState
-        {
-            get { return new ErrorType("I"); }
-        }
+        public static ErrorType InvalidState => new("I");
 
         /// <summary>
         /// Gets the invalid SMS error.
         /// </summary>
-        public static ErrorType SMSInvalid
-        {
-            get { return new ErrorType("SMS"); }
-        }
+        public static ErrorType SMSInvalid => new("SMS");
 
         /// <summary>
         /// Gets or sets the value that holds the internal representation of the ErrorType.

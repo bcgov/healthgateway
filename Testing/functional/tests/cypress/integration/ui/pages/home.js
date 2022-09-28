@@ -72,4 +72,41 @@ describe("Authenticated User - Home Page", () => {
 
         cy.get("[data-testid=proof-vaccination-card-btn]").should("not.exist");
     });
+
+    it("Home - Notes Card link to Timeline", () => {
+        cy.enableModules([
+            "MedicationRequest",
+            "Medication",
+            "Immunization",
+            "Covid19LaboratoryOrder",
+            "LaboratoryOrder",
+            "Encounter",
+            "Note",
+        ]);
+
+        cy.intercept("GET", "**/Note/*", {
+            fixture: "NoteService/notes-no-records.json",
+        });
+
+        cy.login(
+            Cypress.env("keycloak.username"),
+            Cypress.env("keycloak.password"),
+            AuthMethod.KeyCloak,
+            homeUrl
+        );
+
+        cy.contains("[data-testid=card-button-title]", "My Notes")
+            .parents("[data-testid=quick-link-card]")
+            .should("be.visible", "be.enabled")
+            .click();
+
+        cy.get("[data-testid=loading-toast]").should("be.visible");
+        cy.url().should("include", timelineUrl);
+        // Notes has 0 records and will return quickly so content placeholders will not have enough time to display.
+        cy.get("[data-testid=content-placeholders]").should("not.exist");
+        cy.get("[data-testid=loading-toast]").should("be.visible");
+        cy.get("[data-testid=noTimelineEntriesText]").should("be.visible");
+        cy.get("[data-testid=displayCountText]").should("not.exist");
+        cy.get("[data-testid=loading-toast]").should("be.visible");
+    });
 });

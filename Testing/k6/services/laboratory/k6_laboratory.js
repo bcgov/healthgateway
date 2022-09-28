@@ -23,9 +23,11 @@ export let options = common.OptionConfig();
 export default function () {
     let user = common.users[__VU % common.users.length];
 
+    common.getConfigurations();
+    common.getOpenIdConfigurations();
     common.authorizeUser(user);
     let response = http.get(
-        common.LaboratoryServiceUrl + "?hdid=" + user.hdid,
+        common.ServiceEndpoints.Laboratory + "Laboratory/LaboratoryOrders/?hdid=" + user.hdid,
         common.params(user)
     );
     common.checkResponse(response);

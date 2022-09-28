@@ -124,6 +124,7 @@ namespace Healthgateway.JobScheduler.Jobs
                 page++;
             }
             while (profileResult.Payload.Count == this.profilesPageSize);
+
             this.logger.LogInformation($"Completed processing {page} page(s) with pagesize set to {this.profilesPageSize}");
         }
     }

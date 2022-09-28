@@ -68,8 +68,15 @@ namespace HealthGateway.Admin.Client.Store.MessageVerification
                 return;
             }
 
+            if (response.IsSuccessStatusCode && response.Content != null && response.Content.ResultStatus == ResultType.ActionRequired)
+            {
+                this.Logger.LogInformation("Messaging verifications loaded with warning message: {WarningMessage}", response.Content.ResultError?.ResultMessage);
+                dispatcher.Dispatch(new MessageVerificationActions.LoadSuccessAction(response.Content));
+                return;
+            }
+
             RequestError error = StoreUtility.FormatRequestError(response.Error, response.Content?.ResultError);
-            this.Logger.LogError($"Error loading messaging verifications, reason: {error.Message}");
+            this.Logger.LogError("Error loading messaging verifications, reason: {ErrorMessage}", error.Message);
             dispatcher.Dispatch(new MessageVerificationActions.LoadFailAction(error));
         }
     }

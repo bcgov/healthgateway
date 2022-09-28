@@ -1,9 +1,9 @@
-import { CustomBannerError } from "@/models/bannerError";
 import CovidVaccineRecord from "@/models/covidVaccineRecord";
+import { CustomBannerError, ResultError } from "@/models/errors";
 import { LoadStatus } from "@/models/storeOperations";
+import VaccinationRecord from "@/models/vaccinationRecord";
 import VaccinationStatus from "@/models/vaccinationStatus";
 
-import { ResultError } from "./../../../models/requestResult";
 import { VaccinationStatusGetters, VaccinationStatusState } from "./types";
 
 export const getters: VaccinationStatusGetters = {
@@ -51,29 +51,19 @@ export const getters: VaccinationStatusGetters = {
     authenticatedStatusMessage(state: VaccinationStatusState): string {
         return state.authenticated.statusMessage;
     },
-    authenticatedVaccineRecord(
+    authenticatedVaccineRecords(
         state: VaccinationStatusState
-    ): CovidVaccineRecord | undefined {
-        return state.authenticatedVaccineRecord.vaccinationRecord;
+    ): Map<string, VaccinationRecord> {
+        return state.authenticatedVaccineRecord.vaccinationRecords;
     },
-    authenticatedVaccineRecordIsLoading(
+    authenticatedVaccineRecordStatusChanges(
         state: VaccinationStatusState
-    ): boolean {
-        return state.authenticatedVaccineRecord.status === LoadStatus.REQUESTED;
+    ): number {
+        return state.authenticatedVaccineRecord.statusChanges;
     },
-    authenticatedVaccineRecordError(
-        state: VaccinationStatusState
-    ): ResultError | undefined {
-        return state.authenticatedVaccineRecord.error;
-    },
-    authenticatedVaccineRecordStatusMessage(
+    authenticatedVaccineRecordActiveHdid(
         state: VaccinationStatusState
     ): string {
-        return state.authenticatedVaccineRecord.statusMessage;
-    },
-    authenticatedVaccineRecordResultMessage(
-        state: VaccinationStatusState
-    ): string {
-        return state.authenticatedVaccineRecord.resultMessage;
+        return state.authenticatedVaccineRecord.activeHdid;
     },
 };

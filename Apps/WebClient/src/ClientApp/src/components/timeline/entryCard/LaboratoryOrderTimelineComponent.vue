@@ -9,7 +9,6 @@ import { Getter } from "vuex-class";
 import MessageModalComponent from "@/components/modal/MessageModalComponent.vue";
 import { EntryType, entryTypeMap } from "@/constants/entryType";
 import { DateWrapper } from "@/models/dateWrapper";
-import { LaboratoryReport } from "@/models/laboratory";
 import LaboratoryOrderTimelineEntry from "@/models/laboratoryOrderTimelineEntry";
 import User from "@/models/user";
 import container from "@/plugins/container";
@@ -42,7 +41,7 @@ export default class LaboratoryOrderTimelineComponent extends Vue {
     private isLoadingDocument = false;
     private logger!: ILogger;
 
-    private created() {
+    private created(): void {
         this.logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
         this.laboratoryService = container.get<ILaboratoryService>(
             SERVICE_IDENTIFIER.LaboratoryService
@@ -68,11 +67,16 @@ export default class LaboratoryOrderTimelineComponent extends Vue {
         }
     }
 
+    private getStatusInfoId(labPdfId: string, index: number): string {
+        const isModalIndicator: string = this.isMobileDetails ? "1" : "0";
+        return `laboratory-test-status-info-${labPdfId}-${index}-${isModalIndicator}`;
+    }
+
     private showConfirmationModal(): void {
         this.messageModal.showModal();
     }
 
-    private getReport() {
+    private getReport(): void {
         SnowPlow.trackEvent({
             action: "download_report",
             text: "Laboratory Report PDF",
@@ -82,20 +86,18 @@ export default class LaboratoryOrderTimelineComponent extends Vue {
         this.laboratoryService
             .getReportDocument(this.entry.id, this.user.hdid, false)
             .then((result) => {
-                let dateString =
+                const dateString =
                     this.entry.timelineDateTime.format("yyyy_MM_dd-HH_mm");
-                let report: LaboratoryReport = result.resourcePayload;
+                const report = result.resourcePayload;
                 fetch(
                     `data:${report.mediaType};${report.encoding},${report.data}`
                 )
                     .then((response) => response.blob())
-                    .then((blob) => {
-                        saveAs(blob, `Laboratory_Report_${dateString}.pdf`);
-                    });
+                    .then((blob) =>
+                        saveAs(blob, `Laboratory_Report_${dateString}.pdf`)
+                    );
             })
-            .catch((err) => {
-                this.logger.error(err);
-            })
+            .catch((err) => this.logger.error(err))
             .finally(() => {
                 this.isLoadingDocument = false;
             });
@@ -119,33 +121,6 @@ export default class LaboratoryOrderTimelineComponent extends Vue {
             </strong>
         </div>
         <div slot="details-body">
-            <div
-                v-if="entry.reportAvailable"
-                data-testid="laboratory-report-available"
-                class="mt-2 mb-n1"
-            >
-                <b-spinner v-if="isLoadingDocument" class="mb-1" />
-                <span v-else data-testid="laboratoryReport">
-                    <strong class="align-bottom d-inline-block pb-1">
-                        Detailed Report:
-                    </strong>
-                    <hg-button
-                        data-testid="laboratory-report-download-btn"
-                        variant="link"
-                        class="p-1 ml-1"
-                        @click="showConfirmationModal()"
-                    >
-                        <hg-icon
-                            icon="download"
-                            size="medium"
-                            square
-                            aria-hidden="true"
-                            class="mr-1"
-                        />
-                        <span>{{ entry.downloadLabel }}</span>
-                    </hg-button>
-                </span>
-            </div>
             <div class="my-2">
                 <div data-testid="laboratory-collection-date">
                     <strong>Collection Date: </strong>
@@ -169,7 +144,7 @@ export default class LaboratoryOrderTimelineComponent extends Vue {
                     <span>{{ entry.reportingLab }}</span>
                 </div>
             </div>
-            <div class="my-2 mb-2">
+            <div class="my-2">
                 <div data-testid="reporting-lab-information-text">
                     <span
                         ><router-link to="/faq">Find resources</router-link> to
@@ -178,17 +153,83 @@ export default class LaboratoryOrderTimelineComponent extends Vue {
                     >
                 </div>
             </div>
+            <b-row class="my-3">
+                <b-col />
+                <b-col
+                    v-if="entry.reportAvailable"
+                    data-testid="laboratory-report-available"
+                    cols="auto"
+                >
+                    <hg-button
+                        data-testid="laboratory-report-download-btn"
+                        variant="secondary"
+                        :disabled="isLoadingDocument"
+                        @click="showConfirmationModal()"
+                    >
+                        <b-spinner
+                            v-if="isLoadingDocument"
+                            class="mr-1"
+                            small
+                        />
+                        <hg-icon
+                            v-else
+                            icon="download"
+                            size="medium"
+                            square
+                            aria-hidden="true"
+                            class="mr-1"
+                        />
+                        <span>Download Full Report</span>
+                    </hg-button>
+                </b-col>
+            </b-row>
             <b-table-lite
                 :items="entry.tests"
+                :fields="['testName', 'result', 'status']"
                 sticky-header
                 head-variant="light"
-                class="mt-4 mb-2"
+                class="my-2"
                 data-testid="laboratoryResultTable"
             >
                 <template #cell(result)="data">
                     <strong :class="getResultClasses(data.value)">
                         {{ data.value }}
                     </strong>
+                </template>
+                <template #cell(status)="data">
+                    <span class="mr-1">{{ data.value }}</span>
+                    <hg-button
+                        v-if="data.item.statusInfo.length > 0"
+                        :id="getStatusInfoId(entry.labPdfId, data.index)"
+                        aria-label="Status Information"
+                        href="#"
+                        variant="link"
+                        data-testid="laboratory-test-status-info-button"
+                        class="shadow-none p-0 mt-n1"
+                    >
+                        <hg-icon icon="info-circle" size="small" />
+                    </hg-button>
+                    <b-popover
+                        v-if="data.item.statusInfo.length > 0"
+                        :target="getStatusInfoId(entry.labPdfId, data.index)"
+                        triggers="hover focus"
+                        :placement="isMobileDetails ? 'bottom' : 'left'"
+                        :data-testid="`${getStatusInfoId(
+                            entry.labPdfId,
+                            data.index
+                        )}-popover`"
+                    >
+                        <p
+                            v-for="(paragraph, index) in data.item.statusInfo"
+                            :key="index"
+                            :class="{
+                                'mb-0':
+                                    index + 1 === data.item.statusInfo.length,
+                            }"
+                        >
+                            {{ paragraph }}
+                        </p>
+                    </b-popover>
                 </template>
             </b-table-lite>
             <MessageModalComponent

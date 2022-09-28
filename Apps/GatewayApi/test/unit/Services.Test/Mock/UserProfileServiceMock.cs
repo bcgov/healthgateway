@@ -15,6 +15,7 @@
 //-------------------------------------------------------------------------
 namespace HealthGateway.GatewayApiTests.Services.Test.Mock
 {
+    using System;
     using System.Collections.Generic;
     using HealthGateway.Common.Data.Models;
     using HealthGateway.Common.Delegates;
@@ -24,8 +25,8 @@ namespace HealthGateway.GatewayApiTests.Services.Test.Mock
     using HealthGateway.Database.Delegates;
     using HealthGateway.Database.Models;
     using HealthGateway.Database.Wrapper;
-    using HealthGateway.GatewayApi.Models;
     using HealthGateway.GatewayApi.Services;
+    using HealthGateway.GatewayApi.Test.Services.Utils;
     using Microsoft.AspNetCore.Http;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.Logging;
@@ -68,7 +69,8 @@ namespace HealthGateway.GatewayApiTests.Services.Test.Mock
                 new MessagingVerificationDelegateMock().Object,
                 new Mock<ICryptoDelegate>().Object,
                 new Mock<IHttpContextAccessor>().Object,
-                configuration);
+                configuration,
+                MapperUtil.InitializeAutoMapper());
         }
 
         /// <summary>
@@ -90,11 +92,12 @@ namespace HealthGateway.GatewayApiTests.Services.Test.Mock
                 new NotificationSettingsServiceMock().Object,
                 new UserProfileDelegateMock(userProfileData, userProfileDbResult).Object,
                 new Mock<IUserPreferenceDelegate>().Object,
-                new Mock<ILegalAgreementDelegate>().Object,
+                GetMockLegalAgreement().Object,
                 new MessagingVerificationDelegateMock().Object,
                 new CryptoDelegateMock(message).Object,
                 new Mock<IHttpContextAccessor>().Object,
-                configuration);
+                configuration,
+                MapperUtil.InitializeAutoMapper());
         }
 
         /// <summary>
@@ -118,7 +121,8 @@ namespace HealthGateway.GatewayApiTests.Services.Test.Mock
                 new MessagingVerificationDelegateMock().Object,
                 new Mock<ICryptoDelegate>().Object,
                 new Mock<IHttpContextAccessor>().Object,
-                configuration);
+                configuration,
+                MapperUtil.InitializeAutoMapper());
         }
 
         /// <summary>
@@ -147,7 +151,8 @@ namespace HealthGateway.GatewayApiTests.Services.Test.Mock
                 new MessagingVerificationDelegateMock(messagingVerification).Object,
                 new Mock<ICryptoDelegate>().Object,
                 new Mock<IHttpContextAccessor>().Object,
-                configuration);
+                configuration,
+                MapperUtil.InitializeAutoMapper());
         }
 
         /// <summary>
@@ -171,7 +176,8 @@ namespace HealthGateway.GatewayApiTests.Services.Test.Mock
                 new Mock<IMessagingVerificationDelegate>().Object,
                 new Mock<ICryptoDelegate>().Object,
                 new Mock<IHttpContextAccessor>().Object,
-                configuration);
+                configuration,
+                MapperUtil.InitializeAutoMapper());
         }
 
         /// <summary>
@@ -195,11 +201,12 @@ namespace HealthGateway.GatewayApiTests.Services.Test.Mock
                 new Mock<INotificationSettingsService>().Object,
                 new UserProfileDelegateMock(hdId, userProfileData, userProfileDbResult, shouldProfileCommit).Object,
                 new Mock<IUserPreferenceDelegate>().Object,
-                new Mock<ILegalAgreementDelegate>().Object,
+                GetMockLegalAgreement().Object,
                 new Mock<IMessagingVerificationDelegate>().Object,
                 new Mock<ICryptoDelegate>().Object,
                 new HttpContextAccessorMock(headerDictionary).Object,
-                configuration);
+                configuration,
+                MapperUtil.InitializeAutoMapper());
         }
 
         /// <summary>
@@ -209,6 +216,28 @@ namespace HealthGateway.GatewayApiTests.Services.Test.Mock
         public UserProfileService UserProfileServiceMockInstance()
         {
             return this.userProfileService;
+        }
+
+        private static Mock<ILegalAgreementDelegate> GetMockLegalAgreement()
+        {
+            DBResult<LegalAgreement> tosDbResult = new()
+            {
+                Status = DBStatusCode.Read,
+                Payload = new LegalAgreement()
+                {
+                    Id = Guid.Empty,
+                    CreatedBy = "MockData",
+                    CreatedDateTime = DateTime.UtcNow,
+                    EffectiveDate = DateTime.UtcNow,
+                    LegalAgreementCode = LegalAgreementType.TermsofService,
+                    LegalText = "Mock Terms of Service",
+                },
+            };
+
+            Mock<ILegalAgreementDelegate> mockLegalAgreementDelegate = new();
+            mockLegalAgreementDelegate.Setup(x => x.GetActiveByAgreementType(LegalAgreementType.TermsofService)).Returns(tosDbResult);
+
+            return mockLegalAgreementDelegate;
         }
     }
 }

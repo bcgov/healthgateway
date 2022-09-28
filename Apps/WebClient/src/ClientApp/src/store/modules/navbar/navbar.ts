@@ -5,6 +5,7 @@ import { NavbarModule, NavbarState } from "./types";
 
 const state: NavbarState = {
     isSidebarOpen: null,
+    isSidebarAnimating: false,
     isHeaderShown: true,
 };
 

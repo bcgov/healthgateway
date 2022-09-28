@@ -1,20 +1,19 @@
-CREATE ROLE gateway WITH
+CREATE ROLE hglocal WITH
   LOGIN
   INHERIT
   NOCREATEDB
   NOCREATEROLE
-  PASSWORD 'passw0rd';
+  PASSWORD 'md5126dc4528b42dad68fd970be654bcfe4';
 
-CREATE DATABASE gateway WITH 
-  OWNER = gateway
+CREATE DATABASE hglocal WITH 
+  OWNER = hglocal
   ENCODING = 'UTF8'
   LC_COLLATE = 'en_US.UTF-8'
   LC_CTYPE = 'en_US.UTF-8'
-  TABLESPACE = pg_default
   CONNECTION LIMIT = -1
   TEMPLATE template0;
 
-GRANT gateway to postgres;
+GRANT hglocal to postgres;
 
-\c gateway
+\c hglocal
 CREATE EXTENSION IF NOT EXISTS "uuid-ossp";

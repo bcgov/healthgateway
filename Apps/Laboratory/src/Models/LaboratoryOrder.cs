@@ -16,8 +16,8 @@
 namespace HealthGateway.Laboratory.Models;
 
 using System;
-using System.Linq;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text.Json.Serialization;
 using HealthGateway.Laboratory.Models.PHSA;
 
@@ -99,12 +99,6 @@ public class LaboratoryOrder
     public string OrderStatus { get; set; } = string.Empty;
 
     /// <summary>
-    /// Gets or sets a value for the download label.
-    /// </summary>
-    [JsonPropertyName("downloadLabel")]
-    public string DownloadLabel { get; set; } = string.Empty;
-
-    /// <summary>
     /// Gets or sets a value indicating whether report is available.
     /// </summary>
     [JsonPropertyName("reportAvailable")]
@@ -140,11 +134,6 @@ public class LaboratoryOrder
             {
                 "Held" or "Partial" or "Pending" => "Pending",
                 _ => model.PlisTestStatus,
-            },
-            DownloadLabel = model.PlisTestStatus switch
-            {
-                "Completed" or "Corrected" or "Completed w/Modification" => "Final",
-                _ => "Incomplete",
             },
             ReportAvailable = model.PdfReportAvailable,
         };

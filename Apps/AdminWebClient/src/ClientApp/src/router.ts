@@ -3,28 +3,19 @@ import VueRouter, { Route } from "vue-router";
 
 import { UserRoles } from "@/constants/userRoles";
 import store from "@/store/store";
-import CommunicationView from "@/views/Communication.vue";
 import CovidCardView from "@/views/CovidCard.vue";
-import DashboardView from "@/views/Dashboard.vue";
-import FeedbackView from "@/views/Feedback.vue";
 import LoginView from "@/views/Login.vue";
 import LogoutView from "@/views/Logout.vue";
-import StatsView from "@/views/Stats.vue";
 import SupportView from "@/views/Support.vue";
 import UnauthorizedView from "@/views/Unauthorized.vue";
 
 Vue.use(VueRouter);
 
+const SUPPORT_PATH = "/support";
+const UNAUTHORIZED_PATH = "/unauthorized";
+const VACCINE_CARD_PATH = "/covidcard";
+
 const routes = [
-    {
-        path: "/",
-        name: "Dashboard",
-        component: DashboardView,
-        meta: {
-            requiresAuth: true,
-            validRoles: [UserRoles.Admin, UserRoles.Reviewer],
-        },
-    },
     {
         path: "/Login",
         name: "Login",
@@ -43,46 +34,19 @@ const routes = [
         meta: { requiresAuth: false },
     },
     {
-        path: "/job-scheduler",
-        name: "JobScheduler",
-        meta: { requiresAuth: true, validRoles: [UserRoles.Admin] },
-        beforeEnter() {
-            location.href =
-                store.getters["config/serviceEndpoints"]["JobScheduler"];
-        },
-    },
-    {
-        path: "/user-feedback",
-        name: "User Feedback list",
-        component: FeedbackView,
-        meta: {
-            requiresAuth: true,
-            validRoles: [UserRoles.Admin, UserRoles.Reviewer],
-        },
-    },
-    {
-        path: "/communication",
-        name: "System Communications",
-        component: CommunicationView,
-        meta: { requiresAuth: true, validRoles: [UserRoles.Admin] },
-    },
-    {
-        path: "/stats",
-        name: "System Analytics",
-        component: StatsView,
-        meta: { requiresAuth: true, validRoles: [UserRoles.Admin] },
-    },
-    {
-        path: "/support",
+        path: SUPPORT_PATH,
         name: "Support",
         component: SupportView,
-        meta: { requiresAuth: true, validRoles: [UserRoles.Admin] },
+        meta: {
+            requiresAuth: true,
+            validRoles: [UserRoles.Reviewer, UserRoles.Admin],
+        },
         props: (route: Route) => ({
             hdid: route.query.hdid,
         }),
     },
     {
-        path: "/covidcard",
+        path: VACCINE_CARD_PATH,
         name: "BC Vaccine Card",
         component: CovidCardView,
         meta: {
@@ -91,12 +55,13 @@ const routes = [
         },
     },
     {
-        path: "/unauthorized",
+        path: UNAUTHORIZED_PATH,
         name: "Unauthorized",
         component: UnauthorizedView,
         meta: { requiresAuth: false },
     },
-    { path: "*", redirect: "/" },
+    { path: "/", meta: { requiresAuth: true } },
+    { path: "*", redirect: UNAUTHORIZED_PATH, meta: { requiresAuth: false } },
 ];
 
 const router = new VueRouter({
@@ -105,35 +70,55 @@ const router = new VueRouter({
     routes,
 });
 
-router.beforeEach(async (to, from, next) => {
+router.beforeEach(async (to, _from, next) => {
     const meta = to.meta;
     if (meta === undefined) {
         next(Error("Route meta property is undefined"));
         return;
     }
 
-    if (meta.requiresAuth) {
-        const isAuthenticated = store.getters["auth/isAuthenticated"];
-        if (!isAuthenticated) {
-            next({ path: "/signin", query: { redirect: to.path } });
-        } else {
-            const isAuthorized = store.getters["auth/isAuthorized"];
-            const userRoles: string[] = store.getters["auth/roles"];
-            if (
-                !isAuthorized ||
-                !userRoles.some(
-                    (userRole) =>
-                        !meta.validRoles || meta.validRoles.includes(userRole)
-                )
-            ) {
-                next({ path: "/unauthorized" });
-            } else {
-                next();
-            }
-        }
-    } else {
+    // allow access to route if it doesn't require authentication
+    if (!meta.requiresAuth) {
         next();
+        return;
     }
+
+    // redirect to sign in page if not authenticated (and accessing route that require authentication)
+    const isAuthenticated = store.getters["auth/isAuthenticated"];
+    if (!isAuthenticated) {
+        next({ path: "/signin", query: { redirect: to.path } });
+        return;
+    }
+
+    const isAuthorized = store.getters["auth/isAuthorized"];
+    const userRoles: string[] = store.getters["auth/roles"];
+    const hasValidRole =
+        !meta.validRoles ||
+        meta.validRoles.some((role: string) => userRoles.includes(role));
+
+    // redirect to unauthorized page if user does not have a role assigned that allows access to the route
+    if (!isAuthorized || !hasValidRole) {
+        next({ path: UNAUTHORIZED_PATH });
+        return;
+    }
+
+    // redirect to an appropriate default page for the user based on their assigned roles when accessing the site root
+    if (to.path === "/") {
+        let defaultPath = UNAUTHORIZED_PATH;
+        if (userRoles.includes(UserRoles.SupportUser)) {
+            defaultPath = VACCINE_CARD_PATH;
+        } else if (
+            userRoles.includes(UserRoles.Reviewer) ||
+            userRoles.includes(UserRoles.Admin)
+        ) {
+            defaultPath = SUPPORT_PATH;
+        }
+        next({ path: defaultPath });
+        return;
+    }
+
+    // allow access to the route
+    next();
 });
 
 export default router;

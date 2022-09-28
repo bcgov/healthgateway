@@ -41,6 +41,15 @@ namespace HealthGateway.Database.Delegates
         void UpdateUserFeedback(UserFeedback feedback);
 
         /// <summary>
+        /// Updates the UserFeedback object including user feedback tag associations in the DB.
+        /// Version must be set or a Concurrency exception will occur.
+        /// UpdatedDateTime will overridden by our framework.
+        /// </summary>
+        /// <param name="feedback">The feedback to update.</param>
+        /// <returns>A DB result which encapsulates the return object and status.</returns>
+        DBResult<UserFeedback> UpdateUserFeedbackWithTagAssociations(UserFeedback feedback);
+
+        /// <summary>
         /// Fetches the UserFeedback from the database.
         /// </summary>
         /// <param name="feedbackId">The unique feedback id to find.</param>
@@ -48,9 +57,16 @@ namespace HealthGateway.Database.Delegates
         DBResult<UserFeedback> GetUserFeedback(Guid feedbackId);
 
         /// <summary>
-        /// Fetches the UserFeedback from the database with email attached for administratie purposes.
+        /// Fetches the UserFeedback with FeedbackTag associations from the database.
+        /// </summary>
+        /// <param name="feedbackId">The unique feedback id to find.</param>
+        /// <returns>A DB result which encapsulates the return object and status.</returns>
+        DBResult<UserFeedback> GetUserFeedbackWithFeedbackTags(Guid feedbackId);
+
+        /// <summary>
+        /// Fetches the UserFeedback with FeedbackTag associations from the database.
         /// </summary>
         /// <returns>A DB result which encapsulates the return objects and status.</returns>
-        DBResult<IList<UserFeedbackAdmin>> GetAllUserFeedbackEntries();
+        DBResult<IList<UserFeedback>> GetAllUserFeedbackEntries();
     }
 }

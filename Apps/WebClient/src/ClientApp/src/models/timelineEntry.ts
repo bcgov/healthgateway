@@ -76,11 +76,11 @@ export default abstract class TimelineEntry {
 
     public abstract get comments(): UserComment[] | null;
 
-    public filterApplies(keyword: string, filter: TimelineFilter): boolean {
+    public filterApplies(filter: TimelineFilter): boolean {
         return (
             this.entryTypeApplies(filter.entryTypes) &&
             this.dateRangeApplies(filter) &&
-            this.keywordApplies(keyword)
+            this.keywordApplies(filter.keyword)
         );
     }
 
@@ -93,6 +93,7 @@ export default abstract class TimelineEntry {
             this.commentApplies(keyword)
         );
     }
+
     private commentApplies(keyword: string): boolean {
         if (this.comments !== null) {
             return this.comments.some((comment) =>

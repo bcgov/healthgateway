@@ -9,12 +9,12 @@ import DependentCardComponent from "@/components/DependentCardComponent.vue";
 import LoadingComponent from "@/components/LoadingComponent.vue";
 import NewDependentComponent from "@/components/modal/NewDependentComponent.vue";
 import BreadcrumbComponent from "@/components/navmenu/BreadcrumbComponent.vue";
-import ResourceCentreComponent from "@/components/ResourceCentreComponent.vue";
 import { ErrorSourceType, ErrorType } from "@/constants/errorType";
 import BreadcrumbItem from "@/models/breadcrumbItem";
 import type { WebClientConfiguration } from "@/models/configData";
+import { DateWrapper } from "@/models/dateWrapper";
 import type { Dependent } from "@/models/dependent";
-import { ResultError } from "@/models/requestResult";
+import { ResultError } from "@/models/errors";
 import User from "@/models/user";
 import container from "@/plugins/container";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
@@ -28,7 +28,6 @@ library.add(faUserPlus);
         LoadingComponent,
         DependentCardComponent,
         NewDependentComponent,
-        "resource-centre": ResourceCentreComponent,
     },
 })
 export default class DependentsView extends Vue {
@@ -47,6 +46,9 @@ export default class DependentsView extends Vue {
         traceId: string | undefined;
     }) => void;
 
+    @Action("setTooManyRequestsWarning", { namespace: "errorBanner" })
+    setTooManyRequestsWarning!: (params: { key: string }) => void;
+
     private logger!: ILogger;
     private dependentService!: IDependentService;
 
@@ -62,52 +64,76 @@ export default class DependentsView extends Vue {
         },
     ];
 
-    private created() {
+    private created(): void {
         this.logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
     }
 
-    private mounted() {
+    private mounted(): void {
         this.dependentService = container.get<IDependentService>(
             SERVICE_IDENTIFIER.DependentService
         );
         this.fetchDependents();
     }
 
-    private fetchDependents() {
+    private fetchDependents(): void {
         this.isLoading = true;
         this.dependentService
             .getAll(this.user.hdid)
-            .then((results) => {
-                this.dependents = results;
-            })
+            .then((results) => this.setDependents(results))
             .catch((error: ResultError) => {
                 this.logger.error(error.resultMessage);
-                this.addError({
-                    errorType: ErrorType.Retrieve,
-                    source: ErrorSourceType.Dependent,
-                    traceId: error.traceId,
-                });
+                if (error.statusCode === 429) {
+                    this.setTooManyRequestsWarning({ key: "page" });
+                } else {
+                    this.addError({
+                        errorType: ErrorType.Retrieve,
+                        source: ErrorSourceType.Dependent,
+                        traceId: error.traceId,
+                    });
+                }
             })
             .finally(() => {
                 this.isLoading = false;
             });
     }
 
-    private showModal() {
+    private setDependents(dependents: Dependent[]): void {
+        this.dependents = dependents;
+        this.dependents.sort((a, b) => {
+            const firstDate = new DateWrapper(
+                a.dependentInformation.dateOfBirth
+            );
+            const secondDate = new DateWrapper(
+                b.dependentInformation.dateOfBirth
+            );
+
+            if (firstDate.isBefore(secondDate)) {
+                return 1;
+            }
+
+            if (firstDate.isAfter(secondDate)) {
+                return -1;
+            }
+
+            return 0;
+        });
+    }
+
+    private showModal(): void {
         this.newDependentModal.showModal();
     }
 
-    private hideModal() {
+    private hideModal(): void {
         this.newDependentModal.hideModal();
     }
 
-    private needsUpdate() {
+    private needsUpdate(): void {
         this.fetchDependents();
     }
 }
 </script>
 <template>
-    <div class="m-3 m-md-4 flex-grow-1 d-flex flex-column">
+    <div>
         <BreadcrumbComponent :items="breadcrumbItems" />
         <LoadingComponent :is-loading="isLoading" />
         <b-row>
@@ -125,16 +151,9 @@ export default class DependentsView extends Vue {
                 </page-title>
                 <h5 class="my-3">
                     You can add your dependents under the age of
-                    {{ webClientConfig.maxDependentAge }} to view their COVID-19
-                    test results. Make sure you include all given names exactly
-                    as shown on their BC Services Card. To access your
-                    dependent’s proof of vaccination, please visit
-                    <a
-                        href="https://www.healthgateway.gov.bc.ca/vaccinecard"
-                        target="_blank"
-                        rel="noopener"
-                        >www.healthgateway.gov.bc.ca/vaccinecard</a
-                    >
+                    {{ webClientConfig.maxDependentAge }} to view their health
+                    records. Make sure you include all given names exactly as
+                    shown on their BC Services Card.
                 </h5>
                 <b-row
                     v-for="dependent in dependents"
@@ -150,7 +169,6 @@ export default class DependentsView extends Vue {
                 </b-row>
             </b-col>
         </b-row>
-        <resource-centre />
         <NewDependentComponent
             ref="newDependentModal"
             @show="showModal"

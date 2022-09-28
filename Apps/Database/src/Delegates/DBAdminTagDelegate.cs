@@ -26,7 +26,7 @@ namespace HealthGateway.Database.Delegates
     using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.Logging;
 
-    /// <inheritdoc />
+    /// <inheritdoc/>
     [ExcludeFromCodeCoverage]
     public class DBAdminTagDelegate : IAdminTagDelegate
     {
@@ -46,11 +46,11 @@ namespace HealthGateway.Database.Delegates
             this.dbContext = dbContext;
         }
 
-        /// <inheritdoc />
+        /// <inheritdoc/>
         public DBResult<AdminTag> Add(AdminTag tag, bool commit = true)
         {
-            this.logger.LogTrace($"Adding AdminTag to DB...");
-            DBResult<AdminTag> result = new DBResult<AdminTag>()
+            this.logger.LogTrace("Adding AdminTag to DB...");
+            DBResult<AdminTag> result = new()
             {
                 Payload = tag,
                 Status = DBStatusCode.Deferred,
@@ -71,19 +71,57 @@ namespace HealthGateway.Database.Delegates
                 }
             }
 
-            this.logger.LogDebug($"Finished adding AdminTag to DB");
+            this.logger.LogDebug("Finished adding AdminTag to DB");
             return result;
         }
 
-        /// <inheritdoc />
+        /// <inheritdoc/>
+        public DBResult<AdminTag> Delete(AdminTag tag, bool commit = true)
+        {
+            this.logger.LogTrace("Deleting AdminTag from DB...");
+            DBResult<AdminTag> result = new()
+            {
+                Payload = tag,
+                Status = DBStatusCode.Deferred,
+            };
+            this.dbContext.AdminTag.Remove(tag);
+            if (commit)
+            {
+                try
+                {
+                    this.dbContext.SaveChanges();
+                    result.Status = DBStatusCode.Deleted;
+                }
+                catch (DbUpdateConcurrencyException e)
+                {
+                    result.Status = DBStatusCode.Concurrency;
+                    result.Message = e.Message;
+                }
+            }
+
+            this.logger.LogDebug("Finished deleting AdminTag in DB");
+            return result;
+        }
+
+        /// <inheritdoc/>
         public DBResult<IEnumerable<AdminTag>> GetAll()
         {
-            this.logger.LogTrace($"Getting all AdminTag from DB...");
-            DBResult<IEnumerable<AdminTag>> result = new DBResult<IEnumerable<AdminTag>>();
+            this.logger.LogTrace("Getting all AdminTag from DB...");
+            DBResult<IEnumerable<AdminTag>> result = new();
             result.Payload = this.dbContext.AdminTag
-                    .OrderBy(o => o.Name)
-                    .ToList();
+                .OrderBy(o => o.Name)
+                .ToList();
             result.Status = result.Payload != null ? DBStatusCode.Read : DBStatusCode.NotFound;
+            return result;
+        }
+
+        /// <inheritdoc/>
+        public DBResult<IEnumerable<AdminTag>> GetAdminTags(ICollection<Guid> adminTagIds)
+        {
+            this.logger.LogTrace("Getting admin tags from DB for Admin Tag Ids: {AdminTagId}", adminTagIds.ToString());
+            DBResult<IEnumerable<AdminTag>> result = new();
+            result.Payload = this.dbContext.AdminTag.Where(t => adminTagIds.Contains(t.AdminTagId)).ToList();
+            result.Status = DBStatusCode.Read;
             return result;
         }
     }

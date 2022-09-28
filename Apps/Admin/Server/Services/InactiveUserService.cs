@@ -15,14 +15,17 @@
 //-------------------------------------------------------------------------
 namespace HealthGateway.Admin.Server.Services;
 
+using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using HealthGateway.Admin.Server.Models;
 using HealthGateway.Common.AccessManagement.Administration;
-using HealthGateway.Common.AccessManagement.Authentication;
 using HealthGateway.Common.AccessManagement.Administration.Models;
+using HealthGateway.Common.AccessManagement.Authentication;
 using HealthGateway.Common.AccessManagement.Authentication.Models;
 using HealthGateway.Common.Constants;
+using HealthGateway.Common.Data.Constants;
 using HealthGateway.Common.Data.ViewModels;
 using HealthGateway.Database.Constants;
 using HealthGateway.Database.Delegates;
@@ -30,11 +33,8 @@ using HealthGateway.Database.Models;
 using HealthGateway.Database.Wrapper;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
-using System;
-using System.Threading.Tasks;
-using HealthGateway.Common.Data.Constants;
 
-/// <inheritdoc />
+/// <inheritdoc/>
 public class InactiveUserService : IInactiveUserService
 {
     private const string AuthConfigSectionName = "KeycloakAdmin:Authentication";
@@ -72,12 +72,12 @@ public class InactiveUserService : IInactiveUserService
         configSection.Bind(this.tokenRequest);
     }
 
-    /// <inheritdoc />
+    /// <inheritdoc/>
     public async Task<RequestResult<List<AdminUserProfileView>>> GetInactiveUsers(int inactiveDays, int timeOffset)
     {
-        List<AdminUserProfileView> inactiveUsers = new List<AdminUserProfileView>();
+        List<AdminUserProfileView> inactiveUsers = new();
 
-        RequestResult<List<AdminUserProfileView>> requestResult = new RequestResult<List<AdminUserProfileView>>()
+        RequestResult<List<AdminUserProfileView>> requestResult = new()
         {
             ResultStatus = ResultType.Success,
             ResourcePayload = new List<AdminUserProfileView>(),
@@ -159,7 +159,7 @@ public class InactiveUserService : IInactiveUserService
                 inactiveUser.Email = inactiveUser.Email ??= user.Email;
                 inactiveUser.FirstName = inactiveUser.FirstName ??= user.FirstName;
                 inactiveUser.LastName = inactiveUser.LastName ??= user.LastName;
-                inactiveUser.RealmRoles = inactiveUser.RealmRoles != null ? (inactiveUser.RealmRoles + ", " + role.ToString()) : role.ToString();
+                inactiveUser.RealmRoles = inactiveUser.RealmRoles != null ? inactiveUser.RealmRoles + ", " + role : role.ToString();
             }
         }
     }
@@ -167,10 +167,12 @@ public class InactiveUserService : IInactiveUserService
     private void AddInactiveUser(List<AdminUserProfileView> inactiveUsers, List<AdminUserProfile> activeUserProfiles, List<UserRepresentation> identityAccessUsers, IdentityAccessRole role)
     {
         this.logger.LogDebug("Keycloak {Role} count: {Count}...", role.ToString(), identityAccessUsers.Count);
-        IEnumerable<UserRepresentation> users = identityAccessUsers.Where(x1 =>
-            !inactiveUsers.Exists(x2 => x1.Username == x2.Username) &&
-            !activeUserProfiles.Exists(x2 => x1.Username == x2.Username));
-        this.logger.LogDebug("Keycloak {Role} users that do not exist in inactiveUsers list - count: {Count}...", role.ToString(), users.Count());
+        List<UserRepresentation> users = identityAccessUsers.Where(
+                x1 =>
+                    !inactiveUsers.Exists(x2 => x1.Username == x2.Username) &&
+                    !activeUserProfiles.Exists(x2 => x1.Username == x2.Username))
+            .ToList();
+        this.logger.LogDebug("Keycloak {Role} users that do not exist in inactiveUsers list - count: {Count}...", role, users.Count);
 
         foreach (UserRepresentation user in users)
         {

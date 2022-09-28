@@ -1,15 +1,14 @@
+@using HealthGateway.Admin.Client.Store.Communications
+@using HealthGateway.Common.Data.Utils
+@using HealthGateway.Common.Data.Constants
 @inherits Fluxor.Blazor.Web.Components.FluxorComponent
-
-@using HealthGateway.Admin.Client.Store.Communications;
-@using HealthGateway.Common.Data.Constants;
-@using HealthGateway.Common.Data.Utils;
 
 <MudDialog>
     <DialogContent>
         <HgBannerFeedback Severity="@Severity.Error" IsEnabled="@(HasAddError || HasUpdateError)" TResetAction="@CommunicationsActions.ResetStateAction">
             @ErrorMessage
         </HgBannerFeedback>
-        <MudForm @ref="Form">
+        <MudForm @ref="Form" data-testid="banner-dialog-modal-text">
             <MudGrid Spacing="0">
                 <MudItem xs="6">
                     <MudDatePicker @ref="@EffectiveDatePicker"
@@ -22,7 +21,8 @@
                                    DisableToolbar="@true"
                                    Variant="@Variant.Filled"
                                    Margin="@Margin.Dense"
-                                   Class="mt-3 mr-3">
+                                   Class="mt-3 mr-3"
+                                   data-testid="effective-date-pkr">
                         <PickerActions>
                             <MudButton Class="mr-auto align-self-start"
                                        OnClick="@(() => EffectiveDatePicker.Clear())">
@@ -41,7 +41,8 @@
                                        AmPm="@true"
                                        TimeFormat="h:mm tt"
                                        Variant="@Variant.Filled"
-                                       Margin="@Margin.Dense">
+                                       Margin="@Margin.Dense"
+                                       data-testid="effective-time-pkr">
                             <PickerActions>
                                 <MudButton Class="mr-auto align-self-start"
                                            OnClick="@(() => EffectiveTimePicker.Clear())">
@@ -69,7 +70,8 @@
                                    DisableToolbar="@true"
                                    Variant="@Variant.Filled"
                                    Margin="@Margin.Dense"
-                                   Class="mt-3 mr-3">
+                                   Class="mt-3 mr-3"
+                                   data-testid="expiry-date-pkr">
                         <PickerActions>
                             <MudButton Class="mr-auto align-self-start"
                                        OnClick="@(() => ExpiryDatePicker.Clear())">
@@ -88,7 +90,8 @@
                                        AmPm="@true"
                                        TimeFormat="h:mm tt"
                                        Variant="@Variant.Filled"
-                                       Margin="@Margin.Dense">
+                                       Margin="@Margin.Dense"
+                                       data-testid="expiry-time-pkr">
                             <PickerActions>
                                 <MudButton Class="mr-auto align-self-start"
                                            OnClick="@(() => ExpiryTimePicker.Clear())">
@@ -106,10 +109,10 @@
                     </div>
                 </MudItem>
                 <MudItem xs="6">
-                    <HgTextField Label="Subject" @bind-Value="Communication.Subject" T="@string" Required="@true" RightMargin="@Breakpoint.Always" />
+                    <HgTextField Label="Subject" @bind-Value="Communication.Subject" T="@string" Required="@true" RightMargin="@Breakpoint.Always" data-testid="subject-input" />
                 </MudItem>
                 <MudItem xs="6">
-                    <HgSelect Label="Status" @bind-Value="@Communication.CommunicationStatusCode" T="@CommunicationStatus" Required="@true">
+                    <HgSelect Label="Status" @bind-Value="@Communication.CommunicationStatusCode" T="@CommunicationStatus" Required="@true" data-testid="status-selector">
                         @foreach (CommunicationStatus status in CommunicationStatuses)
                         {
                             <MudSelectItem Value="@status" />
@@ -123,7 +126,7 @@
         </MudForm>
     </DialogContent>
     <DialogActions>
-        <HgButton Color="@Color.Primary" Variant="@Variant.Text" OnClick="@HandleClickCancel">Cancel</HgButton>
-        <HgButton Color="@Color.Primary" OnClick="@HandleClickSaveAsync">Save</HgButton>
+        <HgButton Color="@Color.Primary" Variant="@Variant.Text" OnClick="@HandleClickCancel" data-testid="cancel-btn">Cancel</HgButton>
+        <HgButton Color="@Color.Primary" OnClick="@HandleClickSaveAsync" data-testid="save-btn">Save</HgButton>
     </DialogActions>
 </MudDialog>

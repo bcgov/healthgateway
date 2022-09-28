@@ -20,9 +20,9 @@ namespace HealthGateway.GatewayApi.Controllers
     using System.Diagnostics.CodeAnalysis;
     using System.Security.Claims;
     using System.Threading.Tasks;
+    using HealthGateway.Common.AccessManagement.Authentication;
     using HealthGateway.Common.AccessManagement.Authorization.Policy;
     using HealthGateway.Common.Data.ViewModels;
-    using HealthGateway.Common.Models;
     using HealthGateway.Common.Utils;
     using HealthGateway.GatewayApi.Models;
     using HealthGateway.GatewayApi.Services;
@@ -41,11 +41,12 @@ namespace HealthGateway.GatewayApi.Controllers
     [ApiController]
     public class UserProfileController : ControllerBase
     {
-        private readonly ILogger logger;
-        private readonly IUserProfileService userProfileService;
+        private readonly IAuthenticationDelegate authenticationDelegate;
         private readonly IHttpContextAccessor httpContextAccessor;
+        private readonly ILogger logger;
         private readonly IUserEmailService userEmailService;
-        private readonly IUserSMSService userSMSService;
+        private readonly IUserProfileService userProfileService;
+        private readonly IUserSMSService userSmsService;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="UserProfileController"/> class.
@@ -54,19 +55,22 @@ namespace HealthGateway.GatewayApi.Controllers
         /// <param name="userProfileService">The injected user profile service.</param>
         /// <param name="httpContextAccessor">The injected http context accessor provider.</param>
         /// <param name="userEmailService">The injected user email service.</param>
-        /// <param name="userSMSService">The injected user sms service.</param>
+        /// <param name="userSmsService">The injected user sms service.</param>
+        /// <param name="authenticationDelegate">The injected authentication delegate.</param>
         public UserProfileController(
             ILogger<UserProfileController> logger,
             IUserProfileService userProfileService,
             IHttpContextAccessor httpContextAccessor,
             IUserEmailService userEmailService,
-            IUserSMSService userSMSService)
+            IUserSMSService userSmsService,
+            IAuthenticationDelegate authenticationDelegate)
         {
             this.logger = logger;
             this.userProfileService = userProfileService;
             this.httpContextAccessor = httpContextAccessor;
             this.userEmailService = userEmailService;
-            this.userSMSService = userSMSService;
+            this.userSmsService = userSmsService;
+            this.authenticationDelegate = authenticationDelegate;
         }
 
         /// <summary>
@@ -78,7 +82,10 @@ namespace HealthGateway.GatewayApi.Controllers
         /// <response code="200">The user profile record was saved.</response>
         /// <response code="400">The user profile was already inserted.</response>
         /// <response code="401">The client must authenticate itself to get the requested response.</response>
-        /// <response code="403">The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.</response>
+        /// <response code="403">
+        /// The client does not have access rights to the content; that is, it is unauthorized, so the server
+        /// is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.
+        /// </response>
         [HttpPost]
         [Route("{hdid}")]
         [Authorize(Policy = UserProfilePolicy.Write)]
@@ -95,7 +102,7 @@ namespace HealthGateway.GatewayApi.Controllers
             {
                 ClaimsPrincipal user = httpContext.User;
                 DateTime jwtAuthTime = ClaimsPrincipalReader.GetAuthDateTime(user);
-                string jwtEmailAddress = user.FindFirstValue(ClaimTypes.Email);
+                string? jwtEmailAddress = user.FindFirstValue(ClaimTypes.Email);
                 return await this.userProfileService.CreateUserProfile(createUserRequest, jwtAuthTime, jwtEmailAddress).ConfigureAwait(true);
             }
 
@@ -109,7 +116,10 @@ namespace HealthGateway.GatewayApi.Controllers
         /// <param name="hdid">The user hdid.</param>
         /// <response code="200">Returns the user profile json.</response>
         /// <response code="401">the client must authenticate itself to get the requested response.</response>
-        /// <response code="403">The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.</response>
+        /// <response code="403">
+        /// The client does not have access rights to the content; that is, it is unauthorized, so the server
+        /// is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.
+        /// </response>
         [HttpGet]
         [Route("{hdid}")]
         [Authorize(Policy = UserProfilePolicy.Read)]
@@ -119,18 +129,7 @@ namespace HealthGateway.GatewayApi.Controllers
             DateTime jwtAuthTime = ClaimsPrincipalReader.GetAuthDateTime(user);
 
             RequestResult<UserProfileModel> result = this.userProfileService.GetUserProfile(hdid, jwtAuthTime);
-
-            if (result.ResourcePayload != null)
-            {
-                RequestResult<Dictionary<string, UserPreferenceModel>> userPreferences = this.userProfileService.GetUserPreferences(hdid);
-                if (userPreferences.ResourcePayload != null)
-                {
-                    foreach (var preference in userPreferences.ResourcePayload)
-                    {
-                        result.ResourcePayload.Preferences.Add(preference);
-                    }
-                }
-            }
+            this.AddUserPreferences(result.ResourcePayload);
 
             return result;
         }
@@ -142,7 +141,10 @@ namespace HealthGateway.GatewayApi.Controllers
         /// <param name="hdid">The user hdid.</param>
         /// <response code="200">The request result is returned.</response>
         /// <response code="401">the client must authenticate itself to get the requested response.</response>
-        /// <response code="403">The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.</response>
+        /// <response code="403">
+        /// The client does not have access rights to the content; that is, it is unauthorized, so the server
+        /// is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.
+        /// </response>
         [HttpGet]
         [Route("{hdid}/Validate")]
         [Authorize(Policy = UserProfilePolicy.Read)]
@@ -158,7 +160,10 @@ namespace HealthGateway.GatewayApi.Controllers
         /// <param name="hdid">The user hdid.</param>
         /// <response code="200">Returns the user profile json.</response>
         /// <response code="401">the client must authenticate itself to get the requested response.</response>
-        /// <response code="403">The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.</response>
+        /// <response code="403">
+        /// The client does not have access rights to the content; that is, it is unauthorized, so the server
+        /// is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.
+        /// </response>
         [HttpDelete]
         [Route("{hdid}")]
         [Authorize(Policy = UserProfilePolicy.Write)]
@@ -166,8 +171,7 @@ namespace HealthGateway.GatewayApi.Controllers
         public RequestResult<UserProfileModel> CloseUserProfile(string hdid)
         {
             // Retrieve the user identity id from the claims
-            ClaimsPrincipal user = this.httpContextAccessor.HttpContext!.User;
-            Guid userId = new Guid(user.FindFirst(ClaimTypes.NameIdentifier)!.Value);
+            Guid userId = new(this.authenticationDelegate.FetchAuthenticatedUserId());
 
             return this.userProfileService.CloseUserProfile(hdid, userId);
         }
@@ -179,7 +183,10 @@ namespace HealthGateway.GatewayApi.Controllers
         /// <param name="hdid">The user hdid.</param>
         /// <response code="200">Returns the user profile json.</response>
         /// <response code="401">the client must authenticate itself to get the requested response.</response>
-        /// <response code="403">The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.</response>
+        /// <response code="403">
+        /// The client does not have access rights to the content; that is, it is unauthorized, so the server
+        /// is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.
+        /// </response>
         [HttpGet]
         [Route("{hdid}/recover")]
         [Authorize(Policy = UserProfilePolicy.Write)]
@@ -195,7 +202,10 @@ namespace HealthGateway.GatewayApi.Controllers
         /// <returns>The terms of service model wrapped in a request result.</returns>
         /// <response code="200">Returns the terms of service json.</response>
         /// <response code="401">the client must authenticate itself to get the requested response.</response>
-        /// <response code="403">The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.</response>
+        /// <response code="403">
+        /// The client does not have access rights to the content; that is, it is unauthorized, so the server
+        /// is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.
+        /// </response>
         [HttpGet]
         [Route("termsofservice")]
         [AllowAnonymous]
@@ -250,7 +260,7 @@ namespace HealthGateway.GatewayApi.Controllers
             HttpContext? httpContext = this.httpContextAccessor.HttpContext;
             if (httpContext != null)
             {
-                PrimitiveRequestResult<bool> result = this.userSMSService.ValidateSMS(hdid, validationCode);
+                PrimitiveRequestResult<bool> result = this.userSmsService.ValidateSMS(hdid, validationCode);
                 if (!result.ResourcePayload)
                 {
                     await Task.Delay(5000).ConfigureAwait(true);
@@ -270,7 +280,10 @@ namespace HealthGateway.GatewayApi.Controllers
         /// <returns>True if the action was successful.</returns>
         /// <response code="200">Returns true if the call was successful.</response>
         /// <response code="401">the client must authenticate itself to get the requested response.</response>
-        /// <response code="403">The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.</response>
+        /// <response code="403">
+        /// The client does not have access rights to the content; that is, it is unauthorized, so the server
+        /// is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.
+        /// </response>
         [HttpPut]
         [Route("{hdid}/email")]
         [Authorize(Policy = UserProfilePolicy.Write)]
@@ -287,13 +300,16 @@ namespace HealthGateway.GatewayApi.Controllers
         /// <returns>True if the action was successful.</returns>
         /// <response code="200">Returns true if the call was successful.</response>
         /// <response code="401">the client must authenticate itself to get the requested response.</response>
-        /// <response code="403">The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.</response>
+        /// <response code="403">
+        /// The client does not have access rights to the content; that is, it is unauthorized, so the server
+        /// is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.
+        /// </response>
         [HttpPut]
         [Route("{hdid}/sms")]
         [Authorize(Policy = UserProfilePolicy.Write)]
         public bool UpdateUserSMSNumber(string hdid, [FromBody] string smsNumber)
         {
-            return this.userSMSService.UpdateUserSMS(hdid, smsNumber);
+            return this.userSmsService.UpdateUserSMS(hdid, smsNumber);
         }
 
         /// <summary>
@@ -304,7 +320,10 @@ namespace HealthGateway.GatewayApi.Controllers
         /// <param name="userPreferenceModel">The user preference request model.</param>
         /// <response code="200">The user preference record was saved.</response>
         /// <response code="401">The client must authenticate itself to get the requested response.</response>
-        /// <response code="403">The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.</response>
+        /// <response code="403">
+        /// The client does not have access rights to the content; that is, it is unauthorized, so the server
+        /// is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.
+        /// </response>
         [HttpPut]
         [Route("{hdid}/preference")]
         [Authorize(Policy = UserProfilePolicy.Write)]
@@ -332,7 +351,10 @@ namespace HealthGateway.GatewayApi.Controllers
         /// <param name="userPreferenceModel">The user preference request model.</param>
         /// <response code="200">The comment record was saved.</response>
         /// <response code="401">The client must authenticate itself to get the requested response.</response>
-        /// <response code="403">The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.</response>
+        /// <response code="403">
+        /// The client does not have access rights to the content; that is, it is unauthorized, so the server
+        /// is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.
+        /// </response>
         [HttpPost]
         [Route("{hdid}/preference")]
         [Authorize(Policy = UserProfilePolicy.Write)]
@@ -357,13 +379,34 @@ namespace HealthGateway.GatewayApi.Controllers
         /// <param name="termsOfServiceId">The id of the terms of service to update for this user.</param>
         /// <response code="200">Returns the user profile json.</response>
         /// <response code="401">the client must authenticate itself to get the requested response.</response>
-        /// <response code="403">The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.</response>
+        /// <response code="403">
+        /// The client does not have access rights to the content; that is, it is unauthorized, so the server
+        /// is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.
+        /// </response>
         [HttpPut]
         [Route("{hdid}/acceptedterms")]
         [Authorize(Policy = UserProfilePolicy.Write)]
         public RequestResult<UserProfileModel> UpdateAcceptedTerms(string hdid, [FromBody] Guid termsOfServiceId)
         {
-            return this.userProfileService.UpdateAcceptedTerms(hdid, termsOfServiceId);
+            RequestResult<UserProfileModel> result = this.userProfileService.UpdateAcceptedTerms(hdid, termsOfServiceId);
+            this.AddUserPreferences(result.ResourcePayload);
+
+            return result;
+        }
+
+        private void AddUserPreferences(UserProfileModel profile)
+        {
+            if (profile != null)
+            {
+                RequestResult<Dictionary<string, UserPreferenceModel>> userPreferences = this.userProfileService.GetUserPreferences(profile.HdId);
+                if (userPreferences.ResourcePayload != null)
+                {
+                    foreach (KeyValuePair<string, UserPreferenceModel> preference in userPreferences.ResourcePayload)
+                    {
+                        profile.Preferences.Add(preference);
+                    }
+                }
+            }
         }
     }
 }

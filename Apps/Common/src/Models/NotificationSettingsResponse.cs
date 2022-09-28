@@ -24,7 +24,6 @@ namespace HealthGateway.Common.Models
         /// Initializes a new instance of the <see cref="NotificationSettingsResponse"/> class.
         /// </summary>
         public NotificationSettingsResponse()
-            : base()
         {
         }
 

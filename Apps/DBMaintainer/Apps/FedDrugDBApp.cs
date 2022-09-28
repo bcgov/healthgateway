@@ -25,7 +25,9 @@ namespace HealthGateway.DrugMaintainer.Apps
     /// <summary>
     /// Utility program to load the Federal Government Drug Product database.
     /// Reads the AllFiles zip as located and documented at
-    /// See https://www.canada.ca/en/health-canada/services/drugs-health-products/drug-products/drug-product-database/what-data-extract-drug-product-database.html for reference.
+    /// See
+    /// https://www.canada.ca/en/health-canada/services/drugs-health-products/drug-products/drug-product-database/what-data-extract-drug-product-database.html
+    /// for reference.
     /// </summary>
     public class FedDrugDBApp : BaseDrugApp<IDrugProductParser>
     {

@@ -7,8 +7,8 @@ import {
 } from "vuex";
 
 import { ErrorType } from "@/constants/errorType";
-import { CustomBannerError } from "@/models/bannerError";
 import { StringISODate } from "@/models/dateWrapper";
+import { CustomBannerError, ResultError } from "@/models/errors";
 import {
     Covid19LaboratoryOrder,
     Covid19LaboratoryOrderResult,
@@ -16,7 +16,7 @@ import {
     LaboratoryOrderResult,
     PublicCovidTestResponseResult,
 } from "@/models/laboratory";
-import RequestResult, { ResultError } from "@/models/requestResult";
+import RequestResult from "@/models/requestResult";
 import { LoadStatus } from "@/models/storeOperations";
 import { RootState } from "@/store/types";
 
@@ -86,7 +86,7 @@ export interface LaboratoryActions
     ): Promise<PublicCovidTestResponseResult>;
     handlePublicCovidTestsError(
         context: StoreContext,
-        error: ResultError
+        params: { error: ResultError; errorType: ErrorType }
     ): void;
     resetPublicCovidTestResponseResult(context: StoreContext): void;
 }

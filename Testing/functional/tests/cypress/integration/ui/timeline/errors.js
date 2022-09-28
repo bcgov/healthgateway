@@ -2,10 +2,8 @@ const { AuthMethod } = require("../../../support/constants");
 
 describe("Banner Error", () => {
     beforeEach(() => {
-        cy.intercept("GET", "**/Note/*", (req) => {
-            req.reply((res) => {
-                res.send({ fixture: "WebClientService/dbError.json" });
-            });
+        cy.intercept("GET", "**/Note/*", {
+            fixture: "WebClientService/dbError.json",
         });
         cy.enableModules("Note");
         cy.login(

@@ -15,13 +15,9 @@
 //-------------------------------------------------------------------------
 namespace HealthGateway.Mock.Controllers
 {
+    using System;
     using System.Collections.Generic;
     using System.Diagnostics.CodeAnalysis;
-    using System.IO;
-    using System.Reflection;
-    using System.Text;
-    using System.Text.Json;
-    using System.Threading.Tasks;
     using HealthGateway.Common.Utils;
     using HealthGateway.Mock.Models;
     using Microsoft.AspNetCore.Mvc;
@@ -112,7 +108,7 @@ namespace HealthGateway.Mock.Controllers
         {
             foreach (KeyValuePair<string, string> variable in variables)
             {
-                fixtureString = fixtureString.Replace(variable.Key, variable.Value, System.StringComparison.CurrentCulture);
+                fixtureString = fixtureString.Replace(variable.Key, variable.Value, StringComparison.CurrentCulture);
             }
 
             return fixtureString;

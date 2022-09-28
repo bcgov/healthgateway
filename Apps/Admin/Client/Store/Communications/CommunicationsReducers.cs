@@ -15,11 +15,11 @@
 //-------------------------------------------------------------------------
 namespace HealthGateway.Admin.Client.Store.Communications;
 
+using System.Collections.Generic;
+using System.Linq;
 using Fluxor;
 using HealthGateway.Admin.Client.Models;
 using HealthGateway.Admin.Common.Models;
-using System.Collections.Generic;
-using System.Linq;
 
 /// <summary>
 /// The set of reducers for the feature.
@@ -122,7 +122,7 @@ public static class CommunicationsReducers
         {
             data = new List<ExtendedCommunication>(data)
             {
-                new ExtendedCommunication(communication),
+                new(communication),
             };
         }
 

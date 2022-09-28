@@ -65,7 +65,7 @@ namespace HealthGateway.Encounter.Delegates
             {
                 string? serviceHost = Environment.GetEnvironmentVariable($"{this.odrConfig.ServiceName}{this.odrConfig.ServiceHostSuffix}");
                 string? servicePort = Environment.GetEnvironmentVariable($"{this.odrConfig.ServiceName}{this.odrConfig.ServicePortSuffix}");
-                Dictionary<string, string> replacementData = new Dictionary<string, string>()
+                Dictionary<string, string> replacementData = new()
                 {
                     { "serviceHost", serviceHost! },
                     { "servicePort", servicePort! },
@@ -77,26 +77,26 @@ namespace HealthGateway.Encounter.Delegates
                 this.baseURL = new Uri(this.odrConfig.BaseEndpoint);
             }
 
-            logger.LogInformation($"ODR Proxy URL resolved as {this.baseURL.ToString()}");
+            logger.LogDebug($"ODR Proxy URL resolved as {this.baseURL}");
         }
 
-        private static ActivitySource Source { get; } = new ActivitySource(nameof(RestMspVisitDelegate));
+        private static ActivitySource Source { get; } = new(nameof(RestMspVisitDelegate));
 
         /// <inheritdoc/>
         public async Task<RequestResult<MspVisitHistoryResponse>> GetMSPVisitHistoryAsync(OdrHistoryQuery query, string hdid, string ipAddress)
         {
-            using (Source.StartActivity("GetMSPVisitHistoryAsync"))
+            using (Source.StartActivity())
             {
-                RequestResult<MspVisitHistoryResponse> retVal = new RequestResult<MspVisitHistoryResponse>();
+                RequestResult<MspVisitHistoryResponse> retVal = new();
                 this.logger.LogTrace($"Getting MSP visits... {query.PHN.Substring(0, 3)}");
 
                 using HttpClient client = this.httpClientService.CreateDefaultHttpClient();
                 client.DefaultRequestHeaders.Accept.Clear();
                 client.DefaultRequestHeaders.Accept.Add(
                     new MediaTypeWithQualityHeaderValue(MediaTypeNames.Application.Json));
-                MspVisitHistory request = new MspVisitHistory()
+                MspVisitHistory request = new()
                 {
-                    Id = System.Guid.NewGuid(),
+                    Id = Guid.NewGuid(),
                     RequestorHDID = hdid,
                     RequestorIP = ipAddress,
                     Query = query,
@@ -105,7 +105,7 @@ namespace HealthGateway.Encounter.Delegates
                 {
                     string json = JsonSerializer.Serialize(request);
                     using HttpContent content = new StringContent(json, null, MediaTypeNames.Application.Json);
-                    Uri endpoint = new Uri(this.baseURL, this.odrConfig.MSPVisitsEndpoint);
+                    Uri endpoint = new(this.baseURL, this.odrConfig.MSPVisitsEndpoint);
                     HttpResponseMessage response = await client.PostAsync(endpoint, content).ConfigureAwait(true);
                     string payload = await response.Content.ReadAsStringAsync().ConfigureAwait(true);
                     if (response.IsSuccessStatusCode)
@@ -118,7 +118,11 @@ namespace HealthGateway.Encounter.Delegates
                     else
                     {
                         retVal.ResultStatus = ResultType.Error;
-                        retVal.ResultError = new RequestResultError() { ResultMessage = $"Invalid HTTP Response code of {response.StatusCode} from ODR with reason {response.ReasonPhrase}", ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.ODRRecords) };
+                        retVal.ResultError = new RequestResultError
+                        {
+                            ResultMessage = $"Invalid HTTP Response code of {response.StatusCode} from ODR with reason {response.ReasonPhrase}",
+                            ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.ODRRecords),
+                        };
                         this.logger.LogError(retVal.ResultError.ResultMessage);
                     }
                 }
@@ -127,11 +131,15 @@ namespace HealthGateway.Encounter.Delegates
 #pragma warning restore CA1031 // Do not catch general exception types
                 {
                     retVal.ResultStatus = ResultType.Error;
-                    retVal.ResultError = new RequestResultError() { ResultMessage = e.ToString(), ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.ODRRecords) };
-                    this.logger.LogError($"Unable to post message {e.ToString()}");
+                    retVal.ResultError = new RequestResultError
+                    {
+                        ResultMessage = e.ToString(),
+                        ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.ODRRecords),
+                    };
+                    this.logger.LogError($"Unable to post message {e}");
                 }
 
-                this.logger.LogDebug($"Finished getting MSP visits");
+                this.logger.LogDebug("Finished getting MSP visits");
 
                 return retVal;
             }

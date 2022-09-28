@@ -1,20 +1,27 @@
-import BannerError from "@/models/bannerError";
+import { BannerError } from "@/models/errors";
 
 import { ErrorBannerMutations, ErrorBannerState } from "./types";
 
 export const mutations: ErrorBannerMutations = {
-    dismiss(state: ErrorBannerState) {
-        state.errors = [];
-        state.isShowing = !state.isShowing;
-    },
     show(state: ErrorBannerState) {
-        state.isShowing = true;
+        state.genericErrorBanner.isShowing = true;
     },
     addError(state: ErrorBannerState, bannerError: BannerError) {
-        state.isShowing = true;
-        state.errors.push(bannerError);
+        state.genericErrorBanner.isShowing = true;
+        state.genericErrorBanner.errors.push(bannerError);
     },
-    clearError(state: ErrorBannerState) {
-        state.errors = [];
+    clearErrors(state: ErrorBannerState) {
+        state.genericErrorBanner.errors = [];
+        state.genericErrorBanner.isShowing = false;
+    },
+    setTooManyRequestsWarning(state: ErrorBannerState, key: string) {
+        state.tooManyRequestsWarning = key;
+    },
+    setTooManyRequestsError(state: ErrorBannerState, key: string) {
+        state.tooManyRequestsError = key;
+    },
+    clearTooManyRequests(state: ErrorBannerState) {
+        state.tooManyRequestsWarning = undefined;
+        state.tooManyRequestsError = undefined;
     },
 };

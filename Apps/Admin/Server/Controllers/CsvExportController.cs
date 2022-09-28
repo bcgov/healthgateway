@@ -20,7 +20,6 @@ namespace HealthGateway.Admin.Server.Controllers
     using System.Threading.Tasks;
     using HealthGateway.Admin.Server.Services;
     using HealthGateway.Common.Utils;
-    using HealthGateway.Database.Models;
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.Net.Http.Headers;
@@ -54,7 +53,10 @@ namespace HealthGateway.Admin.Server.Controllers
         /// <returns>A CSV of the raw data. email.</returns>
         /// <response code="200">Returns the list of beta requests.</response>
         /// <response code="401">the client must authenticate itself to get the requested response.</response>
-        /// <response code="403">The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.</response>
+        /// <response code="403">
+        /// The client does not have access rights to the content; that is, it is unauthorized, so the server
+        /// is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.
+        /// </response>
         [HttpGet]
         [Route("GetUserProfiles")]
         [Produces("text/csv")]
@@ -71,7 +73,10 @@ namespace HealthGateway.Admin.Server.Controllers
         /// <returns>A CSV of inactive users.</returns>
         /// <response code="200">Returns the list of beta requests.</response>
         /// <response code="401">the client must authenticate itself to get the requested response.</response>
-        /// <response code="403">The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.</response>
+        /// <response code="403">
+        /// The client does not have access rights to the content; that is, it is unauthorized, so the server
+        /// is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.
+        /// </response>
         [HttpGet]
         [Route("GetInactiveUsers")]
         [Produces("text/csv")]
@@ -88,7 +93,10 @@ namespace HealthGateway.Admin.Server.Controllers
         /// <returns>The invite email.</returns>
         /// <response code="200">Returns the list of beta requests.</response>
         /// <response code="401">the client must authenticate itself to get the requested response.</response>
-        /// <response code="403">The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.</response>
+        /// <response code="403">
+        /// The client does not have access rights to the content; that is, it is unauthorized, so the server
+        /// is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.
+        /// </response>
         [HttpGet]
         [Route("GetComments")]
         [Produces("text/csv")]
@@ -105,7 +113,10 @@ namespace HealthGateway.Admin.Server.Controllers
         /// <param name="endDate">The optional end date for the data.</param>
         /// <response code="200">Returns the list of beta requests.</response>
         /// <response code="401">the client must authenticate itself to get the requested response.</response>
-        /// <response code="403">The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.</response>
+        /// <response code="403">
+        /// The client does not have access rights to the content; that is, it is unauthorized, so the server
+        /// is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.
+        /// </response>
         [HttpGet]
         [Route("GetNotes")]
         [Produces("text/csv")]
@@ -122,7 +133,10 @@ namespace HealthGateway.Admin.Server.Controllers
         /// <param name="endDate">The optional end date for the data.</param>
         /// <response code="200">Returns the list of beta requests.</response>
         /// <response code="401">the client must authenticate itself to get the requested response.</response>
-        /// <response code="403">The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.</response>
+        /// <response code="403">
+        /// The client does not have access rights to the content; that is, it is unauthorized, so the server
+        /// is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.
+        /// </response>
         [HttpGet]
         [Route("GetRatings")]
         [Produces("text/csv")]
@@ -131,12 +145,30 @@ namespace HealthGateway.Admin.Server.Controllers
             return SendContentResponse("Ratings", this.dataExportService.GetRatings(startDate, endDate));
         }
 
+        /// <summary>
+        /// Retrieves a list of User Feedback.
+        /// </summary>
+        /// <returns>A CSV of User Feedback.</returns>
+        /// <response code="200">Returns the list of user feedback.</response>
+        /// <response code="401">the client must authenticate itself to get the requested response.</response>
+        /// <response code="403">
+        /// The client does not have access rights to the content; that is, it is unauthorized, so the server
+        /// is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.
+        /// </response>
+        [HttpGet]
+        [Route("GetUserFeedback")]
+        [Produces("text/csv")]
+        public IActionResult GetUserFeedback()
+        {
+            return SendContentResponse("UserFeedback", this.dataExportService.GetUserFeedback());
+        }
+
         private static FileStreamResult SendContentResponse(string name, Stream csvStream)
         {
             csvStream.Seek(0, SeekOrigin.Begin);
-            MediaTypeHeaderValue mimeType = new MediaTypeHeaderValue("text/csv");
+            MediaTypeHeaderValue mimeType = new("text/csv");
             string filename = $"{name}_export_{DateTimeFormatter.FormatDate(DateTime.Now)}.csv";
-            FileStreamResult result = new FileStreamResult(csvStream, mimeType)
+            FileStreamResult result = new(csvStream, mimeType)
             {
                 FileDownloadName = filename,
             };

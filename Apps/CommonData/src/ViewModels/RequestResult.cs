@@ -25,7 +25,7 @@ namespace HealthGateway.Common.Data.ViewModels
     /// <typeparam name="T">The payload type.</typeparam>
     [ExcludeFromCodeCoverage]
     public class RequestResult<T>
-        where T : class
+        where T : class?
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="RequestResult{T}"/> class.
@@ -51,7 +51,7 @@ namespace HealthGateway.Common.Data.ViewModels
         /// Gets or sets the result payload.
         /// </summary>
         [JsonPropertyName("resourcePayload")]
-        public T? ResourcePayload { get; set; } = default(T);
+        public T? ResourcePayload { get; set; }
 
         /// <summary>
         /// Gets or sets the total result count for the request for pagination.

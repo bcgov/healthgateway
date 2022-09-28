@@ -19,7 +19,6 @@ namespace HealthGateway.Database.Delegates
     using System.Collections.Generic;
     using System.Diagnostics.CodeAnalysis;
     using System.Linq;
-    using System.Text.Json;
     using HealthGateway.Common.Data.Constants;
     using HealthGateway.Database.Constants;
     using HealthGateway.Database.Context;
@@ -29,7 +28,7 @@ namespace HealthGateway.Database.Delegates
     using Microsoft.Extensions.Logging;
     using Npgsql;
 
-    /// <inheritdoc />
+    /// <inheritdoc/>
     [ExcludeFromCodeCoverage]
     public class DBCommunicationDelegate : ICommunicationDelegate
     {
@@ -52,35 +51,31 @@ namespace HealthGateway.Database.Delegates
             this.dbContext = dbContext;
         }
 
-        /// <inheritdoc />
-        public DBResult<Communication> GetActiveBanner(CommunicationType communicationType)
+        /// <inheritdoc/>
+        public DBResult<Communication?> GetNext(CommunicationType communicationType)
         {
-            this.logger.LogTrace($"Getting active Communication from DB...");
-            DBResult<Communication> result = new DBResult<Communication>()
-            {
-                Status = DBStatusCode.NotFound,
-            };
+            this.logger.LogTrace("Getting next non-expired Communication from DB...");
             Communication? communication = this.dbContext.Communication
-                .OrderByDescending(c => c.CreatedDateTime)
-                .Where(c => c.CommunicationTypeCode == communicationType)
-                .Where(c => c.CommunicationStatusCode == CommunicationStatus.New)
-                .Where(c => DateTime.UtcNow >= c.EffectiveDateTime && DateTime.UtcNow <= c.ExpiryDateTime)
+                .Where(
+                    c => c.CommunicationTypeCode == communicationType &&
+                         c.CommunicationStatusCode == CommunicationStatus.New &&
+                         DateTime.UtcNow < c.ExpiryDateTime)
+                .OrderBy(c => c.EffectiveDateTime)
                 .FirstOrDefault();
-
-            if (communication != null)
+            DBResult<Communication?> result = new()
             {
-                result.Status = DBStatusCode.Read;
-                result.Payload = communication;
-            }
+                Status = communication != null ? DBStatusCode.Read : DBStatusCode.NotFound,
+                Payload = communication,
+            };
 
             return result;
         }
 
-        /// <inheritdoc />
+        /// <inheritdoc/>
         public DBResult<Communication> Add(Communication communication, bool commit = true)
         {
-            this.logger.LogTrace($"Adding Communication to DB...");
-            DBResult<Communication> result = new DBResult<Communication>()
+            this.logger.LogTrace("Adding Communication to DB...");
+            DBResult<Communication> result = new()
             {
                 Payload = communication,
                 Status = DBStatusCode.Deferred,
@@ -102,27 +97,27 @@ namespace HealthGateway.Database.Delegates
                 }
             }
 
-            this.logger.LogDebug($"Finished adding Communication in DB");
+            this.logger.LogDebug("Finished adding Communication in DB");
             return result;
         }
 
-        /// <inheritdoc />
+        /// <inheritdoc/>
         public DBResult<IEnumerable<Communication>> GetAll()
         {
-            this.logger.LogTrace($"Getting all communication entries...");
-            DBResult<IEnumerable<Communication>> result = new DBResult<IEnumerable<Communication>>();
+            this.logger.LogTrace("Getting all communication entries...");
+            DBResult<IEnumerable<Communication>> result = new();
             result.Payload = this.dbContext.Communication
-                    .OrderBy(o => o.CreatedDateTime)
-                    .ToList();
+                .OrderBy(o => o.CreatedDateTime)
+                .ToList();
             result.Status = result.Payload != null ? DBStatusCode.Read : DBStatusCode.NotFound;
             return result;
         }
 
-        /// <inheritdoc />
+        /// <inheritdoc/>
         public DBResult<Communication> Update(Communication communication, bool commit = true)
         {
-            this.logger.LogTrace($"Updating Communication in DB...");
-            DBResult<Communication> result = new DBResult<Communication>()
+            this.logger.LogTrace("Updating Communication in DB...");
+            DBResult<Communication> result = new()
             {
                 Payload = communication,
                 Status = DBStatusCode.Deferred,
@@ -149,15 +144,15 @@ namespace HealthGateway.Database.Delegates
                 }
             }
 
-            this.logger.LogDebug($"Finished updating Communication in DB");
+            this.logger.LogDebug("Finished updating Communication in DB");
             return result;
         }
 
-        /// <inheritdoc />
+        /// <inheritdoc/>
         public DBResult<Communication> Delete(Communication communication, bool commit = true)
         {
-            this.logger.LogTrace($"Deleting Communication from DB...");
-            DBResult<Communication> result = new DBResult<Communication>()
+            this.logger.LogTrace("Deleting Communication from DB...");
+            DBResult<Communication> result = new()
             {
                 Payload = communication,
                 Status = DBStatusCode.Deferred,
@@ -177,7 +172,7 @@ namespace HealthGateway.Database.Delegates
                 }
             }
 
-            this.logger.LogDebug($"Finished deleting Communication in DB");
+            this.logger.LogDebug("Finished deleting Communication in DB");
             return result;
         }
 
@@ -188,10 +183,8 @@ namespace HealthGateway.Database.Delegates
             {
                 return true;
             }
-            else
-            {
-                return false;
-            }
+
+            return false;
         }
     }
 }

@@ -44,12 +44,13 @@ namespace HealthGateway.Common.AspNetConfiguration.Modules
     using Microsoft.Extensions.Logging;
     using Microsoft.IdentityModel.Logging;
     using Microsoft.IdentityModel.Tokens;
+    using AuthenticationFailedContext = Microsoft.AspNetCore.Authentication.JwtBearer.AuthenticationFailedContext;
 
     /// <summary>
     /// Provides ASP.Net Services related to Authentication and Authorization services.
     /// </summary>
     [ExcludeFromCodeCoverage]
-    [System.Diagnostics.CodeAnalysis.SuppressMessage("Maintainability", "CA1506:Avoid excessive class coupling", Justification = "Team decision")]
+    [SuppressMessage("Maintainability", "CA1506:Avoid excessive class coupling", Justification = "Team decision")]
     public static class Auth
     {
         /// <summary>
@@ -64,142 +65,181 @@ namespace HealthGateway.Common.AspNetConfiguration.Modules
 
             services.AddScoped<IAuthorizationHandler, UserAuthorizationHandler>();
             services.AddScoped<IAuthorizationHandler, FhirResourceAuthorizationHandler>();
-            services.AddScoped<IAuthorizationHandler, ApiKeyAuthorizationHandler>();
 
-            services.AddAuthorization(options =>
-            {
-                // User Policies this should be removed when migrated to UserProfilePolicy
-                options.AddPolicy(UserPolicy.UserOnly, policy =>
+            services.AddAuthorization(
+                options =>
                 {
-                    policy.AuthenticationSchemes.Add(JwtBearerDefaults.AuthenticationScheme);
-                    policy.RequireAuthenticatedUser();
-                    policy.Requirements.Add(new UserRequirement(false));
-                });
-                options.AddPolicy(UserPolicy.Read, policy =>
-                {
-                    policy.AuthenticationSchemes.Add(JwtBearerDefaults.AuthenticationScheme);
-                    policy.RequireAuthenticatedUser();
-                    policy.Requirements.Add(new UserRequirement(true));
-                });
-                options.AddPolicy(UserPolicy.Write, policy =>
-                {
-                    policy.AuthenticationSchemes.Add(JwtBearerDefaults.AuthenticationScheme);
-                    policy.RequireAuthenticatedUser();
-                    policy.Requirements.Add(new UserRequirement(true));
-                });
+                    // User Policies this should be removed when migrated to UserProfilePolicy
+                    options.AddPolicy(
+                        UserPolicy.UserOnly,
+                        policy =>
+                        {
+                            policy.AuthenticationSchemes.Add(JwtBearerDefaults.AuthenticationScheme);
+                            policy.RequireAuthenticatedUser();
+                            policy.Requirements.Add(new UserRequirement(false));
+                        });
+                    options.AddPolicy(
+                        UserPolicy.Read,
+                        policy =>
+                        {
+                            policy.AuthenticationSchemes.Add(JwtBearerDefaults.AuthenticationScheme);
+                            policy.RequireAuthenticatedUser();
+                            policy.Requirements.Add(new UserRequirement(true));
+                        });
+                    options.AddPolicy(
+                        UserPolicy.Write,
+                        policy =>
+                        {
+                            policy.AuthenticationSchemes.Add(JwtBearerDefaults.AuthenticationScheme);
+                            policy.RequireAuthenticatedUser();
+                            policy.Requirements.Add(new UserRequirement(true));
+                        });
 
-                // User Profile Policies
-                options.AddPolicy(UserProfilePolicy.Read, policy =>
-                {
-                    policy.AuthenticationSchemes.Add(JwtBearerDefaults.AuthenticationScheme);
-                    policy.RequireAuthenticatedUser();
-                    policy.Requirements.Add(new FhirRequirement(FhirResource.UserProfile, FhirAccessType.Read));
-                });
-                options.AddPolicy(UserProfilePolicy.Write, policy =>
-                {
-                    policy.AuthenticationSchemes.Add(JwtBearerDefaults.AuthenticationScheme);
-                    policy.RequireAuthenticatedUser();
-                    policy.Requirements.Add(new FhirRequirement(FhirResource.UserProfile, FhirAccessType.Write));
-                });
+                    // User Profile Policies
+                    options.AddPolicy(
+                        UserProfilePolicy.Read,
+                        policy =>
+                        {
+                            policy.AuthenticationSchemes.Add(JwtBearerDefaults.AuthenticationScheme);
+                            policy.RequireAuthenticatedUser();
+                            policy.Requirements.Add(new FhirRequirement(FhirResource.UserProfile, FhirAccessType.Read));
+                        });
+                    options.AddPolicy(
+                        UserProfilePolicy.Write,
+                        policy =>
+                        {
+                            policy.AuthenticationSchemes.Add(JwtBearerDefaults.AuthenticationScheme);
+                            policy.RequireAuthenticatedUser();
+                            policy.Requirements.Add(new FhirRequirement(FhirResource.UserProfile, FhirAccessType.Write));
+                        });
 
-                // Patient Policies
-                options.AddPolicy(PatientPolicy.Read, policy =>
-                {
-                    policy.AuthenticationSchemes.Add(JwtBearerDefaults.AuthenticationScheme);
-                    policy.RequireAuthenticatedUser();
-                    policy.Requirements.Add(new FhirRequirement(FhirResource.Patient, FhirAccessType.Read));
-                });
-                options.AddPolicy(PatientPolicy.Write, policy =>
-                {
-                    policy.AuthenticationSchemes.Add(JwtBearerDefaults.AuthenticationScheme);
-                    policy.RequireAuthenticatedUser();
-                    policy.Requirements.Add(new FhirRequirement(FhirResource.Patient, FhirAccessType.Write));
-                });
+                    // Patient Policies
+                    options.AddPolicy(
+                        PatientPolicy.Read,
+                        policy =>
+                        {
+                            policy.AuthenticationSchemes.Add(JwtBearerDefaults.AuthenticationScheme);
+                            policy.RequireAuthenticatedUser();
+                            policy.Requirements.Add(new FhirRequirement(FhirResource.Patient, FhirAccessType.Read));
+                        });
+                    options.AddPolicy(
+                        PatientPolicy.Write,
+                        policy =>
+                        {
+                            policy.AuthenticationSchemes.Add(JwtBearerDefaults.AuthenticationScheme);
+                            policy.RequireAuthenticatedUser();
+                            policy.Requirements.Add(new FhirRequirement(FhirResource.Patient, FhirAccessType.Write));
+                        });
 
-                // Immunization Policies
-                options.AddPolicy(ImmunizationPolicy.Read, policy =>
-                {
-                    policy.AuthenticationSchemes.Add(JwtBearerDefaults.AuthenticationScheme);
-                    policy.RequireAuthenticatedUser();
-                    policy.Requirements.Add(new FhirRequirement(
-                        FhirResource.Immunization,
-                        FhirAccessType.Read,
-                        FhirResourceLookup.Parameter,
-                        supportsUserDelegation: true));
-                });
-                options.AddPolicy(ImmunizationPolicy.Write, policy =>
-                {
-                    policy.AuthenticationSchemes.Add(JwtBearerDefaults.AuthenticationScheme);
-                    policy.RequireAuthenticatedUser();
-                    policy.Requirements.Add(new FhirRequirement(FhirResource.Immunization, FhirAccessType.Write));
-                });
+                    // Immunization Policies
+                    options.AddPolicy(
+                        ImmunizationPolicy.Read,
+                        policy =>
+                        {
+                            policy.AuthenticationSchemes.Add(JwtBearerDefaults.AuthenticationScheme);
+                            policy.RequireAuthenticatedUser();
+                            policy.Requirements.Add(
+                                new FhirRequirement(
+                                    FhirResource.Immunization,
+                                    FhirAccessType.Read,
+                                    FhirResourceLookup.Parameter,
+                                    supportsUserDelegation: true));
+                        });
+                    options.AddPolicy(
+                        ImmunizationPolicy.Write,
+                        policy =>
+                        {
+                            policy.AuthenticationSchemes.Add(JwtBearerDefaults.AuthenticationScheme);
+                            policy.RequireAuthenticatedUser();
+                            policy.Requirements.Add(new FhirRequirement(FhirResource.Immunization, FhirAccessType.Write));
+                        });
 
-                // Laboratory/Observation Policies
-                options.AddPolicy(LaboratoryPolicy.Read, policy =>
-                {
-                    policy.AuthenticationSchemes.Add(JwtBearerDefaults.AuthenticationScheme);
-                    policy.RequireAuthenticatedUser();
-                    policy.Requirements.Add(new FhirRequirement(
-                        FhirResource.Observation,
-                        FhirAccessType.Read,
-                        FhirResourceLookup.Parameter,
-                        supportsUserDelegation: true));
-                });
-                options.AddPolicy(LaboratoryPolicy.Write, policy =>
-                {
-                    policy.AuthenticationSchemes.Add(JwtBearerDefaults.AuthenticationScheme);
-                    policy.RequireAuthenticatedUser();
-                    policy.Requirements.Add(new FhirRequirement(FhirResource.Observation, FhirAccessType.Write));
-                });
+                    // Laboratory/Observation Policies
+                    options.AddPolicy(
+                        LaboratoryPolicy.Read,
+                        policy =>
+                        {
+                            policy.AuthenticationSchemes.Add(JwtBearerDefaults.AuthenticationScheme);
+                            policy.RequireAuthenticatedUser();
+                            policy.Requirements.Add(
+                                new FhirRequirement(
+                                    FhirResource.Observation,
+                                    FhirAccessType.Read,
+                                    FhirResourceLookup.Parameter,
+                                    supportsUserDelegation: true));
+                        });
+                    options.AddPolicy(
+                        LaboratoryPolicy.Write,
+                        policy =>
+                        {
+                            policy.AuthenticationSchemes.Add(JwtBearerDefaults.AuthenticationScheme);
+                            policy.RequireAuthenticatedUser();
+                            policy.Requirements.Add(new FhirRequirement(FhirResource.Observation, FhirAccessType.Write));
+                        });
 
-                // MedicationStatement Policies
-                options.AddPolicy(MedicationPolicy.MedicationStatementRead, policy =>
-                {
-                    policy.AuthenticationSchemes.Add(JwtBearerDefaults.AuthenticationScheme);
-                    policy.RequireAuthenticatedUser();
-                    policy.Requirements.Add(new FhirRequirement(FhirResource.MedicationStatement, FhirAccessType.Read));
-                });
-                options.AddPolicy(MedicationPolicy.MedicationStatementWrite, policy =>
-                {
-                    policy.AuthenticationSchemes.Add(JwtBearerDefaults.AuthenticationScheme);
-                    policy.RequireAuthenticatedUser();
-                    policy.Requirements.Add(new FhirRequirement(FhirResource.MedicationStatement, FhirAccessType.Write));
-                });
+                    // MedicationStatement Policies
+                    options.AddPolicy(
+                        MedicationPolicy.MedicationStatementRead,
+                        policy =>
+                        {
+                            policy.AuthenticationSchemes.Add(JwtBearerDefaults.AuthenticationScheme);
+                            policy.RequireAuthenticatedUser();
+                            policy.Requirements.Add(new FhirRequirement(FhirResource.MedicationStatement, FhirAccessType.Read));
+                        });
+                    options.AddPolicy(
+                        MedicationPolicy.MedicationStatementWrite,
+                        policy =>
+                        {
+                            policy.AuthenticationSchemes.Add(JwtBearerDefaults.AuthenticationScheme);
+                            policy.RequireAuthenticatedUser();
+                            policy.Requirements.Add(new FhirRequirement(FhirResource.MedicationStatement, FhirAccessType.Write));
+                        });
 
-                // MedicationRequest Policies
-                options.AddPolicy(MedicationPolicy.MedicationRequestRead, policy =>
-                {
-                    policy.AuthenticationSchemes.Add(JwtBearerDefaults.AuthenticationScheme);
-                    policy.RequireAuthenticatedUser();
-                    policy.Requirements.Add(new FhirRequirement(FhirResource.MedicationRequest, FhirAccessType.Read));
-                });
-                options.AddPolicy(MedicationPolicy.MedicationRequestWrite, policy =>
-                {
-                    policy.AuthenticationSchemes.Add(JwtBearerDefaults.AuthenticationScheme);
-                    policy.RequireAuthenticatedUser();
-                    policy.Requirements.Add(new FhirRequirement(FhirResource.MedicationRequest, FhirAccessType.Write));
-                });
+                    // MedicationRequest Policies
+                    options.AddPolicy(
+                        MedicationPolicy.MedicationRequestRead,
+                        policy =>
+                        {
+                            policy.AuthenticationSchemes.Add(JwtBearerDefaults.AuthenticationScheme);
+                            policy.RequireAuthenticatedUser();
+                            policy.Requirements.Add(new FhirRequirement(FhirResource.MedicationRequest, FhirAccessType.Read));
+                        });
+                    options.AddPolicy(
+                        MedicationPolicy.MedicationRequestWrite,
+                        policy =>
+                        {
+                            policy.AuthenticationSchemes.Add(JwtBearerDefaults.AuthenticationScheme);
+                            policy.RequireAuthenticatedUser();
+                            policy.Requirements.Add(new FhirRequirement(FhirResource.MedicationRequest, FhirAccessType.Write));
+                        });
 
-                // Encounter Policies
-                options.AddPolicy(EncounterPolicy.Read, policy =>
-                {
-                    policy.AuthenticationSchemes.Add(JwtBearerDefaults.AuthenticationScheme);
-                    policy.RequireAuthenticatedUser();
-                    policy.Requirements.Add(new FhirRequirement(FhirResource.Encounter, FhirAccessType.Read));
-                });
-                options.AddPolicy(EncounterPolicy.Write, policy =>
-                {
-                    policy.AuthenticationSchemes.Add(JwtBearerDefaults.AuthenticationScheme);
-                    policy.RequireAuthenticatedUser();
-                    policy.Requirements.Add(new FhirRequirement(FhirResource.Encounter, FhirAccessType.Write));
-                });
+                    // Encounter Policies
+                    options.AddPolicy(
+                        EncounterPolicy.Read,
+                        policy =>
+                        {
+                            policy.AuthenticationSchemes.Add(JwtBearerDefaults.AuthenticationScheme);
+                            policy.RequireAuthenticatedUser();
+                            policy.Requirements.Add(new FhirRequirement(FhirResource.Encounter, FhirAccessType.Read));
+                        });
+                    options.AddPolicy(
+                        EncounterPolicy.Write,
+                        policy =>
+                        {
+                            policy.AuthenticationSchemes.Add(JwtBearerDefaults.AuthenticationScheme);
+                            policy.RequireAuthenticatedUser();
+                            policy.Requirements.Add(new FhirRequirement(FhirResource.Encounter, FhirAccessType.Write));
+                        });
 
-                // API Key Policy
-                options.AddPolicy(ApiKeyPolicy.Write, policy =>
-                {
-                    policy.Requirements.Add(new ApiKeyRequirement(configuration));
+                    options.AddPolicy(
+                        ClinicalDocumentPolicy.Read,
+                        policy =>
+                        {
+                            policy.AuthenticationSchemes.Add(JwtBearerDefaults.AuthenticationScheme);
+                            policy.RequireAuthenticatedUser();
+                            policy.Requirements.Add(new FhirRequirement(FhirResource.ClinicalDocuments, FhirAccessType.Read));
+                        });
                 });
-            });
         }
 
         /// <summary>
@@ -214,7 +254,7 @@ namespace HealthGateway.Common.AspNetConfiguration.Modules
 
             services.AddScoped<IAuthorizationHandler, FhirResourceDelegateAuthorizationHandler>();
             ConfigureAuthorizationServices(services, logger, configuration);
-            Patient.ConfigurePatientAccess(services, configuration);
+            Patient.ConfigurePatientAccess(services, logger, configuration);
             services.AddTransient<IResourceDelegateDelegate, DBResourceDelegateDelegate>();
         }
 
@@ -228,34 +268,37 @@ namespace HealthGateway.Common.AspNetConfiguration.Modules
         public static void ConfigureAuthServicesForJwtBearer(IServiceCollection services, ILogger logger, IConfiguration configuration, IWebHostEnvironment environment)
         {
             IAuditLogger? auditLogger = services.BuildServiceProvider().GetService<IAuditLogger>();
-            bool debugEnabled = environment.IsDevelopment() || configuration.GetValue<bool>("EnableDebug", true);
+            bool debugEnabled = environment.IsDevelopment() || configuration.GetValue("EnableDebug", true);
             logger.LogDebug($"Debug configuration is {debugEnabled}");
 
             // Displays sensitive data from the jwt if the environment is development only
             IdentityModelEventSource.ShowPII = debugEnabled;
 
-            services.AddAuthentication(options =>
-            {
-                options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-                options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-            }).AddJwtBearer(options =>
-            {
-                options.SaveToken = true;
-                options.RequireHttpsMetadata = true;
-                options.IncludeErrorDetails = true;
-                configuration.GetSection("OpenIdConnect").Bind(options);
+            services.AddAuthentication(
+                    options =>
+                    {
+                        options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                        options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+                    })
+                .AddJwtBearer(
+                    options =>
+                    {
+                        options.SaveToken = true;
+                        options.RequireHttpsMetadata = true;
+                        options.IncludeErrorDetails = true;
+                        configuration.GetSection("OpenIdConnect").Bind(options);
 
-                options.TokenValidationParameters = new TokenValidationParameters()
-                {
-                    ValidateIssuerSigningKey = true,
-                    ValidateAudience = true,
-                    ValidateIssuer = true,
-                };
-                options.Events = new JwtBearerEvents()
-                {
-                    OnAuthenticationFailed = (ctx) => { return OnAuthenticationFailed(logger, ctx, auditLogger); },
-                };
-            });
+                        options.TokenValidationParameters = new TokenValidationParameters
+                        {
+                            ValidateIssuerSigningKey = true,
+                            ValidateAudience = true,
+                            ValidateIssuer = true,
+                        };
+                        options.Events = new JwtBearerEvents
+                        {
+                            OnAuthenticationFailed = ctx => OnAuthenticationFailed(logger, ctx, auditLogger),
+                        };
+                    });
         }
 
         /// <summary>
@@ -267,75 +310,77 @@ namespace HealthGateway.Common.AspNetConfiguration.Modules
         /// <param name="environment">The environment to use.</param>
         public static void ConfigureOpenIdConnectServices(IServiceCollection services, ILogger logger, IConfiguration configuration, IWebHostEnvironment environment)
         {
-            services.AddAuthentication(auth =>
-            {
-                auth.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
-                auth.DefaultAuthenticateScheme = OpenIdConnectDefaults.AuthenticationScheme;
-                auth.DefaultChallengeScheme = OpenIdConnectDefaults.AuthenticationScheme;
-            })
+            services.AddAuthentication(
+                    auth =>
+                    {
+                        auth.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+                        auth.DefaultAuthenticateScheme = OpenIdConnectDefaults.AuthenticationScheme;
+                        auth.DefaultChallengeScheme = OpenIdConnectDefaults.AuthenticationScheme;
+                    })
                 .AddCookie(options => AddCookies(logger, configuration, environment, options))
-                .AddOpenIdConnect(options =>
-                {
-                    if (environment.IsDevelopment())
+                .AddOpenIdConnect(
+                    options =>
                     {
-                        // Allows http://localhost to work on Chromium and Edge.
-                        options.ProtocolValidator.RequireNonce = false;
-                        options.CorrelationCookie.SecurePolicy = CookieSecurePolicy.SameAsRequest;
-                        options.CorrelationCookie.SameSite = SameSiteMode.Unspecified;
-                    }
-
-                    options.TokenValidationParameters = new TokenValidationParameters
-                    {
-                        ValidateIssuer = true,
-                        ValidateAudience = true,
-                        ValidateIssuerSigningKey = true,
-                        RequireAudience = true,
-                    };
-
-                    configuration.GetSection(@"OpenIdConnect").Bind(options);
-                    if (string.IsNullOrEmpty(options.Authority))
-                    {
-                        logger.LogCritical(@"OpenIdConnect Authority is missing, bad things are going to occur");
-                    }
-
-                    options.Events = new OpenIdConnectEvents()
-                    {
-                        OnTokenValidated = ctx =>
+                        if (environment.IsDevelopment())
                         {
-                            JwtSecurityToken accessToken = ctx.SecurityToken;
-                            if (accessToken != null)
+                            // Allows http://localhost to work on Chromium and Edge.
+                            options.ProtocolValidator.RequireNonce = false;
+                            options.CorrelationCookie.SecurePolicy = CookieSecurePolicy.SameAsRequest;
+                            options.CorrelationCookie.SameSite = SameSiteMode.Unspecified;
+                        }
+
+                        options.TokenValidationParameters = new TokenValidationParameters
+                        {
+                            ValidateIssuer = true,
+                            ValidateAudience = true,
+                            ValidateIssuerSigningKey = true,
+                            RequireAudience = true,
+                        };
+
+                        configuration.GetSection(@"OpenIdConnect").Bind(options);
+                        if (string.IsNullOrEmpty(options.Authority))
+                        {
+                            logger.LogCritical(@"OpenIdConnect Authority is missing, bad things are going to occur");
+                        }
+
+                        options.Events = new OpenIdConnectEvents
+                        {
+                            OnTokenValidated = ctx =>
                             {
-                                if (ctx.Principal?.Identity is not ClaimsIdentity claimsIdentity)
+                                JwtSecurityToken accessToken = ctx.SecurityToken;
+                                if (accessToken != null)
                                 {
-                                    throw new TypeAccessException(@"Error setting access_token: ctx.Principal.Identity is not a ClaimsIdentity object.");
+                                    if (ctx.Principal?.Identity is not ClaimsIdentity claimsIdentity)
+                                    {
+                                        throw new TypeAccessException(@"Error setting access_token: ctx.Principal.Identity is not a ClaimsIdentity object.");
+                                    }
+
+                                    claimsIdentity.AddClaim(new Claim("access_token", accessToken.RawData));
                                 }
 
-                                claimsIdentity.AddClaim(new Claim("access_token", accessToken.RawData));
-                            }
-
-                            return Task.CompletedTask;
-                        },
-                        OnRedirectToIdentityProvider = redirectContext =>
-                        {
-                            if (!string.IsNullOrEmpty(configuration["Keycloak:IDPHint"]))
+                                return Task.CompletedTask;
+                            },
+                            OnRedirectToIdentityProvider = redirectContext =>
                             {
-                                logger.LogDebug("Adding IDP Hint on Redirect to provider");
-                                redirectContext.ProtocolMessage.SetParameter(configuration["Keycloak:IDPHintKey"], configuration["Keycloak:IDPHint"]);
-                            }
+                                if (!string.IsNullOrEmpty(configuration["Keycloak:IDPHint"]))
+                                {
+                                    logger.LogDebug("Adding IDP Hint on Redirect to provider");
+                                    redirectContext.ProtocolMessage.SetParameter(configuration["Keycloak:IDPHintKey"], configuration["Keycloak:IDPHint"]);
+                                }
 
-                            return Task.FromResult(0);
-                        },
-                        OnAuthenticationFailed = c =>
-                        {
-                            c.HandleResponse();
-                            c.Response.StatusCode = StatusCodes.Status401Unauthorized;
-                            c.Response.ContentType = "text/plain";
-                            logger.LogError(c.Exception.ToString());
+                                return Task.FromResult(0);
+                            },
+                            OnAuthenticationFailed = c =>
+                            {
+                                c.HandleResponse();
+                                c.Response.StatusCode = StatusCodes.Status401Unauthorized;
+                                c.Response.ContentType = "text/plain";
+                                logger.LogError(c.Exception.ToString());
 
-                            return c.Response.WriteAsync(c.Exception.ToString());
-                        },
-                    };
-                });
+                                return c.Response.WriteAsync(c.Exception.ToString());
+                            },
+                        };
+                    });
         }
 
         /// <summary>
@@ -383,7 +428,7 @@ namespace HealthGateway.Common.AspNetConfiguration.Modules
         /// <param name="context">The JWT authentication failed context.</param>
         /// <param name="auditLogger">The audit logger provider.</param>
         /// <returns>An async task.</returns>
-        private static Task OnAuthenticationFailed(ILogger logger, Microsoft.AspNetCore.Authentication.JwtBearer.AuthenticationFailedContext context, IAuditLogger auditLogger)
+        private static Task OnAuthenticationFailed(ILogger logger, AuthenticationFailedContext context, IAuditLogger auditLogger)
         {
             logger.LogDebug("OnAuthenticationFailed...");
 
@@ -404,11 +449,13 @@ namespace HealthGateway.Common.AspNetConfiguration.Modules
             context.Response.StatusCode = (int)HttpStatusCode.Unauthorized;
             context.Response.ContentType = "application/json";
 
-            return context.Response.WriteAsync(JsonSerializer.Serialize(new
-            {
-                State = "AuthenticationFailed",
-                Message = context.Exception.ToString(),
-            }));
+            return context.Response.WriteAsync(
+                JsonSerializer.Serialize(
+                    new
+                    {
+                        State = "AuthenticationFailed",
+                        Message = context.Exception.ToString(),
+                    }));
         }
     }
 }

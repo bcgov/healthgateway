@@ -1,9 +1,10 @@
 import { injectable } from "inversify";
 
+import { ServiceCode } from "@/constants/serviceCodes";
 import AddDependentRequest from "@/models/addDependentRequest";
 import { ExternalConfiguration } from "@/models/configData";
 import type { Dependent } from "@/models/dependent";
-import { ServiceName } from "@/models/errorInterfaces";
+import { HttpError } from "@/models/errors";
 import RequestResult from "@/models/requestResult";
 import container from "@/plugins/container";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
@@ -17,7 +18,7 @@ import RequestResultUtil from "@/utility/requestResultUtil";
 
 @injectable()
 export class RestDependentService implements IDependentService {
-    private logger: ILogger = container.get(SERVICE_IDENTIFIER.Logger);
+    private logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
     private readonly DEPENDENT_BASE_URI: string = "UserProfile";
     private http!: IHttpDelegate;
     private isEnabled = false;
@@ -59,12 +60,14 @@ export class RestDependentService implements IDependentService {
                             reject
                         );
                     })
-                    .catch((err) => {
-                        this.logger.error(err);
+                    .catch((err: HttpError) => {
+                        this.logger.error(
+                            `Error in RestDependentService.addDependent()`
+                        );
                         return reject(
                             ErrorTranslator.internalNetworkError(
                                 err,
-                                ServiceName.HealthGatewayUser
+                                ServiceCode.HealthGatewayUser
                             )
                         );
                     });
@@ -73,7 +76,7 @@ export class RestDependentService implements IDependentService {
     }
 
     public getAll(hdid: string): Promise<Dependent[]> {
-        return new Promise((resolve, reject) => {
+        return new Promise((resolve, reject) =>
             this.http
                 .getWithCors<RequestResult<Dependent[]>>(
                     `${this.baseUri}${this.DEPENDENT_BASE_URI}/${hdid}/Dependent`
@@ -90,20 +93,20 @@ export class RestDependentService implements IDependentService {
                         reject
                     );
                 })
-                .catch((err) => {
-                    this.logger.error(`getAll dependents error: ${err}`);
+                .catch((err: HttpError) => {
+                    this.logger.error(`Error in RestDependentService.getAll()`);
                     return reject(
                         ErrorTranslator.internalNetworkError(
                             err,
-                            ServiceName.HealthGatewayUser
+                            ServiceCode.HealthGatewayUser
                         )
                     );
-                });
-        });
+                })
+        );
     }
 
     public removeDependent(hdid: string, dependent: Dependent): Promise<void> {
-        return new Promise((resolve, reject) => {
+        return new Promise((resolve, reject) =>
             this.http
                 .delete<RequestResult<void>>(
                     `${this.baseUri}${this.DEPENDENT_BASE_URI}/${hdid}/Dependent/${dependent.ownerId}`,
@@ -121,15 +124,17 @@ export class RestDependentService implements IDependentService {
                         reject
                     );
                 })
-                .catch((err) => {
-                    this.logger.error(`removeDependent error: ${err}`);
+                .catch((err: HttpError) => {
+                    this.logger.error(
+                        `Error in RestDependentService.removeDependent()`
+                    );
                     return reject(
                         ErrorTranslator.internalNetworkError(
                             err,
-                            ServiceName.HealthGatewayUser
+                            ServiceCode.HealthGatewayUser
                         )
                     );
-                });
-        });
+                })
+        );
     }
 }

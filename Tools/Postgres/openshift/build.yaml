@@ -30,7 +30,7 @@ objects:
       annotations: null
       from:
         kind: DockerImage
-        name: registry.hub.docker.com/library/postgres:${PG_VERSION}
+        name: docker.io/library/postgres:${PG_VERSION}
       importPolicy:
         scheduled: true
       name: "${PG_VERSION}"

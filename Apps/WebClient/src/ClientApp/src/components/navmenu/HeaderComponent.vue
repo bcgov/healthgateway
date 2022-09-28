@@ -74,13 +74,13 @@ export default class HeaderComponent extends Vue {
     }
 
     @Watch("isMobileWidth")
-    private onMobileWidth() {
+    private onMobileWidth(): void {
         if (!this.isMobileWidth) {
             this.setHeaderState(false);
         }
     }
 
-    private created() {
+    private created(): void {
         this.logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
         this.$nextTick(() => {
             window.addEventListener("scroll", this.onScroll);
@@ -90,7 +90,7 @@ export default class HeaderComponent extends Vue {
         });
     }
 
-    private destroyed() {
+    private destroyed(): void {
         window.removeEventListener("scroll", this.onScroll);
     }
 
@@ -114,8 +114,8 @@ export default class HeaderComponent extends Vue {
         return !this.oidcIsAuthenticated && !this.isOffline && !this.isPcrTest;
     }
 
-    private onScroll() {
-        var st = window.scrollY || document.documentElement.scrollTop;
+    private onScroll(): void {
+        let st = window.scrollY || document.documentElement.scrollTop;
         if (
             Math.abs(st - this.lastScrollTop) >
                 HeaderComponent.minimunScrollChange &&
@@ -137,15 +137,15 @@ export default class HeaderComponent extends Vue {
         this.lastScrollTop = st <= 0 ? 0 : st;
     }
 
-    private handleToggleClick() {
+    private handleToggleClick(): void {
         this.toggleSidebar();
     }
 
-    private toggleMenu() {
+    private toggleMenu(): void {
         this.toggleSidebar();
     }
 
-    private handleLogoutClick() {
+    private handleLogoutClick(): void {
         if (this.isValidIdentityProvider) {
             this.showRating();
         } else {
@@ -153,11 +153,11 @@ export default class HeaderComponent extends Vue {
         }
     }
 
-    private showRating() {
+    private showRating(): void {
         this.ratingComponent.showModal();
     }
 
-    private processLogout() {
+    private processLogout(): void {
         this.logger.debug(`redirecting to logout view ...`);
         this.$router.push({ path: "/logout" });
     }
@@ -166,7 +166,7 @@ export default class HeaderComponent extends Vue {
 
 <template>
     <header class="sticky-top" :class="{ 'nav-up': !isHeaderShown }">
-        <b-navbar toggleable="md" type="dark">
+        <b-navbar toggleable="md" type="dark" aria-label="Top Nav">
             <!-- Hamburger toggle -->
             <hg-button
                 v-if="isSidebarButtonShown"
@@ -250,6 +250,7 @@ export default class HeaderComponent extends Vue {
                         <b-dropdown-divider />
                     </span>
                     <b-dropdown-item
+                        v-if="isValidIdentityProvider"
                         id="menuBtnProfile"
                         data-testid="profileBtn"
                         to="/profile"
@@ -279,26 +280,28 @@ export default class HeaderComponent extends Vue {
                         <span>Log Out</span>
                     </b-dropdown-item-button>
                 </b-nav-item-dropdown>
-                <router-link
+                <b-nav-item
                     v-else-if="isLogInButtonShown"
                     id="menuBtnLogin"
                     data-testid="loginBtn"
-                    class="nav-link d-flex align-items-center"
+                    class="nav-link"
+                    link-classes="d-flex align-items-center"
                     to="/login"
                 >
                     <hg-icon icon="sign-in-alt" size="large" class="mr-2" />
                     <span>Log In</span>
-                </router-link>
-                <router-link
+                </b-nav-item>
+                <b-nav-item
                     v-else-if="isLogOutButtonShown"
                     id="header-log-out-button"
                     data-testid="header-log-out-button"
-                    class="nav-link d-flex align-items-center"
+                    class="nav-link"
+                    link-classes="d-flex align-items-center"
                     to="/logout"
                 >
                     <hg-icon icon="sign-out-alt" size="large" class="mr-2" />
                     <span>Log Out</span>
-                </router-link>
+                </b-nav-item>
             </b-navbar-nav>
 
             <RatingComponent
@@ -340,15 +343,18 @@ nav {
         text-decoration: none;
         color: white;
     }
+
     a:hover h4 {
         text-decoration: underline;
     }
+
     button {
         svg {
             width: 1.5em;
             height: 1.5em;
         }
     }
+
     .nav-link {
         cursor: pointer;
     }

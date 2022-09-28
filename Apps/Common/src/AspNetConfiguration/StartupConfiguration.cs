@@ -16,6 +16,7 @@
 namespace HealthGateway.Common.AspNetConfiguration
 {
     using System.Diagnostics.CodeAnalysis;
+    using HealthGateway.Common.AspNetConfiguration.Modules;
     using Microsoft.AspNetCore.Builder;
     using Microsoft.AspNetCore.Hosting;
     using Microsoft.Extensions.Configuration;
@@ -29,7 +30,6 @@ namespace HealthGateway.Common.AspNetConfiguration
     public class StartupConfiguration
     {
         private readonly IWebHostEnvironment environment;
-        private readonly IConfiguration configuration;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="StartupConfiguration"/> class.
@@ -39,22 +39,19 @@ namespace HealthGateway.Common.AspNetConfiguration
         public StartupConfiguration(IConfiguration config, IWebHostEnvironment env)
         {
             this.environment = env;
-            this.configuration = config;
-            this.Logger = ProgramConfiguration.GetInitialLogger(this.configuration);
+            this.Configuration = config;
+            this.Logger = ProgramConfiguration.GetInitialLogger(this.Configuration);
         }
 
         /// <summary>
         /// Gets the startup configuration.
         /// </summary>
-        public IConfiguration Configuration
-        {
-            get => this.configuration;
-        }
+        public IConfiguration Configuration { get; }
 
         /// <summary>
         /// Gets the Startup Logger.
         /// </summary>
-        public ILogger Logger { get; private set; }
+        public ILogger Logger { get; }
 
         /// <summary>
         /// Configures the http services.
@@ -63,7 +60,7 @@ namespace HealthGateway.Common.AspNetConfiguration
         /// <param name="dbHealth">If true, DB Health checks will be added.</param>
         public void ConfigureHttpServices(IServiceCollection services, bool dbHealth = true)
         {
-            Modules.HttpWeb.ConfigureHttpServices(services, this.Logger, dbHealth);
+            HttpWeb.ConfigureHttpServices(services, this.Logger, dbHealth);
         }
 
         /// <summary>
@@ -72,7 +69,7 @@ namespace HealthGateway.Common.AspNetConfiguration
         /// <param name="services">The services collection provider.</param>
         public void ConfigureAuthorizationServices(IServiceCollection services)
         {
-            Modules.Auth.ConfigureAuthorizationServices(services, this.Logger, this.configuration);
+            Auth.ConfigureAuthorizationServices(services, this.Logger, this.Configuration);
         }
 
         /// <summary>
@@ -81,7 +78,7 @@ namespace HealthGateway.Common.AspNetConfiguration
         /// <param name="services">The services collection provider.</param>
         public void ConfigureDelegateAuthorizationServices(IServiceCollection services)
         {
-            Modules.Auth.ConfigureDelegateAuthorizationServices(services, this.Logger, this.configuration);
+            Auth.ConfigureDelegateAuthorizationServices(services, this.Logger, this.Configuration);
         }
 
         /// <summary>
@@ -90,7 +87,7 @@ namespace HealthGateway.Common.AspNetConfiguration
         /// <param name="services">The injected services provider.</param>
         public void ConfigureAuthServicesForJwtBearer(IServiceCollection services)
         {
-            Modules.Auth.ConfigureAuthServicesForJwtBearer(services, this.Logger, this.configuration, this.environment);
+            Auth.ConfigureAuthServicesForJwtBearer(services, this.Logger, this.Configuration, this.environment);
         }
 
         /// <summary>
@@ -99,7 +96,7 @@ namespace HealthGateway.Common.AspNetConfiguration
         /// <param name="services">The passed in IServiceCollection.</param>
         public void ConfigureOpenIdConnectServices(IServiceCollection services)
         {
-            Modules.Auth.ConfigureOpenIdConnectServices(services, this.Logger, this.configuration, this.environment);
+            Auth.ConfigureOpenIdConnectServices(services, this.Logger, this.Configuration, this.environment);
         }
 
         /// <summary>
@@ -108,7 +105,7 @@ namespace HealthGateway.Common.AspNetConfiguration
         /// <param name="services">The services collection provider.</param>
         public void ConfigureAuditServices(IServiceCollection services)
         {
-            Modules.Audit.ConfigureAuditServices(services, this.Logger);
+            Audit.ConfigureAuditServices(services, this.Logger, this.Configuration);
         }
 
         /// <summary>
@@ -117,7 +114,7 @@ namespace HealthGateway.Common.AspNetConfiguration
         /// <param name="services">The services collection provider.</param>
         public void ConfigureDatabaseServices(IServiceCollection services)
         {
-            Modules.Db.ConfigureDatabaseServices(services, this.Logger, this.configuration);
+            Db.ConfigureDatabaseServices(services, this.Logger, this.Configuration);
         }
 
         /// <summary>
@@ -126,7 +123,7 @@ namespace HealthGateway.Common.AspNetConfiguration
         /// <param name="services">The service collection provider.</param>
         public void ConfigureSwaggerServices(IServiceCollection services)
         {
-            Modules.SwaggerDoc.ConfigureSwaggerServices(services, this.configuration);
+            SwaggerDoc.ConfigureSwaggerServices(services, this.Configuration);
         }
 
         /// <summary>
@@ -135,7 +132,7 @@ namespace HealthGateway.Common.AspNetConfiguration
         /// <param name="services">The service collection to add forward proxies into.</param>
         public void ConfigureForwardHeaders(IServiceCollection services)
         {
-            Modules.HttpWeb.ConfigureForwardHeaders(services, this.Logger, this.configuration);
+            HttpWeb.ConfigureForwardHeaders(services, this.Logger, this.Configuration);
         }
 
         /// <summary>
@@ -144,7 +141,7 @@ namespace HealthGateway.Common.AspNetConfiguration
         /// <param name="services">The service collection to add forward proxies into.</param>
         public void ConfigureHangfireQueue(IServiceCollection services)
         {
-            Modules.JobScheduler.ConfigureHangfireQueue(services, this.configuration);
+            JobScheduler.ConfigureHangfireQueue(services, this.Configuration);
         }
 
         /// <summary>
@@ -153,7 +150,7 @@ namespace HealthGateway.Common.AspNetConfiguration
         /// <param name="services">The service collection to add forward proxies into.</param>
         public void ConfigurePatientAccess(IServiceCollection services)
         {
-            Modules.Patient.ConfigurePatientAccess(services, this.configuration);
+            Patient.ConfigurePatientAccess(services, this.Logger, this.Configuration);
         }
 
         /// <summary>
@@ -162,7 +159,7 @@ namespace HealthGateway.Common.AspNetConfiguration
         /// <param name="services">The service collection to add forward proxies into.</param>
         public void ConfigureTracing(IServiceCollection services)
         {
-            Modules.Utility.ConfigureTracing(services, this.Logger, this.configuration);
+            Utility.ConfigureTracing(services, this.Logger, this.Configuration);
         }
 
         /// <summary>
@@ -171,7 +168,7 @@ namespace HealthGateway.Common.AspNetConfiguration
         /// <param name="services">The service collection to add forward proxies into.</param>
         public void ConfigureAccessControl(IServiceCollection services)
         {
-            Modules.HttpWeb.ConfigureAccessControl(services, this.Logger);
+            HttpWeb.ConfigureAccessControl(services, this.Logger);
         }
 
         /// <summary>
@@ -180,7 +177,7 @@ namespace HealthGateway.Common.AspNetConfiguration
         /// <param name="app">The application builder provider.</param>
         public void UseAuth(IApplicationBuilder app)
         {
-            Modules.Auth.UseAuth(app, this.Logger);
+            Auth.UseAuth(app, this.Logger);
         }
 
         /// <summary>
@@ -189,7 +186,7 @@ namespace HealthGateway.Common.AspNetConfiguration
         /// <param name="app">The application builder provider.</param>
         public void UseForwardHeaders(IApplicationBuilder app)
         {
-            Modules.HttpWeb.UseForwardHeaders(app, this.Logger, this.configuration);
+            HttpWeb.UseForwardHeaders(app, this.Logger, this.Configuration);
         }
 
         /// <summary>
@@ -198,7 +195,7 @@ namespace HealthGateway.Common.AspNetConfiguration
         /// <param name="app">The application builder provider.</param>
         public void UseHttp(IApplicationBuilder app)
         {
-            Modules.HttpWeb.UseHttp(app, this.Logger, this.configuration, this.environment);
+            HttpWeb.UseHttp(app, this.Logger, this.Configuration, this.environment);
         }
 
         /// <summary>
@@ -207,7 +204,7 @@ namespace HealthGateway.Common.AspNetConfiguration
         /// <param name="app">The application builder provider.</param>
         public void UseContentSecurityPolicy(IApplicationBuilder app)
         {
-            Modules.HttpWeb.UseContentSecurityPolicy(app, this.configuration);
+            HttpWeb.UseContentSecurityPolicy(app, this.Configuration);
         }
 
         /// <summary>
@@ -216,7 +213,7 @@ namespace HealthGateway.Common.AspNetConfiguration
         /// <param name="app">The application builder provider.</param>
         public void UseSwagger(IApplicationBuilder app)
         {
-            Modules.SwaggerDoc.UseSwagger(app, this.Logger);
+            SwaggerDoc.UseSwagger(app, this.Logger);
         }
 
         /// <summary>
@@ -225,7 +222,7 @@ namespace HealthGateway.Common.AspNetConfiguration
         /// <param name="app">The application builder provider.</param>
         public void UseRest(IApplicationBuilder app)
         {
-            Modules.HttpWeb.UseRest(app, this.Logger);
+            HttpWeb.UseRest(app, this.Logger);
         }
     }
 }

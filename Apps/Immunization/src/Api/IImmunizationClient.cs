@@ -17,9 +17,7 @@ namespace HealthGateway.Immunization.Api;
 
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using HealthGateway.Common.Data.ViewModels;
 using HealthGateway.Common.Models.PHSA;
-using HealthGateway.Immunization.Models.PHSA;
 using Refit;
 
 /// <summary>
@@ -34,7 +32,7 @@ public interface IImmunizationClient
     /// <param name="token">The bearer token to authorize the call.</param>
     /// <returns>The immunization that matches the given id.</returns>
     [Get("/api/v1/Immunizations/{ImmunizationId}")]
-    Task<IApiResponse<PhsaResult<ImmunizationViewResponse>>> GetImmunization(string immunizationId, [Authorize("Bearer")] string token);
+    Task<IApiResponse<PhsaResult<ImmunizationViewResponse>>> GetImmunization(string immunizationId, [Authorize] string token);
 
     /// <summary>
     /// Returns a PHSA Result including the load state and a List of Immunizations for the authenticated user.
@@ -42,7 +40,10 @@ public interface IImmunizationClient
     /// </summary>
     /// <param name="query">Query parameters used to query immunizations.</param>
     /// <param name="token">The bearer token to authorize the call.</param>
-    /// <returns>The PHSA Result including the load state and the list of Immunizations available for the user identified by either the subject id in the query or by the user identified in the bearer token.</returns>
+    /// <returns>
+    /// The PHSA Result including the load state and the list of Immunizations available for the user identified by
+    /// either the subject id in the query or by the user identified in the bearer token.
+    /// </returns>
     [Get("/api/v1/Immunizations")]
-    Task<IApiResponse<PhsaResult<ImmunizationResponse>>> GetImmunizations(Dictionary<string, string?> query, [Authorize("Bearer")] string token);
+    Task<IApiResponse<PhsaResult<ImmunizationResponse>>> GetImmunizations(Dictionary<string, string?> query, [Authorize] string token);
 }

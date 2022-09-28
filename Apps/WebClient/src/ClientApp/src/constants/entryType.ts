@@ -8,6 +8,7 @@ export enum EntryType {
     LaboratoryOrder = "AllLaboratory",
     Encounter = "Encounter",
     Note = "Note",
+    ClinicalDocument = "ClinicalDocument",
 }
 
 export class EntryTypeDetails {
@@ -95,6 +96,17 @@ entryTypeMap.set(EntryType.MedicationRequest, {
     icon: "file-medical",
     component: "MedicationRequestComponent",
     eventName: "special_authority",
+});
+
+entryTypeMap.set(EntryType.ClinicalDocument, {
+    type: EntryType.ClinicalDocument,
+    commentType: CommentEntryType.ClinicalDocument,
+    name: "Clinical Documents",
+    description:
+        "View documents shared by your care providers. You can get consultation notes, hospital discharge summaries, outpatient clinic notes and more.",
+    icon: "file-waveform",
+    component: "ClinicalDocumentComponent",
+    eventName: "document",
 });
 
 export { entryTypeMap };

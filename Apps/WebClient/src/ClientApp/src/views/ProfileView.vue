@@ -22,6 +22,7 @@ import { ErrorSourceType, ErrorType } from "@/constants/errorType";
 import BreadcrumbItem from "@/models/breadcrumbItem";
 import type { WebClientConfiguration } from "@/models/configData";
 import { DateWrapper } from "@/models/dateWrapper";
+import { instanceOfResultError, ResultError } from "@/models/errors";
 import PatientData, { Address } from "@/models/patientData";
 import User, { OidcUserInfo } from "@/models/user";
 import UserProfile from "@/models/userProfile";
@@ -52,6 +53,12 @@ export default class ProfileView extends Vue {
         source: ErrorSourceType;
         traceId: string | undefined;
     }) => void;
+
+    @Action("setTooManyRequestsError", { namespace: "errorBanner" })
+    setTooManyRequestsError!: (params: { key: string }) => void;
+
+    @Action("setTooManyRequestsWarning", { namespace: "errorBanner" })
+    setTooManyRequestsWarning!: (params: { key: string }) => void;
 
     @Action("updateUserEmail", { namespace: "user" })
     updateUserEmail!: ({
@@ -182,7 +189,7 @@ export default class ProfileView extends Vue {
     }
 
     private get isPostalAddressShown(): boolean {
-        return this.patientData.postalAddress !== null;
+        return this.patientData.postalAddress != null;
     }
 
     private get postalAddressLabel(): string {
@@ -240,15 +247,15 @@ export default class ProfileView extends Vue {
         return items;
     }
 
-    private mounted() {
+    private mounted(): void {
         this.logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
         this.userProfileService = container.get<IUserProfileService>(
             SERVICE_IDENTIFIER.UserProfileService
         );
 
         this.isLoading = true;
-        var patientPromise = this.retrievePatientData();
-        var userProfilePromise = this.userProfileService.getProfile(
+        let patientPromise = this.retrievePatientData();
+        let userProfilePromise = this.userProfileService.getProfile(
             this.user.hdid
         );
 
@@ -270,77 +277,53 @@ export default class ProfileView extends Vue {
                 }
 
                 this.setAddresses();
-                this.checkToVerifyPhone();
-                this.checkToVerifyEmail();
 
                 this.isLoading = false;
             })
-            .catch((err) => {
+            .catch((error) => {
                 this.logger.error(`Error loading profile: ${err}`);
-                this.addError({
-                    errorType: ErrorType.Retrieve,
-                    source: ErrorSourceType.Profile,
-                    traceId: undefined,
-                });
+                if (instanceOfResultError(error) && error.statusCode === 429) {
+                    this.setTooManyRequestsError({ key: "page" });
+                } else {
+                    this.addError({
+                        errorType: ErrorType.Retrieve,
+                        source: ErrorSourceType.Profile,
+                        traceId: undefined,
+                    });
+                }
                 this.isLoading = false;
             });
 
         this.calculateTimeForDeletion();
-        this.intervalHandler = window.setInterval(() => {
-            this.calculateTimeForDeletion();
-        }, 1000);
-    }
-
-    private checkToVerifyPhone() {
-        let toVerifyPhone = this.$route.query.toVerifyPhone;
-        this.logger.debug(
-            `toVerifyPhone: ${toVerifyPhone}; smsVerified: ${this.smsVerified}`
+        this.intervalHandler = window.setInterval(
+            () => this.calculateTimeForDeletion(),
+            1000
         );
-        if (toVerifyPhone === "true" && !this.smsVerified) {
-            this.logger.debug(`display Verifying SMS popup`);
-            this.verifySMS();
-        }
     }
 
-    private checkToVerifyEmail() {
-        let toVerifyEmail = this.$route.query.toVerifyEmail;
-        this.logger.debug(
-            `toVerifyEmail: ${toVerifyEmail}; emailVerified: ${this.emailVerified}`
-        );
-        if (
-            toVerifyEmail === "true" &&
-            !this.emailVerified &&
-            !this.isEmptyEmail
-        ) {
-            this.logger.debug(`display Verification Email`);
-            this.showCheckEmailAlert = true;
-        }
-    }
-
-    private validations() {
+    private validations(): unknown {
         const sms = helpers.regex("sms", /^\D?(\d{3})\D?\D?(\d{3})\D?(\d{4})$/);
         return {
             smsNumber: {
-                required: requiredIf(() => {
-                    return this.isSMSEditable && this.smsNumber !== "";
-                }),
+                required: requiredIf(
+                    () => this.isSMSEditable && this.smsNumber !== ""
+                ),
                 newSMSNumber: not(sameAs("tempSMS")),
                 sms,
             },
             smsVerificationCode: {
-                required: requiredIf(() => {
-                    return (
+                required: requiredIf(
+                    () =>
                         !this.smsVerified &&
                         this.smsNumber !== "" &&
                         !this.isSMSEditable
-                    );
-                }),
+                ),
                 minLength: minLength(6),
             },
             email: {
-                required: requiredIf(() => {
-                    return this.isEmailEditable && !this.isEmptyEmail;
-                }),
+                required: requiredIf(
+                    () => this.isEmailEditable && !this.isEmptyEmail
+                ),
                 newEmail: not(sameAs("tempEmail")),
                 email,
             },
@@ -421,9 +404,23 @@ export default class ProfileView extends Vue {
     }
 
     private onVerifySMSSubmit(): void {
-        this.checkRegistration();
-        this.smsVerified = true;
+        this.checkRegistration()
+            .then(() => {
+                this.smsVerified = this.user.verifiedSMS;
+            })
+            .catch((error) => {
+                if (instanceOfResultError(error) && error.statusCode === 429) {
+                    this.setTooManyRequestsWarning({ key: "page" });
+                } else {
+                    this.addError({
+                        errorType: ErrorType.Retrieve,
+                        source: ErrorSourceType.Profile,
+                        traceId: undefined,
+                    });
+                }
+            });
     }
+
     private sendUserEmailUpdate(): void {
         this.isLoading = true;
         this.updateUserEmail({
@@ -435,17 +432,34 @@ export default class ProfileView extends Vue {
                 this.emailVerified = false;
                 this.emailVerificationSent = true;
                 this.tempEmail = "";
-                this.checkRegistration();
                 this.$v.$reset();
                 this.showCheckEmailAlert = !this.isEmptyEmail;
+                this.checkRegistration().catch((error) => {
+                    if (
+                        instanceOfResultError(error) &&
+                        error.statusCode === 429
+                    ) {
+                        this.setTooManyRequestsWarning({ key: "page" });
+                    } else {
+                        this.addError({
+                            errorType: ErrorType.Retrieve,
+                            source: ErrorSourceType.Profile,
+                            traceId: undefined,
+                        });
+                    }
+                });
             })
             .catch((err) => {
                 this.logger.error(err);
-                this.addError({
-                    errorType: ErrorType.Update,
-                    source: ErrorSourceType.Profile,
-                    traceId: undefined,
-                });
+                if (err.statusCode === 429) {
+                    this.setTooManyRequestsError({ key: "page" });
+                } else {
+                    this.addError({
+                        errorType: ErrorType.Update,
+                        source: ErrorSourceType.Profile,
+                        traceId: undefined,
+                    });
+                }
             })
             .finally(() => {
                 this.isLoading = false;
@@ -456,10 +470,12 @@ export default class ProfileView extends Vue {
         this.logger.debug(
             `Updating ${this.smsNumber ? this.smsNumber : "sms number..."}`
         );
+
         // Reset timer when user submits their SMS number
         this.updateSMSResendDateTime({
             dateTime: new DateWrapper(),
         });
+
         // Send update to backend
         this.userProfileService
             .updateSMSNumber(this.user.hdid, this.smsNumber)
@@ -467,29 +483,57 @@ export default class ProfileView extends Vue {
                 this.isSMSEditable = false;
                 this.smsVerified = false;
                 this.tempSMS = "";
-                this.checkRegistration();
+
                 if (this.smsNumber) {
                     this.verifySMS();
                 }
                 this.$v.$reset();
+
+                this.checkRegistration().catch((error) => {
+                    if (
+                        instanceOfResultError(error) &&
+                        error.statusCode === 429
+                    ) {
+                        this.setTooManyRequestsWarning({ key: "page" });
+                    } else {
+                        this.addError({
+                            errorType: ErrorType.Retrieve,
+                            source: ErrorSourceType.Profile,
+                            traceId: undefined,
+                        });
+                    }
+                });
+            })
+            .catch((error) => {
+                if (instanceOfResultError(error) && error.statusCode === 429) {
+                    this.setTooManyRequestsWarning({ key: "page" });
+                } else {
+                    this.addError({
+                        errorType: ErrorType.Update,
+                        source: ErrorSourceType.Profile,
+                        traceId: undefined,
+                    });
+                }
             });
     }
 
     private recoverAccount(): void {
         this.isLoading = true;
         this.recoverUserAccount()
-            .then(() => {
-                this.logger.verbose("success!");
-            })
-            .catch((err) => {
+            .then(() => this.logger.verbose("success!"))
+            .catch((err: ResultError) => {
                 this.logger.error(err);
-                this.addCustomError({
-                    title:
-                        "Unable to recover " +
-                        ErrorSourceType.Profile.toLowerCase(),
-                    source: ErrorSourceType.Profile,
-                    traceId: undefined,
-                });
+                if (err.statusCode === 429) {
+                    this.setTooManyRequestsError({ key: "page" });
+                } else {
+                    this.addCustomError({
+                        title:
+                            "Unable to recover " +
+                            ErrorSourceType.Profile.toLowerCase(),
+                        source: ErrorSourceType.Profile,
+                        traceId: undefined,
+                    });
+                }
             })
             .finally(() => {
                 this.isLoading = false;
@@ -511,15 +555,19 @@ export default class ProfileView extends Vue {
                 this.logger.verbose("success!");
                 this.showCloseWarning = false;
             })
-            .catch((err) => {
+            .catch((err: ResultError) => {
                 this.logger.error(err);
-                this.addCustomError({
-                    title:
-                        "Unable to close " +
-                        ErrorSourceType.Profile.toLowerCase(),
-                    source: ErrorSourceType.Profile,
-                    traceId: undefined,
-                });
+                if (err.statusCode === 429) {
+                    this.setTooManyRequestsError({ key: "page" });
+                } else {
+                    this.addCustomError({
+                        title:
+                            "Unable to close " +
+                            ErrorSourceType.Profile.toLowerCase(),
+                        source: ErrorSourceType.Profile,
+                        traceId: undefined,
+                    });
+                }
             })
             .finally(() => {
                 this.isLoading = false;
@@ -527,25 +575,34 @@ export default class ProfileView extends Vue {
     }
 
     private isSameAddress(): boolean {
-        const equals = (a: string[], b: string[]) =>
-            a.length === b.length && a.every((v, i) => v === b[i]);
+        let result = false;
+        if (this.postalAddress != null && this.physicalAddress != null) {
+            const equals = (a: string[], b: string[]) =>
+                a.length === b.length && a.every((v, i) => v === b[i]);
 
-        const isStreetLineSame = equals(
-            this.postalAddress.streetLines,
-            this.physicalAddress.streetLines
-        );
+            const isStreetLineSame = equals(
+                this.postalAddress.streetLines,
+                this.physicalAddress.streetLines
+            );
 
-        const isCitySame =
-            this.postalAddress.city === this.physicalAddress.city;
+            const isCitySame =
+                this.postalAddress.city === this.physicalAddress.city;
 
-        const isStateSame =
-            this.postalAddress.state === this.physicalAddress.state;
+            const isStateSame =
+                this.postalAddress.state === this.physicalAddress.state;
 
-        const isPostalCodeSame =
-            this.postalAddress.postalCode === this.physicalAddress.postalCode;
+            const isPostalCodeSame =
+                this.postalAddress.postalCode ===
+                this.physicalAddress.postalCode;
 
-        const result =
-            isStreetLineSame && isCitySame && isStateSame && isPostalCodeSame;
+            result =
+                isStreetLineSame &&
+                isCitySame &&
+                isStateSame &&
+                isPostalCodeSame;
+        } else {
+            result = this.postalAddress == null && this.physicalAddress == null;
+        }
 
         this.logger.debug(
             `Physical Address and Postal Address same: ${result}`
@@ -582,7 +639,7 @@ export default class ProfileView extends Vue {
 </script>
 
 <template>
-    <div class="m-3 m-md-4 flex-grow-1 d-flex flex-column">
+    <div>
         <BreadcrumbComponent :items="breadcrumbItems" />
         <LoadingComponent :is-loading="isLoading" />
         <b-alert
@@ -972,10 +1029,11 @@ export default class ProfileView extends Vue {
                                                 item, index
                                             ) in postalAddress.streetLines"
                                             :key="index"
-                                            ><b-col>{{ item }} </b-col></b-row
                                         >
-                                        <b-row
-                                            ><b-col
+                                            <b-col>{{ item }}</b-col>
+                                        </b-row>
+                                        <b-row>
+                                            <b-col
                                                 >{{ postalAddress.city }},
                                                 {{ postalAddress.state }},
                                                 {{ postalAddress.postalCode }}
@@ -1020,10 +1078,11 @@ export default class ProfileView extends Vue {
                                                 item, index
                                             ) in physicalAddress.streetLines"
                                             :key="index"
-                                            ><b-col>{{ item }} </b-col></b-row
                                         >
-                                        <b-row
-                                            ><b-col
+                                            <b-col>{{ item }}</b-col>
+                                        </b-row>
+                                        <b-row>
+                                            <b-col
                                                 >{{ physicalAddress.city }},
                                                 {{ physicalAddress.state }},
                                                 {{ physicalAddress.postalCode }}

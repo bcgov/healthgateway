@@ -31,7 +31,7 @@ namespace HealthGateway.HGAdmin.Server
     [ExcludeFromCodeCoverage]
     public static class Program
     {
-        /// <summary>.
+        /// <summary>
         /// The entry point for the class.
         /// </summary>
         /// <param name="args">The command line arguments to be passed in.</param>
@@ -48,11 +48,11 @@ namespace HealthGateway.HGAdmin.Server
             HttpWeb.ConfigureForwardHeaders(services, logger, configuration);
             Db.ConfigureDatabaseServices(services, logger, configuration);
             HttpWeb.ConfigureHttpServices(services, logger);
-            Audit.ConfigureAuditServices(services, logger);
+            Audit.ConfigureAuditServices(services, logger, configuration);
             Auth.ConfigureAuthServicesForJwtBearer(services, logger, configuration, environment);
             Auth.ConfigureAuthorizationServices(services, logger, configuration);
             SwaggerDoc.ConfigureSwaggerServices(services, configuration);
-            Patient.ConfigurePatientAccess(services, configuration);
+            Patient.ConfigurePatientAccess(services, logger, configuration);
             Utility.ConfigureTracing(services, logger, configuration);
 
             WebApplication app = builder.Build();

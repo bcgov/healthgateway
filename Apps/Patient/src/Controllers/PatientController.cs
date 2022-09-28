@@ -18,6 +18,7 @@ namespace HealthGateway.Patient.Controllers
     using System.Threading.Tasks;
     using HealthGateway.Common.AccessManagement.Authorization.Policy;
     using HealthGateway.Common.Data.ViewModels;
+    using HealthGateway.Common.Models;
     using HealthGateway.Common.Services;
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Mvc;
@@ -52,25 +53,17 @@ namespace HealthGateway.Patient.Controllers
         /// <param name="hdid">The patient hdid.</param>
         /// <response code="200">Returns the patient record.</response>
         /// <response code="401">the client must authenticate itself to get the requested response.</response>
-        /// <response code="403">The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.</response>
+        /// <response code="403">
+        /// The client does not have access rights to the content; that is, it is unauthorized, so the server
+        /// is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.
+        /// </response>
         [HttpGet]
         [Produces("application/json")]
         [Route("{hdid}")]
         [Authorize(Policy = PatientPolicy.Read)]
-        public async Task<RequestResult<Models.PatientModel>> GetPatient(string hdid)
+        public async Task<RequestResult<PatientModel>> GetPatient(string hdid)
         {
-            RequestResult<Common.Models.PatientModel> patientResult = await this.service.GetPatient(hdid).ConfigureAwait(true);
-            RequestResult<Models.PatientModel> result = new()
-            {
-                PageIndex = patientResult.PageIndex,
-                PageSize = patientResult.PageSize,
-                ResourcePayload = new(patientResult.ResourcePayload),
-                ResultError = patientResult.ResultError,
-                ResultStatus = patientResult.ResultStatus,
-                TotalResultCount = patientResult.TotalResultCount,
-            };
-
-            return result;
+            return await this.service.GetPatient(hdid).ConfigureAwait(true);
         }
     }
 }

@@ -17,8 +17,6 @@ namespace HealthGateway.Admin.Server
 {
     using System.Diagnostics.CodeAnalysis;
     using System.Threading.Tasks;
-    using HealthGateway.Admin.Server.Api;
-    using HealthGateway.Admin.Server.Delegates;
     using HealthGateway.Admin.Server.Services;
     using HealthGateway.Common.AccessManagement.Administration;
     using HealthGateway.Common.AccessManagement.Authentication;
@@ -26,7 +24,6 @@ namespace HealthGateway.Admin.Server
     using HealthGateway.Common.AspNetConfiguration.Modules;
     using HealthGateway.Common.Delegates;
     using HealthGateway.Common.Delegates.PHSA;
-    using HealthGateway.Common.Models.PHSA;
     using HealthGateway.Database.Delegates;
     using Microsoft.AspNetCore.Builder;
     using Microsoft.AspNetCore.Hosting;
@@ -34,7 +31,6 @@ namespace HealthGateway.Admin.Server
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Hosting;
     using Microsoft.Extensions.Logging;
-    using Refit;
 
     /// <summary>
     /// The entry point for the project.
@@ -42,9 +38,7 @@ namespace HealthGateway.Admin.Server
     [ExcludeFromCodeCoverage]
     public static class Program
     {
-        private const string PhsaConfigSectionKey = "PHSA";
-
-        /// <summary>.
+        /// <summary>
         /// The entry point for the class.
         /// </summary>
         /// <param name="args">The command line arguments to be passed in.</param>
@@ -61,15 +55,12 @@ namespace HealthGateway.Admin.Server
             HttpWeb.ConfigureForwardHeaders(services, logger, configuration);
             Db.ConfigureDatabaseServices(services, logger, configuration);
             HttpWeb.ConfigureHttpServices(services, logger);
-            Audit.ConfigureAuditServices(services, logger);
+            Audit.ConfigureAuditServices(services, logger, configuration);
             Auth.ConfigureAuthServicesForJwtBearer(services, logger, configuration, environment);
             Auth.ConfigureAuthorizationServices(services, logger, configuration);
             SwaggerDoc.ConfigureSwaggerServices(services, configuration);
             JobScheduler.ConfigureHangfireQueue(services, configuration);
-            Patient.ConfigurePatientAccess(services, configuration);
-
-            // Register Refit clients
-            RegisterRefitClients(services, configuration);
+            Patient.ConfigurePatientAccess(services, logger, configuration);
 
             // Add services to the container.
             services.AddControllersWithViews();
@@ -80,7 +71,6 @@ namespace HealthGateway.Admin.Server
             services.AddTransient<IDashboardService, DashboardService>();
             services.AddTransient<ICommunicationService, CommunicationService>();
             services.AddTransient<ICsvExportService, CsvExportService>();
-            services.AddTransient<ICovidSupportService, CovidSupportService>();
             services.AddTransient<IInactiveUserService, InactiveUserService>();
 
             // Add HG Delegates
@@ -94,12 +84,13 @@ namespace HealthGateway.Admin.Server
             services.AddTransient<ICommentDelegate, DBCommentDelegate>();
             services.AddTransient<IAdminTagDelegate, DBAdminTagDelegate>();
             services.AddTransient<IFeedbackTagDelegate, DBFeedbackTagDelegate>();
-            services.AddTransient<IImmunizationAdminDelegate, RestImmunizationAdminDelegate>();
             services.AddTransient<IVaccineStatusDelegate, RestVaccineStatusDelegate>();
             services.AddTransient<IVaccineProofDelegate, VaccineProofDelegate>();
             services.AddTransient<IAdminUserProfileDelegate, DbAdminUserProfileDelegate>();
             services.AddTransient<IAuthenticationDelegate, AuthenticationDelegate>();
             services.AddTransient<IUserAdminDelegate, KeycloakUserAdminDelegate>();
+
+            services.AddAutoMapper(typeof(Program));
 
             WebApplication app = builder.Build();
             HttpWeb.UseForwardHeaders(app, logger, configuration);
@@ -124,14 +115,6 @@ namespace HealthGateway.Admin.Server
             app.MapFallbackToFile("index.html");
 
             await app.RunAsync().ConfigureAwait(true);
-        }
-
-        private static void RegisterRefitClients(IServiceCollection services, IConfiguration configuration)
-        {
-            PhsaConfig phsaConfig = new();
-            configuration.Bind(PhsaConfigSectionKey, phsaConfig);
-            services.AddRefitClient<IImmunizationAdminClient>()
-                .ConfigureHttpClient(c => c.BaseAddress = phsaConfig.BaseUrl);
         }
     }
 }

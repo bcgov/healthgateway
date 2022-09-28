@@ -4,10 +4,8 @@ const HDID = "P6FFO433A5WPMVTGM7T4ZVWBKCSVNAYGTWTU3J2LWMGUMERKI72A";
 
 describe("User Profile", () => {
     beforeEach(() => {
-        cy.intercept("GET", `**/UserProfile/${HDID}`, (req) => {
-            req.reply({
-                fixture: "UserProfileService/userProfile.json",
-            });
+        cy.intercept("GET", `**/UserProfile/${HDID}`, {
+            fixture: "UserProfileService/userProfile.json",
         });
 
         cy.login(
@@ -88,12 +86,10 @@ describe("User Profile", () => {
         });
 
         cy.log("Verify SMS number");
-        cy.intercept("GET", `**/UserProfile/${HDID}`, (req) => {
-            req.reply({
-                fixture: "UserProfileService/userProfile.json",
-            });
-        });
         cy.get("[data-testid=smsStatusNotVerified]").should("be.visible");
+        cy.intercept("GET", `**/UserProfile/${HDID}`, {
+            fixture: "UserProfileService/userProfileSMSVerified.json",
+        });
         cy.get("[data-testid=verifySMSBtn]")
             .should("be.visible")
             .should("be.enabled")
@@ -110,6 +106,9 @@ describe("User Profile", () => {
         cy.get("[data-testid=smsStatusVerified]").should("be.visible");
 
         cy.log("Edit SMS number");
+        cy.intercept("GET", `**/UserProfile/${HDID}`, {
+            fixture: "UserProfileService/userProfile.json",
+        });
         cy.get("[data-testid=editSMSBtn]").click();
         cy.get("[data-testid=smsInvalidNewEqualsOld]").should("be.visible");
         cy.get("[data-testid=smsNumberInput]").clear().type(fakeSMSNumber);
@@ -131,6 +130,9 @@ describe("User Profile", () => {
 
 describe("User Profile - Validate Address", () => {
     beforeEach(() => {
+        cy.intercept("GET", `**/UserProfile/${HDID}`, {
+            fixture: "UserProfileService/userProfile.json",
+        });
         cy.login(
             Cypress.env("keycloak.username"),
             Cypress.env("keycloak.password"),
@@ -143,10 +145,8 @@ describe("User Profile - Validate Address", () => {
         cy.intercept(
             "GET",
             `**/Patient/P6FFO433A5WPMVTGM7T4ZVWBKCSVNAYGTWTU3J2LWMGUMERKI72A`,
-            (req) => {
-                req.reply({
-                    fixture: "PatientService/patientCombinedAddress.json",
-                });
+            {
+                fixture: "PatientService/patientCombinedAddress.json",
             }
         );
         cy.visit("/profile");
@@ -167,10 +167,8 @@ describe("User Profile - Validate Address", () => {
         cy.intercept(
             "GET",
             `**/Patient/P6FFO433A5WPMVTGM7T4ZVWBKCSVNAYGTWTU3J2LWMGUMERKI72A`,
-            (req) => {
-                req.reply({
-                    fixture: "PatientService/patientDifferentAddress.json",
-                });
+            {
+                fixture: "PatientService/patientDifferentAddress.json",
             }
         );
         cy.visit("/profile");
@@ -196,14 +194,12 @@ describe("User Profile - Validate Address", () => {
             .contains("VICTORIA, BC, V9C6P1");
     });
 
-    it("Verify user has no addresse", () => {
+    it("Verify user has no address", () => {
         cy.intercept(
             "GET",
             `**/Patient/P6FFO433A5WPMVTGM7T4ZVWBKCSVNAYGTWTU3J2LWMGUMERKI72A`,
-            (req) => {
-                req.reply({
-                    fixture: "PatientService/patientNoAddress.json",
-                });
+            {
+                fixture: "PatientService/patientNoAddress.json",
             }
         );
         cy.visit("/profile");
@@ -222,10 +218,8 @@ describe("User Profile - Validate Address", () => {
         cy.intercept(
             "GET",
             `**/Patient/P6FFO433A5WPMVTGM7T4ZVWBKCSVNAYGTWTU3J2LWMGUMERKI72A`,
-            (req) => {
-                req.reply({
-                    fixture: "PatientService/patientOnlyPhysicalAddress.json",
-                });
+            {
+                fixture: "PatientService/patientOnlyPhysicalAddress.json",
             }
         );
         cy.visit("/profile");
@@ -250,10 +244,8 @@ describe("User Profile - Validate Address", () => {
         cy.intercept(
             "GET",
             `**/Patient/P6FFO433A5WPMVTGM7T4ZVWBKCSVNAYGTWTU3J2LWMGUMERKI72A`,
-            (req) => {
-                req.reply({
-                    fixture: "PatientService/patientOnlyPostalAddress.json",
-                });
+            {
+                fixture: "PatientService/patientOnlyPostalAddress.json",
             }
         );
         cy.visit("/profile");

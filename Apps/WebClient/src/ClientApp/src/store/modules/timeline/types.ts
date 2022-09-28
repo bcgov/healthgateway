@@ -13,19 +13,15 @@ import { RootState } from "@/store/types";
 export interface TimelineState {
     filter: TimelineFilter;
     keyword: string;
-    isLinearView: boolean;
     linearDate: DateWrapper;
-    calendarDate: DateWrapper;
     selectedDate: DateWrapper | null;
 }
 
 export interface TimelineGetters extends GetterTree<TimelineState, RootState> {
     filter(state: TimelineState): TimelineFilter;
     hasActiveFilter(state: TimelineState): boolean;
-    isLinearView(state: TimelineState): boolean;
     keyword(state: TimelineState): string;
     linearDate(state: TimelineState): DateWrapper;
-    calendarDate(state: TimelineState): DateWrapper;
     selectedDate(state: TimelineState): DateWrapper | null;
 }
 
@@ -35,11 +31,8 @@ export interface TimelineActions extends ActionTree<TimelineState, RootState> {
         context: StoreContext,
         filterBuilder: TimelineFilterBuilder
     ): void;
-    setKeyword(context: StoreContext, keyword: string): void;
-    setLinearView(context: StoreContext, isLinearView: boolean): void;
     clearFilter(context: StoreContext): void;
     setLinearDate(context: StoreContext, currentPage: number): void;
-    setCalendarDate(context: StoreContext, currentDate: DateWrapper): void;
     setSelectedDate(
         context: StoreContext,
         selectedDate: DateWrapper | null
@@ -48,11 +41,8 @@ export interface TimelineActions extends ActionTree<TimelineState, RootState> {
 
 export interface TimelineMutations extends MutationTree<TimelineState> {
     setFilter(state: TimelineState, filter: TimelineFilter): void;
-    setKeyword(state: TimelineState, keyword: string): void;
-    setLinearView(state: TimelineState, isLinearView: boolean): void;
     clearFilter(state: TimelineState): void;
     setLinearDate(state: TimelineState, linearDate: DateWrapper): void;
-    setCalendarDate(state: TimelineState, calendarDate: DateWrapper): void;
     setSelectedDate(
         state: TimelineState,
         selectedDate: DateWrapper | null

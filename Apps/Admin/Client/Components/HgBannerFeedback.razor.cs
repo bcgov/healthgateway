@@ -23,7 +23,10 @@ namespace HealthGateway.Admin.Client.Components
     /// <summary>
     /// Backing logic for the HgBannerFeedback component.
     /// </summary>
-    /// <typeparam name="TResetAction">An action to subscribe to that indicates the banner should be reset to its initial unhidden state.</typeparam>
+    /// <typeparam name="TResetAction">
+    /// An action to subscribe to that indicates the banner should be reset to its initial
+    /// unhidden state.
+    /// </typeparam>
     public partial class HgBannerFeedback<TResetAction> : FluxorComponent
     {
         /// <summary>
@@ -44,6 +47,12 @@ namespace HealthGateway.Admin.Client.Components
         /// </summary>
         [Parameter]
         public bool IsEnabled { get; set; } = true;
+
+        /// <summary>
+        /// Gets or sets the data-testid associated with the alert.
+        /// </summary>
+        [Parameter]
+        public string? DataTestId { get; set; }
 
         [Inject]
         private IActionSubscriber ActionSubscriber { get; set; } = default!;

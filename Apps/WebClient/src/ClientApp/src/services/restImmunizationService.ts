@@ -1,8 +1,9 @@
 import { injectable } from "inversify";
 
 import { ResultType } from "@/constants/resulttype";
+import { ServiceCode } from "@/constants/serviceCodes";
 import { ExternalConfiguration } from "@/models/configData";
-import { ServiceName } from "@/models/errorInterfaces";
+import { HttpError } from "@/models/errors";
 import ImmunizationResult from "@/models/immunizationResult";
 import RequestResult from "@/models/requestResult";
 import container from "@/plugins/container";
@@ -16,7 +17,7 @@ import ErrorTranslator from "@/utility/errorTranslator";
 
 @injectable()
 export class RestImmunizationService implements IImmunizationService {
-    private logger: ILogger = container.get(SERVICE_IDENTIFIER.Logger);
+    private logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
     private readonly IMMS_BASE_URI: string = "Immunization";
     private baseUri = "";
     private http!: IHttpDelegate;
@@ -54,15 +55,15 @@ export class RestImmunizationService implements IImmunizationService {
                 .getWithCors<RequestResult<ImmunizationResult>>(
                     `${this.baseUri}${this.IMMS_BASE_URI}?hdid=${hdid}`
                 )
-                .then((requestResult) => {
-                    resolve(requestResult);
-                })
-                .catch((err) => {
-                    this.logger.error(`Fetch error: ${err}`);
+                .then((requestResult) => resolve(requestResult))
+                .catch((err: HttpError) => {
+                    this.logger.error(
+                        `Error in RestImmunizationService.getPatientImmunizations()`
+                    );
                     reject(
                         ErrorTranslator.internalNetworkError(
                             err,
-                            ServiceName.Immunization
+                            ServiceCode.Immunization
                         )
                     );
                 });

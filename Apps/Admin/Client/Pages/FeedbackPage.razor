@@ -1,0 +1,160 @@
+﻿@page "/feedback"
+@layout MainLayout
+@attribute [Authorize(Roles = $"{Roles.Admin},{Roles.Reviewer}")]
+@using HealthGateway.Admin.Client.Store.Tag
+@using HealthGateway.Admin.Common.Models
+@using HealthGateway.Common.Data.Utils
+@inherits Fluxor.Blazor.Web.Components.FluxorComponent
+
+<PageTitle>Health Gateway Admin Feedback Review</PageTitle>
+<HgPageHeading>Feedback Review</HgPageHeading>
+
+@foreach (RequestError error in TagErrors)
+{
+    <HgBannerFeedback Severity="@Severity.Error"
+                      TResetAction="@TagActions.ResetStateAction"
+                      DataTestId="banner-feedback-error-message">
+        @error.Message
+    </HgBannerFeedback>
+}
+
+<EditForm Model="@AddTagModel" OnValidSubmit="@AddTag" Class="d-flex" data-testid="add-tag-form">
+    <MudTextField T="string"
+                  @ref="AddTagNameInput"
+                  @bind-Value="@AddTagModel.Name"
+                  Class="flex-grow-1"
+                  MaxLength="20"
+                  Label="Tag Name"
+                  Disabled="@TagState.Value.Add.IsLoading"
+                  data-testid="add-tag-input" />
+    <HgButton ButtonType="@ButtonType.Submit"
+              TopMargin="@Breakpoint.Always"
+              LeftMargin="@Breakpoint.Always"
+              Class="flex-grow-0"
+              EndIcon="@Icons.Material.Filled.Add"
+              Variant="@Variant.Filled"
+              Color="@Color.Success"
+              Loading="@TagState.Value.Add.IsLoading"
+              data-testid="add-tag-button">
+        Add Tag
+    </HgButton>
+</EditForm>
+
+@if (TagsUpdating)
+{
+    <MudProgressLinear Color="Color.Tertiary"
+                       Indeterminate="true"
+                       Class="mt-7 mb-8"
+                       data-testid="tags-updating-indicator" />
+}
+else
+{
+    <MudChipSet @bind-SelectedChips="@SelectedTagChips"
+                Class="my-3"
+                MultiSelection="true"
+                Filter="true"
+                data-testid="tag-collection">
+        @foreach (AdminTagView tag in Tags)
+        {
+            <MudChip Text="@tag.Name"
+                     Value="@tag.Id"
+                     Default="@TagIdFilter.Any(tagId => tagId == tag.Id)"
+                     Class="my-2"
+                     Variant="@Variant.Text"
+                     Size="@Size.Small"
+                     Color="@Color.Tertiary"
+                     Disabled="@(TagState.Value.Add.IsLoading || TagState.Value.Delete.IsLoading)"
+                     OnClose="@RemoveTag"
+                     data-testid="tag-collection-item" />
+        }
+    </MudChipSet>
+}
+
+@if (FeedbackLoaded || FeedbackLoading)
+{
+    <MudForm>
+        <MudTable Class="mt-3"
+                  Items="@FeedbackRows"
+                  Loading="@(FeedbackLoading || FeedbackUpdating)"
+                  Breakpoint="@Breakpoint.Md"
+                  HorizontalScrollbar="true"
+                  Striped="true"
+                  Dense="true"
+                  data-testid="feedback-table">
+            <HeaderContent>
+                <MudTh>
+                    <MudTableSortLabel SortBy="new Func<FeedbackRow, object>(x => x.DateTime)"
+                                       InitialDirection="@SortDirection.Descending">
+                        Date
+                    </MudTableSortLabel>
+                </MudTh>
+                <MudTh>
+                    <MudTableSortLabel SortBy="new Func<FeedbackRow, object>(x => x.Email)">
+                        Email
+                    </MudTableSortLabel>
+                </MudTh>
+                <MudTh>
+                    <MudTableSortLabel SortBy="new Func<FeedbackRow, object>(x => x.Comments)">
+                        Comments
+                    </MudTableSortLabel>
+                </MudTh>
+                <MudTh Style="min-width: 252px;">
+                    <MudTableSortLabel SortBy="new Func<FeedbackRow, object>(x => x.TagIds.Count())">
+                        Tags
+                    </MudTableSortLabel>
+                </MudTh>
+                <MudTh>
+                    <MudTableSortLabel SortBy="new Func<FeedbackRow, object>(x => x.IsReviewed)">
+                        Reviewed?
+                    </MudTableSortLabel>
+                </MudTh>
+            </HeaderContent>
+            <RowTemplate>
+                <MudTd DataLabel="Date" data-testid="feedback-date">
+                    @DateFormatter.ToShortDateAndTime(context.DateTime)
+                </MudTd>
+                <MudTd DataLabel="Email" data-testid="feedback-email">
+                    @if (context.Hdid.Length > 0)
+                    {
+                        <MudIconButton Icon="@Icons.Material.Filled.PersonSearch"
+                                       Color="@Color.Dark"
+                                       data-testid="feedback-person-search-button"
+                                       OnClick="() => NavigateToSupport(context.Hdid)" />
+                    }
+                    @if (context.Email.Length > 0)
+                    {
+                        @context.Email
+                    }
+                </MudTd>
+                <MudTd DataLabel="Comments" data-testid="feedback-comments">@context.Comments</MudTd>
+                <MudTd DataLabel="Tags">
+                    <MudSelect T="Guid"
+                               MultiSelection="true"
+                               SelectedValues="@context.TagIds"
+                               SelectedValuesChanged="@(tagIds => AssociateTags(tagIds, context.Id))"
+                               MultiSelectionTextFunc="@DescribeTags"
+                               Disabled="@FeedbackUpdating"
+                               Variant="@Variant.Filled"
+                               Margin="@Margin.Dense"
+                               Dense="true"
+                               data-testid="feedback-tag-select">
+                        @foreach (AdminTagView tag in Tags)
+                        {
+                            <MudSelectItem T="Guid" Value="@tag.Id" data-testid="feedback-tag">@tag.Name</MudSelectItem>
+                        }
+                    </MudSelect>
+                </MudTd>
+                <MudTd DataLabel="Reviewed">
+                    <MudIconButton Icon="@(context.IsReviewed ? Icons.Material.Filled.Check : Icons.Material.Filled.Close)"
+                                   Color="@(context.IsReviewed ? Color.Success : Color.Error)"
+                                   Disabled="@FeedbackUpdating"
+                                   data-testid="feedback-review-button"
+                                   @onclick="@(() => ToggleIsReviewed(context.Id))" />
+                </MudTd>
+            </RowTemplate>
+            <PagerContent>
+                <MudTablePager data-testid="feedback-table-pagination" />
+            </PagerContent>
+        </MudTable>
+    </MudForm>
+}

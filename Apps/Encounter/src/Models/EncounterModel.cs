@@ -17,6 +17,7 @@ namespace HealthGateway.Encounter.Models
 {
     using System;
     using System.Collections.Generic;
+    using System.Diagnostics.CodeAnalysis;
     using System.Globalization;
     using System.Security.Cryptography;
     using System.Text;
@@ -55,18 +56,18 @@ namespace HealthGateway.Encounter.Models
         /// Gets or sets the Location Name.
         /// </summary>
         [JsonPropertyName("clinic")]
-        public Clinic Clinic { get; set; } = new Clinic();
+        public Clinic Clinic { get; set; } = new();
 
         /// <summary>
         /// Creates an Encounter object from an ODR model.
         /// </summary>
         /// <param name="model">The claim result to convert.</param>
         /// <returns>The newly created Encounter object.</returns>
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Security", "CA5351:Do Not Use Broken Cryptographic Algorithms", Justification = "Team decision")]
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Security", "SCS0006:Weak hashing function", Justification = "Team decision")]
+        [SuppressMessage("Security", "CA5351:Do Not Use Broken Cryptographic Algorithms", Justification = "Team decision")]
+        [SuppressMessage("Security", "SCS0006:Weak hashing function", Justification = "Team decision")]
         public static EncounterModel FromODRClaimModel(Claim model)
         {
-            using var md5CryptoService = MD5.Create();
+            using MD5 md5CryptoService = MD5.Create();
             StringBuilder sourceId = new();
             sourceId.Append(CultureInfo.InvariantCulture, $"{model.ServiceDate:yyyyMMdd}");
             sourceId.Append(CultureInfo.InvariantCulture, $"{model.SpecialtyDesc}");
@@ -79,13 +80,13 @@ namespace HealthGateway.Encounter.Models
             sourceId.Append(CultureInfo.InvariantCulture, $"{model.LocationAddress.AddrLine2}");
             sourceId.Append(CultureInfo.InvariantCulture, $"{model.LocationAddress.AddrLine3}");
             sourceId.Append(CultureInfo.InvariantCulture, $"{model.LocationAddress.AddrLine4}");
-            return new EncounterModel()
+            return new EncounterModel
             {
                 Id = new Guid(md5CryptoService.ComputeHash(Encoding.Default.GetBytes(sourceId.ToString()))).ToString(),
                 EncounterDate = model.ServiceDate,
                 SpecialtyDescription = model.SpecialtyDesc,
                 PractitionerName = model.PractitionerName,
-                Clinic = new Clinic()
+                Clinic = new Clinic
                 {
                     Name = model.LocationName,
                 },
@@ -103,7 +104,7 @@ namespace HealthGateway.Encounter.Models
             HashSet<string> encounterIds = new();
             foreach (Claim claimModel in models)
             {
-                var encounter = FromODRClaimModel(claimModel);
+                EncounterModel encounter = FromODRClaimModel(claimModel);
                 if (!encounterIds.Contains(encounter.Id))
                 {
                     objects.Add(encounter);

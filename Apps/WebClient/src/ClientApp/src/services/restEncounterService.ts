@@ -1,9 +1,10 @@
 import { injectable } from "inversify";
 
 import { ResultType } from "@/constants/resulttype";
+import { ServiceCode } from "@/constants/serviceCodes";
 import { ExternalConfiguration } from "@/models/configData";
 import Encounter from "@/models/encounter";
-import { ServiceName } from "@/models/errorInterfaces";
+import { HttpError } from "@/models/errors";
 import RequestResult from "@/models/requestResult";
 import container from "@/plugins/container";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
@@ -16,7 +17,7 @@ import ErrorTranslator from "@/utility/errorTranslator";
 
 @injectable()
 export class RestEncounterService implements IEncounterService {
-    private logger: ILogger = container.get(SERVICE_IDENTIFIER.Logger);
+    private logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
     private readonly ENCOUNTER_BASE_URI: string = "Encounter";
     private baseUri = "";
     private http!: IHttpDelegate;
@@ -49,15 +50,15 @@ export class RestEncounterService implements IEncounterService {
                 .getWithCors<RequestResult<Encounter[]>>(
                     `${this.baseUri}${this.ENCOUNTER_BASE_URI}/${hdid}`
                 )
-                .then((requestResult) => {
-                    resolve(requestResult);
-                })
-                .catch((err) => {
-                    this.logger.error(`Fetch error: ${err}`);
+                .then((requestResult) => resolve(requestResult))
+                .catch((err: HttpError) => {
+                    this.logger.error(
+                        `Error in RestEncounterService.getPatientEncounters()`
+                    );
                     reject(
                         ErrorTranslator.internalNetworkError(
                             err,
-                            ServiceName.Encounter
+                            ServiceCode.Encounter
                         )
                     );
                 });

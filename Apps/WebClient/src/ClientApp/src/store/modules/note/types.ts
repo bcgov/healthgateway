@@ -7,7 +7,8 @@ import {
 } from "vuex";
 
 import { ErrorType } from "@/constants/errorType";
-import RequestResult, { ResultError } from "@/models/requestResult";
+import { ResultError } from "@/models/errors";
+import RequestResult from "@/models/requestResult";
 import { LoadStatus, Operation } from "@/models/storeOperations";
 import UserNote from "@/models/userNote";
 import { RootState } from "@/store/types";

@@ -4,18 +4,18 @@
         "windowsAuthentication": false,
         "anonymousAuthentication": true,
         "iisExpress": {
-            "applicationUrl": "http://0.0.0.0:3000"
+            "applicationUrl": "http://localhost:3000"
         }
     },
     "profiles": {
         "GatewayApi": {
             "commandName": "Project",
-            "launchBrowser": true,
+            "launchBrowser": false,
             "environmentVariables": {
                 "DOTNET_USE_POLLING_FILE_WATCHER": "1",
                 "ASPNETCORE_ENVIRONMENT": "Development"
             },
-            "applicationUrl": "http://0.0.0.0:3000"
+            "applicationUrl": "http://localhost:3000"
         }
     }
 }

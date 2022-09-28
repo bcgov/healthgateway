@@ -70,7 +70,7 @@ public class CommunicationsEffects
         }
 
         RequestError error = StoreUtility.FormatRequestError(response.Error, response.Content?.ResultError);
-        this.Logger.LogError($"Error adding communication, reason: {error.Message}");
+        this.Logger.LogError("Error adding communication, reason: {ErrorMessage}", error.Message);
         dispatcher.Dispatch(new CommunicationsActions.AddFailAction(error));
     }
 
@@ -93,7 +93,7 @@ public class CommunicationsEffects
         }
 
         RequestError error = StoreUtility.FormatRequestError(response.Error, response.Content?.ResultError);
-        this.Logger.LogError($"Error loading communications, reason: {error.Message}");
+        this.Logger.LogError("Error loading communications, reason: {ErrorMessage}", error.Message);
         dispatcher.Dispatch(new CommunicationsActions.LoadFailAction(error));
     }
 
@@ -117,7 +117,7 @@ public class CommunicationsEffects
         }
 
         RequestError error = StoreUtility.FormatRequestError(response.Error, response.Content?.ResultError);
-        this.Logger.LogError($"Error updating communication, reason: {error.Message}");
+        this.Logger.LogError("Error updating communication, reason: {ErrorMessage}", error.Message);
         dispatcher.Dispatch(new CommunicationsActions.UpdateFailAction(error));
     }
 
@@ -141,7 +141,7 @@ public class CommunicationsEffects
         }
 
         RequestError error = StoreUtility.FormatRequestError(response.Error, response.Content?.ResultError);
-        this.Logger.LogError($"Error deleting communication, reason: {error.Message}");
+        this.Logger.LogError("Error deleting communication, reason: {ErrorMessage}", error.Message);
         dispatcher.Dispatch(new CommunicationsActions.DeleteFailAction(error));
     }
 }

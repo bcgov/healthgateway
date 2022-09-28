@@ -19,8 +19,8 @@ namespace HealthGateway.Database.Models
     using HealthGateway.Common.Data.Models;
     using HealthGateway.Database.Constants;
 
-    #pragma warning disable CS1591 // self explanatory simple model
-    #pragma warning disable SA1600 // self explanatory simple model
+#pragma warning disable CS1591 // self explanatory simple model
+#pragma warning disable SA1600 // self explanatory simple model
     public class LegalAgreementTypeCode : AuditableEntity
     {
         [Key]

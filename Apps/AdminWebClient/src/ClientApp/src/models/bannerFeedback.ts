@@ -1,7 +1,7 @@
-import { ResultType } from "@/constants/resulttype";
+import { FeedbackType } from "@/constants/feedbacktype";
 
 export default interface BannerFeedback {
-    type: ResultType;
+    type: FeedbackType;
     title: string;
     message: string;
 }

@@ -25,9 +25,95 @@ export default class ReleaseNotesView extends Vue {
 </script>
 
 <template>
-    <div class="m-3 m-md-4 flex-grow-1 d-flex flex-column">
+    <div>
         <BreadcrumbComponent :items="breadcrumbItems" />
         <page-title title="Health Gateway Release Notes" />
+        <release-note
+            date="September 6, 2022"
+            version="v2022.6.6"
+            title="Guardian Access to Federal Proof of Vaccination"
+        >
+            <ul>
+                <li>
+                    We added a feature that provides guardian access to the
+                    federal proof of vaccination for their dependents.
+                </li>
+            </ul>
+        </release-note>
+        <release-note
+            date="August 23, 2022"
+            version="v2022.6.5"
+            title="Guardian Access to Immunizations"
+        >
+            <ul>
+                <li>
+                    We expanded dependent access to include immunizations from
+                    the Provincial Immunization Registry so you can view your
+                    child's vaccine records.
+                </li>
+            </ul>
+        </release-note>
+        <release-note
+            date="July 5, 2022"
+            version="v2022.6.2"
+            title="Filter badges, Pagination buttons"
+        >
+            <ul>
+                <li>
+                    We added filter badges to show you what filters you have
+                    applied, including data set, date range, and keywords.
+                </li>
+                <li>
+                    We moved the pagination buttons to the bottom of the
+                    timeline page so you can navigate to the next page after
+                    scrolling down.
+                </li>
+            </ul>
+        </release-note>
+        <release-note
+            date="June 21, 2022"
+            version="v2022.6.1"
+            title="Lab report download, Record filter counts, BC Vaccine Card quick link"
+        >
+            <ul>
+                <li>
+                    We added a button for downloading lab reports so they are
+                    easier to access.
+                </li>
+                <li>
+                    We updated the filter counts to show an accurate count of
+                    the records when filters are applied.
+                </li>
+                <li>
+                    We updated the quick link for BC Vaccine Card so you can
+                    remove it if you want.
+                </li>
+            </ul>
+        </release-note>
+        <release-note
+            date="June 7, 2022"
+            version="v2022.6.0"
+            title="Updated Terms of Service"
+        >
+            <ul>
+                <li>
+                    We added a feature that allows you to review and accept the
+                    terms of service when they have been updated.
+                </li>
+            </ul>
+        </release-note>
+        <release-note
+            date="May 26, 2022"
+            version="v1.5.10.1"
+            title="Lab Result Access"
+        >
+            <ul>
+                <li>
+                    We added access to lab results for blood tests and other lab
+                    tests done in B.C.
+                </li>
+            </ul>
+        </release-note>
         <release-note
             date="May 24, 2022"
             version="v1.5.10"

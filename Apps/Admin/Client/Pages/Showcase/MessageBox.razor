@@ -1,4 +1,5 @@
 @page "/showcase/message-box"
+@layout MainLayout
 
 <PageTitle>Message Box</PageTitle>
 
@@ -18,13 +19,13 @@
 
     private async void OpenMessageBox()
     {
-        bool? result = await DialogService.ShowMessageBox(new MessageBoxOptions()
-            {
-                Title = "Title of the Message Box",
-                Message = "Text explaining what is happening.",
-                NoText = "No",
-                CancelText = "Cancel",
-            });
+        bool? result = await DialogService.ShowMessageBox(new MessageBoxOptions
+        {
+            Title = "Title of the Message Box",
+            Message = "Text explaining what is happening.",
+            NoText = "No",
+            CancelText = "Cancel",
+        });
 
         if (result == true)
         {

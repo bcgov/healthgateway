@@ -16,6 +16,7 @@
 namespace HealthGateway.DrugMaintainer
 {
     using System;
+    using System.Diagnostics.CodeAnalysis;
     using System.IO;
     using HealthGateway.Common.FileDownload;
     using HealthGateway.Common.Services;
@@ -51,7 +52,7 @@ namespace HealthGateway.DrugMaintainer
             }
             else
             {
-                System.Console.WriteLine("Federal Drug App is null");
+                Console.WriteLine("Federal Drug App is null");
             }
 
             // Process Provincial file
@@ -62,7 +63,7 @@ namespace HealthGateway.DrugMaintainer
             }
             else
             {
-                System.Console.WriteLine("Provincial Drug App is null");
+                Console.WriteLine("Provincial Drug App is null");
             }
         }
 
@@ -71,41 +72,45 @@ namespace HealthGateway.DrugMaintainer
         /// </summary>
         /// <returns>The IHostBuilder.</returns>
         /// <param name="args">The set of command line arguments.</param>
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "CA1801:Review unused parameters", Justification = "Required for migrations")]
+        [SuppressMessage("Usage", "CA1801:Review unused parameters", Justification = "Required for migrations")]
         public static IHostBuilder CreateWebHostBuilder(string[] args)
         {
             string environment = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") ?? "Development";
             return new HostBuilder()
-                       .ConfigureAppConfiguration((hostingContext, config) =>
-                       {
-                           config.SetBasePath(Directory.GetCurrentDirectory());
-                           config.AddJsonFile($"appsettings.json", true, true);
-                           config.AddJsonFile($"appsettings.{environment}.json", true, true);
-                       })
-                       .ConfigureServices((hostContext, services) =>
-                       {
-                           Console.WriteLine("Configuring Services...");
-                           services.AddDbContextPool<GatewayDbContext>(options =>
-                                options.UseNpgsql(hostContext.Configuration.GetConnectionString("GatewayConnection")));
+                .ConfigureAppConfiguration(
+                    (_, config) =>
+                    {
+                        config.SetBasePath(Directory.GetCurrentDirectory());
+                        config.AddJsonFile("appsettings.json", true, true);
+                        config.AddJsonFile($"appsettings.{environment}.json", true, true);
+                        config.AddUserSecrets(typeof(Program).Assembly);
+                        config.AddJsonFile("appsettings.local.json", true, true);
+                    })
+                .ConfigureServices(
+                    (hostContext, services) =>
+                    {
+                        Console.WriteLine("Configuring Services...");
+                        services.AddDbContextPool<GatewayDbContext>(options => options.UseNpgsql(hostContext.Configuration.GetConnectionString("GatewayConnection")));
 
-                           // Add HTTP Client
-                           services.AddHttpClient();
+                        // Add HTTP Client
+                        services.AddHttpClient();
 
-                           // Add services
-                           services.AddTransient<IHttpClientService, HttpClientService>();
-                           services.AddTransient<IFileDownloadService, FileDownloadService>();
-                           services.AddTransient<IDrugProductParser, FederalDrugProductParser>();
-                           services.AddTransient<IPharmaCareDrugParser, PharmaCareDrugParser>();
+                        // Add services
+                        services.AddTransient<IHttpClientService, HttpClientService>();
+                        services.AddTransient<IFileDownloadService, FileDownloadService>();
+                        services.AddTransient<IDrugProductParser, FederalDrugProductParser>();
+                        services.AddTransient<IPharmaCareDrugParser, PharmaCareDrugParser>();
 
-                           // Add app
-                           services.AddTransient<FedDrugDBApp>();
-                           services.AddTransient<BcpProvDrugDbApp>();
-                       })
-                       .ConfigureLogging(logging =>
-                       {
-                           logging.ClearProviders();
-                           logging.AddConsole();
-                       });
+                        // Add app
+                        services.AddTransient<FedDrugDBApp>();
+                        services.AddTransient<BcpProvDrugDbApp>();
+                    })
+                .ConfigureLogging(
+                    logging =>
+                    {
+                        logging.ClearProviders();
+                        logging.AddConsole();
+                    });
         }
     }
 }

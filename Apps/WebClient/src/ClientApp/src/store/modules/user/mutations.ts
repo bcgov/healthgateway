@@ -25,7 +25,7 @@ export const mutations: UserMutation = {
         state.status = LoadStatus.LOADED;
     },
     setProfileUserData(state: UserState, userProfile: UserProfile) {
-        const logger: ILogger = container.get(SERVICE_IDENTIFIER.Logger);
+        const logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
 
         if (userProfile) {
             const notePreference = UserPreferenceType.TutorialMenuNote;
@@ -86,6 +86,9 @@ export const mutations: UserMutation = {
             state.status = LoadStatus.PARTIALLY_LOADED;
         }
     },
+    setEmailVerified(state: UserState) {
+        Vue.set(state.user, "verifiedEmail", true);
+    },
     setSMSResendDateTime(state: UserState, dateTime: DateWrapper) {
         state.smsResendDateTime = dateTime;
         state.error = false;
@@ -93,17 +96,16 @@ export const mutations: UserMutation = {
         state.status = LoadStatus.LOADED;
     },
     setUserPreference(state: UserState, userPreference: UserPreference) {
-        const logger: ILogger = container.get(SERVICE_IDENTIFIER.Logger);
+        const logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
+
         logger.debug(
             `setUserPreference: preference.name: ${JSON.stringify(
                 userPreference.preference
             )}, preference.value: ${JSON.stringify(userPreference.value)}`
         );
-        Vue.set(
-            state.user.preferences,
-            userPreference.preference,
-            userPreference
-        );
+        state.user.preferences = Object.assign({}, state.user.preferences, {
+            [userPreference.preference]: userPreference,
+        });
         state.error = false;
         state.statusMessage = "success";
         state.status = LoadStatus.LOADED;

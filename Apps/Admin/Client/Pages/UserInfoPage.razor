@@ -1,0 +1,36 @@
+﻿@page "/user-info"
+@layout MainLayout
+@attribute [Authorize(Roles = $"{Roles.Admin},{Roles.Reviewer}")]
+@inherits Fluxor.Blazor.Web.Components.FluxorComponent
+
+<PageTitle>Health Gateway Admin User Info</PageTitle>
+
+<MudHidden Invert="@(!ConfigurationState.Value.IsLoading)">
+    <MudProgressLinear Color="Color.Primary" Indeterminate="@(ConfigurationState.Value.IsLoading)" Class="my-7" />
+</MudHidden>
+<HgPageHeading>User Info</HgPageHeading>
+<MudField Label="Auth Message" Variant="Variant.Outlined">
+    @AuthMessage
+</MudField>
+<MudField Label="IP Address " Variant="Variant.Outlined">
+    @(ConfigurationState.Value.Result?.ClientIp ?? ConfigurationState.Value.Error?.Message)
+</MudField>
+@if (Token != null)
+{
+    <MudTextField @bind-Value="Token" Label="Token" Variant="Variant.Outlined" Lines="6" ReadOnly="true" />
+}
+@if (Claims.Any())
+{
+    <MudField Label="Claims" Variant="Variant.Outlined">
+        <MudTable Items="@Claims" Dense="true" Hover="true" Striped="true" Style="overflow-x: auto;">
+            <HeaderContent>
+                <MudTh>Claim</MudTh>
+                <MudTh>Value</MudTh>
+            </HeaderContent>
+            <RowTemplate>
+                <MudTd DataLabel="Claim">@context.Type</MudTd>
+                <MudTd DataLabel="Value">@context.Value</MudTd>
+            </RowTemplate>
+        </MudTable>
+    </MudField>
+}

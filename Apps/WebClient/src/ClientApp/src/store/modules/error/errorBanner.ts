@@ -4,8 +4,9 @@ import { mutations } from "./mutations";
 import { ErrorBannerModule, ErrorBannerState } from "./types";
 
 const state: ErrorBannerState = {
-    isShowing: false,
-    errors: [],
+    genericErrorBanner: { isShowing: false, errors: [] },
+    tooManyRequestsWarning: undefined,
+    tooManyRequestsError: undefined,
 };
 
 const namespaced = true;

@@ -19,7 +19,7 @@ export const getters: NavbarGetters = {
             rootGetters["auth/oidcIsAuthenticated"];
         const isValid: boolean = rootGetters["auth/isValidIdentityProvider"];
         const isRegistered: boolean = rootGetters["user/userIsRegistered"];
-        return !isOffline && (!isAuthenticated || (isValid && isRegistered));
+        return !isOffline && (!isAuthenticated || !isValid || isRegistered);
     },
     isSidebarOpen(
         _state: NavbarState,
@@ -35,6 +35,9 @@ export const getters: NavbarGetters = {
             return isMobile ? false : true;
         }
         return _state.isSidebarOpen;
+    },
+    isSidebarAnimating(state: NavbarState): boolean {
+        return state.isSidebarAnimating;
     },
     isSidebarAvailable: (
         _state: NavbarState,

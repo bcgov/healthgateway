@@ -1,6 +1,7 @@
 import { ActionContext, StoreOptions } from "vuex";
 
 import { AuthModule } from "./modules/auth/types";
+import { ClinicalDocumentModule } from "./modules/clinicalDocument/types";
 import { CommentModule } from "./modules/comment/types";
 import { ConfigModule } from "./modules/config/types";
 import { EncounterModule } from "./modules/encounter/types";
@@ -42,6 +43,7 @@ export interface GatewayStoreOptions extends StoreOptions<RootState> {
         comment: CommentModule;
         immunization: ImmunizationModule;
         encounter: EncounterModule;
+        clinicalDocument: ClinicalDocumentModule;
         note: NoteModule;
         navbar: NavbarModule;
         idle: IdleModule;

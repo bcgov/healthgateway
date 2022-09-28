@@ -32,7 +32,6 @@ namespace HealthGateway.Immunization.Services
     using HealthGateway.Immunization.Models;
     using Microsoft.AspNetCore.Authentication;
     using Microsoft.AspNetCore.Http;
-    using Microsoft.Extensions.Caching.Memory;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.Logging;
 
@@ -128,7 +127,11 @@ namespace HealthGateway.Immunization.Services
                 else if (payload.Loaded && string.IsNullOrEmpty(payload.FederalVaccineProof?.Data))
                 {
                     retVal.ResultStatus = ResultType.Error;
-                    retVal.ResultError = new RequestResultError() { ResultMessage = "Vaccine Proof document is not available.", ErrorCode = ErrorTranslator.ServiceError(ErrorType.InvalidState, ServiceType.PHSA) };
+                    retVal.ResultError = new RequestResultError
+                    {
+                        ResultMessage = "Vaccine Proof document is not available.",
+                        ErrorCode = ErrorTranslator.ServiceError(ErrorType.InvalidState, ServiceType.PHSA),
+                    };
                 }
             }
 
@@ -167,7 +170,11 @@ namespace HealthGateway.Immunization.Services
                 else if (payload.Loaded && string.IsNullOrEmpty(payload.FederalVaccineProof?.Data))
                 {
                     retVal.ResultStatus = ResultType.Error;
-                    retVal.ResultError = new RequestResultError() { ResultMessage = "Vaccine Proof document is not available.", ErrorCode = ErrorTranslator.ServiceError(ErrorType.InvalidState, ServiceType.PHSA) };
+                    retVal.ResultError = new RequestResultError
+                    {
+                        ResultMessage = "Vaccine Proof document is not available.",
+                        ErrorCode = ErrorTranslator.ServiceError(ErrorType.InvalidState, ServiceType.PHSA),
+                    };
                 }
             }
 
@@ -189,7 +196,7 @@ namespace HealthGateway.Immunization.Services
             catch (Exception e) when (e is FormatException || e is ArgumentNullException)
             {
                 retVal.ResultStatus = ResultType.Error;
-                retVal.ResultError = new RequestResultError()
+                retVal.ResultError = new RequestResultError
                 {
                     ResultMessage = "Error parsing date of birth",
                     ErrorCode = ErrorTranslator.InternalError(ErrorType.InvalidState),
@@ -205,7 +212,7 @@ namespace HealthGateway.Immunization.Services
             catch (Exception e) when (e is FormatException || e is ArgumentNullException)
             {
                 retVal.ResultStatus = ResultType.Error;
-                retVal.ResultError = new RequestResultError()
+                retVal.ResultError = new RequestResultError
                 {
                     ResultMessage = "Error parsing date of vaccine",
                     ErrorCode = ErrorTranslator.InternalError(ErrorType.InvalidState),
@@ -216,7 +223,7 @@ namespace HealthGateway.Immunization.Services
             if (!PhnValidator.IsValid(phn))
             {
                 retVal.ResultStatus = ResultType.Error;
-                retVal.ResultError = new RequestResultError()
+                retVal.ResultError = new RequestResultError
                 {
                     ResultMessage = "Error parsing phn",
                     ErrorCode = ErrorTranslator.InternalError(ErrorType.InvalidState),

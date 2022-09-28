@@ -1,4 +1,9 @@
 <script lang="ts">
+// Add font awesome styles manually
+import "@fortawesome/fontawesome-svg-core/styles.css";
+
+// Load general icons
+import { config } from "@fortawesome/fontawesome-svg-core";
 // Load Bootstrap general plugins
 import {
     AlertPlugin,
@@ -25,6 +30,23 @@ import {
     TablePlugin,
     TooltipPlugin,
 } from "bootstrap-vue";
+import Vue from "vue";
+import { Component, Ref, Watch } from "vue-property-decorator";
+import VueTheMask from "vue-the-mask";
+import { Action, Getter } from "vuex-class";
+
+import CommunicationComponent from "@/components/CommunicationComponent.vue";
+import ErrorCardComponent from "@/components/ErrorCardComponent.vue";
+import IdleComponent from "@/components/modal/IdleComponent.vue";
+import FooterComponent from "@/components/navmenu/FooterComponent.vue";
+import HeaderComponent from "@/components/navmenu/HeaderComponent.vue";
+import SidebarComponent from "@/components/navmenu/SidebarComponent.vue";
+import ResourceCentreComponent from "@/components/ResourceCentreComponent.vue";
+import Process, { EnvironmentType } from "@/constants/process";
+import ScreenWidth from "@/constants/screenWidth";
+import container from "@/plugins/container";
+import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
+import { ILogger } from "@/services/interfaces";
 
 Vue.use(LayoutPlugin);
 Vue.use(NavPlugin);
@@ -51,48 +73,38 @@ Vue.use(FormDatepickerPlugin);
 Vue.use(IconsPlugin);
 Vue.use(VueTheMask);
 
-// Load general icons
-import { config } from "@fortawesome/fontawesome-svg-core";
 // Prevent auto adding CSS to the header since that breaks Content security policies.
 config.autoAddCss = false;
-// Add font awesome styles manually
-import "@fortawesome/fontawesome-svg-core/styles.css";
 
-import Vue from "vue";
-import { Component, Ref, Watch } from "vue-property-decorator";
-import VueTheMask from "vue-the-mask";
-import { Action, Getter } from "vuex-class";
-
-import CommunicationComponent from "@/components/CommunicationComponent.vue";
-import ErrorCard from "@/components/ErrorCardComponent.vue";
-import IdleComponent from "@/components/modal/IdleComponent.vue";
-import FooterComponent from "@/components/navmenu/FooterComponent.vue";
-import HeaderComponent from "@/components/navmenu/HeaderComponent.vue";
-import SidebarComponent from "@/components/navmenu/SidebarComponent.vue";
-import Process, { EnvironmentType } from "@/constants/process";
-import ScreenWidth from "@/constants/screenWidth";
-import container from "@/plugins/container";
-import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
-import { ILogger } from "@/services/interfaces";
-
-const logger: ILogger = container.get(SERVICE_IDENTIFIER.Logger);
+const logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
 
 @Component({
     components: {
         NavHeader: HeaderComponent,
         NavFooter: FooterComponent,
         NavSidebar: SidebarComponent,
-        ErrorCard: ErrorCard,
+        ErrorCardComponent,
         IdleComponent,
         CommunicationComponent,
+        ResourceCentreComponent,
     },
 })
 export default class App extends Vue {
-    @Ref("idleModal") readonly idleModal!: IdleComponent;
-    @Action("setIsMobile") setIsMobile!: (isMobile: boolean) => void;
-    @Getter("isMobile") isMobile!: boolean;
+    @Ref("idleModal")
+    readonly idleModal!: IdleComponent;
+
+    @Action("setIsMobile")
+    setIsMobile!: (isMobile: boolean) => void;
+
+    @Getter("isMobile")
+    isMobile!: boolean;
+
     @Getter("oidcIsAuthenticated", { namespace: "auth" })
     oidcIsAuthenticated?: boolean;
+
+    @Getter("isValidIdentityProvider", { namespace: "auth" })
+    isValidIdentityProvider?: boolean;
+
     @Getter("hasTermsOfServiceUpdated", { namespace: "user" })
     hasTermsOfServiceUpdated!: boolean;
 
@@ -110,7 +122,11 @@ export default class App extends Vue {
     private loginCallbackPath = "/logincallback";
     private registrationPath = "/registration";
     private pcrTestPath = "/pcrtest";
-    private acceptTermsOfServicePath = "/acceptTermsOfService";
+    private acceptTermsOfServicePath = "/accepttermsofservice";
+    private dependentsPath = "/dependents";
+    private reportsPath = "/reports";
+    private timelinePath = "/timeline";
+    private landingPath = "/";
 
     constructor() {
         super();
@@ -127,13 +143,13 @@ export default class App extends Vue {
     }
 
     @Watch("isAppIdle")
-    private onIsAppIdleChanged(idle: boolean) {
-        if (idle && this.oidcIsAuthenticated) {
+    private onIsAppIdleChanged(idle: boolean): void {
+        if (idle && this.oidcIsAuthenticated && this.isValidIdentityProvider) {
             this.idleModal.show();
         }
     }
 
-    private created() {
+    private created(): void {
         this.windowWidth = window.innerWidth;
         this.$nextTick(() => {
             window.addEventListener("resize", this.onResize);
@@ -142,11 +158,11 @@ export default class App extends Vue {
         });
     }
 
-    private beforeDestroy() {
+    private beforeDestroy(): void {
         window.removeEventListener("resize", this.onResize);
     }
 
-    private onResize() {
+    private onResize(): void {
         this.windowWidth = window.innerWidth;
 
         if (this.windowWidth < ScreenWidth.Mobile) {
@@ -160,60 +176,63 @@ export default class App extends Vue {
         }
     }
 
-    private get isPublicDestinationPath(): boolean {
-        const routePath = this.$route.path.toLowerCase();
-        return (
-            routePath === this.vaccineCardPath ||
-            routePath === this.covidTestPath
-        );
+    private currentPathMatches(...paths: string[]): boolean {
+        const currentPath = this.$route.path.toLowerCase();
+        return paths.some((path) => path === currentPath);
     }
 
-    private get isLoginCallbackPath(): boolean {
-        return this.$route.path.toLowerCase() === this.loginCallbackPath;
-    }
-
-    private get isRegistrationPath(): boolean {
-        return this.$route.path.toLowerCase() === this.registrationPath;
-    }
-
-    private get isPcrTestPath(): boolean {
-        return this.$route.path.toLowerCase().startsWith(this.pcrTestPath);
-    }
-
-    private get isAcceptTermsOfServicePath(): boolean {
-        return (
-            this.$route.path.toLowerCase() ===
-            this.acceptTermsOfServicePath.toLowerCase()
+    private get pageHasCustomLayout(): boolean {
+        return this.currentPathMatches(
+            this.vaccineCardPath,
+            this.covidTestPath,
+            this.landingPath
         );
     }
 
     private get isHeaderVisible(): boolean {
-        return !this.isPublicDestinationPath && !this.isLoginCallbackPath;
+        return !this.currentPathMatches(
+            this.loginCallbackPath,
+            this.vaccineCardPath,
+            this.covidTestPath
+        );
     }
 
     private get isFooterVisible(): boolean {
-        return (
-            !this.isPublicDestinationPath &&
-            !this.isLoginCallbackPath &&
-            !this.isRegistrationPath
+        return !this.currentPathMatches(
+            this.loginCallbackPath,
+            this.registrationPath,
+            this.vaccineCardPath,
+            this.covidTestPath
         );
     }
 
     private get isSidebarVisible(): boolean {
         return (
-            !this.isLoginCallbackPath &&
-            !this.isRegistrationPath &&
-            !this.isPcrTestPath &&
-            !this.isAcceptTermsOfServicePath &&
+            !this.currentPathMatches(
+                this.loginCallbackPath,
+                this.registrationPath,
+                this.acceptTermsOfServicePath
+            ) &&
+            !this.$route.path.toLowerCase().startsWith(this.pcrTestPath) &&
             !this.hasTermsOfServiceUpdated
         );
     }
 
     private get isCommunicationVisible(): boolean {
         return (
-            !this.isPublicDestinationPath &&
-            !this.isLoginCallbackPath &&
-            !this.isPcrTestPath
+            !this.currentPathMatches(
+                this.loginCallbackPath,
+                this.vaccineCardPath,
+                this.covidTestPath
+            ) && !this.$route.path.toLowerCase().startsWith(this.pcrTestPath)
+        );
+    }
+
+    private get isResourceCentreVisible(): boolean {
+        return this.currentPathMatches(
+            this.dependentsPath,
+            this.reportsPath,
+            this.timelinePath
         );
     }
 }
@@ -239,9 +258,15 @@ export default class App extends Vue {
                 class="d-print-none sticky-top vh-100"
             />
             <main class="col fill-height d-flex flex-column">
-                <CommunicationComponent v-show="isCommunicationVisible" />
-                <ErrorCard />
-                <router-view />
+                <CommunicationComponent v-if="isCommunicationVisible" />
+
+                <router-view v-if="pageHasCustomLayout" />
+                <div v-else class="m-3 m-md-4">
+                    <ErrorCardComponent />
+                    <router-view />
+                </div>
+
+                <ResourceCentreComponent v-if="isResourceCentreVisible" />
                 <IdleComponent ref="idleModal" />
             </main>
         </b-row>
@@ -265,6 +290,7 @@ export default class App extends Vue {
 </style>
 <style lang="scss">
 @import "@/assets/scss/_variables.scss";
+
 @media print {
     .navbar {
         display: flex !important;

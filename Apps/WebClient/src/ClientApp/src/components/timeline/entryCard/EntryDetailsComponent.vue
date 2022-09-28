@@ -11,6 +11,7 @@ import { Operation } from "@/models/storeOperations";
 import TimelineEntry from "@/models/timelineEntry";
 import User from "@/models/user";
 
+import ClinicalDocumentTimelineComponent from "./ClinicalDocumentTimelineComponent.vue";
 import Covid19LaboratoryOrderTimelineComponent from "./Covid19LaboratoryOrderTimelineComponent.vue";
 import EncounterTimelineComponent from "./EncounterTimelineComponent.vue";
 import ImmunizationTimelineComponent from "./ImmunizationTimelineComponent.vue";
@@ -31,6 +32,7 @@ library.add(faArrowLeft);
         LaboratoryOrderComponent: LaboratoryOrderTimelineComponent,
         EncounterComponent: EncounterTimelineComponent,
         NoteComponent: NoteTimelineComponent,
+        ClinicalDocumentComponent: ClinicalDocumentTimelineComponent,
     },
 })
 export default class EntryDetailsComponent extends Vue {
@@ -56,14 +58,14 @@ export default class EntryDetailsComponent extends Vue {
     }
 
     @Watch("isMobile")
-    private onIsMobile() {
+    private onIsMobile(): void {
         if (this.isVisible && !this.isMobile) {
             this.handleClose();
         }
     }
 
     @Watch("lastNoteOperation")
-    private onLastNoteOperation() {
+    private onLastNoteOperation(): void {
         if (
             this.lastNoteOperation !== null &&
             this.entry !== null &&
@@ -72,14 +74,15 @@ export default class EntryDetailsComponent extends Vue {
             this.handleClose();
         }
     }
-    private created() {
+
+    private created(): void {
         window.onpopstate = (event: PopStateEvent) => {
             this.hideModal();
             event.preventDefault();
         };
     }
 
-    private mounted() {
+    private mounted(): void {
         this.entry = null;
         this.eventBus.$on(EventMessageName.ViewEntryDetails, this.viewDetails);
     }
@@ -106,7 +109,7 @@ export default class EntryDetailsComponent extends Vue {
         this.isVisible = false;
     }
 
-    private clear() {
+    private clear(): void {
         this.entry = null;
     }
 }
@@ -179,10 +182,12 @@ export default class EntryDetailsComponent extends Vue {
 
 <style lang="scss">
 @import "@/assets/scss/_variables.scss";
+
 .entry-details-modal-content {
     min-height: 100vh;
     border: 0px;
     border-radius: 0px;
+
     .modal-body {
         padding: 0em;
     }

@@ -5,30 +5,41 @@ import {
     faTimesCircle as farTimesCircle,
 } from "@fortawesome/free-regular-svg-icons";
 import {
+    faAngleDown,
     faComments,
     faExclamationCircle,
-    faWindowMinimize,
 } from "@fortawesome/free-solid-svg-icons";
 import Vue from "vue";
 import { Component, Watch } from "vue-property-decorator";
 import { Action, Getter } from "vuex-class";
 
+import { ResultError } from "@/models/errors";
 import User from "@/models/user";
 import container from "@/plugins/container";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import { IUserFeedbackService } from "@/services/interfaces";
 
-library.add(faComments, faExclamationCircle, faWindowMinimize);
+library.add(faAngleDown, faComments, faExclamationCircle);
 
 const navbar = "navbar";
 const user = "user";
 
 @Component
 export default class FeedbackComponent extends Vue {
-    @Action("toggleSidebar", { namespace: navbar }) toggleSidebar!: () => void;
+    @Action("setTooManyRequestsError", { namespace: "errorBanner" })
+    setTooManyRequestsError!: (params: { key: string }) => void;
 
-    @Getter("isSidebarOpen", { namespace: navbar }) isSidebarOpen!: boolean;
-    @Getter("user", { namespace: user }) user!: User;
+    @Action("toggleSidebar", { namespace: navbar })
+    toggleSidebar!: () => void;
+
+    @Getter("isSidebarOpen", { namespace: navbar })
+    isSidebarOpen!: boolean;
+
+    @Getter("isSidebarAnimating", { namespace: "navbar" })
+    isSidebarAnimating!: boolean;
+
+    @Getter("user", { namespace: user })
+    user!: User;
 
     private comment = "";
 
@@ -38,7 +49,15 @@ export default class FeedbackComponent extends Vue {
     private isLoading = false;
     private userFeedbackService!: IUserFeedbackService;
 
-    private get isValid() {
+    private get isSidebarFullyOpen(): boolean {
+        return this.isSidebarOpen && !this.isSidebarAnimating;
+    }
+
+    private get feedbackMaximized(): boolean {
+        return this.isSidebarFullyOpen && this.visible;
+    }
+
+    private get isValid(): boolean {
         return this.comment.length > 1;
     }
 
@@ -69,27 +88,27 @@ export default class FeedbackComponent extends Vue {
     }
 
     @Watch("isSidebarOpen")
-    private onIsSidebarOpen(newValue: boolean) {
+    private onIsSidebarOpen(newValue: boolean): void {
         // Make sure it closes if the sidebar is closing and reset state
         if (!newValue) {
             this.resetFeedback();
         }
     }
 
-    private created() {
+    private created(): void {
         this.userFeedbackService = container.get(
             SERVICE_IDENTIFIER.UserFeedbackService
         );
     }
 
-    private toggleExpanded() {
+    private toggleExpanded(): void {
         this.visible = !this.visible;
         if (!this.isSidebarOpen) {
             this.toggleSidebar();
         }
     }
 
-    private onSubmit(event: Event) {
+    private onSubmit(): void {
         this.isLoading = true;
 
         this.userFeedbackService
@@ -99,18 +118,19 @@ export default class FeedbackComponent extends Vue {
             .then((result) => {
                 this.isSuccess = result;
             })
-            .catch(() => {
+            .catch((err: ResultError) => {
+                if (err.statusCode === 429) {
+                    this.setTooManyRequestsError({ key: "page" });
+                }
                 this.isSuccess = false;
             })
             .finally(() => {
                 this.hasSubmitted = true;
                 this.isLoading = false;
             });
-
-        event.preventDefault();
     }
 
-    private resetFeedback() {
+    private resetFeedback(): void {
         this.visible = false;
         this.hasSubmitted = false;
         this.isSuccess = false;
@@ -127,7 +147,7 @@ export default class FeedbackComponent extends Vue {
     >
         <b-button
             data-testid="expandFeedbackBtn"
-            class="justify-content-center feedback py-0 rounded-0"
+            class="justify-content-center feedback px-0 py-2 rounded-0"
             :class="{
                 'bg-danger': hasSubmitted && !isSuccess,
                 'bg-success': hasSubmitted && isSuccess,
@@ -137,31 +157,40 @@ export default class FeedbackComponent extends Vue {
             size="sm"
             @click="toggleExpanded"
         >
-            <b-row v-show="!hasSubmitted">
+            <b-row v-show="!hasSubmitted" no-gutters class="px-2 px-md-3">
+                <b-col class="text-nowrap">
+                    <hg-icon
+                        icon="comments"
+                        size="large"
+                        square
+                        aria-hidden="true"
+                    />
+                    <span
+                        v-show="isSidebarFullyOpen"
+                        class="px-2 px-md-3"
+                        :class="{
+                            'mr-3': !visible,
+                        }"
+                        >Feedback</span
+                    >
+                </b-col>
                 <b-col
-                    title="Feedback"
-                    class="py-2 pl-4"
+                    cols="auto"
+                    class="align-items-center"
                     :class="{
-                        'col-2 col-md-4 text-right pr-2': isSidebarOpen,
+                        'd-flex': feedbackMaximized,
+                        'd-none': !feedbackMaximized,
                     }"
                 >
-                    <hg-icon icon="comments" size="large" aria-hidden="true" />
-                </b-col>
-                <b-col
-                    v-show="isSidebarOpen"
-                    class="button-title text-left col-7 col-md-6 p-0 pl-4 pl-md-3 py-2"
-                >
-                    <span> Feedback </span>
-                </b-col>
-                <b-col v-show="isSidebarOpen && visible" cols="auto">
                     <hg-icon
-                        icon="window-minimize"
+                        icon="angle-down"
                         size="medium"
+                        square
                         aria-hidden="true"
                     />
                 </b-col>
             </b-row>
-            <b-row v-show="hasSubmitted">
+            <b-row v-show="hasSubmitted" no-gutters>
                 <b-col>
                     <hg-icon
                         :icon="resultIcon"
@@ -172,124 +201,137 @@ export default class FeedbackComponent extends Vue {
             </b-row>
         </b-button>
         <b-collapse id="collapse" v-model="visible" class="input-container">
-            <div v-if="!hasSubmitted">
-                <b-row class="p-3 description-container">
-                    <b-col class="text-left small"
-                        ><span class="button-title"
-                            >Do you have a suggestion or idea? Let us know in
-                            the field below.</span
-                        >
-                    </b-col>
-                </b-row>
-                <b-form ref="feedbackForm" @submit.prevent="onSubmit">
-                    <b-row class="px-0">
-                        <b-col>
-                            <b-form-textarea
-                                id="comment"
-                                v-model="comment"
-                                data-testid="feedbackCommentInput"
-                                size="sm"
-                                placeholder="Describe your suggestion or idea..."
-                                rows="5"
-                                max-rows="3"
-                                maxlength="500"
-                                class="border-0 p-2"
-                                :disabled="isSuccess || isLoading"
-                            />
-                        </b-col>
+            <div v-show="isSidebarOpen" class="p-3">
+                <div v-if="!hasSubmitted">
+                    <b-row no-gutters class="description-container">
+                        <p v-show="isSidebarFullyOpen" class="small">
+                            Do you have a suggestion or idea? Let us know in the
+                            field below.
+                        </p>
                     </b-row>
-                    <b-row class="submit-button-container my-3">
-                        <b-col class="d-flex justify-content-center">
-                            <b-button
-                                v-if="!isSuccess && !isLoading"
-                                data-testid="sendFeedbackMessageBtn"
-                                size="md"
-                                class="aqua-button px-5"
-                                type="submit"
-                                :disabled="!isValid"
-                                >Send Message</b-button
-                            >
-                            <b-spinner v-if="isLoading"></b-spinner>
-                        </b-col>
-                    </b-row>
-                </b-form>
-            </div>
-            <!-- Request result section -->
-            <div v-else>
-                <b-row>
-                    <b-col class="my-3 text-center">
+                    <b-form ref="feedbackForm" @submit.prevent="onSubmit">
+                        <b-row no-gutters class="mb-3">
+                            <b-col>
+                                <b-form-textarea
+                                    id="comment"
+                                    v-model="comment"
+                                    data-testid="feedbackCommentInput"
+                                    size="sm"
+                                    placeholder="Describe your suggestion or idea..."
+                                    rows="5"
+                                    max-rows="3"
+                                    maxlength="500"
+                                    class="border-0 p-2"
+                                    :disabled="isSuccess || isLoading"
+                                />
+                            </b-col>
+                        </b-row>
+                        <b-row no-gutters class="submit-button-container">
+                            <b-col class="d-flex justify-content-center">
+                                <b-button
+                                    v-if="!isSuccess && !isLoading"
+                                    data-testid="sendFeedbackMessageBtn"
+                                    size="md"
+                                    block
+                                    class="action-button aqua-button border-0 px-3"
+                                    type="submit"
+                                    :disabled="!isValid"
+                                >
+                                    Send Message
+                                </b-button>
+                                <b-spinner v-if="isLoading"></b-spinner>
+                            </b-col>
+                        </b-row>
+                    </b-form>
+                </div>
+                <!-- Request result section -->
+                <div v-else v-show="isSidebarFullyOpen">
+                    <div class="text-center">
                         <p class="font-weight-bold">
                             {{ resultTitle }}
                         </p>
                         <p class="small">
                             {{ resultDescription }}
                         </p>
-                    </b-col>
-                </b-row>
-                <b-row v-if="isSuccess && !hasEmail" class="mb-4">
-                    <b-col class="col-3 text-right p-0 m-0">
-                        <hg-icon
-                            icon="exclamation-circle"
-                            size="medium"
-                            aria-hidden="true"
-                            class="text-warning"
-                        />
-                    </b-col>
-                    <b-col class="text-left px-3 small" cols="9">
-                        <span>
-                            We won't be able to respond to your message unless
-                            you have a verified email address in your profile.
-                        </span>
-                    </b-col>
-                </b-row>
-                <!-- Result buttons -->
-                <b-row v-if="isSuccess && !hasEmail" class="mb-4">
-                    <b-col class="p-0 ml-auto mr-2" cols="auto">
-                        <b-button
-                            data-testid="noNeedBtn"
-                            variant="link"
-                            size="sm"
-                            @click="resetFeedback"
-                            >No Need!</b-button
-                        >
-                    </b-col>
-                    <b-col class="p-0 mr-auto ml-2" cols="auto">
-                        <router-link
-                            id="menuBtnProfile"
-                            data-testid="menuBtnProfileLink"
-                            to="/profile"
-                        >
+                    </div>
+                    <b-row
+                        v-if="isSuccess && !hasEmail"
+                        no-gutters
+                        class="mt-4 mb-3 mb-md-4 px-md-3 small"
+                    >
+                        <b-col cols="auto">
+                            <hg-icon
+                                icon="exclamation-circle"
+                                size="medium"
+                                aria-hidden="true"
+                                class="text-warning mt-1 mr-2 mr-md-3"
+                            />
+                        </b-col>
+                        <b-col>
+                            <span class="text-left">
+                                We won't be able to respond to your message
+                                unless you have a verified email address in your
+                                profile.
+                            </span>
+                        </b-col>
+                    </b-row>
+                    <!-- Result buttons -->
+                    <b-row
+                        v-if="isSuccess && !hasEmail"
+                        no-gutters
+                        class="justify-content-center"
+                    >
+                        <b-col class="mx-2 mb-2" cols="auto">
                             <b-button
-                                data-testid="updateMyEmailButton"
+                                data-testid="noNeedBtn"
+                                variant="link"
                                 size="sm"
-                                class="aqua-button"
-                                >Update my email
+                                @click="resetFeedback"
+                            >
+                                No Need!
                             </b-button>
-                        </router-link>
-                    </b-col>
-                </b-row>
-                <b-row v-else>
-                    <b-col>
+                        </b-col>
+                        <b-col class="mx-2 mb-2" cols="auto">
+                            <router-link
+                                id="menuBtnProfile"
+                                data-testid="menuBtnProfileLink"
+                                to="/profile"
+                            >
+                                <b-button
+                                    data-testid="updateMyEmailButton"
+                                    size="sm"
+                                    class="aqua-button border-0"
+                                >
+                                    Update my email
+                                </b-button>
+                            </router-link>
+                        </b-col>
+                    </b-row>
+                    <div v-else class="mb-2 d-flex justify-content-center">
                         <b-button
                             v-if="isSuccess && hasEmail"
                             data-testid="hasEmailResetFeedbackBtn"
                             size="md"
-                            class="aqua-button px-5 bg-success mb-4"
+                            block
+                            class="action-button bg-success px-3 border-0"
                             :disabled="isLoading"
                             @click="resetFeedback"
-                            >Got it!</b-button
                         >
+                            Got it!
+                        </b-button>
                         <b-button
                             v-if="!isSuccess"
                             data-testid="tryAgainBtn"
                             size="md"
-                            class="aqua-button px-5 bg-danger mb-4"
+                            block
+                            class="action-button bg-danger px-3 border-0"
                             :disabled="isLoading"
-                            @click="onSubmit($event)"
-                            >Try Again</b-button
+                            @click="onSubmit"
                         >
-                    </b-col>
-                </b-row>
+                            Try Again
+                        </b-button>
+                    </div>
+                </div>
             </div>
         </b-collapse>
     </div>
@@ -297,6 +339,7 @@ export default class FeedbackComponent extends Vue {
 
 <style lang="scss" scoped>
 @import "@/assets/scss/_variables.scss";
+
 .feedback {
     background-color: $aquaBlue;
     display: inline;
@@ -313,11 +356,14 @@ export default class FeedbackComponent extends Vue {
 
 .aqua-button {
     background-color: $aquaBlue;
-    border: 0px;
+}
+
+.action-button {
+    max-width: 160px;
 }
 
 .description-container {
-    height: 70px;
+    min-height: 58px;
 }
 
 .submit-button-container {

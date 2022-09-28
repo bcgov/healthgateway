@@ -1,10 +1,9 @@
 const { AuthMethod } = require("../../../support/constants");
 const registrationPath = "/registration";
-const profilePath = "/profile";
+const homePath = "/home";
 
 describe("Registration Page", () => {
-    it("Minimum Age error", () => {
-        cy.enableModules("Medication");
+    it("Minimum age error", () => {
         cy.login(
             Cypress.env("keycloak.hlthgw401.username"),
             Cypress.env("keycloak.password"),
@@ -14,19 +13,7 @@ describe("Registration Page", () => {
         cy.get("[data-testid=minimumAgeErrorText]").should("be.visible");
     });
 
-    it("Client Registration error", () => {
-        cy.enableModules("Medication");
-        cy.login(
-            Cypress.env("keycloak.healthgateway12.username"),
-            Cypress.env("keycloak.password"),
-            AuthMethod.KeyCloak
-        );
-        cy.location("pathname").should("eq", registrationPath);
-        cy.get("[data-testid=clientRegistryErrorText]").should("be.visible");
-    });
-
     it("No sidebar or footer", () => {
-        cy.enableModules("Medication");
         cy.login(
             Cypress.env("keycloak.unregistered.username"),
             Cypress.env("keycloak.password"),
@@ -37,8 +24,7 @@ describe("Registration Page", () => {
         cy.get("[data-testid=footer]").should("not.exist");
     });
 
-    it("Registration goes to Verify Phone and Email", () => {
-        cy.enableModules("Medication");
+    it("Registering leads to home page", () => {
         cy.login(
             Cypress.env("keycloak.unregistered.username"),
             Cypress.env("keycloak.password"),
@@ -63,9 +49,8 @@ describe("Registration Page", () => {
         cy.get("[data-testid=registerButton]")
             .should("be.visible", "be.enabled")
             .click();
-        cy.location("pathname").should("eq", profilePath);
-        cy.get("[data-testid=verifySMSModalText]").should("be.visible");
-        cy.get("[data-testid=verifyEmailTxt]").should("be.visible");
+        cy.location("pathname").should("eq", homePath);
+        cy.get("[data-testid=incomplete-profile-banner]").should("be.visible");
     });
 
     it("Validate Closed Profile Registration", () => {

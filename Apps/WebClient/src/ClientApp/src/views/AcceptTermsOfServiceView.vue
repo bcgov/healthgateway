@@ -11,7 +11,7 @@ import HtmlTextAreaComponent from "@/components/HtmlTextAreaComponent.vue";
 import LoadingComponent from "@/components/LoadingComponent.vue";
 import { ErrorSourceType, ErrorType } from "@/constants/errorType";
 import type { WebClientConfiguration } from "@/models/configData";
-import { ResultError } from "@/models/requestResult";
+import { ResultError } from "@/models/errors";
 import User from "@/models/user";
 import container from "@/plugins/container";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
@@ -26,9 +26,6 @@ library.add(faExclamationTriangle);
     },
 })
 export default class AcceptTermsOfServiceView extends Vue {
-    @Action("checkRegistration", { namespace: "user" })
-    checkRegistration!: () => Promise<boolean>;
-
     @Action("updateAcceptedTerms", { namespace: "user" })
     updateAcceptedTerms!: (params: {
         termsOfServiceId: string;
@@ -40,6 +37,12 @@ export default class AcceptTermsOfServiceView extends Vue {
         source: ErrorSourceType;
         traceId: string | undefined;
     }) => void;
+
+    @Action("setTooManyRequestsError", { namespace: "errorBanner" })
+    setTooManyRequestsError!: (params: { key: string }) => void;
+
+    @Action("setTooManyRequestsWarning", { namespace: "errorBanner" })
+    setTooManyRequestsWarning!: (params: { key: string }) => void;
 
     @Getter("user", { namespace: "user" })
     user!: User;
@@ -65,7 +68,7 @@ export default class AcceptTermsOfServiceView extends Vue {
         return this.loadingTermsOfService;
     }
 
-    private mounted() {
+    private mounted(): void {
         this.logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
 
         this.userProfileService = container.get(
@@ -75,7 +78,7 @@ export default class AcceptTermsOfServiceView extends Vue {
         this.loadTermsOfService();
     }
 
-    private validations() {
+    private validations(): unknown {
         return {
             accepted: { isChecked: sameAs(() => true) },
         };
@@ -92,13 +95,17 @@ export default class AcceptTermsOfServiceView extends Vue {
                 this.termsOfServiceId = result.id;
                 this.termsOfService = result.content;
             })
-            .catch((err) => {
+            .catch((err: ResultError) => {
                 this.logger.error(err);
-                this.addError({
-                    errorType: ErrorType.Retrieve,
-                    source: ErrorSourceType.TermsOfService,
-                    traceId: undefined,
-                });
+                if (err.statusCode === 429) {
+                    this.setTooManyRequestsWarning({ key: "page" });
+                } else {
+                    this.addError({
+                        errorType: ErrorType.Retrieve,
+                        source: ErrorSourceType.TermsOfService,
+                        traceId: undefined,
+                    });
+                }
             })
             .finally(() => {
                 this.loadingTermsOfService = false;
@@ -109,7 +116,7 @@ export default class AcceptTermsOfServiceView extends Vue {
         return param.$dirty ? !param.$invalid : undefined;
     }
 
-    private onSubmit(event: Event) {
+    private onSubmit(event: Event): void {
         this.$v.$touch();
         if (this.$v.$invalid) {
             event.preventDefault();
@@ -119,20 +126,22 @@ export default class AcceptTermsOfServiceView extends Vue {
         this.loadingTermsOfService = true;
 
         this.updateAcceptedTerms({ termsOfServiceId: this.termsOfServiceId })
-            .then(() => {
-                this.redirect();
-            })
+            .then(() => this.redirect())
             .catch((err: ResultError) => {
                 this.logger.error(
                     `Error updating accepted terms of service: ${JSON.stringify(
                         err
                     )}`
                 );
-                this.addError({
-                    errorType: ErrorType.Update,
-                    source: ErrorSourceType.Profile,
-                    traceId: err.traceId,
-                });
+                if (err.statusCode === 429) {
+                    this.setTooManyRequestsError({ key: "page" });
+                } else {
+                    this.addError({
+                        errorType: ErrorType.Update,
+                        source: ErrorSourceType.Profile,
+                        traceId: err.traceId,
+                    });
+                }
             })
             .finally(() => {
                 this.loadingTermsOfService = false;
@@ -149,7 +158,7 @@ export default class AcceptTermsOfServiceView extends Vue {
 </script>
 
 <template>
-    <div class="m-3 m-md-4 flex-grow-1 d-flex flex-column">
+    <div>
         <LoadingComponent :is-loading="isLoading" />
         <b-container v-if="!isLoading && termsOfService !== ''">
             <div>

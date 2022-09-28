@@ -19,7 +19,7 @@ export default class RatingComponent extends Vue {
     private isVisible = false;
     private logger!: ILogger;
 
-    private created() {
+    private created(): void {
         this.logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
     }
 
@@ -36,21 +36,19 @@ export default class RatingComponent extends Vue {
         this.isVisible = false;
     }
 
-    private handleRating(value: number, skip = false) {
-        const ratingService: IUserRatingService = container.get(
+    private handleRating(value: number, skip = false): void {
+        const ratingService = container.get<IUserRatingService>(
             SERVICE_IDENTIFIER.UserRatingService
         );
         this.logger.debug(
             `submitting rating: ratingValue = ${value}, skip = ${skip} ...`
         );
         ratingService
-            .submitRating({ ratingValue: value, skip: skip })
-            .then(() => {
-                this.logger.debug(`submitRating with success.`);
-            })
-            .catch((err) => {
-                this.logger.error(`submitRating with error: ${err}`);
-            })
+            .submitRating({ ratingValue: value, skip })
+            .then(() => this.logger.debug(`submitRating with success.`))
+            .catch((err) =>
+                this.logger.error(`submitRating with error: ${err}`)
+            )
             .finally(() => {
                 this.hideModal();
                 this.onClose();
@@ -118,6 +116,7 @@ export default class RatingComponent extends Vue {
 </template>
 <style lang="scss">
 @import "@/assets/scss/_variables.scss";
+
 [data-modal="rating"] {
     z-index: $z_application_rating !important;
 }

@@ -15,6 +15,8 @@
 //-------------------------------------------------------------------------
 namespace HealthGateway.Medication.Models
 {
+    using System;
+
     /// <summary>
     /// Contains sumary information of a medication.
     /// </summary>
@@ -48,7 +50,7 @@ namespace HealthGateway.Medication.Models
         /// <summary>
         /// Gets or sets the date the Drug was discontinued if applicable.
         /// </summary>
-        public System.DateTime? DrugDiscontinuedDate { get; set; }
+        public DateTime? DrugDiscontinuedDate { get; set; }
 
         /// <summary>
         /// Gets or sets the form.

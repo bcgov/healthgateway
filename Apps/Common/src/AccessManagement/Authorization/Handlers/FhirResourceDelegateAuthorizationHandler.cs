@@ -21,7 +21,6 @@ namespace HealthGateway.Common.AccessManagement.Authorization.Handlers
     using System.Threading.Tasks;
     using HealthGateway.Common.AccessManagement.Authorization.Claims;
     using HealthGateway.Common.AccessManagement.Authorization.Requirements;
-    using HealthGateway.Common.Constants;
     using HealthGateway.Common.Data.ViewModels;
     using HealthGateway.Common.Models;
     using HealthGateway.Common.Services;
@@ -86,17 +85,17 @@ namespace HealthGateway.Common.AccessManagement.Authorization.Handlers
                         }
                         else
                         {
-                            this.logger.LogWarning($"Non-owner access to {resourceHDID} rejected");
+                            this.logger.LogDebug($"Non-owner access to {resourceHDID} rejected");
                         }
                     }
                     else
                     {
-                        this.logger.LogWarning($"Non-owner access to {resourceHDID} rejected as user delegation is disabled");
+                        this.logger.LogDebug($"Non-owner access to {resourceHDID} rejected as user delegation is disabled");
                     }
                 }
                 else
                 {
-                    this.logger.LogWarning($"Fhir resource Handler has been invoked without route resource being specified, ignoring");
+                    this.logger.LogWarning("Fhir resource Handler has been invoked without route resource being specified, ignoring");
                 }
             }
 
@@ -150,10 +149,7 @@ namespace HealthGateway.Common.AccessManagement.Authorization.Handlers
                 return false;
             }
 
-            RequestResult<PatientModel> patientResult = Task.Run(async () =>
-            {
-                return await this.patientService.GetPatient(resourceHDID, PatientIdentifierType.HDID).ConfigureAwait(true);
-            }).Result;
+            RequestResult<PatientModel> patientResult = Task.Run(async () => await this.patientService.GetPatient(resourceHDID).ConfigureAwait(true)).Result;
 
             return patientResult.ResourcePayload!.Birthdate.AddYears(this.maxDependentAge.Value) < DateTime.Now;
         }

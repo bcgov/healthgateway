@@ -24,6 +24,7 @@ namespace HealthGateway.WebClient
     using HealthGateway.WebClient.Services;
     using Microsoft.AspNetCore.Builder;
     using Microsoft.AspNetCore.Hosting;
+    using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.AspNetCore.Rewrite;
     using Microsoft.AspNetCore.SpaServices;
@@ -31,6 +32,7 @@ namespace HealthGateway.WebClient
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Hosting;
+    using Microsoft.Extensions.Primitives;
     using VueCliMiddleware;
 
     /// <summary>
@@ -68,24 +70,15 @@ namespace HealthGateway.WebClient
             services.AddTransient<IConfigurationService, ConfigurationService>();
 
             // Add Background Services
-            services.Configure<ApiBehaviorOptions>(options =>
-            {
-                options.SuppressModelStateInvalidFilter = true;
-            });
+            services.Configure<ApiBehaviorOptions>(options => options.SuppressModelStateInvalidFilter = true);
 
             // Configure SPA
             services.AddControllersWithViews();
 
             // In production, the Vue files will be served from this directory
-            services.AddSpaStaticFiles(configuration =>
-            {
-                configuration.RootPath = "ClientApp/dist";
-            });
+            services.AddSpaStaticFiles(options => options.RootPath = "ClientApp/dist");
 
-            services.AddControllers().AddJsonOptions(options =>
-            {
-                options.JsonSerializerOptions.Converters.Add(new DateOnlyJsonConverter());
-            });
+            services.AddControllers().AddJsonOptions(options => options.JsonSerializerOptions.Converters.Add(new DateOnlyJsonConverter()));
         }
 
         /// <summary>
@@ -118,25 +111,24 @@ namespace HealthGateway.WebClient
                 app.UseResponseCompression();
             }
 
-            app.UseEndpoints(endpoints =>
-            {
-                endpoints.MapRazorPages();
-                endpoints.MapControllers();
-                endpoints.MapControllerRoute(
-                    name: "default",
-                    pattern: "{controller}/{action=Index}/{id?}");
-
-                if (env.IsDevelopment() && Debugger.IsAttached)
+            app.UseEndpoints(
+                endpoints =>
                 {
-                    endpoints.MapToVueCliProxy(
-                        "{*path}",
-                        new SpaOptions { SourcePath = "ClientApp" },
-                        npmScript: "serve",
-                        port: 8585,
-                        regex: "Compiled ",
-                        forceKill: true);
-                }
-            });
+                    endpoints.MapRazorPages();
+                    endpoints.MapControllers();
+                    endpoints.MapControllerRoute("default", "{controller}/{action=Index}/{id?}");
+
+                    if (env.IsDevelopment() && Debugger.IsAttached)
+                    {
+                        endpoints.MapToVueCliProxy(
+                            "{*path}",
+                            new SpaOptions { SourcePath = "ClientApp" },
+                            "serve",
+                            8585,
+                            regex: "Compiled ",
+                            forceKill: true);
+                    }
+                });
 
             bool redirectToWWW = this.configuration.GetSection("WebClient").GetValue<bool>("RedirectToWWW");
             if (redirectToWWW)
@@ -146,52 +138,55 @@ namespace HealthGateway.WebClient
                 app.UseRewriter(rewriteOption);
             }
 
-            app.UseSpa(spa =>
-            {
-                spa.Options.SourcePath = "ClientApp";
-                if (env.IsDevelopment() && !Debugger.IsAttached)
+            app.UseSpa(
+                spa =>
                 {
-                    // change this to whatever webpack dev server says it's running on
+                    spa.Options.SourcePath = "ClientApp";
+                    if (env.IsDevelopment() && !Debugger.IsAttached)
+                    {
+                        // change this to whatever webpack dev server says it's running on
 #pragma warning disable S1075
-                    spa.UseProxyToSpaDevelopmentServer("http://localhost:8080");
+                        spa.UseProxyToSpaDevelopmentServer("http://localhost:8080");
 #pragma warning restore S1075
-                }
-            });
+                    }
+                });
 
-            app.UseStaticFiles(new StaticFileOptions
-            {
-                OnPrepareResponse = (content) =>
+            app.UseStaticFiles(
+                new StaticFileOptions
                 {
-                    var headers = content.Context.Response.Headers;
-                    var contentType = headers["Content-Type"];
-                    if (contentType != "application/x-gzip" && !content.File.Name.EndsWith(".gz", StringComparison.CurrentCultureIgnoreCase))
+                    OnPrepareResponse = content =>
                     {
-                        return;
-                    }
+                        IHeaderDictionary headers = content.Context.Response.Headers;
+                        StringValues contentType = headers["Content-Type"];
+                        if (contentType != "application/x-gzip" && !content.File.Name.EndsWith(".gz", StringComparison.CurrentCultureIgnoreCase))
+                        {
+                            return;
+                        }
 
-                    var mimeTypeProvider = new FileExtensionContentTypeProvider();
-                    var fileNameToTry = content.File.Name.Substring(0, content.File.Name.Length - 3);
-                    if (mimeTypeProvider.TryGetContentType(fileNameToTry, out var mimeType))
-                    {
-                        headers.Add("Content-Encoding", "gzip");
-                        headers["Content-Type"] = mimeType;
-                    }
-                },
-            });
+                        FileExtensionContentTypeProvider mimeTypeProvider = new();
+                        string fileNameToTry = content.File.Name.Substring(0, content.File.Name.Length - 3);
+                        if (mimeTypeProvider.TryGetContentType(fileNameToTry, out string? mimeType))
+                        {
+                            headers.Add("Content-Encoding", "gzip");
+                            headers["Content-Type"] = mimeType;
+                        }
+                    },
+                });
         }
 
         private static void DisableTraceMethod(IApplicationBuilder app)
         {
-            app.Use(async (context, next) =>
-            {
-                if (context.Request.Method == "TRACE")
+            app.Use(
+                async (context, next) =>
                 {
-                    context.Response.StatusCode = 405;
-                    return;
-                }
+                    if (context.Request.Method == "TRACE")
+                    {
+                        context.Response.StatusCode = 405;
+                        return;
+                    }
 
-                await next.Invoke().ConfigureAwait(true);
-            });
+                    await next.Invoke().ConfigureAwait(true);
+                });
         }
     }
 }

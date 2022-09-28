@@ -1,4 +1,4 @@
-import { CustomBannerError } from "@/models/bannerError";
+import { CustomBannerError } from "@/models/errors";
 import {
     Covid19LaboratoryOrder,
     LaboratoryOrderResult,

@@ -25,7 +25,7 @@ export default class ContactUsView extends Vue {
 </script>
 
 <template>
-    <div class="m-3 m-md-4 flex-grow-1 d-flex flex-column">
+    <div>
         <b-row>
             <b-col>
                 <BreadcrumbComponent :items="breadcrumbItems" />
@@ -46,7 +46,7 @@ export default class ContactUsView extends Vue {
                                 9 am to 5 pm on holidays.
                             </b-col>
                         </b-row>
-                        <b-row class="pb-4"> </b-row>
+                        <b-row class="pb-4"></b-row>
                         <b-row>
                             <b-col>
                                 <h4>Health Gateway</h4>

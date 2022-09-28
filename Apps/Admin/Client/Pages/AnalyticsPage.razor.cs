@@ -16,6 +16,7 @@
 namespace HealthGateway.Admin.Client.Pages;
 
 using System;
+using System.Globalization;
 using System.Net.Http;
 using System.Threading.Tasks;
 using Fluxor;
@@ -30,6 +31,9 @@ using Microsoft.JSInterop;
 public partial class AnalyticsPage : FluxorComponent
 {
     [Inject]
+    private IJSRuntime JsRuntime { get; set; } = default!;
+
+    [Inject]
     private IDispatcher Dispatcher { get; set; } = default!;
 
     [Inject]
@@ -40,7 +44,7 @@ public partial class AnalyticsPage : FluxorComponent
 
     private int InactiveDays { get; set; } = 90;
 
-    private int TimeOffset { get; set; } = (int)TimeZoneInfo.Local.GetUtcOffset(DateTime.UtcNow).TotalMinutes * -1;
+    private int TimeOffset { get; } = (int)TimeZoneInfo.Local.GetUtcOffset(DateTime.UtcNow).TotalMinutes * -1;
 
     private HttpContent AnalyticsStateData => this.AnalyticsState.Value.Result ?? default!;
 
@@ -98,6 +102,13 @@ public partial class AnalyticsPage : FluxorComponent
         this.Dispatcher.Dispatch(new AnalyticsActions.LoadInactiveUsersAction(this.InactiveDays, this.TimeOffset));
     }
 
+    private void GetUserFeedbackData()
+    {
+        this.ResetAnalyticsState();
+        this.ReportName = "UserFeedback";
+        this.Dispatcher.Dispatch(new AnalyticsActions.LoadUserFeedbackAction());
+    }
+
     private void DownloadAnalyticsReport(AnalyticsActions.LoadSuccessAction action)
     {
         Task.Run(async () => await this.DownloadReport(this.AnalyticsStateData).ConfigureAwait(true));
@@ -110,8 +121,8 @@ public partial class AnalyticsPage : FluxorComponent
 
     private async Task DownloadReport(HttpContent content)
     {
-        byte[]? fileBytes = await content.ReadAsByteArrayAsync().ConfigureAwait(true);
-        string? fileName = $"{this.ReportName}_export_{DateTime.Now.ToString("yyyy-MM-dd", System.Globalization.CultureInfo.InvariantCulture)}.csv";
-        await this.JSRuntime.InvokeAsync<object>("saveAsFile", fileName, Convert.ToBase64String(fileBytes)).ConfigureAwait(true);
+        byte[] fileBytes = await content.ReadAsByteArrayAsync().ConfigureAwait(true);
+        string fileName = $"{this.ReportName}_export_{DateTime.Now.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture)}.csv";
+        await this.JsRuntime.InvokeAsync<object>("saveAsFile", fileName, Convert.ToBase64String(fileBytes)).ConfigureAwait(true);
     }
 }

@@ -15,9 +15,7 @@
 //-------------------------------------------------------------------------
 namespace HealthGateway.GatewayApi.Models
 {
-    using HealthGateway.Common.Models;
     using HealthGateway.Database.Constants;
-    using HealthGateway.Database.Models;
 
     /// <summary>
     /// Represents a Dependent Model.
@@ -27,7 +25,7 @@ namespace HealthGateway.GatewayApi.Models
         /// <summary>
         /// Gets or sets the hdid of the dependent.
         /// </summary>
-        public DependentInformation DependentInformation { get; set; } = new DependentInformation();
+        public DependentInformation DependentInformation { get; set; } = new();
 
         /// <summary>
         /// Gets or sets the owner of the hdid.
@@ -48,38 +46,5 @@ namespace HealthGateway.GatewayApi.Models
         /// Gets or sets the version.
         /// </summary>
         public uint Version { get; set; }
-
-        /// <summary>
-        /// Constructs a new DependentModel based on a PatientModel.
-        /// </summary>
-        /// <param name="resourceDeleagate">The ResourceDelegate model.</param>
-        /// <param name="patientModel">The Patien Model to be converted.</param>
-        /// <returns>The Dependent Model.</returns>
-        public static DependentModel CreateFromModels(ResourceDelegate resourceDeleagate, PatientModel patientModel)
-        {
-            return new DependentModel()
-            {
-                OwnerId = resourceDeleagate.ResourceOwnerHdid,
-                DelegateId = resourceDeleagate.ProfileHdid,
-                ReasonCode = resourceDeleagate.ReasonCode,
-                Version = resourceDeleagate.Version,
-                DependentInformation = DependentInformation.FromPatientModel(patientModel),
-            };
-        }
-
-        /// <summary>
-        /// Creates a new ResourceDelegate model based on the dependent model.
-        /// </summary>
-        /// <returns>A new ResourceDelegate model.</returns>
-        public ResourceDelegate ToDBModel()
-        {
-            return new ResourceDelegate()
-            {
-                ResourceOwnerHdid = this.OwnerId,
-                ProfileHdid = this.DelegateId,
-                ReasonCode = this.ReasonCode,
-                Version = this.Version,
-            };
-        }
     }
 }

@@ -20,19 +20,24 @@ namespace HealthGateway.Admin.Server.Services
     using System.Globalization;
     using System.Linq;
     using System.Threading.Tasks;
-    using HealthGateway.Admin.Common.Constants;
     using HealthGateway.Common.Constants;
     using HealthGateway.Common.Data.Constants;
     using HealthGateway.Common.Data.Models;
+    using HealthGateway.Common.Data.Models.ErrorHandling;
     using HealthGateway.Common.Data.ViewModels;
     using HealthGateway.Common.Models;
     using HealthGateway.Common.Services;
+    using HealthGateway.Database.Constants;
     using HealthGateway.Database.Delegates;
     using HealthGateway.Database.Wrapper;
+    using Microsoft.Extensions.Logging;
+    using Microsoft.IdentityModel.Tokens;
+    using UserQueryType = HealthGateway.Admin.Common.Constants.UserQueryType;
 
-    /// <inheritdoc />
+    /// <inheritdoc/>
     public class DashboardService : IDashboardService
     {
+        private readonly ILogger logger;
         private readonly IResourceDelegateDelegate dependentDelegate;
         private readonly IUserProfileDelegate userProfileDelegate;
         private readonly IMessagingVerificationDelegate messagingVerificationDelegate;
@@ -42,18 +47,21 @@ namespace HealthGateway.Admin.Server.Services
         /// <summary>
         /// Initializes a new instance of the <see cref="DashboardService"/> class.
         /// </summary>
+        /// <param name="logger">Injected Logger Provider.</param>
         /// <param name="dependentDelegate">The dependent delegate to interact with the DB.</param>
         /// <param name="userProfileDelegate">The user profile delegate to interact with the DB.</param>
         /// <param name="messagingVerificationDelegate">The Messaging verification delegate to interact with the DB.</param>
         /// <param name="patientService">The patient service to lookup HDIDs by PHN.</param>
         /// <param name="ratingDelegate">The rating delegate.</param>
         public DashboardService(
+            ILogger<DashboardService> logger,
             IResourceDelegateDelegate dependentDelegate,
             IUserProfileDelegate userProfileDelegate,
             IMessagingVerificationDelegate messagingVerificationDelegate,
             IPatientService patientService,
             IRatingDelegate ratingDelegate)
         {
+            this.logger = logger;
             this.dependentDelegate = dependentDelegate;
             this.userProfileDelegate = userProfileDelegate;
             this.messagingVerificationDelegate = messagingVerificationDelegate;
@@ -61,43 +69,53 @@ namespace HealthGateway.Admin.Server.Services
             this.ratingDelegate = ratingDelegate;
         }
 
-        /// <inheritdoc />
+        /// <inheritdoc/>
         public IDictionary<DateTime, int> GetDailyRegisteredUsersCount(int timeOffset)
         {
-            // Javascript offset is positive # of minutes if the local timezone is behind UTC, and negative if it is ahead.
             TimeSpan ts = new(0, timeOffset, 0);
             return this.userProfileDelegate.GetDailyRegisteredUsersCount(ts);
         }
 
-        /// <inheritdoc />
+        /// <inheritdoc/>
         public IDictionary<DateTime, int> GetDailyLoggedInUsersCount(int timeOffset)
         {
-            // Javascript offset is positive # of minutes if the local timezone is behind UTC, and negative if it is ahead.
             TimeSpan ts = new(0, timeOffset, 0);
             return this.userProfileDelegate.GetDailyLoggedInUsersCount(ts);
         }
 
-        /// <inheritdoc />
+        /// <inheritdoc/>
         public IDictionary<DateTime, int> GetDailyDependentCount(int timeOffset)
         {
-            // Javascript offset is positive # of minutes if the local timezone is behind UTC, and negative if it is ahead.
             TimeSpan ts = new(0, timeOffset, 0);
             return this.dependentDelegate.GetDailyDependentCount(ts);
         }
 
-        /// <inheritdoc />
+        /// <inheritdoc/>
         public int GetRecurrentUserCount(int dayCount, string startPeriod, string endPeriod, int timeOffset)
         {
-            // Javascript offset is positive # of minutes if the local timezone is behind UTC, and negative if it is ahead.
-            TimeSpan ts = new(0, timeOffset, 0);
+            int offset = GetOffset(timeOffset);
+            TimeSpan ts = new(0, offset, 0);
+            this.logger.LogDebug("Timespan: {Timespan}", ts.ToString());
+
             DateTime startDate = DateTime.Parse(startPeriod, CultureInfo.InvariantCulture).Date.Add(ts);
             startDate = DateTime.SpecifyKind(startDate, DateTimeKind.Utc);
             DateTime endDate = DateTime.Parse(endPeriod, CultureInfo.InvariantCulture).Date.Add(ts).AddDays(1).AddMilliseconds(-1);
             endDate = DateTime.SpecifyKind(endDate, DateTimeKind.Utc);
+
+            this.logger.LogDebug(
+                "Start Period (Local): {StartPeriod} - End Period (Local): {EndPeriod} - StartDate (UTC): {StartDate} - End Date (UTC): {EndDate} - Timespan: {Timespan} - TimeOffset (UI): {TimeOffset} - Offset: {Offset}",
+                startPeriod,
+                endPeriod,
+                startDate,
+                endDate,
+                ts.ToString(),
+                timeOffset.ToString(CultureInfo.InvariantCulture),
+                offset.ToString(CultureInfo.InvariantCulture));
+
             return this.userProfileDelegate.GetRecurrentUserCount(dayCount, startDate, endDate);
         }
 
-        /// <inheritdoc />
+        /// <inheritdoc/>
         public RequestResult<IEnumerable<MessagingVerificationModel>> GetMessageVerifications(UserQueryType queryType, string queryString)
         {
             RequestResult<IEnumerable<MessagingVerificationModel>> retVal = new()
@@ -110,13 +128,17 @@ namespace HealthGateway.Admin.Server.Services
             string phn = string.Empty;
             switch (queryType)
             {
-                case UserQueryType.PHN:
+                case UserQueryType.Phn:
                     RequestResult<PatientModel> patientResult = Task.Run(async () => await this.patientService.GetPatient(queryString, PatientIdentifierType.PHN).ConfigureAwait(true)).Result;
                     if (patientResult.ResultStatus == ResultType.Success && patientResult.ResourcePayload != null)
                     {
                         string hdid = patientResult.ResourcePayload.HdId;
                         phn = patientResult.ResourcePayload.PersonalHealthNumber;
                         dbResult = this.messagingVerificationDelegate.GetUserMessageVerifications(Database.Constants.UserQueryType.HDID, hdid);
+                        if (!patientResult.ResourcePayload.ResponseCode.IsNullOrEmpty())
+                        {
+                            retVal.ResultError = GetWarningMessageForResponseCode(patientResult.ResourcePayload.ResponseCode);
+                        }
                     }
                     else
                     {
@@ -127,15 +149,19 @@ namespace HealthGateway.Admin.Server.Services
                 case UserQueryType.Email:
                     dbResult = this.messagingVerificationDelegate.GetUserMessageVerifications(Database.Constants.UserQueryType.Email, queryString);
                     break;
-                case UserQueryType.SMS:
+                case UserQueryType.Sms:
                     dbResult = this.messagingVerificationDelegate.GetUserMessageVerifications(Database.Constants.UserQueryType.SMS, queryString);
                     break;
-                case UserQueryType.HDID:
+                case UserQueryType.Hdid:
                     RequestResult<PatientModel> patientResultHdid = Task.Run(async () => await this.patientService.GetPatient(queryString).ConfigureAwait(true)).Result;
                     if (patientResultHdid.ResultStatus == ResultType.Success && patientResultHdid.ResourcePayload != null)
                     {
                         phn = patientResultHdid.ResourcePayload.PersonalHealthNumber;
                         dbResult = this.messagingVerificationDelegate.GetUserMessageVerifications(Database.Constants.UserQueryType.HDID, queryString);
+                        if (!patientResultHdid.ResourcePayload.ResponseCode.IsNullOrEmpty())
+                        {
+                            retVal.ResultError = GetWarningMessageForResponseCode(patientResultHdid.ResourcePayload.ResponseCode);
+                        }
                     }
                     else
                     {
@@ -145,38 +171,66 @@ namespace HealthGateway.Admin.Server.Services
                     break;
             }
 
-            if (dbResult != null && dbResult.Status == Database.Constants.DBStatusCode.Read)
+            if (dbResult != null && dbResult.Status == DBStatusCode.Read)
             {
                 retVal.ResultStatus = ResultType.Success;
-                List<MessagingVerificationModel> results = new();
-                if (dbResult.Payload != null)
+                if (retVal.ResultError != null)
                 {
-                    results.AddRange(dbResult.Payload.Select(MessagingVerificationModel.CreateFromDbModel));
-                    if (queryType == UserQueryType.HDID || queryType == UserQueryType.PHN)
-                    {
-                        foreach (MessagingVerificationModel? item in results)
-                        {
-                            item.PersonalHealthNumber = phn;
-                        }
-                    }
-
-                    retVal.ResourcePayload = results;
+                    retVal.ResultStatus = ResultType.ActionRequired;
                 }
+
+                List<MessagingVerificationModel> results = new();
+                results.AddRange(dbResult.Payload.Select(MessagingVerificationModel.CreateFromDbModel));
+                if (queryType == UserQueryType.Hdid || queryType == UserQueryType.Phn)
+                {
+                    foreach (MessagingVerificationModel? item in results)
+                    {
+                        item.PersonalHealthNumber = phn;
+                    }
+                }
+
+                retVal.ResourcePayload = results;
             }
 
             return retVal;
         }
 
-        /// <inheritdoc />
+        /// <inheritdoc/>
         public IDictionary<string, int> GetRatingSummary(string startPeriod, string endPeriod, int timeOffset)
         {
-            // Javascript offset is positive # of minutes if the local timezone is behind UTC, and negative if it is ahead.
-            TimeSpan ts = new(0, timeOffset, 0);
+            TimeSpan ts = new(0, GetOffset(timeOffset), 0);
             DateTime startDate = DateTime.Parse(startPeriod, CultureInfo.InvariantCulture).Date.Add(ts);
             startDate = DateTime.SpecifyKind(startDate, DateTimeKind.Utc);
             DateTime endDate = DateTime.Parse(endPeriod, CultureInfo.InvariantCulture).Date.Add(ts).AddDays(1).AddMilliseconds(-1);
             endDate = DateTime.SpecifyKind(endDate, DateTimeKind.Utc);
             return this.ratingDelegate.GetSummary(startDate, endDate);
+        }
+
+        /// <summary>
+        /// Returns an offset value that can be used to create a date in UTC.
+        /// </summary>
+        /// <param name="timeOffset">The offset from the client browser to UTC.</param>
+        /// <returns>The offset value used to create UTC.</returns>
+        private static int GetOffset(int timeOffset)
+        {
+            // If timeOffset is a negative value, then it means current timezone is [n] minutes behind UTC so we need to change this value to a positive when creating TimeSpan for DateTime object in UTC.
+            // If timeOffset is a positive value, then it means current timezone is [n] minutes ahead of UTC so we need to change this value to a negative when creating TimeSpan for DateTime object in UTC.
+            // If timeOffset is 0, then it means current timezone is UTC.
+            return timeOffset * -1;
+        }
+
+        private static RequestResultError GetWarningMessageForResponseCode(string resourcePayloadResponseCode)
+        {
+            string[] messageParts = resourcePayloadResponseCode.Split('|', StringSplitOptions.TrimEntries);
+
+            RequestResultError error = new()
+            {
+                ErrorCode = messageParts[0],
+                ResultMessage = messageParts[1],
+                ActionCode = ActionType.Warning,
+            };
+
+            return error;
         }
     }
 }

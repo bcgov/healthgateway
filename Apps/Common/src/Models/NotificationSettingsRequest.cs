@@ -27,7 +27,6 @@ namespace HealthGateway.Common.Models
         /// Initializes a new instance of the <see cref="NotificationSettingsRequest"/> class.
         /// </summary>
         public NotificationSettingsRequest()
-            : base()
         {
         }
 
@@ -42,13 +41,13 @@ namespace HealthGateway.Common.Models
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="NotificationSettingsRequest"/> class using only the email address and SMS number.
+        /// Initializes a new instance of the <see cref="NotificationSettingsRequest"/> class using only the email address and SMS
+        /// number.
         /// </summary>
         /// <param name="userProfile">The user profile.</param>
         /// <param name="emailAddress">Email address for the notification settings.</param>
         /// <param name="smsNumber">SMS Number for the notification settings.</param>
         public NotificationSettingsRequest(UserProfile userProfile, string? emailAddress, string? smsNumber)
-            : base()
         {
             this.SubjectHdid = userProfile.HdId;
             this.EmailAddress = emailAddress;

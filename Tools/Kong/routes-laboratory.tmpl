@@ -1,0 +1,37 @@
+      - name: laboratory-$KONG_NAMESPACE-public
+        methods:
+          - GET
+          - POST
+          - PUT
+          - DELETE
+        hosts:
+          - $KONG_NAMESPACE.api.gov.bc.ca
+        paths:
+          - /api/laboratoryservice/PublicLaboratory
+        strip_path: false
+        plugins:
+          - name: rate-limiting
+            tags: [ns.$KONG_NAMESPACE]
+            enabled: true
+            config:
+              fault_tolerant: true
+              hide_client_headers: false
+              limit_by: ip
+              minute: $IP_RATE_LIMIT
+            protocols:
+              - http
+              - https
+          - name: rate-limiting_902
+            tags: [ns.$KONG_NAMESPACE]
+            enabled: true
+            config:
+              fault_tolerant: true
+              hide_client_headers: false
+              limit_by: service
+              minute: $GLOBAL_RATE_LIMIT
+            protocols:
+              - http
+              - https
+        tags:
+          - OAS3_import
+          - ns.$KONG_NAMESPACE

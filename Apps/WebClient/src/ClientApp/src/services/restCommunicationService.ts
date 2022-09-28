@@ -1,8 +1,9 @@
 import { injectable } from "inversify";
 
+import { ServiceCode } from "@/constants/serviceCodes";
 import Communication, { CommunicationType } from "@/models/communication";
 import { ExternalConfiguration } from "@/models/configData";
-import { ServiceName } from "@/models/errorInterfaces";
+import { HttpError } from "@/models/errors";
 import RequestResult from "@/models/requestResult";
 import container from "@/plugins/container";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
@@ -15,7 +16,7 @@ import ErrorTranslator from "@/utility/errorTranslator";
 
 @injectable()
 export class RestCommunicationService implements ICommunicationService {
-    private logger: ILogger = container.get(SERVICE_IDENTIFIER.Logger);
+    private logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
     private readonly BASE_URI: string = "Communication";
     private http!: IHttpDelegate;
     private baseUri = "";
@@ -31,23 +32,23 @@ export class RestCommunicationService implements ICommunicationService {
     public getActive(
         type: CommunicationType
     ): Promise<RequestResult<Communication>> {
-        return new Promise((resolve, reject) => {
+        return new Promise((resolve, reject) =>
             this.http
                 .getWithCors<RequestResult<Communication>>(
                     `${this.baseUri}${this.BASE_URI}/${type}`
                 )
-                .then((communication) => {
-                    return resolve(communication);
-                })
-                .catch((err) => {
-                    this.logger.error(`getActive Communication error: ${err}`);
+                .then((communication) => resolve(communication))
+                .catch((err: HttpError) => {
+                    this.logger.error(
+                        `Error in RestCommunicationService.getActive()`
+                    );
                     return reject(
                         ErrorTranslator.internalNetworkError(
                             err,
-                            ServiceName.HealthGatewayUser
+                            ServiceCode.HealthGatewayUser
                         )
                     );
-                });
-        });
+                })
+        );
     }
 }

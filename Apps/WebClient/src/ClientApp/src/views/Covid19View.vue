@@ -20,10 +20,12 @@ import BreadcrumbItem from "@/models/breadcrumbItem";
 import type { WebClientConfiguration } from "@/models/configData";
 import CovidVaccineRecord from "@/models/covidVaccineRecord";
 import { DateWrapper } from "@/models/dateWrapper";
+import { ResultError } from "@/models/errors";
 import { ImmunizationEvent } from "@/models/immunizationModel";
-import { ResultError } from "@/models/requestResult";
+import { LoadStatus } from "@/models/storeOperations";
 import TimelineEntry from "@/models/timelineEntry";
 import User from "@/models/user";
+import VaccinationRecord from "@/models/vaccinationRecord";
 import VaccinationStatus from "@/models/vaccinationStatus";
 import container from "@/plugins/container";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
@@ -64,6 +66,11 @@ export default class Covid19View extends Vue {
         hdid: string;
     }) => Promise<CovidVaccineRecord>;
 
+    @Action("stopAuthenticatedVaccineRecordDownload", {
+        namespace: "vaccinationStatus",
+    })
+    stopAuthenticatedVaccineRecordDownload!: (params: { hdid: string }) => void;
+
     @Getter("webClient", { namespace: "config" })
     config!: WebClientConfiguration;
 
@@ -81,9 +88,6 @@ export default class Covid19View extends Vue {
     @Getter("authenticatedError", { namespace: "vaccinationStatus" })
     vaccinationStatusError!: ResultError | undefined;
 
-    @Getter("authenticatedStatusMessage", { namespace: "vaccinationStatus" })
-    vaccinationStatusMessage!: string;
-
     @Getter("isLoading", { namespace: "immunization" })
     isImmunizationLoading!: boolean;
 
@@ -96,18 +100,13 @@ export default class Covid19View extends Vue {
     @Getter("error", { namespace: "immunization" })
     immunizationError!: ResultError | undefined;
 
-    @Getter("authenticatedVaccineRecord", { namespace: "vaccinationStatus" })
-    vaccineRecord!: CovidVaccineRecord | undefined;
+    @Getter("authenticatedVaccineRecords", { namespace: "vaccinationStatus" })
+    vaccineRecords!: Map<string, VaccinationRecord>;
 
-    @Getter("authenticatedVaccineRecordIsLoading", {
+    @Getter("authenticatedVaccineRecordStatusChanges", {
         namespace: "vaccinationStatus",
     })
-    vaccineRecordIsLoading!: boolean;
-
-    @Getter("authenticatedVaccineRecordStatusMessage", {
-        namespace: "vaccinationStatus",
-    })
-    vaccineRecordStatusMessage!: string;
+    vaccineRecordStatusChanges!: number;
 
     @Ref("vaccineCardMessageModal")
     readonly vaccineCardMessageModal!: MessageModalComponent;
@@ -149,6 +148,17 @@ export default class Covid19View extends Vue {
         return this.vaccinationState === VaccinationState.PartiallyVaccinated;
     }
 
+    private get isVaccineRecordDownloading(): boolean {
+        if (this.vaccineRecordStatusChanges > 0) {
+            const vaccinationRecord: VaccinationRecord | undefined =
+                this.getVaccinationRecord();
+            if (vaccinationRecord !== undefined) {
+                return vaccinationRecord.status === LoadStatus.REQUESTED;
+            }
+        }
+        return false;
+    }
+
     private get isVaccinationNotFound(): boolean {
         return this.vaccinationState === VaccinationState.NotFound;
     }
@@ -158,11 +168,17 @@ export default class Covid19View extends Vue {
             return "Downloading....";
         }
 
-        if (this.vaccineRecordIsLoading) {
-            return this.vaccineRecordStatusMessage;
+        const vaccinationRecord: VaccinationRecord | undefined =
+            this.getVaccinationRecord();
+
+        if (
+            this.isVaccineRecordDownloading &&
+            vaccinationRecord !== undefined
+        ) {
+            return vaccinationRecord.statusMessage;
         }
 
-        return this.vaccinationStatusMessage;
+        return "";
     }
 
     private get downloadButtonShown(): boolean {
@@ -191,7 +207,7 @@ export default class Covid19View extends Vue {
         return (
             this.isVaccinationStatusLoading ||
             this.isHistoryLoading ||
-            this.vaccineRecordIsLoading ||
+            this.isVaccineRecordDownloading ||
             this.isDownloading
         );
     }
@@ -213,7 +229,7 @@ export default class Covid19View extends Vue {
             : DateWrapper.format(date, "yyyy-MMM-dd");
     }
 
-    private showImmunizationHistory(show: boolean) {
+    private showImmunizationHistory(show: boolean): void {
         if (show) {
             this.fetchHistoryData();
         }
@@ -232,55 +248,68 @@ export default class Covid19View extends Vue {
         });
     }
 
-    private fetchVaccineCardData() {
+    private fetchVaccineCardData(): void {
         this.retrieveVaccineStatus({ hdid: this.user.hdid })
-            .then(() => {
+            .then(() =>
                 SnowPlow.trackEvent({
                     action: "view_card",
                     text: "COVID Card",
-                });
-            })
-            .catch((err) => {
-                this.logger.error(`Error loading COVID-19 data: ${err}`);
-            });
+                })
+            )
+            .catch((err) =>
+                this.logger.error(`Error loading COVID-19 data: ${err}`)
+            );
     }
 
-    private fetchHistoryData() {
-        this.retrieveImmunizations({ hdid: this.user.hdid }).catch((err) => {
-            this.logger.error(`Error loading immunization data: ${err}`);
-        });
+    private fetchHistoryData(): void {
+        this.retrieveImmunizations({ hdid: this.user.hdid }).catch((err) =>
+            this.logger.error(`Error loading immunization data: ${err}`)
+        );
     }
 
-    @Watch("vaccineRecord")
-    private saveVaccinePdf() {
-        if (this.vaccineRecord !== undefined) {
-            const mimeType = this.vaccineRecord.document.mediaType;
-            const downloadLink = `data:${mimeType};base64,${this.vaccineRecord.document.data}`;
+    private getVaccinationRecord(): VaccinationRecord | undefined {
+        return this.vaccineRecords.get(this.user.hdid);
+    }
+
+    @Watch("vaccineRecordStatusChanges")
+    private saveVaccinePdf(): void {
+        this.logger.info(`Downloading PDF for hdid: ${this.user.hdid}`);
+        const vaccinationRecord: VaccinationRecord | undefined =
+            this.getVaccinationRecord();
+        if (
+            vaccinationRecord !== undefined &&
+            vaccinationRecord.hdid === this.user.hdid &&
+            vaccinationRecord.status === LoadStatus.LOADED &&
+            vaccinationRecord.download
+        ) {
+            const mimeType = vaccinationRecord.record.document.mediaType;
+            const downloadLink = `data:${mimeType};base64,${vaccinationRecord.record.document.data}`;
             fetch(downloadLink).then((res) => {
                 SnowPlow.trackEvent({
                     action: "download_card",
                     text: "COVID Card PDF",
                 });
-                res.blob().then((blob) => {
-                    saveAs(blob, "ProvincialVaccineProof.pdf");
-                });
+                res.blob().then((blob) =>
+                    saveAs(blob, "ProvincialVaccineProof.pdf")
+                );
+            });
+            this.stopAuthenticatedVaccineRecordDownload({
+                hdid: this.user.hdid,
             });
         }
     }
 
-    private retrieveVaccinePdf() {
+    private retrieveVaccinePdf(): void {
         this.retrieveAuthenticatedVaccineRecord({
             hdid: this.user.hdid,
-        }).catch((err) => {
-            this.logger.error(
-                `Error loading authenticated record data: ${err}`
-            );
-        });
+        }).catch((err) =>
+            this.logger.error(`Error loading authenticated record data: ${err}`)
+        );
     }
 
-    private download() {
-        const printingArea: HTMLElement | null =
-            document.querySelector(".vaccine-card");
+    private download(): void {
+        const printingArea =
+            document.querySelector<HTMLElement>(".vaccine-card");
         if (printingArea !== null) {
             this.isDownloading = true;
             SnowPlow.trackEvent({
@@ -294,11 +323,13 @@ export default class Covid19View extends Vue {
             })
                 .then((canvas) => {
                     const dataUrl = canvas.toDataURL();
-                    fetch(dataUrl).then((res) => {
-                        res.blob().then((blob) => {
-                            saveAs(blob, "ProvincialVaccineProof.png");
-                        });
-                    });
+                    fetch(dataUrl).then((res) =>
+                        res
+                            .blob()
+                            .then((blob) =>
+                                saveAs(blob, "ProvincialVaccineProof.png")
+                            )
+                    );
                 })
                 .finally(() => {
                     this.isDownloading = false;
@@ -306,15 +337,15 @@ export default class Covid19View extends Vue {
         }
     }
 
-    private showVaccineCardMessageModal() {
+    private showVaccineCardMessageModal(): void {
         this.vaccineCardMessageModal.showModal();
     }
 
-    private showConfirmationModal() {
+    private showConfirmationModal(): void {
         this.messageModal.showModal();
     }
 
-    private created() {
+    private created(): void {
         this.logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
         this.fetchVaccineCardData();
     }
@@ -323,10 +354,7 @@ export default class Covid19View extends Vue {
 
 <template>
     <div class="background flex-grow-1 d-flex flex-column">
-        <BreadcrumbComponent
-            class="mt-3 mt-md-4 ml-3 ml-md-4"
-            :items="breadcrumbItems"
-        />
+        <BreadcrumbComponent :items="breadcrumbItems" />
         <loading :is-loading="isLoading" :text="loadingStatusMessage" />
         <div
             v-if="!isVaccineCardLoading && !vaccinationStatusError"
@@ -471,7 +499,9 @@ export default class Covid19View extends Vue {
                                         Dose {{ index + 1 }}
                                     </div>
                                 </b-col>
-                                <b-col><hr /></b-col>
+                                <b-col>
+                                    <hr />
+                                </b-col>
                             </b-row>
                             <b-row no-gutters class="justify-content-end">
                                 <b-col>
@@ -521,6 +551,7 @@ export default class Covid19View extends Vue {
 
 <style lang="scss" scoped>
 @import "@/assets/scss/_variables.scss";
+
 .vaccine-card {
     max-width: 438px;
     color-adjust: exact;
@@ -530,9 +561,11 @@ export default class Covid19View extends Vue {
         border-bottom-right-radius: 0.25rem;
     }
 }
+
 .immunization-history {
     max-width: 700px;
 }
+
 .primary {
     color: $primary;
 }

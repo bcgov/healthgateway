@@ -1,9 +1,10 @@
 import { injectable } from "inversify";
 
 import { ResultType } from "@/constants/resulttype";
+import { ServiceCode } from "@/constants/serviceCodes";
 import { Dictionary } from "@/models/baseTypes";
 import { ExternalConfiguration } from "@/models/configData";
-import { ServiceName } from "@/models/errorInterfaces";
+import { HttpError } from "@/models/errors";
 import MedicationRequest from "@/models/MedicationRequest";
 import MedicationStatementHistory from "@/models/medicationStatementHistory";
 import RequestResult from "@/models/requestResult";
@@ -18,7 +19,7 @@ import ErrorTranslator from "@/utility/errorTranslator";
 
 @injectable()
 export class RestMedicationService implements IMedicationService {
-    private logger: ILogger = container.get(SERVICE_IDENTIFIER.Logger);
+    private logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
     private readonly MEDICATION_STATEMENT_BASE_URI: string =
         "MedicationStatement";
     private readonly MEDICATION_REQUEST_BASE_URI: string = "MedicationRequest";
@@ -26,7 +27,6 @@ export class RestMedicationService implements IMedicationService {
     private http!: IHttpDelegate;
     private isMedicationEnabled = false;
     private isMedicationRequestEnabled = false;
-    private readonly FETCH_ERROR = "Fetch error:";
 
     public initialize(
         config: ExternalConfiguration,
@@ -63,17 +63,15 @@ export class RestMedicationService implements IMedicationService {
                     `${this.baseUri}${this.MEDICATION_STATEMENT_BASE_URI}/${hdid}`,
                     headers
                 )
-                .then((requestResult) => {
-                    resolve(requestResult);
-                })
-                .catch((err) => {
+                .then((requestResult) => resolve(requestResult))
+                .catch((err: HttpError) => {
                     this.logger.error(
-                        `getPatientMedicationStatementHistory ${this.FETCH_ERROR}: ${err}`
+                        `Error in RestMedicationService.getPatientMedicationStatementHistory()`
                     );
                     reject(
                         ErrorTranslator.internalNetworkError(
                             err,
-                            ServiceName.Medication
+                            ServiceCode.Medication
                         )
                     );
                 });
@@ -98,17 +96,15 @@ export class RestMedicationService implements IMedicationService {
                 .get<RequestResult<MedicationRequest[]>>(
                     `${this.baseUri}${this.MEDICATION_REQUEST_BASE_URI}/${hdid}`
                 )
-                .then((requestResult) => {
-                    resolve(requestResult);
-                })
-                .catch((err) => {
+                .then((requestResult) => resolve(requestResult))
+                .catch((err: HttpError) => {
                     this.logger.error(
-                        `getPatientMedicationRequest ${this.FETCH_ERROR}: ${err}`
+                        `Error in RestMedicationService.getPatientMedicationRequest()`
                     );
                     reject(
                         ErrorTranslator.internalNetworkError(
                             err,
-                            ServiceName.Medication
+                            ServiceCode.Medication
                         )
                     );
                 });

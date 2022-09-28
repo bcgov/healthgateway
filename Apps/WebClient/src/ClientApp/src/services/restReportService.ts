@@ -1,7 +1,8 @@
 import { injectable } from "inversify";
 
+import { ServiceCode } from "@/constants/serviceCodes";
 import { ExternalConfiguration } from "@/models/configData";
-import { ServiceName } from "@/models/errorInterfaces";
+import { HttpError } from "@/models/errors";
 import Report from "@/models/report";
 import ReportRequest from "@/models/reportRequest";
 import RequestResult from "@/models/requestResult";
@@ -12,7 +13,7 @@ import ErrorTranslator from "@/utility/errorTranslator";
 
 @injectable()
 export class RestReportService implements IReportService {
-    private logger: ILogger = container.get(SERVICE_IDENTIFIER.Logger);
+    private logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
     private readonly REPORT_BASE_URI: string = "Report";
     private http!: IHttpDelegate;
     private baseUri = "";
@@ -28,24 +29,24 @@ export class RestReportService implements IReportService {
     public generateReport(
         reportRequest: ReportRequest
     ): Promise<RequestResult<Report>> {
-        return new Promise((resolve, reject) => {
+        return new Promise((resolve, reject) =>
             this.http
                 .post<RequestResult<Report>>(
                     `${this.baseUri}${this.REPORT_BASE_URI}`,
                     reportRequest
                 )
-                .then((result) => {
-                    return resolve(result);
-                })
-                .catch((err) => {
-                    this.logger.error(`generateReport Fetch error: ${err}`);
+                .then((result) => resolve(result))
+                .catch((err: HttpError) => {
+                    this.logger.error(
+                        `Error in RestReportService.generateReport()`
+                    );
                     reject(
                         ErrorTranslator.internalNetworkError(
                             err,
-                            ServiceName.Report
+                            ServiceCode.Report
                         )
                     );
-                });
-        });
+                })
+        );
     }
 }

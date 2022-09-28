@@ -28,7 +28,7 @@ namespace HealthGateway.Database.Delegates
     using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.Logging;
 
-    /// <inheritdoc />
+    /// <inheritdoc/>
     [ExcludeFromCodeCoverage]
     public class DBMessagingVerificationDelegate : IMessagingVerificationDelegate
     {
@@ -48,7 +48,7 @@ namespace HealthGateway.Database.Delegates
             this.dbContext = dbContext;
         }
 
-        /// <inheritdoc />
+        /// <inheritdoc/>
         public Guid Insert(MessagingVerification messageVerification)
         {
             this.logger.LogTrace($"Inserting message verification to DB... {JsonSerializer.Serialize(messageVerification)}");
@@ -56,19 +56,20 @@ namespace HealthGateway.Database.Delegates
             {
                 throw new ArgumentException("Email cannot be null when verification type is Email");
             }
-            else if (messageVerification.VerificationType == MessagingVerificationType.SMS &&
+
+            if (messageVerification.VerificationType == MessagingVerificationType.SMS &&
                 (string.IsNullOrWhiteSpace(messageVerification.SMSNumber) || string.IsNullOrWhiteSpace(messageVerification.SMSValidationCode)))
             {
                 throw new ArgumentException("SMSNumber/SMSValidationCode cannot be null or empty when verification type is SMS");
             }
 
-            this.dbContext.Add<MessagingVerification>(messageVerification);
+            this.dbContext.Add(messageVerification);
             this.dbContext.SaveChanges();
             this.logger.LogDebug($"Finished inserting message verification to DB. {messageVerification.Id}");
             return messageVerification.Id;
         }
 
-        /// <inheritdoc />
+        /// <inheritdoc/>
         public MessagingVerification? GetLastByInviteKey(Guid inviteKey)
         {
             this.logger.LogTrace($"Getting email message verification from DB... {inviteKey}");
@@ -83,10 +84,10 @@ namespace HealthGateway.Database.Delegates
             return retVal;
         }
 
-        /// <inheritdoc />
+        /// <inheritdoc/>
         public IEnumerable<MessagingVerification> GetAllEmail()
         {
-            this.logger.LogTrace($"Getting all email message verifications from DB...");
+            this.logger.LogTrace("Getting all email message verifications from DB...");
             IEnumerable<MessagingVerification> retVal = this.dbContext
                 .MessagingVerification
                 .Where(p => p.VerificationType == MessagingVerificationType.Email)
@@ -96,16 +97,16 @@ namespace HealthGateway.Database.Delegates
             return retVal;
         }
 
-        /// <inheritdoc />
+        /// <inheritdoc/>
         public void Update(MessagingVerification messageVerification)
         {
             this.logger.LogTrace($"Updating email message verification in DB... {JsonSerializer.Serialize(messageVerification)}");
-            this.dbContext.Update<MessagingVerification>(messageVerification);
+            this.dbContext.Update(messageVerification);
             this.dbContext.SaveChanges();
             this.logger.LogDebug($"Finished updating email message verification in DB. {messageVerification.Id}");
         }
 
-        /// <inheritdoc />
+        /// <inheritdoc/>
         public MessagingVerification? GetLastForUser(string hdid, string messagingVerificationType)
         {
             this.logger.LogTrace($"Getting last messaging verification from DB for user... {hdid}");
@@ -125,7 +126,7 @@ namespace HealthGateway.Database.Delegates
             return retVal;
         }
 
-        /// <inheritdoc />
+        /// <inheritdoc/>
         public void Expire(MessagingVerification messageVerification, bool markDeleted)
         {
             messageVerification.ExpireDate = DateTime.UtcNow;
@@ -135,7 +136,7 @@ namespace HealthGateway.Database.Delegates
             this.logger.LogDebug("Finished Expiring messaging verification from DB.");
         }
 
-        /// <inheritdoc />
+        /// <inheritdoc/>
         public DBResult<IEnumerable<MessagingVerification>> GetUserMessageVerifications(UserQueryType queryType, string queryString)
         {
             IQueryable<MessagingVerification> query;
@@ -155,8 +156,9 @@ namespace HealthGateway.Database.Delegates
             }
 
             IList<MessagingVerification> verifications = query.Include(mv => mv.Email)
-                                                              .OrderByDescending(mv => mv.CreatedDateTime)
-                                                              .AsNoTracking().ToList();
+                .OrderByDescending(mv => mv.CreatedDateTime)
+                .AsNoTracking()
+                .ToList();
             DBResult<IEnumerable<MessagingVerification>> result = new()
             {
                 Payload = verifications,

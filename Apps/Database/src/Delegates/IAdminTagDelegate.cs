@@ -15,6 +15,7 @@
 //-------------------------------------------------------------------------
 namespace HealthGateway.Database.Delegates
 {
+    using System;
     using System.Collections.Generic;
     using HealthGateway.Database.Models;
     using HealthGateway.Database.Wrapper;
@@ -29,13 +30,28 @@ namespace HealthGateway.Database.Delegates
         /// </summary>
         /// <param name="tag">The admin tag to be added to the database.</param>
         /// <param name="commit">if true the transaction is persisted immediately.</param>
-        /// <returns>A admin tag wrapped in a DBResult.</returns>
+        /// <returns>An admin tag wrapped in a DBResult.</returns>
         DBResult<AdminTag> Add(AdminTag tag, bool commit = true);
+
+        /// <summary>
+        /// Delete the given admin tag.
+        /// </summary>
+        /// <param name="tag">The admin tag to be deleted in the database.</param>
+        /// <param name="commit">if true the transaction is persisted immediately.</param>
+        /// <returns>An admin tag wrapped in a DBResult.</returns>
+        DBResult<AdminTag> Delete(AdminTag tag, bool commit = true);
 
         /// <summary>
         /// Gets a list of admin tags ordered by the name ascending.
         /// </summary>
         /// <returns>An IEnumerable of AdminTag wrapped in a DBResult.</returns>
         DBResult<IEnumerable<AdminTag>> GetAll();
+
+        /// <summary>
+        /// Gets a list of admin tags by ids.
+        /// </summary>
+        /// <param name="adminTagIds">The admin tag ids to search on.</param>
+        /// <returns>An IEnumerable of AdminTag wrapped in a DBResult.</returns>
+        DBResult<IEnumerable<AdminTag>> GetAdminTags(ICollection<Guid> adminTagIds);
     }
 }

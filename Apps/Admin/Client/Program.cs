@@ -24,12 +24,16 @@ namespace HealthGateway.Admin.Client
     using Fluxor;
     using HealthGateway.Admin.Client.Authorization;
     using HealthGateway.Admin.Client.Services;
+    using Microsoft.AspNetCore.Components;
     using Microsoft.AspNetCore.Components.Web;
     using Microsoft.AspNetCore.Components.WebAssembly.Authentication;
     using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
+    using Microsoft.AspNetCore.WebUtilities;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Logging;
+    using Microsoft.Extensions.Primitives;
+    using MudBlazor;
     using MudBlazor.Services;
     using Refit;
 
@@ -37,17 +41,17 @@ namespace HealthGateway.Admin.Client
     /// The entry point for the project.
     /// </summary>
     [ExcludeFromCodeCoverage]
-    [System.Diagnostics.CodeAnalysis.SuppressMessage("Maintainability", "CA1506:Avoid excessive class coupling", Justification = "Team decision")]
+    [SuppressMessage("Maintainability", "CA1506:Avoid excessive class coupling", Justification = "Team decision")]
     public static class Program
     {
-        /// <summary>.
+        /// <summary>
         /// The entry point for the class.
         /// </summary>
         /// <param name="args">The command line arguments to be passed in.</param>
         /// <returns>A task which represents the exit of the application.</returns>
         public static async Task Main(string[] args)
         {
-            WebAssemblyHostBuilder? builder = WebAssemblyHostBuilder.CreateDefault(args);
+            WebAssemblyHostBuilder builder = WebAssemblyHostBuilder.CreateDefault(args);
             builder.RootComponents.Add<App>("#app");
             builder.RootComponents.Add<HeadOutlet>("head::after");
 
@@ -57,64 +61,74 @@ namespace HealthGateway.Admin.Client
             // Configure Logging
             IConfigurationSection loggerConfig = builder.Configuration.GetSection("Logging");
             builder.Services
-                        .AddLogging(builder =>
-                        {
-                            builder.AddConfiguration(loggerConfig);
-                        });
+                .AddLogging(loggingBuilder => loggingBuilder.AddConfiguration(loggerConfig));
 
             // Enable Mud Blazor component services
-            builder.Services.AddMudServices();
+            builder.Services.AddMudServices(config => config.SnackbarConfiguration.PositionClass = Defaults.Classes.Position.BottomRight);
+
+            WebAssemblyHost[] app = new WebAssemblyHost[1];
 
             // Configure Authentication and Authorization
-            builder.Services.AddOidcAuthentication(options =>
-            {
-                builder.Configuration.Bind("Oidc", options.ProviderOptions);
-                options.ProviderOptions.ResponseType = "code";
-                options.UserOptions.RoleClaim = "role";
-            }).AddAccountClaimsPrincipalFactory<RolesClaimsPrincipalFactory>();
+            builder.Services.AddOidcAuthentication(
+                    options =>
+                    {
+                        NavigationManager navigationManager = app[0].Services.GetRequiredService<NavigationManager>();
+                        Uri uri = navigationManager.ToAbsoluteUri(navigationManager.Uri);
+
+                        // If there is an authProvider query string value then set the hint.
+                        if (QueryHelpers.ParseQuery(uri.Query).TryGetValue("authProvider", out StringValues authProvider))
+                        {
+                            options.ProviderOptions.AdditionalProviderParameters.Add("kc_idp_hint", authProvider.ToString());
+                        }
+
+                        builder.Configuration.Bind("Oidc", options.ProviderOptions);
+                        options.ProviderOptions.ResponseType = "code";
+                        options.UserOptions.RoleClaim = "role";
+                    })
+                .AddAccountClaimsPrincipalFactory<RolesClaimsPrincipalFactory>();
 
             // Configure State Management
             Assembly currentAssembly = typeof(Program).Assembly;
-            builder.Services.AddFluxor(options => options
-                                    .ScanAssemblies(currentAssembly)
-                                    .UseReduxDevTools(rdt =>
-                                    {
-                                        rdt.Name = "Health Gateway Admin";
-                                    }));
+            builder.Services.AddFluxor(
+                options => options
+                    .ScanAssemblies(currentAssembly)
+                    .UseReduxDevTools(rdt => rdt.Name = "Health Gateway Admin"));
 
             builder.Services.AddBlazoredLocalStorage();
 
-            await builder.Build().RunAsync().ConfigureAwait(true);
+            app[0] = builder.Build();
+            await app[0].RunAsync().ConfigureAwait(true);
         }
 
         private static void RegisterRefitClients(this WebAssemblyHostBuilder builder)
         {
-            RegisterRefitClient<IAnalyticsApi>(builder, "CsvExport", true);
-            RegisterRefitClient<ICommunicationsApi>(builder, "Communication", true);
-            RegisterRefitClient<IConfigurationApi>(builder, "Configuration", false);
-            RegisterRefitClient<IDashboardApi>(builder, "Dashboard", true);
-            RegisterRefitClient<ISupportApi>(builder, "Support", true);
+            RegisterRefitClient<IAnalyticsApi>(builder, "v1/api/CsvExport", true);
+            RegisterRefitClient<ICommunicationsApi>(builder, "v1/api/Communication", true);
+            RegisterRefitClient<IConfigurationApi>(builder, "v1/api/Configuration", false);
+            RegisterRefitClient<IDashboardApi>(builder, "v1/api/Dashboard", true);
+            RegisterRefitClient<ISupportApi>(builder, "v1/api/Support", true);
+            RegisterRefitClient<ITagApi>(builder, "v1/api/Tag", true);
+            RegisterRefitClient<IUserFeedbackApi>(builder, "v1/api/UserFeedback", true);
         }
 
-        private static void RegisterRefitClient<T>(WebAssemblyHostBuilder builder, string configKey, bool isAuthorized)
+        private static void RegisterRefitClient<T>(WebAssemblyHostBuilder builder, string servicePath, bool isAuthorized)
             where T : class
         {
             Uri baseAddress = new(builder.HostEnvironment.BaseAddress);
-            builder.Services.AddTransient(sp => new HttpClient { BaseAddress = baseAddress });
+            builder.Services.AddTransient(_ => new HttpClient { BaseAddress = baseAddress });
 
-            string servicePath = builder.Configuration.GetSection("Services").GetValue<string>(configKey);
             Uri address = new(baseAddress, servicePath);
 
             if (isAuthorized)
             {
                 builder.Services.AddRefitClient<T>()
-                    .ConfigureHttpClient(c => { c.BaseAddress = address; })
+                    .ConfigureHttpClient(c => c.BaseAddress = address)
                     .AddHttpMessageHandler(sp => ConfigureAuthorization(sp, address.AbsoluteUri));
                 return;
             }
 
             builder.Services.AddRefitClient<T>()
-                 .ConfigureHttpClient(c => { c.BaseAddress = address; });
+                .ConfigureHttpClient(c => c.BaseAddress = address);
         }
 
         private static DelegatingHandler ConfigureAuthorization(IServiceProvider serviceProvider, string address)

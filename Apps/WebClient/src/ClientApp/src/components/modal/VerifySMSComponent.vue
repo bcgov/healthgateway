@@ -5,8 +5,10 @@ import { Component, Emit, Prop, Watch } from "vue-property-decorator";
 import { Action, Getter } from "vuex-class";
 
 import LoadingComponent from "@/components/LoadingComponent.vue";
+import TooManyRequestsComponent from "@/components/TooManyRequestsComponent.vue";
 import type { WebClientConfiguration } from "@/models/configData";
 import { DateWrapper } from "@/models/dateWrapper";
+import { instanceOfResultError, ResultError } from "@/models/errors";
 import User from "@/models/user";
 import container from "@/plugins/container";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
@@ -15,16 +17,19 @@ import { ILogger, IUserProfileService } from "@/services/interfaces";
 @Component({
     components: {
         LoadingComponent,
-        countdown: VueCountdown,
+        VueCountdown,
+        TooManyRequestsComponent,
     },
 })
 export default class VerifySMSComponent extends Vue {
-    @Prop() smsNumber!: string;
+    @Prop()
+    smsNumber!: string;
 
-    @Getter("user", { namespace: "user" }) user!: User;
+    @Action("setTooManyRequestsError", { namespace: "errorBanner" })
+    setTooManyRequestsError!: (params: { key: string }) => void;
 
-    @Getter("webClient", { namespace: "config" })
-    config!: WebClientConfiguration;
+    @Action("setTooManyRequestsWarning", { namespace: "errorBanner" })
+    setTooManyRequestsWarning!: (params: { key: string }) => void;
 
     @Action("updateSMSResendDateTime", { namespace: "user" })
     updateSMSResendDateTime!: ({
@@ -35,8 +40,14 @@ export default class VerifySMSComponent extends Vue {
         dateTime: DateWrapper;
     }) => void;
 
+    @Getter("webClient", { namespace: "config" })
+    config!: WebClientConfiguration;
+
     @Getter("smsResendDateTime", { namespace: "user" })
     smsResendDateTime?: DateWrapper;
+
+    @Getter("user", { namespace: "user" })
+    user!: User;
 
     private logger!: ILogger;
     private userProfileService!: IUserProfileService;
@@ -52,18 +63,18 @@ export default class VerifySMSComponent extends Vue {
     private error = false;
 
     @Watch("smsResendDateTime")
-    private onSMSResendDateTimeChanged() {
+    private onSMSResendDateTimeChanged(): void {
         this.setResendTimeout();
     }
 
-    private created() {
+    private created(): void {
         this.logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
         this.userProfileService = container.get<IUserProfileService>(
             SERVICE_IDENTIFIER.UserProfileService
         );
     }
 
-    private mounted() {
+    private mounted(): void {
         this.setResendTimeout();
     }
 
@@ -81,32 +92,30 @@ export default class VerifySMSComponent extends Vue {
             return;
         }
 
-        let smsTimeWhenEnabled: DateWrapper = this.smsResendDateTime.add({
+        const smsTimeWhenEnabled = this.smsResendDateTime.add({
             minutes: this.config.timeouts.resendSMS,
         });
 
-        let now = new DateWrapper();
+        const now = new DateWrapper();
         this.allowRetry = smsTimeWhenEnabled.isBefore(now);
         if (!this.allowRetry) {
-            let millisecondsToExpire =
+            const millisecondsToExpire =
                 smsTimeWhenEnabled.diff(now).milliseconds;
-            setTimeout(() => {
-                this.allowRetry = true;
-            }, millisecondsToExpire);
+            setTimeout(() => (this.allowRetry = true), millisecondsToExpire);
         }
     }
 
     @Emit()
-    private submit() {
+    private submit(): void {
         this.isVisible = false;
     }
 
     @Emit()
-    private cancel() {
+    private cancel(): void {
         this.hideModal();
     }
 
-    private handleOk(bvModalEvt: Event) {
+    private handleOk(bvModalEvt: Event): void {
         // Prevent modal from closing
         bvModalEvt.preventDefault();
 
@@ -114,13 +123,11 @@ export default class VerifySMSComponent extends Vue {
         this.handleSubmit();
     }
 
-    private handleSubmit() {
+    private handleSubmit(): void {
         this.submit();
 
         // Hide the modal manually
-        this.$nextTick(() => {
-            this.hideModal();
-        });
+        this.$nextTick(() => this.hideModal());
     }
 
     private verifySMS(): void {
@@ -134,9 +141,13 @@ export default class VerifySMSComponent extends Vue {
                     this.handleSubmit();
                 }
             })
-            .catch((err) => {
+            .catch((err: ResultError) => {
                 this.logger.error(err);
-                this.error = true;
+                if (err.statusCode === 429) {
+                    this.setTooManyRequestsError({ key: "verifySmsModal" });
+                } else {
+                    this.error = true;
+                }
             })
             .finally(() => {
                 this.smsVerificationCode = "";
@@ -152,13 +163,19 @@ export default class VerifySMSComponent extends Vue {
         });
         this.userProfileService
             .updateSMSNumber(this.user.hdid, this.smsNumber)
-            .then(() => {
-                setTimeout(() => {
-                    this.smsVerificationSent = false;
-                }, 5000);
-            })
-            .catch((err) => {
-                this.logger.error(`updateSMSNumber with error: ${err}`);
+            .then(() =>
+                setTimeout(() => (this.smsVerificationSent = false), 5000)
+            )
+            .catch((error) => {
+                if (instanceOfResultError(error) && error.statusCode === 429) {
+                    this.setTooManyRequestsWarning({ key: "page" });
+                } else {
+                    this.addError({
+                        errorType: ErrorType.Update,
+                        source: ErrorSourceType.Profile,
+                        traceId: undefined,
+                    });
+                }
             });
     }
 
@@ -184,9 +201,9 @@ export default class VerifySMSComponent extends Vue {
         }
     }
 
-    private formatPhoneNumber(phoneNumber: string) {
-        var cleaned = ("" + phoneNumber).replace(/\D/g, "");
-        var match = cleaned.match(/^(\d{3})(\d{3})(\d{4})$/);
+    private formatPhoneNumber(phoneNumber: string): string | null {
+        let cleaned = ("" + phoneNumber).replace(/\D/g, "");
+        let match = cleaned.match(/^(\d{3})(\d{3})(\d{4})$/);
         if (match) {
             return "(" + match[1] + ") " + match[2] + "-" + match[3];
         }
@@ -211,6 +228,7 @@ export default class VerifySMSComponent extends Vue {
         <b-row>
             <b-col>
                 <form>
+                    <TooManyRequestsComponent location="verifySmsModal" />
                     <b-row v-if="error">
                         <b-col class="text-center">
                             An unexpected error has occurred. Please try
@@ -278,7 +296,7 @@ export default class VerifySMSComponent extends Vue {
                     </hg-button>
                 </b-col>
                 <b-col v-if="!allowRetry">
-                    <countdown :time="getTimeout()">
+                    <VueCountdown :time="getTimeout()">
                         <template slot-scope="props"
                             >Your code has been sent. You can resend after
                             <span data-testid="countdownText"
@@ -288,7 +306,7 @@ export default class VerifySMSComponent extends Vue {
                                 {{ props.seconds }}s</span
                             ></template
                         >
-                    </countdown>
+                    </VueCountdown>
                 </b-col>
                 <b-col v-if="tooManyRetries">
                     <hg-button
@@ -303,14 +321,16 @@ export default class VerifySMSComponent extends Vue {
                 </b-col>
             </b-row>
         </template>
-        <LoadingComponent :is-loading="isLoading"></LoadingComponent>
+        <LoadingComponent :is-loading="isLoading" />
     </b-modal>
 </template>
 
 <style lang="scss" scoped>
 @import "@/assets/scss/_variables.scss";
+
 .modal-footer {
     justify-content: flex-start;
+
     button {
         padding: 5px 20px 5px 20px;
     }

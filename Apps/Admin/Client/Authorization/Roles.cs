@@ -28,7 +28,6 @@ namespace HealthGateway.Admin.Client.Authorization
         /// <summary>
         /// Represents a Reviewer Admin.
         /// </summary>
-        ///
         public const string Reviewer = "AdminReviewer";
 
         /// <summary>

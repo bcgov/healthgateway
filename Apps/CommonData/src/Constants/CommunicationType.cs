@@ -24,7 +24,7 @@ namespace HealthGateway.Common.Data.Constants
     public enum CommunicationType
     {
         /// <summary>
-        /// The Banner communication.
+        /// Communication for the public part of the web app.
         /// </summary>
         Banner,
 
@@ -34,8 +34,13 @@ namespace HealthGateway.Common.Data.Constants
         Email,
 
         /// <summary>
-        /// Communication inside the app.
+        /// Communication for the protected part of the web app.
         /// </summary>
         InApp,
+
+        /// <summary>
+        /// Communication for the mobile app.
+        /// </summary>
+        Mobile,
     }
 }

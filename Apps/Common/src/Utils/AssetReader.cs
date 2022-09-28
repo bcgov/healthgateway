@@ -43,15 +43,13 @@ namespace HealthGateway.Common.Utils
 
             if (toBase64)
             {
-                using MemoryStream memoryStream = new MemoryStream();
+                using MemoryStream memoryStream = new();
                 resourceStream.CopyTo(memoryStream);
                 return Convert.ToBase64String(memoryStream.ToArray());
             }
-            else
-            {
-                using StreamReader reader = new StreamReader(resourceStream!, Encoding.UTF8);
-                return reader.ReadToEnd();
-            }
+
+            using StreamReader reader = new(resourceStream, Encoding.UTF8);
+            return reader.ReadToEnd();
         }
     }
 }

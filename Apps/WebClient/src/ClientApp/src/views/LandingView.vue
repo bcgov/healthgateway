@@ -8,6 +8,7 @@ import {
     faDesktop,
     faEdit,
     faFileMedical,
+    faFileWaveform,
     faMagnifyingGlass,
     faMicroscope,
     faMobileScreenButton,
@@ -37,6 +38,7 @@ library.add(
     faDesktop,
     faEdit,
     faFileMedical,
+    faFileWaveform,
     faMagnifyingGlass,
     faMicroscope,
     faMobileScreenButton,
@@ -82,7 +84,6 @@ export default class LandingView extends Vue {
     }
 
     private logger!: ILogger;
-    private isOpenRegistration = false;
     private selectedPreviewDevice = "laptop";
 
     private entryTypes: EntryType[] = [
@@ -92,6 +93,7 @@ export default class LandingView extends Vue {
         EntryType.Encounter,
         EntryType.Immunization,
         EntryType.MedicationRequest,
+        EntryType.ClinicalDocument,
     ];
 
     private tiles: Tile[] = [];
@@ -108,14 +110,15 @@ export default class LandingView extends Vue {
         return this.tiles.filter((tile) => tile.active);
     }
 
-    private created() {
+    private get isOpenRegistration(): boolean {
+        return this.config.registrationStatus === RegistrationStatus.Open;
+    }
+
+    private created(): void {
         this.logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
     }
 
-    private mounted() {
-        this.isOpenRegistration =
-            this.config.registrationStatus == RegistrationStatus.Open;
-
+    private mounted(): void {
         // Get core tiles from entry type constants
         this.loadCoreTiles();
 
@@ -188,7 +191,7 @@ export default class LandingView extends Vue {
         this.tiles = this.entryTypes.map((type) => {
             const details = entryTypeMap.get(type);
             const tile: Tile = {
-                type: type,
+                type,
                 icon: details?.icon ?? "",
                 name: details?.name ?? "",
                 description: details?.description ?? "",
@@ -309,16 +312,12 @@ export default class LandingView extends Vue {
                                 <span>Log in with BC Services Card</span>
                             </hg-button>
                         </router-link>
-                        <div class="mt-3">
+                        <div v-if="isOpenRegistration" class="mt-3">
                             <span class="mr-2">Need an account?</span>
                             <router-link
                                 id="btnStart"
                                 data-testid="btnStart"
-                                :to="
-                                    isOpenRegistration
-                                        ? 'registration'
-                                        : 'registrationInfo'
-                                "
+                                to="registration"
                                 >Register</router-link
                             >
                         </div>
@@ -357,7 +356,7 @@ export default class LandingView extends Vue {
                     </b-col>
                 </b-row>
             </div>
-            <div class="my-4 mb-md-5">
+            <div class="mt-4 mt-md-5">
                 <b-row>
                     <b-col cols="12" lg="6">
                         <h1 class="mb-4">What you can do</h1>
@@ -492,6 +491,47 @@ export default class LandingView extends Vue {
                     </b-col>
                 </b-row>
             </div>
+            <b-row align-v="center">
+                <b-col cols="12" lg="6">
+                    <div class="text-center">
+                        <img
+                            class="img-fluid"
+                            src="@/assets/images/landing/mobile-app.png"
+                            alt="Health Gateway Splash Page App"
+                            data-testid="spash-page-app"
+                        />
+                    </div>
+                </b-col>
+                <b-col cols="12" lg="6" class="text-center mb-4 mb-md-5">
+                    <h1 class="mb-4">Try the mobile app.</h1>
+                    <p class="mb-4">
+                        You can download it for free to your phone, tablet or
+                        iPad.
+                    </p>
+                    <a
+                        href="https://play.google.com/store/apps/details?id=ca.bc.gov.myhealth&hl=en_CA&gl=US"
+                        rel="noopener"
+                        target="_blank"
+                    >
+                        <img
+                            class="img-fluid mr-3"
+                            src="@/assets/images/landing/google-play-badge.png"
+                            alt="Go to Google Play"
+                        />
+                    </a>
+                    <a
+                        href="https://apps.apple.com/ca/app/health-gateway/id1590009068"
+                        rel="noopener"
+                        target="_blank"
+                    >
+                        <img
+                            class="img-fluid"
+                            src="@/assets/images/landing/apple-badge.png"
+                            alt="Go to App Store"
+                        />
+                    </a>
+                </b-col>
+            </b-row>
         </b-container>
     </div>
 </template>

@@ -1,0 +1,22 @@
+{
+    "resourcePayload": {
+        "loaded": true,
+        "retryin": 0,
+        "document": {
+            "mediaType": null,
+            "encoding": null,
+            "data": null
+        },
+        "qrCode": null
+    },
+    "totalResultCount": null,
+    "pageIndex": null,
+    "pageSize": null,
+    "resultStatus": 2,
+    "resultError": {
+        "resultMessage": "Vaccine Proof document is not available.",
+        "errorCode": "ImmunizationServer-I",
+        "traceId": "a7bc6eee9dc6d09cdd07466a9b1071f4",
+        "actionCode": "INVALID"
+    }
+}

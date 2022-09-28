@@ -30,7 +30,7 @@ namespace HealthGateway.Admin.Server.Services
     using HealthGateway.Database.Models;
     using HealthGateway.Database.Wrapper;
 
-    /// <inheritdoc />
+    /// <inheritdoc/>
     public class CsvExportService : ICsvExportService
     {
         private const int PageSize = 100000;
@@ -40,6 +40,7 @@ namespace HealthGateway.Admin.Server.Services
         private readonly ICommentDelegate commentDelegate;
         private readonly IRatingDelegate ratingDelegate;
         private readonly IInactiveUserService inactiveUserService;
+        private readonly IFeedbackDelegate feedbackDelegate;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="CsvExportService"/> class.
@@ -49,49 +50,52 @@ namespace HealthGateway.Admin.Server.Services
         /// <param name="commentDelegate">The comment delegate to interact with the DB.</param>
         /// <param name="ratingDelegate">The rating delegate to interact with the DB.</param>
         /// <param name="inactiveUserService">The inactive user service to get match db and keycloak inactive users.</param>
+        /// <param name="feedbackDelegate">The feedback delegate to interact with the DB.</param>
         public CsvExportService(
             INoteDelegate noteDelegate,
             IUserProfileDelegate userProfileDelegate,
             ICommentDelegate commentDelegate,
             IRatingDelegate ratingDelegate,
-            IInactiveUserService inactiveUserService)
+            IInactiveUserService inactiveUserService,
+            IFeedbackDelegate feedbackDelegate)
         {
             this.noteDelegate = noteDelegate;
             this.userProfileDelegate = userProfileDelegate;
             this.commentDelegate = commentDelegate;
             this.ratingDelegate = ratingDelegate;
             this.inactiveUserService = inactiveUserService;
+            this.feedbackDelegate = feedbackDelegate;
         }
 
-        /// <inheritdoc />
+        /// <inheritdoc/>
         public Stream GetComments(DateTime? startDate, DateTime? endDate)
         {
             DBResult<IEnumerable<Comment>> comments = this.commentDelegate.GetAll(Page, PageSize);
             return GetStream<Comment, CommentCsvMap>(comments.Payload);
         }
 
-        /// <inheritdoc />
+        /// <inheritdoc/>
         public Stream GetNotes(DateTime? startDate, DateTime? endDate)
         {
             DBResult<IEnumerable<Note>> notes = this.noteDelegate.GetAll(Page, PageSize);
             return GetStream<Note, NoteCsvMap>(notes.Payload);
         }
 
-        /// <inheritdoc />
+        /// <inheritdoc/>
         public Stream GetUserProfiles(DateTime? startDate, DateTime? endDate)
         {
             DBResult<IEnumerable<UserProfile>> profiles = this.userProfileDelegate.GetAll(Page, PageSize);
             return GetStream<UserProfile, UserProfileCsvMap>(profiles.Payload);
         }
 
-        /// <inheritdoc />
+        /// <inheritdoc/>
         public Stream GetRatings(DateTime? startDate, DateTime? endDate)
         {
             DBResult<IEnumerable<Rating>> profiles = this.ratingDelegate.GetAll(Page, PageSize);
             return GetStream<Rating, UserProfileCsvMap>(profiles.Payload);
         }
 
-        /// <inheritdoc />
+        /// <inheritdoc/>
         public async Task<Stream> GetInactiveUsers(int inactiveDays, int timeOffset)
         {
             RequestResult<List<AdminUserProfileView>> inactiveUsersResult = await this.inactiveUserService.GetInactiveUsers(inactiveDays, timeOffset).ConfigureAwait(true);
@@ -104,6 +108,13 @@ namespace HealthGateway.Admin.Server.Services
             return GetStream<AdminUserProfileView, AdminUserProfileViewCsvMap>(new List<AdminUserProfileView>());
         }
 
+        /// <inheritdoc/>
+        public Stream GetUserFeedback()
+        {
+            DBResult<IList<UserFeedback>> feedback = this.feedbackDelegate.GetAllUserFeedbackEntries();
+            return GetStream<UserFeedback, UserFeedbackCsvMap>(feedback.Payload);
+        }
+
         private static Stream GetStream<TModel, TMap>(IEnumerable<TModel> obj)
             where TMap : ClassMap
         {
@@ -111,7 +122,7 @@ namespace HealthGateway.Admin.Server.Services
             using (StreamWriter writeFile = new(stream, leaveOpen: true))
             {
 #pragma warning disable CA2000 // Dispose objects before losing scope
-                CsvWriter csv = new(writeFile, CultureInfo.CurrentCulture, leaveOpen: true);
+                CsvWriter csv = new(writeFile, CultureInfo.CurrentCulture, true);
 #pragma warning restore CA2000 // Dispose objects before losing scope
                 csv.Context.RegisterClassMap<TMap>();
                 csv.WriteRecords(obj);

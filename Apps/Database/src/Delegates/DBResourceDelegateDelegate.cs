@@ -27,7 +27,7 @@ namespace HealthGateway.Database.Delegates
     using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.Logging;
 
-    /// <inheritdoc />
+    /// <inheritdoc/>
     [ExcludeFromCodeCoverage]
     public class DBResourceDelegateDelegate : IResourceDelegateDelegate
     {
@@ -47,17 +47,17 @@ namespace HealthGateway.Database.Delegates
             this.dbContext = dbContext;
         }
 
-        /// <inheritdoc />
+        /// <inheritdoc/>
         public DBResult<ResourceDelegate> Insert(ResourceDelegate resourceDelegate, bool commit)
         {
             this.logger.LogTrace($"Inserting resource delegate to DB... {JsonSerializer.Serialize(resourceDelegate)}");
-            DBResult<ResourceDelegate> result = new DBResult<ResourceDelegate>()
+            DBResult<ResourceDelegate> result = new()
             {
                 Payload = resourceDelegate,
                 Status = DBStatusCode.Deferred,
             };
 
-            this.dbContext.Add<ResourceDelegate>(resourceDelegate);
+            this.dbContext.Add(resourceDelegate);
             if (commit)
             {
                 try
@@ -67,7 +67,7 @@ namespace HealthGateway.Database.Delegates
                 }
                 catch (DbUpdateException e)
                 {
-                    this.logger.LogError($"Error inserting resource delegate to DB with exception ({e.ToString()})");
+                    this.logger.LogError($"Error inserting resource delegate to DB with exception ({e})");
                     result.Status = DBStatusCode.Error;
                     result.Message = e.Message;
                 }
@@ -77,38 +77,40 @@ namespace HealthGateway.Database.Delegates
             return result;
         }
 
-        /// <inheritdoc />
+        /// <inheritdoc/>
         public DBResult<IEnumerable<ResourceDelegate>> Get(string delegateId, int page, int pageSize)
         {
             this.logger.LogTrace($"Getting resource delegates from DB... {delegateId}");
-            var result = DBDelegateHelper.GetPagedDBResult(
+            DBResult<IEnumerable<ResourceDelegate>> result = DBDelegateHelper.GetPagedDBResult(
                 this.dbContext.ResourceDelegate
-                    .Where(resourceDelegate => resourceDelegate.ProfileHdid == delegateId),
+                    .Where(resourceDelegate => resourceDelegate.ProfileHdid == delegateId)
+                    .OrderBy(resourceDelegate => resourceDelegate.CreatedDateTime),
                 page,
                 pageSize);
             this.logger.LogTrace($"Finished getting resource delegates from DB... {JsonSerializer.Serialize(result)}");
             return result;
         }
 
-        /// <inheritdoc />
+        /// <inheritdoc/>
         public IDictionary<DateTime, int> GetDailyDependentCount(TimeSpan offset)
         {
-            this.logger.LogTrace($"Counting resource delegates from DB...");
+            this.logger.LogTrace("Counting resource delegates from DB...");
             Dictionary<DateTime, int> dateCount = this.dbContext.ResourceDelegate
-                                .Select(x => new { x.ProfileHdid, x.ResourceOwnerHdid, createdDate = GatewayDbContext.DateTrunc("days", x.CreatedDateTime.AddMinutes(offset.TotalMinutes)) })
-                                .GroupBy(x => x.createdDate).Select(x => new { createdDate = x.Key, count = x.Count() })
-                                .OrderBy(x => x.createdDate)
-                                .ToDictionary(x => x.createdDate, x => x.count);
-            this.logger.LogTrace($"Finished counting resource delegates from DB...");
+                .Select(x => new { x.ProfileHdid, x.ResourceOwnerHdid, createdDate = GatewayDbContext.DateTrunc("days", x.CreatedDateTime.AddMinutes(offset.TotalMinutes)) })
+                .GroupBy(x => x.createdDate)
+                .Select(x => new { createdDate = x.Key, count = x.Count() })
+                .OrderBy(x => x.createdDate)
+                .ToDictionary(x => x.createdDate, x => x.count);
+            this.logger.LogTrace("Finished counting resource delegates from DB...");
 
             return dateCount;
         }
 
-        /// <inheritdoc />
+        /// <inheritdoc/>
         public DBResult<ResourceDelegate> Delete(ResourceDelegate resourceDelegate, bool commit)
         {
             this.logger.LogTrace($"Deleting resourceDelegate {JsonSerializer.Serialize(resourceDelegate)} from DB...");
-            DBResult<ResourceDelegate> result = new DBResult<ResourceDelegate>()
+            DBResult<ResourceDelegate> result = new()
             {
                 Status = DBStatusCode.Deferred,
             };
@@ -128,21 +130,19 @@ namespace HealthGateway.Database.Delegates
                 }
             }
 
-            this.logger.LogDebug($"Finished deleting resourceDelegate from DB");
+            this.logger.LogDebug("Finished deleting resourceDelegate from DB");
             return result;
         }
 
-        /// <inheritdoc />
+        /// <inheritdoc/>
         public bool Exists(string ownerId, string delegateId)
         {
             if (this.dbContext.ResourceDelegate.Any(rd => rd.ResourceOwnerHdid == ownerId && rd.ProfileHdid == delegateId))
             {
                 return true;
             }
-            else
-            {
-                return false;
-            }
+
+            return false;
         }
     }
 }

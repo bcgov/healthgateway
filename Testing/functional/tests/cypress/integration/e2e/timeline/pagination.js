@@ -1,4 +1,3 @@
-require("cypress-xpath");
 const { AuthMethod } = require("../../../support/constants");
 
 describe("Pagination", () => {
@@ -13,12 +12,10 @@ describe("Pagination", () => {
     });
 
     it("Count Records", () => {
-        // xpath is an additional library and we should probably not use much but this should
-        // help in migrating over Selenium Tests
-        cy.xpath('//*[contains(@class, "timelineCard")]').then((elements) => {
-            cy.get("#listControls")
-                .find(".col")
-                .contains(`Displaying ${elements.length} out of `);
+        cy.get("[data-testid=timelineCard]").then(($cards) => {
+            cy.get("[data-testid=timeline-record-count]").contains(
+                `Displaying ${$cards.length} out of `
+            );
         });
     });
 

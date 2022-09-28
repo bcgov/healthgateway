@@ -45,26 +45,30 @@ namespace HealthGateway.Medication.Services
         /// <inheritdoc/>
         public IDictionary<string, MedicationInformation> GetMedications(IList<string> medicationDinList)
         {
-            this.logger.LogTrace($"Getting list of medications...");
+            this.logger.LogTrace("Getting list of medications...");
             IDictionary<string, MedicationInformation> result = new Dictionary<string, MedicationInformation>();
 
             // Retrieve drug information from the Federal soruce
             IList<DrugProduct> drugProducts = this.drugLookupDelegate.GetDrugProductsByDIN(medicationDinList);
             foreach (DrugProduct drugProduct in drugProducts)
             {
-                FederalDrugSource federalData = new FederalDrugSource()
+                FederalDrugSource federalData = new()
                 {
                     UpdateDateTime = drugProduct.UpdatedDateTime,
                     DrugProduct = drugProduct,
                 };
-                result[drugProduct.DrugIdentificationNumber] = new MedicationInformation() { DIN = drugProduct.DrugIdentificationNumber, FederalData = federalData };
+                result[drugProduct.DrugIdentificationNumber] = new MedicationInformation
+                {
+                    DIN = drugProduct.DrugIdentificationNumber,
+                    FederalData = federalData,
+                };
             }
 
             // Retrieve drug information from the Provincial source and append it to the result if previously added.
             IList<PharmaCareDrug> pharmaCareDrugs = this.drugLookupDelegate.GetPharmaCareDrugsByDIN(medicationDinList);
             foreach (PharmaCareDrug pharmaCareDrug in pharmaCareDrugs)
             {
-                ProvincialDrugSource provincialData = new ProvincialDrugSource()
+                ProvincialDrugSource provincialData = new()
                 {
                     UpdateDateTime = pharmaCareDrug.UpdatedDateTime,
                     PharmaCareDrug = pharmaCareDrug,
@@ -76,11 +80,15 @@ namespace HealthGateway.Medication.Services
                 }
                 else
                 {
-                    result[pharmaCareDrug.DINPIN] = new MedicationInformation() { DIN = pharmaCareDrug.DINPIN, ProvincialData = provincialData };
+                    result[pharmaCareDrug.DINPIN] = new MedicationInformation
+                    {
+                        DIN = pharmaCareDrug.DINPIN,
+                        ProvincialData = provincialData,
+                    };
                 }
             }
 
-            this.logger.LogDebug($"Finished getting list of medications.");
+            this.logger.LogDebug("Finished getting list of medications.");
             return result;
         }
     }

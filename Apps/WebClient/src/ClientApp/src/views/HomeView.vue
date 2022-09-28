@@ -5,6 +5,7 @@ import {
     faEdit,
     faEllipsisV,
     faFileMedical,
+    faFileWaveform,
     faMicroscope,
     faPills,
     faPlus,
@@ -22,12 +23,16 @@ import LoadingComponent from "@/components/LoadingComponent.vue";
 import AddQuickLinkComponent from "@/components/modal/AddQuickLinkComponent.vue";
 import MessageModalComponent from "@/components/modal/MessageModalComponent.vue";
 import { EntryType, entryTypeMap } from "@/constants/entryType";
+import UserPreferenceType from "@/constants/userPreferenceType";
 import type { WebClientConfiguration } from "@/models/configData";
 import CovidVaccineRecord from "@/models/covidVaccineRecord";
 import { DateWrapper } from "@/models/dateWrapper";
 import { QuickLink } from "@/models/quickLink";
+import { LoadStatus } from "@/models/storeOperations";
 import { TimelineFilterBuilder } from "@/models/timelineFilter";
 import User from "@/models/user";
+import { UserPreference } from "@/models/userPreference";
+import VaccinationRecord from "@/models/vaccinationRecord";
 import SnowPlow from "@/utility/snowPlow";
 
 library.add(
@@ -35,6 +40,7 @@ library.add(
     faEdit,
     faEllipsisV,
     faFileMedical,
+    faFileWaveform,
     faMicroscope,
     faPills,
     faPlus,
@@ -66,6 +72,11 @@ export default class HomeView extends Vue {
         hdid: string;
     }) => Promise<CovidVaccineRecord>;
 
+    @Action("stopAuthenticatedVaccineRecordDownload", {
+        namespace: "vaccinationStatus",
+    })
+    stopAuthenticatedVaccineRecordDownload!: (params: { hdid: string }) => void;
+
     @Action("setFilter", { namespace: "timeline" })
     setFilter!: (filterBuilder: TimelineFilterBuilder) => void;
 
@@ -78,15 +89,15 @@ export default class HomeView extends Vue {
         quickLinks: QuickLink[];
     }) => Promise<void>;
 
-    @Getter("authenticatedVaccineRecordIsLoading", {
-        namespace: "vaccinationStatus",
-    })
-    isLoadingVaccineRecord!: boolean;
+    @Action("updateUserPreference", { namespace: "user" })
+    updateUserPreference!: (params: {
+        userPreference: UserPreference;
+    }) => Promise<void>;
 
-    @Getter("authenticatedVaccineRecordStatusMessage", {
-        namespace: "vaccinationStatus",
-    })
-    vaccineRecordStatusMessage!: string;
+    @Action("createUserPreference", { namespace: "user" })
+    createUserPreference!: (params: {
+        userPreference: UserPreference;
+    }) => Promise<void>;
 
     @Getter("webClient", { namespace: "config" })
     config!: WebClientConfiguration;
@@ -97,13 +108,13 @@ export default class HomeView extends Vue {
         | QuickLink[]
         | undefined;
 
-    @Getter("authenticatedVaccineRecord", { namespace: "vaccinationStatus" })
-    vaccineRecord!: CovidVaccineRecord | undefined;
-
-    @Getter("authenticatedVaccineRecordResultMessage", {
+    @Getter("authenticatedVaccineRecordStatusChanges", {
         namespace: "vaccinationStatus",
     })
-    vaccineRecordResultMessage!: string;
+    vaccineRecordStatusChanges!: number;
+
+    @Getter("authenticatedVaccineRecords", { namespace: "vaccinationStatus" })
+    vaccineRecords!: Map<string, VaccinationRecord>;
 
     @Ref("sensitivedocumentDownloadModal")
     readonly sensitivedocumentDownloadModal!: MessageModalComponent;
@@ -114,12 +125,40 @@ export default class HomeView extends Vue {
     @Ref("addQuickLinkModal")
     readonly addQuickLinkModal!: AddQuickLinkComponent;
 
-    private get isLoading(): boolean {
-        return this.isLoadingVaccineRecord;
+    private get isVaccineRecordDownloading(): boolean {
+        const vaccinationRecord: VaccinationRecord | undefined =
+            this.getVaccinationRecord();
+        if (
+            this.vaccineRecordStatusChanges > 0 &&
+            vaccinationRecord !== undefined
+        ) {
+            return vaccinationRecord.status === LoadStatus.REQUESTED;
+        }
+        return false;
     }
 
-    private get loadingStatusMessage(): string {
-        return this.vaccineRecordStatusMessage;
+    private get vaccineRecordStatusMessage(): string {
+        const vaccinationRecord: VaccinationRecord | undefined =
+            this.getVaccinationRecord();
+        if (
+            this.vaccineRecordStatusChanges > 0 &&
+            vaccinationRecord !== undefined
+        ) {
+            return vaccinationRecord.statusMessage;
+        }
+        return "";
+    }
+
+    private get vaccineRecordResultMessage(): string {
+        const vaccinationRecord: VaccinationRecord | undefined =
+            this.getVaccinationRecord();
+        if (
+            this.vaccineRecordStatusChanges > 0 &&
+            vaccinationRecord !== undefined
+        ) {
+            return vaccinationRecord.resultMessage;
+        }
+        return "";
     }
 
     private get unverifiedEmail(): boolean {
@@ -145,8 +184,21 @@ export default class HomeView extends Vue {
         return this.config.modules["FederalCardButton"];
     }
 
-    private get showVaccineCardButton(): boolean {
+    private get vaccinationStatusModuleEnabled(): boolean {
         return this.config.modules["VaccinationStatus"];
+    }
+
+    private get preferenceVaccineCardHidden(): boolean {
+        const preferenceName = UserPreferenceType.HideVaccineCardQuickLink;
+        let hideVaccineCard = this.user.preferences[preferenceName];
+        return hideVaccineCard?.value === "true";
+    }
+
+    private get showVaccineCardButton(): boolean {
+        return (
+            !this.preferenceVaccineCardHidden &&
+            this.vaccinationStatusModuleEnabled
+        );
     }
 
     private get enabledQuickLinks(): QuickLink[] {
@@ -191,11 +243,13 @@ export default class HomeView extends Vue {
                             existingLink.filter.modules.length === 1 &&
                             existingLink.filter.modules[0] === details.type
                     ) === undefined
-            ).length === 0
+            ).length === 0 &&
+            (!this.vaccinationStatusModuleEnabled ||
+                !this.preferenceVaccineCardHidden)
         );
     }
 
-    private trackClickLink(linkType: string | undefined) {
+    private trackClickLink(linkType: string | undefined): void {
         if (linkType) {
             SnowPlow.trackEvent({
                 action: "click",
@@ -204,7 +258,7 @@ export default class HomeView extends Vue {
         }
     }
 
-    private retrieveVaccinePdf() {
+    private retrieveVaccinePdf(): void {
         this.trackClickLink("federal_proof");
         this.retrieveAuthenticatedVaccineRecord({
             hdid: this.user.hdid,
@@ -223,6 +277,10 @@ export default class HomeView extends Vue {
         });
     }
 
+    private getVaccinationRecord(): VaccinationRecord | undefined {
+        return this.vaccineRecords.get(this.user.hdid);
+    }
+
     private handleClickHealthRecords(): void {
         this.trackClickLink("all_records");
         this.clearFilter();
@@ -237,6 +295,27 @@ export default class HomeView extends Vue {
     private handleClickRemoveQuickLink(index: number): void {
         const quickLink = this.enabledQuickLinks[index];
         this.removeQuickLink(quickLink);
+    }
+
+    private handleClickRemoveVaccineCardQuickLink(): void {
+        const preferenceName = UserPreferenceType.HideVaccineCardQuickLink;
+        if (this.user.preferences[preferenceName] != undefined) {
+            this.user.preferences[preferenceName].value = "true";
+            this.updateUserPreference({
+                userPreference: this.user.preferences[preferenceName],
+            });
+        } else {
+            this.user.preferences[preferenceName] = {
+                hdId: this.user.hdid,
+                preference: preferenceName,
+                value: "true",
+                version: 0,
+                createdDateTime: new DateWrapper().toISO(),
+            };
+            this.createUserPreference({
+                userPreference: this.user.preferences[preferenceName],
+            });
+        }
     }
 
     private handleClickQuickLink(index: number): void {
@@ -258,31 +337,45 @@ export default class HomeView extends Vue {
         this.$router.push({ path: "/timeline" });
     }
 
-    @Watch("vaccineRecordResultMessage")
-    private vaccineRecordErrorChanged() {
-        if (this.vaccineRecordResultMessage.length > 0) {
+    @Watch("vaccineRecordStatusChanges")
+    private showVaccineRecordResultModal(): void {
+        const vaccinationRecord: VaccinationRecord | undefined =
+            this.getVaccinationRecord();
+        if (
+            vaccinationRecord !== undefined &&
+            vaccinationRecord.resultMessage.length > 0
+        ) {
             this.vaccineRecordResultModal.showModal();
         }
     }
 
-    @Watch("vaccineRecord")
-    private saveVaccinePdf() {
-        if (this.vaccineRecord !== undefined) {
-            const mimeType = this.vaccineRecord.document.mediaType;
-            const downloadLink = `data:${mimeType};base64,${this.vaccineRecord.document.data}`;
+    @Watch("vaccineRecordStatusChanges")
+    private saveVaccinePdf(): void {
+        const vaccinationRecord: VaccinationRecord | undefined =
+            this.getVaccinationRecord();
+
+        if (
+            vaccinationRecord !== undefined &&
+            vaccinationRecord.hdid === this.user.hdid &&
+            vaccinationRecord.status === LoadStatus.LOADED &&
+            vaccinationRecord.download
+        ) {
+            const mimeType = vaccinationRecord.record.document.mediaType;
+            const downloadLink = `data:${mimeType};base64,${vaccinationRecord.record.document.data}`;
             fetch(downloadLink).then((res) => {
                 SnowPlow.trackEvent({
                     action: "click_button",
                     text: "FederalPVC",
                 });
-                res.blob().then((blob) => {
-                    saveAs(blob, "VaccineProof.pdf");
-                });
+                res.blob().then((blob) => saveAs(blob, "VaccineProof.pdf"));
+            });
+            this.stopAuthenticatedVaccineRecordDownload({
+                hdid: this.user.hdid,
             });
         }
     }
 
-    private showSensitiveDocumentDownloadModal() {
+    private showSensitiveDocumentDownloadModal(): void {
         this.sensitivedocumentDownloadModal.showModal();
     }
 
@@ -293,14 +386,14 @@ export default class HomeView extends Vue {
 </script>
 
 <template>
-    <div class="m-3 m-md-4 flex-grow-1 d-flex flex-column">
+    <div>
         <LoadingComponent
-            :is-loading="isLoading"
-            :text="loadingStatusMessage"
+            :is-loading="isVaccineRecordDownloading"
+            :text="vaccineRecordStatusMessage"
         />
         <b-alert
             v-if="unverifiedEmail || unverifiedSMS"
-            id="incomplete-profile-banner"
+            data-testid="incomplete-profile-banner"
             show
             dismissible
             variant="info"
@@ -400,6 +493,33 @@ export default class HomeView extends Vue {
                             size="large"
                             square
                         />
+                    </template>
+                    <template #menu>
+                        <b-nav align="right">
+                            <b-nav-item-dropdown
+                                right
+                                text=""
+                                :no-caret="true"
+                                menu-class="quick-link-menu"
+                                toggle-class="quick-link-menu-button"
+                            >
+                                <template slot="button-content">
+                                    <hg-icon
+                                        icon="ellipsis-v"
+                                        size="medium"
+                                        data-testid="quick-link-menu-button"
+                                    />
+                                </template>
+                                <b-dropdown-item
+                                    data-testid="remove-quick-link-button"
+                                    @click.stop="
+                                        handleClickRemoveVaccineCardQuickLink()
+                                    "
+                                >
+                                    Remove
+                                </b-dropdown-item>
+                            </b-nav-item-dropdown>
+                        </b-nav>
                     </template>
                     <div>
                         View, download and print your BC Vaccine Card. Present
@@ -512,6 +632,7 @@ export default class HomeView extends Vue {
         &:hover:not([disabled]):not(:active) {
             color: $hg-text-primary;
         }
+
         &:active:not([disabled]) {
             color: white;
         }

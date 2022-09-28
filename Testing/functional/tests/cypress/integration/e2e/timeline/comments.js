@@ -48,7 +48,9 @@ describe("Comments Enable", () => {
         var testComment = "Test Add Comment";
 
         // Filter by text
+        cy.get("[data-testid=filterDropdown]").click();
         cy.get("[data-testid=filterTextInput]").type(testComment);
+        cy.get("[data-testid=btnFilterApply]").click();
         cy.get("[data-testid=noTimelineEntriesText]").should("not.exist");
 
         cy.get("[data-testid=entryCardDetailsTitle]").first().click();

@@ -55,7 +55,7 @@ namespace HealthGateway.Common.AccessManagement.Authorization.Handlers
         public Task HandleAsync(AuthorizationHandlerContext context)
         {
             string? resourceHDID = this.httpContextAccessor.HttpContext?.Request.RouteValues[RouteResourceIdentifier] as string;
-            foreach (var requirement in context.PendingRequirements.OfType<UserRequirement>().Where(requirement => this.Authorize(context, resourceHDID, requirement)))
+            foreach (UserRequirement requirement in context.PendingRequirements.OfType<UserRequirement>().Where(requirement => this.Authorize(context, resourceHDID, requirement)))
             {
                 context.Succeed(requirement);
             }
@@ -89,7 +89,7 @@ namespace HealthGateway.Common.AccessManagement.Authorization.Handlers
             }
             else
             {
-                this.logger.LogInformation($"Unable to validate resource owner for {resourceHDID} as no HDID claims present");
+                this.logger.LogDebug($"Unable to validate resource owner for {resourceHDID} as no HDID claims present");
             }
 
             return retVal;

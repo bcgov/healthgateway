@@ -17,8 +17,8 @@ namespace HealthGateway.GatewayApi.Controllers
 {
     using HealthGateway.Common.Data.Constants;
     using HealthGateway.Common.Data.ViewModels;
+    using HealthGateway.Common.Services;
     using HealthGateway.Database.Models;
-    using HealthGateway.GatewayApi.Services;
     using Microsoft.AspNetCore.Mvc;
 
     /// <summary>
@@ -35,8 +35,7 @@ namespace HealthGateway.GatewayApi.Controllers
         /// Initializes a new instance of the <see cref="CommunicationController"/> class.
         /// </summary>
         /// <param name="communicationService">The injected communication service.</param>
-        public CommunicationController(
-            ICommunicationService communicationService)
+        public CommunicationController(ICommunicationService communicationService)
         {
             this.communicationService = communicationService;
         }
@@ -44,14 +43,14 @@ namespace HealthGateway.GatewayApi.Controllers
         /// <summary>
         /// Gets the latest active communication.
         /// </summary>
-        /// <param name="bannerType">The banner type to retrieve.</param>
+        /// <param name="communicationType">The communication type to retrieve.</param>
         /// <returns>The active communication or null if not found.</returns>
         /// <response code="200">Returns the communication json.</response>
         [HttpGet]
-        [Route("{bannerType}")]
-        public RequestResult<Communication> Get(CommunicationType bannerType = CommunicationType.Banner)
+        [Route("{communicationType}")]
+        public RequestResult<Communication?> Get(CommunicationType communicationType = CommunicationType.Banner)
         {
-            return this.communicationService.GetActiveBanner(bannerType);
+            return this.communicationService.GetActiveCommunication(communicationType);
         }
     }
 }

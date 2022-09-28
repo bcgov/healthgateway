@@ -16,6 +16,7 @@
 namespace HealthGateway.Admin.Client.Pages;
 
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Threading.Tasks;
 using Fluxor;
@@ -48,6 +49,7 @@ public partial class CommunicationsPage : FluxorComponent
     [Inject]
     private ISnackbar Snackbar { get; set; } = default!;
 
+    [SuppressMessage("Minor Code Smell", "S3459:Unassigned members should be removed", Justification = "Assigned in .razor file")]
     private HgTabs? Tabs { get; set; }
 
     private bool CommunicationsLoading => this.CommunicationsState.Value.IsLoading;
@@ -58,9 +60,7 @@ public partial class CommunicationsPage : FluxorComponent
 
     private bool HasDeleteError => this.CommunicationsState.Value.Delete.Error != null && this.CommunicationsState.Value.Delete.Error.Message.Length > 0;
 
-    private string? ErrorMessage => this.HasLoadError ?
-        this.CommunicationsState.Value.Load.Error?.Message :
-        this.CommunicationsState.Value.Delete.Error?.Message;
+    private string? ErrorMessage => this.HasLoadError ? this.CommunicationsState.Value.Load.Error?.Message : this.CommunicationsState.Value.Delete.Error?.Message;
 
     private bool IsModalShown { get; set; }
 
@@ -73,11 +73,15 @@ public partial class CommunicationsPage : FluxorComponent
     private IEnumerable<ExtendedCommunication> InAppCommunications =>
         this.AllCommunications.Where(c => c.CommunicationTypeCode == CommunicationType.InApp);
 
+    private IEnumerable<ExtendedCommunication> MobileCommunications =>
+        this.AllCommunications.Where(c => c.CommunicationTypeCode == CommunicationType.Mobile);
+
     private CommunicationType? SelectedCommunicationType =>
-        this.Tabs?.MudComponent?.ActivePanelIndex switch
+        this.Tabs?.MudComponent.ActivePanelIndex switch
         {
             0 => CommunicationType.Banner,
             1 => CommunicationType.InApp,
+            2 => CommunicationType.Mobile,
             _ => null,
         };
 
@@ -86,6 +90,7 @@ public partial class CommunicationsPage : FluxorComponent
         {
             CommunicationType.Banner => "Public",
             CommunicationType.InApp => "In-App",
+            CommunicationType.Mobile => "Mobile",
             _ => null,
         };
 
@@ -114,9 +119,14 @@ public partial class CommunicationsPage : FluxorComponent
         }
 
         string title = $"Create {this.SelectedBannerName} Banner";
+        if (this.SelectedCommunicationType == CommunicationType.Mobile)
+        {
+            title = "Create Mobile Communication";
+        }
+
         Communication communication = new()
         {
-            CommunicationTypeCode = type!.Value,
+            CommunicationTypeCode = type.Value,
             CommunicationStatusCode = CommunicationStatus.Draft,
         };
 

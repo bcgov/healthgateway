@@ -18,7 +18,6 @@ export default class LaboratoryOrderTimelineEntry extends TimelineEntry {
     public orderingProvider: string;
     public orderStatus: string;
     public reportAvailable: boolean;
-    public downloadLabel: string;
 
     public tests: LaboratoryTestViewModel[];
 
@@ -57,12 +56,11 @@ export default class LaboratoryOrderTimelineEntry extends TimelineEntry {
 
         this.reportId = model.reportId;
         this.orderStatus = model.orderStatus;
-        this.downloadLabel = model.downloadLabel;
 
         this.tests = [];
-        model.laboratoryTests.forEach((test) => {
-            this.tests.push(new LaboratoryTestViewModel(test));
-        });
+        model.laboratoryTests.forEach((test) =>
+            this.tests.push(new LaboratoryTestViewModel(test))
+        );
 
         this.sortResults();
 
@@ -82,7 +80,7 @@ export default class LaboratoryOrderTimelineEntry extends TimelineEntry {
         return text.includes(keyword.toUpperCase());
     }
 
-    private sortResults() {
+    private sortResults(): void {
         this.tests.sort((a, b) => {
             if (a.result === b.result) {
                 return 0;
@@ -108,10 +106,31 @@ export class LaboratoryTestViewModel {
     public testName: string;
     public result: string;
     public status: string;
+    public statusInfo: string[];
 
     constructor(model: LaboratoryTest) {
         this.testName = model.batteryType;
         this.result = model.result;
         this.status = model.filteredTestStatus;
+        this.statusInfo = LaboratoryTestViewModel.getStatusText(this.status);
+    }
+
+    private static getStatusText(status: string): string[] {
+        switch (status?.toUpperCase()) {
+            case "PENDING":
+                return [
+                    "Most results are ready about 3 days after your test.",
+                    "Pathology tests, like tissue biopsies, can take several weeks.",
+                ];
+            case "COMPLETED":
+            case "CORRECTED":
+                return ["Download the PDF to see your detailed results."];
+            case "CANCELLED":
+                return [
+                    "Contact your care provider if you have any questions.",
+                ];
+            default:
+                return [];
+        }
     }
 }

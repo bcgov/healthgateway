@@ -1,14 +1,13 @@
 <script lang="ts">
 import { library } from "@fortawesome/fontawesome-svg-core";
 import { faQuestion } from "@fortawesome/free-solid-svg-icons";
-
-library.add(faQuestion);
-
 import Vue from "vue";
 import { Component } from "vue-property-decorator";
 import { Getter } from "vuex-class";
 
 import { ImmunizationEvent } from "@/models/immunizationModel";
+
+library.add(faQuestion);
 
 @Component
 export default class ResourceCentreComponent extends Vue {

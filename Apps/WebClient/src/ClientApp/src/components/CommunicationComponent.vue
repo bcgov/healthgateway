@@ -4,6 +4,7 @@ import { Component, Watch } from "vue-property-decorator";
 import { Getter } from "vuex-class";
 
 import Communication, { CommunicationType } from "@/models/communication";
+import { ResultError } from "@/models/errors";
 import container from "@/plugins/container";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import { ICommunicationService, ILogger } from "@/services/interfaces";
@@ -26,7 +27,7 @@ export default class CommunicationComponent extends Vue {
     @Getter("isOffline", { namespace: "config" })
     isOffline!: boolean;
 
-    private get isInApp(): boolean {
+    private get displayInAppBanner(): boolean {
         return (
             this.oidcIsAuthenticated &&
             this.userIsRegistered &&
@@ -36,7 +37,7 @@ export default class CommunicationComponent extends Vue {
     }
 
     private get hasCommunication(): boolean {
-        if (this.isInApp) {
+        if (this.displayInAppBanner) {
             return this.inAppCommunication != null;
         } else {
             return this.bannerCommunication != null;
@@ -44,7 +45,7 @@ export default class CommunicationComponent extends Vue {
     }
 
     private get text(): string {
-        if (this.isInApp) {
+        if (this.displayInAppBanner) {
             return this.inAppCommunication ? this.inAppCommunication.text : "";
         } else {
             return this.bannerCommunication
@@ -54,24 +55,23 @@ export default class CommunicationComponent extends Vue {
     }
 
     @Watch("$route.path")
-    private onRouteChange() {
+    private onRouteChange(): void {
         this.fetchCommunication(CommunicationType.InApp);
     }
 
-    private created() {
+    private created(): void {
         this.logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
     }
 
-    private mounted() {
+    private mounted(): void {
         this.fetchCommunication(CommunicationType.Banner);
         this.fetchCommunication(CommunicationType.InApp);
     }
 
-    private fetchCommunication(type: CommunicationType) {
-        const communicationService: ICommunicationService =
-            container.get<ICommunicationService>(
-                SERVICE_IDENTIFIER.CommunicationService
-            );
+    private fetchCommunication(type: CommunicationType): void {
+        const communicationService = container.get<ICommunicationService>(
+            SERVICE_IDENTIFIER.CommunicationService
+        );
 
         communicationService
             .getActive(type)
@@ -82,7 +82,19 @@ export default class CommunicationComponent extends Vue {
                     this.inAppCommunication = requestResult.resourcePayload;
                 }
             })
-            .catch((err) => {
+            .catch((err: ResultError) => {
+                if (err.statusCode === 429) {
+                    const communication: Communication = {
+                        text: "We are experiencing higher than usual site traffic, which may cause delays in accessing your health records. Please try again later.",
+                        communicationTypeCode: type,
+                    };
+
+                    if (type === CommunicationType.Banner) {
+                        this.bannerCommunication = communication;
+                    } else {
+                        this.inAppCommunication = communication;
+                    }
+                }
                 this.logger.error(JSON.stringify(err));
             });
     }

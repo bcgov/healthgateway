@@ -51,10 +51,6 @@ const RegistrationView = () =>
     import(
         /* webpackChunkName: "registration" */ "@/views/RegistrationView.vue"
     );
-const RegistrationInfoView = () =>
-    import(
-        /* webpackChunkName: "registrationInfo" */ "@/views/RegistrationInfoView.vue"
-    );
 const HomeView = () =>
     import(/* webpackChunkName: "home" */ "@/views/HomeView.vue");
 const TimelineView = () =>
@@ -68,10 +64,6 @@ const ValidateEmailView = () =>
 const TermsOfServiceView = () =>
     import(
         /* webpackChunkName: "termsOfService" */ "@/views/TermsOfServiceView.vue"
-    );
-const HealthInsightsView = () =>
-    import(
-        /* webpackChunkName: "healthInsights" */ "@/views/HealthInsightsView.vue"
     );
 const AcceptTermsOfServiceView = () =>
     import(
@@ -97,19 +89,20 @@ export enum UserState {
     notRegistered = "notRegistered",
     registered = "registered",
     pendingDeletion = "pendingDeletion",
-    invalidLogin = "invalidLogin",
+    invalidIdentityProvider = "invalidIdentityProvider",
     offline = "offline",
     acceptTermsOfService = "acceptTermsOfService",
 }
 
-function calculateUserState() {
-    const storeWrapper: IStoreProvider = container.get(
+function calculateUserState(): UserState {
+    const storeWrapper = container.get<IStoreProvider>(
         STORE_IDENTIFIER.StoreProvider
     );
     const store = storeWrapper.getStore();
     const isOffline = store.getters["config/isOffline"];
     const isAuthenticated: boolean = store.getters["auth/oidcIsAuthenticated"];
-    const isValid: boolean = store.getters["auth/isValidIdentityProvider"];
+    const isValidIdentityProvider: boolean =
+        store.getters["auth/isValidIdentityProvider"];
     const isRegistered: boolean = store.getters["user/userIsRegistered"];
     const userIsActive: boolean = store.getters["user/userIsActive"];
     const hasTermsOfServiceUpdated: boolean =
@@ -119,8 +112,8 @@ function calculateUserState() {
         return UserState.offline;
     } else if (!isAuthenticated) {
         return UserState.unauthenticated;
-    } else if (!isValid) {
-        return UserState.invalidLogin;
+    } else if (!isValidIdentityProvider) {
+        return UserState.invalidIdentityProvider;
     } else if (!isRegistered) {
         return UserState.notRegistered;
     } else if (!userIsActive) {
@@ -132,8 +125,8 @@ function calculateUserState() {
     }
 }
 
-function getAvailableModules() {
-    const storeWrapper: IStoreProvider = container.get(
+function getAvailableModules(): string[] {
+    const storeWrapper = container.get<IStoreProvider>(
         STORE_IDENTIFIER.StoreProvider
     );
     const store = storeWrapper.getStore();
@@ -154,7 +147,6 @@ const IDIR_LOGGED_IN_PATH = "/idirLoggedIn";
 const LOGIN_PATH = "/login";
 const PROFILE_PATH = "/profile";
 const REGISTRATION_PATH = "/registration";
-const REGISTRATION_INFO_PATH = "/registrationInfo";
 const ROOT_PATH = "/";
 const TIMELINE_PATH = "/timeline";
 const UNAUTHORIZED_PATH = "/unauthorized";
@@ -167,20 +159,10 @@ const routes = [
         meta: {
             validStates: [
                 UserState.unauthenticated,
+                UserState.invalidIdentityProvider,
                 UserState.registered,
                 UserState.offline,
             ],
-        },
-    },
-    {
-        path: REGISTRATION_INFO_PATH,
-        component: RegistrationInfoView,
-        props: (route: Route) => ({
-            inviteKey: route.query.inviteKey,
-            email: route.query.email,
-        }),
-        meta: {
-            validStates: [UserState.unauthenticated, UserState.notRegistered],
         },
     },
     {
@@ -239,11 +221,6 @@ const routes = [
         },
     },
     {
-        path: "/healthInsights",
-        component: HealthInsightsView,
-        meta: { validStates: [UserState.registered] },
-    },
-    {
         path: "/reports",
         component: ReportsView,
         meta: { validStates: [UserState.registered] },
@@ -262,6 +239,7 @@ const routes = [
         meta: {
             validStates: [
                 UserState.unauthenticated,
+                UserState.invalidIdentityProvider,
                 UserState.registered,
                 UserState.pendingDeletion,
             ],
@@ -289,6 +267,7 @@ const routes = [
         meta: {
             validStates: [
                 UserState.unauthenticated,
+                UserState.invalidIdentityProvider,
                 UserState.registered,
                 UserState.notRegistered,
                 UserState.pendingDeletion,
@@ -302,6 +281,7 @@ const routes = [
         meta: {
             validStates: [
                 UserState.unauthenticated,
+                UserState.invalidIdentityProvider,
                 UserState.registered,
                 UserState.pendingDeletion,
             ],
@@ -314,6 +294,7 @@ const routes = [
         meta: {
             validStates: [
                 UserState.unauthenticated,
+                UserState.invalidIdentityProvider,
                 UserState.registered,
                 UserState.pendingDeletion,
             ],
@@ -325,6 +306,7 @@ const routes = [
         meta: {
             validStates: [
                 UserState.unauthenticated,
+                UserState.invalidIdentityProvider,
                 UserState.registered,
                 UserState.pendingDeletion,
             ],
@@ -336,6 +318,7 @@ const routes = [
         meta: {
             validStates: [
                 UserState.unauthenticated,
+                UserState.invalidIdentityProvider,
                 UserState.registered,
                 UserState.pendingDeletion,
             ],
@@ -347,6 +330,7 @@ const routes = [
         meta: {
             validStates: [
                 UserState.unauthenticated,
+                UserState.invalidIdentityProvider,
                 UserState.registered,
                 UserState.pendingDeletion,
             ],
@@ -381,7 +365,7 @@ const routes = [
     {
         path: IDIR_LOGGED_IN_PATH,
         component: IdirLoggedInView,
-        meta: { validStates: [UserState.invalidLogin] },
+        meta: { validStates: [UserState.invalidIdentityProvider] },
     },
     {
         path: UNAUTHORIZED_PATH,
@@ -404,8 +388,8 @@ export const beforeEachGuard: NavigationGuard = async (
     from: Route,
     next: NavigationGuardNext<Vue>
 ) => {
-    const logger: ILogger = container.get(SERVICE_IDENTIFIER.Logger);
-    const storeWrapper: IStoreProvider = container.get(
+    const logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
+    const storeWrapper = container.get<IStoreProvider>(
         STORE_IDENTIFIER.StoreProvider
     );
     const store = storeWrapper.getStore();
@@ -469,7 +453,7 @@ function getDefaultPath(
             return hasRequiredModules ? HOME_PATH : UNAUTHORIZED_PATH;
         case UserState.notRegistered:
             return REGISTRATION_PATH;
-        case UserState.invalidLogin:
+        case UserState.invalidIdentityProvider:
             return IDIR_LOGGED_IN_PATH;
         case UserState.unauthenticated:
             return hasRequiredModules ? LOGIN_PATH : UNAUTHORIZED_PATH;
@@ -501,6 +485,14 @@ const router = new VueRouter({
 router.beforeEach(beforeEachGuard);
 
 router.afterEach(() => {
+    const storeWrapper = container.get<IStoreProvider>(
+        STORE_IDENTIFIER.StoreProvider
+    );
+    const store = storeWrapper.getStore();
+
+    store.dispatch("errorBanner/clearErrors");
+    store.dispatch("errorBanner/clearTooManyRequests");
+
     window.snowplow("trackPageView");
 });
 
