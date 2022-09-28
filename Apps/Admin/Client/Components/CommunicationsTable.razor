@@ -85,3 +85,21 @@
         <MudTablePager />
     </PagerContent>
 </MudTable>
+
+<MudMessageBox @ref="DeleteConfirmation" Title="Delete Notification">
+    <MessageContent>
+        <span data-testid="confirm-delete-message">
+            Are you sure you want to delete this?
+        </span>
+    </MessageContent>
+    <YesButton>
+        <MudButton Variant="Variant.Filled" Color="Color.Error" StartIcon="@Icons.Material.Filled.DeleteForever" data-testid="confirm-delete-btn">
+            Delete
+        </MudButton>
+    </YesButton>
+    <CancelButton>
+        <MudButton data-testid="confirm-cancel-btn">
+            Cancel
+        </MudButton>
+    </CancelButton>
+</MudMessageBox>
