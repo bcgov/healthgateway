@@ -527,7 +527,7 @@ export default class HomeView extends Vue {
             <b-col class="p-3">
                 <hg-card-button
                     title="Health Records"
-                    data-testid="health-records-card-btn"
+                    data-testid="health-records-card"
                     @click="handleClickHealthRecords()"
                 >
                     <template #icon>
@@ -566,7 +566,7 @@ export default class HomeView extends Vue {
             <b-col v-if="showVaccineCardButton" class="p-3">
                 <hg-card-button
                     title="BC Vaccine Card"
-                    data-testid="bc-vaccine-card-btn"
+                    data-testid="bc-vaccine-card-card"
                     @click="handleClickVaccineCard()"
                 >
                     <template #icon>
