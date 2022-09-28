@@ -12,6 +12,7 @@ import {
     faSearch,
     faStethoscope,
     faSyringe,
+    faUpload,
     faVial,
 } from "@fortawesome/free-solid-svg-icons";
 import { saveAs } from "file-saver";
@@ -51,6 +52,7 @@ library.add(
     faSearch,
     faStethoscope,
     faSyringe,
+    faUpload,
     faVial
 );
 
@@ -117,11 +119,11 @@ export default class HomeView extends Vue {
     @Getter("webClient", { namespace: "config" })
     config!: WebClientConfiguration;
 
-    @Getter("user", { namespace: "user" }) user!: User;
+    @Getter("user", { namespace: "user" })
+    user!: User;
 
-    @Getter("quickLinks", { namespace: "user" }) quickLinks!:
-        | QuickLink[]
-        | undefined;
+    @Getter("quickLinks", { namespace: "user" })
+    quickLinks!: QuickLink[] | undefined;
 
     @Getter("authenticatedVaccineRecordStatusChanges", {
         namespace: "vaccinationStatus",
@@ -216,8 +218,15 @@ export default class HomeView extends Vue {
 
     private get preferenceVaccineCardHidden(): boolean {
         const preferenceName = UserPreferenceType.HideVaccineCardQuickLink;
-        let hideVaccineCard = this.user.preferences[preferenceName];
-        return hideVaccineCard?.value === "true";
+        const preference = this.user.preferences[preferenceName];
+        return preference?.value === "true";
+    }
+
+    private get preferenceImmunizationRecordHidden(): boolean {
+        const preferenceName =
+            UserPreferenceType.HideImmunizationRecordQuickLink;
+        const preference = this.user.preferences[preferenceName];
+        return preference?.value === "true";
     }
 
     private get showVaccineCardButton(): boolean {
@@ -225,6 +234,10 @@ export default class HomeView extends Vue {
             !this.preferenceVaccineCardHidden &&
             this.vaccinationStatusModuleEnabled
         );
+    }
+
+    private get showImmunizationRecordButton(): boolean {
+        return !this.preferenceImmunizationRecordHidden;
     }
 
     private get enabledQuickLinks(): QuickLink[] {
@@ -270,6 +283,7 @@ export default class HomeView extends Vue {
                             existingLink.filter.modules[0] === details.type
                     ) === undefined
             ).length === 0 &&
+            !this.preferenceImmunizationRecordHidden &&
             (!this.vaccinationStatusModuleEnabled ||
                 !this.preferenceVaccineCardHidden)
         );
@@ -344,6 +358,15 @@ export default class HomeView extends Vue {
         this.$router.push({ path: "/covid19" });
     }
 
+    private handleClickImmunizationRecord(): void {
+        this.trackClickLink("immunization_record");
+        window.open(
+            "https://www.immunizationrecord.gov.bc.ca/",
+            "_blank",
+            "noopener"
+        );
+    }
+
     private handleClickRemoveQuickLink(index: number): void {
         this.logger.debug("Removing quick link");
         const quickLink = this.enabledQuickLinks[index];
@@ -352,19 +375,25 @@ export default class HomeView extends Vue {
 
     private handleClickRemoveVaccineCardQuickLink(): void {
         this.logger.debug("Removing vaccine card quick link");
-        const preferenceType = UserPreferenceType.HideVaccineCardQuickLink;
+        this.setPreferenceValue(
+            UserPreferenceType.HideVaccineCardQuickLink,
+            "true"
+        );
+    }
 
-        let preference = this.user.preferences[preferenceType];
-        if (preference === undefined) {
-            preference = {
-                preference: preferenceType,
-                value: "true",
-                version: 0,
-                createdDateTime: new DateWrapper().toISO(),
-            };
-        } else {
-            preference = { ...preference, value: "true" };
-        }
+    private handleClickRemoveImmunizationRecordQuickLink(): void {
+        this.logger.debug("Removing immunization record quick link");
+        this.setPreferenceValue(
+            UserPreferenceType.HideImmunizationRecordQuickLink,
+            "true"
+        );
+    }
+
+    private setPreferenceValue(preferenceType: string, value: string) {
+        const preference = {
+            ...this.user.preferences[preferenceType],
+            value,
+        };
 
         this.setUserPreference({ preference }).catch((error) => {
             this.logger.error(error);
@@ -608,6 +637,54 @@ export default class HomeView extends Vue {
                         View, download and print your BC Vaccine Card. Present
                         this card as proof of vaccination at some BC businesses,
                         services and events.
+                    </div>
+                </hg-card-button>
+            </b-col>
+            <b-col v-if="showImmunizationRecordButton" class="p-3">
+                <hg-card-button
+                    title="Add Vaccines"
+                    data-testid="immunization-record-card"
+                    @click="handleClickImmunizationRecord()"
+                >
+                    <template #icon>
+                        <hg-icon
+                            class="quick-link-card-icon align-self-center"
+                            icon="upload"
+                            size="large"
+                            square
+                        />
+                    </template>
+                    <template #menu>
+                        <b-nav align="right">
+                            <b-nav-item-dropdown
+                                right
+                                text=""
+                                :no-caret="true"
+                                menu-class="quick-link-menu"
+                                toggle-class="quick-link-menu-button"
+                            >
+                                <template slot="button-content">
+                                    <hg-icon
+                                        icon="ellipsis-v"
+                                        size="medium"
+                                        data-testid="quick-link-menu-button"
+                                    />
+                                </template>
+                                <b-dropdown-item
+                                    data-testid="remove-quick-link-button"
+                                    @click.stop="
+                                        handleClickRemoveImmunizationRecordQuickLink()
+                                    "
+                                >
+                                    Remove
+                                </b-dropdown-item>
+                            </b-nav-item-dropdown>
+                        </b-nav>
+                    </template>
+                    <div>
+                        Add immunizations from family practice or travel
+                        clinics. This helps make sure your immunization records
+                        and forecasts are up to date in Health Gateway.
                     </div>
                 </hg-card-button>
             </b-col>

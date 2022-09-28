@@ -29,7 +29,6 @@ export const mutations: UserMutation = {
         const logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
 
         if (userProfile) {
-            // If there are no preferences, set the default states for tutorial popovers
             PreferenceUtil.setDefaultValue(
                 userProfile.preferences,
                 UserPreferenceType.TutorialNote,
@@ -59,6 +58,16 @@ export const mutations: UserMutation = {
                 userProfile.preferences,
                 UserPreferenceType.TutorialComment,
                 "true"
+            );
+            PreferenceUtil.setDefaultValue(
+                userProfile.preferences,
+                UserPreferenceType.HideVaccineCardQuickLink,
+                "false"
+            );
+            PreferenceUtil.setDefaultValue(
+                userProfile.preferences,
+                UserPreferenceType.HideImmunizationRecordQuickLink,
+                "false"
             );
         }
 

@@ -100,6 +100,14 @@ export default class AddQuickLinkComponent extends Vue {
         );
     }
 
+    private get showImmunizationRecord(): boolean {
+        const preference =
+            this.user.preferences[
+                UserPreferenceType.HideImmunizationRecordQuickLink
+            ];
+        return preference?.value === "true";
+    }
+
     private created(): void {
         this.logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
     }
@@ -172,6 +180,24 @@ export default class AddQuickLinkComponent extends Vue {
                         this.selectedQuickLinks =
                             this.selectedQuickLinks.filter(
                                 (link) => link !== "bc-vaccine-card"
+                            );
+                    })
+                );
+            }
+
+            if (this.selectedQuickLinks.includes("immunization-record")) {
+                const preference = {
+                    ...this.user.preferences[
+                        UserPreferenceType.HideImmunizationRecordQuickLink
+                    ],
+                    value: "false",
+                };
+
+                promises.push(
+                    this.setUserPreference({ preference }).then(() => {
+                        this.selectedQuickLinks =
+                            this.selectedQuickLinks.filter(
+                                (link) => link !== "immunization-record"
                             );
                     })
                 );
@@ -266,6 +292,20 @@ export default class AddQuickLinkComponent extends Vue {
                         value="bc-vaccine-card"
                     >
                         BC Vaccine Card
+                    </b-form-checkbox>
+                </b-col>
+            </b-row>
+            <b-row v-if="showImmunizationRecord">
+                <b-col cols="8" align-self="start">
+                    <b-form-checkbox
+                        id="immunization-record-filter"
+                        :key="checkboxComponentKey"
+                        v-model="selectedQuickLinks"
+                        data-testid="immunization-record-filter"
+                        name="immunization-record-filter"
+                        value="immunization-record"
+                    >
+                        Add Vaccines
                     </b-form-checkbox>
                 </b-col>
             </b-row>
