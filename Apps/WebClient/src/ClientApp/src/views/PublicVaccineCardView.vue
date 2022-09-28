@@ -452,121 +452,109 @@ export default class PublicVaccineCardView extends Vue {
                         To get your BC Vaccine Card and Federal Proof of
                         Vaccination, please provide:
                     </p>
-                    <b-row>
-                        <b-col>
-                            <b-form-group
-                                label="Personal Health Number"
-                                label-for="phn"
-                            >
-                                <b-form-input
-                                    id="phn"
-                                    v-model="phn"
-                                    v-mask="phnMask"
-                                    data-testid="phnInput"
-                                    autofocus
-                                    aria-label="Personal Health Number"
-                                    :state="isValid($v.phn)"
-                                    @blur="$v.phn.$touch()"
-                                />
-                                <b-form-invalid-feedback
-                                    v-if="!$v.phn.required"
-                                    aria-label="Invalid Personal Health Number"
-                                    data-testid="feedbackPhnIsRequired"
-                                >
-                                    Personal Health Number is required.
-                                </b-form-invalid-feedback>
-                                <b-form-invalid-feedback
-                                    v-else-if="!$v.phn.formatted"
-                                    aria-label="Invalid Personal Health Number"
-                                    data-testid="feedbackPhnMustBeValid"
-                                >
-                                    Personal Health Number must be valid.
-                                </b-form-invalid-feedback>
-                            </b-form-group>
-                        </b-col>
-                    </b-row>
-                    <b-row>
-                        <b-col>
-                            <b-form-group
-                                label="Date of Birth"
-                                label-for="dateOfBirth"
-                                :state="isValid($v.dateOfBirth)"
-                            >
-                                <hg-date-dropdown
-                                    id="dateOfBirth"
-                                    v-model="dateOfBirth"
-                                    :state="isValid($v.dateOfBirth)"
-                                    :allow-future="false"
-                                    data-testid="dateOfBirthInput"
-                                    aria-label="Date of Birth"
-                                    @blur="$v.dateOfBirth.$touch()"
-                                />
-                                <b-form-invalid-feedback
-                                    v-if="
-                                        $v.dateOfBirth.$dirty &&
-                                        !$v.dateOfBirth.required
-                                    "
-                                    aria-label="Invalid Date of Birth"
-                                    data-testid="feedbackDobIsRequired"
-                                    force-show
-                                >
-                                    A valid date of birth is required.
-                                </b-form-invalid-feedback>
-                                <b-form-invalid-feedback
-                                    v-else-if="
-                                        $v.dateOfBirth.$dirty &&
-                                        !$v.dateOfBirth.maxValue
-                                    "
-                                    aria-label="Invalid Date of Birth"
-                                    force-show
-                                >
-                                    Date of birth must be in the past.
-                                </b-form-invalid-feedback>
-                            </b-form-group>
-                        </b-col>
-                    </b-row>
-                    <b-row>
-                        <b-col>
-                            <b-form-group
-                                label="Date of Vaccine (Any Dose)"
-                                label-for="dateOfVaccine"
-                                :state="isValid($v.dateOfVaccine)"
-                            >
-                                <hg-date-dropdown
-                                    id="dateOfVaccine"
-                                    v-model="dateOfVaccine"
-                                    :state="isValid($v.dateOfVaccine)"
-                                    :allow-future="false"
-                                    :min-year="2020"
-                                    data-testid="dateOfVaccineInput"
-                                    aria-label="Date of Vaccine (Any Dose)"
-                                    @blur="$v.dateOfBirth.$touch()"
-                                />
-                                <b-form-invalid-feedback
-                                    v-if="
-                                        $v.dateOfVaccine.$dirty &&
-                                        !$v.dateOfVaccine.required
-                                    "
-                                    aria-label="Invalid Date of Vaccine"
-                                    data-testid="feedbackDovIsRequired"
-                                    force-show
-                                >
-                                    A valid date of vaccine is required.
-                                </b-form-invalid-feedback>
-                                <b-form-invalid-feedback
-                                    v-else-if="
-                                        $v.dateOfVaccine.$dirty &&
-                                        !$v.dateOfVaccine.maxValue
-                                    "
-                                    aria-label="Invalid Date of Vaccine"
-                                    force-show
-                                >
-                                    Date of vaccine must be in the past.
-                                </b-form-invalid-feedback>
-                            </b-form-group>
-                        </b-col>
-                    </b-row>
-                    <b-row class="mt-3 justify-content-between">
+                    <b-form-group
+                        label="Personal Health Number"
+                        label-for="phn"
+                    >
+                        <b-form-input
+                            id="phn"
+                            v-model="phn"
+                            v-mask="phnMask"
+                            data-testid="phnInput"
+                            autofocus
+                            aria-label="Personal Health Number"
+                            :state="isValid($v.phn)"
+                            @blur="$v.phn.$touch()"
+                        />
+                        <b-form-invalid-feedback
+                            v-if="!$v.phn.required"
+                            aria-label="Invalid Personal Health Number"
+                            data-testid="feedbackPhnIsRequired"
+                        >
+                            Personal Health Number is required.
+                        </b-form-invalid-feedback>
+                        <b-form-invalid-feedback
+                            v-else-if="!$v.phn.formatted"
+                            aria-label="Invalid Personal Health Number"
+                            data-testid="feedbackPhnMustBeValid"
+                        >
+                            Personal Health Number must be valid.
+                        </b-form-invalid-feedback>
+                    </b-form-group>
+                    <b-form-group
+                        label="Date of Birth"
+                        label-for="dateOfBirth"
+                        :state="isValid($v.dateOfBirth)"
+                    >
+                        <hg-date-dropdown
+                            id="dateOfBirth"
+                            v-model="dateOfBirth"
+                            :state="isValid($v.dateOfBirth)"
+                            :allow-future="false"
+                            data-testid="dateOfBirthInput"
+                            aria-label="Date of Birth"
+                            @blur="$v.dateOfBirth.$touch()"
+                        />
+                        <b-form-invalid-feedback
+                            v-if="
+                                $v.dateOfBirth.$dirty &&
+                                !$v.dateOfBirth.required
+                            "
+                            aria-label="Invalid Date of Birth"
+                            data-testid="feedbackDobIsRequired"
+                            force-show
+                        >
+                            A valid date of birth is required.
+                        </b-form-invalid-feedback>
+                        <b-form-invalid-feedback
+                            v-else-if="
+                                $v.dateOfBirth.$dirty &&
+                                !$v.dateOfBirth.maxValue
+                            "
+                            aria-label="Invalid Date of Birth"
+                            force-show
+                        >
+                            Date of birth must be in the past.
+                        </b-form-invalid-feedback>
+                    </b-form-group>
+                    <b-form-group
+                        label="Date of Vaccine (Any Dose)"
+                        label-for="dateOfVaccine"
+                        :state="isValid($v.dateOfVaccine)"
+                    >
+                        <hg-date-dropdown
+                            id="dateOfVaccine"
+                            v-model="dateOfVaccine"
+                            :state="isValid($v.dateOfVaccine)"
+                            :allow-future="false"
+                            :min-year="2020"
+                            data-testid="dateOfVaccineInput"
+                            aria-label="Date of Vaccine (Any Dose)"
+                            @blur="$v.dateOfBirth.$touch()"
+                        />
+                        <b-form-invalid-feedback
+                            v-if="
+                                $v.dateOfVaccine.$dirty &&
+                                !$v.dateOfVaccine.required
+                            "
+                            aria-label="Invalid Date of Vaccine"
+                            data-testid="feedbackDovIsRequired"
+                            force-show
+                        >
+                            A valid date of vaccine is required.
+                        </b-form-invalid-feedback>
+                        <b-form-invalid-feedback
+                            v-else-if="
+                                $v.dateOfVaccine.$dirty &&
+                                !$v.dateOfVaccine.maxValue
+                            "
+                            aria-label="Invalid Date of Vaccine"
+                            force-show
+                        >
+                            Date of vaccine must be in the past.
+                        </b-form-invalid-feedback>
+                    </b-form-group>
+                    <b-row class="pt-3 justify-content-between">
                         <b-col cols="5">
                             <hg-button
                                 variant="secondary"

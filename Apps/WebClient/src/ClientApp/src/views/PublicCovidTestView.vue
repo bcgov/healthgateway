@@ -272,118 +272,103 @@ export default class PublicCovidTestView extends Vue {
                         v-if="publicCovidTests.length"
                         data-testid="public-display-name"
                     >
-                        <b-row>
-                            <b-col>
-                                <strong>Name: </strong> {{ patientDisplayName }}
-                            </b-col>
-                        </b-row>
+                        <strong>Name: </strong>
+                        <span>{{ patientDisplayName }}</span>
                     </div>
                     <div
                         v-for="(publicCovidTest, index) in publicCovidTests"
                         :key="index"
                         class="covid-test-result mt-2 px-2 py-2"
                     >
-                        <b-row class="px-2 pt-1">
-                            <b-col>
-                                <strong>Result: </strong>
-                                <span
-                                    :data-testid="
-                                        'test-outcome-span-' + (index + 1)
-                                    "
-                                    v-bind="$attrs"
-                                    :class="
-                                        getClass(publicCovidTest.testOutcome)
-                                    "
-                                >
-                                    <strong
-                                        :data-testid="
-                                            'test-outcome-' + (index + 1)
-                                        "
-                                        >{{
-                                            publicCovidTest.testOutcome
-                                        }}</strong
-                                    ></span
-                                >
-                            </b-col>
-                        </b-row>
-                        <b-row class="px-2 pt-1">
-                            <b-col :data-testid="'test-type-' + (index + 1)">
-                                <strong>Test Type: </strong>
-                                {{ publicCovidTest.testType }}
-                            </b-col>
-                        </b-row>
-                        <b-row class="px-2 pt-1">
-                            <b-col
-                                :data-testid="'collection-date-' + (index + 1)"
+                        <div class="px-2 pt-1">
+                            <strong>Result: </strong>
+                            <span
+                                :data-testid="
+                                    'test-outcome-span-' + (index + 1)
+                                "
+                                v-bind="$attrs"
+                                :class="getClass(publicCovidTest.testOutcome)"
                             >
-                                <strong>Collection Date: </strong>
-                                {{
-                                    formatDate(
-                                        publicCovidTest.collectionDateTime
-                                    )
-                                }}
-                            </b-col>
-                        </b-row>
-                        <b-row class="px-2 pt-1">
-                            <b-col data-testid="test-status">
-                                <strong>Test Status: </strong>
-                                {{ publicCovidTest.testStatus }}
-                            </b-col>
-                        </b-row>
-                        <b-row class="px-2 pt-1">
-                            <b-col :data-testid="'result-date-' + (index + 1)">
-                                <strong>Result Date: </strong>
-                                {{ formatDate(publicCovidTest.resultDateTime) }}
-                            </b-col>
-                        </b-row>
-                        <b-row class="px-2 pt-1">
-                            <b-col data-testid="reporting-lab"
-                                ><strong>Reporting Lab: </strong>
-                                {{ publicCovidTest.lab }}
-                            </b-col>
-                        </b-row>
-                        <b-row class="px-2 pt-1 pb-2">
-                            <b-col data-testid="result-description">
-                                <strong>Result Description:</strong>
-                            </b-col>
-                        </b-row>
+                                <strong
+                                    :data-testid="'test-outcome-' + (index + 1)"
+                                    >{{ publicCovidTest.testOutcome }}</strong
+                                ></span
+                            >
+                        </div>
+                        <div
+                            class="px-2 pt-1"
+                            :data-testid="'test-type-' + (index + 1)"
+                        >
+                            <strong>Test Type: </strong>
+                            <span>{{ publicCovidTest.testType }}</span>
+                        </div>
+                        <div
+                            class="px-2 pt-1"
+                            :data-testid="'collection-date-' + (index + 1)"
+                        >
+                            <strong>Collection Date: </strong>
+                            <span>{{
+                                formatDate(publicCovidTest.collectionDateTime)
+                            }}</span>
+                        </div>
+                        <div class="px-2 pt-1" data-testid="test-status">
+                            <strong>Test Status: </strong>
+                            <span>{{ publicCovidTest.testStatus }}</span>
+                        </div>
+                        <div
+                            class="px-2 pt-1"
+                            :data-testid="'result-date-' + (index + 1)"
+                        >
+                            <strong>Result Date: </strong>
+                            <span>{{
+                                formatDate(publicCovidTest.resultDateTime)
+                            }}</span>
+                        </div>
+                        <div class="px-2 pt-1" data-testid="reporting-lab">
+                            <strong>Reporting Lab: </strong>
+                            <span>{{ publicCovidTest.lab }}</span>
+                        </div>
+                        <div
+                            class="px-2 pt-1 pb-2"
+                            data-testid="result-description"
+                        >
+                            <strong>Result Description:</strong>
+                        </div>
                         <div
                             v-for="(
                                 resultDescription, resultDescriptionIndex
                             ) in publicCovidTest.resultDescription"
                             :key="resultDescriptionIndex"
                         >
-                            <b-row class="px-2 pb-2">
-                                <b-col>
-                                    {{ resultDescription }}
-                                    <a
-                                        v-if="
-                                            showLink(
-                                                publicCovidTest.resultLink,
-                                                publicCovidTest
-                                                    .resultDescription.length,
-                                                resultDescriptionIndex
-                                            )
-                                        "
-                                        :data-testid="
-                                            'result-link-' +
-                                            (resultDescriptionIndex + 1)
-                                        "
-                                        :href="publicCovidTest.resultLink"
-                                        rel="noopener"
-                                        target="_blank"
-                                        >this page</a
-                                    >
-                                    <span>{{
-                                        getPeriod(
+                            <div class="px-2 pb-2">
+                                {{ resultDescription }}
+                                <a
+                                    v-if="
+                                        showLink(
                                             publicCovidTest.resultLink,
                                             publicCovidTest.resultDescription
                                                 .length,
                                             resultDescriptionIndex
                                         )
-                                    }}</span>
-                                </b-col>
-                            </b-row>
+                                    "
+                                    :data-testid="
+                                        'result-link-' +
+                                        (resultDescriptionIndex + 1)
+                                    "
+                                    :href="publicCovidTest.resultLink"
+                                    rel="noopener"
+                                    target="_blank"
+                                    >this page</a
+                                >
+                                <span>{{
+                                    getPeriod(
+                                        publicCovidTest.resultLink,
+                                        publicCovidTest.resultDescription
+                                            .length,
+                                        resultDescriptionIndex
+                                    )
+                                }}</span>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -480,122 +465,110 @@ export default class PublicCovidTestView extends Vue {
                     <p class="mb-4">
                         To get your COVID-19 test result, please provide:
                     </p>
-                    <b-row>
-                        <b-col>
-                            <b-form-group
-                                label="Personal Health Number"
-                                label-for="phn"
-                            >
-                                <b-form-input
-                                    id="phn"
-                                    ref="phnInput"
-                                    v-model="phn"
-                                    v-mask="phnMask"
-                                    data-testid="phnInput"
-                                    autofocus
-                                    aria-label="Personal Health Number"
-                                    :state="isValid($v.phn)"
-                                    @blur="$v.phn.$touch()"
-                                />
-                                <b-form-invalid-feedback
-                                    v-if="!$v.phn.required"
-                                    aria-label="Invalid Personal Health Number"
-                                    data-testid="feedbackPhnIsRequired"
-                                >
-                                    Personal Health Number is required.
-                                </b-form-invalid-feedback>
-                                <b-form-invalid-feedback
-                                    v-else-if="!$v.phn.formatted"
-                                    aria-label="Invalid Personal Health Number"
-                                    data-testid="feedbackPhnMustBeValid"
-                                >
-                                    Personal Health Number must be valid.
-                                </b-form-invalid-feedback>
-                            </b-form-group>
-                        </b-col>
-                    </b-row>
-                    <b-row>
-                        <b-col>
-                            <b-form-group
-                                label="Date of Birth"
-                                label-for="dateOfBirth"
-                                :state="isValid($v.dateOfBirth)"
-                            >
-                                <hg-date-dropdown
-                                    id="dateOfBirth"
-                                    v-model="dateOfBirth"
-                                    :state="isValid($v.dateOfBirth)"
-                                    :allow-future="false"
-                                    data-testid="dateOfBirthInput"
-                                    aria-label="Date of Birth"
-                                    @blur="$v.dateOfBirth.$touch()"
-                                />
-                                <b-form-invalid-feedback
-                                    v-if="
-                                        $v.dateOfBirth.$dirty &&
-                                        !$v.dateOfBirth.required
-                                    "
-                                    aria-label="Invalid Date of Birth"
-                                    data-testid="feedbackDobIsRequired"
-                                    force-show
-                                >
-                                    A valid date of birth is required.
-                                </b-form-invalid-feedback>
-                                <b-form-invalid-feedback
-                                    v-else-if="
-                                        $v.dateOfBirth.$dirty &&
-                                        !$v.dateOfBirth.maxValue
-                                    "
-                                    aria-label="Invalid Date of Birth"
-                                    force-show
-                                >
-                                    Date of birth must be in the past.
-                                </b-form-invalid-feedback>
-                            </b-form-group>
-                        </b-col>
-                    </b-row>
-                    <b-row>
-                        <b-col>
-                            <b-form-group
-                                label="Date of COVID-19 Test"
-                                label-for="dateOfCollection"
-                                :state="isValid($v.dateOfCollection)"
-                            >
-                                <hg-date-dropdown
-                                    id="dateOfCollection"
-                                    v-model="dateOfCollection"
-                                    :state="isValid($v.dateOfCollection)"
-                                    :allow-future="false"
-                                    :min-year="2020"
-                                    data-testid="dateOfCollectionInput"
-                                    aria-label="Date of COVID-19 Test"
-                                    @blur="$v.dateOfBirth.$touch()"
-                                />
-                                <b-form-invalid-feedback
-                                    v-if="
-                                        $v.dateOfCollection.$dirty &&
-                                        !$v.dateOfCollection.required
-                                    "
-                                    aria-label="Invalid Collection Date"
-                                    data-testid="feedbackCollectionDateIsRequired"
-                                    force-show
-                                >
-                                    A valid collection date is required.
-                                </b-form-invalid-feedback>
-                                <b-form-invalid-feedback
-                                    v-else-if="
-                                        $v.dateOfCollection.$dirty &&
-                                        !$v.dateOfCollection.maxValue
-                                    "
-                                    aria-label="Invalid Collection Date"
-                                    force-show
-                                >
-                                    Collection Date must be in the past.
-                                </b-form-invalid-feedback>
-                            </b-form-group>
-                        </b-col>
-                    </b-row>
-                    <b-row class="mt-3 justify-content-between">
+                    <b-form-group
+                        label="Personal Health Number"
+                        label-for="phn"
+                    >
+                        <b-form-input
+                            id="phn"
+                            ref="phnInput"
+                            v-model="phn"
+                            v-mask="phnMask"
+                            data-testid="phnInput"
+                            autofocus
+                            aria-label="Personal Health Number"
+                            :state="isValid($v.phn)"
+                            @blur="$v.phn.$touch()"
+                        />
+                        <b-form-invalid-feedback
+                            v-if="!$v.phn.required"
+                            aria-label="Invalid Personal Health Number"
+                            data-testid="feedbackPhnIsRequired"
+                        >
+                            Personal Health Number is required.
+                        </b-form-invalid-feedback>
+                        <b-form-invalid-feedback
+                            v-else-if="!$v.phn.formatted"
+                            aria-label="Invalid Personal Health Number"
+                            data-testid="feedbackPhnMustBeValid"
+                        >
+                            Personal Health Number must be valid.
+                        </b-form-invalid-feedback>
+                    </b-form-group>
+                    <b-form-group
+                        label="Date of Birth"
+                        label-for="dateOfBirth"
+                        :state="isValid($v.dateOfBirth)"
+                    >
+                        <hg-date-dropdown
+                            id="dateOfBirth"
+                            v-model="dateOfBirth"
+                            :state="isValid($v.dateOfBirth)"
+                            :allow-future="false"
+                            data-testid="dateOfBirthInput"
+                            aria-label="Date of Birth"
+                            @blur="$v.dateOfBirth.$touch()"
+                        />
+                        <b-form-invalid-feedback
+                            v-if="
+                                $v.dateOfBirth.$dirty &&
+                                !$v.dateOfBirth.required
+                            "
+                            aria-label="Invalid Date of Birth"
+                            data-testid="feedbackDobIsRequired"
+                            force-show
+                        >
+                            A valid date of birth is required.
+                        </b-form-invalid-feedback>
+                        <b-form-invalid-feedback
+                            v-else-if="
+                                $v.dateOfBirth.$dirty &&
+                                !$v.dateOfBirth.maxValue
+                            "
+                            aria-label="Invalid Date of Birth"
+                            force-show
+                        >
+                            Date of birth must be in the past.
+                        </b-form-invalid-feedback>
+                    </b-form-group>
+                    <b-form-group
+                        label="Date of COVID-19 Test"
+                        label-for="dateOfCollection"
+                        :state="isValid($v.dateOfCollection)"
+                    >
+                        <hg-date-dropdown
+                            id="dateOfCollection"
+                            v-model="dateOfCollection"
+                            :state="isValid($v.dateOfCollection)"
+                            :allow-future="false"
+                            :min-year="2020"
+                            data-testid="dateOfCollectionInput"
+                            aria-label="Date of COVID-19 Test"
+                            @blur="$v.dateOfBirth.$touch()"
+                        />
+                        <b-form-invalid-feedback
+                            v-if="
+                                $v.dateOfCollection.$dirty &&
+                                !$v.dateOfCollection.required
+                            "
+                            aria-label="Invalid Collection Date"
+                            data-testid="feedbackCollectionDateIsRequired"
+                            force-show
+                        >
+                            A valid collection date is required.
+                        </b-form-invalid-feedback>
+                        <b-form-invalid-feedback
+                            v-else-if="
+                                $v.dateOfCollection.$dirty &&
+                                !$v.dateOfCollection.maxValue
+                            "
+                            aria-label="Invalid Collection Date"
+                            force-show
+                        >
+                            Collection Date must be in the past.
+                        </b-form-invalid-feedback>
+                    </b-form-group>
+                    <b-row class="pt-3 justify-content-between">
                         <b-col cols="5">
                             <hg-button
                                 variant="secondary"

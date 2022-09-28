@@ -664,616 +664,512 @@ export default class ProfileView extends Vue {
         <page-title title="Profile" />
         <div v-if="!isLoading">
             <div v-if="isActiveProfile">
-                <b-row class="mb-3">
-                    <b-col>
-                        <label for="profileNames" class="hg-label"
-                            >Full Name</label
+                <div class="mb-3">
+                    <label for="profileNames" class="hg-label">Full Name</label>
+                    <div id="profileNames">{{ fullName }}</div>
+                </div>
+                <div class="mb-3">
+                    <label for="PHN" class="hg-label"
+                        >Personal Health Number</label
+                    >
+                    <div id="PHN" data-testid="PHN">{{ phn }}</div>
+                </div>
+                <div>
+                    <b-form-group
+                        :state="
+                            isValid($v.email) || !isEmailEditable ? null : false
+                        "
+                    >
+                        <label for="email" class="hg-label">
+                            Email Address
+                        </label>
+                        <b-link
+                            v-if="!isEmailEditable"
+                            id="editEmail"
+                            data-testid="editEmailBtn"
+                            class="ml-3"
+                            variant="link"
+                            @click="makeEmailEditable()"
+                            >Edit</b-link
                         >
-                        <div id="profileNames">
-                            {{ fullName }}
+                        <div class="form-inline mb-1">
+                            <b-row>
+                                <b-col>
+                                    <b-form-input
+                                        id="email"
+                                        v-model="$v.email.$model"
+                                        data-testid="emailInput"
+                                        type="email"
+                                        :placeholder="
+                                            isEmailEditable
+                                                ? 'Your email address'
+                                                : 'Empty'
+                                        "
+                                        :disabled="!isEmailEditable"
+                                        :state="
+                                            isValid($v.email) ||
+                                            !isEmailEditable
+                                                ? null
+                                                : false
+                                        "
+                                    />
+                                </b-col>
+                                <b-col
+                                    v-if="
+                                        !emailVerified &&
+                                        !isEmailEditable &&
+                                        email
+                                    "
+                                    cols="12"
+                                    md="auto"
+                                    class="pl-md-0 pl-3"
+                                >
+                                    <hg-button
+                                        id="resendEmail"
+                                        data-testid="resendEmailBtn"
+                                        variant="secondary"
+                                        class="mt-md-0 mt-2"
+                                        :disabled="emailVerificationSent"
+                                        @click="sendUserEmailUpdate()"
+                                    >
+                                        Resend Verification
+                                    </hg-button>
+                                </b-col>
+                            </b-row>
                         </div>
-                    </b-col>
-                </b-row>
-                <b-row class="mb-3">
-                    <b-col>
-                        <label for="PHN" class="hg-label"
-                            >Personal Health Number</label
+                        <b-form-invalid-feedback :state="$v.email.email">
+                            Valid email is required
+                        </b-form-invalid-feedback>
+                        <b-form-invalid-feedback
+                            :state="$v.email.newEmail"
+                            data-testid="emailInvalidNewEqualsOld"
                         >
-                        <div id="PHN" data-testid="PHN">
-                            {{ phn }}
+                            New email must be different from the previous one
+                        </b-form-invalid-feedback>
+                        <div
+                            v-if="!isEmailEditable"
+                            id="emailStatus"
+                            data-testid="emailStatus"
+                        >
+                            <status-label
+                                v-if="emailVerified"
+                                status="Verified"
+                                variant="success"
+                                data-testid="emailStatusVerified"
+                            />
+                            <status-label
+                                v-else-if="email == null || email === ''"
+                                status="Opted Out"
+                                data-testid="emailStatusOptedOut"
+                            />
+                            <status-label
+                                v-else
+                                status="Not Verified"
+                                variant="danger"
+                                data-testid="emailStatusNotVerified"
+                            />
                         </div>
-                    </b-col>
-                </b-row>
-                <b-row>
-                    <b-col>
-                        <b-row>
-                            <b-col>
-                                <b-form-group
-                                    :state="
-                                        isValid($v.email) || !isEmailEditable
-                                            ? null
-                                            : false
-                                    "
-                                >
-                                    <label for="email" class="hg-label">
-                                        Email Address
-                                    </label>
-                                    <b-link
-                                        v-if="!isEmailEditable"
-                                        id="editEmail"
-                                        data-testid="editEmailBtn"
-                                        class="ml-3"
-                                        variant="link"
-                                        @click="makeEmailEditable()"
-                                        >Edit</b-link
-                                    >
-                                    <div class="form-inline mb-1">
-                                        <b-row>
-                                            <b-col>
-                                                <b-form-input
-                                                    id="email"
-                                                    v-model="$v.email.$model"
-                                                    data-testid="emailInput"
-                                                    type="email"
-                                                    :placeholder="
-                                                        isEmailEditable
-                                                            ? 'Your email address'
-                                                            : 'Empty'
-                                                    "
-                                                    :disabled="!isEmailEditable"
-                                                    :state="
-                                                        isValid($v.email) ||
-                                                        !isEmailEditable
-                                                            ? null
-                                                            : false
-                                                    "
-                                                />
-                                            </b-col>
-                                            <b-col
-                                                v-if="
-                                                    !emailVerified &&
-                                                    !isEmailEditable &&
-                                                    email
-                                                "
-                                                cols="12"
-                                                md="auto"
-                                                class="pl-md-0 pl-3"
-                                            >
-                                                <hg-button
-                                                    id="resendEmail"
-                                                    data-testid="resendEmailBtn"
-                                                    variant="secondary"
-                                                    class="mt-md-0 mt-2"
-                                                    :disabled="
-                                                        emailVerificationSent
-                                                    "
-                                                    @click="
-                                                        sendUserEmailUpdate()
-                                                    "
-                                                >
-                                                    Resend Verification
-                                                </hg-button>
-                                            </b-col>
-                                        </b-row>
-                                    </div>
-                                    <b-form-invalid-feedback
-                                        :state="$v.email.email"
-                                    >
-                                        Valid email is required
-                                    </b-form-invalid-feedback>
-                                    <b-form-invalid-feedback
-                                        :state="$v.email.newEmail"
-                                        data-testid="emailInvalidNewEqualsOld"
-                                    >
-                                        New email must be different from the
-                                        previous one
-                                    </b-form-invalid-feedback>
-                                    <div
-                                        v-if="!isEmailEditable"
-                                        id="emailStatus"
-                                        data-testid="emailStatus"
-                                    >
-                                        <status-label
-                                            v-if="emailVerified"
-                                            status="Verified"
-                                            variant="success"
-                                            data-testid="emailStatusVerified"
-                                        />
-                                        <status-label
-                                            v-else-if="
-                                                email == null || email === ''
-                                            "
-                                            status="Opted Out"
-                                            data-testid="emailStatusOptedOut"
-                                        />
-                                        <status-label
-                                            v-else
-                                            status="Not Verified"
-                                            variant="danger"
-                                            data-testid="emailStatusNotVerified"
-                                        />
-                                    </div>
-                                </b-form-group>
-                            </b-col>
-                        </b-row>
-                        <b-row
-                            v-if="!email && tempEmail"
-                            class="mb-3"
-                            data-testid="emailOptOutMessage"
-                        >
-                            <b-col
-                                class="font-weight-bold text-primary text-center"
-                            >
-                                <hg-icon
-                                    icon="exclamation-triangle"
-                                    size="medium"
-                                    aria-hidden="true"
-                                    class="mr-2"
-                                />
-                                <span>
-                                    Removing your email address will disable
-                                    future email communications from the Health
-                                    Gateway.
-                                </span>
-                            </b-col>
-                        </b-row>
-                        <b-row v-if="isEmailEditable" class="mb-3">
-                            <b-col>
-                                <hg-button
-                                    id="editEmailCancelBtn"
-                                    data-testid="editEmailCancelBtn"
-                                    variant="secondary"
-                                    size="small"
-                                    class="mr-2"
-                                    @click="cancelEmailEdit()"
-                                >
-                                    Cancel
-                                </hg-button>
-                                <hg-button
-                                    id="editSMSSaveBtn"
-                                    data-testid="editEmailSaveBtn"
-                                    variant="primary"
-                                    size="small"
-                                    class="mx-2"
-                                    :disabled="
-                                        tempEmail === email ||
-                                        !isValid($v.email)
-                                    "
-                                    @click="saveEmailEdit($event)"
-                                >
-                                    Save
-                                </hg-button>
-                            </b-col>
-                        </b-row>
-                    </b-col>
-                </b-row>
-                <b-row>
-                    <b-col>
-                        <b-row>
-                            <b-col>
-                                <b-form-group
-                                    :state="
-                                        isValid($v.smsNumber) || !isSMSEditable
-                                            ? null
-                                            : false
-                                    "
-                                >
-                                    <label for="smsNumber" class="hg-label">
-                                        Cell Number (SMS notifications)
-                                    </label>
-                                    <b-link
-                                        v-if="!isSMSEditable"
-                                        id="editSMS"
-                                        data-testid="editSMSBtn"
-                                        class="ml-3"
-                                        variant="link"
-                                        @click="makeSMSEditable()"
-                                        >Edit</b-link
-                                    >
-                                    <div class="form-inline mb-1">
-                                        <b-row>
-                                            <b-col>
-                                                <b-form-input
-                                                    id="smsNumber"
-                                                    v-model="
-                                                        $v.smsNumber.$model
-                                                    "
-                                                    v-mask="'(###) ###-####'"
-                                                    type="tel"
-                                                    data-testid="smsNumberInput"
-                                                    :placeholder="
-                                                        isSMSEditable
-                                                            ? 'Your phone number'
-                                                            : 'Empty'
-                                                    "
-                                                    :disabled="!isSMSEditable"
-                                                    :state="
-                                                        isValid($v.smsNumber) ||
-                                                        !isSMSEditable
-                                                            ? null
-                                                            : false
-                                                    "
-                                                />
-                                            </b-col>
-                                            <b-col
-                                                v-if="
-                                                    !smsVerified &&
-                                                    !isSMSEditable &&
-                                                    smsNumber
-                                                "
-                                                cols="12"
-                                                md="auto"
-                                                class="pl-md-0 pl-3"
-                                            >
-                                                <hg-button
-                                                    id="verifySMS"
-                                                    variant="secondary"
-                                                    data-testid="verifySMSBtn"
-                                                    class="mt-md-0 mt-2"
-                                                    @click="verifySMS()"
-                                                >
-                                                    Verify
-                                                </hg-button>
-                                            </b-col>
-                                        </b-row>
-                                    </div>
-                                    <b-form-invalid-feedback
-                                        :state="$v.smsNumber.sms"
-                                    >
-                                        Valid SMS number is required
-                                    </b-form-invalid-feedback>
-                                    <b-form-invalid-feedback
-                                        data-testid="smsInvalidNewEqualsOld"
-                                        :state="$v.smsNumber.newSMSNumber"
-                                    >
-                                        New SMS number must be different from
-                                        the previous one
-                                    </b-form-invalid-feedback>
-                                    <div
-                                        v-if="!isSMSEditable"
-                                        id="smsStatus"
-                                        data-testid="smsStatus"
-                                    >
-                                        <status-label
-                                            v-if="smsVerified"
-                                            status="Verified"
-                                            variant="success"
-                                            data-testid="smsStatusVerified"
-                                        />
-                                        <status-label
-                                            v-else-if="
-                                                smsNumber == null ||
-                                                smsNumber === ''
-                                            "
-                                            status="Opted Out"
-                                            data-testid="smsStatusOptedOut"
-                                        />
-                                        <status-label
-                                            v-else
-                                            status="Not Verified"
-                                            variant="danger"
-                                            data-testid="smsStatusNotVerified"
-                                        />
-                                    </div>
-                                </b-form-group>
-                            </b-col>
-                        </b-row>
-                        <b-row
-                            v-if="!smsNumber && tempSMS"
-                            data-testid="smsOptOutMessage"
-                            class="mb-3"
-                        >
-                            <b-col
-                                class="font-weight-bold text-primary text-center"
-                            >
-                                <hg-icon
-                                    icon="exclamation-triangle"
-                                    size="medium"
-                                    aria-hidden="true"
-                                    class="mr-2"
-                                />
-                                <span>
-                                    Removing your phone number will disable
-                                    future SMS communications from the Health
-                                    Gateway.
-                                </span>
-                            </b-col>
-                        </b-row>
-                        <b-row v-if="isSMSEditable" class="mb-3">
-                            <b-col>
-                                <hg-button
-                                    id="cancelBtn"
-                                    data-testid="cancelSMSEditBtn"
-                                    variant="secondary"
-                                    size="small"
-                                    class="mr-2"
-                                    @click="cancelSMSEdit()"
-                                >
-                                    Cancel
-                                </hg-button>
-                                <hg-button
-                                    id="saveBtn"
-                                    data-testid="saveSMSEditBtn"
-                                    variant="primary"
-                                    size="small"
-                                    class="mx-2"
-                                    :disabled="tempSMS === smsNumber"
-                                    @click="saveSMSEdit()"
-                                >
-                                    Save
-                                </hg-button>
-                            </b-col>
-                        </b-row>
-                        <b-row class="mb-3">
-                            <b-col>
-                                <label
-                                    for="postal-address-section"
-                                    class="hg-label"
-                                    data-testid="postal-address-label"
-                                >
-                                    {{ postalAddressLabel }}
-                                </label>
-                                <div id="postal-address-section">
-                                    <div
-                                        v-if="!isPostalAddressShown"
-                                        id="no-postal-address-text-div"
-                                    >
-                                        <em
-                                            data-testid="no-postal-address-text"
-                                        >
-                                            No address on record
-                                        </em>
-                                    </div>
-                                    <div
-                                        v-if="isPostalAddressShown"
-                                        id="postal-address-div"
-                                        data-testid="postal-address-div"
-                                    >
-                                        <b-row
-                                            v-for="(
-                                                item, index
-                                            ) in postalAddress.streetLines"
-                                            :key="index"
-                                        >
-                                            <b-col>{{ item }}</b-col>
-                                        </b-row>
-                                        <b-row>
-                                            <b-col
-                                                >{{ postalAddress.city }},
-                                                {{ postalAddress.state }},
-                                                {{ postalAddress.postalCode }}
-                                            </b-col>
-                                        </b-row>
-                                    </div>
-                                </div>
-                            </b-col>
-                        </b-row>
-                        <b-row
-                            v-if="isPhysicalAddressSectionShown"
-                            class="mb-3"
-                        >
-                            <b-col>
-                                <label
-                                    for="physical-address-section"
-                                    class="hg-label"
-                                    data-testid="physical-address-label"
-                                    >Physical Address
-                                </label>
-                                <div
-                                    id="physical-address-section"
-                                    data-testid="physical-address-section"
-                                >
-                                    <div
-                                        v-if="!isPhysicalAddressShown"
-                                        id="no-physical-address-text-div"
-                                    >
-                                        <em
-                                            data-testid="no-physical-address-text"
-                                        >
-                                            No address on record
-                                        </em>
-                                    </div>
-                                    <div
-                                        v-if="isPhysicalAddressShown"
-                                        id="physical-address-div"
-                                        data-testid="physical-address-div"
-                                    >
-                                        <b-row
-                                            v-for="(
-                                                item, index
-                                            ) in physicalAddress.streetLines"
-                                            :key="index"
-                                        >
-                                            <b-col>{{ item }}</b-col>
-                                        </b-row>
-                                        <b-row>
-                                            <b-col
-                                                >{{ physicalAddress.city }},
-                                                {{ physicalAddress.state }},
-                                                {{ physicalAddress.postalCode }}
-                                            </b-col>
-                                        </b-row>
-                                    </div>
-                                </div>
-                            </b-col>
-                        </b-row>
-                        <b-row
-                            v-if="isUpdateAddressCombinedTextShown"
-                            class="mb-3"
-                        >
-                            <b-col>
-                                If this address is incorrect, update it
-                                <a
-                                    href="https://www.addresschange.gov.bc.ca/"
-                                    target="_blank"
-                                    rel="noopener"
-                                    >here</a
-                                >
-                                <span>.</span>
-                            </b-col>
-                        </b-row>
-                        <b-row
-                            v-if="isUpdateAddressDifferentTextShown"
-                            class="mb-3"
-                        >
-                            <b-col>
-                                If either of these addresses is incorrect,
-                                update them
-                                <a
-                                    href="https://www.addresschange.gov.bc.ca/"
-                                    target="_blank"
-                                    rel="noopener"
-                                    >here</a
-                                >
-                                <span>.</span>
-                            </b-col>
-                        </b-row>
-                        <b-row v-if="isAddAddressTextShown" class="mb-3">
-                            <b-col>
-                                To add an address, visit
-                                <a
-                                    href="https://www.addresschange.gov.bc.ca/"
-                                    target="_blank"
-                                    rel="noopener"
-                                    >this page</a
-                                >
-                                <span>.</span>
-                            </b-col>
-                        </b-row>
-                        <b-row class="mb-3">
-                            <b-col>
-                                <label for="lastLoginDate" class="hg-label"
-                                    >Login History</label
-                                >
-                                <div id="lastLoginDate">
-                                    <ul>
-                                        <li
-                                            v-for="(
-                                                item, index
-                                            ) in formattedLoginDateTimes"
-                                            :key="index"
-                                            data-testid="lastLoginDateItem"
-                                        >
-                                            {{ item }}
-                                        </li>
-                                    </ul>
-                                </div>
-                            </b-col>
-                        </b-row>
-                    </b-col>
-                </b-row>
-            </div>
-            <div v-else>
-                <b-row class="mb-3">
-                    <b-col>
+                    </b-form-group>
+                    <div
+                        v-if="!email && tempEmail"
+                        class="mb-3 font-weight-bold text-primary text-center"
+                        data-testid="emailOptOutMessage"
+                    >
                         <hg-icon
                             icon="exclamation-triangle"
                             size="medium"
                             aria-hidden="true"
-                            class="text-danger mr-2"
+                            class="mr-2"
                         />
-                        <label for="deletionWarning" class="hg-label">
-                            Account marked for removal
-                        </label>
-                        <div id="deletionWarning">
-                            Your account has been deactivated. If you wish to
-                            recover your account click on the "Recover Account"
-                            button before the time expires.
-                        </div>
-                    </b-col>
-                </b-row>
-                <b-row class="mb-3">
-                    <b-col>
-                        <label class="hg-label"
-                            >Time remaining for deletion:
-                        </label>
-                        {{ timeForDeletionString }}
-                    </b-col>
-                </b-row>
-                <b-row class="mb-3">
-                    <b-col>
-                        <hg-button
-                            id="recoverAccountCancelBtn"
-                            data-testid="recoverAccountCancelBtn"
-                            class="mx-auto"
-                            variant="primary"
-                            @click="recoverAccount()"
-                            >Recover Account
-                        </hg-button>
-                    </b-col>
-                </b-row>
-            </div>
-            <b-row v-if="isActiveProfile" class="mb-3">
-                <b-col>
-                    <label class="hg-label">Manage Account</label>
-                    <div>
-                        <hg-button
-                            v-if="!showCloseWarning"
-                            id="recoverAccountShowCloseWarningBtn"
-                            data-testid="recoverAccountShowCloseWarningBtn"
-                            class="p-0 pt-2"
-                            variant="link-danger"
-                            @click="showCloseWarningBtn()"
-                            >Delete My Account
-                        </hg-button>
-                        <b-row v-if="showCloseWarning" class="mb-3">
-                            <b-col
-                                class="font-weight-bold text-danger text-center"
-                            >
-                                <hr />
-                                <hg-icon
-                                    icon="exclamation-triangle"
-                                    size="medium"
-                                    aria-hidden="true"
-                                    class="mr-2"
-                                />
-                                <span
-                                    >Your account will be marked for removal,
-                                    preventing you from accessing your
-                                    information on the Health Gateway. After a
-                                    set period of time it will be removed
-                                    permanently.</span
-                                >
-                            </b-col>
-                        </b-row>
-                        <b-row
-                            v-if="showCloseWarning"
-                            class="mb-3 justify-content-end"
-                        >
-                            <b-col class="text-right">
-                                <hg-button
-                                    id="closeAccountCancelBtn"
-                                    data-testid="closeAccountCancelBtn"
-                                    variant="secondary"
-                                    @click="cancelClose()"
-                                    >Cancel
-                                </hg-button>
-                                <hg-button
-                                    id="closeAccountBtn"
-                                    data-testid="closeAccountBtn"
-                                    class="mx-2"
-                                    variant="danger"
-                                    @click="closeAccount()"
-                                    >Delete Account
-                                </hg-button>
-                            </b-col>
-                        </b-row>
+                        <span>
+                            Removing your email address will disable future
+                            email communications from the Health Gateway.
+                        </span>
                     </div>
-                </b-col>
-            </b-row>
+                    <div v-if="isEmailEditable" class="mb-3">
+                        <hg-button
+                            id="editEmailCancelBtn"
+                            data-testid="editEmailCancelBtn"
+                            variant="secondary"
+                            size="small"
+                            class="mr-2"
+                            @click="cancelEmailEdit()"
+                        >
+                            Cancel
+                        </hg-button>
+                        <hg-button
+                            id="editSMSSaveBtn"
+                            data-testid="editEmailSaveBtn"
+                            variant="primary"
+                            size="small"
+                            class="mx-2"
+                            :disabled="
+                                tempEmail === email || !isValid($v.email)
+                            "
+                            @click="saveEmailEdit($event)"
+                        >
+                            Save
+                        </hg-button>
+                    </div>
+                </div>
+                <div>
+                    <b-form-group
+                        :state="
+                            isValid($v.smsNumber) || !isSMSEditable
+                                ? null
+                                : false
+                        "
+                    >
+                        <label for="smsNumber" class="hg-label">
+                            Cell Number (SMS notifications)
+                        </label>
+                        <b-link
+                            v-if="!isSMSEditable"
+                            id="editSMS"
+                            data-testid="editSMSBtn"
+                            class="ml-3"
+                            variant="link"
+                            @click="makeSMSEditable()"
+                            >Edit</b-link
+                        >
+                        <div class="form-inline mb-1">
+                            <b-row>
+                                <b-col>
+                                    <b-form-input
+                                        id="smsNumber"
+                                        v-model="$v.smsNumber.$model"
+                                        v-mask="'(###) ###-####'"
+                                        type="tel"
+                                        data-testid="smsNumberInput"
+                                        :placeholder="
+                                            isSMSEditable
+                                                ? 'Your phone number'
+                                                : 'Empty'
+                                        "
+                                        :disabled="!isSMSEditable"
+                                        :state="
+                                            isValid($v.smsNumber) ||
+                                            !isSMSEditable
+                                                ? null
+                                                : false
+                                        "
+                                    />
+                                </b-col>
+                                <b-col
+                                    v-if="
+                                        !smsVerified &&
+                                        !isSMSEditable &&
+                                        smsNumber
+                                    "
+                                    cols="12"
+                                    md="auto"
+                                    class="pl-md-0 pl-3"
+                                >
+                                    <hg-button
+                                        id="verifySMS"
+                                        variant="secondary"
+                                        data-testid="verifySMSBtn"
+                                        class="mt-md-0 mt-2"
+                                        @click="verifySMS()"
+                                    >
+                                        Verify
+                                    </hg-button>
+                                </b-col>
+                            </b-row>
+                        </div>
+                        <b-form-invalid-feedback :state="$v.smsNumber.sms">
+                            Valid SMS number is required
+                        </b-form-invalid-feedback>
+                        <b-form-invalid-feedback
+                            data-testid="smsInvalidNewEqualsOld"
+                            :state="$v.smsNumber.newSMSNumber"
+                        >
+                            New SMS number must be different from the previous
+                            one
+                        </b-form-invalid-feedback>
+                        <div
+                            v-if="!isSMSEditable"
+                            id="smsStatus"
+                            data-testid="smsStatus"
+                        >
+                            <status-label
+                                v-if="smsVerified"
+                                status="Verified"
+                                variant="success"
+                                data-testid="smsStatusVerified"
+                            />
+                            <status-label
+                                v-else-if="
+                                    smsNumber == null || smsNumber === ''
+                                "
+                                status="Opted Out"
+                                data-testid="smsStatusOptedOut"
+                            />
+                            <status-label
+                                v-else
+                                status="Not Verified"
+                                variant="danger"
+                                data-testid="smsStatusNotVerified"
+                            />
+                        </div>
+                    </b-form-group>
+                    <div
+                        v-if="!smsNumber && tempSMS"
+                        data-testid="smsOptOutMessage"
+                        class="mb-3 font-weight-bold text-primary text-center"
+                    >
+                        <hg-icon
+                            icon="exclamation-triangle"
+                            size="medium"
+                            aria-hidden="true"
+                            class="mr-2"
+                        />
+                        <span>
+                            Removing your phone number will disable future SMS
+                            communications from the Health Gateway.
+                        </span>
+                    </div>
+                    <div v-if="isSMSEditable" class="mb-3">
+                        <hg-button
+                            id="cancelBtn"
+                            data-testid="cancelSMSEditBtn"
+                            variant="secondary"
+                            size="small"
+                            class="mr-2"
+                            @click="cancelSMSEdit()"
+                        >
+                            Cancel
+                        </hg-button>
+                        <hg-button
+                            id="saveBtn"
+                            data-testid="saveSMSEditBtn"
+                            variant="primary"
+                            size="small"
+                            class="mx-2"
+                            :disabled="tempSMS === smsNumber"
+                            @click="saveSMSEdit()"
+                        >
+                            Save
+                        </hg-button>
+                    </div>
+                    <div class="mb-3">
+                        <label
+                            for="postal-address-section"
+                            class="hg-label"
+                            data-testid="postal-address-label"
+                        >
+                            {{ postalAddressLabel }}
+                        </label>
+                        <div id="postal-address-section">
+                            <div
+                                v-if="!isPostalAddressShown"
+                                id="no-postal-address-text-div"
+                            >
+                                <em data-testid="no-postal-address-text">
+                                    No address on record
+                                </em>
+                            </div>
+                            <div
+                                v-if="isPostalAddressShown"
+                                id="postal-address-div"
+                                data-testid="postal-address-div"
+                            >
+                                <div
+                                    v-for="(
+                                        item, index
+                                    ) in postalAddress.streetLines"
+                                    :key="index"
+                                >
+                                    {{ item }}
+                                </div>
+                                <div>
+                                    {{ postalAddress.city }},
+                                    {{ postalAddress.state }},
+                                    {{ postalAddress.postalCode }}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div v-if="isPhysicalAddressSectionShown" class="mb-3">
+                        <label
+                            for="physical-address-section"
+                            class="hg-label"
+                            data-testid="physical-address-label"
+                            >Physical Address
+                        </label>
+                        <div
+                            id="physical-address-section"
+                            data-testid="physical-address-section"
+                        >
+                            <div
+                                v-if="!isPhysicalAddressShown"
+                                id="no-physical-address-text-div"
+                            >
+                                <em data-testid="no-physical-address-text">
+                                    No address on record
+                                </em>
+                            </div>
+                            <div
+                                v-if="isPhysicalAddressShown"
+                                id="physical-address-div"
+                                data-testid="physical-address-div"
+                            >
+                                <div
+                                    v-for="(
+                                        item, index
+                                    ) in physicalAddress.streetLines"
+                                    :key="index"
+                                >
+                                    {{ item }}
+                                </div>
+                                <div>
+                                    {{ physicalAddress.city }},
+                                    {{ physicalAddress.state }},
+                                    {{ physicalAddress.postalCode }}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div v-if="isUpdateAddressCombinedTextShown" class="mb-3">
+                        If this address is incorrect, update it
+                        <a
+                            href="https://www.addresschange.gov.bc.ca/"
+                            target="_blank"
+                            rel="noopener"
+                            >here</a
+                        >
+                        <span>.</span>
+                    </div>
+                    <div v-if="isUpdateAddressDifferentTextShown" class="mb-3">
+                        If either of these addresses is incorrect, update them
+                        <a
+                            href="https://www.addresschange.gov.bc.ca/"
+                            target="_blank"
+                            rel="noopener"
+                            >here</a
+                        >
+                        <span>.</span>
+                    </div>
+                    <div v-if="isAddAddressTextShown" class="mb-3">
+                        To add an address, visit
+                        <a
+                            href="https://www.addresschange.gov.bc.ca/"
+                            target="_blank"
+                            rel="noopener"
+                            >this page</a
+                        >
+                        <span>.</span>
+                    </div>
+                    <div class="mb-3">
+                        <label for="lastLoginDate" class="hg-label"
+                            >Login History</label
+                        >
+                        <div id="lastLoginDate">
+                            <ul>
+                                <li
+                                    v-for="(
+                                        item, index
+                                    ) in formattedLoginDateTimes"
+                                    :key="index"
+                                    data-testid="lastLoginDateItem"
+                                >
+                                    {{ item }}
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div v-else>
+                <div class="mb-3">
+                    <hg-icon
+                        icon="exclamation-triangle"
+                        size="medium"
+                        aria-hidden="true"
+                        class="text-danger mr-2"
+                    />
+                    <label for="deletionWarning" class="hg-label">
+                        Account marked for removal
+                    </label>
+                    <div id="deletionWarning">
+                        Your account has been deactivated. If you wish to
+                        recover your account click on the "Recover Account"
+                        button before the time expires.
+                    </div>
+                </div>
+                <div class="mb-3">
+                    <label class="hg-label"
+                        >Time remaining for deletion:
+                    </label>
+                    {{ timeForDeletionString }}
+                </div>
+                <div class="mb-3">
+                    <hg-button
+                        id="recoverAccountCancelBtn"
+                        data-testid="recoverAccountCancelBtn"
+                        class="mx-auto"
+                        variant="primary"
+                        @click="recoverAccount()"
+                        >Recover Account
+                    </hg-button>
+                </div>
+            </div>
+            <div v-if="isActiveProfile" class="mb-3">
+                <label class="hg-label">Manage Account</label>
+                <div>
+                    <hg-button
+                        v-if="!showCloseWarning"
+                        id="recoverAccountShowCloseWarningBtn"
+                        data-testid="recoverAccountShowCloseWarningBtn"
+                        class="p-0 pt-2"
+                        variant="link-danger"
+                        @click="showCloseWarningBtn()"
+                        >Delete My Account
+                    </hg-button>
+                    <div
+                        v-if="showCloseWarning"
+                        class="mb-3 font-weight-bold text-danger text-center"
+                    >
+                        <hr />
+                        <hg-icon
+                            icon="exclamation-triangle"
+                            size="medium"
+                            aria-hidden="true"
+                            class="mr-2"
+                        />
+                        <span
+                            >Your account will be marked for removal, preventing
+                            you from accessing your information on the Health
+                            Gateway. After a set period of time it will be
+                            removed permanently.</span
+                        >
+                    </div>
+                    <div v-if="showCloseWarning" class="mb-3 text-right">
+                        <hg-button
+                            id="closeAccountCancelBtn"
+                            data-testid="closeAccountCancelBtn"
+                            variant="secondary"
+                            @click="cancelClose()"
+                            >Cancel
+                        </hg-button>
+                        <hg-button
+                            id="closeAccountBtn"
+                            data-testid="closeAccountBtn"
+                            class="mx-2"
+                            variant="danger"
+                            @click="closeAccount()"
+                            >Delete Account
+                        </hg-button>
+                    </div>
+                </div>
+            </div>
         </div>
-        <div v-else>
-            <b-row class="mb-3">
-                <b-col>
-                    <content-placeholders>
-                        <content-placeholders-heading />
-                        <content-placeholders-text :lines="1" />
-                        <content-placeholders-heading />
-                        <content-placeholders-text :lines="3" />
-                    </content-placeholders>
-                </b-col>
-            </b-row>
-        </div>
+        <content-placeholders v-else>
+            <content-placeholders-heading />
+            <content-placeholders-text :lines="1" />
+            <content-placeholders-heading />
+            <content-placeholders-text :lines="3" />
+        </content-placeholders>
         <VerifySMSComponent
             ref="verifySMSModal"
             :sms-number="smsNumber"
