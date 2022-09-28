@@ -12,8 +12,8 @@ describe("Authenticated User - Home Page", () => {
             homeUrl
         );
 
-        cy.get("[data-testid=bc-vaccine-card-btn]").should("be.visible");
-        cy.get("[data-testid=health-records-card-btn]").should("be.visible");
+        cy.get("[data-testid=bc-vaccine-card-card]").should("be.visible");
+        cy.get("[data-testid=health-records-card]").should("be.visible");
     });
 
     it("Home - Federal Card button enabled", () => {
@@ -38,7 +38,7 @@ describe("Authenticated User - Home Page", () => {
             homeUrl
         );
 
-        cy.get("[data-testid=bc-vaccine-card-btn]")
+        cy.get("[data-testid=bc-vaccine-card-card]")
             .should("be.visible")
             .click();
 
@@ -53,7 +53,7 @@ describe("Authenticated User - Home Page", () => {
             homeUrl
         );
 
-        cy.get("[data-testid=health-records-card-btn]")
+        cy.get("[data-testid=health-records-card]")
             .should("be.visible")
             .click();
 

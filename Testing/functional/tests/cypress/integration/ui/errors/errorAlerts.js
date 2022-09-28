@@ -225,7 +225,7 @@ function testHideVaccineCardQuickLinkError(statusCode = serverErrorStatusCode) {
         "/home"
     );
 
-    cy.get("[data-testid=bc-vaccine-card-btn]").within(() => {
+    cy.get("[data-testid=bc-vaccine-card-card]").within(() => {
         cy.get("[data-testid=quick-link-menu-button]")
             .should("be.visible")
             .parent("a")

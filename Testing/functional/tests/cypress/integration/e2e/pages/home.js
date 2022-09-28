@@ -24,7 +24,7 @@ describe("Home Page", () => {
 
     it("Home - Health Records Card link to Timeline", () => {
         cy.contains("[data-testid=card-button-title]", "Health Records")
-            .parents("[data-testid=health-records-card-btn]")
+            .parents("[data-testid=health-records-card]")
             .should("be.visible", "be.enabled")
             .click();
 

@@ -6,7 +6,7 @@ const addQuickLinkButtonSelector = "[data-testid=add-quick-link-button]";
 const addQuickLinkSubmitButtonSelector = "[data-testid=add-quick-link-btn]";
 const quickLinkMenuButtonSelector = "[data-testid=quick-link-menu-button]";
 const quickLinkRemoveButtonSelector = "[data-testid=remove-quick-link-button]";
-const vaccineCardQuickLinkCardSelector = "[data-testid=bc-vaccine-card-btn]";
+const vaccineCardQuickLinkCardSelector = "[data-testid=bc-vaccine-card-card]";
 const vaccineCardAddQuickLinkCheckboxSelector =
     "[data-testid=bc-vaccine-card-filter]";
 
