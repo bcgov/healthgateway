@@ -13,6 +13,7 @@ describe("Authenticated User - Home Page", () => {
         );
 
         cy.get("[data-testid=bc-vaccine-card-card]").should("be.visible");
+        cy.get("[data-testid=immunization-record-card]").should("be.visible");
         cy.get("[data-testid=health-records-card]").should("be.visible");
     });
 
@@ -29,7 +30,7 @@ describe("Authenticated User - Home Page", () => {
         cy.get("[data-testid=proof-vaccination-card-btn]").should("be.visible");
     });
 
-    it("Home - Link to Covid19 page", () => {
+    it("Home - Link to COVID-19 page", () => {
         cy.enableModules(["VaccinationStatus"]);
         cy.login(
             Cypress.env("keycloak.username"),

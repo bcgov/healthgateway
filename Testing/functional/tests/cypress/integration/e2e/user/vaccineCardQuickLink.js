@@ -39,11 +39,6 @@ describe("Vaccine Card Quick Link", () => {
         cy.log("Verifying vaccine card quick link no longer exists");
         cy.get(vaccineCardQuickLinkCardSelector).should("not.exist");
 
-        cy.log("Verifying add quick link button has been re-enabled");
-        cy.get(addQuickLinkButtonSelector)
-            .should("be.visible")
-            .should("be.enabled");
-
         cy.log("Adding vaccine card quick link");
         cy.get(addQuickLinkButtonSelector)
             .should("be.visible")
