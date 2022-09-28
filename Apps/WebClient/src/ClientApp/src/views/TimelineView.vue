@@ -542,7 +542,7 @@ export default class TimelineView extends Vue {
             </span>
         </b-alert>
         <b-row>
-            <b-col id="timeline" class="col-12 col-lg-9 column-wrapper">
+            <b-col id="timeline" class="column-wrapper">
                 <page-title title="Timeline">
                     <div class="float-right">
                         <add-note-button
