@@ -56,9 +56,6 @@ namespace HealthGateway.Admin.Client.Components
         [Inject]
         private IDispatcher Dispatcher { get; set; } = default!;
 
-        [Inject]
-        private IDialogService DialogService { get; set; } = default!;
-
         private MudMessageBox DeleteConfirmation { get; set; } = default!;
 
         private IEnumerable<CommunicationRow> Rows => this.Data.Select(c => new CommunicationRow(c));
