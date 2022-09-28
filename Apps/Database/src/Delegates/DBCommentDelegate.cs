@@ -50,7 +50,7 @@ namespace HealthGateway.Database.Delegates
         /// <inheritdoc/>
         public DBResult<IEnumerable<Comment>> GetByParentEntry(string hdId, string parentEntryId)
         {
-            this.logger.LogTrace($"Getting Comments for user {hdId} and entry id {parentEntryId}...");
+            this.logger.LogTrace("Getting Comments for user {HdId} and entry id {ParentEntryId}...", hdId, parentEntryId);
             DBResult<IEnumerable<Comment>> result = new();
             result.Payload = this.dbContext.Comment
                 .Where(p => p.UserProfileId == hdId && p.ParentEntryId == parentEntryId)
@@ -79,7 +79,7 @@ namespace HealthGateway.Database.Delegates
                 }
                 catch (DbUpdateException e)
                 {
-                    this.logger.LogError($"Unable to save Comment to DB {e}");
+                    this.logger.LogError("Unable to save Comment to DB {Exception}", e.ToString());
                     result.Status = DBStatusCode.Error;
                     result.Message = e.Message;
                 }
@@ -149,7 +149,7 @@ namespace HealthGateway.Database.Delegates
         /// <inheritdoc/>
         public DBResult<IEnumerable<Comment>> GetAll(string hdId)
         {
-            this.logger.LogTrace($"Getting Comments for user {hdId}...");
+            this.logger.LogTrace("Getting Comments for user {HdId}...", hdId);
             DBResult<IEnumerable<Comment>> result = new();
             result.Payload = this.dbContext.Comment
                 .Where(p => p.UserProfileId == hdId)
@@ -162,7 +162,7 @@ namespace HealthGateway.Database.Delegates
         /// <inheritdoc/>
         public DBResult<IEnumerable<Comment>> GetAll(int page, int pageSize)
         {
-            this.logger.LogTrace($"Retrieving all the comments for the page #{page} with pageSize: {pageSize}...");
+            this.logger.LogTrace("Retrieving all the comments for the page #{Page} with pageSize: {PageSize}...", page, pageSize);
             return DBDelegateHelper.GetPagedDBResult(
                 this.dbContext.Comment
                     .OrderBy(comment => comment.CreatedDateTime),

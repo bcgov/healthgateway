@@ -19,11 +19,14 @@ import { ILogger } from "@/services/interfaces";
 
 library.add(faBars, faSignInAlt, faSignOutAlt, faTimes, faUserCircle);
 
-@Component({
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const options: any = {
     components: {
         RatingComponent,
     },
-})
+};
+
+@Component(options)
 export default class HeaderComponent extends Vue {
     @Action("toggleSidebar", { namespace: "navbar" })
     toggleSidebar!: () => void;

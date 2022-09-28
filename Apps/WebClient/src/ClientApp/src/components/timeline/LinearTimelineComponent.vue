@@ -20,7 +20,8 @@ import MedicationRequestTimelineComponent from "./entryCard/MedicationRequestTim
 import MedicationTimelineComponent from "./entryCard/MedicationTimelineComponent.vue";
 import NoteTimelineComponent from "./entryCard/NoteTimelineComponent.vue";
 
-@Component({
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const options: any = {
     components: {
         MedicationRequestComponent: MedicationRequestTimelineComponent,
         MedicationComponent: MedicationTimelineComponent,
@@ -32,7 +33,9 @@ import NoteTimelineComponent from "./entryCard/NoteTimelineComponent.vue";
         NoteComponent: NoteTimelineComponent,
         ClinicalDocumentComponent: ClinicalDocumentTimelineComponent,
     },
-})
+};
+
+@Component(options)
 export default class LinearTimelineComponent extends Vue {
     @Action("setLinearDate", { namespace: "timeline" })
     setLinearDate!: (linearDate: DateWrapper) => void;
@@ -169,6 +172,10 @@ export default class LinearTimelineComponent extends Vue {
         this.logger.debug(`Timeline filter loading: ${filterLoading}`);
 
         return filterLoading;
+    }
+
+    private get isImmunization(): boolean {
+        return this.isFilterApplied(EntryType.Immunization);
     }
 
     private get numberOfPages(): number {
@@ -322,6 +329,24 @@ export default class LinearTimelineComponent extends Vue {
                 {{ timelineEntryCount }} records
             </b-col>
         </b-row>
+        <div id="linear-timeline-immunization-disclaimer" class="containter">
+            <b-alert
+                :show="isImmunization"
+                variant="info"
+                class="mt-0 mb-1"
+                data-testid="linear-timeline-immunization-disclaimer-alert"
+            >
+                <span>
+                    You can add or update immunizations by visiting
+                    <a
+                        href="https://www.immunizationrecord.gov.bc.ca"
+                        target="_blank"
+                        rel="noopener"
+                        >immunizationrecord.gov.bc.ca</a
+                    >.
+                </span>
+            </b-alert>
+        </div>
         <div id="timeData" data-testid="linearTimelineData">
             <div
                 v-for="dateGroup in dateGroups"

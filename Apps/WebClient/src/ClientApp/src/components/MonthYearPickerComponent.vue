@@ -17,11 +17,14 @@ class MonthToDisplay {
     public hasData = false;
 }
 
-@Component({
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const options: any = {
     directives: {
         onClickaway,
     },
-})
+};
+
+@Component(options)
 export default class MonthYearPickerComponent extends Vue {
     @Prop() readonly currentMonth!: DateWrapper;
     @Prop() availableMonths!: DateWrapper[];

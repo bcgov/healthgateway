@@ -23,6 +23,7 @@ import LoadingComponent from "@/components/LoadingComponent.vue";
 import AddQuickLinkComponent from "@/components/modal/AddQuickLinkComponent.vue";
 import MessageModalComponent from "@/components/modal/MessageModalComponent.vue";
 import { EntryType, entryTypeMap } from "@/constants/entryType";
+import { ErrorSourceType, ErrorType } from "@/constants/errorType";
 import UserPreferenceType from "@/constants/userPreferenceType";
 import type { WebClientConfiguration } from "@/models/configData";
 import CovidVaccineRecord from "@/models/covidVaccineRecord";
@@ -60,14 +61,27 @@ interface QuickLinkCard {
     icon: string;
 }
 
-@Component({
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const options: any = {
     components: {
         LoadingComponent,
         MessageModalComponent,
         AddQuickLinkComponent,
     },
-})
+};
+
+@Component(options)
 export default class HomeView extends Vue {
+    @Action("addError", { namespace: "errorBanner" })
+    addError!: (params: {
+        errorType: ErrorType;
+        source: ErrorSourceType;
+        traceId: string | undefined;
+    }) => void;
+
+    @Action("setTooManyRequestsError", { namespace: "errorBanner" })
+    setTooManyRequestsError!: (params: { key: string }) => void;
+
     @Action("retrieveAuthenticatedVaccineRecord", {
         namespace: "vaccinationStatus",
     })
@@ -290,6 +304,17 @@ export default class HomeView extends Vue {
         return this.updateQuickLinks({
             hdid: this.user.hdid,
             quickLinks: updatedLinks,
+        }).catch((error) => {
+            this.logger.error(error);
+            if (error.statusCode === 429) {
+                this.setTooManyRequestsError({ key: "page" });
+            } else {
+                this.addError({
+                    errorType: ErrorType.Update,
+                    source: ErrorSourceType.Profile,
+                    traceId: undefined,
+                });
+            }
         });
     }
 
@@ -341,7 +366,18 @@ export default class HomeView extends Vue {
             preference = { ...preference, value: "true" };
         }
 
-        this.setUserPreference({ preference });
+        this.setUserPreference({ preference }).catch((error) => {
+            this.logger.error(error);
+            if (error.statusCode === 429) {
+                this.setTooManyRequestsError({ key: "page" });
+            } else {
+                this.addError({
+                    errorType: ErrorType.Update,
+                    source: ErrorSourceType.Profile,
+                    traceId: undefined,
+                });
+            }
+        });
     }
 
     private handleClickQuickLink(index: number): void {
@@ -381,7 +417,7 @@ export default class HomeView extends Vue {
             this.getVaccinationRecord();
 
         if (
-            vaccinationRecord !== undefined &&
+            vaccinationRecord?.record !== undefined &&
             vaccinationRecord.hdid === this.user.hdid &&
             vaccinationRecord.status === LoadStatus.LOADED &&
             vaccinationRecord.download

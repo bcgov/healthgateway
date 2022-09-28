@@ -51,13 +51,13 @@ namespace HealthGateway.Database.Delegates
         /// <returns>The next sequence value.</returns>
         public long GetNextValueForSequence(string sequenceName)
         {
-            this.logger.LogTrace($"Getting next value for sequence from database... {sequenceName}");
+            this.logger.LogTrace("Getting next value for sequence from database... {SequenceName}", sequenceName);
             NpgsqlParameter result = new("@result", NpgsqlDbType.Integer)
             {
                 Direction = ParameterDirection.Output,
             };
             this.dbContext.ExecuteSqlCommand($"SELECT nextval('{sequenceName}')", result);
-            this.logger.LogDebug($"Finished getting next value for sequence from database. {result.Value}");
+            this.logger.LogDebug("Finished getting next value for sequence from database. {Result}", result.Value);
 
             if (result.Value == null)
             {

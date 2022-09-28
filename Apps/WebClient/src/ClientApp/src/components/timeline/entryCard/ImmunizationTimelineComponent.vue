@@ -11,11 +11,14 @@ import EntrycardTimelineComponent from "./EntrycardTimelineComponent.vue";
 
 library.add(faIdCard);
 
-@Component({
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const options: any = {
     components: {
         EntryCard: EntrycardTimelineComponent,
     },
-})
+};
+
+@Component(options)
 export default class ImmunizationTimelineComponent extends Vue {
     @Prop() entry!: ImmunizationTimelineEntry;
     @Prop() index!: number;
@@ -73,6 +76,22 @@ export default class ImmunizationTimelineComponent extends Vue {
                                 <div data-testid="immunizationLotTitle">
                                     <strong> Lot Number: </strong>
                                     {{ agent.lotNumber }}
+                                </div>
+                                <div
+                                    :data-testid="`immunization-disclaimer-${agent.code}`"
+                                >
+                                    <span>
+                                        <strong
+                                            >You can add or update immunizations
+                                            by visiting
+                                        </strong>
+                                        <a
+                                            href="https://www.immunizationrecord.gov.bc.ca"
+                                            target="_blank"
+                                            rel="noopener"
+                                            >immunizationrecord.gov.bc.ca</a
+                                        >.
+                                    </span>
                                 </div>
                             </b-col>
                         </b-row>

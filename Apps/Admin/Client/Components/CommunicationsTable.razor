@@ -1,6 +1,13 @@
 @inherits Fluxor.Blazor.Web.Components.FluxorComponent
 
-<MudTable Class="mt-3" Items="@Rows" Loading="@IsLoading" Breakpoint="@Breakpoint.Md" HorizontalScrollbar="true" Striped="true" Dense="true">
+<MudTable Class="mt-3"
+          Items="@Rows"
+          Loading="@IsLoading"
+          AllowUnsorted="false"
+          Breakpoint="@Breakpoint.Md"
+          HorizontalScrollbar="true"
+          Striped="true"
+          Dense="true">
     <ColGroup>
         <MudHidden Breakpoint="@Breakpoint.MdAndDown">
             <col />
@@ -22,12 +29,13 @@
             </MudTableSortLabel>
         </MudTh>
         <MudTh>
-            <MudTableSortLabel SortBy="new Func<CommunicationRow, object>(x => x.EffectiveDate)" InitialDirection="SortDirection.Descending">
+            <MudTableSortLabel SortBy="new Func<CommunicationRow, object>(x => x.EffectiveDate)"
+                               InitialDirection="@SortDirection.Descending">
                 Effective On
             </MudTableSortLabel>
         </MudTh>
         <MudTh>
-            <MudTableSortLabel SortBy="new Func<CommunicationRow, object>(x => x.ExpiryDate)" InitialDirection="SortDirection.Descending">
+            <MudTableSortLabel SortBy="new Func<CommunicationRow, object>(x => x.ExpiryDate)">
                 Expires On
             </MudTableSortLabel>
         </MudTh>

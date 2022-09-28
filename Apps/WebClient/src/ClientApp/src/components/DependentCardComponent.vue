@@ -72,7 +72,8 @@ interface RecommendationRow {
     status: string;
 }
 
-@Component({
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const options: any = {
     components: {
         BTabs,
         BTab,
@@ -81,7 +82,9 @@ interface RecommendationRow {
         DeleteModalComponent,
         Covid19LaboratoryTestDescriptionComponent,
     },
-})
+};
+
+@Component(options)
 export default class DependentCardComponent extends Vue {
     @Prop() dependent!: Dependent;
 
@@ -753,7 +756,7 @@ export default class DependentCardComponent extends Vue {
             const vaccinationRecord: VaccinationRecord | undefined =
                 this.getVaccinationRecord();
             if (
-                vaccinationRecord !== undefined &&
+                vaccinationRecord?.record !== undefined &&
                 vaccinationRecord.hdid === this.dependent.ownerId &&
                 vaccinationRecord.status === LoadStatus.LOADED &&
                 vaccinationRecord.download
@@ -780,11 +783,11 @@ export default class DependentCardComponent extends Vue {
             :data-testid="`dependent-card-${dependent.dependentInformation.PHN}`"
         >
             <b-tabs v-model="dependentTab" card>
-                <b-tab active data-testid="dependentTab">
+                <b-tab no-body active data-testid="dependentTab">
                     <template #title>
                         <div>Profile</div>
                     </template>
-                    <div v-if="isExpired">
+                    <div v-if="isExpired" class="p-3">
                         <b-row>
                             <b-col class="d-flex justify-content-center">
                                 <h5>Your access has expired</h5>
@@ -810,9 +813,9 @@ export default class DependentCardComponent extends Vue {
                             </b-col>
                         </b-row>
                     </div>
-                    <div v-else>
+                    <div v-else class="p-3">
                         <b-row>
-                            <b-col class="col-12 col-sm-4">
+                            <b-col class="col-12 col-md-6 col-lg-4">
                                 <b-row>
                                     <b-col class="col-12">PHN</b-col>
                                     <b-col class="col-12">
@@ -827,7 +830,7 @@ export default class DependentCardComponent extends Vue {
                                     </b-col>
                                 </b-row>
                             </b-col>
-                            <b-col class="col-12 col-sm-4">
+                            <b-col class="col-12 col-md-6 col-lg-4">
                                 <b-row>
                                     <b-col class="col-12">Date of Birth</b-col>
                                     <b-col class="col-12">
@@ -851,154 +854,173 @@ export default class DependentCardComponent extends Vue {
                 <b-tab
                     :disabled="isExpired"
                     data-testid="covid19Tab"
-                    class="tableTab mt-2"
+                    no-body
                     @click="fetchCovid19LaboratoryTests"
                 >
-                    <div class="d-flex justify-content-center py-3">
-                        <hg-button
-                            :id="`download-proof-of-vaccination-btn-id-${dependent.ownerId}`"
-                            :data-testid="`download-proof-of-vaccination-btn-${dependent.ownerId}`"
-                            variant="secondary"
-                            @click="showVaccineProofDownloadConfirmaationModal"
-                        >
-                            <hg-icon
-                                icon="check-circle"
-                                size="medium"
-                                square
-                                aria-hidden="true"
-                                class="mr-2"
-                            />
-                            Download Proof of Vaccination
-                        </hg-button>
-                    </div>
-                    <div v-if="!isLoading" class="m-2">
-                        <h4>COVID-19 Test Results</h4>
-                    </div>
                     <template #title>
                         <div data-testid="covid19TabTitle">COVID-19</div>
                     </template>
-                    <b-row v-if="isLoading" class="m-2">
-                        <b-col>
-                            <b-spinner />
-                        </b-col>
-                    </b-row>
-                    <b-row v-else-if="testRows.length == 0" class="m-2">
-                        <b-col data-testid="covid19NoRecords">
+                    <div class="p-3">
+                        <div class="d-flex justify-content-center">
+                            <hg-button
+                                :id="`download-proof-of-vaccination-btn-id-${dependent.ownerId}`"
+                                :data-testid="`download-proof-of-vaccination-btn-${dependent.ownerId}`"
+                                variant="secondary"
+                                @click="
+                                    showVaccineProofDownloadConfirmaationModal
+                                "
+                            >
+                                <hg-icon
+                                    icon="check-circle"
+                                    size="medium"
+                                    square
+                                    aria-hidden="true"
+                                    class="mr-2"
+                                />
+                                Download Proof of Vaccination
+                            </hg-button>
+                        </div>
+                        <b-spinner v-if="isLoading" class="mt-3" />
+                        <h4 v-if="!isLoading" class="pt-3">
+                            COVID-19 Test Results
+                        </h4>
+                        <div
+                            v-if="!isLoading && testRows.length === 0"
+                            data-testid="covid19NoRecords"
+                        >
                             No records found.
-                        </b-col>
-                    </b-row>
-                    <table
-                        v-else
-                        class="w-100"
+                        </div>
+                    </div>
+                    <b-table-simple
+                        v-if="!isLoading && testRows.length > 0"
+                        small
+                        striped
+                        borderless
+                        :items="testRows"
+                        class="w-100 mb-0"
                         aria-describedby="COVID-19 Test Results"
                     >
-                        <tr>
-                            <th scope="col">Date</th>
-                            <th scope="col" class="d-none d-sm-table-cell">
-                                Type
-                            </th>
-                            <th scope="col" class="d-none d-sm-table-cell">
-                                Status
-                            </th>
-                            <th scope="col">Result</th>
-                            <th scope="col">Report</th>
-                        </tr>
-                        <tr v-for="(row, index) in testRows" :key="index">
-                            <td data-testid="dependentCovidTestDate">
-                                {{ formatDate(row.test.collectedDateTime) }}
-                            </td>
-                            <td
-                                data-testid="dependentCovidTestType"
-                                class="d-none d-sm-table-cell"
-                            >
-                                {{ row.test.testType }}
-                            </td>
-                            <td
-                                data-testid="dependentCovidTestStatus"
-                                class="d-none d-sm-table-cell"
-                            >
-                                {{ row.test.testStatus }}
-                            </td>
-                            <td data-testid="dependentCovidTestLabResult">
-                                <span
-                                    v-if="row.test.filteredLabResultOutcome"
-                                    class="font-weight-bold"
-                                    :class="
-                                        getOutcomeClasses(
-                                            row.test.labResultOutcome
-                                        )
-                                    "
+                        <b-thead>
+                            <b-tr>
+                                <b-th class="align-middle">Date</b-th>
+                                <b-th
+                                    class="d-none d-md-table-cell align-middle"
                                 >
-                                    {{ row.test.filteredLabResultOutcome }}
-                                </span>
-                                <span v-if="row.test.resultReady">
-                                    <hg-button
-                                        :id="
-                                            'dependent-covid-test-info-button-' +
-                                            index
+                                    Type
+                                </b-th>
+                                <b-th
+                                    class="d-none d-md-table-cell align-middle"
+                                >
+                                    Status
+                                </b-th>
+                                <b-th class="align-middle">Result</b-th>
+                                <b-th class="align-middle">Report</b-th>
+                            </b-tr>
+                        </b-thead>
+                        <b-tbody>
+                            <b-tr v-for="(row, index) in testRows" :key="index">
+                                <b-td
+                                    data-testid="dependentCovidTestDate"
+                                    class="align-middle"
+                                >
+                                    {{ formatDate(row.test.collectedDateTime) }}
+                                </b-td>
+                                <b-td
+                                    data-testid="dependentCovidTestType"
+                                    class="d-none d-md-table-cell align-middle"
+                                >
+                                    {{ row.test.testType }}
+                                </b-td>
+                                <b-td
+                                    data-testid="dependentCovidTestStatus"
+                                    class="d-none d-md-table-cell align-middle"
+                                >
+                                    {{ row.test.testStatus }}
+                                </b-td>
+                                <b-td
+                                    data-testid="dependentCovidTestLabResult"
+                                    class="align-middle"
+                                >
+                                    <span
+                                        v-if="row.test.filteredLabResultOutcome"
+                                        class="font-weight-bold"
+                                        :class="
+                                            getOutcomeClasses(
+                                                row.test.labResultOutcome
+                                            )
                                         "
-                                        aria-label="Result Description"
-                                        href="#"
+                                    >
+                                        {{ row.test.filteredLabResultOutcome }}
+                                    </span>
+                                    <span v-if="row.test.resultReady">
+                                        <hg-button
+                                            :id="
+                                                'dependent-covid-test-info-button-' +
+                                                index
+                                            "
+                                            aria-label="Result Description"
+                                            href="#"
+                                            variant="link"
+                                            data-testid="dependent-covid-test-info-button"
+                                            class="shadow-none p-0 ml-1"
+                                        >
+                                            <hg-icon
+                                                icon="info-circle"
+                                                size="small"
+                                            />
+                                        </hg-button>
+                                        <b-popover
+                                            :target="
+                                                'dependent-covid-test-info-button-' +
+                                                index
+                                            "
+                                            triggers="hover focus"
+                                            placement="bottomleft"
+                                            boundary="viewport"
+                                            data-testid="dependent-covid-test-info-popover"
+                                        >
+                                            <Covid19LaboratoryTestDescriptionComponent
+                                                class="p-2"
+                                                :description="
+                                                    row.test.resultDescription
+                                                "
+                                                :link="row.test.resultLink"
+                                            />
+                                        </b-popover>
+                                    </span>
+                                </b-td>
+                                <b-td class="align-middle">
+                                    <hg-button
+                                        v-if="
+                                            row.reportAvailable &&
+                                            row.test.resultReady
+                                        "
+                                        data-testid="dependentCovidReportDownloadBtn"
                                         variant="link"
-                                        data-testid="dependent-covid-test-info-button"
-                                        class="shadow-none p-0 ml-1"
+                                        class="p-0"
+                                        @click="
+                                            showCovid19DownloadConfirmationModal(
+                                                row
+                                            )
+                                        "
                                     >
                                         <hg-icon
-                                            icon="info-circle"
-                                            size="small"
+                                            icon="download"
+                                            size="medium"
+                                            square
+                                            aria-hidden="true"
                                         />
                                     </hg-button>
-                                    <b-popover
-                                        :target="
-                                            'dependent-covid-test-info-button-' +
-                                            index
-                                        "
-                                        triggers="hover focus"
-                                        placement="bottomleft"
-                                        boundary="viewport"
-                                        data-testid="dependent-covid-test-info-popover"
-                                    >
-                                        <Covid19LaboratoryTestDescriptionComponent
-                                            class="p-2"
-                                            :description="
-                                                row.test.resultDescription
-                                            "
-                                            :link="row.test.resultLink"
-                                        />
-                                    </b-popover>
-                                </span>
-                            </td>
-                            <td>
-                                <hg-button
-                                    v-if="
-                                        row.reportAvailable &&
-                                        row.test.resultReady
-                                    "
-                                    data-testid="dependentCovidReportDownloadBtn"
-                                    variant="link"
-                                    class="p-1"
-                                    @click="
-                                        showCovid19DownloadConfirmationModal(
-                                            row
-                                        )
-                                    "
-                                >
-                                    <hg-icon
-                                        icon="download"
-                                        size="medium"
-                                        square
-                                        aria-hidden="true"
-                                    />
-                                </hg-button>
-                            </td>
-                        </tr>
-                    </table>
+                                </b-td>
+                            </b-tr>
+                        </b-tbody>
+                    </b-table-simple>
                 </b-tab>
                 <b-tab
                     v-if="isImmunizationTabShown"
                     :disabled="isExpired"
+                    no-body
                     :data-testid="`immunization-tab-${dependent.ownerId}`"
-                    class="tableTab mt-2"
                     @click="fetchPatientImmunizations"
                 >
                     <template #title>
@@ -1008,225 +1030,311 @@ export default class DependentCardComponent extends Vue {
                             Immunization
                         </div>
                     </template>
-                    <b-row v-if="isLoading" class="m-2">
-                        <b-col>
-                            <b-spinner />
-                        </b-col>
-                    </b-row>
+                    <div id="dependent-immunization-disclaimer">
+                        <b-alert
+                            :show="immunizationItems.length != 0"
+                            variant="info"
+                            class="mt-3 mb-1 mx-3"
+                            data-testid="dependent-immunization-disclaimer-alert"
+                        >
+                            <span>
+                                You can add or update immunizations by visiting
+                                <a
+                                    href="https://www.immunizationrecord.gov.bc.ca"
+                                    target="_blank"
+                                    rel="noopener"
+                                    >immunizationrecord.gov.bc.ca</a
+                                >.
+                            </span>
+                        </b-alert>
+                    </div>
+                    <b-spinner v-if="isLoading" class="m-3" />
                     <div
                         v-else
                         :data-testid="`immunization-tab-div-${dependent.ownerId}`"
                     >
-                        <b-card no-body>
-                            <b-tabs class="p-2">
-                                <b-tab title="History" active>
-                                    <b-dropdown
-                                        v-if="immunizationItems.length != 0"
-                                        id="download-immunization-history-report-btn"
-                                        text="Download"
-                                        class="p-4 float-right"
-                                        variant="outline-dark"
-                                        :data-testid="`download-immunization-history-report-btn-${dependent.ownerId}`"
-                                        :disabled="
-                                            isDownloadImmunizationReportButtonDisabled
-                                        "
+                        <b-card no-body class="border-0">
+                            <b-tabs card nav-wrapper-class="bg-white">
+                                <b-tab title="History" no-body active>
+                                    <div
+                                        v-if="immunizationItems.length === 0"
+                                        class="p-3"
+                                        :data-testid="`immunization-history-no-rows-found-${dependent.ownerId}`"
                                     >
-                                        <b-dropdown-item
-                                            :data-testid="`download-immunization-history-report-pdf-btn-${dependent.ownerId}`"
-                                            @click="
-                                                showImmunizationDownloadConfirmationModal(
-                                                    ReportFormatType.PDF
-                                                )
-                                            "
-                                            >PDF</b-dropdown-item
+                                        No records found. If this is your first
+                                        time checking for records, please try
+                                        refreshing the page in a few minutes.
+                                    </div>
+                                    <div v-else>
+                                        <b-row
+                                            align-h="end"
+                                            class="p-3"
+                                            no-gutters
                                         >
-                                        <b-dropdown-item
-                                            :data-testid="`download-immunization-history-report-csv-btn-${dependent.ownerId}`"
-                                            @click="
-                                                showImmunizationDownloadConfirmationModal(
-                                                    ReportFormatType.CSV
-                                                )
-                                            "
-                                            >CSV</b-dropdown-item
+                                            <b-col
+                                                cols="auto"
+                                                align-self="center"
+                                            >
+                                                <b-dropdown
+                                                    v-if="
+                                                        immunizationItems.length !=
+                                                        0
+                                                    "
+                                                    id="download-immunization-history-report-btn"
+                                                    text="Download"
+                                                    variant="outline-dark"
+                                                    :data-testid="`download-immunization-history-report-btn-${dependent.ownerId}`"
+                                                    :disabled="
+                                                        isDownloadImmunizationReportButtonDisabled
+                                                    "
+                                                >
+                                                    <b-dropdown-item
+                                                        :data-testid="`download-immunization-history-report-pdf-btn-${dependent.ownerId}`"
+                                                        @click="
+                                                            showImmunizationDownloadConfirmationModal(
+                                                                ReportFormatType.PDF
+                                                            )
+                                                        "
+                                                        >PDF</b-dropdown-item
+                                                    >
+                                                    <b-dropdown-item
+                                                        :data-testid="`download-immunization-history-report-csv-btn-${dependent.ownerId}`"
+                                                        @click="
+                                                            showImmunizationDownloadConfirmationModal(
+                                                                ReportFormatType.CSV
+                                                            )
+                                                        "
+                                                        >CSV</b-dropdown-item
+                                                    >
+                                                    <b-dropdown-item
+                                                        :data-testid="`download-immunization-history-report-xlsx-btn-${dependent.ownerId}`"
+                                                        @click="
+                                                            showImmunizationDownloadConfirmationModal(
+                                                                ReportFormatType.XLSX
+                                                            )
+                                                        "
+                                                        >XLSX</b-dropdown-item
+                                                    >
+                                                </b-dropdown>
+                                            </b-col>
+                                        </b-row>
+                                        <b-table-simple
+                                            small
+                                            striped
+                                            borderless
+                                            :items="immunizationItems"
+                                            class="w-100 mb-0"
+                                            aria-describedby="Immunization History"
+                                            :data-testid="`immunization-history-table-${dependent.ownerId}`"
                                         >
-                                        <b-dropdown-item
-                                            :data-testid="`download-immunization-history-report-xlsx-btn-${dependent.ownerId}`"
-                                            @click="
-                                                showImmunizationDownloadConfirmationModal(
-                                                    ReportFormatType.XLSX
-                                                )
-                                            "
-                                            >XLSX</b-dropdown-item
-                                        >
-                                    </b-dropdown>
-                                    <b-row
-                                        v-if="immunizationItems.length == 0"
-                                        class="m-2"
-                                    >
-                                        <b-col
-                                            :data-testid="`immunization-history-no-rows-found-${dependent.ownerId}`"
-                                        >
-                                            No records found. If this is your
-                                            first time checking for records,
-                                            please try refreshing the page in a
-                                            few minutes.
-                                        </b-col>
-                                    </b-row>
-                                    <table
-                                        v-else
-                                        class="w-100"
-                                        aria-describedby="Immunization History"
-                                        :data-testid="`immunization-history-table-${dependent.ownerId}`"
-                                    >
-                                        <tr>
-                                            <th scope="col">Date</th>
-                                            <th scope="col">Immunization</th>
-                                            <th
-                                                scope="col"
-                                                class="d-none d-sm-table-cell"
-                                            >
-                                                Agent
-                                            </th>
-                                            <th
-                                                scope="col"
-                                                class="d-none d-sm-table-cell"
-                                            >
-                                                Product
-                                            </th>
-                                            <th scope="col">Provider/Clinic</th>
-                                            <th
-                                                scope="col"
-                                                class="d-none d-sm-table-cell"
-                                            >
-                                                Lot Number
-                                            </th>
-                                        </tr>
-                                        <tr
-                                            v-for="(
-                                                row, index
-                                            ) in immunizationItems"
-                                            :key="index"
-                                        >
-                                            <td
-                                                :data-testid="`history-immunization-date-${dependent.ownerId}-${index}`"
-                                            >
-                                                {{ row.date }}
-                                            </td>
-                                            <td
-                                                :data-testid="`history-product-${dependent.ownerId}-${index}`"
-                                            >
-                                                {{ row.immunization }}
-                                            </td>
-                                            <td
-                                                :data-testid="`history-immunizing-agent-${dependent.ownerId}-${index}`"
-                                                class="d-none d-sm-table-cell"
-                                            >
-                                                {{ row.agent }}
-                                            </td>
-                                            <td
-                                                :data-testid="`history-immunizing-product-${dependent.ownerId}-${index}`"
-                                                class="d-none d-sm-table-cell"
-                                            >
-                                                {{ row.product }}
-                                            </td>
-                                            <td
-                                                :data-testid="`history-provider-clinic-${dependent.ownerId}-${index}`"
-                                            >
-                                                {{ row.provider_clinic }}
-                                            </td>
-                                            <td
-                                                :data-testid="`history-lot-number-${dependent.ownerId}-${index}`"
-                                                class="d-none d-sm-table-cell"
-                                            >
-                                                {{ row.lotNumber }}
-                                            </td>
-                                        </tr>
-                                    </table>
+                                            <b-thead>
+                                                <b-tr>
+                                                    <b-th class="align-middle">
+                                                        Date
+                                                    </b-th>
+                                                    <b-th class="align-middle">
+                                                        Immunization
+                                                    </b-th>
+                                                    <b-th
+                                                        class="d-none d-lg-table-cell align-middle"
+                                                    >
+                                                        Agent
+                                                    </b-th>
+                                                    <b-th
+                                                        class="d-none d-lg-table-cell align-middle"
+                                                    >
+                                                        Product
+                                                    </b-th>
+                                                    <b-th class="align-middle">
+                                                        Provider/Clinic
+                                                    </b-th>
+                                                    <th
+                                                        class="d-none d-lg-table-cell align-middle"
+                                                    >
+                                                        Lot Number
+                                                    </th>
+                                                </b-tr>
+                                            </b-thead>
+                                            <b-tbody>
+                                                <b-tr
+                                                    v-for="(
+                                                        row, index
+                                                    ) in immunizationItems"
+                                                    :key="index"
+                                                >
+                                                    <b-td
+                                                        :data-testid="`history-immunization-date-${dependent.ownerId}-${index}`"
+                                                        class="align-middle"
+                                                    >
+                                                        {{ row.date }}
+                                                    </b-td>
+                                                    <b-td
+                                                        :data-testid="`history-product-${dependent.ownerId}-${index}`"
+                                                        class="align-middle"
+                                                    >
+                                                        {{ row.immunization }}
+                                                    </b-td>
+                                                    <b-td
+                                                        :data-testid="`history-immunizing-agent-${dependent.ownerId}-${index}`"
+                                                        class="d-none d-lg-table-cell align-middle"
+                                                    >
+                                                        {{ row.agent }}
+                                                    </b-td>
+                                                    <b-td
+                                                        :data-testid="`history-immunizing-product-${dependent.ownerId}-${index}`"
+                                                        class="d-none d-lg-table-cell align-middle"
+                                                    >
+                                                        {{ row.product }}
+                                                    </b-td>
+                                                    <b-td
+                                                        :data-testid="`history-provider-clinic-${dependent.ownerId}-${index}`"
+                                                        class="align-middle"
+                                                    >
+                                                        {{
+                                                            row.provider_clinic
+                                                        }}
+                                                    </b-td>
+                                                    <b-td
+                                                        :data-testid="`history-lot-number-${dependent.ownerId}-${index}`"
+                                                        class="d-none d-lg-table-cell align-middle"
+                                                    >
+                                                        {{ row.lotNumber }}
+                                                    </b-td>
+                                                </b-tr>
+                                            </b-tbody>
+                                        </b-table-simple>
+                                    </div>
                                 </b-tab>
-                                <b-tab title="Forecasts">
-                                    <b-dropdown
-                                        v-if="recommendationItems.length != 0"
-                                        id="download-immunization-forecast-report-btn"
-                                        text="Download"
-                                        class="p-4 float-right"
-                                        variant="outline-dark"
-                                        :data-testid="`download-immunization-forecast-report-btn-${dependent.ownerId}`"
-                                        :disabled="
-                                            isDownloadImmunizationReportButtonDisabled
-                                        "
-                                    >
-                                        <b-dropdown-item
-                                            :data-testid="`download-immunization-forecast-report-pdf-btn-${dependent.ownerId}`"
-                                            @click="
-                                                showImmunizationDownloadConfirmationModal(
-                                                    ReportFormatType.PDF
-                                                )
+                                <b-tab title="Forecasts" no-body>
+                                    <div class="p-3">
+                                        <b-row align-h="end" no-gutters>
+                                            <b-col cols="12" :md="true">
+                                                <p class="mb-md-0">
+                                                    School-aged children are
+                                                    offered most immunizations
+                                                    in their school,
+                                                    particularly in grades 6 and
+                                                    9. The school can let you
+                                                    know which vaccines are
+                                                    offered. You need to book an
+                                                    appointment to get your
+                                                    child vaccinated against
+                                                    COVID‑19.
+                                                    <a
+                                                        href="https://www2.gov.bc.ca/gov/content/covid-19/vaccine"
+                                                        rel="noopener"
+                                                        target="_blank"
+                                                        >Find out how.</a
+                                                    >
+                                                </p>
+                                            </b-col>
+                                            <b-col
+                                                v-if="
+                                                    recommendationItems.length >
+                                                    0
+                                                "
+                                                cols="auto"
+                                                align-self="center"
+                                                class="pl-3"
+                                            >
+                                                <b-dropdown
+                                                    id="download-immunization-forecast-report-btn"
+                                                    text="Download"
+                                                    variant="outline-dark"
+                                                    :data-testid="`download-immunization-forecast-report-btn-${dependent.ownerId}`"
+                                                    :disabled="
+                                                        isDownloadImmunizationReportButtonDisabled
+                                                    "
+                                                >
+                                                    <b-dropdown-item
+                                                        :data-testid="`download-immunization-forecast-report-pdf-btn-${dependent.ownerId}`"
+                                                        @click="
+                                                            showImmunizationDownloadConfirmationModal(
+                                                                ReportFormatType.PDF
+                                                            )
+                                                        "
+                                                        >PDF</b-dropdown-item
+                                                    >
+                                                    <b-dropdown-item
+                                                        :data-testid="`download-immunization-forecast-report-csv-btn-${dependent.ownerId}`"
+                                                        @click="
+                                                            showImmunizationDownloadConfirmationModal(
+                                                                ReportFormatType.CSV
+                                                            )
+                                                        "
+                                                        >CSV</b-dropdown-item
+                                                    >
+                                                    <b-dropdown-item
+                                                        :data-testid="`download-immunization-forecast-report-xlsx-btn-${dependent.ownerId}`"
+                                                        @click="
+                                                            showImmunizationDownloadConfirmationModal(
+                                                                ReportFormatType.XLSX
+                                                            )
+                                                        "
+                                                        >XLSX</b-dropdown-item
+                                                    >
+                                                </b-dropdown>
+                                            </b-col>
+                                        </b-row>
+                                        <div
+                                            v-if="
+                                                recommendationItems.length === 0
                                             "
-                                            >PDF</b-dropdown-item
-                                        >
-                                        <b-dropdown-item
-                                            :data-testid="`download-immunization-forecast-report-csv-btn-${dependent.ownerId}`"
-                                            @click="
-                                                showImmunizationDownloadConfirmationModal(
-                                                    ReportFormatType.CSV
-                                                )
-                                            "
-                                            >CSV</b-dropdown-item
-                                        >
-                                        <b-dropdown-item
-                                            :data-testid="`download-immunization-forecast-report-xlsx-btn-${dependent.ownerId}`"
-                                            @click="
-                                                showImmunizationDownloadConfirmationModal(
-                                                    ReportFormatType.XLSX
-                                                )
-                                            "
-                                            >XLSX</b-dropdown-item
-                                        >
-                                    </b-dropdown>
-                                    <b-row
-                                        v-if="recommendationItems.length == 0"
-                                        class="m-2"
-                                    >
-                                        <b-col
                                             :data-testid="`immunization-forecast-no-rows-found-${dependent.ownerId}`"
                                         >
                                             No records found.
-                                        </b-col>
-                                    </b-row>
-                                    <table
-                                        v-else
-                                        class="w-100"
+                                        </div>
+                                    </div>
+                                    <b-table-simple
+                                        v-if="recommendationItems.length > 0"
+                                        small
+                                        striped
+                                        borderless
+                                        class="w-100 mb-0"
                                         aria-describedby="Immunization Forecast"
                                         :data-testid="`immunization-forecast-table-${dependent.ownerId}`"
                                     >
-                                        <tr>
-                                            <th scope="col">Immunization</th>
-                                            <th scope="col">Due Date</th>
-                                            <th scope="col">Status</th>
-                                        </tr>
-                                        <tr
-                                            v-for="(
-                                                row, index
-                                            ) in recommendationItems"
-                                            :key="index"
-                                        >
-                                            <td
-                                                :data-testid="`forecast-immunization-${dependent.ownerId}-${index}`"
+                                        <b-thead>
+                                            <b-tr>
+                                                <b-th class="align-middle">
+                                                    Immunization
+                                                </b-th>
+                                                <b-th class="align-middle">
+                                                    Due Date
+                                                </b-th>
+                                                <b-th class="align-middle">
+                                                    Status
+                                                </b-th>
+                                            </b-tr>
+                                        </b-thead>
+                                        <b-tbody>
+                                            <b-tr
+                                                v-for="(
+                                                    row, index
+                                                ) in recommendationItems"
+                                                :key="index"
                                             >
-                                                {{ row.immunization }}
-                                            </td>
-                                            <td
-                                                :data-testid="`forecast-due-date-${dependent.ownerId}-${index}`"
-                                            >
-                                                {{ row.due_date }}
-                                            </td>
-                                            <td
-                                                :data-testid="`forecast-status-${dependent.ownerId}-${index}`"
-                                            >
-                                                {{ row.status }}
-                                            </td>
-                                        </tr>
-                                    </table>
+                                                <b-td
+                                                    :data-testid="`forecast-immunization-${dependent.ownerId}-${index}`"
+                                                    class="align-middle"
+                                                >
+                                                    {{ row.immunization }}
+                                                </b-td>
+                                                <b-td
+                                                    :data-testid="`forecast-due-date-${dependent.ownerId}-${index}`"
+                                                    class="align-middle"
+                                                >
+                                                    {{ row.due_date }}
+                                                </b-td>
+                                                <b-td
+                                                    :data-testid="`forecast-status-${dependent.ownerId}-${index}`"
+                                                    class="align-middle"
+                                                >
+                                                    {{ row.status }}
+                                                </b-td>
+                                            </b-tr>
+                                        </b-tbody>
+                                    </b-table-simple>
                                 </b-tab>
                             </b-tabs>
                         </b-card>
@@ -1316,10 +1424,6 @@ export default class DependentCardComponent extends Vue {
 <style lang="scss" scoped>
 @import "@/assets/scss/_variables.scss";
 
-tr:nth-child(even) {
-    background: $soft_background;
-}
-
 th {
     font-weight: bold;
 }
@@ -1327,10 +1431,6 @@ th {
 td,
 th {
     text-align: center;
-}
-
-.tableTab {
-    padding: 0;
 }
 
 .dependentMenu {

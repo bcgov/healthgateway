@@ -10,6 +10,7 @@ import MessageModalComponent from "@/components/modal/MessageModalComponent.vue"
 import { EntryType, entryTypeMap } from "@/constants/entryType";
 import { ErrorSourceType, ErrorType } from "@/constants/errorType";
 import { DateWrapper } from "@/models/dateWrapper";
+import { ResultError } from "@/models/errors";
 import LaboratoryOrderTimelineEntry from "@/models/laboratoryOrderTimelineEntry";
 import User from "@/models/user";
 import container from "@/plugins/container";
@@ -21,12 +22,15 @@ import EntrycardTimelineComponent from "./EntrycardTimelineComponent.vue";
 
 library.add(faDownload);
 
-@Component({
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const options: any = {
     components: {
         MessageModalComponent,
         EntryCard: EntrycardTimelineComponent,
     },
-})
+};
+
+@Component(options)
 export default class LaboratoryOrderTimelineComponent extends Vue {
     @Prop() entry!: LaboratoryOrderTimelineEntry;
     @Prop() index!: number;

@@ -51,102 +51,102 @@ namespace HealthGateway.Database.Delegates
         /// <inheritdoc/>
         public Email GetEmail(Guid emailId)
         {
-            this.logger.LogTrace($"Getting email from DB... {emailId}");
+            this.logger.LogTrace("Getting email from DB... {EmailId}", emailId);
             Email? retVal = this.dbContext.Find<Email>(emailId);
-            this.logger.LogDebug($"Finished getting email from DB. {JsonSerializer.Serialize(retVal)}");
+            this.logger.LogDebug("Finished getting email {EmailId} from DB.", emailId);
             return retVal!;
         }
 
         /// <inheritdoc/>
         public Email? GetNewEmail(Guid emailId)
         {
-            this.logger.LogTrace($"Getting new email from DB... {emailId}");
+            this.logger.LogTrace("Getting new email from DB... {EmailId}", emailId);
             Email? retVal = this.dbContext.Email.Where(p => p.Id == emailId && p.EmailStatusCode == EmailStatus.New && p.Priority >= EmailPriority.Standard).SingleOrDefault();
-            this.logger.LogDebug($"Finished getting new email from DB. {JsonSerializer.Serialize(retVal)}");
+            this.logger.LogDebug("Finished getting new email {EmailId} from DB.", emailId);
             return retVal;
         }
 
         /// <inheritdoc/>
         public IList<Email> GetLowPriorityEmail(int maxRows)
         {
-            this.logger.LogTrace($"Getting list of low priority emails from DB... {maxRows}");
+            this.logger.LogTrace("Getting list of low priority emails from DB... {MaxRows}", maxRows);
             IList<Email> retVal = this.dbContext.Email.Where(p => p.EmailStatusCode == EmailStatus.New && p.Priority < EmailPriority.Standard)
                 .OrderByDescending(o => o.Priority)
                 .ThenBy(o => o.CreatedDateTime)
                 .Take(maxRows)
                 .ToList();
-            this.logger.LogDebug($"Finished getting list of low priority emails from DB. {JsonSerializer.Serialize(retVal)}");
+            this.logger.LogDebug("Finished getting list of low priority emails from DB.");
             return retVal;
         }
 
         /// <inheritdoc/>
         public IList<Email> GetStandardPriorityEmail(int maxRows)
         {
-            this.logger.LogTrace($"Getting list of standard priority emails from DB... {maxRows}");
+            this.logger.LogTrace("Getting list of standard priority emails from DB... {MaxRows}", maxRows);
             IList<Email> retVal = this.dbContext.Email.Where(p => p.EmailStatusCode == EmailStatus.New && p.Priority >= EmailPriority.Standard && p.Priority < EmailPriority.High)
                 .OrderByDescending(s => s.Priority)
                 .Take(maxRows)
                 .ToList();
-            this.logger.LogDebug($"Finished getting list of standard priority emails from DB. {JsonSerializer.Serialize(retVal)}");
+            this.logger.LogDebug("Finished getting list of standard priority emails from DB.");
             return retVal;
         }
 
         /// <inheritdoc/>
         public IList<Email> GetHighPriorityEmail(int maxRows)
         {
-            this.logger.LogTrace($"Getting list of high priority emails from DB... {maxRows}");
+            this.logger.LogTrace("Getting list of high priority emails from DB... {MaxRows}", maxRows);
             IList<Email> retVal = this.dbContext.Email.Where(p => p.EmailStatusCode == EmailStatus.New && p.Priority >= EmailPriority.High && p.Priority < EmailPriority.Urgent)
                 .OrderByDescending(s => s.Priority)
                 .Take(maxRows)
                 .ToList();
-            this.logger.LogDebug($"Finished getting list of high priority emails from DB. {JsonSerializer.Serialize(retVal)}");
+            this.logger.LogDebug("Finished getting list of high priority emails from DB.");
             return retVal;
         }
 
         /// <inheritdoc/>
         public IList<Email> GetUrgentPriorityEmail(int maxRows)
         {
-            this.logger.LogTrace($"Getting list of urgent priority emails from DB... {maxRows}");
+            this.logger.LogTrace("Getting list of urgent priority emails from DB... {MaxRows}", maxRows);
             IList<Email> retVal = this.dbContext.Email.Where(p => p.EmailStatusCode == EmailStatus.New && p.Priority >= EmailPriority.Urgent)
                 .OrderByDescending(s => s.Priority)
                 .Take(maxRows)
                 .ToList();
-            this.logger.LogDebug($"Finished getting list of urgent priority emails from DB. {JsonSerializer.Serialize(retVal)}");
+            this.logger.LogDebug("Finished getting list of urgent priority emails from DB.");
             return retVal;
         }
 
         /// <inheritdoc/>
         public Guid InsertEmail(Email email, bool shouldCommit = true)
         {
-            this.logger.LogTrace($"Inserting email to DB... {email}");
+            this.logger.LogTrace("Inserting email to DB..");
             this.dbContext.Add(email);
             if (shouldCommit)
             {
                 this.dbContext.SaveChanges();
             }
 
-            this.logger.LogDebug($"Finished inserting email to DB. {JsonSerializer.Serialize(email)}");
+            this.logger.LogDebug("Finished inserting email to DB. {Email}", email.Id);
             return email.Id;
         }
 
         /// <inheritdoc/>
         public void UpdateEmail(Email email)
         {
-            this.logger.LogTrace($"Updating email in DB... {email}");
+            this.logger.LogTrace("Updating email {Email} in DB... ", email.Id);
             this.dbContext.Update(email);
             this.dbContext.SaveChanges();
-            this.logger.LogDebug($"Finished updating email in DB. {JsonSerializer.Serialize(email)}");
+            this.logger.LogDebug("Finished updating email {Email} in DB", email.Id);
         }
 
         /// <inheritdoc/>
         public EmailTemplate GetEmailTemplate(string templateName)
         {
-            this.logger.LogTrace($"Getting email template from DB... {templateName}");
+            this.logger.LogTrace("Getting email template {TemplateName} from DB... ", templateName);
             EmailTemplate retVal = this.dbContext
                 .EmailTemplate
                 .Where(p => p.Name == templateName)
                 .First();
-            this.logger.LogDebug($"Finished getting email template from DB. {JsonSerializer.Serialize(retVal)}");
+            this.logger.LogDebug("Finished getting email {TemplateName} template from DB", templateName);
 
             return retVal;
         }
@@ -179,7 +179,7 @@ namespace HealthGateway.Database.Delegates
                 .ToList();
             if (oldIds.Count > 0)
             {
-                this.logger.LogDebug($"Deleting {oldIds.Count} Emails out of a maximum of {maxRows}");
+                this.logger.LogDebug("Deleting {Count} Emails out of a maximum of {MaxRows}", oldIds.Count, maxRows);
                 this.dbContext.RemoveRange(oldIds);
                 if (shouldCommit)
                 {
@@ -188,7 +188,7 @@ namespace HealthGateway.Database.Delegates
             }
             else
             {
-                this.logger.LogDebug($"No emails to delete that are older than {daysAgo} days");
+                this.logger.LogDebug("No emails to delete that are older than {DaysAgo} days", daysAgo);
             }
 
             return oldIds.Count;

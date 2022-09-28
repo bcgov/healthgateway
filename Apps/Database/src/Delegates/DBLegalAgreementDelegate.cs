@@ -49,7 +49,7 @@ namespace HealthGateway.Database.Delegates
         [SuppressMessage("Globalization", "CA1307:Specify StringComparison", Justification = "Ordinal doesn't work")]
         public DBResult<LegalAgreement> GetActiveByAgreementType(LegalAgreementType agreementTypeCode)
         {
-            this.logger.LogDebug($"Getting active legal agreement by type {agreementTypeCode}");
+            this.logger.LogDebug("Getting active legal agreement by type {AgreementTypeCode}", agreementTypeCode);
             LegalAgreement legalAgreement = this.dbContext.LegalAgreement
                 .Where(la => la.EffectiveDate <= DateTime.UtcNow)
                 .Where(la => agreementTypeCode.Equals(la.LegalAgreementCode))

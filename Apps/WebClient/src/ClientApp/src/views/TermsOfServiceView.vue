@@ -12,13 +12,16 @@ import container from "@/plugins/container";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import { ILogger, IUserProfileService } from "@/services/interfaces";
 
-@Component({
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const options: any = {
     components: {
         BreadcrumbComponent,
         LoadingComponent,
         HtmlTextAreaComponent,
     },
-})
+};
+
+@Component(options)
 export default class TermsOfServiceView extends Vue {
     @Action("setTooManyRequestsWarning", { namespace: "errorBanner" })
     setTooManyRequestsWarning!: (params: { key: string }) => void;
@@ -59,7 +62,7 @@ export default class TermsOfServiceView extends Vue {
                 this.termsOfService = result.content;
             })
             .catch((err: ResultError) => {
-                this.logger.error(err);
+                this.logger.error(err.resultMessage);
                 if (err.statusCode === 429) {
                     this.setTooManyRequestsWarning({ key: "page" });
                 } else {

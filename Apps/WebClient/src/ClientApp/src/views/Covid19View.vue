@@ -42,14 +42,17 @@ interface Dose {
     provider: string;
 }
 
-@Component({
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const options: any = {
     components: {
         BreadcrumbComponent,
         loading: LoadingComponent,
         "vaccine-card": VaccineCardComponent,
         "message-modal": MessageModalComponent,
     },
-})
+};
+
+@Component(options)
 export default class Covid19View extends Vue {
     @Action("retrieve", { namespace: "immunization" })
     retrieveImmunizations!: (params: { hdid: string }) => Promise<void>;
@@ -277,7 +280,7 @@ export default class Covid19View extends Vue {
         const vaccinationRecord: VaccinationRecord | undefined =
             this.getVaccinationRecord();
         if (
-            vaccinationRecord !== undefined &&
+            vaccinationRecord?.record !== undefined &&
             vaccinationRecord.hdid === this.user.hdid &&
             vaccinationRecord.status === LoadStatus.LOADED &&
             vaccinationRecord.download
@@ -554,7 +557,7 @@ export default class Covid19View extends Vue {
 
 .vaccine-card {
     max-width: 438px;
-    color-adjust: exact;
+    print-color-adjust: exact;
 
     .actions {
         border-bottom-left-radius: 0.25rem;

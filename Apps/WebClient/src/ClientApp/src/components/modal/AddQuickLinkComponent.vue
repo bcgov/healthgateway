@@ -23,11 +23,14 @@ interface QuickLinkFilter {
     module: EntryType;
 }
 
-@Component({
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const options: any = {
     components: {
         TooManyRequestsComponent,
     },
-})
+};
+
+@Component(options)
 export default class AddQuickLinkComponent extends Vue {
     @Action("setTooManyRequestsError", { namespace: "errorBanner" })
     setTooManyRequestsError!: (params: { key: string }) => void;

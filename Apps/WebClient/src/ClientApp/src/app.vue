@@ -78,7 +78,8 @@ config.autoAddCss = false;
 
 const logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
 
-@Component({
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const options: any = {
     components: {
         NavHeader: HeaderComponent,
         NavFooter: FooterComponent,
@@ -88,7 +89,9 @@ const logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
         CommunicationComponent,
         ResourceCentreComponent,
     },
-})
+};
+
+@Component(options)
 export default class App extends Vue {
     @Ref("idleModal")
     readonly idleModal!: IdleComponent;

@@ -72,7 +72,8 @@ enum FilterLabelType {
     Date = "Date",
 }
 
-@Component({
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const options: any = {
     components: {
         BToast,
         BreadcrumbComponent,
@@ -83,7 +84,9 @@ enum FilterLabelType {
         Filters: FilterComponent,
         "add-note-button": AddNoteButtonComponent,
     },
-})
+};
+
+@Component(options)
 export default class TimelineView extends Vue {
     @Getter("webClient", { namespace: "config" })
     config!: WebClientConfiguration;

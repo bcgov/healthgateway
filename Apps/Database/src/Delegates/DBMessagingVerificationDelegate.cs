@@ -51,7 +51,7 @@ namespace HealthGateway.Database.Delegates
         /// <inheritdoc/>
         public Guid Insert(MessagingVerification messageVerification)
         {
-            this.logger.LogTrace($"Inserting message verification to DB... {JsonSerializer.Serialize(messageVerification)}");
+            this.logger.LogTrace("Inserting message verification to DB...");
             if (messageVerification.VerificationType == MessagingVerificationType.Email && messageVerification.Email == null)
             {
                 throw new ArgumentException("Email cannot be null when verification type is Email");
@@ -65,14 +65,14 @@ namespace HealthGateway.Database.Delegates
 
             this.dbContext.Add(messageVerification);
             this.dbContext.SaveChanges();
-            this.logger.LogDebug($"Finished inserting message verification to DB. {messageVerification.Id}");
+            this.logger.LogDebug("Finished inserting message verification to DB");
             return messageVerification.Id;
         }
 
         /// <inheritdoc/>
         public MessagingVerification? GetLastByInviteKey(Guid inviteKey)
         {
-            this.logger.LogTrace($"Getting email message verification from DB... {inviteKey}");
+            this.logger.LogTrace("Getting email message verification from DB... {InviteKey}", inviteKey);
             MessagingVerification? retVal = this.dbContext
                 .MessagingVerification
                 .Include(email => email.Email)
@@ -80,7 +80,7 @@ namespace HealthGateway.Database.Delegates
                 .OrderByDescending(mv => mv.CreatedDateTime)
                 .FirstOrDefault();
 
-            this.logger.LogDebug($"Finished getting email message verification from DB. {JsonSerializer.Serialize(retVal)}");
+            this.logger.LogDebug("Finished getting email message verification from DB");
             return retVal;
         }
 
@@ -93,23 +93,23 @@ namespace HealthGateway.Database.Delegates
                 .Where(p => p.VerificationType == MessagingVerificationType.Email)
                 .ToList();
 
-            this.logger.LogDebug($"Finished getting all email message verifications from DB. {JsonSerializer.Serialize(retVal)}");
+            this.logger.LogDebug("Finished getting all email message verifications from DB");
             return retVal;
         }
 
         /// <inheritdoc/>
         public void Update(MessagingVerification messageVerification)
         {
-            this.logger.LogTrace($"Updating email message verification in DB... {JsonSerializer.Serialize(messageVerification)}");
+            this.logger.LogTrace("Updating email message verification in DB...");
             this.dbContext.Update(messageVerification);
             this.dbContext.SaveChanges();
-            this.logger.LogDebug($"Finished updating email message verification in DB. {messageVerification.Id}");
+            this.logger.LogDebug("Finished updating email message verification {Id} in DB", messageVerification.Id);
         }
 
         /// <inheritdoc/>
         public MessagingVerification? GetLastForUser(string hdid, string messagingVerificationType)
         {
-            this.logger.LogTrace($"Getting last messaging verification from DB for user... {hdid}");
+            this.logger.LogTrace("Getting last messaging verification from DB for user... {HdId}", hdid);
             MessagingVerification? retVal = this.dbContext
                 .MessagingVerification
                 .Include(email => email.Email)
@@ -122,7 +122,7 @@ namespace HealthGateway.Database.Delegates
                 return null;
             }
 
-            this.logger.LogDebug($"Finished getting messaging verification from DB. {JsonSerializer.Serialize(retVal)}");
+            this.logger.LogDebug("Finished getting messaging verification from DB");
             return retVal;
         }
 

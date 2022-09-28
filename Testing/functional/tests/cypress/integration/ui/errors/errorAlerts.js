@@ -173,6 +173,76 @@ function testAddCommentError(statusCode = serverErrorStatusCode) {
     }
 }
 
+function getQuickLinkCard(title) {
+    return cy
+        .contains("[data-testid=card-button-title]", title)
+        .parents("[data-testid=quick-link-card]");
+}
+
+function testRemoveQuickLinkError(statusCode = serverErrorStatusCode) {
+    cy.intercept("PUT", "**/UserProfile/*/preference", {
+        statusCode,
+    });
+    cy.intercept("POST", "**/UserProfile/*/preference", {
+        statusCode,
+    });
+    cy.login(
+        Cypress.env("keycloak.username"),
+        Cypress.env("keycloak.password"),
+        AuthMethod.KeyCloak,
+        "/home"
+    );
+
+    getQuickLinkCard("Medications").within(() => {
+        cy.get("[data-testid=quick-link-menu-button]")
+            .should("be.visible")
+            .parent("a")
+            .should("be.visible", "be.enabled")
+            .click();
+        cy.get("[data-testid=remove-quick-link-button]")
+            .should("be.visible")
+            .click();
+    });
+
+    if (statusCode === tooManyRequestsStatusCode) {
+        cy.get("[data-testid=too-many-requests-error]").should("be.visible");
+    } else {
+        cy.get("[data-testid=errorBanner]").should("be.visible");
+    }
+}
+
+function testHideVaccineCardQuickLinkError(statusCode = serverErrorStatusCode) {
+    cy.intercept("PUT", "**/UserProfile/*/preference", {
+        statusCode,
+    });
+    cy.intercept("POST", "**/UserProfile/*/preference", {
+        statusCode,
+    });
+    cy.login(
+        Cypress.env("keycloak.username"),
+        Cypress.env("keycloak.password"),
+        AuthMethod.KeyCloak,
+        "/home"
+    );
+
+    cy.get("[data-testid=bc-vaccine-card-btn]").within(() => {
+        cy.get("[data-testid=quick-link-menu-button]")
+            .should("be.visible")
+            .parent("a")
+            .should("be.visible", "be.enabled")
+            .click();
+        cy.get("[data-testid=remove-quick-link-button]")
+            .should("be.visible")
+            .click();
+    });
+
+    if (statusCode === tooManyRequestsStatusCode) {
+        cy.get("[data-testid=too-many-requests-error]").should("be.visible");
+    } else {
+        cy.get("[data-testid=errorBanner]").should("be.visible");
+    }
+}
+
 describe("Error Alerts", () => {
     it("Error Retrieving Configuration", () => {
         testGetConfigurationError();
@@ -196,6 +266,14 @@ describe("Error Alerts", () => {
 
     it("Error Adding Comment", () => {
         testAddCommentError();
+    });
+
+    it("Error Removing Quick Link", () => {
+        testRemoveQuickLinkError();
+    });
+
+    it("Error Hiding Vaccine Card Quick Link", () => {
+        testHideVaccineCardQuickLinkError();
     });
 });
 
@@ -222,5 +300,13 @@ describe("429 Alerts", () => {
 
     it("429 Error Adding Comment", () => {
         testAddCommentError(429);
+    });
+
+    it("429 Error Removing Quick Link", () => {
+        testRemoveQuickLinkError(429);
+    });
+
+    it("429 Error Hiding Vaccine Card Quick Link", () => {
+        testHideVaccineCardQuickLinkError(429);
     });
 });
