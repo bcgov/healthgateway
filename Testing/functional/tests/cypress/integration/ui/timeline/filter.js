@@ -73,7 +73,8 @@ describe("Filters", () => {
 
         cy.get("[data-testid=filterDropdown]").click();
         cy.get("[data-testid=Immunization-filter]").click({ force: true });
-        cy.get("[data-testid=btnFilterApply]").click().should("not.exist");
+        cy.get("[data-testid=btnFilterApply]").click();
+        cy.get("[data-testid=btnFilterApply]").should("not.exist");
 
         cy.get(
             "[data-testid=linear-timeline-immunization-disclaimer-alert]"
