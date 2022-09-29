@@ -24,9 +24,11 @@ namespace HealthGateway.Common.UserManagedAccess.Models
     public class ResourceOwner
     {
         /// <summary>Gets or sets the resource owner identifier.</summary>
+        [JsonPropertyName("id")]
         public string Id { get; set; } = string.Empty;
 
         /// <summary>Gets or sets the resource owner name.</summary>
+        [JsonPropertyName("name")]
         public string Name { get; set; } = string.Empty;
     }
 }

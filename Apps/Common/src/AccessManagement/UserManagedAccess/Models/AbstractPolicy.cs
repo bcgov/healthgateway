@@ -35,7 +35,7 @@ namespace namespace HealthGateway.Common.UserManagedAccess.Models
 
         /// <inheritdoc/>
         [JsonPropertyName("type")]
-        public string? Type { get; set; }
+        public string? Type { get; set; } = "uma";
 
         /// <inheritdoc/>
         [JsonPropertyName("policies")]
@@ -54,7 +54,7 @@ namespace namespace HealthGateway.Common.UserManagedAccess.Models
         public Logic Logic { get; set; } = Logic.Positive;
 
         /// <inheritdoc/>
-        [JsonPropertyName("decision_strategy")]
+        [JsonPropertyName("decisionStrategy")]
         public DecisionStrategy DecisionStrategy { get; set; } = DecisionStrategy.Unanimous;
 
         /// <inheritdoc/>

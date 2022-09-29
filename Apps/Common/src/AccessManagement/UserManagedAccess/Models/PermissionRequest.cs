@@ -36,6 +36,7 @@ namespace HealthGateway.Common.UserManagedAccess.Models
         public string? ResourceServerId { get; set; }
 
         /// <summary>Gets the claims.</summary>
+        [JsonPropertyName("claims")]
         public Dictionary<string, List<string>>? Claims { get; } = new Dictionary<string, List<string>>();
     }
 }

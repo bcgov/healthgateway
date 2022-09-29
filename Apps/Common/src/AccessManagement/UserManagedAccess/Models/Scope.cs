@@ -26,21 +26,27 @@ namespace HealthGateway.Common.UserManagedAccess.Models
     public class Scope
     {
         /// <summary>Gets or sets the scope ID.</summary>
+        [JsonPropertyName("id")]
         public string? Id { get; set; }
 
         /// <summary>Gets or sets the scope name.</summary>
+        [JsonPropertyName("name")]
         public string? Name { get; set; }
 
         /// <summary>Gets or sets the scope icon URI.</summary>
+        [JsonPropertyName("icon_uri")]
         public Uri? IconUri { get; set; }
 
         /// <summary>Gets the scope policies.</summary>
+        [JsonPropertyName("policies")]
         public List<AccessPolicy>? Policies { get; } = new List<AccessPolicy>();
 
         /// <summary>Gets the scope resources.</summary>
+        [JsonPropertyName("resources")]
         public List<Resource>? Resources { get; } = new List<Resource>();
 
         /// <summary>Gets or sets the scope displayName.</summary>
+        [JsonPropertyName("displayName")]
         public string? DisplayName { get; set; }
     }
 }
