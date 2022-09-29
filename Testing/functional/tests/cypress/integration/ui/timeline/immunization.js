@@ -28,45 +28,34 @@ describe("Immunization - With Refresh", () => {
         cy.checkTimelineHasLoaded();
     });
 
-    it("Validate COVID-19 Immunization Attachment Icons", () => {
-        cy.log(
-            "All valid COVID-19 immunizations should have attachment icons."
-        );
-        cy.get("[data-testid=cardBtn]")
-            .closest("[data-testid=timelineCard]")
-            .each((card) => {
-                cy.wrap(card)
-                    .find("[data-testid=attachmentIcon]")
-                    .should("exist");
-            });
-
-        cy.log(
-            "All cards with attachment icons should be valid COVID-19 immunizations."
-        );
-        cy.get("[data-testid=attachmentIcon]")
-            .closest("[data-testid=timelineCard]")
-            .each((card) => {
-                cy.wrap(card).find("[data-testid=cardBtn]").should("exist");
-            });
-    });
-
     it("Validate Card Details", () => {
-        cy.get("[data-testid=cardBtn]")
-            .closest("[data-testid=timelineCard]")
+        cy.get("[data-testid=timelineCard]")
             .first()
-            .click();
-        cy.get("[data-testid=immunizationTitle]").should("be.visible");
-        cy.get("[data-testid=immunizationProductTitle]").should("be.visible");
-        cy.get("[data-testid=immunizationProviderTitle]").should("be.visible");
-        cy.get("[data-testid=immunizationLotTitle]").should("be.visible");
+            .click()
+            .within(() => {
+                cy.get("[data-testid=immunizationTitle]").should("be.visible");
+                cy.get("[data-testid=immunizationProductTitle]").should(
+                    "be.visible"
+                );
+                cy.get("[data-testid=immunizationProviderTitle]").should(
+                    "be.visible"
+                );
+                cy.get("[data-testid=immunizationLotTitle]").should(
+                    "be.visible"
+                );
 
-        // Verify Forecast
-        cy.get("[data-testid=forecastDisplayName]")
-            .first()
-            .should("be.visible")
-            .contains("Covid-19");
-        cy.get("[data-testid=forecastDueDate]").first().should("be.visible");
-        cy.get("[data-testid=forecastStatus]").first().should("be.visible");
+                // Verify Forecast
+                cy.get("[data-testid=forecastDisplayName]")
+                    .first()
+                    .should("be.visible")
+                    .contains("Covid-19");
+                cy.get("[data-testid=forecastDueDate]")
+                    .first()
+                    .should("be.visible");
+                cy.get("[data-testid=forecastStatus]")
+                    .first()
+                    .should("be.visible");
+            });
     });
 });
 
@@ -86,26 +75,6 @@ describe("Immunization", () => {
         cy.get("[data-testid=immunizationTitle]")
             .should("be.visible")
             .should("have.text", "Immunization");
-    });
-
-    it("Validate Provincial VaccineProof Buttons", () => {
-        cy.intercept("GET", "**/Immunization?*", {
-            fixture: "ImmunizationService/immunization.json",
-        });
-        cy.enableModules([
-            "Immunization",
-            "VaccinationStatus",
-            "VaccinationStatusPdf",
-        ]);
-        cy.login(
-            Cypress.env("keycloak.username"),
-            Cypress.env("keycloak.password"),
-            AuthMethod.KeyCloak,
-            "/timeline"
-        );
-        cy.checkTimelineHasLoaded();
-
-        cy.get("[data-testid=cardBtn]").should("have.attr", "href", "/covid19");
     });
 });
 
