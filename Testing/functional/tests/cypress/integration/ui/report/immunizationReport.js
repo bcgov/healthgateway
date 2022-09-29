@@ -61,7 +61,9 @@ describe("Immunization History Report", () => {
         cy.get("[data-testid=recommendationDateTitle]").should("be.visible");
         cy.get("[data-testid=recommendationStatusTitle]").should("be.visible");
 
-        cy.get("[data-testid=recommendationItem]").should("be.visible");
+        cy.get("[data-testid=recommendationItem]")
+            .scrollIntoView()
+            .should("be.visible");
         cy.get("[data-testid=recommendationDateItem]")
             .last()
             .contains(/\d{4}-[A-Z]{1}[a-z]{2}-\d{2}/);
