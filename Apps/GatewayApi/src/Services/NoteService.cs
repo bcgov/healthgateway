@@ -33,11 +33,11 @@ namespace HealthGateway.GatewayApi.Services
     /// <inheritdoc/>
     public class NoteService : INoteService
     {
+        private readonly IMapper autoMapper;
+        private readonly ICryptoDelegate cryptoDelegate;
         private readonly ILogger logger;
         private readonly INoteDelegate noteDelegate;
         private readonly IUserProfileDelegate profileDelegate;
-        private readonly ICryptoDelegate cryptoDelegate;
-        private readonly IMapper autoMapper;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="NoteService"/> class.
@@ -63,7 +63,7 @@ namespace HealthGateway.GatewayApi.Services
             string? key = profile.EncryptionKey;
             if (key == null)
             {
-                this.logger.LogError($"User does not have a key: ${userNote.HdId}");
+                this.logger.LogError("User does not have a key: {HdId}", userNote.HdId);
                 return new RequestResult<UserNote>
                 {
                     ResultStatus = ResultType.Error,
@@ -105,7 +105,7 @@ namespace HealthGateway.GatewayApi.Services
             // If there is no key yet, generate one and store it in the profile. Only valid while not all profiles have a encryption key.
             if (key == null)
             {
-                this.logger.LogInformation($"First time note retrieval with key for user ${hdId}");
+                this.logger.LogInformation("First time note retrieval with key for user {Hdid}", hdId);
                 key = this.EncryptFirstTime(profile, dbNotes.Payload);
                 dbNotes = this.noteDelegate.GetNotes(hdId, offset, pageSize);
             }
@@ -113,7 +113,7 @@ namespace HealthGateway.GatewayApi.Services
             // Check that the key has been set
             if (key == null)
             {
-                this.logger.LogError($"User does not have a key: ${hdId}");
+                this.logger.LogError("User does not have a key: {Hdid}", hdId);
                 return new RequestResult<IEnumerable<UserNote>>
                 {
                     ResultStatus = ResultType.Error,
@@ -150,7 +150,7 @@ namespace HealthGateway.GatewayApi.Services
             string? key = profile.EncryptionKey;
             if (key == null)
             {
-                this.logger.LogError($"User does not have a key: ${userNote.HdId}");
+                this.logger.LogError("User does not have a key: {HdId}", userNote.HdId);
                 return new RequestResult<UserNote>
                 {
                     ResultStatus = ResultType.Error,
@@ -187,7 +187,7 @@ namespace HealthGateway.GatewayApi.Services
             string? key = profile.EncryptionKey;
             if (key == null)
             {
-                this.logger.LogError($"User does not have a key: ${userNote.HdId}");
+                this.logger.LogError("User does not have a key: {Hdid}", userNote.HdId);
                 return new RequestResult<UserNote>
                 {
                     ResultStatus = ResultType.Error,

@@ -33,11 +33,11 @@ namespace HealthGateway.GatewayApi.Services
     /// <inheritdoc/>
     public class CommentService : ICommentService
     {
-        private readonly ILogger logger;
-        private readonly ICommentDelegate commentDelegate;
-        private readonly IUserProfileDelegate profileDelegate;
-        private readonly ICryptoDelegate cryptoDelegate;
         private readonly IMapper autoMapper;
+        private readonly ICommentDelegate commentDelegate;
+        private readonly ICryptoDelegate cryptoDelegate;
+        private readonly ILogger logger;
+        private readonly IUserProfileDelegate profileDelegate;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="CommentService"/> class.
@@ -63,7 +63,7 @@ namespace HealthGateway.GatewayApi.Services
             string? key = profile.EncryptionKey;
             if (key == null)
             {
-                this.logger.LogError($"User does not have a key: ${userComment.UserProfileId}");
+                this.logger.LogError("User does not have a key: {UserProfileId}", userComment.UserProfileId);
                 return new RequestResult<UserComment>
                 {
                     ResultStatus = ResultType.Error,
@@ -99,7 +99,7 @@ namespace HealthGateway.GatewayApi.Services
             // Check that the key has been set
             if (key == null)
             {
-                this.logger.LogError($"User does not have a key: ${hdId}");
+                this.logger.LogError("User does not have a key: {HdId}", hdId);
                 return new RequestResult<IEnumerable<UserComment>>
                 {
                     ResultStatus = ResultType.Error,
@@ -139,7 +139,7 @@ namespace HealthGateway.GatewayApi.Services
             // Check that the key has been set
             if (key == null)
             {
-                this.logger.LogError($"User does not have a key: ${hdId}");
+                this.logger.LogError("User does not have a key: {HdId}", hdId);
                 return new RequestResult<IDictionary<string, IEnumerable<UserComment>>>
                 {
                     ResultStatus = ResultType.Error,
@@ -180,7 +180,7 @@ namespace HealthGateway.GatewayApi.Services
             string? key = profile.EncryptionKey;
             if (key == null)
             {
-                this.logger.LogError($"User does not have a key: ${userComment.UserProfileId}");
+                this.logger.LogError("User does not have a key: {UserProfileId}", userComment.UserProfileId);
                 return new RequestResult<UserComment>
                 {
                     ResultStatus = ResultType.Error,
@@ -217,7 +217,7 @@ namespace HealthGateway.GatewayApi.Services
             string? key = profile.EncryptionKey;
             if (key == null)
             {
-                this.logger.LogError($"User does not have a key: ${userComment.UserProfileId}");
+                this.logger.LogError("User does not have a key: {UserProfileId}", userComment.UserProfileId);
                 return new RequestResult<UserComment>
                 {
                     ResultStatus = ResultType.Error,
