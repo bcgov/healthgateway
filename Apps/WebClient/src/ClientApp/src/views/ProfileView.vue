@@ -499,7 +499,7 @@ export default class ProfileView extends Vue {
                         instanceOfResultError(error) &&
                         error.statusCode === 429
                     ) {
-                        this.setTooManyRequestsWarning({ key: "page" });
+                        this.setTooManyRequestsError({ key: "page" });
                     } else {
                         this.addError({
                             errorType: ErrorType.Retrieve,
@@ -511,7 +511,7 @@ export default class ProfileView extends Vue {
             })
             .catch((error) => {
                 if (instanceOfResultError(error) && error.statusCode === 429) {
-                    this.setTooManyRequestsWarning({ key: "page" });
+                    this.setTooManyRequestsError({ key: "page" });
                 } else {
                     this.addError({
                         errorType: ErrorType.Update,

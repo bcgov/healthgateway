@@ -240,7 +240,10 @@ export default class VerifySMSComponent extends Vue {
             <b-col>
                 <form>
                     <TooManyRequestsComponent location="verifySmsModal" />
-                    <b-row v-if="error">
+                    <b-row
+                        v-if="error"
+                        data-testid="verifySMSModalUnexpectedErrorText"
+                    >
                         <b-col class="text-center">
                             An unexpected error has occurred. Please try
                             refreshing your browser or try again later.

@@ -243,6 +243,89 @@ function testHideVaccineCardQuickLinkError(statusCode = serverErrorStatusCode) {
     }
 }
 
+function testEditSmsError(statusCode = serverErrorStatusCode) {
+    cy.intercept("GET", "**/UserProfile/*", {
+        fixture: "UserProfileService/userProfile.json",
+    });
+    cy.intercept("PUT", "**/UserProfile/*/sms", {
+        statusCode,
+    });
+    cy.intercept("POST", "**/UserProfile/*/sms", {
+        statusCode,
+    });
+    cy.login(
+        Cypress.env("keycloak.username"),
+        Cypress.env("keycloak.password"),
+        AuthMethod.KeyCloak,
+        "/profile"
+    );
+
+    cy.get("[data-testid=editSMSBtn]").click();
+    cy.get("[data-testid=smsNumberInput]").clear().type("7781234567");
+    cy.get("[data-testid=saveSMSEditBtn]").click();
+
+    if (statusCode === tooManyRequestsStatusCode) {
+        cy.get("[data-testid=too-many-requests-error]").should("be.visible");
+    } else {
+        cy.get("[data-testid=errorBanner]").should("be.visible");
+    }
+}
+
+function testVerifySmsError(statusCode = serverErrorStatusCode) {
+    cy.intercept("GET", "**/UserProfile/*/sms/validate/*", {
+        statusCode,
+    });
+    cy.login(
+        Cypress.env("keycloak.username"),
+        Cypress.env("keycloak.password"),
+        AuthMethod.KeyCloak,
+        "/profile"
+    );
+
+    cy.get("[data-testid=verifySMSBtn]")
+        .should("be.visible")
+        .should("be.enabled")
+        .click();
+
+    cy.get("[data-testid=verifySMSModalCodeInput]")
+        .should("be.visible")
+        .should("have.focus")
+        .type("123456");
+
+    if (statusCode === tooManyRequestsStatusCode) {
+        cy.get("[data-testid=too-many-requests-error]").should("be.visible");
+    } else {
+        cy.get("[data-testid=verifySMSModalUnexpectedErrorText]").should(
+            "be.visible"
+        );
+    }
+}
+
+function testEditEmailError(statusCode = serverErrorStatusCode) {
+    cy.intercept("PUT", "**/UserProfile/*/email", {
+        statusCode,
+    });
+    cy.intercept("POST", "**/UserProfile/*/email", {
+        statusCode,
+    });
+    cy.login(
+        Cypress.env("keycloak.username"),
+        Cypress.env("keycloak.password"),
+        AuthMethod.KeyCloak,
+        "/profile"
+    );
+
+    cy.get("[data-testid=editEmailBtn]").click();
+    cy.get("[data-testid=emailInput]").type(Cypress.env("emailAddress"));
+    cy.get("[data-testid=editEmailSaveBtn]").click();
+
+    if (statusCode === tooManyRequestsStatusCode) {
+        cy.get("[data-testid=too-many-requests-error]").should("be.visible");
+    } else {
+        cy.get("[data-testid=errorBanner]").should("be.visible");
+    }
+}
+
 describe("Error Alerts", () => {
     it("Error Retrieving Configuration", () => {
         testGetConfigurationError();
@@ -274,6 +357,18 @@ describe("Error Alerts", () => {
 
     it("Error Hiding Vaccine Card Quick Link", () => {
         testHideVaccineCardQuickLinkError();
+    });
+
+    it("Error Editing SMS Number", () => {
+        testEditSmsError();
+    });
+
+    it("Error On SMS Verification", () => {
+        testVerifySmsError();
+    });
+
+    it("Error Editing Email", () => {
+        testEditEmailError();
     });
 });
 
@@ -308,5 +403,17 @@ describe("429 Alerts", () => {
 
     it("429 Error Hiding Vaccine Card Quick Link", () => {
         testHideVaccineCardQuickLinkError(429);
+    });
+
+    it("429 Error Editing SMS Number", () => {
+        testEditSmsError(429);
+    });
+
+    it("429 Error On SMS Verification", () => {
+        testVerifySmsError(429);
+    });
+
+    it("429 Error Editing Email", () => {
+        testEditEmailError(429);
     });
 });
