@@ -13,14 +13,16 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //-------------------------------------------------------------------------
-namespace namespace HealthGateway.Common.UserManagedAccess.Models
+namespace HealthGateway.Common.UserManagedAccess.Models
 {
     using System.Collections.Generic;
+    using System.Text.Json.Serialization;
 
     /// <summary>A class representing a UMA 2.0 Policy.</summary>
     public class AccessPolicy : AbstractPolicy
     {
         /// <summary>Gets the policy configuration.</summary>
+        [JsonPropertyName("config")]
         public Dictionary<string, string> Config { get; } = new Dictionary<string, string>();
     }
 }

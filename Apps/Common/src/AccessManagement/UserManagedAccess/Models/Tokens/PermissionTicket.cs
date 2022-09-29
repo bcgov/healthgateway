@@ -23,33 +23,43 @@ namespace HealthGateway.Common.UserManagedAccess.Models.Tokens
     public class PermissionTicket
     {
         /// <summary>Gets or sets the permssion ticket ID.</summary>
+        [JsonPropertyName("id")]
         public string? Id { get; set; }
 
         /// <summary>Gets or sets the permssion ticket owner.</summary>
+        [JsonPropertyName("owner")]
         public string? Owner { get; set; }
 
         /// <summary>Gets or sets the permssion ticket resource.</summary>
+        [JsonPropertyName("resource")]
         public string? Resource { get; set; }
 
         /// <summary>Gets or sets the permssion ticket scope.</summary>
+        [JsonPropertyName("scope")]
         public string? Scope { get; set; }
 
         /// <summary>Gets or sets a value indicating whether the permssion ticket is granted.</summary>
+        [JsonPropertyName("granted")]
         public bool Granted { get; set; }
 
         /// <summary>Gets or sets the permssion ticket scope name.</summary>
+        [JsonPropertyName("scopeName")]
         public string? ScopeName { get; set; }
 
         /// <summary>Gets or sets the permssion ticket resource name.</summary>
+        [JsonPropertyName("resourceName")]
         public string? ResourceName { get; set; }
 
         /// <summary>Gets or sets the permssion ticket requester.</summary>
+        [JsonPropertyName("requester")]
         public string? Requester { get; set; }
 
         /// <summary>Gets or sets the permssion ticket owner's name.</summary>
+        [JsonPropertyName("ownerName")]
         public string? OwnerName { get; set; }
 
         /// <summary>Gets or sets the permssion ticket requester's name.</summary>
+        [JsonPropertyName("requesterName")]
         public string? RequesterName { get; set; }
     }
 }

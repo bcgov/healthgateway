@@ -13,13 +13,13 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //-------------------------------------------------------------------------
-namespace namespace HealthGateway.Common.UserManagedAccess.Models
+namespace HealthGateway.Common.UserManagedAccess.Models
 {
     using System.Collections.Generic;
     using System.Text;
     using System.Text.Json.Serialization;
 
-    using namespace HealthGateway.Common.UserManagedAccess.Models.Tokens;
+    using HealthGateway.Common.UserManagedAccess.Models.Tokens;
 
     /// <summary>
     /// UMA 2.0 AuthorizationRequest.
@@ -29,36 +29,43 @@ namespace namespace HealthGateway.Common.UserManagedAccess.Models
         /// <summary>
         /// Gets or sets the Ticket.
         /// </summary>
+        [JsonPropertyName("ticket")]
         public string? Ticket { get; set; }
 
         /// <summary>
         /// Gets or sets the ClaimToken.
         /// </summary>
+        [JsonPropertyName("claimToken")]
         public string? ClaimToken { get; set; }
 
         /// <summary>
         /// Gets or sets the ClaimTokenFormat.
         /// </summary>
+        [JsonPropertyName("claimTokenFormat")]
         public string? ClaimTokenFormat { get; set; }
 
         /// <summary>
         /// Gets or sets the Pct.
         /// </summary>
+        [JsonPropertyName("pct")]
         public string? Pct { get; set; }
 
         /// <summary>
         /// Gets or sets the Scope.
         /// </summary>
+        [JsonPropertyName("scope")]
         public string? Scope { get; set; }
 
         /// <summary>
         /// Gets the Permissions.
         /// </summary>
+        [JsonPropertyName("permissions")]
         public PermissionTicketToken? Permissions { get; } = new PermissionTicketToken();
 
         /// <summary>
         /// Gets or sets the Metadata.
         /// </summary>
+        [JsonPropertyName("requestMetadata")]
         public RequestMetadata? Metadata { get; set; }
 
         /// <summary>
@@ -70,26 +77,31 @@ namespace namespace HealthGateway.Common.UserManagedAccess.Models
         /// <summary>
         /// Gets or sets the SubjectToken.
         /// </summary>
+        [JsonPropertyName("subjectToken")]
         public string? SubjectToken { get; set; }
 
         /// <summary>
         /// Gets or sets a value indicating whether the SubmitRequest happened.
         /// </summary>
+        [JsonPropertyName("submitRequest")]
         public bool SubmitRequest { get; set; }
 
         /// <summary>
         /// Gets the dictionary of a list of claims.
         /// </summary>
+        [JsonPropertyName("claims")]
         public Dictionary<string, List<string>>? Claims { get; } = new Dictionary<string, List<string>>();
 
         /// <summary>
         /// Gets the AccessToken.
         /// </summary>
+        [JsonPropertyName("rpt")]
         public AccessToken Rpt { get; } = new AccessToken();
 
         /// <summary>
         /// Gets or sets the relying party token, RptToken.
         /// </summary>
+        [JsonPropertyName("rptToken")]
         public string? RptToken { get; set; }
     }
 }

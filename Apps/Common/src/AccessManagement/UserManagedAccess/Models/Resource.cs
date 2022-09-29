@@ -20,7 +20,7 @@ namespace HealthGateway.Common.UserManagedAccess.Models
     using System.Text.Json.Serialization;
 
     /// <summary>
-    /// OAuth 2.0 UMA Resource. Information about a user protected resource. A uma Permission can be assigned to this entity.
+    /// OAuth 2.0 UMA Resource. Information about a user protected resource. A UMA Permission can be assigned to this entity.
     /// </summary>
     public class Resource
     {
@@ -29,6 +29,7 @@ namespace HealthGateway.Common.UserManagedAccess.Models
         public string? Id { get; set; }
 
         /// <summary>Gets or sets the resource name.</summary>
+        [JsonPropertyName("name")]
         public string? Name { get; set; }
 
         /// <summary>Gets the resource URIs.</summary>
@@ -40,15 +41,19 @@ namespace HealthGateway.Common.UserManagedAccess.Models
         public Uri? IconUri { get; set; }
 
          /// <summary>Gets or sets the resource owner.</summary>
+        [JsonPropertyName("owner")]
         public ResourceOwner? Owner { get; set; }
 
          /// <summary>Gets or sets a value indicating whether the resource owner manages access.</summary>
+        [JsonPropertyName("ownerManagedAccess")]
         public bool OwnerManagedAccess { get; set; }
 
          /// <summary>Gets or sets whether the resource display Name.</summary>
+        [JsonPropertyName("displayName")]
         public string? DisplayName { get; set; }
 
          /// <summary>Gets the resource attributes.</summary>
+        [JsonPropertyName("attributes")]
         public Dictionary<string, List<string>> Attributes { get; } = new Dictionary<string, List<string>>();
     }
 }

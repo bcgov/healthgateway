@@ -15,16 +15,21 @@
 //-------------------------------------------------------------------------
 namespace HealthGateway.Common.UserManagedAccess.Models
 {
+    using System.Text.Json.Serialization;
+
     /// <summary>Metadata, a component of <see cref="AuthorizationRequest"/>.</summary>
     public class RequestMetadata
     {
         /// <summary>Gets or sets a value indicating whether to include Resource Name.</summary>
+        [JsonPropertyName("includeResourceName")]
         public bool IncludeResourceName { get; set; }
 
         /// <summary>Gets or sets the limit.</summary>
+        [JsonPropertyName("limit")]
         public int Limit { get; set; }
 
         /// <summary>Gets or sets the response mode.</summary>
+        [JsonPropertyName("responseMode")]
         public string? ResponseMode { get; set; }
     }
 }

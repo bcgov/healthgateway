@@ -13,9 +13,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //-------------------------------------------------------------------------
-namespace namespace HealthGateway.Common.UserManagedAccess.Models
+namespace HealthGateway.Common.UserManagedAccess.Models
 {
     using System.Collections.Generic;
+    using System.Text.Json.Serialization;
 
     /// <summary>An interface representing a Policy.</summary>
     public interface IPolicy

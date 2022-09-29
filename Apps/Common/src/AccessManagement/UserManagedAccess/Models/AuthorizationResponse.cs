@@ -13,7 +13,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //-------------------------------------------------------------------------
-namespace namespace HealthGateway.Common.UserManagedAccess.Models
+namespace HealthGateway.Common.UserManagedAccess.Models
 {
     /// <summary>
     /// An authorization response in form of an OAuth2 access token.

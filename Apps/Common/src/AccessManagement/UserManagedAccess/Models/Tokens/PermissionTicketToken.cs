@@ -13,10 +13,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //-------------------------------------------------------------------------
-namespace namespace HealthGateway.Common.UserManagedAccess.Models.Tokens
+namespace HealthGateway.Common.UserManagedAccess.Models.Tokens
 {
     using System.Collections.Generic;
     using System.IdentityModel.Tokens.Jwt;
+    using System.Text.Json.Serialization;
 
     /// <summary>A PermissionTicket Token for UMA 2.0.</summary>
     public class PermissionTicketToken : JwtPayload
@@ -34,6 +35,7 @@ namespace namespace HealthGateway.Common.UserManagedAccess.Models.Tokens
         }
 
         /// <summary>Gets the Permissions. </summary>
+        [JsonPropertyName("permissions")]
         public List<Permission> Permissions { get; } = new List<Permission>();
     }
 }

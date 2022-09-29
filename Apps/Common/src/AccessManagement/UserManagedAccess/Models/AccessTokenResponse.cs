@@ -13,14 +13,14 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //-------------------------------------------------------------------------
-namespace namespace HealthGateway.Common.UserManagedAccess.Models
+namespace HealthGateway.Common.UserManagedAccess.Models
 {
-    using Keycloak.Authentication.Models;
+    using System.IdentityModel.Tokens.Jwt;
 
     /// <summary>
     /// OAuth 2.0 Access Token Response json.
     /// </summary>
-    public class AccessTokenResponse : JWTModel
+    public class AccessTokenResponse : JwtPayload
     {
     }
 }
