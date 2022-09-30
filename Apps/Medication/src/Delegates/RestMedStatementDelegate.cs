@@ -41,8 +41,6 @@ namespace HealthGateway.Medication.Delegates
     using HealthGateway.Medication.Models.ODR;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.Logging;
-    using Newtonsoft.Json;
-    using JsonSerializer = System.Text.Json.JsonSerializer;
 
     /// <summary>
     /// ODR Implementation for Rest Medication Statements.
@@ -51,13 +49,13 @@ namespace HealthGateway.Medication.Delegates
     {
         private const string ODRConfigSectionKey = "ODR";
         private const string ProtectiveWordCacheDomain = "ProtectiveWord";
-
-        private readonly ILogger logger;
-        private readonly IHttpClientService httpClientService;
+        private readonly Uri baseURL;
         private readonly ICacheProvider cacheProvider;
         private readonly IHashDelegate hashDelegate;
+        private readonly IHttpClientService httpClientService;
+
+        private readonly ILogger logger;
         private readonly OdrConfig odrConfig;
-        private readonly Uri baseURL;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="RestMedStatementDelegate"/> class.
@@ -97,7 +95,7 @@ namespace HealthGateway.Medication.Delegates
                 this.baseURL = new Uri(this.odrConfig.BaseEndpoint);
             }
 
-            logger.LogInformation($"ODR Proxy URL resolved as {this.baseURL}");
+            logger.LogInformation("ODR Proxy URL resolved as {BaseUrl}", this.baseURL);
         }
 
         private static ActivitySource Source { get; } = new(nameof(ClientRegistriesDelegate));
@@ -115,7 +113,7 @@ namespace HealthGateway.Medication.Delegates
                     {
                         using (Source.StartActivity("ODRQuery"))
                         {
-                            this.logger.LogTrace($"Getting medication statements... {query.PHN.Substring(0, 3)}");
+                            this.logger.LogTrace("Getting medication statements... {Phn}", query.PHN.Substring(0, 3));
 
                             using HttpClient client = this.httpClientService.CreateDefaultHttpClient();
                             client.DefaultRequestHeaders.Accept.Clear();
@@ -150,7 +148,7 @@ namespace HealthGateway.Medication.Delegates
                                         ResultMessage = "Unable to deserialize ODR response",
                                         ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.ODRRecords),
                                     };
-                                    this.logger.LogError(retVal.ResultError.ResultMessage);
+                                    this.logger.LogError("{ResultErrorMessage}", retVal.ResultError.ResultMessage);
                                 }
                             }
                             else
@@ -161,7 +159,7 @@ namespace HealthGateway.Medication.Delegates
                                     ResultMessage = $"Invalid HTTP Response code of ${response.StatusCode} from ODR with reason ${response.ReasonPhrase}",
                                     ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.ODRRecords),
                                 };
-                                this.logger.LogError(retVal.ResultError.ResultMessage);
+                                this.logger.LogError("{ResultErrorMessage}", retVal.ResultError.ResultMessage);
                             }
 
                             this.logger.LogDebug("Finished getting medication statements");
@@ -182,7 +180,7 @@ namespace HealthGateway.Medication.Delegates
                         ResultMessage = e.ToString(),
                         ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.ODRRecords),
                     };
-                    this.logger.LogError($"Error with Medication Service: {e}");
+                    this.logger.LogError("Error with Medication Service: {Exception}", e.ToString());
                 }
 
                 return retVal;
@@ -255,7 +253,7 @@ namespace HealthGateway.Medication.Delegates
         {
             using (Source.StartActivity())
             {
-                this.logger.LogTrace($"Getting Protective word for {phn.Substring(0, 3)}");
+                this.logger.LogTrace("Getting Protective word for {Phn}", phn.Substring(0, 3));
 
                 IHash retVal;
                 using HttpClient client = this.httpClientService.CreateDefaultHttpClient();
@@ -293,17 +291,17 @@ namespace HealthGateway.Medication.Delegates
                     }
                     else
                     {
-                        this.logger.LogError($"Response payload is not well-formed {payload}");
+                        this.logger.LogError("Response payload is not well-formed {Payload}", payload);
                         throw new HttpRequestException($"Response payload is not well-formed {payload}");
                     }
                 }
                 else
                 {
-                    this.logger.LogError($"Invalid HTTP Response code of ${response.StatusCode} from ODR with reason {response.ReasonPhrase}");
+                    this.logger.LogError("Invalid HTTP Response code of ${StatusCode} from ODR with reason {ReasonPhrase}", response.StatusCode, response.ReasonPhrase);
                     throw new HttpRequestException($"Invalid HTTP Response code of ${response.StatusCode} from ODR with reason {response.ReasonPhrase}");
                 }
 
-                this.logger.LogDebug($"Finished getting Protective Word {phn.Substring(0, 3)}");
+                this.logger.LogDebug("Finished getting Protective Word {Phn}", phn.Substring(0, 3));
                 return retVal;
             }
         }

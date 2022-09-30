@@ -47,11 +47,11 @@ namespace HealthGateway.Common.Services
         /// <param name="correlationState">Correlation State.</param>
         public void AfterReceiveReply(ref Message reply, object correlationState)
         {
-            this.logger.LogTrace($"Getting the reply response... {reply.State}");
+            this.logger.LogTrace("Getting the reply response... {State}", reply.State);
             using (MessageBuffer buffer = reply.CreateBufferedCopy(int.MaxValue))
             {
                 XmlDocument document = GetDocument(buffer.CreateMessage());
-                this.logger.LogDebug($"Finished getting the reply response. {document.OuterXml}");
+                this.logger.LogDebug("Finished getting the reply response. {OuterXml}", document.OuterXml);
                 reply = buffer.CreateMessage();
             }
         }
@@ -65,12 +65,12 @@ namespace HealthGateway.Common.Services
         /// <returns>The object that is returned as the correlationState argument of the AfterReceiveReply(Message, Object) method.</returns>
         public object BeforeSendRequest(ref Message request, IClientChannel channel)
         {
-            this.logger.LogTrace($"Getting the reply request... {request.State}");
+            this.logger.LogTrace("Getting the reply request... {State}", request.State);
 
             using (MessageBuffer buffer = request.CreateBufferedCopy(int.MaxValue))
             {
                 XmlDocument document = GetDocument(buffer.CreateMessage());
-                this.logger.LogDebug($"Finished getting the reply request. {document.OuterXml}");
+                this.logger.LogDebug("Finished getting the reply request. {OuterXml}", document.OuterXml);
                 request = buffer.CreateMessage();
                 return null!;
             }

@@ -42,20 +42,20 @@ namespace Healthgateway.JobScheduler.Jobs
 
         private const string AuthConfigSectionName = "ClientAuthentication";
 
-        private readonly ILogger<CloseAccountJob> logger;
-        private readonly IUserProfileDelegate profileDelegate;
-        private readonly IEmailQueueService emailService;
-
         private readonly IAuthenticationDelegate authDelegate;
 
-        private readonly IUserAdminDelegate userAdminDelegate;
-
         private readonly GatewayDbContext dbContext;
-        private readonly int profilesPageSize;
-        private readonly int hoursBeforeDeletion;
+        private readonly IEmailQueueService emailService;
         private readonly string emailTemplate;
+        private readonly int hoursBeforeDeletion;
+
+        private readonly ILogger<CloseAccountJob> logger;
+        private readonly IUserProfileDelegate profileDelegate;
+        private readonly int profilesPageSize;
         private readonly ClientCredentialsTokenRequest tokenRequest;
         private readonly Uri tokenUri;
+
+        private readonly IUserAdminDelegate userAdminDelegate;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="CloseAccountJob"/> class.
@@ -100,7 +100,7 @@ namespace Healthgateway.JobScheduler.Jobs
         public void Process()
         {
             DateTime deleteDate = DateTime.UtcNow.AddHours(this.hoursBeforeDeletion);
-            this.logger.LogInformation($"Looking for closed accounts that are earlier than {deleteDate}");
+            this.logger.LogInformation("Looking for closed accounts that are earlier than {DeleteDate}", deleteDate);
             int page = 0;
             DBResult<List<UserProfile>> profileResult;
             do
@@ -119,13 +119,13 @@ namespace Healthgateway.JobScheduler.Jobs
                     this.userAdminDelegate.DeleteUser(profile.IdentityManagementId!.Value, jwtModel);
                 }
 
-                this.logger.LogInformation($"Removed and sent emails for {profileResult.Payload.Count} closed profiles");
+                this.logger.LogInformation("Removed and sent emails for {Count} closed profiles", profileResult.Payload.Count);
                 this.dbContext.SaveChanges(); // commit after every page
                 page++;
             }
             while (profileResult.Payload.Count == this.profilesPageSize);
 
-            this.logger.LogInformation($"Completed processing {page} page(s) with pagesize set to {this.profilesPageSize}");
+            this.logger.LogInformation("Completed processing {Page} page(s) with pagesize set to {ProfilesPageSize}", page, this.profilesPageSize);
         }
     }
 }

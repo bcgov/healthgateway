@@ -58,9 +58,9 @@ namespace HealthGateway.Common.AccessManagement.Administration
         private const string GetRolesUrlKey = "GetRolesUrl";
 
         /// <summary>
-        /// The injected logger delegate.
+        /// The injected configuration delegate.
         /// </summary>
-        private readonly ILogger logger;
+        private readonly IConfiguration configuration;
 
         /// <summary>
         /// The injected HttpClientService delegate.
@@ -68,9 +68,9 @@ namespace HealthGateway.Common.AccessManagement.Administration
         private readonly IHttpClientService httpClientService;
 
         /// <summary>
-        /// The injected configuration delegate.
+        /// The injected logger delegate.
         /// </summary>
-        private readonly IConfiguration configuration;
+        private readonly ILogger logger;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="KeycloakUserAdminDelegate"/> class.
@@ -93,7 +93,7 @@ namespace HealthGateway.Common.AccessManagement.Administration
         /// <inheritdoc/>
         public UserRepresentation GetUser(Guid userId, JwtModel jwtModel)
         {
-            this.logger.LogInformation($"Keycloak GetUser : {userId.ToString()}");
+            this.logger.LogInformation("Keycloak GetUser : {UserId}", userId.ToString());
 
             throw new NotImplementedException();
         }
@@ -151,7 +151,7 @@ namespace HealthGateway.Common.AccessManagement.Administration
                     ResultMessage = $"Exception getting users: {e}",
                     ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.Keycloak),
                 };
-                this.logger.LogError($"Unexpected exception in Get Users {e}");
+                this.logger.LogError("Unexpected exception in Get Users {Exception}", e);
             }
 
             return retVal;
@@ -160,7 +160,7 @@ namespace HealthGateway.Common.AccessManagement.Administration
         /// <inheritdoc/>
         public bool DeleteUser(Guid userId, JwtModel jwtModel)
         {
-            this.logger.LogInformation($"Keycloak DeleteUser : {userId.ToString()}");
+            this.logger.LogInformation("Keycloak DeleteUser : {UserId}", userId.ToString());
 
             Task<bool> task = Task.Run(async () => await this.DeleteUserAsync(userId, jwtModel).ConfigureAwait(true));
             task.Wait();
@@ -191,7 +191,7 @@ namespace HealthGateway.Common.AccessManagement.Administration
             else
             {
                 string msg = $"Error performing DELETE Request: {userId}, HTTP StatusCode: {response.StatusCode}";
-                this.logger.LogError(msg);
+                this.logger.LogError("{Message", msg);
 
                 if (response.StatusCode != HttpStatusCode.NotFound)
                 {

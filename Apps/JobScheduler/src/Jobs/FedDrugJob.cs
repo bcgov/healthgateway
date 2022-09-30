@@ -50,9 +50,9 @@ namespace Healthgateway.JobScheduler.Jobs
         [MaximumConcurrentExecutions(MaxConcurrency, ConcurrencyTimeout)]
         public override void Process(string configSectionName)
         {
-            this.Logger.LogDebug($"Processing federal drug files {configSectionName}");
+            this.Logger.LogDebug("Processing federal drug files {ConfigSectionName}", configSectionName);
             base.Process(configSectionName);
-            this.Logger.LogDebug($"Finished processing federal drug files {configSectionName}");
+            this.Logger.LogDebug("Finished processing federal drug files {ConfigSectionName}", configSectionName);
         }
     }
 }

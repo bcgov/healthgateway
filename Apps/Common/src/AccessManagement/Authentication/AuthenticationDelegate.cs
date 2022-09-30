@@ -79,12 +79,12 @@ namespace HealthGateway.Common.AccessManagement.Authentication
         /// <inheritdoc/>
         public JwtModel AuthenticateAsSystem(Uri tokenUri, ClientCredentialsTokenRequest tokenRequest)
         {
-            this.logger.LogDebug($"Authenticating Service... {tokenRequest.ClientId}");
+            this.logger.LogDebug("Authenticating Service... {ClientId}", tokenRequest.ClientId);
             JwtModel? jwtModel = this.ClientCredentialsGrant(tokenUri, tokenRequest);
-            this.logger.LogDebug($"Finished authenticating Service. {tokenRequest.ClientId}");
+            this.logger.LogDebug("Finished authenticating Service. {ClientId}", tokenRequest.ClientId);
             if (jwtModel == null)
             {
-                this.logger.LogCritical($"Unable to authenticate to as {tokenRequest.Username} to {tokenUri}");
+                this.logger.LogCritical("Unable to authenticate to as {Username} to {TokenUri}", tokenRequest.Username, tokenUri);
                 throw new InvalidOperationException("Auth failure - JwtModel cannot be null");
             }
 
@@ -114,7 +114,7 @@ namespace HealthGateway.Common.AccessManagement.Authentication
             }
             catch (InvalidOperationException e)
             {
-                this.logger.LogDebug($"Internal issue - returning null access token {e}");
+                this.logger.LogDebug("Internal issue - returning null access token {Exception}", e.ToString());
             }
 
             return accessToken;
@@ -146,7 +146,7 @@ namespace HealthGateway.Common.AccessManagement.Authentication
             }
             else
             {
-                this.logger.LogInformation($"JWT Model not found in cache - Authenticating Direct Grant as User: {tokenRequest.Username}");
+                this.logger.LogInformation("JWT Model not found in cache - Authenticating Direct Grant as User: {Username}", tokenRequest.Username);
                 jwtModel = this.ResourceOwnerPasswordGrant(tokenUri, tokenRequest);
                 if (jwtModel != null)
                 {
@@ -162,11 +162,11 @@ namespace HealthGateway.Common.AccessManagement.Authentication
                 }
                 else
                 {
-                    this.logger.LogCritical($"Unable to authenticate to as {tokenRequest.Username} to {tokenUri}");
+                    this.logger.LogCritical("Unable to authenticate to as {Username} to {TokenUri}", tokenRequest.Username, tokenUri);
                     throw new InvalidOperationException("Auth failure - JwtModel cannot be null");
                 }
 
-                this.logger.LogInformation($"Finished authenticating User: {tokenRequest.Username}");
+                this.logger.LogInformation("Finished authenticating User: {Username}", tokenRequest.Username);
             }
 
             return (jwtModel, cached);
@@ -223,17 +223,17 @@ namespace HealthGateway.Common.AccessManagement.Authentication
                 using HttpResponseMessage response = client.PostAsync(tokenUri, content).Result;
 
                 string jwtTokenResponse = response.Content.ReadAsStringAsync().Result;
-                this.logger.LogTrace($"JWT Token response: {jwtTokenResponse}");
+                this.logger.LogTrace("JWT Token response: {JwtTokenResponse}", jwtTokenResponse);
                 response.EnsureSuccessStatusCode();
                 authModel = JsonSerializer.Deserialize<JwtModel>(jwtTokenResponse)!;
             }
             catch (HttpRequestException e)
             {
-                this.logger.LogError($"Error Message {e.Message}");
+                this.logger.LogError("Error Message {Message}", e.Message);
             }
             catch (InvalidOperationException e)
             {
-                this.logger.LogError($"Error Message {e.Message}");
+                this.logger.LogError("Error Message {Message}", e.Message);
             }
 
             return authModel;
@@ -265,18 +265,18 @@ namespace HealthGateway.Common.AccessManagement.Authentication
                 {
                     HttpResponseMessage response = task.Result;
                     string jwtTokenResponse = response.Content.ReadAsStringAsync().Result;
-                    this.logger.LogTrace($"JWT Token response: {jwtTokenResponse}");
+                    this.logger.LogTrace("JWT Token response: {JwtTokenResponse}", jwtTokenResponse);
                     response.EnsureSuccessStatusCode();
                     authModel = JsonSerializer.Deserialize<JwtModel>(jwtTokenResponse);
                 }
             }
             catch (HttpRequestException e)
             {
-                this.logger.LogError($"Error Message {e.Message}");
+                this.logger.LogError("Error Message {Message}", e.Message);
             }
             catch (InvalidOperationException e)
             {
-                this.logger.LogError($"Error Message {e.Message}");
+                this.logger.LogError("Error Message {Message}", e.Message);
             }
 
             return authModel;

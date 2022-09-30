@@ -75,22 +75,15 @@ namespace HealthGateway.DrugMaintainer.Apps
         /// </summary>
         protected GatewayDbContext DrugDbContext { get; set; }
 
-        /// <summary>
-        /// Processes the downloaded file.
-        /// </summary>
-        /// <param name="sourceFolder">The source folder.</param>
-        /// <param name="downloadedFile">The filedownload to process.</param>
-        public abstract void ProcessDownload(string sourceFolder, FileDownload downloadedFile);
-
         /// <inheritdoc/>
         public virtual void Process(string configSectionName)
         {
-            this.Logger.LogInformation($"Reading configuration for section {configSectionName}");
+            this.Logger.LogInformation("Reading configuration for section {ConfigSectionName}", configSectionName);
             IConfigurationSection section = this.Configuration.GetSection(configSectionName);
             Uri source = section.GetValue<Uri>("Url");
 
             string programType = section.GetValue<string>("AppName");
-            this.Logger.LogInformation($"Program Type = {programType}");
+            this.Logger.LogInformation("Program Type = {ProgramType}", programType);
             string targetFolder = this.Configuration.GetSection(configSectionName).GetValue<string>("TargetFolder");
 
             FileDownload downloadedFile = this.DownloadFile(source, targetFolder);
@@ -108,15 +101,22 @@ namespace HealthGateway.DrugMaintainer.Apps
                 if (downloadedFile.LocalFilePath != null && downloadedFile.Name != null)
                 {
                     string filename = Path.Combine(downloadedFile.LocalFilePath, downloadedFile.Name);
-                    this.Logger.LogInformation($"Removing zip file: {filename}");
+                    this.Logger.LogInformation("Removing zip file: {Filename}", filename);
                     File.Delete(filename);
                 }
                 else
                 {
-                    this.Logger.LogWarning($"Unable to clean up as FileDownload contains null data, LocalFilePath = {downloadedFile.LocalFilePath} Name = {downloadedFile.Name}");
+                    this.Logger.LogWarning("Unable to clean up as FileDownload contains null data, LocalFilePath = {LocalFilePath} Name = {Name}", downloadedFile.LocalFilePath, downloadedFile.Name);
                 }
             }
         }
+
+        /// <summary>
+        /// Processes the downloaded file.
+        /// </summary>
+        /// <param name="sourceFolder">The source folder.</param>
+        /// <param name="downloadedFile">The filedownload to process.</param>
+        public abstract void ProcessDownload(string sourceFolder, FileDownload downloadedFile);
 
         /// <summary>
         /// Adds the processed file to the DB to ensure we don't process again.
@@ -124,7 +124,7 @@ namespace HealthGateway.DrugMaintainer.Apps
         /// <param name="downloadedFile">The FileDownload to add to the DB.</param>
         protected void AddFileToDB(FileDownload downloadedFile)
         {
-            this.Logger.LogInformation($"Marking file with hash {downloadedFile.Hash} as processed in DB");
+            this.Logger.LogInformation("Marking file with hash {Hash} as processed in DB", downloadedFile.Hash);
             this.DrugDbContext.FileDownload.Add(downloadedFile);
         }
 
@@ -138,7 +138,7 @@ namespace HealthGateway.DrugMaintainer.Apps
                 .Where(p => p.ProgramCode == downloadedFile.ProgramCode && p.Hash != downloadedFile.Hash)
                 .Select(f => new FileDownload { Id = f.Id, Version = f.Version })
                 .ToList();
-            oldIds.ForEach(s => this.Logger.LogInformation($"Deleting old Download file with hash: {s}"));
+            oldIds.ForEach(s => this.Logger.LogInformation("Deleting old Download file with hash: {Hash}", s.Hash));
             this.DrugDbContext.RemoveRange(oldIds);
         }
 
@@ -150,7 +150,7 @@ namespace HealthGateway.DrugMaintainer.Apps
         /// <returns>A FileDownload object.</returns>
         private FileDownload DownloadFile(Uri source, string targetFolder)
         {
-            this.Logger.LogInformation($"Downloading file from {source} to {targetFolder}");
+            this.Logger.LogInformation("Downloading file from {Source} to {TargetFolder}", source, targetFolder);
             return Task.Run(async () => await this.DownloadService.GetFileFromUrl(source, targetFolder, true).ConfigureAwait(true)).Result;
         }
 
@@ -164,7 +164,7 @@ namespace HealthGateway.DrugMaintainer.Apps
             if (downloadedFile.LocalFilePath != null && downloadedFile.Name != null)
             {
                 string filename = Path.Combine(downloadedFile.LocalFilePath, downloadedFile.Name);
-                this.Logger.LogInformation($"Extracting zip file: {filename}");
+                this.Logger.LogInformation("Extracting zip file: {Filename}", filename);
                 string unzipedPath = Path.Combine(downloadedFile.LocalFilePath, Path.GetFileNameWithoutExtension(downloadedFile.Name));
                 ZipFile.ExtractToDirectory(filename, unzipedPath);
                 this.Logger.LogInformation("Deleting Zip file");
@@ -183,7 +183,7 @@ namespace HealthGateway.DrugMaintainer.Apps
         /// <param name="folder">The folder to delete.</param>
         private void RemoveExtractedFiles(string folder)
         {
-            this.Logger.LogInformation($"Removing extracted files under {folder}");
+            this.Logger.LogInformation("Removing extracted files under {Folder}", folder);
             Directory.Delete(folder, true);
         }
 

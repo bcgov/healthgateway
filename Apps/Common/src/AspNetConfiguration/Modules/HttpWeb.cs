@@ -168,7 +168,7 @@ namespace HealthGateway.Common.AspNetConfiguration.Modules
         {
             IConfigurationSection section = configuration.GetSection("ForwardProxies");
             bool enabled = section.GetValue<bool>("Enabled");
-            logger.LogInformation($"Forward Proxies enabled: {enabled}");
+            logger.LogInformation("Forward Proxies enabled: {Enabled}", enabled);
             if (enabled)
             {
                 logger.LogDebug("Configuring Forward Headers");
@@ -199,14 +199,14 @@ namespace HealthGateway.Common.AspNetConfiguration.Modules
         {
             IConfigurationSection section = configuration.GetSection("ForwardProxies");
             bool enabled = section.GetValue<bool>("Enabled");
-            logger.LogInformation($"Forward Proxies enabled: {enabled}");
+            logger.LogInformation("Forward Proxies enabled: {Enabled}", enabled);
             if (enabled)
             {
                 logger.LogDebug("Using Forward Headers");
                 string basePath = section.GetValue<string>("BasePath");
                 if (!string.IsNullOrEmpty(basePath))
                 {
-                    logger.LogInformation($"Forward BasePath is set to {basePath}, setting PathBase for app");
+                    logger.LogInformation("Forward BasePath is set to {BasePath}, setting PathBase for app", basePath);
                     app.UsePathBase(basePath);
                     app.Use(
                         async (context, next) =>

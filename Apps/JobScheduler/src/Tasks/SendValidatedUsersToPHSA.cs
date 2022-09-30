@@ -29,8 +29,8 @@ namespace Healthgateway.JobScheduler.Tasks
     /// </summary>
     public class SendValidatedUsersToPHSA : IOneTimeTask
     {
-        private readonly ILogger<SendValidatedUsersToPHSA> logger;
         private readonly GatewayDbContext dbContext;
+        private readonly ILogger<SendValidatedUsersToPHSA> logger;
         private readonly INotificationSettingsService notificationSettingsService;
 
         /// <summary>
@@ -54,9 +54,9 @@ namespace Healthgateway.JobScheduler.Tasks
         /// </summary>
         public void Run()
         {
-            this.logger.LogInformation($"Performing Task {this.GetType().Name}");
+            this.logger.LogInformation("Performing Task {Name}", this.GetType().Name);
             IEnumerable<UserProfile> users = this.dbContext.UserProfile.Where(q => !string.IsNullOrEmpty(q.Email)).ToList();
-            this.logger.LogInformation($"Queueing NotificationSettings for {users.Count()} users");
+            this.logger.LogInformation("Queueing NotificationSettings for {Count} users", users.Count());
             foreach (UserProfile user in users)
             {
                 NotificationSettingsRequest nsr = new()
@@ -70,7 +70,7 @@ namespace Healthgateway.JobScheduler.Tasks
                 this.notificationSettingsService.QueueNotificationSettings(nsr);
             }
 
-            this.logger.LogInformation($"Task {this.GetType().Name} has completed");
+            this.logger.LogInformation("Task {Name} has completed", this.GetType().Name);
         }
     }
 }

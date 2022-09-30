@@ -45,9 +45,9 @@ namespace HealthGateway.JobScheduler
     /// </summary>
     public class Startup
     {
-        private readonly StartupConfiguration startupConfig;
         private readonly IConfiguration configuration;
         private readonly ILogger logger;
+        private readonly StartupConfiguration startupConfig;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Startup"/> class.
@@ -142,7 +142,7 @@ namespace HealthGateway.JobScheduler
         /// <param name="env">The passed in Environment.</param>
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
-            this.logger.LogInformation($"Hosting Environment: {env!.EnvironmentName}");
+            this.logger.LogInformation("Hosting Environment: {EnvironmentName}", env!.EnvironmentName);
             this.startupConfig.UseForwardHeaders(app);
             this.startupConfig.UseHttp(app);
             this.startupConfig.UseContentSecurityPolicy(app);

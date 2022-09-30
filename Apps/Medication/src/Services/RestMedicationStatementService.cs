@@ -21,7 +21,6 @@ namespace HealthGateway.Medication.Services
     using System.Globalization;
     using System.Linq;
     using System.Net;
-    using System.Text.Json;
     using System.Text.RegularExpressions;
     using System.Threading.Tasks;
     using HealthGateway.Common.Constants;
@@ -47,11 +46,11 @@ namespace HealthGateway.Medication.Services
     {
         private const int MaxLengthProtectiveWord = 8;
         private const int MinLengthProtectiveWord = 6;
-        private readonly ILogger logger;
-        private readonly IHttpContextAccessor httpContextAccessor;
-        private readonly IPatientService patientService;
         private readonly IDrugLookupDelegate drugLookupDelegate;
+        private readonly IHttpContextAccessor httpContextAccessor;
+        private readonly ILogger logger;
         private readonly IMedStatementDelegate medicationStatementDelegate;
+        private readonly IPatientService patientService;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="RestMedicationStatementService"/> class.
@@ -83,7 +82,7 @@ namespace HealthGateway.Medication.Services
             using (Source.StartActivity())
             {
                 this.logger.LogDebug("Getting history of medication statements");
-                this.logger.LogTrace($"User hdid: {hdid}");
+                this.logger.LogTrace("User hdid: {Hdid}", hdid);
 
                 protectiveWord = protectiveWord?.ToUpper(CultureInfo.InvariantCulture);
                 RequestResult<IList<MedicationStatementHistory>> result = new();
@@ -131,7 +130,7 @@ namespace HealthGateway.Medication.Services
                 }
                 else
                 {
-                    this.logger.LogInformation($"Invalid protective word. {hdid}");
+                    this.logger.LogInformation("Invalid protective word. {Hdid}", hdid);
                     result.ResultStatus = ResultType.ActionRequired;
                     result.ResultError = ErrorTranslator.ActionRequired(protectiveWordValidationMessage, ActionType.Protected);
                 }
@@ -181,18 +180,21 @@ namespace HealthGateway.Medication.Services
                 List<string> medicationIdentifiers = medSummaries.Select(s => s.DIN.PadLeft(8, '0')).ToList();
 
                 this.logger.LogDebug("Getting drugs from DB");
-                this.logger.LogTrace($"Identifiers: {JsonSerializer.Serialize(medicationIdentifiers)}");
-                List<string> uniqueDrugIdentifers = medicationIdentifiers.Distinct().ToList();
-                this.logger.LogDebug($"Total DrugIdentifiers: {medicationIdentifiers.Count} | Unique identifiers:{uniqueDrugIdentifers.Count} ");
+                this.logger.LogTrace("Identifiers: {MedicationIdentifiers}", string.Join(",", medicationIdentifiers));
+                List<string> uniqueDrugIdentifiers = medicationIdentifiers.Distinct().ToList();
+                this.logger.LogDebug(
+                    "Total DrugIdentifiers: {MedicationIdentifiersCount} | Unique identifiers: {UniqueDrugIdentifiersCount}",
+                    medicationIdentifiers.Count,
+                    uniqueDrugIdentifiers.Count);
 
                 // Retrieve the brand names using the Federal data
-                IList<DrugProduct> drugProducts = this.drugLookupDelegate.GetDrugProductsByDIN(uniqueDrugIdentifers);
+                IList<DrugProduct> drugProducts = this.drugLookupDelegate.GetDrugProductsByDIN(uniqueDrugIdentifiers);
                 Dictionary<string, DrugProduct> drugProductsDict = drugProducts.ToDictionary(pcd => pcd.DrugIdentificationNumber, pcd => pcd);
                 Dictionary<string, PharmaCareDrug> provicialDict = new();
-                if (uniqueDrugIdentifers.Count > drugProductsDict.Count)
+                if (uniqueDrugIdentifiers.Count > drugProductsDict.Count)
                 {
                     // Get the DINs not found on the previous query
-                    List<string> notFoundDins = uniqueDrugIdentifers.Where(din => !drugProductsDict.ContainsKey(din)).ToList();
+                    List<string> notFoundDins = uniqueDrugIdentifiers.Where(din => !drugProductsDict.ContainsKey(din)).ToList();
 
                     // Retrieve the brand names using the provincial data
                     IList<PharmaCareDrug> pharmaCareDrugs = this.drugLookupDelegate.GetPharmaCareDrugsByDIN(notFoundDins);
@@ -200,7 +202,7 @@ namespace HealthGateway.Medication.Services
                 }
 
                 this.logger.LogDebug("Finished getting drugs from DB");
-                this.logger.LogTrace($"Populating medication summary... {medSummaries.Count} records");
+                this.logger.LogTrace("Populating medication summary... {Count} records", medSummaries.Count);
                 foreach (MedicationSummary mdSummary in medSummaries)
                 {
                     string din = mdSummary.DIN.PadLeft(8, '0');
@@ -220,7 +222,7 @@ namespace HealthGateway.Medication.Services
                     }
                 }
 
-                this.logger.LogDebug($"Finished populating medication summary. {medSummaries.Count} records");
+                this.logger.LogDebug("Finished populating medication summary. {Count} records", medSummaries.Count);
             }
         }
     }

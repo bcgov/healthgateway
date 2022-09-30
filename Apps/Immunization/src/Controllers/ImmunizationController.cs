@@ -75,10 +75,10 @@ namespace HealthGateway.Immunization.Controllers
         [Authorize(Policy = ImmunizationPolicy.Read)]
         public async Task<RequestResult<ImmunizationEvent>> GetImmunization([FromQuery] string hdid, string immunizationId)
         {
-            this.logger.LogDebug($"Getting immunization {immunizationId} for user {hdid}");
+            this.logger.LogDebug("Getting immunization {ImmunizationId} for user {Hdid}", immunizationId, hdid);
             RequestResult<ImmunizationEvent> result = await this.service.GetImmunization(immunizationId).ConfigureAwait(true);
 
-            this.logger.LogDebug($"Finished getting immunization {immunizationId} for user {hdid}");
+            this.logger.LogDebug("Finished getting immunization {ImmunizationId} for user {Hdid}", immunizationId, hdid);
             return result;
         }
 
@@ -99,10 +99,10 @@ namespace HealthGateway.Immunization.Controllers
         [Authorize(Policy = ImmunizationPolicy.Read)]
         public async Task<RequestResult<ImmunizationResult>> GetImmunizations([FromQuery] string hdid)
         {
-            this.logger.LogDebug($"Getting immunizations for user {hdid}");
+            this.logger.LogDebug("Getting immunizations for user {Hdid}", hdid);
             RequestResult<ImmunizationResult> result = await this.service.GetImmunizations(hdid).ConfigureAwait(true);
 
-            this.logger.LogDebug($"Finished getting immunizations for user {hdid}");
+            this.logger.LogDebug("Finished getting immunizations for user {Hdid}", hdid);
             return result;
         }
     }
