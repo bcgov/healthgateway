@@ -36,9 +36,9 @@ namespace HealthGateway.Common.AccessManagement.Authorization.Handlers
     public class FhirResourceDelegateAuthorizationHandler : BaseFhirAuthorizationHandler
     {
         private readonly ILogger<FhirResourceDelegateAuthorizationHandler> logger;
-        private readonly IResourceDelegateDelegate resourceDelegateDelegate;
-        private readonly IPatientService patientService;
         private readonly int? maxDependentAge;
+        private readonly IPatientService patientService;
+        private readonly IResourceDelegateDelegate resourceDelegateDelegate;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="FhirResourceDelegateAuthorizationHandler"/> class.
@@ -85,12 +85,12 @@ namespace HealthGateway.Common.AccessManagement.Authorization.Handlers
                         }
                         else
                         {
-                            this.logger.LogDebug($"Non-owner access to {resourceHDID} rejected");
+                            this.logger.LogDebug("Non-owner access to {ResourceHdid} rejected", resourceHDID);
                         }
                     }
                     else
                     {
-                        this.logger.LogDebug($"Non-owner access to {resourceHDID} rejected as user delegation is disabled");
+                        this.logger.LogDebug("Non-owner access to {ResourceHdid} rejected as user delegation is disabled", resourceHDID);
                     }
                 }
                 else
@@ -111,7 +111,7 @@ namespace HealthGateway.Common.AccessManagement.Authorization.Handlers
         private bool IsDelegated(AuthorizationHandlerContext context, string resourceHDID, FhirRequirement requirement)
         {
             bool retVal = false;
-            this.logger.LogInformation($"Performing user delegation validation for resource {resourceHDID}");
+            this.logger.LogInformation("Performing user delegation validation for resource {ResourceHdid}", resourceHDID);
             string? userHDID = context.User.FindFirst(c => c.Type == GatewayClaims.HDID)?.Value;
             if (userHDID != null)
             {
@@ -119,17 +119,17 @@ namespace HealthGateway.Common.AccessManagement.Authorization.Handlers
                 {
                     if (this.IsExpired(resourceHDID))
                     {
-                        this.logger.LogError($"Performing Observation delegation on resource {resourceHDID} failed as delegation is expired.");
+                        this.logger.LogError("Performing Observation delegation on resource {ResourceHdid} failed as delegation is expired.", resourceHDID);
                     }
                     else
                     {
-                        this.logger.LogInformation($"Authorized user {userHDID} to have {requirement.AccessType} access to Observation resource {resourceHDID}");
+                        this.logger.LogInformation("Authorized user {UserHdid} to have {AccessType} access to Observation resource {ResourceHdid}", userHDID, requirement.AccessType, resourceHDID);
                         retVal = true;
                     }
                 }
                 else
                 {
-                    this.logger.LogWarning($"Delegation validation for User {userHDID} on Observation resource {resourceHDID} failed");
+                    this.logger.LogWarning("Delegation validation for User {UserHdid} on Observation resource {ResourceHdid} failed", userHDID, resourceHDID);
                 }
             }
 
@@ -145,7 +145,7 @@ namespace HealthGateway.Common.AccessManagement.Authorization.Handlers
         {
             if (!this.maxDependentAge.HasValue)
             {
-                this.logger.LogInformation($"Delegate expired check on resource {resourceHDID} skipped as max dependent age is null");
+                this.logger.LogInformation("Delegate expired check on resource {ResourceHdid} skipped as max dependent age is null", resourceHDID);
                 return false;
             }
 

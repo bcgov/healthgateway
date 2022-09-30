@@ -26,8 +26,8 @@ namespace Healthgateway.JobScheduler.Jobs
     public class DBMigrationsJob
     {
         private const int ConcurrencyTimeout = 5 * 60; // 5 Minutes
-        private readonly ILogger logger;
         private readonly GatewayDbContext dbContext;
+        private readonly ILogger logger;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="DBMigrationsJob"/> class.
@@ -48,9 +48,9 @@ namespace Healthgateway.JobScheduler.Jobs
         [DisableConcurrentExecution(ConcurrencyTimeout)]
         public void Migrate()
         {
-            this.logger.LogTrace($"Migrating database... {ConcurrencyTimeout}");
+            this.logger.LogTrace("Migrating database... {ConcurrencyTimeout}", ConcurrencyTimeout);
             this.dbContext.Database.Migrate();
-            this.logger.LogTrace($"Finished migrating database. {ConcurrencyTimeout}");
+            this.logger.LogTrace("Finished migrating database. {ConcurrencyTimeout}", ConcurrencyTimeout);
         }
     }
 }

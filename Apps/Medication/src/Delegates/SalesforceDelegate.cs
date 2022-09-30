@@ -41,11 +41,11 @@ namespace HealthGateway.Medication.Delegates
     public class SalesforceDelegate : IMedicationRequestDelegate
     {
         private const string SalesforceConfigSectionKey = "Salesforce";
+        private readonly IAuthenticationDelegate authDelegate;
+        private readonly IHttpClientService httpClientService;
 
         private readonly ILogger logger;
-        private readonly IHttpClientService httpClientService;
         private readonly Config salesforceConfig;
-        private readonly IAuthenticationDelegate authDelegate;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="SalesforceDelegate"/> class.
@@ -83,7 +83,7 @@ namespace HealthGateway.Medication.Delegates
                 string? accessToken = this.authDelegate.AuthenticateAsUser(this.salesforceConfig.TokenUri, this.salesforceConfig.ClientAuthentication, true).AccessToken;
                 if (string.IsNullOrEmpty(accessToken))
                 {
-                    this.logger.LogError($"Authenticated as User System access token is null or emtpy, Error:\n{accessToken}");
+                    this.logger.LogError("Authenticated as User System access token is null or emtpy, Error:\n{AccessToken}", accessToken);
                     retVal.ResultStatus = ResultType.Error;
                     retVal.ResultError = new RequestResultError
                     {
@@ -104,11 +104,11 @@ namespace HealthGateway.Medication.Delegates
                     Uri endpoint = new(this.salesforceConfig.Endpoint);
                     HttpResponseMessage response = await client.GetAsync(endpoint).ConfigureAwait(true);
                     string payload = await response.Content.ReadAsStringAsync().ConfigureAwait(true);
-                    this.logger.LogTrace($"Response: {response}");
+                    this.logger.LogTrace("Response: {Response}", response);
                     switch (response.StatusCode)
                     {
                         case HttpStatusCode.OK:
-                            this.logger.LogTrace($"Response payload: {payload}");
+                            this.logger.LogTrace("Response payload: {Payload}", payload);
                             ResponseWrapper? replyWrapper = JsonSerializer.Deserialize<ResponseWrapper>(payload);
                             if (replyWrapper != null)
                             {
@@ -147,7 +147,7 @@ namespace HealthGateway.Medication.Delegates
                                 ResultMessage = $"Unable to connect to Medication Requests endpoint, HTTP Error {response.StatusCode}",
                                 ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.SF),
                             };
-                            this.logger.LogError($"Unable to connect to endpoint {endpoint}, HTTP Error {response.StatusCode}\n{payload}");
+                            this.logger.LogError("Unable to connect to endpoint {Endpoint}, HTTP Error {StatusCode}\n{Payload}", endpoint, response.StatusCode, payload);
                             break;
                     }
                 }
@@ -160,7 +160,7 @@ namespace HealthGateway.Medication.Delegates
                         ResultMessage = $"Exception getting Medication Requests: {e}",
                         ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.SF),
                     };
-                    this.logger.LogError($"Unexpected exception in GetMedicationRequestsAsync {e}");
+                    this.logger.LogError("Unexpected exception in GetMedicationRequestsAsync {Exception}", e.ToString());
                 }
 
                 this.logger.LogDebug("Finished getting Medication Requests");

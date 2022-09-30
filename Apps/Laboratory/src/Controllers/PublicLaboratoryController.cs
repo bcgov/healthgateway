@@ -37,13 +37,12 @@ namespace HealthGateway.Laboratory.Controllers
     [ExcludeFromCodeCoverage]
     public class PublicLaboratoryController : ControllerBase
     {
-        private readonly ILogger logger;
-
         /// <summary>
         /// Gets or sets the laboratory data service.
         /// </summary>
         private readonly ILaboratoryService laboratoryService;
         private readonly ILabTestKitService labTestKitService;
+        private readonly ILogger logger;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="PublicLaboratoryController"/> class.
@@ -80,9 +79,9 @@ namespace HealthGateway.Laboratory.Controllers
         [Produces("application/json")]
         public async Task<RequestResult<PublicCovidTestResponse>> CovidTests([FromHeader] string phn, [FromHeader] string dateOfBirth, [FromHeader] string collectionDate)
         {
-            this.logger.LogTrace($"Getting COVID-19 test results for PHN: {phn}, DOB: {dateOfBirth}, and collection date: {collectionDate}");
+            this.logger.LogTrace("Getting COVID-19 test results for PHN: {Phn}, DOB: {DateOfBirth}, and collection date: {CollectionDate}", phn, dateOfBirth, collectionDate);
             RequestResult<PublicCovidTestResponse> result = await this.laboratoryService.GetPublicCovidTestsAsync(phn, dateOfBirth, collectionDate).ConfigureAwait(true);
-            this.logger.LogTrace($"Finished getting COVID-19 test results for PHN: {phn}, DOB: {dateOfBirth}, and collection date: {collectionDate}");
+            this.logger.LogTrace("Finished getting COVID-19 test results for PHN: {Phn}, DOB: {DateOfBirth}, and collection date: {CollectionDate}", phn, dateOfBirth, collectionDate);
 
             return result;
         }

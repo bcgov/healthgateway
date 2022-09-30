@@ -42,14 +42,14 @@ namespace HealthGateway.Immunization.Services
     {
         private const string PHSAConfigSectionKey = "PHSA";
         private const string AuthConfigSectionName = "ClientAuthentication";
-
-        private readonly IVaccineStatusDelegate vaccineStatusDelegate;
         private readonly IAuthenticationDelegate authDelegate;
         private readonly IHttpContextAccessor httpContextAccessor;
         private readonly ILogger<VaccineStatusService> logger;
-        private readonly ClientCredentialsTokenRequest tokenRequest;
         private readonly PhsaConfig phsaConfig;
+        private readonly ClientCredentialsTokenRequest tokenRequest;
         private readonly Uri tokenUri;
+
+        private readonly IVaccineStatusDelegate vaccineStatusDelegate;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="VaccineStatusService"/> class.
@@ -246,7 +246,7 @@ namespace HealthGateway.Immunization.Services
             }
             catch (InvalidOperationException e)
             {
-                this.logger.LogCritical($"Error during authentication {e}");
+                this.logger.LogCritical("Error during authentication {Exception}", e.ToString());
                 retVal.ResultError = new()
                 {
                     ResultMessage = "Error authenticating with KeyCloak",

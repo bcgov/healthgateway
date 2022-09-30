@@ -46,9 +46,9 @@ namespace HealthGateway.Common.Delegates
         private readonly string bcMailPlusEndpoint;
         private readonly string bcMailPlusJobClass;
         private readonly string bcMailPlusSchemaVersion;
+        private readonly IHttpClientService httpClientService;
 
         private readonly ILogger logger;
-        private readonly IHttpClientService httpClientService;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="VaccineProofDelegate"/> class.
@@ -120,7 +120,7 @@ namespace HealthGateway.Common.Delegates
                 };
                 retVal.ResultStatus = ResultType.Success;
                 retVal.TotalResultCount = 1;
-                this.logger.LogTrace($"The BC Mail Plus job {jobStatusResult.JobId} has a status of {jobStatusResult.JobStatus}");
+                this.logger.LogTrace("The BC Mail Plus job {JobId} has a status of {JobStatus}", jobStatusResult.JobId, jobStatusResult.JobStatus);
             }
             else
             {
@@ -172,7 +172,7 @@ namespace HealthGateway.Common.Delegates
                 };
                 retVal.ResultStatus = ResultType.Success;
                 retVal.TotalResultCount = 1;
-                this.logger.LogTrace($"The BC Mail Plus job {jobStatusResult.JobId} has a status of {jobStatusResult.JobStatus}");
+                this.logger.LogTrace("The BC Mail Plus job {JobId} has a status of {JobStatus}", jobStatusResult.JobId, jobStatusResult.JobStatus);
             }
             else
             {
@@ -206,7 +206,7 @@ namespace HealthGateway.Common.Delegates
                         byte[] payload = await response.Content.ReadAsByteArrayAsync().ConfigureAwait(true);
                         if (payload.Length > 0)
                         {
-                            this.logger.LogTrace($"Response: {response}");
+                            this.logger.LogTrace("Response: {Response}", response);
                             retVal.ResourcePayload = new()
                             {
                                 Data = Convert.ToBase64String(payload),
@@ -245,7 +245,7 @@ namespace HealthGateway.Common.Delegates
                     ResultMessage = $"Exception while fetching Vaccine Proof: {e}",
                     ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.BCMP),
                 };
-                this.logger.LogError($"Unexpected exception while fetching Vaccine Proof {e}");
+                this.logger.LogError("Unexpected exception while fetching Vaccine Proof {Exception}", e);
             }
 
             return retVal;
@@ -268,7 +268,7 @@ namespace HealthGateway.Common.Delegates
             {
                 HttpResponseMessage response = await client.PostAsync(endpoint, httpContent).ConfigureAwait(true);
                 string payload = await response.Content.ReadAsStringAsync().ConfigureAwait(true);
-                this.logger.LogTrace($"Response: {response}");
+                this.logger.LogTrace("Response: {Response}", response);
                 switch (response.StatusCode)
                 {
                     case HttpStatusCode.OK:
@@ -280,7 +280,7 @@ namespace HealthGateway.Common.Delegates
                                 ResultMessage = "Error encountered from BC Mail Plus",
                                 ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.BCMP),
                             };
-                            this.logger.LogWarning($"Error Details:{Environment.NewLine}{payload}");
+                            this.logger.LogWarning("Error Details:{NewLine}{Payload}", Environment.NewLine, payload);
                         }
                         else
                         {
@@ -308,7 +308,7 @@ namespace HealthGateway.Common.Delegates
                             ResultMessage = $"Unable to connect to BC Mail Plus Endpoint, HTTP Error {response.StatusCode}",
                             ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.BCMP),
                         };
-                        this.logger.LogError($"Unable to connect to endpoint {endpointString}, HTTP Error {response.StatusCode}\n{payload}");
+                        this.logger.LogError("Unable to connect to endpoint {EndpointString}, HTTP Error {StatusCode}\n{Payload}", endpointString, response.StatusCode, payload);
                         break;
                 }
             }
@@ -321,7 +321,7 @@ namespace HealthGateway.Common.Delegates
                     ResultMessage = $"Exception while sending HTTP request to BC Mail Plus: {e}",
                     ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.BCMP),
                 };
-                this.logger.LogError($"Unexpected exception while sending HTTP request to BC Mail Plus {e}");
+                this.logger.LogError("Unexpected exception while sending HTTP request to BC Mail Plus {Exception}", e);
             }
 
             return retVal;

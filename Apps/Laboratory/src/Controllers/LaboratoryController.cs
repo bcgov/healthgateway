@@ -38,9 +38,9 @@ namespace HealthGateway.Laboratory.Controllers
     [ExcludeFromCodeCoverage]
     public class LaboratoryController : ControllerBase
     {
-        private readonly ILogger logger;
         private readonly ILaboratoryService labService;
         private readonly ILabTestKitService labTestKitService;
+        private readonly ILogger logger;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="LaboratoryController"/> class.
@@ -81,7 +81,7 @@ namespace HealthGateway.Laboratory.Controllers
         {
             this.logger.LogDebug("Getting COVID-19 laboratory orders...");
             RequestResult<Covid19OrderResult> result = await this.labService.GetCovid19Orders(hdid).ConfigureAwait(true);
-            this.logger.LogDebug($"Finished getting COVID-19 laboratory orders from controller for HDID: {hdid}");
+            this.logger.LogDebug("Finished getting COVID-19 laboratory orders from controller for HDID: {Hdid}", hdid);
             return result;
         }
 
@@ -108,7 +108,7 @@ namespace HealthGateway.Laboratory.Controllers
         {
             this.logger.LogDebug("Getting laboratory orders...");
             RequestResult<LaboratoryOrderResult> result = await this.labService.GetLaboratoryOrders(hdid).ConfigureAwait(true);
-            this.logger.LogDebug($"Finished getting laboratory orders from controller for HDID: {hdid}");
+            this.logger.LogDebug("Finished getting laboratory orders from controller for HDID: {Hdid}", hdid);
             return result;
         }
 
@@ -157,9 +157,9 @@ namespace HealthGateway.Laboratory.Controllers
         [Authorize(Policy = LaboratoryPolicy.Write)]
         public async Task<RequestResult<LabTestKit>> AddLabTestKit(string hdid, [FromBody] LabTestKit labTestKit)
         {
-            this.logger.LogDebug($"Post AddLabTestKit {hdid}");
+            this.logger.LogDebug("Post AddLabTestKit {Hdid}", hdid);
             RequestResult<LabTestKit> result = await this.labTestKitService.RegisterLabTestKitAsync(hdid, labTestKit).ConfigureAwait(true);
-            this.logger.LogDebug($"Finishing submitting lab test kit from controller ... {hdid}");
+            this.logger.LogDebug("Finishing submitting lab test kit from controller ... {Hdid}", hdid);
             return result;
         }
     }

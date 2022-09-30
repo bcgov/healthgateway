@@ -49,16 +49,16 @@ namespace HealthGateway.Admin.Services
     {
         private const string BcMailPlusConfigSectionKey = "BCMailPlus";
         private const string VaccineCardConfigSectionKey = "VaccineCard";
+        private readonly IAuthenticationDelegate authenticationDelegate;
+        private readonly BcMailPlusConfig bcmpConfig;
+        private readonly IHttpContextAccessor httpContextAccessor;
+        private readonly IImmunizationAdminClient immunizationAdminClient;
+        private readonly IImmunizationAdminDelegate immunizationDelegate;
         private readonly ILogger<CovidSupportService> logger;
         private readonly IPatientService patientService;
-        private readonly IImmunizationAdminDelegate immunizationDelegate;
-        private readonly IVaccineStatusDelegate vaccineStatusDelegate;
-        private readonly IHttpContextAccessor httpContextAccessor;
-        private readonly IVaccineProofDelegate vaccineProofDelegate;
-        private readonly BcMailPlusConfig bcmpConfig;
         private readonly VaccineCardConfig vaccineCardConfig;
-        private readonly IImmunizationAdminClient immunizationAdminClient;
-        private readonly IAuthenticationDelegate authenticationDelegate;
+        private readonly IVaccineProofDelegate vaccineProofDelegate;
+        private readonly IVaccineStatusDelegate vaccineStatusDelegate;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="CovidSupportService"/> class.
@@ -71,7 +71,7 @@ namespace HealthGateway.Admin.Services
         /// <param name="configuration">The configuration to use.</param>
         /// <param name="vaccineProofDelegate">The injected delegate to get the vaccine proof.</param>
         /// <param name="immunizationAdminClient">The api client to use for immunization.</param>
-        /// /// <param name="authenticationDelegate">The auth delegate to fetch tokens.</param>
+        /// <param name="authenticationDelegate">The auth delegate to fetch tokens.</param>
         public CovidSupportService(
             ILogger<CovidSupportService> logger,
             IPatientService patientService,
@@ -99,10 +99,10 @@ namespace HealthGateway.Admin.Services
             configuration.Bind(VaccineCardConfigSectionKey, this.vaccineCardConfig);
         }
 
-        /// <inheritdoc />
+        /// <inheritdoc/>
         public async Task<RequestResult<CovidInformation>> GetCovidInformation(string phn, bool refresh)
         {
-            this.logger.LogDebug($"Retrieving covid information");
+            this.logger.LogDebug("Retrieving covid information");
             this.logger.LogTrace("For PHN: {Phn}", phn);
             this.logger.LogDebug("For Refresh: {Refresh}", refresh);
 
@@ -110,14 +110,14 @@ namespace HealthGateway.Admin.Services
 
             if (patientResult.ResultStatus == ResultType.Success)
             {
-                this.logger.LogDebug($"Successfully retrieved patient.");
+                this.logger.LogDebug("Successfully retrieved patient.");
 
                 RequestResult<VaccineDetails> vaccineDetailsResult =
                     await this.immunizationDelegate.GetVaccineDetailsWithRetries(patientResult.ResourcePayload, refresh).ConfigureAwait(true);
 
                 if (vaccineDetailsResult.ResultStatus == ResultType.Success && vaccineDetailsResult.ResourcePayload != null)
                 {
-                    this.logger.LogDebug($"Successfully retrieved vaccine details.");
+                    this.logger.LogDebug("Successfully retrieved vaccine details.");
 
                     CovidInformation covidInformation = new()
                     {
@@ -130,7 +130,7 @@ namespace HealthGateway.Admin.Services
                         covidInformation.VaccineDetails = vaccineDetailsResult.ResourcePayload;
                     }
 
-                    return new RequestResult<CovidInformation>()
+                    return new RequestResult<CovidInformation>
                     {
                         PageIndex = 0,
                         PageSize = 1,
@@ -138,43 +138,39 @@ namespace HealthGateway.Admin.Services
                         ResultStatus = ResultType.Success,
                     };
                 }
-                else
-                {
-                    this.logger.LogError($"Error retrieving vaccine details.");
-                    return new RequestResult<CovidInformation>()
-                    {
-                        PageIndex = 0,
-                        PageSize = 0,
-                        ResultStatus = ResultType.Error,
-                        ResultError = vaccineDetailsResult.ResultError,
-                    };
-                }
-            }
-            else
-            {
-                this.logger.LogError($"Error retrieving patient information.");
-                return new RequestResult<CovidInformation>()
+
+                this.logger.LogError("Error retrieving vaccine details.");
+                return new RequestResult<CovidInformation>
                 {
                     PageIndex = 0,
                     PageSize = 0,
                     ResultStatus = ResultType.Error,
-                    ResultError = patientResult.ResultError,
+                    ResultError = vaccineDetailsResult.ResultError,
                 };
             }
+
+            this.logger.LogError("Error retrieving patient information.");
+            return new RequestResult<CovidInformation>
+            {
+                PageIndex = 0,
+                PageSize = 0,
+                ResultStatus = ResultType.Error,
+                ResultError = patientResult.ResultError,
+            };
         }
 
-        /// <inheritdoc />
+        /// <inheritdoc/>
         public async Task<PrimitiveRequestResult<bool>> MailVaccineCardAsync(MailDocumentRequest request)
         {
-            this.logger.LogDebug($"Mailing document");
+            this.logger.LogDebug("Mailing document");
             this.logger.LogTrace("For PHN: {Phn}", request.PersonalHealthNumber);
 
             RequestResult<PatientModel> patientResult = await this.patientService.GetPatient(request.PersonalHealthNumber, PatientIdentifierType.PHN, true).ConfigureAwait(true);
 
             if (patientResult.ResultStatus != ResultType.Success)
             {
-                this.logger.LogError($"Error retrieving patient information.");
-                return new PrimitiveRequestResult<bool>()
+                this.logger.LogError("Error retrieving patient information.");
+                return new PrimitiveRequestResult<bool>
                 {
                     ResultStatus = ResultType.Error,
                     ResourcePayload = false,
@@ -187,12 +183,12 @@ namespace HealthGateway.Admin.Services
 
             if (bearerToken == null)
             {
-                this.logger.LogError($"Error getting access token.");
-                return new PrimitiveRequestResult<bool>()
+                this.logger.LogError("Error getting access token.");
+                return new PrimitiveRequestResult<bool>
                 {
                     ResultStatus = ResultType.Error,
                     ResourcePayload = false,
-                    ResultError = new RequestResultError()
+                    ResultError = new RequestResultError
                     {
                         ResultMessage = "Error getting access token.",
                         ErrorCode = ErrorTranslator.ServiceError(ErrorType.InvalidState, ServiceType.Immunization),
@@ -219,56 +215,57 @@ namespace HealthGateway.Admin.Services
                 VaccineState state = Enum.Parse<VaccineState>(vaccineStatusResult.ResourcePayload.Result!.StatusIndicator);
                 if (state == VaccineState.NotFound || state == VaccineState.DataMismatch || state == VaccineState.Threshold || state == VaccineState.Blocked)
                 {
-                    return new PrimitiveRequestResult<bool>()
+                    return new PrimitiveRequestResult<bool>
                     {
                         ResultStatus = ResultType.Error,
                         ResourcePayload = false,
-                        ResultError = new RequestResultError()
+                        ResultError = new RequestResultError
                         {
                             ResultMessage = "Vaccine status not found",
                             ErrorCode = ErrorTranslator.ServiceError(ErrorType.InvalidState, ServiceType.PHSA),
                         },
                     };
                 }
-                else
+
+                VaccinationStatus requestState = state switch
                 {
-                    VaccinationStatus requestState = state switch
+                    VaccineState.AllDosesReceived => VaccinationStatus.Fully,
+                    VaccineState.PartialDosesReceived => VaccinationStatus.Partially,
+                    VaccineState.Exempt => VaccinationStatus.Exempt,
+                    _ => VaccinationStatus.Unknown,
+                };
+
+                if (requestState != VaccinationStatus.Unknown)
+                {
+                    this.logger.LogDebug("Vaccine Status: {RequestState}", requestState);
+                    VaccineProofRequest vaccineProofRequest = new()
                     {
-                        VaccineState.AllDosesReceived => VaccinationStatus.Fully,
-                        VaccineState.PartialDosesReceived => VaccinationStatus.Partially,
-                        VaccineState.Exempt => VaccinationStatus.Exempt,
-                        _ => VaccinationStatus.Unknown,
+                        Status = requestState,
+                        SmartHealthCardQr = vaccineStatusResult.ResourcePayload.Result.QRCode.Data!,
                     };
 
-                    if (requestState != VaccinationStatus.Unknown)
+                    RequestResult<VaccineProofResponse> vaccineProofResponse =
+                        await this.vaccineProofDelegate.MailAsync(this.vaccineCardConfig.MailTemplate, vaccineProofRequest, request.MailAddress).ConfigureAwait(true);
+
+                    if (vaccineProofResponse.ResultStatus == ResultType.Success)
                     {
-                        this.logger.LogDebug("Vaccine Status: {RequestState}", requestState);
-                        VaccineProofRequest vaccineProofRequest = new()
-                        {
-                            Status = requestState,
-                            SmartHealthCardQr = vaccineStatusResult.ResourcePayload.Result.QRCode.Data!,
-                        };
-
-                        RequestResult<VaccineProofResponse> vaccineProofResponse =
-                            await this.vaccineProofDelegate.MailAsync(this.vaccineCardConfig.MailTemplate, vaccineProofRequest, request.MailAddress).ConfigureAwait(true);
-
-                        if (vaccineProofResponse.ResultStatus == ResultType.Success)
-                        {
-                            retVal.ResourcePayload = true;
-                            retVal.ResultStatus = ResultType.Success;
-                        }
-                        else
-                        {
-                            retVal.ResourcePayload = false;
-                            retVal.ResultStatus = ResultType.Error;
-                            retVal.ResultError = vaccineProofResponse.ResultError;
-                            this.logger.LogError($"Error mailing via BCMailPlus {vaccineProofResponse.ResultError}");
-                        }
+                        retVal.ResourcePayload = true;
+                        retVal.ResultStatus = ResultType.Success;
                     }
                     else
                     {
-                        retVal.ResultError = vaccineStatusResult.ResultError;
+                        retVal.ResourcePayload = false;
+                        retVal.ResultStatus = ResultType.Error;
+                        retVal.ResultError = vaccineProofResponse.ResultError;
+                        this.logger.LogError(
+                            "Error mailing via BCMailPlus - error code: {ResultErrorCode} and error message: {ResultErrorMessage}",
+                            vaccineProofResponse.ResultError?.ErrorCode,
+                            vaccineProofResponse.ResultError?.ResultMessage);
                     }
+                }
+                else
+                {
+                    retVal.ResultError = vaccineStatusResult.ResultError;
                 }
             }
             else
@@ -281,18 +278,18 @@ namespace HealthGateway.Admin.Services
             return retVal;
         }
 
-        /// <inheritdoc />
+        /// <inheritdoc/>
         public async Task<RequestResult<ReportModel>> RetrieveVaccineRecordAsync(string phn)
         {
-            this.logger.LogDebug($"Retrieving vaccine record");
+            this.logger.LogDebug("Retrieving vaccine record");
             this.logger.LogTrace("For PHN: {Phn}", phn);
 
             RequestResult<PatientModel> patientResult = await this.patientService.GetPatient(phn, PatientIdentifierType.PHN, true).ConfigureAwait(true);
 
             if (patientResult.ResultStatus != ResultType.Success)
             {
-                this.logger.LogError($"Error retrieving patient information.");
-                return new RequestResult<ReportModel>()
+                this.logger.LogError("Error retrieving patient information.");
+                return new RequestResult<ReportModel>
                 {
                     PageIndex = 0,
                     PageSize = 0,
@@ -306,11 +303,11 @@ namespace HealthGateway.Admin.Services
 
             if (bearerToken == null)
             {
-                this.logger.LogError($"Error getting access token.");
-                return new RequestResult<ReportModel>()
+                this.logger.LogError("Error getting access token.");
+                return new RequestResult<ReportModel>
                 {
                     ResultStatus = ResultType.Error,
-                    ResultError = new RequestResultError()
+                    ResultError = new RequestResultError
                     {
                         ResultMessage = "Error getting access token.",
                         ErrorCode = ErrorTranslator.ServiceError(ErrorType.InvalidState, ServiceType.Immunization),
@@ -325,7 +322,7 @@ namespace HealthGateway.Admin.Services
             return statusReport;
         }
 
-        /// <inheritdoc />
+        /// <inheritdoc/>
         public async Task<RequestResult<CovidAssessmentResponse>> SubmitCovidAssessmentAsync(CovidAssessmentRequest request)
         {
             RequestResult<CovidAssessmentResponse> requestResult = new()
@@ -343,10 +340,10 @@ namespace HealthGateway.Admin.Services
             }
             catch (HttpRequestException e)
             {
-                this.logger.LogCritical($"HTTP Request Exception {e}");
-                requestResult.ResultError = new RequestResultError()
+                this.logger.LogCritical("HTTP Request Exception {Exception}", e.ToString());
+                requestResult.ResultError = new RequestResultError
                 {
-                    ResultMessage = $"Error with HTTP Request",
+                    ResultMessage = "Error with HTTP Request",
                     ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.PHSA),
                 };
             }
@@ -354,7 +351,7 @@ namespace HealthGateway.Admin.Services
             return requestResult;
         }
 
-        /// <inheritdoc />
+        /// <inheritdoc/>
         public async Task<RequestResult<CovidAssessmentDetailsResponse>> GetCovidAssessmentDetailsAsync(string phn)
         {
             RequestResult<CovidAssessmentDetailsResponse> requestResult = new()
@@ -375,15 +372,19 @@ namespace HealthGateway.Admin.Services
                 try
                 {
                     IApiResponse<CovidAssessmentDetailsResponse> response =
-                        await this.immunizationAdminClient.GetCovidAssessmentDetails(new CovidAssessmentDetailsRequest() { Phn = phn, }, accessToken).ConfigureAwait(true);
+                        await this.immunizationAdminClient.GetCovidAssessmentDetails(
+                                new CovidAssessmentDetailsRequest
+                                    { Phn = phn },
+                                accessToken)
+                            .ConfigureAwait(true);
                     this.ProcessResponse(requestResult, response);
                 }
                 catch (HttpRequestException e)
                 {
-                    this.logger.LogCritical($"HTTP Request Exception {e}");
-                    requestResult.ResultError = new RequestResultError()
+                    this.logger.LogCritical("HTTP Request Exception {Exception}", e.ToString());
+                    requestResult.ResultError = new RequestResultError
                     {
-                        ResultMessage = $"Error with HTTP Request",
+                        ResultMessage = "Error with HTTP Request",
                         ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.PHSA),
                     };
                 }
@@ -412,32 +413,32 @@ namespace HealthGateway.Admin.Services
 
                     // Only GetCovidAssessmentDetailsAsync can return HttpStatusCode.NoContent
                     case HttpStatusCode.NoContent:
-                        requestResult.ResultError = new RequestResultError()
+                        requestResult.ResultError = new RequestResultError
                         {
-                            ResultMessage = $"No Details found",
+                            ResultMessage = "No Details found",
                             ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.PHSA),
                         };
                         break;
 
                     // SubmitCovidAssessmentAsync and GetCovidAssessmentDetailsAsync can return HttpStatusCode.Unauthorized
                     case HttpStatusCode.Unauthorized:
-                        requestResult.ResultError = new RequestResultError()
+                        requestResult.ResultError = new RequestResultError
                         {
-                            ResultMessage = $"Request was not authorized",
+                            ResultMessage = "Request was not authorized",
                             ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.PHSA),
                         };
                         break;
 
                     // SubmitCovidAssessmentAsync and GetCovidAssessmentDetailsAsync can return HttpStatusCode.Forbidden
                     case HttpStatusCode.Forbidden:
-                        requestResult.ResultError = new RequestResultError()
+                        requestResult.ResultError = new RequestResultError
                         {
                             ResultMessage = $"Missing Required Data Element, HTTP Error {response.StatusCode}",
                             ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.PHSA),
                         };
                         break;
                     default:
-                        requestResult.ResultError = new RequestResultError()
+                        requestResult.ResultError = new RequestResultError
                         {
                             ResultMessage = $"An unexpected error occurred, HTTP Error {response.StatusCode}",
                             ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.PHSA),
@@ -447,11 +448,11 @@ namespace HealthGateway.Admin.Services
             }
             else
             {
-                this.logger.LogError($"Exception: {response.Error}");
+                this.logger.LogError("Exception: {ErrorStatusCode}", response.Error.StatusCode.ToString());
                 this.logger.LogError("Http Payload: {Content}", response.Error.Content);
-                requestResult.ResultError = new RequestResultError()
+                requestResult.ResultError = new RequestResultError
                 {
-                    ResultMessage = $"An unexpected error occurred while processing external call",
+                    ResultMessage = "An unexpected error occurred while processing external call",
                     ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.PHSA),
                 };
             }
@@ -459,7 +460,7 @@ namespace HealthGateway.Admin.Services
 
         private async Task<RequestResult<ReportModel>> RetrieveVaccineCardAsync(string phn, DateTime birthdate, string bearerToken)
         {
-            this.logger.LogDebug($"Retrieving vaccine card document");
+            this.logger.LogDebug("Retrieving vaccine card document");
             this.logger.LogTrace("For PHN: {Phn}", phn);
             VaccineStatusQuery statusQuery = new()
             {
@@ -471,8 +472,8 @@ namespace HealthGateway.Admin.Services
 
             if (statusResult.ResultStatus != ResultType.Success)
             {
-                this.logger.LogError($"Error getting vaccine status.");
-                return new RequestResult<ReportModel>()
+                this.logger.LogError("Error getting vaccine status.");
+                return new RequestResult<ReportModel>
                 {
                     PageIndex = 0,
                     PageSize = 0,
@@ -484,13 +485,13 @@ namespace HealthGateway.Admin.Services
             VaccineStatusResult? vaccineStatusResult = statusResult.ResourcePayload?.Result;
             if (vaccineStatusResult == null)
             {
-                this.logger.LogError($"Error retrieving vaccine status information.");
-                return new RequestResult<ReportModel>()
+                this.logger.LogError("Error retrieving vaccine status information.");
+                return new RequestResult<ReportModel>
                 {
                     PageIndex = 0,
                     PageSize = 0,
                     ResultStatus = ResultType.Error,
-                    ResultError = new RequestResultError()
+                    ResultError = new RequestResultError
                     {
                         ResultMessage = "Error retrieving vaccine status information.",
                         ErrorCode = ErrorTranslator.ServiceError(ErrorType.InvalidState, ServiceType.Immunization),
@@ -551,7 +552,8 @@ namespace HealthGateway.Admin.Services
                     }
                     else
                     {
-                        retVal.ResultError = assetResult.ResultError ?? new RequestResultError() { ResultMessage = "Unable to obtain Vaccine Proof PDF", ErrorCode = ErrorTranslator.ServiceError(ErrorType.InvalidState, ServiceType.BCMP) };
+                        retVal.ResultError = assetResult.ResultError ?? new RequestResultError
+                            { ResultMessage = "Unable to obtain Vaccine Proof PDF", ErrorCode = ErrorTranslator.ServiceError(ErrorType.InvalidState, ServiceType.BCMP) };
                     }
                 }
                 else
@@ -561,7 +563,8 @@ namespace HealthGateway.Admin.Services
             }
             else
             {
-                retVal.ResultError = new RequestResultError() { ResultMessage = "Vaccine status is unknown", ErrorCode = ErrorTranslator.ServiceError(ErrorType.InvalidState, ServiceType.BCMP) };
+                retVal.ResultError = new RequestResultError
+                    { ResultMessage = "Vaccine status is unknown", ErrorCode = ErrorTranslator.ServiceError(ErrorType.InvalidState, ServiceType.BCMP) };
             }
 
             return retVal;

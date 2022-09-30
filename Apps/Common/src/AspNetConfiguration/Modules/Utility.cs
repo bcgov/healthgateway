@@ -82,7 +82,7 @@ namespace HealthGateway.Common.AspNetConfiguration.Modules
                 basePath = section.GetValue<string>("BasePath");
             }
 
-            logger.LogDebug($"BasePath = {basePath}");
+            logger.LogDebug("BasePath = {BasePath}", basePath);
             return basePath;
         }
     }

@@ -35,8 +35,8 @@ namespace HealthGateway.Common.Services
     {
         private readonly IEmailDelegate emailDelegate;
         private readonly IWebHostEnvironment environment;
-        private readonly ILogger logger;
         private readonly IBackgroundJobClient jobClient;
+        private readonly ILogger logger;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="EmailQueueService"/> class.
@@ -95,7 +95,7 @@ namespace HealthGateway.Common.Services
                 this.jobClient.Enqueue<IEmailJob>(j => j.SendEmail(email.Id));
             }
 
-            this.logger.LogDebug($"Finished queueing email. {email.Id}");
+            this.logger.LogDebug("Finished queueing email. {Id}", email.Id);
         }
 
         /// <inheritdoc/>
@@ -124,7 +124,7 @@ namespace HealthGateway.Common.Services
         /// <inheritdoc/>
         public EmailTemplate GetEmailTemplate(string templateName)
         {
-            this.logger.LogTrace($"Getting email template... {templateName}");
+            this.logger.LogTrace("Getting email template... {TemplateName}", templateName);
             EmailTemplate retVal = this.emailDelegate.GetEmailTemplate(templateName);
             this.logger.LogDebug("Finished getting email template.");
             return retVal;
@@ -139,7 +139,7 @@ namespace HealthGateway.Common.Services
         /// <inheritdoc/>
         public Email ProcessTemplate(string toEmail, EmailTemplate emailTemplate, Dictionary<string, string> keyValues)
         {
-            this.logger.LogTrace($"Processing template... {emailTemplate.Name}");
+            this.logger.LogTrace("Processing template... {Name}", emailTemplate.Name);
             Email email = this.ParseTemplate(emailTemplate, keyValues);
             email.To = toEmail;
             this.logger.LogDebug("Finished processing template.");
