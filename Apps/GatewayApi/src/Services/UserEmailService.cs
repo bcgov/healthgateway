@@ -36,16 +36,16 @@ namespace HealthGateway.GatewayApi.Services
     /// <inheritdoc/>
     public class UserEmailService : IUserEmailService
     {
-        private readonly string webClientConfigSection = "WebClient";
         private readonly string emailConfigExpirySecondsKey = "EmailVerificationExpirySeconds";
-        private readonly int emailVerificationExpirySeconds;
-        private readonly int maxVerificationAttempts = 5;
-        private readonly ILogger logger;
-        private readonly IMessagingVerificationDelegate messageVerificationDelegate;
-        private readonly IUserProfileDelegate profileDelegate;
         private readonly IEmailQueueService emailQueueService;
-        private readonly INotificationSettingsService notificationSettingsService;
+        private readonly int emailVerificationExpirySeconds;
         private readonly IHttpContextAccessor httpContextAccessor;
+        private readonly ILogger logger;
+        private readonly int maxVerificationAttempts = 5;
+        private readonly IMessagingVerificationDelegate messageVerificationDelegate;
+        private readonly INotificationSettingsService notificationSettingsService;
+        private readonly IUserProfileDelegate profileDelegate;
+        private readonly string webClientConfigSection = "WebClient";
 
         /// <summary>
         /// Initializes a new instance of the <see cref="UserEmailService"/> class.
@@ -79,7 +79,7 @@ namespace HealthGateway.GatewayApi.Services
         /// <inheritdoc/>
         public PrimitiveRequestResult<bool> ValidateEmail(string hdid, Guid inviteKey)
         {
-            this.logger.LogTrace($"Validating email... {inviteKey}");
+            this.logger.LogTrace("Validating email... {InviteKey}", inviteKey);
             MessagingVerification? matchingVerification = this.messageVerificationDelegate.GetLastByInviteKey(inviteKey);
             if (matchingVerification == null ||
                 matchingVerification.UserProfileId != hdid ||
@@ -175,7 +175,7 @@ namespace HealthGateway.GatewayApi.Services
             this.logger.LogTrace("Updating user email...");
 
             UserProfile userProfile = this.profileDelegate.GetUserProfile(hdid).Payload;
-            this.logger.LogInformation($"Removing email from user ${hdid}");
+            this.logger.LogInformation("Removing email from user {Hdid}", hdid);
             this.profileDelegate.Update(userProfile);
             userProfile.Email = null;
 
@@ -185,12 +185,12 @@ namespace HealthGateway.GatewayApi.Services
             MessagingVerification? lastEmailVerification = this.messageVerificationDelegate.GetLastForUser(hdid, MessagingVerificationType.Email);
             if (lastEmailVerification != null)
             {
-                this.logger.LogInformation($"Expiring old email validation for user ${hdid}");
+                this.logger.LogInformation("Expiring old email validation for user {Hdid}", hdid);
                 bool isDeleted = string.IsNullOrEmpty(emailAddress);
                 this.messageVerificationDelegate.Expire(lastEmailVerification, isDeleted);
                 if (!isDeleted)
                 {
-                    this.logger.LogInformation($"Sending new email verification for user ${hdid}");
+                    this.logger.LogInformation("Sending new email verification for user {Hdid}", hdid);
 
                     if (lastEmailVerification.Email != null
                         && !string.IsNullOrEmpty(lastEmailVerification.Email.To)

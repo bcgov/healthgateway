@@ -19,7 +19,6 @@ namespace HealthGateway.GatewayApi.Services
     using System.Collections.Generic;
     using System.Globalization;
     using System.Text;
-    using System.Text.Json;
     using System.Threading.Tasks;
     using AutoMapper;
     using HealthGateway.Common.Constants;
@@ -42,13 +41,13 @@ namespace HealthGateway.GatewayApi.Services
     {
         private const string WebClientConfigSection = "WebClient";
         private const string MaxDependentAgeKey = "MaxDependentAge";
-        private readonly int maxDependentAge;
+        private readonly IMapper autoMapper;
         private readonly ILogger logger;
+        private readonly int maxDependentAge;
+        private readonly INotificationSettingsService notificationSettingsService;
         private readonly IPatientService patientService;
         private readonly IResourceDelegateDelegate resourceDelegateDelegate;
-        private readonly INotificationSettingsService notificationSettingsService;
         private readonly IUserProfileDelegate userProfileDelegate;
-        private readonly IMapper autoMapper;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="DependentService"/> class.
@@ -81,7 +80,7 @@ namespace HealthGateway.GatewayApi.Services
         /// <inheritdoc/>
         public RequestResult<DependentModel> AddDependent(string delegateHdId, AddDependentRequest addDependentRequest)
         {
-            this.logger.LogTrace($"Delegate hdid: {delegateHdId}");
+            this.logger.LogTrace("Delegate hdid: {DelegateHdid}", delegateHdId);
 
             DateTime minimumBirthDate = DateTime.UtcNow.AddYears(this.maxDependentAge * -1);
             if (addDependentRequest.DateOfBirth < minimumBirthDate)
@@ -121,13 +120,12 @@ namespace HealthGateway.GatewayApi.Services
                 };
             }
 
-            this.logger.LogDebug($"Finished getting dependent details...{JsonSerializer.Serialize(patientResult)}");
+            this.logger.LogDebug("Finished getting dependent details... {DependentPhn}", addDependentRequest.PHN);
 
             // Verify dependent's details entered by user
             if (patientResult.ResourcePayload == null || !this.ValidateDependent(addDependentRequest, patientResult.ResourcePayload))
             {
-                this.logger.LogDebug(
-                    $"Dependent information does not match request: {JsonSerializer.Serialize(addDependentRequest)} response: {JsonSerializer.Serialize(patientResult.ResourcePayload)}");
+                this.logger.LogDebug("Dependent information does not match request: {DependentPhn}", addDependentRequest.PHN);
                 return new RequestResult<DependentModel>
                 {
                     ResultStatus = ResultType.ActionRequired,
@@ -197,7 +195,7 @@ namespace HealthGateway.GatewayApi.Services
             StringBuilder resultErrorMessage = new();
             foreach (ResourceDelegate resourceDelegate in dbResourceDelegates.Payload)
             {
-                this.logger.LogDebug($"Getting dependent details for Dependent hdid: {resourceDelegate.ResourceOwnerHdid} ...");
+                this.logger.LogDebug("Getting dependent details for Dependent hdid: {DependentHdid}", resourceDelegate.ResourceOwnerHdid);
                 RequestResult<PatientModel> patientResult = Task.Run(async () => await this.patientService.GetPatient(resourceDelegate.ResourceOwnerHdid).ConfigureAwait(true)).Result;
 
                 if (patientResult.ResourcePayload != null)

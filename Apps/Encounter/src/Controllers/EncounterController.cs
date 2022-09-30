@@ -74,10 +74,10 @@ namespace HealthGateway.Encounter.Controllers
         [Authorize(Policy = EncounterPolicy.Read)]
         public async Task<RequestResult<IEnumerable<EncounterModel>>> GetEncounters(string hdid)
         {
-            this.logger.LogDebug($"Getting claims from controller... {hdid}");
+            this.logger.LogDebug("Getting claims from controller... {Hdid}", hdid);
             RequestResult<IEnumerable<EncounterModel>> result = await this.service.GetEncounters(hdid).ConfigureAwait(true);
 
-            this.logger.LogDebug($"Finished getting claims from controller... {hdid}");
+            this.logger.LogDebug("Finished getting claims from controller... {Hdid}", hdid);
             return result;
         }
     }

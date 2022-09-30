@@ -40,11 +40,11 @@ namespace HealthGateway.Encounter.Delegates
     public class RestMspVisitDelegate : IMspVisitDelegate
     {
         private const string ODRConfigSectionKey = "ODR";
+        private readonly Uri baseURL;
+        private readonly IHttpClientService httpClientService;
 
         private readonly ILogger logger;
-        private readonly IHttpClientService httpClientService;
         private readonly OdrConfig odrConfig;
-        private readonly Uri baseURL;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="RestMspVisitDelegate"/> class.
@@ -77,7 +77,7 @@ namespace HealthGateway.Encounter.Delegates
                 this.baseURL = new Uri(this.odrConfig.BaseEndpoint);
             }
 
-            logger.LogDebug($"ODR Proxy URL resolved as {this.baseURL}");
+            logger.LogDebug("ODR Proxy URL resolved as {BaseUrl}", this.baseURL);
         }
 
         private static ActivitySource Source { get; } = new(nameof(RestMspVisitDelegate));
@@ -88,7 +88,7 @@ namespace HealthGateway.Encounter.Delegates
             using (Source.StartActivity())
             {
                 RequestResult<MspVisitHistoryResponse> retVal = new();
-                this.logger.LogTrace($"Getting MSP visits... {query.PHN.Substring(0, 3)}");
+                this.logger.LogTrace("Getting MSP visits... {Phn}", query.PHN.Substring(0, 3));
 
                 using HttpClient client = this.httpClientService.CreateDefaultHttpClient();
                 client.DefaultRequestHeaders.Accept.Clear();
@@ -123,7 +123,7 @@ namespace HealthGateway.Encounter.Delegates
                             ResultMessage = $"Invalid HTTP Response code of {response.StatusCode} from ODR with reason {response.ReasonPhrase}",
                             ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.ODRRecords),
                         };
-                        this.logger.LogError(retVal.ResultError.ResultMessage);
+                        this.logger.LogError("MSP Visits endpoint error message... {Message}", retVal.ResultError.ResultMessage);
                     }
                 }
 #pragma warning disable CA1031 // Do not catch general exception types
@@ -136,7 +136,7 @@ namespace HealthGateway.Encounter.Delegates
                         ResultMessage = e.ToString(),
                         ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.ODRRecords),
                     };
-                    this.logger.LogError($"Unable to post message {e}");
+                    this.logger.LogError("Unable to post message {Exception}", e);
                 }
 
                 this.logger.LogDebug("Finished getting MSP visits");

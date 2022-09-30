@@ -35,10 +35,10 @@ namespace HealthGateway.Encounter.Services
     /// <inheritdoc/>
     public class EncounterService : IEncounterService
     {
-        private readonly ILogger logger;
         private readonly IHttpContextAccessor httpContextAccessor;
-        private readonly IPatientService patientService;
+        private readonly ILogger logger;
         private readonly IMspVisitDelegate mspVisitDelegate;
+        private readonly IPatientService patientService;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="EncounterService"/> class.
@@ -67,7 +67,7 @@ namespace HealthGateway.Encounter.Services
             using (Source.StartActivity())
             {
                 this.logger.LogDebug("Getting encounters");
-                this.logger.LogTrace($"User hdid: {hdid}");
+                this.logger.LogTrace("User hdid: {Hdid}", hdid);
 
                 RequestResult<IEnumerable<EncounterModel>> result = new();
 
