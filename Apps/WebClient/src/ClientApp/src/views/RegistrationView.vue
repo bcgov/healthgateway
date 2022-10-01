@@ -85,6 +85,7 @@ export default class RegistrationView extends Vue {
     private submitStatus = "";
     private loadingUserData = true;
     private loadingTermsOfService = true;
+    private submittingRegistration = false;
     private clientRegistryError = false;
     private errorMessage = "";
 
@@ -95,7 +96,11 @@ export default class RegistrationView extends Vue {
     private termsOfService?: TermsOfService;
 
     private get isLoading(): boolean {
-        return this.loadingTermsOfService || this.loadingUserData;
+        return (
+            this.loadingTermsOfService ||
+            this.loadingUserData ||
+            this.submittingRegistration
+        );
     }
 
     private get fullName(): string {
@@ -230,11 +235,10 @@ export default class RegistrationView extends Vue {
         return param.$dirty ? !param.$invalid : undefined;
     }
 
-    private onSubmit(event: Event): void {
+    private async onSubmit(): Promise<void> {
         this.$v.$touch();
         if (this.$v.$invalid || this.oidcUserInfo === undefined) {
             this.submitStatus = "ERROR";
-            event.preventDefault();
             return;
         }
 
@@ -242,44 +246,35 @@ export default class RegistrationView extends Vue {
         if (this.smsNumber) {
             this.smsNumber = this.smsNumber.replace(/\D+/g, "");
         }
-        this.loadingTermsOfService = true;
-        this.createProfile({
-            request: {
-                profile: {
-                    hdid: this.oidcUserInfo.hdid,
-                    termsOfServiceId: this.termsOfService?.id || "",
-                    acceptedTermsOfService: this.accepted,
-                    email: this.email || "",
-                    isEmailVerified: false,
-                    smsNumber: this.smsNumber || "",
-                    isSMSNumberVerified: false,
-                    preferences: {},
+
+        try {
+            this.submittingRegistration = true;
+            await this.createProfile({
+                request: {
+                    profile: {
+                        hdid: this.oidcUserInfo.hdid,
+                        termsOfServiceId: this.termsOfService?.id || "",
+                        acceptedTermsOfService: this.accepted,
+                        email: this.email || "",
+                        isEmailVerified: false,
+                        smsNumber: this.smsNumber || "",
+                        isSMSNumberVerified: false,
+                        preferences: {},
+                    },
+                    inviteCode: this.inviteKey || "",
                 },
-                inviteCode: this.inviteKey || "",
-            },
-        })
-            .then((result) => {
-                this.logger.debug(
-                    `Create Profile result: ${JSON.stringify(result)}`
-                );
-                this.redirect();
-            })
-            .catch(() => {
-                this.logger.error("Error while registering.");
-            })
-            .finally(() => {
-                this.loadingTermsOfService = false;
             });
 
-        event.preventDefault();
-    }
+            const path = this.webClientConfig.modules["VaccinationStatus"]
+                ? "/home"
+                : "/timeline";
 
-    private redirect(): void {
-        const defaultRoute = this.webClientConfig.modules["VaccinationStatus"]
-            ? "/home"
-            : "/timeline";
-
-        this.$router.push({ path: defaultRoute });
+            await this.$router.push({ path });
+        } catch {
+            this.logger.error("Error while registering.");
+        } finally {
+            this.submittingRegistration = false;
+        }
     }
 
     private onEmailOptout(isChecked: boolean): void {
@@ -455,7 +450,7 @@ export default class RegistrationView extends Vue {
                         contact <strong>HealthGateway@gov.bc.ca</strong>
                     </p>
                 </div>
-                <div v-else><h1>WTF</h1></div>
+                <div v-else><h1>Unknown error</h1></div>
             </div>
         </b-container>
     </div>
