@@ -13,13 +13,13 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //-------------------------------------------------------------------------
-namespace HealthGateway.Common.AccessManagement.Authorization.Handlers
+namespace HealthGateway.Common.UserManagedAccess.ResourceServer.Handlers
 {
     using System.Linq;
     using System.Security.Claims;
     using System.Threading.Tasks;
-    using HealthGateway.Common.AccessManagement.Authorization.Claims;
-    using HealthGateway.Common.AccessManagement.Authorization.Requirements;
+    using HealthGateway.Common.UserManagedAccess.ResourceServer.Requirements;
+    using HealthGateway.Common.UserManagedAccess.ResourceServer.Claims;
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Http;
     using Microsoft.Extensions.Logging;
@@ -27,19 +27,19 @@ namespace HealthGateway.Common.AccessManagement.Authorization.Handlers
     /// <summary>
     /// UserAuthorizationHandler validates that User requirements have been met.
     /// </summary>
-    public class UserAuthorizationHandler : IAuthorizationHandler
+    public class UserManagedAccessHandler : IAuthorizationHandler
     {
         private const string RouteResourceIdentifier = "hdid";
 
-        private readonly ILogger<UserAuthorizationHandler> logger;
+        private readonly ILogger<UserManagedAccessHandler> logger;
         private readonly IHttpContextAccessor httpContextAccessor;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="UserAuthorizationHandler"/> class.
+        /// Initializes a new instance of the <see cref="UserManagedAccessHandler"/> class.
         /// </summary>
         /// <param name="logger">the injected logger.</param>
         /// <param name="httpContextAccessor">The HTTP Context accessor.</param>
-        public UserAuthorizationHandler(ILogger<UserAuthorizationHandler> logger, IHttpContextAccessor httpContextAccessor)
+        public UserManagedAccessHandler(ILogger<UserAuthorizationHandler> logger, IHttpContextAccessor httpContextAccessor)
         {
             this.logger = logger;
             this.httpContextAccessor = httpContextAccessor;
@@ -55,7 +55,7 @@ namespace HealthGateway.Common.AccessManagement.Authorization.Handlers
         public Task HandleAsync(AuthorizationHandlerContext context)
         {
             string? resourceHDID = this.httpContextAccessor.HttpContext?.Request.RouteValues[RouteResourceIdentifier] as string;
-            foreach (UserRequirement requirement in context.PendingRequirements.OfType<UserRequirement>().Where(requirement => this.Authorize(context, resourceHDID, requirement)))
+            foreach (UserRequirement requirement in context.PendingRequirements.OfType<UserRequirement>().Where(requirement => this.AuthorizationAssessment(context, resourceHDID, requirement)))
             {
                 context.Succeed(requirement);
             }
@@ -69,16 +69,20 @@ namespace HealthGateway.Common.AccessManagement.Authorization.Handlers
         /// <param name="context">The authorization handler context.</param>
         /// <param name="resourceHDID">The health data resource subject identifier.</param>
         /// <param name="requirement">The requirement to validate.</param>
-        private bool Authorize(AuthorizationHandlerContext context, string? resourceHDID, UserRequirement requirement)
+        private bool AuthorizationAssessment(AuthorizationHandlerContext context, string? resourceHDID, UserRequirement requirement)
         {
             bool retVal = false;
             ClaimsPrincipal user = context.User;
             string? userHDID = user.FindFirst(c => c.Type == GatewayClaims.HDID)?.Value;
             if (userHDID != null)
             {
-                if (requirement.ValidateOwnership)
+                if (requirement.ValidateGrantedAccess)
                 {
                     retVal = userHDID == resourceHDID;
+                    // Validate that the resource Uri found in the RPT token, if it is  RPT token at all,
+                    // matches the URI of this http request context. If so, return true,
+                    // Otherwise, return 401 with new permission ticket.
+
                     this.logger.LogInformation($"{userHDID} is {(!retVal ? "not " : string.Empty)}the resource owner");
                 }
                 else

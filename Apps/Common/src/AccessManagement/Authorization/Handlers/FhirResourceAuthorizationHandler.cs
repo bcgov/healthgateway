@@ -66,10 +66,6 @@ namespace HealthGateway.Common.AccessManagement.Authorization.Handlers
                 {
                     context.Succeed(requirement);
                 }
-                else if (requirement.SupportsUserManagedAccess && this.IsOwnerSharedAccess(context, resourceHDID, requirement))
-                {
-                    context.Succeed(requirement);
-                }
                 else
                 {
                     this.logger.LogDebug($"Non-owner access to {resourceHDID} rejected; Supports delegation: {requirement.SupportsSystemDelegation}");
