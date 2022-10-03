@@ -67,7 +67,7 @@ namespace HealthGateway.JobScheduler.Listeners
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
             this.logger.LogInformation("Banner Listener is starting");
-            stoppingToken.Register(() => this.logger.LogInformation("Banner Listener Shutdown as cancellation requested    "));
+            stoppingToken.Register(() => this.logger.LogInformation("Banner Listener Shutdown as cancellation requested"));
             this.ClearCache();
             int attempts = 0;
             while (!stoppingToken.IsCancellationRequested)
@@ -118,7 +118,7 @@ namespace HealthGateway.JobScheduler.Listeners
 
         private void ReceiveEvent(object sender, NpgsqlNotificationEventArgs e)
         {
-            this.logger.LogDebug($"Banner Event received on channel {Channel}");
+            this.logger.LogDebug("Banner Event received on channel {Channel}", Channel);
             JsonSerializerOptions options = new()
             {
                 PropertyNameCaseInsensitive = true,
