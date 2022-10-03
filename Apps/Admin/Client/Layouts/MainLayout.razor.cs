@@ -17,6 +17,7 @@ namespace HealthGateway.Admin.Client.Layouts
 {
     using System;
     using System.Threading.Tasks;
+    using System.Timers;
     using Blazored.LocalStorage;
     using Fluxor;
     using HealthGateway.Admin.Client.Components;
@@ -26,6 +27,7 @@ namespace HealthGateway.Admin.Client.Layouts
     using Microsoft.AspNetCore.Components;
     using Microsoft.AspNetCore.Components.Authorization;
     using Microsoft.AspNetCore.Components.WebAssembly.Authentication;
+    using Microsoft.Extensions.Configuration;
     using Microsoft.JSInterop;
     using MudBlazor;
 
@@ -36,9 +38,14 @@ namespace HealthGateway.Admin.Client.Layouts
     {
         private const string DarkThemeKey = "DarkMode";
 
-        private DotNetObjectReference<MainLayout>? objectReference;
+        private readonly Timer tokenRefreshTimer = new();
 
         private bool disposed;
+
+        private DotNetObjectReference<MainLayout>? objectReference;
+
+        [Inject]
+        private IConfiguration Configuration { get; set; } = default!;
 
         [Inject]
         private IAccessTokenProvider AccessTokenProvider { get; set; } = default!;
@@ -66,6 +73,8 @@ namespace HealthGateway.Admin.Client.Layouts
 
         private bool UserInfoDisabled => !this.ConfigurationState.Value.Result?.Features["UserInfo"] ?? true;
 
+        private double TokenRefreshInterval { get; set; }
+
         private bool DrawerOpen { get; set; } = true;
 
         private bool DarkMode { get; set; } = true;
@@ -77,6 +86,14 @@ namespace HealthGateway.Admin.Client.Layouts
         private MudTheme DarkTheme { get; } = new DarkTheme();
 
         private MudTheme CurrentTheme => this.DarkMode ? this.DarkTheme : this.LightTheme;
+
+        /// <inheritdoc/>
+        public void Dispose()
+        {
+            // Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
+            this.Dispose(disposing: true);
+            GC.SuppressFinalize(this);
+        }
 
         /// <summary>
         /// A method that can be invoked with JavaScript to display the <see cref="InactivityDialog"/>.
@@ -105,14 +122,6 @@ namespace HealthGateway.Admin.Client.Layouts
             this.IsInactivityModalShown = false;
         }
 
-        /// <inheritdoc/>
-        public void Dispose()
-        {
-            // Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
-            this.Dispose(disposing: true);
-            GC.SuppressFinalize(this);
-        }
-
         /// <summary>
         /// Releases the unmanaged resources used by this class optionally disposes of the managed resources.
         /// </summary>
@@ -127,6 +136,8 @@ namespace HealthGateway.Admin.Client.Layouts
                 if (disposing)
                 {
                     this.objectReference?.Dispose();
+                    this.tokenRefreshTimer.Stop();
+                    this.tokenRefreshTimer.Dispose();
                 }
 
                 this.disposed = true;
@@ -144,8 +155,13 @@ namespace HealthGateway.Admin.Client.Layouts
                 this.StateHasChanged();
             }
 
+            this.TokenRefreshInterval = this.Configuration.GetValue("TokenRefreshInterval", 0);
             this.objectReference = DotNetObjectReference.Create(this);
             await this.JsRuntime.InitializeInactivityTimer(this.objectReference).ConfigureAwait(true);
+            this.tokenRefreshTimer.Elapsed += this.HandleTokenRefreshAsync;
+            this.tokenRefreshTimer.Interval = this.TokenRefreshInterval;
+            this.tokenRefreshTimer.AutoReset = true;
+            this.tokenRefreshTimer.Start();
         }
 
         private async Task<bool> IsAuthenticatedAsync()
@@ -163,6 +179,19 @@ namespace HealthGateway.Admin.Client.Layouts
                 return;
             }
 
+            // try to refresh token
+            AccessTokenResult? tokenResult = await this.AccessTokenProvider.RequestAccessToken().ConfigureAwait(true);
+            if (tokenResult.TryGetToken(out _))
+            {
+                return;
+            }
+
+            // navigate to login page if refresh fails
+            this.NavigationManager.NavigateTo("authentication/login");
+        }
+
+        private async void HandleTokenRefreshAsync(object? sender, ElapsedEventArgs e)
+        {
             // try to refresh token
             AccessTokenResult? tokenResult = await this.AccessTokenProvider.RequestAccessToken().ConfigureAwait(true);
             if (tokenResult.TryGetToken(out _))
