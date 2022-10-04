@@ -70,8 +70,8 @@ export default class ProfileView extends Vue {
         emailAddress: string;
     }) => Promise<void>;
 
-    @Action("checkRegistration", { namespace: "user" })
-    checkRegistration!: () => Promise<boolean>;
+    @Action("retrieveProfile", { namespace: "user" })
+    retrieveProfile!: () => Promise<void>;
 
     @Action("closeUserAccount", { namespace: "user" })
     closeUserAccount!: () => Promise<void>;
@@ -409,7 +409,7 @@ export default class ProfileView extends Vue {
     }
 
     private onVerifySMSSubmit(): void {
-        this.checkRegistration()
+        this.retrieveProfile()
             .then(() => {
                 this.smsVerified = this.user.verifiedSMS;
             })
@@ -439,7 +439,7 @@ export default class ProfileView extends Vue {
                 this.tempEmail = "";
                 this.$v.$reset();
                 this.showCheckEmailAlert = !this.isEmptyEmail;
-                this.checkRegistration().catch((error) => {
+                this.retrieveProfile().catch((error) => {
                     if (
                         instanceOfResultError(error) &&
                         error.statusCode === 429
@@ -494,7 +494,7 @@ export default class ProfileView extends Vue {
                 }
                 this.$v.$reset();
 
-                this.checkRegistration().catch((error) => {
+                this.retrieveProfile().catch((error) => {
                     if (
                         instanceOfResultError(error) &&
                         error.statusCode === 429

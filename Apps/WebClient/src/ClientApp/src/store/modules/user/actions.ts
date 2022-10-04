@@ -48,7 +48,7 @@ export const actions: UserActions = {
                 })
         );
     },
-    checkRegistration(context): Promise<boolean> {
+    retrieveProfile(context): Promise<void> {
         const logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
         const userProfileService = container.get<IUserProfileService>(
             SERVICE_IDENTIFIER.UserProfileService
@@ -62,7 +62,7 @@ export const actions: UserActions = {
                         `User Profile: ${JSON.stringify(userProfile)}`
                     );
                     context.commit("setProfileUserData", userProfile);
-                    resolve(userProfile.acceptedTermsOfService);
+                    resolve();
                 })
                 .catch((error) => {
                     context.commit("userError");

@@ -49,7 +49,7 @@ export interface UserActions extends ActionTree<UserState, RootState> {
         context: StoreContext,
         params: { request: CreateUserRequest }
     ): Promise<void>;
-    checkRegistration(context: StoreContext): Promise<boolean>;
+    retrieveProfile(context: StoreContext): Promise<void>;
     updateUserEmail(
         context: StoreContext,
         params: { emailAddress: string }

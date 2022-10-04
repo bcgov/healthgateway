@@ -214,7 +214,7 @@ configService
 
                 if (user.hdid && isValidIdentityProvider) {
                     try {
-                        await store.dispatch("user/checkRegistration");
+                        await store.dispatch("user/retrieveProfile");
                     } catch (error) {
                         let busy = false;
                         if (
