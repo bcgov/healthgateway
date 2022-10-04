@@ -3,11 +3,14 @@ import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
 import Vue from "vue";
 import { Component, Prop } from "vue-property-decorator";
 
-@Component({
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const options: any = {
     components: {
         FontAwesomeIcon,
     },
-})
+};
+
+@Component(options)
 export default class HgIconComponent extends Vue {
     @Prop({ required: false, default: "medium" }) size!: string;
     @Prop({ required: false, default: false }) square!: boolean;

@@ -36,11 +36,11 @@ namespace HealthGateway.GatewayApi.Services
         /// </summary>
         public const int MaxVerificationAttempts = 5;
         private const int VerificationExpiryDays = 5;
-        private readonly Regex validSMSRegex;
         private readonly ILogger logger;
-        private readonly IUserProfileDelegate profileDelegate;
-        private readonly INotificationSettingsService notificationSettingsService;
         private readonly IMessagingVerificationDelegate messageVerificationDelegate;
+        private readonly INotificationSettingsService notificationSettingsService;
+        private readonly IUserProfileDelegate profileDelegate;
+        private readonly Regex validSMSRegex;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="UserSMSService"/> class.
@@ -66,7 +66,7 @@ namespace HealthGateway.GatewayApi.Services
         /// <inheritdoc/>
         public PrimitiveRequestResult<bool> ValidateSMS(string hdid, string validationCode)
         {
-            this.logger.LogTrace($"Validating sms... {validationCode}");
+            this.logger.LogTrace("Validating sms... {ValidationCode}", validationCode);
 
             PrimitiveRequestResult<bool> retVal = new() { ResourcePayload = false, ResultStatus = ResultType.Success };
             MessagingVerification? smsVerification = this.messageVerificationDelegate.GetLastForUser(hdid, MessagingVerificationType.SMS);
@@ -107,7 +107,7 @@ namespace HealthGateway.GatewayApi.Services
         /// <inheritdoc/>
         public MessagingVerification CreateUserSMS(string hdid, string sms)
         {
-            this.logger.LogInformation($"Adding new sms verification for user ${hdid}");
+            this.logger.LogInformation("Adding new sms verification for user {Hdid}", hdid);
             string sanitizedSms = this.SanitizeSMS(sms);
             MessagingVerification messagingVerification = this.AddVerificationSMS(hdid, sanitizedSms);
             this.logger.LogDebug("Finished updating user sms");
@@ -117,7 +117,7 @@ namespace HealthGateway.GatewayApi.Services
         /// <inheritdoc/>
         public bool UpdateUserSMS(string hdid, string sms)
         {
-            this.logger.LogTrace($"Removing user sms number ${hdid}");
+            this.logger.LogTrace("Removing user sms number {Hdid}", hdid);
             string sanitizedSms = this.SanitizeSMS(sms);
             UserProfile userProfile = this.profileDelegate.GetUserProfile(hdid).Payload;
             userProfile.SMSNumber = null;
@@ -127,14 +127,14 @@ namespace HealthGateway.GatewayApi.Services
             MessagingVerification? lastSMSVerification = this.messageVerificationDelegate.GetLastForUser(hdid, MessagingVerificationType.SMS);
             if (lastSMSVerification != null)
             {
-                this.logger.LogInformation($"Expiring old sms validation for user ${hdid}");
+                this.logger.LogInformation("Expiring old sms validation for user {Hdid}", hdid);
                 this.messageVerificationDelegate.Expire(lastSMSVerification, isDeleted);
             }
 
             NotificationSettingsRequest notificationRequest = new(userProfile, userProfile.Email, sanitizedSms);
             if (!isDeleted)
             {
-                this.logger.LogInformation($"Adding new sms verification for user ${hdid}");
+                this.logger.LogInformation("Adding new sms verification for user {Hdid}", hdid);
                 MessagingVerification messagingVerification = this.AddVerificationSMS(hdid, sanitizedSms);
                 notificationRequest.SMSVerificationCode = messagingVerification.SMSValidationCode;
             }
@@ -169,7 +169,7 @@ namespace HealthGateway.GatewayApi.Services
 
         private MessagingVerification AddVerificationSMS(string hdid, string sms)
         {
-            this.logger.LogInformation($"Sending new sms verification for user ${hdid}");
+            this.logger.LogInformation("Sending new sms verification for user {Hdid}", hdid);
             MessagingVerification messagingVerification = new()
             {
                 UserProfileId = hdid,

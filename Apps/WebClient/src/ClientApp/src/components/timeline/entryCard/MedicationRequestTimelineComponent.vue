@@ -9,11 +9,14 @@ import MedicationRequestTimelineEntry from "@/models/medicationRequestTimelineEn
 
 import EntrycardTimelineComponent from "./EntrycardTimelineComponent.vue";
 
-@Component({
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const options: any = {
     components: {
         EntryCard: EntrycardTimelineComponent,
     },
-})
+};
+
+@Component(options)
 export default class MedicationRequestTimelineComponent extends Vue {
     @Prop() entry!: MedicationRequestTimelineEntry;
     @Prop() index!: number;

@@ -19,7 +19,6 @@ namespace HealthGateway.GatewayApi.Services
     using System.Collections.Generic;
     using System.Diagnostics.CodeAnalysis;
     using System.Linq;
-    using System.Text.Json;
     using System.Threading.Tasks;
     using AutoMapper;
     using HealthGateway.Common.Constants;
@@ -48,22 +47,22 @@ namespace HealthGateway.GatewayApi.Services
         private const string UserProfileHistoryRecordLimitKey = "UserProfileHistoryRecordLimit";
         private const string RegistrationStatusKey = "RegistrationStatus";
         private const string MinPatientAgeKey = "MinPatientAge";
-        private readonly int userProfileHistoryRecordLimit;
-        private readonly string registrationStatus;
-        private readonly int minPatientAge;
-        private readonly ILogger logger;
-        private readonly IPatientService patientService;
-        private readonly IUserEmailService userEmailService;
-        private readonly IUserSMSService userSMSService;
-        private readonly IEmailQueueService emailQueueService;
-        private readonly INotificationSettingsService notificationSettingsService;
-        private readonly IUserProfileDelegate userProfileDelegate;
-        private readonly IUserPreferenceDelegate userPreferenceDelegate;
-        private readonly ILegalAgreementDelegate legalAgreementDelegate;
-        private readonly IMessagingVerificationDelegate messageVerificationDelegate;
-        private readonly ICryptoDelegate cryptoDelegate;
-        private readonly IHttpContextAccessor httpContextAccessor;
         private readonly IMapper autoMapper;
+        private readonly ICryptoDelegate cryptoDelegate;
+        private readonly IEmailQueueService emailQueueService;
+        private readonly IHttpContextAccessor httpContextAccessor;
+        private readonly ILegalAgreementDelegate legalAgreementDelegate;
+        private readonly ILogger logger;
+        private readonly IMessagingVerificationDelegate messageVerificationDelegate;
+        private readonly int minPatientAge;
+        private readonly INotificationSettingsService notificationSettingsService;
+        private readonly IPatientService patientService;
+        private readonly string registrationStatus;
+        private readonly IUserEmailService userEmailService;
+        private readonly IUserPreferenceDelegate userPreferenceDelegate;
+        private readonly IUserProfileDelegate userProfileDelegate;
+        private readonly int userProfileHistoryRecordLimit;
+        private readonly IUserSMSService userSMSService;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="UserProfileService"/> class.
@@ -121,9 +120,9 @@ namespace HealthGateway.GatewayApi.Services
         /// <inheritdoc/>
         public RequestResult<UserProfileModel> GetUserProfile(string hdid, DateTime jwtAuthTime)
         {
-            this.logger.LogTrace($"Getting user profile... {hdid}");
+            this.logger.LogTrace("Getting user profile... {Hdid}", hdid);
             DBResult<UserProfile> retVal = this.userProfileDelegate.GetUserProfile(hdid);
-            this.logger.LogDebug($"Finished getting user profile. {JsonSerializer.Serialize(retVal)}");
+            this.logger.LogDebug("Finished getting user profile...{Hdid}", hdid);
 
             if (retVal.Status == DBStatusCode.NotFound)
             {
@@ -137,10 +136,10 @@ namespace HealthGateway.GatewayApi.Services
             DateTime previousLastLogin = retVal.Payload.LastLoginDateTime;
             if (DateTime.Compare(previousLastLogin, jwtAuthTime) != 0)
             {
-                this.logger.LogTrace($"Updating user last login... {hdid}");
+                this.logger.LogTrace("Updating user last login... {Hdid}", hdid);
                 retVal.Payload.LastLoginDateTime = jwtAuthTime;
-                DBResult<UserProfile> updateResult = this.userProfileDelegate.Update(retVal.Payload);
-                this.logger.LogDebug($"Finished updating user last login. {JsonSerializer.Serialize(updateResult)}");
+                this.userProfileDelegate.Update(retVal.Payload);
+                this.logger.LogDebug("Finished updating user last login... {Hdid}", hdid);
             }
 
             RequestResult<TermsOfServiceModel> termsOfServiceResult = this.GetActiveTermsOfService();
@@ -158,19 +157,19 @@ namespace HealthGateway.GatewayApi.Services
 
             if (!userProfile.IsEmailVerified)
             {
-                this.logger.LogTrace($"Retrieving last email invite... {hdid}");
+                this.logger.LogTrace("Retrieving last email invite... {Hdid}", hdid);
                 MessagingVerification? emailInvite =
                     this.messageVerificationDelegate.GetLastForUser(hdid, MessagingVerificationType.Email);
-                this.logger.LogDebug($"Finished retrieving email: {JsonSerializer.Serialize(emailInvite)}");
+                this.logger.LogDebug("Finished retrieving email invite... {Hdid}", hdid);
                 userProfile.Email = emailInvite?.Email?.To;
             }
 
             if (!userProfile.IsSMSNumberVerified)
             {
-                this.logger.LogTrace($"Retrieving last email invite... {hdid}");
+                this.logger.LogTrace("Retrieving last sms invite... {Hdid}", hdid);
                 MessagingVerification? smsInvite =
                     this.messageVerificationDelegate.GetLastForUser(hdid, MessagingVerificationType.SMS);
-                this.logger.LogDebug($"Finished retrieving email: {JsonSerializer.Serialize(smsInvite)}");
+                this.logger.LogDebug("Finished retrieving sms invite... {Hdid}", hdid);
                 userProfile.SMSNumber = smsInvite?.SMSNumber;
             }
 
@@ -191,11 +190,11 @@ namespace HealthGateway.GatewayApi.Services
         /// <inheritdoc/>
         public async Task<RequestResult<UserProfileModel>> CreateUserProfile(CreateUserRequest createProfileRequest, DateTime jwtAuthTime, string? jwtEmailAddress)
         {
-            this.logger.LogTrace($"Creating user profile... {JsonSerializer.Serialize(createProfileRequest)}");
+            this.logger.LogTrace("Creating user profile... {Hdid}", createProfileRequest.Profile.HdId);
 
             if (this.registrationStatus == RegistrationStatus.Closed)
             {
-                this.logger.LogWarning($"Registration is closed. {JsonSerializer.Serialize(createProfileRequest)}");
+                this.logger.LogWarning("Registration is closed... {Hdid}", createProfileRequest.Profile.HdId);
                 return new RequestResult<UserProfileModel>
                 {
                     ResultStatus = ResultType.Error,
@@ -221,7 +220,7 @@ namespace HealthGateway.GatewayApi.Services
 
             if (!isMinimumAgeResult.ResourcePayload)
             {
-                this.logger.LogWarning($"Patient under minimum age. {JsonSerializer.Serialize(createProfileRequest)}");
+                this.logger.LogWarning("Patient under minimum age... {Hdid}", createProfileRequest.Profile.HdId);
                 return new RequestResult<UserProfileModel>
                 {
                     ResultStatus = ResultType.Error,
@@ -278,7 +277,7 @@ namespace HealthGateway.GatewayApi.Services
 
                 this.notificationSettingsService.QueueNotificationSettings(notificationRequest);
 
-                this.logger.LogDebug($"Finished creating user profile. {JsonSerializer.Serialize(insertResult)}");
+                this.logger.LogDebug("Finished creating user profile... {Hdid}", insertResult.Payload.HdId);
                 return new RequestResult<UserProfileModel>
                 {
                     ResourcePayload = userProfileModel,
@@ -286,7 +285,7 @@ namespace HealthGateway.GatewayApi.Services
                 };
             }
 
-            this.logger.LogError($"Error creating user profile. {JsonSerializer.Serialize(insertResult)}");
+            this.logger.LogError("Error creating user profile... {Hdid}", insertResult.Payload.HdId);
             return new RequestResult<UserProfileModel>
             {
                 ResultStatus = ResultType.Error,
@@ -302,7 +301,7 @@ namespace HealthGateway.GatewayApi.Services
         [SuppressMessage("Design", "CA1054:Uri parameters should not be strings", Justification = "Team decision")]
         public RequestResult<UserProfileModel> CloseUserProfile(string hdid, Guid userId)
         {
-            this.logger.LogTrace($"Closing user profile... {hdid}");
+            this.logger.LogTrace("Closing user profile... {Hdid}", hdid);
 
             DBResult<UserProfile> retrieveResult = this.userProfileDelegate.GetUserProfile(hdid);
 
@@ -330,7 +329,7 @@ namespace HealthGateway.GatewayApi.Services
                     this.QueueEmail(profile.Email, EmailTemplateName.AccountClosedTemplate);
                 }
 
-                this.logger.LogDebug($"Finished closing user profile. {JsonSerializer.Serialize(updateResult)}");
+                this.logger.LogDebug("Finished closing user profile... {Hdid}", updateResult.Payload.HdId);
                 return new RequestResult<UserProfileModel>
                 {
                     ResourcePayload = UserProfileMapUtils.CreateFromDbModel(updateResult.Payload, termsOfServiceResult.ResourcePayload?.Id, this.autoMapper),
@@ -353,7 +352,7 @@ namespace HealthGateway.GatewayApi.Services
         [SuppressMessage("Design", "CA1054:Uri parameters should not be strings", Justification = "Team decision")]
         public RequestResult<UserProfileModel> RecoverUserProfile(string hdid)
         {
-            this.logger.LogTrace($"Recovering user profile... {hdid}");
+            this.logger.LogTrace("Recovering user profile... {Hdid}", hdid);
 
             DBResult<UserProfile> retrieveResult = this.userProfileDelegate.GetUserProfile(hdid);
 
@@ -381,7 +380,7 @@ namespace HealthGateway.GatewayApi.Services
                     this.QueueEmail(profile.Email, EmailTemplateName.AccountRecoveredTemplate);
                 }
 
-                this.logger.LogDebug($"Finished recovering user profile. {JsonSerializer.Serialize(updateResult)}");
+                this.logger.LogDebug("Finished recovering user profile... {Hdid}", hdid);
                 return new RequestResult<UserProfileModel>
                 {
                     ResourcePayload = UserProfileMapUtils.CreateFromDbModel(updateResult.Payload, termsOfServiceResult.ResourcePayload?.Id, this.autoMapper),
@@ -424,12 +423,12 @@ namespace HealthGateway.GatewayApi.Services
         /// <inheritdoc/>
         public RequestResult<UserPreferenceModel> UpdateUserPreference(UserPreferenceModel userPreferenceModel)
         {
-            this.logger.LogTrace($"Updating user preference... {userPreferenceModel.Preference}");
+            this.logger.LogTrace("Updating user preference... {Preference} for {Hdid}", userPreferenceModel.Preference, userPreferenceModel.HdId);
 
             UserPreference userPreference = this.autoMapper.Map<UserPreference>(userPreferenceModel);
 
             DBResult<UserPreference> dbResult = this.userPreferenceDelegate.UpdateUserPreference(userPreference);
-            this.logger.LogDebug($"Finished updating user preference. {JsonSerializer.Serialize(dbResult)}");
+            this.logger.LogDebug("Finished updating user preference... {Preference} for {Hdid}", userPreferenceModel.Preference, userPreferenceModel.HdId);
 
             RequestResult<UserPreferenceModel> requestResult = new()
             {
@@ -449,10 +448,10 @@ namespace HealthGateway.GatewayApi.Services
         /// <inheritdoc/>
         public RequestResult<UserPreferenceModel> CreateUserPreference(UserPreferenceModel userPreferenceModel)
         {
-            this.logger.LogTrace($"Creating user preference... {userPreferenceModel.Preference}");
+            this.logger.LogTrace("Creating user preference... {Preference} for {Hdid}", userPreferenceModel.Preference, userPreferenceModel.HdId);
             UserPreference userPreference = this.autoMapper.Map<UserPreference>(userPreferenceModel);
             DBResult<UserPreference> dbResult = this.userPreferenceDelegate.CreateUserPreference(userPreference);
-            this.logger.LogDebug($"Finished creating user preference. {JsonSerializer.Serialize(dbResult)}");
+            this.logger.LogDebug("Finished creating user preference... {Preference} for {Hdid}", userPreferenceModel.Preference, userPreferenceModel.HdId);
 
             RequestResult<UserPreferenceModel> requestResult = new()
             {
@@ -472,7 +471,7 @@ namespace HealthGateway.GatewayApi.Services
         /// <inheritdoc/>
         public RequestResult<Dictionary<string, UserPreferenceModel>> GetUserPreferences(string hdid)
         {
-            this.logger.LogTrace($"Getting user preference... {hdid}");
+            this.logger.LogTrace("Getting user preference... {Hdid}", hdid);
             DBResult<IEnumerable<UserPreference>> dbResult = this.userPreferenceDelegate.GetUserPreferences(hdid);
             RequestResult<Dictionary<string, UserPreferenceModel>> requestResult =
                 new()
@@ -489,7 +488,7 @@ namespace HealthGateway.GatewayApi.Services
                         },
                 };
 
-            this.logger.LogTrace($"Finished getting user preference. {JsonSerializer.Serialize(dbResult)}");
+            this.logger.LogTrace("Finished getting user preference...{Hdid}", hdid);
             return requestResult;
         }
 
@@ -509,7 +508,7 @@ namespace HealthGateway.GatewayApi.Services
 
             if (patientResult.ResultStatus != ResultType.Success)
             {
-                this.logger.LogWarning($"Error retrieving patient age. {JsonSerializer.Serialize(patientResult)}");
+                this.logger.LogWarning("Error retrieving patient age... {Hdid}", hdid);
                 return new PrimitiveRequestResult<bool>
                 {
                     ResultStatus = patientResult.ResultStatus,

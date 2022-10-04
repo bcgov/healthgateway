@@ -34,12 +34,12 @@ namespace Healthgateway.JobScheduler.Jobs
     public class EmailJob : IEmailJob
     {
         private const int ConcurrencyTimeout = 5 * 60; // 5 minutes
-        private readonly ILogger<EmailJob> logger;
         private readonly IEmailDelegate emailDelegate;
         private readonly string host;
+        private readonly ILogger<EmailJob> logger;
+        private readonly int maxRetries;
         private readonly int port;
         private readonly int retryFetchSize;
-        private readonly int maxRetries;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="EmailJob"/> class.
@@ -63,7 +63,7 @@ namespace Healthgateway.JobScheduler.Jobs
         /// <inheritdoc/>
         public void SendEmail(Guid emailId)
         {
-            this.logger.LogTrace($"Sending email... {emailId}");
+            this.logger.LogTrace("Sending email... {EmailId}", emailId.ToString());
             Email? email = this.emailDelegate.GetNewEmail(emailId);
             if (email != null)
             {
@@ -71,7 +71,7 @@ namespace Healthgateway.JobScheduler.Jobs
             }
             else
             {
-                this.logger.LogInformation($"Email {emailId} was not returned from DB, skipping.");
+                this.logger.LogInformation("Email {EmailId} was not returned from DB, skipping.", emailId.ToString());
             }
 
             this.logger.LogDebug("Finished sending email.");
@@ -81,7 +81,7 @@ namespace Healthgateway.JobScheduler.Jobs
         [DisableConcurrentExecution(ConcurrencyTimeout)]
         public void SendLowPriorityEmails()
         {
-            this.logger.LogDebug($"Sending low priority emails... Looking for up to {this.retryFetchSize} emails to send");
+            this.logger.LogDebug("Sending low priority emails... Looking for up to {RetryFetchSize} emails to send", this.retryFetchSize);
             IList<Email> resendEmails = this.emailDelegate.GetLowPriorityEmail(this.retryFetchSize);
             this.ProcessEmails(resendEmails);
             this.logger.LogDebug("Finished sending low priority emails.");
@@ -91,7 +91,7 @@ namespace Healthgateway.JobScheduler.Jobs
         [DisableConcurrentExecution(ConcurrencyTimeout)]
         public void SendStandardPriorityEmails()
         {
-            this.logger.LogDebug($"Sending standard priority emails... Looking for up to {this.retryFetchSize} emails to send");
+            this.logger.LogDebug("Sending standard priority emails... Looking for up to {RetryFetchSize} emails to send", this.retryFetchSize);
             IList<Email> resendEmails = this.emailDelegate.GetStandardPriorityEmail(this.retryFetchSize);
             this.ProcessEmails(resendEmails);
             this.logger.LogDebug("Finished sending standard priority emails.");
@@ -101,7 +101,7 @@ namespace Healthgateway.JobScheduler.Jobs
         [DisableConcurrentExecution(ConcurrencyTimeout)]
         public void SendHighPriorityEmails()
         {
-            this.logger.LogDebug($"Sending high priority emails... Looking for up to {this.retryFetchSize} emails to send");
+            this.logger.LogDebug("Sending high priority emails... Looking for up to {RetryFetchSize} emails to send", this.retryFetchSize);
             IList<Email> resendEmails = this.emailDelegate.GetHighPriorityEmail(this.retryFetchSize);
             this.ProcessEmails(resendEmails);
             this.logger.LogDebug("Finished sending high priority emails");
@@ -111,7 +111,7 @@ namespace Healthgateway.JobScheduler.Jobs
         [DisableConcurrentExecution(ConcurrencyTimeout)]
         public void SendUrgentPriorityEmails()
         {
-            this.logger.LogDebug($"Sending urgent priority emails... Looking for up to {this.retryFetchSize} emails to send");
+            this.logger.LogDebug("Sending urgent priority emails... Looking for up to {RetryFetchSize} emails to send", this.retryFetchSize);
             IList<Email> resendEmails = this.emailDelegate.GetUrgentPriorityEmail(this.retryFetchSize);
             this.ProcessEmails(resendEmails);
             this.logger.LogDebug("Finished sending urgent priority emails.");
@@ -134,7 +134,7 @@ namespace Healthgateway.JobScheduler.Jobs
         {
             if (resendEmails.Count > 0)
             {
-                this.logger.LogInformation($"Found {resendEmails.Count} emails to send");
+                this.logger.LogInformation("Found {Count} emails to send", resendEmails.Count);
                 foreach (Email email in resendEmails)
                 {
 #pragma warning disable CA1031 //We want to catch exception.
@@ -145,7 +145,7 @@ namespace Healthgateway.JobScheduler.Jobs
                     catch (Exception e)
                     {
                         // log the exception as a warning but we can continue
-                        this.logger.LogWarning($"Error while sending {email.Id} - skipping for now\n{e.ToString()}");
+                        this.logger.LogWarning("Error while sending {Id} - skipping for now\n{Exception}", email.Id.ToString(), e.ToString());
                     }
 #pragma warning restore CA1031 // Restore warnings.
                 }
@@ -175,7 +175,7 @@ namespace Healthgateway.JobScheduler.Jobs
                         catch (SmtpCommandException e)
                         {
                             caught = e;
-                            this.logger.LogError($"Unexpected error while sending email {email.Id}, SMTP Error = {email.SmtpStatusCode}\n{e.ToString()}");
+                            this.logger.LogError("Unexpected error while sending email {Id}, SMTP Error = {SmtpStatusCode}\n{Exception}", email.Id.ToString(), email.SmtpStatusCode, e.ToString());
                         }
 
                         smtpClient.Disconnect(true);
@@ -183,7 +183,11 @@ namespace Healthgateway.JobScheduler.Jobs
                     catch (SmtpCommandException e)
                     {
                         caught = e;
-                        this.logger.LogError($"Unexpected error while connecting to SMTP Server to send email {email.Id}, SMTP Error = {email.SmtpStatusCode}\n{e.ToString()}");
+                        this.logger.LogError(
+                            "Unexpected error while connecting to SMTP Server to send email {Id}, SMTP Error = {SmtpStatusCode}\n{Exception}",
+                            email.Id.ToString(),
+                            email.SmtpStatusCode,
+                            e.ToString());
                     }
                 }
             }
@@ -191,7 +195,7 @@ namespace Healthgateway.JobScheduler.Jobs
             catch (Exception e)
             {
                 caught = e;
-                this.logger.LogError($"Unexpected error while sending email {email.Id}", e);
+                this.logger.LogError("Unexpected error while sending email {Id} {Exception}", email.Id.ToString(), e.ToString());
             }
 #pragma warning restore CA1031 // Restore check
 

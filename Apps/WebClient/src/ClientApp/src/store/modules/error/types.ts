@@ -60,7 +60,8 @@ export interface ErrorBannerActions
             key: string;
         }
     ): void;
-    clearTooManyRequests(context: StoreContext): void;
+    clearTooManyRequestsWarning(context: StoreContext): void;
+    clearTooManyRequestsError(context: StoreContext): void;
 }
 
 export interface ErrorBannerMutations extends MutationTree<ErrorBannerState> {
@@ -69,7 +70,8 @@ export interface ErrorBannerMutations extends MutationTree<ErrorBannerState> {
     clearErrors(state: ErrorBannerState): void;
     setTooManyRequestsWarning(state: ErrorBannerState, key: string): void;
     setTooManyRequestsError(state: ErrorBannerState, key: string): void;
-    clearTooManyRequests(state: ErrorBannerState): void;
+    clearTooManyRequestsWarning(state: ErrorBannerState): void;
+    clearTooManyRequestsError(state: ErrorBannerState): void;
 }
 
 export interface ErrorBannerModule extends Module<ErrorBannerState, RootState> {

@@ -69,9 +69,9 @@ namespace HealthGateway.Immunization.Controllers
         [Produces("application/json")]
         public async Task<RequestResult<VaccineStatus>> GetVaccineStatus([FromHeader] string phn, [FromHeader] string dateOfBirth, [FromHeader] string dateOfVaccine)
         {
-            this.logger.LogTrace($"Getting vaccine status for PHN: {phn}, DOB: {dateOfBirth}, and DOV: {dateOfVaccine}");
+            this.logger.LogTrace("Getting vaccine status for PHN: {Phn}, DOB: {DateOfBirth}, and DOV: {DateOfVaccine}", phn, dateOfBirth, dateOfVaccine);
             RequestResult<VaccineStatus> result = await this.vaccineStatusService.GetPublicVaccineStatus(phn, dateOfBirth, dateOfVaccine).ConfigureAwait(true);
-            this.logger.LogTrace($"Finished getting vaccine status for PHN: {phn}, DOB: {dateOfBirth}, and DOV: {dateOfVaccine}");
+            this.logger.LogTrace("Finished getting vaccine status for PHN: {Phn}, DOB: {DateOfBirth}, and DOV: {DateOfVaccine}", phn, dateOfBirth, dateOfVaccine);
 
             return result;
         }
@@ -95,9 +95,9 @@ namespace HealthGateway.Immunization.Controllers
         [Produces("application/json")]
         public async Task<RequestResult<VaccineProofDocument>> GetVaccineProof([FromHeader] string phn, [FromHeader] string dateOfBirth, [FromHeader] string dateOfVaccine)
         {
-            this.logger.LogDebug($"Getting Vaccine Proof for PHN: {phn}, DOB: {dateOfBirth}, and DOV: {dateOfVaccine}");
+            this.logger.LogDebug("Getting Vaccine Proof for PHN: {Phn}, DOB: {DateOfBirth}, and DOV: {DateOfVaccine}", phn, dateOfBirth, dateOfVaccine);
             RequestResult<VaccineProofDocument> result = await this.vaccineStatusService.GetPublicVaccineProof(phn, dateOfBirth, dateOfVaccine).ConfigureAwait(true);
-            this.logger.LogDebug($"Finished getting Vaccine Proof for PHN: {phn}, DOB: {dateOfBirth}, and DOV: {dateOfVaccine}");
+            this.logger.LogDebug("Finished getting Vaccine Proof for PHN: {Phn}, DOB: {DateOfBirth}, and DOV: {DateOfVaccine}", phn, dateOfBirth, dateOfVaccine);
 
             return result;
         }

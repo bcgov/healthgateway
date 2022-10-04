@@ -40,9 +40,9 @@ namespace HealthGateway.Common.Delegates.PHSA
     {
         private const string NotificationSettingsConfigSectionKey = "NotificationSettings";
         private const string SubjectResourceHeader = "patient";
+        private readonly IHttpClientService httpClientService;
 
         private readonly ILogger logger;
-        private readonly IHttpClientService httpClientService;
         private readonly NotificationSettingsConfig nsConfig;
 
         /// <summary>
@@ -81,8 +81,8 @@ namespace HealthGateway.Common.Delegates.PHSA
                 Uri endpoint = new(this.nsConfig.Endpoint);
                 HttpResponseMessage response = await client.GetAsync(endpoint).ConfigureAwait(true);
                 string payload = await response.Content.ReadAsStringAsync().ConfigureAwait(true);
-                this.logger.LogTrace($"Response: {response}");
-                this.logger.LogTrace($"Payload: {payload}");
+                this.logger.LogTrace("Response: {Response}", response);
+                this.logger.LogTrace("Payload: {Payload}", payload);
                 switch (response.StatusCode)
                 {
                     case HttpStatusCode.OK:
@@ -109,7 +109,7 @@ namespace HealthGateway.Common.Delegates.PHSA
                         retVal.TotalResultCount = 0;
                         break;
                     case HttpStatusCode.Forbidden:
-                        this.logger.LogError($"Error Details: {payload}");
+                        this.logger.LogError("Error Details: {Payload}", payload);
                         retVal.ResultError = new RequestResultError
                         {
                             ResultMessage = $"DID Claim is missing or can not resolve PHN, HTTP Error {response.StatusCode}",
@@ -122,7 +122,7 @@ namespace HealthGateway.Common.Delegates.PHSA
                             ResultMessage = $"Unable to connect to Notification Settings Endpoint, HTTP Error {response.StatusCode}",
                             ErrorCode = ErrorTranslator.ServiceError(ErrorType.SMSInvalid, ServiceType.PHSA),
                         };
-                        this.logger.LogError($"Unable to connect to endpoint {endpoint}, HTTP Error {response.StatusCode}\n{payload}");
+                        this.logger.LogError("Unable to connect to endpoint {Endpoint}, HTTP Error {StatusCode}\n{Payload}", endpoint, response.StatusCode, payload);
                         break;
                 }
             }
@@ -135,11 +135,11 @@ namespace HealthGateway.Common.Delegates.PHSA
                     ResultMessage = $"Exception getting Notification Settings: {e}",
                     ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.PHSA),
                 };
-                this.logger.LogError($"Unexpected exception in GetNotificationSettings {e}");
+                this.logger.LogError("Unexpected exception in GetNotificationSettings {Exception}", e);
             }
 
             timer.Stop();
-            this.logger.LogDebug($"Finished getting Notification Settings, Time Elapsed: {timer.Elapsed}");
+            this.logger.LogDebug("Finished getting Notification Settings, Time Elapsed: {Elapsed}", timer.Elapsed);
             return retVal;
         }
 
@@ -153,7 +153,7 @@ namespace HealthGateway.Common.Delegates.PHSA
             Stopwatch timer = new();
             timer.Start();
             this.logger.LogDebug("Sending Notification Settings to PHSA...");
-            this.logger.LogTrace($"Bearer token: {bearerToken}");
+            this.logger.LogTrace("Bearer token: {BearerToken}", bearerToken);
             using HttpClient client = this.httpClientService.CreateDefaultHttpClient();
             client.DefaultRequestHeaders.Clear();
             client.DefaultRequestHeaders.Accept.Clear();
@@ -171,11 +171,11 @@ namespace HealthGateway.Common.Delegates.PHSA
                 };
                 string json = JsonSerializer.Serialize(notificationSettings, options);
                 using HttpContent content = new StringContent(json, Encoding.UTF8, MediaTypeNames.Application.Json);
-                this.logger.LogTrace($"Http content: {json}");
+                this.logger.LogTrace("Http content: {Json}", json);
                 HttpResponseMessage response = await client.PutAsync(endpoint, content).ConfigureAwait(true);
                 string payload = await response.Content.ReadAsStringAsync().ConfigureAwait(true);
-                this.logger.LogTrace($"Response: {response}");
-                this.logger.LogTrace($"Payload: {payload}");
+                this.logger.LogTrace("Response: {Response}", response);
+                this.logger.LogTrace("Payload: {Payload}", payload);
                 switch (response.StatusCode)
                 {
                     case HttpStatusCode.Created:
@@ -187,7 +187,7 @@ namespace HealthGateway.Common.Delegates.PHSA
                         break;
                     case HttpStatusCode.UnprocessableEntity:
                         retVal.ResultStatus = ResultType.ActionRequired;
-                        this.logger.LogInformation($"PHSA has indicated that the SMS number is invalid: {notificationSettings.SMSNumber}");
+                        this.logger.LogInformation("PHSA has indicated that the SMS number is invalid: {SksNumber}", notificationSettings.SMSNumber);
                         retVal.ResultError = new RequestResultError
                         {
                             ResultMessage = $"PHSA has indicated that the SMS number is invalid: {notificationSettings.SMSNumber}",
@@ -195,7 +195,7 @@ namespace HealthGateway.Common.Delegates.PHSA
                         };
                         break;
                     case HttpStatusCode.BadRequest:
-                        this.logger.LogError($"Error Details: {payload}");
+                        this.logger.LogError("Error Details: {Payload}", payload);
                         retVal.ResultError = new RequestResultError
                         {
                             ResultMessage = $"Bad Request, HTTP Error {response.StatusCode}\nDetails:\n{payload}",
@@ -203,7 +203,7 @@ namespace HealthGateway.Common.Delegates.PHSA
                         };
                         break;
                     case HttpStatusCode.Forbidden:
-                        this.logger.LogError($"Error Details: {payload}");
+                        this.logger.LogError("Error Details: {Payload}", payload);
                         retVal.ResultError = new RequestResultError
                         {
                             ResultMessage = $"DID Claim is missing or can not resolve PHN, HTTP Error {response.StatusCode}",
@@ -216,7 +216,7 @@ namespace HealthGateway.Common.Delegates.PHSA
                             ResultMessage = $"Unable to connect to Notification Settings Endpoint, HTTP Error {response.StatusCode}",
                             ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.PHSA),
                         };
-                        this.logger.LogError($"Unable to connect to endpoint {endpoint}, HTTP Error {response.StatusCode}\n{payload}");
+                        this.logger.LogError("Unable to connect to endpoint {Endpoint}, HTTP Error {StatusCode}\n{Payload}", endpoint, response.StatusCode, payload);
                         break;
                 }
             }
@@ -229,11 +229,11 @@ namespace HealthGateway.Common.Delegates.PHSA
                     ResultMessage = $"Exception getting Notification Settings: {e}",
                     ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.PHSA),
                 };
-                this.logger.LogError($"Unexpected exception in GetNotificationSettings {e}");
+                this.logger.LogError("Unexpected exception in GetNotificationSettings {Exception}", e);
             }
 
             timer.Stop();
-            this.logger.LogDebug($"Finished getting Notification Settings, Time Elapsed: {timer.Elapsed}");
+            this.logger.LogDebug("Finished getting Notification Settings, Time Elapsed: {Elapsed}", timer.Elapsed);
             return retVal;
         }
     }

@@ -38,11 +38,11 @@ namespace Healthgateway.JobScheduler.Jobs
         private const string JobConfigKey = "NotificationSettings";
         private const string JobEnabledKey = "Enabled";
         private const string AuthConfigSectionName = "ClientAuthentication";
-        private readonly ILogger<NotificationSettingsJob> logger;
-        private readonly INotificationSettingsDelegate notificationSettingsDelegate;
         private readonly IAuthenticationDelegate authDelegate;
         private readonly IEventLogDelegate eventLogDelegate;
         private readonly bool jobEnabled;
+        private readonly ILogger<NotificationSettingsJob> logger;
+        private readonly INotificationSettingsDelegate notificationSettingsDelegate;
         private readonly ClientCredentialsTokenRequest tokenRequest;
         private readonly Uri tokenUri;
 
@@ -88,7 +88,7 @@ namespace Healthgateway.JobScheduler.Jobs
 
                     if (string.IsNullOrEmpty(accessToken))
                     {
-                        this.logger.LogError($"Authenticated as User System access token is null or empty, Error:\n{accessToken}");
+                        this.logger.LogError("Authenticated as User System access token is null or empty, Error:\n{AccessToken}", accessToken);
                         throw new FormatException($"Authenticated as User System access token is null or empty, Error:\n{accessToken}");
                     }
 
@@ -108,7 +108,7 @@ namespace Healthgateway.JobScheduler.Jobs
                     {
                         if (retVal.ResultStatus != ResultType.Success)
                         {
-                            this.logger.LogError($"Unable to send Notification Settings to PHSA, Error:\n{retVal.ResultError?.ResultMessage}");
+                            this.logger.LogError("Unable to send Notification Settings to PHSA, Error:\n{ResultMessage}", retVal.ResultError?.ResultMessage);
                             throw new FormatException($"Unable to send Notification Settings to PHSA, Error:\n{retVal.ResultError?.ResultMessage}");
                         }
                     }

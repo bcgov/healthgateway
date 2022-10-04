@@ -10,6 +10,7 @@ import MessageModalComponent from "@/components/modal/MessageModalComponent.vue"
 import { EntryType, entryTypeMap } from "@/constants/entryType";
 import { ErrorSourceType, ErrorType } from "@/constants/errorType";
 import { DateWrapper } from "@/models/dateWrapper";
+import { ResultError } from "@/models/errors";
 import LaboratoryOrderTimelineEntry from "@/models/laboratoryOrderTimelineEntry";
 import User from "@/models/user";
 import container from "@/plugins/container";
@@ -21,12 +22,15 @@ import EntrycardTimelineComponent from "./EntrycardTimelineComponent.vue";
 
 library.add(faDownload);
 
-@Component({
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const options: any = {
     components: {
         MessageModalComponent,
         EntryCard: EntrycardTimelineComponent,
     },
-})
+};
+
+@Component(options)
 export default class LaboratoryOrderTimelineComponent extends Vue {
     @Prop() entry!: LaboratoryOrderTimelineEntry;
     @Prop() index!: number;
@@ -65,17 +69,6 @@ export default class LaboratoryOrderTimelineComponent extends Vue {
 
     private formatDate(date: DateWrapper): string {
         return date.format("yyyy-MMM-dd, t");
-    }
-
-    private getResultClasses(result: string): string[] {
-        switch (result?.toUpperCase()) {
-            case "OUT OF RANGE":
-                return ["text-danger"];
-            case "IN RANGE":
-                return ["text-success"];
-            default:
-                return [];
-        }
     }
 
     private getStatusInfoId(labPdfId: string, index: number): string {
@@ -261,9 +254,9 @@ export default class LaboratoryOrderTimelineComponent extends Vue {
                 data-testid="laboratoryResultTable"
             >
                 <template #cell(result)="data">
-                    <strong :class="getResultClasses(data.value)">
+                    <span>
                         {{ data.value }}
-                    </strong>
+                    </span>
                 </template>
                 <template #head(result)="data">
                     <span>{{ data.label }}</span>

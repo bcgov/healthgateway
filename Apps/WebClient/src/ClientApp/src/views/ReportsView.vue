@@ -44,7 +44,8 @@ const medicationRequestReport = "medication-request-report";
 const noteReport = "note-report";
 const laboratoryReport = "laboratory-report";
 
-@Component({
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const options: any = {
     components: {
         BreadcrumbComponent,
         LoadingComponent,
@@ -59,7 +60,9 @@ const laboratoryReport = "laboratory-report";
         noteReport: NotesReportComponent,
         laboratoryReport: LaboratoryReportComponent,
     },
-})
+};
+
+@Component(options)
 export default class ReportsView extends Vue {
     @Getter("webClient", { namespace: "config" })
     config!: WebClientConfiguration;
@@ -376,11 +379,7 @@ export default class ReportsView extends Vue {
         </b-alert>
         <page-title title="Export Records" />
         <div class="my-3 px-3 py-4 form">
-            <b-row>
-                <b-col>
-                    <label for="reportType">Record Type</label>
-                </b-col>
-            </b-row>
+            <label for="reportType">Record Type</label>
             <b-row align-h="between" class="py-2">
                 <b-col class="mb-2" sm="">
                     <b-form-select
@@ -499,20 +498,18 @@ export default class ReportsView extends Vue {
                         />
                     </b-col>
                 </b-row>
-                <b-row v-show="isMedicationReport" class="pt-3">
-                    <b-col>
-                        <div>
-                            <strong>Exclude These Records</strong>
-                        </div>
-                        <div>Medications:</div>
-                        <MultiSelectComponent
-                            v-model="selectedMedicationOptions"
-                            placeholder="Choose a medication"
-                            :options="medicationOptions"
-                            data-testid="medicationExclusionFilter"
-                        ></MultiSelectComponent>
-                    </b-col>
-                </b-row>
+                <div v-show="isMedicationReport" class="pt-3">
+                    <div>
+                        <strong>Exclude These Records</strong>
+                    </div>
+                    <div>Medications:</div>
+                    <MultiSelectComponent
+                        v-model="selectedMedicationOptions"
+                        placeholder="Choose a medication"
+                        :options="medicationOptions"
+                        data-testid="medicationExclusionFilter"
+                    />
+                </div>
                 <b-row align-h="end" class="pt-4">
                     <b-col cols="auto">
                         <hg-button
@@ -558,25 +555,17 @@ export default class ReportsView extends Vue {
             />
         </div>
         <div v-else>
-            <b-row>
-                <b-col>
-                    <img
-                        class="mx-auto d-block"
-                        src="@/assets/images/reports/reports.png"
-                        data-testid="infoImage"
-                        width="200"
-                        height="auto"
-                        alt="..."
-                    />
-                </b-col>
-            </b-row>
-            <b-row>
-                <b-col class="text-center">
-                    <h5 data-testid="infoText">
-                        Select a record type above to create a report
-                    </h5>
-                </b-col>
-            </b-row>
+            <img
+                class="mx-auto d-block"
+                src="@/assets/images/reports/reports.png"
+                data-testid="infoImage"
+                width="200"
+                height="auto"
+                alt="..."
+            />
+            <h5 data-testid="infoText" class="text-center">
+                Select a record type above to create a report
+            </h5>
         </div>
 
         <message-modal
@@ -591,10 +580,6 @@ export default class ReportsView extends Vue {
 
 <style lang="scss" scoped>
 @import "@/assets/scss/_variables.scss";
-
-.column-wrapper {
-    border: 1px;
-}
 
 .sample {
     width: 100%;

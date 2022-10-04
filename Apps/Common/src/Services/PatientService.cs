@@ -38,14 +38,14 @@ namespace HealthGateway.Common.Services
         /// The generic cache domain to store patients against.
         /// </summary>
         private const string PatientCacheDomain = "Patient";
+        private readonly ICacheProvider cacheProvider;
+        private readonly int cacheTtl;
 
         /// <summary>
         /// The injected logger delegate.
         /// </summary>
         private readonly ILogger<PatientService> logger;
         private readonly IClientRegistriesDelegate patientDelegate;
-        private readonly ICacheProvider cacheProvider;
-        private readonly int cacheTtl;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="PatientService"/> class.
@@ -120,7 +120,7 @@ namespace HealthGateway.Common.Services
                                 ResultMessage = $"Internal Error: PatientIdentifier is invalid '{identifier}'",
                                 ErrorCode = ErrorTranslator.InternalError(ErrorType.InvalidState),
                             };
-                            this.logger.LogDebug($"The PHN provided is invalid: {identifier}");
+                            this.logger.LogDebug("The PHN provided is invalid: {Identifier}", identifier);
                         }
 
                         break;
@@ -176,7 +176,8 @@ namespace HealthGateway.Common.Services
                         break;
                 }
 
-                this.logger.LogDebug($"Patient with identifier {identifier} was {(retPatient == null ? "not" : string.Empty)} found in cache");
+                string message = $"Patient with identifier {identifier} was {(retPatient == null ? "not" : string.Empty)} found in cache";
+                this.logger.LogDebug("{Message}", message);
             }
 
             activity?.Stop();
@@ -193,7 +194,7 @@ namespace HealthGateway.Common.Services
             string hdid = patient.HdId;
             if (this.cacheTtl > 0)
             {
-                this.logger.LogDebug($"Attempting to cache patient: {hdid}");
+                this.logger.LogDebug("Attempting to cache patient: {Hdid}", hdid);
                 TimeSpan expiry = TimeSpan.FromMinutes(this.cacheTtl);
                 if (patient.HdId != null)
                 {
@@ -207,7 +208,7 @@ namespace HealthGateway.Common.Services
             }
             else
             {
-                this.logger.LogDebug($"Patient caching is disabled will not cache patient: {hdid}");
+                this.logger.LogDebug("Patient caching is disabled will not cache patient: {Hdid}", hdid);
             }
 
             activity?.Stop();

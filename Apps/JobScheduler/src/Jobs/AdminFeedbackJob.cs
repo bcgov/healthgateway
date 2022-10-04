@@ -38,12 +38,12 @@ namespace Healthgateway.JobScheduler.Jobs
     {
         private const string FeedbackTemplateName = "AdminFeedback";
         private const int ConcurrencyTimeout = 5 * 60; // 5 minutes
-        private readonly ILogger<AdminFeedbackJob> logger;
-        private readonly IFeedbackDelegate feedBackDelegate;
-        private readonly IEmailQueueService emailService;
-        private readonly string host;
-        private readonly int port;
         private readonly string adminEmail;
+        private readonly IEmailQueueService emailService;
+        private readonly IFeedbackDelegate feedBackDelegate;
+        private readonly string host;
+        private readonly ILogger<AdminFeedbackJob> logger;
+        private readonly int port;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="AdminFeedbackJob"/> class.
@@ -86,7 +86,7 @@ namespace Healthgateway.JobScheduler.Jobs
             }
             else
             {
-                this.logger.LogCritical($"Unable to read UserFeedback with id {clientFeedback.UserFeedbackId}");
+                this.logger.LogCritical("Unable to read UserFeedback with id {UserFeedbackId}", clientFeedback.UserFeedbackId);
                 throw new InvalidOperationException($"Unable to read UserFeedback with id {clientFeedback.UserFeedbackId}");
             }
         }

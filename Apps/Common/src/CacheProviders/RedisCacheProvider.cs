@@ -25,8 +25,8 @@ namespace HealthGateway.Common.CacheProviders
     /// </summary>
     public class RedisCacheProvider : ICacheProvider
     {
-        private readonly ILogger<RedisCacheProvider> logger;
         private readonly IConnectionMultiplexer connectionMultiplexer;
+        private readonly ILogger<RedisCacheProvider> logger;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="RedisCacheProvider"/> class.
@@ -63,7 +63,7 @@ namespace HealthGateway.Common.CacheProviders
         /// <inheritdoc/>
         public void RemoveItem(string key)
         {
-            this.connectionMultiplexer.GetDatabase().KeyDelete(key, flags: CommandFlags.FireAndForget);
+            this.connectionMultiplexer.GetDatabase().KeyDelete(key, CommandFlags.FireAndForget);
         }
 
         private void Add(string key, string value, TimeSpan? expiry = null)
@@ -80,7 +80,7 @@ namespace HealthGateway.Common.CacheProviders
             }
             catch (RedisTimeoutException e)
             {
-                this.logger.LogInformation($"Unable to retrieve cache key {key}\n{e}");
+                this.logger.LogInformation("Unable to retrieve cache key {Key}\n{Exception}", key, e.ToString());
             }
 
             return cacheStr;

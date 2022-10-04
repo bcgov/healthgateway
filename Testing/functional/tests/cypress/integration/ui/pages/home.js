@@ -12,8 +12,9 @@ describe("Authenticated User - Home Page", () => {
             homeUrl
         );
 
-        cy.get("[data-testid=bc-vaccine-card-btn]").should("be.visible");
-        cy.get("[data-testid=health-records-card-btn]").should("be.visible");
+        cy.get("[data-testid=bc-vaccine-card-card]").should("be.visible");
+        cy.get("[data-testid=immunization-record-card]").should("be.visible");
+        cy.get("[data-testid=health-records-card]").should("be.visible");
     });
 
     it("Home - Federal Card button enabled", () => {
@@ -29,7 +30,7 @@ describe("Authenticated User - Home Page", () => {
         cy.get("[data-testid=proof-vaccination-card-btn]").should("be.visible");
     });
 
-    it("Home - Link to Covid19 page", () => {
+    it("Home - Link to COVID-19 page", () => {
         cy.enableModules(["VaccinationStatus"]);
         cy.login(
             Cypress.env("keycloak.username"),
@@ -38,7 +39,7 @@ describe("Authenticated User - Home Page", () => {
             homeUrl
         );
 
-        cy.get("[data-testid=bc-vaccine-card-btn]")
+        cy.get("[data-testid=bc-vaccine-card-card]")
             .should("be.visible")
             .click();
 
@@ -53,7 +54,7 @@ describe("Authenticated User - Home Page", () => {
             homeUrl
         );
 
-        cy.get("[data-testid=health-records-card-btn]")
+        cy.get("[data-testid=health-records-card]")
             .should("be.visible")
             .click();
 

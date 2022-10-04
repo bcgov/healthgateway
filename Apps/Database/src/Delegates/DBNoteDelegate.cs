@@ -68,7 +68,7 @@ namespace HealthGateway.Database.Delegates
         /// <inheritdoc/>
         public DBResult<IEnumerable<Note>> GetNotes(string hdId, int offset = 0, int pagesize = 500)
         {
-            this.logger.LogTrace($"Getting Notes for {hdId}...");
+            this.logger.LogTrace("Getting Notes for {HdId}...", hdId);
             DBResult<IEnumerable<Note>> result = new();
             result.Payload = this.dbContext.Note
                 .Where(p => p.HdId == hdId)
@@ -99,7 +99,7 @@ namespace HealthGateway.Database.Delegates
                 }
                 catch (DbUpdateException e)
                 {
-                    this.logger.LogError($"Unable to save note to DB {e}");
+                    this.logger.LogError("Unable to save note to DB {Exception}", e.ToString());
                     result.Status = DBStatusCode.Error;
                     result.Message = e.Message;
                 }
@@ -198,7 +198,7 @@ namespace HealthGateway.Database.Delegates
         /// <inheritdoc/>
         public DBResult<IEnumerable<Note>> GetAll(int page, int pageSize)
         {
-            this.logger.LogTrace($"Retrieving all the notes for the page #{page} with pageSize: {pageSize}...");
+            this.logger.LogTrace("Retrieving all the notes for the page #{Page} with pageSize: {PageSize}...", page, pageSize);
             return DBDelegateHelper.GetPagedDBResult(
                 this.dbContext.Note
                     .OrderBy(note => note.CreatedDateTime),

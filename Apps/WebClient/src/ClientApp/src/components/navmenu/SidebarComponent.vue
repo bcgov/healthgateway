@@ -30,11 +30,14 @@ library.add(
     faUserFriends
 );
 
-@Component({
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const options: any = {
     components: {
         FeedbackComponent,
     },
-})
+};
+
+@Component(options)
 export default class SidebarComponent extends Vue {
     @Action("setUserPreference", { namespace: "user" })
     setUserPreference!: (params: {
@@ -271,7 +274,11 @@ export default class SidebarComponent extends Vue {
                         :class="{ selected: isDependents }"
                     >
                         <b-row class="align-items-center" no-gutters>
-                            <b-col title="Reports" cols="auto" class="pr-md-4">
+                            <b-col
+                                title="Dependents"
+                                cols="auto"
+                                class="pr-md-4"
+                            >
                                 <hg-icon
                                     icon="user-friends"
                                     size="large"

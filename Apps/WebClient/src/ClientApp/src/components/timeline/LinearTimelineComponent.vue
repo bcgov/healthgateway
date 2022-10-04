@@ -20,7 +20,8 @@ import MedicationRequestTimelineComponent from "./entryCard/MedicationRequestTim
 import MedicationTimelineComponent from "./entryCard/MedicationTimelineComponent.vue";
 import NoteTimelineComponent from "./entryCard/NoteTimelineComponent.vue";
 
-@Component({
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const options: any = {
     components: {
         MedicationRequestComponent: MedicationRequestTimelineComponent,
         MedicationComponent: MedicationTimelineComponent,
@@ -32,7 +33,9 @@ import NoteTimelineComponent from "./entryCard/NoteTimelineComponent.vue";
         NoteComponent: NoteTimelineComponent,
         ClinicalDocumentComponent: ClinicalDocumentTimelineComponent,
     },
-})
+};
+
+@Component(options)
 export default class LinearTimelineComponent extends Vue {
     @Action("setLinearDate", { namespace: "timeline" })
     setLinearDate!: (linearDate: DateWrapper) => void;
@@ -171,6 +174,13 @@ export default class LinearTimelineComponent extends Vue {
         return filterLoading;
     }
 
+    private get isOnlyImmunizationSelected(): boolean {
+        return (
+            this.filter.entryTypes.size === 1 &&
+            this.filter.entryTypes.has(EntryType.Immunization)
+        );
+    }
+
     private get numberOfPages(): number {
         let pageCount = 1;
         if (this.timelineEntries.length > this.pageSize) {
@@ -286,20 +296,11 @@ export default class LinearTimelineComponent extends Vue {
         return entryTypeMap.get(entryType)?.component ?? "";
     }
 
-    private isFilterApplied(entryType: EntryType): boolean {
-        const entryTypes = Array.from(this.filter.entryTypes);
-        const filterApplied = !!entryTypes.includes(entryType);
-        this.logger.debug(
-            `Timeline filter entry type: ${entryType} applied: ${filterApplied}`
-        );
-        return filterApplied;
-    }
-
     private isSelectedFilterModuleLoading(
         entryType: EntryType,
         loading: boolean
     ): boolean {
-        const filterApplied = this.isFilterApplied(entryType);
+        const filterApplied = this.filter.entryTypes.has(entryType);
         const isLoading = filterApplied && loading;
         this.logger.debug(
             `Timeline filter entry type: ${entryType} applied: ${filterApplied} - filter loading: ${loading} and filter isLoading: ${isLoading}`
@@ -322,6 +323,28 @@ export default class LinearTimelineComponent extends Vue {
                 {{ timelineEntryCount }} records
             </b-col>
         </b-row>
+        <div
+            v-show="isOnlyImmunizationSelected"
+            id="linear-timeline-immunization-disclaimer"
+            class="pb-2"
+        >
+            <b-alert
+                show
+                variant="info"
+                class="mt-0 mb-1"
+                data-testid="linear-timeline-immunization-disclaimer-alert"
+            >
+                <span>
+                    You can add or update immunizations by visiting
+                    <a
+                        href="https://www.immunizationrecord.gov.bc.ca"
+                        target="_blank"
+                        rel="noopener"
+                        >immunizationrecord.gov.bc.ca</a
+                    >.
+                </span>
+            </b-alert>
+        </div>
         <div id="timeData" data-testid="linearTimelineData">
             <div
                 v-for="dateGroup in dateGroups"

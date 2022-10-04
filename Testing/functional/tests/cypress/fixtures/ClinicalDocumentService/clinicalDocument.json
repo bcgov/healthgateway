@@ -1,0 +1,27 @@
+{
+    "resourcePayload": [
+        {
+            "id": "5762bea4-dc02-48ba-86f0-98b476dfe077",
+            "fileId": "14bac0b6-9e95-4a1b-b6fd-d354edfce4e7-710b28fa980440fd93c426e25c0ce52f",
+            "name": "Discharge summary",
+            "type": "Discharge summary",
+            "facilityName": "Lions Gate Hospital",
+            "discipline": "Cancer",
+            "serviceDate": "2021-11-15T01:52:59.6349624-08:00"
+        },
+        {
+            "id": "35646fe4-0ed3-4138-84fb-df42b6494cf7",
+            "fileId": "14bac0b6-9e95-4a1b-b6fd-d354edfce4e7-e0bd45ade2f04cf1a1b62844809fdb20",
+            "name": "Consultation",
+            "type": "Consultation",
+            "facilityName": "St. Paul's Hospital",
+            "discipline": "CARDIOLOGY",
+            "serviceDate": "2021-12-28T22:44:31.2898235-08:00"
+        }
+    ],
+    "totalResultCount": 2,
+    "pageIndex": null,
+    "pageSize": 0,
+    "resultStatus": 1,
+    "resultError": null
+}

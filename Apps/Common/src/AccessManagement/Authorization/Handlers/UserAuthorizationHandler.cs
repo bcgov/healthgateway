@@ -30,9 +30,9 @@ namespace HealthGateway.Common.AccessManagement.Authorization.Handlers
     public class UserAuthorizationHandler : IAuthorizationHandler
     {
         private const string RouteResourceIdentifier = "hdid";
+        private readonly IHttpContextAccessor httpContextAccessor;
 
         private readonly ILogger<UserAuthorizationHandler> logger;
-        private readonly IHttpContextAccessor httpContextAccessor;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="UserAuthorizationHandler"/> class.
@@ -79,17 +79,18 @@ namespace HealthGateway.Common.AccessManagement.Authorization.Handlers
                 if (requirement.ValidateOwnership)
                 {
                     retVal = userHDID == resourceHDID;
-                    this.logger.LogInformation($"{userHDID} is {(!retVal ? "not " : string.Empty)}the resource owner");
+                    string message = $"{userHDID} is {(!retVal ? "not " : string.Empty)}the resource owner";
+                    this.logger.LogInformation("{Message}", message);
                 }
                 else
                 {
                     retVal = true;
-                    this.logger.LogInformation($"User has claim {GatewayClaims.HDID} and has been authorized");
+                    this.logger.LogInformation("User has claim {GatewayClaimsHdid} and has been authorized", GatewayClaims.HDID);
                 }
             }
             else
             {
-                this.logger.LogDebug($"Unable to validate resource owner for {resourceHDID} as no HDID claims present");
+                this.logger.LogDebug("Unable to validate resource owner for {ResourceHdid} as no HDID claims present", resourceHDID);
             }
 
             return retVal;

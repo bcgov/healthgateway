@@ -51,7 +51,6 @@ namespace HealthGateway.Database.Delegates
         public IList<DrugProduct> GetDrugProductsByDIN(IList<string> drugIdentifiers)
         {
             this.logger.LogDebug("Getting list of drug products from DB");
-            this.logger.LogTrace($"Identifiers {JsonSerializer.Serialize(drugIdentifiers)}");
             IList<string> uniqueDrugIdentifers = drugIdentifiers.Distinct().ToList();
             IList<DrugProduct> retVal = this.dbContext.DrugProduct
                 .Include(c => c.Company)
@@ -63,7 +62,6 @@ namespace HealthGateway.Database.Delegates
                 .Select(drug => drug.OrderByDescending(o => o.LastUpdate).First())
                 .ToList();
             this.logger.LogDebug("Finished getting list of drug products from DB");
-            this.logger.LogTrace($"Products: {JsonSerializer.Serialize(retVal)}");
             return retVal;
         }
 
@@ -71,7 +69,6 @@ namespace HealthGateway.Database.Delegates
         public IList<PharmaCareDrug> GetPharmaCareDrugsByDIN(IList<string> drugIdentifiers)
         {
             this.logger.LogDebug("Getting list of pharmacare drug products from DB");
-            this.logger.LogTrace($"Identifiers {JsonSerializer.Serialize(drugIdentifiers)}");
             IList<string> uniqueDrugIdentifers = drugIdentifiers.Distinct().ToList();
             DateTime now = DateTime.UtcNow;
             IList<PharmaCareDrug> retVal = this.dbContext.PharmaCareDrug
@@ -82,7 +79,6 @@ namespace HealthGateway.Database.Delegates
                 .ToList();
 
             this.logger.LogDebug("Finished getting list of pharmacare drug products from DB");
-            this.logger.LogTrace($"Products: {JsonSerializer.Serialize(retVal)}");
             return retVal;
         }
 
@@ -90,9 +86,8 @@ namespace HealthGateway.Database.Delegates
         public Dictionary<string, string> GetDrugsBrandNameByDIN(IList<string> drugIdentifiers)
         {
             this.logger.LogDebug("Getting drug brand names from DB");
-            this.logger.LogTrace($"Identifiers: {JsonSerializer.Serialize(drugIdentifiers)}");
             List<string> uniqueDrugIdentifers = drugIdentifiers.Distinct().ToList();
-            this.logger.LogDebug($"Total DrugIdentifiers: {drugIdentifiers.Count} | Unique identifiers:{uniqueDrugIdentifers.Count} ");
+            this.logger.LogDebug("Total DrugIdentifiers: {Count} | Unique identifiers:{UniqueCount} ", drugIdentifiers.Count, uniqueDrugIdentifers.Count);
 
             // Retrieve the brand names using the Federal data
             IList<DrugProduct> drugProducts = this.GetDrugProductsByDIN(uniqueDrugIdentifers);
@@ -113,7 +108,6 @@ namespace HealthGateway.Database.Delegates
             }
 
             this.logger.LogDebug("Finished getting drug brand names from DB");
-            this.logger.LogTrace($"Names: {JsonSerializer.Serialize(brandNames)}");
             return brandNames;
         }
     }

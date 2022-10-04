@@ -34,13 +34,13 @@ namespace Healthgateway.JobScheduler.Jobs
         private const string JobKey = "OneTime";
         private const string OneTimeClassKey = "TaskClass";
         private const int ConcurrencyTimeout = 5 * 60; // 5 Minutes
-
-        private readonly IServiceProvider serviceProvider;
-        private readonly IConfiguration jobConfig;
-        private readonly ILogger<OneTimeJob> logger;
         private readonly IApplicationSettingsDelegate applicationSettingsDelegate;
 
         private readonly GatewayDbContext dbContext;
+        private readonly IConfiguration jobConfig;
+        private readonly ILogger<OneTimeJob> logger;
+
+        private readonly IServiceProvider serviceProvider;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="OneTimeJob"/> class.
@@ -77,18 +77,18 @@ namespace Healthgateway.JobScheduler.Jobs
                 Type? taskType = Type.GetType(className);
                 if (taskType != null)
                 {
-                    this.logger.LogInformation($"OneTimeJob will invoke {taskType.Name}");
+                    this.logger.LogInformation("OneTimeJob will invoke {Name}", taskType.Name);
                     ApplicationSetting? hasRunAppSetting = this.applicationSettingsDelegate.GetApplicationSetting(
                         ApplicationType.JobScheduler,
                         this.GetType().Name,
                         className);
                     if (hasRunAppSetting == null)
                     {
-                        this.logger.LogInformation($"OneTimeJob is invoking {className}");
+                        this.logger.LogInformation("OneTimeJob is invoking {ClassName}", className);
                         Type? type = Type.GetType(className);
                         IOneTimeTask task = (IOneTimeTask)ActivatorUtilities.CreateInstance(this.serviceProvider, type);
                         task.Run();
-                        this.logger.LogInformation($"OneTimeJob is marking class {taskType.Name} as invoked");
+                        this.logger.LogInformation("OneTimeJob is marking class {Name} as invoked", taskType.Name);
                         hasRunAppSetting = new ApplicationSetting
                         {
                             Application = ApplicationType.JobScheduler,
@@ -102,7 +102,7 @@ namespace Healthgateway.JobScheduler.Jobs
                     }
                     else
                     {
-                        this.logger.LogInformation($"OneTimeJob has invoked {taskType.Name} before and will exit");
+                        this.logger.LogInformation("OneTimeJob has invoked {Name} before and will exit", taskType.Name);
                     }
                 }
                 else

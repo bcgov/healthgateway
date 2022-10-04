@@ -41,11 +41,11 @@ namespace HealthGateway.Common.Delegates.PHSA
     public class RestVaccineStatusDelegate : IVaccineStatusDelegate
     {
         private const string PHSAConfigSectionKey = "PHSA";
-        private readonly ILogger logger;
         private readonly IHttpClientService httpClientService;
-        private readonly PhsaConfig phsaConfig;
 
         private readonly IHttpContextAccessor httpContextAccessor;
+        private readonly ILogger logger;
+        private readonly PhsaConfig phsaConfig;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="RestVaccineStatusDelegate"/> class.
@@ -74,7 +74,13 @@ namespace HealthGateway.Common.Delegates.PHSA
         public async Task<RequestResult<PhsaResult<VaccineStatusResult>>> GetVaccineStatus(VaccineStatusQuery query, string accessToken, bool isPublicEndpoint)
         {
             using Activity? activity = Source.StartActivity();
-            this.logger.LogDebug($"Getting vaccine status {query.HdId} {query.PersonalHealthNumber} {query.DateOfBirth} {query.DateOfVaccine} {query.IncludeFederalVaccineProof}...");
+            this.logger.LogDebug(
+                "Getting vaccine status {Hdid} {PersonalHealthNumber} {DateOfBirth} {DateOfVaccine} {IncludeFederalVaccineProof}...",
+                query.HdId,
+                query.PersonalHealthNumber,
+                query.DateOfBirth,
+                query.DateOfVaccine,
+                query.IncludeFederalVaccineProof);
 
             HttpContent? content = null;
             Uri endpoint = null!;
@@ -122,12 +128,12 @@ namespace HealthGateway.Common.Delegates.PHSA
 
                 HttpResponseMessage response = await client.PostAsync(endpoint, content).ConfigureAwait(true);
                 string payload = await response.Content.ReadAsStringAsync().ConfigureAwait(true);
-                this.logger.LogTrace($"Response: {response}");
+                this.logger.LogTrace("Response: {Response}", response);
 
                 switch (response.StatusCode)
                 {
                     case HttpStatusCode.OK:
-                        this.logger.LogTrace($"Response payload: {payload}");
+                        this.logger.LogTrace("Response payload: {Payload}", payload);
                         PhsaResult<VaccineStatusResult>? phsaResult = JsonSerializer.Deserialize<PhsaResult<VaccineStatusResult>>(payload);
                         if (phsaResult != null && phsaResult.Result != null)
                         {
@@ -158,7 +164,7 @@ namespace HealthGateway.Common.Delegates.PHSA
                             ResultMessage = $"Unable to connect to Immunizations/VaccineStatus Endpoint, HTTP Error {response.StatusCode}",
                             ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.PHSA),
                         };
-                        this.logger.LogError($"Unable to connect to endpoint {endpointString}, HTTP Error {response.StatusCode}\n{payload}");
+                        this.logger.LogError("Unable to connect to endpoint {EndpointString}, HTTP Error {StatusCode}\n{Payload}", endpointString, response.StatusCode, payload);
                         break;
                 }
             }
@@ -171,14 +177,14 @@ namespace HealthGateway.Common.Delegates.PHSA
                     ResultMessage = $"Exception getting vaccine status: {e}",
                     ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.PHSA),
                 };
-                this.logger.LogError($"Unexpected exception retrieving vaccine status {e}");
+                this.logger.LogError("Unexpected exception retrieving vaccine status {Exception}", e);
             }
             finally
             {
                 content?.Dispose();
             }
 
-            this.logger.LogDebug($"Finished getting vaccine status {query.HdId} {query.PersonalHealthNumber} {query.DateOfBirth}");
+            this.logger.LogDebug("Finished getting vaccine status {Hdid} {PersonalHealthNumber} {DateOfBirth}", query.HdId, query.PersonalHealthNumber, query.DateOfBirth);
             return retVal;
         }
 
@@ -238,7 +244,7 @@ namespace HealthGateway.Common.Delegates.PHSA
         public async Task<RequestResult<PhsaResult<RecordCard>>> GetRecordCard(RecordCardQuery query, string accessToken)
         {
             using Activity? activity = Source.StartActivity();
-            this.logger.LogDebug($"Getting record card {query.PersonalHealthNumber.Substring(0, 5)} {query.DateOfBirth}...");
+            this.logger.LogDebug("Getting record card {PersonalHealthNumber} {DateOfBirth}...", query.PersonalHealthNumber.Substring(0, 5), query.DateOfBirth);
             string endpointString = $"{this.phsaConfig.BaseUrl}{this.phsaConfig.RecordCardEndpoint}";
 
             HttpContext? httpContext = this.httpContextAccessor.HttpContext;
@@ -263,12 +269,12 @@ namespace HealthGateway.Common.Delegates.PHSA
 
                 HttpResponseMessage response = await client.PostAsync(new Uri(endpointString), content).ConfigureAwait(true);
                 string payload = await response.Content.ReadAsStringAsync().ConfigureAwait(true);
-                this.logger.LogTrace($"Response: {response}");
+                this.logger.LogTrace("Response: {Response}", response);
 
                 switch (response.StatusCode)
                 {
                     case HttpStatusCode.OK:
-                        this.logger.LogTrace($"Response payload: {payload}");
+                        this.logger.LogTrace("Response payload: {Payload}", payload);
                         PhsaResult<RecordCard>? phsaResult = JsonSerializer.Deserialize<PhsaResult<RecordCard>>(payload);
                         if (phsaResult != null && phsaResult.Result != null)
                         {
@@ -307,7 +313,7 @@ namespace HealthGateway.Common.Delegates.PHSA
                             ResultMessage = $"Unable to connect to record card Endpoint, HTTP Error {response.StatusCode}",
                             ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.PHSA),
                         };
-                        this.logger.LogError($"Unable to connect to endpoint {endpointString}, HTTP Error {response.StatusCode}\n{payload}");
+                        this.logger.LogError("Unable to connect to endpoint {EndpointString}, HTTP Error {StatusCode}\n{Payload}", endpointString, response.StatusCode, payload);
                         break;
                 }
             }
@@ -320,10 +326,10 @@ namespace HealthGateway.Common.Delegates.PHSA
                     ResultMessage = $"Exception getting record card: {e}",
                     ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.PHSA),
                 };
-                this.logger.LogError($"Unexpected exception retrieving record card {e}");
+                this.logger.LogError("Unexpected exception retrieving record card {Exception}", e);
             }
 
-            this.logger.LogDebug($"Finished getting record card {query.PersonalHealthNumber.Substring(0, 5)} {query.DateOfBirth}");
+            this.logger.LogDebug("Finished getting record card {PersonalHealthNumber} {DateOfBirth}", query.PersonalHealthNumber.Substring(0, 5), query.DateOfBirth);
             return retVal;
         }
 

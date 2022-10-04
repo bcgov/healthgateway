@@ -29,11 +29,14 @@ interface EntryTypeFilter {
     display: string;
 }
 
-@Component({
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const options: any = {
     components: {
         DatePickerComponent,
     },
-})
+};
+
+@Component(options)
 export default class FilterComponent extends Vue {
     @Action("setFilter", { namespace: "timeline" })
     setFilter!: (filterBuilder: TimelineFilterBuilder) => void;

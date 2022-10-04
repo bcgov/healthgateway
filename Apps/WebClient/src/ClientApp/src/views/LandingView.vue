@@ -339,6 +339,7 @@ export default class LandingView extends Vue {
                         v-for="tile in activeTiles"
                         :key="tile.name"
                         class="text-center px-4 px-md-5 pb-4 pb-md-5"
+                        :data-testid="`active-tile-${tile.type}`"
                         cols="12"
                         md="6"
                         lg="4"

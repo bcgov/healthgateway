@@ -26,10 +26,10 @@ namespace Healthgateway.JobScheduler.Jobs
     public class DeleteEmailJob
     {
         private const int ConcurrencyTimeout = 5 * 60; // 5 minutes
-        private readonly ILogger<EmailJob> logger;
-        private readonly IEmailDelegate emailDelegate;
-        private readonly int deleteMaxRows;
         private readonly uint deleteAfterDays;
+        private readonly int deleteMaxRows;
+        private readonly IEmailDelegate emailDelegate;
+        private readonly ILogger<EmailJob> logger;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="DeleteEmailJob"/> class.
@@ -55,9 +55,9 @@ namespace Healthgateway.JobScheduler.Jobs
         [DisableConcurrentExecution(ConcurrencyTimeout)]
         public void DeleteOldEmails()
         {
-            this.logger.LogInformation($"Delete job running: Delete emails {this.deleteAfterDays} days old and limit to {this.deleteMaxRows} deleted");
+            this.logger.LogInformation("Delete job running: Delete emails {DeleteAfterDays} days old and limit to {DeleteMaxRows} deleted", this.deleteAfterDays, this.deleteMaxRows);
             int count = this.emailDelegate.Delete(this.deleteAfterDays, this.deleteMaxRows);
-            this.logger.LogInformation($"Delete job finished after removing {count} records");
+            this.logger.LogInformation("Delete job finished after removing {Count} records", count);
         }
     }
 }

@@ -45,6 +45,9 @@ describe("Filters", () => {
         cy.get("[data-testid=MedicationRequestCount]")
             .should("be.visible")
             .contains(countRegex);
+        cy.get("[data-testid=ClinicalDocumentCount]")
+            .should("be.visible")
+            .contains(countRegex);
         cy.get("[data-testid=btnFilterCancel]").click();
     });
 
@@ -107,6 +110,9 @@ describe("Filters", () => {
         cy.get("[data-testid=Immunization-filter]").should("not.to.be.checked");
         cy.get("[data-testid=Laboratory-filter]").should("not.to.be.checked");
         cy.get("[data-testid=Encounter-filter]").should("not.to.be.checked");
+        cy.get("[data-testid=ClinicalDocument-filter]").should(
+            "not.to.be.checked"
+        );
         cy.get("[data-testid=btnFilterCancel]").click();
     });
 
@@ -123,6 +129,7 @@ describe("Filters", () => {
         cy.get("[data-testid=medicationTitle]").should("not.exist");
         cy.get("[data-testid=immunizationTitle]").should("be.visible");
         cy.get("[data-testid=medicationrequestTitle]").should("not.exist");
+        cy.get("[data-testid=clinicaldocumentTitle]").should("not.exist");
         verifyActiveFilters(["Immunization"]);
     });
 
@@ -158,6 +165,7 @@ describe("Filters", () => {
         cy.get("[data-testid=alllaboratoryTitle]").should("not.exist");
         cy.get("[data-testid=medicationTitle]").should("be.visible");
         cy.get("[data-testid=medicationrequestTitle]").should("not.exist");
+        cy.get("[data-testid=clinicaldocumentTitle]").should("not.exist");
         verifyActiveFilters(["Medication"]);
     });
 
@@ -174,6 +182,7 @@ describe("Filters", () => {
         cy.get("[data-testid=alllaboratoryTitle]").should("not.exist");
         cy.get("[data-testid=medicationTitle]").should("not.exist");
         cy.get("[data-testid=medicationrequestTitle]").should("not.exist");
+        cy.get("[data-testid=clinicaldocumentTitle]").should("not.exist");
         verifyActiveFilters(["Health Visits"]);
     });
 
@@ -190,6 +199,7 @@ describe("Filters", () => {
         cy.get("[data-testid=medicationTitle]").should("not.exist");
         cy.get("[data-testid=alllaboratoryTitle]").should("not.exist");
         cy.get("[data-testid=medicationrequestTitle]").should("not.exist");
+        cy.get("[data-testid=clinicaldocumentTitle]").should("not.exist");
         verifyActiveFilters(["COVID‑19 Tests"]);
     });
 
@@ -206,6 +216,7 @@ describe("Filters", () => {
         cy.get("[data-testid=alllaboratoryTitle]").should("be.visible");
         cy.get("[data-testid=medicationTitle]").should("not.exist");
         cy.get("[data-testid=medicationrequestTitle]").should("not.exist");
+        cy.get("[data-testid=clinicaldocumentTitle]").should("not.exist");
         verifyActiveFilters(["Lab Results"]);
     });
 
@@ -222,7 +233,25 @@ describe("Filters", () => {
         cy.get("[data-testid=laboratoryTitle]").should("not.exist");
         cy.get("[data-testid=alllaboratoryTitle]").should("not.exist");
         cy.get("[data-testid=medicationrequestTitle]").should("be.visible");
+        cy.get("[data-testid=clinicaldocumentTitle]").should("not.exist");
         verifyActiveFilters(["Special Authority"]);
+    });
+
+    it("Filter Clinical Documents", () => {
+        cy.get("[data-testid=filterContainer]").should("not.exist");
+        cy.get("[data-testid=filterDropdown]").click();
+        cy.get("[data-testid=ClinicalDocument-filter]").click({ force: true });
+        cy.get("[data-testid=btnFilterApply]").click();
+
+        cy.get("[data-testid=encounterTitle]").should("not.exist");
+        cy.get("[data-testid=noteTitle]").should("not.exist");
+        cy.get("[data-testid=immunizationTitle]").should("not.exist");
+        cy.get("[data-testid=laboratoryTitle]").should("not.exist");
+        cy.get("[data-testid=alllaboratoryTitle]").should("not.exist");
+        cy.get("[data-testid=medicationTitle]").should("not.exist");
+        cy.get("[data-testid=medicationrequestTitle]").should("not.exist");
+        cy.get("[data-testid=clinicaldocumentTitle]").should("be.visible");
+        verifyActiveFilters(["Clinical Documents"]);
     });
 
     it("Validate Apply and Cancel buttons", () => {
@@ -240,6 +269,9 @@ describe("Filters", () => {
         cy.get("[data-testid=MedicationRequest-filter]").should(
             "not.to.be.checked"
         );
+        cy.get("[data-testid=ClinicalDocument-filter]").should(
+            "not.to.be.checked"
+        );
         cy.get("[data-testid=btnFilterApply]").click();
         cy.get("[data-testid=filterContainer]").should("not.exist");
 
@@ -252,6 +284,7 @@ describe("Filters", () => {
         cy.get("[data-testid=AllLaboratory-filter]").click({ force: true });
         cy.get("[data-testid=Note-filter]").click({ force: true });
         cy.get("[data-testid=MedicationRequest-filter]").click({ force: true });
+        cy.get("[data-testid=ClinicalDocument-filter]").click({ force: true });
         cy.get("[data-testid=Medication-filter]").should("be.checked");
         cy.get("[data-testid=Note-filter]").should("be.checked");
         cy.get("[data-testid=Immunization-filter]").should("be.checked");
@@ -259,6 +292,7 @@ describe("Filters", () => {
         cy.get("[data-testid=AllLaboratory-filter]").should("be.checked");
         cy.get("[data-testid=Encounter-filter]").should("be.checked");
         cy.get("[data-testid=MedicationRequest-filter]").should("be.checked");
+        cy.get("[data-testid=ClinicalDocument-filter]").should("be.checked");
         cy.get("[data-testid=btnFilterCancel]").click();
         cy.get("[data-testid=filterContainer]").should("not.exist");
 
@@ -273,6 +307,9 @@ describe("Filters", () => {
         );
         cy.get("[data-testid=Encounter-filter]").should("not.to.be.checked");
         cy.get("[data-testid=MedicationRequest-filter]").should(
+            "not.to.be.checked"
+        );
+        cy.get("[data-testid=ClinicalDocument-filter]").should(
             "not.to.be.checked"
         );
         cy.get("[data-testid=btnFilterCancel]").click();
@@ -295,6 +332,7 @@ describe("Filters", () => {
         cy.get("[data-testid=LaboratoryCount]").should("not.exist");
         cy.get("[data-testid=AllLaboratoryCount]").should("not.exist");
         cy.get("[data-testid=MedicationRequestCount]").should("not.exist");
+        cy.get("[data-testid=ClinicalDocumentCount]").should("not.exist");
         cy.get("[data-testid=btnFilterCancel]").click();
     });
 });
@@ -320,6 +358,7 @@ describe("Disabled Filters", () => {
         cy.get("[data-testid=LaboratoryCount]").should("not.exist");
         cy.get("[data-testid=AllLaboratoryCount]").should("not.exist");
         cy.get("[data-testid=MedicationRequestCount]").should("not.exist");
+        cy.get("[data-testid=ClinicalDocumentCount]").should("not.exist");
         cy.get("[data-testid=btnFilterCancel]").click();
     });
 });

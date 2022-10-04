@@ -19,7 +19,6 @@ namespace HealthGateway.GatewayApi.Services
     using System.Globalization;
     using System.IO;
     using System.Reflection;
-    using System.Text.Json;
     using System.Threading.Tasks;
     using HealthGateway.Common.Data.ViewModels;
     using HealthGateway.Common.Delegates;
@@ -31,8 +30,8 @@ namespace HealthGateway.GatewayApi.Services
     /// <inheritdoc/>
     public class ReportService : IReportService
     {
-        private readonly ILogger logger;
         private readonly ICDogsDelegate cdogsDelegate;
+        private readonly ILogger logger;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ReportService"/> class.
@@ -48,7 +47,7 @@ namespace HealthGateway.GatewayApi.Services
         /// <inheritdoc/>
         public RequestResult<ReportModel> GetReport(ReportRequestModel reportRequest)
         {
-            this.logger.LogTrace($"New report request: {JsonSerializer.Serialize(reportRequest)}");
+            this.logger.LogTrace("New report request type: {Type} and template: {Template}", reportRequest.Type, reportRequest.Template);
 
             string reportName = $"HealthGateway{reportRequest.Template}Report";
             CDogsRequestModel cdogsRequest = new()
@@ -68,7 +67,7 @@ namespace HealthGateway.GatewayApi.Services
             };
 
             RequestResult<ReportModel> retVal = Task.Run(async () => await this.cdogsDelegate.GenerateReportAsync(cdogsRequest).ConfigureAwait(true)).Result;
-            this.logger.LogTrace($"Finished generating report: {JsonSerializer.Serialize(retVal)}");
+            this.logger.LogTrace("Finished generating report: {ReportFileName}", retVal.ResourcePayload?.FileName);
             return retVal;
         }
 

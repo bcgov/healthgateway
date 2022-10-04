@@ -1,0 +1,168 @@
+{
+    "resourcePayload": {
+        "loadState": {
+            "refreshInProgress": false
+        },
+        "immunizations": [
+            {
+                "id": "f7b51d01-16a3-4616-6865-08d99fe36b9e",
+                "dateOfImmunization": "1988-08-08T00:00:00",
+                "status": "Completed",
+                "valid": true,
+                "providerOrClinic": null,
+                "targetedDisease": "NOTSET",
+                "immunization": {
+                    "name": "Anthrax",
+                    "immunizationAgents": [
+                        {
+                            "code": "333521006",
+                            "name": "Anthrax",
+                            "lotNumber": null,
+                            "productName": null
+                        }
+                    ]
+                },
+                "forecast": null
+            },
+            {
+                "id": "55e4be9f-33ad-4b52-6866-08d99fe36b9e",
+                "dateOfImmunization": "2000-01-01T00:00:00",
+                "status": "Completed",
+                "valid": true,
+                "providerOrClinic": null,
+                "targetedDisease": "NOTSET",
+                "immunization": {
+                    "name": "Hepatitis A, Hepatitis B",
+                    "immunizationAgents": [
+                        {
+                            "code": "333702001",
+                            "name": "HAHB",
+                            "lotNumber": null,
+                            "productName": null
+                        }
+                    ]
+                },
+                "forecast": null
+            },
+            {
+                "id": "e9cc77a4-18ac-458d-6867-08d99fe36b9e",
+                "dateOfImmunization": "2010-10-10T00:00:00",
+                "status": "Completed",
+                "valid": true,
+                "providerOrClinic": null,
+                "targetedDisease": "NOTSET",
+                "immunization": {
+                    "name": "Chickenpox (Varicella)",
+                    "immunizationAgents": [
+                        {
+                            "code": "412530002",
+                            "name": "Varicella",
+                            "lotNumber": null,
+                            "productName": null
+                        }
+                    ]
+                },
+                "forecast": null
+            },
+            {
+                "id": "4cf4bebe-c151-4e90-6868-08d99fe36b9e",
+                "dateOfImmunization": "2021-03-30T00:00:00",
+                "status": "Completed",
+                "valid": false,
+                "providerOrClinic": null,
+                "targetedDisease": "COVID19",
+                "immunization": {
+                    "name": "COVID-19",
+                    "immunizationAgents": [
+                        {
+                            "code": "28531000087107",
+                            "name": "COVID-19",
+                            "lotNumber": null,
+                            "productName": null
+                        }
+                    ]
+                },
+                "forecast": null
+            },
+            {
+                "id": "5231285a-ba80-4edc-6869-08d99fe36b9e",
+                "dateOfImmunization": "2021-07-14T00:00:00",
+                "status": "Completed",
+                "valid": true,
+                "providerOrClinic": null,
+                "targetedDisease": "COVID19",
+                "immunization": {
+                    "name": "COVID-19 Non-replicating Viral Vector",
+                    "immunizationAgents": [
+                        {
+                            "code": "29061000087103",
+                            "name": "COVID-19 Non-replicating Viral Vector",
+                            "lotNumber": "4120Z003RN",
+                            "productName": "COVISHIELD"
+                        }
+                    ]
+                },
+                "forecast": {
+                    "recommendationId": "5588012_145363549",
+                    "createDate": "2021-08-18T00:00:00",
+                    "status": "Overdue",
+                    "displayName": "COVID-19 Non-replicating Viral Vector",
+                    "eligibleDate": "2021-08-11T00:00:00",
+                    "dueDate": "2021-08-11T00:00:00"
+                }
+            }
+        ],
+        "recommendations": [
+            {
+                "recommendationSetId": "5588012_145363549",
+                "diseaseEligibleDate": null,
+                "diseaseDueDate": null,
+                "agentEligibleDate": "2021-08-11T00:00:00",
+                "agentDueDate": "2021-08-11T00:00:00",
+                "status": "Overdue",
+                "targetDiseases": [],
+                "immunization": {
+                    "name": null,
+                    "immunizationAgents": [
+                        {
+                            "code": "29061000087103",
+                            "name": "COVID-19 Non-replicating Viral Vector",
+                            "lotNumber": "",
+                            "productName": ""
+                        }
+                    ]
+                }
+            },
+            {
+                "recommendationSetId": "5588012_145363549",
+                "diseaseEligibleDate": "2021-08-11T00:00:00",
+                "diseaseDueDate": "2021-08-11T00:00:00",
+                "agentEligibleDate": null,
+                "agentDueDate": null,
+                "status": "Overdue",
+                "targetDiseases": [
+                    {
+                        "code": "186747009",
+                        "name": "Coronavirus infection"
+                    }
+                ],
+                "immunization": {
+                    "name": null,
+                    "immunizationAgents": [
+                        {
+                            "code": "BCYSCT_AN035",
+                            "name": "COVID-19 Non-replicating Viral Vector",
+                            "lotNumber": "",
+                            "productName": ""
+                        }
+                    ]
+                }
+            }
+        ]
+    },
+    "totalResultCount": 1,
+    "pageIndex": null,
+    "pageSize": 0,
+    "resultStatus": 1,
+    "resultError": null
+}

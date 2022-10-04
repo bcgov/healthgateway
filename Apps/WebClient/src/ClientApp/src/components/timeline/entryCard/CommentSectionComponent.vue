@@ -15,12 +15,15 @@ import container from "@/plugins/container";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import { ILogger } from "@/services/interfaces";
 
-@Component({
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const options: any = {
     components: {
         Comment: CommentComponent,
         AddComment: AddCommentComponent,
     },
-})
+};
+
+@Component(options)
 export default class CommentSectionComponent extends Vue {
     @Prop()
     parentEntry!: TimelineEntry;

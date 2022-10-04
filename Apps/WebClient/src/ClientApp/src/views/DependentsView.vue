@@ -24,14 +24,17 @@ import { IDependentService, ILogger } from "@/services/interfaces";
 
 library.add(faUserPlus);
 
-@Component({
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const options: any = {
     components: {
         BreadcrumbComponent,
         LoadingComponent,
         DependentCardComponent,
         NewDependentComponent,
     },
-})
+};
+
+@Component(options)
 export default class DependentsView extends Vue {
     @Action("addError", { namespace: "errorBanner" })
     addError!: (params: {
@@ -168,60 +171,51 @@ export default class DependentsView extends Vue {
     <div>
         <BreadcrumbComponent :items="breadcrumbItems" />
         <LoadingComponent :is-loading="isLoading" />
-        <b-row>
-            <b-col class="col-12 column-wrapper">
-                <page-title title="Dependents">
+        <page-title title="Dependents">
+            <hg-button
+                id="add-dependent-button"
+                data-testid="addNewDependentBtn"
+                class="float-right"
+                variant="secondary"
+                @click="showModal()"
+            >
+                <hg-icon icon="user-plus" size="medium" class="mr-2" />
+                <span>Add</span>
+            </hg-button>
+            <b-popover
+                triggers="manual"
+                :show="showAddDependentTutorial"
+                target="add-dependent-button"
+                :placement="isMobileView ? 'bottom' : 'left'"
+                boundary="viewport"
+            >
+                <div>
                     <hg-button
-                        id="add-dependent-button"
-                        data-testid="addNewDependentBtn"
-                        class="float-right"
-                        variant="secondary"
-                        @click="showModal()"
+                        class="float-right text-dark p-0 ml-2"
+                        variant="icon"
+                        @click="dismissAddDependentTutorial()"
+                        >×</hg-button
                     >
-                        <hg-icon icon="user-plus" size="medium" class="mr-2" />
-                        <span>Add</span>
-                    </hg-button>
-                    <b-popover
-                        triggers="manual"
-                        :show="showAddDependentTutorial"
-                        target="add-dependent-button"
-                        :placement="isMobileView ? 'bottom' : 'left'"
-                        boundary="viewport"
-                    >
-                        <div>
-                            <hg-button
-                                class="float-right text-dark p-0 ml-2"
-                                variant="icon"
-                                @click="dismissAddDependentTutorial()"
-                                >×</hg-button
-                            >
-                        </div>
-                        <div data-testid="add-dependent-tutorial-popover">
-                            Add a dependent under 12 years old to get their
-                            health records.
-                        </div>
-                    </b-popover>
-                </page-title>
-                <h5 class="my-3">
-                    You can add your dependents under the age of
-                    {{ webClientConfig.maxDependentAge }} to view their health
-                    records. Make sure you include all given names exactly as
-                    shown on their BC Services Card.
-                </h5>
-                <b-row
-                    v-for="dependent in dependents"
-                    :key="dependent.hdid"
-                    class="mt-2"
-                >
-                    <b-col>
-                        <DependentCardComponent
-                            :dependent="dependent"
-                            @needs-update="needsUpdate"
-                        />
-                    </b-col>
-                </b-row>
-            </b-col>
-        </b-row>
+                </div>
+                <div data-testid="add-dependent-tutorial-popover">
+                    Add a dependent under 12 years old to get their health
+                    records.
+                </div>
+            </b-popover>
+        </page-title>
+        <h5 class="my-3">
+            You can add your dependents under the age of
+            {{ webClientConfig.maxDependentAge }} to view their health records.
+            Make sure you include all given names exactly as shown on their BC
+            Services Card.
+        </h5>
+        <DependentCardComponent
+            v-for="dependent in dependents"
+            :key="dependent.hdid"
+            :dependent="dependent"
+            class="mt-2"
+            @needs-update="needsUpdate"
+        />
         <NewDependentComponent
             ref="newDependentModal"
             @show="showModal"

@@ -23,17 +23,20 @@ interface QuickLinkFilter {
     module: EntryType;
 }
 
-@Component({
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const options: any = {
     components: {
         TooManyRequestsComponent,
     },
-})
+};
+
+@Component(options)
 export default class AddQuickLinkComponent extends Vue {
     @Action("setTooManyRequestsError", { namespace: "errorBanner" })
     setTooManyRequestsError!: (params: { key: string }) => void;
 
-    @Action("clearTooManyRequests", { namespace: "errorBanner" })
-    clearTooManyRequests!: () => void;
+    @Action("clearTooManyRequestsError", { namespace: "errorBanner" })
+    clearTooManyRequestsError!: () => void;
 
     @Action("updateQuickLinks", { namespace: "user" })
     updateQuickLinks!: (params: {
@@ -48,6 +51,9 @@ export default class AddQuickLinkComponent extends Vue {
 
     @Getter("webClient", { namespace: "config" })
     webClientConfig!: WebClientConfiguration;
+
+    @Getter("tooManyRequestsError", { namespace: "errorBanner" })
+    tooManyRequestsError!: string | undefined;
 
     @Getter("quickLinks", { namespace: "user" })
     quickLinks!: QuickLink[] | undefined;
@@ -94,6 +100,14 @@ export default class AddQuickLinkComponent extends Vue {
         );
     }
 
+    private get showImmunizationRecord(): boolean {
+        const preference =
+            this.user.preferences[
+                UserPreferenceType.HideImmunizationRecordQuickLink
+            ];
+        return preference?.value === "true";
+    }
+
     private created(): void {
         this.logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
     }
@@ -102,9 +116,15 @@ export default class AddQuickLinkComponent extends Vue {
         this.checkboxComponentKey++;
     }
 
-    private handleCancel(modalEvt: Event): void {
+    private clearErrors(): void {
         this.bannerError = null;
-        this.clearTooManyRequests();
+        if (this.tooManyRequestsError === "addQuickLinkModal") {
+            this.clearTooManyRequestsError();
+        }
+    }
+
+    private handleCancel(modalEvt: Event): void {
+        this.clearErrors();
 
         // Prevent modal from closing
         modalEvt.preventDefault();
@@ -120,8 +140,7 @@ export default class AddQuickLinkComponent extends Vue {
     }
 
     private async handleSubmit(modalEvt: Event): Promise<void> {
-        this.bannerError = null;
-        this.clearTooManyRequests();
+        this.clearErrors();
 
         // Prevent modal from closing
         modalEvt.preventDefault();
@@ -166,6 +185,24 @@ export default class AddQuickLinkComponent extends Vue {
                 );
             }
 
+            if (this.selectedQuickLinks.includes("immunization-record")) {
+                const preference = {
+                    ...this.user.preferences[
+                        UserPreferenceType.HideImmunizationRecordQuickLink
+                    ],
+                    value: "false",
+                };
+
+                promises.push(
+                    this.setUserPreference({ preference }).then(() => {
+                        this.selectedQuickLinks =
+                            this.selectedQuickLinks.filter(
+                                (link) => link !== "immunization-record"
+                            );
+                    })
+                );
+            }
+
             await PromiseUtility.withMinimumDelay(Promise.all(promises), 1000);
 
             // Hide the modal manually
@@ -205,7 +242,7 @@ export default class AddQuickLinkComponent extends Vue {
         v-model="isVisible"
         data-testid="add-quick-link-modal"
         content-class="mt-5"
-        title="Add a quick link to a record type"
+        title="Add a quick link"
         size="lg"
         header-bg-variant="primary"
         header-text-variant="light"
@@ -255,6 +292,20 @@ export default class AddQuickLinkComponent extends Vue {
                         value="bc-vaccine-card"
                     >
                         BC Vaccine Card
+                    </b-form-checkbox>
+                </b-col>
+            </b-row>
+            <b-row v-if="showImmunizationRecord">
+                <b-col cols="8" align-self="start">
+                    <b-form-checkbox
+                        id="immunization-record-filter"
+                        :key="checkboxComponentKey"
+                        v-model="selectedQuickLinks"
+                        data-testid="immunization-record-filter"
+                        name="immunization-record-filter"
+                        value="immunization-record"
+                    >
+                        Add Vaccines
                     </b-form-checkbox>
                 </b-col>
             </b-row>

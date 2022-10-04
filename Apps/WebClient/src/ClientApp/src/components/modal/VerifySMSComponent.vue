@@ -6,6 +6,7 @@ import { Action, Getter } from "vuex-class";
 
 import LoadingComponent from "@/components/LoadingComponent.vue";
 import TooManyRequestsComponent from "@/components/TooManyRequestsComponent.vue";
+import { ErrorSourceType, ErrorType } from "@/constants/errorType";
 import type { WebClientConfiguration } from "@/models/configData";
 import { DateWrapper } from "@/models/dateWrapper";
 import { instanceOfResultError, ResultError } from "@/models/errors";
@@ -14,16 +15,26 @@ import container from "@/plugins/container";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import { ILogger, IUserProfileService } from "@/services/interfaces";
 
-@Component({
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const options: any = {
     components: {
         LoadingComponent,
         VueCountdown,
         TooManyRequestsComponent,
     },
-})
+};
+
+@Component(options)
 export default class VerifySMSComponent extends Vue {
     @Prop()
     smsNumber!: string;
+
+    @Action("addError", { namespace: "errorBanner" })
+    addError!: (params: {
+        errorType: ErrorType;
+        source: ErrorSourceType;
+        traceId: string | undefined;
+    }) => void;
 
     @Action("setTooManyRequestsError", { namespace: "errorBanner" })
     setTooManyRequestsError!: (params: { key: string }) => void;
@@ -142,7 +153,7 @@ export default class VerifySMSComponent extends Vue {
                 }
             })
             .catch((err: ResultError) => {
-                this.logger.error(err);
+                this.logger.error(err.resultMessage);
                 if (err.statusCode === 429) {
                     this.setTooManyRequestsError({ key: "verifySmsModal" });
                 } else {
@@ -229,7 +240,10 @@ export default class VerifySMSComponent extends Vue {
             <b-col>
                 <form>
                     <TooManyRequestsComponent location="verifySmsModal" />
-                    <b-row v-if="error">
+                    <b-row
+                        v-if="error"
+                        data-testid="verifySMSModalUnexpectedErrorText"
+                    >
                         <b-col class="text-center">
                             An unexpected error has occurred. Please try
                             refreshing your browser or try again later.

@@ -46,11 +46,11 @@ namespace HealthGateway.Laboratory.Delegates
     public class RestLaboratoryDelegate : ILaboratoryDelegate
     {
         private const string LabConfigSectionKey = "Laboratory";
-
-        private readonly ILogger logger;
         private readonly IHttpClientService httpClientService;
         private readonly IHttpContextAccessor httpContextAccessor;
         private readonly LaboratoryConfig labConfig;
+
+        private readonly ILogger logger;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="RestLaboratoryDelegate"/> class.
@@ -101,11 +101,11 @@ namespace HealthGateway.Laboratory.Delegates
                     Uri endpoint = new(QueryHelpers.AddQueryString(endpointString, query));
                     HttpResponseMessage response = await client.GetAsync(endpoint).ConfigureAwait(true);
                     string payload = await response.Content.ReadAsStringAsync().ConfigureAwait(true);
-                    this.logger.LogTrace($"Response: {response}");
+                    this.logger.LogTrace("Response: {Response}", response);
                     switch (response.StatusCode)
                     {
                         case HttpStatusCode.OK:
-                            this.logger.LogTrace($"Response payload: {payload}");
+                            this.logger.LogTrace("Response payload: {Payload}", payload);
                             PhsaResult<List<PhsaCovid19Order>>? phsaResult = JsonSerializer.Deserialize<PhsaResult<List<PhsaCovid19Order>>>(payload);
                             if (phsaResult != null)
                             {
@@ -147,7 +147,7 @@ namespace HealthGateway.Laboratory.Delegates
                                 ResultMessage = $"Unable to connect to Labs Endpoint, HTTP Error {response.StatusCode}",
                                 ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.PHSA),
                             };
-                            this.logger.LogError($"Unable to connect to endpoint {endpoint}, HTTP Error {response.StatusCode}\n{payload}");
+                            this.logger.LogError("Unable to connect to endpoint {Endpoint}, HTTP Error {StatusCode}\n{Payload}", endpoint, response.StatusCode.ToString(), payload);
                             break;
                     }
                 }
@@ -160,7 +160,7 @@ namespace HealthGateway.Laboratory.Delegates
                         ResultMessage = $"Exception getting Covid19 Orders: {e}",
                         ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.PHSA),
                     };
-                    this.logger.LogError($"Unexpected exception in Get Covid19 Orders {e}");
+                    this.logger.LogError("Unexpected exception in Get Covid19 Orders {Exception}", e.ToString());
                 }
 
                 this.logger.LogDebug("Finished getting Laboratory Orders");
@@ -178,7 +178,7 @@ namespace HealthGateway.Laboratory.Delegates
                     ResultStatus = ResultType.Error,
                 };
 
-                this.logger.LogTrace($"Getting laboratory report... {id}");
+                this.logger.LogTrace("Getting laboratory report... {Id}", id);
                 using HttpClient client = this.httpClientService.CreateDefaultHttpClient();
                 client.DefaultRequestHeaders.Accept.Clear();
                 client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("bearer", bearerToken);
@@ -205,7 +205,7 @@ namespace HealthGateway.Laboratory.Delegates
 
                     HttpResponseMessage response = await client.GetAsync(endpoint).ConfigureAwait(true);
                     string payload = await response.Content.ReadAsStringAsync().ConfigureAwait(true);
-                    this.logger.LogTrace($"Get laboratory report response payload: {payload}");
+                    this.logger.LogTrace("Get laboratory report response payload: {Payload}", payload);
                     switch (response.StatusCode)
                     {
                         case HttpStatusCode.OK:
@@ -252,7 +252,7 @@ namespace HealthGateway.Laboratory.Delegates
                                 ResultMessage = $"Unable to connect to Labs Endpoint, HTTP Error {response.StatusCode}",
                                 ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.PHSA),
                             };
-                            this.logger.LogError($"Unable to connect to endpoint {endpoint}, HTTP Error {response.StatusCode}\n{payload}");
+                            this.logger.LogError("Unable to connect to endpoint {Endpoint}, HTTP Error {StatusCode}\n{Payload}", endpoint, response.StatusCode.ToString(), payload);
                             break;
                     }
                 }
@@ -265,7 +265,7 @@ namespace HealthGateway.Laboratory.Delegates
                         ResultMessage = $"Exception getting Lab Report: {e}",
                         ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.PHSA),
                     };
-                    this.logger.LogError($"Unexpected exception in Lab Report {e}");
+                    this.logger.LogError("Unexpected exception in Lab Report {Exception}", e.ToString());
                 }
 
                 this.logger.LogDebug("Finished getting Laboratory Report");
@@ -299,11 +299,11 @@ namespace HealthGateway.Laboratory.Delegates
                 Uri endpoint = new(QueryHelpers.AddQueryString(endpointString, query));
                 HttpResponseMessage response = await client.GetAsync(endpoint).ConfigureAwait(true);
                 string payload = await response.Content.ReadAsStringAsync().ConfigureAwait(true);
-                this.logger.LogTrace($"Response: {response}");
+                this.logger.LogTrace("Response: {Response}", response);
                 switch (response.StatusCode)
                 {
                     case HttpStatusCode.OK:
-                        this.logger.LogTrace($"Response payload: {payload}");
+                        this.logger.LogTrace("Response payload: {Payload}", payload);
                         PhsaResult<PhsaLaboratorySummary>? phsaResult = JsonSerializer.Deserialize<PhsaResult<PhsaLaboratorySummary>>(payload);
                         if (phsaResult != null)
                         {
@@ -345,7 +345,7 @@ namespace HealthGateway.Laboratory.Delegates
                             ResultMessage = $"Unable to connect to Labs Endpoint, HTTP Error {response.StatusCode}",
                             ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.PHSA),
                         };
-                        this.logger.LogError($"Unable to connect to endpoint {endpoint}, HTTP Error {response.StatusCode}\n{payload}");
+                        this.logger.LogError("Unable to connect to endpoint {Endpoint}, HTTP Error {StatusCode}\n{Payload}", endpoint, response.StatusCode.ToString(), payload);
                         break;
                 }
             }
@@ -358,7 +358,7 @@ namespace HealthGateway.Laboratory.Delegates
                     ResultMessage = $"Exception getting laboratory summary: {e}",
                     ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.PHSA),
                 };
-                this.logger.LogError($"Unexpected exception in getting laboratory summary {e}");
+                this.logger.LogError("Unexpected exception in getting laboratory summary {Exception}", e.ToString());
             }
 
             this.logger.LogDebug("Finished getting Laboratory Orders");
@@ -370,7 +370,7 @@ namespace HealthGateway.Laboratory.Delegates
         public async Task<RequestResult<PhsaResult<IEnumerable<CovidTestResult>>>> GetPublicTestResults(string accessToken, string phn, DateOnly dateOfBirth, DateOnly collectionDate)
         {
             using Activity? activity = Source.StartActivity();
-            this.logger.LogDebug($"Getting public COVID-19 test results {phn} {dateOfBirth} {collectionDate}...");
+            this.logger.LogDebug("Getting public COVID-19 test results {Phn} {DateOfBirth} {CollectionDate}...", phn, dateOfBirth, collectionDate);
 
             HttpContext? httpContext = this.httpContextAccessor.HttpContext;
             string? ipAddress = httpContext?.Connection.RemoteIpAddress?.MapToIPv4().ToString();
@@ -401,12 +401,12 @@ namespace HealthGateway.Laboratory.Delegates
 
                 HttpResponseMessage response = await client.PostAsync(endpoint, content).ConfigureAwait(true);
                 string payload = await response.Content.ReadAsStringAsync().ConfigureAwait(true);
-                this.logger.LogTrace($"Response: {response}");
+                this.logger.LogTrace("Response: {Response}", response);
 
                 switch (response.StatusCode)
                 {
                     case HttpStatusCode.OK:
-                        this.logger.LogTrace($"Response payload: {payload}");
+                        this.logger.LogTrace("Response payload: {Payload}", payload);
                         PhsaResult<IEnumerable<CovidTestResult>>? phsaResult = JsonSerializer.Deserialize<PhsaResult<IEnumerable<CovidTestResult>>>(payload);
                         if (phsaResult != null && phsaResult.Result != null)
                         {
@@ -437,7 +437,7 @@ namespace HealthGateway.Laboratory.Delegates
                             ResultMessage = $"Unable to connect to Laboratory PublicCovidTestsEndPoint, HTTP Error {response.StatusCode}",
                             ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.PHSA),
                         };
-                        this.logger.LogError($"Unable to connect to endpoint {endpointString}, HTTP Error {response.StatusCode}\n{payload}");
+                        this.logger.LogError("Unable to connect to endpoint {EndpointString}, HTTP Error {StatusCode}\n{Payload}", endpointString, response.StatusCode.ToString(), payload);
                         break;
                 }
             }
@@ -450,10 +450,10 @@ namespace HealthGateway.Laboratory.Delegates
                     ResultMessage = $"Exception getting public COVID-19 test results: {e}",
                     ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.PHSA),
                 };
-                this.logger.LogError($"Unexpected exception retrieving public COVID-19 test results {e}");
+                this.logger.LogError("Unexpected exception retrieving public COVID-19 test results {Exception}", e.ToString());
             }
 
-            this.logger.LogDebug($"Finished getting public COVID-19 test results {phn} {dateOfBirth} {collectionDate}...");
+            this.logger.LogDebug("Finished getting public COVID-19 test results {Phn} {DateOfBirth} {CollectionDate}...", phn, dateOfBirth, collectionDate);
             return retVal;
         }
     }
