@@ -72,9 +72,6 @@ export default class LandingView extends Vue {
     @Getter("isSidebarAvailable", { namespace: "navbar" })
     isSidebarAvailable!: boolean;
 
-    @Getter("userIsRegistered", { namespace: "user" })
-    userIsRegistered!: boolean;
-
     private get isVaccinationBannerEnabled(): boolean {
         return false;
     }
