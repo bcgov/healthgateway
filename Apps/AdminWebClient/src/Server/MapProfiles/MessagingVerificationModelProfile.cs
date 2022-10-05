@@ -13,28 +13,24 @@
 //  See the License for the specific language governing permissions and
 //  limitations under the License.
 // -------------------------------------------------------------------------
-namespace HealthGateway.Common.Data.ViewModels
+namespace HealthGateway.Admin.MapProfiles
 {
-    using System;
+    using AutoMapper;
+    using HealthGateway.Common.Data.Models;
+    using HealthGateway.Common.Data.ViewModels;
 
     /// <summary>
-    /// Represents a Support User.
+    /// An AutoMapper profile class which defines mapping between DB and UI Models.
     /// </summary>
-    public class SupportUser
+    public class MessagingVerificationModelProfile : Profile
     {
         /// <summary>
-        /// Gets or sets the patient's PHN.
+        /// Initializes a new instance of the <see cref="MessagingVerificationModelProfile"/> class.
         /// </summary>
-        public string PersonalHealthNumber { get; set; } = string.Empty;
-
-        /// <summary>
-        /// Gets or sets the user's hdId.
-        /// </summary>
-        public string HdId { get; set; } = string.Empty;
-
-        /// <summary>
-        /// Gets or sets the user's last login date time.
-        /// </summary>
-        public DateTime LastLoginDateTime { get; set; }
+        public MessagingVerificationModelProfile()
+        {
+            this.CreateMap<MessagingVerification, MessagingVerificationModel>()
+                .ReverseMap();
+        }
     }
 }
