@@ -19,6 +19,7 @@ namespace HealthGateway.Admin.Services
     using System.Collections.Generic;
     using System.Linq;
     using System.Threading.Tasks;
+    using AutoMapper;
     using HealthGateway.Common.Constants;
     using HealthGateway.Common.Data.Constants;
     using HealthGateway.Common.Data.Models;
@@ -28,107 +29,82 @@ namespace HealthGateway.Admin.Services
     using HealthGateway.Common.Services;
     using HealthGateway.Database.Constants;
     using HealthGateway.Database.Delegates;
+    using HealthGateway.Database.Models;
     using HealthGateway.Database.Wrapper;
     using Microsoft.IdentityModel.Tokens;
     using UserQueryType = HealthGateway.Admin.Constants.UserQueryType;
 
-    /// <inheritdoc />
+    /// <inheritdoc/>
     public class SupportService : ISupportService
     {
+        private readonly IMapper autoMapper;
         private readonly IMessagingVerificationDelegate messagingVerificationDelegate;
         private readonly IPatientService patientService;
+        private readonly IUserProfileDelegate userProfileDelegate;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="SupportService" /> class.
+        /// Initializes a new instance of the <see cref="SupportService"/> class.
         /// </summary>
+        /// <param name="userProfileDelegate">The user profile delegate to interact with the DB.</param>
         /// <param name="messagingVerificationDelegate">The Messaging verification delegate to interact with the DB.</param>
         /// <param name="patientService">The patient service to lookup HDIDs by PHN.</param>
+        /// <param name="autoMapper">The injected automapper provider.</param>
         public SupportService(
+            IUserProfileDelegate userProfileDelegate,
             IMessagingVerificationDelegate messagingVerificationDelegate,
-            IPatientService patientService)
+            IPatientService patientService,
+            IMapper autoMapper)
         {
+            this.userProfileDelegate = userProfileDelegate;
             this.messagingVerificationDelegate = messagingVerificationDelegate;
             this.patientService = patientService;
+            this.autoMapper = autoMapper;
         }
 
-        /// <inheritdoc />
-        public RequestResult<IEnumerable<MessagingVerificationModel>> GetMessageVerifications(UserQueryType queryType, string queryString)
+        /// <inheritdoc/>
+        public RequestResult<IEnumerable<MessagingVerificationModel>> GetMessageVerifications(string hdid)
         {
-            RequestResult<IEnumerable<MessagingVerificationModel>> retVal = new()
+            DBResult<IEnumerable<MessagingVerification>> dbResult = this.messagingVerificationDelegate.GetUserMessageVerifications(hdid);
+            IList<MessagingVerificationModel> verificationModels = this.autoMapper.Map<IList<MessagingVerificationModel>>(dbResult.Payload);
+            RequestResult<IEnumerable<MessagingVerificationModel>> result = new()
             {
                 ResultStatus = ResultType.Error,
-                ResourcePayload = Enumerable.Empty<MessagingVerificationModel>(),
+                ResourcePayload = verificationModels,
+            };
+            return result;
+        }
+
+        /// <inheritdoc/>
+        public RequestResult<IEnumerable<SupportUser>> GetSupportUsers(UserQueryType queryType, string queryString)
+        {
+            RequestResult<IEnumerable<SupportUser>> result = new()
+            {
+                ResultStatus = ResultType.Error,
+                ResourcePayload = Enumerable.Empty<SupportUser>(),
             };
 
-            DBResult<IEnumerable<MessagingVerification>>? dbResult = null;
-            string phn = string.Empty;
             switch (queryType)
             {
                 case UserQueryType.Phn:
-                    RequestResult<PatientModel> patientResult = Task.Run(async () => await this.patientService.GetPatient(queryString, PatientIdentifierType.PHN).ConfigureAwait(true)).Result;
-                    if (patientResult.ResultStatus == ResultType.Success && patientResult.ResourcePayload != null)
-                    {
-                        string hdid = patientResult.ResourcePayload.HdId;
-                        phn = patientResult.ResourcePayload.PersonalHealthNumber;
-                        dbResult = this.messagingVerificationDelegate.GetUserMessageVerifications(Database.Constants.UserQueryType.HDID, hdid);
-                        if (!patientResult.ResourcePayload.ResponseCode.IsNullOrEmpty())
-                        {
-                            retVal.ResultError = GetWarningMessageForResponseCode(patientResult.ResourcePayload.ResponseCode);
-                        }
-                    }
-                    else
-                    {
-                        retVal.ResultError = patientResult.ResultError;
-                    }
-
+                    this.PopulateSupportUser(result, PatientIdentifierType.PHN, queryString);
                     break;
                 case UserQueryType.Email:
-                    dbResult = this.messagingVerificationDelegate.GetUserMessageVerifications(Database.Constants.UserQueryType.Email, queryString);
+                    this.PopulateSupportUser(result, Database.Constants.UserQueryType.Email, queryString);
                     break;
                 case UserQueryType.Sms:
-                    dbResult = this.messagingVerificationDelegate.GetUserMessageVerifications(Database.Constants.UserQueryType.SMS, queryString);
+                    this.PopulateSupportUser(result, Database.Constants.UserQueryType.SMS, queryString);
                     break;
                 case UserQueryType.Hdid:
-                    RequestResult<PatientModel> patientResultHdid = Task.Run(async () => await this.patientService.GetPatient(queryString).ConfigureAwait(true)).Result;
-                    if (patientResultHdid.ResultStatus == ResultType.Success && patientResultHdid.ResourcePayload != null)
-                    {
-                        phn = patientResultHdid.ResourcePayload.PersonalHealthNumber;
-                        dbResult = this.messagingVerificationDelegate.GetUserMessageVerifications(Database.Constants.UserQueryType.HDID, queryString);
-                        if (!patientResultHdid.ResourcePayload.ResponseCode.IsNullOrEmpty())
-                        {
-                            retVal.ResultError = GetWarningMessageForResponseCode(patientResultHdid.ResourcePayload.ResponseCode);
-                        }
-                    }
-                    else
-                    {
-                        retVal.ResultError = patientResultHdid.ResultError;
-                    }
-
+                    this.PopulateSupportUser(result, PatientIdentifierType.HDID, queryString);
                     break;
             }
 
-            if (dbResult != null && dbResult.Status == DBStatusCode.Read)
+            if (result.ResultError != null)
             {
-                retVal.ResultStatus = ResultType.Success;
-                if (retVal.ResultError != null)
-                {
-                    retVal.ResultStatus = ResultType.ActionRequired;
-                }
-
-                List<MessagingVerificationModel> results = new();
-                results.AddRange(dbResult.Payload.Select(MessagingVerificationModel.CreateFromDbModel));
-                if (queryType == UserQueryType.Hdid || queryType == UserQueryType.Phn)
-                {
-                    foreach (MessagingVerificationModel item in results)
-                    {
-                        item.PersonalHealthNumber = phn;
-                    }
-                }
-
-                retVal.ResourcePayload = results;
+                result.ResultStatus = ResultType.ActionRequired;
             }
 
-            return retVal;
+            return result;
         }
 
         private static RequestResultError GetWarningMessageForResponseCode(string resourcePayloadResponseCode)
@@ -143,6 +119,47 @@ namespace HealthGateway.Admin.Services
             };
 
             return error;
+        }
+
+        private void PopulateSupportUser(RequestResult<IEnumerable<SupportUser>> result, PatientIdentifierType patientIdentifierType, string queryString)
+        {
+            RequestResult<PatientModel> patientResult = Task.Run(async () => await this.patientService.GetPatient(queryString, patientIdentifierType).ConfigureAwait(true)).Result;
+            if (patientResult.ResultStatus == ResultType.Success && patientResult.ResourcePayload != null)
+            {
+                List<SupportUser> supportUsers = new();
+                DBResult<UserProfile> dbResult = this.userProfileDelegate.GetUserProfile(patientResult.ResourcePayload.HdId);
+                if (dbResult.Status == DBStatusCode.Read)
+                {
+                    SupportUser supportUser = this.autoMapper.Map<SupportUser>(dbResult.Payload);
+                    supportUser.PersonalHealthNumber = patientResult.ResourcePayload.PersonalHealthNumber;
+                    supportUsers.Add(supportUser);
+                    result.ResourcePayload = supportUsers;
+                    result.ResultStatus = ResultType.Success;
+                }
+                else
+                {
+                    result.ResultError = new()
+                    {
+                        ResultMessage = $"Unable to find user profile for hdid: {patientResult.ResourcePayload.HdId}",
+                    };
+                }
+
+                if (!patientResult.ResourcePayload.ResponseCode.IsNullOrEmpty())
+                {
+                    result.ResultError = GetWarningMessageForResponseCode(patientResult.ResourcePayload.ResponseCode);
+                }
+            }
+            else
+            {
+                result.ResultError = patientResult.ResultError;
+            }
+        }
+
+        private void PopulateSupportUser(RequestResult<IEnumerable<SupportUser>> result, Database.Constants.UserQueryType queryType, string queryString)
+        {
+            DBResult<List<UserProfile>> dbResult = this.userProfileDelegate.GetUserProfiles(queryType, queryString);
+            result.ResourcePayload = this.autoMapper.Map<IEnumerable<SupportUser>>(dbResult.Payload);
+            result.ResultStatus = ResultType.Success;
         }
     }
 }
