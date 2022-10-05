@@ -57,14 +57,6 @@ namespace HealthGateway.Admin.Server.Services
         int GetRecurrentUserCount(int dayCount, string startPeriod, string endPeriod, int timeOffset);
 
         /// <summary>
-        /// Retrieves a list of message verifications matching the query.
-        /// </summary>
-        /// <param name="queryType">The type of query to perform.</param>
-        /// <param name="queryString">The value to query on.</param>
-        /// <returns>A list of users matching the query.</returns>
-        RequestResult<IEnumerable<MessagingVerificationModel>> GetMessageVerifications(UserQueryType queryType, string queryString);
-
-        /// <summary>
         /// Retrieves the ratings summary.
         /// </summary>
         /// <param name="startPeriod">The period start to calculate the summary.</param>
