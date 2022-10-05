@@ -60,11 +60,6 @@
                 </MudTableSortLabel>
             </MudTh>
             <MudTh>
-                <MudTableSortLabel SortBy="new Func<MessagingVerificationRow, object>(x => x.PersonalHealthNumber)">
-                    PHN
-                </MudTableSortLabel>
-            </MudTh>
-            <MudTh>
                 <MudTableSortLabel SortBy="new Func<MessagingVerificationRow, object>(x => x.EmailOrSms)">
                     Email or SMS
                 </MudTableSortLabel>
@@ -88,7 +83,6 @@
         </HeaderContent>
         <RowTemplate>
             <MudTd DataLabel="HDID" data-testid=@($"message-verification-table-hdid-{context.Hdid}")>@context.Hdid</MudTd>
-            <MudTd DataLabel="PHN" data-testid=@($"message-verification-table-phn-{context.Hdid}")>@context.PersonalHealthNumber</MudTd>
             <MudTd DataLabel="Email or SMS" data-testid=@($"message-verification-table-email-sms-{context.Hdid}")>@context.EmailOrSms</MudTd>
             <MudTd DataLabel="Verified" data-testid=@($"message-verification-table-verified-{context.Hdid}")>@context.Verified</MudTd>
             <MudTd DataLabel="Verification Date" data-testid=@($"message-verification-table-verification-date-{context.Hdid}")>@context.VerificationDate</MudTd>

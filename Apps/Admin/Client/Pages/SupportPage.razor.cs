@@ -145,7 +145,6 @@ namespace HealthGateway.Admin.Client.Pages
             public MessagingVerificationRow(MessagingVerificationModel model)
             {
                 this.Hdid = model.UserProfileId ?? string.Empty;
-                this.PersonalHealthNumber = model.PersonalHealthNumber ?? string.Empty;
                 this.EmailOrSms = model.VerificationType switch
                 {
                     MessagingVerificationType.Email => model.Email?.To ?? "N/A",
@@ -161,8 +160,6 @@ namespace HealthGateway.Admin.Client.Pages
             }
 
             public string Hdid { get; }
-
-            public string PersonalHealthNumber { get; }
 
             public string EmailOrSms { get; }
 
