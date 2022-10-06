@@ -22,7 +22,8 @@ export default class AppErrorView extends Vue {
             Please try again later.
         </b-alert>
         <b-alert v-else show variant="danger" data-testid="app-error">
-            Unable to load application.
+            Unable to load application. Please try refreshing the page or come
+            back later.
         </b-alert>
     </div>
 </template>
