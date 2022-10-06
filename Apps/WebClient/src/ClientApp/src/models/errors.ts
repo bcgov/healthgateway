@@ -38,3 +38,8 @@ export function instanceOfResultError(object: any): object is ResultError {
         "resultMessage" in object
     );
 }
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export function isTooManyRequestsError(object: any): boolean {
+    return instanceOfResultError(object) && object.statusCode === 429;
+}

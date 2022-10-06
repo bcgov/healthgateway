@@ -22,7 +22,7 @@ import { ErrorSourceType, ErrorType } from "@/constants/errorType";
 import BreadcrumbItem from "@/models/breadcrumbItem";
 import type { WebClientConfiguration } from "@/models/configData";
 import { DateWrapper } from "@/models/dateWrapper";
-import { instanceOfResultError, ResultError } from "@/models/errors";
+import { isTooManyRequestsError, ResultError } from "@/models/errors";
 import PatientData, { Address } from "@/models/patientData";
 import User, { OidcUserInfo } from "@/models/user";
 import UserProfile from "@/models/userProfile";
@@ -281,7 +281,7 @@ export default class ProfileView extends Vue {
                 this.logger.error(
                     `Error loading profile: ${error.resultMessage}`
                 );
-                if (instanceOfResultError(error) && error.statusCode === 429) {
+                if (isTooManyRequestsError(error)) {
                     this.setTooManyRequestsError({ key: "page" });
                 } else {
                     this.addError({
@@ -408,7 +408,7 @@ export default class ProfileView extends Vue {
                 this.smsVerified = this.user.verifiedSMS;
             })
             .catch((error) => {
-                if (instanceOfResultError(error) && error.statusCode === 429) {
+                if (isTooManyRequestsError(error)) {
                     this.setTooManyRequestsWarning({ key: "page" });
                 } else {
                     this.addError({
@@ -434,10 +434,7 @@ export default class ProfileView extends Vue {
                 this.$v.$reset();
                 this.showCheckEmailAlert = !this.isEmptyEmail;
                 this.retrieveProfile().catch((error) => {
-                    if (
-                        instanceOfResultError(error) &&
-                        error.statusCode === 429
-                    ) {
+                    if (isTooManyRequestsError(error)) {
                         this.setTooManyRequestsWarning({ key: "page" });
                     } else {
                         this.addError({
@@ -489,10 +486,7 @@ export default class ProfileView extends Vue {
                 this.$v.$reset();
 
                 this.retrieveProfile().catch((error) => {
-                    if (
-                        instanceOfResultError(error) &&
-                        error.statusCode === 429
-                    ) {
+                    if (isTooManyRequestsError(error)) {
                         this.setTooManyRequestsWarning({ key: "page" });
                     } else {
                         this.addError({
@@ -504,7 +498,7 @@ export default class ProfileView extends Vue {
                 });
             })
             .catch((error) => {
-                if (instanceOfResultError(error) && error.statusCode === 429) {
+                if (isTooManyRequestsError(error)) {
                     this.setTooManyRequestsError({ key: "page" });
                 } else {
                     this.addError({

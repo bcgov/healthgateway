@@ -8,7 +8,7 @@ import { EntryType, entryTypeMap } from "@/constants/entryType";
 import { ErrorSourceType, ErrorType } from "@/constants/errorType";
 import UserPreferenceType from "@/constants/userPreferenceType";
 import type { WebClientConfiguration } from "@/models/configData";
-import { BannerError, instanceOfResultError } from "@/models/errors";
+import { BannerError, isTooManyRequestsError } from "@/models/errors";
 import { QuickLink } from "@/models/quickLink";
 import User from "@/models/user";
 import { UserPreference } from "@/models/userPreference";
@@ -209,7 +209,7 @@ export default class AddQuickLinkComponent extends Vue {
             await this.$nextTick();
             this.hideModal();
         } catch (error) {
-            if (instanceOfResultError(error) && error.statusCode === 429) {
+            if (isTooManyRequestsError(error)) {
                 this.setTooManyRequestsError({ key: "addQuickLinkModal" });
             } else {
                 this.bannerError = ErrorTranslator.toBannerError(
