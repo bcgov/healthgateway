@@ -64,7 +64,7 @@ namespace HealthGateway.Database.Models
         public DateTime? ClosedDateTime { get; set; }
 
         /// <summary>
-        /// Gets or sets the External Identity Management identifer for the user.
+        /// Gets or sets the External Identity Management identifier for the user.
         /// </summary>
         public Guid? IdentityManagementId { get; set; }
 
@@ -79,6 +79,12 @@ namespace HealthGateway.Database.Models
         /// </summary>
         [MaxLength(44)]
         public string? EncryptionKey { get; set; }
+
+        /// <summary>
+        /// Gets or sets the users year of birth.
+        /// </summary>
+        [MaxLength(4)]
+        public string? YearOfBirth { get; set; }
 
         /// <summary>
         /// Gets or sets the id.
