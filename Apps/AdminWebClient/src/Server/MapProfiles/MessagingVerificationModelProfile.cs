@@ -13,25 +13,24 @@
 //  See the License for the specific language governing permissions and
 //  limitations under the License.
 // -------------------------------------------------------------------------
-namespace HealthGateway.Admin.Server.MapProfiles
+namespace HealthGateway.Admin.MapProfiles
 {
     using AutoMapper;
-    using HealthGateway.Admin.Common.Models;
+    using HealthGateway.Common.Data.Models;
     using HealthGateway.Common.Data.ViewModels;
-    using HealthGateway.Database.Models;
 
     /// <summary>
     /// An AutoMapper profile class which defines mapping between DB and UI Models.
     /// </summary>
-    public class SupportUserProfile : Profile
+    public class MessagingVerificationModelProfile : Profile
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="SupportUserProfile"/> class.
+        /// Initializes a new instance of the <see cref="MessagingVerificationModelProfile"/> class.
         /// </summary>
-        public SupportUserProfile()
+        public MessagingVerificationModelProfile()
         {
-            this.CreateMap<UserProfile, SupportUser>()
-                .ForMember(dest => dest.Hdid, opt => opt.MapFrom(src => src.HdId))
+            this.CreateMap<MessagingVerification, MessagingVerificationModel>()
+                .ForMember(dest => dest.Email, opt => opt.MapFrom(src => src.Email!.To))
                 .ReverseMap();
         }
     }

@@ -13,7 +13,7 @@
 //  See the License for the specific language governing permissions and
 //  limitations under the License.
 // -------------------------------------------------------------------------
-namespace HealthGateway.Admin.Services
+namespace HealthGateway.Admin.Server.Services
 {
     using System;
     using System.Collections.Generic;
@@ -32,15 +32,15 @@ namespace HealthGateway.Admin.Services
     using HealthGateway.Database.Models;
     using HealthGateway.Database.Wrapper;
     using Microsoft.IdentityModel.Tokens;
-    using UserQueryType = HealthGateway.Admin.Constants.UserQueryType;
+    using UserQueryType = HealthGateway.Admin.Common.Constants.UserQueryType;
 
-    /// <inheritdoc/>
+    /// <inheritdoc />
     public class SupportService : ISupportService
     {
-        private readonly IMapper autoMapper;
+        private readonly IUserProfileDelegate userProfileDelegate;
         private readonly IMessagingVerificationDelegate messagingVerificationDelegate;
         private readonly IPatientService patientService;
-        private readonly IUserProfileDelegate userProfileDelegate;
+        private readonly IMapper autoMapper;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="SupportService"/> class.
@@ -61,20 +61,20 @@ namespace HealthGateway.Admin.Services
             this.autoMapper = autoMapper;
         }
 
-        /// <inheritdoc/>
+        /// <inheritdoc />
         public RequestResult<IEnumerable<MessagingVerificationModel>> GetMessageVerifications(string hdid)
         {
             DBResult<IEnumerable<MessagingVerification>> dbResult = this.messagingVerificationDelegate.GetUserMessageVerifications(hdid);
             IList<MessagingVerificationModel> verificationModels = this.autoMapper.Map<IList<MessagingVerificationModel>>(dbResult.Payload);
             RequestResult<IEnumerable<MessagingVerificationModel>> result = new()
             {
-                ResultStatus = ResultType.Error,
+                ResultStatus = ResultType.Success,
                 ResourcePayload = verificationModels,
             };
             return result;
         }
 
-        /// <inheritdoc/>
+        /// <inheritdoc />
         public RequestResult<IEnumerable<SupportUser>> GetSupportUsers(UserQueryType queryType, string queryString)
         {
             RequestResult<IEnumerable<SupportUser>> result = new()

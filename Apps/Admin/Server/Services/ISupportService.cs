@@ -13,14 +13,14 @@
 //  See the License for the specific language governing permissions and
 //  limitations under the License.
 // -------------------------------------------------------------------------
-namespace HealthGateway.Admin.Services
+namespace HealthGateway.Admin.Server.Services
 {
     using System.Collections.Generic;
-    using HealthGateway.Admin.Constants;
+    using HealthGateway.Admin.Common.Constants;
     using HealthGateway.Common.Data.ViewModels;
 
     /// <summary>
-    /// Service that provides functionality for the admin support page.
+    /// Service that provides functionality to admin support.
     /// </summary>
     public interface ISupportService
     {

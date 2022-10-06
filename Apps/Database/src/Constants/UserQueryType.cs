@@ -21,11 +21,6 @@ namespace HealthGateway.Database.Constants
     public enum UserQueryType
     {
         /// <summary>
-        /// Query by the directed identifer.
-        /// </summary>
-        HDID,
-
-        /// <summary>
         /// Query by the Email.
         /// </summary>
         Email,

@@ -72,6 +72,7 @@ namespace HealthGateway.Admin.Server
             services.AddTransient<ICommunicationService, CommunicationService>();
             services.AddTransient<ICsvExportService, CsvExportService>();
             services.AddTransient<IInactiveUserService, InactiveUserService>();
+            services.AddTransient<ISupportService, SupportService>();
 
             // Add HG Delegates
             services.AddTransient<IMessagingVerificationDelegate, DBMessagingVerificationDelegate>();

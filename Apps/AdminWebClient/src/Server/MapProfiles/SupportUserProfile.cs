@@ -13,10 +13,9 @@
 //  See the License for the specific language governing permissions and
 //  limitations under the License.
 // -------------------------------------------------------------------------
-namespace HealthGateway.Admin.Server.MapProfiles
+namespace HealthGateway.Admin.MapProfiles
 {
     using AutoMapper;
-    using HealthGateway.Admin.Common.Models;
     using HealthGateway.Common.Data.ViewModels;
     using HealthGateway.Database.Models;
 

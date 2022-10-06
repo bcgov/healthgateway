@@ -145,10 +145,9 @@ namespace HealthGateway.Admin.Client.Pages
             public MessagingVerificationRow(MessagingVerificationModel model)
             {
                 this.Hdid = model.UserProfileId ?? string.Empty;
-                this.PersonalHealthNumber = model.PersonalHealthNumber ?? string.Empty;
                 this.EmailOrSms = model.VerificationType switch
                 {
-                    MessagingVerificationType.Email => model.Email?.To ?? "N/A",
+                    MessagingVerificationType.Email => model.Email ?? "N/A",
                     _ => model.SMSNumber ?? "N/A",
                 };
                 this.Verified = model.Validated ? "true" : "false";
@@ -161,8 +160,6 @@ namespace HealthGateway.Admin.Client.Pages
             }
 
             public string Hdid { get; }
-
-            public string PersonalHealthNumber { get; }
 
             public string EmailOrSms { get; }
 
