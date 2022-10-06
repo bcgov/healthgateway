@@ -147,7 +147,7 @@ namespace HealthGateway.Admin.Client.Pages
                 this.Hdid = model.UserProfileId ?? string.Empty;
                 this.EmailOrSms = model.VerificationType switch
                 {
-                    MessagingVerificationType.Email => model.Email?.To ?? "N/A",
+                    MessagingVerificationType.Email => model.Email ?? "N/A",
                     _ => model.SMSNumber ?? "N/A",
                 };
                 this.Verified = model.Validated ? "true" : "false";

@@ -30,6 +30,7 @@ namespace HealthGateway.Admin.MapProfiles
         public SupportUserProfile()
         {
             this.CreateMap<UserProfile, SupportUser>()
+                .ForMember(dest => dest.Hdid, opt => opt.MapFrom(src => src.HdId))
                 .ReverseMap();
         }
     }

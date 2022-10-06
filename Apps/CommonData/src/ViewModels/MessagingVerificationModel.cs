@@ -50,7 +50,7 @@ namespace HealthGateway.Common.Data.ViewModels
         /// Gets or sets the associated email for this verification.
         /// Required if the VerificationType = MessagingVerificationType.Email.
         /// </summary>
-        public Email? Email { get; set; }
+        public string? Email { get; set; }
 
         /// <summary>
         /// Gets or sets the email invite key.

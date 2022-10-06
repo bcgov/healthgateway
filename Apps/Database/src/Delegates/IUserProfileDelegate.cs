@@ -69,7 +69,7 @@ namespace HealthGateway.Database.Delegates
         DBResult<List<UserProfile>> GetUserProfiles(IList<string> hdIds);
 
         /// <summary>
-        /// Fetches Hdid from the database.
+        /// Fetches UserProfile from the database.
         /// </summary>
         /// <param name="queryType">The type of query to perform.</param>
         /// <param name="queryString">The value to query on.</param>

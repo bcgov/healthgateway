@@ -28,9 +28,9 @@ namespace HealthGateway.Common.Data.ViewModels
         public string PersonalHealthNumber { get; set; } = string.Empty;
 
         /// <summary>
-        /// Gets or sets the user's hdId.
+        /// Gets or sets the user's hdid.
         /// </summary>
-        public string HdId { get; set; } = string.Empty;
+        public string Hdid { get; set; } = string.Empty;
 
         /// <summary>
         /// Gets or sets the user's last login date time.

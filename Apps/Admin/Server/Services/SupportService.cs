@@ -68,7 +68,7 @@ namespace HealthGateway.Admin.Server.Services
             IList<MessagingVerificationModel> verificationModels = this.autoMapper.Map<IList<MessagingVerificationModel>>(dbResult.Payload);
             RequestResult<IEnumerable<MessagingVerificationModel>> result = new()
             {
-                ResultStatus = ResultType.Error,
+                ResultStatus = ResultType.Success,
                 ResourcePayload = verificationModels,
             };
             return result;

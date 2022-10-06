@@ -43,7 +43,7 @@ namespace HealthGateway.Admin.Server.Controllers
         }
 
         /// <summary>
-        /// Retrieves a list of support users matching the query.
+        /// Retrieves a list of users matching the query.
         /// </summary>
         /// <param name="queryType">The type of query to perform.</param>
         /// <param name="queryString">The value to query on.</param>
