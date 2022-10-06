@@ -93,9 +93,6 @@ export default class ReportsView extends Vue {
         traceId: string | undefined;
     }) => void;
 
-    @Action("retrievePatientData", { namespace: "user" })
-    retrievePatientData!: () => Promise<void>;
-
     @Action("setTooManyRequestsError", { namespace: "errorBanner" })
     setTooManyRequestsError!: (params: { key: string }) => void;
 
@@ -188,7 +185,6 @@ export default class ReportsView extends Vue {
 
     private created(): void {
         this.logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
-        this.retrievePatientData();
 
         if (this.config.modules["Medication"]) {
             this.reportTypeOptions.push({

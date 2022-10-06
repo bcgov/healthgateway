@@ -82,9 +82,6 @@ export default class ProfileView extends Vue {
     @Action("updateSMSResendDateTime", { namespace: "user" })
     updateSMSResendDateTime!: ({ dateTime }: { dateTime: DateWrapper }) => void;
 
-    @Action("retrievePatientData", { namespace: "user" })
-    retrievePatientData!: () => Promise<void>;
-
     @Getter("oidcIsAuthenticated", { namespace: "auth" })
     oidcIsAuthenticated!: boolean;
 
@@ -257,13 +254,10 @@ export default class ProfileView extends Vue {
         );
 
         this.isLoading = true;
-        let patientPromise = this.retrievePatientData();
-        let userProfilePromise = this.userProfileService.getProfile(
-            this.user.hdid
-        );
 
-        Promise.all([userProfilePromise, patientPromise])
-            .then(([userProfile]) => {
+        this.userProfileService
+            .getProfile(this.user.hdid)
+            .then((userProfile) => {
                 if (userProfile) {
                     // Load user profile
                     this.logger.verbose(
