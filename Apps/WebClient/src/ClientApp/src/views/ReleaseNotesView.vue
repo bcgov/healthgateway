@@ -40,8 +40,8 @@ export default class ReleaseNotesView extends Vue {
                 <li>
                     We added links to the new immunization submission portal
                     which allows you to submit immunizations to public health to
-                    update your records, including a quick link on the home
-                    page.
+                    update your records. The update includes a quick link on the
+                    home page.
                 </li>
             </ul>
         </release-note>
