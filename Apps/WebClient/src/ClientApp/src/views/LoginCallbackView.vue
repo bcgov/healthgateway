@@ -19,6 +19,9 @@ export default class LoginCallbackView extends Vue {
     @Action("clearStorage", { namespace: "auth" })
     clearStorage!: () => void;
 
+    @Action("retrieveEssentialData", { namespace: "user" })
+    retrieveEssentialData!: () => Promise<void>;
+
     @Action("retrieveProfile", { namespace: "user" })
     retrieveProfile!: () => Promise<void>;
 
@@ -42,10 +45,10 @@ export default class LoginCallbackView extends Vue {
             await this.signIn({ redirectPath: this.redirectPath });
             this.logger.debug(`signIn for user: ${JSON.stringify(this.user)}`);
 
-            // If the idp is valid, check the registration status and continue the route.
-            // Otherwise the router will handle the path.
+            // If the identity provider is valid, the essential user data can be retrieved.
+            // If the identity provider is invalid, the router will redirect to the appropriate error page.
             if (this.isValidIdentityProvider) {
-                await this.retrieveProfile();
+                await this.retrieveEssentialData();
             }
 
             this.$router

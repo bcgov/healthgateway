@@ -36,7 +36,7 @@ import HgIconComponent from "@/components/shared/HgIconComponent.vue";
 import PageTitleComponent from "@/components/shared/PageTitleComponent.vue";
 import StatusLabelComponent from "@/components/shared/StatusLabelComponent.vue";
 
-import { instanceOfResultError } from "@/models/errors";
+import { isTooManyRequestsError } from "@/models/errors";
 import User from "@/models/user";
 import {
     DELEGATE_IDENTIFIER,
@@ -70,6 +70,7 @@ import {
     IUserRatingService,
     IVaccinationStatusService,
 } from "@/services/interfaces";
+import { AppErrorType } from "./constants/errorType";
 
 Vue.component("BBadge", BBadge);
 Vue.component("BBreadcrumb", BBreadcrumb);
@@ -101,6 +102,10 @@ const httpDelegate = container.get<IHttpDelegate>(
 const configService = container.get<IConfigService>(
     SERVICE_IDENTIFIER.ConfigService
 );
+const storeProvider = container.get<IStoreProvider>(
+    STORE_IDENTIFIER.StoreProvider
+);
+const store = storeProvider.getStore();
 
 configService.initialize(httpDelegate);
 
@@ -159,14 +164,10 @@ configService
             container.get<IVaccinationStatusService>(
                 SERVICE_IDENTIFIER.VaccinationStatusService
             );
-        const storeProvider = container.get<IStoreProvider>(
-            STORE_IDENTIFIER.StoreProvider
-        );
         const pcrTestKitService = container.get<IPcrTestService>(
             SERVICE_IDENTIFIER.PcrTestService
         );
 
-        const store = storeProvider.getStore();
         store.dispatch("config/initialize", config);
 
         logger.initialize(config.webClient.logLevel);
@@ -213,20 +214,7 @@ configService
                 const user: User = store.getters["user/user"];
 
                 if (user.hdid && isValidIdentityProvider) {
-                    try {
-                        await store.dispatch("user/retrieveProfile");
-                    } catch (error) {
-                        let busy = false;
-                        if (
-                            instanceOfResultError(error) &&
-                            error.statusCode === 429
-                        ) {
-                            busy = true;
-                        }
-
-                        initializeVueError(busy);
-                        return;
-                    }
+                    await store.dispatch("user/retrieveEssentialData");
                 }
             }
 
@@ -234,12 +222,14 @@ configService
         });
     })
     .catch((error) => {
-        let busy = false;
-        if (instanceOfResultError(error) && error.statusCode === 429) {
-            busy = true;
+        // error while retrieving configuration
+        let errorType = AppErrorType.General;
+        if (isTooManyRequestsError(error)) {
+            errorType = AppErrorType.TooManyRequests;
         }
+        store.commit("setAppError", errorType);
 
-        initializeVueError(busy);
+        initializeVue(store);
     });
 
 function initializeVue(store: Store<RootState>): Vue {
@@ -249,16 +239,5 @@ function initializeVue(store: Store<RootState>): Vue {
         store,
         router,
         render: (h) => h(App),
-    });
-}
-
-function initializeVueError(busy: boolean): Vue {
-    const AppErrorView = () =>
-        import(
-            /* webpackChunkName: "error" */ "./views/errors/AppErrorView.vue"
-        );
-    return new Vue({
-        el: "#app-root",
-        render: (h) => h(AppErrorView, { props: { busy } }),
     });
 }

@@ -43,6 +43,10 @@ const IdirLoggedInView = () =>
     import(
         /* webpackChunkName: "idirLoggedIn" */ "@/views/errors/IdirLoggedInView.vue"
     );
+const PatientRetrievalErrorView = () =>
+    import(
+        /* webpackChunkName: "patientRetrievalError" */ "@/views/errors/PatientRetrievalErrorView.vue"
+    );
 const LoginCallbackView = () =>
     import(
         /* webpackChunkName: "loginCallback" */ "@/views/LoginCallbackView.vue"
@@ -85,13 +89,14 @@ const PcrTestView = () =>
     import(/* webpackChunkName: "pcrTest" */ "@/views/PcrTestView.vue");
 
 export enum UserState {
-    unauthenticated = "unauthenticated",
-    notRegistered = "notRegistered",
-    registered = "registered",
-    pendingDeletion = "pendingDeletion",
-    invalidIdentityProvider = "invalidIdentityProvider",
     offline = "offline",
+    unauthenticated = "unauthenticated",
+    invalidIdentityProvider = "invalidIdentityProvider",
+    noPatientData = "noPatientData",
+    notRegistered = "notRegistered",
+    pendingDeletion = "pendingDeletion",
     acceptTermsOfService = "acceptTermsOfService",
+    registered = "registered",
 }
 
 function calculateUserState(): UserState {
@@ -103,6 +108,8 @@ function calculateUserState(): UserState {
     const isAuthenticated: boolean = store.getters["auth/oidcIsAuthenticated"];
     const isValidIdentityProvider: boolean =
         store.getters["auth/isValidIdentityProvider"];
+    const patientRetrievalFailed: boolean =
+        store.getters["user/patientRetrievalFailed"];
     const isRegistered: boolean = store.getters["user/userIsRegistered"];
     const userIsActive: boolean = store.getters["user/userIsActive"];
     const hasTermsOfServiceUpdated: boolean =
@@ -114,6 +121,8 @@ function calculateUserState(): UserState {
         return UserState.unauthenticated;
     } else if (!isValidIdentityProvider) {
         return UserState.invalidIdentityProvider;
+    } else if (patientRetrievalFailed) {
+        return UserState.noPatientData;
     } else if (!isRegistered) {
         return UserState.notRegistered;
     } else if (!userIsActive) {
@@ -142,15 +151,16 @@ function getAvailableModules(): string[] {
     return availableModules;
 }
 
+const ACCEPT_TERMS_OF_SERVICE_PATH = "/acceptTermsOfService";
 const HOME_PATH = "/home";
 const IDIR_LOGGED_IN_PATH = "/idirLoggedIn";
 const LOGIN_PATH = "/login";
+const PATIENT_RETRIEVAL_ERROR_PATH = "/patientRetrievalError";
 const PROFILE_PATH = "/profile";
 const REGISTRATION_PATH = "/registration";
 const ROOT_PATH = "/";
 const TIMELINE_PATH = "/timeline";
 const UNAUTHORIZED_PATH = "/unauthorized";
-const ACCEPT_TERMS_OF_SERVICE_PATH = "/acceptTermsOfService";
 
 const routes = [
     {
@@ -160,6 +170,7 @@ const routes = [
             validStates: [
                 UserState.unauthenticated,
                 UserState.invalidIdentityProvider,
+                UserState.noPatientData,
                 UserState.registered,
                 UserState.offline,
             ],
@@ -240,6 +251,7 @@ const routes = [
             validStates: [
                 UserState.unauthenticated,
                 UserState.invalidIdentityProvider,
+                UserState.noPatientData,
                 UserState.registered,
                 UserState.pendingDeletion,
             ],
@@ -282,6 +294,7 @@ const routes = [
             validStates: [
                 UserState.unauthenticated,
                 UserState.invalidIdentityProvider,
+                UserState.noPatientData,
                 UserState.registered,
                 UserState.pendingDeletion,
             ],
@@ -295,6 +308,7 @@ const routes = [
             validStates: [
                 UserState.unauthenticated,
                 UserState.invalidIdentityProvider,
+                UserState.noPatientData,
                 UserState.registered,
                 UserState.pendingDeletion,
             ],
@@ -307,6 +321,7 @@ const routes = [
             validStates: [
                 UserState.unauthenticated,
                 UserState.invalidIdentityProvider,
+                UserState.noPatientData,
                 UserState.registered,
                 UserState.pendingDeletion,
             ],
@@ -319,6 +334,7 @@ const routes = [
             validStates: [
                 UserState.unauthenticated,
                 UserState.invalidIdentityProvider,
+                UserState.noPatientData,
                 UserState.registered,
                 UserState.pendingDeletion,
             ],
@@ -331,6 +347,7 @@ const routes = [
             validStates: [
                 UserState.unauthenticated,
                 UserState.invalidIdentityProvider,
+                UserState.noPatientData,
                 UserState.registered,
                 UserState.pendingDeletion,
             ],
@@ -366,6 +383,11 @@ const routes = [
         path: IDIR_LOGGED_IN_PATH,
         component: IdirLoggedInView,
         meta: { validStates: [UserState.invalidIdentityProvider] },
+    },
+    {
+        path: PATIENT_RETRIEVAL_ERROR_PATH,
+        component: PatientRetrievalErrorView,
+        meta: { validStates: [UserState.noPatientData] },
     },
     {
         path: UNAUTHORIZED_PATH,
@@ -455,6 +477,8 @@ function getDefaultPath(
             return REGISTRATION_PATH;
         case UserState.invalidIdentityProvider:
             return IDIR_LOGGED_IN_PATH;
+        case UserState.noPatientData:
+            return PATIENT_RETRIEVAL_ERROR_PATH;
         case UserState.unauthenticated:
             return hasRequiredModules ? LOGIN_PATH : UNAUTHORIZED_PATH;
         case UserState.acceptTermsOfService:

@@ -1,3 +1,8 @@
+export const enum AppErrorType {
+    General,
+    TooManyRequests,
+}
+
 export const enum ErrorType {
     Create,
     Retrieve,
