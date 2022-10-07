@@ -81,7 +81,7 @@ namespace HealthGateway.Database.Models
         public string? EncryptionKey { get; set; }
 
         /// <summary>
-        /// Gets or sets the users year of birth.
+        /// Gets or sets the user's year of birth.
         /// </summary>
         [MaxLength(4)]
         public string? YearOfBirth { get; set; }

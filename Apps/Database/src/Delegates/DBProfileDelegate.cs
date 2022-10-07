@@ -19,7 +19,6 @@ namespace HealthGateway.Database.Delegates
     using System.Collections.Generic;
     using System.Diagnostics.CodeAnalysis;
     using System.Linq;
-    using System.Text.Json;
     using HealthGateway.Database.Constants;
     using HealthGateway.Database.Context;
     using HealthGateway.Database.Models;
@@ -31,8 +30,8 @@ namespace HealthGateway.Database.Delegates
     [ExcludeFromCodeCoverage]
     public class DBProfileDelegate : IUserProfileDelegate
     {
-        private readonly ILogger logger;
         private readonly GatewayDbContext dbContext;
+        private readonly ILogger logger;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="DBProfileDelegate"/> class.
@@ -77,7 +76,7 @@ namespace HealthGateway.Database.Delegates
             if (result.Status == DBStatusCode.Read)
             {
                 // Copy certain attributes into the fetched User Profile
-                result.Payload!.Email = profile.Email;
+                result.Payload.Email = profile.Email;
                 result.Payload.TermsOfServiceId = profile.TermsOfServiceId;
                 result.Payload.UpdatedBy = profile.UpdatedBy;
                 result.Payload.Version = profile.Version;
@@ -278,6 +277,24 @@ namespace HealthGateway.Database.Delegates
                 .Take(limit);
             result.Status = DBStatusCode.Read;
             return result;
+        }
+
+        /// <inheritdoc/>
+        public IDictionary<string, int> GetLoggedInUserYearOfBirthCounts(DateTime startDate, DateTime endDate)
+        {
+            Dictionary<string, int> yobCount = this.dbContext.UserProfile
+                .Select(x => new { x.HdId, x.LastLoginDateTime, x.YearOfBirth })
+                .Concat(
+                    this.dbContext.UserProfileHistory.Select(x => new { x.HdId, x.LastLoginDateTime, x.YearOfBirth }))
+                .Where(x => x.YearOfBirth != null && x.LastLoginDateTime >= startDate && x.LastLoginDateTime <= endDate)
+                .Select(x => new { x.HdId, lastLoginDate = GatewayDbContext.DateTrunc("days", x.LastLoginDateTime), x.YearOfBirth })
+                .Distinct()
+                .GroupBy(x => x.YearOfBirth)
+                .Select(x => new { yearOfBirth = x.Key, count = x.Count() })
+                .OrderBy(x => x.yearOfBirth)
+                .ToDictionary(x => x.yearOfBirth!, x => x.count);
+
+            return yobCount;
         }
     }
 }
