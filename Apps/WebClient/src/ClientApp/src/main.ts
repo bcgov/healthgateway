@@ -36,6 +36,8 @@ import HgIconComponent from "@/components/shared/HgIconComponent.vue";
 import PageTitleComponent from "@/components/shared/PageTitleComponent.vue";
 import StatusLabelComponent from "@/components/shared/StatusLabelComponent.vue";
 
+import { AppErrorType } from "@/constants/errorType";
+
 import { isTooManyRequestsError } from "@/models/errors";
 import User from "@/models/user";
 import {
@@ -70,7 +72,6 @@ import {
     IUserRatingService,
     IVaccinationStatusService,
 } from "@/services/interfaces";
-import { AppErrorType } from "./constants/errorType";
 
 Vue.component("BBadge", BBadge);
 Vue.component("BBreadcrumb", BBreadcrumb);
