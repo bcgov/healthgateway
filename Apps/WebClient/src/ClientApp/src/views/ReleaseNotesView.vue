@@ -32,6 +32,20 @@ export default class ReleaseNotesView extends Vue {
         <BreadcrumbComponent :items="breadcrumbItems" />
         <page-title title="Health Gateway Release Notes" />
         <release-note
+            date="October 4, 2022"
+            version="v2022.6.8"
+            title="Add Vaccinations"
+        >
+            <ul>
+                <li>
+                    We added links to the new immunization submission portal
+                    which allows you to submit immunizations to public health to
+                    update your records, including a quick link on the home
+                    page.
+                </li>
+            </ul>
+        </release-note>
+        <release-note
             date="September 20, 2022"
             version="v2022.6.7"
             title="Tutorial Messages, Lab Test Resources"

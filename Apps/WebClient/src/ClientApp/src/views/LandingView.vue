@@ -364,10 +364,9 @@ export default class LandingView extends Vue {
                     </b-col>
                     <b-col cols="12" lg="6">
                         <p class="mb-0">
-                            Health Gateway brings together your information from
-                            BC’s health databases. View your medications, health
-                            visits, immunizations and more, all in one place.
-                            New features and information are regularly added.
+                            View your B.C. health records in one place,
+                            including lab test results, medications, health
+                            visits, immunizations and more.
                         </p>
                     </b-col>
                 </b-row>
