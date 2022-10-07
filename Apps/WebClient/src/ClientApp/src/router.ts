@@ -279,7 +279,6 @@ const routes = [
         meta: {
             validStates: [
                 UserState.unauthenticated,
-                UserState.invalidIdentityProvider,
                 UserState.registered,
                 UserState.notRegistered,
                 UserState.pendingDeletion,
