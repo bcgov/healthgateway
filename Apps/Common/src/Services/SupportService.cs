@@ -13,7 +13,7 @@
 //  See the License for the specific language governing permissions and
 //  limitations under the License.
 // -------------------------------------------------------------------------
-namespace HealthGateway.Admin.Server.Services
+namespace HealthGateway.Common.Services
 {
     using System;
     using System.Collections.Generic;
@@ -26,15 +26,14 @@ namespace HealthGateway.Admin.Server.Services
     using HealthGateway.Common.Data.Models.ErrorHandling;
     using HealthGateway.Common.Data.ViewModels;
     using HealthGateway.Common.Models;
-    using HealthGateway.Common.Services;
     using HealthGateway.Database.Constants;
     using HealthGateway.Database.Delegates;
     using HealthGateway.Database.Models;
     using HealthGateway.Database.Wrapper;
     using Microsoft.IdentityModel.Tokens;
-    using UserQueryType = HealthGateway.Admin.Common.Constants.UserQueryType;
+    using UserQueryType = HealthGateway.Common.Data.Constants.UserQueryType;
 
-    /// <inheritdoc />
+    /// <inheritdoc/>
     public class SupportService : ISupportService
     {
         private readonly IUserProfileDelegate userProfileDelegate;
@@ -61,7 +60,7 @@ namespace HealthGateway.Admin.Server.Services
             this.autoMapper = autoMapper;
         }
 
-        /// <inheritdoc />
+        /// <inheritdoc/>
         public RequestResult<IEnumerable<MessagingVerificationModel>> GetMessageVerifications(string hdid)
         {
             DBResult<IEnumerable<MessagingVerification>> dbResult = this.messagingVerificationDelegate.GetUserMessageVerifications(hdid);
@@ -74,7 +73,7 @@ namespace HealthGateway.Admin.Server.Services
             return result;
         }
 
-        /// <inheritdoc />
+        /// <inheritdoc/>
         public RequestResult<IEnumerable<SupportUser>> GetSupportUsers(UserQueryType queryType, string queryString)
         {
             RequestResult<IEnumerable<SupportUser>> result = new()

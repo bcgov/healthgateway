@@ -13,10 +13,10 @@
 //  See the License for the specific language governing permissions and
 //  limitations under the License.
 // -------------------------------------------------------------------------
-namespace HealthGateway.Admin.Server.Services
+namespace HealthGateway.Common.Services
 {
     using System.Collections.Generic;
-    using HealthGateway.Admin.Common.Constants;
+    using HealthGateway.Common.Data.Constants;
     using HealthGateway.Common.Data.ViewModels;
 
     /// <summary>
