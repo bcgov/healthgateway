@@ -101,8 +101,7 @@ describe("Authentication", () => {
             AuthMethod.KeyCloak,
             "/home"
         );
-        cy.url().should("include", "/registration");
-        cy.get("[data-testid=clientRegistryErrorText]").should("be.visible");
+        cy.url().should("include", "/patientRetrievalError");
     });
 
     // it('Idle Timeout', () => {
