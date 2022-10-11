@@ -28,7 +28,7 @@
         "eslint-config-prettier": "^8.5.0",
         "eslint-plugin-prettier": "^4.2.1",
         "eslint-plugin-simple-import-sort": "^7.0.0",
-        "eslint-plugin-sonarjs": "^0.15.0",
+        "eslint-plugin-sonarjs": "^0.16.0",
         "eslint-plugin-vue": "^8.7.1",
         "file-loader": "^6.2.0",
         "fork-ts-checker-webpack-plugin": "^7.2.13",
