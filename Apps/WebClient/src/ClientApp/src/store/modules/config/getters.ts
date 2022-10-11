@@ -25,6 +25,10 @@ export const getters: ConfigGetters = {
     },
     isOffline(state: ConfigState): boolean {
         const webclientConfig = state.config.webClient;
+        if (!webclientConfig) {
+            return true;
+        }
+
         const clientIP = webclientConfig.clientIP || "";
         const offlineConfig = webclientConfig.offlineMode;
 

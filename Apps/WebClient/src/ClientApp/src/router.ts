@@ -7,6 +7,7 @@ import { Position, PositionResult } from "vue-router/types/router";
 
 import { ClientModule } from "@/constants/clientModule";
 import { Dictionary } from "@/models/baseTypes";
+import { WebClientConfiguration } from "@/models/configData";
 import container from "@/plugins/container";
 import { SnowplowWindow } from "@/plugins/extensions";
 import { SERVICE_IDENTIFIER, STORE_IDENTIFIER } from "@/plugins/inversify";
@@ -139,9 +140,10 @@ function getAvailableModules(): string[] {
         STORE_IDENTIFIER.StoreProvider
     );
     const store = storeWrapper.getStore();
+    const webClientConfig: WebClientConfiguration =
+        store.getters["config/webClient"];
+    const configModules: Dictionary<boolean> = webClientConfig?.modules ?? [];
     const availableModules: string[] = [];
-    const configModules: Dictionary<boolean> =
-        store.getters["config/webClient"].modules;
 
     for (const moduleName in configModules) {
         if (configModules[moduleName]) {
