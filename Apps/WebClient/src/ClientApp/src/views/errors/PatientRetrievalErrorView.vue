@@ -12,11 +12,14 @@ const options: any = {
 };
 
 @Component(options)
-export default class UnauthorizedView extends Vue {}
+export default class PatientRetrievalErrorView extends Vue {}
 </script>
 
 <template>
-    <PageErrorComponent title="401" subtitle="Unauthorized">
-        <p>You do not have permission to view this page.</p>
+    <PageErrorComponent title="Error retrieving user information">
+        <p>
+            There may be an issue in our Client Registry. Please contact
+            <strong>HealthGateway@gov.bc.ca</strong>
+        </p>
     </PageErrorComponent>
 </template>

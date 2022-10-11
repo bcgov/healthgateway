@@ -17,18 +17,6 @@ export interface HttpError {
     statusCode?: number;
 }
 
-export class PageError {
-    public code: string;
-    public name: string;
-    public message: string;
-
-    constructor(code: string, name: string, message: string) {
-        this.code = code;
-        this.name = name;
-        this.message = message;
-    }
-}
-
 export interface ResultError {
     // The error code associated to the request
     errorCode: string;
@@ -49,4 +37,9 @@ export function instanceOfResultError(object: any): object is ResultError {
         "traceId" in object &&
         "resultMessage" in object
     );
+}
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export function isTooManyRequestsError(object: any): boolean {
+    return instanceOfResultError(object) && object.statusCode === 429;
 }

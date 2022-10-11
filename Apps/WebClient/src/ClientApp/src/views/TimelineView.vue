@@ -91,9 +91,6 @@ export default class TimelineView extends Vue {
     @Getter("webClient", { namespace: "config" })
     config!: WebClientConfiguration;
 
-    @Action("retrievePatientData", { namespace: "user" })
-    retrievePatientData!: () => Promise<void>;
-
     @Action("retrieve", { namespace: "immunization" })
     retrieveImmunizations!: (params: { hdid: string }) => Promise<void>;
 
@@ -422,7 +419,6 @@ export default class TimelineView extends Vue {
 
     private fetchTimelineData(): void {
         Promise.all([
-            this.retrievePatientData(),
             this.retrieveMedications({ hdid: this.user.hdid }),
             this.retrieveMedicationRequests({ hdid: this.user.hdid }),
             this.retrieveImmunizations({ hdid: this.user.hdid }),

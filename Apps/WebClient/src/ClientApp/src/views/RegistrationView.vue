@@ -58,9 +58,6 @@ export default class RegistrationView extends Vue {
     @Action("setTooManyRequestsWarning", { namespace: "errorBanner" })
     setTooManyRequestsWarning!: (params: { key: string }) => void;
 
-    @Action("checkRegistration", { namespace: "user" })
-    checkRegistration!: () => Promise<boolean>;
-
     @Action("createProfile", { namespace: "user" })
     createProfile!: (params: { request: CreateUserRequest }) => Promise<void>;
 
