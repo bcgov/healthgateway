@@ -37,9 +37,9 @@ namespace HealthGateway.GatewayApiTests.Services.Test.Mock
     /// </summary>
     public class UserProfileServiceMock : Mock<IUserProfileService>
     {
+        private readonly string userProfileHistoryRecordLimitKey = "UserProfileHistoryRecordLimit";
         private readonly UserProfileService userProfileService;
         private readonly string webClientConfigSection = "WebClient";
-        private readonly string userProfileHistoryRecordLimitKey = "UserProfileHistoryRecordLimit";
 
         /// <summary>
         /// Initializes a new instance of the <see cref="UserProfileServiceMock"/> class.
@@ -50,15 +50,25 @@ namespace HealthGateway.GatewayApiTests.Services.Test.Mock
         /// <param name="userProfileDbResult">user profile from DbResult.</param>
         /// <param name="readResult">read result.</param>
         /// <param name="termsOfService">terms of service.</param>
+        /// <param name="patientModel">patient model.</param>
         /// <param name="configuration">configuration.</param>
         /// <param name="userProfileHistoryDbResult">user profile history from DbResult.</param>
-        public UserProfileServiceMock(string hdId, DBStatusCode dbResultStatus, UserProfile userProfileData, DBResult<UserProfile> userProfileDbResult, DBResult<IEnumerable<UserPreference>> readResult, LegalAgreement termsOfService, IConfiguration configuration, DBResult<IEnumerable<UserProfileHistory>> userProfileHistoryDbResult)
+        public UserProfileServiceMock(
+            string hdId,
+            DBStatusCode dbResultStatus,
+            UserProfile userProfileData,
+            DBResult<UserProfile> userProfileDbResult,
+            DBResult<IEnumerable<UserPreference>> readResult,
+            LegalAgreement termsOfService,
+            PatientModel patientModel,
+            IConfiguration configuration,
+            DBResult<IEnumerable<UserProfileHistory>> userProfileHistoryDbResult)
         {
             int limit = configuration.GetSection(this.webClientConfigSection).GetValue(this.userProfileHistoryRecordLimitKey, 2);
 
             this.userProfileService = new UserProfileService(
                 new Mock<ILogger<UserProfileService>>().Object,
-                new Mock<IPatientService>().Object,
+                new PatientServiceMock(hdId, patientModel).Object,
                 new Mock<IUserEmailService>().Object,
                 new Mock<IUserSMSService>().Object,
                 new Mock<IEmailQueueService>().Object,
@@ -79,13 +89,14 @@ namespace HealthGateway.GatewayApiTests.Services.Test.Mock
         /// <param name="message">message.</param>
         /// <param name="userProfileData">user profile data.</param>
         /// <param name="userProfileDbResult">user profile from DbResult.</param>
-        /// <param name="registrationStatus">registration status.</param>
+        /// <param name="hdid">hdid.</param>
         /// <param name="configuration">configuration.</param>
-        public UserProfileServiceMock(string message, UserProfile userProfileData, DBResult<UserProfile> userProfileDbResult, string registrationStatus, IConfiguration configuration)
+        /// <param name="patientModel">patient model.</param>
+        public UserProfileServiceMock(string message, UserProfile userProfileData, DBResult<UserProfile> userProfileDbResult, string hdid, IConfiguration configuration, PatientModel patientModel)
         {
             this.userProfileService = new UserProfileService(
                 new Mock<ILogger<UserProfileService>>().Object,
-                new Mock<IPatientService>().Object,
+                new PatientServiceMock(hdid, patientModel).Object,
                 new Mock<IUserEmailService>().Object,
                 new Mock<IUserSMSService>().Object,
                 new Mock<IEmailQueueService>().Object,
@@ -136,7 +147,15 @@ namespace HealthGateway.GatewayApiTests.Services.Test.Mock
         /// <param name="termsOfService">terms of service.</param>
         /// <param name="configuration">configuration.</param>
         /// <param name="commit">commit.</param>
-        public UserProfileServiceMock(string hdId, UserProfile userProfileData, DBResult<UserProfile> userProfileDbResult, DBResult<IEnumerable<UserPreference>> readResult, MessagingVerification messagingVerification, LegalAgreement termsOfService, IConfiguration configuration, bool commit = true)
+        public UserProfileServiceMock(
+            string hdId,
+            UserProfile userProfileData,
+            DBResult<UserProfile> userProfileDbResult,
+            DBResult<IEnumerable<UserPreference>> readResult,
+            MessagingVerification messagingVerification,
+            LegalAgreement termsOfService,
+            IConfiguration configuration,
+            bool commit = true)
         {
             this.userProfileService = new UserProfileService(
                 new Mock<ILogger<UserProfileService>>().Object,
@@ -190,7 +209,14 @@ namespace HealthGateway.GatewayApiTests.Services.Test.Mock
         /// <param name="configuration">configuration.</param>
         /// <param name="shouldEmailCommit">should email commit.</param>
         /// <param name="shouldProfileCommit">should profile commit.</param>
-        public UserProfileServiceMock(string hdId, UserProfile userProfileData, DBResult<UserProfile> userProfileDbResult, IHeaderDictionary headerDictionary, IConfiguration configuration, bool shouldEmailCommit, bool shouldProfileCommit = true)
+        public UserProfileServiceMock(
+            string hdId,
+            UserProfile userProfileData,
+            DBResult<UserProfile> userProfileDbResult,
+            IHeaderDictionary headerDictionary,
+            IConfiguration configuration,
+            bool shouldEmailCommit,
+            bool shouldProfileCommit = true)
         {
             this.userProfileService = new UserProfileService(
                 new Mock<ILogger<UserProfileService>>().Object,
@@ -223,7 +249,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test.Mock
             DBResult<LegalAgreement> tosDbResult = new()
             {
                 Status = DBStatusCode.Read,
-                Payload = new LegalAgreement()
+                Payload = new LegalAgreement
                 {
                     Id = Guid.Empty,
                     CreatedBy = "MockData",
