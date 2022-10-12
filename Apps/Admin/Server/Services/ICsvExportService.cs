@@ -75,7 +75,8 @@ namespace HealthGateway.Admin.Server.Services
         /// </summary>
         /// <param name="startDate">The start date of last login of users.</param>
         /// <param name="endDate">The end date of last login of users.</param>
+        /// <param name="timeOffset">The clients offset to get to UTC.</param>
         /// <returns>Return the counts of logged in users by Year of Birth.</returns>
-        Stream GetYearOfBirthCounts(DateTime startDate, DateTime endDate);
+        Stream GetYearOfBirthCounts(DateTime startDate, DateTime endDate, int timeOffset);
     }
 }

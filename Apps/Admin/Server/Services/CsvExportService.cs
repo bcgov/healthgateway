@@ -116,9 +116,15 @@ namespace HealthGateway.Admin.Server.Services
         }
 
         /// <inheritdoc/>
-        public Stream GetYearOfBirthCounts(DateTime startDate, DateTime endDate)
+        public Stream GetYearOfBirthCounts(DateTime startDate, DateTime endDate, int timeOffset)
         {
-            IDictionary<string, int> yobCounts = this.userProfileDelegate.GetLoggedInUserYearOfBirthCounts(startDate, endDate);
+            int offset = timeOffset * -1;
+            TimeSpan timeSpan = new(0, offset, 0);
+            DateTime startDateUtc = startDate.Date.Add(timeSpan);
+            startDateUtc = DateTime.SpecifyKind(startDateUtc, DateTimeKind.Utc);
+            DateTime endDateUtc = endDate.Date.Add(timeSpan).AddDays(1).AddMilliseconds(-1);
+            endDateUtc = DateTime.SpecifyKind(endDateUtc, DateTimeKind.Utc);
+            IDictionary<string, int> yobCounts = this.userProfileDelegate.GetLoggedInUserYearOfBirthCounts(startDateUtc, endDateUtc);
 
             MemoryStream stream = new();
             using StreamWriter writer = new(stream);
