@@ -58,8 +58,8 @@ BEGIN
                old.""YearOfBirth"", old.""LastLoginDateTime"", old.""CreatedBy"", old.""CreatedDateTime"", old.""UpdatedBy"", old.""UpdatedDateTime"", old.""SMSNumber"");
         RETURN old;
     ELSEIF(TG_OP = 'UPDATE') THEN
-        INSERT INTO {schema}.""UserProfileHistory""(""UserProfileHistoryId"", ""Operation"", ""OperationDateTime"", ""EncryptionKey"",
-                    ""UserProfileId"", ""AcceptedTermsOfService"", ""TermsOfServiceId"", ""Email"", ""ClosedDateTime"", ""IdentityManagementId"",
+        INSERT INTO {schema}.""UserProfileHistory""(""UserProfileHistoryId"", ""Operation"", ""OperationDateTime"",
+                    ""UserProfileId"", ""AcceptedTermsOfService"", ""TermsOfServiceId"", ""Email"", ""ClosedDateTime"", ""IdentityManagementId"", ""EncryptionKey"",
                     ""YearOfBirth"", ""LastLoginDateTime"", ""CreatedBy"", ""CreatedDateTime"", ""UpdatedBy"", ""UpdatedDateTime"", ""SMSNumber"")
 		VALUES(uuid_generate_v4(), TG_OP || '_LOGIN', now(),
                old.""UserProfileId"", null, old.""TermsOfServiceId"", old.""Email"", old.""ClosedDateTime"", old.""IdentityManagementId"", old.""EncryptionKey"",

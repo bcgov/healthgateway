@@ -19,7 +19,6 @@ namespace HealthGateway.Database.Delegates
     using System.Collections.Generic;
     using System.Diagnostics.CodeAnalysis;
     using System.Linq;
-    using System.Text.Json;
     using HealthGateway.Database.Constants;
     using HealthGateway.Database.Context;
     using HealthGateway.Database.Models;
@@ -31,8 +30,8 @@ namespace HealthGateway.Database.Delegates
     [ExcludeFromCodeCoverage]
     public class DBProfileDelegate : IUserProfileDelegate
     {
-        private readonly ILogger logger;
         private readonly GatewayDbContext dbContext;
+        private readonly ILogger logger;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="DBProfileDelegate"/> class.
@@ -81,6 +80,7 @@ namespace HealthGateway.Database.Delegates
                 result.Payload.TermsOfServiceId = profile.TermsOfServiceId;
                 result.Payload.UpdatedBy = profile.UpdatedBy;
                 result.Payload.Version = profile.Version;
+                result.Payload.YearOfBirth = profile.YearOfBirth;
                 result.Status = DBStatusCode.Deferred;
 
                 if (commit)
