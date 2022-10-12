@@ -14,11 +14,11 @@
 // limitations under the License.
 //-------------------------------------------------------------------------
 
-namespace HealthGateway.Admin.Client.Store.MessageVerification
+namespace HealthGateway.Admin.Client.Store.SupportUser
 {
     using System.Collections.Generic;
-    using System.Collections.Immutable;
     using Fluxor;
+    using HealthGateway.Admin.Client.Models;
     using HealthGateway.Common.Data.ViewModels;
 
     /// <summary>
@@ -26,11 +26,16 @@ namespace HealthGateway.Admin.Client.Store.MessageVerification
     /// State should be decorated with [FeatureState] for automatic discovery when services.AddFluxor is called.
     /// </summary>
     [FeatureState]
-    public record MessageVerificationState : BaseRequestState<RequestResult<IEnumerable<MessagingVerificationModel>>>
+    public record SupportUserState : BaseRequestState<RequestResult<IEnumerable<SupportUser>>>
     {
         /// <summary>
         /// Gets the collection of data.
         /// </summary>
-        public ImmutableList<MessagingVerificationModel>? Data { get; init; }
+        public IList<ExtendedSupportUser>? Data { get; init; }
+
+        /// <summary>
+        /// Gets the warning message for display.
+        /// </summary>
+        public string? WarningMessage { get; init; }
     }
 }
