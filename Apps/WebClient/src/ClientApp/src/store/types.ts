@@ -1,5 +1,7 @@
 import { ActionContext, StoreOptions } from "vuex";
 
+import { AppErrorType } from "@/constants/errorType";
+
 import { AuthModule } from "./modules/auth/types";
 import { ClinicalDocumentModule } from "./modules/clinicalDocument/types";
 import { CommentModule } from "./modules/comment/types";
@@ -17,21 +19,28 @@ import { UserModule } from "./modules/user/types";
 import { VaccinationStatusModule } from "./modules/vaccinationStatus/types";
 
 export interface RootState {
-    version: string;
+    appError?: AppErrorType;
     isMobile: boolean;
+    version: string;
 }
 
 export interface GatewayStoreOptions extends StoreOptions<RootState> {
     actions: {
+        setAppError(
+            context: ActionContext<RootState, RootState>,
+            appError: AppErrorType
+        ): void;
         setIsMobile(
             context: ActionContext<RootState, RootState>,
             isMobile: boolean
         ): void;
     };
     getters: {
+        appError: (state: RootState) => AppErrorType | undefined;
         isMobile: (state: RootState) => boolean;
     };
     mutations: {
+        setAppError(state: RootState, appError: AppErrorType): void;
         setIsMobile(state: RootState, isMobile: boolean): void;
     };
     modules: {

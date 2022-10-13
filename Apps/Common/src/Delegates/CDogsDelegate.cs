@@ -40,10 +40,10 @@ namespace HealthGateway.Common.Delegates
     public class CDogsDelegate : ICDogsDelegate
     {
         private const string CDOGSConfigSectionKey = "CDOGS";
-        private readonly ILogger<CDogsDelegate> logger;
-        private readonly IHttpClientService httpClientService;
-        private readonly Uri serviceEndpoint;
         private readonly CDogsConfig cdogsConfig;
+        private readonly IHttpClientService httpClientService;
+        private readonly ILogger<CDogsDelegate> logger;
+        private readonly Uri serviceEndpoint;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="CDogsDelegate"/> class.
@@ -77,7 +77,7 @@ namespace HealthGateway.Common.Delegates
                 this.serviceEndpoint = new Uri(this.cdogsConfig.BaseEndpoint);
             }
 
-            logger.LogInformation($"CDogs URL resolved as {this.serviceEndpoint}");
+            logger.LogInformation("CDogs URL resolved as {ServiceEndpoint}", this.serviceEndpoint);
         }
 
         private static ActivitySource Source { get; } = new(nameof(CDogsDelegate));
@@ -100,7 +100,7 @@ namespace HealthGateway.Common.Delegates
                     Uri endpoint = new($"{this.serviceEndpoint}api/v2/template/render");
                     HttpResponseMessage? response = await client.PostAsync(endpoint, httpContent).ConfigureAwait(true);
                     byte[] payload = await response.Content.ReadAsByteArrayAsync().ConfigureAwait(true);
-                    this.logger.LogTrace($"CDogs Response: {JsonSerializer.Serialize(response)}");
+                    this.logger.LogTrace("CDogs Response status code: {ResponseStatusCode}", response.StatusCode);
 
                     if (response.IsSuccessStatusCode)
                     {
@@ -119,7 +119,7 @@ namespace HealthGateway.Common.Delegates
                             ResultMessage = $"Unable to connect to CDogs API, HTTP Error {response.StatusCode}",
                             ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationInternal, ServiceType.CDogs),
                         };
-                        this.logger.LogError($"Unable to connect to endpoint {endpoint}, HTTP Error {response.StatusCode}\n{payload}");
+                        this.logger.LogError("Unable to connect to endpoint {Endpoint}, HTTP Error {StatusCode}\n{Payload}", endpoint, response.StatusCode, payload);
                     }
                 }
 #pragma warning disable CA1031 // Do not catch general exception types
@@ -131,7 +131,7 @@ namespace HealthGateway.Common.Delegates
                         ResultMessage = $"Exception generating report: {e}",
                         ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationInternal, ServiceType.CDogs),
                     };
-                    this.logger.LogError($"Unexpected exception in GenerateReport {e}");
+                    this.logger.LogError("Unexpected exception in GenerateReport {Exception}", e);
                 }
 
                 return retVal;

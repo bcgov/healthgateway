@@ -32,9 +32,9 @@ namespace HealthGateway.Common.AccessManagement.Authorization.Handlers
     {
         private const string System = "system";
         private const string RouteResourceIdentifier = "hdid";
+        private readonly IHttpContextAccessor httpContextAccessor;
 
         private readonly ILogger logger;
-        private readonly IHttpContextAccessor httpContextAccessor;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="BaseFhirAuthorizationHandler"/> class.
@@ -85,11 +85,12 @@ namespace HealthGateway.Common.AccessManagement.Authorization.Handlers
             if (userHDID != null)
             {
                 retVal = userHDID == resourceHDID;
-                this.logger.LogDebug($"{userHDID} is {(!retVal ? "not " : string.Empty)}the resource owner");
+                string message = $"{userHDID} is {(!retVal ? "not " : string.Empty)}the resource owner";
+                this.logger.LogDebug("{Message}", message);
             }
             else
             {
-                this.logger.LogDebug($"Unable to validate resource owner for {resourceHDID} as no HDID claims present");
+                this.logger.LogDebug("Unable to validate resource owner for {ResourceHdid} as no HDID claims present", resourceHDID);
             }
 
             return retVal;
@@ -109,12 +110,12 @@ namespace HealthGateway.Common.AccessManagement.Authorization.Handlers
             {
                 string scopeclaim = context.User.FindFirstValue(GatewayClaims.Scope);
                 string[] scopes = scopeclaim.Split(' ');
-                this.logger.LogDebug($"Performing system delegation validation for resource {resourceHDID}");
-                this.logger.LogDebug($"Caller has the following scopes: {scopeclaim}");
+                this.logger.LogDebug("Performing system delegation validation for resource {ResourceHdid}", resourceHDID);
+                this.logger.LogDebug("Caller has the following scopes: {ScopeClaim}", scopeclaim);
                 string[] systemDelegatedScopes = GetAcceptedScopes(System, requirement);
                 if (scopes.Intersect(systemDelegatedScopes).Any())
                 {
-                    this.logger.LogDebug($"Authorized caller as system to have {requirement.AccessType} access to resource {resourceHDID}");
+                    this.logger.LogDebug("Authorized caller as system to have {AccessType} access to resource {ResourceHdid}", requirement.AccessType, resourceHDID);
                     retVal = true;
                 }
             }

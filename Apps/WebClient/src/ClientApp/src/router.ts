@@ -7,6 +7,7 @@ import { Position, PositionResult } from "vue-router/types/router";
 
 import { ClientModule } from "@/constants/clientModule";
 import { Dictionary } from "@/models/baseTypes";
+import { WebClientConfiguration } from "@/models/configData";
 import container from "@/plugins/container";
 import { SnowplowWindow } from "@/plugins/extensions";
 import { SERVICE_IDENTIFIER, STORE_IDENTIFIER } from "@/plugins/inversify";
@@ -42,6 +43,10 @@ const UnauthorizedView = () =>
 const IdirLoggedInView = () =>
     import(
         /* webpackChunkName: "idirLoggedIn" */ "@/views/errors/IdirLoggedInView.vue"
+    );
+const PatientRetrievalErrorView = () =>
+    import(
+        /* webpackChunkName: "patientRetrievalError" */ "@/views/errors/PatientRetrievalErrorView.vue"
     );
 const LoginCallbackView = () =>
     import(
@@ -85,13 +90,14 @@ const PcrTestView = () =>
     import(/* webpackChunkName: "pcrTest" */ "@/views/PcrTestView.vue");
 
 export enum UserState {
-    unauthenticated = "unauthenticated",
-    notRegistered = "notRegistered",
-    registered = "registered",
-    pendingDeletion = "pendingDeletion",
-    invalidIdentityProvider = "invalidIdentityProvider",
     offline = "offline",
+    unauthenticated = "unauthenticated",
+    invalidIdentityProvider = "invalidIdentityProvider",
+    noPatientData = "noPatientData",
+    notRegistered = "notRegistered",
+    pendingDeletion = "pendingDeletion",
     acceptTermsOfService = "acceptTermsOfService",
+    registered = "registered",
 }
 
 function calculateUserState(): UserState {
@@ -103,6 +109,8 @@ function calculateUserState(): UserState {
     const isAuthenticated: boolean = store.getters["auth/oidcIsAuthenticated"];
     const isValidIdentityProvider: boolean =
         store.getters["auth/isValidIdentityProvider"];
+    const patientRetrievalFailed: boolean =
+        store.getters["user/patientRetrievalFailed"];
     const isRegistered: boolean = store.getters["user/userIsRegistered"];
     const userIsActive: boolean = store.getters["user/userIsActive"];
     const hasTermsOfServiceUpdated: boolean =
@@ -114,6 +122,8 @@ function calculateUserState(): UserState {
         return UserState.unauthenticated;
     } else if (!isValidIdentityProvider) {
         return UserState.invalidIdentityProvider;
+    } else if (patientRetrievalFailed) {
+        return UserState.noPatientData;
     } else if (!isRegistered) {
         return UserState.notRegistered;
     } else if (!userIsActive) {
@@ -130,9 +140,10 @@ function getAvailableModules(): string[] {
         STORE_IDENTIFIER.StoreProvider
     );
     const store = storeWrapper.getStore();
+    const webClientConfig: WebClientConfiguration =
+        store.getters["config/webClient"];
+    const configModules: Dictionary<boolean> = webClientConfig?.modules ?? [];
     const availableModules: string[] = [];
-    const configModules: Dictionary<boolean> =
-        store.getters["config/webClient"].modules;
 
     for (const moduleName in configModules) {
         if (configModules[moduleName]) {
@@ -142,15 +153,16 @@ function getAvailableModules(): string[] {
     return availableModules;
 }
 
+const ACCEPT_TERMS_OF_SERVICE_PATH = "/acceptTermsOfService";
 const HOME_PATH = "/home";
 const IDIR_LOGGED_IN_PATH = "/idirLoggedIn";
 const LOGIN_PATH = "/login";
+const PATIENT_RETRIEVAL_ERROR_PATH = "/patientRetrievalError";
 const PROFILE_PATH = "/profile";
 const REGISTRATION_PATH = "/registration";
 const ROOT_PATH = "/";
 const TIMELINE_PATH = "/timeline";
 const UNAUTHORIZED_PATH = "/unauthorized";
-const ACCEPT_TERMS_OF_SERVICE_PATH = "/acceptTermsOfService";
 
 const routes = [
     {
@@ -160,6 +172,7 @@ const routes = [
             validStates: [
                 UserState.unauthenticated,
                 UserState.invalidIdentityProvider,
+                UserState.noPatientData,
                 UserState.registered,
                 UserState.offline,
             ],
@@ -240,6 +253,7 @@ const routes = [
             validStates: [
                 UserState.unauthenticated,
                 UserState.invalidIdentityProvider,
+                UserState.noPatientData,
                 UserState.registered,
                 UserState.pendingDeletion,
             ],
@@ -267,7 +281,6 @@ const routes = [
         meta: {
             validStates: [
                 UserState.unauthenticated,
-                UserState.invalidIdentityProvider,
                 UserState.registered,
                 UserState.notRegistered,
                 UserState.pendingDeletion,
@@ -282,6 +295,7 @@ const routes = [
             validStates: [
                 UserState.unauthenticated,
                 UserState.invalidIdentityProvider,
+                UserState.noPatientData,
                 UserState.registered,
                 UserState.pendingDeletion,
             ],
@@ -295,6 +309,7 @@ const routes = [
             validStates: [
                 UserState.unauthenticated,
                 UserState.invalidIdentityProvider,
+                UserState.noPatientData,
                 UserState.registered,
                 UserState.pendingDeletion,
             ],
@@ -307,6 +322,7 @@ const routes = [
             validStates: [
                 UserState.unauthenticated,
                 UserState.invalidIdentityProvider,
+                UserState.noPatientData,
                 UserState.registered,
                 UserState.pendingDeletion,
             ],
@@ -319,6 +335,7 @@ const routes = [
             validStates: [
                 UserState.unauthenticated,
                 UserState.invalidIdentityProvider,
+                UserState.noPatientData,
                 UserState.registered,
                 UserState.pendingDeletion,
             ],
@@ -331,6 +348,7 @@ const routes = [
             validStates: [
                 UserState.unauthenticated,
                 UserState.invalidIdentityProvider,
+                UserState.noPatientData,
                 UserState.registered,
                 UserState.pendingDeletion,
             ],
@@ -366,6 +384,11 @@ const routes = [
         path: IDIR_LOGGED_IN_PATH,
         component: IdirLoggedInView,
         meta: { validStates: [UserState.invalidIdentityProvider] },
+    },
+    {
+        path: PATIENT_RETRIEVAL_ERROR_PATH,
+        component: PatientRetrievalErrorView,
+        meta: { validStates: [UserState.noPatientData] },
     },
     {
         path: UNAUTHORIZED_PATH,
@@ -455,6 +478,8 @@ function getDefaultPath(
             return REGISTRATION_PATH;
         case UserState.invalidIdentityProvider:
             return IDIR_LOGGED_IN_PATH;
+        case UserState.noPatientData:
+            return PATIENT_RETRIEVAL_ERROR_PATH;
         case UserState.unauthenticated:
             return hasRequiredModules ? LOGIN_PATH : UNAUTHORIZED_PATH;
         case UserState.acceptTermsOfService:
@@ -491,7 +516,8 @@ router.afterEach(() => {
     const store = storeWrapper.getStore();
 
     store.dispatch("errorBanner/clearErrors");
-    store.dispatch("errorBanner/clearTooManyRequests");
+    store.dispatch("errorBanner/clearTooManyRequestsWarning");
+    store.dispatch("errorBanner/clearTooManyRequestsError");
 
     window.snowplow("trackPageView");
 });

@@ -22,7 +22,8 @@ import NoteTimelineComponent from "./NoteTimelineComponent.vue";
 
 library.add(faArrowLeft);
 
-@Component({
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const options: any = {
     components: {
         MedicationRequestComponent: MedicationRequestTimelineComponent,
         MedicationComponent: MedicationTimelineComponent,
@@ -34,17 +35,24 @@ library.add(faArrowLeft);
         NoteComponent: NoteTimelineComponent,
         ClinicalDocumentComponent: ClinicalDocumentTimelineComponent,
     },
-})
-export default class EntryDetailsComponent extends Vue {
-    @Action("setHeaderState", { namespace: "navbar" }) setHeaderState!: (
-        isOpen: boolean
-    ) => void;
+};
 
-    @Getter("isMobile") isMobile!: boolean;
-    @Getter("user", { namespace: "user" }) user!: User;
-    @Getter("isVisible", { namespace: "idle" }) isIdleWarningVisible!: boolean;
+@Component(options)
+export default class EntryDetailsComponent extends Vue {
+    @Action("setHeaderState", { namespace: "navbar" })
+    setHeaderState!: (isOpen: boolean) => void;
+
+    @Getter("isMobile")
+    isMobile!: boolean;
+
+    @Getter("isVisible", { namespace: "idle" })
+    isIdleWarningVisible!: boolean;
+
     @Getter("lastOperation", { namespace: "note" })
     lastNoteOperation!: Operation | null;
+
+    @Getter("user", { namespace: "user" })
+    user!: User;
 
     private entry: TimelineEntry | null = null;
     private entryDate = "";

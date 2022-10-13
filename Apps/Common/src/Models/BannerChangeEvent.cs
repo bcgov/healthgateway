@@ -35,6 +35,6 @@ namespace HealthGateway.Common.Models
         /// <summary>
         /// Gets or sets the Communication object.
         /// </summary>
-        public Communication? Data { get; set; }
+        public Communication Data { get; set; } = new();
     }
 }

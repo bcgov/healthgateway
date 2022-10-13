@@ -5,11 +5,14 @@ import { Component } from "vue-property-decorator";
 import BreadcrumbComponent from "@/components/navmenu/BreadcrumbComponent.vue";
 import BreadcrumbItem from "@/models/breadcrumbItem";
 
-@Component({
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const options: any = {
     components: {
         BreadcrumbComponent,
     },
-})
+};
+
+@Component(options)
 export default class FaqView extends Vue {
     private breadcrumbItems: BreadcrumbItem[] = [
         {
@@ -25,10 +28,11 @@ export default class FaqView extends Vue {
     <div>
         <BreadcrumbComponent :items="breadcrumbItems" />
         <page-title title="Frequently Asked Questions" />
-        <b-row class="mb-1 fluid text-right">
-            <b-col>Last updated: <strong>2022-May-24</strong></b-col>
-        </b-row>
-        <b-row class="m-0 pt-0"><h3>Lab test results</h3></b-row>
+        <div class="mb-1 text-right">
+            <span>Last updated: </span>
+            <strong>2022-May-24</strong>
+        </div>
+        <h3>Lab test results</h3>
         <b-card no-body class="mb-1 border-0">
             <b-card-header
                 header-tag="header"
@@ -242,7 +246,7 @@ export default class FaqView extends Vue {
                 </b-card-body>
             </b-collapse>
         </b-card>
-        <b-row class="m-0 pt-3"><H3>COVID-19 information</H3></b-row>
+        <h3 class="pt-3">COVID-19 information</h3>
         <b-card no-body class="mb-1 border-0">
             <b-card-header
                 header-tag="header"
@@ -358,7 +362,7 @@ export default class FaqView extends Vue {
                 </b-card-body>
             </b-collapse>
         </b-card>
-        <b-row class="m-0 pt-3"><H3>Other health records</H3></b-row>
+        <h3 class="pt-3">Other health records</h3>
         <b-card no-body class="mb-1 border-0">
             <b-card-header
                 header-tag="header"
@@ -518,7 +522,7 @@ export default class FaqView extends Vue {
                 </b-card-body>
             </b-collapse>
         </b-card>
-        <b-row class="m-0 pt-3"><H3>Adding a dependent</H3></b-row>
+        <h3 class="pt-3">Adding a dependent</h3>
         <b-card no-body class="mb-1 border-0">
             <b-card-header
                 header-tag="header"
@@ -612,7 +616,7 @@ export default class FaqView extends Vue {
                 </b-card-body>
             </b-collapse>
         </b-card>
-        <b-row class="m-0 pt-3"><H3>Learn more about Health Gateway</H3></b-row>
+        <h3 class="pt-3">Learn more about Health Gateway</h3>
         <b-card no-body class="mb-1 border-0">
             <b-card-header
                 header-tag="header"

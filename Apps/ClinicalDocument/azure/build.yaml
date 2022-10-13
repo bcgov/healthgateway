@@ -4,20 +4,21 @@ pr: none
 
 resources:
   pipelines:
-    - pipeline: Common
-      source: Common
-      trigger:
-        branches:
-          - dev
+  - pipeline: Common
+    source: Common
+    trigger:
+      branches:
+        include:
+        - dev
 
 trigger:
   batch: "true"
   branches:
     include:
-      - dev
+    - dev
   paths:
     include:
-      - Apps/ClinicalDocument
+    - Apps/ClinicalDocument
 
 extends:
   template: /Build/hg.yaml

@@ -47,7 +47,7 @@ namespace HealthGateway.Database.Delegates
         /// <inheritdoc/>
         public DBResult<EventLog> WriteEventLog(EventLog eventLog, bool commit = true)
         {
-            this.logger.LogTrace($"Inserting event log to DB... {JsonSerializer.Serialize(eventLog)}");
+            this.logger.LogTrace("Inserting event log to DB...");
             DBResult<EventLog> result = new();
             this.dbContext.Add(eventLog);
             if (commit)
@@ -64,7 +64,7 @@ namespace HealthGateway.Database.Delegates
                 }
             }
 
-            this.logger.LogDebug($"Finished inserting event log to DB... {JsonSerializer.Serialize(result)}");
+            this.logger.LogDebug("Finished inserting event log to DB...");
             return result;
         }
     }

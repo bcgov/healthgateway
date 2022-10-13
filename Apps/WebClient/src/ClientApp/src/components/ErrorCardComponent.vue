@@ -16,12 +16,15 @@ import User from "@/models/user";
 library.add(faChevronDown, faChevronUp, farCopy);
 Vue.use(VueClipboard);
 
-@Component({
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const options: any = {
     components: {
         MessageModalComponent,
         TooManyRequestsComponent,
     },
-})
+};
+
+@Component(options)
 export default class ErrorCardComponent extends Vue {
     @Action("clearErrors", { namespace: "errorBanner" })
     clearErrors!: () => void;
@@ -30,13 +33,23 @@ export default class ErrorCardComponent extends Vue {
     user!: User;
 
     @Getter("isShowing", { namespace: "errorBanner" })
-    isShowing!: boolean;
+    isShowingInStore!: boolean;
 
     @Getter("errors", { namespace: "errorBanner" })
     errors!: BannerError[];
 
     @Ref("copyToClipBoardModal")
     readonly copyToClipBoardModal!: MessageModalComponent;
+
+    private get isShowing(): boolean {
+        return this.isShowingInStore;
+    }
+
+    private set isShowing(value: boolean) {
+        if (value === false) {
+            this.clearErrors();
+        }
+    }
 
     public get haveError(): boolean {
         return this.errors !== undefined && this.errors.length > 0;
@@ -90,12 +103,11 @@ export default class ErrorCardComponent extends Vue {
     <div>
         <TooManyRequestsComponent />
         <b-alert
+            v-model="isShowing"
             data-testid="errorBanner"
             variant="danger"
             dismissible
             class="no-print"
-            :show="isShowing"
-            @dismissed="clearErrors"
         >
             <div>
                 <div
@@ -148,7 +160,7 @@ export default class ErrorCardComponent extends Vue {
                         <p
                             v-for="(error, index) in errorDetails"
                             :key="index"
-                            class="break-word"
+                            class="text-break"
                             :data-testid="'error-details-span-' + (index + 1)"
                         >
                             {{ error }}
@@ -170,9 +182,5 @@ export default class ErrorCardComponent extends Vue {
 .collapsed > .when-opened,
 :not(.collapsed) > .when-closed {
     display: none;
-}
-
-.break-word {
-    word-wrap: break-word;
 }
 </style>

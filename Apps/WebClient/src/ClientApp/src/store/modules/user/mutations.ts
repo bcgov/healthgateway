@@ -10,6 +10,7 @@ import UserProfile from "@/models/userProfile";
 import container from "@/plugins/container";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import { ILogger } from "@/services/interfaces";
+import PreferenceUtil from "@/utility/preferenceUtil";
 
 import { UserMutation, UserState } from "./types";
 
@@ -28,27 +29,46 @@ export const mutations: UserMutation = {
         const logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
 
         if (userProfile) {
-            const notePreference = UserPreferenceType.TutorialMenuNote;
-            // If there are no preferences, set the default popover state
-            if (userProfile.preferences[notePreference] === undefined) {
-                userProfile.preferences[notePreference] = {
-                    hdId: userProfile.hdid,
-                    preference: notePreference,
-                    value: "true",
-                    version: 0,
-                    createdDateTime: new DateWrapper().toISO(),
-                };
-            }
-            const exportPreference = UserPreferenceType.TutorialMenuExport;
-            if (userProfile.preferences[exportPreference] === undefined) {
-                userProfile.preferences[exportPreference] = {
-                    hdId: userProfile.hdid,
-                    preference: exportPreference,
-                    value: "true",
-                    version: 0,
-                    createdDateTime: new DateWrapper().toISO(),
-                };
-            }
+            PreferenceUtil.setDefaultValue(
+                userProfile.preferences,
+                UserPreferenceType.TutorialNote,
+                "true"
+            );
+            PreferenceUtil.setDefaultValue(
+                userProfile.preferences,
+                UserPreferenceType.TutorialMenuExport,
+                "true"
+            );
+            PreferenceUtil.setDefaultValue(
+                userProfile.preferences,
+                UserPreferenceType.TutorialAddDependent,
+                "true"
+            );
+            PreferenceUtil.setDefaultValue(
+                userProfile.preferences,
+                UserPreferenceType.TutorialAddQuickLink,
+                "true"
+            );
+            PreferenceUtil.setDefaultValue(
+                userProfile.preferences,
+                UserPreferenceType.TutorialTimelineFilter,
+                "true"
+            );
+            PreferenceUtil.setDefaultValue(
+                userProfile.preferences,
+                UserPreferenceType.TutorialComment,
+                "true"
+            );
+            PreferenceUtil.setDefaultValue(
+                userProfile.preferences,
+                UserPreferenceType.HideVaccineCardQuickLink,
+                "false"
+            );
+            PreferenceUtil.setDefaultValue(
+                userProfile.preferences,
+                UserPreferenceType.HideImmunizationRecordQuickLink,
+                "false"
+            );
         }
 
         Vue.set(
@@ -120,16 +140,26 @@ export const mutations: UserMutation = {
             state.status = LoadStatus.PARTIALLY_LOADED;
         }
     },
+    setPatientRetrievalFailed(state: UserState) {
+        state.patientRetrievalFailed = true;
+    },
     clearUserData(state: UserState) {
         state.user = new User();
         state.oidcUserInfo = undefined;
+        state.patientData = new PatientData();
+        state.patientRetrievalFailed = false;
+        state.smsResendDateTime = undefined;
+        state.seenTutorialComment = false;
         state.error = false;
-        state.statusMessage = "success";
-        state.status = LoadStatus.LOADED;
+        state.statusMessage = "";
+        state.status = LoadStatus.NONE;
     },
     userError(state: UserState, errorMessage: string) {
         state.error = true;
         state.statusMessage = errorMessage;
         state.status = LoadStatus.ERROR;
+    },
+    setSeenTutorialComment: function (state: UserState, value: boolean): void {
+        state.seenTutorialComment = value;
     },
 };

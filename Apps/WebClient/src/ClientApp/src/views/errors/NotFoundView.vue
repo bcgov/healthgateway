@@ -3,22 +3,20 @@ import Vue from "vue";
 import { Component } from "vue-property-decorator";
 
 import PageErrorComponent from "@/components/PageErrorComponent.vue";
-import { PageError } from "@/models/errors";
 
-@Component({
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const options: any = {
     components: {
         PageErrorComponent,
     },
-})
-export default class NotFoundView extends Vue {
-    public errorDescription = new PageError(
-        "404",
-        "Page Not Found",
-        "The page you were looking for does not exist."
-    );
-}
+};
+
+@Component(options)
+export default class NotFoundView extends Vue {}
 </script>
 
 <template>
-    <PageErrorComponent :error="errorDescription" />
+    <PageErrorComponent title="404" subtitle="Page Not Found">
+        <p>The page you were looking for does not exist.</p>
+    </PageErrorComponent>
 </template>

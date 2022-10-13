@@ -1,6 +1,8 @@
 import { injectable } from "inversify";
 import { ActionContext } from "vuex";
 
+import { AppErrorType } from "@/constants/errorType";
+
 import { auth } from "./modules/auth/auth";
 import { clinicalDocument } from "./modules/clinicalDocument/clinicalDocument";
 import { comment } from "./modules/comment/comment";
@@ -21,10 +23,17 @@ import { GatewayStoreOptions, RootState } from "./types";
 @injectable()
 export class StoreOptions implements GatewayStoreOptions {
     state = {
-        version: "1.0.0",
+        appError: undefined,
         isMobile: false,
+        version: "1.0.0",
     };
     actions = {
+        setAppError(
+            context: ActionContext<RootState, RootState>,
+            appError: AppErrorType
+        ): void {
+            context.commit("setAppError", appError);
+        },
         setIsMobile(
             context: ActionContext<RootState, RootState>,
             isMobile: boolean
@@ -33,9 +42,14 @@ export class StoreOptions implements GatewayStoreOptions {
         },
     };
     getters = {
+        appError: (state: RootState): AppErrorType | undefined =>
+            state.appError,
         isMobile: (state: RootState): boolean => state.isMobile,
     };
     mutations = {
+        setAppError(state: RootState, appError: AppErrorType): void {
+            state.appError = appError;
+        },
         setIsMobile(state: RootState, isMobile: boolean): void {
             state.isMobile = isMobile;
         },

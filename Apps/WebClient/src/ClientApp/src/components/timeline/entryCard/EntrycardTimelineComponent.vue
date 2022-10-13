@@ -10,16 +10,23 @@ import EventBus, { EventMessageName } from "@/eventbus";
 import type { WebClientConfiguration } from "@/models/configData";
 import { DateWrapper } from "@/models/dateWrapper";
 import TimelineEntry from "@/models/timelineEntry";
+import User from "@/models/user";
+import container from "@/plugins/container";
+import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
+import { ILogger } from "@/services/interfaces";
 
 import CommentSectionComponent from "./CommentSectionComponent.vue";
 
 library.add(farComment, faPaperclip);
 
-@Component({
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const options: any = {
     components: {
-        CommentSection: CommentSectionComponent,
+        CommentSectionComponent,
     },
-})
+};
+
+@Component(options)
 export default class EntrycardTimelineComponent extends Vue {
     @Prop() entry!: TimelineEntry;
     @Prop() cardId!: string;
@@ -31,11 +38,17 @@ export default class EntrycardTimelineComponent extends Vue {
     @Prop({ default: true }) canShowDetails!: boolean;
     @Prop({ default: false }) isMobileDetails!: boolean;
     @Prop({ default: false }) hasAttachment!: boolean;
-    @Getter("isMobile") isMobileWidth!: boolean;
+
+    @Getter("isMobile")
+    isMobileWidth!: boolean;
 
     @Getter("webClient", { namespace: "config" })
     config!: WebClientConfiguration;
 
+    @Getter("user", { namespace: "user" })
+    user!: User;
+
+    private logger!: ILogger;
     private eventBus = EventBus;
     private detailsVisible = false;
 
@@ -85,6 +98,7 @@ export default class EntrycardTimelineComponent extends Vue {
     }
 
     private mounted(): void {
+        this.logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
         if (this.isMobileDetails) {
             this.detailsVisible = true;
         }
@@ -185,9 +199,10 @@ export default class EntrycardTimelineComponent extends Vue {
                 <b-row v-if="allowComment && isCommentEnabled">
                     <b-col class="leftPane d-none d-md-block" />
                     <b-col class="pb-1 pt-1 px-3">
-                        <CommentSection
+                        <CommentSectionComponent
                             :parent-entry="entry"
                             :is-mobile-details="isMobileDetails"
+                            :visible="detailsVisible"
                         />
                     </b-col>
                 </b-row>
@@ -266,7 +281,7 @@ div[class*=" row"] {
 .icon {
     background-color: $primary;
     color: white;
-    color-adjust: exact;
+    print-color-adjust: exact;
     text-align: center;
     border-radius: 50%;
     height: 60px;

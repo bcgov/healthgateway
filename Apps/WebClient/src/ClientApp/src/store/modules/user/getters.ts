@@ -4,7 +4,6 @@ import PatientData from "@/models/patientData";
 import { QuickLink } from "@/models/quickLink";
 import { LoadStatus } from "@/models/storeOperations";
 import User, { OidcUserInfo } from "@/models/user";
-import { UserPreference } from "@/models/userPreference";
 import { QuickLinkUtil } from "@/utility/quickLinkUtil";
 
 import { UserGetters, UserState } from "./types";
@@ -29,19 +28,17 @@ export const getters: UserGetters = {
     smsResendDateTime(state: UserState): DateWrapper | undefined {
         return state.smsResendDateTime;
     },
+    seenTutorialComment: function (state: UserState): boolean {
+        return state.seenTutorialComment;
+    },
     hasTermsOfServiceUpdated(state: UserState): boolean {
         const { user } = state;
         return user === undefined ? false : user.hasTermsOfServiceUpdated;
     },
-    getPreference:
-        (state: UserState) =>
-        (preferenceName: string): UserPreference | undefined =>
-            state.user.preferences[preferenceName],
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     quickLinks(_state: UserState, userGetters: any): QuickLink[] | undefined {
-        const preference = userGetters.getPreference(
-            UserPreferenceType.QuickLinks
-        );
+        const preference =
+            userGetters.user.preferences[UserPreferenceType.QuickLinks];
         if (preference === undefined) {
             return undefined;
         }
@@ -49,6 +46,9 @@ export const getters: UserGetters = {
     },
     patientData(state: UserState): PatientData {
         return state.patientData;
+    },
+    patientRetrievalFailed(state: UserState): boolean {
+        return state.patientRetrievalFailed;
     },
     isLoading(state: UserState): boolean {
         return state.status === LoadStatus.REQUESTED;

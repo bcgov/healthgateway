@@ -8,9 +8,11 @@ import { mutations } from "./mutations";
 import { UserModule, UserState } from "./types";
 
 const state: UserState = {
-    statusMessage: "",
     user: new User(),
     patientData: new PatientData(),
+    patientRetrievalFailed: false,
+    seenTutorialComment: false,
+    statusMessage: "",
     error: false,
     status: LoadStatus.NONE,
 };

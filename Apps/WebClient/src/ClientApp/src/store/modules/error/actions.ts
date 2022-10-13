@@ -56,7 +56,10 @@ export const actions: ErrorBannerActions = {
     ) {
         context.commit("setTooManyRequestsError", params.key);
     },
-    clearTooManyRequests(context) {
-        context.commit("clearTooManyRequests");
+    clearTooManyRequestsWarning(context) {
+        context.commit("clearTooManyRequestsWarning");
+    },
+    clearTooManyRequestsError(context) {
+        context.commit("clearTooManyRequestsError");
     },
 };

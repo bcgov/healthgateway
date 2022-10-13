@@ -1,3 +1,8 @@
+export const enum AppErrorType {
+    General,
+    TooManyRequests,
+}
+
 export const enum ErrorType {
     Create,
     Retrieve,
@@ -28,4 +33,6 @@ export enum ErrorSourceType {
     TermsOfService = "terms of service",
     TestKit = "test kit",
     QuickLinks = "quick links",
+    DependentImmunizationReport = "Dependent Immunization Report",
+    ExportRecords = "Export Records",
 }

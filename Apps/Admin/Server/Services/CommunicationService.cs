@@ -16,7 +16,6 @@
 namespace HealthGateway.Admin.Server.Services
 {
     using System.Collections.Generic;
-    using System.Text.Json;
     using AutoMapper;
     using HealthGateway.Admin.Common.Models;
     using HealthGateway.Common.Data.Constants;
@@ -30,9 +29,9 @@ namespace HealthGateway.Admin.Server.Services
     /// <inheritdoc/>
     public class CommunicationService : ICommunicationService
     {
-        private readonly ILogger logger;
-        private readonly ICommunicationDelegate communicationDelegate;
         private readonly IMapper autoMapper;
+        private readonly ICommunicationDelegate communicationDelegate;
+        private readonly ILogger logger;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="CommunicationService"/> class.
@@ -50,11 +49,11 @@ namespace HealthGateway.Admin.Server.Services
         /// <inheritdoc/>
         public RequestResult<Communication> Add(Communication communication)
         {
-            this.logger.LogTrace($"Communication received:  {JsonSerializer.Serialize(communication)}");
+            this.logger.LogTrace("Communication received: {Id)}", communication.Id.ToString());
 
             if (communication.EffectiveDateTime < communication.ExpiryDateTime)
             {
-                this.logger.LogTrace($"Adding communication... {JsonSerializer.Serialize(communication)}");
+                this.logger.LogTrace("Adding communication... {Id)}", communication.Id.ToString());
                 DBResult<Database.Models.Communication> dbResult = this.communicationDelegate.Add(this.autoMapper.Map<Database.Models.Communication>(communication));
                 return new RequestResult<Communication>
                 {
@@ -87,7 +86,7 @@ namespace HealthGateway.Admin.Server.Services
         {
             if (communication.EffectiveDateTime < communication.ExpiryDateTime)
             {
-                this.logger.LogTrace($"Updating communication... {JsonSerializer.Serialize(communication)}");
+                this.logger.LogTrace("Updating communication... {Id)}", communication.Id.ToString());
 
                 DBResult<Database.Models.Communication> dbResult = this.communicationDelegate.Update(this.autoMapper.Map<Database.Models.Communication>(communication));
                 return new RequestResult<Communication>

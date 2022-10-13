@@ -19,11 +19,14 @@ import { ILogger } from "@/services/interfaces";
 
 library.add(faBars, faSignInAlt, faSignOutAlt, faTimes, faUserCircle);
 
-@Component({
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const options: any = {
     components: {
         RatingComponent,
     },
-})
+};
+
+@Component(options)
 export default class HeaderComponent extends Vue {
     @Action("toggleSidebar", { namespace: "navbar" })
     toggleSidebar!: () => void;
@@ -57,6 +60,9 @@ export default class HeaderComponent extends Vue {
 
     @Getter("oidcUserInfo", { namespace: "user" })
     oidcUserInfo!: OidcUserInfo | undefined;
+
+    @Getter("patientRetrievalFailed", { namespace: "user" })
+    patientRetrievalFailed!: boolean;
 
     @Ref("ratingComponent")
     readonly ratingComponent!: RatingComponent;
@@ -112,6 +118,14 @@ export default class HeaderComponent extends Vue {
 
     private get isLogInButtonShown(): boolean {
         return !this.oidcIsAuthenticated && !this.isOffline && !this.isPcrTest;
+    }
+
+    private get isProfileLinkAvailable(): boolean {
+        return (
+            this.isLoggedInMenuShown &&
+            this.isValidIdentityProvider &&
+            !this.patientRetrievalFailed
+        );
     }
 
     private onScroll(): void {
@@ -250,7 +264,7 @@ export default class HeaderComponent extends Vue {
                         <b-dropdown-divider />
                     </span>
                     <b-dropdown-item
-                        v-if="isValidIdentityProvider"
+                        v-if="isProfileLinkAvailable"
                         id="menuBtnProfile"
                         data-testid="profileBtn"
                         to="/profile"

@@ -29,8 +29,8 @@ namespace HealthGateway.Common.FileDownload
     /// </summary>
     public class FileDownloadService : IFileDownloadService
     {
-        private readonly ILogger<FileDownloadService> logger;
         private readonly IHttpClientService httpClientService;
+        private readonly ILogger<FileDownloadService> logger;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="FileDownloadService"/> class.
@@ -88,7 +88,7 @@ namespace HealthGateway.Common.FileDownload
             catch (Exception exception)
 #pragma warning restore CA1031
             {
-                this.logger.LogCritical(exception.ToString());
+                this.logger.LogCritical("{Exception}", exception.ToString());
                 File.Delete(filePath);
                 fd.Name = string.Empty;
                 fd.LocalFilePath = string.Empty;

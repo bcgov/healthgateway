@@ -72,7 +72,8 @@ enum FilterLabelType {
     Date = "Date",
 }
 
-@Component({
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const options: any = {
     components: {
         BToast,
         BreadcrumbComponent,
@@ -83,13 +84,12 @@ enum FilterLabelType {
         Filters: FilterComponent,
         "add-note-button": AddNoteButtonComponent,
     },
-})
+};
+
+@Component(options)
 export default class TimelineView extends Vue {
     @Getter("webClient", { namespace: "config" })
     config!: WebClientConfiguration;
-
-    @Action("retrievePatientData", { namespace: "user" })
-    retrievePatientData!: () => Promise<void>;
 
     @Action("retrieve", { namespace: "immunization" })
     retrieveImmunizations!: (params: { hdid: string }) => Promise<void>;
@@ -419,7 +419,6 @@ export default class TimelineView extends Vue {
 
     private fetchTimelineData(): void {
         Promise.all([
-            this.retrievePatientData(),
             this.retrieveMedications({ hdid: this.user.hdid }),
             this.retrieveMedicationRequests({ hdid: this.user.hdid }),
             this.retrieveImmunizations({ hdid: this.user.hdid }),
@@ -538,66 +537,57 @@ export default class TimelineView extends Vue {
                 until you can see them.
             </span>
         </b-alert>
-        <b-row>
-            <b-col id="timeline" class="col-12 col-lg-9 column-wrapper">
-                <page-title title="Timeline">
-                    <div class="float-right">
-                        <add-note-button
-                            v-if="isNoteEnabled && !isNoteLoading"
-                        />
-                    </div>
-                </page-title>
-                <div
-                    v-if="showTimelineEntries"
-                    class="sticky-top sticky-offset"
-                    :class="{ 'header-offset': isHeaderShown }"
-                >
-                    <b-row
-                        class="no-print justify-content-between py-2"
-                        align-v="start"
+        <page-title title="Timeline">
+            <div class="float-right">
+                <add-note-button v-if="isNoteEnabled && !isNoteLoading" />
+            </div>
+        </page-title>
+        <div
+            v-if="showTimelineEntries"
+            class="sticky-top sticky-offset"
+            :class="{ 'header-offset': isHeaderShown }"
+        >
+            <b-row
+                class="no-print justify-content-between py-2"
+                align-v="start"
+            >
+                <b-col class="col-auto">
+                    <Filters class="my-1" />
+                </b-col>
+                <b-col class="mx-2">
+                    <b-form-tag
+                        v-for="[label, value] in filterLabels"
+                        :key="`${label}-${value}`"
+                        variant="light"
+                        class="filter-label p-1 mr-2 my-1"
+                        :title="`${label} Filter`"
+                        data-testid="filter-label"
+                        @remove="clearFilter(label, value)"
+                        >{{ value }}</b-form-tag
                     >
-                        <b-col class="col-auto">
-                            <Filters class="my-1" />
-                        </b-col>
-                        <b-col class="mx-2">
-                            <b-form-tag
-                                v-for="[label, value] in filterLabels"
-                                :key="`${label}-${value}`"
-                                variant="light"
-                                class="filter-label p-1 mr-2 my-1"
-                                :title="`${label} Filter`"
-                                data-testid="filter-label"
-                                @remove="clearFilter(label, value)"
-                                >{{ value }}</b-form-tag
-                            >
-                            <hg-button
-                                v-if="filterLabels.length > 0"
-                                class="p-1 mt-n1"
-                                data-testid="clear-filters-button"
-                                variant="link"
-                                @click="clearFilters"
-                            >
-                                Clear All
-                            </hg-button>
-                        </b-col>
-                    </b-row>
-                </div>
-                <LinearTimeline
-                    v-show="showTimelineEntries"
-                    :timeline-entries="filteredTimelineEntries"
-                />
-                <b-row v-if="showContentPlaceholders">
-                    <b-col>
-                        <content-placeholders
-                            data-testid="content-placeholders"
-                        >
-                            <content-placeholders-heading :img="true" />
-                            <content-placeholders-text :lines="3" />
-                        </content-placeholders>
-                    </b-col>
-                </b-row>
-            </b-col>
-        </b-row>
+                    <hg-button
+                        v-if="filterLabels.length > 0"
+                        class="p-1 mt-n1"
+                        data-testid="clear-filters-button"
+                        variant="link"
+                        @click="clearFilters"
+                    >
+                        Clear All
+                    </hg-button>
+                </b-col>
+            </b-row>
+        </div>
+        <LinearTimeline
+            v-show="showTimelineEntries"
+            :timeline-entries="filteredTimelineEntries"
+        />
+        <content-placeholders
+            v-if="showContentPlaceholders"
+            data-testid="content-placeholders"
+        >
+            <content-placeholders-heading :img="true" />
+            <content-placeholders-text :lines="3" />
+        </content-placeholders>
         <ProtectiveWordComponent :is-loading="isMedicationStatementLoading" />
         <NoteEditComponent :is-loading="isNoteLoading" />
         <EntryDetailsComponent />
@@ -620,10 +610,6 @@ export default class TimelineView extends Vue {
 .sticky-top {
     transition: all 0.3s;
     z-index: 49 !important;
-}
-
-.column-wrapper {
-    border: 1px;
 }
 
 hr {

@@ -6,12 +6,15 @@ import BreadcrumbComponent from "@/components/navmenu/BreadcrumbComponent.vue";
 import ReleaseNoteComponent from "@/components/ReleaseNoteComponent.vue";
 import BreadcrumbItem from "@/models/breadcrumbItem";
 
-@Component({
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const options: any = {
     components: {
         BreadcrumbComponent,
         "release-note": ReleaseNoteComponent,
     },
-})
+};
+
+@Component(options)
 export default class ReleaseNotesView extends Vue {
     private breadcrumbItems: BreadcrumbItem[] = [
         {
@@ -28,6 +31,37 @@ export default class ReleaseNotesView extends Vue {
     <div>
         <BreadcrumbComponent :items="breadcrumbItems" />
         <page-title title="Health Gateway Release Notes" />
+        <release-note
+            date="October 4, 2022"
+            version="v2022.6.8"
+            title="Add Vaccinations"
+        >
+            <ul>
+                <li>
+                    We added links to the new immunization submission portal
+                    which allows you to submit immunizations to public health to
+                    update your records. The update includes a quick link on the
+                    home page.
+                </li>
+            </ul>
+        </release-note>
+        <release-note
+            date="September 20, 2022"
+            version="v2022.6.7"
+            title="Tutorial Messages, Lab Test Resources"
+        >
+            <ul>
+                <li>
+                    We updated and added more tutorial messages that provide
+                    helpful information when you log in to Health Gateway for
+                    the first time.
+                </li>
+                <li>
+                    We updated the resource popovers for lab results to include
+                    links to reputable information about lab tests.
+                </li>
+            </ul>
+        </release-note>
         <release-note
             date="September 6, 2022"
             version="v2022.6.6"

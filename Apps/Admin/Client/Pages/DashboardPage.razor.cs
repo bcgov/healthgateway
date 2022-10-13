@@ -227,8 +227,7 @@ public partial class DashboardPage : FluxorComponent
                         TotalRegisteredUsers = grp.Sum(s => s.TotalRegisteredUsers),
                         TotalDependents = grp.Sum(d => d.TotalDependents),
                         TotalLoggedInUsers = grp.Sum(l => l.TotalLoggedInUsers),
-                    })
-                .OrderByDescending(grp => grp.DailyDateTime);
+                    });
         }
     }
 

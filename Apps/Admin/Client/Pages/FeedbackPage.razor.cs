@@ -76,7 +76,6 @@ public partial class FeedbackPage : FluxorComponent
 
     private IEnumerable<FeedbackRow> FeedbackRows => this.Feedback
         .Where(f => this.TagIdFilter.All(t => f.Tags.Any(ft => ft.TagId == t)))
-        .OrderByDescending(f => f.CreatedDateTime)
         .Select(f => new FeedbackRow(f));
 
     private MudChip[] SelectedTagChips { get; set; } = Array.Empty<MudChip>();

@@ -12,8 +12,11 @@ import { Action, Getter } from "vuex-class";
 
 import DatePickerComponent from "@/components/DatePickerComponent.vue";
 import { EntryType, entryTypeMap } from "@/constants/entryType";
+import UserPreferenceType from "@/constants/userPreferenceType";
 import type { WebClientConfiguration } from "@/models/configData";
 import TimelineFilter, { TimelineFilterBuilder } from "@/models/timelineFilter";
+import User from "@/models/user";
+import { UserPreference } from "@/models/userPreference";
 import container from "@/plugins/container";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import { ILogger } from "@/services/interfaces";
@@ -26,14 +29,20 @@ interface EntryTypeFilter {
     display: string;
 }
 
-@Component({
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const options: any = {
     components: {
         DatePickerComponent,
     },
-})
+};
+
+@Component(options)
 export default class FilterComponent extends Vue {
     @Action("setFilter", { namespace: "timeline" })
     setFilter!: (filterBuilder: TimelineFilterBuilder) => void;
+
+    @Action("setUserPreference", { namespace: "user" })
+    setUserPreference!: (params: { preference: UserPreference }) => void;
 
     @Getter("webClient", { namespace: "config" })
     config!: WebClientConfiguration;
@@ -71,9 +80,13 @@ export default class FilterComponent extends Vue {
     @Getter("filter", { namespace: "timeline" })
     activeFilter!: TimelineFilter;
 
+    @Getter("user", { namespace: "user" })
+    user!: User;
+
     private logger!: ILogger;
     private isModalVisible = false;
     private isMenuVisible = false;
+    private isFilterTutorialHidden = false;
 
     private startDate = "";
     private endDate = "";
@@ -91,6 +104,14 @@ export default class FilterComponent extends Vue {
 
     private get hasFilterSelected(): boolean {
         return this.activeFilter.hasActiveFilter();
+    }
+
+    private get showFilterTutorial(): boolean {
+        const preferenceType = UserPreferenceType.TutorialTimelineFilter;
+        return (
+            this.user.preferences[preferenceType]?.value === "true" &&
+            !this.isFilterTutorialHidden
+        );
     }
 
     private mounted(): void {
@@ -182,16 +203,28 @@ export default class FilterComponent extends Vue {
               ).toString() + "K"
             : num.toString();
     }
+
+    private dismissFilterTutorial(): void {
+        this.logger.debug("Dismissing timeline filter tutorial");
+        this.isFilterTutorialHidden = true;
+
+        const preference = {
+            ...this.user.preferences[UserPreferenceType.TutorialTimelineFilter],
+            value: "false",
+        };
+        this.setUserPreference({ preference });
+    }
 }
 </script>
 
 <template>
     <div class="filters-wrapper">
-        <div class="filters-width d-none d-lg-block">
+        <div id="filter-button-container">
             <hg-button
                 id="filterBtn"
                 data-testid="filterDropdown"
                 :class="{ selected: hasFilterSelected }"
+                class="d-none d-lg-block"
                 variant="secondary"
                 tabindex="0"
                 @click="toggleMenu"
@@ -211,120 +244,144 @@ export default class FilterComponent extends Vue {
                     class="ml-2"
                 />
             </hg-button>
-            <b-popover
-                target="filterBtn"
-                :show.sync="isMenuVisible"
-                triggers="click"
-                text="Filter"
-                class="w-100"
-                data-testid="filterContainer"
-                placement="bottom"
-                fallback-placement="clockwise"
-                menu-class="z-index-large w-100"
+            <hg-button
+                data-testid="mobileFilterDropdown"
+                class="d-inline d-lg-none"
+                :class="{ selected: hasFilterSelected }"
+                variant="secondary"
+                @click.stop="toggleMobileView"
             >
-                <div class="px-1">
-                    <b-row class="mt-2">
-                        <b-col><strong>Keywords</strong></b-col>
-                    </b-row>
-                    <div class="mt-1 has-filter">
-                        <hg-icon
-                            icon="search"
-                            size="medium"
-                            class="form-control-feedback"
-                        />
-                        <b-form-input
-                            v-model="keywordInputText"
-                            data-testid="filterTextInput"
-                            type="text"
-                            placeholder=""
-                            maxlength="50"
-                            debounce="250"
-                        />
-                    </div>
-                    <b-row class="mt-2 mb-1">
-                        <b-col><strong>Type</strong></b-col>
-                    </b-row>
-                    <b-row
-                        v-for="(entryType, index) in enabledEntryTypes"
-                        :key="index"
-                    >
-                        <b-col cols="8" align-self="start">
-                            <b-form-checkbox
-                                :id="entryType.type + '-filter'"
-                                v-model="selectedEntryTypes"
-                                :data-testid="`${entryType.type}-filter`"
-                                :name="entryType.type + '-filter'"
-                                :value="entryType.type"
-                            >
-                                {{ entryType.display }}
-                            </b-form-checkbox>
-                        </b-col>
-                        <b-col
-                            cols="4"
-                            align-self="end"
-                            class="text-right"
-                            :data-testid="`${entryType.type}Count`"
-                        >
-                            ({{ formatFilterCount(entryType.type) }})
-                        </b-col>
-                    </b-row>
-                    <b-row class="mt-2">
-                        <b-col><strong>Dates</strong></b-col>
-                    </b-row>
-                    <b-row class="mt-1">
-                        <b-col>
-                            <DatePickerComponent
-                                id="start-date"
-                                v-model="startDate"
-                                data-testid="filterStartDateInput"
-                            />
-                        </b-col>
-                    </b-row>
-                    <b-row class="mt-1">
-                        <b-col>
-                            <DatePickerComponent
-                                id="end-date"
-                                v-model="endDate"
-                                data-testid="filterEndDateInput"
-                            />
-                        </b-col>
-                    </b-row>
-                    <b-row class="mt-3 mb-2" no-gutters align-h="end">
-                        <b-col cols="auto">
-                            <hg-button
-                                data-testid="btnFilterCancel"
-                                class="px-2"
-                                variant="secondary"
-                                @click.stop="cancel"
-                            >
-                                Cancel
-                            </hg-button>
-                        </b-col>
-                        <b-col cols="auto" class="ml-2">
-                            <hg-button
-                                data-testid="btnFilterApply"
-                                class="btn-primary px-2"
-                                variant="primary"
-                                @click.stop="apply"
-                            >
-                                Apply
-                            </hg-button>
-                        </b-col>
-                    </b-row>
-                </div>
-            </b-popover>
+                <hg-icon
+                    icon="filter"
+                    size="medium"
+                    square
+                    aria-hidden="true"
+                />
+            </hg-button>
         </div>
-
-        <!-- Mobile view specific modal-->
-        <hg-button
-            data-testid="mobileFilterDropdown"
-            class="d-inline d-lg-none"
-            :class="{ 'filter-selected': hasFilterSelected }"
-            variant="secondary"
-            @click.stop="toggleMobileView"
+        <b-popover
+            triggers="manual"
+            :show="showFilterTutorial"
+            target="filter-button-container"
+            placement="bottom"
+            boundary="viewport"
         >
-            <hg-icon icon="filter" size="medium" square aria-hidden="true" />
-        </hg-button>
+            <div>
+                <hg-button
+                    class="float-right text-dark p-0 ml-2"
+                    variant="icon"
+                    @click="dismissFilterTutorial()"
+                    >×</hg-button
+                >
+            </div>
+            <div data-testid="filter-tutorial-popover">
+                Filter by health record type, date or keyword to find what you
+                need.
+            </div>
+        </b-popover>
+        <b-popover
+            target="filterBtn"
+            :show.sync="isMenuVisible"
+            triggers="click"
+            text="Filter"
+            class="w-100"
+            data-testid="filterContainer"
+            placement="bottom"
+            fallback-placement="clockwise"
+            boundary="viewport"
+            menu-class="z-index-large w-100"
+        >
+            <div class="px-1">
+                <b-row class="mt-2">
+                    <b-col><strong>Keywords</strong></b-col>
+                </b-row>
+                <div class="mt-1 has-filter">
+                    <hg-icon
+                        icon="search"
+                        size="medium"
+                        class="form-control-feedback"
+                    />
+                    <b-form-input
+                        v-model="keywordInputText"
+                        data-testid="filterTextInput"
+                        type="text"
+                        placeholder=""
+                        maxlength="50"
+                        debounce="250"
+                    />
+                </div>
+                <b-row class="mt-2 mb-1">
+                    <b-col><strong>Type</strong></b-col>
+                </b-row>
+                <b-row
+                    v-for="(entryType, index) in enabledEntryTypes"
+                    :key="index"
+                >
+                    <b-col cols="8" align-self="start">
+                        <b-form-checkbox
+                            :id="entryType.type + '-filter'"
+                            v-model="selectedEntryTypes"
+                            :data-testid="`${entryType.type}-filter`"
+                            :name="entryType.type + '-filter'"
+                            :value="entryType.type"
+                        >
+                            {{ entryType.display }}
+                        </b-form-checkbox>
+                    </b-col>
+                    <b-col
+                        cols="4"
+                        align-self="end"
+                        class="text-right"
+                        :data-testid="`${entryType.type}Count`"
+                    >
+                        ({{ formatFilterCount(entryType.type) }})
+                    </b-col>
+                </b-row>
+                <b-row class="mt-2">
+                    <b-col><strong>Dates</strong></b-col>
+                </b-row>
+                <b-row class="mt-1">
+                    <b-col>
+                        <DatePickerComponent
+                            id="start-date"
+                            v-model="startDate"
+                            data-testid="filterStartDateInput"
+                        />
+                    </b-col>
+                </b-row>
+                <b-row class="mt-1">
+                    <b-col>
+                        <DatePickerComponent
+                            id="end-date"
+                            v-model="endDate"
+                            data-testid="filterEndDateInput"
+                        />
+                    </b-col>
+                </b-row>
+                <b-row class="mt-3 mb-2" no-gutters align-h="end">
+                    <b-col cols="auto">
+                        <hg-button
+                            data-testid="btnFilterCancel"
+                            class="px-2"
+                            variant="secondary"
+                            @click.stop="cancel"
+                        >
+                            Cancel
+                        </hg-button>
+                    </b-col>
+                    <b-col cols="auto" class="ml-2">
+                        <hg-button
+                            data-testid="btnFilterApply"
+                            class="btn-primary px-2"
+                            variant="primary"
+                            @click.stop="apply"
+                        >
+                            Apply
+                        </hg-button>
+                    </b-col>
+                </b-row>
+            </div>
+        </b-popover>
         <b-modal
             id="generic-message"
             v-model="isModalVisible"
@@ -469,14 +526,6 @@ export default class FilterComponent extends Vue {
 
     .btn-close {
         font-size: 1.5em;
-    }
-}
-
-.filters-wrapper {
-    .filter-selected {
-        border-color: $aquaBlue;
-        background-color: $aquaBlue;
-        color: white;
     }
 }
 

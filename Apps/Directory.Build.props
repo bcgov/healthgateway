@@ -4,15 +4,15 @@
         <Nullable>enable</Nullable>
         <LangVersion>10.0</LangVersion>
         <AnalysisMode>AllEnabledByDefault</AnalysisMode>
-     	<WarningLevel>4</WarningLevel>
+        <WarningLevel>4</WarningLevel>
         <EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
-      <NoWarn>CA1848,CA2253,CA2254</NoWarn>
+        <NoWarn>CA1848</NoWarn>
     </PropertyGroup>
     <ItemGroup>
-        <PackageReference Include="Microsoft.CodeAnalysis" Version="4.3.0" ExcludeAssets="All" />
-        <PackageReference Include="SonarAnalyzer.CSharp" Version="8.44.0.52574">
-          <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-          <PrivateAssets>all</PrivateAssets>
+        <PackageReference Include="Microsoft.CodeAnalysis" Version="4.3.1" ExcludeAssets="All"/>
+        <PackageReference Include="SonarAnalyzer.CSharp" Version="8.46.0.54807">
+            <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+            <PrivateAssets>all</PrivateAssets>
         </PackageReference>
         <PackageReference Include="StyleCop.Analyzers" Version="1.2.0-beta.354">
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>

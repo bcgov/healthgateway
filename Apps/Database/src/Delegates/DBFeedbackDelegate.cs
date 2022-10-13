@@ -50,7 +50,7 @@ namespace HealthGateway.Database.Delegates
         /// <inheritdoc/>
         public DBResult<UserFeedback> InsertUserFeedback(UserFeedback feedback)
         {
-            this.logger.LogTrace($"Inserting user feedback to DB... {JsonSerializer.Serialize(feedback)}");
+            this.logger.LogTrace("Inserting user feedback to DB...");
             DBResult<UserFeedback> result = new();
             this.dbContext.Add(feedback);
             try
@@ -64,14 +64,14 @@ namespace HealthGateway.Database.Delegates
                 result.Message = e.Message;
             }
 
-            this.logger.LogDebug($"Finished inserting user feedback to DB... {JsonSerializer.Serialize(result)}");
+            this.logger.LogDebug("Finished inserting user feedback to DB...");
             return result;
         }
 
         /// <inheritdoc/>
         public void UpdateUserFeedback(UserFeedback feedback)
         {
-            this.logger.LogTrace($"Updating the user feedback in DB... {feedback}");
+            this.logger.LogTrace("Updating the user feedback in DB...");
             this.dbContext.Update(feedback);
 
             // Disallow updates to UserProfileId
@@ -82,7 +82,7 @@ namespace HealthGateway.Database.Delegates
             // Reload the entry after saving to retrieve the actual UserProfileId value
             this.dbContext.Entry(feedback).Reload();
 
-            this.logger.LogDebug($"Finished updating feedback in DB. {JsonSerializer.Serialize(feedback)}");
+            this.logger.LogDebug("Finished updating feedback in DB...");
         }
 
         /// <inheritdoc/>
@@ -110,7 +110,7 @@ namespace HealthGateway.Database.Delegates
         /// <inheritdoc/>
         public DBResult<UserFeedback> GetUserFeedback(Guid feedbackId)
         {
-            this.logger.LogTrace($"Getting user feedback from DB... {feedbackId}");
+            this.logger.LogTrace("Getting user feedback from DB... {FeedbackId}", feedbackId);
             UserFeedback? feedback = this.dbContext.UserFeedback.Find(feedbackId);
             DBResult<UserFeedback> result = new();
             if (feedback != null)
@@ -120,11 +120,11 @@ namespace HealthGateway.Database.Delegates
             }
             else
             {
-                this.logger.LogInformation($"Unable to find feedback using ID: {feedbackId}");
+                this.logger.LogInformation("Unable to find feedback using ID: {FeedbackId}", feedbackId);
                 result.Status = DBStatusCode.NotFound;
             }
 
-            this.logger.LogDebug($"Finished getting user feedback from DB... {JsonSerializer.Serialize(result)}");
+            this.logger.LogDebug("Finished getting user feedback from DB...");
             return result;
         }
 

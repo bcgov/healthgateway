@@ -32,9 +32,9 @@ namespace HealthGateway.Laboratory.Services
     /// <inheritdoc/>
     public class LabTestKitService : ILabTestKitService
     {
-        private readonly ILogger<LabTestKitService> logger;
         private readonly IAuthenticationDelegate authenticationDelegate;
         private readonly ILabTestKitClient labTestKitClient;
+        private readonly ILogger<LabTestKitService> logger;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="LabTestKitService"/> class.
@@ -87,7 +87,7 @@ namespace HealthGateway.Laboratory.Services
                     }
                     catch (HttpRequestException e)
                     {
-                        this.logger.LogCritical($"HTTP Request Exception {e}");
+                        this.logger.LogCritical("HTTP Request Exception {Exception}", e.ToString());
                         requestResult.ResultError = new()
                         {
                             ResultMessage = "Error with HTTP Request",
@@ -127,7 +127,7 @@ namespace HealthGateway.Laboratory.Services
             }
             catch (HttpRequestException e)
             {
-                this.logger.LogCritical($"HTTP Request Exception {e}");
+                this.logger.LogCritical("HTTP Request Exception {Exception}", e.ToString());
                 requestResult.ResultError = new()
                 {
                     ResultMessage = "Error with HTTP Request",

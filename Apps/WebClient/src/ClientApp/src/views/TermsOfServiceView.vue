@@ -12,13 +12,16 @@ import container from "@/plugins/container";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import { ILogger, IUserProfileService } from "@/services/interfaces";
 
-@Component({
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const options: any = {
     components: {
         BreadcrumbComponent,
         LoadingComponent,
         HtmlTextAreaComponent,
     },
-})
+};
+
+@Component(options)
 export default class TermsOfServiceView extends Vue {
     @Action("setTooManyRequestsWarning", { namespace: "errorBanner" })
     setTooManyRequestsWarning!: (params: { key: string }) => void;
@@ -59,7 +62,7 @@ export default class TermsOfServiceView extends Vue {
                 this.termsOfService = result.content;
             })
             .catch((err: ResultError) => {
-                this.logger.error(err);
+                this.logger.error(err.resultMessage);
                 if (err.statusCode === 429) {
                     this.setTooManyRequestsWarning({ key: "page" });
                 } else {
@@ -78,26 +81,13 @@ export default class TermsOfServiceView extends Vue {
     <div>
         <BreadcrumbComponent :items="breadcrumbItems" />
         <LoadingComponent :is-loading="isLoading" />
-        <b-row>
-            <b-col class="col-12 col-lg-9 column-wrapper">
-                <b-row>
-                    <b-col>
-                        <b-alert :show="hasErrors" dismissible variant="danger">
-                            <h4>Error</h4>
-                            <p>
-                                An unexpected error occured while processing the
-                                request:
-                            </p>
-                            <span>{{ errorMessage }}</span>
-                        </b-alert>
-                    </b-col>
-                </b-row>
-                <page-title title="Terms of Service" />
-                <div v-if="!isLoading">
-                    <HtmlTextAreaComponent :input="termsOfService" />
-                </div>
-            </b-col>
-        </b-row>
+        <b-alert :show="hasErrors" dismissible variant="danger">
+            <h4>Error</h4>
+            <p>An unexpected error occured while processing the request:</p>
+            <span>{{ errorMessage }}</span>
+        </b-alert>
+        <page-title title="Terms of Service" />
+        <HtmlTextAreaComponent v-if="!isLoading" :input="termsOfService" />
     </div>
 </template>
 

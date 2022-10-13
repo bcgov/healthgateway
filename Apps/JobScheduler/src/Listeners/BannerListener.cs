@@ -67,13 +67,13 @@ namespace HealthGateway.JobScheduler.Listeners
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
             this.logger.LogInformation("Banner Listener is starting");
-            stoppingToken.Register(() => this.logger.LogInformation("Banner Listener Shutdown as cancellation requested    "));
+            stoppingToken.Register(() => this.logger.LogInformation("Banner Listener Shutdown as cancellation requested"));
             this.ClearCache();
             int attempts = 0;
             while (!stoppingToken.IsCancellationRequested)
             {
                 attempts++;
-                this.logger.LogInformation($"Registering Channel Notification on channel {Channel}, attempts = {attempts}");
+                this.logger.LogInformation("Registering Channel Notification on channel {Channel}, attempts = {Attempts}", Channel, attempts);
                 try
                 {
                     using IServiceScope scope = this.services.CreateScope();
@@ -97,7 +97,7 @@ namespace HealthGateway.JobScheduler.Listeners
                 }
                 catch (NpgsqlException e)
                 {
-                    this.logger.LogError($"DB Error encountered in WaitChannelNotification: {Channel}\n{e}");
+                    this.logger.LogError("DB Error encountered in WaitChannelNotification: {Channel}\n{Exception}", Channel, e.ToString());
                     if (!stoppingToken.IsCancellationRequested)
                     {
                         await Task.Delay(SleepDuration, stoppingToken).ConfigureAwait(true);
@@ -118,7 +118,7 @@ namespace HealthGateway.JobScheduler.Listeners
 
         private void ReceiveEvent(object sender, NpgsqlNotificationEventArgs e)
         {
-            this.logger.LogDebug($"Banner Event received on channel {Channel}");
+            this.logger.LogDebug("Banner Event received on channel {Channel}", Channel);
             JsonSerializerOptions options = new()
             {
                 PropertyNameCaseInsensitive = true,

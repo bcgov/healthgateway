@@ -17,11 +17,14 @@ import VaccinationStatus from "@/models/vaccinationStatus";
 
 library.add(faCheckCircle, faChevronLeft, faChevronRight, faHandPointer);
 
-@Component({
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const options: any = {
     components: {
         TooManyRequestsComponent,
     },
-})
+};
+
+@Component(options)
 export default class VaccineCardComponent extends Vue {
     @Prop({ required: true }) status!: VaccinationStatus | undefined;
     @Prop({ required: false, default: undefined }) previousAction!:

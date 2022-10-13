@@ -15,22 +15,33 @@ import container from "@/plugins/container";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import { ILogger } from "@/services/interfaces";
 
-@Component({
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const options: any = {
     components: {
         Comment: CommentComponent,
         AddComment: AddCommentComponent,
     },
-})
-export default class CommentSectionComponent extends Vue {
-    @Prop() parentEntry!: TimelineEntry;
-    @Prop({ default: false }) isMobileDetails!: boolean;
+};
 
-    @Getter("user", { namespace: "user" }) user!: User;
+@Component(options)
+export default class CommentSectionComponent extends Vue {
+    @Prop()
+    parentEntry!: TimelineEntry;
+
+    @Prop({ default: false })
+    isMobileDetails!: boolean;
+
+    @Prop({ default: false })
+    visible!: boolean;
+
     @Action("updateComment", { namespace: "comment" })
     updateComment!: (params: {
         hdid: string;
         comment: UserComment;
     }) => Promise<UserComment>;
+
+    @Getter("user", { namespace: "user" })
+    user!: User;
 
     private logger!: ILogger;
     private showComments = false;
@@ -169,6 +180,8 @@ export default class CommentSectionComponent extends Vue {
                     'fixed-bottom p-3 comment-input': isMobileDetails,
                 }"
                 :comment="newComment"
+                :is-mobile-details="isMobileDetails"
+                :visible="visible"
                 @on-comment-added="onAdd"
             ></AddComment>
         </b-col>

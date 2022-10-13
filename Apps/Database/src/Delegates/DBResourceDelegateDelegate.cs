@@ -50,7 +50,7 @@ namespace HealthGateway.Database.Delegates
         /// <inheritdoc/>
         public DBResult<ResourceDelegate> Insert(ResourceDelegate resourceDelegate, bool commit)
         {
-            this.logger.LogTrace($"Inserting resource delegate to DB... {JsonSerializer.Serialize(resourceDelegate)}");
+            this.logger.LogTrace("Inserting resource delegate to DB...");
             DBResult<ResourceDelegate> result = new()
             {
                 Payload = resourceDelegate,
@@ -67,27 +67,27 @@ namespace HealthGateway.Database.Delegates
                 }
                 catch (DbUpdateException e)
                 {
-                    this.logger.LogError($"Error inserting resource delegate to DB with exception ({e})");
+                    this.logger.LogError("Error inserting resource delegate to DB with exception {Exception}", e.ToString());
                     result.Status = DBStatusCode.Error;
                     result.Message = e.Message;
                 }
             }
 
-            this.logger.LogTrace($"Finished inserting resource delegate to DB... {JsonSerializer.Serialize(result)}");
+            this.logger.LogTrace("Finished inserting resource delegate to DB with id");
             return result;
         }
 
         /// <inheritdoc/>
         public DBResult<IEnumerable<ResourceDelegate>> Get(string delegateId, int page, int pageSize)
         {
-            this.logger.LogTrace($"Getting resource delegates from DB... {delegateId}");
+            this.logger.LogTrace("Getting resource delegates from DB... {DelegateId}", delegateId);
             DBResult<IEnumerable<ResourceDelegate>> result = DBDelegateHelper.GetPagedDBResult(
                 this.dbContext.ResourceDelegate
                     .Where(resourceDelegate => resourceDelegate.ProfileHdid == delegateId)
                     .OrderBy(resourceDelegate => resourceDelegate.CreatedDateTime),
                 page,
                 pageSize);
-            this.logger.LogTrace($"Finished getting resource delegates from DB... {JsonSerializer.Serialize(result)}");
+            this.logger.LogTrace("Finished getting resource delegates from DB for Id {DelegateId}", delegateId);
             return result;
         }
 
@@ -109,7 +109,7 @@ namespace HealthGateway.Database.Delegates
         /// <inheritdoc/>
         public DBResult<ResourceDelegate> Delete(ResourceDelegate resourceDelegate, bool commit)
         {
-            this.logger.LogTrace($"Deleting resourceDelegate {JsonSerializer.Serialize(resourceDelegate)} from DB...");
+            this.logger.LogTrace("Deleting resourceDelegate from DB...");
             DBResult<ResourceDelegate> result = new()
             {
                 Status = DBStatusCode.Deferred,

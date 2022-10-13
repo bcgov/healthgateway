@@ -269,7 +269,7 @@ namespace HealthGateway.Common.AspNetConfiguration.Modules
         {
             IAuditLogger? auditLogger = services.BuildServiceProvider().GetService<IAuditLogger>();
             bool debugEnabled = environment.IsDevelopment() || configuration.GetValue("EnableDebug", true);
-            logger.LogDebug($"Debug configuration is {debugEnabled}");
+            logger.LogDebug("Debug configuration is {DebugEnabled}", debugEnabled);
 
             // Displays sensitive data from the jwt if the environment is development only
             IdentityModelEventSource.ShowPII = debugEnabled;
@@ -375,7 +375,7 @@ namespace HealthGateway.Common.AspNetConfiguration.Modules
                                 c.HandleResponse();
                                 c.Response.StatusCode = StatusCodes.Status401Unauthorized;
                                 c.Response.ContentType = "text/plain";
-                                logger.LogError(c.Exception.ToString());
+                                logger.LogError("{Exception}", c.Exception.ToString());
 
                                 return c.Response.WriteAsync(c.Exception.ToString());
                             },

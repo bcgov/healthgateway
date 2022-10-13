@@ -69,9 +69,9 @@ namespace HealthGateway.Immunization.Controllers
         [Authorize(Policy = ImmunizationPolicy.Read)]
         public async Task<RequestResult<VaccineStatus>> GetVaccineStatus([FromQuery] string hdid)
         {
-            this.logger.LogDebug($"Getting vaccine status for HDID {hdid}");
+            this.logger.LogDebug("Getting vaccine status for HDID {Hdid}", hdid);
             RequestResult<VaccineStatus> result = await this.vaccineStatusService.GetAuthenticatedVaccineStatus(hdid).ConfigureAwait(true);
-            this.logger.LogDebug($"Finished getting vaccine status for HDID {hdid}");
+            this.logger.LogDebug("Finished getting vaccine status for HDID {Hdid}", hdid);
 
             return result;
         }
@@ -94,9 +94,9 @@ namespace HealthGateway.Immunization.Controllers
         [Authorize(Policy = ImmunizationPolicy.Read)]
         public async Task<RequestResult<VaccineProofDocument>> GetVaccineProof([FromQuery] string hdid)
         {
-            this.logger.LogDebug($"Getting  Vaccine Proof for HDID {hdid}");
+            this.logger.LogDebug("Getting  Vaccine Proof for HDID {Hdid}", hdid);
             RequestResult<VaccineProofDocument> result = await this.vaccineStatusService.GetAuthenticatedVaccineProof(hdid).ConfigureAwait(true);
-            this.logger.LogDebug($"Finished getting Vaccine Proof for HDID {hdid}");
+            this.logger.LogDebug("Finished getting Vaccine Proof for HDID {Hdid}", hdid);
 
             return result;
         }

@@ -45,7 +45,7 @@ namespace HealthGateway.GatewayApi.Test.Services
         private readonly string mockPHN = "MockPHN";
         private readonly string mockFirstName = "MockFirstName";
         private readonly string mockLastName = "MockLastName";
-        private readonly DateTime mockDateOfBirth = new(2010, 10, 10);
+        private readonly DateTime mockDateOfBirth = DateTime.Now.AddYears(-12).AddDays(1);
         private readonly string mockGender = "Male";
         private readonly string mockHdId = "MockHdId";
         private readonly string mismatchedError = "The information you entered does not match our records. Please try again.";

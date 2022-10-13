@@ -12,7 +12,7 @@ export default class Covid19LaboratoryTestDescriptionComponent extends Vue {
     }
 
     private shouldDisplayLink(index: number): boolean {
-        return this.isLastEntry(index) && this.link;
+        return this.isLastEntry(index) && Boolean(this.link);
     }
 }
 </script>

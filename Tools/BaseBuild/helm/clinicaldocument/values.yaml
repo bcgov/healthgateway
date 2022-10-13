@@ -11,6 +11,8 @@ Application:
   Secrets:
     HealthGateway_PatientService__ClientRegistry__ClientCertificate__Password: common-secrets
     HealthGateway_RedisConnection: common-secrets
+    HealthGateway_PhsaV2__ClientId: common-secrets
+    HealthGateway_PhsaV2__ClientSecret: common-secrets
   Environment:
     ASPNETCORE_ENVIRONMENT: ${ASPNETCORE_ENVIRONMENT}
 
