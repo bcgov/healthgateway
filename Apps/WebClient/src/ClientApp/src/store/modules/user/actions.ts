@@ -268,22 +268,7 @@ export const actions: UserActions = {
             patientService
                 .getPatientData(context.state.user.hdid)
                 .then((result) => {
-                    if (result.resultStatus === ResultType.Error) {
-                        if (result.resultError?.statusCode === 429) {
-                            logger.debug(
-                                "Patient retrieval failed because of too many requests"
-                            );
-                            context.commit(
-                                "setAppError",
-                                AppErrorType.TooManyRequests,
-                                { root: true }
-                            );
-                        } else {
-                            logger.debug("Patient retrieval failed");
-                            context.commit("setPatientRetrievalFailed");
-                        }
-                        resolve();
-                    } else {
+                    if (result.resultStatus === ResultType.Success) {
                         context.commit(
                             "setPatientData",
                             result.resourcePayload
@@ -320,6 +305,21 @@ export const actions: UserActions = {
                                 }
                                 resolve();
                             });
+                    } else {
+                        if (result.resultError?.statusCode === 429) {
+                            logger.debug(
+                                "Patient retrieval failed because of too many requests"
+                            );
+                            context.commit(
+                                "setAppError",
+                                AppErrorType.TooManyRequests,
+                                { root: true }
+                            );
+                        } else {
+                            logger.debug("Patient retrieval failed");
+                            context.commit("setPatientRetrievalFailed");
+                        }
+                        resolve();
                     }
                 })
                 .catch((error: ResultError) => {
