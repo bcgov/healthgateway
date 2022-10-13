@@ -59,6 +59,6 @@ describe("Registration Page", () => {
             Cypress.env("keycloak.password"),
             AuthMethod.KeyCloak
         );
-        cy.url().should("include", "/registration");
+        cy.url().should("include", "/patientRetrievalError");
     });
 });
