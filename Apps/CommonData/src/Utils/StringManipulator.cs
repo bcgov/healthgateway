@@ -74,5 +74,15 @@ namespace HealthGateway.Common.Data.Utils
         {
             return target is null ? target : WhitespaceRegex.Replace(target, string.Empty);
         }
+
+        /// <summary>
+        /// Returns bool indicating if a string is all numeric.
+        /// </summary>
+        /// <param name="target">The string to check.</param>
+        /// <returns>The bool indicating if string is all numeric.</returns>
+        public static bool IsNumeric(string target)
+        {
+            return Regex.IsMatch(target, @"^\d+$");
+        }
     }
 }

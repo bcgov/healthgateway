@@ -22,24 +22,24 @@ using HealthGateway.Common.Data.ViewModels;
 using Refit;
 
 /// <summary>
-/// API to fetch the Messaging Verification from the server.
+/// APIs to fetch support related data from the server.
 /// </summary>
 public interface ISupportApi
 {
     /// <summary>
-    /// Gets the messaging verification from the server.
+    /// Gets the list of users from the server.
     /// </summary>
     /// <param name="queryType">queryType.</param>
     /// <param name="queryString">queryString.</param>
-    /// <returns>The MessagingVerification object.</returns>
+    /// <returns>The list of SupportUser objects.</returns>
     [Get("/Users?queryType={queryType}&queryString={queryString}")]
-    Task<ApiResponse<RequestResult<IEnumerable<MessagingVerificationModel>>>> GetSupportUsers(UserQueryType queryType, string queryString);
+    Task<ApiResponse<RequestResult<IEnumerable<SupportUser>>>> GetSupportUsers(UserQueryType queryType, string queryString);
 
     /// <summary>
-    /// Gets the messaging verification from the server.
+    /// Gets the list of messaging verification models from the server.
     /// </summary>
     /// <param name="hdid">The hdid associated with the messaging verification.</param>
-    /// <returns>The MessagingVerification object.</returns>
+    /// <returns>The list of MessagingVerificationModel objects.</returns>
     [Get("/Verifications?hdid={hdid}")]
     Task<ApiResponse<RequestResult<IEnumerable<MessagingVerificationModel>>>> GetMessagingVerifications(string hdid);
 }
