@@ -76,7 +76,7 @@ namespace HealthGateway.Database.Delegates
             if (result.Status == DBStatusCode.Read)
             {
                 // Copy certain attributes into the fetched User Profile
-                result.Payload!.Email = profile.Email;
+                result.Payload.Email = profile.Email;
                 result.Payload.TermsOfServiceId = profile.TermsOfServiceId;
                 result.Payload.UpdatedBy = profile.UpdatedBy;
                 result.Payload.Version = profile.Version;
@@ -278,6 +278,23 @@ namespace HealthGateway.Database.Delegates
                 .Take(limit);
             result.Status = DBStatusCode.Read;
             return result;
+        }
+
+        /// <inheritdoc/>
+        public IDictionary<string, int> GetLoggedInUserYearOfBirthCounts(DateTime startDate, DateTime endDate)
+        {
+            Dictionary<string, int> yobCount = this.dbContext.UserProfile
+                .Select(x => new { x.HdId, x.LastLoginDateTime, x.YearOfBirth })
+                .Concat(
+                    this.dbContext.UserProfileHistory.Select(x => new { x.HdId, x.LastLoginDateTime, x.YearOfBirth }))
+                .Where(x => x.YearOfBirth != null && x.LastLoginDateTime >= startDate && x.LastLoginDateTime <= endDate)
+                .Select(x => new { x.HdId, x.YearOfBirth })
+                .Distinct()
+                .GroupBy(x => x.YearOfBirth)
+                .Select(x => new { yearOfBirth = x.Key, count = x.Count() })
+                .ToDictionary(x => x.yearOfBirth!, x => x.count);
+
+            return new SortedDictionary<string, int>(yobCount);
         }
     }
 }

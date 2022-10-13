@@ -35,12 +35,12 @@ namespace HealthGateway.Admin.Server.Services
     {
         private const int PageSize = 100000;
         private const int Page = 0;
-        private readonly INoteDelegate noteDelegate;
-        private readonly IUserProfileDelegate userProfileDelegate;
         private readonly ICommentDelegate commentDelegate;
-        private readonly IRatingDelegate ratingDelegate;
-        private readonly IInactiveUserService inactiveUserService;
         private readonly IFeedbackDelegate feedbackDelegate;
+        private readonly IInactiveUserService inactiveUserService;
+        private readonly INoteDelegate noteDelegate;
+        private readonly IRatingDelegate ratingDelegate;
+        private readonly IUserProfileDelegate userProfileDelegate;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="CsvExportService"/> class.
@@ -115,18 +115,33 @@ namespace HealthGateway.Admin.Server.Services
             return GetStream<UserFeedback, UserFeedbackCsvMap>(feedback.Payload);
         }
 
+        /// <inheritdoc/>
+        public Stream GetYearOfBirthCounts(DateTime startDate, DateTime endDate, int timeOffset)
+        {
+            int offset = timeOffset * -1;
+            TimeSpan timeSpan = new(0, offset, 0);
+            DateTime startDateUtc = startDate.Date.Add(timeSpan);
+            startDateUtc = DateTime.SpecifyKind(startDateUtc, DateTimeKind.Utc);
+            DateTime endDateUtc = endDate.Date.Add(timeSpan).AddDays(1).AddMilliseconds(-1);
+            endDateUtc = DateTime.SpecifyKind(endDateUtc, DateTimeKind.Utc);
+            IDictionary<string, int> yobCounts = this.userProfileDelegate.GetLoggedInUserYearOfBirthCounts(startDateUtc, endDateUtc);
+
+            MemoryStream stream = new();
+            using StreamWriter writer = new(stream);
+            using CsvWriter csv = new(writer, CultureInfo.CurrentCulture);
+            csv.WriteRecords(yobCounts);
+
+            return stream;
+        }
+
         private static Stream GetStream<TModel, TMap>(IEnumerable<TModel> obj)
             where TMap : ClassMap
         {
             MemoryStream stream = new();
-            using (StreamWriter writeFile = new(stream, leaveOpen: true))
-            {
-#pragma warning disable CA2000 // Dispose objects before losing scope
-                CsvWriter csv = new(writeFile, CultureInfo.CurrentCulture, true);
-#pragma warning restore CA2000 // Dispose objects before losing scope
-                csv.Context.RegisterClassMap<TMap>();
-                csv.WriteRecords(obj);
-            }
+            using StreamWriter writeFile = new(stream, leaveOpen: true);
+            using CsvWriter csv = new(writeFile, CultureInfo.CurrentCulture, true);
+            csv.Context.RegisterClassMap<TMap>();
+            csv.WriteRecords(obj);
 
             return stream;
         }
