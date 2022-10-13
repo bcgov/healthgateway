@@ -119,7 +119,7 @@ export default class CovidCardView extends Vue {
         return this.searchResult?.blocked === true;
     }
 
-    private get snackbarPosition(): string {
+    private get snackbarPositionBottom(): string {
         return SnackbarPosition.Bottom;
     }
 
@@ -454,7 +454,7 @@ export default class CovidCardView extends Vue {
         <BannerFeedbackComponent
             :show-feedback.sync="showFeedback"
             :feedback="bannerFeedback"
-            :position="snackbarPosition"
+            :position="snackbarPositionBottom"
         />
         <CovidTreatmentAssessmentComponent
             v-if="

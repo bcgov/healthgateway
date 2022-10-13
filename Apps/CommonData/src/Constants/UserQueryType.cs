@@ -14,7 +14,7 @@
 //  limitations under the License.
 // -------------------------------------------------------------------------
 
-namespace HealthGateway.Admin.Common.Constants
+namespace HealthGateway.Common.Data.Constants
 {
     /// <summary>
     /// Represents the type of query being performed.

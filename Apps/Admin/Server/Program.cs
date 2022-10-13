@@ -24,6 +24,7 @@ namespace HealthGateway.Admin.Server
     using HealthGateway.Common.AspNetConfiguration.Modules;
     using HealthGateway.Common.Delegates;
     using HealthGateway.Common.Delegates.PHSA;
+    using HealthGateway.Common.Services;
     using HealthGateway.Database.Delegates;
     using Microsoft.AspNetCore.Builder;
     using Microsoft.AspNetCore.Hosting;
@@ -31,6 +32,8 @@ namespace HealthGateway.Admin.Server
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Hosting;
     using Microsoft.Extensions.Logging;
+    using CommunicationService = HealthGateway.Admin.Server.Services.CommunicationService;
+    using ICommunicationService = HealthGateway.Admin.Server.Services.ICommunicationService;
 
     /// <summary>
     /// The entry point for the project.

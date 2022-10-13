@@ -17,8 +17,6 @@ namespace HealthGateway.Admin.Server.Services
 {
     using System;
     using System.Collections.Generic;
-    using HealthGateway.Admin.Common.Constants;
-    using HealthGateway.Common.Data.ViewModels;
 
     /// <summary>
     /// Service that provides functionality to the admin dashboard.

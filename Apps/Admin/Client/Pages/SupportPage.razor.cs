@@ -24,7 +24,7 @@ namespace HealthGateway.Admin.Client.Pages
     using HealthGateway.Admin.Client.Models;
     using HealthGateway.Admin.Client.Store.MessageVerification;
     using HealthGateway.Admin.Client.Store.SupportUser;
-    using HealthGateway.Admin.Common.Constants;
+    using HealthGateway.Common.Data.Constants;
     using HealthGateway.Common.Data.Utils;
     using HealthGateway.Common.Data.ViewModels;
     using Microsoft.AspNetCore.Components;
@@ -206,7 +206,7 @@ namespace HealthGateway.Admin.Client.Pages
 
             public DateTime LastLoginDateTime { get; }
 
-            public bool IsExpanded { get; set; }
+            public bool IsExpanded { get; }
         }
     }
 }

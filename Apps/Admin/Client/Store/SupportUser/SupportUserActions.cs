@@ -17,7 +17,7 @@ namespace HealthGateway.Admin.Client.Store.SupportUser
 {
     using System.Collections.Generic;
     using System.Diagnostics.CodeAnalysis;
-    using HealthGateway.Admin.Common.Constants;
+    using HealthGateway.Common.Data.Constants;
     using HealthGateway.Common.Data.ViewModels;
 
     /// <summary>

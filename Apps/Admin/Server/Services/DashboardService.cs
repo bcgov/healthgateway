@@ -18,21 +18,9 @@ namespace HealthGateway.Admin.Server.Services
     using System;
     using System.Collections.Generic;
     using System.Globalization;
-    using System.Linq;
-    using System.Threading.Tasks;
-    using HealthGateway.Common.Constants;
-    using HealthGateway.Common.Data.Constants;
-    using HealthGateway.Common.Data.Models;
-    using HealthGateway.Common.Data.Models.ErrorHandling;
-    using HealthGateway.Common.Data.ViewModels;
-    using HealthGateway.Common.Models;
     using HealthGateway.Common.Services;
-    using HealthGateway.Database.Constants;
     using HealthGateway.Database.Delegates;
-    using HealthGateway.Database.Wrapper;
     using Microsoft.Extensions.Logging;
-    using Microsoft.IdentityModel.Tokens;
-    using UserQueryType = HealthGateway.Admin.Common.Constants.UserQueryType;
 
     /// <inheritdoc/>
     public class DashboardService : IDashboardService

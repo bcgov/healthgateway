@@ -3,8 +3,9 @@
 @attribute [Authorize(Roles = $"{Roles.Admin},{Roles.Reviewer}")]
 @using HealthGateway.Admin.Client.Store.MessageVerification
 @using HealthGateway.Admin.Client.Store.SupportUser
-@using HealthGateway.Common.Ui.Constants
+@using HealthGateway.Common.Data.Constants
 @using HealthGateway.Common.Data.Utils
+@using HealthGateway.Common.Ui.Constants
 @inherits Fluxor.Blazor.Web.Components.FluxorComponent
 
 <PageTitle>Health Gateway Admin Support</PageTitle>
@@ -80,7 +81,7 @@
         <RowTemplate>
             <MudTd DataLabel="HDID" data-testid=@($"message-user-table-hdid-{context.Hdid}")>@context.Hdid</MudTd>
             <MudTd DataLabel="PHN" data-testid=@($"message-user-table-phn-{context.Hdid}")>@context.PersonalHealthNumber</MudTd>
-            <MudTd DataLabel="Last Login" data-testid=@($"message-user-table-last-login-{context.Hdid}")>@DateFormatter.ToShortDateAndTime(@context.LastLoginDateTime)</MudTd>
+            <MudTd DataLabel="Last Login" data-testid=@($"message-user-table-last-login-{context.Hdid}")>@DateFormatter.ToShortDateAndTime(context.LastLoginDateTime)</MudTd>
             <MudTd Style="text-align:right">
                 <div>
                     <MudTooltip Text="@(context.IsExpanded ? "Collapse" : "Expand")">
@@ -94,10 +95,10 @@
             </MudTd>
         </RowTemplate>
         <ChildRowContent>
-             @if (context.IsExpanded)
-             {
-                 <MessageVerificationTable Data="@GetMessagingVerificationModels(context.Hdid)" IsLoading="@MessagingVerificationsLoading" />
-             }
+            @if (context.IsExpanded)
+            {
+                <MessageVerificationTable Data="@GetMessagingVerificationModels(context.Hdid)" IsLoading="@MessagingVerificationsLoading" />
+            }
         </ChildRowContent>
         <PagerContent>
             <MudTablePager />
