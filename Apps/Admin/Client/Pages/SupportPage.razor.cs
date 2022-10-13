@@ -83,7 +83,7 @@ namespace HealthGateway.Admin.Client.Pages
 
         private bool HasSupportUsersError => this.SupportUserState.Value.Error != null && this.SupportUserState.Value.Error.Message.Length > 0;
 
-        private bool HasHasSupportUsersWarning => this.SupportUserState.Value.WarningMessage != null && this.SupportUserState.Value.WarningMessage.Length > 0;
+        private bool HasSupportUsersWarning => this.SupportUserState.Value.WarningMessage != null && this.SupportUserState.Value.WarningMessage.Length > 0;
 
         private IEnumerable<ExtendedSupportUser> SupportUsers =>
             this.SupportUserState.Value.Data ?? Enumerable.Empty<ExtendedSupportUser>();

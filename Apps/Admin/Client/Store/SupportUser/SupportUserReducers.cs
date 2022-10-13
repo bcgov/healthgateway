@@ -88,6 +88,7 @@ namespace HealthGateway.Admin.Client.Store.SupportUser
                 Result = null,
                 Error = null,
                 Data = null,
+                WarningMessage = null,
             };
         }
 
