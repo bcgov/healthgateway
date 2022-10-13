@@ -1,17 +1,5 @@
 import { ActionType } from "@/constants/actionType";
 
-export interface BannerError {
-    title: string;
-    traceId?: string;
-    source: string;
-}
-
-export interface CustomBannerError {
-    title: string;
-    description: string;
-    detail?: string;
-}
-
 export interface HttpError {
     message: string;
     statusCode?: number;
@@ -37,9 +25,4 @@ export function instanceOfResultError(object: any): object is ResultError {
         "traceId" in object &&
         "resultMessage" in object
     );
-}
-
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export function isTooManyRequestsError(object: any): boolean {
-    return instanceOfResultError(object) && object.statusCode === 429;
 }

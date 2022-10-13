@@ -1,4 +1,4 @@
-﻿// -------------------------------------------------------------------------
+// -------------------------------------------------------------------------
 //  Copyright © 2019 Province of British Columbia
 //
 //  Licensed under the Apache License, Version 2.0 (the "License");
@@ -13,21 +13,28 @@
 //  See the License for the specific language governing permissions and
 //  limitations under the License.
 // -------------------------------------------------------------------------
-namespace HealthGateway.Database.Constants
+namespace HealthGateway.Common.Data.ViewModels
 {
+    using System;
+
     /// <summary>
-    /// Represents the type of query being performed.
+    /// Represents a Support User.
     /// </summary>
-    public enum UserQueryType
+    public class SupportUser
     {
         /// <summary>
-        /// Query by the Email.
+        /// Gets or sets the patient's PHN.
         /// </summary>
-        Email,
+        public string PersonalHealthNumber { get; set; } = string.Empty;
 
         /// <summary>
-        /// Query by the SMS Phone number.
+        /// Gets or sets the user's hdid.
         /// </summary>
-        SMS,
+        public string Hdid { get; set; } = string.Empty;
+
+        /// <summary>
+        /// Gets or sets the user's last login date time.
+        /// </summary>
+        public DateTime LastLoginDateTime { get; set; }
     }
 }

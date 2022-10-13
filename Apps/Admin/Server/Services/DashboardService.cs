@@ -18,21 +18,9 @@ namespace HealthGateway.Admin.Server.Services
     using System;
     using System.Collections.Generic;
     using System.Globalization;
-    using System.Linq;
-    using System.Threading.Tasks;
-    using HealthGateway.Common.Constants;
-    using HealthGateway.Common.Data.Constants;
-    using HealthGateway.Common.Data.Models;
-    using HealthGateway.Common.Data.Models.ErrorHandling;
-    using HealthGateway.Common.Data.ViewModels;
-    using HealthGateway.Common.Models;
     using HealthGateway.Common.Services;
-    using HealthGateway.Database.Constants;
     using HealthGateway.Database.Delegates;
-    using HealthGateway.Database.Wrapper;
     using Microsoft.Extensions.Logging;
-    using Microsoft.IdentityModel.Tokens;
-    using UserQueryType = HealthGateway.Admin.Common.Constants.UserQueryType;
 
     /// <inheritdoc/>
     public class DashboardService : IDashboardService
@@ -116,86 +104,6 @@ namespace HealthGateway.Admin.Server.Services
         }
 
         /// <inheritdoc/>
-        public RequestResult<IEnumerable<MessagingVerificationModel>> GetMessageVerifications(UserQueryType queryType, string queryString)
-        {
-            RequestResult<IEnumerable<MessagingVerificationModel>> retVal = new()
-            {
-                ResultStatus = ResultType.Error,
-                ResourcePayload = Enumerable.Empty<MessagingVerificationModel>(),
-            };
-
-            DBResult<IEnumerable<MessagingVerification>>? dbResult = null;
-            string phn = string.Empty;
-            switch (queryType)
-            {
-                case UserQueryType.Phn:
-                    RequestResult<PatientModel> patientResult = Task.Run(async () => await this.patientService.GetPatient(queryString, PatientIdentifierType.PHN).ConfigureAwait(true)).Result;
-                    if (patientResult.ResultStatus == ResultType.Success && patientResult.ResourcePayload != null)
-                    {
-                        string hdid = patientResult.ResourcePayload.HdId;
-                        phn = patientResult.ResourcePayload.PersonalHealthNumber;
-                        dbResult = this.messagingVerificationDelegate.GetUserMessageVerifications(Database.Constants.UserQueryType.HDID, hdid);
-                        if (!patientResult.ResourcePayload.ResponseCode.IsNullOrEmpty())
-                        {
-                            retVal.ResultError = GetWarningMessageForResponseCode(patientResult.ResourcePayload.ResponseCode);
-                        }
-                    }
-                    else
-                    {
-                        retVal.ResultError = patientResult.ResultError;
-                    }
-
-                    break;
-                case UserQueryType.Email:
-                    dbResult = this.messagingVerificationDelegate.GetUserMessageVerifications(Database.Constants.UserQueryType.Email, queryString);
-                    break;
-                case UserQueryType.Sms:
-                    dbResult = this.messagingVerificationDelegate.GetUserMessageVerifications(Database.Constants.UserQueryType.SMS, queryString);
-                    break;
-                case UserQueryType.Hdid:
-                    RequestResult<PatientModel> patientResultHdid = Task.Run(async () => await this.patientService.GetPatient(queryString).ConfigureAwait(true)).Result;
-                    if (patientResultHdid.ResultStatus == ResultType.Success && patientResultHdid.ResourcePayload != null)
-                    {
-                        phn = patientResultHdid.ResourcePayload.PersonalHealthNumber;
-                        dbResult = this.messagingVerificationDelegate.GetUserMessageVerifications(Database.Constants.UserQueryType.HDID, queryString);
-                        if (!patientResultHdid.ResourcePayload.ResponseCode.IsNullOrEmpty())
-                        {
-                            retVal.ResultError = GetWarningMessageForResponseCode(patientResultHdid.ResourcePayload.ResponseCode);
-                        }
-                    }
-                    else
-                    {
-                        retVal.ResultError = patientResultHdid.ResultError;
-                    }
-
-                    break;
-            }
-
-            if (dbResult != null && dbResult.Status == DBStatusCode.Read)
-            {
-                retVal.ResultStatus = ResultType.Success;
-                if (retVal.ResultError != null)
-                {
-                    retVal.ResultStatus = ResultType.ActionRequired;
-                }
-
-                List<MessagingVerificationModel> results = new();
-                results.AddRange(dbResult.Payload.Select(MessagingVerificationModel.CreateFromDbModel));
-                if (queryType == UserQueryType.Hdid || queryType == UserQueryType.Phn)
-                {
-                    foreach (MessagingVerificationModel? item in results)
-                    {
-                        item.PersonalHealthNumber = phn;
-                    }
-                }
-
-                retVal.ResourcePayload = results;
-            }
-
-            return retVal;
-        }
-
-        /// <inheritdoc/>
         public IDictionary<string, int> GetRatingSummary(string startPeriod, string endPeriod, int timeOffset)
         {
             TimeSpan ts = new(0, GetOffset(timeOffset), 0);
@@ -217,20 +125,6 @@ namespace HealthGateway.Admin.Server.Services
             // If timeOffset is a positive value, then it means current timezone is [n] minutes ahead of UTC so we need to change this value to a negative when creating TimeSpan for DateTime object in UTC.
             // If timeOffset is 0, then it means current timezone is UTC.
             return timeOffset * -1;
-        }
-
-        private static RequestResultError GetWarningMessageForResponseCode(string resourcePayloadResponseCode)
-        {
-            string[] messageParts = resourcePayloadResponseCode.Split('|', StringSplitOptions.TrimEntries);
-
-            RequestResultError error = new()
-            {
-                ErrorCode = messageParts[0],
-                ResultMessage = messageParts[1],
-                ActionCode = ActionType.Warning,
-            };
-
-            return error;
         }
     }
 }

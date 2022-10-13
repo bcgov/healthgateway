@@ -14,7 +14,7 @@
 // limitations under the License.
 //-------------------------------------------------------------------------
 
-namespace HealthGateway.Admin.Client.Store.MessageVerification
+namespace HealthGateway.Admin.Client.Store.SupportUser
 {
     using System.Collections.Generic;
     using System.Threading.Tasks;
@@ -30,21 +30,21 @@ namespace HealthGateway.Admin.Client.Store.MessageVerification
     /// <summary>
     /// The effects for the feature.
     /// </summary>
-    public class MessageVerificationEffects
+    public class SupportUserEffects
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="MessageVerificationEffects"/> class.
+        /// Initializes a new instance of the <see cref="SupportUserEffects"/> class.
         /// </summary>
         /// <param name="logger">The injected logger.</param>
         /// <param name="supportApi">the injected api to query the support. </param>
-        public MessageVerificationEffects(ILogger<MessageVerificationEffects> logger, ISupportApi supportApi)
+        public SupportUserEffects(ILogger<SupportUserEffects> logger, ISupportApi supportApi)
         {
             this.Logger = logger;
             this.SupportApi = supportApi;
         }
 
         [Inject]
-        private ILogger<MessageVerificationEffects> Logger { get; set; }
+        private ILogger<SupportUserEffects> Logger { get; set; }
 
         [Inject]
         private ISupportApi SupportApi { get; set; }
@@ -56,21 +56,28 @@ namespace HealthGateway.Admin.Client.Store.MessageVerification
         /// <param name="dispatcher">Dispatch the actions.</param>
         /// <returns>A <see cref="Task"/> representing the result of the asynchronous operation.</returns>
         [EffectMethod]
-        public async Task HandleLoadAction(MessageVerificationActions.LoadAction action, IDispatcher dispatcher)
+        public async Task HandleLoadAction(SupportUserActions.LoadAction action, IDispatcher dispatcher)
         {
-            this.Logger.LogInformation("Loading messaging verifications");
+            this.Logger.LogInformation("Loading users");
 
-            ApiResponse<RequestResult<IEnumerable<MessagingVerificationModel>>> response = await this.SupportApi.GetMessagingVerifications(action.Hdid).ConfigureAwait(true);
+            ApiResponse<RequestResult<IEnumerable<SupportUser>>> response = await this.SupportApi.GetSupportUsers(action.QueryType, action.QueryString).ConfigureAwait(true);
             if (response.IsSuccessStatusCode && response.Content != null && response.Content.ResultStatus == ResultType.Success)
             {
-                this.Logger.LogInformation("Messaging verifications loaded successfully!");
-                dispatcher.Dispatch(new MessageVerificationActions.LoadSuccessAction(response.Content, action.Hdid));
+                this.Logger.LogInformation("Users loaded successfully!");
+                dispatcher.Dispatch(new SupportUserActions.LoadSuccessAction(response.Content));
+                return;
+            }
+
+            if (response.IsSuccessStatusCode && response.Content != null && response.Content.ResultStatus == ResultType.ActionRequired)
+            {
+                this.Logger.LogInformation("Users loaded with warning message: {WarningMessage}", response.Content.ResultError?.ResultMessage);
+                dispatcher.Dispatch(new SupportUserActions.LoadSuccessAction(response.Content));
                 return;
             }
 
             RequestError error = StoreUtility.FormatRequestError(response.Error, response.Content?.ResultError);
-            this.Logger.LogError("Error loading messaging verifications, reason: {ErrorMessage}", error.Message);
-            dispatcher.Dispatch(new MessageVerificationActions.LoadFailAction(error));
+            this.Logger.LogError("Error loading users, reason: {ErrorMessage}", error.Message);
+            dispatcher.Dispatch(new SupportUserActions.LoadFailAction(error));
         }
     }
 }

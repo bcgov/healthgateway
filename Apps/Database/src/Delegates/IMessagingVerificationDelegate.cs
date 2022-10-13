@@ -18,7 +18,6 @@ namespace HealthGateway.Database.Delegates
     using System;
     using System.Collections.Generic;
     using HealthGateway.Common.Data.Models;
-    using HealthGateway.Database.Constants;
     using HealthGateway.Database.Wrapper;
 
     /// <summary>
@@ -50,7 +49,7 @@ namespace HealthGateway.Database.Delegates
         MessagingVerification? GetLastForUser(string hdid, string messagingVerificationType);
 
         /// <summary>
-        /// Updates a MessageingVerification using a populated model object.
+        /// Updates a MessagingVerification using a populated model object.
         /// </summary>
         /// <param name="messageVerification">The populated email to save.</param>
         void Update(MessagingVerification messageVerification);
@@ -62,7 +61,7 @@ namespace HealthGateway.Database.Delegates
         IEnumerable<MessagingVerification> GetAllEmail();
 
         /// <summary>
-        /// Expire a MessageingVerification.
+        /// Expire a MessagingVerification.
         /// </summary>
         /// <param name="messageVerification">The message verification to expire.</param>
         /// <param name="markDeleted">Mark the verification as deleted.</param>
@@ -71,9 +70,8 @@ namespace HealthGateway.Database.Delegates
         /// <summary>
         /// Retrieves a list of message verifications matching the query.
         /// </summary>
-        /// <param name="queryType">The type of query to perform.</param>
-        /// <param name="queryString">The value to query on.</param>
+        /// <param name="hdid">The hdid associated with the messaging verification.</param>
         /// <returns>A list of users matching the query.</returns>
-        DBResult<IEnumerable<MessagingVerification>> GetUserMessageVerifications(UserQueryType queryType, string queryString);
+        DBResult<IEnumerable<MessagingVerification>> GetUserMessageVerifications(string hdid);
     }
 }

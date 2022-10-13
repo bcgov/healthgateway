@@ -1,4 +1,4 @@
-﻿// -------------------------------------------------------------------------
+// -------------------------------------------------------------------------
 //  Copyright © 2019 Province of British Columbia
 //
 //  Licensed under the Apache License, Version 2.0 (the "License");
@@ -13,7 +13,8 @@
 //  See the License for the specific language governing permissions and
 //  limitations under the License.
 // -------------------------------------------------------------------------
-namespace HealthGateway.Database.Constants
+
+namespace HealthGateway.Common.Data.Constants
 {
     /// <summary>
     /// Represents the type of query being performed.
@@ -21,13 +22,23 @@ namespace HealthGateway.Database.Constants
     public enum UserQueryType
     {
         /// <summary>
-        /// Query by the Email.
+        /// Query by Personal Health Number.
+        /// </summary>
+        Phn,
+
+        /// <summary>
+        /// Query by email.
         /// </summary>
         Email,
 
         /// <summary>
-        /// Query by the SMS Phone number.
+        /// Query by SMS phone number.
         /// </summary>
-        SMS,
+        Sms,
+
+        /// <summary>
+        /// Query by Health-Directed identifier.
+        /// </summary>
+        Hdid,
     }
 }

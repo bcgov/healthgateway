@@ -1,0 +1,50 @@
+@using HealthGateway.Common.Data.Utils
+@inherits Fluxor.Blazor.Web.Components.FluxorComponent
+
+<MudText Class="ma-4" Typo="Typo.subtitle1">
+    <strong>Verification</strong>
+</MudText>
+
+<MudTable Class="ma-4"
+          Items="@Rows"
+          Loading="@IsLoading"
+          AllowUnsorted="false"
+          Breakpoint="@Breakpoint.Md"
+          HorizontalScrollbar="true"
+          Striped="true"
+          Dense="true">
+    <HeaderContent>
+        <MudTh>
+            <MudTableSortLabel SortBy="new Func<MessagingVerificationRow, object>(x => x.EmailOrSms)">
+                Email/SMS
+            </MudTableSortLabel>
+        </MudTh>
+        <MudTh>
+            <MudTableSortLabel SortBy="new Func<MessagingVerificationRow, object>(x => x.Verified)">
+                Verified
+            </MudTableSortLabel>
+        </MudTh>
+        <MudTh>
+            <MudTableSortLabel SortBy="new Func<MessagingVerificationRow, object>(x => x.VerificationDate)"
+                               InitialDirection="@SortDirection.Descending">
+                Verification Date
+            </MudTableSortLabel>
+        </MudTh>
+        <MudTh>
+            <MudTableSortLabel SortBy="new Func<MessagingVerificationRow, object>(x => x.VerificationCode)">
+                Verification Code
+            </MudTableSortLabel>
+        </MudTh>
+    </HeaderContent>
+    <RowTemplate>
+        <MudTd data-testid="verification-table-email-sms" DataLabel="Email/SMS">@context.EmailOrSms</MudTd>
+        <MudTd data-testid="verification-table-verified" DataLabel="Verified">@context.Verified</MudTd>
+        <MudTd data-testid="verification-table-date" DataLabel="Verification Date">@DateFormatter.ToShortDateAndTime(@context.VerificationDate)</MudTd>
+        <MudTd data-testid="verification-table-code" DataLabel="Verification Code">@context.VerificationCode</MudTd>
+    </RowTemplate>
+    <PagerContent>
+        <MudTablePager />
+    </PagerContent>
+</MudTable>
+
+
