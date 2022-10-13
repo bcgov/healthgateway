@@ -287,14 +287,13 @@ namespace HealthGateway.Database.Delegates
                 .Concat(
                     this.dbContext.UserProfileHistory.Select(x => new { x.HdId, x.LastLoginDateTime, x.YearOfBirth }))
                 .Where(x => x.YearOfBirth != null && x.LastLoginDateTime >= startDate && x.LastLoginDateTime <= endDate)
-                .Select(x => new { x.HdId, lastLoginDate = GatewayDbContext.DateTrunc("days", x.LastLoginDateTime), x.YearOfBirth })
+                .Select(x => new { x.HdId, x.YearOfBirth })
                 .Distinct()
                 .GroupBy(x => x.YearOfBirth)
                 .Select(x => new { yearOfBirth = x.Key, count = x.Count() })
-                .OrderBy(x => x.yearOfBirth)
                 .ToDictionary(x => x.yearOfBirth!, x => x.count);
 
-            return yobCount;
+            return new SortedDictionary<string, int>(yobCount);
         }
     }
 }
