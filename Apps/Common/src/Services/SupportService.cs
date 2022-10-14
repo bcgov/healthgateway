@@ -74,7 +74,7 @@ namespace HealthGateway.Common.Services
         }
 
         /// <inheritdoc/>
-        public RequestResult<IEnumerable<SupportUser>> GetSupportUsers(UserQueryType queryType, string queryString)
+        public RequestResult<IEnumerable<SupportUser>> GetUsers(UserQueryType queryType, string queryString)
         {
             RequestResult<IEnumerable<SupportUser>> result = new()
             {
@@ -98,7 +98,7 @@ namespace HealthGateway.Common.Services
                     break;
             }
 
-            if (result.ResultError != null)
+            if (result.ResultError != null && result.ResultError.ActionCode != null && result.ResultError.ActionCode.Equals(ActionType.Warning))
             {
                 result.ResultStatus = ResultType.ActionRequired;
             }

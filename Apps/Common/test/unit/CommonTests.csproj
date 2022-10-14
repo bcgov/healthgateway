@@ -27,6 +27,7 @@
     <PackageReference Include="XunitXml.TestLogger" Version="3.0.70" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\..\Admin\Server\Admin.Server.csproj" />
     <ProjectReference Include="..\..\src\Common.csproj" />
   </ItemGroup>
   <ItemGroup>

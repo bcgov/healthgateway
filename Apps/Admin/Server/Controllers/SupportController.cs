@@ -58,7 +58,7 @@ namespace HealthGateway.Admin.Server.Controllers
         [Route("Users")]
         public IActionResult GetSupportUsers([FromQuery] UserQueryType queryType, [FromQuery] string queryString)
         {
-            return new JsonResult(this.supportService.GetSupportUsers(queryType, queryString));
+            return new JsonResult(this.supportService.GetUsers(queryType, queryString));
         }
 
         /// <summary>
