@@ -211,6 +211,10 @@ export default class SupportView extends Vue {
             searchText = searchText.replace(/[() -]/g, "");
         }
 
+        if (queryType === QueryType.PHN) {
+            searchText = searchText.replace(/\D/g, "");
+        }
+
         try {
             this.usersLoading = true;
             const result = await this.supportService.getUsers(
