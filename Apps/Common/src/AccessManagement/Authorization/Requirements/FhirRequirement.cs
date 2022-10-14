@@ -36,7 +36,6 @@ namespace HealthGateway.Common.AccessManagement.Authorization.Requirements
             string fhirAccessType,
             FhirResourceLookup fhirLookup = FhirResourceLookup.Route,
             bool supportsSystemDelegation = true,
-            bool supportsUserManagedAccess = true,
             bool supportsUserDelegation = false)
         {
             this.Resource = fhirResource;
