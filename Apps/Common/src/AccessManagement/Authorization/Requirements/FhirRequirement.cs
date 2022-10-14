@@ -44,7 +44,6 @@ namespace HealthGateway.Common.AccessManagement.Authorization.Requirements
             this.Lookup = fhirLookup;
             this.SupportsSystemDelegation = supportsSystemDelegation;
             this.SupportsUserDelegation = supportsUserDelegation;
-            this.SupportsUserManagedAccess = supportsUserManagedAccess;
         }
 
         /// <summary>

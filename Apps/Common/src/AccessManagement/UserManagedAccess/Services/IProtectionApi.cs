@@ -13,22 +13,27 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //-------------------------------------------------------------------------
-namespace Keycloak.Client.Resource
+namespace HealthGateway.Common.AccessManagement.UserManagedAccess.Services
 {
     using System.Collections.Generic;
     using System.Threading.Tasks;
 
-    using Keycloak.Client.Representation;
+    using HealthGateway.Common.AccessManagement.UserManagedAccess.Models;
+    using HealthGateway.Common.AccessManagement.UserManagedAccess.Models.Tokens;
+
+    using Refit;
+
 
     ///
     /// <summary>An entry point for managing permission tickets using the Protection API.</summary>
     ///
+    [Headers("Authorization: Bearer")]   // The requesting party token as extension to Bearer token
     public interface IProtectionResource
     {
         /// <summary>Introspects the given rpt using the token introspection endpoint.</summary>
-        /// <param name="rpt">the Requesting Party Token to Introspect.</param>
-        /// <param name="token">The bearer token to use for authorization.</param>
+        /// <param name="request">the Requesting Party Token to Introspect along with the token hint.</param>
         /// <returns>A TokenIntrospectionResponse.</returns>
-        public Task<TokenIntrospectionResponse> IntrospectRequestingPartyToken(string rpt, string token);
+        [Post("/protocol/openid-connect/token/introspect")]
+        public Task<TokenIntrospectionResponse> IntrospectRequestingPartyToken([Body(BodySerializationMethod.UrlEncoded)] TokenIntrospectionRequest request);
     }
 }

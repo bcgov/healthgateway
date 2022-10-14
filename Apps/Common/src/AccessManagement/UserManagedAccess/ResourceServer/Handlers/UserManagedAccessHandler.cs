@@ -13,16 +13,18 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //-------------------------------------------------------------------------
-namespace HealthGateway.Common.UserManagedAccess.ResourceServer.Handlers
+namespace HealthGateway.Common.AccessManagement.UserManagedAccess.ResourceServer.Handlers
 {
     using System.Linq;
     using System.Security.Claims;
     using System.Threading.Tasks;
-    using HealthGateway.Common.UserManagedAccess.ResourceServer.Requirements;
-    using HealthGateway.Common.UserManagedAccess.ResourceServer.Claims;
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Http;
     using Microsoft.Extensions.Logging;
+
+    using HealthGateway.Common.AccessManagement.UserManagedAccess.ResourceServer.Requirements;
+    using HealthGateway.Common.AccessManagement.UserManagedAccess.Models;
+
 
     /// <summary>
     /// UserAuthorizationHandler validates that User requirements have been met.
@@ -39,7 +41,7 @@ namespace HealthGateway.Common.UserManagedAccess.ResourceServer.Handlers
         /// </summary>
         /// <param name="logger">the injected logger.</param>
         /// <param name="httpContextAccessor">The HTTP Context accessor.</param>
-        public UserManagedAccessHandler(ILogger<UserAuthorizationHandler> logger, IHttpContextAccessor httpContextAccessor)
+        public UserManagedAccessHandler(ILogger<UserManagedAccessHandler> logger, IHttpContextAccessor httpContextAccessor)
         {
             this.logger = logger;
             this.httpContextAccessor = httpContextAccessor;
@@ -55,7 +57,7 @@ namespace HealthGateway.Common.UserManagedAccess.ResourceServer.Handlers
         public Task HandleAsync(AuthorizationHandlerContext context)
         {
             string? resourceHDID = this.httpContextAccessor.HttpContext?.Request.RouteValues[RouteResourceIdentifier] as string;
-            foreach (UserRequirement requirement in context.PendingRequirements.OfType<UserRequirement>().Where(requirement => this.AuthorizationAssessment(context, resourceHDID, requirement)))
+            foreach (UmaRequirement requirement in context.PendingRequirements.OfType<UmaRequirement>().Where(requirement => this.AuthorizationAssessment(context, resourceHDID, requirement)))
             {
                 context.Succeed(requirement);
             }
@@ -69,33 +71,10 @@ namespace HealthGateway.Common.UserManagedAccess.ResourceServer.Handlers
         /// <param name="context">The authorization handler context.</param>
         /// <param name="resourceHDID">The health data resource subject identifier.</param>
         /// <param name="requirement">The requirement to validate.</param>
-        private bool AuthorizationAssessment(AuthorizationHandlerContext context, string? resourceHDID, UserRequirement requirement)
+        private bool AuthorizationAssessment(AuthorizationHandlerContext context, string? resourceHDID, UmaRequirement requirement)
         {
             bool retVal = false;
-            ClaimsPrincipal user = context.User;
-            string? userHDID = user.FindFirst(c => c.Type == GatewayClaims.HDID)?.Value;
-            if (userHDID != null)
-            {
-                if (requirement.ValidateGrantedAccess)
-                {
-                    retVal = userHDID == resourceHDID;
-                    // Validate that the resource Uri found in the RPT token, if it is  RPT token at all,
-                    // matches the URI of this http request context. If so, return true,
-                    // Otherwise, return 401 with new permission ticket.
-
-                    this.logger.LogInformation($"{userHDID} is {(!retVal ? "not " : string.Empty)}the resource owner");
-                }
-                else
-                {
-                    retVal = true;
-                    this.logger.LogInformation($"User has claim {GatewayClaims.HDID} and has been authorized");
-                }
-            }
-            else
-            {
-                this.logger.LogDebug($"Unable to validate resource owner for {resourceHDID} as no HDID claims present");
-            }
-
+           
             return retVal;
         }
     }

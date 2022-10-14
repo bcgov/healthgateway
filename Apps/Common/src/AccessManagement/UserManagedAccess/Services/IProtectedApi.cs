@@ -13,55 +13,58 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //-------------------------------------------------------------------------
-namespace Keycloak.Client.Resource
+namespace HealthGateway.Common.AccessManagement.UserManagedAccess.Services
 {
     using System;
     using System.Collections.Generic;
     using System.Threading.Tasks;
 
-    using Keycloak.Authorization.Representation;
+    using HealthGateway.Common.AccessManagement.UserManagedAccess.Models;
+    using Refit;
+
 
     ///
     /// <summary>An entry point for managing permission tickets using the Protection API.</summary>
     ///
+    [Headers("Authorization: Bearer")]
     public interface IProtectedResource
     {
         /// <summary>
         /// Creates a new Resource on the authorization server. See <see cref="Resource"/> class.
         /// </summary>
         /// <param name="resource">The Resource data.</param>
-        /// <param name="token"> A valid base64 access_token from authenticing the caller.</param>
         /// <returns>The Resource created.</returns>
-        public Task<Resource> Create(Resource resource, string token);
+        [Post("")]
+        public Task<Resource> Create([Body] Resource resource);
 
         /// <summary>
         /// Updates an existing Resource on the authorization server. See <see cref="Resource"/> class.
         /// </summary>
         /// <param name="resource">The Resource to be updated.</param>
-        /// <param name="token"> A valid base64 access_token from authenticing the caller.</param>
         /// <returns>True when updated.</returns>
-        public Task<bool> Update(Resource resource, string token);
+        [Put("/")]
+        public Task<bool> Update([Body] Resource resource);
 
         /// <summary>Deletes an existing user-managed Resource from the server.</summary>
         /// <param name="resourceId">The Resource identifier.</param>
-        /// <param name="token"> A valid base64 access_token from authenticing the caller.</param>
         /// <returns>True if the delete was successful.</returns>
-        public Task<bool> Delete(string resourceId, string token);
+        [Delete("?resourceId={resourceId}")]
+        public Task<bool> Delete(string resourceId);
 
         /// <summary>
         /// Query the server for a resource given its id.
         /// </summary>
         /// <param name="resourceId">The Resource  ID to be found.</param>
-        /// <param name="token"> A valid base64 access_token from authenticing the caller.</param>
         /// <returns>The Resource found.</returns>
-        public Task<Resource> FindById(string resourceId, string token);
+        [Get("")]
+        public Task<Resource> FindById(string resourceId);
 
         /// <summary>
         /// Query the server for a Resource with a given Uri.
         /// </summary>
         /// <param name="uri">The url to be found.</param>
-        /// <param name="token"> A valid base64 access_token from authenticing the caller.</param>
         /// <returns>Returns a list of Resources that best matches the given Uri.</returns>
+        [Get("/")]
         public Task<List<Resource>> FindByUri(Uri uri, string token);
 
         /// <summary>
@@ -69,13 +72,13 @@ namespace Keycloak.Client.Resource
         /// This method queries the server for resources that match the Uri.
         /// </summary>
         /// <param name="uri">The url to be found.</param>
-        /// <param name="token"> A valid base64 access_token from authenticing the caller.</param>
         /// <returns>Returns a list of Resources that best matches the given Uri.</returns>
-        public Task<List<Resource>> FindByMatchingUri(Uri uri, string token);
+        [Get("/")]
+        public Task<List<Resource>> FindByMatchingUri(Uri uri);
 
         /// <summary>Query the server for all resources.</summary>
-        /// <param name="token"> A valid base64 access_token from authenticing the caller.</param>
         /// <returns> @return an array of strings with the resource ids.</returns>
-        public Task<string[]> FindAll(string token);
+        [Get("/")]
+        public Task<string[]> FindAll();
     }
 }

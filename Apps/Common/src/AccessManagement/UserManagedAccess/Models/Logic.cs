@@ -13,20 +13,21 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //-------------------------------------------------------------------------
-namespace HealthGateway.Common.UserManagedAccess.Models
+namespace HealthGateway.Common.AccessManagement.UserManagedAccess.Models
 {
     using System.Text.Json.Serialization;
+    using System.Runtime.Serialization;
 
     /// <summary>The decision strategy dictates how the policies associated with a given policy
     /// are evaluated and how a final decision is obtained.</summary>
     public enum Logic
     {
         /// <summary>Defines that this policy follows a positive logic. In other words, the final decision is the policy outcome.</summary>
-        [EnumMember(Value = "POSITIVE")]
+        [EnumMember(Value="POSITIVE")]
         Positive,
 
         /// <summary>Defines that this policy uses a logical negation. In other words, the final decision would be a negative of the policy outcome.</summary>
-        [EnumMember(Value = "NEGATIVE")]
+        [EnumMember(Value="NEGATIVE")]
         Negative,
     }
 }

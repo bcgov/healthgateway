@@ -13,23 +13,21 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //-------------------------------------------------------------------------
-namespace HealthGateway.Common.UserManagedAccess.Services
+namespace HealthGateway.Common.AccessManagement.UserManagedAccess.Services
 {
     using System.Threading.Tasks;
-    using HealthGateway.Common.UserManagedAccess.Models;
+    using HealthGateway.Common.AccessManagement.UserManagedAccess.Models;
     using Refit;
 
     /// <summary>
     /// An entry point for obtaining permissions from the server.
     /// </summary>
-    [Headers("Authorization: Bearer")]
     public interface IAuthorizationApi
     {
         /// <summary>Query the server for permissions given an <see cref="AuthorizationRequest"/>.</summary>
         /// <param name="request">A <see cref="AuthorizationRequest"/> instance.</param>
-        /// <param name="headers">The Http Headers, including the Bearer token.</param>
         /// <returns>An <see cref="AuthorizationRequest"/>with a RPT holding all granted permissions.</returns>
         [Post("/protocol/openid-connect/auth")]
-        public Task<AuthorizationResponse> Authorize([Body] AuthorizationRequest request, [HeaderCollection] IDictionary<string, string> headers);
+        public Task<AuthorizationResponse> Authorize([Body] AuthorizationRequest request);
     }
 }

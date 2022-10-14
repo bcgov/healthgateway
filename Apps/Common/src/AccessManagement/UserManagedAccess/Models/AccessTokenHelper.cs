@@ -13,10 +13,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //-------------------------------------------------------------------------
-namespace HealthGateway.Common.UserManagedAccess.Models
+namespace HealthGateway.Common.AccessManagement.UserManagedAccess.Models
 {
     using System.Collections.Generic;
-    using namespace HealthGateway.Common.UserManagedAccess.Models.Tokens;
+    using HealthGateway.Common.AccessManagement.UserManagedAccess.Models.Tokens;
 
     /// <summary>Some handy extensions to the serializable AccessToken. These were part of AuthorizationContext.java in the original
     /// keycloak client library. </summary>

@@ -1,5 +1,5 @@
 //-------------------------------------------------------------------------
-// Copyright © 2019 Province of British Columbia
+// Copyright © 2020 Province of British Columbia
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -13,20 +13,24 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //-------------------------------------------------------------------------
-namespace HealthGateway.Common.AccessManagement.UserManagedAccess
+namespace HealthGateway.Common.AccessManagement.UserManagedAccess.Models
 {
+    using System.Collections.Generic;
+    using System.Text.Json.Serialization;
+    using HealthGateway.Common.AccessManagement.UserManagedAccess.Constants;
+
     /// <summary>
-    /// The UserManagedAccess (UMA 2.0) Service interface.
+    /// UMA 2.0 RPT Introspection Requst Payload (to be url encoded).
     /// </summary>
-    public interface IUserManagedAccesService
+    public class TokenIntrospectionRequest
     {
-        bool RegisterUserManagedResource(string name, string ownerUsername, string resourceType, string resourceUri, string[] resourceScopes);
+        /// <summary>Gets or sets the resource id.</summary>
+        [JsonPropertyName("token_type_hint")]
+        public string? TokenTypeHint { get; set; } = OAuth2Constants.TokenTypeHintRpt;
 
-        bool GrantPermission(string resourceId, string requestorId, string scopeName);
+        /// <summary>Requesting Party Token.</summary>
+        [JsonPropertyName("token")]
+        public string? Rpt { get; set; }
 
-        bool RevokePermission(string resourceId, string requestorId, string scopeName);
-
-        string CreatePermissionTicket(string resourceUri, string[] scopeNames);
-        
     }
 }

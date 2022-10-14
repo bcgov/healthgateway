@@ -13,11 +13,13 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //-------------------------------------------------------------------------
-namespace HealthGateway.Common.UserManagedAccess.Services
+namespace HealthGateway.Common.AccessManagement.UserManagedAccess.Services
 {
     using System.Collections.Generic;
     using System.Threading.Tasks;
-    using HealthGateway.Common.UserManagedAccess.Models;
+    using HealthGateway.Common.AccessManagement.UserManagedAccess.Models;
+    using HealthGateway.Common.AccessManagement.UserManagedAccess.Models.Tokens;
+
     using Refit;
 
     /// <summary>
@@ -31,35 +33,33 @@ namespace HealthGateway.Common.UserManagedAccess.Services
         /// <param name="headers"> Http headers, inclding the bearer token.</param>
         /// <returns>Permission response holding a permission ticket with the requested permissions.</returns>
         [Post("/authz/protection/permission")]
-        public Task<PermissionResponse> Create([Body] PermissionRequest request, [HeaderCollection] IDictionary<string, string> headers);
+        public Task<PermissionResponse> Create([Body] PermissionRequest request);
 
         /// <summary>Creates new permission ticket(s) for a set of resources and scope(s).</summary>
         /// <param name="requests"> a List of <see cref="PermissionRequest"/> representing the resource and scope(s).</param>
-        /// <param name="token"> A valid base64 access_token from authenticing the caller.</param>
         /// <returns>Permission response holding a permission ticket with the requested permissions.</returns>
         [Post("/authz/protection/permission")]
-        public Task<PermissionResponse> Create([Body] List<PermissionRequest> requests, [HeaderCollection] IDictionary<string, string> headers);
+        public Task<PermissionResponse> Create([Body] List<PermissionRequest> requests);
 
         /// <summary>Creates a new uma permission for a single resource and scope(s).</summary>
         /// <param name="ticket">The <see cref="PermissionTicket"/> representing the resource and scope(s).</param>
-        /// <param name="token"> A valid base64 access_token from authenticing the caller.</param>
         /// <returns>A permission response holding the permission ticket representation.</returns>
         [Post("/authz/protection/permission")]
-        public Task<PermissionTicket> Create([Body] PermissionTicket ticket, [HeaderCollection] IDictionary<string, string> headers);
+        public Task<PermissionTicket> Create([Body] PermissionTicket ticket);
 
         /// <summary>Query the server for any permission ticket associated with the given scopeId.</summary>
         /// <param name="scopeId">The scopeId the scope id.</param>
         /// <param name="token"> A valid base64 access_token from authenticing the caller.</param>
         /// <returns>A list of permission tickets associated with the given scopeId.</returns>
-        [Get("/authz/protection/permission")]
-        public Task<List<PermissionTicket>> FindByScope(string scopeId, [HeaderCollection] IDictionary<string, string> headers);
+        [Get("/authz/protection/permission?scopeId={scopeId}")]
+        public Task<List<PermissionTicket>> FindByScope(string scopeId);
 
         /// <summary>Query the server for any permission ticket associated with the given scopeId.</summary>
         /// <param name="resourceId">The resourceId.</param>
         /// <param name="token">A valid base64 access_token from authenticing the caller.</param>
         /// <returns>A list of permission tickets associated with the given scopeId.</returns>
         [Get("/authz/protection/permission?resourceId={resourceId}")]
-        public Task<List<PermissionTicket>> FindByResourceId(string resourceId, [HeaderCollection] IDictionary<string, string> headers);
+        public Task<List<PermissionTicket>> FindByResourceId(string resourceId);
 
         /// <summary>Query the server for any permission ticket with the matching arguments.</summary>
         /// <param name="resourceId">The resource id or name.</param>
@@ -81,21 +81,20 @@ namespace HealthGateway.Common.UserManagedAccess.Services
             bool granted,
             bool returnNames,
             int firstResult,
-            int maxResult,
-            [HeaderCollection] IDictionary<string, string> headers);
+            int maxResult);
 
         /// <summary>Updates a permission ticket.</summary>
         /// <param name="ticket">The permission ticket.</param>
         /// <param name="token"> A valid base64 access_token from authenticing the caller.</param>
         /// <returns>True when the permission ticket is updated.</returns>
         [Put("/authz/protection/permission")]
-        public Task<bool> Update([Body] PermissionTicket ticket, [HeaderCollection] IDictionary<string, string> headers);
+        public Task<bool> Update([Body] PermissionTicket ticket);
 
         /// <summary>Delete a permission ticket.</summary>
         /// <param name="ticketId">The id of the permission ticket to delete.</param>
         /// <param name="token"> A valid base64 access_token from authenticing the caller.</param>
         /// <returns>True if the delete succeeded.</returns>
         [Delete("/authz/protection/permission?ticketId={ticketId}")]
-        public Task<bool> Delete(string ticketId, [HeaderCollection] IDictionary<string, string> headers);
+        public Task<bool> Delete(string ticketId);
     }
 }

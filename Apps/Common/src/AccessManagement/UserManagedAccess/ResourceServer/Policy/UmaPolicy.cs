@@ -1,5 +1,5 @@
 //-------------------------------------------------------------------------
-// Copyright © 2020 Province of British Columbia
+// Copyright © 2019 Province of British Columbia
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -13,14 +13,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //-------------------------------------------------------------------------
-namespace Keycloak.Client.Resource
+namespace HealthGateway.Common.AccessManagement.UserManagedAccess.Policy
 {
-    using Keycloak.Client.Configuration;
-
-    /// <summary>Interface for the ServerConfiguration access delegate (from a well-known keycloak end point).</summary>
-    public interface IServerConfigurationResource
+    /// <summary>
+    /// The set of claims to access Patient data.
+    /// </summary>
+    public static class UmaPolicy
     {
-        /// <summary>Gets the ServerConfiguration.</summary>
-        public ServerConfiguration ServerConfiguration { get; }
     }
 }

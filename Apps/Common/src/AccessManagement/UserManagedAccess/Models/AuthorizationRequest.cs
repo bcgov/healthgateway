@@ -13,13 +13,13 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //-------------------------------------------------------------------------
-namespace HealthGateway.Common.UserManagedAccess.Models
+namespace HealthGateway.Common.AccessManagement.UserManagedAccess.Models
 {
     using System.Collections.Generic;
     using System.Text;
     using System.Text.Json.Serialization;
 
-    using HealthGateway.Common.UserManagedAccess.Models.Tokens;
+    using HealthGateway.Common.AccessManagement.UserManagedAccess.Models.Tokens;
 
     /// <summary>
     /// UMA 2.0 AuthorizationRequest.

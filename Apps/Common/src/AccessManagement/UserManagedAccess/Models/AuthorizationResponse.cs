@@ -13,24 +13,19 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //-------------------------------------------------------------------------
-namespace HealthGateway.Common.UserManagedAccess.Models
+namespace HealthGateway.Common.AccessManagement.UserManagedAccess.Models
 {
+    using HealthGateway.Common.AccessManagement.Authentication.Models;
+
     /// <summary>
     /// An authorization response in form of an OAuth2 access token.
     /// </summary>
     public class AuthorizationResponse : AccessTokenResponse
     {
         /// <summary>Initializes a new instance of the <see cref="AuthorizationResponse"/> class.</summary>
-        /// <param name="response">An <see cref="AccessTokenResponse"/> response.</param>
         /// <param name="upgraded">A boolean whether the token was upgraded.</param>
-        public AuthorizationResponse(AccessTokenResponse response, bool upgraded)
+        public AuthorizationResponse(bool upgraded)
         {
-            this.AccessToken = response.AccessToken;
-            this.TokenType = "Bearer";
-            this.RefreshToken = response.RefreshToken;
-            this.RefreshExpiresIn = response.RefreshExpiresIn;
-            this.ExpiresIn = response.ExpiresIn;
-            this.NotBeforePolicy = response.NotBeforePolicy;
             this.Upgraded = upgraded;
         }
 
