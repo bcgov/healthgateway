@@ -211,4 +211,32 @@ public class AnalyticsEffects
         this.Logger.LogError("{ErrorMessage}", error.Message);
         dispatcher.Dispatch(new AnalyticsActions.LoadFailAction(error));
     }
+
+    /// <summary>
+    /// Handler that calls the year of birth counts service and dispatch the actions.
+    /// </summary>
+    /// <param name="action">Load the initial action.</param>
+    /// <param name="dispatcher">Dispatch the actions.</param>
+    /// <returns>A <see cref="Task"/> representing the result of the asynchronous operation.</returns>
+    [EffectMethod]
+    public async Task HandleLoadAction(AnalyticsActions.LoadYearOfBirthCountsAction action, IDispatcher dispatcher)
+    {
+        this.Logger.LogInformation("Loading year of birth counts report.");
+
+        HttpResponseMessage response = await this.AnalyticsApi.GetYearOfBirthCounts(action.StartPeriod, action.EndPeriod, action.TimeOffset).ConfigureAwait(true);
+        this.Logger.LogInformation("Year of birth counts report exported successfully!");
+        if (response.IsSuccessStatusCode)
+        {
+            dispatcher.Dispatch(new AnalyticsActions.LoadSuccessAction(response.Content));
+            return;
+        }
+
+        RequestError error = new()
+        {
+            Message = "Error exporting year of birth counts report.",
+        };
+
+        this.Logger.LogError("{ErrorMessage}", error.Message);
+        dispatcher.Dispatch(new AnalyticsActions.LoadFailAction(error));
+    }
 }

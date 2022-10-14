@@ -76,4 +76,14 @@ public interface IAnalyticsApi
     /// <returns>HttpResponseMessage.</returns>
     [Get("/GetUserFeedback")]
     Task<HttpResponseMessage> GetUserFeedback();
+
+    /// <summary>
+    /// Retrieves a list of year of birth counts for time period.
+    /// </summary>
+    /// <param name="startPeriod">The period start to count year of birth.</param>
+    /// <param name="endPeriod">The period end to count year of birth.</param>
+    /// <param name="timeOffset">The offset from the client browser to UTC.</param>
+    /// <returns>HttpResponseMessage.</returns>
+    [Get("/GetYearOfBirthCounts?startPeriod={startPeriod}&endPeriod={endPeriod}&timeOffset={timeOffset}")]
+    Task<HttpResponseMessage> GetYearOfBirthCounts(string startPeriod, string endPeriod, int timeOffset);
 }

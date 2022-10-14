@@ -126,11 +126,11 @@ namespace HealthGateway.Database.Delegates
         DBResult<IEnumerable<UserProfileHistory>> GetUserProfileHistories(string hdid, int limit);
 
         /// <summary>
-        /// Returns the list of logged in user Year of Birth counts over a date range.
+        /// Returns the list of logged in user year of birth counts over a date range.
         /// </summary>
         /// <param name="startDate">The start date of last login of users.</param>
         /// <param name="endDate">The end date of last login of users.</param>
-        /// <returns>The counts of logged in users by Year of Birth.</returns>
+        /// <returns>The counts of logged in users by year of birth.</returns>
         IDictionary<string, int> GetLoggedInUserYearOfBirthCounts(DateTime startDate, DateTime endDate);
     }
 }

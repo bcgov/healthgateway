@@ -116,19 +116,19 @@ namespace HealthGateway.Admin.Server.Services
         }
 
         /// <inheritdoc/>
-        public Stream GetYearOfBirthCounts(DateTime startDate, DateTime endDate, int timeOffset)
+        public Stream GetYearOfBirthCounts(string startPeriod, string endPeriod, int timeOffset)
         {
-            int offset = timeOffset * -1;
-            TimeSpan timeSpan = new(0, offset, 0);
-            DateTime startDateUtc = startDate.Date.Add(timeSpan);
-            startDateUtc = DateTime.SpecifyKind(startDateUtc, DateTimeKind.Utc);
-            DateTime endDateUtc = endDate.Date.Add(timeSpan).AddDays(1).AddMilliseconds(-1);
-            endDateUtc = DateTime.SpecifyKind(endDateUtc, DateTimeKind.Utc);
-            IDictionary<string, int> yobCounts = this.userProfileDelegate.GetLoggedInUserYearOfBirthCounts(startDateUtc, endDateUtc);
+            TimeSpan ts = new(0, timeOffset, 0);
+            DateTime startDate = DateTime.Parse(startPeriod, CultureInfo.InvariantCulture).Date.Add(ts);
+            startDate = DateTime.SpecifyKind(startDate, DateTimeKind.Utc);
+            DateTime endDate = DateTime.Parse(endPeriod, CultureInfo.InvariantCulture).Date.Add(ts).AddDays(1).AddMilliseconds(-1);
+            endDate = DateTime.SpecifyKind(endDate, DateTimeKind.Utc);
+
+            IDictionary<string, int> yobCounts = this.userProfileDelegate.GetLoggedInUserYearOfBirthCounts(startDate, endDate);
 
             MemoryStream stream = new();
-            using StreamWriter writer = new(stream);
-            using CsvWriter csv = new(writer, CultureInfo.CurrentCulture);
+            using StreamWriter writer = new(stream, leaveOpen: true);
+            using CsvWriter csv = new(writer, CultureInfo.CurrentCulture, true);
             csv.WriteRecords(yobCounts);
 
             return stream;

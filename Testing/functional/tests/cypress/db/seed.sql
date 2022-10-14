@@ -27,7 +27,8 @@ INSERT INTO gateway."UserProfile"(
 	"IdentityManagementId", 
 	"LastLoginDateTime", 
 	"EncryptionKey", 
-	"SMSNumber")
+	"SMSNumber",
+	"YearOfBirth")
 VALUES (
 	'P6FFO433A5WPMVTGM7T4ZVWBKCSVNAYGTWTU3J2LWMGUMERKI72A',	
 	'System', 
@@ -40,7 +41,8 @@ VALUES (
 	null,
 	current_timestamp, 
 	'CwqU7+gCkL3jMWWcUpq80Oh42QejXOwI+Ov0tmsVWBI=',
-	null
+	null,
+	'1967'
 );
 
 /* Protected User - Keycloak User (protected) */
@@ -56,7 +58,8 @@ INSERT INTO gateway."UserProfile"(
 	"IdentityManagementId", 
 	"LastLoginDateTime", 
 	"EncryptionKey", 
-	"SMSNumber")
+	"SMSNumber",
+	"YearOfBirth")
 VALUES (
 	'RD33Y2LJEUZCY2TCMOIECUTKS3E62MEQ62CSUL6Q553IHHBI3AWQ',	
 	'System', 
@@ -69,7 +72,8 @@ VALUES (
 	null,
 	current_timestamp, 
 	'iHa5atSWqppGzWsR1Z8nbL9OHJamPHLMwYqdKmsf4jU=',
-	null
+	null,
+	'1995'
 );
 
 /* Invaliddoses - Keycloak User (hthgtwy20) */
@@ -85,7 +89,8 @@ INSERT INTO gateway."UserProfile"(
 	"IdentityManagementId", 
 	"LastLoginDateTime", 
 	"EncryptionKey", 
-	"SMSNumber")
+	"SMSNumber",
+	"YearOfBirth")
 VALUES (
 	'DEV4FPEGCXG2NB5K2USBL52S66SC3GOUHWRP3GTXR2BTY5HEC4YA',	
 	'System', 
@@ -98,6 +103,7 @@ VALUES (
 	null,
 	current_timestamp, 
 	'CwqU7+gCkL3jMWWcUpq80Oh42QejXOwI+Ov0tmsVWBI=',
+	null,
 	null
 );
 
@@ -114,7 +120,8 @@ INSERT INTO gateway."UserProfile"(
 	"IdentityManagementId", 
 	"LastLoginDateTime", 
 	"EncryptionKey", 
-	"SMSNumber")
+	"SMSNumber",
+	"YearOfBirth")
 VALUES (
 	'3ZQCSNNC6KVP2GYLA4O3EFZXGUAPWBQHU6ZEB7FXNZJ2WYCLPH3A',	
 	'System', 
@@ -127,7 +134,8 @@ VALUES (
 	null,
 	current_timestamp, 
 	'CwqU7+gCkL3jMWWcUpq80Oh42QejXOwI+Ov0tmsVWBI=',
-	null
+	null,
+	'1967'
 );
 
 /* Notfound - Keycloak User - Keycloak User (hthgtwy03) */
@@ -143,7 +151,8 @@ INSERT INTO gateway."UserProfile"(
 	"IdentityManagementId", 
 	"LastLoginDateTime", 
 	"EncryptionKey", 
-	"SMSNumber")
+	"SMSNumber",
+	"YearOfBirth")
 VALUES (
 	'R43YCT4ZY37EIJLW2O5LV2I77BZA3K3M25EUJGWAVGVJ7JKBDKCQ',
 	'System', 
@@ -156,7 +165,8 @@ VALUES (
 	null,
 	current_timestamp, 
 	'KtBm7JYegayKpx5fjwM2RUGZf79JOnNC21NhUrIAzmg=',
-	null
+	null,
+	'1988'
 );
 
 /* User without the latest accepted terms of service - Keycloak User - Keycloak User (hthgtwy04) */
@@ -172,7 +182,8 @@ INSERT INTO gateway."UserProfile"(
 	"IdentityManagementId", 
 	"LastLoginDateTime", 
 	"EncryptionKey", 
-	"SMSNumber")
+	"SMSNumber",
+	"YearOfBirth")
 VALUES (
 	'K6HL4VX67CZ2PGSZ2ZOIR4C3PGMFFBW5CIOXM74D6EQ7RYYL7P4A',	
 	'System', 
@@ -185,7 +196,8 @@ VALUES (
 	null,
 	current_timestamp,  
 	'CwqU7+gCkL3jMWWcUpq80Oh42QejXOwI+Ov0tmsVWBI=',
-	null
+	null,
+	'2001'
 );
 
 /* User (hthgtwy04) - last logged in 1 day ago */
@@ -205,7 +217,8 @@ INSERT INTO gateway."UserProfileHistory"(
     "OperationDateTime",
 	"EncryptionKey", 
 	"SMSNumber",
-    "TermsOfServiceId")
+    "TermsOfServiceId",
+	"YearOfBirth")
 VALUES (
 	uuid_generate_v4(),	
 	'System', 
@@ -222,7 +235,8 @@ VALUES (
     current_timestamp,
 	'CwqU7+gCkL3jMWWcUpq80Oh42QejXOwI+Ov0tmsVWBI=',
 	null,
-    'eafeee76-8a64-49ee-81ba-ddfe2c01deb8'
+    'eafeee76-8a64-49ee-81ba-ddfe2c01deb8',
+	'2001'
 );
 
 /* User (hthgtwy04) - last logged in 2 days ago */
@@ -242,7 +256,8 @@ INSERT INTO gateway."UserProfileHistory"(
     "OperationDateTime",
 	"EncryptionKey", 
 	"SMSNumber",
-    "TermsOfServiceId")
+    "TermsOfServiceId",
+	"YearOfBirth")
 VALUES (
 	uuid_generate_v4(),		
 	'System', 
@@ -259,7 +274,8 @@ VALUES (
     current_timestamp,
 	'CwqU7+gCkL3jMWWcUpq80Oh42QejXOwI+Ov0tmsVWBI=',
 	null,
-    'eafeee76-8a64-49ee-81ba-ddfe2c01deb8'
+    'eafeee76-8a64-49ee-81ba-ddfe2c01deb8',
+	'2001'
 );
 
 /* User (hthgtwy04) - last logged in 3 days ago */
@@ -279,7 +295,8 @@ INSERT INTO gateway."UserProfileHistory"(
     "OperationDateTime",
 	"EncryptionKey", 
 	"SMSNumber",
-    "TermsOfServiceId")
+    "TermsOfServiceId",
+	"YearOfBirth")
 VALUES (
 	uuid_generate_v4(),	
 	'System', 
@@ -296,7 +313,8 @@ VALUES (
     current_timestamp,
 	'CwqU7+gCkL3jMWWcUpq80Oh42QejXOwI+Ov0tmsVWBI=',
 	null,
-    'eafeee76-8a64-49ee-81ba-ddfe2c01deb8'
+    'eafeee76-8a64-49ee-81ba-ddfe2c01deb8',
+	'2001'
 );
 
 /* User keycloak (hthgtwy11) - last logged in 1 day ago  */
@@ -316,7 +334,8 @@ INSERT INTO gateway."UserProfileHistory"(
     "OperationDateTime",
 	"EncryptionKey", 
 	"SMSNumber",
-    "TermsOfServiceId")
+    "TermsOfServiceId",
+	"YearOfBirth")
 VALUES (
 	uuid_generate_v4(),	
 	'System', 
@@ -333,7 +352,8 @@ VALUES (
     current_timestamp,
 	'CwqU7+gCkL3jMWWcUpq80Oh42QejXOwI+Ov0tmsVWBI=',
 	null,
-    'eafeee76-8a64-49ee-81ba-ddfe2c01deb8'
+    'eafeee76-8a64-49ee-81ba-ddfe2c01deb8',
+	'1967'
 );
 
 /* User keycloak (hthgtwy11) - last logged in 2 days ago  */
@@ -353,7 +373,8 @@ INSERT INTO gateway."UserProfileHistory"(
     "OperationDateTime",
 	"EncryptionKey", 
 	"SMSNumber",
-    "TermsOfServiceId")
+    "TermsOfServiceId",
+	"YearOfBirth")
 VALUES (
 	uuid_generate_v4(),		
 	'System', 
@@ -370,7 +391,8 @@ VALUES (
     current_timestamp,
 	'CwqU7+gCkL3jMWWcUpq80Oh42QejXOwI+Ov0tmsVWBI=',
 	null,
-    'eafeee76-8a64-49ee-81ba-ddfe2c01deb8'
+    'eafeee76-8a64-49ee-81ba-ddfe2c01deb8',
+	'1967'
 );
 
 /* Notfound - Keycloak User - Last logged in 2 days ago */
@@ -390,7 +412,8 @@ INSERT INTO gateway."UserProfileHistory"(
     "OperationDateTime",
 	"EncryptionKey", 
 	"SMSNumber",
-    "TermsOfServiceId")
+    "TermsOfServiceId",
+	"YearOfBirth")
 VALUES (
 	uuid_generate_v4(),	
 	'System', 
@@ -407,7 +430,8 @@ VALUES (
     current_timestamp,
 	'CwqU7+gCkL3jMWWcUpq80Oh42QejXOwI+Ov0tmsVWBI=',
 	null,
-    'eafeee76-8a64-49ee-81ba-ddfe2c01deb8'
+    'eafeee76-8a64-49ee-81ba-ddfe2c01deb8',
+	'1988'
 );
 
 /* Invaliddoses - Keycloak User - Last logged in 120 days ago */
@@ -427,7 +451,8 @@ INSERT INTO gateway."UserProfileHistory"(
     "OperationDateTime",
 	"EncryptionKey", 
 	"SMSNumber",
-    "TermsOfServiceId")
+    "TermsOfServiceId",
+	"YearOfBirth")
 VALUES (
 	uuid_generate_v4(),	
 	'System', 
@@ -444,7 +469,8 @@ VALUES (
     current_timestamp,
 	'CwqU7+gCkL3jMWWcUpq80Oh42QejXOwI+Ov0tmsVWBI=',
 	null,
-    'eafeee76-8a64-49ee-81ba-ddfe2c01deb8'
+    'eafeee76-8a64-49ee-81ba-ddfe2c01deb8',
+	null
 );
 
 INSERT INTO gateway."Rating"(
