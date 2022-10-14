@@ -32,11 +32,11 @@ namespace HealthGateway.Common.Services
         RequestResult<IEnumerable<MessagingVerificationModel>> GetMessageVerifications(string hdid);
 
         /// <summary>
-        /// Retrieves a list of support users matching the query.
+        /// Retrieves a list of users matching the query.
         /// </summary>
         /// <param name="queryType">The type of query to perform.</param>
         /// <param name="queryString">The value to query on.</param>
-        /// <returns>A list of support users matching the query.</returns>
-        RequestResult<IEnumerable<SupportUser>> GetSupportUsers(UserQueryType queryType, string queryString);
+        /// <returns>A list of users matching the query.</returns>
+        RequestResult<IEnumerable<SupportUser>> GetUsers(UserQueryType queryType, string queryString);
     }
 }
