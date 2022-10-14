@@ -13,17 +13,18 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //-------------------------------------------------------------------------
-namespace HealthGateway.Admin.Client.Store.MessageVerification
+namespace HealthGateway.Admin.Client.Store.SupportUser
 {
     using System.Collections.Generic;
     using System.Diagnostics.CodeAnalysis;
+    using HealthGateway.Common.Data.Constants;
     using HealthGateway.Common.Data.ViewModels;
 
     /// <summary>
     /// Static class that implements all actions for the feature.
     /// </summary>
     [SuppressMessage("Design", "CA1034:Nested types should not be visible", Justification = "Team decision")]
-    public static class MessageVerificationActions
+    public static class SupportUserActions
     {
         /// <summary>
         /// The action representing the initiation of a load.
@@ -33,16 +34,23 @@ namespace HealthGateway.Admin.Client.Store.MessageVerification
             /// <summary>
             /// Initializes a new instance of the <see cref="LoadAction"/> class.
             /// </summary>
-            /// <param name="hdid">Represents the query string being performed.</param>
-            public LoadAction(string hdid)
+            /// <param name="queryType">Represents the type of query being performed.</param>
+            /// <param name="queryString">Represents the query string being performed.</param>
+            public LoadAction(UserQueryType queryType, string queryString)
             {
-                this.Hdid = hdid;
+                this.QueryString = queryString;
+                this.QueryType = queryType;
             }
+
+            /// <summary>
+            /// Gets or sets query type.
+            /// </summary>
+            public UserQueryType QueryType { get; set; }
 
             /// <summary>
             /// Gets or sets query string.
             /// </summary>
-            public string Hdid { get; set; }
+            public string QueryString { get; set; }
         }
 
         /// <summary>
@@ -63,23 +71,16 @@ namespace HealthGateway.Admin.Client.Store.MessageVerification
         /// <summary>
         /// The action representing a successful load.
         /// </summary>
-        public class LoadSuccessAction : BaseSuccessAction<RequestResult<IEnumerable<MessagingVerificationModel>>>
+        public class LoadSuccessAction : BaseSuccessAction<RequestResult<IEnumerable<SupportUser>>>
         {
             /// <summary>
             /// Initializes a new instance of the <see cref="LoadSuccessAction"/> class.
             /// </summary>
             /// <param name="data">Result data.</param>
-            /// <param name="hdid">hdid associated with the data.</param>
-            public LoadSuccessAction(RequestResult<IEnumerable<MessagingVerificationModel>> data, string hdid)
+            public LoadSuccessAction(RequestResult<IEnumerable<SupportUser>> data)
                 : base(data)
             {
-                this.Hdid = hdid;
             }
-
-            /// <summary>
-            /// Gets or sets query string.
-            /// </summary>
-            public string Hdid { get; set; }
         }
 
         /// <summary>
@@ -87,6 +88,26 @@ namespace HealthGateway.Admin.Client.Store.MessageVerification
         /// </summary>
         public class ResetStateAction
         {
+        }
+
+        /// <summary>
+        /// The action that toggles whether a particular user is expanded.
+        /// </summary>
+        public class ToggleIsExpandedAction
+        {
+            /// <summary>
+            /// Initializes a new instance of the <see cref="ToggleIsExpandedAction"/> class.
+            /// </summary>
+            /// <param name="hdid">Represents the Hdid of the user.</param>
+            public ToggleIsExpandedAction(string hdid)
+            {
+                this.Hdid = hdid;
+            }
+
+            /// <summary>
+            /// Gets or sets the Hdid of the user.
+            /// </summary>
+            public string Hdid { get; set; }
         }
     }
 }

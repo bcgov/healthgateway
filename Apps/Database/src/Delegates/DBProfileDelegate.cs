@@ -19,7 +19,6 @@ namespace HealthGateway.Database.Delegates
     using System.Collections.Generic;
     using System.Diagnostics.CodeAnalysis;
     using System.Linq;
-    using System.Text.Json;
     using HealthGateway.Database.Constants;
     using HealthGateway.Database.Context;
     using HealthGateway.Database.Models;
@@ -172,6 +171,33 @@ namespace HealthGateway.Database.Delegates
             result.Payload = this.dbContext.UserProfile
                 .Where(p => hdIds.Contains(p.HdId))
                 .ToList();
+
+            result.Status = DBStatusCode.Read;
+            this.logger.LogDebug("Finished getting user profiles from DB");
+            return result;
+        }
+
+        /// <inheritdoc/>
+        public DBResult<List<UserProfile>> GetUserProfiles(UserQueryType queryType, string queryString)
+        {
+            this.logger.LogTrace("Getting user profiles via message verification from DB for type {QueryType}: {QueryString}", queryType, queryString);
+            DBResult<List<UserProfile>> result = new();
+
+            switch (queryType)
+            {
+                case UserQueryType.Email:
+                    result.Payload = this.dbContext.UserProfile
+                        .Where(user => user.Verifications.Any(v => v.Email != null && EF.Functions.ILike(v.Email.To, $"%{queryString}%")))
+                        .GroupBy(user => user.HdId).Select(x => x.First())
+                        .ToList();
+                    break;
+                case UserQueryType.SMS:
+                    result.Payload = this.dbContext.UserProfile
+                        .Where(user => user.Verifications.Any(v => EF.Functions.ILike(v.SMSNumber, $"%{queryString}%")))
+                        .GroupBy(user => user.HdId).Select(x => x.First())
+                        .ToList();
+                    break;
+            }
 
             result.Status = DBStatusCode.Read;
             this.logger.LogDebug("Finished getting user profiles from DB");

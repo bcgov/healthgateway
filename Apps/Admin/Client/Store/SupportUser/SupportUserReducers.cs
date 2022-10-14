@@ -13,25 +13,25 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //-------------------------------------------------------------------------
-namespace HealthGateway.Admin.Client.Store.MessageVerification
+namespace HealthGateway.Admin.Client.Store.SupportUser
 {
     using System.Collections.Generic;
-    using System.Collections.Immutable;
+    using System.Linq;
     using Fluxor;
-    using HealthGateway.Common.Data.ViewModels;
+    using HealthGateway.Admin.Client.Models;
 
     /// <summary>
     /// The set of reducers for the feature.
     /// </summary>
-    public static class MessageVerificationReducers
+    public static class SupportUserReducers
     {
         /// <summary>
-        /// The Reducer for loading the message verification.
+        /// The Reducer for loading the support user.
         /// </summary>
-        /// <param name="state">The message verification state.</param>
+        /// <param name="state">The support user state.</param>
         /// <returns>The new state.</returns>
-        [ReducerMethod(typeof(MessageVerificationActions.LoadAction))]
-        public static MessageVerificationState ReduceLoadAction(MessageVerificationState state)
+        [ReducerMethod(typeof(SupportUserActions.LoadAction))]
+        public static SupportUserState ReduceLoadAction(SupportUserState state)
         {
             return state with
             {
@@ -42,26 +42,19 @@ namespace HealthGateway.Admin.Client.Store.MessageVerification
         /// <summary>
         /// The Reducer for the load success action.
         /// </summary>
-        /// <param name="state">The message verification state.</param>
+        /// <param name="state">The support user state.</param>
         /// <param name="action">The load success action.</param>
         /// <returns>The new state.</returns>
         [ReducerMethod]
-        public static MessageVerificationState ReduceLoadSuccessAction(MessageVerificationState state, MessageVerificationActions.LoadSuccessAction action)
+        public static SupportUserState ReduceLoadSuccessAction(SupportUserState state, SupportUserActions.LoadSuccessAction action)
         {
-            ImmutableList<MessagingVerificationModel> data = state.Data ?? new List<MessagingVerificationModel>().ToImmutableList();
-
-            IEnumerable<MessagingVerificationModel>? verifications = action.Data.ResourcePayload;
-            if (verifications != null)
-            {
-                data = data.RemoveAll(x => x.UserProfileId == action.Hdid).AddRange(verifications);
-            }
-
             return state with
             {
                 IsLoading = false,
                 Result = action.Data,
                 Error = null,
-                Data = data,
+                WarningMessage = action.Data.ResultError?.ResultMessage,
+                Data = action.Data.ResourcePayload?.Select(u => new ExtendedSupportUser(u)).ToList(),
             };
         }
 
@@ -72,7 +65,7 @@ namespace HealthGateway.Admin.Client.Store.MessageVerification
         /// <param name="action">The load fail action.</param>
         /// <returns>The new state.</returns>
         [ReducerMethod]
-        public static MessageVerificationState ReduceLoadFailAction(MessageVerificationState state, MessageVerificationActions.LoadFailAction action)
+        public static SupportUserState ReduceLoadFailAction(SupportUserState state, SupportUserActions.LoadFailAction action)
         {
             return state with
             {
@@ -84,10 +77,10 @@ namespace HealthGateway.Admin.Client.Store.MessageVerification
         /// <summary>
         /// The Reducer for the reset state action.
         /// </summary>
-        /// <param name="state">The message verification state.</param>
+        /// <param name="state">The support user state.</param>
         /// <returns>The empty state.</returns>
-        [ReducerMethod(typeof(MessageVerificationActions.ResetStateAction))]
-        public static MessageVerificationState ReduceResetStateAction(MessageVerificationState state)
+        [ReducerMethod(typeof(SupportUserActions.ResetStateAction))]
+        public static SupportUserState ReduceResetStateAction(SupportUserState state)
         {
             return state with
             {
@@ -95,7 +88,28 @@ namespace HealthGateway.Admin.Client.Store.MessageVerification
                 Result = null,
                 Error = null,
                 Data = null,
+                WarningMessage = null,
             };
+        }
+
+        /// <summary>
+        /// The reducer for the toggle IsExpanded action.
+        /// </summary>
+        /// <param name="state">The user state.</param>
+        /// <param name="action">The toggle IsExpanded action.</param>
+        /// <returns>The default state.</returns>
+        [ReducerMethod]
+        public static SupportUserState ReduceToggleIsExpandedAction(SupportUserState state, SupportUserActions.ToggleIsExpandedAction action)
+        {
+            IEnumerable<ExtendedSupportUser> data = state.Data ?? Enumerable.Empty<ExtendedSupportUser>();
+
+            ExtendedSupportUser? user = data.SingleOrDefault(c => c.Hdid == action.Hdid);
+            if (user != null)
+            {
+                user.IsExpanded = !user.IsExpanded;
+            }
+
+            return state;
         }
     }
 }

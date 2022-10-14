@@ -21,8 +21,9 @@ namespace HealthGateway.Admin.Client.Pages
     using System.Threading.Tasks;
     using Fluxor;
     using Fluxor.Blazor.Web.Components;
+    using HealthGateway.Admin.Client.Models;
     using HealthGateway.Admin.Client.Store.MessageVerification;
-    using HealthGateway.Admin.Common.Constants;
+    using HealthGateway.Admin.Client.Store.SupportUser;
     using HealthGateway.Common.Data.Constants;
     using HealthGateway.Common.Data.Utils;
     using HealthGateway.Common.Data.ViewModels;
@@ -45,6 +46,9 @@ namespace HealthGateway.Admin.Client.Pages
         private IState<MessageVerificationState> MessageVerificationState { get; set; } = default!;
 
         [Inject]
+        private IState<SupportUserState> SupportUserState { get; set; } = default!;
+
+        [Inject]
         private NavigationManager NavigationManager { get; set; } = default!;
 
         private UserQueryType QueryType { get; set; } = UserQueryType.Phn;
@@ -55,7 +59,7 @@ namespace HealthGateway.Admin.Client.Pages
 
             set
             {
-                this.ResetState();
+                this.ResetSupportUserState();
                 this.QueryParameter = string.Empty;
                 this.QueryType = value;
             }
@@ -67,18 +71,24 @@ namespace HealthGateway.Admin.Client.Pages
 
         private bool MessagingVerificationsLoading => this.MessageVerificationState.Value.IsLoading;
 
-        private bool MessagingVerificationsLoaded => this.MessageVerificationState.Value.Loaded;
-
         private bool PhnSelected => this.SelectedQueryType == UserQueryType.Phn;
 
-        private bool HasError => this.MessageVerificationState.Value.Error != null && this.MessageVerificationState.Value.Error.Message.Length > 0;
+        private bool HasMessagingVerificationsError => this.MessageVerificationState.Value.Error != null && this.MessageVerificationState.Value.Error.Message.Length > 0;
 
-        private bool HasWarning => this.MessageVerificationState.Value.WarningMessage != null && this.MessageVerificationState.Value.WarningMessage.Length > 0;
+        private IEnumerable<MessagingVerificationModel> MessagingVerifications => this.MessageVerificationState.Value.Data ?? Enumerable.Empty<MessagingVerificationModel>();
 
-        private IEnumerable<MessagingVerificationModel> MessagingVerifications =>
-            this.MessageVerificationState.Value.Result?.ResourcePayload ?? Enumerable.Empty<MessagingVerificationModel>();
+        private bool SupportUsersLoading => this.SupportUserState.Value.IsLoading;
 
-        private IEnumerable<MessagingVerificationRow> MessagingVerificationRows => this.MessagingVerifications.Select(v => new MessagingVerificationRow(v));
+        private bool SupportUsersLoaded => this.SupportUserState.Value.Loaded;
+
+        private bool HasSupportUsersError => this.SupportUserState.Value.Error != null && this.SupportUserState.Value.Error.Message.Length > 0;
+
+        private bool HasSupportUsersWarning => this.SupportUserState.Value.WarningMessage != null && this.SupportUserState.Value.WarningMessage.Length > 0;
+
+        private IEnumerable<ExtendedSupportUser> SupportUsers =>
+            this.SupportUserState.Value.Data ?? Enumerable.Empty<ExtendedSupportUser>();
+
+        private IEnumerable<SupportUserRow> SupportUserRows => this.SupportUsers.Select(v => new SupportUserRow(v));
 
         private Func<string, string?> ValidateQueryParameter => parameter =>
         {
@@ -92,6 +102,16 @@ namespace HealthGateway.Admin.Client.Pages
                 return "Invalid PHN";
             }
 
+            if ((this.SelectedQueryType == UserQueryType.Email || this.SelectedQueryType == UserQueryType.Sms) && StringManipulator.StripWhitespace(parameter)?.Length < 5)
+            {
+                return "Email/SMS must be minimum 5 characters";
+            }
+
+            if (this.SelectedQueryType == UserQueryType.Sms && !StringManipulator.IsNumeric(parameter))
+            {
+                return "SMS must contain digits only";
+            }
+
             return null;
         };
 
@@ -99,13 +119,14 @@ namespace HealthGateway.Admin.Client.Pages
         protected override void OnInitialized()
         {
             base.OnInitialized();
-            this.ResetState();
+            this.ResetSupportUserState();
+            this.ResetMessageVerificationState();
 
             Uri uri = this.NavigationManager.ToAbsoluteUri(this.NavigationManager.Uri);
 
             if (QueryHelpers.ParseQuery(uri.Query).TryGetValue(UserQueryType.Hdid.ToString(), out StringValues hdid))
             {
-                this.Dispatcher.Dispatch(new MessageVerificationActions.LoadAction(UserQueryType.Hdid, StringManipulator.StripWhitespace(hdid)));
+                this.Dispatcher.Dispatch(new SupportUserActions.LoadAction(UserQueryType.Hdid, StringManipulator.StripWhitespace(hdid)));
                 this.QueryParameter = hdid;
                 this.SelectedQueryType = UserQueryType.Hdid;
             }
@@ -122,12 +143,40 @@ namespace HealthGateway.Admin.Client.Pages
             };
         }
 
+        private IList<MessagingVerificationModel> GetMessagingVerificationModels(string hdid)
+        {
+            return this.MessagingVerifications.Where(v => v.UserProfileId == hdid).ToList();
+        }
+
+        private bool HasMessagingVerification(string hdid)
+        {
+            return this.MessagingVerifications.ToList().Exists(v => v.UserProfileId == hdid);
+        }
+
         /// <summary>
         /// Resets the component to its initial state.
         /// </summary>
-        private void ResetState()
+        private void ResetSupportUserState()
+        {
+            this.Dispatcher.Dispatch(new SupportUserActions.ResetStateAction());
+        }
+
+        /// <summary>
+        /// Resets the component to its initial state.
+        /// </summary>
+        private void ResetMessageVerificationState()
         {
             this.Dispatcher.Dispatch(new MessageVerificationActions.ResetStateAction());
+        }
+
+        private void ToggleExpandRow(string hdid)
+        {
+            if (!this.HasMessagingVerification(hdid))
+            {
+                this.Dispatcher.Dispatch(new MessageVerificationActions.LoadAction(hdid));
+            }
+
+            this.Dispatcher.Dispatch(new SupportUserActions.ToggleIsExpandedAction(hdid));
         }
 
         private async Task SearchAsync()
@@ -135,42 +184,29 @@ namespace HealthGateway.Admin.Client.Pages
             await this.Form.Validate().ConfigureAwait(true);
             if (this.Form.IsValid)
             {
-                this.ResetState();
-                this.Dispatcher.Dispatch(new MessageVerificationActions.LoadAction(this.SelectedQueryType, StringManipulator.StripWhitespace(this.QueryParameter)));
+                this.ResetSupportUserState();
+                this.ResetMessageVerificationState();
+                this.Dispatcher.Dispatch(new SupportUserActions.LoadAction(this.SelectedQueryType, StringManipulator.StripWhitespace(this.QueryParameter)));
             }
         }
 
-        private sealed record MessagingVerificationRow
+        private sealed record SupportUserRow
         {
-            public MessagingVerificationRow(MessagingVerificationModel model)
+            public SupportUserRow(ExtendedSupportUser model)
             {
-                this.Hdid = model.UserProfileId ?? string.Empty;
-                this.PersonalHealthNumber = model.PersonalHealthNumber ?? string.Empty;
-                this.EmailOrSms = model.VerificationType switch
-                {
-                    MessagingVerificationType.Email => model.Email?.To ?? "N/A",
-                    _ => model.SMSNumber ?? "N/A",
-                };
-                this.Verified = model.Validated ? "true" : "false";
-                this.VerificationDate = DateFormatter.ToShortDateAndTime(model.UpdatedDateTime.ToLocalTime());
-                this.VerificationCode = model.VerificationType switch
-                {
-                    MessagingVerificationType.Email => "-",
-                    _ => model.SMSValidationCode ?? "-",
-                };
+                this.Hdid = model.Hdid;
+                this.PersonalHealthNumber = model.PersonalHealthNumber;
+                this.LastLoginDateTime = model.LastLoginDateTime;
+                this.IsExpanded = model.IsExpanded;
             }
 
             public string Hdid { get; }
 
             public string PersonalHealthNumber { get; }
 
-            public string EmailOrSms { get; }
+            public DateTime LastLoginDateTime { get; }
 
-            public string Verified { get; }
-
-            public string VerificationDate { get; }
-
-            public string VerificationCode { get; }
+            public bool IsExpanded { get; }
         }
     }
 }

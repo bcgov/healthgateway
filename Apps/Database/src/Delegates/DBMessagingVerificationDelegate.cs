@@ -19,7 +19,6 @@ namespace HealthGateway.Database.Delegates
     using System.Collections.Generic;
     using System.Diagnostics.CodeAnalysis;
     using System.Linq;
-    using System.Text.Json;
     using HealthGateway.Common.Data.Constants;
     using HealthGateway.Common.Data.Models;
     using HealthGateway.Database.Constants;
@@ -133,32 +132,18 @@ namespace HealthGateway.Database.Delegates
             messageVerification.Deleted = markDeleted;
             this.Update(messageVerification);
 
-            this.logger.LogDebug("Finished Expiring messaging verification from DB.");
+            this.logger.LogDebug("Finished Expiring messaging verification from DB");
         }
 
-        /// <inheritdoc/>
-        public DBResult<IEnumerable<MessagingVerification>> GetUserMessageVerifications(UserQueryType queryType, string queryString)
+        /// <inheritdoc />
+        public DBResult<IEnumerable<MessagingVerification>> GetUserMessageVerifications(string hdid)
         {
-            IQueryable<MessagingVerification> query;
-            switch (queryType)
-            {
-                case UserQueryType.Email:
-                    query = this.dbContext.MessagingVerification.Where(mv => mv.Email != null && EF.Functions.ILike(mv.Email.To, $"%{queryString}%"));
-                    break;
-                case UserQueryType.HDID:
-                    query = this.dbContext.MessagingVerification.Where(mv => mv.UserProfileId == queryString);
-                    break;
-                case UserQueryType.SMS:
-                    query = this.dbContext.MessagingVerification.Where(mv => mv.SMSNumber != null && EF.Functions.ILike(mv.SMSNumber, $"%{queryString}%"));
-                    break;
-                default:
-                    throw new ArgumentOutOfRangeException(nameof(queryType), "Query Type is invalid");
-            }
-
-            IList<MessagingVerification> verifications = query.Include(mv => mv.Email)
+            IList<MessagingVerification> verifications = this.dbContext.MessagingVerification.Where(mv => mv.UserProfileId == hdid)
+                .Include(mv => mv.Email)
                 .OrderByDescending(mv => mv.CreatedDateTime)
                 .AsNoTracking()
                 .ToList();
+
             DBResult<IEnumerable<MessagingVerification>> result = new()
             {
                 Payload = verifications,

@@ -1,4 +1,4 @@
-﻿// -------------------------------------------------------------------------
+// -------------------------------------------------------------------------
 //  Copyright © 2019 Province of British Columbia
 //
 //  Licensed under the Apache License, Version 2.0 (the "License");
@@ -13,21 +13,25 @@
 //  See the License for the specific language governing permissions and
 //  limitations under the License.
 // -------------------------------------------------------------------------
-namespace HealthGateway.Database.Constants
+namespace HealthGateway.Admin.MapProfiles
 {
+    using AutoMapper;
+    using HealthGateway.Common.Data.Models;
+    using HealthGateway.Common.Data.ViewModels;
+
     /// <summary>
-    /// Represents the type of query being performed.
+    /// An AutoMapper profile class which defines mapping between DB and UI Models.
     /// </summary>
-    public enum UserQueryType
+    public class MessagingVerificationModelProfile : Profile
     {
         /// <summary>
-        /// Query by the Email.
+        /// Initializes a new instance of the <see cref="MessagingVerificationModelProfile"/> class.
         /// </summary>
-        Email,
-
-        /// <summary>
-        /// Query by the SMS Phone number.
-        /// </summary>
-        SMS,
+        public MessagingVerificationModelProfile()
+        {
+            this.CreateMap<MessagingVerification, MessagingVerificationModel>()
+                .ForMember(dest => dest.Email, opt => opt.MapFrom(src => src.Email!.To))
+                .ReverseMap();
+        }
     }
 }

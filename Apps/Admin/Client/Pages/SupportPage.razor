@@ -2,14 +2,20 @@
 @layout MainLayout
 @attribute [Authorize(Roles = $"{Roles.Admin},{Roles.Reviewer}")]
 @using HealthGateway.Admin.Client.Store.MessageVerification
+@using HealthGateway.Admin.Client.Store.SupportUser
+@using HealthGateway.Common.Data.Constants
+@using HealthGateway.Common.Data.Utils
 @using HealthGateway.Common.Ui.Constants
 @inherits Fluxor.Blazor.Web.Components.FluxorComponent
 
 <PageTitle>Health Gateway Admin Support</PageTitle>
 <HgPageHeading>Support</HgPageHeading>
 
-<HgBannerFeedback Severity="Severity.Error" IsEnabled="HasError" TResetAction="MessageVerificationActions.ResetStateAction" DataTestId="banner-feedback-error-message">
+<HgBannerFeedback Severity="Severity.Error" IsEnabled="HasMessagingVerificationsError" TResetAction="MessageVerificationActions.ResetStateAction" DataTestId="banner-feedback-error-message">
     @MessageVerificationState.Value.Error?.Message
+</HgBannerFeedback>
+<HgBannerFeedback Severity="Severity.Error" IsEnabled="HasSupportUsersError" TResetAction="SupportUserActions.ResetStateAction" DataTestId="user-banner-feedback-error-message">
+    @SupportUserState.Value.Error?.Message
 </HgBannerFeedback>
 
 <MudForm @ref="Form">
@@ -38,62 +44,62 @@
     </MudGrid>
 </MudForm>
 
-<HgBannerFeedback Severity="@Severity.Info" IsEnabled="HasWarning" TResetAction="MessageVerificationActions.ResetStateAction" DataTestId="banner-feedback-warning-message">
-    @MessageVerificationState.Value.WarningMessage
+<HgBannerFeedback Severity="@Severity.Info" IsEnabled="HasSupportUsersWarning" TResetAction="SupportUserActions.ResetStateAction" DataTestId="banner-feedback-warning-message">
+    @SupportUserState.Value.WarningMessage
 </HgBannerFeedback>
 
-@if (MessagingVerificationsLoaded || MessagingVerificationsLoading)
+@if (SupportUsersLoaded || SupportUsersLoading)
 {
     <MudTable Class="mt-3"
-              Items="MessagingVerificationRows"
-              Loading="MessagingVerificationsLoading"
+              Items="SupportUserRows"
+              Loading="SupportUsersLoading"
               AllowUnsorted="false"
               Breakpoint="Breakpoint.Md"
               HorizontalScrollbar="true"
               Striped="true"
               Dense="true"
-              data-testid="message-verification-table">
+              data-testid="support-user-table">
         <HeaderContent>
             <MudTh>
-                <MudTableSortLabel SortBy="new Func<MessagingVerificationRow, object>(x => x.Hdid)">
+                <MudTableSortLabel SortBy="new Func<SupportUserRow, object>(x => x.Hdid)">
                     HDID
                 </MudTableSortLabel>
             </MudTh>
             <MudTh>
-                <MudTableSortLabel SortBy="new Func<MessagingVerificationRow, object>(x => x.PersonalHealthNumber)">
+                <MudTableSortLabel SortBy="new Func<SupportUserRow, object>(x => x.PersonalHealthNumber)">
                     PHN
                 </MudTableSortLabel>
             </MudTh>
             <MudTh>
-                <MudTableSortLabel SortBy="new Func<MessagingVerificationRow, object>(x => x.EmailOrSms)">
-                    Email or SMS
-                </MudTableSortLabel>
-            </MudTh>
-            <MudTh>
-                <MudTableSortLabel SortBy="new Func<MessagingVerificationRow, object>(x => x.Verified)">
-                    Verified
-                </MudTableSortLabel>
-            </MudTh>
-            <MudTh>
-                <MudTableSortLabel SortBy="new Func<MessagingVerificationRow, object>(x => x.VerificationDate)"
+                <MudTableSortLabel SortBy="new Func<SupportUserRow, object>(x => x.LastLoginDateTime)"
                                    InitialDirection="@SortDirection.Descending">
-                    Verification Date
+                    Last Login
                 </MudTableSortLabel>
             </MudTh>
-            <MudTh>
-                <MudTableSortLabel SortBy="new Func<MessagingVerificationRow, object>(x => x.VerificationCode)">
-                    Verification Code
-                </MudTableSortLabel>
-            </MudTh>
+            <MudTh Style="text-align:right"></MudTh>
         </HeaderContent>
         <RowTemplate>
-            <MudTd DataLabel="HDID" data-testid=@($"message-verification-table-hdid-{context.Hdid}")>@context.Hdid</MudTd>
-            <MudTd DataLabel="PHN" data-testid=@($"message-verification-table-phn-{context.Hdid}")>@context.PersonalHealthNumber</MudTd>
-            <MudTd DataLabel="Email or SMS" data-testid=@($"message-verification-table-email-sms-{context.Hdid}")>@context.EmailOrSms</MudTd>
-            <MudTd DataLabel="Verified" data-testid=@($"message-verification-table-verified-{context.Hdid}")>@context.Verified</MudTd>
-            <MudTd DataLabel="Verification Date" data-testid=@($"message-verification-table-verification-date-{context.Hdid}")>@context.VerificationDate</MudTd>
-            <MudTd DataLabel="Verification Code" data-testid=@($"message-verification-table-verification-code-{context.Hdid}")>@context.VerificationCode</MudTd>
+            <MudTd DataLabel="HDID" data-testid=@($"message-user-table-hdid-{context.Hdid}")>@context.Hdid</MudTd>
+            <MudTd DataLabel="PHN" data-testid=@($"message-user-table-phn-{context.Hdid}")>@context.PersonalHealthNumber</MudTd>
+            <MudTd DataLabel="Last Login" data-testid=@($"message-user-table-last-login-{context.Hdid}")>@DateFormatter.ToShortDateAndTime(context.LastLoginDateTime)</MudTd>
+            <MudTd Style="text-align:right">
+                <div>
+                    <MudTooltip Text="@(context.IsExpanded ? "Collapse" : "Expand")">
+                        <MudIconButton OnClick="@(() => ToggleExpandRow(context.Hdid))"
+                                       Icon="@(context.IsExpanded ? Icons.Material.Filled.ExpandLess : Icons.Material.Filled.ExpandMore)"
+                                       Color="@Color.Primary"
+                                       data-testid=@($"messaging-verification-table-expand-btn-{context.Hdid}")>
+                        </MudIconButton>
+                    </MudTooltip>
+                </div>
+            </MudTd>
         </RowTemplate>
+        <ChildRowContent>
+            @if (context.IsExpanded)
+            {
+                <MessageVerificationTable Data="@GetMessagingVerificationModels(context.Hdid)" IsLoading="@MessagingVerificationsLoading" />
+            }
+        </ChildRowContent>
         <PagerContent>
             <MudTablePager />
         </PagerContent>
