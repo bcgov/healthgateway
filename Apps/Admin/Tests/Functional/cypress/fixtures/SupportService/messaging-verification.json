@@ -1,0 +1,39 @@
+{
+    "resourcePayload": [
+        {
+            "id": "740a0024-aff5-4145-aee1-6b608ca4239b",
+            "userProfileId": "P6FFO433A5WPMVTGM7T4ZVWBKCSVNAYGTWTU3J2LWMGUMERKI72A",
+            "validated": true,
+            "emailId": null,
+            "email": null,
+            "inviteKey": "00000000-0000-0000-0000-000000000000",
+            "verificationType": "SMS",
+            "smsNumber": "2501234567",
+            "smsValidationCode": "654321",
+            "expireDate": "2022-10-15T19:00:26.631761Z",
+            "verificationAttempts": 0,
+            "deleted": false,
+            "updatedDateTime": "2022-10-14T19:00:26.631761Z"
+        },
+        {
+            "id": "d2b830dd-e625-4667-92a5-65161a9fe6da",
+            "userProfileId": "P6FFO433A5WPMVTGM7T4ZVWBKCSVNAYGTWTU3J2LWMGUMERKI72A",
+            "validated": false,
+            "emailId": null,
+            "email": null,
+            "inviteKey": "00000000-0000-0000-0000-000000000000",
+            "verificationType": "SMS",
+            "smsNumber": "2501234567",
+            "smsValidationCode": "123456",
+            "expireDate": "2022-10-15T19:00:26.631761Z",
+            "verificationAttempts": 0,
+            "deleted": false,
+            "updatedDateTime": "2022-10-14T18:00:26.631761Z"
+        }
+    ],
+    "totalResultCount": null,
+    "pageIndex": null,
+    "pageSize": null,
+    "resultStatus": 1,
+    "resultError": null
+}

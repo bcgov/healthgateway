@@ -11,7 +11,7 @@
 <PageTitle>Health Gateway Admin Support</PageTitle>
 <HgPageHeading>Support</HgPageHeading>
 
-<HgBannerFeedback Severity="Severity.Error" IsEnabled="HasMessagingVerificationsError" TResetAction="MessageVerificationActions.ResetStateAction" DataTestId="banner-feedback-error-message">
+<HgBannerFeedback Severity="Severity.Error" IsEnabled="HasMessagingVerificationsError" TResetAction="MessageVerificationActions.ResetStateAction" DataTestId="messaging-verification-banner-feedback-error-message">
     @MessageVerificationState.Value.Error?.Message
 </HgBannerFeedback>
 <HgBannerFeedback Severity="Severity.Error" IsEnabled="HasSupportUsersError" TResetAction="SupportUserActions.ResetStateAction" DataTestId="user-banner-feedback-error-message">
@@ -44,7 +44,7 @@
     </MudGrid>
 </MudForm>
 
-<HgBannerFeedback Severity="@Severity.Info" IsEnabled="HasSupportUsersWarning" TResetAction="SupportUserActions.ResetStateAction" DataTestId="banner-feedback-warning-message">
+<HgBannerFeedback Severity="@Severity.Info" IsEnabled="HasSupportUsersWarning" TResetAction="SupportUserActions.ResetStateAction" DataTestId="user-banner-feedback-warning-message">
     @SupportUserState.Value.WarningMessage
 </HgBannerFeedback>
 
@@ -58,7 +58,7 @@
               HorizontalScrollbar="true"
               Striped="true"
               Dense="true"
-              data-testid="support-user-table">
+              data-testid="user-table">
         <HeaderContent>
             <MudTh>
                 <MudTableSortLabel SortBy="new Func<SupportUserRow, object>(x => x.Hdid)">
@@ -79,9 +79,9 @@
             <MudTh Style="text-align:right"></MudTh>
         </HeaderContent>
         <RowTemplate>
-            <MudTd DataLabel="HDID" data-testid=@($"message-user-table-hdid-{context.Hdid}")>@context.Hdid</MudTd>
-            <MudTd DataLabel="PHN" data-testid=@($"message-user-table-phn-{context.Hdid}")>@context.PersonalHealthNumber</MudTd>
-            <MudTd DataLabel="Last Login" data-testid=@($"message-user-table-last-login-{context.Hdid}")>@DateFormatter.ToShortDateAndTime(context.LastLoginDateTime)</MudTd>
+            <MudTd DataLabel="HDID" data-testid=@($"user-table-hdid-{context.Hdid}")>@context.Hdid</MudTd>
+            <MudTd DataLabel="PHN" data-testid=@($"user-table-phn-{context.Hdid}")>@context.PersonalHealthNumber</MudTd>
+            <MudTd DataLabel="Last Login" data-testid=@($"user-table-last-login-{context.Hdid}")>@DateFormatter.ToShortDateAndTime(context.LastLoginDateTime)</MudTd>
             <MudTd Style="text-align:right">
                 <div>
                     <MudTooltip Text="@(context.IsExpanded ? "Collapse" : "Expand")">
