@@ -32,7 +32,7 @@
         <HgButton TopMargin="Breakpoint.Always" Disabled="@AnalyticsState.Value.IsLoading" EndIcon="@Icons.Material.Filled.Download" FullWidth="@true" Variant="Variant.Filled" Color="Color.Primary" @onclick="GetUserFeedbackData" data-testid="user-feedback-download-btn">User Feedback</HgButton>
     </MudItem>
     <MudItem xs="6" lg="3">
-        <HgButton TopMargin="Breakpoint.Always" Disabled="@AnalyticsState.Value.IsLoading" EndIcon="@Icons.Material.Filled.Download" FullWidth="@true" Variant="Variant.Filled" Color="Color.Primary" @onclick="GetYearOfBirthCountsData" data-testid="user-feedback-download-btn">Year of Birth</HgButton>
+        <HgButton TopMargin="Breakpoint.Always" Disabled="@AnalyticsState.Value.IsLoading" EndIcon="@Icons.Material.Filled.Download" FullWidth="@true" Variant="Variant.Filled" Color="Color.Primary" @onclick="GetYearOfBirthCountsData" data-testid="year-of-birth-download-btn">Year of Birth</HgButton>
         <MudDateRangePicker data-testid="minimum-maximum-date-time-picker" Mindate="@MinimumDateTime" MaxDate="@MaximumDateTime" @ref="SelectedDateRangePicker" Label="Select Date Range" @bind-DateRange="SelectedDateRange" Color="Color.Success" Style="font-weight:bold">
             <PickerActions>
                 <MudButton Class="mr-auto align-self-start" OnClick="@(() => SelectedDateRangePicker.Clear())">Clear</MudButton>
