@@ -518,7 +518,7 @@ export default class PublicVaccineCardView extends Vue {
                         </b-form-invalid-feedback>
                     </b-form-group>
                     <b-form-group
-                        label="Date of Vaccine (Any Dose)"
+                        label="Date of Vaccine (Dose 1 to 4)"
                         label-for="dateOfVaccine"
                         :state="isValid($v.dateOfVaccine)"
                     >
