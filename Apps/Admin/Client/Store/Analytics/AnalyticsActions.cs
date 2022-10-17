@@ -130,6 +130,40 @@ public static class AnalyticsActions
     }
 
     /// <summary>
+    /// The action representing the initiation of year of birth counts load action.
+    /// </summary>
+    public class LoadYearOfBirthCountsAction
+    {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="LoadYearOfBirthCountsAction"/> class.
+        /// </summary>
+        /// <param name="startPeriod">The start period of the year of birth counts.</param>
+        /// <param name="endPeriod">The end period of the year of birth counts.</param>
+        /// <param name="timeOffset">The offset from the client browser to UTC.</param>
+        public LoadYearOfBirthCountsAction(string startPeriod, string endPeriod, int timeOffset)
+        {
+            this.StartPeriod = startPeriod;
+            this.EndPeriod = endPeriod;
+            this.TimeOffset = timeOffset;
+        }
+
+        /// <summary>
+        /// Gets or sets start period.
+        /// </summary>
+        public string StartPeriod { get; set; }
+
+        /// <summary>
+        /// Gets or sets end period.
+        /// </summary>
+        public string EndPeriod { get; set; }
+
+        /// <summary>
+        /// Gets or sets time offset.
+        /// </summary>
+        public int TimeOffset { get; set; }
+    }
+
+    /// <summary>
     /// The action representing a successful load action.
     /// </summary>
     public class LoadSuccessAction : BaseSuccessAction<HttpContent>

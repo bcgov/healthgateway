@@ -28,7 +28,17 @@
         <HgButton TopMargin="Breakpoint.Always" Disabled="@AnalyticsState.Value.IsLoading" EndIcon="@Icons.Material.Filled.Download" FullWidth="@true" Variant="Variant.Filled" Color="Color.Primary" @onclick="GetInactiveUsersData" data-testid="inactive-users-download-btn">Inactive Users</HgButton>
         <HgTextField T="int" Label="Days Inactive" Required="@true" @bind-Value="InactiveDays" Disabled="@AnalyticsState.Value.IsLoading" data-testid="days-inactive-input" />
     </MudItem>
-        <MudItem xs="6" lg="3">
-            <HgButton TopMargin="Breakpoint.Always" Disabled="@AnalyticsState.Value.IsLoading" EndIcon="@Icons.Material.Filled.Download" FullWidth="@true" Variant="Variant.Filled" Color="Color.Primary" @onclick="GetUserFeedbackData" data-testid="user-feedback-download-btn">User Feedback</HgButton>
-        </MudItem>
+    <MudItem xs="6" lg="3">
+        <HgButton TopMargin="Breakpoint.Always" Disabled="@AnalyticsState.Value.IsLoading" EndIcon="@Icons.Material.Filled.Download" FullWidth="@true" Variant="Variant.Filled" Color="Color.Primary" @onclick="GetUserFeedbackData" data-testid="user-feedback-download-btn">User Feedback</HgButton>
+    </MudItem>
+    <MudItem xs="6" lg="3">
+        <HgButton TopMargin="Breakpoint.Always" Disabled="@AnalyticsState.Value.IsLoading" EndIcon="@Icons.Material.Filled.Download" FullWidth="@true" Variant="Variant.Filled" Color="Color.Primary" @onclick="GetYearOfBirthCountsData" data-testid="user-feedback-download-btn">Year of Birth</HgButton>
+        <MudDateRangePicker data-testid="minimum-maximum-date-time-picker" Mindate="@MinimumDateTime" MaxDate="@MaximumDateTime" @ref="SelectedDateRangePicker" Label="Select Date Range" @bind-DateRange="SelectedDateRange" Color="Color.Success" Style="font-weight:bold">
+            <PickerActions>
+                <MudButton Class="mr-auto align-self-start" OnClick="@(() => SelectedDateRangePicker.Clear())">Clear</MudButton>
+                <MudButton OnClick="@(() => SelectedDateRangePicker.Close(false))">Cancel</MudButton>
+                <MudButton Color="Color.Primary" @onclick="@(() => SelectedDateRangePicker.Close())">Ok</MudButton>
+            </PickerActions>
+        </MudDateRangePicker>
+    </MudItem>
 </MudGrid>

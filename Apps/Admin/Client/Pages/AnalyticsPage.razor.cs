@@ -24,12 +24,15 @@ using Fluxor.Blazor.Web.Components;
 using HealthGateway.Admin.Client.Store.Analytics;
 using Microsoft.AspNetCore.Components;
 using Microsoft.JSInterop;
+using MudBlazor;
 
 /// <summary>
 /// Backing logic for the Analytics page.
 /// </summary>
 public partial class AnalyticsPage : FluxorComponent
 {
+    private const string YearOfBirthReportName = "YearOfBirthCounts";
+
     [Inject]
     private IJSRuntime JsRuntime { get; set; } = default!;
 
@@ -44,7 +47,31 @@ public partial class AnalyticsPage : FluxorComponent
 
     private int InactiveDays { get; set; } = 90;
 
+    private string? StartDate { get; set; } = DateTime.Now.AddDays(-30).ToString("yyyy-MM-dd", CultureInfo.InvariantCulture);
+
+    private string? EndDate { get; set; } = DateTime.Now.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture);
+
     private int TimeOffset { get; } = (int)TimeZoneInfo.Local.GetUtcOffset(DateTime.UtcNow).TotalMinutes * -1;
+
+    private DateRange DateRange { get; set; } = new(DateTime.Now.AddDays(-30).Date, DateTime.Now.Date);
+
+    private DateRange SelectedDateRange
+    {
+        get => this.DateRange;
+
+        set
+        {
+            this.StartDate = value.Start?.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture);
+            this.EndDate = value.End?.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture);
+            this.DateRange = value;
+        }
+    }
+
+    private MudDateRangePicker SelectedDateRangePicker { get; set; } = default!;
+
+    private DateTime MinimumDateTime { get; } = new(2019, 06, 1);
+
+    private DateTime MaximumDateTime { get; } = DateTime.Now;
 
     private HttpContent AnalyticsStateData => this.AnalyticsState.Value.Result ?? default!;
 
@@ -109,6 +136,13 @@ public partial class AnalyticsPage : FluxorComponent
         this.Dispatcher.Dispatch(new AnalyticsActions.LoadUserFeedbackAction());
     }
 
+    private void GetYearOfBirthCountsData()
+    {
+        this.ResetAnalyticsState();
+        this.ReportName = YearOfBirthReportName;
+        this.Dispatcher.Dispatch(new AnalyticsActions.LoadYearOfBirthCountsAction(this.StartDate, this.EndDate, this.TimeOffset));
+    }
+
     private void DownloadAnalyticsReport(AnalyticsActions.LoadSuccessAction action)
     {
         Task.Run(async () => await this.DownloadReport(this.AnalyticsStateData).ConfigureAwait(true));
@@ -122,7 +156,10 @@ public partial class AnalyticsPage : FluxorComponent
     private async Task DownloadReport(HttpContent content)
     {
         byte[] fileBytes = await content.ReadAsByteArrayAsync().ConfigureAwait(true);
-        string fileName = $"{this.ReportName}_export_{DateTime.Now.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture)}.csv";
+        string fileName = this.ReportName == YearOfBirthReportName
+            ? $"{this.ReportName}_export_{this.StartDate}_to_{this.EndDate}.csv"
+            : $"{this.ReportName}_export_{DateTime.Now.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture)}.csv";
+
         await this.JsRuntime.InvokeAsync<object>("saveAsFile", fileName, Convert.ToBase64String(fileBytes)).ConfigureAwait(true);
     }
 }
