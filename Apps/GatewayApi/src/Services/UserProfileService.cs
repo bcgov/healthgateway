@@ -18,6 +18,7 @@ namespace HealthGateway.GatewayApi.Services
     using System;
     using System.Collections.Generic;
     using System.Diagnostics.CodeAnalysis;
+    using System.Globalization;
     using System.Linq;
     using System.Threading.Tasks;
     using AutoMapper;
@@ -118,7 +119,7 @@ namespace HealthGateway.GatewayApi.Services
         }
 
         /// <inheritdoc/>
-        public RequestResult<UserProfileModel> GetUserProfile(string hdid, DateTime jwtAuthTime)
+        public async Task<RequestResult<UserProfileModel>> GetUserProfile(string hdid, DateTime jwtAuthTime)
         {
             this.logger.LogTrace("Getting user profile... {Hdid}", hdid);
             DBResult<UserProfile> retVal = this.userProfileDelegate.GetUserProfile(hdid);
@@ -136,10 +137,16 @@ namespace HealthGateway.GatewayApi.Services
             DateTime previousLastLogin = retVal.Payload.LastLoginDateTime;
             if (DateTime.Compare(previousLastLogin, jwtAuthTime) != 0)
             {
-                this.logger.LogTrace("Updating user last login... {Hdid}", hdid);
+                this.logger.LogTrace("Updating user last login and year of birth... {Hdid}", hdid);
                 retVal.Payload.LastLoginDateTime = jwtAuthTime;
+
+                // Update user year of birth.
+                RequestResult<PatientModel> patientResult = await this.patientService.GetPatient(hdid).ConfigureAwait(true);
+                DateTime? birthDate = patientResult.ResourcePayload?.Birthdate;
+                retVal.Payload.YearOfBirth = birthDate?.Year.ToString(CultureInfo.InvariantCulture);
+
                 this.userProfileDelegate.Update(retVal.Payload);
-                this.logger.LogDebug("Finished updating user last login... {Hdid}", hdid);
+                this.logger.LogDebug("Finished updating user last login and year of birth... {Hdid}", hdid);
             }
 
             RequestResult<TermsOfServiceModel> termsOfServiceResult = this.GetActiveTermsOfService();
@@ -232,6 +239,9 @@ namespace HealthGateway.GatewayApi.Services
                 };
             }
 
+            RequestResult<PatientModel> patientResult = await this.patientService.GetPatient(hdid).ConfigureAwait(true);
+            DateTime? birthDate = patientResult.ResourcePayload?.Birthdate;
+
             // Create profile
             UserProfile newProfile = new()
             {
@@ -244,6 +254,7 @@ namespace HealthGateway.GatewayApi.Services
                 UpdatedBy = hdid,
                 LastLoginDateTime = jwtAuthTime,
                 EncryptionKey = this.cryptoDelegate.GenerateKey(),
+                YearOfBirth = birthDate?.Year.ToString(CultureInfo.InvariantCulture),
             };
             DBResult<UserProfile> insertResult = this.userProfileDelegate.InsertUserProfile(newProfile);
 

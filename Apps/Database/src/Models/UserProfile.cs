@@ -83,6 +83,12 @@ namespace HealthGateway.Database.Models
         public string? EncryptionKey { get; set; }
 
         /// <summary>
+        /// Gets or sets the user's year of birth.
+        /// </summary>
+        [MaxLength(4)]
+        public string? YearOfBirth { get; set; }
+
+        /// <summary>
         /// Gets or sets the messaging verifications for this user.
         /// </summary>
         [SuppressMessage("Usage", "CA2227:Collection properties should be read only", Justification = "Team decision")]
