@@ -179,6 +179,33 @@ namespace HealthGateway.Database.Delegates
         }
 
         /// <inheritdoc/>
+        public DBResult<List<UserProfile>> GetUserProfiles(UserQueryType queryType, string queryString)
+        {
+            this.logger.LogTrace("Getting user profiles via message verification from DB for type {QueryType}: {QueryString}", queryType, queryString);
+            DBResult<List<UserProfile>> result = new();
+
+            switch (queryType)
+            {
+                case UserQueryType.Email:
+                    result.Payload = this.dbContext.UserProfile
+                        .Where(user => user.Verifications.Any(v => v.Email != null && EF.Functions.ILike(v.Email.To, $"%{queryString}%")))
+                        .GroupBy(user => user.HdId).Select(x => x.First())
+                        .ToList();
+                    break;
+                case UserQueryType.SMS:
+                    result.Payload = this.dbContext.UserProfile
+                        .Where(user => user.Verifications.Any(v => EF.Functions.ILike(v.SMSNumber, $"%{queryString}%")))
+                        .GroupBy(user => user.HdId).Select(x => x.First())
+                        .ToList();
+                    break;
+            }
+
+            result.Status = DBStatusCode.Read;
+            this.logger.LogDebug("Finished getting user profiles from DB");
+            return result;
+        }
+
+        /// <inheritdoc/>
         public DBResult<List<UserProfile>> GetAllUserProfilesAfter(DateTime filterDateTime, int page = 0, int pagesize = 500)
         {
             DBResult<List<UserProfile>> result = new();

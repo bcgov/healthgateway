@@ -1,4 +1,5 @@
 import { ResultType } from "@/constants/resulttype";
+import { ResultError } from "@/models/errors";
 
 export default interface RequestResult<T> {
     // The request resource payload
@@ -15,12 +16,4 @@ export default interface RequestResult<T> {
     resultMessage: string;
     // The result error
     resultError: ResultError;
-}
-
-export interface ResultError {
-    resultMessage: string;
-    errorCode: string;
-    traceId: string;
-    actionCode: string;
-    actionCodeValue: string;
 }

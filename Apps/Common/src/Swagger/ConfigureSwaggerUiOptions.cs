@@ -41,7 +41,7 @@ namespace HealthGateway.Common.Swagger
             Debug.Assert(settings != null, $"{nameof(versionDescriptionProvider)} != null");
 
             this.provider = versionDescriptionProvider;
-            this.settings = settings?.Value ?? new SwaggerSettings();
+            this.settings = settings.Value;
         }
 
         /// <summary>

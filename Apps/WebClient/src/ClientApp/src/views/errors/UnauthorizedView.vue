@@ -3,7 +3,6 @@ import Vue from "vue";
 import { Component } from "vue-property-decorator";
 
 import PageErrorComponent from "@/components/PageErrorComponent.vue";
-import { PageError } from "@/models/errors";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const options: any = {
@@ -13,15 +12,11 @@ const options: any = {
 };
 
 @Component(options)
-export default class UnauthorizedView extends Vue {
-    public errorDescription = new PageError(
-        "401",
-        "Unauthorized",
-        "You do not have permission to view this page."
-    );
-}
+export default class UnauthorizedView extends Vue {}
 </script>
 
 <template>
-    <PageErrorComponent :error="errorDescription" />
+    <PageErrorComponent title="401" subtitle="Unauthorized">
+        <p>You do not have permission to view this page.</p>
+    </PageErrorComponent>
 </template>

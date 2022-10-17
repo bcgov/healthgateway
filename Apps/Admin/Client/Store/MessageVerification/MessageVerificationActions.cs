@@ -17,7 +17,6 @@ namespace HealthGateway.Admin.Client.Store.MessageVerification
 {
     using System.Collections.Generic;
     using System.Diagnostics.CodeAnalysis;
-    using HealthGateway.Admin.Common.Constants;
     using HealthGateway.Common.Data.ViewModels;
 
     /// <summary>
@@ -34,23 +33,16 @@ namespace HealthGateway.Admin.Client.Store.MessageVerification
             /// <summary>
             /// Initializes a new instance of the <see cref="LoadAction"/> class.
             /// </summary>
-            /// <param name="queryType">Represents the type of query being performed.</param>
-            /// <param name="queryString">Represents the query string being performed.</param>
-            public LoadAction(UserQueryType queryType, string queryString)
+            /// <param name="hdid">Represents the query string being performed.</param>
+            public LoadAction(string hdid)
             {
-                this.QueryString = queryString;
-                this.QueryType = queryType;
+                this.Hdid = hdid;
             }
-
-            /// <summary>
-            /// Gets or sets query type.
-            /// </summary>
-            public UserQueryType QueryType { get; set; }
 
             /// <summary>
             /// Gets or sets query string.
             /// </summary>
-            public string QueryString { get; set; }
+            public string Hdid { get; set; }
         }
 
         /// <summary>
@@ -77,10 +69,17 @@ namespace HealthGateway.Admin.Client.Store.MessageVerification
             /// Initializes a new instance of the <see cref="LoadSuccessAction"/> class.
             /// </summary>
             /// <param name="data">Result data.</param>
-            public LoadSuccessAction(RequestResult<IEnumerable<MessagingVerificationModel>> data)
+            /// <param name="hdid">hdid associated with the data.</param>
+            public LoadSuccessAction(RequestResult<IEnumerable<MessagingVerificationModel>> data, string hdid)
                 : base(data)
             {
+                this.Hdid = hdid;
             }
+
+            /// <summary>
+            /// Gets or sets query string.
+            /// </summary>
+            public string Hdid { get; set; }
         }
 
         /// <summary>

@@ -23,11 +23,11 @@ namespace HealthGateway.Admin
     using HealthGateway.Admin.Services;
     using HealthGateway.Common.AccessManagement.Authentication;
     using HealthGateway.Common.AspNetConfiguration;
-    using HealthGateway.Common.AspNetConfiguration.Modules;
     using HealthGateway.Common.Authorization.Admin;
     using HealthGateway.Common.Delegates;
     using HealthGateway.Common.Delegates.PHSA;
     using HealthGateway.Common.Models.PHSA;
+    using HealthGateway.Common.Services;
     using HealthGateway.Database.Delegates;
     using Microsoft.AspNetCore.Authentication;
     using Microsoft.AspNetCore.Authentication.Cookies;
@@ -54,13 +54,13 @@ namespace HealthGateway.Admin
     public class Startup
     {
         private const string PhsaConfigSectionKey = "PHSA";
-        private readonly StartupConfiguration startupConfig;
-        private readonly IWebHostEnvironment environment;
         private readonly IConfiguration configuration;
+        private readonly IWebHostEnvironment environment;
         private readonly ILogger logger;
+        private readonly StartupConfiguration startupConfig;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="Startup" /> class.
+        /// Initializes a new instance of the <see cref="Startup"/> class.
         /// </summary>
         /// <param name="env">The injected Environment provider.</param>
         /// <param name="configuration">The injected configuration provider.</param>
@@ -95,6 +95,7 @@ namespace HealthGateway.Admin
             services.AddTransient<IAuthenticationService, AuthenticationService>();
             services.AddTransient<ISupportService, SupportService>();
             services.AddTransient<ICovidSupportService, CovidSupportService>();
+            services.AddTransient<IUserProfileDelegate, DBProfileDelegate>();
 
             // Add delegates
             services.AddTransient<IMessagingVerificationDelegate, DBMessagingVerificationDelegate>();
@@ -115,6 +116,8 @@ namespace HealthGateway.Admin
             this.startupConfig.Configuration.Bind(PhsaConfigSectionKey, phsaConfig);
             services.AddRefitClient<IImmunizationAdminClient>()
                 .ConfigureHttpClient(c => c.BaseAddress = phsaConfig.BaseUrl);
+
+            services.AddAutoMapper(typeof(Startup));
         }
 
         /// <summary>
@@ -145,35 +148,37 @@ namespace HealthGateway.Admin
 
             bool launchDevSpa = debugerAttached && !serverOnly;
 
-            app.UseEndpoints(endpoints =>
-            {
-                endpoints.MapControllers();
-                endpoints.MapControllerRoute(
-                    "default",
-                    "{controller}/{action=Index}/{id?}");
-
-                if (env.IsDevelopment() && launchDevSpa)
+            app.UseEndpoints(
+                endpoints =>
                 {
-                    endpoints.MapToVueCliProxy(
-                        "{*path}",
-                        new SpaOptions { SourcePath = "ClientApp" },
-                        "serve",
-                        regex: "Compiled successfully",
-                        forceKill: true);
-                }
-            });
+                    endpoints.MapControllers();
+                    endpoints.MapControllerRoute(
+                        "default",
+                        "{controller}/{action=Index}/{id?}");
 
-            app.UseSpa(spa =>
-            {
-                spa.Options.SourcePath = "ClientApp";
-                if (env.IsDevelopment() && !launchDevSpa)
+                    if (env.IsDevelopment() && launchDevSpa)
+                    {
+                        endpoints.MapToVueCliProxy(
+                            "{*path}",
+                            new SpaOptions { SourcePath = "ClientApp" },
+                            "serve",
+                            regex: "Compiled successfully",
+                            forceKill: true);
+                    }
+                });
+
+            app.UseSpa(
+                spa =>
                 {
-                    // change this to whatever webpack dev server says it's running on
+                    spa.Options.SourcePath = "ClientApp";
+                    if (env.IsDevelopment() && !launchDevSpa)
+                    {
+                        // change this to whatever webpack dev server says it's running on
 #pragma warning disable S1075
-                    spa.UseProxyToSpaDevelopmentServer("http://localhost:8080");
+                        spa.UseProxyToSpaDevelopmentServer("http://localhost:8080");
 #pragma warning restore S1075
-                }
-            });
+                    }
+                });
 
             RewriteOptions rewriteOption = new RewriteOptions()
                 .AddRedirect("(.*[^/])$", "$1/");
@@ -182,16 +187,17 @@ namespace HealthGateway.Admin
 
         private static void DisableTraceMethod(IApplicationBuilder app)
         {
-            app.Use(async (context, next) =>
-            {
-                if (context.Request.Method == "TRACE")
+            app.Use(
+                async (context, next) =>
                 {
-                    context.Response.StatusCode = 405;
-                    return;
-                }
+                    if (context.Request.Method == "TRACE")
+                    {
+                        context.Response.StatusCode = 405;
+                        return;
+                    }
 
-                await next.Invoke().ConfigureAwait(true);
-            });
+                    await next.Invoke().ConfigureAwait(true);
+                });
         }
 
         /// <summary>
@@ -202,66 +208,69 @@ namespace HealthGateway.Admin
         {
             string basePath = this.GetBasePath();
 
-            AuthenticationBuilder builder = services.AddAuthentication(options =>
-                {
-                    options.DefaultAuthenticateScheme = CookieAuthenticationDefaults.AuthenticationScheme;
-                    options.DefaultSignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
-                    options.DefaultChallengeScheme = OpenIdConnectDefaults.AuthenticationScheme;
-                })
-                .AddCookie(options =>
-                {
-                    options.Cookie.Name = AuthorizationConstants.CookieName;
-                    options.LoginPath = $"{basePath}{AuthorizationConstants.LoginPath}";
-                    options.LogoutPath = $"{basePath}{AuthorizationConstants.LogoutPath}";
-                });
+            AuthenticationBuilder builder = services.AddAuthentication(
+                    options =>
+                    {
+                        options.DefaultAuthenticateScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+                        options.DefaultSignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+                        options.DefaultChallengeScheme = OpenIdConnectDefaults.AuthenticationScheme;
+                    })
+                .AddCookie(
+                    options =>
+                    {
+                        options.Cookie.Name = AuthorizationConstants.CookieName;
+                        options.LoginPath = $"{basePath}{AuthorizationConstants.LoginPath}";
+                        options.LogoutPath = $"{basePath}{AuthorizationConstants.LogoutPath}";
+                    });
 
             this.ConfigureOpenId(builder);
         }
 
         private void ConfigureOpenId(AuthenticationBuilder services)
         {
-            services.AddOpenIdConnect(options =>
-            {
-                // Allows http://localhost to work on Chromium and Edge.
-                if (this.environment.IsDevelopment())
+            services.AddOpenIdConnect(
+                options =>
                 {
-                    options.CorrelationCookie.SecurePolicy = CookieSecurePolicy.SameAsRequest;
-                    options.CorrelationCookie.SameSite = SameSiteMode.Unspecified;
-                    options.NonceCookie.SameSite = SameSiteMode.Unspecified;
-                }
-
-                options.TokenValidationParameters = new TokenValidationParameters
-                {
-                    ValidateIssuer = true,
-                };
-                this.configuration.GetSection("OpenIdConnect").Bind(options);
-                if (string.IsNullOrEmpty(options.Authority))
-                {
-                    this.logger.LogCritical("OpenIdConnect Authority is missing, bad things are going to occur");
-                }
-
-                options.Events = new OpenIdConnectEvents
-                {
-                    OnRedirectToIdentityProvider = ctx =>
+                    // Allows http://localhost to work on Chromium and Edge.
+                    if (this.environment.IsDevelopment())
                     {
-                        if (!string.IsNullOrEmpty(this.configuration["KeyCloak:IDPHint"]))
+                        options.CorrelationCookie.SecurePolicy = CookieSecurePolicy.SameAsRequest;
+                        options.CorrelationCookie.SameSite = SameSiteMode.Unspecified;
+                        options.NonceCookie.SameSite = SameSiteMode.Unspecified;
+                    }
+
+                    options.TokenValidationParameters = new TokenValidationParameters
+                    {
+                        ValidateIssuer = true,
+                    };
+                    this.configuration.GetSection("OpenIdConnect").Bind(options);
+                    if (string.IsNullOrEmpty(options.Authority))
+                    {
+                        this.logger.LogCritical("OpenIdConnect Authority is missing, bad things are going to occur");
+                    }
+
+                    options.Events = new OpenIdConnectEvents
+                    {
+                        OnRedirectToIdentityProvider = ctx =>
                         {
-                            this.logger.LogDebug("Adding IDP Hint on Redirect to provider");
-                            ctx.ProtocolMessage.SetParameter(this.configuration["KeyCloak:IDPHintKey"], this.configuration["KeyCloak:IDPHint"]);
-                        }
+                            if (!string.IsNullOrEmpty(this.configuration["KeyCloak:IDPHint"]))
+                            {
+                                this.logger.LogDebug("Adding IDP Hint on Redirect to provider");
+                                ctx.ProtocolMessage.SetParameter(this.configuration["KeyCloak:IDPHintKey"], this.configuration["KeyCloak:IDPHint"]);
+                            }
 
-                        return Task.FromResult(0);
-                    },
-                    OnAuthenticationFailed = c =>
-                    {
-                        c.HandleResponse();
-                        c.Response.StatusCode = StatusCodes.Status401Unauthorized;
-                        c.Response.ContentType = "text/plain";
-                        this.logger.LogError("{Exception}", c.Exception);
-                        return c.Response.WriteAsync(c.Exception.ToString());
-                    },
-                };
-            });
+                            return Task.FromResult(0);
+                        },
+                        OnAuthenticationFailed = c =>
+                        {
+                            c.HandleResponse();
+                            c.Response.StatusCode = StatusCodes.Status401Unauthorized;
+                            c.Response.ContentType = "text/plain";
+                            this.logger.LogError("{Exception}", c.Exception);
+                            return c.Response.WriteAsync(c.Exception.ToString());
+                        },
+                    };
+                });
         }
 
         private string GetBasePath()

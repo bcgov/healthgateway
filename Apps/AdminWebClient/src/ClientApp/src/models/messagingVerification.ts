@@ -5,13 +5,12 @@ export const enum VerificationType {
     SMS = "SMS",
 }
 
-export default interface MessageVerification {
+export default interface MessagingVerification {
     id: string;
-    personalHealthNumber: string;
     userProfileId: string;
     validated: boolean;
     emailId?: string;
-    email: Email | null;
+    email?: string;
     inviteKey: string;
     verificationType: VerificationType;
     smsNumber: string | null;
@@ -20,16 +19,4 @@ export default interface MessageVerification {
     verificationAttempts: number;
     deleted: boolean;
     updatedDateTime: StringISODateTime;
-}
-
-export interface Email {
-    id: string;
-    from: string;
-    to: string;
-    subject: string;
-    body: string;
-    sentDateTime: StringISODateTime;
-    lastRetryDateTime?: StringISODateTime;
-    attempts: number;
-    smtpStatusCode: number;
 }

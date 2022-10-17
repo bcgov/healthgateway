@@ -25,8 +25,8 @@ using Fluxor.Blazor.Web.Components;
 using HealthGateway.Admin.Client.Store;
 using HealthGateway.Admin.Client.Store.Tag;
 using HealthGateway.Admin.Client.Store.UserFeedback;
-using HealthGateway.Admin.Common.Constants;
 using HealthGateway.Admin.Common.Models;
+using HealthGateway.Common.Data.Constants;
 using Microsoft.AspNetCore.Components;
 using MudBlazor;
 

@@ -60,18 +60,11 @@ namespace HealthGateway.Admin.Client.Store.MessageVerification
         {
             this.Logger.LogInformation("Loading messaging verifications");
 
-            ApiResponse<RequestResult<IEnumerable<MessagingVerificationModel>>> response = await this.SupportApi.GetMessagingVerifications(action.QueryType, action.QueryString).ConfigureAwait(true);
+            ApiResponse<RequestResult<IEnumerable<MessagingVerificationModel>>> response = await this.SupportApi.GetMessagingVerifications(action.Hdid).ConfigureAwait(true);
             if (response.IsSuccessStatusCode && response.Content != null && response.Content.ResultStatus == ResultType.Success)
             {
                 this.Logger.LogInformation("Messaging verifications loaded successfully!");
-                dispatcher.Dispatch(new MessageVerificationActions.LoadSuccessAction(response.Content));
-                return;
-            }
-
-            if (response.IsSuccessStatusCode && response.Content != null && response.Content.ResultStatus == ResultType.ActionRequired)
-            {
-                this.Logger.LogInformation("Messaging verifications loaded with warning message: {WarningMessage}", response.Content.ResultError?.ResultMessage);
-                dispatcher.Dispatch(new MessageVerificationActions.LoadSuccessAction(response.Content));
+                dispatcher.Dispatch(new MessageVerificationActions.LoadSuccessAction(response.Content, action.Hdid));
                 return;
             }
 

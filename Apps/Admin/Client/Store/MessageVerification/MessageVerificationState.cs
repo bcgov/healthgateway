@@ -17,19 +17,20 @@
 namespace HealthGateway.Admin.Client.Store.MessageVerification
 {
     using System.Collections.Generic;
+    using System.Collections.Immutable;
     using Fluxor;
     using HealthGateway.Common.Data.ViewModels;
 
     /// <summary>
     /// The state for the feature.
-    /// State should be decorated with [FeatureState] for automatic discovery when services. AddFluxor is called.
+    /// State should be decorated with [FeatureState] for automatic discovery when services.AddFluxor is called.
     /// </summary>
     [FeatureState]
     public record MessageVerificationState : BaseRequestState<RequestResult<IEnumerable<MessagingVerificationModel>>>
     {
         /// <summary>
-        /// Gets the warning message for display.
+        /// Gets the collection of data.
         /// </summary>
-        public string? WarningMessage { get; init; }
+        public ImmutableList<MessagingVerificationModel>? Data { get; init; }
     }
 }

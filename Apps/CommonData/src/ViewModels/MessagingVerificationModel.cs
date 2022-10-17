@@ -18,7 +18,6 @@ namespace HealthGateway.Common.Data.ViewModels
     using System;
     using System.Diagnostics.CodeAnalysis;
     using HealthGateway.Common.Data.Constants;
-    using HealthGateway.Common.Data.Models;
 
 #pragma warning disable CS1591 // self explanatory simple model
 #pragma warning disable SA1600 // self explanatory simple model
@@ -29,11 +28,6 @@ namespace HealthGateway.Common.Data.ViewModels
         /// Gets or sets the messaging verification id.
         /// </summary>
         public Guid Id { get; set; }
-
-        /// <summary>
-        /// Gets or sets the patient's PHN.
-        /// </summary>
-        public string? PersonalHealthNumber { get; set; }
 
         /// <summary>
         /// Gets or sets the user's directed identifier.
@@ -55,7 +49,7 @@ namespace HealthGateway.Common.Data.ViewModels
         /// Gets or sets the associated email for this verification.
         /// Required if the VerificationType = MessagingVerificationType.Email.
         /// </summary>
-        public Email? Email { get; set; }
+        public string? Email { get; set; }
 
         /// <summary>
         /// Gets or sets the email invite key.
@@ -84,7 +78,7 @@ namespace HealthGateway.Common.Data.ViewModels
         public DateTime ExpireDate { get; set; }
 
         /// <summary>
-        /// Gets or sets the attemped verification count.
+        /// Gets or sets the attempted verification count.
         /// </summary>
         public int VerificationAttempts { get; set; }
 
@@ -97,22 +91,5 @@ namespace HealthGateway.Common.Data.ViewModels
         /// Gets or sets the datetime the entity was updated.
         /// </summary>
         public DateTime UpdatedDateTime { get; set; }
-
-        public static MessagingVerificationModel CreateFromDbModel(MessagingVerification model)
-        {
-            return new MessagingVerificationModel
-            {
-                Id = model.Id,
-                UserProfileId = model.UserProfileId,
-                EmailId = model.EmailId,
-                Email = model.Email,
-                VerificationAttempts = model.VerificationAttempts,
-                VerificationType = model.VerificationType,
-                SMSNumber = model.SMSNumber,
-                SMSValidationCode = model.SMSValidationCode,
-                Deleted = model.Deleted,
-                UpdatedDateTime = model.UpdatedDateTime,
-            };
-        }
     }
 }

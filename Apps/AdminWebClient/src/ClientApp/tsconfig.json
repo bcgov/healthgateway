@@ -20,6 +20,10 @@
         },
         "lib": ["esnext", "dom", "dom.iterable", "scripthost", "es2018.promise"]
     },
+    "vueCompilerOptions": {
+        "target": 2.7,
+        "experimentalDisableTemplateSupport": true
+    },
     "include": ["./src/**/*.ts", "./src/**/*.vue", "./test/**/*.ts"],
     "exclude": ["node_modules"]
 }

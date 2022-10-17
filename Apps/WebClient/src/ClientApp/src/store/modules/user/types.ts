@@ -22,6 +22,7 @@ export interface UserState {
     user: User;
     oidcUserInfo?: OidcUserInfo;
     patientData: PatientData;
+    patientRetrievalFailed: boolean;
     smsResendDateTime?: DateWrapper;
     seenTutorialComment: boolean;
     statusMessage: string;
@@ -40,6 +41,7 @@ export interface UserGetters extends GetterTree<UserState, RootState> {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     quickLinks(state: UserState, getters: any): QuickLink[] | undefined;
     patientData(state: UserState): PatientData;
+    patientRetrievalFailed(state: UserState): boolean;
     isLoading(state: UserState): boolean;
 }
 
@@ -49,7 +51,7 @@ export interface UserActions extends ActionTree<UserState, RootState> {
         context: StoreContext,
         params: { request: CreateUserRequest }
     ): Promise<void>;
-    checkRegistration(context: StoreContext): Promise<boolean>;
+    retrieveProfile(context: StoreContext): Promise<void>;
     updateUserEmail(
         context: StoreContext,
         params: { emailAddress: string }
@@ -72,7 +74,7 @@ export interface UserActions extends ActionTree<UserState, RootState> {
     ): Promise<RequestResult<boolean>>;
     closeUserAccount(context: StoreContext): Promise<void>;
     recoverUserAccount(context: StoreContext): Promise<void>;
-    retrievePatientData(context: StoreContext): Promise<void>;
+    retrieveEssentialData(context: StoreContext): Promise<void>;
     setSeenTutorialComment(
         context: StoreContext,
         params: { value: boolean }
@@ -90,6 +92,7 @@ export interface UserMutation extends MutationTree<UserState> {
     setSMSResendDateTime(state: UserState, dateTime: DateWrapper): void;
     setUserPreference(state: UserState, userPreference: UserPreference): void;
     setPatientData(state: UserState, patientData: PatientData): void;
+    setPatientRetrievalFailed(state: UserState): void;
     clearUserData(state: UserState): void;
     setSeenTutorialComment(state: UserState, value: boolean): void;
     userError(state: UserState, errorMessage: string): void;

@@ -93,7 +93,7 @@ export class RestAuthenticationService implements IAuthenticationService {
     }
 
     public getOidcTokenDetails(): OidcTokenDetails | null {
-        if (!this.keycloak.authenticated) {
+        if (!this.keycloak?.authenticated) {
             return null;
         }
 

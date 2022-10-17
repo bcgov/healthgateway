@@ -15,8 +15,8 @@
 // -------------------------------------------------------------------------
 namespace HealthGateway.Admin.Server.Controllers
 {
-    using HealthGateway.Admin.Common.Constants;
-    using HealthGateway.Admin.Server.Services;
+    using HealthGateway.Common.Data.Constants;
+    using HealthGateway.Common.Services;
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Mvc;
 
@@ -30,20 +30,20 @@ namespace HealthGateway.Admin.Server.Controllers
     [Authorize(Roles = "AdminUser,AdminReviewer")]
     public class SupportController
     {
-        private readonly IDashboardService dashboardService;
+        private readonly ISupportService supportService;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="SupportController"/> class.
         /// </summary>
-        /// <param name="dashboardService">The injected dashboard service.</param>
+        /// <param name="supportService">The injected support service.</param>
         public SupportController(
-            IDashboardService dashboardService)
+            ISupportService supportService)
         {
-            this.dashboardService = dashboardService;
+            this.supportService = supportService;
         }
 
         /// <summary>
-        /// Retrieves a list Message Verifications matching the query.
+        /// Retrieves a list of users matching the query.
         /// </summary>
         /// <param name="queryType">The type of query to perform.</param>
         /// <param name="queryString">The value to query on.</param>
@@ -56,9 +56,27 @@ namespace HealthGateway.Admin.Server.Controllers
         /// </response>
         [HttpGet]
         [Route("Users")]
-        public IActionResult GetMessageVerifications([FromQuery] UserQueryType queryType, [FromQuery] string queryString)
+        public IActionResult GetSupportUsers([FromQuery] UserQueryType queryType, [FromQuery] string queryString)
         {
-            return new JsonResult(this.dashboardService.GetMessageVerifications(queryType, queryString));
+            return new JsonResult(this.supportService.GetUsers(queryType, queryString));
+        }
+
+        /// <summary>
+        /// Retrieves a list of message verifications matching the query.
+        /// </summary>
+        /// <param name="hdid">The hdid associated with the messaging verification.</param>
+        /// <returns>A list of users matching the query.</returns>
+        /// <response code="200">Returns the list of users matching the query.</response>
+        /// <response code="401">The client must authenticate itself to get the requested response.</response>
+        /// <response code="403">
+        /// The client does not have access rights to the content; that is, it is unauthorized, so the server
+        /// is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.
+        /// </response>
+        [HttpGet]
+        [Route("Verifications")]
+        public IActionResult GetMessageVerifications([FromQuery] string hdid)
+        {
+            return new JsonResult(this.supportService.GetMessageVerifications(hdid));
         }
     }
 }

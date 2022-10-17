@@ -15,7 +15,10 @@
 //-------------------------------------------------------------------------
 namespace HealthGateway.Admin.Client.Store.MessageVerification
 {
+    using System.Collections.Generic;
+    using System.Collections.Immutable;
     using Fluxor;
+    using HealthGateway.Common.Data.ViewModels;
 
     /// <summary>
     /// The set of reducers for the feature.
@@ -45,12 +48,20 @@ namespace HealthGateway.Admin.Client.Store.MessageVerification
         [ReducerMethod]
         public static MessageVerificationState ReduceLoadSuccessAction(MessageVerificationState state, MessageVerificationActions.LoadSuccessAction action)
         {
+            ImmutableList<MessagingVerificationModel> data = state.Data ?? new List<MessagingVerificationModel>().ToImmutableList();
+
+            IEnumerable<MessagingVerificationModel>? verifications = action.Data.ResourcePayload;
+            if (verifications != null)
+            {
+                data = data.RemoveAll(x => x.UserProfileId == action.Hdid).AddRange(verifications);
+            }
+
             return state with
             {
                 IsLoading = false,
                 Result = action.Data,
                 Error = null,
-                WarningMessage = action.Data.ResultError?.ResultMessage,
+                Data = data,
             };
         }
 
@@ -83,6 +94,7 @@ namespace HealthGateway.Admin.Client.Store.MessageVerification
                 IsLoading = false,
                 Result = null,
                 Error = null,
+                Data = null,
             };
         }
     }

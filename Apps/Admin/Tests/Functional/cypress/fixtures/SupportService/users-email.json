@@ -1,38 +1,9 @@
 {
     "resourcePayload": [
         {
-            "id": "840d9515-5131-41ce-ab39-34eccec4de9d",
-            "personalHealthNumber": null,
-            "userProfileId": "DEV4FPEGCXG2NB5K2USBL52S66SC3GOUHWRP3GTXR2BTY5HEC4YA",
-            "validated": false,
-            "emailId": "a86b1a95-42c1-49e4-9d48-6080cf2a223d",
-            "email": {
-                "id": "a86b1a95-42c1-49e4-9d48-6080cf2a223d",
-                "from": "HG_Donotreply@gov.bc.ca",
-                "to": "fakeemail@healthgateway.gov.bc.ca",
-                "subject": "Health Gateway Email Verification hgdev",
-                "body": "\u003C!DOCTYPE html\u003E\n    \u003Chtml lang=\u0022en\u0022\u003E\n        \u003Chead\u003E\n            \u003Ctitle\u003EEmail Validation\u003C/title\u003E\n        \u003C/head\u003E\n        \u003Cbody style=\u0022margin: 0\u0022\u003E\n            \u003Ctable\n                style=\u0022\n                    width: 100%;\n                    border-spacing: 0px;\n                    margin: 0;\n                    color: #707070;\n                    font-family: Helvetica, Arial, Verdana, Tahoma, sans-serif;\n                    font-size: 12px;\n                \u0022\n                aria-describedby=\u0022Layout Table\u0022\n            \u003E\n                \u003Ctr style=\u0022background: #003366\u0022\u003E\n                    \u003Cth scope=\u0022col\u0022 style=\u0022width:45px;\u0022\u003E\u003C/th\u003E\n                    \u003Cth\n                        scope=\u0022col\u0022\n                        style=\u0022text-align: left; width:350px;\u0022\n                    \u003E\n                        \u003Cdiv role=\u0022img\u0022 aria - label=\u0022Health Gateway Logo\u0022\u003E\n                            \u003Cimg\n                                src=\u0022https://dev.healthgateway.gov.bc.ca/Logo.png\u0022\n                                alt=\u0022Health Gateway Logo\u0022\n                            /\u003E\n                        \u003C/div\u003E\n                    \u003C/th\u003E\n                    \u003Cth scope=\u0022col\u0022\u003E\u003C/th\u003E\n                \u003C/tr\u003E\n                \u003Ctr\u003E\n                    \u003Ctd colspan=\u00223\u0022 style=\u0022height:20px;\u0022\u003E\u003C/td\u003E\n                \u003C/tr\u003E\n                \u003Ctr\u003E\n                    \u003Ctd\u003E\u003C/td\u003E\n                    \u003Ctd\u003E\n                        \u003Ch1 style=\u0022font-size: 18px\u0022\u003EAlmost there!\u003C/h1\u003E\n                        \u003Cp\u003E\n                            We\u0027ve received a request to register your email address\n                            for a Health Gateway account.\n                        \u003C/p\u003E\n                        \u003Cp\u003E\n                            To activate your account, please verify your email by\n                            clicking the link:\n                        \u003C/p\u003E\n                        \u003Ca\n                            style=\u0022color: #1292c5; font-weight: 600\u0022\n                            href=\u0022https://dev.healthgateway.gov.bc.ca/ValidateEmail/5f9ceabb-a6e2-4eb3-839c-b364f65c502d\u0022\n                        \u003E\n                            Health Gateway Account Verification\n                        \u003C/a\u003E\n                        \u003Cp\u003E\n                            This email verification link will expire in\n                            12 hours.\n                        \u003C/p\u003E\n                    \u003C/td\u003E\n                    \u003Ctd\u003E\u003C/td\u003E\n                \u003C/tr\u003E\n            \u003C/table\u003E\n        \u003C/body\u003E\n    \u003C/html\u003E",
-                "formatCode": 1,
-                "priority": 10,
-                "sentDateTime": "2022-07-05T00:47:05.828812Z",
-                "lastRetryDateTime": null,
-                "attempts": 1,
-                "smtpStatusCode": 250,
-                "emailStatusCode": 3,
-                "createdBy": "System",
-                "createdDateTime": "2022-07-05T05:23:45.801417Z",
-                "updatedBy": "System",
-                "updatedDateTime": "2022-07-05T05:23:45.801417Z",
-                "version": 21540
-            },
-            "inviteKey": "00000000-0000-0000-0000-000000000000",
-            "verificationType": "Email",
-            "smsNumber": "2501234567",
-            "smsValidationCode": "123456",
-            "expireDate": "0001-01-01T00:00:00",
-            "verificationAttempts": 0,
-            "deleted": false,
-            "updatedDateTime": "2022-07-05T05:23:45.801417Z"
+            "personalHealthNumber": "",
+            "hdid": "P6FFO433A5WPMVTGM7T4ZVWBKCSVNAYGTWTU3J2LWMGUMERKI72A",
+            "lastLoginDateTime": "2022-10-14T19:00:26.631761Z"
         }
     ],
     "totalResultCount": null,

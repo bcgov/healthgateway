@@ -17,28 +17,16 @@ export interface HttpError {
     statusCode?: number;
 }
 
-export class PageError {
-    public code: string;
-    public name: string;
-    public message: string;
-
-    constructor(code: string, name: string, message: string) {
-        this.code = code;
-        this.name = name;
-        this.message = message;
-    }
-}
-
 export interface ResultError {
-    // The error code associated to the request
-    errorCode: string;
-    // The trace id associated to the request
-    traceId: string;
-    // The message associated to the error request
+    // The result message associated with the request. Will always be populated when ResultType is Error.
     resultMessage: string;
-    // The action code associated to the request
+    // The error code associated with the request. Will always be populated when ResultType is Error.
+    errorCode: string;
+    // The trace ID associated with the request.
+    traceId: string;
+    // The action code that will be set when ResultType is ActionRequired.
     actionCode?: ActionType;
-    // The HTTP status code returned by the request
+    // The HTTP status code returned by the request.
     statusCode?: number;
 }
 
@@ -49,4 +37,9 @@ export function instanceOfResultError(object: any): object is ResultError {
         "traceId" in object &&
         "resultMessage" in object
     );
+}
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export function isTooManyRequestsError(object: any): boolean {
+    return instanceOfResultError(object) && object.statusCode === 429;
 }
