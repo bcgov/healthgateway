@@ -506,8 +506,9 @@ export default class TimelineView extends Vue {
 <template>
     <div>
         <b-toast
+            v-if="!isFullyLoaded"
             id="loading-toast"
-            :visible="!isFullyLoaded"
+            visible
             toaster="b-toaster-top-center"
             variant="info"
             solid
