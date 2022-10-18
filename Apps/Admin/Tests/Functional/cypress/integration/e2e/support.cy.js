@@ -60,8 +60,6 @@ describe("Support", () => {
         cy.get("[data-testid=messaging-verification-table]")
             .find("tr")
             .should("have.length", 3);
-
-        // Hdid is unique and is used as a unique identifier for each row in the table.
         cy.get("[data-testid=messaging-verification-table-email-sms").contains(
             sms
         );
