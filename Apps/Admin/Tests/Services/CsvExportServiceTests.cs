@@ -72,7 +72,7 @@ namespace HealthGateway.Admin.Client.Services
 
             string startPeriod = DateTime.Now.AddDays(-30).ToString("yyyy-MM-dd", CultureInfo.InvariantCulture);
             string endPeriod = DateTime.Now.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture);
-            int timeOffset = -7;
+            int timeOffset = -300;
 
             Stream yobCounts = service.GetYearOfBirthCounts(startPeriod, endPeriod, timeOffset);
 
