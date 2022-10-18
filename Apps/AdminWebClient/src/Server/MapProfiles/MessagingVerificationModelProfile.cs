@@ -13,23 +13,25 @@
 //  See the License for the specific language governing permissions and
 //  limitations under the License.
 // -------------------------------------------------------------------------
-namespace HealthGateway.Admin.Services
+namespace HealthGateway.Admin.MapProfiles
 {
-    using System.Collections.Generic;
-    using HealthGateway.Admin.Constants;
+    using AutoMapper;
+    using HealthGateway.Common.Data.Models;
     using HealthGateway.Common.Data.ViewModels;
 
     /// <summary>
-    /// Service that provides functionality for the admin support page.
+    /// An AutoMapper profile class which defines mapping between DB and UI Models.
     /// </summary>
-    public interface ISupportService
+    public class MessagingVerificationModelProfile : Profile
     {
         /// <summary>
-        /// Retrieves a list of message verifications matching the query.
+        /// Initializes a new instance of the <see cref="MessagingVerificationModelProfile"/> class.
         /// </summary>
-        /// <param name="queryType">The type of query to perform.</param>
-        /// <param name="queryString">The value to query on.</param>
-        /// <returns>A list of users matching the query.</returns>
-        RequestResult<IEnumerable<MessagingVerificationModel>> GetMessageVerifications(UserQueryType queryType, string queryString);
+        public MessagingVerificationModelProfile()
+        {
+            this.CreateMap<MessagingVerification, MessagingVerificationModel>()
+                .ForMember(dest => dest.Email, opt => opt.MapFrom(src => src.Email!.To))
+                .ReverseMap();
+        }
     }
 }

@@ -53,8 +53,16 @@ export const getters: NavbarGetters = {
         const isValid: boolean = rootGetters["auth/isValidIdentityProvider"];
         const isRegistered: boolean = rootGetters["user/userIsRegistered"];
         const isActive: boolean = rootGetters["user/userIsActive"];
+        const patientRetrievalFailed: boolean =
+            rootGetters["user/patientRetrievalFailed"];
+
         return (
-            !isOffline && isAuthenticated && isValid && isRegistered && isActive
+            !isOffline &&
+            isAuthenticated &&
+            isValid &&
+            isRegistered &&
+            isActive &&
+            !patientRetrievalFailed
         );
     },
 };

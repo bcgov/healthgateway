@@ -42,11 +42,13 @@ import FooterComponent from "@/components/navmenu/FooterComponent.vue";
 import HeaderComponent from "@/components/navmenu/HeaderComponent.vue";
 import SidebarComponent from "@/components/navmenu/SidebarComponent.vue";
 import ResourceCentreComponent from "@/components/ResourceCentreComponent.vue";
+import { AppErrorType } from "@/constants/errorType";
 import Process, { EnvironmentType } from "@/constants/process";
 import ScreenWidth from "@/constants/screenWidth";
 import container from "@/plugins/container";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import { ILogger } from "@/services/interfaces";
+import AppErrorView from "@/views/errors/AppErrorView.vue";
 
 Vue.use(LayoutPlugin);
 Vue.use(NavPlugin);
@@ -88,6 +90,7 @@ const options: any = {
         IdleComponent,
         CommunicationComponent,
         ResourceCentreComponent,
+        AppErrorView,
     },
 };
 
@@ -98,6 +101,9 @@ export default class App extends Vue {
 
     @Action("setIsMobile")
     setIsMobile!: (isMobile: boolean) => void;
+
+    @Getter("appError")
+    appError?: AppErrorType;
 
     @Getter("isMobile")
     isMobile!: boolean;
@@ -193,19 +199,25 @@ export default class App extends Vue {
     }
 
     private get isHeaderVisible(): boolean {
-        return !this.currentPathMatches(
-            this.loginCallbackPath,
-            this.vaccineCardPath,
-            this.covidTestPath
+        return (
+            this.appError === undefined &&
+            !this.currentPathMatches(
+                this.loginCallbackPath,
+                this.vaccineCardPath,
+                this.covidTestPath
+            )
         );
     }
 
     private get isFooterVisible(): boolean {
-        return !this.currentPathMatches(
-            this.loginCallbackPath,
-            this.registrationPath,
-            this.vaccineCardPath,
-            this.covidTestPath
+        return (
+            this.appError === undefined &&
+            !this.currentPathMatches(
+                this.loginCallbackPath,
+                this.registrationPath,
+                this.vaccineCardPath,
+                this.covidTestPath
+            )
         );
     }
 
@@ -255,7 +267,9 @@ export default class App extends Vue {
         </div>
 
         <NavHeader v-if="isHeaderVisible" class="d-print-none" />
-        <b-row>
+
+        <AppErrorView v-if="appError !== undefined" />
+        <b-row v-else>
             <NavSidebar
                 v-if="isSidebarVisible"
                 class="d-print-none sticky-top vh-100"

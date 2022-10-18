@@ -7,8 +7,9 @@ import CovidCardPatientResult from "@/models/covidCardPatientResult";
 import CovidTreatmentAssessmentDetails from "@/models/covidTreatmentAssessmentDetails";
 import CovidTreatmentAssessmentRequest from "@/models/covidTreatmentAssessmentRequest";
 import ExternalConfiguration from "@/models/externalConfiguration";
-import MessageVerification from "@/models/messageVerification";
+import MessagingVerification from "@/models/messagingVerification";
 import RequestResult from "@/models/requestResult";
+import User from "@/models/user";
 import { QueryType } from "@/models/userQuery";
 
 export interface IConfigService {
@@ -26,10 +27,10 @@ export interface IAuthenticationService {
 
 export interface ISupportService {
     initialize(http: IHttpDelegate): void;
-    getMessageVerifications(
-        type: QueryType,
-        query: string
-    ): Promise<RequestResult<MessageVerification[]>>;
+    getUsers(type: QueryType, query: string): Promise<RequestResult<User[]>>;
+    getVerifications(
+        hdid: string
+    ): Promise<RequestResult<MessagingVerification[]>>;
 }
 
 export interface ICovidSupportService {

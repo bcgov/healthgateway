@@ -31,6 +31,8 @@ CREATE DATABASE [DB NAME] WITH
   LC_CTYPE = 'en_US.UTF-8'
   CONNECTION LIMIT = -1
   TEMPLATE template0;
+
+REVOKE connect ON DATABASE [DB NAME] FROM PUBLIC;
 ```
 
 ### Add requires extensions
@@ -43,14 +45,5 @@ CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 
 ## Initial Data Migrations
 
-After successfully creating the DB, disconnect from the database and re-connect using the gateway credentials and setting the maintenance database to gateway.
+JobScheduler will need to connect to the DB and run in order to create the DB tables and schemas.
 
-### Run Migrations
-
-Open a query tool on the gateway db and run the [01_init-to-AddAllLaboratoryOrdersCommentEntryType.sql](/sql/01_init-to-AddAllLaboratoryOrdersCommentEntryType.sql) script.  You will see one warning
-
-```console
-NOTICE:  trigger "PushBannerChange" for relation "gateway.Communication" does not exist, skipping
-```
-
-The database is now ready for application configuration.  The JobScheduler should be run to update the database to match the current deployment.

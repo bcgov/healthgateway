@@ -63,7 +63,7 @@ export const actions: AuthActions = {
             throw err;
         }
     },
-    signOut(): void {
+    signOut(context): void {
         const authService = container.get<IAuthenticationService>(
             SERVICE_IDENTIFIER.AuthenticationService
         );
@@ -72,7 +72,7 @@ export const actions: AuthActions = {
             clearTimeout(refreshTimeout);
             refreshTimeout = undefined;
         }
-
+        context.commit("user/clearUserData", null, { root: true });
         authService.signOut();
     },
     async refreshToken(context): Promise<void> {

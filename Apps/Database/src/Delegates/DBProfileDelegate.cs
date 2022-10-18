@@ -19,7 +19,6 @@ namespace HealthGateway.Database.Delegates
     using System.Collections.Generic;
     using System.Diagnostics.CodeAnalysis;
     using System.Linq;
-    using System.Text.Json;
     using HealthGateway.Database.Constants;
     using HealthGateway.Database.Context;
     using HealthGateway.Database.Models;
@@ -31,8 +30,8 @@ namespace HealthGateway.Database.Delegates
     [ExcludeFromCodeCoverage]
     public class DBProfileDelegate : IUserProfileDelegate
     {
-        private readonly ILogger logger;
         private readonly GatewayDbContext dbContext;
+        private readonly ILogger logger;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="DBProfileDelegate"/> class.
@@ -77,10 +76,11 @@ namespace HealthGateway.Database.Delegates
             if (result.Status == DBStatusCode.Read)
             {
                 // Copy certain attributes into the fetched User Profile
-                result.Payload!.Email = profile.Email;
+                result.Payload.Email = profile.Email;
                 result.Payload.TermsOfServiceId = profile.TermsOfServiceId;
                 result.Payload.UpdatedBy = profile.UpdatedBy;
                 result.Payload.Version = profile.Version;
+                result.Payload.YearOfBirth = profile.YearOfBirth;
                 result.Status = DBStatusCode.Deferred;
 
                 if (commit)
@@ -172,6 +172,33 @@ namespace HealthGateway.Database.Delegates
             result.Payload = this.dbContext.UserProfile
                 .Where(p => hdIds.Contains(p.HdId))
                 .ToList();
+
+            result.Status = DBStatusCode.Read;
+            this.logger.LogDebug("Finished getting user profiles from DB");
+            return result;
+        }
+
+        /// <inheritdoc/>
+        public DBResult<List<UserProfile>> GetUserProfiles(UserQueryType queryType, string queryString)
+        {
+            this.logger.LogTrace("Getting user profiles via message verification from DB for type {QueryType}: {QueryString}", queryType, queryString);
+            DBResult<List<UserProfile>> result = new();
+
+            switch (queryType)
+            {
+                case UserQueryType.Email:
+                    result.Payload = this.dbContext.UserProfile
+                        .Where(user => user.Verifications.Any(v => v.Email != null && EF.Functions.ILike(v.Email.To, $"%{queryString}%")))
+                        .GroupBy(user => user.HdId).Select(x => x.First())
+                        .ToList();
+                    break;
+                case UserQueryType.SMS:
+                    result.Payload = this.dbContext.UserProfile
+                        .Where(user => user.Verifications.Any(v => EF.Functions.ILike(v.SMSNumber, $"%{queryString}%")))
+                        .GroupBy(user => user.HdId).Select(x => x.First())
+                        .ToList();
+                    break;
+            }
 
             result.Status = DBStatusCode.Read;
             this.logger.LogDebug("Finished getting user profiles from DB");
@@ -278,6 +305,23 @@ namespace HealthGateway.Database.Delegates
                 .Take(limit);
             result.Status = DBStatusCode.Read;
             return result;
+        }
+
+        /// <inheritdoc/>
+        public IDictionary<string, int> GetLoggedInUserYearOfBirthCounts(DateTime startDate, DateTime endDate)
+        {
+            Dictionary<string, int> yobCount = this.dbContext.UserProfile
+                .Select(x => new { x.HdId, x.LastLoginDateTime, x.YearOfBirth })
+                .Concat(
+                    this.dbContext.UserProfileHistory.Select(x => new { x.HdId, x.LastLoginDateTime, x.YearOfBirth }))
+                .Where(x => x.YearOfBirth != null && x.LastLoginDateTime >= startDate && x.LastLoginDateTime <= endDate)
+                .Select(x => new { x.HdId, x.YearOfBirth })
+                .Distinct()
+                .GroupBy(x => x.YearOfBirth)
+                .Select(x => new { yearOfBirth = x.Key, count = x.Count() })
+                .ToDictionary(x => x.yearOfBirth!, x => x.count);
+
+            return new SortedDictionary<string, int>(yobCount);
         }
     }
 }

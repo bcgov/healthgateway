@@ -33,7 +33,7 @@ export interface AuthActions extends ActionTree<AuthState, RootState> {
         context: StoreContext,
         params: { idpHint: string; redirectPath: string }
     ): Promise<void>;
-    signOut(): void;
+    signOut(context: StoreContext): void;
     refreshToken(context: StoreContext): Promise<void>;
     clearStorage(context: StoreContext): void;
     handleSuccessfulAuthentication(

@@ -27,7 +27,8 @@ INSERT INTO gateway."UserProfile"(
 	"IdentityManagementId", 
 	"LastLoginDateTime", 
 	"EncryptionKey", 
-	"SMSNumber")
+	"SMSNumber",
+	"YearOfBirth")
 VALUES (
 	'P6FFO433A5WPMVTGM7T4ZVWBKCSVNAYGTWTU3J2LWMGUMERKI72A',	
 	'System', 
@@ -40,7 +41,8 @@ VALUES (
 	null,
 	current_timestamp, 
 	'CwqU7+gCkL3jMWWcUpq80Oh42QejXOwI+Ov0tmsVWBI=',
-	null
+	null,
+	'1967'
 );
 
 /* Protected User - Keycloak User (protected) */
@@ -56,7 +58,8 @@ INSERT INTO gateway."UserProfile"(
 	"IdentityManagementId", 
 	"LastLoginDateTime", 
 	"EncryptionKey", 
-	"SMSNumber")
+	"SMSNumber",
+	"YearOfBirth")
 VALUES (
 	'RD33Y2LJEUZCY2TCMOIECUTKS3E62MEQ62CSUL6Q553IHHBI3AWQ',	
 	'System', 
@@ -69,7 +72,8 @@ VALUES (
 	null,
 	current_timestamp, 
 	'iHa5atSWqppGzWsR1Z8nbL9OHJamPHLMwYqdKmsf4jU=',
-	null
+	null,
+	'1995'
 );
 
 /* Invaliddoses - Keycloak User (hthgtwy20) */
@@ -85,7 +89,8 @@ INSERT INTO gateway."UserProfile"(
 	"IdentityManagementId", 
 	"LastLoginDateTime", 
 	"EncryptionKey", 
-	"SMSNumber")
+	"SMSNumber",
+	"YearOfBirth")
 VALUES (
 	'DEV4FPEGCXG2NB5K2USBL52S66SC3GOUHWRP3GTXR2BTY5HEC4YA',	
 	'System', 
@@ -98,6 +103,7 @@ VALUES (
 	null,
 	current_timestamp, 
 	'CwqU7+gCkL3jMWWcUpq80Oh42QejXOwI+Ov0tmsVWBI=',
+	null,
 	null
 );
 
@@ -114,7 +120,8 @@ INSERT INTO gateway."UserProfile"(
 	"IdentityManagementId", 
 	"LastLoginDateTime", 
 	"EncryptionKey", 
-	"SMSNumber")
+	"SMSNumber",
+	"YearOfBirth")
 VALUES (
 	'3ZQCSNNC6KVP2GYLA4O3EFZXGUAPWBQHU6ZEB7FXNZJ2WYCLPH3A',	
 	'System', 
@@ -127,7 +134,8 @@ VALUES (
 	null,
 	current_timestamp, 
 	'CwqU7+gCkL3jMWWcUpq80Oh42QejXOwI+Ov0tmsVWBI=',
-	null
+	null,
+	'1967'
 );
 
 /* Notfound - Keycloak User - Keycloak User (hthgtwy03) */
@@ -143,7 +151,8 @@ INSERT INTO gateway."UserProfile"(
 	"IdentityManagementId", 
 	"LastLoginDateTime", 
 	"EncryptionKey", 
-	"SMSNumber")
+	"SMSNumber",
+	"YearOfBirth")
 VALUES (
 	'R43YCT4ZY37EIJLW2O5LV2I77BZA3K3M25EUJGWAVGVJ7JKBDKCQ',
 	'System', 
@@ -156,7 +165,8 @@ VALUES (
 	null,
 	current_timestamp, 
 	'KtBm7JYegayKpx5fjwM2RUGZf79JOnNC21NhUrIAzmg=',
-	null
+	null,
+	'1988'
 );
 
 /* User without the latest accepted terms of service - Keycloak User - Keycloak User (hthgtwy04) */
@@ -172,7 +182,8 @@ INSERT INTO gateway."UserProfile"(
 	"IdentityManagementId", 
 	"LastLoginDateTime", 
 	"EncryptionKey", 
-	"SMSNumber")
+	"SMSNumber",
+	"YearOfBirth")
 VALUES (
 	'K6HL4VX67CZ2PGSZ2ZOIR4C3PGMFFBW5CIOXM74D6EQ7RYYL7P4A',	
 	'System', 
@@ -185,7 +196,8 @@ VALUES (
 	null,
 	current_timestamp,  
 	'CwqU7+gCkL3jMWWcUpq80Oh42QejXOwI+Ov0tmsVWBI=',
-	null
+	null,
+	'2001'
 );
 
 /* User (hthgtwy04) - last logged in 1 day ago */
@@ -205,7 +217,8 @@ INSERT INTO gateway."UserProfileHistory"(
     "OperationDateTime",
 	"EncryptionKey", 
 	"SMSNumber",
-    "TermsOfServiceId")
+    "TermsOfServiceId",
+	"YearOfBirth")
 VALUES (
 	uuid_generate_v4(),	
 	'System', 
@@ -222,7 +235,8 @@ VALUES (
     current_timestamp,
 	'CwqU7+gCkL3jMWWcUpq80Oh42QejXOwI+Ov0tmsVWBI=',
 	null,
-    'eafeee76-8a64-49ee-81ba-ddfe2c01deb8'
+    'eafeee76-8a64-49ee-81ba-ddfe2c01deb8',
+	'2001'
 );
 
 /* User (hthgtwy04) - last logged in 2 days ago */
@@ -242,7 +256,8 @@ INSERT INTO gateway."UserProfileHistory"(
     "OperationDateTime",
 	"EncryptionKey", 
 	"SMSNumber",
-    "TermsOfServiceId")
+    "TermsOfServiceId",
+	"YearOfBirth")
 VALUES (
 	uuid_generate_v4(),		
 	'System', 
@@ -259,7 +274,8 @@ VALUES (
     current_timestamp,
 	'CwqU7+gCkL3jMWWcUpq80Oh42QejXOwI+Ov0tmsVWBI=',
 	null,
-    'eafeee76-8a64-49ee-81ba-ddfe2c01deb8'
+    'eafeee76-8a64-49ee-81ba-ddfe2c01deb8',
+	'2001'
 );
 
 /* User (hthgtwy04) - last logged in 3 days ago */
@@ -279,7 +295,8 @@ INSERT INTO gateway."UserProfileHistory"(
     "OperationDateTime",
 	"EncryptionKey", 
 	"SMSNumber",
-    "TermsOfServiceId")
+    "TermsOfServiceId",
+	"YearOfBirth")
 VALUES (
 	uuid_generate_v4(),	
 	'System', 
@@ -296,7 +313,8 @@ VALUES (
     current_timestamp,
 	'CwqU7+gCkL3jMWWcUpq80Oh42QejXOwI+Ov0tmsVWBI=',
 	null,
-    'eafeee76-8a64-49ee-81ba-ddfe2c01deb8'
+    'eafeee76-8a64-49ee-81ba-ddfe2c01deb8',
+	'2001'
 );
 
 /* User keycloak (hthgtwy11) - last logged in 1 day ago  */
@@ -316,7 +334,8 @@ INSERT INTO gateway."UserProfileHistory"(
     "OperationDateTime",
 	"EncryptionKey", 
 	"SMSNumber",
-    "TermsOfServiceId")
+    "TermsOfServiceId",
+	"YearOfBirth")
 VALUES (
 	uuid_generate_v4(),	
 	'System', 
@@ -333,7 +352,8 @@ VALUES (
     current_timestamp,
 	'CwqU7+gCkL3jMWWcUpq80Oh42QejXOwI+Ov0tmsVWBI=',
 	null,
-    'eafeee76-8a64-49ee-81ba-ddfe2c01deb8'
+    'eafeee76-8a64-49ee-81ba-ddfe2c01deb8',
+	'1967'
 );
 
 /* User keycloak (hthgtwy11) - last logged in 2 days ago  */
@@ -353,7 +373,8 @@ INSERT INTO gateway."UserProfileHistory"(
     "OperationDateTime",
 	"EncryptionKey", 
 	"SMSNumber",
-    "TermsOfServiceId")
+    "TermsOfServiceId",
+	"YearOfBirth")
 VALUES (
 	uuid_generate_v4(),		
 	'System', 
@@ -370,7 +391,8 @@ VALUES (
     current_timestamp,
 	'CwqU7+gCkL3jMWWcUpq80Oh42QejXOwI+Ov0tmsVWBI=',
 	null,
-    'eafeee76-8a64-49ee-81ba-ddfe2c01deb8'
+    'eafeee76-8a64-49ee-81ba-ddfe2c01deb8',
+	'1967'
 );
 
 /* Notfound - Keycloak User - Last logged in 2 days ago */
@@ -390,7 +412,8 @@ INSERT INTO gateway."UserProfileHistory"(
     "OperationDateTime",
 	"EncryptionKey", 
 	"SMSNumber",
-    "TermsOfServiceId")
+    "TermsOfServiceId",
+	"YearOfBirth")
 VALUES (
 	uuid_generate_v4(),	
 	'System', 
@@ -407,7 +430,8 @@ VALUES (
     current_timestamp,
 	'CwqU7+gCkL3jMWWcUpq80Oh42QejXOwI+Ov0tmsVWBI=',
 	null,
-    'eafeee76-8a64-49ee-81ba-ddfe2c01deb8'
+    'eafeee76-8a64-49ee-81ba-ddfe2c01deb8',
+	'1988'
 );
 
 /* Invaliddoses - Keycloak User - Last logged in 120 days ago */
@@ -427,7 +451,8 @@ INSERT INTO gateway."UserProfileHistory"(
     "OperationDateTime",
 	"EncryptionKey", 
 	"SMSNumber",
-    "TermsOfServiceId")
+    "TermsOfServiceId",
+	"YearOfBirth")
 VALUES (
 	uuid_generate_v4(),	
 	'System', 
@@ -444,7 +469,8 @@ VALUES (
     current_timestamp,
 	'CwqU7+gCkL3jMWWcUpq80Oh42QejXOwI+Ov0tmsVWBI=',
 	null,
-    'eafeee76-8a64-49ee-81ba-ddfe2c01deb8'
+    'eafeee76-8a64-49ee-81ba-ddfe2c01deb8',
+	null
 );
 
 INSERT INTO gateway."Rating"(
@@ -827,6 +853,104 @@ VALUES (
     'Processed'
 );
 
+INSERT INTO gateway."Email"(
+    "EmailId", 
+    "CreatedBy", 
+    "CreatedDateTime", 
+    "UpdatedBy", 
+    "UpdatedDateTime", 
+    "From", 
+    "To", 
+    "Subject", 
+    "Body", 
+    "FormatCode", 
+    "Priority", 
+    "SentDateTime", 
+    "LastRetryDateTime", 
+    "Attempts", 
+    "SmtpStatusCode", 
+    "EmailStatusCode")
+VALUES (
+    '8986a8b9-02e1-4756-a660-3e1ed4fa81ce', 
+    'System',
+    now(),
+    'System',
+    now(),
+    'HG_Donotreply@gov.bc.ca', 
+    'nobody@healthgateway.gov.bc.ca', 
+    'Health Gateway Email Verification hgdev', 
+    '<!DOCTYPE html>
+    <html lang="en">
+        <head>
+            <title>Email Validation</title>
+        </head>
+        <body style="margin: 0">
+            <table
+                style="
+                    width: 100%;
+                    border-spacing: 0px;
+                    margin: 0;
+                    color: #707070;
+                    font-family: Helvetica, Arial, Verdana, Tahoma, sans-serif;
+                    font-size: 12px;
+                "
+                aria-describedby="Layout Table"
+            >
+                <tr style="background: #003366">
+                    <th scope="col" style="width:45px;"></th>
+                    <th
+                        scope="col"
+                        style="text-align: left; width:350px;"
+                    >
+                        <div role="img" aria - label="Health Gateway Logo">
+                            <img
+                                src="https://dev.healthgateway.gov.bc.ca/Logo.png"
+                                alt="Health Gateway Logo"
+                            />
+                        </div>
+                    </th>
+                    <th scope="col"></th>
+                </tr>
+                <tr>
+                    <td colspan="3" style="height:20px;"></td>
+                </tr>
+                <tr>
+                    <td></td>
+                    <td>
+                        <h1 style="font-size: 18px">Almost there!</h1>
+                        <p>
+                            We''ve received a request to register your email address
+                            for a Health Gateway account.
+                        </p>
+                        <p>
+                            To activate your account, please verify your email by
+                            clicking the link:
+                        </p>
+                        <a
+                            style="color: #1292c5; font-weight: 600"
+                            href="https://dev.healthgateway.gov.bc.ca/ValidateEmail/5f9ceabb-a6e2-4eb3-839c-b364f65c502d"
+                        >
+                            Health Gateway Account Verification
+                        </a>
+                        <p>
+                            This email verification link will expire in
+                            12 hours.
+                        </p>
+                    </td>
+                    <td></td>
+                </tr>
+            </table>
+        </body>
+    </html>', 
+    'HTML', 
+    10, 
+    '2022-07-05 00:47:05.828812+00', 
+    null, 
+    1,
+    250, 
+    'Processed'
+);
+
 /* Registered HealthGateway User - Keycloak User (healthgateway) */
 INSERT INTO gateway."MessagingVerification"(
 	"MessagingVerificationId", 
@@ -851,6 +975,41 @@ VALUES (
 	'System',
 	now(),
 	'P6FFO433A5WPMVTGM7T4ZVWBKCSVNAYGTWTU3J2LWMGUMERKI72A',
+	true,
+	null,
+	'00000000-0000-0000-0000-000000000000',
+	now()+INTERVAL '1 day',
+	'2501234567',
+	'654321',
+	'SMS',
+	false,
+	0
+);
+
+/* Registered HealthGateway User - Keycloak User (healthgateway) */
+INSERT INTO gateway."MessagingVerification"(
+	"MessagingVerificationId", 
+	"CreatedBy", 
+	"CreatedDateTime", 
+	"UpdatedBy", 
+	"UpdatedDateTime", 
+	"HdId", 
+	"Validated", 
+	"EmailId", 
+	"InviteKey", 
+	"ExpireDate", 
+	"SMSNumber", 
+	"SMSValidationCode", 
+	"VerificationType", 
+	"Deleted", 
+	"VerificationAttempts")
+VALUES (
+	uuid_generate_v4(),
+	'System',
+	now()- INTERVAL '1 hour',
+	'System',
+	now()- INTERVAL '1 hour',
+	'P6FFO433A5WPMVTGM7T4ZVWBKCSVNAYGTWTU3J2LWMGUMERKI72A',
 	false,
 	null,
 	'00000000-0000-0000-0000-000000000000',
@@ -862,7 +1021,42 @@ VALUES (
 	0
 );
 
-/* Invaliddoses - Keycloak User (hthgtwy20) */
+/* Registered HealthGateway User - Keycloak User (healthgateway) */
+INSERT INTO gateway."MessagingVerification"(
+	"MessagingVerificationId", 
+	"CreatedBy", 
+	"CreatedDateTime", 
+	"UpdatedBy", 
+	"UpdatedDateTime", 
+	"HdId", 
+	"Validated", 
+	"EmailId", 
+	"InviteKey", 
+	"ExpireDate", 
+	"SMSNumber", 
+	"SMSValidationCode", 
+	"VerificationType", 
+	"Deleted", 
+	"VerificationAttempts")
+VALUES (
+	uuid_generate_v4(),
+	'System',
+	now(),
+	'System',
+	now(),
+	'RD33Y2LJEUZCY2TCMOIECUTKS3E62MEQ62CSUL6Q553IHHBI3AWQ',
+	false,
+	null,
+	'00000000-0000-0000-0000-000000000000',
+	now()+INTERVAL '1 day',
+	'2501234567',
+	'567890',
+	'SMS',
+	false,
+	0
+);
+
+/* Keycloak User (hthgtwy20) */
 INSERT INTO gateway."MessagingVerification"(
 	"MessagingVerificationId", 
 	"CreatedBy", 
@@ -888,6 +1082,41 @@ VALUES (
 	'DEV4FPEGCXG2NB5K2USBL52S66SC3GOUHWRP3GTXR2BTY5HEC4YA',
 	false,
 	'a86b1a95-42c1-49e4-9d48-6080cf2a223d',
+	'00000000-0000-0000-0000-000000000000',
+	now()+INTERVAL '1 day',
+	null,
+	'123456',
+	'Email',
+	false,
+	0
+);
+
+/* Keycloak User (hthgtwy20) */
+INSERT INTO gateway."MessagingVerification"(
+	"MessagingVerificationId", 
+	"CreatedBy", 
+	"CreatedDateTime", 
+	"UpdatedBy", 
+	"UpdatedDateTime", 
+	"HdId", 
+	"Validated", 
+	"EmailId", 
+	"InviteKey", 
+	"ExpireDate", 
+	"SMSNumber", 
+	"SMSValidationCode", 
+	"VerificationType", 
+	"Deleted", 
+	"VerificationAttempts")
+VALUES (
+	uuid_generate_v4(),
+	'System',
+	now()- INTERVAL '1 hour',
+	'System',
+	now()- INTERVAL '1 hour',
+	'DEV4FPEGCXG2NB5K2USBL52S66SC3GOUHWRP3GTXR2BTY5HEC4YA',
+	true,
+	'8986a8b9-02e1-4756-a660-3e1ed4fa81ce',
 	'00000000-0000-0000-0000-000000000000',
 	now()+INTERVAL '1 day',
 	null,

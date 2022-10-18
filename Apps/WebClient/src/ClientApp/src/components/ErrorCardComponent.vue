@@ -160,7 +160,7 @@ export default class ErrorCardComponent extends Vue {
                         <p
                             v-for="(error, index) in errorDetails"
                             :key="index"
-                            class="break-word"
+                            class="text-break"
                             :data-testid="'error-details-span-' + (index + 1)"
                         >
                             {{ error }}
@@ -182,9 +182,5 @@ export default class ErrorCardComponent extends Vue {
 .collapsed > .when-opened,
 :not(.collapsed) > .when-closed {
     display: none;
-}
-
-.break-word {
-    word-wrap: break-word;
 }
 </style>

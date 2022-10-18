@@ -107,6 +107,20 @@ public static class AnalyticsReducers
     }
 
     /// <summary>
+    /// The Reducer for the load year of birth counts action.
+    /// </summary>
+    /// <param name="state">The year of birth counts state.</param>
+    /// <returns>The new year of birth counts state.</returns>
+    [ReducerMethod(typeof(AnalyticsActions.LoadYearOfBirthCountsAction))]
+    public static AnalyticsState ReduceYearOfBirthCountsAction(AnalyticsState state)
+    {
+        return state with
+        {
+            IsLoading = true,
+        };
+    }
+
+    /// <summary>
     /// The Reducer for the load success action.
     /// </summary>
     /// <param name="state">The analytics state.</param>

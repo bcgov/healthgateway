@@ -1,8 +1,12 @@
 const timeout = 45000;
 
-function getFileName(name) {
+function formatDate(date) {
     // yyyy-mm-dd
-    const today = new Date().toLocaleDateString("en-CA");
+    return date.toLocaleDateString("en-CA");
+}
+
+function getFileName(name) {
+    const today = formatDate(new Date());
     const fileName = `${name}_export_${today}.csv`;
     cy.log(`File name: ${fileName}`);
     return fileName;
@@ -24,7 +28,9 @@ describe("System Analytics", () => {
             "getInactiveUsers"
         );
 
-        cy.intercept("GET", "**/CsvExport/GetUserFeedback").as("getUserFeedback");
+        cy.intercept("GET", "**/CsvExport/GetUserFeedback").as(
+            "getUserFeedback"
+        );
 
         cy.login(
             Cypress.env("keycloak_username"),
@@ -72,6 +78,17 @@ describe("System Analytics", () => {
             .click();
         cy.wait("@getUserFeedback", { timeout });
         cy.verifyDownload(getFileName("UserFeedback"));
+
+        cy.get("[data-testid=year-of-birth-download-btn]")
+            .should("be.visible")
+            .click();
+
+        let lastMonth = new Date();
+        lastMonth.setDate(lastMonth.getDate() - 30);
+        const fromDate = formatDate(lastMonth);
+        const toDate = formatDate(new Date());
+        const fileName = `YearOfBirthCounts_export_${fromDate}_to_${toDate}.csv`;
+        cy.verifyDownload(fileName);
 
         cy.log("System Analytics stats download test finished.");
     });

@@ -19,7 +19,7 @@ namespace HealthGateway.Database.Migrations
 #pragma warning disable 612, 618
             modelBuilder
                 .HasDefaultSchema("gateway")
-                .HasAnnotation("ProductVersion", "6.0.8")
+                .HasAnnotation("ProductVersion", "6.0.9")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
@@ -2954,6 +2954,10 @@ namespace HealthGateway.Database.Migrations
                         .HasColumnType("xid")
                         .HasColumnName("xmin");
 
+                    b.Property<string>("YearOfBirth")
+                        .HasMaxLength(4)
+                        .HasColumnType("character varying(4)");
+
                     b.HasKey("HdId");
 
                     b.HasIndex("TermsOfServiceId");
@@ -3029,6 +3033,10 @@ namespace HealthGateway.Database.Migrations
                         .ValueGeneratedOnAddOrUpdate()
                         .HasColumnType("xid")
                         .HasColumnName("xmin");
+
+                    b.Property<string>("YearOfBirth")
+                        .HasMaxLength(4)
+                        .HasColumnType("character varying(4)");
 
                     b.HasKey("Id");
 

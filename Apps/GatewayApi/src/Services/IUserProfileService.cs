@@ -32,8 +32,8 @@ namespace HealthGateway.GatewayApi.Services
         /// </summary>
         /// <param name="hdid">The requested user hdid.</param>
         /// <param name="jwtAuthTime">The date of last jwt authorization time.</param>
-        /// <returns>The wrappeed user profile.</returns>
-        RequestResult<UserProfileModel> GetUserProfile(string hdid, DateTime jwtAuthTime);
+        /// <returns>The wrapped user profile.</returns>
+        Task<RequestResult<UserProfileModel>> GetUserProfile(string hdid, DateTime jwtAuthTime);
 
         /// <summary>
         /// Saves the user profile to the database.
@@ -85,7 +85,7 @@ namespace HealthGateway.GatewayApi.Services
         /// Gets the user preference model.
         /// </summary>
         /// <param name="hdid">The requested user hdid.</param>
-        /// <returns>The wrappeed user reference.</returns>
+        /// <returns>The wrapped user reference.</returns>
         RequestResult<Dictionary<string, UserPreferenceModel>> GetUserPreferences(string hdid);
 
         /// <summary>
@@ -96,7 +96,7 @@ namespace HealthGateway.GatewayApi.Services
         Task<PrimitiveRequestResult<bool>> ValidateMinimumAge(string hdid);
 
         /// <summary>
-        /// Updates the user profile and sets the acceepted terms of service to the supplied value.
+        /// Updates the user profile and sets the accepted terms of service to the supplied value.
         /// </summary>
         /// <param name="hdid">The users hdid.</param>
         /// <param name="termsOfServiceId">The terms of service id accepted.</param>

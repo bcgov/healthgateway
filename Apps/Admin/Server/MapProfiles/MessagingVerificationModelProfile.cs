@@ -13,32 +13,25 @@
 //  See the License for the specific language governing permissions and
 //  limitations under the License.
 // -------------------------------------------------------------------------
-
-namespace HealthGateway.Admin.Common.Constants
+namespace HealthGateway.Admin.Server.MapProfiles
 {
+    using AutoMapper;
+    using HealthGateway.Common.Data.Models;
+    using HealthGateway.Common.Data.ViewModels;
+
     /// <summary>
-    /// Represents the type of query being performed.
+    /// An AutoMapper profile class which defines mapping between DB and UI Models.
     /// </summary>
-    public enum UserQueryType
+    public class MessagingVerificationModelProfile : Profile
     {
         /// <summary>
-        /// Query by Personal Health Number.
+        /// Initializes a new instance of the <see cref="MessagingVerificationModelProfile"/> class.
         /// </summary>
-        Phn,
-
-        /// <summary>
-        /// Query by email.
-        /// </summary>
-        Email,
-
-        /// <summary>
-        /// Query by SMS phone number.
-        /// </summary>
-        Sms,
-
-        /// <summary>
-        /// Query by Health-Directed identifier.
-        /// </summary>
-        Hdid,
+        public MessagingVerificationModelProfile()
+        {
+            this.CreateMap<MessagingVerification, MessagingVerificationModel>()
+                .ForMember(dest => dest.Email, opt => opt.MapFrom(src => src.Email!.To))
+                .ReverseMap();
+        }
     }
 }

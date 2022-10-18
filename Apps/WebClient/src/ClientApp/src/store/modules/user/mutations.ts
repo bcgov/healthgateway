@@ -140,12 +140,19 @@ export const mutations: UserMutation = {
             state.status = LoadStatus.PARTIALLY_LOADED;
         }
     },
+    setPatientRetrievalFailed(state: UserState) {
+        state.patientRetrievalFailed = true;
+    },
     clearUserData(state: UserState) {
         state.user = new User();
         state.oidcUserInfo = undefined;
+        state.patientData = new PatientData();
+        state.patientRetrievalFailed = false;
+        state.smsResendDateTime = undefined;
+        state.seenTutorialComment = false;
         state.error = false;
-        state.statusMessage = "success";
-        state.status = LoadStatus.LOADED;
+        state.statusMessage = "";
+        state.status = LoadStatus.NONE;
     },
     userError(state: UserState, errorMessage: string) {
         state.error = true;

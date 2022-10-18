@@ -1,4 +1,8 @@
-import { ErrorSourceType, ErrorType } from "@/constants/errorType";
+import {
+    AppErrorType,
+    ErrorSourceType,
+    ErrorType,
+} from "@/constants/errorType";
 import { ResultType } from "@/constants/resulttype";
 import UserPreferenceType from "@/constants/userPreferenceType";
 import { DateWrapper } from "@/models/dateWrapper";
@@ -48,7 +52,7 @@ export const actions: UserActions = {
                 })
         );
     },
-    checkRegistration(context): Promise<boolean> {
+    retrieveProfile(context): Promise<void> {
         const logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
         const userProfileService = container.get<IUserProfileService>(
             SERVICE_IDENTIFIER.UserProfileService
@@ -62,7 +66,7 @@ export const actions: UserActions = {
                         `User Profile: ${JSON.stringify(userProfile)}`
                     );
                     context.commit("setProfileUserData", userProfile);
-                    resolve(userProfile.acceptedTermsOfService);
+                    resolve();
                 })
                 .catch((error) => {
                     context.commit("userError");
@@ -250,49 +254,90 @@ export const actions: UserActions = {
                 })
         );
     },
-    retrievePatientData(context): Promise<void> {
+    retrieveEssentialData(context): Promise<void> {
         const logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
         const patientService = container.get<IPatientService>(
             SERVICE_IDENTIFIER.PatientService
         );
+        const userProfileService = container.get<IUserProfileService>(
+            SERVICE_IDENTIFIER.UserProfileService
+        );
 
-        return new Promise((resolve, reject) => {
-            if (context.getters.patientData.hdid !== undefined) {
-                logger.debug(`Patient data found stored, not querying!`);
-                resolve();
-            } else {
-                context.commit("setRequested");
-                patientService
-                    .getPatientData(context.state.user.hdid)
-                    .then((result) => {
-                        if (result.resultStatus === ResultType.Error) {
-                            context.dispatch("handleError", {
-                                error: result.resultError,
-                                errorType: ErrorType.Retrieve,
+        return new Promise((resolve) => {
+            context.commit("setRequested");
+            patientService
+                .getPatientData(context.state.user.hdid)
+                .then((result) => {
+                    if (result.resultStatus === ResultType.Success) {
+                        context.commit(
+                            "setPatientData",
+                            result.resourcePayload
+                        );
+
+                        userProfileService
+                            .getProfile(context.state.user.hdid)
+                            .then((userProfile) => {
+                                context.commit(
+                                    "setProfileUserData",
+                                    userProfile
+                                );
+                                resolve();
+                            })
+                            .catch((error: ResultError) => {
+                                if (error.statusCode === 429) {
+                                    logger.debug(
+                                        "User profile retrieval failed because of too many requests"
+                                    );
+                                    context.commit(
+                                        "setAppError",
+                                        AppErrorType.TooManyRequests,
+                                        { root: true }
+                                    );
+                                } else {
+                                    logger.debug(
+                                        "User profile retrieval failed"
+                                    );
+                                    context.commit(
+                                        "setAppError",
+                                        AppErrorType.General,
+                                        { root: true }
+                                    );
+                                }
+                                resolve();
                             });
-                            reject(result.resultError);
-                        } else {
+                    } else {
+                        if (result.resultError?.statusCode === 429) {
                             logger.debug(
-                                `retrievePatientData User Profile: ${JSON.stringify(
-                                    result
-                                )}`
+                                "Patient retrieval failed because of too many requests"
                             );
                             context.commit(
-                                "setPatientData",
-                                result.resourcePayload
+                                "setAppError",
+                                AppErrorType.TooManyRequests,
+                                { root: true }
                             );
-                            resolve();
+                        } else {
+                            logger.debug("Patient retrieval failed");
+                            context.commit("setPatientRetrievalFailed");
                         }
-                    })
-                    .catch((error: ResultError) => {
-                        context.dispatch("handleError", {
-                            error,
-                            errorType: ErrorType.Retrieve,
-                            source: ErrorSourceType.Patient,
-                        });
-                        reject(error);
-                    });
-            }
+                        resolve();
+                    }
+                })
+                .catch((error: ResultError) => {
+                    if (error.statusCode === 429) {
+                        logger.debug(
+                            "Patient retrieval failed because of too many requests"
+                        );
+                        context.commit(
+                            "setAppError",
+                            AppErrorType.TooManyRequests,
+                            { root: true }
+                        );
+                    } else {
+                        logger.debug("Patient retrieval failed");
+                        context.commit("setPatientRetrievalFailed");
+                    }
+                    resolve();
+                });
         });
     },
     handleError(

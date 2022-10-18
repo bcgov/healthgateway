@@ -47,6 +47,9 @@ export const getters: UserGetters = {
     patientData(state: UserState): PatientData {
         return state.patientData;
     },
+    patientRetrievalFailed(state: UserState): boolean {
+        return state.patientRetrievalFailed;
+    },
     isLoading(state: UserState): boolean {
         return state.status === LoadStatus.REQUESTED;
     },

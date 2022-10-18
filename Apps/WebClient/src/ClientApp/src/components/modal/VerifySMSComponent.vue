@@ -9,7 +9,7 @@ import TooManyRequestsComponent from "@/components/TooManyRequestsComponent.vue"
 import { ErrorSourceType, ErrorType } from "@/constants/errorType";
 import type { WebClientConfiguration } from "@/models/configData";
 import { DateWrapper } from "@/models/dateWrapper";
-import { instanceOfResultError, ResultError } from "@/models/errors";
+import { isTooManyRequestsError, ResultError } from "@/models/errors";
 import User from "@/models/user";
 import container from "@/plugins/container";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
@@ -178,7 +178,7 @@ export default class VerifySMSComponent extends Vue {
                 setTimeout(() => (this.smsVerificationSent = false), 5000)
             )
             .catch((error) => {
-                if (instanceOfResultError(error) && error.statusCode === 429) {
+                if (isTooManyRequestsError(error)) {
                     this.setTooManyRequestsWarning({ key: "page" });
                 } else {
                     this.addError({

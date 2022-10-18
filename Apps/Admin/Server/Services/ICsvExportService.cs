@@ -69,5 +69,14 @@ namespace HealthGateway.Admin.Server.Services
         /// </summary>
         /// <returns>returns a stream representing a CSV of the User Feedback.</returns>
         Stream GetUserFeedback();
+
+        /// <summary>
+        /// Retrieves stream of logged in user year of birth counts over a date range.
+        /// </summary>
+        /// <param name="startPeriod">The period start of last login of users.</param>
+        /// <param name="endPeriod">The period end of last login of users.</param>
+        /// <param name="timeOffset">The clients offset to get to UTC.</param>
+        /// <returns>Return the counts of logged in users by year of birth for time range.</returns>
+        Stream GetYearOfBirthCounts(string startPeriod, string endPeriod, int timeOffset);
     }
 }

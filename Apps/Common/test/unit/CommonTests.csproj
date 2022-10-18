@@ -15,7 +15,7 @@
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
     <PackageReference Include="DeepEqual" Version="4.1.0" />
-    <PackageReference Include="Microsoft.AspNetCore.Cryptography.KeyDerivation" Version="6.0.9" />
+    <PackageReference Include="Microsoft.AspNetCore.Cryptography.KeyDerivation" Version="6.0.10" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.3.2" />
     <PackageReference Include="Moq" Version="4.18.2" />
     <PackageReference Include="Testcontainers" Version="2.1.0" />
@@ -27,6 +27,7 @@
     <PackageReference Include="XunitXml.TestLogger" Version="3.0.70" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\..\Admin\Server\Admin.Server.csproj" />
     <ProjectReference Include="..\..\src\Common.csproj" />
   </ItemGroup>
   <ItemGroup>

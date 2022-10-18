@@ -123,12 +123,12 @@ namespace HealthGateway.GatewayApi.Controllers
         [HttpGet]
         [Route("{hdid}")]
         [Authorize(Policy = UserProfilePolicy.Read)]
-        public RequestResult<UserProfileModel> GetUserProfile(string hdid)
+        public async Task<RequestResult<UserProfileModel>> GetUserProfile(string hdid)
         {
             ClaimsPrincipal? user = this.httpContextAccessor.HttpContext?.User;
             DateTime jwtAuthTime = ClaimsPrincipalReader.GetAuthDateTime(user);
 
-            RequestResult<UserProfileModel> result = this.userProfileService.GetUserProfile(hdid, jwtAuthTime);
+            RequestResult<UserProfileModel> result = await this.userProfileService.GetUserProfile(hdid, jwtAuthTime).ConfigureAwait(true);
             this.AddUserPreferences(result.ResourcePayload);
 
             return result;
