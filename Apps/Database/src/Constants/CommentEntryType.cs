@@ -21,7 +21,7 @@ namespace HealthGateway.Database.Constants
     public static class CommentEntryType
     {
         /// <summary>
-        /// The code represeting no entry type set.
+        /// The code representing no entry type set.
         /// </summary>
         public const string None = "NA";
 
@@ -54,5 +54,10 @@ namespace HealthGateway.Database.Constants
         /// The code representing Clinical Documents.
         /// </summary>
         public const string ClinicalDocuments = "CDO";
+
+        /// <summary>
+        /// The code representing Hospital Visits.
+        /// </summary>
+        public const string HospitalVisits = "Hos";
     }
 }
