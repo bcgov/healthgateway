@@ -112,5 +112,11 @@ namespace HealthGateway.Encounter.Services
                 return result;
             }
         }
+
+        /// <inheritdoc/>
+        public Task<RequestResult<IEnumerable<HospitalVisitModel>>> GetHospitalVisits(string hdid)
+        {
+            throw new NotImplementedException();
+        }
     }
 }
