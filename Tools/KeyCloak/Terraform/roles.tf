@@ -32,3 +32,17 @@ data "keycloak_role" "Uma_authorization" {
   realm_id = var.keycloak_realm
   name     = "uma_authorization"
 }
+data "keycloak_role" "realm_admin" {
+  realm_id = var.keycloak_realm
+  name     = "realm-admin"
+}
+
+data "keycloak_role" "realm_viewer" {
+  realm_id = var.keycloak_realm
+  name     = "realm-viewer"
+}
+
+data "keycloak_role" "default_hg" {
+  realm_id = var.keycloak_realm
+  name     = "default-roles-health-gateway-gold"
+}

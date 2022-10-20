@@ -1,21 +1,22 @@
 resource "keycloak_oidc_identity_provider" "azidiridp" {
-  realm                 = var.keycloak_realm
-  alias                 = "azureidir"
-  display_name          = "Azure IDIR"
-  enabled               = true
-  store_token           = false
-  trust_email           = true
-  sync_mode             = "IMPORT"
-  authorization_url     = "${var.keycloak_base_url}/realms/standard/protocol/openid-connect/auth"
-  token_url             = "${var.keycloak_base_url}/realms/standard/protocol/openid-connect/token"
-  logout_url            = "${var.keycloak_base_url}/realms/standard/logout/protocol/openid-connect"
-  backchannel_supported = true
-  user_info_url         = "${var.keycloak_base_url}/realms/standard/protocol/openid-connect/userinfo"
-  client_id             = var.keycloak_idp_azure_idir_client_id
-  client_secret         = var.keycloak_idp_azure_idir_client_secret
-  issuer                = "${var.keycloak_base_url}/realms/standard"
-  default_scopes        = "openid profile email"
-  validate_signature    = true
+  realm                         = var.keycloak_realm
+  alias                         = "azureidir"
+  display_name                  = "Azure IDIR"
+  enabled                       = true
+  store_token                   = false
+  trust_email                   = true
+  first_broker_login_flow_alias = keycloak_authentication_flow.first_login.alias
+  sync_mode                     = "FORCE"
+  authorization_url             = "${var.keycloak_base_url}/realms/standard/protocol/openid-connect/auth"
+  token_url                     = "${var.keycloak_base_url}/realms/standard/protocol/openid-connect/token"
+  logout_url                    = "${var.keycloak_base_url}/realms/standard/logout/protocol/openid-connect"
+  backchannel_supported         = true
+  user_info_url                 = "${var.keycloak_base_url}/realms/standard/protocol/openid-connect/userinfo"
+  client_id                     = var.keycloak_idp_azure_idir_client_id
+  client_secret                 = var.keycloak_idp_azure_idir_client_secret
+  issuer                        = "${var.keycloak_base_url}/realms/standard"
+  default_scopes                = "openid profile email"
+  validate_signature            = true
 
   jwks_url = "${var.keycloak_base_url}/realms/standard/protocol/openid-connect/certs"
   extra_config = {
@@ -28,7 +29,7 @@ resource "keycloak_user_template_importer_identity_provider_mapper" "az_username
   realm                   = var.keycloak_realm
   name                    = "username"
   identity_provider_alias = keycloak_oidc_identity_provider.azidiridp.alias
-  template                = "$${CLAIM.idir_username}@$${ALIAS}"
+  template                = "$${CLAIM.idir_username}@idir"
   extra_config = {
     syncMode = "INHERIT"
   }

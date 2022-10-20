@@ -6,7 +6,7 @@ resource "keycloak_oidc_identity_provider" "phsa" {
   store_token           = false
   trust_email           = true
   hide_on_login_page    = true
-  sync_mode             = "IMPORT"
+  sync_mode             = "FORCE"
   authorization_url     = "${var.keycloak_idp_phsa_base_url}${var.keycloak_idp_phsa_auth_path}"
   token_url             = "${var.keycloak_idp_phsa_base_url}${var.keycloak_idp_phsa_token_path}"
   backchannel_supported = false

@@ -19,9 +19,11 @@ resource "keycloak_generic_role_mapper" "hg_mobile_uma" {
   role_id   = data.keycloak_role.Uma_authorization.id
 }
 
-# resource "keycloak_openid_audience_protocol_mapper" "hg_mobile_audience" {
-#   realm_id  = var.keycloak_realm
-#   client_id = keycloak_openid_client.hg_mobile_client.id
-#   name      = "health-gateway-audience"
-#   included_client_audience = keycloak_openid_client.hg_client.
-# }
+resource "keycloak_openid_audience_protocol_mapper" "hg_mobile_audience" {
+  realm_id                 = var.keycloak_realm
+  client_id                = keycloak_openid_client.hg_mobile_client.id
+  name                     = "health-gateway-audience"
+  included_client_audience = keycloak_openid_client.hg_client.client_id
+  add_to_id_token          = true
+  add_to_access_token      = true
+}

@@ -1,3 +1,7 @@
+variable "environment" {
+  type        = string
+  description = "The environment name"
+}
 variable "keycloak_terraform_client_id" {
   type        = string
   description = "The client_id for the Keycloak client in Master Realm"
@@ -207,4 +211,12 @@ variable "client_hg_mobile_valid_redirects" {
 variable "client_hg_mobile_web_origins" {
   type        = list(string)
   description = "The list of valid web origins for the HealthGateway mobile client"
+}
+
+variable "user_default_password" {
+  type        = string
+  description = "The password to set for users created in the dev environment"
+}
+locals {
+  development = var.environment == "Development"
 }
