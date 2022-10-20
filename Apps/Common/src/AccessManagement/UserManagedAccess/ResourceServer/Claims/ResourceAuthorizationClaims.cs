@@ -17,7 +17,7 @@ namespace HealthGateway.Common.AccessManagement.Authorization.Claims
 {
     /// <summary>
     /// Claims specific to Health Gateway for Shared Access from Resource Owner to a Relying Party.
-    /// This is UMA 2.0. 
+    /// This is UMA 2.0.
     /// </summary>
     public static class ResourceAuthorizationClaims
     {

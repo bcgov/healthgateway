@@ -22,19 +22,18 @@ namespace HealthGateway.Common.AccessManagement.UserManagedAccess.Services
     using HealthGateway.Common.AccessManagement.UserManagedAccess.Models;
     using Refit;
 
-
     ///
     /// <summary>An entry point for managing permission tickets using the Protection API.</summary>
     ///
     [Headers("Authorization: Bearer")]
-    public interface IProtectedResource
+    public interface IProtectedApi
     {
         /// <summary>
         /// Creates a new Resource on the authorization server. See <see cref="Resource"/> class.
         /// </summary>
         /// <param name="resource">The Resource data.</param>
         /// <returns>The Resource created.</returns>
-        [Post("")]
+        [Post("/authz/protection/resource_set")]
         public Task<Resource> Create([Body] Resource resource);
 
         /// <summary>
@@ -42,43 +41,50 @@ namespace HealthGateway.Common.AccessManagement.UserManagedAccess.Services
         /// </summary>
         /// <param name="resource">The Resource to be updated.</param>
         /// <returns>True when updated.</returns>
-        [Put("/")]
+        [Put("/authz/protection/resource_set/{resource.Id}")]
         public Task<bool> Update([Body] Resource resource);
 
         /// <summary>Deletes an existing user-managed Resource from the server.</summary>
         /// <param name="resourceId">The Resource identifier.</param>
         /// <returns>True if the delete was successful.</returns>
-        [Delete("?resourceId={resourceId}")]
+        [Delete("/authz/protection/resource_set/{resourceId}")]
         public Task<bool> Delete(string resourceId);
+
+        /// <summary>
+        /// Query the server for a Resource with a given name.
+        /// </summary>
+        /// <param name="name">The url to be found.</param>
+        /// <returns>Returns a list of Resources that best matches the given Uri.</returns>
+        [Get("/authz/protection/resource_set?name={name}")]
+        public Task<List<Resource>> FindByName(string name);
 
         /// <summary>
         /// Query the server for a resource given its id.
         /// </summary>
         /// <param name="resourceId">The Resource  ID to be found.</param>
         /// <returns>The Resource found.</returns>
-        [Get("")]
+        [Get("/authz/protection/resource_set/{resourceId}")]
         public Task<Resource> FindById(string resourceId);
 
         /// <summary>
-        /// Query the server for a Resource with a given Uri.
+        /// Query the server for a resource given its id.
         /// </summary>
-        /// <param name="uri">The url to be found.</param>
-        /// <returns>Returns a list of Resources that best matches the given Uri.</returns>
-        [Get("/")]
-        public Task<List<Resource>> FindByUri(Uri uri, string token);
+        /// <param name="owner">The Resource  owner.</param>
+        /// <returns>The Resource found.</returns>
+        [Get("/authz/protection/resource_set?owner={owner}")]
+        public Task<Resource> FindByOwner(string owner);
 
         /// <summary>
         /// Query the server for a Resource with a given Uri.
-        /// This method queries the server for resources that match the Uri.
         /// </summary>
         /// <param name="uri">The url to be found.</param>
         /// <returns>Returns a list of Resources that best matches the given Uri.</returns>
-        [Get("/")]
-        public Task<List<Resource>> FindByMatchingUri(Uri uri);
+        [Get("/authz/protection/resource_set?resource_uri={uri.OriginalString}")]
+        public Task<List<Resource>> FindByUri(Uri uri);
 
         /// <summary>Query the server for all resources.</summary>
         /// <returns> @return an array of strings with the resource ids.</returns>
-        [Get("/")]
+        [Get("/authz/protection/resource_set?matchingUri=false")]
         public Task<string[]> FindAll();
     }
 }

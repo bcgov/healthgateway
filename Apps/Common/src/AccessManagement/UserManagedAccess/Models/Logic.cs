@@ -15,8 +15,8 @@
 //-------------------------------------------------------------------------
 namespace HealthGateway.Common.AccessManagement.UserManagedAccess.Models
 {
-    using System.Text.Json.Serialization;
     using System.Runtime.Serialization;
+    using System.Text.Json.Serialization;
 
     /// <summary>The decision strategy dictates how the policies associated with a given policy
     /// are evaluated and how a final decision is obtained.</summary>

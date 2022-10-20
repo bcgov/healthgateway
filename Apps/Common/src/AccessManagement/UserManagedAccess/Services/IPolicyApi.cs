@@ -56,13 +56,12 @@ namespace HealthGateway.Common.AccessManagement.UserManagedAccess.Services
                 string name,
                 string scope,
                 int firstResult,
-                int maxResult,
-                string token);
+                int maxResult);
 
         /// <summary>Queries the server for a permission with the given ID.</summary>
         /// <param name="id">The uma permission identifier to find.</param>
         /// <returns>An UmaPermission, if found.</returns>
         [Get("/uathz/protection/uma-policy?permissionId={id}")]
-        public Task<UmaPermission> FindById(string id, string token);
+        public Task<UmaPermission> FindById(string id);
     }
 }

@@ -30,7 +30,6 @@ namespace HealthGateway.Common.AccessManagement.UserManagedAccess.Services
     {
         /// <summary>Creates a new permission ticket for a single resource and scope(s).</summary>
         /// <param name="request"> the <see cref="PermissionRequest"/> representing the resource and scope(s).</param>
-        /// <param name="headers"> Http headers, inclding the bearer token.</param>
         /// <returns>Permission response holding a permission ticket with the requested permissions.</returns>
         [Post("/authz/protection/permission")]
         public Task<PermissionResponse> Create([Body] PermissionRequest request);
@@ -49,14 +48,12 @@ namespace HealthGateway.Common.AccessManagement.UserManagedAccess.Services
 
         /// <summary>Query the server for any permission ticket associated with the given scopeId.</summary>
         /// <param name="scopeId">The scopeId the scope id.</param>
-        /// <param name="token"> A valid base64 access_token from authenticing the caller.</param>
         /// <returns>A list of permission tickets associated with the given scopeId.</returns>
         [Get("/authz/protection/permission?scopeId={scopeId}")]
         public Task<List<PermissionTicket>> FindByScope(string scopeId);
 
         /// <summary>Query the server for any permission ticket associated with the given scopeId.</summary>
         /// <param name="resourceId">The resourceId.</param>
-        /// <param name="token">A valid base64 access_token from authenticing the caller.</param>
         /// <returns>A list of permission tickets associated with the given scopeId.</returns>
         [Get("/authz/protection/permission?resourceId={resourceId}")]
         public Task<List<PermissionTicket>> FindByResourceId(string resourceId);
@@ -70,7 +67,6 @@ namespace HealthGateway.Common.AccessManagement.UserManagedAccess.Services
         /// <param name="returnNames">If the response should include names for resource, scope and owner.</param>
         /// <param name="firstResult">The position of the first resource to retrieve.</param>
         /// <param name="maxResult">The maximum number of resources to retrieve.</param>
-        /// <param name="token"> A valid base64 access_token from authenticing the caller.</param>
         /// <returns>A list of permission tickets with the matching arguments.</returns>
         [Get("/authz/protection/permission?resourceId={resourceId}&scopeId={scopeId}&owner={owner}&requester={requester}&granted={granted}&returnName={returnNames}&firstResult={firstResult}&maxResult={maxResult}")]
         public Task<List<PermissionTicket>> Find(
@@ -85,14 +81,12 @@ namespace HealthGateway.Common.AccessManagement.UserManagedAccess.Services
 
         /// <summary>Updates a permission ticket.</summary>
         /// <param name="ticket">The permission ticket.</param>
-        /// <param name="token"> A valid base64 access_token from authenticing the caller.</param>
         /// <returns>True when the permission ticket is updated.</returns>
         [Put("/authz/protection/permission")]
         public Task<bool> Update([Body] PermissionTicket ticket);
 
         /// <summary>Delete a permission ticket.</summary>
         /// <param name="ticketId">The id of the permission ticket to delete.</param>
-        /// <param name="token"> A valid base64 access_token from authenticing the caller.</param>
         /// <returns>True if the delete succeeded.</returns>
         [Delete("/authz/protection/permission?ticketId={ticketId}")]
         public Task<bool> Delete(string ticketId);

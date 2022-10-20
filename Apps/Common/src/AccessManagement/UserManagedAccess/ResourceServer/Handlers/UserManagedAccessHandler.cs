@@ -18,21 +18,19 @@ namespace HealthGateway.Common.AccessManagement.UserManagedAccess.ResourceServer
     using System.Linq;
     using System.Security.Claims;
     using System.Threading.Tasks;
+
+    using HealthGateway.Common.AccessManagement.UserManagedAccess.Models;
+    using HealthGateway.Common.AccessManagement.UserManagedAccess.ResourceServer.Requirements;
+
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Http;
     using Microsoft.Extensions.Logging;
-
-    using HealthGateway.Common.AccessManagement.UserManagedAccess.ResourceServer.Requirements;
-    using HealthGateway.Common.AccessManagement.UserManagedAccess.Models;
-
 
     /// <summary>
     /// UserAuthorizationHandler validates that User requirements have been met.
     /// </summary>
     public class UserManagedAccessHandler : IAuthorizationHandler
     {
-        private const string RouteResourceIdentifier = "hdid";
-
         private readonly ILogger<UserManagedAccessHandler> logger;
         private readonly IHttpContextAccessor httpContextAccessor;
 
@@ -56,12 +54,6 @@ namespace HealthGateway.Common.AccessManagement.UserManagedAccess.ResourceServer
         /// <returns>The Authorization Result.</returns>
         public Task HandleAsync(AuthorizationHandlerContext context)
         {
-            string? resourceHDID = this.httpContextAccessor.HttpContext?.Request.RouteValues[RouteResourceIdentifier] as string;
-            foreach (UmaRequirement requirement in context.PendingRequirements.OfType<UmaRequirement>().Where(requirement => this.AuthorizationAssessment(context, resourceHDID, requirement)))
-            {
-                context.Succeed(requirement);
-            }
-
             return Task.CompletedTask;
         }
 
@@ -74,7 +66,6 @@ namespace HealthGateway.Common.AccessManagement.UserManagedAccess.ResourceServer
         private bool AuthorizationAssessment(AuthorizationHandlerContext context, string? resourceHDID, UmaRequirement requirement)
         {
             bool retVal = false;
-           
             return retVal;
         }
     }

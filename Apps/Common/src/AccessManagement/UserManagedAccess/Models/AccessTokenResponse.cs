@@ -15,12 +15,19 @@
 //-------------------------------------------------------------------------
 namespace HealthGateway.Common.AccessManagement.UserManagedAccess.Models
 {
+    using System;
     using System.IdentityModel.Tokens.Jwt;
+    using System.Runtime.Serialization;
+    using System.Security.Permissions;
 
     /// <summary>
     /// OAuth 2.0 Access Token Response json.
     /// </summary>
+    [Serializable]
     public class AccessTokenResponse : JwtPayload
     {
+        protected AccessTokenResponse(SerializationInfo info, StreamingContext context)
+        {
+        }
     }
 }

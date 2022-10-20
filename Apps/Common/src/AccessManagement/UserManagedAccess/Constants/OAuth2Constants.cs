@@ -186,13 +186,13 @@ namespace HealthGateway.Common.AccessManagement.UserManagedAccess.Constants
         /// <summary>The subject_token_type label.</summary>
         public const string SubjectTokenType = "subject_token_type";
 
-       /// <summary>The token exchange grant type.</summary>
+        /// <summary>The token exchange grant type.</summary>
         public const string TokenExchangeGrantType = "urn:ietf:params:oauth:grant-type:token-exchange";
 
-        /// <summary>A Tokenn Introspectiion Hint</summary>
+        /// <summary>A Tokenn Introspection Hint.</summary>
         public const string TokenTypeHint = "token_type_hint";
 
-        /// <summary>A Requesting Party Token Hint Value</summary>
+        /// <summary>A Requesting Party Token Hint Value.</summary>
         public const string TokenTypeHintRpt = "requesting_party_token";
 
        /// <summary>The ui_locales label.</summary>

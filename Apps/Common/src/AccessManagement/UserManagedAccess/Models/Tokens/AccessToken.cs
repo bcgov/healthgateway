@@ -15,6 +15,7 @@
 //-------------------------------------------------------------------------
 namespace HealthGateway.Common.AccessManagement.UserManagedAccess.Models.Tokens
 {
+    using System;
     using System.Collections.Generic;
     using System.IdentityModel.Tokens.Jwt;
     using System.Text.Json.Serialization;
@@ -22,6 +23,7 @@ namespace HealthGateway.Common.AccessManagement.UserManagedAccess.Models.Tokens
     /// <summary>
     /// OAuth 2.0 Access Token Response json.
     /// </summary>
+    [Serializable]
     public class AccessToken : JwtPayload
     {
         /// <summary>

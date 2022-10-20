@@ -23,7 +23,7 @@ namespace HealthGateway.Common.AccessManagement.UserManagedAccess.ResourceServer
     public class UmaRequirement : IAuthorizationRequirement
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="UserRequirement"/> class.
+        /// Initializes a new instance of the <see cref="UmaRequirement"/> class.
         /// </summary>
         /// <param name="validateRequestingPartyToken">If true validates the user HDID matches the resource HDID.</param>
         public UmaRequirement(bool validateRequestingPartyToken)

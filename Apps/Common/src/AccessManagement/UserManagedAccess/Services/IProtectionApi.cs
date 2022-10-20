@@ -20,15 +20,13 @@ namespace HealthGateway.Common.AccessManagement.UserManagedAccess.Services
 
     using HealthGateway.Common.AccessManagement.UserManagedAccess.Models;
     using HealthGateway.Common.AccessManagement.UserManagedAccess.Models.Tokens;
-
     using Refit;
-
 
     ///
     /// <summary>An entry point for managing permission tickets using the Protection API.</summary>
     ///
-    [Headers("Authorization: Bearer")]   // The requesting party token as extension to Bearer token
-    public interface IProtectionResource
+    [Headers("Authorization: Bearer")] // The requesting party token as extension to Bearer token.
+    public interface IProtectionApi
     {
         /// <summary>Introspects the given rpt using the token introspection endpoint.</summary>
         /// <param name="request">the Requesting Party Token to Introspect along with the token hint.</param>
