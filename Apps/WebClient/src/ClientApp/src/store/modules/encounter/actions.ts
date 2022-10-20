@@ -1,7 +1,7 @@
 import { EntryType } from "@/constants/entryType";
 import { ErrorSourceType, ErrorType } from "@/constants/errorType";
 import { ResultType } from "@/constants/resulttype";
-import Encounter from "@/models/encounter";
+import { Encounter, HospitalVisit } from "@/models/encounter";
 import { ResultError } from "@/models/errors";
 import RequestResult from "@/models/requestResult";
 import { LoadStatus } from "@/models/storeOperations";
@@ -13,7 +13,7 @@ import EventTracker from "@/utility/eventTracker";
 import { EncounterActions } from "./types";
 
 export const actions: EncounterActions = {
-    retrieve(
+    retrievePatientEncounters(
         context,
         params: { hdid: string }
     ): Promise<RequestResult<Encounter[]>> {
@@ -53,6 +53,61 @@ export const actions: EncounterActions = {
                             );
                             context.commit(
                                 "setPatientEncounters",
+                                result.resourcePayload
+                            );
+                            resolve(result);
+                        }
+                    })
+                    .catch((error: ResultError) => {
+                        context.dispatch("handleError", {
+                            error,
+                            errorType: ErrorType.Retrieve,
+                        });
+                        reject(error);
+                    });
+            }
+        });
+    },
+    retrieveHospitalVisits(
+        context,
+        params: { hdid: string }
+    ): Promise<RequestResult<HospitalVisit[]>> {
+        const logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
+        const encounterService = container.get<IEncounterService>(
+            SERVICE_IDENTIFIER.EncounterService
+        );
+
+        return new Promise((resolve, reject) => {
+            const hospitalVisits: HospitalVisit[] =
+                context.getters.hospitalVisits;
+            if (context.state.status === LoadStatus.LOADED) {
+                logger.debug(`Encounters found stored, not querying!`);
+                resolve({
+                    pageIndex: 0,
+                    pageSize: 0,
+                    resourcePayload: hospitalVisits,
+                    resultStatus: ResultType.Success,
+                    totalResultCount: hospitalVisits.length,
+                });
+            } else {
+                logger.debug(`Retrieving Hospital Visits`);
+                context.commit("setRequested");
+                encounterService
+                    .getHospitalVisits(params.hdid)
+                    .then((result) => {
+                        if (result.resultStatus === ResultType.Error) {
+                            context.dispatch("handleError", {
+                                error: result.resultError,
+                                errorType: ErrorType.Retrieve,
+                            });
+                            reject(result.resultError);
+                        } else {
+                            EventTracker.loadData(
+                                EntryType.Encounter,
+                                result.resourcePayload.length
+                            );
+                            context.commit(
+                                "setHospitalVisits",
                                 result.resourcePayload
                             );
                             resolve(result);

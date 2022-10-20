@@ -8,6 +8,7 @@ import { EncounterModule, EncounterState } from "./types";
 const state: EncounterState = {
     statusMessage: "",
     patientEncounters: [],
+    hospitalVisits: [],
     error: undefined,
     status: LoadStatus.NONE,
 };

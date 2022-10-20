@@ -3,7 +3,7 @@ import { injectable } from "inversify";
 import { ResultType } from "@/constants/resulttype";
 import { ServiceCode } from "@/constants/serviceCodes";
 import { ExternalConfiguration } from "@/models/configData";
-import Encounter from "@/models/encounter";
+import { Encounter, HospitalVisit } from "@/models/encounter";
 import { HttpError } from "@/models/errors";
 import RequestResult from "@/models/requestResult";
 import container from "@/plugins/container";
@@ -54,6 +54,39 @@ export class RestEncounterService implements IEncounterService {
                 .catch((err: HttpError) => {
                     this.logger.error(
                         `Error in RestEncounterService.getPatientEncounters()`
+                    );
+                    reject(
+                        ErrorTranslator.internalNetworkError(
+                            err,
+                            ServiceCode.Encounter
+                        )
+                    );
+                });
+        });
+    }
+
+    public getHospitalVisits(
+        hdid: string
+    ): Promise<RequestResult<HospitalVisit[]>> {
+        return new Promise((resolve, reject) => {
+            if (!this.isEnabled) {
+                resolve({
+                    pageIndex: 0,
+                    pageSize: 0,
+                    resourcePayload: [],
+                    resultStatus: ResultType.Success,
+                    totalResultCount: 0,
+                });
+                return;
+            }
+            this.http
+                .getWithCors<RequestResult<HospitalVisit[]>>(
+                    `${this.baseUri}${this.ENCOUNTER_BASE_URI}/HospitalVisits?hdid=${hdid}`
+                )
+                .then((requestResult) => resolve(requestResult))
+                .catch((err: HttpError) => {
+                    this.logger.error(
+                        `Error in RestEncounterService.getHospitalVisits()`
                     );
                     reject(
                         ErrorTranslator.internalNetworkError(
