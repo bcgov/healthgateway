@@ -28,9 +28,9 @@ describe("Menu System", () => {
     it("Validate Profile Button for Desktop", () => {
         login(false);
         cy.get("[data-testid=sidebarUserName]").should("not.exist");
-        cy.get("[data-testid=profileButtonUserName]")
+        cy.get("[data-testid=profileButtonInitials]")
             .should("be.visible")
-            .should("include.text", "Dr Gateway");
+            .should("include.text", "DG");
         cy.get("[data-testid=profileBtn]").should("not.be.visible");
         cy.get("[data-testid=profileDropDownIcon]").should("not.be.visible");
         cy.get("[data-testid=logoutBtn]").should("not.be.visible");
@@ -38,7 +38,7 @@ describe("Menu System", () => {
         cy.get("[data-testid=headerDropdownBtn]")
             .should("be.visible", "be.enabled")
             .click();
-        cy.get("[data-testid=profileUserNameMobileOnly]").should("not.exist");
+        cy.get("[data-testid=profileUserName]").should("be.visible");
         cy.get("[data-testid=profileBtn]").should("be.visible");
         cy.get("[data-testid=profileDropDownIcon]").should("be.visible");
         cy.get("[data-testid=profileBtn]").should(
@@ -54,7 +54,9 @@ describe("Menu System", () => {
 
     it("Validate Profile Button for Mobile", () => {
         login(true);
-        cy.get("[data-testid=profileButtonUserName]").should("not.exist");
+        cy.get("[data-testid=profileButtonInitials]")
+            .should("be.visible")
+            .should("include.text", "DG");
         cy.get("[data-testid=profileBtn]").should("not.be.visible");
         cy.get("[data-testid=profileDropDownIcon]").should("not.be.visible");
         cy.get("[data-testid=logoutBtn]").should("not.be.visible");
@@ -62,7 +64,7 @@ describe("Menu System", () => {
         cy.get("[data-testid=headerDropdownBtn]")
             .should("be.visible", "be.enabled")
             .click();
-        cy.get("[data-testid=profileUserNameMobileOnly]").should("exist");
+        cy.get("[data-testid=profileUserName]").should("be.visible");
         cy.get("[data-testid=profileBtn]").should("be.visible", "be.visible");
         cy.get("[data-testid=profileDropDownIcon]").should("be.visible");
         cy.get("[data-testid=profileBtn]").should(
