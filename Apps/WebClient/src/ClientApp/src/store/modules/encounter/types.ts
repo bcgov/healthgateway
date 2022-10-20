@@ -7,7 +7,7 @@ import {
 } from "vuex";
 
 import { ErrorType } from "@/constants/errorType";
-import Encounter from "@/models/encounter";
+import { Encounter, HospitalVisit } from "@/models/encounter";
 import { ResultError } from "@/models/errors";
 import RequestResult from "@/models/requestResult";
 import { LoadStatus } from "@/models/storeOperations";
@@ -15,6 +15,7 @@ import { RootState } from "@/store/types";
 
 export interface EncounterState {
     patientEncounters: Encounter[];
+    hospitalVisits: HospitalVisit[];
     statusMessage: string;
     error?: ResultError;
     status: LoadStatus;
@@ -23,6 +24,7 @@ export interface EncounterState {
 export interface EncounterGetters
     extends GetterTree<EncounterState, RootState> {
     patientEncounters(state: EncounterState): Encounter[];
+    hospitalVisits(state: EncounterState): HospitalVisit[];
     encounterCount(state: EncounterState): number;
     isLoading(state: EncounterState): boolean;
 }
@@ -30,10 +32,14 @@ export interface EncounterGetters
 type StoreContext = ActionContext<EncounterState, RootState>;
 export interface EncounterActions
     extends ActionTree<EncounterState, RootState> {
-    retrieve(
+    retrievePatientEncounters(
         context: StoreContext,
         params: { hdid: string }
     ): Promise<RequestResult<Encounter[]>>;
+    retrieveHospitalVisits(
+        context: StoreContext,
+        params: { hdid: string }
+    ): Promise<RequestResult<HospitalVisit[]>>;
     handleError(
         context: StoreContext,
         params: { error: ResultError; errorType: ErrorType }
@@ -45,6 +51,10 @@ export interface EncounterMutations extends MutationTree<EncounterState> {
     setPatientEncounters(
         state: EncounterState,
         patientEncounters: Encounter[]
+    ): void;
+    setHospitalVisits(
+        state: EncounterState,
+        hospitalVisits: HospitalVisit[]
     ): void;
     encounterError(state: EncounterState, error: ResultError): void;
 }

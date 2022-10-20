@@ -1,4 +1,4 @@
-import Encounter from "@/models/encounter";
+import { Encounter, HospitalVisit } from "@/models/encounter";
 import { ResultError } from "@/models/errors";
 import { LoadStatus } from "@/models/storeOperations";
 
@@ -13,6 +13,12 @@ export const mutations: EncounterMutations = {
         patientEncounters: Encounter[]
     ) {
         state.patientEncounters = patientEncounters;
+        state.error = undefined;
+        state.statusMessage = "success";
+        state.status = LoadStatus.LOADED;
+    },
+    setHospitalVisits(state: EncounterState, hospitalVisits: HospitalVisit[]) {
+        state.hospitalVisits = hospitalVisits;
         state.error = undefined;
         state.statusMessage = "success";
         state.status = LoadStatus.LOADED;
