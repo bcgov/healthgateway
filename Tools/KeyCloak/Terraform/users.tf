@@ -73,6 +73,21 @@ resource "keycloak_user_roles" "user_roles_rayking" {
   ]
 }
 
+resource "keycloak_user" "user_miklyttl" {
+  realm_id = var.keycloak_realm
+  username = "miklyttl@idir"
+  enabled  = true
+}
+resource "keycloak_user_roles" "user_roles_miklyttl" {
+  realm_id = var.keycloak_realm
+  user_id  = keycloak_user.user_miklyttl.id
+  role_ids = [
+    data.keycloak_role.default_hg.id,
+    data.keycloak_role.realm_viewer.id,
+    keycloak_role.AdminUser.id
+  ]
+}
+
 resource "keycloak_user" "user_hg" {
   count      = local.development ? 1 : 0
   realm_id   = var.keycloak_realm
