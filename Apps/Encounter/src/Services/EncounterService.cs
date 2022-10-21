@@ -21,24 +21,33 @@ namespace HealthGateway.Encounter.Services
     using System.Linq;
     using System.Net;
     using System.Threading.Tasks;
+    using AutoMapper;
     using HealthGateway.Common.Data.Constants;
+    using HealthGateway.Common.Data.Models.ErrorHandling;
     using HealthGateway.Common.Data.ViewModels;
+    using HealthGateway.Common.ErrorHandling;
     using HealthGateway.Common.Models;
     using HealthGateway.Common.Models.ODR;
+    using HealthGateway.Common.Models.PHSA;
     using HealthGateway.Common.Services;
     using HealthGateway.Encounter.Delegates;
     using HealthGateway.Encounter.Models;
     using HealthGateway.Encounter.Models.ODR;
+    using HealthGateway.Encounter.Models.PHSA;
     using Microsoft.AspNetCore.Http;
+    using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.Logging;
 
     /// <inheritdoc/>
     public class EncounterService : IEncounterService
     {
+        private readonly IMapper autoMapper;
+        private readonly IHospitalVisitDelegate hospitalVisitDelegate;
         private readonly IHttpContextAccessor httpContextAccessor;
         private readonly ILogger logger;
         private readonly IMspVisitDelegate mspVisitDelegate;
         private readonly IPatientService patientService;
+        private readonly PhsaConfig phsaConfig;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="EncounterService"/> class.
@@ -47,16 +56,26 @@ namespace HealthGateway.Encounter.Services
         /// <param name="httpAccessor">The injected http context accessor provider.</param>
         /// <param name="patientService">The injected patient registry provider.</param>
         /// <param name="mspVisitDelegate">The MSPVisit delegate.</param>
+        /// <param name="hospitalVisitDelegate">The injected hospital visit provider.</param>
+        /// <param name="configuration">The injected configuration provider.</param>
+        /// <param name="autoMapper">The injected automapper provider.</param>
         public EncounterService(
             ILogger<EncounterService> logger,
             IHttpContextAccessor httpAccessor,
             IPatientService patientService,
-            IMspVisitDelegate mspVisitDelegate)
+            IMspVisitDelegate mspVisitDelegate,
+            IHospitalVisitDelegate hospitalVisitDelegate,
+            IConfiguration configuration,
+            IMapper autoMapper)
         {
             this.logger = logger;
             this.httpContextAccessor = httpAccessor;
             this.patientService = patientService;
             this.mspVisitDelegate = mspVisitDelegate;
+            this.hospitalVisitDelegate = hospitalVisitDelegate;
+            this.autoMapper = autoMapper;
+            this.phsaConfig = new PhsaConfig();
+            configuration.Bind(PhsaConfig.ConfigurationSectionKey, this.phsaConfig);
         }
 
         private static ActivitySource Source { get; } = new(nameof(EncounterService));
@@ -114,9 +133,42 @@ namespace HealthGateway.Encounter.Services
         }
 
         /// <inheritdoc/>
-        public Task<RequestResult<IEnumerable<HospitalVisitModel>>> GetHospitalVisits(string hdid)
+        public async Task<RequestResult<HospitalVisitResult>> GetHospitalVisits(string hdid)
         {
-            throw new NotImplementedException();
+            using (Source.StartActivity())
+            {
+                this.logger.LogDebug("Getting hospital visits for hdid: {Hdid}", hdid);
+                RequestResult<HospitalVisitResult> result = new()
+                {
+                    ResourcePayload = new(),
+                };
+
+                RequestResult<PhsaResult<IEnumerable<HospitalVisit>>> hospitalVisitResult = await this.hospitalVisitDelegate.GetHospitalVisits(hdid).ConfigureAwait(true);
+
+                if (hospitalVisitResult.ResultStatus == ResultType.Success && hospitalVisitResult.ResourcePayload != null)
+                {
+                    result.ResourcePayload.HospitalVisits = this.autoMapper.Map<IList<HospitalVisitModel>>(hospitalVisitResult.ResourcePayload.Result);
+                }
+
+                PhsaLoadState? loadState = hospitalVisitResult.ResourcePayload?.LoadState;
+
+                if (loadState != null)
+                {
+                    result.ResourcePayload.Queued = loadState.Queued;
+                    result.ResourcePayload.Loaded = !loadState.RefreshInProgress;
+                    if (loadState.RefreshInProgress)
+                    {
+                        result.ResultStatus = ResultType.ActionRequired;
+                        result.ResultError = ErrorTranslator.ActionRequired("Refresh in progress", ActionType.Refresh);
+                        result.ResourcePayload.RetryIn = Math.Max(
+                            loadState.BackOffMilliseconds,
+                            this.phsaConfig.BackOffMilliseconds);
+                    }
+                }
+
+                this.logger.LogDebug("Finished getting hospital visits for hdid: {Hdid}", hdid);
+                return result;
+            }
         }
     }
 }
