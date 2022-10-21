@@ -9,6 +9,7 @@ resource "keycloak_oidc_identity_provider" "bcsc_mobile" {
   first_broker_login_flow_alias = keycloak_authentication_flow.first_login.alias
   sync_mode                     = "FORCE"
   authorization_url             = "${var.keycloak_idp_bcsc_mobile_base_url}${var.keycloak_idp_bcsc_mobile_auth_path}"
+  login_hint                    = true
   token_url                     = "${var.keycloak_idp_bcsc_mobile_base_url}${var.keycloak_idp_bcsc_mobile_token_path}"
   backchannel_supported         = false
   user_info_url                 = "${var.keycloak_idp_bcsc_mobile_base_url}${var.keycloak_idp_bcsc_mobile_userinfo_path}"
