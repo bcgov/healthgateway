@@ -165,6 +165,9 @@ export default class TimelineView extends Vue {
     @Getter("isLoading", { namespace: "note" })
     isNoteLoading!: boolean;
 
+    @Getter("isLoading", { namespace: "clinicalDocument" })
+    isClinicalDocumentLoading!: boolean;
+
     @Getter("immunizations", { namespace: "immunization" })
     patientImmunizations!: ImmunizationEvent[];
 
@@ -316,6 +319,7 @@ export default class TimelineView extends Vue {
             !this.isLaboratoryLoading &&
             !this.isEncounterLoading &&
             !this.isHospitalVisitLoading &&
+            !this.isClinicalDocumentLoading &&
             !this.isNoteLoading &&
             !this.isCommentLoading
         );
@@ -376,6 +380,13 @@ export default class TimelineView extends Vue {
             this.isSelectedFilterModuleLoading(
                 EntryType.Note,
                 this.isNoteLoading
+            )
+        );
+
+        filtersLoaded.push(
+            this.isSelectedFilterModuleLoading(
+                EntryType.ClinicalDocument,
+                this.isClinicalDocumentLoading
             )
         );
 
