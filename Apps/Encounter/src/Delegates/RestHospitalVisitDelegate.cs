@@ -108,7 +108,7 @@ namespace HealthGateway.Encounter.Delegates
             return requestResult;
         }
 
-        private void ProcessResponse<T>(RequestResult<PhsaResult<T>> requestResult, IApiResponse<PhsaResult<T>> response)
+        private void ProcessResponse<T>(RequestResult<PhsaResult<IEnumerable<T>>> requestResult, IApiResponse<PhsaResult<IEnumerable<T>>> response)
             where T : class
         {
             if (response.Error is null)
@@ -118,11 +118,11 @@ namespace HealthGateway.Encounter.Delegates
                     case HttpStatusCode.OK:
                         requestResult.ResultStatus = ResultType.Success;
                         requestResult.ResourcePayload!.Result = response.Content!.Result;
-                        requestResult.TotalResultCount = 1;
+                        requestResult.TotalResultCount = requestResult.ResourcePayload.Result.Count();
                         break;
                     case HttpStatusCode.NoContent:
                         requestResult.ResultStatus = ResultType.Success;
-                        requestResult.ResourcePayload = new PhsaResult<T>();
+                        requestResult.ResourcePayload = new PhsaResult<IEnumerable<T>>();
                         requestResult.TotalResultCount = 0;
                         requestResult.PageSize = int.Parse(this.phsaConfig.FetchSize, CultureInfo.InvariantCulture);
                         break;
