@@ -141,12 +141,15 @@ namespace HealthGateway.Encounter.Services
                 RequestResult<HospitalVisitResult> result = new()
                 {
                     ResourcePayload = new(),
+                    TotalResultCount = 0,
                 };
 
                 RequestResult<PhsaResult<IEnumerable<HospitalVisit>>> hospitalVisitResult = await this.hospitalVisitDelegate.GetHospitalVisits(hdid).ConfigureAwait(true);
 
                 if (hospitalVisitResult.ResultStatus == ResultType.Success && hospitalVisitResult.ResourcePayload != null)
                 {
+                    result.ResultStatus = ResultType.Success;
+                    result.TotalResultCount = hospitalVisitResult.TotalResultCount;
                     result.ResourcePayload.HospitalVisits = this.autoMapper.Map<IList<HospitalVisitModel>>(hospitalVisitResult.ResourcePayload.Result);
                 }
 
