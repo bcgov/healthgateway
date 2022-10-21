@@ -13,6 +13,35 @@ resource "keycloak_openid_client" "hg_mobile_client" {
   full_scope_allowed           = false
 }
 
+resource "keycloak_openid_client_default_scopes" "hg_mobile_client_default_scopes" {
+  realm_id  = var.keycloak_realm
+  client_id = keycloak_openid_client.hg_mobile_client.id
+
+  default_scopes = [
+    "profile",
+    "web-origins",
+    keycloak_openid_client_scope.audience_scope.name,
+    keycloak_openid_client_scope.immunization_read_scope.name,
+    keycloak_openid_client_scope.laboratory_read_scope.name,
+    keycloak_openid_client_scope.notification_read_scope.name,
+    keycloak_openid_client_scope.patient_read_scope.name
+  ]
+}
+resource "keycloak_openid_client_optional_scopes" "hg_mobile_client_optional_scopes" {
+  realm_id  = var.keycloak_realm
+  client_id = keycloak_openid_client.hg_mobile_client.id
+
+  optional_scopes = [
+    "address",
+    "email",
+    "phone",
+    "microprofile-jwt",
+    keycloak_openid_client_scope.encounter_read_scope.name,
+    keycloak_openid_client_scope.medication_dispense_read_scope.name,
+    keycloak_openid_client_scope.observation_read_scope.name,
+  ]
+}
+
 resource "keycloak_generic_role_mapper" "hg_mobile_uma" {
   realm_id  = var.keycloak_realm
   client_id = keycloak_openid_client.hg_mobile_client.id

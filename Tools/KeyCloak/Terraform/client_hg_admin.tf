@@ -14,6 +14,30 @@ resource "keycloak_openid_client" "hgadmin_client" {
   full_scope_allowed           = false
 }
 
+resource "keycloak_openid_client_default_scopes" "hgadmin_client_default_scopes" {
+  realm_id  = var.keycloak_realm
+  client_id = keycloak_openid_client.hgadmin_client.id
+  default_scopes = [
+    "email",
+    "profile",
+    "web-origins",
+    "roles",
+    keycloak_openid_client_scope.audience_scope.name,
+    keycloak_openid_client_scope.immunization_read_scope.name,
+    keycloak_openid_client_scope.laboratory_read_scope.name,
+    keycloak_openid_client_scope.system_notification_read_scope.name,
+    keycloak_openid_client_scope.system_notification_write_scope.name
+  ]
+}
+resource "keycloak_openid_client_optional_scopes" "hgadmin_client_optional_scopes" {
+  realm_id  = var.keycloak_realm
+  client_id = keycloak_openid_client.hgadmin_client.id
+  optional_scopes = [
+    "phone",
+    "microprofile-jwt"
+  ]
+}
+
 resource "keycloak_generic_role_mapper" "hgadmin_adminreviewer" {
   realm_id  = var.keycloak_realm
   client_id = keycloak_openid_client.hgadmin_client.id
