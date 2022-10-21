@@ -244,6 +244,7 @@ namespace HealthGateway.EncounterTests.Services
                         },
                     },
                 },
+                TotalResultCount = 1,
             };
             IEncounterService service = GetEncounterService(hospitalVisitResults);
 
@@ -254,6 +255,7 @@ namespace HealthGateway.EncounterTests.Services
             Assert.Equal(ResultType.Success, actualResult.ResultStatus);
             Assert.NotNull(actualResult.ResourcePayload);
             Assert.Single(actualResult.ResourcePayload!.HospitalVisits);
+            Assert.True(actualResult.TotalResultCount == 1);
         }
 
         /// <summary>
@@ -270,6 +272,7 @@ namespace HealthGateway.EncounterTests.Services
                 {
                     Result = Enumerable.Empty<HospitalVisit>(),
                 },
+                TotalResultCount = 0,
             };
             IEncounterService service = GetEncounterService(hospitalVisitResults);
 
@@ -280,6 +283,7 @@ namespace HealthGateway.EncounterTests.Services
             Assert.Equal(ResultType.Success, actualResult.ResultStatus);
             Assert.NotNull(actualResult.ResourcePayload);
             Assert.Empty(actualResult.ResourcePayload!.HospitalVisits);
+            Assert.True(actualResult.TotalResultCount == 0);
         }
 
         /// <summary>
@@ -315,6 +319,7 @@ namespace HealthGateway.EncounterTests.Services
             Assert.True(actualResult.ResourcePayload!.Queued);
             Assert.False(actualResult.ResourcePayload!.Loaded);
             Assert.True(actualResult.ResourcePayload!.RetryIn == PhsaBackOffMilliseconds);
+            Assert.True(actualResult.TotalResultCount == 0);
         }
 
         /// <summary>
@@ -341,6 +346,7 @@ namespace HealthGateway.EncounterTests.Services
             Assert.Equal(ResultType.Error, actualResult.ResultStatus);
             Assert.NotNull(actualResult.ResourcePayload);
             Assert.Empty(actualResult.ResourcePayload!.HospitalVisits);
+            Assert.True(actualResult.TotalResultCount == 0);
         }
 
         private static IConfigurationRoot GetIConfigurationRoot()

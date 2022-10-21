@@ -88,6 +88,7 @@ namespace HealthGateway.EncounterTests.Delegates
             Assert.Equal(ResultType.Success, actualResult.ResultStatus);
             Assert.NotNull(actualResult.ResourcePayload);
             Assert.Single(actualResult.ResourcePayload.Result);
+            Assert.True(actualResult.TotalResultCount == 1);
         }
 
         /// <summary>
@@ -113,6 +114,7 @@ namespace HealthGateway.EncounterTests.Delegates
 
             Assert.Equal(ResultType.Error, actualResult.ResultStatus);
             Assert.Equal(HttpExceptionMessage, actualResult.ResultError?.ResultMessage);
+            Assert.True(actualResult.TotalResultCount == 0);
         }
 
         private static IHospitalVisitDelegate GetHospitalVisitDelegate(PhsaResult<IEnumerable<HospitalVisit>> response, HttpStatusCode statusCode, bool throwException)

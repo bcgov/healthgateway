@@ -79,6 +79,7 @@ namespace HealthGateway.Encounter.Delegates
                 {
                     Result = Enumerable.Empty<HospitalVisit>(),
                 },
+                TotalResultCount = 0,
             };
 
             string? accessToken = this.authenticationDelegate.FetchAuthenticatedUserToken();

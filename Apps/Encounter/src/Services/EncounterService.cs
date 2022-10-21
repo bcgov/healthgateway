@@ -141,6 +141,7 @@ namespace HealthGateway.Encounter.Services
                 RequestResult<HospitalVisitResult> result = new()
                 {
                     ResourcePayload = new(),
+                    TotalResultCount = 0,
                 };
 
                 RequestResult<PhsaResult<IEnumerable<HospitalVisit>>> hospitalVisitResult = await this.hospitalVisitDelegate.GetHospitalVisits(hdid).ConfigureAwait(true);
