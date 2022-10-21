@@ -5,7 +5,7 @@ resource "keycloak_openid_client" "hgadmin_client" {
   description                  = "Health Gateway Administration web application"
   enabled                      = true
   access_type                  = "CONFIDENTIAL"
-  login_theme                  = "bcgov-idp-stopper"
+  login_theme                  = "bcgov"
   standard_flow_enabled        = true
   direct_access_grants_enabled = true
   service_accounts_enabled     = true

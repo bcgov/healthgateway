@@ -5,7 +5,7 @@ resource "keycloak_openid_client" "hg_mobile_client" {
   description                  = "Health Gateway Mobile applications"
   enabled                      = true
   access_type                  = "PUBLIC"
-  login_theme                  = "bcgov-idp-stopper"
+  login_theme                  = "bcgov"
   standard_flow_enabled        = true
   direct_access_grants_enabled = false
   valid_redirect_uris          = var.client_hg_mobile_valid_redirects

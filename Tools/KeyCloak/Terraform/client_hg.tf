@@ -5,7 +5,7 @@ resource "keycloak_openid_client" "hg_client" {
   description                  = "Health Gateway web application"
   enabled                      = true
   access_type                  = "PUBLIC"
-  login_theme                  = "bcgov-idp-stopper"
+  login_theme                  = "bcgov"
   standard_flow_enabled        = true
   direct_access_grants_enabled = true
   valid_redirect_uris          = var.client_hg_valid_redirects
@@ -42,7 +42,50 @@ resource "keycloak_openid_client_optional_scopes" "hg_client_optional_scopes" {
   ]
 }
 
-#Mappers go here
+resource "keycloak_openid_user_attribute_protocol_mapper" "hg_hdid" {
+  realm_id            = var.keycloak_realm
+  client_id           = keycloak_openid_client.hg_client.id
+  name                = "hdid"
+  user_attribute      = "hdid"
+  claim_name          = "hdid"
+  claim_value_type    = "String"
+  add_to_id_token     = true
+  add_to_access_token = true
+  add_to_userinfo     = true
+}
+
+resource "keycloak_openid_user_attribute_protocol_mapper" "hg_auth_method" {
+  realm_id            = var.keycloak_realm
+  client_id           = keycloak_openid_client.hg_client.id
+  name                = "AuthMethod"
+  user_attribute      = "idp"
+  claim_name          = "idp"
+  claim_value_type    = "String"
+  add_to_id_token     = true
+  add_to_access_token = true
+  add_to_userinfo     = true
+}
+
+resource "keycloak_openid_user_property_protocol_mapper" "hg_username" {
+  realm_id            = var.keycloak_realm
+  client_id           = keycloak_openid_client.hg_client.id
+  name                = "username"
+  user_property       = "username"
+  claim_name          = "preferred_username"
+  claim_value_type    = "String"
+  add_to_id_token     = false
+  add_to_access_token = false
+  add_to_userinfo     = true
+}
+
+resource "keycloak_openid_audience_protocol_mapper" "hg_audience" {
+  realm_id                 = var.keycloak_realm
+  client_id                = keycloak_openid_client.hg_client.id
+  name                     = "health-gateway-audience"
+  included_client_audience = keycloak_openid_client.hg_client.client_id
+  add_to_id_token          = true
+  add_to_access_token      = true
+}
 
 resource "keycloak_generic_role_mapper" "hg_uma" {
   realm_id  = var.keycloak_realm
