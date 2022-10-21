@@ -147,6 +147,8 @@ namespace HealthGateway.Encounter.Services
 
                 if (hospitalVisitResult.ResultStatus == ResultType.Success && hospitalVisitResult.ResourcePayload != null)
                 {
+                    result.ResultStatus = ResultType.Success;
+                    result.TotalResultCount = hospitalVisitResult.TotalResultCount;
                     result.ResourcePayload.HospitalVisits = this.autoMapper.Map<IList<HospitalVisitModel>>(hospitalVisitResult.ResourcePayload.Result);
                 }
 
