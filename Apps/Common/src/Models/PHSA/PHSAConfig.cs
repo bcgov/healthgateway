@@ -23,6 +23,11 @@ namespace HealthGateway.Common.Models.PHSA
     public class PhsaConfig
     {
         /// <summary>
+        /// The section key to use when binding this object.
+        /// </summary>
+        public const string ConfigurationSectionKey = "PHSA";
+
+        /// <summary>
         /// Gets or sets the phsa base endpoint.
         /// </summary>
         public Uri BaseUrl { get; set; } = null!;

@@ -57,13 +57,13 @@ namespace HealthGateway.Encounter.Models
         /// Gets or sets the admit date time.
         /// </summary>
         [JsonPropertyName("admitDateTime")]
-        public DateTime AdmitDateTime { get; set; }
+        public DateTime? AdmitDateTime { get; set; }
 
         /// <summary>
         /// Gets or sets the end date time.
         /// </summary>
         [JsonPropertyName("endDateTime")]
-        public DateTime EndDateTime { get; set; }
+        public DateTime? EndDateTime { get; set; }
 
         /// <summary>
         /// Gets or sets the provider.

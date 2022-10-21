@@ -13,31 +13,24 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //-------------------------------------------------------------------------
-namespace HealthGateway.Encounter.Services
+namespace HealthGateway.Encounter.Delegates
 {
     using System.Collections.Generic;
     using System.Threading.Tasks;
     using HealthGateway.Common.Data.ViewModels;
-    using HealthGateway.Encounter.Models;
+    using HealthGateway.Common.Models.PHSA;
     using HealthGateway.Encounter.Models.PHSA;
 
     /// <summary>
-    /// The Encounter data service.
+    /// Interface to retrieve hospital visits.
     /// </summary>
-    public interface IEncounterService
+    public interface IHospitalVisitDelegate
     {
         /// <summary>
-        /// Gets a list of Encounters.
+        /// Returns a PHSA Result including the load state and a list of hospital visits for the authenticated user.
         /// </summary>
-        /// <param name="hdid">The health directed id for the subject.</param>
-        /// <returns>Returns a list of claims.</returns>
-        Task<RequestResult<IEnumerable<EncounterModel>>> GetEncounters(string hdid);
-
-        /// <summary>
-        /// Gets a list of Hospital Visits.
-        /// </summary>
-        /// <param name="hdid">The health directed id for the subject.</param>
-        /// <returns>Returns the hospital visit result.</returns>
-        Task<RequestResult<HospitalVisitResult>> GetHospitalVisits(string hdid);
+        /// <param name="hdid">The hdid patient id.</param>
+        /// <returns>The PhsaResult including the load state and the list of hospital visits available for the user hdid.</returns>
+        Task<RequestResult<PhsaResult<IEnumerable<HospitalVisit>>>> GetHospitalVisits(string hdid);
     }
 }

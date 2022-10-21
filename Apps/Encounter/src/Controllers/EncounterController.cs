@@ -21,6 +21,7 @@ namespace HealthGateway.Encounter.Controllers
     using HealthGateway.Common.Data.ViewModels;
     using HealthGateway.Common.Filters;
     using HealthGateway.Encounter.Models;
+    using HealthGateway.Encounter.Models.PHSA;
     using HealthGateway.Encounter.Services;
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Mvc;
@@ -95,12 +96,12 @@ namespace HealthGateway.Encounter.Controllers
         /// <response code="503">The service is unavailable for use.</response>
         [HttpGet]
         [Produces("application/json")]
-        [Route("HospitalVisits")]
+        [Route("HospitalVisit/{hdid}")]
         [Authorize(Policy = EncounterPolicy.Read)]
-        public async Task<RequestResult<IEnumerable<HospitalVisitModel>>> GetHospitalVisits([FromHeader] string hdid)
+        public async Task<RequestResult<HospitalVisitResult>> GetHospitalVisits(string hdid)
         {
             this.logger.LogDebug("Getting hospital visit records from controller... {Hdid}", hdid);
-            RequestResult<IEnumerable<HospitalVisitModel>> result = await this.service.GetHospitalVisits(hdid).ConfigureAwait(true);
+            RequestResult<HospitalVisitResult> result = await this.service.GetHospitalVisits(hdid).ConfigureAwait(true);
 
             this.logger.LogDebug("Finished getting hospital visit records from controller... {Hdid}", hdid);
             return result;
