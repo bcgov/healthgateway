@@ -140,7 +140,7 @@ describe("Feedback Review", () => {
                     .click();
             });
         cy.location("pathname").should("eq", "/support");
-        //validateTableLoad("[data-testid=message-verification-table]");
-        validateTableRowCount("[data-testid=message-verification-table]", 1);
+        //validateTableLoad("[data-testid=user-table]");
+        validateTableRowCount("[data-testid=user-table]", 1);
     });
 });
