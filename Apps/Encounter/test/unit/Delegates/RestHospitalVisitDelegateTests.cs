@@ -92,6 +92,44 @@ namespace HealthGateway.EncounterTests.Delegates
         }
 
         /// <summary>
+        /// GetHospitalVisits - returns no rows.
+        /// </summary>
+        [Fact]
+        public void GetHospitalVisitsReturnsNoRows()
+        {
+            PhsaResult<IEnumerable<HospitalVisit>> phsaResponse = new()
+            {
+                Result = new List<HospitalVisit>(),
+            };
+
+            RequestResult<PhsaResult<IEnumerable<HospitalVisit>>> actualResult = GetHospitalVisitDelegate(phsaResponse, HttpStatusCode.OK, false).GetHospitalVisits(It.IsAny<string>()).Result;
+
+            Assert.Equal(ResultType.Success, actualResult.ResultStatus);
+            Assert.NotNull(actualResult.ResourcePayload);
+            Assert.Empty(actualResult.ResourcePayload.Result);
+            Assert.True(actualResult.TotalResultCount == 0);
+        }
+
+        /// <summary>
+        /// GetHospitalVisits - returns no content.
+        /// </summary>
+        [Fact]
+        public void GetHospitalVisitsReturnsNoContent()
+        {
+            PhsaResult<IEnumerable<HospitalVisit>> phsaResponse = new()
+            {
+                Result = new List<HospitalVisit>(),
+            };
+
+            RequestResult<PhsaResult<IEnumerable<HospitalVisit>>> actualResult = GetHospitalVisitDelegate(phsaResponse, HttpStatusCode.NoContent, false).GetHospitalVisits(It.IsAny<string>()).Result;
+
+            Assert.Equal(ResultType.Success, actualResult.ResultStatus);
+            Assert.NotNull(actualResult.ResourcePayload);
+            Assert.Empty(actualResult.ResourcePayload.Result);
+            Assert.True(actualResult.TotalResultCount == 0);
+        }
+
+        /// <summary>
         /// GetHospitalVisits - HttpRequestException.
         /// </summary>
         [Fact]

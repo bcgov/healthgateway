@@ -123,7 +123,6 @@ namespace HealthGateway.Encounter.Delegates
                         break;
                     case HttpStatusCode.NoContent:
                         requestResult.ResultStatus = ResultType.Success;
-                        requestResult.ResourcePayload = new PhsaResult<IEnumerable<T>>();
                         requestResult.TotalResultCount = 0;
                         requestResult.PageSize = int.Parse(this.phsaConfig.FetchSize, CultureInfo.InvariantCulture);
                         break;
