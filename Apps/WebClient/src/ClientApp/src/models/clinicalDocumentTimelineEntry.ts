@@ -4,7 +4,7 @@ import { DateWrapper } from "@/models/dateWrapper";
 import TimelineEntry from "@/models/timelineEntry";
 import { UserComment } from "@/models/userComment";
 
-// The clinical document timeline entry model
+// The hospital visit timeline entry model
 export default class ClinicalDocumentTimelineEntry extends TimelineEntry {
     public fileId: string;
     public name: string;

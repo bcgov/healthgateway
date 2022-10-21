@@ -14,6 +14,7 @@ import { ILogger } from "@/services/interfaces";
 import ClinicalDocumentTimelineComponent from "./entryCard/ClinicalDocumentTimelineComponent.vue";
 import Covid19LaboratoryOrderTimelineComponent from "./entryCard/Covid19LaboratoryOrderTimelineComponent.vue";
 import EncounterTimelineComponent from "./entryCard/EncounterTimelineComponent.vue";
+import HospitalVisitTimelineComponent from "./entryCard/HospitalVisitTimelineComponent.vue";
 import ImmunizationTimelineComponent from "./entryCard/ImmunizationTimelineComponent.vue";
 import LaboratoryOrderTimelineComponent from "./entryCard/LaboratoryOrderTimelineComponent.vue";
 import MedicationRequestTimelineComponent from "./entryCard/MedicationRequestTimelineComponent.vue";
@@ -32,6 +33,7 @@ const options: any = {
         EncounterComponent: EncounterTimelineComponent,
         NoteComponent: NoteTimelineComponent,
         ClinicalDocumentComponent: ClinicalDocumentTimelineComponent,
+        HospitalVisitComponent: HospitalVisitTimelineComponent,
     },
 };
 
@@ -73,6 +75,9 @@ export default class LinearTimelineComponent extends Vue {
     @Getter("isLoading", { namespace: "encounter" })
     isEncounterLoading!: boolean;
 
+    @Getter("isHospitalVisitLoading", { namespace: "encounter" })
+    isHospitalVisitLoading!: boolean;
+
     @Getter("isLoading", { namespace: "immunization" })
     isImmunizationLoading!: boolean;
 
@@ -103,6 +108,7 @@ export default class LinearTimelineComponent extends Vue {
             !this.isCovid19LaboratoryLoading &&
             !this.isLaboratoryLoading &&
             !this.isEncounterLoading &&
+            !this.isHospitalVisitLoading &&
             !this.isClinicalDocumentLoading &&
             !this.isNoteLoading &&
             !this.isCommentLoading;

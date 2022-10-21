@@ -14,6 +14,7 @@ import User from "@/models/user";
 import ClinicalDocumentTimelineComponent from "./ClinicalDocumentTimelineComponent.vue";
 import Covid19LaboratoryOrderTimelineComponent from "./Covid19LaboratoryOrderTimelineComponent.vue";
 import EncounterTimelineComponent from "./EncounterTimelineComponent.vue";
+import HospitalVisitTimelineComponent from "./HospitalVisitTimelineComponent.vue";
 import ImmunizationTimelineComponent from "./ImmunizationTimelineComponent.vue";
 import LaboratoryOrderTimelineComponent from "./LaboratoryOrderTimelineComponent.vue";
 import MedicationRequestTimelineComponent from "./MedicationRequestTimelineComponent.vue";
@@ -34,6 +35,7 @@ const options: any = {
         EncounterComponent: EncounterTimelineComponent,
         NoteComponent: NoteTimelineComponent,
         ClinicalDocumentComponent: ClinicalDocumentTimelineComponent,
+        HospitalVisitComponent: HospitalVisitTimelineComponent,
     },
 };
 
