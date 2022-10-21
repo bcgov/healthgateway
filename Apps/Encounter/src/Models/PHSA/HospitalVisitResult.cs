@@ -46,10 +46,9 @@ namespace HealthGateway.Encounter.Models.PHSA
         public int RetryIn { get; set; }
 
         /// <summary>
-        /// Gets the list of hospital visits.
+        /// Gets or sets the list of hospital visits.
         /// </summary>
         [JsonPropertyName("hospitalVisits")]
         public IEnumerable<HospitalVisitModel> HospitalVisits { get; set; } = Enumerable.Empty<HospitalVisitModel>();
-
     }
 }

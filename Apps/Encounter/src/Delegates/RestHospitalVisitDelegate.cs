@@ -15,7 +15,6 @@
 //-------------------------------------------------------------------------
 namespace HealthGateway.Encounter.Delegates
 {
-    using System.Collections;
     using System.Collections.Generic;
     using System.Diagnostics;
     using System.Globalization;
@@ -30,7 +29,6 @@ namespace HealthGateway.Encounter.Delegates
     using HealthGateway.Common.Models.PHSA;
     using HealthGateway.Encounter.Api;
     using HealthGateway.Encounter.Models.PHSA;
-    using Hl7.Fhir.Language.Debugging;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.Logging;
     using Refit;
@@ -40,10 +38,10 @@ namespace HealthGateway.Encounter.Delegates
     /// </summary>
     public class RestHospitalVisitDelegate : IHospitalVisitDelegate
     {
-        private readonly PhsaConfig phsaConfig;
-        private readonly ILogger logger;
         private readonly IAuthenticationDelegate authenticationDelegate;
         private readonly IHospitalVisitApi hospitalVisitApi;
+        private readonly ILogger logger;
+        private readonly PhsaConfig phsaConfig;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="RestHospitalVisitDelegate"/> class.
@@ -67,6 +65,7 @@ namespace HealthGateway.Encounter.Delegates
 
         private static ActivitySource Source { get; } = new(nameof(RestHospitalVisitDelegate));
 
+        /// <inheritdoc/>
         public async Task<RequestResult<PhsaResult<IEnumerable<HospitalVisit>>>> GetHospitalVisits(string hdid)
         {
             using Activity? activity = Source.StartActivity();
@@ -76,7 +75,7 @@ namespace HealthGateway.Encounter.Delegates
             {
                 ResultStatus = ResultType.Error,
                 PageSize = 0,
-                ResourcePayload = new PhsaResult<IEnumerable<HospitalVisit>>()
+                ResourcePayload = new PhsaResult<IEnumerable<HospitalVisit>>
                 {
                     Result = Enumerable.Empty<HospitalVisit>(),
                 },
@@ -118,7 +117,7 @@ namespace HealthGateway.Encounter.Delegates
                 {
                     case HttpStatusCode.OK:
                         requestResult.ResultStatus = ResultType.Success;
-                        requestResult.ResourcePayload!.Result = response!.Content!.Result;
+                        requestResult.ResourcePayload!.Result = response.Content!.Result;
                         requestResult.TotalResultCount = 1;
                         break;
                     case HttpStatusCode.NoContent:
