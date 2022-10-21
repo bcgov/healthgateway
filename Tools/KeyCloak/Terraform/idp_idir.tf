@@ -1,5 +1,5 @@
 resource "keycloak_oidc_identity_provider" "idiridp" {
-  realm                         = var.keycloak_realm
+  realm                         = data.keycloak_realm.hg_realm.id
   alias                         = "idir"
   display_name                  = "IDIR"
   enabled                       = true
@@ -26,7 +26,7 @@ resource "keycloak_oidc_identity_provider" "idiridp" {
 }
 
 resource "keycloak_user_template_importer_identity_provider_mapper" "username_importer" {
-  realm                   = var.keycloak_realm
+  realm                   = data.keycloak_realm.hg_realm.id
   name                    = "username"
   identity_provider_alias = keycloak_oidc_identity_provider.idiridp.alias
   template                = "$${CLAIM.idir_username}@$${ALIAS}"
@@ -36,7 +36,7 @@ resource "keycloak_user_template_importer_identity_provider_mapper" "username_im
 }
 
 resource "keycloak_attribute_importer_identity_provider_mapper" "idir_userid" {
-  realm                   = var.keycloak_realm
+  realm                   = data.keycloak_realm.hg_realm.id
   name                    = "idir_userid"
   claim_name              = "idir_username"
   identity_provider_alias = keycloak_oidc_identity_provider.idiridp.alias
@@ -47,7 +47,7 @@ resource "keycloak_attribute_importer_identity_provider_mapper" "idir_userid" {
 }
 
 resource "keycloak_attribute_importer_identity_provider_mapper" "idir_guid" {
-  realm                   = var.keycloak_realm
+  realm                   = data.keycloak_realm.hg_realm.id
   name                    = "idir_guid"
   claim_name              = "idir_user_guid"
   identity_provider_alias = keycloak_oidc_identity_provider.idiridp.alias
@@ -58,7 +58,7 @@ resource "keycloak_attribute_importer_identity_provider_mapper" "idir_guid" {
 }
 
 resource "keycloak_attribute_importer_identity_provider_mapper" "displayname" {
-  realm                   = var.keycloak_realm
+  realm                   = data.keycloak_realm.hg_realm.id
   name                    = "displayName"
   claim_name              = "display_name"
   identity_provider_alias = keycloak_oidc_identity_provider.idiridp.alias
@@ -69,7 +69,7 @@ resource "keycloak_attribute_importer_identity_provider_mapper" "displayname" {
 }
 
 resource "keycloak_hardcoded_attribute_identity_provider_mapper" "idp" {
-  realm                   = var.keycloak_realm
+  realm                   = data.keycloak_realm.hg_realm.id
   name                    = "idp"
   identity_provider_alias = keycloak_oidc_identity_provider.idiridp.alias
   attribute_name          = "idp"

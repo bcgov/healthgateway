@@ -1,10 +1,10 @@
 resource "keycloak_user" "user_nisamson" {
-  realm_id = var.keycloak_realm
+  realm_id = data.keycloak_realm.hg_realm.id
   username = "nisamsons@idir"
   enabled  = true
 }
 resource "keycloak_user_roles" "user_roles_nisamson" {
-  realm_id = var.keycloak_realm
+  realm_id = data.keycloak_realm.hg_realm.id
   user_id  = keycloak_user.user_nisamson.id
   role_ids = [
     data.keycloak_role.default_hg.id,
@@ -14,12 +14,12 @@ resource "keycloak_user_roles" "user_roles_nisamson" {
 }
 
 resource "keycloak_user" "user_sslaws" {
-  realm_id = var.keycloak_realm
+  realm_id = data.keycloak_realm.hg_realm.id
   username = "sslaws@idir"
   enabled  = true
 }
 resource "keycloak_user_roles" "user_roles_sslaws" {
-  realm_id = var.keycloak_realm
+  realm_id = data.keycloak_realm.hg_realm.id
   user_id  = keycloak_user.user_sslaws.id
   role_ids = [
     data.keycloak_role.default_hg.id,
@@ -29,12 +29,12 @@ resource "keycloak_user_roles" "user_roles_sslaws" {
 }
 
 resource "keycloak_user" "user_bhead" {
-  realm_id = var.keycloak_realm
+  realm_id = data.keycloak_realm.hg_realm.id
   username = "bhead@idir"
   enabled  = true
 }
 resource "keycloak_user_roles" "user_roles_bhead" {
-  realm_id = var.keycloak_realm
+  realm_id = data.keycloak_realm.hg_realm.id
   user_id  = keycloak_user.user_bhead.id
   role_ids = [
     data.keycloak_role.default_hg.id,
@@ -44,12 +44,12 @@ resource "keycloak_user_roles" "user_roles_bhead" {
 }
 
 resource "keycloak_user" "user_brjang" {
-  realm_id = var.keycloak_realm
+  realm_id = data.keycloak_realm.hg_realm.id
   username = "brjang@idir"
   enabled  = true
 }
 resource "keycloak_user_roles" "user_roles_brjang" {
-  realm_id = var.keycloak_realm
+  realm_id = data.keycloak_realm.hg_realm.id
   user_id  = keycloak_user.user_brjang.id
   role_ids = [
     data.keycloak_role.default_hg.id,
@@ -59,12 +59,12 @@ resource "keycloak_user_roles" "user_roles_brjang" {
 }
 
 resource "keycloak_user" "user_rayking" {
-  realm_id = var.keycloak_realm
+  realm_id = data.keycloak_realm.hg_realm.id
   username = "rayking@idir"
   enabled  = true
 }
 resource "keycloak_user_roles" "user_roles_rayking" {
-  realm_id = var.keycloak_realm
+  realm_id = data.keycloak_realm.hg_realm.id
   user_id  = keycloak_user.user_rayking.id
   role_ids = [
     data.keycloak_role.default_hg.id,
@@ -74,12 +74,12 @@ resource "keycloak_user_roles" "user_roles_rayking" {
 }
 
 resource "keycloak_user" "user_miklyttl" {
-  realm_id = var.keycloak_realm
+  realm_id = data.keycloak_realm.hg_realm.id
   username = "miklyttl@idir"
   enabled  = true
 }
 resource "keycloak_user_roles" "user_roles_miklyttl" {
-  realm_id = var.keycloak_realm
+  realm_id = data.keycloak_realm.hg_realm.id
   user_id  = keycloak_user.user_miklyttl.id
   role_ids = [
     data.keycloak_role.default_hg.id,
@@ -90,7 +90,7 @@ resource "keycloak_user_roles" "user_roles_miklyttl" {
 
 resource "keycloak_user" "user_hg" {
   count      = local.development ? 1 : 0
-  realm_id   = var.keycloak_realm
+  realm_id   = data.keycloak_realm.hg_realm.id
   username   = "healthgateway"
   enabled    = true
   first_name = "Dr"
@@ -106,7 +106,7 @@ resource "keycloak_user" "user_hg" {
 
 resource "keycloak_user" "user_02" {
   count      = local.development ? 1 : 0
-  realm_id   = var.keycloak_realm
+  realm_id   = data.keycloak_realm.hg_realm.id
   username   = "hthgtwy02"
   enabled    = true
   first_name = "Dr"
@@ -122,7 +122,7 @@ resource "keycloak_user" "user_02" {
 
 resource "keycloak_user" "user_03" {
   count      = local.development ? 1 : 0
-  realm_id   = var.keycloak_realm
+  realm_id   = data.keycloak_realm.hg_realm.id
   username   = "hthgtwy03"
   enabled    = true
   first_name = "Dr"
@@ -138,7 +138,7 @@ resource "keycloak_user" "user_03" {
 
 resource "keycloak_user" "user_04" {
   count      = local.development ? 1 : 0
-  realm_id   = var.keycloak_realm
+  realm_id   = data.keycloak_realm.hg_realm.id
   username   = "hthgtwy04"
   enabled    = true
   first_name = "Dr"
@@ -154,7 +154,7 @@ resource "keycloak_user" "user_04" {
 
 resource "keycloak_user" "user_09" {
   count      = local.development ? 1 : 0
-  realm_id   = var.keycloak_realm
+  realm_id   = data.keycloak_realm.hg_realm.id
   username   = "hthgtwy09"
   enabled    = true
   first_name = "Dr"
@@ -170,7 +170,7 @@ resource "keycloak_user" "user_09" {
 
 resource "keycloak_user" "user_12" {
   count      = local.development ? 1 : 0
-  realm_id   = var.keycloak_realm
+  realm_id   = data.keycloak_realm.hg_realm.id
   username   = "healthgateway12"
   enabled    = true
   first_name = "Dr"
@@ -186,7 +186,7 @@ resource "keycloak_user" "user_12" {
 
 resource "keycloak_user" "user_19" {
   count      = local.development ? 1 : 0
-  realm_id   = var.keycloak_realm
+  realm_id   = data.keycloak_realm.hg_realm.id
   username   = "hthgtwy19"
   enabled    = true
   first_name = "Deceased"
@@ -202,7 +202,7 @@ resource "keycloak_user" "user_19" {
 
 resource "keycloak_user" "user_20" {
   count      = local.development ? 1 : 0
-  realm_id   = var.keycloak_realm
+  realm_id   = data.keycloak_realm.hg_realm.id
   username   = "hthgtwy20"
   enabled    = true
   first_name = "Dr"
@@ -218,7 +218,7 @@ resource "keycloak_user" "user_20" {
 
 resource "keycloak_user" "user_401" {
   count      = local.development ? 1 : 0
-  realm_id   = var.keycloak_realm
+  realm_id   = data.keycloak_realm.hg_realm.id
   username   = "hlthgw401"
   enabled    = true
   first_name = "Dr"
@@ -234,7 +234,7 @@ resource "keycloak_user" "user_401" {
 
 resource "keycloak_user" "user_protected" {
   count      = local.development ? 1 : 0
-  realm_id   = var.keycloak_realm
+  realm_id   = data.keycloak_realm.hg_realm.id
   username   = "protected"
   enabled    = true
   first_name = "Dr"
@@ -250,7 +250,7 @@ resource "keycloak_user" "user_protected" {
 
 resource "keycloak_user" "user_closed" {
   count      = local.development ? 1 : 0
-  realm_id   = var.keycloak_realm
+  realm_id   = data.keycloak_realm.hg_realm.id
   username   = "accountclosure"
   enabled    = true
   first_name = "Account"

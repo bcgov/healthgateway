@@ -1,5 +1,5 @@
 resource "keycloak_openid_client" "hg_mobile_client" {
-  realm_id                     = var.keycloak_realm
+  realm_id                     = data.keycloak_realm.hg_realm.id
   client_id                    = "HealthGatewayMobile"
   name                         = "Health Gateway Mobile"
   description                  = "Health Gateway Mobile applications"
@@ -14,7 +14,7 @@ resource "keycloak_openid_client" "hg_mobile_client" {
 }
 
 resource "keycloak_openid_client_default_scopes" "hg_mobile_client_default_scopes" {
-  realm_id  = var.keycloak_realm
+  realm_id  = data.keycloak_realm.hg_realm.id
   client_id = keycloak_openid_client.hg_mobile_client.id
 
   default_scopes = [
@@ -28,7 +28,7 @@ resource "keycloak_openid_client_default_scopes" "hg_mobile_client_default_scope
   ]
 }
 resource "keycloak_openid_client_optional_scopes" "hg_mobile_client_optional_scopes" {
-  realm_id  = var.keycloak_realm
+  realm_id  = data.keycloak_realm.hg_realm.id
   client_id = keycloak_openid_client.hg_mobile_client.id
 
   optional_scopes = [
@@ -43,13 +43,13 @@ resource "keycloak_openid_client_optional_scopes" "hg_mobile_client_optional_sco
 }
 
 resource "keycloak_generic_role_mapper" "hg_mobile_uma" {
-  realm_id  = var.keycloak_realm
+  realm_id  = data.keycloak_realm.hg_realm.id
   client_id = keycloak_openid_client.hg_mobile_client.id
   role_id   = data.keycloak_role.Uma_authorization.id
 }
 
 resource "keycloak_openid_audience_protocol_mapper" "hg_mobile_audience" {
-  realm_id                 = var.keycloak_realm
+  realm_id                 = data.keycloak_realm.hg_realm.id
   client_id                = keycloak_openid_client.hg_mobile_client.id
   name                     = "health-gateway-audience"
   included_client_audience = keycloak_openid_client.hg_client.client_id

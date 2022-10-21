@@ -1,5 +1,5 @@
 resource "keycloak_oidc_identity_provider" "bcsc" {
-  realm                         = var.keycloak_realm
+  realm                         = data.keycloak_realm.hg_realm.id
   alias                         = "bcsc"
   display_name                  = "BCSC"
   enabled                       = true
@@ -25,7 +25,7 @@ resource "keycloak_oidc_identity_provider" "bcsc" {
 }
 
 resource "keycloak_attribute_importer_identity_provider_mapper" "bcsc_given_name" {
-  realm                   = var.keycloak_realm
+  realm                   = data.keycloak_realm.hg_realm.id
   name                    = "given_name"
   claim_name              = "given_names"
   identity_provider_alias = keycloak_oidc_identity_provider.bcsc.alias
@@ -36,7 +36,7 @@ resource "keycloak_attribute_importer_identity_provider_mapper" "bcsc_given_name
 }
 
 resource "keycloak_hardcoded_attribute_identity_provider_mapper" "bcsc_idp" {
-  realm                   = var.keycloak_realm
+  realm                   = data.keycloak_realm.hg_realm.id
   name                    = "idp"
   identity_provider_alias = keycloak_oidc_identity_provider.bcsc.alias
   attribute_name          = "idp"
@@ -48,7 +48,7 @@ resource "keycloak_hardcoded_attribute_identity_provider_mapper" "bcsc_idp" {
 }
 
 resource "keycloak_attribute_importer_identity_provider_mapper" "bcsc_email" {
-  realm                   = var.keycloak_realm
+  realm                   = data.keycloak_realm.hg_realm.id
   name                    = "email"
   claim_name              = "email"
   identity_provider_alias = keycloak_oidc_identity_provider.bcsc.alias
@@ -59,7 +59,7 @@ resource "keycloak_attribute_importer_identity_provider_mapper" "bcsc_email" {
 }
 
 resource "keycloak_attribute_importer_identity_provider_mapper" "bcsc_display_name" {
-  realm                   = var.keycloak_realm
+  realm                   = data.keycloak_realm.hg_realm.id
   name                    = "display_name"
   claim_name              = "display_name"
   identity_provider_alias = keycloak_oidc_identity_provider.bcsc.alias
@@ -70,7 +70,7 @@ resource "keycloak_attribute_importer_identity_provider_mapper" "bcsc_display_na
 }
 
 resource "keycloak_attribute_importer_identity_provider_mapper" "bcsc_family_name" {
-  realm                   = var.keycloak_realm
+  realm                   = data.keycloak_realm.hg_realm.id
   name                    = "family_name"
   claim_name              = "family_name"
   identity_provider_alias = keycloak_oidc_identity_provider.bcsc.alias
@@ -81,7 +81,7 @@ resource "keycloak_attribute_importer_identity_provider_mapper" "bcsc_family_nam
 }
 
 resource "keycloak_attribute_importer_identity_provider_mapper" "bcsc_username" {
-  realm                   = var.keycloak_realm
+  realm                   = data.keycloak_realm.hg_realm.id
   name                    = "username"
   claim_name              = "sub"
   identity_provider_alias = keycloak_oidc_identity_provider.bcsc.alias
@@ -92,7 +92,7 @@ resource "keycloak_attribute_importer_identity_provider_mapper" "bcsc_username" 
 }
 
 resource "keycloak_attribute_importer_identity_provider_mapper" "bcsc_hdid" {
-  realm                   = var.keycloak_realm
+  realm                   = data.keycloak_realm.hg_realm.id
   name                    = "hdid"
   claim_name              = "sub"
   identity_provider_alias = keycloak_oidc_identity_provider.bcsc.alias
@@ -103,7 +103,7 @@ resource "keycloak_attribute_importer_identity_provider_mapper" "bcsc_hdid" {
 }
 
 resource "keycloak_attribute_importer_identity_provider_mapper" "bcsc_iasenv" {
-  realm                   = var.keycloak_realm
+  realm                   = data.keycloak_realm.hg_realm.id
   name                    = "iasenv"
   claim_name              = "authoritative_party_identifier"
   identity_provider_alias = keycloak_oidc_identity_provider.bcsc.alias

@@ -1,5 +1,5 @@
 resource "keycloak_openid_client" "hg_client" {
-  realm_id                     = var.keycloak_realm
+  realm_id                     = data.keycloak_realm.hg_realm.id
   client_id                    = "HealthGateway"
   name                         = "Health Gateway"
   description                  = "Health Gateway web application"
@@ -14,7 +14,7 @@ resource "keycloak_openid_client" "hg_client" {
 }
 
 resource "keycloak_openid_client_default_scopes" "hg_client_default_scopes" {
-  realm_id  = var.keycloak_realm
+  realm_id  = data.keycloak_realm.hg_realm.id
   client_id = keycloak_openid_client.hg_client.id
 
   default_scopes = [
@@ -28,7 +28,7 @@ resource "keycloak_openid_client_default_scopes" "hg_client_default_scopes" {
   ]
 }
 resource "keycloak_openid_client_optional_scopes" "hg_client_optional_scopes" {
-  realm_id  = var.keycloak_realm
+  realm_id  = data.keycloak_realm.hg_realm.id
   client_id = keycloak_openid_client.hg_client.id
 
   optional_scopes = [
@@ -43,7 +43,7 @@ resource "keycloak_openid_client_optional_scopes" "hg_client_optional_scopes" {
 }
 
 resource "keycloak_openid_user_attribute_protocol_mapper" "hg_hdid" {
-  realm_id            = var.keycloak_realm
+  realm_id            = data.keycloak_realm.hg_realm.id
   client_id           = keycloak_openid_client.hg_client.id
   name                = "hdid"
   user_attribute      = "hdid"
@@ -55,7 +55,7 @@ resource "keycloak_openid_user_attribute_protocol_mapper" "hg_hdid" {
 }
 
 resource "keycloak_openid_user_attribute_protocol_mapper" "hg_auth_method" {
-  realm_id            = var.keycloak_realm
+  realm_id            = data.keycloak_realm.hg_realm.id
   client_id           = keycloak_openid_client.hg_client.id
   name                = "AuthMethod"
   user_attribute      = "idp"
@@ -67,7 +67,7 @@ resource "keycloak_openid_user_attribute_protocol_mapper" "hg_auth_method" {
 }
 
 resource "keycloak_openid_user_property_protocol_mapper" "hg_username" {
-  realm_id            = var.keycloak_realm
+  realm_id            = data.keycloak_realm.hg_realm.id
   client_id           = keycloak_openid_client.hg_client.id
   name                = "username"
   user_property       = "username"
@@ -79,7 +79,7 @@ resource "keycloak_openid_user_property_protocol_mapper" "hg_username" {
 }
 
 resource "keycloak_openid_audience_protocol_mapper" "hg_audience" {
-  realm_id                 = var.keycloak_realm
+  realm_id                 = data.keycloak_realm.hg_realm.id
   client_id                = keycloak_openid_client.hg_client.id
   name                     = "health-gateway-audience"
   included_client_audience = keycloak_openid_client.hg_client.client_id
@@ -88,7 +88,7 @@ resource "keycloak_openid_audience_protocol_mapper" "hg_audience" {
 }
 
 resource "keycloak_generic_role_mapper" "hg_uma" {
-  realm_id  = var.keycloak_realm
+  realm_id  = data.keycloak_realm.hg_realm.id
   client_id = keycloak_openid_client.hg_client.id
   role_id   = data.keycloak_role.Uma_authorization.id
 }

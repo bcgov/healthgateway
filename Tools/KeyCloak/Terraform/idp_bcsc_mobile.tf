@@ -1,5 +1,5 @@
 resource "keycloak_oidc_identity_provider" "bcsc_mobile" {
-  realm                         = var.keycloak_realm
+  realm                         = data.keycloak_realm.hg_realm.id
   alias                         = "bcsc-mobile"
   display_name                  = "BC Services Card for HG Mobile App"
   enabled                       = true
@@ -26,7 +26,7 @@ resource "keycloak_oidc_identity_provider" "bcsc_mobile" {
 }
 
 resource "keycloak_attribute_importer_identity_provider_mapper" "bcsc_mobile_given_name" {
-  realm                   = var.keycloak_realm
+  realm                   = data.keycloak_realm.hg_realm.id
   name                    = "given_name"
   claim_name              = "given_names"
   identity_provider_alias = keycloak_oidc_identity_provider.bcsc_mobile.alias
@@ -37,7 +37,7 @@ resource "keycloak_attribute_importer_identity_provider_mapper" "bcsc_mobile_giv
 }
 
 resource "keycloak_hardcoded_attribute_identity_provider_mapper" "bcsc_mobile_idp" {
-  realm                   = var.keycloak_realm
+  realm                   = data.keycloak_realm.hg_realm.id
   name                    = "idp"
   identity_provider_alias = keycloak_oidc_identity_provider.bcsc_mobile.alias
   attribute_name          = "idp"
@@ -49,7 +49,7 @@ resource "keycloak_hardcoded_attribute_identity_provider_mapper" "bcsc_mobile_id
 }
 
 resource "keycloak_attribute_importer_identity_provider_mapper" "bcsc_mobile_email" {
-  realm                   = var.keycloak_realm
+  realm                   = data.keycloak_realm.hg_realm.id
   name                    = "email"
   claim_name              = "email"
   identity_provider_alias = keycloak_oidc_identity_provider.bcsc_mobile.alias
@@ -60,7 +60,7 @@ resource "keycloak_attribute_importer_identity_provider_mapper" "bcsc_mobile_ema
 }
 
 resource "keycloak_attribute_importer_identity_provider_mapper" "bcsc_mobile_display_name" {
-  realm                   = var.keycloak_realm
+  realm                   = data.keycloak_realm.hg_realm.id
   name                    = "display_name"
   claim_name              = "display_name"
   identity_provider_alias = keycloak_oidc_identity_provider.bcsc_mobile.alias
@@ -71,7 +71,7 @@ resource "keycloak_attribute_importer_identity_provider_mapper" "bcsc_mobile_dis
 }
 
 resource "keycloak_attribute_importer_identity_provider_mapper" "bcsc_mobile_family_name" {
-  realm                   = var.keycloak_realm
+  realm                   = data.keycloak_realm.hg_realm.id
   name                    = "family_name"
   claim_name              = "family_name"
   identity_provider_alias = keycloak_oidc_identity_provider.bcsc_mobile.alias
@@ -82,7 +82,7 @@ resource "keycloak_attribute_importer_identity_provider_mapper" "bcsc_mobile_fam
 }
 
 resource "keycloak_attribute_importer_identity_provider_mapper" "bcsc_mobile_username" {
-  realm                   = var.keycloak_realm
+  realm                   = data.keycloak_realm.hg_realm.id
   name                    = "username"
   claim_name              = "sub"
   identity_provider_alias = keycloak_oidc_identity_provider.bcsc_mobile.alias
@@ -93,7 +93,7 @@ resource "keycloak_attribute_importer_identity_provider_mapper" "bcsc_mobile_use
 }
 
 resource "keycloak_attribute_importer_identity_provider_mapper" "bcsc_mobile_hdid" {
-  realm                   = var.keycloak_realm
+  realm                   = data.keycloak_realm.hg_realm.id
   name                    = "hdid"
   claim_name              = "sub"
   identity_provider_alias = keycloak_oidc_identity_provider.bcsc_mobile.alias
@@ -104,7 +104,7 @@ resource "keycloak_attribute_importer_identity_provider_mapper" "bcsc_mobile_hdi
 }
 
 resource "keycloak_attribute_importer_identity_provider_mapper" "bcsc_mobile_iasenv" {
-  realm                   = var.keycloak_realm
+  realm                   = data.keycloak_realm.hg_realm.id
   name                    = "iasenv"
   claim_name              = "authoritative_party_identifier"
   identity_provider_alias = keycloak_oidc_identity_provider.bcsc_mobile.alias

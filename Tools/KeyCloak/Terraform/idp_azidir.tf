@@ -1,5 +1,5 @@
 resource "keycloak_oidc_identity_provider" "azidiridp" {
-  realm                         = var.keycloak_realm
+  realm                         = data.keycloak_realm.hg_realm.id
   alias                         = "azureidir"
   display_name                  = "Azure IDIR"
   enabled                       = true
@@ -26,7 +26,7 @@ resource "keycloak_oidc_identity_provider" "azidiridp" {
 }
 
 resource "keycloak_user_template_importer_identity_provider_mapper" "az_username_importer" {
-  realm                   = var.keycloak_realm
+  realm                   = data.keycloak_realm.hg_realm.id
   name                    = "username"
   identity_provider_alias = keycloak_oidc_identity_provider.azidiridp.alias
   template                = "$${CLAIM.idir_username}@idir"
@@ -36,7 +36,7 @@ resource "keycloak_user_template_importer_identity_provider_mapper" "az_username
 }
 
 resource "keycloak_attribute_importer_identity_provider_mapper" "az_idir_userid" {
-  realm                   = var.keycloak_realm
+  realm                   = data.keycloak_realm.hg_realm.id
   name                    = "idir_userid"
   claim_name              = "idir_username"
   identity_provider_alias = keycloak_oidc_identity_provider.azidiridp.alias
@@ -47,7 +47,7 @@ resource "keycloak_attribute_importer_identity_provider_mapper" "az_idir_userid"
 }
 
 resource "keycloak_attribute_importer_identity_provider_mapper" "az_idir_guid" {
-  realm                   = var.keycloak_realm
+  realm                   = data.keycloak_realm.hg_realm.id
   name                    = "idir_guid"
   claim_name              = "idir_user_guid"
   identity_provider_alias = keycloak_oidc_identity_provider.azidiridp.alias
@@ -58,7 +58,7 @@ resource "keycloak_attribute_importer_identity_provider_mapper" "az_idir_guid" {
 }
 
 resource "keycloak_attribute_importer_identity_provider_mapper" "az_displayname" {
-  realm                   = var.keycloak_realm
+  realm                   = data.keycloak_realm.hg_realm.id
   name                    = "displayName"
   claim_name              = "display_name"
   identity_provider_alias = keycloak_oidc_identity_provider.azidiridp.alias
@@ -69,7 +69,7 @@ resource "keycloak_attribute_importer_identity_provider_mapper" "az_displayname"
 }
 
 resource "keycloak_hardcoded_attribute_identity_provider_mapper" "az_idp" {
-  realm                   = var.keycloak_realm
+  realm                   = data.keycloak_realm.hg_realm.id
   name                    = "idp"
   identity_provider_alias = keycloak_oidc_identity_provider.azidiridp.alias
   attribute_name          = "idp"

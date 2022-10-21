@@ -1,5 +1,5 @@
 resource "keycloak_openid_client" "hgadminblazor_client" {
-  realm_id                     = var.keycloak_realm
+  realm_id                     = data.keycloak_realm.hg_realm.id
   client_id                    = "HealthGatewayAdminBlazor"
   name                         = "Health Gateway Admin Blazor"
   description                  = "Health Gateway Blazor Admin web application"
@@ -14,7 +14,7 @@ resource "keycloak_openid_client" "hgadminblazor_client" {
 }
 
 resource "keycloak_openid_client_default_scopes" "hgadminblazor_client_default_scopes" {
-  realm_id  = var.keycloak_realm
+  realm_id  = data.keycloak_realm.hg_realm.id
   client_id = keycloak_openid_client.hgadminblazor_client.id
   default_scopes = [
     "profile",
@@ -24,7 +24,7 @@ resource "keycloak_openid_client_default_scopes" "hgadminblazor_client_default_s
   ]
 }
 resource "keycloak_openid_client_optional_scopes" "hgadminblazor_client_optional_scopes" {
-  realm_id  = var.keycloak_realm
+  realm_id  = data.keycloak_realm.hg_realm.id
   client_id = keycloak_openid_client.hgadminblazor_client.id
   optional_scopes = [
     "microprofile-jwt",
@@ -33,19 +33,19 @@ resource "keycloak_openid_client_optional_scopes" "hgadminblazor_client_optional
 }
 
 resource "keycloak_generic_role_mapper" "hgadminblazor_adminreviewer" {
-  realm_id  = var.keycloak_realm
+  realm_id  = data.keycloak_realm.hg_realm.id
   client_id = keycloak_openid_client.hgadminblazor_client.id
   role_id   = keycloak_role.AdminReviewer.id
 }
 
 resource "keycloak_generic_role_mapper" "hgadminblazor_adminuser" {
-  realm_id  = var.keycloak_realm
+  realm_id  = data.keycloak_realm.hg_realm.id
   client_id = keycloak_openid_client.hgadminblazor_client.id
   role_id   = keycloak_role.AdminUser.id
 }
 
 resource "keycloak_generic_role_mapper" "hgadminblazor_supportuser" {
-  realm_id  = var.keycloak_realm
+  realm_id  = data.keycloak_realm.hg_realm.id
   client_id = keycloak_openid_client.hgadminblazor_client.id
   role_id   = keycloak_role.SupportUser.id
 }

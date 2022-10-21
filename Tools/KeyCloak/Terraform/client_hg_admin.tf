@@ -1,5 +1,5 @@
 resource "keycloak_openid_client" "hgadmin_client" {
-  realm_id                     = var.keycloak_realm
+  realm_id                     = data.keycloak_realm.hg_realm.id
   client_id                    = "HealthGatewayAdmin"
   name                         = "Health Gateway Administration"
   description                  = "Health Gateway Administration web application"
@@ -15,7 +15,7 @@ resource "keycloak_openid_client" "hgadmin_client" {
 }
 
 resource "keycloak_openid_client_default_scopes" "hgadmin_client_default_scopes" {
-  realm_id  = var.keycloak_realm
+  realm_id  = data.keycloak_realm.hg_realm.id
   client_id = keycloak_openid_client.hgadmin_client.id
   default_scopes = [
     "email",
@@ -30,7 +30,7 @@ resource "keycloak_openid_client_default_scopes" "hgadmin_client_default_scopes"
   ]
 }
 resource "keycloak_openid_client_optional_scopes" "hgadmin_client_optional_scopes" {
-  realm_id  = var.keycloak_realm
+  realm_id  = data.keycloak_realm.hg_realm.id
   client_id = keycloak_openid_client.hgadmin_client.id
   optional_scopes = [
     "phone",
@@ -39,31 +39,31 @@ resource "keycloak_openid_client_optional_scopes" "hgadmin_client_optional_scope
 }
 
 resource "keycloak_generic_role_mapper" "hgadmin_adminreviewer" {
-  realm_id  = var.keycloak_realm
+  realm_id  = data.keycloak_realm.hg_realm.id
   client_id = keycloak_openid_client.hgadmin_client.id
   role_id   = keycloak_role.AdminReviewer.id
 }
 
 resource "keycloak_generic_role_mapper" "hgadmin_adminuser" {
-  realm_id  = var.keycloak_realm
+  realm_id  = data.keycloak_realm.hg_realm.id
   client_id = keycloak_openid_client.hgadmin_client.id
   role_id   = keycloak_role.AdminUser.id
 }
 
 resource "keycloak_generic_role_mapper" "hgadmin_supportuser" {
-  realm_id  = var.keycloak_realm
+  realm_id  = data.keycloak_realm.hg_realm.id
   client_id = keycloak_openid_client.hgadmin_client.id
   role_id   = keycloak_role.SupportUser.id
 }
 
 resource "keycloak_generic_role_mapper" "hgadmin_system" {
-  realm_id  = var.keycloak_realm
+  realm_id  = data.keycloak_realm.hg_realm.id
   client_id = keycloak_openid_client.hgadmin_client.id
   role_id   = keycloak_role.System.id
 }
 
 resource "keycloak_generic_role_mapper" "hgadmin_anonymous" {
-  realm_id  = var.keycloak_realm
+  realm_id  = data.keycloak_realm.hg_realm.id
   client_id = keycloak_openid_client.hgadmin_client.id
   role_id   = keycloak_role.Anonymous.id
 }

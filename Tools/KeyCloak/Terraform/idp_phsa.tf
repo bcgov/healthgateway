@@ -1,5 +1,5 @@
 # resource "keycloak_oidc_identity_provider" "phsa" {
-#   realm                 = var.keycloak_realm
+#   realm                 = data.keycloak_realm.hg_realm.id
 #   alias                 = "phsaazure"
 #   display_name          = "PHSA Azure"
 #   enabled               = false
@@ -22,7 +22,7 @@
 # }
 
 # resource "keycloak_hardcoded_attribute_identity_provider_mapper" "phsa_idp" {
-#   realm                   = var.keycloak_realm
+#   realm                   = data.keycloak_realm.hg_realm.id
 #   name                    = "idp"
 #   identity_provider_alias = keycloak_oidc_identity_provider.phsa.alias
 #   attribute_name          = "idp"
