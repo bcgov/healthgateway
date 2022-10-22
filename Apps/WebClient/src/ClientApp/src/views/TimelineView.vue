@@ -150,7 +150,7 @@ export default class TimelineView extends Vue {
     @Getter("laboratoryOrdersAreLoading", { namespace: "laboratory" })
     isLaboratoryLoading!: boolean;
 
-    @Getter("isLoading", { namespace: "encounter" })
+    @Getter("isEncounterLoading", { namespace: "encounter" })
     isEncounterLoading!: boolean;
 
     @Getter("isHospitalVisitLoading", { namespace: "encounter" })

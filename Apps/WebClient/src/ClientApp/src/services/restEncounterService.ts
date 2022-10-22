@@ -3,8 +3,9 @@ import { injectable } from "inversify";
 import { ResultType } from "@/constants/resulttype";
 import { ServiceCode } from "@/constants/serviceCodes";
 import { ExternalConfiguration } from "@/models/configData";
-import { Encounter, HospitalVisit } from "@/models/encounter";
+import { Encounter } from "@/models/encounter";
 import { HttpError } from "@/models/errors";
+import HospitalVisitResult from "@/models/hospitalVisitResult";
 import RequestResult from "@/models/requestResult";
 import container from "@/plugins/container";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
@@ -67,21 +68,26 @@ export class RestEncounterService implements IEncounterService {
 
     public getHospitalVisits(
         hdid: string
-    ): Promise<RequestResult<HospitalVisit[]>> {
+    ): Promise<RequestResult<HospitalVisitResult>> {
         return new Promise((resolve, reject) => {
             if (!this.isEnabled) {
                 resolve({
                     pageIndex: 0,
                     pageSize: 0,
-                    resourcePayload: [],
+                    resourcePayload: {
+                        loaded: true,
+                        queued: false,
+                        retryin: 0,
+                        hospitalVisits: [],
+                    },
                     resultStatus: ResultType.Success,
                     totalResultCount: 0,
                 });
                 return;
             }
             this.http
-                .getWithCors<RequestResult<HospitalVisit[]>>(
-                    `${this.baseUri}${this.ENCOUNTER_BASE_URI}/HospitalVisits?hdid=${hdid}`
+                .getWithCors<RequestResult<HospitalVisitResult>>(
+                    `${this.baseUri}${this.ENCOUNTER_BASE_URI}/HospitalVisit/${hdid}`
                 )
                 .then((requestResult) => resolve(requestResult))
                 .catch((err: HttpError) => {
