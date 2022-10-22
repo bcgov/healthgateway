@@ -5,7 +5,6 @@ variable "environment" {
 variable "keycloak_terraform_client_id" {
   type        = string
   description = "The client_id for the Keycloak client in Master Realm"
-  default     = "terraform"
 }
 
 variable "keycloak_terraform_client_secret" {
@@ -22,7 +21,6 @@ variable "keycloak_base_url" {
 variable "keycloak_realm" {
   type        = string
   description = "The keycloak realm"
-  default     = "health-gateway-gold"
 }
 
 variable "keycloak_idp_idir_client_id" {
@@ -223,10 +221,6 @@ variable "client_hg_phsa_web_origins" {
   description = "The list of valid web origins for the HealthGateway PHSA client"
 }
 
-variable "user_default_password" {
-  type        = string
-  description = "The password to set for users created in the dev environment"
-}
 locals {
   development = var.environment == "Development"
 }
