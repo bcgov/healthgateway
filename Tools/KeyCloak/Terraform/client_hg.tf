@@ -1,7 +1,7 @@
 resource "keycloak_openid_client" "hg_client" {
   realm_id                     = data.keycloak_realm.hg_realm.id
-  client_id                    = "HealthGateway"
-  name                         = "Health Gateway"
+  client_id                    = "hg"
+  name                         = "Health Gateway  - ${var.environment}"
   description                  = "Health Gateway web application"
   enabled                      = true
   access_type                  = "PUBLIC"
@@ -73,15 +73,15 @@ resource "keycloak_openid_user_property_protocol_mapper" "hg_username" {
   user_property       = "username"
   claim_name          = "preferred_username"
   claim_value_type    = "String"
-  add_to_id_token     = false
-  add_to_access_token = false
+  add_to_id_token     = true
+  add_to_access_token = true
   add_to_userinfo     = true
 }
 
 resource "keycloak_openid_audience_protocol_mapper" "hg_audience" {
   realm_id                 = data.keycloak_realm.hg_realm.id
   client_id                = keycloak_openid_client.hg_client.id
-  name                     = "health-gateway-audience"
+  name                     = "hg-audience"
   included_client_audience = keycloak_openid_client.hg_client.client_id
   add_to_id_token          = true
   add_to_access_token      = true

@@ -1,7 +1,7 @@
 resource "keycloak_openid_client" "hgadmin_client" {
   realm_id                     = data.keycloak_realm.hg_realm.id
-  client_id                    = "HealthGatewayAdmin"
-  name                         = "Health Gateway Administration"
+  client_id                    = "hg-admin"
+  name                         = "Health Gateway Administration - ${var.environment}"
   description                  = "Health Gateway Administration web application"
   enabled                      = true
   access_type                  = "CONFIDENTIAL"
@@ -66,4 +66,49 @@ resource "keycloak_generic_role_mapper" "hgadmin_anonymous" {
   realm_id  = data.keycloak_realm.hg_realm.id
   client_id = keycloak_openid_client.hgadmin_client.id
   role_id   = keycloak_role.Anonymous.id
+}
+
+resource "keycloak_openid_user_attribute_protocol_mapper" "hgadmin_auth_method" {
+  realm_id            = data.keycloak_realm.hg_realm.id
+  client_id           = keycloak_openid_client.hgadmin_client.id
+  name                = "AuthMethod"
+  user_attribute      = "idp"
+  claim_name          = "idp"
+  claim_value_type    = "String"
+  add_to_id_token     = true
+  add_to_access_token = true
+  add_to_userinfo     = true
+}
+
+resource "keycloak_openid_audience_protocol_mapper" "hgadmin_audience" {
+  realm_id                 = data.keycloak_realm.hg_realm.id
+  client_id                = keycloak_openid_client.hgadmin_client.id
+  name                     = "hg-admin-audience"
+  included_client_audience = keycloak_openid_client.hgadmin_client.client_id
+  add_to_id_token          = true
+  add_to_access_token      = true
+}
+
+resource "keycloak_openid_user_property_protocol_mapper" "hgadmin_username" {
+  realm_id            = data.keycloak_realm.hg_realm.id
+  client_id           = keycloak_openid_client.hgadmin_client.id
+  name                = "username"
+  user_property       = "username"
+  claim_name          = "preferred_username"
+  claim_value_type    = "String"
+  add_to_id_token     = true
+  add_to_access_token = true
+  add_to_userinfo     = true
+}
+
+resource "keycloak_openid_user_realm_role_protocol_mapper" "hgadmin_realmroles" {
+  realm_id            = data.keycloak_realm.hg_realm.id
+  client_id           = keycloak_openid_client.hgadmin_client.id
+  name                = "realm roles"
+  multivalued         = true
+  claim_name          = "user_realm_roles"
+  claim_value_type    = "String"
+  add_to_id_token     = true
+  add_to_access_token = true
+  add_to_userinfo     = true
 }

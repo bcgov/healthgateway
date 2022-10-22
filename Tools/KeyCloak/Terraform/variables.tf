@@ -139,39 +139,39 @@ variable "keycloak_idp_bcsc_mobile_jwks_path" {
   default     = "/oauth2/jwk.json"
 }
 
-# variable "keycloak_idp_phsa_base_url" {
-#   type        = string
-#   description = "The PHSA Azure IDP base URL"
-# }
+variable "keycloak_idp_phsa_base_url" {
+  type        = string
+  description = "The PHSA Azure IDP base URL"
+}
 
-# variable "keycloak_idp_phsa_auth_path" {
-#   type        = string
-#   description = "The PHSA Azure IDP Authorization URL"
-#   default     = "/oauth2/v2.0/authorize"
-# }
+variable "keycloak_idp_phsa_auth_path" {
+  type        = string
+  description = "The PHSA Azure IDP Authorization URL"
+  default     = "/oauth2/v2.0/authorize"
+}
 
-# variable "keycloak_idp_phsa_token_path" {
-#   type        = string
-#   description = "The PHSA Azure IDP Token URL"
-#   default     = "/oauth2/v2.0/token"
-# }
+variable "keycloak_idp_phsa_token_path" {
+  type        = string
+  description = "The PHSA Azure IDP Token URL"
+  default     = "/oauth2/v2.0/token"
+}
 
-# variable "keycloak_idp_phsa_client_id" {
-#   type        = string
-#   description = "The PHSA Azure IDP client id"
-# }
+variable "keycloak_idp_phsa_client_id" {
+  type        = string
+  description = "The PHSA Azure IDP client id"
+}
 
-# variable "keycloak_idp_phsa_client_secret" {
-#   type        = string
-#   description = "The PHSA Azure IDP client secret"
-#   sensitive   = true
-# }
+variable "keycloak_idp_phsa_client_secret" {
+  type        = string
+  description = "The PHSA Azure IDP client secret"
+  sensitive   = true
+}
 
-# variable "keycloak_idp_phsa_jwks_path" {
-#   type        = string
-#   description = "The PHSA Azure IDP client JWKS URL"
-#   default     = "/discovery/v2.0/keys"
-# }
+variable "keycloak_idp_phsa_jwks_path" {
+  type        = string
+  description = "The PHSA Azure IDP client JWKS URL"
+  default     = "/discovery/v2.0/keys"
+}
 
 variable "client_hg_admin_blazor_valid_redirects" {
   type        = list(string)
@@ -211,6 +211,16 @@ variable "client_hg_mobile_valid_redirects" {
 variable "client_hg_mobile_web_origins" {
   type        = list(string)
   description = "The list of valid web origins for the HealthGateway mobile client"
+}
+
+variable "client_hg_phsa_valid_redirects" {
+  type        = list(string)
+  description = "The list of valid redirect for the HealthGateway PHSA client"
+}
+
+variable "client_hg_phsa_web_origins" {
+  type        = list(string)
+  description = "The list of valid web origins for the HealthGateway PHSA client"
 }
 
 variable "user_default_password" {

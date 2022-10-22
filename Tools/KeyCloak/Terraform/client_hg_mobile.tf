@@ -1,7 +1,7 @@
 resource "keycloak_openid_client" "hg_mobile_client" {
   realm_id                     = data.keycloak_realm.hg_realm.id
-  client_id                    = "HealthGatewayMobile"
-  name                         = "Health Gateway Mobile"
+  client_id                    = "hg-mobile"
+  name                         = "Health Gateway Mobile - ${var.environment}"
   description                  = "Health Gateway Mobile applications"
   enabled                      = true
   access_type                  = "PUBLIC"

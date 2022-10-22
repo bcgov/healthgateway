@@ -1,7 +1,7 @@
 resource "keycloak_openid_client" "hgadminblazor_client" {
   realm_id                     = data.keycloak_realm.hg_realm.id
-  client_id                    = "HealthGatewayAdminBlazor"
-  name                         = "Health Gateway Admin Blazor"
+  client_id                    = "hg-admin-blazor"
+  name                         = "Health Gateway Admin Blazor - ${var.environment}"
   description                  = "Health Gateway Blazor Admin web application"
   enabled                      = true
   access_type                  = "PUBLIC"
