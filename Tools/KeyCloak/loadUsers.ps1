@@ -122,12 +122,12 @@ foreach($user in $loadData.users)
   $roleMappings = $loadData.roleMappings.($user.UserName)
   if ( $null -ne $roleMappings)
   {
-    Write-Host Found role mappings for $keycloakUser.UserName
+    Write-Host "Found role mappings for $($keycloakUser.UserName)"
     foreach($role in $roleMappings)
     {
       if ($null -eq $keycloakRoles[$role])
       {
-        Write-Host Role "$($role) not found looking up in keycloak"
+        Write-Host "Role $($role) not found looking up in keycloak"
         $keycloakRole = GetRole $keycloakConfig $token.access_token $role
         $keycloakRoles.Add($role, $keycloakRole)
       }
