@@ -74,7 +74,7 @@ namespace HealthGateway.Encounter.Delegates
             RequestResult<PhsaResult<IEnumerable<HospitalVisit>>> requestResult = new()
             {
                 ResultStatus = ResultType.Error,
-                PageSize = 0,
+                PageSize = int.Parse(this.phsaConfig.FetchSize, CultureInfo.InvariantCulture),
                 ResourcePayload = new PhsaResult<IEnumerable<HospitalVisit>>
                 {
                     Result = Enumerable.Empty<HospitalVisit>(),
@@ -105,7 +105,7 @@ namespace HealthGateway.Encounter.Delegates
                 };
             }
 
-            this.logger.LogDebug("Finished getting Immunizations");
+            this.logger.LogDebug("Finished getting hospital visits for hdid: {Hdid}", hdid);
             return requestResult;
         }
 
@@ -124,7 +124,6 @@ namespace HealthGateway.Encounter.Delegates
                     case HttpStatusCode.NoContent:
                         requestResult.ResultStatus = ResultType.Success;
                         requestResult.TotalResultCount = 0;
-                        requestResult.PageSize = int.Parse(this.phsaConfig.FetchSize, CultureInfo.InvariantCulture);
                         break;
                     case HttpStatusCode.Forbidden:
                         requestResult.ResultError = new()
