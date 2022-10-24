@@ -23,23 +23,23 @@ export interface HospitalVisit {
     encounterId: string;
 
     // Gets or sets the facility.
-    facility: string;
+    facility?: string;
 
     // Gets or sets the health service.
-    healthService: string;
+    healthService?: string;
 
     // Gets or sets the visit type.
-    visitType: string;
+    visitType?: string;
 
     // Gets or sets the health authority.
-    healthAuthority: string;
+    healthAuthority?: string;
 
     // Gets or sets the admit date time.
-    admitDateTime: StringISODate;
+    admitDateTime?: StringISODate;
 
     // Gets or sets the end date time.
-    endDateTime: StringISODate;
+    endDateTime?: StringISODate;
 
     // Gets or sets the provider.
-    provider: string;
+    provider: string[];
 }

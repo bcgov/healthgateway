@@ -31,7 +31,7 @@ namespace HealthGateway.Encounter.MapProfiles
         public HospitalVisitModelProfile()
         {
             this.CreateMap<HospitalVisit, HospitalVisitModel>()
-                .ForMember(dest => dest.Provider, opt => opt.MapFrom(src => src.Clinicians.Where(c => c.RoleDescription == "attending").Select(c => c.DisplayName).SingleOrDefault()))
+                .ForMember(dest => dest.Provider, opt => opt.MapFrom(src => src.Clinicians.Where(c => c.RoleDescription == "Attending Physician").Select(c => c.DisplayName)))
                 .ReverseMap();
         }
     }
