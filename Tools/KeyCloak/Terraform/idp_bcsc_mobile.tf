@@ -23,6 +23,9 @@ resource "keycloak_oidc_identity_provider" "bcsc_mobile" {
     "clientAuthMethod" = "client_secret_post"
     "prompt"           = "login"
   }
+  depends_on = [
+    keycloak_authentication_flow.first_login
+  ]
 }
 
 resource "keycloak_attribute_importer_identity_provider_mapper" "bcsc_mobile_given_name" {

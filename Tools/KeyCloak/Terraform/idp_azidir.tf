@@ -23,6 +23,9 @@ resource "keycloak_oidc_identity_provider" "azidiridp" {
     "clientAuthMethod" = "client_secret_post"
     "prompt"           = "login"
   }
+  depends_on = [
+    keycloak_authentication_flow.first_login
+  ]
 }
 
 resource "keycloak_user_template_importer_identity_provider_mapper" "az_username_importer" {

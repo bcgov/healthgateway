@@ -221,6 +221,16 @@ variable "client_hg_phsa_web_origins" {
   description = "The list of valid web origins for the HealthGateway PHSA client"
 }
 
+variable "client_hg_k6_valid_redirects" {
+  type        = list(string)
+  description = "The list of valid redirect for the HealthGateway K6 client"
+}
+
+variable "client_hg_k6_web_origins" {
+  type        = list(string)
+  description = "The list of valid web origins for the HealthGateway K6 client"
+}
+
 locals {
   development = var.environment == "Development"
 }
