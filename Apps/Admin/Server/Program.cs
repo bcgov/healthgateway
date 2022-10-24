@@ -69,6 +69,7 @@ namespace HealthGateway.Admin.Server
             services.AddControllersWithViews();
 
             // Add HG Services
+            services.AddTransient<IBroadcastService, BroadcastService>();
             services.AddTransient<IConfigurationService, ConfigurationService>();
             services.AddTransient<IUserFeedbackService, UserFeedbackService>();
             services.AddTransient<IDashboardService, DashboardService>();
