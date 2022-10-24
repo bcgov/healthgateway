@@ -44,7 +44,7 @@ namespace HealthGateway.Common.Services
         /// <param name="logger">The injected logger.</param>
         /// <param name="systemBroadcastApi">The injected API for interacting with system broadcasts.</param>
         /// <param name="autoMapper">The injected automapper provider.</param>
-        public BroadcastService(ILogger logger, ISystemBroadcastApi systemBroadcastApi, IMapper autoMapper)
+        public BroadcastService(ILogger<BroadcastService> logger, ISystemBroadcastApi systemBroadcastApi, IMapper autoMapper)
         {
             this.logger = logger;
             this.systemBroadcastApi = systemBroadcastApi;
