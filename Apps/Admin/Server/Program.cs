@@ -20,10 +20,12 @@ namespace HealthGateway.Admin.Server
     using HealthGateway.Admin.Server.Services;
     using HealthGateway.Common.AccessManagement.Administration;
     using HealthGateway.Common.AccessManagement.Authentication;
+    using HealthGateway.Common.Api;
     using HealthGateway.Common.AspNetConfiguration;
     using HealthGateway.Common.AspNetConfiguration.Modules;
     using HealthGateway.Common.Delegates;
     using HealthGateway.Common.Delegates.PHSA;
+    using HealthGateway.Common.Models.PHSA;
     using HealthGateway.Common.Services;
     using HealthGateway.Database.Delegates;
     using Microsoft.AspNetCore.Builder;
@@ -32,6 +34,7 @@ namespace HealthGateway.Admin.Server
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Hosting;
     using Microsoft.Extensions.Logging;
+    using Refit;
     using CommunicationService = HealthGateway.Admin.Server.Services.CommunicationService;
     using ICommunicationService = HealthGateway.Admin.Server.Services.ICommunicationService;
 
@@ -94,6 +97,12 @@ namespace HealthGateway.Admin.Server
             services.AddTransient<IAdminUserProfileDelegate, DbAdminUserProfileDelegate>();
             services.AddTransient<IAuthenticationDelegate, AuthenticationDelegate>();
             services.AddTransient<IUserAdminDelegate, KeycloakUserAdminDelegate>();
+
+            // Add API clients
+            PhsaConfigV2 phsaConfig = new();
+            configuration.Bind(PhsaConfigV2.ConfigurationSectionKey, phsaConfig);
+            services.AddRefitClient<ISystemBroadcastApi>()
+                .ConfigureHttpClient(c => c.BaseAddress = phsaConfig.BaseUrl);
 
             services.AddAutoMapper(typeof(Program));
 
