@@ -16,6 +16,8 @@
 namespace HealthGateway.EncounterTests.Delegates
 {
     using System.Collections.Generic;
+    using System.Globalization;
+    using System.Linq;
     using System.Net;
     using System.Net.Http;
     using HealthGateway.Common.AccessManagement.Authentication;
@@ -80,6 +82,12 @@ namespace HealthGateway.EncounterTests.Delegates
                         AdmitDateTime = null,
                         EndDateTime = null,
                     },
+                    new()
+                    {
+                        EncounterId = "456",
+                        AdmitDateTime = null,
+                        EndDateTime = null,
+                    },
                 },
             };
 
@@ -87,8 +95,9 @@ namespace HealthGateway.EncounterTests.Delegates
 
             Assert.Equal(ResultType.Success, actualResult.ResultStatus);
             Assert.NotNull(actualResult.ResourcePayload);
-            Assert.Single(actualResult.ResourcePayload.Result);
-            Assert.True(actualResult.TotalResultCount == 1);
+            Assert.True(actualResult.ResourcePayload.Result.Count() == 2);
+            Assert.True(actualResult.TotalResultCount == 2);
+            Assert.True(actualResult.PageSize == int.Parse(ConfigFetchSize, CultureInfo.InvariantCulture));
         }
 
         /// <summary>
@@ -108,6 +117,7 @@ namespace HealthGateway.EncounterTests.Delegates
             Assert.NotNull(actualResult.ResourcePayload);
             Assert.Empty(actualResult.ResourcePayload.Result);
             Assert.True(actualResult.TotalResultCount == 0);
+            Assert.True(actualResult.PageSize == int.Parse(ConfigFetchSize, CultureInfo.InvariantCulture));
         }
 
         /// <summary>
@@ -127,6 +137,7 @@ namespace HealthGateway.EncounterTests.Delegates
             Assert.NotNull(actualResult.ResourcePayload);
             Assert.Empty(actualResult.ResourcePayload.Result);
             Assert.True(actualResult.TotalResultCount == 0);
+            Assert.True(actualResult.PageSize == int.Parse(ConfigFetchSize, CultureInfo.InvariantCulture));
         }
 
         /// <summary>
@@ -135,38 +146,26 @@ namespace HealthGateway.EncounterTests.Delegates
         [Fact]
         public void GetImmunizationThrowsException()
         {
-            PhsaResult<IEnumerable<HospitalVisit>> phsaResponse = new()
-            {
-                Result = new List<HospitalVisit>
-                {
-                    new()
-                    {
-                        EncounterId = "123",
-                        AdmitDateTime = null,
-                        EndDateTime = null,
-                    },
-                },
-            };
-
-            RequestResult<PhsaResult<IEnumerable<HospitalVisit>>> actualResult = GetHospitalVisitDelegate(phsaResponse, HttpStatusCode.OK, true).GetHospitalVisits(It.IsAny<string>()).Result;
+            RequestResult<PhsaResult<IEnumerable<HospitalVisit>>> actualResult = GetHospitalVisitDelegate(null, null, true).GetHospitalVisits(It.IsAny<string>()).Result;
 
             Assert.Equal(ResultType.Error, actualResult.ResultStatus);
             Assert.Equal(HttpExceptionMessage, actualResult.ResultError?.ResultMessage);
             Assert.True(actualResult.TotalResultCount == 0);
+            Assert.True(actualResult.PageSize == int.Parse(ConfigFetchSize, CultureInfo.InvariantCulture));
         }
 
-        private static IHospitalVisitDelegate GetHospitalVisitDelegate(PhsaResult<IEnumerable<HospitalVisit>> response, HttpStatusCode statusCode, bool throwException)
+        private static IHospitalVisitDelegate GetHospitalVisitDelegate(PhsaResult<IEnumerable<HospitalVisit>>? response, HttpStatusCode? statusCode, bool throwException)
         {
             Mock<IAuthenticationDelegate> mockAuthDelegate = new();
             mockAuthDelegate.Setup(s => s.FetchAuthenticatedUserToken()).Returns(AccessToken);
 
-            Mock<IApiResponse<PhsaResult<IEnumerable<HospitalVisit>>>> mockApiResponse = new();
-            mockApiResponse.Setup(s => s.Content).Returns(response);
-            mockApiResponse.Setup(s => s.StatusCode).Returns(statusCode);
-
             Mock<IHospitalVisitApi> mockHospitalVisitApi = new();
             if (!throwException)
             {
+                Mock<IApiResponse<PhsaResult<IEnumerable<HospitalVisit>>>> mockApiResponse = new();
+                mockApiResponse.Setup(s => s.Content).Returns(response);
+                mockApiResponse.Setup(s => s.StatusCode).Returns(statusCode ?? HttpStatusCode.OK);
+
                 mockHospitalVisitApi.Setup(s => s.GetHospitalVisits(It.IsAny<Dictionary<string, string?>>(), AccessToken))
                     .ReturnsAsync(mockApiResponse.Object);
             }
