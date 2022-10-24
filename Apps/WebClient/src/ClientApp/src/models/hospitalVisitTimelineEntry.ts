@@ -6,11 +6,11 @@ import { UserComment } from "@/models/userComment";
 
 // The clinical document timeline entry model
 export default class HospitalVisitTimelineEntry extends TimelineEntry {
-    public healthService?: string;
-    public visitType?: string;
+    public healthService: string;
+    public visitType: string;
     public outpatient: boolean;
-    public facility?: string;
-    public provider?: string;
+    public facility: string;
+    public provider: string;
     public healthAuthority?: string;
     public admitDateTime: DateWrapper;
     public endDateTime: DateWrapper;
@@ -37,7 +37,7 @@ export default class HospitalVisitTimelineEntry extends TimelineEntry {
         this.endDateTime = new DateWrapper(model.endDateTime, {
             hasTime: true,
         });
-        this.provider = model.provider.length > 0 ? model.provider[0] : "";
+        this.provider = model.provider;
         this.getComments = getComments;
     }
 

@@ -16,7 +16,6 @@
 namespace HealthGateway.Encounter.Models
 {
     using System;
-    using System.Collections.Generic;
     using System.Text.Json.Serialization;
 
     /// <summary>
@@ -28,7 +27,7 @@ namespace HealthGateway.Encounter.Models
         /// Gets or sets the encounter id.
         /// </summary>
         [JsonPropertyName("encounterId")]
-        public string EncounterId { get; set; } = string.Empty;
+        public string? EncounterId { get; set; }
 
         /// <summary>
         /// Gets or sets the facility.
@@ -70,6 +69,6 @@ namespace HealthGateway.Encounter.Models
         /// Gets or sets the provider.
         /// </summary>
         [JsonPropertyName("provider")]
-        public IEnumerable<string> Provider { get; set; } = new List<string>();
+        public string? Provider { get; set; }
     }
 }
