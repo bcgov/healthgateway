@@ -1,0 +1,181 @@
+{
+    "users": [
+        {
+            "username": "healthgateway",
+            "enabled": true,
+            "firstName": "Dr",
+            "lastName": "Gateway",
+            "attributes": {
+                "hdid": "P6FFO433A5WPMVTGM7T4ZVWBKCSVNAYGTWTU3J2LWMGUMERKI72A"
+            },
+            "credentials": [
+                {
+                    "type": "password",
+                    "value": "{PASSWORD}",
+                    "temporary": false
+                }
+            ]
+        },
+        {
+            "username": "hthgtwy02",
+            "enabled": true,
+            "firstName": "Dr",
+            "lastName": "Gateway",
+            "attributes": {
+                "hdid": "S22BPV6WHS5TRLBL4XKGQDBVDUKLPIRSBGYSEJAHYMYRP22SP2TA"
+            },
+            "credentials": [
+                {
+                    "type": "password",
+                    "value": "{PASSWORD}",
+                    "temporary": false
+                }
+            ]
+        },
+        {
+            "username": "hthgtwy03",
+            "enabled": true,
+            "firstName": "Dr",
+            "lastName": "Gateway",
+            "attributes": {
+                "hdid": "R43YCT4ZY37EIJLW2O5LV2I77BZA3K3M25EUJGWAVGVJ7JKBDKCQ"
+            },
+            "credentials": [
+                {
+                    "type": "password",
+                    "value": "{PASSWORD}",
+                    "temporary": false
+                }
+            ]
+        },
+        {
+            "username": "hthgtwy04",
+            "enabled": true,
+            "firstName": "Dr",
+            "lastName": "Gateway",
+            "attributes": {
+                "hdid": "K6HL4VX67CZ2PGSZ2ZOIR4C3PGMFFBW5CIOXM74D6EQ7RYYL7P4A"
+            },
+            "credentials": [
+                {
+                    "type": "password",
+                    "value": "{PASSWORD}",
+                    "temporary": false
+                }
+            ]
+        },
+        {
+            "username": "hthgtwy09",
+            "enabled": true,
+            "firstName": "Dr",
+            "lastName": "Gateway",
+            "attributes": {
+                "hdid": "3ZQCSNNC6KVP2GYLA4O3EFZXGUAPWBQHU6ZEB7FXNZJ2WYCLPH3A"
+            },
+            "credentials": [
+                {
+                    "type": "password",
+                    "value": "{PASSWORD}",
+                    "temporary": false
+                }
+            ]
+        },
+        {
+            "username": "healthgateway12",
+            "enabled": true,
+            "firstName": "Dr",
+            "lastName": "Gateway",
+            "attributes": {
+                "hdid": "L6XJCCRMCCZQ2L6LCVRLBWGCRGWMBPI6OZVXDG5AYPSJ2OPYB2WQ"
+            },
+            "credentials": [
+                {
+                    "type": "password",
+                    "value": "{PASSWORD}",
+                    "temporary": false
+                }
+            ]
+        },
+        {
+            "username": "hthgtwy19",
+            "enabled": true,
+            "firstName": "Deceased",
+            "lastName": "Gateway",
+            "attributes": {
+                "hdid": "MPOLGP66AV4PPDB6ZMYEWQ63WKRYPM4EPDW5MSXA2LA65EQOEMCQ"
+            },
+            "credentials": [
+                {
+                    "type": "password",
+                    "value": "{PASSWORD}",
+                    "temporary": false
+                }
+            ]
+        },
+        {
+            "username": "hthgtwy20",
+            "enabled": true,
+            "firstName": "Dr",
+            "lastName": "Gateway",
+            "attributes": {
+                "hdid": "DEV4FPEGCXG2NB5K2USBL52S66SC3GOUHWRP3GTXR2BTY5HEC4YA"
+            },
+            "credentials": [
+                {
+                    "type": "password",
+                    "value": "{PASSWORD}",
+                    "temporary": false
+                }
+            ]
+        },        {
+            "username": "hlthgw401",
+            "enabled": true,
+            "firstName": "Dr",
+            "lastName": "Gateway",
+            "attributes": {
+                "hdid": "C54JQKXANHJK7TIYBRCHJBOKXOIXASNQE76WSRCTOPKOXRMI5OAA"
+            },
+            "credentials": [
+                {
+                    "type": "password",
+                    "value": "{PASSWORD}",
+                    "temporary": false
+                }
+            ]
+        },
+        {
+            "username": "protected",
+            "enabled": true,
+            "firstName": "Dr",
+            "lastName": "Gateway",
+            "attributes": {
+                "hdid": "RD33Y2LJEUZCY2TCMOIECUTKS3E62MEQ62CSUL6Q553IHHBI3AWQ"
+            },
+            "credentials": [
+                {
+                    "type": "password",
+                    "value": "{PASSWORD}",
+                    "temporary": false
+                }
+            ]
+        },
+        {
+            "username": "accountclosure",
+            "enabled": true,
+            "firstName": "Dr",
+            "lastName": "Gateway",
+            "attributes": {
+                "hdid": "EXTRIOYFPNX35TWEBUAJ3DNFDFXSYTBC6J4M76GYE3HC5ER2NKWQ"
+            },
+            "credentials": [
+                {
+                    "type": "password",
+                    "value": "{PASSWORD}",
+                    "temporary": false
+                }
+            ]
+        }
+
+    ],
+    "roleMappings": { }
+}
