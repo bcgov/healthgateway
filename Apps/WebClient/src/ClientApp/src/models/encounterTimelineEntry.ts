@@ -3,7 +3,7 @@ import { Duration } from "luxon";
 import { EntryType } from "@/constants/entryType";
 import Clinic from "@/models/clinic";
 import { DateWrapper } from "@/models/dateWrapper";
-import Encounter from "@/models/encounter";
+import { Encounter } from "@/models/encounter";
 import TimelineEntry from "@/models/timelineEntry";
 import { UserComment } from "@/models/userComment";
 

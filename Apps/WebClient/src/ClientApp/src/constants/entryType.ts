@@ -9,6 +9,7 @@ export enum EntryType {
     Encounter = "Encounter",
     Note = "Note",
     ClinicalDocument = "ClinicalDocument",
+    HospitalVisit = "HospitalVisit",
 }
 
 export class EntryTypeDetails {
@@ -107,6 +108,17 @@ entryTypeMap.set(EntryType.ClinicalDocument, {
     icon: "file-waveform",
     component: "ClinicalDocumentComponent",
     eventName: "document",
+});
+
+entryTypeMap.set(EntryType.HospitalVisit, {
+    type: EntryType.HospitalVisit,
+    commentType: CommentEntryType.HospitalVisit,
+    name: "Hospital Visits",
+    description:
+        "View a list of your hospital visits. You can get the admission and discharge dates, location and provider for each visit.",
+    icon: "house-medical",
+    component: "HospitalVisitComponent",
+    eventName: "hospital_visits",
 });
 
 export { entryTypeMap };

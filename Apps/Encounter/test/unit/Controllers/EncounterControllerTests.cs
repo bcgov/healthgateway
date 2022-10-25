@@ -13,7 +13,7 @@
 //  See the License for the specific language governing permissions and
 //  limitations under the License.
 // -------------------------------------------------------------------------
-namespace HealthGateway.Encounter.Test.Controllers
+namespace HealthGateway.EncounterTests.Controllers
 {
     using System;
     using System.Collections.Generic;
@@ -23,6 +23,7 @@ namespace HealthGateway.Encounter.Test.Controllers
     using HealthGateway.Common.Data.ViewModels;
     using HealthGateway.Encounter.Controllers;
     using HealthGateway.Encounter.Models;
+    using HealthGateway.Encounter.Models.PHSA;
     using HealthGateway.Encounter.Services;
     using Microsoft.Extensions.Logging;
     using Moq;
@@ -38,7 +39,7 @@ namespace HealthGateway.Encounter.Test.Controllers
         /// <summary>
         /// GetEncounters - Happy Path.
         /// </summary>
-        /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
+        /// <returns>A <see cref="System.Threading.Tasks.Task"/> representing the asynchronous unit test.</returns>
         [Fact]
         public async Task ShouldGetEncounters()
         {
@@ -46,26 +47,26 @@ namespace HealthGateway.Encounter.Test.Controllers
             {
                 ResultStatus = ResultType.Success,
                 TotalResultCount = 2,
-                ResourcePayload = new List<EncounterModel>()
+                ResourcePayload = new List<EncounterModel>
                 {
-                    new EncounterModel()
+                    new()
                     {
                         Id = "1",
                         EncounterDate = new DateTime(2020, 05, 27),
                         SpecialtyDescription = "LABORATORY MEDICINE",
                         PractitionerName = "PRACTITIONER NAME",
-                        Clinic = new Clinic()
+                        Clinic = new Clinic
                         {
                             Name = "LOCATION NAME",
                         },
                     },
-                    new EncounterModel()
+                    new()
                     {
                         Id = "2",
                         EncounterDate = new DateTime(2020, 06, 27),
                         SpecialtyDescription = "LABORATORY MEDICINE",
                         PractitionerName = "PRACTITIONER NAME",
-                        Clinic = new Clinic()
+                        Clinic = new Clinic
                         {
                             Name = "LOCATION NAME",
                         },
@@ -86,6 +87,46 @@ namespace HealthGateway.Encounter.Test.Controllers
 
             Assert.Equal(2, actual?.ResourcePayload?.Count());
             Assert.Equal(2, actual?.TotalResultCount);
+        }
+
+        /// <summary>
+        /// GetHospitalVisits - Happy Path.
+        /// </summary>
+        /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
+        [Fact]
+        public async Task ShouldGetHospitalVisits()
+        {
+            RequestResult<HospitalVisitResult> expectedRequestResult = new()
+            {
+                ResultStatus = ResultType.Success,
+                TotalResultCount = 1,
+                ResourcePayload = new HospitalVisitResult
+                {
+                    HospitalVisits = new List<HospitalVisitModel>
+                    {
+                        new()
+                        {
+                            EncounterId = "123",
+                            AdmitDateTime = DateTime.Now,
+                            EndDateTime = DateTime.Now.AddDays(10),
+                        },
+                    },
+                },
+            };
+
+            Mock<IEncounterService> svcMock = new();
+            svcMock.Setup(s => s.GetHospitalVisits(Hdid)).ReturnsAsync(expectedRequestResult);
+
+            EncounterController controller = new(new Mock<ILogger<EncounterController>>().Object, svcMock.Object);
+
+            // Act
+            RequestResult<HospitalVisitResult> actual = await controller.GetHospitalVisits(Hdid).ConfigureAwait(true);
+
+            // Verify
+            Assert.True(actual != null && actual.ResultStatus == ResultType.Success);
+
+            Assert.Equal(1, actual?.ResourcePayload?.HospitalVisits.Count());
+            Assert.Equal(1, actual?.TotalResultCount);
         }
     }
 }

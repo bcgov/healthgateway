@@ -4,7 +4,7 @@ import { Component, Emit, Prop, Watch } from "vue-property-decorator";
 import { Action, Getter } from "vuex-class";
 
 import { DateWrapper } from "@/models/dateWrapper";
-import Encounter from "@/models/encounter";
+import { Encounter } from "@/models/encounter";
 import Report from "@/models/report";
 import ReportField from "@/models/reportField";
 import ReportFilter from "@/models/reportFilter";
@@ -27,7 +27,7 @@ interface EncounterRow {
 export default class MSPVisitsReportComponent extends Vue {
     @Prop() private filter!: ReportFilter;
 
-    @Action("retrieve", { namespace: "encounter" })
+    @Action("retrievePatientEncounters", { namespace: "encounter" })
     retrieveEncounters!: (params: { hdid: string }) => Promise<void>;
 
     @Getter("isLoading", { namespace: "encounter" })

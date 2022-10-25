@@ -7,4 +7,5 @@ export const enum CommentEntryType {
     LaboratoryOrder = "ALO",
     Encounter = "Enc",
     ClinicalDocument = "CDO",
+    HospitalVisit = "Hos",
 }

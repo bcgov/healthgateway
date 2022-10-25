@@ -13,31 +13,29 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //-------------------------------------------------------------------------
-namespace HealthGateway.Encounter.Services
+namespace HealthGateway.Encounter.Api
 {
     using System.Collections.Generic;
     using System.Threading.Tasks;
-    using HealthGateway.Common.Data.ViewModels;
-    using HealthGateway.Encounter.Models;
+    using HealthGateway.Common.Models.PHSA;
     using HealthGateway.Encounter.Models.PHSA;
+    using Refit;
 
     /// <summary>
-    /// The Encounter data service.
+    /// API for all Hospital Visits for the current user.
     /// </summary>
-    public interface IEncounterService
+    public interface IHospitalVisitApi
     {
         /// <summary>
-        /// Gets a list of Encounters.
+        /// Returns a list of hospital visits.
         /// </summary>
-        /// <param name="hdid">The health directed id for the subject.</param>
-        /// <returns>Returns a list of claims.</returns>
-        Task<RequestResult<IEnumerable<EncounterModel>>> GetEncounters(string hdid);
-
-        /// <summary>
-        /// Gets a list of Hospital Visits.
-        /// </summary>
-        /// <param name="hdid">The health directed id for the subject.</param>
-        /// <returns>Returns the hospital visit result.</returns>
-        Task<RequestResult<HospitalVisitResult>> GetHospitalVisits(string hdid);
+        /// <param name="query">Query parameters used to query hospital visits.</param>
+        /// <param name="token">The bearer token to authorize the call.</param>
+        /// <returns>
+        /// The PHSA Result including the load state and the list of hospital visits for the user identified by
+        /// the subject id in the query.
+        /// </returns>
+        [Get("/api/v1/HospitalVisits")]
+        Task<IApiResponse<PhsaResult<IEnumerable<HospitalVisit>>>> GetHospitalVisits(Dictionary<string, string?> query, [Authorize] string token);
     }
 }
