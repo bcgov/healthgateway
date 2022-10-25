@@ -1,15 +1,15 @@
 resource "keycloak_openid_client" "hg_mobile_client" {
   realm_id                     = data.keycloak_realm.hg_realm.id
-  client_id                    = "hg-mobile"
-  name                         = "Health Gateway Mobile - ${var.environment}"
+  client_id                    = var.client_hg_mobile.id
+  name                         = "Health Gateway Mobile - ${var.environment.name}"
   description                  = "Health Gateway Mobile applications"
   enabled                      = true
   access_type                  = "PUBLIC"
   login_theme                  = "bcgov"
   standard_flow_enabled        = true
   direct_access_grants_enabled = false
-  valid_redirect_uris          = var.client_hg_mobile_valid_redirects
-  web_origins                  = var.client_hg_mobile_web_origins
+  valid_redirect_uris          = var.client_hg_mobile.valid_redirects
+  web_origins                  = var.client_hg_mobile.web_origins
   full_scope_allowed           = false
 }
 

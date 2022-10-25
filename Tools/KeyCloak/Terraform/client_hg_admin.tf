@@ -1,7 +1,7 @@
 resource "keycloak_openid_client" "hgadmin_client" {
   realm_id                     = data.keycloak_realm.hg_realm.id
-  client_id                    = "hg-admin"
-  name                         = "Health Gateway Administration - ${var.environment}"
+  client_id                    = var.client_hg_admin.id
+  name                         = "Health Gateway Administration - ${var.environment.name}"
   description                  = "Health Gateway Administration web application"
   enabled                      = true
   access_type                  = "CONFIDENTIAL"
@@ -9,8 +9,8 @@ resource "keycloak_openid_client" "hgadmin_client" {
   standard_flow_enabled        = true
   direct_access_grants_enabled = true
   service_accounts_enabled     = true
-  valid_redirect_uris          = var.client_hg_admin_valid_redirects
-  web_origins                  = var.client_hg_admin_web_origins
+  valid_redirect_uris          = var.client_hg_admin.valid_redirects
+  web_origins                  = var.client_hg_admin.web_origins
   full_scope_allowed           = false
 }
 

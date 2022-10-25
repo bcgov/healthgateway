@@ -1,7 +1,7 @@
 resource "keycloak_openid_client" "hgphsa_client" {
   realm_id                     = data.keycloak_realm.hg_realm.id
-  client_id                    = "hg-phsa"
-  name                         = "Health Gateway PHSA - ${var.environment}"
+  client_id                    = var.client_hg_phsa.id
+  name                         = "Health Gateway PHSA - ${var.environment.name}"
   description                  = "Health Gateway PHSA integration"
   enabled                      = true
   access_type                  = "CONFIDENTIAL"
@@ -9,8 +9,8 @@ resource "keycloak_openid_client" "hgphsa_client" {
   standard_flow_enabled        = true
   direct_access_grants_enabled = true
   service_accounts_enabled     = true
-  valid_redirect_uris          = var.client_hg_phsa_valid_redirects
-  web_origins                  = var.client_hg_phsa_web_origins
+  valid_redirect_uris          = var.client_hg_phsa.valid_redirects
+  web_origins                  = var.client_hg_phsa.web_origins
   full_scope_allowed           = false
 }
 

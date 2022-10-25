@@ -1,16 +1,16 @@
 resource "keycloak_openid_client" "hgk6_client" {
   count                        = local.development ? 1 : 0
   realm_id                     = data.keycloak_realm.hg_realm.id
-  client_id                    = "hg-k6"
-  name                         = "Health Gateway K6 Client  - ${var.environment}"
+  client_id                    = var.client_hg_k6.id
+  name                         = "Health Gateway K6 Client  - ${var.environment.name}"
   description                  = "Health Gateway K6 Performance Testing client"
   enabled                      = true
   access_type                  = "PUBLIC"
   login_theme                  = "bcgov"
   standard_flow_enabled        = true
   direct_access_grants_enabled = true
-  valid_redirect_uris          = var.client_hg_k6_valid_redirects
-  web_origins                  = var.client_hg_k6_web_origins
+  valid_redirect_uris          = var.client_hg_k6.valid_redirects
+  web_origins                  = var.client_hg_k6.web_origins
   full_scope_allowed           = false
 }
 
@@ -22,7 +22,7 @@ resource "keycloak_openid_client_default_scopes" "hgk6_client_default_scopes" {
   default_scopes = []
 }
 resource "keycloak_openid_client_optional_scopes" "hgk6_client_optional_scopes" {
-  count     = local.development ? 1 : 0  
+  count     = local.development ? 1 : 0
   realm_id  = data.keycloak_realm.hg_realm.id
   client_id = keycloak_openid_client.hgk6_client[0].id
 
@@ -43,7 +43,7 @@ resource "keycloak_openid_client_optional_scopes" "hgk6_client_optional_scopes" 
 }
 
 resource "keycloak_openid_user_attribute_protocol_mapper" "hgk6_hdid" {
-  count               = local.development ? 1 : 0  
+  count               = local.development ? 1 : 0
   realm_id            = data.keycloak_realm.hg_realm.id
   client_id           = keycloak_openid_client.hgk6_client[0].id
   name                = "hdid"

@@ -1,15 +1,15 @@
 resource "keycloak_openid_client" "hgadminblazor_client" {
   realm_id                     = data.keycloak_realm.hg_realm.id
-  client_id                    = "hg-admin-blazor"
-  name                         = "Health Gateway Admin Blazor - ${var.environment}"
+  client_id                    = var.client_hg_admin_blazor.id
+  name                         = "Health Gateway Admin Blazor - ${var.environment.name}"
   description                  = "Health Gateway Blazor Admin web application"
   enabled                      = true
   access_type                  = "PUBLIC"
   login_theme                  = "bcgov"
   standard_flow_enabled        = true
   direct_access_grants_enabled = true
-  valid_redirect_uris          = var.client_hg_admin_blazor_valid_redirects
-  web_origins                  = var.client_hg_admin_blazor_web_origins
+  valid_redirect_uris          = var.client_hg_admin_blazor.valid_redirects
+  web_origins                  = var.client_hg_admin_blazor.web_origins
   full_scope_allowed           = false
 }
 

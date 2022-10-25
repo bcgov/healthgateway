@@ -23,16 +23,8 @@ function getKeyCloakConfig
     [Parameter(Mandatory)]
     [string] $secretFile
   )
-  $rawProperties=cat $secretFile
-  $propertiesToConvert=($rawProperties -replace '"','') -join [Environment]::NewLine
-  $properties=ConvertFrom-StringData $propertiesToConvert
-  $keycloakConfig = @{
-    BaseUrl = $properties.keycloak_base_url
-    Realm = $properties.keycloak_realm
-    Client = $properties.keycloak_terraform_client_id
-    Secret = $properties.keycloak_terraform_client_secret
-  }
-  return $keycloakConfig
+  $configuration = Get-Content -Path $secretFile | ConvertFrom-Json
+  return $configuration
 }
 
 function GetAccessToken

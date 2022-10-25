@@ -1,15 +1,15 @@
 resource "keycloak_openid_client" "hg_client" {
   realm_id                     = data.keycloak_realm.hg_realm.id
-  client_id                    = "hg"
-  name                         = "Health Gateway  - ${var.environment}"
+  client_id                    = var.client_hg.id
+  name                         = "Health Gateway  - ${var.environment.name}"
   description                  = "Health Gateway web application"
   enabled                      = true
   access_type                  = "PUBLIC"
   login_theme                  = "bcgov"
   standard_flow_enabled        = true
   direct_access_grants_enabled = true
-  valid_redirect_uris          = var.client_hg_valid_redirects
-  web_origins                  = var.client_hg_web_origins
+  valid_redirect_uris          = var.client_hg.valid_redirects
+  web_origins                  = var.client_hg.web_origins
   full_scope_allowed           = false
 }
 
