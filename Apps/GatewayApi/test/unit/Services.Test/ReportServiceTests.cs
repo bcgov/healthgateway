@@ -47,11 +47,12 @@ namespace HealthGateway.GatewayApi.Test.Services
         [InlineData(TemplateType.MedicationRequest, "HealthGatewayMedicationRequestReport")]
         [InlineData(TemplateType.Laboratory, "HealthGatewayLaboratoryReport")]
         [InlineData(TemplateType.DependentImmunization, "HealthGatewayDependentImmunizationReport")]
+        [InlineData(TemplateType.HospitalVisit, "HealthGatewayHospitalVisitReport")]
         public void ShouldGetReport(TemplateType templateType, string reportName)
         {
             RequestResult<ReportModel> expectedResult = new()
             {
-                ResourcePayload = new ReportModel()
+                ResourcePayload = new ReportModel
                 {
                     Data = "base64data",
                 },
