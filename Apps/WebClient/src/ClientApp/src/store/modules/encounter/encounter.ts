@@ -6,11 +6,19 @@ import { mutations } from "./mutations";
 import { EncounterModule, EncounterState } from "./types";
 
 const state: EncounterState = {
-    statusMessage: "",
-    patientEncounters: [],
-    hospitalVisits: [],
-    error: undefined,
-    status: LoadStatus.NONE,
+    encounter: {
+        statusMessage: "",
+        patientEncounters: [],
+        error: undefined,
+        status: LoadStatus.NONE,
+    },
+    hospitalVisit: {
+        statusMessage: "",
+        hospitalVisits: [],
+        error: undefined,
+        status: LoadStatus.NONE,
+        queued: false,
+    },
 };
 
 const namespaced = true;

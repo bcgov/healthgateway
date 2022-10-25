@@ -11,7 +11,7 @@ export default class HospitalVisitTimelineEntry extends TimelineEntry {
     public outpatient: boolean;
     public facility: string;
     public provider: string;
-    public healthAuthority: string;
+    public healthAuthority?: string;
     public admitDateTime: DateWrapper;
     public endDateTime: DateWrapper;
 
