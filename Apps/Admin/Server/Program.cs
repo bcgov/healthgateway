@@ -25,6 +25,7 @@ namespace HealthGateway.Admin.Server
     using HealthGateway.Common.AspNetConfiguration.Modules;
     using HealthGateway.Common.Delegates;
     using HealthGateway.Common.Delegates.PHSA;
+    using HealthGateway.Common.MapProfiles;
     using HealthGateway.Common.Models.PHSA;
     using HealthGateway.Common.Services;
     using HealthGateway.Common.Utils.Phsa;
@@ -111,7 +112,7 @@ namespace HealthGateway.Admin.Server
                 .ConfigureHttpClient(c => c.BaseAddress = phsaConfig.BaseUrl)
                 .AddHttpMessageHandler<AuthHeaderHandler>();
 
-            services.AddAutoMapper(typeof(Program));
+            services.AddAutoMapper(typeof(Program), typeof(BroadcastProfile));
 
             WebApplication app = builder.Build();
             HttpWeb.UseForwardHeaders(app, logger, configuration);
