@@ -103,6 +103,7 @@ namespace HealthGateway.Admin.Client
         private static void RegisterRefitClients(this WebAssemblyHostBuilder builder)
         {
             RegisterRefitClient<IAnalyticsApi>(builder, "v1/api/CsvExport", true);
+            RegisterRefitClient<IBroadcastsApi>(builder, "v1/api/Broadcast", true);
             RegisterRefitClient<ICommunicationsApi>(builder, "v1/api/Communication", true);
             RegisterRefitClient<IConfigurationApi>(builder, "v1/api/Configuration", false);
             RegisterRefitClient<IDashboardApi>(builder, "v1/api/Dashboard", true);
