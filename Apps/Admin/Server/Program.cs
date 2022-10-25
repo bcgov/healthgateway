@@ -20,11 +20,14 @@ namespace HealthGateway.Admin.Server
     using HealthGateway.Admin.Server.Services;
     using HealthGateway.Common.AccessManagement.Administration;
     using HealthGateway.Common.AccessManagement.Authentication;
+    using HealthGateway.Common.Api;
     using HealthGateway.Common.AspNetConfiguration;
     using HealthGateway.Common.AspNetConfiguration.Modules;
     using HealthGateway.Common.Delegates;
     using HealthGateway.Common.Delegates.PHSA;
+    using HealthGateway.Common.Models.PHSA;
     using HealthGateway.Common.Services;
+    using HealthGateway.Common.Utils.Phsa;
     using HealthGateway.Database.Delegates;
     using Microsoft.AspNetCore.Builder;
     using Microsoft.AspNetCore.Hosting;
@@ -32,6 +35,7 @@ namespace HealthGateway.Admin.Server
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Hosting;
     using Microsoft.Extensions.Logging;
+    using Refit;
     using CommunicationService = HealthGateway.Admin.Server.Services.CommunicationService;
     using ICommunicationService = HealthGateway.Admin.Server.Services.ICommunicationService;
 
@@ -69,6 +73,8 @@ namespace HealthGateway.Admin.Server
             services.AddControllersWithViews();
 
             // Add HG Services
+            services.AddTransient<IAccessTokenService, AccessTokenService>();
+            services.AddTransient<IBroadcastService, BroadcastService>();
             services.AddTransient<IConfigurationService, ConfigurationService>();
             services.AddTransient<IUserFeedbackService, UserFeedbackService>();
             services.AddTransient<IDashboardService, DashboardService>();
@@ -78,6 +84,7 @@ namespace HealthGateway.Admin.Server
             services.AddTransient<ISupportService, SupportService>();
 
             // Add HG Delegates
+            services.AddTransient<AuthHeaderHandler>();
             services.AddTransient<IMessagingVerificationDelegate, DBMessagingVerificationDelegate>();
             services.AddTransient<IFeedbackDelegate, DBFeedbackDelegate>();
             services.AddTransient<IRatingDelegate, DBRatingDelegate>();
@@ -92,7 +99,17 @@ namespace HealthGateway.Admin.Server
             services.AddTransient<IVaccineProofDelegate, VaccineProofDelegate>();
             services.AddTransient<IAdminUserProfileDelegate, DbAdminUserProfileDelegate>();
             services.AddTransient<IAuthenticationDelegate, AuthenticationDelegate>();
+            services.AddTransient<ITokenSwapDelegate, RestTokenSwapDelegate>();
             services.AddTransient<IUserAdminDelegate, KeycloakUserAdminDelegate>();
+
+            // Add API clients
+            PhsaConfigV2 phsaConfig = new();
+            configuration.Bind(PhsaConfigV2.ConfigurationSectionKey, phsaConfig);
+            services.AddRefitClient<ITokenSwapApi>()
+                .ConfigureHttpClient(c => c.BaseAddress = phsaConfig.TokenBaseUrl);
+            services.AddRefitClient<ISystemBroadcastApi>()
+                .ConfigureHttpClient(c => c.BaseAddress = phsaConfig.BaseUrl)
+                .AddHttpMessageHandler<AuthHeaderHandler>();
 
             services.AddAutoMapper(typeof(Program));
 
