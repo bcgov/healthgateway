@@ -29,7 +29,7 @@ export default class HospitalVisitReportComponent extends Vue {
     @Prop() private filter!: ReportFilter;
 
     @Action("retrieveHospitalVisits", { namespace: "encounter" })
-    retrieveEncounters!: (params: { hdid: string }) => Promise<void>;
+    retrieveHospitalVisits!: (params: { hdid: string }) => Promise<void>;
 
     @Getter("isHospitalVisitLoading", { namespace: "encounter" })
     isLoading!: boolean;
@@ -94,7 +94,7 @@ export default class HospitalVisitReportComponent extends Vue {
 
     private created(): void {
         this.logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
-        this.retrieveEncounters({ hdid: this.user.hdid }).catch((err) =>
+        this.retrieveHospitalVisits({ hdid: this.user.hdid }).catch((err) =>
             this.logger.error(`Error loading hospital visit data: ${err}`)
         );
     }
