@@ -94,7 +94,16 @@ public partial class BannerDialog : FluxorComponent
 
     private void SetFormValues()
     {
-        if (!this.IsNewBanner)
+        if (this.IsNewBanner)
+        {
+            DateTime now = DateTime.Now;
+            DateTime tomorrow = now.AddDays(1);
+            this.EffectiveDate = now.Date;
+            this.EffectiveTime = now.TimeOfDay;
+            this.ExpiryDate = tomorrow.Date;
+            this.ExpiryTime = tomorrow.TimeOfDay;
+        }
+        else
         {
             this.EffectiveDate = this.Communication.EffectiveDateTime.ToLocalTime().Date;
             this.EffectiveTime = this.Communication.EffectiveDateTime.ToLocalTime().TimeOfDay;
