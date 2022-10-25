@@ -12,6 +12,7 @@ import MultiSelectComponent, {
 } from "@/components/MultiSelectComponent.vue";
 import BreadcrumbComponent from "@/components/navmenu/BreadcrumbComponent.vue";
 import Covid19ReportComponent from "@/components/report/Covid19ReportComponent.vue";
+import HospitalVisitReportComponent from "@/components/report/HospitalVisitReportComponent.vue";
 import ImmunizationHistoryReportComponent from "@/components/report/ImmunizationHistoryReportComponent.vue";
 import LaboratoryReportComponent from "@/components/report/LaboratoryReportComponent.vue";
 import MedicationHistoryReportComponent from "@/components/report/MedicationHistoryReportComponent.vue";
@@ -43,6 +44,7 @@ const immunizationReport = "immunization-report";
 const medicationRequestReport = "medication-request-report";
 const noteReport = "note-report";
 const laboratoryReport = "laboratory-report";
+const hospitalVisitReport = "hospital-visit-report";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const options: any = {
@@ -59,6 +61,7 @@ const options: any = {
         MultiSelectComponent,
         noteReport: NotesReportComponent,
         laboratoryReport: LaboratoryReportComponent,
+        HospitalVisitReport: HospitalVisitReportComponent,
     },
 };
 
@@ -228,6 +231,12 @@ export default class ReportsView extends Vue {
                 text: "Laboratory Tests",
             });
         }
+        if (this.config.modules["HospitalVisit"]) {
+            this.reportTypeOptions.push({
+                value: hospitalVisitReport,
+                text: "Hospital Visits",
+            });
+        }
     }
 
     private clearFilter(): void {
@@ -345,6 +354,9 @@ export default class ReportsView extends Vue {
                 break;
             case laboratoryReport:
                 reportName = "Laboratory Tests";
+                break;
+            case hospitalVisitReport:
+                reportName = "Hospital Visits";
                 break;
         }
         if (reportName !== "") {

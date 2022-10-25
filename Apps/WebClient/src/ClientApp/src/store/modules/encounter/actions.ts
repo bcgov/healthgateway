@@ -111,7 +111,7 @@ export const actions: EncounterActions = {
                             payload.loaded
                         ) {
                             EventTracker.loadData(
-                                EntryType.Encounter,
+                                EntryType.HospitalVisit,
                                 result.totalResultCount
                             );
                             logger.info("Hospital Visits loaded.");

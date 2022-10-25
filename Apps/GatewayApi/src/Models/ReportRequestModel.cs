@@ -85,6 +85,11 @@ namespace HealthGateway.GatewayApi.Models
         /// Indicates a Laboratory template type.
         /// </summary>
         Laboratory,
+
+        /// <summary>
+        /// Indicates a Hospital Visit template type.
+        /// </summary>
+        HospitalVisit,
     }
 
     /// <summary>

@@ -12,6 +12,7 @@ describe("Reports", () => {
             "Immunization",
             "MedicationRequest",
             "AllLaboratory",
+            "HospitalVisit",
         ]);
         cy.login(
             Cypress.env("keycloak.username"),
@@ -196,6 +197,36 @@ describe("Reports", () => {
 
         cy.get("[data-testid=reportSample]").should("be.visible");
         cy.get("[data-testid=labResultDateItem]", { timeout: 60000 })
+            .last()
+            .contains(/\d{4}-[A-Z]{1}[a-z]{2}-\d{2}/);
+
+        cy.viewport("iphone-6");
+        cy.get("[data-testid=reportSample]").should("not.be.visible");
+        cy.viewport(1440, 600);
+
+        cy.get("[data-testid=exportRecordBtn] button")
+            .should("be.enabled", "be.visible")
+            .click();
+
+        cy.get("[data-testid=exportRecordBtn] a").first().click();
+
+        cy.get("[data-testid=genericMessageModal]").should("be.visible");
+
+        cy.get("[data-testid=genericMessageText]").should(
+            "have.text",
+            sensitiveDocText
+        );
+
+        cy.get("[data-testid=genericMessageSubmitBtn]").click();
+
+        cy.get("[data-testid=genericMessageModal]").should("not.exist");
+    });
+
+    it("Validate Hospital Visits Report", () => {
+        cy.get("[data-testid=reportType]").select("Hospital Visits");
+
+        cy.get("[data-testid=reportSample]").should("be.visible");
+        cy.get("[data-testid=hospital-visit-date]", { timeout: 60000 })
             .last()
             .contains(/\d{4}-[A-Z]{1}[a-z]{2}-\d{2}/);
 
