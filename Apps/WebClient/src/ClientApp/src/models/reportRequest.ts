@@ -18,6 +18,7 @@ export enum TemplateType {
     MedicationRequest,
     Notes,
     Laboratory,
+    HospitalVisit,
 }
 
 export enum ReportFormatType {
