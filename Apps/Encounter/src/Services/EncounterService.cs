@@ -151,6 +151,8 @@ namespace HealthGateway.Encounter.Services
                     result.ResultStatus = ResultType.Success;
                     result.TotalResultCount = hospitalVisitResult.TotalResultCount;
                     result.ResourcePayload.HospitalVisits = this.autoMapper.Map<IList<HospitalVisitModel>>(hospitalVisitResult.ResourcePayload.Result);
+                    result.PageIndex = hospitalVisitResult.PageIndex;
+                    result.PageSize = hospitalVisitResult.PageSize;
                 }
 
                 PhsaLoadState? loadState = hospitalVisitResult.ResourcePayload?.LoadState;
