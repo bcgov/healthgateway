@@ -1,0 +1,44 @@
+{
+    "resourcePayload": {
+        "loaded": true,
+        "queued": false,
+        "retryin": 0,
+        "hospitalVisits": [
+            {
+                "encounterId": "4edcc644-2877-4d4a-a3da-b189f1b5de26",
+                "facility": "Vancouver General Hospital",
+                "healthService": "Gynecology",
+                "visitType": "Series",
+                "healthAuthority": "VCHA",
+                "admitDateTime": "2019-02-01T08:00:00",
+                "endDateTime": "2020-01-31T08:00:00",
+                "provider": null
+            },
+            {
+                "encounterId": "38406137-1bd3-4f6c-8bce-cb8316177c78",
+                "facility": "BC Cancer",
+                "healthService": "Hematology",
+                "visitType": "Preadmit",
+                "healthAuthority": "VCHA",
+                "admitDateTime": "2018-12-19T18:18:00",
+                "endDateTime": "2018-12-19T18:18:00",
+                "provider": null
+            },
+            {
+                "encounterId": "2220582e-9922-42be-a158-1fe6b69f7863",
+                "facility": "BC Cancer",
+                "healthService": "Hematology",
+                "visitType": "Preadmit",
+                "healthAuthority": "VCHA",
+                "admitDateTime": "2020-12-18T18:18:00",
+                "endDateTime": "2020-12-18T18:18:00",
+                "provider": null
+            }
+        ]
+    },
+    "totalResultCount": 3,
+    "pageIndex": null,
+    "pageSize": null,
+    "resultStatus": 1,
+    "resultError": null
+}
