@@ -22,7 +22,8 @@ export class RestEncounterService implements IEncounterService {
     private readonly ENCOUNTER_BASE_URI: string = "Encounter";
     private baseUri = "";
     private http!: IHttpDelegate;
-    private isEnabled = false;
+    private isEncounterEnabled = false;
+    private isHospitalVisitEnabled = false;
 
     public initialize(
         config: ExternalConfiguration,
@@ -30,14 +31,15 @@ export class RestEncounterService implements IEncounterService {
     ): void {
         this.baseUri = config.serviceEndpoints["Encounter"];
         this.http = http;
-        this.isEnabled = config.webClient.modules["Encounter"];
+        this.isEncounterEnabled = config.webClient.modules["Encounter"];
+        this.isHospitalVisitEnabled = config.webClient.modules["HospitalVisit"];
     }
 
     public getPatientEncounters(
         hdid: string
     ): Promise<RequestResult<Encounter[]>> {
         return new Promise((resolve, reject) => {
-            if (!this.isEnabled) {
+            if (!this.isEncounterEnabled) {
                 resolve({
                     pageIndex: 0,
                     pageSize: 0,
@@ -70,7 +72,7 @@ export class RestEncounterService implements IEncounterService {
         hdid: string
     ): Promise<RequestResult<HospitalVisitResult>> {
         return new Promise((resolve, reject) => {
-            if (!this.isEnabled) {
+            if (!this.isHospitalVisitEnabled) {
                 resolve({
                     pageIndex: 0,
                     pageSize: 0,
