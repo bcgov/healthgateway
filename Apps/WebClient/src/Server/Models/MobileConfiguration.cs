@@ -31,5 +31,21 @@ namespace HealthGateway.WebClient.Models
         /// Gets or sets the base url for the endpoints to be used by the mobile application.
         /// </summary>
         public Uri? BaseUrl { get; set; }
+
+        /// <summary>
+        /// Gets or sets the URL for OpenId authentication.
+        /// </summary>
+        public Uri? OpenIdUrl { get; set; }
+
+        /// <summary>
+        /// Gets or sets the client id for OpenId authentication.
+        /// </summary>
+        public string? OpenIdClientId { get; set; }
+
+        /// <summary>
+        /// Gets or sets the mobile version.
+        /// The use of this version is to trigger forced updates in the future.
+        /// </summary>
+        public string? Version { get; set; }
     }
 }
