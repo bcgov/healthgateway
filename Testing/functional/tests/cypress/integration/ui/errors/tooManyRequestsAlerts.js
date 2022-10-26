@@ -214,6 +214,38 @@ describe("Immunization", () => {
     });
 });
 
+describe("Encounter", () => {
+    it("Unsuccessful Response: Too Many Requests", () => {
+        cy.intercept("GET", "**/Encounter/*", {
+            statusCode: 429,
+        });
+        cy.enableModules("Encounter");
+        cy.login(
+            Cypress.env("keycloak.username"),
+            Cypress.env("keycloak.password"),
+            AuthMethod.KeyCloak
+        );
+
+        cy.get("[data-testid=too-many-requests-warning]").should("be.visible");
+    });
+});
+
+describe("Hospital Visits", () => {
+    it("Unsuccessful Response: Too Many Requests", () => {
+        cy.intercept("GET", "**/HospitalVisit/*", {
+            statusCode: 429,
+        });
+        cy.enableModules("HospitalVisit");
+        cy.login(
+            Cypress.env("keycloak.username"),
+            Cypress.env("keycloak.password"),
+            AuthMethod.KeyCloak
+        );
+
+        cy.get("[data-testid=too-many-requests-warning]").should("be.visible");
+    });
+});
+
 describe("Medication Request", () => {
     it("Unsuccessful Response: Too Many Requests", () => {
         cy.intercept("GET", "**/MedicationRequest/*", {
@@ -253,6 +285,40 @@ describe("Mobile - Immunization: Unsuccessful Response", () => {
             statusCode: 429,
         });
         cy.enableModules("Immunization");
+        cy.viewport("iphone-6");
+        cy.login(
+            Cypress.env("keycloak.username"),
+            Cypress.env("keycloak.password"),
+            AuthMethod.KeyCloak
+        );
+
+        cy.get("[data-testid=too-many-requests-warning]").should("be.visible");
+    });
+});
+
+describe("Mobile - Encounter", () => {
+    it("Unsuccessful Response: Too Many Requests", () => {
+        cy.intercept("GET", "**/Encounter/*", {
+            statusCode: 429,
+        });
+        cy.enableModules("Encounter");
+        cy.viewport("iphone-6");
+        cy.login(
+            Cypress.env("keycloak.username"),
+            Cypress.env("keycloak.password"),
+            AuthMethod.KeyCloak
+        );
+
+        cy.get("[data-testid=too-many-requests-warning]").should("be.visible");
+    });
+});
+
+describe("Mobile - Hospital Visits", () => {
+    it("Unsuccessful Response: Too Many Requests", () => {
+        cy.intercept("GET", "**/HospitalVisit/*", {
+            statusCode: 429,
+        });
+        cy.enableModules("HospitalVisit");
         cy.viewport("iphone-6");
         cy.login(
             Cypress.env("keycloak.username"),
