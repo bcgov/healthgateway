@@ -29,7 +29,9 @@ namespace HealthGateway.Common.MapProfiles
         /// </summary>
         public BroadcastProfile()
         {
-            this.CreateMap<BroadcastResponse, Broadcast>();
+            this.CreateMap<BroadcastResponse, Broadcast>()
+                .ForMember(dest => dest.CategoryName, opt => opt.MapFrom(src => src.CategoryName ?? string.Empty))
+                .ForMember(dest => dest.DisplayText, opt => opt.MapFrom(src => src.DisplayText ?? string.Empty));
             this.CreateMap<Broadcast, BroadcastRequest>();
         }
     }

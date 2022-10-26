@@ -15,6 +15,7 @@
 //-------------------------------------------------------------------------
 namespace HealthGateway.Admin.Client.Store.Broadcasts;
 
+using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using HealthGateway.Common.Data.Models;
@@ -224,5 +225,25 @@ public static class BroadcastsActions
     /// </summary>
     public class ResetStateAction
     {
+    }
+
+    /// <summary>
+    /// The action that toggles whether a particular broadcast is expanded.
+    /// </summary>
+    public class ToggleIsExpandedAction
+    {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ToggleIsExpandedAction"/> class.
+        /// </summary>
+        /// <param name="id">Represents the ID of the broadcast.</param>
+        public ToggleIsExpandedAction(Guid id)
+        {
+            this.Id = id;
+        }
+
+        /// <summary>
+        /// Gets or sets the ID of the broadcast.
+        /// </summary>
+        public Guid Id { get; set; }
     }
 }

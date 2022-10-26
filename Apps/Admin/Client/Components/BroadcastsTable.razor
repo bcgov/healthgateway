@@ -1,0 +1,105 @@
+@inherits Fluxor.Blazor.Web.Components.FluxorComponent
+
+<MudTable Class="mt-3"
+          Items="@Rows"
+          Loading="@IsLoading"
+          AllowUnsorted="false"
+          Breakpoint="@Breakpoint.Md"
+          HorizontalScrollbar="true"
+          Striped="true"
+          Dense="true">
+    <ColGroup>
+        <MudHidden Breakpoint="@Breakpoint.MdAndDown">
+            <col />
+            <col style="width: 200px;" />
+            <col style="width: 200px;" />
+            <col style="width: 150px;" />
+            <col style="width: 200px;" />
+        </MudHidden>
+    </ColGroup>
+    <HeaderContent>
+        <MudTh>
+            <MudTableSortLabel SortBy="new Func<BroadcastRow, object>(x => x.Subject)">
+                Subject
+            </MudTableSortLabel>
+        </MudTh>
+        <MudTh>
+            <MudTableSortLabel SortBy="new Func<BroadcastRow, object>(x => x.EffectiveDate)"
+                               InitialDirection="@SortDirection.Descending">
+                Effective On
+            </MudTableSortLabel>
+        </MudTh>
+        <MudTh>
+            <MudTableSortLabel SortBy="new Func<BroadcastRow, object>(x => x.ExpiryDate)">
+                Expires On
+            </MudTableSortLabel>
+        </MudTh>
+        <MudTh>
+            <MudTableSortLabel SortBy="new Func<BroadcastRow, object>(x => x.ActionType)">
+                Action Type
+            </MudTableSortLabel>
+        </MudTh>
+        <MudTh Style="text-align:right">
+            Actions
+        </MudTh>
+    </HeaderContent>
+    <RowTemplate>
+        <MudTd data-testid="broadcast-table-subject" DataLabel="Subject">@context.Subject</MudTd>
+        <MudTd data-testid="broadcast-table-effective-date" DataLabel="Effective On">@context.EffectiveDate</MudTd>
+        <MudTd data-testid="broadcast-table-expiry-date" DataLabel="Expires On">@context.ExpiryDate</MudTd>
+        <MudTd data-testid="broadcast-table-action-type" DataLabel="Action Type">@context.ActionType</MudTd>
+        <MudTd DataLabel="Actions" Style="text-align:right">
+            <div>
+                <MudTooltip Text="@(context.IsExpanded ? "Collapse" : "Expand")">
+                    <MudIconButton OnClick="@(() => ToggleExpandRow(context.Id))"
+                                   Icon="@(context.IsExpanded ? Icons.Material.Filled.ExpandLess : Icons.Material.Filled.ExpandMore)"
+                                   Color="@Color.Primary"
+                                   data-testid="broadcast-table-expand-btn" />
+                </MudTooltip>
+                <MudTooltip Text="Edit">
+                    <MudIconButton OnClick="@(async () => await EditBroadcastAsync(context.Id))"
+                                   Icon="@Icons.Material.Filled.Edit"
+                                   Color="@Color.Primary"
+                                   data-testid="broadcast-table-edit-btn" />
+                </MudTooltip>
+                <MudTooltip Text="Delete">
+                    <MudIconButton OnClick="@(() => DeleteBroadcast(context.Id))"
+                                   Icon="@Icons.Material.Filled.Delete"
+                                   Color="@Color.Primary"
+                                   data-testid="broadcast-table-delete-btn" />
+                </MudTooltip>
+            </div>
+        </MudTd>
+    </RowTemplate>
+    <ChildRowContent>
+        @if (context.IsExpanded)
+        {
+            <MudTr>
+                <MudTd data-testid="broadcast-table-expanded-text" colspan="5" Style="text-align:center">
+                    <div class="ma-3">@context.Text</div>
+                </MudTd>
+            </MudTr>
+        }
+    </ChildRowContent>
+    <PagerContent>
+        <MudTablePager />
+    </PagerContent>
+</MudTable>
+
+<MudMessageBox @ref="DeleteConfirmation" Title="Delete Broadcast">
+    <MessageContent>
+        <span data-testid="confirm-delete-message">
+            Are you sure you want to delete this?
+        </span>
+    </MessageContent>
+    <YesButton>
+        <MudButton Variant="Variant.Filled" Color="Color.Error" StartIcon="@Icons.Material.Filled.DeleteForever" data-testid="confirm-delete-btn">
+            Delete
+        </MudButton>
+    </YesButton>
+    <CancelButton>
+        <MudButton data-testid="confirm-cancel-btn">
+            Cancel
+        </MudButton>
+    </CancelButton>
+</MudMessageBox>

@@ -20,6 +20,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using Fluxor;
+using HealthGateway.Admin.Client.Models;
 using HealthGateway.Common.Data.Models;
 using HealthGateway.Common.Data.ViewModels;
 
@@ -53,7 +54,7 @@ public record BroadcastsState
     /// <summary>
     /// Gets the collection of data.
     /// </summary>
-    public IImmutableDictionary<Guid, Broadcast>? Data { get; init; }
+    public IImmutableDictionary<Guid, ExtendedBroadcast>? Data { get; init; }
 
     /// <summary>
     /// Gets the request error if available.

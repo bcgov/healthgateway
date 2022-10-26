@@ -18,7 +18,9 @@ namespace HealthGateway.Admin.Client.Store.Broadcasts;
 using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
+using System.Linq;
 using Fluxor;
+using HealthGateway.Admin.Client.Models;
 using HealthGateway.Common.Data.Models;
 
 /// <summary>
@@ -62,7 +64,7 @@ public static class BroadcastsReducers
                 Error = null,
             },
             IsLoading = false,
-            Data = action.Data.ResourcePayload.ToImmutableDictionary(tag => tag.Id),
+            Data = action.Data.ResourcePayload.Select(b => new ExtendedBroadcast(b)).ToImmutableDictionary(tag => tag.Id),
             Error = null,
         };
     }
@@ -115,12 +117,12 @@ public static class BroadcastsReducers
     [ReducerMethod]
     public static BroadcastsState ReduceAddSuccessAction(BroadcastsState state, BroadcastsActions.AddSuccessAction action)
     {
-        IImmutableDictionary<Guid, Broadcast> data = state.Data ?? new Dictionary<Guid, Broadcast>().ToImmutableDictionary();
+        IImmutableDictionary<Guid, ExtendedBroadcast> data = state.Data ?? new Dictionary<Guid, ExtendedBroadcast>().ToImmutableDictionary();
 
         Broadcast? broadcast = action.Data.ResourcePayload;
         if (broadcast != null)
         {
-            data = data.Remove(broadcast.Id).Add(broadcast.Id, broadcast);
+            data = data.Remove(broadcast.Id).Add(broadcast.Id, new(broadcast));
         }
 
         return state with
@@ -185,12 +187,12 @@ public static class BroadcastsReducers
     [ReducerMethod]
     public static BroadcastsState ReduceUpdateSuccessAction(BroadcastsState state, BroadcastsActions.UpdateSuccessAction action)
     {
-        IImmutableDictionary<Guid, Broadcast> data = state.Data ?? new Dictionary<Guid, Broadcast>().ToImmutableDictionary();
+        IImmutableDictionary<Guid, ExtendedBroadcast> data = state.Data ?? new Dictionary<Guid, ExtendedBroadcast>().ToImmutableDictionary();
 
         Broadcast? broadcast = action.Data.ResourcePayload;
         if (broadcast != null)
         {
-            data = data.Remove(broadcast.Id).Add(broadcast.Id, broadcast);
+            data = data.Remove(broadcast.Id).Add(broadcast.Id, new(broadcast));
         }
 
         return state with
@@ -255,7 +257,7 @@ public static class BroadcastsReducers
     [ReducerMethod]
     public static BroadcastsState ReduceDeleteSuccessAction(BroadcastsState state, BroadcastsActions.DeleteSuccessAction action)
     {
-        IImmutableDictionary<Guid, Broadcast> data = state.Data ?? new Dictionary<Guid, Broadcast>().ToImmutableDictionary();
+        IImmutableDictionary<Guid, ExtendedBroadcast> data = state.Data ?? new Dictionary<Guid, ExtendedBroadcast>().ToImmutableDictionary();
 
         Broadcast? broadcast = action.Data.ResourcePayload;
         if (broadcast != null)
@@ -316,5 +318,25 @@ public static class BroadcastsReducers
             Error = null,
             IsLoading = false,
         };
+    }
+
+    /// <summary>
+    /// The reducer for the ToggleIsExpanded action.
+    /// </summary>
+    /// <param name="state">The broadcasts state.</param>
+    /// <param name="action">The ToggleIsExpanded action.</param>
+    /// <returns>The default state.</returns>
+    [ReducerMethod]
+    public static BroadcastsState ReduceToggleIsExpandedAction(BroadcastsState state, BroadcastsActions.ToggleIsExpandedAction action)
+    {
+        IImmutableDictionary<Guid, ExtendedBroadcast> data = state.Data ?? new Dictionary<Guid, ExtendedBroadcast>().ToImmutableDictionary();
+
+        ExtendedBroadcast? broadcast = data.GetValueOrDefault(action.Id);
+        if (broadcast != null)
+        {
+            broadcast.IsExpanded = !broadcast.IsExpanded;
+        }
+
+        return state;
     }
 }
