@@ -64,7 +64,7 @@ namespace HealthGateway.CommonTests.Services
         /// CreateBroadcast - api returns error.
         /// </summary>
         [Fact]
-        public void ShouldCreateBroadcastApiReturnsError()
+        public void CreateBroadcastShouldReturnsError()
         {
             // Arrange
             IBroadcastService service = GetBroadcastService(null, HttpStatusCode.InternalServerError, false);
@@ -83,7 +83,7 @@ namespace HealthGateway.CommonTests.Services
         /// CreateBroadcast - api throws exception.
         /// </summary>
         [Fact]
-        public void ShouldCreateBroadcastApiThrowsException()
+        public void CreateBroadcastShouldThrowsException()
         {
             // Arrange
             IBroadcastService service = GetBroadcastService(null, null, true);
@@ -142,7 +142,7 @@ namespace HealthGateway.CommonTests.Services
         /// GetBroadcasts - api returns error.
         /// </summary>
         [Fact]
-        public void ShouldGetBroadcastsApiReturnsError()
+        public void GetBroadcastsShouldReturnsError()
         {
             // Arrange
             IBroadcastService service = GetBroadcastService(null, HttpStatusCode.InternalServerError, false);
@@ -161,7 +161,7 @@ namespace HealthGateway.CommonTests.Services
         /// GetBroadcasts - api throws exception.
         /// </summary>
         [Fact]
-        public void ShouldGetBroadcastsApiThrowsException()
+        public void GetBroadcastsShouldThrowsException()
         {
             // Arrange
             IBroadcastService service = GetBroadcastService(null, null, true);
@@ -205,7 +205,7 @@ namespace HealthGateway.CommonTests.Services
         /// UpdateBroadcast -api returns error.
         /// </summary>
         [Fact]
-        public void ShouldUpdateBroadcastApiReturnsError()
+        public void UpdateBroadcastShouldReturnsError()
         {
             Guid expectedId = Guid.NewGuid();
 
@@ -230,7 +230,7 @@ namespace HealthGateway.CommonTests.Services
         /// CreateBroadcast -api throws exception.
         /// </summary>
         [Fact]
-        public void ShouldUpdateBroadcastApiThrowsException()
+        public void UpdateBroadcastShouldThrowsException()
         {
             Guid expectedId = Guid.NewGuid();
 
