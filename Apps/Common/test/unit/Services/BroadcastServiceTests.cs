@@ -202,7 +202,7 @@ namespace HealthGateway.CommonTests.Services
         }
 
         /// <summary>
-        /// UpdateBroadcast -api returns error.
+        /// UpdateBroadcast - api returns error.
         /// </summary>
         [Fact]
         public void UpdateBroadcastShouldReturnsError()
@@ -227,7 +227,7 @@ namespace HealthGateway.CommonTests.Services
         }
 
         /// <summary>
-        /// CreateBroadcast -api throws exception.
+        /// CreateBroadcast - api throws exception.
         /// </summary>
         [Fact]
         public void UpdateBroadcastShouldThrowsException()
@@ -275,7 +275,7 @@ namespace HealthGateway.CommonTests.Services
         }
 
         /// <summary>
-        /// DeleteBroadcast -api returns error.
+        /// DeleteBroadcast - api returns error.
         /// </summary>
         [Fact]
         public void DeleteBroadcastShouldReturnError()
@@ -300,7 +300,7 @@ namespace HealthGateway.CommonTests.Services
         }
 
         /// <summary>
-        /// DeleteBroadcast -api throws exception.
+        /// DeleteBroadcast - api throws exception.
         /// </summary>
         [Fact]
         public void DeleteBroadcastShouldThrowException()
