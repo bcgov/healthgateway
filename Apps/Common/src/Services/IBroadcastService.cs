@@ -38,5 +38,12 @@ namespace HealthGateway.Common.Services
         /// </summary>
         /// <returns>The collection of broadcasts wrapped in a RequestResult.</returns>
         Task<RequestResult<IEnumerable<Broadcast>>> GetBroadcastsAsync();
+
+        /// <summary>
+        /// Updates a broadcast.
+        /// </summary>
+        /// <param name="broadcast">The broadcast model.</param>
+        /// <returns>The updated broadcast wrapped in a RequestResult.</returns>
+        Task<RequestResult<Broadcast>> UpdateBroadcastAsync(Broadcast broadcast);
     }
 }
