@@ -208,7 +208,8 @@ namespace HealthGateway.Common.Services
                 if (response.StatusCode == HttpStatusCode.OK && response.Error is null)
                 {
                     requestResult.ResultStatus = ResultType.Success;
-                    requestResult.ResultError = null;
+                    requestResult.ResourcePayload = broadcast;
+                    requestResult.TotalResultCount = 1;
                 }
                 else
                 {

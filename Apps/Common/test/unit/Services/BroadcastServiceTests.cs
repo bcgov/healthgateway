@@ -271,7 +271,9 @@ namespace HealthGateway.CommonTests.Services
 
             // Assert
             Assert.Equal(ResultType.Success, actualResult.ResultStatus);
-            Assert.Null(actualResult.ResultError);
+            Assert.NotNull(actualResult.ResourcePayload);
+            Assert.True(actualResult.TotalResultCount == 1);
+            Assert.Equal(expectedId, actualResult.ResourcePayload.Id);
         }
 
         /// <summary>
