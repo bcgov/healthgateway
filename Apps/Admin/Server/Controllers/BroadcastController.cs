@@ -95,12 +95,12 @@ namespace HealthGateway.Admin.Server.Controllers
         }
 
         /// <summary>
-        /// Deletes the Broadcast that is passed to the controller.
+        /// Deletes a broadcast.
         /// </summary>
-        /// <param name="broadcast">The broadcast object to delete.</param>
-        /// <returns>The broadcast object delete wrapped in a Request result.</returns>
-        /// <response code="200">Returns the communication json of the deleted object wrapped in a request result.</response>
-        /// <response code="401">the client must authenticate itself to get the requested response.</response>
+        /// <param name="broadcast">The broadcast model.</param>
+        /// <returns>The deleted broadcast wrapped in a RequestResult.</returns>
+        /// <response code="200">Returns the deleted broadcast wrapped in a RequestResult.</response>
+        /// <response code="401">The client must authenticate itself to get the requested response.</response>
         /// <response code="403">
         /// The client does not have access rights to the content; that is, it is unauthorized, so the server
         /// is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.
