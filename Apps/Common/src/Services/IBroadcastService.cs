@@ -19,7 +19,6 @@ namespace HealthGateway.Common.Services
     using System.Threading.Tasks;
     using HealthGateway.Common.Data.Models;
     using HealthGateway.Common.Data.ViewModels;
-    using HealthGateway.Common.Models;
 
     /// <summary>
     /// Service to interact with broadcasts.
@@ -45,5 +44,12 @@ namespace HealthGateway.Common.Services
         /// <param name="broadcast">The broadcast model.</param>
         /// <returns>The updated broadcast wrapped in a RequestResult.</returns>
         Task<RequestResult<Broadcast>> UpdateBroadcastAsync(Broadcast broadcast);
+
+        /// <summary>
+        /// Deletes a broadcast.
+        /// </summary>
+        /// <param name="broadcast">The broadcast to delete.</param>
+        /// <returns>The deleted broadcast wrapped in a RequestResult.</returns>
+        Task<RequestResult<Broadcast>> DeleteBroadcastAsync(Broadcast broadcast);
     }
 }

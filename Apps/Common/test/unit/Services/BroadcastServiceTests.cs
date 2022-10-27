@@ -202,7 +202,7 @@ namespace HealthGateway.CommonTests.Services
         }
 
         /// <summary>
-        /// UpdateBroadcast -api returns error.
+        /// UpdateBroadcast - api returns error.
         /// </summary>
         [Fact]
         public void UpdateBroadcastShouldReturnsError()
@@ -227,7 +227,7 @@ namespace HealthGateway.CommonTests.Services
         }
 
         /// <summary>
-        /// CreateBroadcast -api throws exception.
+        /// CreateBroadcast - api throws exception.
         /// </summary>
         [Fact]
         public void UpdateBroadcastShouldThrowsException()
@@ -243,6 +243,81 @@ namespace HealthGateway.CommonTests.Services
 
             // Act
             RequestResult<Broadcast> actualResult = service.UpdateBroadcastAsync(broadcast).Result;
+
+            // Assert
+            Assert.Equal(ResultType.Error, actualResult.ResultStatus);
+            Assert.Null(actualResult.ResourcePayload);
+            Assert.NotNull(actualResult.ResultError);
+            Assert.Equal(ThrownExceptionMessage, actualResult.ResultError?.ResultMessage);
+        }
+
+        /// <summary>
+        /// DeleteBroadcast.
+        /// </summary>
+        [Fact]
+        public void ShouldDeleteBroadcast()
+        {
+            Guid expectedId = Guid.NewGuid();
+
+            // Arrange
+            Broadcast broadcast = new()
+            {
+                Id = expectedId,
+            };
+            IBroadcastService service = GetBroadcastService(expectedId, HttpStatusCode.OK, false);
+
+            // Act
+            RequestResult<Broadcast> actualResult = service.DeleteBroadcastAsync(broadcast).Result;
+
+            // Assert
+            Assert.Equal(ResultType.Success, actualResult.ResultStatus);
+            Assert.NotNull(actualResult.ResourcePayload);
+            Assert.True(actualResult.TotalResultCount == 1);
+            Assert.Equal(expectedId, actualResult.ResourcePayload.Id);
+        }
+
+        /// <summary>
+        /// DeleteBroadcast - api returns error.
+        /// </summary>
+        [Fact]
+        public void DeleteBroadcastShouldReturnError()
+        {
+            Guid expectedId = Guid.NewGuid();
+
+            // Arrange
+            Broadcast broadcast = new()
+            {
+                Id = expectedId,
+            };
+            IBroadcastService service = GetBroadcastService(null, HttpStatusCode.InternalServerError, false);
+
+            // Act
+            RequestResult<Broadcast> actualResult = service.DeleteBroadcastAsync(broadcast).Result;
+
+            // Assert
+            Assert.Equal(ResultType.Error, actualResult.ResultStatus);
+            Assert.Null(actualResult.ResourcePayload);
+            Assert.NotNull(actualResult.ResultError);
+            Assert.Equal(UnexpectedErrorMessage, actualResult.ResultError?.ResultMessage);
+        }
+
+        /// <summary>
+        /// DeleteBroadcast - api throws exception.
+        /// </summary>
+        [Fact]
+        public void DeleteBroadcastShouldThrowException()
+        {
+            Guid expectedId = Guid.NewGuid();
+
+            // Arrange
+            Broadcast broadcast = new()
+            {
+                Id = expectedId,
+            };
+            IBroadcastService service = GetBroadcastService(null, null, true);
+
+            // Act
+            RequestResult<Broadcast> actualResult = service.DeleteBroadcastAsync(broadcast).Result;
 
             // Assert
             Assert.Equal(ResultType.Error, actualResult.ResultStatus);

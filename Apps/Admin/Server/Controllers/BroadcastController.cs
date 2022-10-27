@@ -19,7 +19,6 @@ namespace HealthGateway.Admin.Server.Controllers
     using System.Threading.Tasks;
     using HealthGateway.Common.Data.Models;
     using HealthGateway.Common.Data.ViewModels;
-    using HealthGateway.Common.Models;
     using HealthGateway.Common.Services;
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Mvc;
@@ -93,6 +92,23 @@ namespace HealthGateway.Admin.Server.Controllers
         public async Task<RequestResult<Broadcast>> UpdateBroadcast(Broadcast broadcast)
         {
             return await this.broadcastService.UpdateBroadcastAsync(broadcast).ConfigureAwait(true);
+        }
+
+        /// <summary>
+        /// Deletes a broadcast.
+        /// </summary>
+        /// <param name="broadcast">The broadcast model.</param>
+        /// <returns>The deleted broadcast wrapped in a RequestResult.</returns>
+        /// <response code="200">Returns the deleted broadcast wrapped in a RequestResult.</response>
+        /// <response code="401">The client must authenticate itself to get the requested response.</response>
+        /// <response code="403">
+        /// The client does not have access rights to the content; that is, it is unauthorized, so the server
+        /// is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.
+        /// </response>
+        [HttpDelete]
+        public async Task<RequestResult<Broadcast>> DeleteBroadcast(Broadcast broadcast)
+        {
+            return await this.broadcastService.DeleteBroadcastAsync(broadcast).ConfigureAwait(true);
         }
     }
 }
