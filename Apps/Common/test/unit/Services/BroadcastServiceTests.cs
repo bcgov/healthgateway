@@ -61,10 +61,10 @@ namespace HealthGateway.CommonTests.Services
         }
 
         /// <summary>
-        /// CreateBroadcast returns error.
+        /// CreateBroadcast - api returns error.
         /// </summary>
         [Fact]
-        public void ShouldCreateBroadcastReturnsError()
+        public void ShouldCreateBroadcastApiReturnsError()
         {
             // Arrange
             IBroadcastService service = GetBroadcastService(null, HttpStatusCode.InternalServerError, false);
@@ -80,10 +80,10 @@ namespace HealthGateway.CommonTests.Services
         }
 
         /// <summary>
-        /// CreateBroadcast throws exception.
+        /// CreateBroadcast - api throws exception.
         /// </summary>
         [Fact]
-        public void ShouldCreateBroadcastThrowsException()
+        public void ShouldCreateBroadcastApiThrowsException()
         {
             // Arrange
             IBroadcastService service = GetBroadcastService(null, null, true);
@@ -99,7 +99,7 @@ namespace HealthGateway.CommonTests.Services
         }
 
         /// <summary>
-        /// GetBroadcasts - returns one row.
+        /// GetBroadcasts - api returns one row.
         /// </summary>
         [Fact]
         public void ShouldGetBroadcasts()
@@ -139,10 +139,10 @@ namespace HealthGateway.CommonTests.Services
         }
 
         /// <summary>
-        /// GetBroadcasts - returns error.
+        /// GetBroadcasts - api returns error.
         /// </summary>
         [Fact]
-        public void ShouldGetBroadcastsReturnsError()
+        public void ShouldGetBroadcastsApiReturnsError()
         {
             // Arrange
             IBroadcastService service = GetBroadcastService(null, HttpStatusCode.InternalServerError, false);
@@ -158,10 +158,10 @@ namespace HealthGateway.CommonTests.Services
         }
 
         /// <summary>
-        /// GetBroadcasts - throws exception.
+        /// GetBroadcasts - api throws exception.
         /// </summary>
         [Fact]
-        public void ShouldGetBroadcastsThrowsException()
+        public void ShouldGetBroadcastsApiThrowsException()
         {
             // Arrange
             IBroadcastService service = GetBroadcastService(null, null, true);
@@ -202,10 +202,10 @@ namespace HealthGateway.CommonTests.Services
         }
 
         /// <summary>
-        /// UpdateBroadcast returns error.
+        /// UpdateBroadcast -api returns error.
         /// </summary>
         [Fact]
-        public void ShouldUpdateBroadcastReturnsError()
+        public void ShouldUpdateBroadcastApiReturnsError()
         {
             Guid expectedId = Guid.NewGuid();
 
@@ -227,10 +227,10 @@ namespace HealthGateway.CommonTests.Services
         }
 
         /// <summary>
-        /// CreateBroadcast throws exception.
+        /// CreateBroadcast -api throws exception.
         /// </summary>
         [Fact]
-        public void ShouldUpdateBroadcastThrowsException()
+        public void ShouldUpdateBroadcastApiThrowsException()
         {
             Guid expectedId = Guid.NewGuid();
 
