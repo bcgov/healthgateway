@@ -27,7 +27,6 @@ namespace HealthGateway.Common.Services
     using HealthGateway.Common.Data.Models;
     using HealthGateway.Common.Data.ViewModels;
     using HealthGateway.Common.ErrorHandling;
-    using HealthGateway.Common.Models;
     using HealthGateway.Common.Models.PHSA;
     using Microsoft.Extensions.Logging;
     using Refit;
@@ -142,6 +141,52 @@ namespace HealthGateway.Common.Services
             }
 
             this.logger.LogDebug("Finished retrieving broadcasts");
+            return requestResult;
+        }
+
+        /// <inheritdoc />
+        public async Task<RequestResult<Broadcast>> UpdateBroadcastAsync(Broadcast broadcast)
+        {
+            using Activity? activity = Source.StartActivity();
+            this.logger.LogDebug("Updating broadcast for id: {Id}", broadcast.Id.ToString());
+
+            RequestResult<Broadcast> requestResult = new()
+            {
+                ResultStatus = ResultType.Error,
+            };
+
+            try
+            {
+                BroadcastRequest broadcastRequest = this.autoMapper.Map<BroadcastRequest>(broadcast);
+                IApiResponse<BroadcastResponse> response = await this.systemBroadcastApi.UpdateBroadcast(broadcast.Id.ToString(), broadcastRequest).ConfigureAwait(true);
+
+                if (response.StatusCode == HttpStatusCode.OK && response.Error is null && response.Content is not null)
+                {
+                    requestResult.ResultStatus = ResultType.Success;
+                    requestResult.ResourcePayload = this.autoMapper.Map<Broadcast>(response.Content);
+                    requestResult.TotalResultCount = 1;
+                }
+                else
+                {
+                    this.logger.LogError("Broadcast request returned unsuccessful response");
+                    requestResult.ResultError = new()
+                    {
+                        ResultMessage = "An unexpected error occurred while processing external call",
+                        ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.PHSA),
+                    };
+                }
+            }
+            catch (HttpRequestException e)
+            {
+                this.logger.LogCritical("HTTP Request Exception {Error}", e.ToString());
+                requestResult.ResultError = new()
+                {
+                    ResultMessage = "Error with HTTP Request",
+                    ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.PHSA),
+                };
+            }
+
+            this.logger.LogDebug("Finished updating broadcast");
             return requestResult;
         }
     }

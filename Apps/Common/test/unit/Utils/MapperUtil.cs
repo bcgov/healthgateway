@@ -17,6 +17,7 @@ namespace HealthGateway.CommonTests.Utils
 {
     using AutoMapper;
     using HealthGateway.Admin.Server.MapProfiles;
+    using HealthGateway.Common.MapProfiles;
 
     /// <summary>
     /// Static utility class to provide a fully initialized AutoMapper.
@@ -30,11 +31,13 @@ namespace HealthGateway.CommonTests.Utils
         /// <returns>A configured AutoMapper.</returns>
         public static IMapper InitializeAutoMapper()
         {
-            MapperConfiguration config = new MapperConfiguration(cfg =>
-            {
-                cfg.AddProfile(new MessagingVerificationModelProfile());
-                cfg.AddProfile(new SupportUserProfile());
-            });
+            MapperConfiguration config = new(
+                cfg =>
+                {
+                    cfg.AddProfile(new MessagingVerificationModelProfile());
+                    cfg.AddProfile(new SupportUserProfile());
+                    cfg.AddProfile(new BroadcastProfile());
+                });
 
             return config.CreateMapper();
         }
