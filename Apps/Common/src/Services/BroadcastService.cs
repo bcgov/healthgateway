@@ -34,8 +34,8 @@ namespace HealthGateway.Common.Services
     /// <inheritdoc/>
     public class BroadcastService : IBroadcastService
     {
-        private readonly ILogger logger;
         private readonly IMapper autoMapper;
+        private readonly ILogger logger;
         private readonly ISystemBroadcastApi systemBroadcastApi;
 
         /// <summary>
@@ -144,7 +144,7 @@ namespace HealthGateway.Common.Services
             return requestResult;
         }
 
-        /// <inheritdoc />
+        /// <inheritdoc/>
         public async Task<RequestResult<Broadcast>> UpdateBroadcastAsync(Broadcast broadcast)
         {
             using Activity? activity = Source.StartActivity();
@@ -187,6 +187,50 @@ namespace HealthGateway.Common.Services
             }
 
             this.logger.LogDebug("Finished updating broadcast");
+            return requestResult;
+        }
+
+        /// <inheritdoc/>
+        public async Task<RequestResult<Broadcast>> DeleteBroadcastAsync(Broadcast broadcast)
+        {
+            using Activity? activity = Source.StartActivity();
+            this.logger.LogDebug("Deleting broadcast for id: {Id}", broadcast.Id.ToString());
+
+            RequestResult<Broadcast> requestResult = new()
+            {
+                ResultStatus = ResultType.Error,
+            };
+
+            try
+            {
+                IApiResponse response = await this.systemBroadcastApi.DeleteBroadcast(broadcast.Id.ToString()).ConfigureAwait(true);
+
+                if (response.StatusCode == HttpStatusCode.OK && response.Error is null)
+                {
+                    requestResult.ResultStatus = ResultType.Success;
+                    requestResult.ResultError = null;
+                }
+                else
+                {
+                    this.logger.LogError("Broadcast delete returned unsuccessful response");
+                    requestResult.ResultError = new()
+                    {
+                        ResultMessage = "An unexpected error occurred while processing external call",
+                        ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.PHSA),
+                    };
+                }
+            }
+            catch (HttpRequestException e)
+            {
+                this.logger.LogCritical("HTTP Request Exception {Error}", e.ToString());
+                requestResult.ResultError = new()
+                {
+                    ResultMessage = "Error with HTTP Request",
+                    ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.PHSA),
+                };
+            }
+
+            this.logger.LogDebug("Finished deleting broadcast");
             return requestResult;
         }
     }
