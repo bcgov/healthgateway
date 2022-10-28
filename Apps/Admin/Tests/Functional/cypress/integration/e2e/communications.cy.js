@@ -16,6 +16,9 @@ describe("Communications", () => {
     it("Verify banner crud functions.", () => {
         cy.log("Validating data initialized by seed script.");
 
+        cy.get("[data-testid=banner-tabs]")
+            .contains(".mud-tab", "Public Banners")
+            .click();
         cy.get("[data-testid=comm-table-subject]").contains("Test Banner");
         cy.get("[data-testid=comm-table-status]").contains("New");
         cy.get("[data-testid=comm-table-effective-date]").contains(
