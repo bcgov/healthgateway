@@ -19,6 +19,7 @@ namespace HealthGateway.Database.Delegates
     using System.Collections.Generic;
     using System.Diagnostics.CodeAnalysis;
     using System.Linq;
+    using HealthGateway.Common.Data.Models;
     using HealthGateway.Database.Constants;
     using HealthGateway.Database.Context;
     using HealthGateway.Database.Models;
@@ -189,13 +190,15 @@ namespace HealthGateway.Database.Delegates
                 case UserQueryType.Email:
                     result.Payload = this.dbContext.UserProfile
                         .Where(user => user.Verifications.Any(v => v.Email != null && EF.Functions.ILike(v.Email.To, $"%{queryString}%")))
-                        .GroupBy(user => user.HdId).Select(x => x.First())
+                        .GroupBy(user => user.HdId)
+                        .Select(x => x.First())
                         .ToList();
                     break;
                 case UserQueryType.SMS:
                     result.Payload = this.dbContext.UserProfile
                         .Where(user => user.Verifications.Any(v => EF.Functions.ILike(v.SMSNumber, $"%{queryString}%")))
-                        .GroupBy(user => user.HdId).Select(x => x.First())
+                        .GroupBy(user => user.HdId)
+                        .Select(x => x.First())
                         .ToList();
                     break;
             }

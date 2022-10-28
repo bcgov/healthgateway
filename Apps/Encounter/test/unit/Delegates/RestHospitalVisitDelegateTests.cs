@@ -45,7 +45,7 @@ namespace HealthGateway.EncounterTests.Delegates
         private const string HttpExceptionMessage = "Error with HTTP Request";
 
         /// <summary>
-        /// Tests a various http status codes on Hospital Visit Response.
+        /// Tests various http status codes on Hospital Visit Response.
         /// </summary>
         /// <param name="httpStatusCode">The http status code to return from the mock.</param>
         /// <param name="resultStatus">The result code to return from the mock.</param>
@@ -57,21 +57,27 @@ namespace HealthGateway.EncounterTests.Delegates
         [InlineData(HttpStatusCode.InternalServerError, ResultType.Error, InternalServerErrorMessage)]
         public void ShouldGetHospitalVisitsResponses(HttpStatusCode httpStatusCode, ResultType resultStatus, string resultMessage)
         {
+            // Arrange
             PhsaResult<IEnumerable<HospitalVisit>> expectedResult = new()
             {
                 Result = new List<HospitalVisit>(),
             };
+
+            // Act
             RequestResult<PhsaResult<IEnumerable<HospitalVisit>>> actualResult = GetHospitalVisitDelegate(expectedResult, httpStatusCode, false).GetHospitalVisits(It.IsAny<string>()).Result;
+
+            // Assert
             Assert.True(actualResult.ResultStatus == resultStatus);
             Assert.Equal(actualResult?.ResultError?.ResultMessage, resultMessage);
         }
 
         /// <summary>
-        /// GetHospitalVisits - returns one row.
+        /// GetHospitalVisits - api returns one row.
         /// </summary>
         [Fact]
-        public void GetHospitalVisits()
+        public void ShouldGetHospitalVisits()
         {
+            // Arrange
             PhsaResult<IEnumerable<HospitalVisit>> phsaResponse = new()
             {
                 Result = new List<HospitalVisit>
@@ -91,8 +97,10 @@ namespace HealthGateway.EncounterTests.Delegates
                 },
             };
 
+            // Act
             RequestResult<PhsaResult<IEnumerable<HospitalVisit>>> actualResult = GetHospitalVisitDelegate(phsaResponse, HttpStatusCode.OK, false).GetHospitalVisits(It.IsAny<string>()).Result;
 
+            // Assert
             Assert.Equal(ResultType.Success, actualResult.ResultStatus);
             Assert.NotNull(actualResult.ResourcePayload);
             Assert.True(actualResult.ResourcePayload.Result.Count() == 2);
@@ -101,18 +109,21 @@ namespace HealthGateway.EncounterTests.Delegates
         }
 
         /// <summary>
-        /// GetHospitalVisits - returns no rows.
+        /// GetHospitalVisits - api returns no rows.
         /// </summary>
         [Fact]
-        public void GetHospitalVisitsReturnsNoRows()
+        public void GetHospitalVisitsShouldReturnNoRows()
         {
+            // Arrange
             PhsaResult<IEnumerable<HospitalVisit>> phsaResponse = new()
             {
                 Result = new List<HospitalVisit>(),
             };
 
+            // Act
             RequestResult<PhsaResult<IEnumerable<HospitalVisit>>> actualResult = GetHospitalVisitDelegate(phsaResponse, HttpStatusCode.OK, false).GetHospitalVisits(It.IsAny<string>()).Result;
 
+            // Assert
             Assert.Equal(ResultType.Success, actualResult.ResultStatus);
             Assert.NotNull(actualResult.ResourcePayload);
             Assert.Empty(actualResult.ResourcePayload.Result);
@@ -121,18 +132,21 @@ namespace HealthGateway.EncounterTests.Delegates
         }
 
         /// <summary>
-        /// GetHospitalVisits - returns no content.
+        /// GetHospitalVisits - api returns no content error.
         /// </summary>
         [Fact]
-        public void GetHospitalVisitsReturnsNoContent()
+        public void GetHospitalVisitsShouldReturnNoContentError()
         {
+            // Arrange
             PhsaResult<IEnumerable<HospitalVisit>> phsaResponse = new()
             {
                 Result = new List<HospitalVisit>(),
             };
 
+            // Act
             RequestResult<PhsaResult<IEnumerable<HospitalVisit>>> actualResult = GetHospitalVisitDelegate(phsaResponse, HttpStatusCode.NoContent, false).GetHospitalVisits(It.IsAny<string>()).Result;
 
+            // Assert
             Assert.Equal(ResultType.Success, actualResult.ResultStatus);
             Assert.NotNull(actualResult.ResourcePayload);
             Assert.Empty(actualResult.ResourcePayload.Result);
@@ -141,13 +155,15 @@ namespace HealthGateway.EncounterTests.Delegates
         }
 
         /// <summary>
-        /// GetHospitalVisits - HttpRequestException.
+        /// GetHospitalVisits - api throws Exception.
         /// </summary>
         [Fact]
-        public void GetImmunizationThrowsException()
+        public void GetImmunizationShouldThrowException()
         {
+            // Arrange and Act
             RequestResult<PhsaResult<IEnumerable<HospitalVisit>>> actualResult = GetHospitalVisitDelegate(null, null, true).GetHospitalVisits(It.IsAny<string>()).Result;
 
+            // Assert
             Assert.Equal(ResultType.Error, actualResult.ResultStatus);
             Assert.Equal(HttpExceptionMessage, actualResult.ResultError?.ResultMessage);
             Assert.True(actualResult.TotalResultCount == 0);
@@ -174,7 +190,7 @@ namespace HealthGateway.EncounterTests.Delegates
                 mockHospitalVisitApi.Setup(
                         s =>
                             s.GetHospitalVisits(It.IsAny<Dictionary<string, string?>>(), AccessToken))
-                    .ThrowsAsync(new HttpRequestException("Unit Test HTTP Request Exception"));
+                    .ThrowsAsync(new HttpRequestException(string.Empty));
             }
 
             IHospitalVisitDelegate hospitalVisitDelegate = new RestHospitalVisitDelegate(

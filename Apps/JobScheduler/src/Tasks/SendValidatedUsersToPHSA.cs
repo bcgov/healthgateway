@@ -17,10 +17,10 @@ namespace Healthgateway.JobScheduler.Tasks
 {
     using System.Collections.Generic;
     using System.Linq;
+    using HealthGateway.Common.Data.Models;
     using HealthGateway.Common.Models;
     using HealthGateway.Common.Services;
     using HealthGateway.Database.Context;
-    using HealthGateway.Database.Models;
     using Microsoft.Extensions.Logging;
 
     /// <summary>

@@ -1,40 +1,39 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project Sdk="Microsoft.NET.Sdk">
-  <PropertyGroup>
-    <IsPackable>false</IsPackable>
-    <SonarQubeTestProject>true</SonarQubeTestProject>
-    <RootNamespace>HealthGateway.CommonTests</RootNamespace>
-    <DocumentationFile>bin\$(Configuration)\$(TargetFramework)\$(MSBuildThisFileName).xml</DocumentationFile>
-  </PropertyGroup>
-  <ItemGroup>
-    <AdditionalFiles Include="..\..\..\stylecop.json" />
-  </ItemGroup>
-  <ItemGroup>
-    <PackageReference Include="coverlet.msbuild" Version="3.1.2">
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-      <PrivateAssets>all</PrivateAssets>
-    </PackageReference>
-    <PackageReference Include="DeepEqual" Version="4.1.0" />
-    <PackageReference Include="Microsoft.AspNetCore.Cryptography.KeyDerivation" Version="6.0.10" />
-    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.3.2" />
-    <PackageReference Include="Moq" Version="4.18.2" />
-    <PackageReference Include="Testcontainers" Version="2.1.0" />
-    <PackageReference Include="xunit" Version="2.4.2" />
-    <PackageReference Include="xunit.runner.visualstudio" Version="2.4.5">
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-      <PrivateAssets>all</PrivateAssets>
-    </PackageReference>
-    <PackageReference Include="XunitXml.TestLogger" Version="3.0.70" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\..\..\Admin\Server\Admin.Server.csproj" />
-    <ProjectReference Include="..\..\src\Common.csproj" />
-  </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Swagger\" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Remove="MockAsset.txt" />
-    <EmbeddedResource Include="MockAsset.txt" />
-  </ItemGroup>
+    <PropertyGroup>
+        <IsPackable>false</IsPackable>
+        <SonarQubeTestProject>true</SonarQubeTestProject>
+        <RootNamespace>HealthGateway.CommonTests</RootNamespace>
+        <DocumentationFile>bin\$(Configuration)\$(TargetFramework)\$(MSBuildThisFileName).xml</DocumentationFile>
+    </PropertyGroup>
+    <ItemGroup>
+        <AdditionalFiles Include="..\..\..\stylecop.json"/>
+    </ItemGroup>
+    <ItemGroup>
+        <PackageReference Include="coverlet.msbuild" Version="3.1.2">
+            <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+            <PrivateAssets>all</PrivateAssets>
+        </PackageReference>
+        <PackageReference Include="DeepEqual" Version="4.1.0"/>
+        <PackageReference Include="Microsoft.AspNetCore.Cryptography.KeyDerivation" Version="6.0.10"/>
+        <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.3.2"/>
+        <PackageReference Include="Moq" Version="4.18.2"/>
+        <PackageReference Include="Testcontainers" Version="2.1.0"/>
+        <PackageReference Include="xunit" Version="2.4.2"/>
+        <PackageReference Include="xunit.runner.visualstudio" Version="2.4.5">
+            <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+            <PrivateAssets>all</PrivateAssets>
+        </PackageReference>
+        <PackageReference Include="XunitXml.TestLogger" Version="3.0.70"/>
+    </ItemGroup>
+    <ItemGroup>
+        <ProjectReference Include="..\..\src\Common.csproj"/>
+    </ItemGroup>
+    <ItemGroup>
+        <Folder Include="Swagger\"/>
+    </ItemGroup>
+    <ItemGroup>
+        <None Remove="MockAsset.txt"/>
+        <EmbeddedResource Include="MockAsset.txt"/>
+    </ItemGroup>
 </Project>

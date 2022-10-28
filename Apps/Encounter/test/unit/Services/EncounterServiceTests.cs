@@ -262,7 +262,7 @@ namespace HealthGateway.EncounterTests.Services
         /// GetHospitalVisits - returns no rows.
         /// </summary>
         [Fact]
-        public void ShouldGetHospitalVisitsReturnNoRows()
+        public void GetHospitalVisitsShouldReturnNoRows()
         {
             // Arrange
             RequestResult<PhsaResult<IEnumerable<HospitalVisit>>> hospitalVisitResults = new()
@@ -290,7 +290,7 @@ namespace HealthGateway.EncounterTests.Services
         /// GetHospitalVisits - returns refresh in progress.
         /// </summary>
         [Fact]
-        public void ShouldGetHospitalVisitsReturnRefreshInProgress()
+        public void GetHospitalVisitsShouldReturnRefreshInProgress()
         {
             // Arrange
             RequestResult<PhsaResult<IEnumerable<HospitalVisit>>> hospitalVisitResults = new()
@@ -326,7 +326,7 @@ namespace HealthGateway.EncounterTests.Services
         /// GetHospitalVisits - returns error caused by delegate.
         /// </summary>
         [Fact]
-        public void ShouldGetHospitalVisitsReturnError()
+        public void GetHospitalVisitsShouldReturnError()
         {
             // Arrange
             RequestResult<PhsaResult<IEnumerable<HospitalVisit>>> hospitalVisitResults = new()

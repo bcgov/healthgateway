@@ -22,6 +22,7 @@ namespace HealthGateway.Admin.Server.Services
     using HealthGateway.Admin.Common.Models;
     using HealthGateway.Admin.Server.MapUtils;
     using HealthGateway.Common.Data.Constants;
+    using HealthGateway.Common.Data.Models;
     using HealthGateway.Common.Data.ViewModels;
     using HealthGateway.Database.Constants;
     using HealthGateway.Database.Delegates;
@@ -32,11 +33,11 @@ namespace HealthGateway.Admin.Server.Services
     /// <inheritdoc/>
     public class UserFeedbackService : IUserFeedbackService
     {
-        private readonly ILogger logger;
-        private readonly IFeedbackDelegate feedbackDelegate;
         private readonly IAdminTagDelegate adminTagDelegate;
-        private readonly IUserProfileDelegate userProfileDelegate;
         private readonly IMapper autoMapper;
+        private readonly IFeedbackDelegate feedbackDelegate;
+        private readonly ILogger logger;
+        private readonly IUserProfileDelegate userProfileDelegate;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="UserFeedbackService"/> class.
