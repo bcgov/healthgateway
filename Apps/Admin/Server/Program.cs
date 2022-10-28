@@ -73,41 +73,17 @@ namespace HealthGateway.Admin.Server
             // Add services to the container.
             services.AddControllersWithViews();
 
-            // Add HG Services
-            services.AddTransient<IAccessTokenService, AccessTokenService>();
-            services.AddTransient<IBroadcastService, BroadcastService>();
-            services.AddTransient<IConfigurationService, ConfigurationService>();
-            services.AddTransient<IUserFeedbackService, UserFeedbackService>();
-            services.AddTransient<IDashboardService, DashboardService>();
-            services.AddTransient<ICommunicationService, CommunicationService>();
-            services.AddTransient<ICsvExportService, CsvExportService>();
-            services.AddTransient<IInactiveUserService, InactiveUserService>();
-            services.AddTransient<ISupportService, SupportService>();
+            AddServices(services);
+            AddDelegates(services);
 
-            // Add HG Delegates
+            // Configure token swapping
             services.AddTransient<AuthHeaderHandler>();
-            services.AddTransient<IMessagingVerificationDelegate, DBMessagingVerificationDelegate>();
-            services.AddTransient<IFeedbackDelegate, DBFeedbackDelegate>();
-            services.AddTransient<IRatingDelegate, DBRatingDelegate>();
-            services.AddTransient<IUserProfileDelegate, DBProfileDelegate>();
-            services.AddTransient<ICommunicationDelegate, DBCommunicationDelegate>();
-            services.AddTransient<INoteDelegate, DBNoteDelegate>();
-            services.AddTransient<IResourceDelegateDelegate, DBResourceDelegateDelegate>();
-            services.AddTransient<ICommentDelegate, DBCommentDelegate>();
-            services.AddTransient<IAdminTagDelegate, DBAdminTagDelegate>();
-            services.AddTransient<IFeedbackTagDelegate, DBFeedbackTagDelegate>();
-            services.AddTransient<IVaccineStatusDelegate, RestVaccineStatusDelegate>();
-            services.AddTransient<IVaccineProofDelegate, VaccineProofDelegate>();
-            services.AddTransient<IAdminUserProfileDelegate, DbAdminUserProfileDelegate>();
-            services.AddTransient<IAuthenticationDelegate, AuthenticationDelegate>();
-            services.AddTransient<ITokenSwapDelegate, RestTokenSwapDelegate>();
-            services.AddTransient<IUserAdminDelegate, KeycloakUserAdminDelegate>();
-
-            // Add API clients
             PhsaConfigV2 phsaConfig = new();
             configuration.Bind(PhsaConfigV2.ConfigurationSectionKey, phsaConfig);
             services.AddRefitClient<ITokenSwapApi>()
                 .ConfigureHttpClient(c => c.BaseAddress = phsaConfig.TokenBaseUrl);
+
+            // Add API clients
             services.AddRefitClient<ISystemBroadcastApi>()
                 .ConfigureHttpClient(c => c.BaseAddress = phsaConfig.BaseUrl)
                 .AddHttpMessageHandler<AuthHeaderHandler>();
@@ -137,6 +113,39 @@ namespace HealthGateway.Admin.Server
             app.MapFallbackToFile("index.html");
 
             await app.RunAsync().ConfigureAwait(true);
+        }
+
+        private static void AddServices(IServiceCollection services)
+        {
+            services.AddTransient<IAccessTokenService, AccessTokenService>();
+            services.AddTransient<IBroadcastService, BroadcastService>();
+            services.AddTransient<IConfigurationService, ConfigurationService>();
+            services.AddTransient<IUserFeedbackService, UserFeedbackService>();
+            services.AddTransient<IDashboardService, DashboardService>();
+            services.AddTransient<ICommunicationService, CommunicationService>();
+            services.AddTransient<ICsvExportService, CsvExportService>();
+            services.AddTransient<IInactiveUserService, InactiveUserService>();
+            services.AddTransient<ISupportService, SupportService>();
+        }
+
+        private static void AddDelegates(IServiceCollection services)
+        {
+            services.AddTransient<IMessagingVerificationDelegate, DBMessagingVerificationDelegate>();
+            services.AddTransient<IFeedbackDelegate, DBFeedbackDelegate>();
+            services.AddTransient<IRatingDelegate, DBRatingDelegate>();
+            services.AddTransient<IUserProfileDelegate, DBProfileDelegate>();
+            services.AddTransient<ICommunicationDelegate, DBCommunicationDelegate>();
+            services.AddTransient<INoteDelegate, DBNoteDelegate>();
+            services.AddTransient<IResourceDelegateDelegate, DBResourceDelegateDelegate>();
+            services.AddTransient<ICommentDelegate, DBCommentDelegate>();
+            services.AddTransient<IAdminTagDelegate, DBAdminTagDelegate>();
+            services.AddTransient<IFeedbackTagDelegate, DBFeedbackTagDelegate>();
+            services.AddTransient<IVaccineStatusDelegate, RestVaccineStatusDelegate>();
+            services.AddTransient<IVaccineProofDelegate, VaccineProofDelegate>();
+            services.AddTransient<IAdminUserProfileDelegate, DbAdminUserProfileDelegate>();
+            services.AddTransient<IAuthenticationDelegate, AuthenticationDelegate>();
+            services.AddTransient<ITokenSwapDelegate, RestTokenSwapDelegate>();
+            services.AddTransient<IUserAdminDelegate, KeycloakUserAdminDelegate>();
         }
     }
 }
