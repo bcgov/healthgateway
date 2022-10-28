@@ -13,13 +13,12 @@
 //  See the License for the specific language governing permissions and
 //  limitations under the License.
 // -------------------------------------------------------------------------
-namespace HealthGateway.Database.Models
+namespace HealthGateway.Common.Data.Models
 {
     using System;
     using System.ComponentModel.DataAnnotations;
     using System.ComponentModel.DataAnnotations.Schema;
-    using HealthGateway.Common.Data.Models;
-    using HealthGateway.Database.Constants;
+    using HealthGateway.Common.Data.Constants;
 
     /// <summary>
     /// A represntation of Legal Agreements for Health Gateway.
@@ -35,7 +34,7 @@ namespace HealthGateway.Database.Models
 
         /// <summary>
         /// Gets or sets a value representing the type of legal agreement.
-        /// The value is one of <see cref="Constants.LegalAgreementType"/>.
+        /// The value is one of <see cref="LegalAgreementType"/>.
         /// </summary>
         [Required]
         [MaxLength(10)]

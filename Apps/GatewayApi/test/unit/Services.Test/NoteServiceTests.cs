@@ -21,6 +21,7 @@ namespace HealthGateway.GatewayApi.Test.Services
     using AutoMapper;
     using DeepEqual.Syntax;
     using HealthGateway.Common.Data.Constants;
+    using HealthGateway.Common.Data.Models;
     using HealthGateway.Common.Data.ViewModels;
     using HealthGateway.Common.Delegates;
     using HealthGateway.Common.ErrorHandling;
@@ -49,7 +50,7 @@ namespace HealthGateway.GatewayApi.Test.Services
         [Fact]
         public void ShouldGetNotes()
         {
-            (RequestResult<IEnumerable<UserNote>> actualResult, List<UserNote>? userNoteList) = this.ExecuteGetNotes("abc", DBStatusCode.Read);
+            (RequestResult<IEnumerable<UserNote>> actualResult, List<UserNote>? userNoteList) = this.ExecuteGetNotes("abc");
 
             Assert.Equal(ResultType.Success, actualResult.ResultStatus);
             userNoteList.ShouldDeepEqual(actualResult.ResourcePayload);
@@ -73,7 +74,7 @@ namespace HealthGateway.GatewayApi.Test.Services
         [Fact]
         public void ShouldGetNotesWithProfileKeyNotSetError()
         {
-            (RequestResult<IEnumerable<UserNote>> actualResult, _) = this.ExecuteGetNotes(null);
+            (RequestResult<IEnumerable<UserNote>> actualResult, _) = this.ExecuteGetNotes();
 
             Assert.Equal(ResultType.Error, actualResult.ResultStatus);
             Assert.Equal("Profile Key not set", actualResult.ResultError?.ResultMessage);
@@ -85,7 +86,7 @@ namespace HealthGateway.GatewayApi.Test.Services
         [Fact]
         public void ShouldInsertNote()
         {
-            (RequestResult<UserNote> actualResult, UserNote userNote) = this.ExecuteCreateNote(DBStatusCode.Created);
+            (RequestResult<UserNote> actualResult, UserNote userNote) = this.ExecuteCreateNote();
 
             Assert.Equal(ResultType.Success, actualResult.ResultStatus);
             Assert.Null(actualResult.ResultError);
@@ -110,7 +111,7 @@ namespace HealthGateway.GatewayApi.Test.Services
         [Fact]
         public void ShouldUpdateNote()
         {
-            (RequestResult<UserNote> actualResult, UserNote userNote) = this.ExecuteUpdateNote(DBStatusCode.Updated);
+            (RequestResult<UserNote> actualResult, UserNote userNote) = this.ExecuteUpdateNote();
 
             Assert.Equal(ResultType.Success, actualResult.ResultStatus);
             userNote.ShouldDeepEqual(actualResult.ResourcePayload);
@@ -134,7 +135,7 @@ namespace HealthGateway.GatewayApi.Test.Services
         [Fact]
         public void ShouldDeleteNote()
         {
-            (RequestResult<UserNote> actualResult, UserNote userNote) = this.ExecuteDeleteNote(DBStatusCode.Deleted);
+            (RequestResult<UserNote> actualResult, UserNote userNote) = this.ExecuteDeleteNote();
 
             Assert.Equal(ResultType.Success, actualResult.ResultStatus);
             Assert.Null(actualResult.ResultError);
@@ -162,7 +163,8 @@ namespace HealthGateway.GatewayApi.Test.Services
             string? encryptionKey = null;
             DBResult<UserProfile> profileDBResult = new()
             {
-                Payload = new UserProfile() { EncryptionKey = encryptionKey },
+                Payload = new UserProfile
+                    { EncryptionKey = encryptionKey },
             };
 
             Mock<IUserProfileDelegate> profileDelegateMock = new();
@@ -181,7 +183,7 @@ namespace HealthGateway.GatewayApi.Test.Services
                 new Mock<INoteDelegate>().Object,
                 profileDelegateMock.Object,
                 new Mock<ICryptoDelegate>().Object,
-                Utils.MapperUtil.InitializeAutoMapper());
+                MapperUtil.InitializeAutoMapper());
 
             RequestResult<UserNote> actualResult = service.CreateNote(userNote);
 
@@ -197,7 +199,8 @@ namespace HealthGateway.GatewayApi.Test.Services
             string? encryptionKey = null;
             DBResult<UserProfile> profileDBResult = new()
             {
-                Payload = new UserProfile() { EncryptionKey = encryptionKey },
+                Payload = new UserProfile
+                    { EncryptionKey = encryptionKey },
             };
 
             Mock<IUserProfileDelegate> profileDelegateMock = new();
@@ -216,7 +219,7 @@ namespace HealthGateway.GatewayApi.Test.Services
                 new Mock<INoteDelegate>().Object,
                 profileDelegateMock.Object,
                 new Mock<ICryptoDelegate>().Object,
-                Utils.MapperUtil.InitializeAutoMapper());
+                MapperUtil.InitializeAutoMapper());
 
             RequestResult<UserNote> actualResult = service.UpdateNote(userNote);
 
@@ -232,7 +235,8 @@ namespace HealthGateway.GatewayApi.Test.Services
             string? encryptionKey = null;
             DBResult<UserProfile> profileDBResult = new()
             {
-                Payload = new UserProfile() { EncryptionKey = encryptionKey },
+                Payload = new UserProfile
+                    { EncryptionKey = encryptionKey },
             };
 
             Mock<IUserProfileDelegate> profileDelegateMock = new();
@@ -251,7 +255,7 @@ namespace HealthGateway.GatewayApi.Test.Services
                 new Mock<INoteDelegate>().Object,
                 profileDelegateMock.Object,
                 new Mock<ICryptoDelegate>().Object,
-                Utils.MapperUtil.InitializeAutoMapper());
+                MapperUtil.InitializeAutoMapper());
 
             RequestResult<UserNote> actualResult = service.DeleteNote(userNote);
 
@@ -262,7 +266,8 @@ namespace HealthGateway.GatewayApi.Test.Services
         {
             DBResult<UserProfile> profileDBResult = new()
             {
-                Payload = new UserProfile() { EncryptionKey = encryptionKey },
+                Payload = new UserProfile
+                    { EncryptionKey = encryptionKey },
             };
 
             Mock<IUserProfileDelegate> profileDelegateMock = new();
@@ -312,7 +317,7 @@ namespace HealthGateway.GatewayApi.Test.Services
                 cryptoDelegateMock.Object,
                 autoMapper);
 
-            RequestResult<IEnumerable<UserNote>> actualResult = service.GetNotes(this.hdid, 0, 500);
+            RequestResult<IEnumerable<UserNote>> actualResult = service.GetNotes(this.hdid);
 
             return (actualResult, userNoteList);
         }
@@ -322,7 +327,8 @@ namespace HealthGateway.GatewayApi.Test.Services
             string encryptionKey = "abc";
             DBResult<UserProfile> profileDBResult = new()
             {
-                Payload = new UserProfile() { EncryptionKey = encryptionKey },
+                Payload = new UserProfile
+                    { EncryptionKey = encryptionKey },
             };
 
             Mock<IUserProfileDelegate> profileDelegateMock = new();
@@ -367,7 +373,8 @@ namespace HealthGateway.GatewayApi.Test.Services
             string encryptionKey = "abc";
             DBResult<UserProfile> profileDBResult = new()
             {
-                Payload = new UserProfile() { EncryptionKey = encryptionKey },
+                Payload = new UserProfile
+                    { EncryptionKey = encryptionKey },
             };
 
             Mock<IUserProfileDelegate> profileDelegateMock = new();
@@ -413,7 +420,8 @@ namespace HealthGateway.GatewayApi.Test.Services
             string encryptionKey = "abc";
             DBResult<UserProfile> profileDBResult = new()
             {
-                Payload = new UserProfile() { EncryptionKey = encryptionKey },
+                Payload = new UserProfile
+                    { EncryptionKey = encryptionKey },
             };
 
             Mock<IUserProfileDelegate> profileDelegateMock = new();

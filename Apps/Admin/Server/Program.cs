@@ -89,7 +89,7 @@ namespace HealthGateway.Admin.Server
                 .ConfigureHttpClient(c => c.BaseAddress = phsaConfig.BaseUrl)
                 .AddHttpMessageHandler<AuthHeaderHandler>();
 
-            services.AddAutoMapper(typeof(Program), typeof(BroadcastProfile));
+            services.AddAutoMapper(typeof(Program), typeof(BroadcastProfile), typeof(UserProfileProfile), typeof(MessagingVerificationProfile));
 
             WebApplication app = builder.Build();
             HttpWeb.UseForwardHeaders(app, logger, configuration);

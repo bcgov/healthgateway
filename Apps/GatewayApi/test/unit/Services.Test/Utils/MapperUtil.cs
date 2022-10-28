@@ -17,6 +17,7 @@
 namespace HealthGateway.GatewayApi.Test.Services.Utils
 {
     using AutoMapper;
+    using HealthGateway.Common.MapProfiles;
     using HealthGateway.GatewayApi.MapProfiles;
 
     /// <summary>
@@ -31,16 +32,17 @@ namespace HealthGateway.GatewayApi.Test.Services.Utils
         /// <returns>A configured AutoMapper.</returns>
         public static IMapper InitializeAutoMapper()
         {
-            MapperConfiguration config = new MapperConfiguration(cfg =>
-            {
-                cfg.AddProfile(new DependentInformationProfile());
-                cfg.AddProfile(new DependentProfile());
-                cfg.AddProfile(new TermsOfServiceProfile());
-                cfg.AddProfile(new UserCommentProfile());
-                cfg.AddProfile(new UserNoteProfile());
-                cfg.AddProfile(new UserPreferenceProfile());
-                cfg.AddProfile(new UserProfileProfile());
-            });
+            MapperConfiguration config = new(
+                cfg =>
+                {
+                    cfg.AddProfile(new DependentInformationProfile());
+                    cfg.AddProfile(new DependentProfile());
+                    cfg.AddProfile(new TermsOfServiceProfile());
+                    cfg.AddProfile(new UserCommentProfile());
+                    cfg.AddProfile(new UserNoteProfile());
+                    cfg.AddProfile(new UserPreferenceProfile());
+                    cfg.AddProfile(new UserProfileProfile());
+                });
 
             return config.CreateMapper();
         }

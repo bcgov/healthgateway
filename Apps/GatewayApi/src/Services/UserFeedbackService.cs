@@ -17,6 +17,7 @@ namespace HealthGateway.GatewayApi.Services
 {
     using Hangfire;
     using HealthGateway.Common.Data.Constants;
+    using HealthGateway.Common.Data.Models;
     using HealthGateway.Common.Data.ViewModels;
     using HealthGateway.Common.ErrorHandling;
     using HealthGateway.Common.Jobs;
@@ -30,11 +31,11 @@ namespace HealthGateway.GatewayApi.Services
     /// <inheritdoc/>
     public class UserFeedbackService : IUserFeedbackService
     {
-        private readonly ILogger logger;
         private readonly IFeedbackDelegate feedbackDelegate;
-        private readonly IRatingDelegate ratingDelegate;
-        private readonly IUserProfileDelegate profileDelegate;
         private readonly IBackgroundJobClient jobClient;
+        private readonly ILogger logger;
+        private readonly IUserProfileDelegate profileDelegate;
+        private readonly IRatingDelegate ratingDelegate;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="UserFeedbackService"/> class.

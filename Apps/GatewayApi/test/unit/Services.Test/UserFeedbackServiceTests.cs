@@ -19,6 +19,7 @@ namespace HealthGateway.GatewayApi.Test.Services
     using DeepEqual.Syntax;
     using Hangfire;
     using HealthGateway.Common.Data.Constants;
+    using HealthGateway.Common.Data.Models;
     using HealthGateway.Common.Data.ViewModels;
     using HealthGateway.Database.Constants;
     using HealthGateway.Database.Delegates;
@@ -140,7 +141,12 @@ namespace HealthGateway.GatewayApi.Test.Services
             };
 
             Mock<IFeedbackDelegate> userFeedbackDelegateMock = new();
-            userFeedbackDelegateMock.Setup(s => s.InsertUserFeedback(It.Is<UserFeedback>(r => r.Comment == expectedUserFeedback.Comment && r.Id == expectedUserFeedback.Id && r.UserProfileId == expectedUserFeedback.UserProfileId && r.IsSatisfied == expectedUserFeedback.IsSatisfied && r.IsReviewed == expectedUserFeedback.IsReviewed))).Returns(insertResult);
+            userFeedbackDelegateMock.Setup(
+                    s => s.InsertUserFeedback(
+                        It.Is<UserFeedback>(
+                            r => r.Comment == expectedUserFeedback.Comment && r.Id == expectedUserFeedback.Id && r.UserProfileId == expectedUserFeedback.UserProfileId &&
+                                 r.IsSatisfied == expectedUserFeedback.IsSatisfied && r.IsReviewed == expectedUserFeedback.IsReviewed)))
+                .Returns(insertResult);
 
             Mock<IBackgroundJobClient> mockJobclient = new();
             Mock<IUserProfileDelegate> mockProfileDelegate = new();

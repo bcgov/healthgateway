@@ -13,24 +13,31 @@
 //  See the License for the specific language governing permissions and
 //  limitations under the License.
 // -------------------------------------------------------------------------
-namespace HealthGateway.Admin.Server.MapProfiles
+namespace HealthGateway.Common.MapProfiles
 {
+    using System;
     using AutoMapper;
     using HealthGateway.Common.Data.Models;
     using HealthGateway.Common.Data.ViewModels;
 
     /// <summary>
-    /// An AutoMapper profile class which defines mapping between DB and UI Models.
+    /// An AutoMapper profile class which defines mapping between DB Model UserProfile and API Model UserProfileModel.
     /// </summary>
-    public class MessagingVerificationModelProfile : Profile
+    public class UserProfileProfile : Profile
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="MessagingVerificationModelProfile"/> class.
+        /// Initializes a new instance of the <see cref="UserProfileProfile"/> class.
         /// </summary>
-        public MessagingVerificationModelProfile()
+        public UserProfileProfile()
         {
-            this.CreateMap<MessagingVerification, MessagingVerificationModel>()
-                .ForMember(dest => dest.Email, opt => opt.MapFrom(src => src.Email!.To))
+            this.CreateMap<UserProfile, UserProfileModel>()
+                .ForMember(dest => dest.IsEmailVerified, opt => opt.MapFrom(src => !string.IsNullOrEmpty(src.Email)))
+                .ForMember(dest => dest.IsSMSNumberVerified, opt => opt.MapFrom(src => !string.IsNullOrEmpty(src.SMSNumber)))
+                .ForMember(dest => dest.AcceptedTermsOfService, opt => opt.MapFrom(src => src.TermsOfServiceId != Guid.Empty))
+                .ReverseMap();
+
+            this.CreateMap<UserProfile, SupportUser>()
+                .ForMember(dest => dest.Hdid, opt => opt.MapFrom(src => src.HdId))
                 .ReverseMap();
         }
     }

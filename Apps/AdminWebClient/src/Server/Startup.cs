@@ -26,6 +26,7 @@ namespace HealthGateway.Admin
     using HealthGateway.Common.Authorization.Admin;
     using HealthGateway.Common.Delegates;
     using HealthGateway.Common.Delegates.PHSA;
+    using HealthGateway.Common.MapProfiles;
     using HealthGateway.Common.Models.PHSA;
     using HealthGateway.Common.Services;
     using HealthGateway.Database.Delegates;
@@ -117,7 +118,7 @@ namespace HealthGateway.Admin
             services.AddRefitClient<IImmunizationAdminClient>()
                 .ConfigureHttpClient(c => c.BaseAddress = phsaConfig.BaseUrl);
 
-            services.AddAutoMapper(typeof(Startup));
+            services.AddAutoMapper(typeof(Startup), typeof(UserProfileProfile), typeof(MessagingVerificationProfile));
         }
 
         /// <summary>

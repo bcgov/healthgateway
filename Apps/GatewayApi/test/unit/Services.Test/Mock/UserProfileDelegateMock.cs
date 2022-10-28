@@ -16,6 +16,7 @@
 namespace HealthGateway.GatewayApiTests.Services.Test.Mock
 {
     using System.Collections.Generic;
+    using HealthGateway.Common.Data.Models;
     using HealthGateway.Database.Delegates;
     using HealthGateway.Database.Models;
     using HealthGateway.Database.Wrapper;

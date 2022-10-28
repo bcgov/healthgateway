@@ -22,8 +22,8 @@ namespace HealthGateway.GatewayApi.Test.Controllers
     using DeepEqual.Syntax;
     using HealthGateway.Common.AccessManagement.Authentication;
     using HealthGateway.Common.Data.Constants;
+    using HealthGateway.Common.Data.Models;
     using HealthGateway.Common.Data.ViewModels;
-    using HealthGateway.Database.Models;
     using HealthGateway.GatewayApi.Controllers;
     using HealthGateway.GatewayApi.MapUtils;
     using HealthGateway.GatewayApi.Models;

@@ -21,6 +21,7 @@ namespace HealthGateway.GatewayApi.Test.Services
     using AutoMapper;
     using DeepEqual.Syntax;
     using HealthGateway.Common.Data.Constants;
+    using HealthGateway.Common.Data.Models;
     using HealthGateway.Common.Data.ViewModels;
     using HealthGateway.Common.Delegates;
     using HealthGateway.Database.Constants;
@@ -49,7 +50,7 @@ namespace HealthGateway.GatewayApi.Test.Services
         [Fact]
         public void ShouldGetComments()
         {
-            (RequestResult<IEnumerable<UserComment>> actualResult, List<UserComment> userCommentList) = this.ExecuteGetComments("abc", DBStatusCode.Read);
+            (RequestResult<IEnumerable<UserComment>> actualResult, List<UserComment> userCommentList) = this.ExecuteGetComments("abc");
 
             Assert.Equal(ResultType.Success, actualResult.ResultStatus);
             userCommentList.ShouldDeepEqual(actualResult.ResourcePayload);
@@ -73,7 +74,7 @@ namespace HealthGateway.GatewayApi.Test.Services
         [Fact]
         public void ShouldInsertComment()
         {
-            (RequestResult<UserComment> actualResult, UserComment createdRecord) = this.ExecuteInsertComment(DBStatusCode.Created);
+            (RequestResult<UserComment> actualResult, UserComment createdRecord) = this.ExecuteInsertComment();
 
             Assert.Equal(ResultType.Success, actualResult.ResultStatus);
             createdRecord.ShouldDeepEqual(actualResult.ResourcePayload);
@@ -97,7 +98,7 @@ namespace HealthGateway.GatewayApi.Test.Services
         [Fact]
         public void ShouldUpdateComment()
         {
-            (RequestResult<UserComment> actualResult, UserComment updatedRecord) = this.ExecuteUpdateComment(DBStatusCode.Updated);
+            (RequestResult<UserComment> actualResult, UserComment updatedRecord) = this.ExecuteUpdateComment();
 
             Assert.Equal(ResultType.Success, actualResult.ResultStatus);
             updatedRecord.ShouldDeepEqual(actualResult.ResourcePayload);
@@ -121,7 +122,7 @@ namespace HealthGateway.GatewayApi.Test.Services
         [Fact]
         public void ShouldDeleteComment()
         {
-            (RequestResult<UserComment> actualResult, UserComment deletedRecord) = this.ExecuteDeleteComment(DBStatusCode.Deleted);
+            (RequestResult<UserComment> actualResult, UserComment deletedRecord) = this.ExecuteDeleteComment();
 
             Assert.Equal(ResultType.Success, actualResult.ResultStatus);
             deletedRecord.ShouldDeepEqual(actualResult.ResourcePayload);
@@ -148,7 +149,8 @@ namespace HealthGateway.GatewayApi.Test.Services
             string? encryptionKey = null;
             DBResult<UserProfile> profileDBResult = new()
             {
-                Payload = new UserProfile() { EncryptionKey = encryptionKey },
+                Payload = new UserProfile
+                    { EncryptionKey = encryptionKey },
             };
 
             Mock<IUserProfileDelegate> profileDelegateMock = new();
@@ -159,7 +161,7 @@ namespace HealthGateway.GatewayApi.Test.Services
                 new Mock<ICommentDelegate>().Object,
                 profileDelegateMock.Object,
                 new Mock<ICryptoDelegate>().Object,
-                Utils.MapperUtil.InitializeAutoMapper());
+                MapperUtil.InitializeAutoMapper());
 
             RequestResult<IEnumerable<UserComment>> actualResult = service.GetEntryComments(this.hdid, this.parentEntryId);
 
@@ -175,7 +177,8 @@ namespace HealthGateway.GatewayApi.Test.Services
             string? encryptionKey = null;
             DBResult<UserProfile> profileDBResult = new()
             {
-                Payload = new UserProfile() { EncryptionKey = encryptionKey },
+                Payload = new UserProfile
+                    { EncryptionKey = encryptionKey },
             };
 
             Mock<IUserProfileDelegate> profileDelegateMock = new();
@@ -195,7 +198,7 @@ namespace HealthGateway.GatewayApi.Test.Services
                 new Mock<ICommentDelegate>().Object,
                 profileDelegateMock.Object,
                 new Mock<ICryptoDelegate>().Object,
-                Utils.MapperUtil.InitializeAutoMapper());
+                MapperUtil.InitializeAutoMapper());
 
             RequestResult<UserComment> actualResult = service.Add(userComment);
 
@@ -211,7 +214,8 @@ namespace HealthGateway.GatewayApi.Test.Services
             string? encryptionKey = null;
             DBResult<UserProfile> profileDBResult = new()
             {
-                Payload = new UserProfile() { EncryptionKey = encryptionKey },
+                Payload = new UserProfile
+                    { EncryptionKey = encryptionKey },
             };
 
             Mock<IUserProfileDelegate> profileDelegateMock = new();
@@ -231,7 +235,7 @@ namespace HealthGateway.GatewayApi.Test.Services
                 new Mock<ICommentDelegate>().Object,
                 profileDelegateMock.Object,
                 new Mock<ICryptoDelegate>().Object,
-                Utils.MapperUtil.InitializeAutoMapper());
+                MapperUtil.InitializeAutoMapper());
 
             RequestResult<UserComment> actualResult = service.Update(userComment);
 
@@ -247,7 +251,8 @@ namespace HealthGateway.GatewayApi.Test.Services
             string? encryptionKey = null;
             DBResult<UserProfile> profileDBResult = new()
             {
-                Payload = new UserProfile() { EncryptionKey = encryptionKey },
+                Payload = new UserProfile
+                    { EncryptionKey = encryptionKey },
             };
 
             Mock<IUserProfileDelegate> profileDelegateMock = new();
@@ -267,7 +272,7 @@ namespace HealthGateway.GatewayApi.Test.Services
                 new Mock<ICommentDelegate>().Object,
                 profileDelegateMock.Object,
                 new Mock<ICryptoDelegate>().Object,
-                Utils.MapperUtil.InitializeAutoMapper());
+                MapperUtil.InitializeAutoMapper());
 
             RequestResult<UserComment> actualResult = service.Delete(userComment);
 
@@ -279,7 +284,8 @@ namespace HealthGateway.GatewayApi.Test.Services
             string encryptionKey = "abc";
             DBResult<UserProfile> profileDBResult = new()
             {
-                Payload = new UserProfile() { EncryptionKey = encryptionKey },
+                Payload = new UserProfile
+                    { EncryptionKey = encryptionKey },
             };
 
             Mock<IUserProfileDelegate> profileDelegateMock = new();
@@ -325,7 +331,8 @@ namespace HealthGateway.GatewayApi.Test.Services
             string encryptionKey = "abc";
             DBResult<UserProfile> profileDBResult = new()
             {
-                Payload = new UserProfile() { EncryptionKey = encryptionKey },
+                Payload = new UserProfile
+                    { EncryptionKey = encryptionKey },
             };
 
             Mock<IUserProfileDelegate> profileDelegateMock = new();
@@ -373,7 +380,8 @@ namespace HealthGateway.GatewayApi.Test.Services
         {
             DBResult<UserProfile> profileDBResult = new()
             {
-                Payload = new UserProfile() { EncryptionKey = encryptionKey },
+                Payload = new UserProfile
+                    { EncryptionKey = encryptionKey },
             };
 
             Mock<IUserProfileDelegate> profileDelegateMock = new();
@@ -431,7 +439,8 @@ namespace HealthGateway.GatewayApi.Test.Services
             string encryptionKey = "abc";
             DBResult<UserProfile> profileDBResult = new()
             {
-                Payload = new UserProfile() { EncryptionKey = encryptionKey },
+                Payload = new UserProfile
+                    { EncryptionKey = encryptionKey },
             };
 
             Mock<IUserProfileDelegate> profileDelegateMock = new();
