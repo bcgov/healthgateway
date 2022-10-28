@@ -3,11 +3,13 @@
 
 @if (IsEnabled && !IsHidden)
 {
-    <MudAlert Variant="Variant.Text"
-              Severity="@Severity"
-              ShowCloseIcon="true"
-              CloseIconClicked="@Close"
-              data-testid="@DataTestId">
+    <MudAlert
+        Class="@Class"
+        Variant="Variant.Text"
+        Severity="@Severity"
+        ShowCloseIcon="true"
+        CloseIconClicked="@Close"
+        data-testid="@DataTestId">
         @ChildContent
     </MudAlert>
 }

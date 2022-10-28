@@ -16,6 +16,7 @@
 namespace HealthGateway.Admin.Client.Components
 {
     using System.Diagnostics.CodeAnalysis;
+    using Microsoft.AspNetCore.Components;
     using MudBlazor;
 
     /// <summary>
@@ -34,5 +35,16 @@ namespace HealthGateway.Admin.Client.Components
             this.VerticalMarginSize = 3;
             this.TopMargin = Breakpoint.Always;
         }
+
+        /// <summary>
+        /// Gets or sets the event callback that will be triggered when the value changes.
+        /// </summary>
+        [Parameter]
+        public EventCallback<T> ValueChanged { get; set; }
+
+        /// <summary>
+        /// Gets the underlying MudBlazor component.
+        /// </summary>
+        public MudSelect<T> MudComponent { get; private set; } = default!;
     }
 }

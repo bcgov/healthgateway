@@ -34,5 +34,10 @@ namespace HealthGateway.Admin.Client.Components
             this.VerticalMarginSize = 3;
             this.TopMargin = Breakpoint.Always;
         }
+
+        /// <summary>
+        /// Gets the underlying MudBlazor component.
+        /// </summary>
+        public MudTextField<T> MudComponent { get; private set; } = default!;
     }
 }

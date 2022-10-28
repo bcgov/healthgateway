@@ -68,7 +68,7 @@ describe("Communications", () => {
         cy.log("Validate edit subject.");
 
         cy.get("[data-testid=comm-table-edit-btn]").click();
-        cy.get("[data-testid=banner-dialog-modal-text]").within(() => {
+        cy.get("[data-testid=communication-dialog-modal-text]").within(() => {
             cy.get("[data-testid=subject-input]")
                 .clear()
                 .focus()

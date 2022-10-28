@@ -1,4 +1,4 @@
-// -------------------------------------------------------------------------
+﻿// -------------------------------------------------------------------------
 //  Copyright © 2019 Province of British Columbia
 //
 //  Licensed under the Apache License, Version 2.0 (the "License");
@@ -13,16 +13,15 @@
 //  See the License for the specific language governing permissions and
 //  limitations under the License.
 // -------------------------------------------------------------------------
-namespace HealthGateway.Common.Models.PHSA
+namespace HealthGateway.Common.Data.Models
 {
     using System;
     using System.Text.Json.Serialization;
-    using HealthGateway.Common.Data.Models;
 
     /// <summary>
-    /// Model representing a PHSA Broadcast Response.
+    /// Model representing a broadcast.
     /// </summary>
-    public class BroadcastResponse
+    public class Broadcast
     {
         /// <summary>
         /// Gets or sets the id.
@@ -34,13 +33,13 @@ namespace HealthGateway.Common.Models.PHSA
         /// Gets or sets the category name.
         /// </summary>
         [JsonPropertyName("categoryName")]
-        public string? CategoryName { get; set; }
+        public string CategoryName { get; set; } = string.Empty;
 
         /// <summary>
         /// Gets or sets the display text.
         /// </summary>
         [JsonPropertyName("displayText")]
-        public string? DisplayText { get; set; }
+        public string DisplayText { get; set; } = string.Empty;
 
         /// <summary>
         /// Gets or sets a value indicating whether this broadcast system is enabled.
@@ -49,51 +48,27 @@ namespace HealthGateway.Common.Models.PHSA
         public bool Enabled { get; set; }
 
         /// <summary>
-        /// Gets or sets the action url.
-        /// </summary>
-        [JsonPropertyName("actionUrl")]
-        public Uri? ActionUrl { get; set; }
-
-        /// <summary>
         /// Gets or sets the action type.
         /// </summary>
         [JsonPropertyName("actionType")]
         public BroadcastActionType ActionType { get; set; }
 
         /// <summary>
-        /// Gets or sets the scheduled datetime in UTC.
+        /// Gets or sets the action URL.
         /// </summary>
-        [JsonPropertyName("scheduledDateUtc")]
+        [JsonPropertyName("actionUrl")]
+        public Uri? ActionUrl { get; set; }
+
+        /// <summary>
+        /// Gets or sets the scheduled datetime.
+        /// </summary>
+        [JsonPropertyName("scheduledDate")]
         public DateTime ScheduledDateUtc { get; set; }
 
         /// <summary>
-        /// Gets or sets the expiration datetime in UTC.
+        /// Gets or sets the expiration datetime.
         /// </summary>
-        [JsonPropertyName("expirationDateUtc")]
+        [JsonPropertyName("expirationDate")]
         public DateTime? ExpirationDateUtc { get; set; }
-
-        /// <summary>
-        /// Gets or sets the created by.
-        /// </summary>
-        [JsonPropertyName("createdBy")]
-        public string? CreatedBy { get; set; }
-
-        /// <summary>
-        /// Gets or sets the last modified by.
-        /// </summary>
-        [JsonPropertyName("lastModifiedBy")]
-        public string? LastModifiedBy { get; set; }
-
-        /// <summary>
-        /// Gets or sets the creation datetime in UTC.
-        /// </summary>
-        [JsonPropertyName("creationDateUtc")]
-        public DateTime CreationDateUtc { get; set; }
-
-        /// <summary>
-        /// Gets or sets the modified datetime in UTC.
-        /// </summary>
-        [JsonPropertyName("modifiedDateUtc")]
-        public DateTime? ModifiedDateUtc { get; set; }
     }
 }

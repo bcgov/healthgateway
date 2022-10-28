@@ -13,26 +13,28 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //-------------------------------------------------------------------------
-namespace HealthGateway.Admin.Client.Store.Communications;
+namespace HealthGateway.Admin.Client.Store.Broadcasts;
 
+using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Linq;
 using Fluxor;
 using HealthGateway.Admin.Client.Models;
-using HealthGateway.Admin.Common.Models;
+using HealthGateway.Common.Data.Models;
 
 /// <summary>
 /// The set of reducers for the feature.
 /// </summary>
-public static class CommunicationsReducers
+public static class BroadcastsReducers
 {
     /// <summary>
-    /// The reducer for loading communications.
+    /// The reducer for loading broadcasts.
     /// </summary>
-    /// <param name="state">The communications state.</param>
+    /// <param name="state">The broadcasts state.</param>
     /// <returns>The new state.</returns>
-    [ReducerMethod(typeof(CommunicationsActions.LoadAction))]
-    public static CommunicationsState ReduceLoadAction(CommunicationsState state)
+    [ReducerMethod(typeof(BroadcastsActions.LoadAction))]
+    public static BroadcastsState ReduceLoadAction(BroadcastsState state)
     {
         return state with
         {
@@ -47,11 +49,11 @@ public static class CommunicationsReducers
     /// <summary>
     /// The reducer for the load success action.
     /// </summary>
-    /// <param name="state">The communications state.</param>
+    /// <param name="state">The broadcasts state.</param>
     /// <param name="action">The load success action.</param>
     /// <returns>The new state.</returns>
     [ReducerMethod]
-    public static CommunicationsState ReduceLoadSuccessAction(CommunicationsState state, CommunicationsActions.LoadSuccessAction action)
+    public static BroadcastsState ReduceLoadSuccessAction(BroadcastsState state, BroadcastsActions.LoadSuccessAction action)
     {
         return state with
         {
@@ -62,7 +64,7 @@ public static class CommunicationsReducers
                 Error = null,
             },
             IsLoading = false,
-            Data = action.Data.ResourcePayload?.Select(c => new ExtendedCommunication(c)).ToList(),
+            Data = action.Data.ResourcePayload.Select(b => new ExtendedBroadcast(b)).ToImmutableDictionary(tag => tag.Id),
             Error = null,
         };
     }
@@ -70,11 +72,11 @@ public static class CommunicationsReducers
     /// <summary>
     /// The reducer for the load fail action.
     /// </summary>
-    /// <param name="state">The communications state.</param>
+    /// <param name="state">The broadcasts state.</param>
     /// <param name="action">The load fail action.</param>
     /// <returns>The new state.</returns>
     [ReducerMethod]
-    public static CommunicationsState ReduceLoadFailAction(CommunicationsState state, CommunicationsActions.LoadFailAction action)
+    public static BroadcastsState ReduceLoadFailAction(BroadcastsState state, BroadcastsActions.LoadFailAction action)
     {
         return state with
         {
@@ -89,12 +91,12 @@ public static class CommunicationsReducers
     }
 
     /// <summary>
-    /// The reducer for adding communications.
+    /// The reducer for adding broadcasts.
     /// </summary>
-    /// <param name="state">The communications state.</param>
+    /// <param name="state">The broadcasts state.</param>
     /// <returns>The new state.</returns>
-    [ReducerMethod(typeof(CommunicationsActions.AddAction))]
-    public static CommunicationsState ReduceAddAction(CommunicationsState state)
+    [ReducerMethod(typeof(BroadcastsActions.AddAction))]
+    public static BroadcastsState ReduceAddAction(BroadcastsState state)
     {
         return state with
         {
@@ -109,21 +111,18 @@ public static class CommunicationsReducers
     /// <summary>
     /// The reducer for the add success action.
     /// </summary>
-    /// <param name="state">The communications state.</param>
+    /// <param name="state">The broadcasts state.</param>
     /// <param name="action">The add success action.</param>
     /// <returns>The new state.</returns>
     [ReducerMethod]
-    public static CommunicationsState ReduceAddSuccessAction(CommunicationsState state, CommunicationsActions.AddSuccessAction action)
+    public static BroadcastsState ReduceAddSuccessAction(BroadcastsState state, BroadcastsActions.AddSuccessAction action)
     {
-        IList<ExtendedCommunication> data = state.Data ?? new List<ExtendedCommunication>();
+        IImmutableDictionary<Guid, ExtendedBroadcast> data = state.Data ?? new Dictionary<Guid, ExtendedBroadcast>().ToImmutableDictionary();
 
-        Communication? communication = action.Data.ResourcePayload;
-        if (communication != null)
+        Broadcast? broadcast = action.Data.ResourcePayload;
+        if (broadcast != null)
         {
-            data = new List<ExtendedCommunication>(data)
-            {
-                new(communication),
-            };
+            data = data.Remove(broadcast.Id).Add(broadcast.Id, new(broadcast));
         }
 
         return state with
@@ -143,11 +142,11 @@ public static class CommunicationsReducers
     /// <summary>
     /// The reducer for the add fail action.
     /// </summary>
-    /// <param name="state">The communications state.</param>
+    /// <param name="state">The broadcasts state.</param>
     /// <param name="action">The add fail action.</param>
     /// <returns>The new state.</returns>
     [ReducerMethod]
-    public static CommunicationsState ReduceAddFailAction(CommunicationsState state, CommunicationsActions.AddFailAction action)
+    public static BroadcastsState ReduceAddFailAction(BroadcastsState state, BroadcastsActions.AddFailAction action)
     {
         return state with
         {
@@ -162,12 +161,12 @@ public static class CommunicationsReducers
     }
 
     /// <summary>
-    /// The reducer for updating communications.
+    /// The reducer for updating broadcasts.
     /// </summary>
-    /// <param name="state">The communications state.</param>
+    /// <param name="state">The broadcasts state.</param>
     /// <returns>The new state.</returns>
-    [ReducerMethod(typeof(CommunicationsActions.UpdateAction))]
-    public static CommunicationsState ReduceUpdateAction(CommunicationsState state)
+    [ReducerMethod(typeof(BroadcastsActions.UpdateAction))]
+    public static BroadcastsState ReduceUpdateAction(BroadcastsState state)
     {
         return state with
         {
@@ -182,26 +181,18 @@ public static class CommunicationsReducers
     /// <summary>
     /// The reducer for the update success action.
     /// </summary>
-    /// <param name="state">The communications state.</param>
+    /// <param name="state">The broadcasts state.</param>
     /// <param name="action">The update success action.</param>
     /// <returns>The new state.</returns>
     [ReducerMethod]
-    public static CommunicationsState ReduceUpdateSuccessAction(CommunicationsState state, CommunicationsActions.UpdateSuccessAction action)
+    public static BroadcastsState ReduceUpdateSuccessAction(BroadcastsState state, BroadcastsActions.UpdateSuccessAction action)
     {
-        IList<ExtendedCommunication> data = state.Data ?? new List<ExtendedCommunication>();
+        IImmutableDictionary<Guid, ExtendedBroadcast> data = state.Data ?? new Dictionary<Guid, ExtendedBroadcast>().ToImmutableDictionary();
 
-        Communication? communication = action.Data.ResourcePayload;
-        if (communication != null)
+        Broadcast? broadcast = action.Data.ResourcePayload;
+        if (broadcast != null)
         {
-            ExtendedCommunication? existingCommunication = data.SingleOrDefault(c => c.Id == communication.Id);
-            if (existingCommunication != null)
-            {
-                existingCommunication.PopulateFromModel(communication);
-            }
-            else
-            {
-                data.Add(new ExtendedCommunication(communication));
-            }
+            data = data.Remove(broadcast.Id).Add(broadcast.Id, new(broadcast));
         }
 
         return state with
@@ -221,11 +212,11 @@ public static class CommunicationsReducers
     /// <summary>
     /// The reducer for the update fail action.
     /// </summary>
-    /// <param name="state">The communications state.</param>
+    /// <param name="state">The broadcasts state.</param>
     /// <param name="action">The update fail action.</param>
     /// <returns>The new state.</returns>
     [ReducerMethod]
-    public static CommunicationsState ReduceUpdateFailAction(CommunicationsState state, CommunicationsActions.UpdateFailAction action)
+    public static BroadcastsState ReduceUpdateFailAction(BroadcastsState state, BroadcastsActions.UpdateFailAction action)
     {
         return state with
         {
@@ -240,12 +231,12 @@ public static class CommunicationsReducers
     }
 
     /// <summary>
-    /// The reducer for deleting communications.
+    /// The reducer for deleting broadcasts.
     /// </summary>
-    /// <param name="state">The communications state.</param>
+    /// <param name="state">The broadcasts state.</param>
     /// <returns>The new state.</returns>
-    [ReducerMethod(typeof(CommunicationsActions.DeleteAction))]
-    public static CommunicationsState ReduceDeleteAction(CommunicationsState state)
+    [ReducerMethod(typeof(BroadcastsActions.DeleteAction))]
+    public static BroadcastsState ReduceDeleteAction(BroadcastsState state)
     {
         return state with
         {
@@ -260,18 +251,18 @@ public static class CommunicationsReducers
     /// <summary>
     /// The reducer for the delete success action.
     /// </summary>
-    /// <param name="state">The communications state.</param>
+    /// <param name="state">The broadcasts state.</param>
     /// <param name="action">The delete success action.</param>
     /// <returns>The new state.</returns>
     [ReducerMethod]
-    public static CommunicationsState ReduceDeleteSuccessAction(CommunicationsState state, CommunicationsActions.DeleteSuccessAction action)
+    public static BroadcastsState ReduceDeleteSuccessAction(BroadcastsState state, BroadcastsActions.DeleteSuccessAction action)
     {
-        IList<ExtendedCommunication> data = state.Data ?? new List<ExtendedCommunication>();
+        IImmutableDictionary<Guid, ExtendedBroadcast> data = state.Data ?? new Dictionary<Guid, ExtendedBroadcast>().ToImmutableDictionary();
 
-        Communication? communication = action.Data.ResourcePayload;
-        if (communication != null)
+        Broadcast? broadcast = action.Data.ResourcePayload;
+        if (broadcast != null)
         {
-            data = data.Where(x => x.Id != communication.Id).ToList();
+            data = data.Remove(broadcast.Id);
         }
 
         return state with
@@ -291,11 +282,11 @@ public static class CommunicationsReducers
     /// <summary>
     /// The reducer for the delete fail action.
     /// </summary>
-    /// <param name="state">The communications state.</param>
+    /// <param name="state">The broadcasts state.</param>
     /// <param name="action">The delete fail action.</param>
     /// <returns>The new state.</returns>
     [ReducerMethod]
-    public static CommunicationsState ReduceDeleteFailAction(CommunicationsState state, CommunicationsActions.DeleteFailAction action)
+    public static BroadcastsState ReduceDeleteFailAction(BroadcastsState state, BroadcastsActions.DeleteFailAction action)
     {
         return state with
         {
@@ -312,10 +303,10 @@ public static class CommunicationsReducers
     /// <summary>
     /// The reducer for the reset state action.
     /// </summary>
-    /// <param name="state">The communications state.</param>
+    /// <param name="state">The broadcasts state.</param>
     /// <returns>The default state.</returns>
-    [ReducerMethod(typeof(CommunicationsActions.ResetStateAction))]
-    public static CommunicationsState ReduceResetStateAction(CommunicationsState state)
+    [ReducerMethod(typeof(BroadcastsActions.ResetStateAction))]
+    public static BroadcastsState ReduceResetStateAction(BroadcastsState state)
     {
         return state with
         {
@@ -332,18 +323,18 @@ public static class CommunicationsReducers
     /// <summary>
     /// The reducer for the ToggleIsExpanded action.
     /// </summary>
-    /// <param name="state">The communications state.</param>
+    /// <param name="state">The broadcasts state.</param>
     /// <param name="action">The ToggleIsExpanded action.</param>
     /// <returns>The default state.</returns>
     [ReducerMethod]
-    public static CommunicationsState ReduceToggleIsExpandedAction(CommunicationsState state, CommunicationsActions.ToggleIsExpandedAction action)
+    public static BroadcastsState ReduceToggleIsExpandedAction(BroadcastsState state, BroadcastsActions.ToggleIsExpandedAction action)
     {
-        IEnumerable<ExtendedCommunication> data = state.Data ?? Enumerable.Empty<ExtendedCommunication>();
+        IImmutableDictionary<Guid, ExtendedBroadcast> data = state.Data ?? new Dictionary<Guid, ExtendedBroadcast>().ToImmutableDictionary();
 
-        ExtendedCommunication? communication = data.SingleOrDefault(c => c.Id == action.Id);
-        if (communication != null)
+        ExtendedBroadcast? broadcast = data.GetValueOrDefault(action.Id);
+        if (broadcast != null)
         {
-            communication.IsExpanded = !communication.IsExpanded;
+            broadcast.IsExpanded = !broadcast.IsExpanded;
         }
 
         return state;

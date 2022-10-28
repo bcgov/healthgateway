@@ -23,21 +23,21 @@ namespace HealthGateway.Common.Api
     /// <summary>
     /// Interface to interact with PHSA System Broadcasts API.
     /// </summary>
-    public interface ISystemBroadcastsApi
+    public interface ISystemBroadcastApi
     {
         /// <summary>
-        /// Retrieves the broadcasts.
+        /// Retrieves broadcasts.
         /// </summary>
-        /// <returns>The collection of Broadcasts.</returns>
-        [Get("/api/system-broadcasts")]
+        /// <returns>A response containing the collection of broadcasts.</returns>
+        [Get("/system-broadcasts")]
         Task<IApiResponse<IEnumerable<BroadcastResponse>>> GetBroadcasts();
 
         /// <summary>
         /// Creates a broadcast.
         /// </summary>
         /// <param name="request">The broadcast to create.</param>
-        /// <returns>The Broadcasts that was created.</returns>
-        [Post("/api/system-broadcasts")]
+        /// <returns>A response containing the broadcast that was created.</returns>
+        [Post("/system-broadcasts")]
         Task<IApiResponse<BroadcastResponse>> CreateBroadcast([Body] BroadcastRequest request);
 
         /// <summary>
@@ -45,16 +45,16 @@ namespace HealthGateway.Common.Api
         /// </summary>
         /// <param name="id">The id of the broadcast that is being updated.</param>
         /// <param name="request">The broadcast values to update.</param>
-        /// <returns>The Broadcasts that was updated.</returns>
-        [Put("/api/system-broadcasts/{id}")]
+        /// <returns>A response containing the broadcast that was updated.</returns>
+        [Put("/system-broadcasts/{id}")]
         Task<IApiResponse<BroadcastResponse>> UpdateBroadcast(string id, [Body] BroadcastRequest request);
 
         /// <summary>
         /// Deletes a broadcast.
         /// </summary>
-        /// <param name="id">The id of the broadcast that is being deleted..</param>
-        /// <returns>The Broadcasts that was created.</returns>
-        [Delete("/api/system-broadcasts/{id}")]
+        /// <param name="id">The id of the broadcast that is being deleted.</param>
+        /// <returns>A response indicating success or failure.</returns>
+        [Delete("/system-broadcasts/{id}")]
         Task<IApiResponse> DeleteBroadcast(string id);
     }
 }

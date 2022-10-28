@@ -17,6 +17,7 @@ namespace HealthGateway.Common.Models.PHSA
 {
     using System;
     using System.Text.Json.Serialization;
+    using HealthGateway.Common.Data.Models;
 
     /// <summary>
     /// Model representing a PHSA Broadcast Request.
@@ -42,10 +43,10 @@ namespace HealthGateway.Common.Models.PHSA
         public bool Enabled { get; set; }
 
         /// <summary>
-        /// Gets or sets the action text.
+        /// Gets or sets the action type.
         /// </summary>
-        [JsonPropertyName("actionText")]
-        public string? ActionText { get; set; }
+        [JsonPropertyName("actionType")]
+        public BroadcastActionType ActionType { get; set; }
 
         /// <summary>
         /// Gets or sets the action url.

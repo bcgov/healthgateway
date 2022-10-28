@@ -13,33 +13,26 @@
 //  See the License for the specific language governing permissions and
 //  limitations under the License.
 // -------------------------------------------------------------------------
-namespace HealthGateway.CommonTests.Utils
+namespace HealthGateway.Common.MapProfiles
 {
     using AutoMapper;
-    using HealthGateway.Admin.Server.MapProfiles;
-    using HealthGateway.Common.MapProfiles;
+    using HealthGateway.Common.Data.Models;
+    using HealthGateway.Common.Models.PHSA;
 
     /// <summary>
-    /// Static utility class to provide a fully initialized AutoMapper.
-    /// NOTE: Any newly added profiles will have to be registered.
+    /// An AutoMapper profile class which defines mapping between PHSA and front-end models.
     /// </summary>
-    public static class MapperUtil
+    public class BroadcastProfile : Profile
     {
         /// <summary>
-        /// Creates an AutoMapper.
+        /// Initializes a new instance of the <see cref="BroadcastProfile"/> class.
         /// </summary>
-        /// <returns>A configured AutoMapper.</returns>
-        public static IMapper InitializeAutoMapper()
+        public BroadcastProfile()
         {
-            MapperConfiguration config = new(
-                cfg =>
-                {
-                    cfg.AddProfile(new MessagingVerificationModelProfile());
-                    cfg.AddProfile(new SupportUserProfile());
-                    cfg.AddProfile(new BroadcastProfile());
-                });
-
-            return config.CreateMapper();
+            this.CreateMap<BroadcastResponse, Broadcast>()
+                .ForMember(dest => dest.CategoryName, opt => opt.MapFrom(src => src.CategoryName ?? string.Empty))
+                .ForMember(dest => dest.DisplayText, opt => opt.MapFrom(src => src.DisplayText ?? string.Empty));
+            this.CreateMap<Broadcast, BroadcastRequest>();
         }
     }
 }
