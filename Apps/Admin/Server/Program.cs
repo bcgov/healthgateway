@@ -44,6 +44,7 @@ namespace HealthGateway.Admin.Server
     /// The entry point for the project.
     /// </summary>
     [ExcludeFromCodeCoverage]
+    [SuppressMessage("Maintainability", "CA1506:Avoid excessive class coupling", Justification = "Team decision")]
     public static class Program
     {
         /// <summary>
