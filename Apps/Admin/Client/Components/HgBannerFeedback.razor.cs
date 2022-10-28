@@ -54,6 +54,12 @@ namespace HealthGateway.Admin.Client.Components
         [Parameter]
         public string? DataTestId { get; set; }
 
+        /// <summary>
+        /// Gets or sets class names, separated by space.
+        /// </summary>
+        [Parameter]
+        public string Class { get; set; } = string.Empty;
+
         [Inject]
         private IActionSubscriber ActionSubscriber { get; set; } = default!;
 

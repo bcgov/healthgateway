@@ -23,9 +23,11 @@ using Fluxor;
 using Fluxor.Blazor.Web.Components;
 using HealthGateway.Admin.Client.Components;
 using HealthGateway.Admin.Client.Models;
+using HealthGateway.Admin.Client.Store.Broadcasts;
 using HealthGateway.Admin.Client.Store.Communications;
 using HealthGateway.Admin.Common.Models;
 using HealthGateway.Common.Data.Constants;
+using HealthGateway.Common.Data.Models;
 using Microsoft.AspNetCore.Components;
 using MudBlazor;
 
@@ -41,6 +43,9 @@ public partial class CommunicationsPage : FluxorComponent
     private IActionSubscriber ActionSubscriber { get; set; } = default!;
 
     [Inject]
+    private IState<BroadcastsState> BroadcastsState { get; set; } = default!;
+
+    [Inject]
     private IState<CommunicationsState> CommunicationsState { get; set; } = default!;
 
     [Inject]
@@ -52,17 +57,35 @@ public partial class CommunicationsPage : FluxorComponent
     [SuppressMessage("Minor Code Smell", "S3459:Unassigned members should be removed", Justification = "Assigned in .razor file")]
     private HgTabs? Tabs { get; set; }
 
+    private bool BroadcastsLoading => this.BroadcastsState.Value.IsLoading;
+
+    private bool BroadcastsLoaded => this.BroadcastsState.Value.Loaded;
+
     private bool CommunicationsLoading => this.CommunicationsState.Value.IsLoading;
 
     private bool CommunicationsLoaded => this.CommunicationsState.Value.Loaded;
 
-    private bool HasLoadError => this.CommunicationsState.Value.Load.Error != null && this.CommunicationsState.Value.Load.Error.Message.Length > 0;
+    private bool HasBroadcastsLoadError =>
+        this.BroadcastsState.Value.Load.Error != null && this.BroadcastsState.Value.Load.Error.Message.Length > 0;
 
-    private bool HasDeleteError => this.CommunicationsState.Value.Delete.Error != null && this.CommunicationsState.Value.Delete.Error.Message.Length > 0;
+    private bool HasBroadcastsDeleteError =>
+        this.BroadcastsState.Value.Delete.Error != null && this.BroadcastsState.Value.Delete.Error.Message.Length > 0;
 
-    private string? ErrorMessage => this.HasLoadError ? this.CommunicationsState.Value.Load.Error?.Message : this.CommunicationsState.Value.Delete.Error?.Message;
+    private string? BroadcastsErrorMessage =>
+        this.HasBroadcastsLoadError ? this.BroadcastsState.Value.Load.Error?.Message : this.BroadcastsState.Value.Delete.Error?.Message;
+
+    private bool HasCommunicationsLoadError =>
+        this.CommunicationsState.Value.Load.Error != null && this.CommunicationsState.Value.Load.Error.Message.Length > 0;
+
+    private bool HasCommunicationsDeleteError =>
+        this.CommunicationsState.Value.Delete.Error != null && this.CommunicationsState.Value.Delete.Error.Message.Length > 0;
+
+    private string? CommunicationsErrorMessage =>
+        this.HasCommunicationsLoadError ? this.CommunicationsState.Value.Load.Error?.Message : this.CommunicationsState.Value.Delete.Error?.Message;
 
     private bool IsModalShown { get; set; }
+
+    private IEnumerable<ExtendedBroadcast> Broadcasts => this.BroadcastsState.Value.Data?.Values ?? Enumerable.Empty<ExtendedBroadcast>();
 
     private IEnumerable<ExtendedCommunication> AllCommunications =>
         this.CommunicationsState.Value.Data ?? Enumerable.Empty<ExtendedCommunication>();
@@ -79,18 +102,18 @@ public partial class CommunicationsPage : FluxorComponent
     private CommunicationType? SelectedCommunicationType =>
         this.Tabs?.MudComponent.ActivePanelIndex switch
         {
-            0 => CommunicationType.Banner,
-            1 => CommunicationType.InApp,
-            2 => CommunicationType.Mobile,
+            1 => CommunicationType.Banner,
+            2 => CommunicationType.InApp,
+            3 => CommunicationType.Mobile,
             _ => null,
         };
 
-    private string? SelectedBannerName =>
+    private string? SelectedCommunicationName =>
         this.SelectedCommunicationType switch
         {
-            CommunicationType.Banner => "Public",
-            CommunicationType.InApp => "In-App",
-            CommunicationType.Mobile => "Mobile",
+            CommunicationType.Banner => "Public Banner",
+            CommunicationType.InApp => "In-App Banner",
+            CommunicationType.Mobile => "Mobile Communication",
             _ => null,
         };
 
@@ -99,54 +122,39 @@ public partial class CommunicationsPage : FluxorComponent
     {
         base.OnInitialized();
         this.ResetState();
+        this.Dispatcher.Dispatch(new BroadcastsActions.LoadAction());
         this.Dispatcher.Dispatch(new CommunicationsActions.LoadAction());
-        this.ActionSubscriber.SubscribeToAction<CommunicationsActions.AddSuccessAction>(this, this.DisplayAddSuccessful);
-        this.ActionSubscriber.SubscribeToAction<CommunicationsActions.UpdateSuccessAction>(this, this.DisplayUpdateSuccessful);
-        this.ActionSubscriber.SubscribeToAction<CommunicationsActions.DeleteSuccessAction>(this, this.DisplayDeleteSuccessful);
+        this.ActionSubscriber.SubscribeToAction<BroadcastsActions.AddSuccessAction>(this, this.DisplayAddBroadcastSuccessful);
+        this.ActionSubscriber.SubscribeToAction<BroadcastsActions.UpdateSuccessAction>(this, this.DisplayUpdateBroadcastSuccessful);
+        this.ActionSubscriber.SubscribeToAction<BroadcastsActions.DeleteSuccessAction>(this, this.DisplayDeleteBroadcastSuccessful);
+        this.ActionSubscriber.SubscribeToAction<CommunicationsActions.AddSuccessAction>(this, this.DisplayAddCommunicationSuccessful);
+        this.ActionSubscriber.SubscribeToAction<CommunicationsActions.UpdateSuccessAction>(this, this.DisplayUpdateCommunicationSuccessful);
+        this.ActionSubscriber.SubscribeToAction<CommunicationsActions.DeleteSuccessAction>(this, this.DisplayDeleteCommunicationSuccessful);
     }
 
     private void ResetState()
     {
+        this.Dispatcher.Dispatch(new BroadcastsActions.ResetStateAction());
         this.Dispatcher.Dispatch(new CommunicationsActions.ResetStateAction());
     }
 
-    private async Task CreateBannerAsync()
+    private async Task CreateBroadcastAsync()
     {
-        CommunicationType? type = this.SelectedCommunicationType;
-        if (type == null)
-        {
-            return;
-        }
+        string title = "Create Notification";
 
-        string title = $"Create {this.SelectedBannerName} Banner";
-        if (this.SelectedCommunicationType == CommunicationType.Mobile)
-        {
-            title = "Create Mobile Communication";
-        }
+        Broadcast broadcast = new();
 
-        Communication communication = new()
-        {
-            CommunicationTypeCode = type.Value,
-            CommunicationStatusCode = CommunicationStatus.Draft,
-        };
-
-        await this.OpenBannerDialogAsync(title, communication).ConfigureAwait(true);
+        await this.OpenBroadcastDialogAsync(title, broadcast).ConfigureAwait(true);
     }
 
-    private async Task EditBannerAsync(ExtendedCommunication communication)
+    private async Task EditBroadcastAsync(ExtendedBroadcast broadcast)
     {
-        CommunicationType? type = this.SelectedCommunicationType;
-        if (type == null)
-        {
-            return;
-        }
+        string title = "Edit Notification";
 
-        string title = $"Edit {this.SelectedBannerName} Banner";
-
-        await this.OpenBannerDialogAsync(title, communication).ConfigureAwait(true);
+        await this.OpenBroadcastDialogAsync(title, broadcast).ConfigureAwait(true);
     }
 
-    private async Task OpenBannerDialogAsync(string title, Communication communication)
+    private async Task OpenBroadcastDialogAsync(string title, Broadcast broadcast)
     {
         if (this.IsModalShown)
         {
@@ -155,25 +163,89 @@ public partial class CommunicationsPage : FluxorComponent
 
         this.IsModalShown = true;
 
-        DialogParameters parameters = new() { [nameof(BannerDialog.Communication)] = communication };
+        DialogParameters parameters = new() { [nameof(BroadcastDialog.Broadcast)] = broadcast };
         DialogOptions options = new() { DisableBackdropClick = true };
-        IDialogReference dialog = this.Dialog.Show<BannerDialog>(title, parameters, options);
+        IDialogReference dialog = this.Dialog.Show<BroadcastDialog>(title, parameters, options);
 
         await dialog.Result.ConfigureAwait(true);
         this.IsModalShown = false;
     }
 
-    private void DisplayAddSuccessful(CommunicationsActions.AddSuccessAction action)
+    private async Task CreateCommunicationAsync()
+    {
+        CommunicationType? type = this.SelectedCommunicationType;
+        if (type == null)
+        {
+            return;
+        }
+
+        string title = $"Create {this.SelectedCommunicationName}";
+
+        Communication communication = new()
+        {
+            CommunicationTypeCode = type.Value,
+            CommunicationStatusCode = CommunicationStatus.Draft,
+        };
+
+        await this.OpenCommunicationDialogAsync(title, communication).ConfigureAwait(true);
+    }
+
+    private async Task EditCommunicationAsync(ExtendedCommunication communication)
+    {
+        CommunicationType? type = this.SelectedCommunicationType;
+        if (type == null)
+        {
+            return;
+        }
+
+        string title = $"Edit {this.SelectedCommunicationName}";
+
+        await this.OpenCommunicationDialogAsync(title, communication).ConfigureAwait(true);
+    }
+
+    private async Task OpenCommunicationDialogAsync(string title, Communication communication)
+    {
+        if (this.IsModalShown)
+        {
+            return;
+        }
+
+        this.IsModalShown = true;
+
+        DialogParameters parameters = new() { [nameof(CommunicationDialog.Communication)] = communication };
+        DialogOptions options = new() { DisableBackdropClick = true };
+        IDialogReference dialog = this.Dialog.Show<CommunicationDialog>(title, parameters, options);
+
+        await dialog.Result.ConfigureAwait(true);
+        this.IsModalShown = false;
+    }
+
+    private void DisplayAddBroadcastSuccessful(BroadcastsActions.AddSuccessAction action)
+    {
+        this.Snackbar.Add("Notification added.", Severity.Success);
+    }
+
+    private void DisplayUpdateBroadcastSuccessful(BroadcastsActions.UpdateSuccessAction action)
+    {
+        this.Snackbar.Add("Notification updated.", Severity.Success);
+    }
+
+    private void DisplayDeleteBroadcastSuccessful(BroadcastsActions.DeleteSuccessAction action)
+    {
+        this.Snackbar.Add("Notification deleted.", Severity.Success);
+    }
+
+    private void DisplayAddCommunicationSuccessful(CommunicationsActions.AddSuccessAction action)
     {
         this.Snackbar.Add("Communication added.", Severity.Success);
     }
 
-    private void DisplayUpdateSuccessful(CommunicationsActions.UpdateSuccessAction action)
+    private void DisplayUpdateCommunicationSuccessful(CommunicationsActions.UpdateSuccessAction action)
     {
         this.Snackbar.Add("Communication updated.", Severity.Success);
     }
 
-    private void DisplayDeleteSuccessful(CommunicationsActions.DeleteSuccessAction action)
+    private void DisplayDeleteCommunicationSuccessful(CommunicationsActions.DeleteSuccessAction action)
     {
         this.Snackbar.Add("Communication deleted.", Severity.Success);
     }

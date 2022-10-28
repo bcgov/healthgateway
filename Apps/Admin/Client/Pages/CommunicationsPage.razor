@@ -1,41 +1,54 @@
 @page "/communications"
 @layout MainLayout
 @attribute [Authorize(Roles = $"{Roles.Admin},{Roles.Reviewer}")]
+@using HealthGateway.Admin.Client.Store.Broadcasts
 @using HealthGateway.Admin.Client.Store.Communications
 @inherits Fluxor.Blazor.Web.Components.FluxorComponent
 
 <PageTitle>Health Gateway Admin Communications</PageTitle>
 <HgPageHeading>Communications</HgPageHeading>
 
-<HgBannerFeedback Severity="@Severity.Error" IsEnabled="@(HasLoadError || HasDeleteError)" TResetAction="@CommunicationsActions.ResetStateAction">
-    @ErrorMessage
+<HgBannerFeedback
+    Severity="@Severity.Error"
+    IsEnabled="@(HasBroadcastsLoadError || HasBroadcastsDeleteError)"
+    TResetAction="@BroadcastsActions.ResetStateAction"
+    Class="mb-4">
+    @BroadcastsErrorMessage
 </HgBannerFeedback>
 
-@if (CommunicationsLoaded || CommunicationsLoading)
+<HgBannerFeedback
+    Severity="@Severity.Error"
+    IsEnabled="@(HasCommunicationsLoadError || HasCommunicationsDeleteError)"
+    TResetAction="@CommunicationsActions.ResetStateAction"
+    Class="mb-4">
+    @CommunicationsErrorMessage
+</HgBannerFeedback>
+
+@if (BroadcastsLoaded || BroadcastsLoading || CommunicationsLoaded || CommunicationsLoading)
 {
     <HgTabs @ref="@Tabs" data-testid="banner-tabs">
         <Header>
-            @if (SelectedBannerName != null)
-            {
-                <HgButton EndIcon="@Icons.Material.Filled.Add"
-                          TopMargin="@Breakpoint.Always"
-                          RightMargin="@Breakpoint.Always"
-                          BottomMargin="@Breakpoint.Always"
-                          @onclick="@CreateBannerAsync"
-                          data-testid="create-banner-btn">
-                    Create
-                </HgButton>
-            }
+            <HgButton EndIcon="@Icons.Material.Filled.Add"
+                      TopMargin="@Breakpoint.Always"
+                      RightMargin="@Breakpoint.Always"
+                      BottomMargin="@Breakpoint.Always"
+                      @onclick="@(SelectedCommunicationType == null ? CreateBroadcastAsync : CreateCommunicationAsync)"
+                      data-testid="create-btn">
+                Create
+            </HgButton>
         </Header>
         <ChildContent>
+            <MudTabPanel Text="Notifications">
+                <BroadcastsTable Data="@Broadcasts" IsLoading="@BroadcastsLoading" OnEditCallback="EditBroadcastAsync" />
+            </MudTabPanel>
             <MudTabPanel Text="Public Banners">
-                <CommunicationsTable Data="@PublicCommunications" IsLoading="@CommunicationsLoading" OnEditCallback="EditBannerAsync" />
+                <CommunicationsTable Data="@PublicCommunications" IsLoading="@CommunicationsLoading" OnEditCallback="EditCommunicationAsync" />
             </MudTabPanel>
             <MudTabPanel Text="In-App Banners">
-                <CommunicationsTable Data="@InAppCommunications" IsLoading="@CommunicationsLoading" OnEditCallback="EditBannerAsync" />
+                <CommunicationsTable Data="@InAppCommunications" IsLoading="@CommunicationsLoading" OnEditCallback="EditCommunicationAsync" />
             </MudTabPanel>
             <MudTabPanel Text="Mobile">
-                <CommunicationsTable Data="@MobileCommunications" IsLoading="@CommunicationsLoading" OnEditCallback="EditBannerAsync" />
+                <CommunicationsTable Data="@MobileCommunications" IsLoading="@CommunicationsLoading" OnEditCallback="EditCommunicationAsync" />
             </MudTabPanel>
         </ChildContent>
     </HgTabs>

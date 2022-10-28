@@ -27,14 +27,14 @@ using Microsoft.AspNetCore.Components;
 using MudBlazor;
 
 /// <summary>
-/// Backing logic for the BannerDialog component.
+/// Backing logic for the CommunicationDialog component.
 /// If the Save button is pressed, the dialog's Result will have the Data property populated with a bool value of true.
 /// If the Cancel button is pressed, the dialog's Result will have the Cancelled property set to true.
 /// </summary>
-public partial class BannerDialog : FluxorComponent
+public partial class CommunicationDialog : FluxorComponent
 {
     /// <summary>
-    /// Gets or sets the communication model corresponding to the banner that is being edited.
+    /// Gets or sets the communication model corresponding to the communication that is being edited.
     /// </summary>
     [Parameter]
     public Communication Communication { get; set; } = default!;
@@ -53,7 +53,7 @@ public partial class BannerDialog : FluxorComponent
     [Inject]
     private IState<CommunicationsState> CommunicationsState { get; set; } = default!;
 
-    private bool IsNewBanner => this.Communication.Id == Guid.Empty;
+    private bool IsNewCommunication => this.Communication.Id == Guid.Empty;
 
     private bool HasAddError => this.CommunicationsState.Value.Add.Error != null && this.CommunicationsState.Value.Add.Error.Message.Length > 0;
 
@@ -94,7 +94,7 @@ public partial class BannerDialog : FluxorComponent
 
     private void SetFormValues()
     {
-        if (this.IsNewBanner)
+        if (this.IsNewCommunication)
         {
             DateTime now = DateTime.Now;
             DateTime tomorrow = now.AddDays(1);
@@ -132,7 +132,7 @@ public partial class BannerDialog : FluxorComponent
         {
             await this.RetrieveFormValuesAsync().ConfigureAwait(true);
 
-            if (this.IsNewBanner)
+            if (this.IsNewCommunication)
             {
                 this.Dispatcher.Dispatch(new CommunicationsActions.AddAction(this.Communication));
             }
