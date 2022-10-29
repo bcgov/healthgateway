@@ -22,7 +22,6 @@ namespace HealthGateway.Common.AccessManagement.UserManagedAccess.Models
     /// are evaluated and how a final decision is obtained.</summary>
     public enum DecisionStrategy
     {
-
         /// <summary>Defines that at least one policy must evaluate to a positive decision
         /// in order to the overall decision be also positive.</summary>
         [EnumMember(Value="AFFIRMATIVE")]

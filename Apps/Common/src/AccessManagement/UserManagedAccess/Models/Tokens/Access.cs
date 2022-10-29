@@ -16,7 +16,6 @@
 namespace HealthGateway.Common.AccessManagement.UserManagedAccess.Models.Tokens
 {
     using System.Collections.Generic;
-    using System.IdentityModel.Tokens.Jwt;
     using System.Text.Json.Serialization;
 
     /// <summary>
@@ -28,7 +27,7 @@ namespace HealthGateway.Common.AccessManagement.UserManagedAccess.Models.Tokens
         /// Gets the roles.
         /// </summary>
         [JsonPropertyName("roles")]
-        public List<string> Roles { get; } = new List<string>();
+        public ICollection<string> Roles { get; } = new List<string>();
 
         /// <summary>
         /// Gets a value indicating whether verify_caller flag is set.

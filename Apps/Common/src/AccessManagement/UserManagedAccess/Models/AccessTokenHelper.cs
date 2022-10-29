@@ -86,7 +86,7 @@ namespace HealthGateway.Common.AccessManagement.UserManagedAccess.Models
         /// <summary>Checks whether the AccessToken has the permissions for the given resource and scope.</summary>
         /// <param name="accessToken">this.</param>
         /// <returns>Returns true if the AccessToken has the permissions for the scopeName.</returns>
-        public static List<Permission> GetPermissions(this AccessToken accessToken)
+        public static IReadOnlyCollection<Permission> GetPermissions(this AccessToken accessToken)
         {
             ResourceAuthorization authorization = accessToken.ResourceAuthorization!;
 

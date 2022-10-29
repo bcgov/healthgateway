@@ -39,15 +39,15 @@ namespace HealthGateway.Common.AccessManagement.UserManagedAccess.Models
 
         /// <inheritdoc/>
         [JsonPropertyName("policies")]
-        public List<string> Policies { get; } = new List<string>();
+        public IEnumerable<string> Policies { get; } = new List<string>();
 
         /// <inheritdoc/>
         [JsonPropertyName("resources")]
-        public List<string> Resources { get; } = new List<string>();
+        public IEnumerable<string> Resources { get; } = new List<string>();
 
         /// <inheritdoc/>
         [JsonPropertyName("scopes")]
-        public List<string> Scopes { get; } = new List<string>();
+        public IEnumerable<string> Scopes { get; } = new List<string>();
 
         /// <inheritdoc/>
         [JsonPropertyName("logic")]

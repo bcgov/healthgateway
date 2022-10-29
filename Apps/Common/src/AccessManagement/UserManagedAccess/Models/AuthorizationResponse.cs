@@ -15,16 +15,18 @@
 //-------------------------------------------------------------------------
 namespace HealthGateway.Common.AccessManagement.UserManagedAccess.Models
 {
-    using HealthGateway.Common.AccessManagement.Authentication.Models;
-
+    using HealthGateway.Common.AccessManagement.UserManagedAccess.Models.Tokens;
     /// <summary>
     /// An authorization response in form of an OAuth2 access token.
     /// </summary>
-    public class AuthorizationResponse : AccessTokenResponse
+
+    public class AuthorizationResponse : AccessToken
     {
-        /// <summary>Initializes a new instance of the <see cref="AuthorizationResponse"/> class.</summary>
-        /// <param name="upgraded">A boolean whether the token was upgraded.</param>
-        public AuthorizationResponse(bool upgraded)
+        /// <summary>
+        /// Initializes a new instance of the <see cref="AuthorizationResponse"/> class.
+        /// </summary>
+        /// <param name="upgraded">Whether upgraded..</param>
+        protected AuthorizationResponse(bool upgraded)
         {
             this.Upgraded = upgraded;
         }

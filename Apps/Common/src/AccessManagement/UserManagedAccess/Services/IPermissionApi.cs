@@ -38,7 +38,7 @@ namespace HealthGateway.Common.AccessManagement.UserManagedAccess.Services
         /// <param name="requests"> a List of <see cref="PermissionRequest"/> representing the resource and scope(s).</param>
         /// <returns>Permission response holding a permission ticket with the requested permissions.</returns>
         [Post("/authz/protection/permission")]
-        public Task<PermissionResponse> Create([Body] List<PermissionRequest> requests);
+        public Task<PermissionResponse> Create([Body] ICollection<PermissionRequest> requests);
 
         /// <summary>Creates a new uma permission for a single resource and scope(s).</summary>
         /// <param name="ticket">The <see cref="PermissionTicket"/> representing the resource and scope(s).</param>
@@ -50,13 +50,13 @@ namespace HealthGateway.Common.AccessManagement.UserManagedAccess.Services
         /// <param name="scopeId">The scopeId the scope id.</param>
         /// <returns>A list of permission tickets associated with the given scopeId.</returns>
         [Get("/authz/protection/permission?scopeId={scopeId}")]
-        public Task<List<PermissionTicket>> FindByScope(string scopeId);
+        public Task<ICollection<PermissionTicket>> FindByScope(string scopeId);
 
         /// <summary>Query the server for any permission ticket associated with the given scopeId.</summary>
         /// <param name="resourceId">The resourceId.</param>
         /// <returns>A list of permission tickets associated with the given scopeId.</returns>
         [Get("/authz/protection/permission?resourceId={resourceId}")]
-        public Task<List<PermissionTicket>> FindByResourceId(string resourceId);
+        public Task<ICollection<PermissionTicket>> FindByResourceId(string resourceId);
 
         /// <summary>Query the server for any permission ticket with the matching arguments.</summary>
         /// <param name="resourceId">The resource id or name.</param>
@@ -69,7 +69,7 @@ namespace HealthGateway.Common.AccessManagement.UserManagedAccess.Services
         /// <param name="maxResult">The maximum number of resources to retrieve.</param>
         /// <returns>A list of permission tickets with the matching arguments.</returns>
         [Get("/authz/protection/permission?resourceId={resourceId}&scopeId={scopeId}&owner={owner}&requester={requester}&granted={granted}&returnName={returnNames}&firstResult={firstResult}&maxResult={maxResult}")]
-        public Task<List<PermissionTicket>> Find(
+        public Task<ICollection<PermissionTicket>> Find(
             string resourceId,
             string scopeId,
             string owner,

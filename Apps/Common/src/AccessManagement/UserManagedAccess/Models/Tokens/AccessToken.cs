@@ -15,7 +15,6 @@
 //-------------------------------------------------------------------------
 namespace HealthGateway.Common.AccessManagement.UserManagedAccess.Models.Tokens
 {
-    using System;
     using System.Collections.Generic;
     using System.IdentityModel.Tokens.Jwt;
     using System.Text.Json.Serialization;
@@ -23,20 +22,19 @@ namespace HealthGateway.Common.AccessManagement.UserManagedAccess.Models.Tokens
     /// <summary>
     /// OAuth 2.0 Access Token Response json.
     /// </summary>
-    [Serializable]
     public class AccessToken : JwtPayload
     {
         /// <summary>
         /// Gets the truested-certs.
         /// </summary>
         [JsonPropertyName("trusted-certs")]
-        public List<string>? TrustedCertificates { get; } = new List<string>();
+        public ICollection<string>? TrustedCertificates { get; } = new List<string>();
 
         /// <summary>
         /// Gets the allowed-origins.
         /// </summary>
         [JsonPropertyName("allowed-origins")]
-        public List<string>? AllowedOrigins { get; } = new List<string>();
+        public ICollection<string>? AllowedOrigins { get; } = new List<string>();
 
         /// <summary>
         /// Gets the realm_access.

@@ -39,15 +39,15 @@ namespace HealthGateway.Common.AccessManagement.UserManagedAccess.Models
 
         /// <summary>Gets the list of policies.</summary>
         [JsonPropertyName("policies")]
-        public List<string> Policies { get; }
+        public IEnumerable<string> Policies { get; }
 
         /// <summary>Gets the list of resources.</summary>
         [JsonPropertyName("resources")]
-        public List<string> Resources { get; }
+        public IEnumerable<string> Resources { get; }
 
         /// <summary>Gets the list of scopes.</summary>
         [JsonPropertyName("scopes")]
-        public List<string> Scopes { get;  }
+        public IEnumerable<string> Scopes { get;  }
 
         /// <summary>Gets or sets the Logic setting.</summary>
         [JsonPropertyName("logic")]
