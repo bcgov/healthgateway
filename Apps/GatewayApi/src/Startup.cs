@@ -21,6 +21,7 @@ namespace HealthGateway.GatewayApi
     using HealthGateway.Common.AspNetConfiguration;
     using HealthGateway.Common.Delegates;
     using HealthGateway.Common.Delegates.PHSA;
+    using HealthGateway.Common.MapProfiles;
     using HealthGateway.Common.Services;
     using HealthGateway.Common.Utils;
     using HealthGateway.Database.Delegates;
@@ -37,8 +38,8 @@ namespace HealthGateway.GatewayApi
     [ExcludeFromCodeCoverage]
     public class Startup
     {
-        private readonly StartupConfiguration startupConfig;
         private readonly IConfiguration configuration;
+        private readonly StartupConfiguration startupConfig;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Startup"/> class.
@@ -105,7 +106,7 @@ namespace HealthGateway.GatewayApi
 
             services.AddControllers().AddJsonOptions(options => options.JsonSerializerOptions.Converters.Add(new DateOnlyJsonConverter()));
 
-            services.AddAutoMapper(typeof(Startup));
+            services.AddAutoMapper(typeof(Startup), typeof(UserProfileProfile));
         }
 
         /// <summary>
