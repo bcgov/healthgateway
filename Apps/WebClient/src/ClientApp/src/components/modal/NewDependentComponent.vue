@@ -97,6 +97,7 @@ export default class NewDependentComponent extends Vue {
     }
 
     public hideModal(): void {
+        this.clear();
         this.$v.$reset();
         this.isVisible = false;
     }
@@ -139,7 +140,6 @@ export default class NewDependentComponent extends Vue {
 
     @Emit()
     private handleSubmit(): void {
-        this.clear();
         // Hide the modal manually
         this.$nextTick(() => this.hideModal());
     }
@@ -152,6 +152,7 @@ export default class NewDependentComponent extends Vue {
             PHN: "",
         };
         this.accepted = false;
+        this.errorMessage = "";
     }
 }
 </script>
