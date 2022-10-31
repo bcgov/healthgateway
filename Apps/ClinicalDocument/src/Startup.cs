@@ -18,11 +18,8 @@ namespace HealthGateway.ClinicalDocument
     using System.Diagnostics.CodeAnalysis;
     using HealthGateway.ClinicalDocument.Api;
     using HealthGateway.ClinicalDocument.Services;
-    using HealthGateway.Common.AccessManagement.Authentication;
     using HealthGateway.Common.Api;
     using HealthGateway.Common.AspNetConfiguration;
-    using HealthGateway.Common.AspNetConfiguration.Modules;
-    using HealthGateway.Common.Delegates.PHSA;
     using HealthGateway.Common.Models.PHSA;
     using HealthGateway.Common.Services;
     using HealthGateway.Common.Utils.Phsa;
@@ -64,28 +61,23 @@ namespace HealthGateway.ClinicalDocument
             this.startupConfig.ConfigureAuthorizationServices(services);
             this.startupConfig.ConfigureSwaggerServices(services);
             this.startupConfig.ConfigurePatientAccess(services);
+            this.startupConfig.ConfigurePhsaV2Access(services);
             this.startupConfig.ConfigureTracing(services);
             this.startupConfig.ConfigureAccessControl(services);
 
             // Add services
             services.AddTransient<IClinicalDocumentService, ClinicalDocumentService>();
-
-            // Enable V2 PHSA Services
-            GatewayCache.ConfigureCaching(services, this.startupConfig.Logger, this.startupConfig.Configuration);
-            services.AddAutoMapper(typeof(Startup));
-            services.AddTransient<IAuthenticationDelegate, AuthenticationDelegate>();
-            services.AddTransient<IAccessTokenService, AccessTokenService>();
-            services.AddTransient<ITokenSwapDelegate, RestTokenSwapDelegate>();
-            services.AddTransient<AuthHeaderHandler>();
             services.AddTransient<IPersonalAccountsService, PersonalAccountsService>();
+            services.AddAutoMapper(typeof(Startup));
+
+            // Add Refit clients
             PhsaConfigV2 phsaConfig = new();
             this.startupConfig.Configuration.Bind(PhsaConfigV2.ConfigurationSectionKey, phsaConfig);
-            services.AddRefitClient<ITokenSwapApi>()
-                .ConfigureHttpClient(c => c.BaseAddress = phsaConfig.TokenBaseUrl);
-            services.AddRefitClient<IPersonalAccountsApi>()
+
+            services.AddRefitClient<IClinicalDocumentsApi>()
                 .ConfigureHttpClient(c => c.BaseAddress = phsaConfig.BaseUrl)
                 .AddHttpMessageHandler<AuthHeaderHandler>();
-            services.AddRefitClient<IClinicalDocumentsApi>()
+            services.AddRefitClient<IPersonalAccountsApi>()
                 .ConfigureHttpClient(c => c.BaseAddress = phsaConfig.BaseUrl)
                 .AddHttpMessageHandler<AuthHeaderHandler>();
         }
