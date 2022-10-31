@@ -67,14 +67,10 @@ namespace HealthGateway.Admin.Server
             AddServices(services);
             AddDelegates(services);
 
-            // Configure token swapping
-            services.AddTransient<AuthHeaderHandler>();
+            // Add Refit clients
             PhsaConfigV2 phsaConfig = new();
             configuration.Bind(PhsaConfigV2.ConfigurationSectionKey, phsaConfig);
-            services.AddRefitClient<ITokenSwapApi>()
-                .ConfigureHttpClient(c => c.BaseAddress = phsaConfig.TokenBaseUrl);
 
-            // Add API clients
             services.AddRefitClient<ISystemBroadcastApi>()
                 .ConfigureHttpClient(c => c.BaseAddress = phsaConfig.BaseUrl)
                 .AddHttpMessageHandler<AuthHeaderHandler>();
@@ -117,11 +113,11 @@ namespace HealthGateway.Admin.Server
             SwaggerDoc.ConfigureSwaggerServices(services, configuration);
             JobScheduler.ConfigureHangfireQueue(services, configuration);
             Patient.ConfigurePatientAccess(services, logger, configuration);
+            PhsaV2.ConfigurePhsaV2Access(services, logger, configuration);
         }
 
         private static void AddServices(IServiceCollection services)
         {
-            services.AddTransient<IAccessTokenService, AccessTokenService>();
             services.AddTransient<IBroadcastService, BroadcastService>();
             services.AddTransient<IConfigurationService, ConfigurationService>();
             services.AddTransient<IUserFeedbackService, UserFeedbackService>();
@@ -148,7 +144,6 @@ namespace HealthGateway.Admin.Server
             services.AddTransient<IVaccineProofDelegate, VaccineProofDelegate>();
             services.AddTransient<IAdminUserProfileDelegate, DbAdminUserProfileDelegate>();
             services.AddTransient<IAuthenticationDelegate, AuthenticationDelegate>();
-            services.AddTransient<ITokenSwapDelegate, RestTokenSwapDelegate>();
             services.AddTransient<IUserAdminDelegate, KeycloakUserAdminDelegate>();
         }
     }
