@@ -18,6 +18,7 @@ namespace HealthGateway.Database.Delegates
     using System;
     using System.Collections.Generic;
     using System.Diagnostics.CodeAnalysis;
+    using System.Globalization;
     using System.Linq;
     using System.Text.Json;
     using HealthGateway.Database.Constants;
@@ -26,6 +27,7 @@ namespace HealthGateway.Database.Delegates
     using HealthGateway.Database.Wrapper;
     using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.Logging;
+    using Npgsql;
 
     /// <inheritdoc/>
     [ExcludeFromCodeCoverage]
@@ -67,9 +69,17 @@ namespace HealthGateway.Database.Delegates
                 }
                 catch (DbUpdateException e)
                 {
-                    this.logger.LogError("Error inserting resource delegate to DB with exception {Exception}", e.ToString());
                     result.Status = DBStatusCode.Error;
-                    result.Message = e.Message;
+
+                    if (e.InnerException is PostgresException { SqlState: PostgresErrorCodes.UniqueViolation })
+                    {
+                        result.Message = "You have already added this dependent.";
+                    }
+                    else
+                    {
+                        this.logger.LogError("Error inserting resource delegate to DB with exception {Exception}", e.ToString());
+                        result.Message = e.Message;
+                    }
                 }
             }
 
