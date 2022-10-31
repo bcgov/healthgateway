@@ -44,7 +44,6 @@ namespace HealthGateway.Admin.Server
     /// The entry point for the project.
     /// </summary>
     [ExcludeFromCodeCoverage]
-    [SuppressMessage("Maintainability", "CA1506:Avoid excessive class coupling", Justification = "Team decision")]
     public static class Program
     {
         /// <summary>
@@ -61,19 +60,10 @@ namespace HealthGateway.Admin.Server
             ILogger logger = ProgramConfiguration.GetInitialLogger(configuration);
             IWebHostEnvironment environment = builder.Environment;
 
-            HttpWeb.ConfigureForwardHeaders(services, logger, configuration);
-            Db.ConfigureDatabaseServices(services, logger, configuration);
-            HttpWeb.ConfigureHttpServices(services, logger);
-            Audit.ConfigureAuditServices(services, logger, configuration);
-            Auth.ConfigureAuthServicesForJwtBearer(services, logger, configuration, environment);
-            Auth.ConfigureAuthorizationServices(services, logger, configuration);
-            SwaggerDoc.ConfigureSwaggerServices(services, configuration);
-            JobScheduler.ConfigureHangfireQueue(services, configuration);
-            Patient.ConfigurePatientAccess(services, logger, configuration);
-
             // Add services to the container.
             services.AddControllersWithViews();
 
+            AddModules(services, configuration, logger, environment);
             AddServices(services);
             AddDelegates(services);
 
@@ -114,6 +104,19 @@ namespace HealthGateway.Admin.Server
             app.MapFallbackToFile("index.html");
 
             await app.RunAsync().ConfigureAwait(true);
+        }
+
+        private static void AddModules(IServiceCollection services, IConfiguration configuration, ILogger logger, IWebHostEnvironment environment)
+        {
+            HttpWeb.ConfigureForwardHeaders(services, logger, configuration);
+            Db.ConfigureDatabaseServices(services, logger, configuration);
+            HttpWeb.ConfigureHttpServices(services, logger);
+            Audit.ConfigureAuditServices(services, logger, configuration);
+            Auth.ConfigureAuthServicesForJwtBearer(services, logger, configuration, environment);
+            Auth.ConfigureAuthorizationServices(services, logger, configuration);
+            SwaggerDoc.ConfigureSwaggerServices(services, configuration);
+            JobScheduler.ConfigureHangfireQueue(services, configuration);
+            Patient.ConfigurePatientAccess(services, logger, configuration);
         }
 
         private static void AddServices(IServiceCollection services)
