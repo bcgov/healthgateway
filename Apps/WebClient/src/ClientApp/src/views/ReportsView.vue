@@ -438,7 +438,6 @@ export default class ReportsView extends Vue {
                         class="filter-selected"
                         title="From"
                         data-testid="clearFilter"
-                        :pill="true"
                         @remove="clearFilterDates"
                     >
                         <span data-testid="selectedDatesFilter"
@@ -471,10 +470,9 @@ export default class ReportsView extends Vue {
                     <b-form-tag
                         v-for="item in reportFilter.medications"
                         :key="item"
-                        variant="danger"
+                        variant="light"
                         :title="item"
                         :data-testid="item + '-clearFilter'"
-                        :pill="true"
                         @remove="clearFilterMedication(item)"
                     >
                         <span :data-testid="item + '-excluded'">{{

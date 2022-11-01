@@ -9,6 +9,7 @@ export default class DeleteModalComponent extends Vue {
 
     @Prop({ default: "Info" }) private title!: string;
     @Prop({ default: "Message" }) private message!: string;
+    @Prop({ default: "Yes, I'm Sure" }) private confirm!: string;
     private isVisible = false;
 
     public showModal(): void {
@@ -82,6 +83,7 @@ export default class DeleteModalComponent extends Vue {
                         <b-col>
                             <hg-button
                                 data-testid="cancelDeleteBtn"
+                                class="mr-2"
                                 variant="secondary"
                                 @click="handleCancel($event)"
                             >
@@ -89,11 +91,10 @@ export default class DeleteModalComponent extends Vue {
                             </hg-button>
                             <hg-button
                                 data-testid="confirmDeleteBtn"
-                                class="mr-2"
                                 variant="primary"
                                 @click="handleSubmit($event)"
                             >
-                                Yes, I'm Sure
+                                {{ confirm }}
                             </hg-button>
                         </b-col>
                     </b-row>
