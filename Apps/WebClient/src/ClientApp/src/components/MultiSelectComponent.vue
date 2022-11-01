@@ -87,7 +87,7 @@ export default class MultiSelectComponent extends Vue {
                             :disabled="disabled"
                             :title="tag"
                             :pill="true"
-                            variant="danger"
+                            variant="light"
                             @remove="removeTag(tag)"
                         >
                             {{ getValueText(tag) }}

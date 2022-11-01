@@ -1403,6 +1403,7 @@ export default class DependentCardComponent extends Vue {
         <delete-modal-component
             ref="deleteModal"
             title="Remove Dependent"
+            confirm="Remove Dependent"
             message="Are you sure you want to remove this dependent?"
             @submit="deleteDependent"
         />
