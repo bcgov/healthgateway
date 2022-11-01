@@ -1,15 +1,6 @@
 const suggestionTag = "suggestion";
 const questionTag = "question";
 
-function validateTableLoad(tableSelector) {
-    cy.get(tableSelector)
-        .find(".mud-table-loading-progress")
-        .should("be.visible");
-    cy.get(tableSelector)
-        .find(".mud-table-loading-progress")
-        .should("not.exist");
-}
-
 function validateTableRowCount(tableSelector, count) {
     cy.log(`Validating table contains ${count} rows of data.`);
     cy.get(tableSelector)
@@ -43,7 +34,7 @@ describe("Feedback Review", () => {
                     .should("have.class", "mud-error-text")
                     .click();
             });
-        validateTableLoad("[data-testid=feedback-table]");
+        cy.validateTableLoad("[data-testid=feedback-table]");
         cy.get(rowSelector)
             .first()
             .within(() => {
@@ -70,7 +61,7 @@ describe("Feedback Review", () => {
                 cy.get("[data-testid=feedback-tag-select]").click();
             });
         cy.get("[data-testid=feedback-tag]").contains(suggestionTag).click();
-        validateTableLoad("[data-testid=feedback-table]");
+        cy.validateTableLoad("[data-testid=feedback-table]");
         cy.get(rowSelector)
             .first()
             .within(() => {
@@ -106,7 +97,7 @@ describe("Feedback Review", () => {
                 cy.get("[data-testid=feedback-tag-select]").click();
             });
         cy.get("[data-testid=feedback-tag]").contains(suggestionTag).click();
-        validateTableLoad("[data-testid=feedback-table]");
+        cy.validateTableLoad("[data-testid=feedback-table]");
         cy.get(rowSelector)
             .first()
             .within(() => {
@@ -140,7 +131,7 @@ describe("Feedback Review", () => {
                     .click();
             });
         cy.location("pathname").should("eq", "/support");
-        //validateTableLoad("[data-testid=user-table]");
+        //cy.validateTableLoad("[data-testid=user-table]");
         validateTableRowCount("[data-testid=user-table]", 1);
     });
 });

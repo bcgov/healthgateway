@@ -135,9 +135,9 @@
                         T="@bool"
                         Required="@true"
                         ToStringFunc="@BroadcastUtility.FormatEnabled"
-                        data-testid="publish-selector">
-                        <MudSelectItem Value="false" />
-                        <MudSelectItem Value="true" />
+                        data-testid="publish-select">
+                        <MudSelectItem Value="false" data-testid="publish-value" />
+                        <MudSelectItem Value="true" data-testid="publish-value" />
                     </HgSelect>
                 </MudItem>
                 <MudItem xs="12" sm="4">

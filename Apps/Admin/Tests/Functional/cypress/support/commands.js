@@ -117,3 +117,12 @@ Cypress.Commands.overwrite(
         cy.wrap(originalFn(subject, valueOrTextOrIndex, options));
     }
 );
+
+Cypress.Commands.add("validateTableLoad", (tableSelector) => {
+    cy.get(tableSelector)
+        .find(".mud-table-loading-progress")
+        .should("be.visible");
+    cy.get(tableSelector)
+        .find(".mud-table-loading-progress")
+        .should("not.exist");
+});
