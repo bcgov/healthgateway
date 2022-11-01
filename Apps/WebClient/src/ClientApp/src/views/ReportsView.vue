@@ -470,7 +470,7 @@ export default class ReportsView extends Vue {
                     <b-form-tag
                         v-for="item in reportFilter.medications"
                         :key="item"
-                        variant="danger"
+                        variant="light"
                         :title="item"
                         :data-testid="item + '-clearFilter'"
                         @remove="clearFilterMedication(item)"
