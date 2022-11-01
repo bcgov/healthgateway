@@ -214,5 +214,28 @@ describe("Communications", () => {
         cy.get("[data-testid=comm-table-subject]").should("not.exist");
 
         cy.log("Validate delete communication finished.");
+
+        cy.log("Validate add communication.");
+
+        cy.get("[data-testid=banner-tabs]")
+            .contains(".mud-tab", "Mobile")
+            .click();
+        cy.get("[data-testid=create-btn]").click();
+        cy.get("[data-testid=communication-dialog-modal-text]").within(() => {
+            cy.get("[data-testid=subject-input]")
+                .clear()
+                .focus()
+                .type("New Mobile Comm");
+        });
+        cy.get("[data-testid=status-select]").click({ force: true });
+        cy.get("[data-testid=status-type]")
+            .contains("New")
+            .click({ force: true });
+        cy.get("[data-testid=save-btn]").click({ force: true });
+        cy.get("[data-testid=comm-table-subject]").contains(
+            "New Mobile Comm"
+        );
+
+        cy.log("Validate add communication finished.");
     });
 });

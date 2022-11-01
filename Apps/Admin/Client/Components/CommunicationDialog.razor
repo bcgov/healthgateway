@@ -112,10 +112,10 @@
                     <HgTextField Label="Subject" @bind-Value="Communication.Subject" T="@string" Required="@true" RightMargin="@Breakpoint.Always" data-testid="subject-input" />
                 </MudItem>
                 <MudItem xs="6">
-                    <HgSelect Label="Status" @bind-Value="@Communication.CommunicationStatusCode" T="@CommunicationStatus" Required="@true" data-testid="status-selector">
+                    <HgSelect Label="Status" @bind-Value="@Communication.CommunicationStatusCode" T="@CommunicationStatus" Required="@true" data-testid="status-select">
                         @foreach (CommunicationStatus status in CommunicationStatuses)
                         {
-                            <MudSelectItem Value="@status" />
+                            <MudSelectItem Value="@status" data-testid="status-type" />
                         }
                     </HgSelect>
                 </MudItem>
