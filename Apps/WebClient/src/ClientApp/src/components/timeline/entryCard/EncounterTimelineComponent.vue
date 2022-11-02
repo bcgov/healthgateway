@@ -48,24 +48,32 @@ export default class EncounterTimelineComponent extends Vue {
             <b-col>
                 <div class="d-inline-flex" data-testid="encounterClinicLabel">
                     <strong>Clinic/Practitioner:</strong>
-                    <div
+                    <hg-button
+                        v-if="entry.clinic.name"
                         :id="`tooltip-info${index}-${datekey}`"
-                        class="infoIcon ml-2"
-                        tabindex="0"
+                        aria-label="Info"
+                        href="#"
+                        variant="link"
+                        data-testid="health-visit-clinic-name-info-button"
+                        class="shadow-none align-baseline p-0 ml-1"
                     >
-                        <hg-icon icon="info-circle" size="medium" />
-                    </div>
-                    <b-tooltip
-                        variant="secondary"
+                        <hg-icon icon="info-circle" size="small" />
+                    </hg-button>
+                    <b-popover
+                        v-if="entry.clinic.name"
                         :target="`tooltip-info${index}-${datekey}`"
-                        placement="top"
                         triggers="hover focus"
+                        placement="topright"
+                        boundary="viewport"
+                        data-testid="health-visit-location-info-popover"
                     >
-                        Information is from the billing claim and may show a
-                        different practitioner or clinic from the one you
-                        visited. For more information, visit the
-                        <router-link to="/faq">FAQ</router-link> page.
-                    </b-tooltip>
+                        <span>
+                            Information is from the billing claim and may show a
+                            different practitioner or clinic from the one you
+                            visited. For more information, visit the
+                            <router-link to="/faq">FAQ</router-link> page.
+                        </span>
+                    </b-popover>
                 </div>
                 <div data-testid="encounterClinicName">
                     {{ entry.clinic.name }}
