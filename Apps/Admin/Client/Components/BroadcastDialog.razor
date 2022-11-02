@@ -1,0 +1,185 @@
+@using HealthGateway.Admin.Client.Store.Broadcasts
+@using HealthGateway.Common.Data.Utils
+@using HealthGateway.Common.Data.Models
+@inherits Fluxor.Blazor.Web.Components.FluxorComponent
+
+<MudDialog>
+    <DialogContent>
+        <HgBannerFeedback
+            Severity="@Severity.Error"
+            IsEnabled="@HasAddError"
+            TResetAction="@BroadcastsActions.AddAction">
+            @ErrorMessage
+        </HgBannerFeedback>
+        <HgBannerFeedback
+            Severity="@Severity.Error"
+            IsEnabled="@HasUpdateError"
+            TResetAction="@BroadcastsActions.UpdateAction">
+            @ErrorMessage
+        </HgBannerFeedback>
+        <MudForm @ref="Form" data-testid="broadcast-dialog-modal-text">
+            <MudGrid Spacing="0">
+                <MudItem xs="6">
+                    <MudDatePicker
+                        @ref="@EffectiveDatePicker"
+                        @bind-Date="@EffectiveDate"
+                        Label="Effective Date"
+                        Required="@true"
+                        PickerVariant="@PickerVariant.Dialog"
+                        Culture="@DateFormatter.CanadianCulture"
+                        AutoClose="@true"
+                        DisableToolbar="@true"
+                        Variant="@Variant.Filled"
+                        Margin="@Margin.Dense"
+                        Class="mt-3 mr-3"
+                        data-testid="effective-date-pkr">
+                        <PickerActions>
+                            <MudButton Class="mr-auto align-self-start"
+                                       OnClick="@(() => EffectiveDatePicker.Clear())">
+                                Clear
+                            </MudButton>
+                        </PickerActions>
+                    </MudDatePicker>
+                </MudItem>
+                <MudItem xs="6">
+                    <div class="mt-3">
+                        <MudTimePicker
+                            @ref="@EffectiveTimePicker"
+                            @bind-Time="@EffectiveTime"
+                            Label="Effective Time"
+                            Required="@true"
+                            PickerVariant="@PickerVariant.Dialog"
+                            AmPm="@true"
+                            TimeFormat="h:mm tt"
+                            Variant="@Variant.Filled"
+                            Margin="@Margin.Dense"
+                            data-testid="effective-time-pkr">
+                            <PickerActions>
+                                <MudButton Class="mr-auto align-self-start"
+                                           OnClick="@(() => EffectiveTimePicker.Clear())">
+                                    Clear
+                                </MudButton>
+                                <MudButton OnClick="@(() => EffectiveTimePicker.Close(false))">
+                                    Cancel
+                                </MudButton>
+                                <MudButton Color="@Color.Primary"
+                                           OnClick="@(() => EffectiveTimePicker.Close())">
+                                    Ok
+                                </MudButton>
+                            </PickerActions>
+                        </MudTimePicker>
+                    </div>
+                </MudItem>
+                <MudItem xs="6">
+                    <MudDatePicker
+                        @ref="@ExpiryDatePicker"
+                        @bind-Date="@ExpiryDate"
+                        Label="Expiry Date"
+                        PickerVariant="@PickerVariant.Dialog"
+                        Culture="@DateFormatter.CanadianCulture"
+                        AutoClose="@true"
+                        DisableToolbar="@true"
+                        Variant="@Variant.Filled"
+                        Margin="@Margin.Dense"
+                        Class="mt-3 mr-3"
+                        data-testid="expiry-date-pkr">
+                        <PickerActions>
+                            <MudButton Class="mr-auto align-self-start"
+                                       OnClick="@(() => ExpiryDatePicker.Clear())">
+                                Clear
+                            </MudButton>
+                        </PickerActions>
+                    </MudDatePicker>
+                </MudItem>
+                <MudItem xs="6">
+                    <div class="mt-3">
+                        <MudTimePicker
+                            @ref="@ExpiryTimePicker"
+                            @bind-Time="@ExpiryTime"
+                            Label="Expiry Time"
+                            PickerVariant="@PickerVariant.Dialog"
+                            AmPm="@true"
+                            TimeFormat="h:mm tt"
+                            Variant="@Variant.Filled"
+                            Margin="@Margin.Dense"
+                            data-testid="expiry-time-pkr">
+                            <PickerActions>
+                                <MudButton Class="mr-auto align-self-start"
+                                           OnClick="@(() => ExpiryTimePicker.Clear())">
+                                    Clear
+                                </MudButton>
+                                <MudButton OnClick="@(() => ExpiryTimePicker.Close(false))">
+                                    Cancel
+                                </MudButton>
+                                <MudButton Color="@Color.Primary"
+                                           OnClick="@(() => ExpiryTimePicker.Close())">
+                                    Ok
+                                </MudButton>
+                            </PickerActions>
+                        </MudTimePicker>
+                    </div>
+                </MudItem>
+                <MudItem xs="6">
+                    <HgTextField
+                        Label="Subject"
+                        @bind-Value="@Broadcast.CategoryName"
+                        T="@string"
+                        Required="@true"
+                        RightMargin="@Breakpoint.Always"
+                        data-testid="subject-input" />
+                </MudItem>
+                <MudItem xs="6">
+                    <HgSelect
+                        Label="Status"
+                        @bind-Value="@Broadcast.Enabled"
+                        T="@bool"
+                        Required="@true"
+                        ToStringFunc="@BroadcastUtility.FormatEnabled"
+                        data-testid="publish-select">
+                        <MudSelectItem Value="false" data-testid="publish-value" />
+                        <MudSelectItem Value="true" data-testid="publish-value" />
+                    </HgSelect>
+                </MudItem>
+                <MudItem xs="12" sm="4">
+                    <HgSelect
+                        Label="Action Type"
+                        Value="@Broadcast.ActionType"
+                        ValueChanged="@ActionTypeChanged"
+                        T="BroadcastActionType"
+                        Required="@true"
+                        RightMargin="@Breakpoint.Sm"
+                        data-testid="action-type-select">
+                        @foreach (BroadcastActionType actionType in ActionTypes)
+                        {
+                            <MudSelectItem Value="@actionType" data-testid="action-type">
+                                @BroadcastUtility.FormatActionType(actionType)
+                            </MudSelectItem>
+                        }
+                    </HgSelect>
+                </MudItem>
+                <MudItem xs="12" sm="8">
+                    <HgTextField
+                        @ref="@ActionUrlTextField"
+                        Label="Action URL"
+                        @bind-Value="@ActionUrlString"
+                        T="@string"
+                        Disabled="@(Broadcast.ActionType == BroadcastActionType.None)"
+                        Validation="@(ValidateActionUrl)"
+                        data-testid="action-url-input" />
+                </MudItem>
+                <MudItem xs="12">
+                    <HgTextField
+                        Label="Content"
+                        @bind-Value="@Broadcast.DisplayText"
+                        T="@string"
+                        Lines="@(2)"
+                        data-testid="content-input" />
+                </MudItem>
+            </MudGrid>
+        </MudForm>
+    </DialogContent>
+    <DialogActions>
+        <HgButton Color="@Color.Primary" Variant="@Variant.Text" OnClick="@HandleClickCancel" data-testid="cancel-btn">Cancel</HgButton>
+        <HgButton Color="@Color.Primary" OnClick="@HandleClickSaveAsync" data-testid="save-btn">Save</HgButton>
+    </DialogActions>
+</MudDialog>

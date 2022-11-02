@@ -1,0 +1,133 @@
+{
+    "users": [
+        {
+            "username": "loadtest_01",
+            "enabled": true,
+            "firstName": "HTHGTWY01",
+            "lastName": "PERFORMANCE",
+            "attributes": {
+                "hdid": "EXTRIOYFPNX35TWEBUAJ3DNFDFXSYTBC6J4M76GYE3HC5ER2NKWQ"
+            },
+            "credentials": [
+                {
+                    "type": "password",
+                    "value": "{PASSWORD}",
+                    "temporary": false
+                }
+            ]
+        },
+        {
+            "username": "loadtest_02",
+            "enabled": true,
+            "firstName": "HTHGTWY02",
+            "lastName": "PERFORMANCE",
+            "attributes": {
+                "hdid": "S22BPV6WHS5TRLBL4XKGQDBVDUKLPIRSBGYSEJAHYMYRP22SP2TA"
+            },
+            "credentials": [
+                {
+                    "type": "password",
+                    "value": "{PASSWORD}",
+                    "temporary": false
+                }
+            ]
+        },
+        {
+            "username": "loadtest_03",
+            "enabled": true,
+            "firstName": "HTHGTWY03",
+            "lastName": "PERFORMANCE",
+            "attributes": {
+                "hdid": "R43YCT4ZY37EIJLW2O5LV2I77BZA3K3M25EUJGWAVGVJ7JKBDKCQ"
+            },
+            "credentials": [
+                {
+                    "type": "password",
+                    "value": "{PASSWORD}",
+                    "temporary": false
+                }
+            ]
+        },
+        {
+            "username": "loadtest_04",
+            "enabled": true,
+            "firstName": "HTHGTWY04",
+            "lastName": "PERFORMANCE",
+            "attributes": {
+                "hdid": "K6HL4VX67CZ2PGSZ2ZOIR4C3PGMFFBW5CIOXM74D6EQ7RYYL7P4A"
+            },
+            "credentials": [
+                {
+                    "type": "password",
+                    "value": "{PASSWORD}",
+                    "temporary": false
+                }
+            ]
+        },
+        {
+            "username": "loadtest_05",
+            "enabled": true,
+            "firstName": "HTHGTWY05",
+            "lastName": "PERFORMANCE",
+            "attributes": {
+                "hdid": "QYFLVCK7GJNL2T2DE33FDAX7Z5E5Q742E2HOXB4OAHZ32WI6YXPA"
+            },
+            "credentials": [
+                {
+                    "type": "password",
+                    "value": "{PASSWORD}",
+                    "temporary": false
+                }
+            ]
+        },
+        {
+            "username": "loadtest_06",
+            "enabled": true,
+            "firstName": "HTHGTWY06",
+            "lastName": "PERFORMANCE",
+            "attributes": {
+                "hdid": "GO4DOSMRJ7MFKPPADDZ3FK2MOJ45SFKONJWR67XNLMZQFNEHDKDA"
+            },
+            "credentials": [
+                {
+                    "type": "password",
+                    "value": "{PASSWORD}",
+                    "temporary": false
+                }
+            ]
+        },
+        {
+            "username": "loadtest_07",
+            "enabled": true,
+            "firstName": "HTHGTWY07",
+            "lastName": "PERFORMANCE",
+            "attributes": {
+                "hdid": "SL35YG7TL76TXZAL72CDDQCA5ZPKNXXJAQQLIYXYENJB5DOB6FAA"
+            },
+            "credentials": [
+                {
+                    "type": "password",
+                    "value": "{PASSWORD}",
+                    "temporary": false
+                }
+            ]
+        },
+        {
+            "username": "loadtest_08",
+            "enabled": true,
+            "firstName": "HTHGTWY08",
+            "lastName": "PERFORMANCE",
+            "attributes": {
+                "hdid": "RD33Y2LJEUZCY2TCMOIECUTKS3E62MEQ62CSUL6Q553IHHBI3AWQ"
+            },
+            "credentials": [
+                {
+                    "type": "password",
+                    "value": "{PASSWORD}",
+                    "temporary": false
+                }
+            ]
+        }
+    ],
+    "roleMappings": { }
+}

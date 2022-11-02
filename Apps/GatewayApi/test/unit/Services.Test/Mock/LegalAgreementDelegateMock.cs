@@ -15,9 +15,9 @@
 //-------------------------------------------------------------------------
 namespace HealthGateway.GatewayApiTests.Services.Test.Mock
 {
-    using HealthGateway.Database.Constants;
+    using HealthGateway.Common.Data.Constants;
+    using HealthGateway.Common.Data.Models;
     using HealthGateway.Database.Delegates;
-    using HealthGateway.Database.Models;
     using HealthGateway.Database.Wrapper;
     using Moq;
 
@@ -33,7 +33,9 @@ namespace HealthGateway.GatewayApiTests.Services.Test.Mock
         public LegalAgreementDelegateMock(LegalAgreement termsOfService)
         {
             this.Setup(s => s.GetActiveByAgreementType(LegalAgreementType.TermsofService))
-                .Returns(new DBResult<LegalAgreement>() { Payload = termsOfService });
+                .Returns(
+                    new DBResult<LegalAgreement>
+                        { Payload = termsOfService });
         }
     }
 }

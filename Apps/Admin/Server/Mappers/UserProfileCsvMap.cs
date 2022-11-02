@@ -18,7 +18,7 @@ namespace HealthGateway.Admin.Server.Mappers
     using System;
     using System.Globalization;
     using CsvHelper.Configuration;
-    using HealthGateway.Database.Models;
+    using HealthGateway.Common.Data.Models;
 
     /// <summary>
     /// Maps the UserProfile model to a CSV.

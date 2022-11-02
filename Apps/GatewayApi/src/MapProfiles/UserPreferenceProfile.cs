@@ -16,8 +16,8 @@
 namespace HealthGateway.GatewayApi.MapProfiles
 {
     using AutoMapper;
+    using HealthGateway.Common.Data.ViewModels;
     using HealthGateway.Database.Models;
-    using HealthGateway.GatewayApi.Models;
 
     /// <summary>
     /// An AutoMapper profile class which defines mapping between DB Model UserPreference and API Model UserPreferenceModel.

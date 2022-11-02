@@ -5,7 +5,7 @@ import {
     faSignInAlt,
     faSignOutAlt,
     faTimes,
-    faUserCircle,
+    faUser,
 } from "@fortawesome/free-solid-svg-icons";
 import Vue from "vue";
 import { Component, Ref, Watch } from "vue-property-decorator";
@@ -17,7 +17,7 @@ import container from "@/plugins/container";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import { ILogger } from "@/services/interfaces";
 
-library.add(faBars, faSignInAlt, faSignOutAlt, faTimes, faUserCircle);
+library.add(faBars, faSignInAlt, faSignOutAlt, faTimes, faUser);
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const options: any = {
@@ -72,11 +72,25 @@ export default class HeaderComponent extends Vue {
     private lastScrollTop = 0;
     private static minimunScrollChange = 2;
 
-    private get fullName(): string {
+    private get userName(): string {
         if (this.oidcUserInfo === undefined) {
             return "";
         }
         return `${this.oidcUserInfo.given_name} ${this.oidcUserInfo.family_name}`;
+    }
+
+    private get userInitials(): string {
+        const first = this.oidcUserInfo?.given_name;
+        const last = this.oidcUserInfo?.family_name;
+        if (first && last) {
+            return first.charAt(0) + last.charAt(0);
+        } else if (first) {
+            return first.charAt(0);
+        } else if (last) {
+            return last.charAt(0);
+        } else {
+            return "?";
+        }
     }
 
     @Watch("isMobileWidth")
@@ -180,11 +194,11 @@ export default class HeaderComponent extends Vue {
 
 <template>
     <header class="sticky-top" :class="{ 'nav-up': !isHeaderShown }">
-        <b-navbar toggleable="md" type="dark" aria-label="Top Nav">
+        <b-navbar type="dark" aria-label="Top Nav" class="p-0">
             <!-- Hamburger toggle -->
             <hg-button
                 v-if="isSidebarButtonShown"
-                class="mr-2"
+                class="m-2"
                 variant="icon"
                 @click="handleToggleClick"
             >
@@ -192,14 +206,15 @@ export default class HeaderComponent extends Vue {
                     :icon="isSidebarOpen ? 'times' : 'bars'"
                     size="large"
                     class="menu-icon"
+                    square
                 />
             </hg-button>
 
             <!-- Brand -->
-            <b-navbar-brand class="mx-0">
+            <b-navbar-brand class="my-2 mr-0 ml-md-2 d-flex">
                 <router-link to="/">
                     <img
-                        class="img-fluid d-none d-md-block mx-1"
+                        class="img-fluid d-none d-md-block"
                         src="@/assets/images/gov/bcid-logo-rev-en.svg"
                         width="181"
                         height="44"
@@ -214,55 +229,39 @@ export default class HeaderComponent extends Vue {
                         alt="Go to healthgateway home page"
                     />
                 </router-link>
-            </b-navbar-brand>
-            <b-navbar-brand class="px-0 pr-md-5 px-lg-5 mx-0">
                 <router-link
                     to="/"
-                    class="nav-link my-0 px-0 pr-md-5 pr-lg-5 mx-0"
+                    class="nav-link py-0 px-0 px-lg-5 mx-2 align-self-center"
                 >
-                    <h4 class="my-0 px-0 pr-md-5 pr-lg-5 mx-0">
-                        Health Gateway
-                    </h4>
+                    Health Gateway
                 </router-link>
             </b-navbar-brand>
 
             <!-- Navbar links -->
-            <b-navbar-nav class="ml-auto">
+            <b-navbar-nav class="nav-pills ml-auto">
                 <b-nav-item-dropdown
                     v-if="isLoggedInMenuShown"
                     id="menuBtnLogout"
                     menu-class="drop-menu-position"
                     data-testid="headerDropdownBtn"
-                    :no-caret="true"
-                    toggle-class="p-0 m-0 mr-1"
+                    toggle-class="py-3 px-2 rounded-0"
                     right
                 >
                     <!-- Using 'button-content' slot -->
                     <template #button-content>
-                        <b-row class="p-0 m-0 align-items-center">
-                            <b-col class="p-0 m-0">
-                                <hg-icon
-                                    icon="user-circle"
-                                    size="large"
-                                    fixed-width
-                                    class="profile-menu"
-                                />
-                            </b-col>
-                            <b-col v-if="!isMobileWidth" class="p-0 m-0 ml-2">
-                                <span data-testid="profileButtonUserName">
-                                    {{ fullName }}
-                                </span>
-                            </b-col>
-                        </b-row>
+                        <b-avatar
+                            :text="userInitials"
+                            class="mr-1 background-secondary"
+                            data-testid="profileButtonInitials"
+                        />
                     </template>
-                    <span v-if="isMobileWidth">
-                        <b-dropdown-item class="text-center">
-                            <span data-testid="profileUserNameMobileOnly">
-                                {{ fullName }}
-                            </span>
-                        </b-dropdown-item>
-                        <b-dropdown-divider />
+                    <span
+                        class="dropdown-item-text text-center"
+                        data-testid="profileUserName"
+                    >
+                        {{ userName }}
                     </span>
+                    <b-dropdown-divider />
                     <b-dropdown-item
                         v-if="isProfileLinkAvailable"
                         id="menuBtnProfile"
@@ -270,7 +269,7 @@ export default class HeaderComponent extends Vue {
                         to="/profile"
                     >
                         <hg-icon
-                            icon="user-circle"
+                            icon="user"
                             size="medium"
                             data-testid="profileDropDownIcon"
                             class="mr-2"
@@ -317,12 +316,9 @@ export default class HeaderComponent extends Vue {
                     <span>Log Out</span>
                 </b-nav-item>
             </b-navbar-nav>
-
-            <RatingComponent
-                ref="ratingComponent"
-                @on-close="processLogout()"
-            />
         </b-navbar>
+
+        <RatingComponent ref="ratingComponent" @on-close="processLogout()" />
     </header>
 </template>
 
@@ -335,16 +331,11 @@ export default class HeaderComponent extends Vue {
 }
 
 .navbar {
-    padding-left: 8px;
-    padding-right: 8px;
     min-height: $header-height;
 }
 
 .nav-up {
-    top: -70px;
-    @media (max-width: 767px) {
-        top: -66px;
-    }
+    top: -74px;
 }
 
 .menu-icon {
@@ -353,13 +344,31 @@ export default class HeaderComponent extends Vue {
 }
 
 nav {
-    a h4 {
-        text-decoration: none;
-        color: white;
-    }
+    .navbar-brand {
+        a {
+            color: white;
+            text-decoration: none;
+        }
 
-    a:hover h4 {
-        text-decoration: underline;
+        a:hover {
+            text-decoration: underline;
+        }
+
+        font-weight: bold;
+        line-height: 1;
+        font-size: 1rem;
+
+        @media (min-width: 360px) {
+            font-size: 1.25rem;
+        }
+
+        @media (min-width: 576px) {
+            font-size: 1.5rem;
+        }
+
+        @media (max-width: 319px) {
+            display: none !important;
+        }
     }
 
     button {
@@ -372,11 +381,10 @@ nav {
     .nav-link {
         cursor: pointer;
     }
-}
 
-.profile-menu {
-    font-size: 2em;
-    color: white;
+    .background-secondary {
+        background-color: $hg-brand-secondary;
+    }
 }
 </style>
 

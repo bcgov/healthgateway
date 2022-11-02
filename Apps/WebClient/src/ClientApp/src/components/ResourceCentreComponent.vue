@@ -3,17 +3,11 @@ import { library } from "@fortawesome/fontawesome-svg-core";
 import { faQuestion } from "@fortawesome/free-solid-svg-icons";
 import Vue from "vue";
 import { Component } from "vue-property-decorator";
-import { Getter } from "vuex-class";
-
-import { ImmunizationEvent } from "@/models/immunizationModel";
 
 library.add(faQuestion);
 
 @Component
-export default class ResourceCentreComponent extends Vue {
-    @Getter("covidImmunizations", { namespace: "immunization" })
-    covidImmunizations!: ImmunizationEvent[];
-}
+export default class ResourceCentreComponent extends Vue {}
 </script>
 
 <template>
@@ -43,13 +37,6 @@ export default class ResourceCentreComponent extends Vue {
                 Resource Centre
             </b-dropdown-text>
             <b-dropdown-divider />
-            <b-dropdown-item
-                :disabled="covidImmunizations.length === 0"
-                data-testid="hg-resource-centre-covid-card"
-                to="/covid19"
-            >
-                BC Vaccine Card
-            </b-dropdown-item>
             <b-dropdown-item to="/faq">FAQ</b-dropdown-item>
             <b-dropdown-item to="/release-notes">Release Notes</b-dropdown-item>
         </b-dropdown>

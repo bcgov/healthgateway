@@ -16,7 +16,7 @@
 namespace HealthGateway.Common.Models
 {
     using System.Text.Json.Serialization;
-    using HealthGateway.Database.Models;
+    using HealthGateway.Common.Data.Models;
 
     /// <summary>
     /// PHSA Notification Settings request model.

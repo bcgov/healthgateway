@@ -16,14 +16,17 @@
 namespace HealthGateway.Encounter
 {
     using System.Diagnostics.CodeAnalysis;
+    using HealthGateway.Common.AccessManagement.Authentication;
     using HealthGateway.Common.AspNetConfiguration;
-    using HealthGateway.Database.Delegates;
+    using HealthGateway.Common.Models.PHSA;
+    using HealthGateway.Encounter.Api;
     using HealthGateway.Encounter.Delegates;
     using HealthGateway.Encounter.Services;
     using Microsoft.AspNetCore.Builder;
     using Microsoft.AspNetCore.Hosting;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
+    using Refit;
 
     /// <summary>
     /// Configures the application during startup.
@@ -60,11 +63,22 @@ namespace HealthGateway.Encounter
             this.startupConfig.ConfigureTracing(services);
             this.startupConfig.ConfigureAccessControl(services);
 
+            // Add auto mapper
+            services.AddAutoMapper(typeof(Startup));
+
             // Add services
             services.AddTransient<IEncounterService, EncounterService>();
 
             // Add Delegates
             services.AddTransient<IMspVisitDelegate, RestMspVisitDelegate>();
+            services.AddTransient<IHospitalVisitDelegate, RestHospitalVisitDelegate>();
+            services.AddTransient<IAuthenticationDelegate, AuthenticationDelegate>();
+
+            // Add API Clients
+            PhsaConfig phsaConfig = new();
+            this.startupConfig.Configuration.Bind(PhsaConfig.ConfigurationSectionKey, phsaConfig);
+            services.AddRefitClient<IHospitalVisitApi>()
+                .ConfigureHttpClient(c => c.BaseAddress = phsaConfig.BaseUrl);
         }
 
         /// <summary>

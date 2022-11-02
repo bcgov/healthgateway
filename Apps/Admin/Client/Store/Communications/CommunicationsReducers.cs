@@ -330,10 +330,10 @@ public static class CommunicationsReducers
     }
 
     /// <summary>
-    /// The reducer for the toggle IsExpanded action.
+    /// The reducer for the ToggleIsExpanded action.
     /// </summary>
     /// <param name="state">The communications state.</param>
-    /// <param name="action">The toggle IsExpanded action.</param>
+    /// <param name="action">The ToggleIsExpanded action.</param>
     /// <returns>The default state.</returns>
     [ReducerMethod]
     public static CommunicationsState ReduceToggleIsExpandedAction(CommunicationsState state, CommunicationsActions.ToggleIsExpandedAction action)

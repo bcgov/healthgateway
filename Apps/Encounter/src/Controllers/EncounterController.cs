@@ -21,6 +21,7 @@ namespace HealthGateway.Encounter.Controllers
     using HealthGateway.Common.Data.ViewModels;
     using HealthGateway.Common.Filters;
     using HealthGateway.Encounter.Models;
+    using HealthGateway.Encounter.Models.PHSA;
     using HealthGateway.Encounter.Services;
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Mvc;
@@ -60,8 +61,8 @@ namespace HealthGateway.Encounter.Controllers
         /// Gets a json list of encounter records.
         /// </summary>
         /// <param name="hdid">The hdid patient id.</param>
-        /// <returns>a list of Encounter records.</returns>
-        /// <response code="200">Returns the List of Encounter records.</response>
+        /// <returns>The list of encounter records.</returns>
+        /// <response code="200">Returns the list of encounter records.</response>
         /// <response code="401">The client must authenticate itself to get the requested response.</response>
         /// <response code="403">
         /// The client does not have access rights to the content; that is, it is unauthorized, so the server
@@ -74,10 +75,35 @@ namespace HealthGateway.Encounter.Controllers
         [Authorize(Policy = EncounterPolicy.Read)]
         public async Task<RequestResult<IEnumerable<EncounterModel>>> GetEncounters(string hdid)
         {
-            this.logger.LogDebug("Getting claims from controller... {Hdid}", hdid);
+            this.logger.LogDebug("Getting encounter records from controller... {Hdid}", hdid);
             RequestResult<IEnumerable<EncounterModel>> result = await this.service.GetEncounters(hdid).ConfigureAwait(true);
 
-            this.logger.LogDebug("Finished getting claims from controller... {Hdid}", hdid);
+            this.logger.LogDebug("Finished getting encounter records from controller... {Hdid}", hdid);
+            return result;
+        }
+
+        /// <summary>
+        /// Gets a json list of hospital visit records.
+        /// </summary>
+        /// <param name="hdid">The hdid patient id.</param>
+        /// <returns>The list of hospital visit records.</returns>
+        /// <response code="200">Returns the list of hospital visit records.</response>
+        /// <response code="401">The client must authenticate itself to get the requested response.</response>
+        /// <response code="403">
+        /// The client does not have access rights to the content; that is, it is unauthorized, so the server
+        /// is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.
+        /// </response>
+        /// <response code="503">The service is unavailable for use.</response>
+        [HttpGet]
+        [Produces("application/json")]
+        [Route("HospitalVisit/{hdid}")]
+        [Authorize(Policy = EncounterPolicy.Read)]
+        public async Task<RequestResult<HospitalVisitResult>> GetHospitalVisits(string hdid)
+        {
+            this.logger.LogDebug("Getting hospital visit records from controller... {Hdid}", hdid);
+            RequestResult<HospitalVisitResult> result = await this.service.GetHospitalVisits(hdid).ConfigureAwait(true);
+
+            this.logger.LogDebug("Finished getting hospital visit records from controller... {Hdid}", hdid);
             return result;
         }
     }

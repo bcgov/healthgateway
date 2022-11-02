@@ -154,6 +154,15 @@ namespace HealthGateway.Common.AspNetConfiguration
         }
 
         /// <summary>
+        /// Configures the ability to use PHSA v2 services.
+        /// </summary>
+        /// <param name="services">The service collection provider.</param>
+        public void ConfigurePhsaV2Access(IServiceCollection services)
+        {
+            PhsaV2.ConfigurePhsaV2Access(services, this.Logger, this.Configuration);
+        }
+
+        /// <summary>
         /// Configures OpenTelemetry tracing.
         /// </summary>
         /// <param name="services">The service collection to add forward proxies into.</param>

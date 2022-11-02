@@ -20,11 +20,15 @@ namespace HealthGateway.Admin.Server
     using HealthGateway.Admin.Server.Services;
     using HealthGateway.Common.AccessManagement.Administration;
     using HealthGateway.Common.AccessManagement.Authentication;
+    using HealthGateway.Common.Api;
     using HealthGateway.Common.AspNetConfiguration;
     using HealthGateway.Common.AspNetConfiguration.Modules;
     using HealthGateway.Common.Delegates;
     using HealthGateway.Common.Delegates.PHSA;
+    using HealthGateway.Common.MapProfiles;
+    using HealthGateway.Common.Models.PHSA;
     using HealthGateway.Common.Services;
+    using HealthGateway.Common.Utils.Phsa;
     using HealthGateway.Database.Delegates;
     using Microsoft.AspNetCore.Builder;
     using Microsoft.AspNetCore.Hosting;
@@ -32,6 +36,7 @@ namespace HealthGateway.Admin.Server
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Hosting;
     using Microsoft.Extensions.Logging;
+    using Refit;
     using CommunicationService = HealthGateway.Admin.Server.Services.CommunicationService;
     using ICommunicationService = HealthGateway.Admin.Server.Services.ICommunicationService;
 
@@ -55,46 +60,22 @@ namespace HealthGateway.Admin.Server
             ILogger logger = ProgramConfiguration.GetInitialLogger(configuration);
             IWebHostEnvironment environment = builder.Environment;
 
-            HttpWeb.ConfigureForwardHeaders(services, logger, configuration);
-            Db.ConfigureDatabaseServices(services, logger, configuration);
-            HttpWeb.ConfigureHttpServices(services, logger);
-            Audit.ConfigureAuditServices(services, logger, configuration);
-            Auth.ConfigureAuthServicesForJwtBearer(services, logger, configuration, environment);
-            Auth.ConfigureAuthorizationServices(services, logger, configuration);
-            SwaggerDoc.ConfigureSwaggerServices(services, configuration);
-            JobScheduler.ConfigureHangfireQueue(services, configuration);
-            Patient.ConfigurePatientAccess(services, logger, configuration);
-
             // Add services to the container.
             services.AddControllersWithViews();
 
-            // Add HG Services
-            services.AddTransient<IConfigurationService, ConfigurationService>();
-            services.AddTransient<IUserFeedbackService, UserFeedbackService>();
-            services.AddTransient<IDashboardService, DashboardService>();
-            services.AddTransient<ICommunicationService, CommunicationService>();
-            services.AddTransient<ICsvExportService, CsvExportService>();
-            services.AddTransient<IInactiveUserService, InactiveUserService>();
-            services.AddTransient<ISupportService, SupportService>();
+            AddModules(services, configuration, logger, environment);
+            AddServices(services);
+            AddDelegates(services);
 
-            // Add HG Delegates
-            services.AddTransient<IMessagingVerificationDelegate, DBMessagingVerificationDelegate>();
-            services.AddTransient<IFeedbackDelegate, DBFeedbackDelegate>();
-            services.AddTransient<IRatingDelegate, DBRatingDelegate>();
-            services.AddTransient<IUserProfileDelegate, DBProfileDelegate>();
-            services.AddTransient<ICommunicationDelegate, DBCommunicationDelegate>();
-            services.AddTransient<INoteDelegate, DBNoteDelegate>();
-            services.AddTransient<IResourceDelegateDelegate, DBResourceDelegateDelegate>();
-            services.AddTransient<ICommentDelegate, DBCommentDelegate>();
-            services.AddTransient<IAdminTagDelegate, DBAdminTagDelegate>();
-            services.AddTransient<IFeedbackTagDelegate, DBFeedbackTagDelegate>();
-            services.AddTransient<IVaccineStatusDelegate, RestVaccineStatusDelegate>();
-            services.AddTransient<IVaccineProofDelegate, VaccineProofDelegate>();
-            services.AddTransient<IAdminUserProfileDelegate, DbAdminUserProfileDelegate>();
-            services.AddTransient<IAuthenticationDelegate, AuthenticationDelegate>();
-            services.AddTransient<IUserAdminDelegate, KeycloakUserAdminDelegate>();
+            // Add Refit clients
+            PhsaConfigV2 phsaConfig = new();
+            configuration.Bind(PhsaConfigV2.ConfigurationSectionKey, phsaConfig);
 
-            services.AddAutoMapper(typeof(Program));
+            services.AddRefitClient<ISystemBroadcastApi>()
+                .ConfigureHttpClient(c => c.BaseAddress = phsaConfig.BaseUrl)
+                .AddHttpMessageHandler<AuthHeaderHandler>();
+
+            services.AddAutoMapper(typeof(Program), typeof(BroadcastProfile), typeof(UserProfileProfile), typeof(MessagingVerificationProfile));
 
             WebApplication app = builder.Build();
             HttpWeb.UseForwardHeaders(app, logger, configuration);
@@ -119,6 +100,51 @@ namespace HealthGateway.Admin.Server
             app.MapFallbackToFile("index.html");
 
             await app.RunAsync().ConfigureAwait(true);
+        }
+
+        private static void AddModules(IServiceCollection services, IConfiguration configuration, ILogger logger, IWebHostEnvironment environment)
+        {
+            HttpWeb.ConfigureForwardHeaders(services, logger, configuration);
+            Db.ConfigureDatabaseServices(services, logger, configuration);
+            HttpWeb.ConfigureHttpServices(services, logger);
+            Audit.ConfigureAuditServices(services, logger, configuration);
+            Auth.ConfigureAuthServicesForJwtBearer(services, logger, configuration, environment);
+            Auth.ConfigureAuthorizationServices(services, logger, configuration);
+            SwaggerDoc.ConfigureSwaggerServices(services, configuration);
+            JobScheduler.ConfigureHangfireQueue(services, configuration);
+            Patient.ConfigurePatientAccess(services, logger, configuration);
+            PhsaV2.ConfigurePhsaV2Access(services, logger, configuration);
+        }
+
+        private static void AddServices(IServiceCollection services)
+        {
+            services.AddTransient<IBroadcastService, BroadcastService>();
+            services.AddTransient<IConfigurationService, ConfigurationService>();
+            services.AddTransient<IUserFeedbackService, UserFeedbackService>();
+            services.AddTransient<IDashboardService, DashboardService>();
+            services.AddTransient<ICommunicationService, CommunicationService>();
+            services.AddTransient<ICsvExportService, CsvExportService>();
+            services.AddTransient<IInactiveUserService, InactiveUserService>();
+            services.AddTransient<ISupportService, SupportService>();
+        }
+
+        private static void AddDelegates(IServiceCollection services)
+        {
+            services.AddTransient<IMessagingVerificationDelegate, DBMessagingVerificationDelegate>();
+            services.AddTransient<IFeedbackDelegate, DBFeedbackDelegate>();
+            services.AddTransient<IRatingDelegate, DBRatingDelegate>();
+            services.AddTransient<IUserProfileDelegate, DBProfileDelegate>();
+            services.AddTransient<ICommunicationDelegate, DBCommunicationDelegate>();
+            services.AddTransient<INoteDelegate, DBNoteDelegate>();
+            services.AddTransient<IResourceDelegateDelegate, DBResourceDelegateDelegate>();
+            services.AddTransient<ICommentDelegate, DBCommentDelegate>();
+            services.AddTransient<IAdminTagDelegate, DBAdminTagDelegate>();
+            services.AddTransient<IFeedbackTagDelegate, DBFeedbackTagDelegate>();
+            services.AddTransient<IVaccineStatusDelegate, RestVaccineStatusDelegate>();
+            services.AddTransient<IVaccineProofDelegate, VaccineProofDelegate>();
+            services.AddTransient<IAdminUserProfileDelegate, DbAdminUserProfileDelegate>();
+            services.AddTransient<IAuthenticationDelegate, AuthenticationDelegate>();
+            services.AddTransient<IUserAdminDelegate, KeycloakUserAdminDelegate>();
         }
     }
 }

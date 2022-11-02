@@ -86,8 +86,7 @@ export default class MultiSelectComponent extends Vue {
                         <b-form-tag
                             :disabled="disabled"
                             :title="tag"
-                            :pill="true"
-                            variant="danger"
+                            variant="light"
                             @remove="removeTag(tag)"
                         >
                             {{ getValueText(tag) }}

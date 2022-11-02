@@ -32,6 +32,18 @@ export default class ReleaseNotesView extends Vue {
         <BreadcrumbComponent :items="breadcrumbItems" />
         <page-title title="Health Gateway Release Notes" />
         <release-note
+            date="November 1, 2022"
+            version="v2022.6.10"
+            title="Profile Icon"
+        >
+            <ul>
+                <li>
+                    We increased the size of the profile icon and added user
+                    initials to make it more distinct.
+                </li>
+            </ul>
+        </release-note>
+        <release-note
             date="October 4, 2022"
             version="v2022.6.8"
             title="Add Vaccinations"

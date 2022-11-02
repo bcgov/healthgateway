@@ -5,6 +5,7 @@ import {
     faEdit,
     faFileMedical,
     faFileWaveform,
+    faHouseMedical,
     faMicroscope,
     faPills,
     faQuestion,
@@ -32,8 +33,9 @@ import ClinicalDocumentTimelineEntry from "@/models/clinicalDocumentTimelineEntr
 import type { WebClientConfiguration } from "@/models/configData";
 import Covid19LaboratoryOrderTimelineEntry from "@/models/covid19LaboratoryOrderTimelineEntry";
 import { DateWrapper } from "@/models/dateWrapper";
-import Encounter from "@/models/encounter";
+import { Encounter, HospitalVisit } from "@/models/encounter";
 import EncounterTimelineEntry from "@/models/encounterTimelineEntry";
+import HospitalVisitTimelineEntry from "@/models/hospitalVisitTimelineEntry";
 import { ImmunizationEvent } from "@/models/immunizationModel";
 import ImmunizationTimelineEntry from "@/models/immunizationTimelineEntry";
 import { Covid19LaboratoryOrder, LaboratoryOrder } from "@/models/laboratory";
@@ -57,6 +59,7 @@ library.add(
     faEdit,
     faFileMedical,
     faFileWaveform,
+    faHouseMedical,
     faMicroscope,
     faPills,
     faQuestion,
@@ -94,8 +97,11 @@ export default class TimelineView extends Vue {
     @Action("retrieve", { namespace: "immunization" })
     retrieveImmunizations!: (params: { hdid: string }) => Promise<void>;
 
-    @Action("retrieve", { namespace: "encounter" })
+    @Action("retrievePatientEncounters", { namespace: "encounter" })
     retrieveEncounters!: (params: { hdid: string }) => Promise<void>;
+
+    @Action("retrieveHospitalVisits", { namespace: "encounter" })
+    retrieveHospitalVisits!: (params: { hdid: string }) => Promise<void>;
 
     @Action("retrieve", { namespace: "note" })
     retrieveNotes!: (params: { hdid: string }) => Promise<void>;
@@ -144,8 +150,11 @@ export default class TimelineView extends Vue {
     @Getter("laboratoryOrdersAreLoading", { namespace: "laboratory" })
     isLaboratoryLoading!: boolean;
 
-    @Getter("isLoading", { namespace: "encounter" })
+    @Getter("isEncounterLoading", { namespace: "encounter" })
     isEncounterLoading!: boolean;
+
+    @Getter("isHospitalVisitLoading", { namespace: "encounter" })
+    isHospitalVisitLoading!: boolean;
 
     @Getter("isLoading", { namespace: "immunization" })
     isImmunizationLoading!: boolean;
@@ -156,6 +165,9 @@ export default class TimelineView extends Vue {
     @Getter("isLoading", { namespace: "note" })
     isNoteLoading!: boolean;
 
+    @Getter("isLoading", { namespace: "clinicalDocument" })
+    isClinicalDocumentLoading!: boolean;
+
     @Getter("immunizations", { namespace: "immunization" })
     patientImmunizations!: ImmunizationEvent[];
 
@@ -164,6 +176,9 @@ export default class TimelineView extends Vue {
 
     @Getter("patientEncounters", { namespace: "encounter" })
     patientEncounters!: Encounter[];
+
+    @Getter("hospitalVisits", { namespace: "encounter" })
+    hospitalVisits!: HospitalVisit[];
 
     @Getter("medicationStatements", { namespace: "medication" })
     medicationStatements!: MedicationStatementHistory[];
@@ -249,6 +264,13 @@ export default class TimelineView extends Vue {
             );
         }
 
+        // Add the hospital visit entries to the timeline list
+        for (const visit of this.hospitalVisits) {
+            timelineEntries.push(
+                new HospitalVisitTimelineEntry(visit, this.getEntryComments)
+            );
+        }
+
         // Add the clinical document entries to the timeline list
         for (const clinicalDocument of this.clinicalDocuments) {
             timelineEntries.push(
@@ -296,6 +318,8 @@ export default class TimelineView extends Vue {
             !this.isCovid19LaboratoryLoading &&
             !this.isLaboratoryLoading &&
             !this.isEncounterLoading &&
+            !this.isHospitalVisitLoading &&
+            !this.isClinicalDocumentLoading &&
             !this.isNoteLoading &&
             !this.isCommentLoading
         );
@@ -347,8 +371,22 @@ export default class TimelineView extends Vue {
 
         filtersLoaded.push(
             this.isSelectedFilterModuleLoading(
+                EntryType.HospitalVisit,
+                this.isHospitalVisitLoading
+            )
+        );
+
+        filtersLoaded.push(
+            this.isSelectedFilterModuleLoading(
                 EntryType.Note,
                 this.isNoteLoading
+            )
+        );
+
+        filtersLoaded.push(
+            this.isSelectedFilterModuleLoading(
+                EntryType.ClinicalDocument,
+                this.isClinicalDocumentLoading
             )
         );
 
@@ -425,6 +463,7 @@ export default class TimelineView extends Vue {
             this.retrieveCovid19LaboratoryOrders({ hdid: this.user.hdid }),
             this.retrieveLaboratoryOrders({ hdid: this.user.hdid }),
             this.retrieveEncounters({ hdid: this.user.hdid }),
+            this.retrieveHospitalVisits({ hdid: this.user.hdid }),
             this.retrieveClinicalDocuments({ hdid: this.user.hdid }),
             this.retrieveNotes({ hdid: this.user.hdid }),
             this.retrieveComments({ hdid: this.user.hdid }),

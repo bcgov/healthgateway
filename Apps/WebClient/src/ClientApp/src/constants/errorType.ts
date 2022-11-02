@@ -16,6 +16,7 @@ export enum ErrorSourceType {
     Comment = "comment",
     Dependent = "dependent",
     Encounter = "health visit",
+    HospitalVisit = "hospital visit",
     Immunization = "immunization",
     Laboratory = "laboratory result",
     Covid19Laboratory = "COVID‑19 test",

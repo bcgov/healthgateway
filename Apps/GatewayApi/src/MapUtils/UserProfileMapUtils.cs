@@ -18,8 +18,8 @@ namespace HealthGateway.GatewayApi.MapUtils
 {
     using System;
     using AutoMapper;
-    using HealthGateway.Database.Models;
-    using HealthGateway.GatewayApi.Models;
+    using HealthGateway.Common.Data.Models;
+    using HealthGateway.Common.Data.ViewModels;
 
     /// <summary>
     /// Static Helper classes for conversion of model objects.

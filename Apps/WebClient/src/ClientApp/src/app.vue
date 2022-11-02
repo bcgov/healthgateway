@@ -7,6 +7,7 @@ import { config } from "@fortawesome/fontawesome-svg-core";
 // Load Bootstrap general plugins
 import {
     AlertPlugin,
+    AvatarPlugin,
     ButtonPlugin,
     CardPlugin,
     FormCheckboxPlugin,
@@ -62,6 +63,7 @@ Vue.use(FormInputPlugin);
 Vue.use(FormCheckboxPlugin);
 Vue.use(FormTextareaPlugin);
 Vue.use(AlertPlugin);
+Vue.use(AvatarPlugin);
 Vue.use(SpinnerPlugin);
 Vue.use(InputGroupPlugin);
 Vue.use(PaginationNavPlugin);
