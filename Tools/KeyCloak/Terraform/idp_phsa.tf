@@ -2,10 +2,10 @@ resource "keycloak_oidc_identity_provider" "phsa" {
   realm                 = data.keycloak_realm.hg_realm.id
   alias                 = "phsaazure"
   display_name          = "PHSA Azure"
-  enabled               = false
+  enabled               = true
   store_token           = false
   trust_email           = true
-  hide_on_login_page    = true
+  hide_on_login_page    = false
   sync_mode             = "FORCE"
   authorization_url     = "${var.keycloak_idp_phsa.base_url}${var.keycloak_idp_phsa.auth_path}"
   token_url             = "${var.keycloak_idp_phsa.base_url}${var.keycloak_idp_phsa.token_path}"

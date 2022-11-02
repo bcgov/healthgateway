@@ -40,13 +40,13 @@ Users are not maintained in Terraform as Terraform constantly sees these resourc
 To load Health Gateway Administrator Users in Development perform the following
 
 ```console
-pwsh ./ProcessUsers.ps1 -SecretsFile dev.secrets.json -UsersFile admin_users.json
+pwsh ./ProcessUsers.ps1 -SecretsFile dev.secrets.json -UsersFile users/admin_users.json
 ```
 
 To remove the same users run
 
 ```console
-pwsh ./ProcessUsers.ps1 -SecretsFile dev.secrets.json -UsersFile admin_users.json -Remove
+pwsh ./ProcessUsers.ps1 -SecretsFile dev.secrets.json -UsersFile users/admin_users.json -Remove
 ```
 
 In the development Keycloak environments additional users should be created for functional tests and load testing.  
