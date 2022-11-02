@@ -65,7 +65,7 @@ export default class EncounterTimelineComponent extends Vue {
                         triggers="hover focus"
                         placement="topright"
                         boundary="viewport"
-                        data-testid="health-visit-location-info-popover"
+                        data-testid="health-visit-clinic-name-info-popover"
                     >
                         <span>
                             Information is from the billing claim and may show a
