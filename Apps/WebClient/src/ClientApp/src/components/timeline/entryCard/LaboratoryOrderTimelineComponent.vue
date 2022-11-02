@@ -215,36 +215,29 @@ export default class LaboratoryOrderTimelineComponent extends Vue {
                     </b-popover>
                 </div>
             </div>
-            <b-row class="my-3">
-                <b-col />
-                <b-col
-                    v-if="entry.reportAvailable"
-                    data-testid="laboratory-report-available"
-                    cols="auto"
+            <div
+                v-if="entry.reportAvailable"
+                class="my-3"
+                data-testid="laboratory-report-available"
+            >
+                <hg-button
+                    data-testid="laboratory-report-download-btn"
+                    variant="secondary"
+                    :disabled="isLoadingDocument"
+                    @click="showConfirmationModal()"
                 >
-                    <hg-button
-                        data-testid="laboratory-report-download-btn"
-                        variant="secondary"
-                        :disabled="isLoadingDocument"
-                        @click="showConfirmationModal()"
-                    >
-                        <b-spinner
-                            v-if="isLoadingDocument"
-                            class="mr-1"
-                            small
-                        />
-                        <hg-icon
-                            v-else
-                            icon="download"
-                            size="medium"
-                            square
-                            aria-hidden="true"
-                            class="mr-1"
-                        />
-                        <span>Download Full Report</span>
-                    </hg-button>
-                </b-col>
-            </b-row>
+                    <b-spinner v-if="isLoadingDocument" class="mr-1" small />
+                    <hg-icon
+                        v-else
+                        icon="download"
+                        size="medium"
+                        square
+                        aria-hidden="true"
+                        class="mr-1"
+                    />
+                    <span>Download Full Report</span>
+                </hg-button>
+            </div>
             <b-table-lite
                 :items="entry.tests"
                 :fields="['testName', 'result', 'status']"
