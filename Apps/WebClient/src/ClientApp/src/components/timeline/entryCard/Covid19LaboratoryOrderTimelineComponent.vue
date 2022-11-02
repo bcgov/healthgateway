@@ -187,7 +187,7 @@ export default class Covid19LaboratoryOrderTimelineComponent extends Vue {
                 :key="test.id"
                 :data-testid="`laboratoryTestBlock-${index}`"
             >
-                <hr />
+                <hr v-if="entry.tests.length > 1" />
                 <div data-testid="laboratoryTestType" class="my-2">
                     <strong
                         v-if="test.resultReady && entry.tests.length > 1"
