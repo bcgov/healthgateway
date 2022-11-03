@@ -20,6 +20,7 @@ namespace HealthGateway.LaboratoryTests.Services
     using System.Globalization;
     using System.Linq;
     using System.Threading.Tasks;
+    using AutoMapper;
     using DeepEqual.Syntax;
     using HealthGateway.Common.AccessManagement.Authentication;
     using HealthGateway.Common.Constants.PHSA;
@@ -32,6 +33,7 @@ namespace HealthGateway.LaboratoryTests.Services
     using HealthGateway.Laboratory.Models.PHSA;
     using HealthGateway.Laboratory.Services;
     using HealthGateway.LaboratoryTests.Mock;
+    using HealthGateway.LaboratoryTests.Utils;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.Logging;
     using Moq;
@@ -47,6 +49,7 @@ namespace HealthGateway.LaboratoryTests.Services
         private const string MockedMessageID = "mockedMessageID";
         private const string MockedReportContent = "mockedReportContent";
         private readonly IConfiguration configuration = GetIConfigurationRoot();
+        private readonly IMapper autoMapper = MapperUtil.InitializeAutoMapper();
         private readonly string phn = "9735353315";
         private readonly DateOnly dateOfBirth = new(1967, 06, 02);
         private readonly DateOnly collectionDate = new(2021, 07, 04);
@@ -62,7 +65,7 @@ namespace HealthGateway.LaboratoryTests.Services
         {
             List<PhsaCovid19Order> covid19Orders = new()
             {
-                new PhsaCovid19Order()
+                new PhsaCovid19Order
                 {
                     Id = Guid.NewGuid(),
                     Location = "Vancouver",
@@ -71,7 +74,7 @@ namespace HealthGateway.LaboratoryTests.Services
                     MessageId = MockedMessageID + "1",
                     ReportAvailable = true,
                 },
-                new PhsaCovid19Order()
+                new PhsaCovid19Order
                 {
                     Id = Guid.NewGuid(),
                     Location = "Vancouver",
@@ -92,7 +95,7 @@ namespace HealthGateway.LaboratoryTests.Services
 
             ILaboratoryService service = new LaboratoryServiceMock(delegateResult, TOKEN).LaboratoryServiceMockInstance();
 
-            Task<RequestResult<Covid19OrderResult>> actualResult = service.GetCovid19Orders(HDID, 0);
+            Task<RequestResult<Covid19OrderResult>> actualResult = service.GetCovid19Orders(HDID);
 
             if (expectedResultType == ResultType.Success)
             {
@@ -127,11 +130,11 @@ namespace HealthGateway.LaboratoryTests.Services
             int expectedLabTestCount = 1;
 
             // Arrange
-            PhsaLaboratorySummary laboratorySummary = new PhsaLaboratorySummary()
+            PhsaLaboratorySummary laboratorySummary = new()
             {
-                LabOrders = new List<PhsaLaboratoryOrder>()
+                LabOrders = new List<PhsaLaboratoryOrder>
                 {
-                    new PhsaLaboratoryOrder()
+                    new()
                     {
                         ReportId = expectedReportId1,
                         LabPdfId = expectedReportId1,
@@ -139,9 +142,9 @@ namespace HealthGateway.LaboratoryTests.Services
                         OrderingProvider = "PLISBVCC, TREVOR",
                         CollectionDateTime = DateTime.Now,
                         PdfReportAvailable = true,
-                        LabBatteries = new List<PhsaLaboratoryTest>()
+                        LabBatteries = new List<PhsaLaboratoryTest>
                         {
-                            new PhsaLaboratoryTest()
+                            new()
                             {
                                 BatteryType = "Gas Panel & Oxyhemoglobin; Arterial",
                                 Loinc = "XXX-2133",
@@ -151,7 +154,7 @@ namespace HealthGateway.LaboratoryTests.Services
                             },
                         },
                     },
-                    new PhsaLaboratoryOrder()
+                    new()
                     {
                         ReportId = expectedReportId2,
                         LabPdfId = expectedReportId2,
@@ -159,9 +162,9 @@ namespace HealthGateway.LaboratoryTests.Services
                         OrderingProvider = "PLISBVCC, TREVOR",
                         CollectionDateTime = DateTime.Now,
                         PdfReportAvailable = true,
-                        LabBatteries = new List<PhsaLaboratoryTest>()
+                        LabBatteries = new List<PhsaLaboratoryTest>
                         {
-                            new PhsaLaboratoryTest()
+                            new()
                             {
                                 BatteryType = "Gas Panel & Oxyhemoglobin; Arterial",
                                 Loinc = "XXX-2133",
@@ -216,7 +219,7 @@ namespace HealthGateway.LaboratoryTests.Services
             int expectedOrderCount = 0;
 
             // Arrange
-            PhsaLaboratorySummary laboratorySummary = new PhsaLaboratorySummary()
+            PhsaLaboratorySummary laboratorySummary = new()
             {
                 LabOrders = null,
                 LabOrderCount = 0,
@@ -331,8 +334,10 @@ namespace HealthGateway.LaboratoryTests.Services
                     LoadState = new(),
                     Result = new List<CovidTestResult>
                     {
-                        new CovidTestResult { StatusIndicator = nameof(LabIndicatorType.Found) },
-                        new CovidTestResult { StatusIndicator = nameof(LabIndicatorType.Found) },
+                        new()
+                            { StatusIndicator = nameof(LabIndicatorType.Found) },
+                        new()
+                            { StatusIndicator = nameof(LabIndicatorType.Found) },
                     },
                 },
             };
@@ -342,13 +347,15 @@ namespace HealthGateway.LaboratoryTests.Services
             string dateOfBirthString = this.dateOfBirth.ToString("yyyy-MM-dd", CultureInfo.CurrentCulture);
             string collectionDateString = this.collectionDate.ToString("yyyy-MM-dd", CultureInfo.CurrentCulture);
 
-            RequestResult<PublicCovidTestResponse> actualResult = Task.Run(async () => await service.GetPublicCovidTestsAsync(this.phn, dateOfBirthString, collectionDateString).ConfigureAwait(true)).Result;
+            RequestResult<PublicCovidTestResponse> actualResult = Task.Run(async () => await service.GetPublicCovidTestsAsync(this.phn, dateOfBirthString, collectionDateString).ConfigureAwait(true))
+                .Result;
 
             expectedResult.ShouldDeepEqual(actualResult);
         }
 
         /// <summary>
-        /// GetPublicTestResults - should return an error code for a data mismatch when the status indicator is DataMismatch or NotFound.
+        /// GetPublicTestResults - should return an error code for a data mismatch when the status indicator is DataMismatch or
+        /// NotFound.
         /// </summary>
         /// <param name="statusIndicator">Status indicator returned from delegate.</param>
         [Theory]
@@ -364,7 +371,8 @@ namespace HealthGateway.LaboratoryTests.Services
                     LoadState = new(),
                     Result = new List<CovidTestResult>
                     {
-                        new CovidTestResult { StatusIndicator = statusIndicator },
+                        new()
+                            { StatusIndicator = statusIndicator },
                     },
                 },
             };
@@ -374,7 +382,8 @@ namespace HealthGateway.LaboratoryTests.Services
             string dateOfBirthString = this.dateOfBirth.ToString("yyyy-MM-dd", CultureInfo.CurrentCulture);
             string collectionDateString = this.collectionDate.ToString("yyyy-MM-dd", CultureInfo.CurrentCulture);
 
-            RequestResult<PublicCovidTestResponse> actualResult = Task.Run(async () => await service.GetPublicCovidTestsAsync(this.phn, dateOfBirthString, collectionDateString).ConfigureAwait(true)).Result;
+            RequestResult<PublicCovidTestResponse> actualResult = Task.Run(async () => await service.GetPublicCovidTestsAsync(this.phn, dateOfBirthString, collectionDateString).ConfigureAwait(true))
+                .Result;
 
             Assert.Equal(ResultType.ActionRequired, actualResult.ResultStatus);
             Assert.Equal(ActionType.DataMismatch, actualResult.ResultError?.ActionCode);
@@ -382,7 +391,8 @@ namespace HealthGateway.LaboratoryTests.Services
         }
 
         /// <summary>
-        /// GetPublicTestResults - should return an error code for an invalid result when the status indicator is Threshold or Blocked.
+        /// GetPublicTestResults - should return an error code for an invalid result when the status indicator is Threshold or
+        /// Blocked.
         /// </summary>
         /// <param name="statusIndicator">Status indicator returned from delegate.</param>
         [Theory]
@@ -398,7 +408,8 @@ namespace HealthGateway.LaboratoryTests.Services
                     LoadState = new(),
                     Result = new List<CovidTestResult>
                     {
-                        new CovidTestResult { StatusIndicator = statusIndicator },
+                        new()
+                            { StatusIndicator = statusIndicator },
                     },
                 },
             };
@@ -408,7 +419,8 @@ namespace HealthGateway.LaboratoryTests.Services
             string dateOfBirthString = this.dateOfBirth.ToString("yyyy-MM-dd", CultureInfo.CurrentCulture);
             string collectionDateString = this.collectionDate.ToString("yyyy-MM-dd", CultureInfo.CurrentCulture);
 
-            RequestResult<PublicCovidTestResponse> actualResult = Task.Run(async () => await service.GetPublicCovidTestsAsync(this.phn, dateOfBirthString, collectionDateString).ConfigureAwait(true)).Result;
+            RequestResult<PublicCovidTestResponse> actualResult = Task.Run(async () => await service.GetPublicCovidTestsAsync(this.phn, dateOfBirthString, collectionDateString).ConfigureAwait(true))
+                .Result;
 
             Assert.Equal(ResultType.ActionRequired, actualResult.ResultStatus);
             Assert.Equal(ActionType.Invalid, actualResult.ResultError?.ActionCode);
@@ -416,7 +428,8 @@ namespace HealthGateway.LaboratoryTests.Services
         }
 
         /// <summary>
-        /// GetPublicTestResults - should return an error code for a refresh in progress when that load state is returned by the delegate.
+        /// GetPublicTestResults - should return an error code for a refresh in progress when that load state is returned by the
+        /// delegate.
         /// </summary>
         [Fact]
         public void ShouldGetCovidTestsWithRefreshInProgress()
@@ -438,7 +451,8 @@ namespace HealthGateway.LaboratoryTests.Services
             string dateOfBirthString = this.dateOfBirth.ToString("yyyy-MM-dd", CultureInfo.CurrentCulture);
             string collectionDateString = this.collectionDate.ToString("yyyy-MM-dd", CultureInfo.CurrentCulture);
 
-            RequestResult<PublicCovidTestResponse> actualResult = Task.Run(async () => await service.GetPublicCovidTestsAsync(this.phn, dateOfBirthString, collectionDateString).ConfigureAwait(true)).Result;
+            RequestResult<PublicCovidTestResponse> actualResult = Task.Run(async () => await service.GetPublicCovidTestsAsync(this.phn, dateOfBirthString, collectionDateString).ConfigureAwait(true))
+                .Result;
 
             Assert.Equal(ResultType.ActionRequired, actualResult.ResultStatus);
             Assert.Equal(ActionType.Refresh, actualResult.ResultError?.ActionCode);
@@ -458,13 +472,15 @@ namespace HealthGateway.LaboratoryTests.Services
                 this.configuration,
                 new Mock<ILogger<LaboratoryService>>().Object,
                 new Mock<ILaboratoryDelegateFactory>().Object,
-                mockAuthDelegate.Object);
+                mockAuthDelegate.Object,
+                this.autoMapper);
 
             string invalidPhn = "123";
             string dateOfBirthString = this.dateOfBirth.ToString("yyyy-MM-dd", CultureInfo.CurrentCulture);
             string collectionDateString = this.collectionDate.ToString("yyyy-MM-dd", CultureInfo.CurrentCulture);
 
-            RequestResult<PublicCovidTestResponse> actualResult = Task.Run(async () => await service.GetPublicCovidTestsAsync(invalidPhn, dateOfBirthString, collectionDateString).ConfigureAwait(true)).Result;
+            RequestResult<PublicCovidTestResponse> actualResult = Task.Run(async () => await service.GetPublicCovidTestsAsync(invalidPhn, dateOfBirthString, collectionDateString).ConfigureAwait(true))
+                .Result;
 
             Assert.Equal(ResultType.Error, actualResult.ResultStatus);
         }
@@ -486,12 +502,14 @@ namespace HealthGateway.LaboratoryTests.Services
                 this.configuration,
                 new Mock<ILogger<LaboratoryService>>().Object,
                 new Mock<ILaboratoryDelegateFactory>().Object,
-                mockAuthDelegate.Object);
+                mockAuthDelegate.Object,
+                this.autoMapper);
 
             string invalidDateOfBirthString = this.dateOfBirth.ToString(dateFormat, CultureInfo.CurrentCulture);
             string collectionDateString = this.collectionDate.ToString("yyyy-MM-dd", CultureInfo.CurrentCulture);
 
-            RequestResult<PublicCovidTestResponse> actualResult = Task.Run(async () => await service.GetPublicCovidTestsAsync(this.phn, invalidDateOfBirthString, collectionDateString).ConfigureAwait(true)).Result;
+            RequestResult<PublicCovidTestResponse> actualResult =
+                Task.Run(async () => await service.GetPublicCovidTestsAsync(this.phn, invalidDateOfBirthString, collectionDateString).ConfigureAwait(true)).Result;
 
             Assert.Equal(ResultType.Error, actualResult.ResultStatus);
         }
@@ -512,12 +530,14 @@ namespace HealthGateway.LaboratoryTests.Services
                 this.configuration,
                 new Mock<ILogger<LaboratoryService>>().Object,
                 new Mock<ILaboratoryDelegateFactory>().Object,
-                mockAuthDelegate.Object);
+                mockAuthDelegate.Object,
+                this.autoMapper);
 
             string dateOfBirthString = this.dateOfBirth.ToString("yyyy-MM-dd", CultureInfo.CurrentCulture);
             string invalidCollectionDateString = this.collectionDate.ToString(dateFormat, CultureInfo.CurrentCulture);
 
-            RequestResult<PublicCovidTestResponse>? actualResult = Task.Run(async () => await service.GetPublicCovidTestsAsync(this.phn, dateOfBirthString, invalidCollectionDateString).ConfigureAwait(true)).Result;
+            RequestResult<PublicCovidTestResponse>? actualResult =
+                Task.Run(async () => await service.GetPublicCovidTestsAsync(this.phn, dateOfBirthString, invalidCollectionDateString).ConfigureAwait(true)).Result;
 
             Assert.Equal(ResultType.Error, actualResult.ResultStatus);
         }
@@ -530,9 +550,9 @@ namespace HealthGateway.LaboratoryTests.Services
             };
 
             return new ConfigurationBuilder()
-                .AddJsonFile("appsettings.json", optional: true)
-                .AddJsonFile("appsettings.Development.json", optional: true)
-                .AddJsonFile("appsettings.local.json", optional: true)
+                .AddJsonFile("appsettings.json", true)
+                .AddJsonFile("appsettings.Development.json", true)
+                .AddJsonFile("appsettings.local.json", true)
                 .AddInMemoryCollection(myConfiguration)
                 .Build();
         }
