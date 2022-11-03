@@ -297,7 +297,6 @@ export default class HeaderComponent extends Vue {
                     v-else-if="isLogInButtonShown"
                     id="menuBtnLogin"
                     data-testid="loginBtn"
-                    class="nav-link"
                     link-classes="d-flex align-items-center"
                     to="/login"
                 >
@@ -308,7 +307,6 @@ export default class HeaderComponent extends Vue {
                     v-else-if="isLogOutButtonShown"
                     id="header-log-out-button"
                     data-testid="header-log-out-button"
-                    class="nav-link"
                     link-classes="d-flex align-items-center"
                     to="/logout"
                 >
@@ -376,10 +374,6 @@ nav {
             width: 1.5em;
             height: 1.5em;
         }
-    }
-
-    .nav-link {
-        cursor: pointer;
     }
 
     .background-secondary {
