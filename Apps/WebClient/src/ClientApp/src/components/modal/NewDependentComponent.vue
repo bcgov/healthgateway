@@ -97,8 +97,6 @@ export default class NewDependentComponent extends Vue {
     }
 
     public hideModal(): void {
-        this.clear();
-        this.$v.$reset();
         this.isVisible = false;
     }
 
@@ -153,6 +151,7 @@ export default class NewDependentComponent extends Vue {
         };
         this.accepted = false;
         this.errorMessage = "";
+        this.$v.$reset();
     }
 }
 </script>
@@ -168,12 +167,12 @@ export default class NewDependentComponent extends Vue {
         header-bg-variant="primary"
         header-text-variant="light"
         centered
+        @hidden="clear"
     >
         <TooManyRequestsComponent location="addDependentModal" />
         <b-alert
             data-testid="dependentErrorBanner"
             variant="danger"
-            dismissible
             class="no-print"
             :show="!!errorMessage"
         >
