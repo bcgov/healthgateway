@@ -16,6 +16,7 @@
 namespace HealthGateway.Laboratory.Models
 {
     using System.Collections.Generic;
+    using System.Linq;
     using System.Text.Json.Serialization;
 
     /// <summary>
@@ -23,24 +24,6 @@ namespace HealthGateway.Laboratory.Models
     /// </summary>
     public class PublicCovidTestResponse
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="PublicCovidTestResponse"/> class.
-        /// </summary>
-        public PublicCovidTestResponse()
-        {
-            this.Records = new List<PublicCovidTestRecord>();
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="PublicCovidTestResponse"/> class.
-        /// </summary>
-        /// <param name="records">The list of COVID-19 test records.</param>
-        [JsonConstructor]
-        public PublicCovidTestResponse(IList<PublicCovidTestRecord> records)
-        {
-            this.Records = records;
-        }
-
         /// <summary>
         /// Gets or sets a value indicating whether the responses have been retrieved.
         /// Will be set to true if the object has been fully loaded.
@@ -57,9 +40,9 @@ namespace HealthGateway.Laboratory.Models
         public int RetryIn { get; set; }
 
         /// <summary>
-        /// Gets the COVID-19 test records.
+        /// Gets or sets the collection of COVID-19 test records.
         /// </summary>
         [JsonPropertyName("records")]
-        public IList<PublicCovidTestRecord> Records { get; }
+        public IEnumerable<PublicCovidTestRecord> Records { get; set; } = Enumerable.Empty<PublicCovidTestRecord>();
     }
 }

@@ -320,9 +320,10 @@ namespace HealthGateway.LaboratoryTests.Services
             {
                 ResultStatus = ResultType.Success,
                 ResultError = null,
-                ResourcePayload = new PublicCovidTestResponse(new List<PublicCovidTestRecord> { new(), new() })
+                ResourcePayload = new PublicCovidTestResponse
                 {
                     Loaded = true,
+                    Records = new List<PublicCovidTestRecord> { new(), new() },
                 },
             };
 

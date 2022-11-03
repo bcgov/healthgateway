@@ -251,7 +251,7 @@ namespace HealthGateway.Laboratory.Services
             }
 
             RequestResult<PhsaResult<IEnumerable<CovidTestResult>>> result = await this.laboratoryDelegate.GetPublicTestResults(accessToken, phn, dateOfBirth, collectionDate).ConfigureAwait(true);
-            IEnumerable<CovidTestResult> payload = result.ResourcePayload?.Result ?? Enumerable.Empty<CovidTestResult>();
+            List<CovidTestResult> payload = result.ResourcePayload?.Result?.ToList() ?? new List<CovidTestResult>();
             PhsaLoadState? loadState = result.ResourcePayload?.LoadState;
 
             retVal.ResultStatus = result.ResultStatus;
@@ -264,7 +264,10 @@ namespace HealthGateway.Laboratory.Services
                 switch (labIndicatorType)
                 {
                     case LabIndicatorType.Found:
-                        retVal.ResourcePayload = new PublicCovidTestResponse(payload.Select(PublicCovidTestRecord.FromModel).ToList());
+                        retVal.ResourcePayload = new PublicCovidTestResponse
+                        {
+                            Records = this.autoMapper.Map<List<CovidTestResult>, IEnumerable<PublicCovidTestRecord>>(payload),
+                        };
                         break;
                     case LabIndicatorType.DataMismatch:
                     case LabIndicatorType.NotFound:

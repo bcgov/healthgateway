@@ -262,13 +262,7 @@ namespace HealthGateway.LaboratoryTests.Delegates
                 },
                 Result = new List<CovidTestResult>
                 {
-                    new(
-                        new List<string>
-                        {
-                            "Your test result for COVID-19 is Negative. If you develop new or worsening symptoms that are related to COVID-19, please get re-tested or call 811 for further information.",
-                            "If you have been identified by Public Health as a close contact, please follow their guidance.",
-                            "For more details refer to ",
-                        })
+                    new()
                     {
                         PatientDisplayName = "SCOTT R",
                         TestType = "Saline Gargle",
@@ -278,6 +272,12 @@ namespace HealthGateway.LaboratoryTests.Delegates
                         TestStatus = "Final",
                         TestOutcome = "Negative",
                         ResultTitle = "Negative",
+                        ResultDescription = new List<string>
+                        {
+                            "Your test result for COVID-19 is Negative. If you develop new or worsening symptoms that are related to COVID-19, please get re-tested or call 811 for further information.",
+                            "If you have been identified by Public Health as a close contact, please follow their guidance.",
+                            "For more details refer to ",
+                        },
                         ResultLink = "http://www.bccdc.ca/results",
                         CollectionDateTime = DateTime.UtcNow,
                         ResultDateTime = DateTime.UtcNow,

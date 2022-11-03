@@ -13,33 +13,23 @@
 //  See the License for the specific language governing permissions and
 //  limitations under the License.
 // -------------------------------------------------------------------------
-
-namespace HealthGateway.LaboratoryTests.Utils
+namespace HealthGateway.Laboratory.MapProfiles
 {
     using AutoMapper;
-    using HealthGateway.Laboratory.MapProfiles;
+    using HealthGateway.Common.Models.PHSA;
+    using HealthGateway.Laboratory.Models;
 
     /// <summary>
-    /// Static utility class to provide a fully initialized AutoMapper.
-    /// NOTE: Any newly added profiles will have to be registered.
+    /// An AutoMapper profile that defines mappings between PHSA and Health Gateway Models.
     /// </summary>
-    public static class MapperUtil
+    public class PublicCovidTestRecordProfile : Profile
     {
         /// <summary>
-        /// Creates an AutoMapper.
+        /// Initializes a new instance of the <see cref="PublicCovidTestRecordProfile"/> class.
         /// </summary>
-        /// <returns>A configured AutoMapper.</returns>
-        public static IMapper InitializeAutoMapper()
+        public PublicCovidTestRecordProfile()
         {
-            MapperConfiguration config = new(
-                cfg =>
-                {
-                    cfg.AddProfile(new Covid19OrderProfile());
-                    cfg.AddProfile(new Covid19TestProfile());
-                    cfg.AddProfile(new PublicCovidTestRecordProfile());
-                });
-
-            return config.CreateMapper();
+            this.CreateMap<CovidTestResult, PublicCovidTestRecord>();
         }
     }
 }
