@@ -15,12 +15,13 @@
 //-------------------------------------------------------------------------
 namespace HealthGateway.JobScheduler
 {
+    using System;
     using System.Collections.Generic;
     using Hangfire;
     using Hangfire.Dashboard;
     using Hangfire.PostgreSql;
-    using HealthGateway.Common.AccessManagement.Administration;
     using HealthGateway.Common.AccessManagement.Authentication;
+    using HealthGateway.Common.Api;
     using HealthGateway.Common.AspNetConfiguration;
     using HealthGateway.Common.AspNetConfiguration.Modules;
     using HealthGateway.Common.Delegates.PHSA;
@@ -39,6 +40,7 @@ namespace HealthGateway.JobScheduler
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Hosting;
     using Microsoft.Extensions.Logging;
+    using Refit;
 
     /// <summary>
     /// The startup class.
@@ -113,7 +115,8 @@ namespace HealthGateway.JobScheduler
 
             // Add injection for KeyCloak User Admin
             services.AddTransient<IAuthenticationDelegate, AuthenticationDelegate>();
-            services.AddTransient<IUserAdminDelegate, KeycloakUserAdminDelegate>();
+            Uri baseUri = this.startupConfig.Configuration.GetValue<Uri>("KeycloakAdmin:BaseUrl");
+            services.AddRefitClient<IKeycloakAdminApi>().ConfigureHttpClient(c => c.BaseAddress = baseUri);
 
             // Add Jobs
             services.AddTransient<FedDrugJob>();
@@ -142,7 +145,7 @@ namespace HealthGateway.JobScheduler
         /// <param name="env">The passed in Environment.</param>
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
-            this.logger.LogInformation("Hosting Environment: {EnvironmentName}", env!.EnvironmentName);
+            this.logger.LogInformation("Hosting Environment: {EnvironmentName}", env.EnvironmentName);
             this.startupConfig.UseForwardHeaders(app);
             this.startupConfig.UseHttp(app);
             this.startupConfig.UseContentSecurityPolicy(app);

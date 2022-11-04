@@ -15,6 +15,7 @@
 //-------------------------------------------------------------------------
 namespace HealthGateway.Admin.Server
 {
+    using System;
     using System.Diagnostics.CodeAnalysis;
     using System.Threading.Tasks;
     using HealthGateway.Admin.Server.Services;
@@ -74,6 +75,10 @@ namespace HealthGateway.Admin.Server
             services.AddRefitClient<ISystemBroadcastApi>()
                 .ConfigureHttpClient(c => c.BaseAddress = phsaConfig.BaseUrl)
                 .AddHttpMessageHandler<AuthHeaderHandler>();
+
+            Uri baseUri = configuration.GetValue<Uri>("KeycloakAdmin:BaseUrl");
+            services.AddRefitClient<IKeycloakAdminApi>()
+                .ConfigureHttpClient(c => c.BaseAddress = baseUri);
 
             services.AddAutoMapper(typeof(Program), typeof(BroadcastProfile), typeof(UserProfileProfile), typeof(MessagingVerificationProfile));
 
@@ -144,7 +149,6 @@ namespace HealthGateway.Admin.Server
             services.AddTransient<IVaccineProofDelegate, VaccineProofDelegate>();
             services.AddTransient<IAdminUserProfileDelegate, DbAdminUserProfileDelegate>();
             services.AddTransient<IAuthenticationDelegate, AuthenticationDelegate>();
-            services.AddTransient<IUserAdminDelegate, KeycloakUserAdminDelegate>();
         }
     }
 }
