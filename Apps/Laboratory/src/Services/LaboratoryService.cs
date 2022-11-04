@@ -20,6 +20,7 @@ namespace HealthGateway.Laboratory.Services
     using System.Globalization;
     using System.Linq;
     using System.Threading.Tasks;
+    using AutoMapper;
     using HealthGateway.Common.AccessManagement.Authentication;
     using HealthGateway.Common.Constants;
     using HealthGateway.Common.Constants.PHSA;
@@ -46,9 +47,10 @@ namespace HealthGateway.Laboratory.Services
 
         private const string IsNullOrEmptyTokenErrorMessage = "The auth token is null or empty - unable to cache or proceed";
 
+        private readonly IAuthenticationDelegate authenticationDelegate;
         private readonly ILaboratoryDelegate laboratoryDelegate;
         private readonly ILogger<LaboratoryService> logger;
-        private readonly IAuthenticationDelegate authenticationDelegate;
+        private readonly IMapper autoMapper;
         private readonly LaboratoryConfig labConfig;
 
         /// <summary>
@@ -58,15 +60,18 @@ namespace HealthGateway.Laboratory.Services
         /// <param name="logger">The injected logger.</param>
         /// <param name="laboratoryDelegateFactory">The laboratory delegate factory.</param>
         /// <param name="authenticationDelegate">The auth delegate to fetch tokens.</param>
+        /// <param name="autoMapper">The injected automapper.</param>
         public LaboratoryService(
             IConfiguration configuration,
             ILogger<LaboratoryService> logger,
             ILaboratoryDelegateFactory laboratoryDelegateFactory,
-            IAuthenticationDelegate authenticationDelegate)
+            IAuthenticationDelegate authenticationDelegate,
+            IMapper autoMapper)
         {
             this.logger = logger;
             this.laboratoryDelegate = laboratoryDelegateFactory.CreateInstance();
             this.authenticationDelegate = authenticationDelegate;
+            this.autoMapper = autoMapper;
 
             this.labConfig = new();
             configuration.Bind(LabConfigSectionKey, this.labConfig);
@@ -86,7 +91,8 @@ namespace HealthGateway.Laboratory.Services
 
             if (accessToken != null)
             {
-                RequestResult<PhsaResult<List<PhsaCovid19Order>>> delegateResult = await this.laboratoryDelegate.GetCovid19Orders(accessToken, hdid, pageIndex).ConfigureAwait(true);
+                RequestResult<PhsaResult<List<PhsaCovid19Order>>> delegateResult =
+                    await this.laboratoryDelegate.GetCovid19Orders(accessToken, hdid, pageIndex).ConfigureAwait(true);
 
                 retVal.ResultStatus = delegateResult.ResultStatus;
                 retVal.ResultError = delegateResult.ResultError;
@@ -94,11 +100,10 @@ namespace HealthGateway.Laboratory.Services
                 retVal.PageSize = delegateResult.PageSize;
                 retVal.TotalResultCount = delegateResult.TotalResultCount;
 
-                IEnumerable<PhsaCovid19Order> payload =
-                    delegateResult.ResourcePayload?.Result ?? Enumerable.Empty<PhsaCovid19Order>();
                 if (delegateResult.ResultStatus == ResultType.Success)
                 {
-                    retVal.ResourcePayload.Covid19Orders = Covid19Order.FromPhsaModelCollection(payload);
+                    retVal.ResourcePayload.Covid19Orders =
+                        this.autoMapper.Map<IEnumerable<PhsaCovid19Order>, IEnumerable<Covid19Order>>(delegateResult.ResourcePayload?.Result);
                 }
 
                 PhsaLoadState? loadState = delegateResult.ResourcePayload?.LoadState;
@@ -146,7 +151,7 @@ namespace HealthGateway.Laboratory.Services
                 if (delegateResult.ResultStatus == ResultType.Success && payload != null)
                 {
                     retVal.ResourcePayload.LaboratoryOrders =
-                        LaboratoryOrder.FromPhsaModelCollection(payload.LabOrders);
+                        this.autoMapper.Map<IEnumerable<PhsaLaboratoryOrder>, IEnumerable<LaboratoryOrder>>(payload.LabOrders);
                 }
 
                 PhsaLoadState? loadState = delegateResult.ResourcePayload?.LoadState;
@@ -246,7 +251,7 @@ namespace HealthGateway.Laboratory.Services
             }
 
             RequestResult<PhsaResult<IEnumerable<CovidTestResult>>> result = await this.laboratoryDelegate.GetPublicTestResults(accessToken, phn, dateOfBirth, collectionDate).ConfigureAwait(true);
-            IEnumerable<CovidTestResult> payload = result.ResourcePayload?.Result ?? Enumerable.Empty<CovidTestResult>();
+            List<CovidTestResult> payload = result.ResourcePayload?.Result?.ToList() ?? new List<CovidTestResult>();
             PhsaLoadState? loadState = result.ResourcePayload?.LoadState;
 
             retVal.ResultStatus = result.ResultStatus;
@@ -259,7 +264,10 @@ namespace HealthGateway.Laboratory.Services
                 switch (labIndicatorType)
                 {
                     case LabIndicatorType.Found:
-                        retVal.ResourcePayload = new PublicCovidTestResponse(payload.Select(PublicCovidTestRecord.FromModel).ToList());
+                        retVal.ResourcePayload = new PublicCovidTestResponse
+                        {
+                            Records = this.autoMapper.Map<List<CovidTestResult>, IEnumerable<PublicCovidTestRecord>>(payload),
+                        };
                         break;
                     case LabIndicatorType.DataMismatch:
                     case LabIndicatorType.NotFound:
