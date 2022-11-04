@@ -151,7 +151,7 @@ namespace HealthGateway.Laboratory.Services
                 if (delegateResult.ResultStatus == ResultType.Success && payload != null)
                 {
                     retVal.ResourcePayload.LaboratoryOrders =
-                        LaboratoryOrder.FromPhsaModelCollection(payload.LabOrders);
+                        this.autoMapper.Map<IEnumerable<PhsaLaboratoryOrder>, IEnumerable<LaboratoryOrder>>(payload.LabOrders);
                 }
 
                 PhsaLoadState? loadState = delegateResult.ResourcePayload?.LoadState;

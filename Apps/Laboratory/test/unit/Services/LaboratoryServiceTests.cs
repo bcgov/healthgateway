@@ -198,11 +198,17 @@ namespace HealthGateway.LaboratoryTests.Services
                 Assert.Equal(ResultType.Success, actualResult.Result.ResultStatus);
                 Assert.Equal(expectedOrderCount, actualResult.Result.TotalResultCount);
                 Assert.NotNull(actualResult.Result.ResourcePayload);
-                Assert.Equal(expectedOrderCount, actualResult.Result.ResourcePayload!.LaboratoryOrders.Count());
-                Assert.Equal(expectedReportId1, actualResult.Result.ResourcePayload!.LaboratoryOrders.ToList()[0].ReportId);
-                Assert.Equal(expectedLabTestCount, actualResult.Result.ResourcePayload!.LaboratoryOrders.ToList()[0].LaboratoryTests.Count);
-                Assert.Equal(expectedReportId2, actualResult.Result.ResourcePayload!.LaboratoryOrders.ToList()[1].ReportId);
-                Assert.Equal(expectedLabTestCount, actualResult.Result.ResourcePayload!.LaboratoryOrders.ToList()[1].LaboratoryTests.Count);
+
+                List<LaboratoryOrder> orders = actualResult.Result.ResourcePayload!.LaboratoryOrders.ToList();
+                Assert.Equal(expectedOrderCount, orders.Count);
+
+                LaboratoryOrder firstLaboratoryOrder = orders[0];
+                Assert.Equal(expectedReportId1, firstLaboratoryOrder.ReportId);
+                Assert.Equal(expectedLabTestCount, firstLaboratoryOrder.LaboratoryTests.Count());
+
+                LaboratoryOrder secondLaboratoryOrder = orders[1];
+                Assert.Equal(expectedReportId2, secondLaboratoryOrder.ReportId);
+                Assert.Equal(expectedLabTestCount, secondLaboratoryOrder.LaboratoryTests.Count());
             }
             else
             {
