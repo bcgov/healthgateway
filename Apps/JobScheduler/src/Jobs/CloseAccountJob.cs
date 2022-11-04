@@ -17,10 +17,11 @@ namespace Healthgateway.JobScheduler.Jobs
 {
     using System;
     using System.Collections.Generic;
+    using System.Threading.Tasks;
     using Hangfire;
-    using HealthGateway.Common.AccessManagement.Administration;
     using HealthGateway.Common.AccessManagement.Authentication;
     using HealthGateway.Common.AccessManagement.Authentication.Models;
+    using HealthGateway.Common.Api;
     using HealthGateway.Common.Data.Models;
     using HealthGateway.Common.Services;
     using HealthGateway.Database.Context;
@@ -28,6 +29,7 @@ namespace Healthgateway.JobScheduler.Jobs
     using HealthGateway.Database.Wrapper;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.Logging;
+    using Refit;
 
     /// <summary>
     /// Confirms if a new Legal Agreement is in place and notifies clients.
@@ -54,8 +56,7 @@ namespace Healthgateway.JobScheduler.Jobs
         private readonly int profilesPageSize;
         private readonly ClientCredentialsTokenRequest tokenRequest;
         private readonly Uri tokenUri;
-
-        private readonly IUserAdminDelegate userAdminDelegate;
+        private readonly IKeycloakAdminApi keycloakAdminApi;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="CloseAccountJob"/> class.
@@ -65,7 +66,7 @@ namespace Healthgateway.JobScheduler.Jobs
         /// <param name="profileDelegate">The profile delegate.</param>
         /// <param name="emailService">The email service.</param>
         /// <param name="authDelegate">The OAuth2 authentication service.</param>
-        /// <param name="userAdminDelegate">The AccessManagement userAdmin delegate.</param>
+        /// <param name="keycloakAdminApi">The Keycloak admin API.</param>
         /// <param name="dbContext">The db context to use.</param>
         public CloseAccountJob(
             IConfiguration configuration,
@@ -73,20 +74,20 @@ namespace Healthgateway.JobScheduler.Jobs
             IUserProfileDelegate profileDelegate,
             IEmailQueueService emailService,
             IAuthenticationDelegate authDelegate,
-            IUserAdminDelegate userAdminDelegate,
+            IKeycloakAdminApi keycloakAdminApi,
             GatewayDbContext dbContext)
         {
             this.logger = logger;
             this.profileDelegate = profileDelegate;
             this.emailService = emailService;
             this.authDelegate = authDelegate;
-            this.userAdminDelegate = userAdminDelegate;
+            this.keycloakAdminApi = keycloakAdminApi;
             this.dbContext = dbContext;
             this.profilesPageSize = configuration.GetValue<int>($"{JobKey}:{ProfilesPageSizeKey}");
             this.hoursBeforeDeletion = configuration.GetValue<int>($"{JobKey}:{HoursDeletionKey}") * -1;
             this.emailTemplate = configuration.GetValue<string>($"{JobKey}:{EmailTemplateKey}");
 
-            IConfigurationSection? configSection = configuration?.GetSection(AuthConfigSectionName);
+            IConfigurationSection? configSection = configuration.GetSection(AuthConfigSectionName);
             this.tokenUri = configSection.GetValue<Uri>(@"TokenUri");
 
             this.tokenRequest = new ClientCredentialsTokenRequest();
@@ -96,8 +97,9 @@ namespace Healthgateway.JobScheduler.Jobs
         /// <summary>
         /// Deletes any closed accounts that are over n hours old.
         /// </summary>
+        /// <returns>An arbitrary task.</returns>
         [DisableConcurrentExecution(ConcurrencyTimeout)]
-        public void Process()
+        public async Task Process()
         {
             DateTime deleteDate = DateTime.UtcNow.AddHours(this.hoursBeforeDeletion);
             this.logger.LogInformation("Looking for closed accounts that are earlier than {DeleteDate}", deleteDate);
@@ -116,7 +118,15 @@ namespace Healthgateway.JobScheduler.Jobs
 
                     JwtModel jwtModel = this.authDelegate.AuthenticateAsSystem(this.tokenUri, this.tokenRequest);
 
-                    this.userAdminDelegate.DeleteUser(profile.IdentityManagementId!.Value, jwtModel);
+                    IApiResponse response = await this.keycloakAdminApi.DeleteUser(profile.IdentityManagementId!.Value, jwtModel.AccessToken).ConfigureAwait(true);
+                    if (!response.IsSuccessStatusCode)
+                    {
+                        this.logger.LogError(
+                            "Error deleting {Id} from Keycloak with HTTP status code {StatusCode} {Error}",
+                            profile.IdentityManagementId,
+                            response.StatusCode,
+                            response.Error?.ToString());
+                    }
                 }
 
                 this.logger.LogInformation("Removed and sent emails for {Count} closed profiles", profileResult.Payload.Count);
@@ -125,7 +135,7 @@ namespace Healthgateway.JobScheduler.Jobs
             }
             while (profileResult.Payload.Count == this.profilesPageSize);
 
-            this.logger.LogInformation("Completed processing {Page} page(s) with pagesize set to {ProfilesPageSize}", page, this.profilesPageSize);
+            this.logger.LogInformation("Completed processing {Page} page(s) with page size set to {ProfilesPageSize}", page, this.profilesPageSize);
         }
     }
 }
