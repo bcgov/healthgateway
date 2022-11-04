@@ -24,7 +24,7 @@ describe("COVID-19 Orders", () => {
         cy.get("[data-testid=laboratoryHeaderDescription]").should(
             "be.visible"
         );
-        cy.get("[data-testid=laboratoryReport]").should("be.visible");
+        cy.get("[data-testid=laboratoryReportAvailable]").should("be.visible");
         cy.get("[data-testid=laboratoryReportingLab]").should("be.visible");
         cy.get("[data-testid=laboratoryTestType]").should("be.visible");
         cy.get("[data-testid=laboratoryTestStatus-0]").should("be.visible");
