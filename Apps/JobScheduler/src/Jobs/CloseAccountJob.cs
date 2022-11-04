@@ -17,7 +17,6 @@ namespace Healthgateway.JobScheduler.Jobs
 {
     using System;
     using System.Collections.Generic;
-    using System.Threading.Tasks;
     using Hangfire;
     using HealthGateway.Common.AccessManagement.Authentication;
     using HealthGateway.Common.AccessManagement.Authentication.Models;
@@ -97,9 +96,8 @@ namespace Healthgateway.JobScheduler.Jobs
         /// <summary>
         /// Deletes any closed accounts that are over n hours old.
         /// </summary>
-        /// <returns>An arbitrary task.</returns>
         [DisableConcurrentExecution(ConcurrencyTimeout)]
-        public async Task Process()
+        public void Process()
         {
             DateTime deleteDate = DateTime.UtcNow.AddHours(this.hoursBeforeDeletion);
             this.logger.LogInformation("Looking for closed accounts that are earlier than {DeleteDate}", deleteDate);
@@ -118,7 +116,7 @@ namespace Healthgateway.JobScheduler.Jobs
 
                     JwtModel jwtModel = this.authDelegate.AuthenticateAsSystem(this.tokenUri, this.tokenRequest);
 
-                    IApiResponse response = await this.keycloakAdminApi.DeleteUser(profile.IdentityManagementId!.Value, jwtModel.AccessToken).ConfigureAwait(true);
+                    IApiResponse response = this.keycloakAdminApi.DeleteUser(profile.IdentityManagementId!.Value, jwtModel.AccessToken).GetAwaiter().GetResult();
                     if (!response.IsSuccessStatusCode)
                     {
                         this.logger.LogError(

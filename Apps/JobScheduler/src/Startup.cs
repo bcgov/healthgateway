@@ -145,7 +145,7 @@ namespace HealthGateway.JobScheduler
         /// <param name="env">The passed in Environment.</param>
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
-            this.logger.LogInformation("Hosting Environment: {EnvironmentName}", env!.EnvironmentName);
+            this.logger.LogInformation("Hosting Environment: {EnvironmentName}", env.EnvironmentName);
             this.startupConfig.UseForwardHeaders(app);
             this.startupConfig.UseHttp(app);
             this.startupConfig.UseContentSecurityPolicy(app);
