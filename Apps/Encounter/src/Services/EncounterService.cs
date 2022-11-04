@@ -114,7 +114,9 @@ namespace HealthGateway.Encounter.Services
                         if (response.ResourcePayload != null && response.ResourcePayload.Claims != null)
                         {
                             result.TotalResultCount = response.ResourcePayload.TotalRecords;
-                            result.ResourcePayload = EncounterModel.FromODRClaimModelList(response.ResourcePayload.Claims.ToList());
+                            result.ResourcePayload = result.ResourcePayload = this.autoMapper.Map<IEnumerable<Claim>, IEnumerable<EncounterModel>>(response.ResourcePayload.Claims)
+                                .GroupBy(e => e.Id)
+                                .Select(g => g.First());
                         }
                         else
                         {
