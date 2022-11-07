@@ -69,32 +69,5 @@ namespace HealthGateway.Medication.Models
         /// Gets or sets the fax number.
         /// </summary>
         public string FaxNumber { get; set; } = string.Empty;
-
-        /// <summary>
-        /// Creates a Pharamacy object from an ODR model.
-        /// </summary>
-        /// <param name="model">The ODR model to convert.</param>
-        /// <returns>A Pharmacy model object.</returns>
-        public static Pharmacy FromODRModel(ODR.Pharmacy? model)
-        {
-            if (model == null)
-            {
-                return new Pharmacy();
-            }
-
-            return new Pharmacy
-            {
-                PharmacyId = model.PharmacyId,
-                Name = model.Name,
-                PhoneNumber = model.PhoneNumber,
-                FaxNumber = model.FaxNumber,
-                AddressLine1 = model.Address.Line1,
-                AddressLine2 = model.Address.Line2,
-                City = model.Address.City,
-                CountryCode = model.Address.Country,
-                PostalCode = model.Address.PostalCode,
-                Province = model.Address.Province,
-            };
-        }
     }
 }

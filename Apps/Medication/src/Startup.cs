@@ -19,7 +19,6 @@ namespace HealthGateway.Medication
     using System.Diagnostics.CodeAnalysis;
     using HealthGateway.Common.AccessManagement.Authentication;
     using HealthGateway.Common.AspNetConfiguration;
-    using HealthGateway.Common.AspNetConfiguration.Modules;
     using HealthGateway.Common.Delegates;
     using HealthGateway.Database.Delegates;
     using HealthGateway.Medication.Delegates;
@@ -62,6 +61,9 @@ namespace HealthGateway.Medication
             this.startupConfig.ConfigureSwaggerServices(services);
             this.startupConfig.ConfigurePatientAccess(services);
             this.startupConfig.ConfigureTracing(services);
+
+            // Add auto mapper
+            services.AddAutoMapper(typeof(Startup));
 
             services.AddCors(
                 options =>
