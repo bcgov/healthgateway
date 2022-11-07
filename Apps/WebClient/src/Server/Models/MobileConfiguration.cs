@@ -42,10 +42,5 @@ namespace HealthGateway.WebClient.Models
         /// The use of this version is to trigger forced updates in the future.
         /// </summary>
         public int Version { get; set; }
-
-        /// <summary>
-        /// Gets or sets a value indicating whether the mobile app should force an upgrade.
-        /// </summary>
-        public bool ForceUpdate { get; set; }
     }
 }
