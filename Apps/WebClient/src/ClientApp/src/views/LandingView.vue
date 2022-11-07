@@ -423,21 +423,21 @@ export default class LandingView extends Vue {
                     <img
                         v-show="selectedPreviewDevice === 'laptop'"
                         src="@/assets/images/landing/preview-laptop.png"
-                        class="img-fluid"
+                        class="img-fluid mw-60"
                         data-testid="preview-image-laptop"
                         alt="Preview of Health Gateway on a Laptop"
                     />
                     <img
                         v-show="selectedPreviewDevice === 'tablet'"
                         src="@/assets/images/landing/preview-tablet.png"
-                        class="img-fluid"
+                        class="img-fluid mw-30"
                         data-testid="preview-image-tablet"
                         alt="Preview of Health Gateway on a Tablet"
                     />
                     <img
                         v-show="selectedPreviewDevice === 'smartphone'"
                         src="@/assets/images/landing/preview-smartphone.png"
-                        class="img-fluid"
+                        class="img-fluid mw-20"
                         data-testid="preview-image-smartphone"
                         alt="Preview of Health Gateway on a Smartphone"
                     />
@@ -561,6 +561,18 @@ export default class LandingView extends Vue {
     .btn-auth-landing {
         background-color: #1a5a95;
         border-color: #1a5a95;
+    }
+
+    .mw-20 {
+        max-width: 20%;
+    }
+
+    .mw-30 {
+        max-width: 30%;
+    }
+
+    .mw-60 {
+        max-width: 60%;
     }
 
     .vaccine-card-banner {
