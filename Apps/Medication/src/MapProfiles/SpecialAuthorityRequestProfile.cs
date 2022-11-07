@@ -20,7 +20,7 @@ namespace HealthGateway.Medication.MapProfiles
     using HealthGateway.Medication.Models.Salesforce;
 
     /// <summary>
-    /// An AutoMapper profile that defines mappings between PHSA and Health Gateway Models.
+    /// An AutoMapper profile that defines mappings between Salesforce and Health Gateway Models.
     /// </summary>
     public class SpecialAuthorityRequestProfile : Profile
     {

@@ -20,7 +20,7 @@ namespace HealthGateway.Medication.MapProfiles
     using HealthGateway.Medication.Models.ODR;
 
     /// <summary>
-    /// An AutoMapper profile that defines mappings between PHSA and Health Gateway Models.
+    /// An AutoMapper profile that defines mappings between ODR and Health Gateway Models.
     /// </summary>
     public class MedicationStatementHistoryProfile : Profile
     {

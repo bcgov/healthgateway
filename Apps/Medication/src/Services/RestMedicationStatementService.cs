@@ -119,7 +119,7 @@ namespace HealthGateway.Medication.Services
                             if (response.ResourcePayload != null && response.ResourcePayload.Results != null)
                             {
                                 result.TotalResultCount = response.ResourcePayload.TotalRecords;
-                                result.ResourcePayload = this.autoMapper.Map<IEnumerable<MedicationResult>, IEnumerable<MedicationStatementHistory>>(response.ResourcePayload.Results).ToList();
+                                result.ResourcePayload = this.autoMapper.Map<IEnumerable<MedicationResult>, IList<MedicationStatementHistory>>(response.ResourcePayload.Results);
                                 this.PopulateMedicationSummary(result.ResourcePayload.Select(r => r.MedicationSummary).ToList());
                             }
                             else
@@ -195,7 +195,7 @@ namespace HealthGateway.Medication.Services
                 // Retrieve the brand names using the Federal data
                 IList<DrugProduct> drugProducts = this.drugLookupDelegate.GetDrugProductsByDIN(uniqueDrugIdentifiers);
                 Dictionary<string, DrugProduct> drugProductsDict = drugProducts.ToDictionary(pcd => pcd.DrugIdentificationNumber, pcd => pcd);
-                Dictionary<string, PharmaCareDrug> provicialDict = new();
+                Dictionary<string, PharmaCareDrug> provincialDict = new();
                 if (uniqueDrugIdentifiers.Count > drugProductsDict.Count)
                 {
                     // Get the DINs not found on the previous query
@@ -203,7 +203,7 @@ namespace HealthGateway.Medication.Services
 
                     // Retrieve the brand names using the provincial data
                     IList<PharmaCareDrug> pharmaCareDrugs = this.drugLookupDelegate.GetPharmaCareDrugsByDIN(notFoundDins);
-                    provicialDict = pharmaCareDrugs.ToDictionary(dp => dp.DINPIN, dp => dp);
+                    provincialDict = pharmaCareDrugs.ToDictionary(dp => dp.DINPIN, dp => dp);
                 }
 
                 this.logger.LogDebug("Finished getting drugs from DB");
@@ -219,11 +219,11 @@ namespace HealthGateway.Medication.Services
                         mdSummary.StrengthUnit = drugProductsDict[din].ActiveIngredient?.StrengthUnit ?? string.Empty;
                         mdSummary.Manufacturer = drugProductsDict[din].Company?.CompanyName ?? string.Empty;
                     }
-                    else if (provicialDict.ContainsKey(din))
+                    else if (provincialDict.ContainsKey(din))
                     {
                         mdSummary.IsPin = true;
-                        mdSummary.BrandName = provicialDict[din].BrandName;
-                        mdSummary.Form = provicialDict[din].DosageForm ?? string.Empty;
+                        mdSummary.BrandName = provincialDict[din].BrandName;
+                        mdSummary.Form = provincialDict[din].DosageForm ?? string.Empty;
                     }
                 }
 

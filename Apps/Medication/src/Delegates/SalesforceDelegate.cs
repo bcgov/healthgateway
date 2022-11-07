@@ -18,7 +18,6 @@ namespace HealthGateway.Medication.Delegates
     using System;
     using System.Collections.Generic;
     using System.Diagnostics;
-    using System.Linq;
     using System.Net;
     using System.Net.Http;
     using System.Net.Http.Headers;
@@ -89,7 +88,7 @@ namespace HealthGateway.Medication.Delegates
                 string? accessToken = this.authDelegate.AuthenticateAsUser(this.salesforceConfig.TokenUri, this.salesforceConfig.ClientAuthentication, true).AccessToken;
                 if (string.IsNullOrEmpty(accessToken))
                 {
-                    this.logger.LogError("Authenticated as User System access token is null or emtpy, Error:\n{AccessToken}", accessToken);
+                    this.logger.LogError("Authenticated as User System access token is null or empty, Error:\n{AccessToken}", accessToken);
                     retVal.ResultStatus = ResultType.Error;
                     retVal.ResultError = new RequestResultError
                     {
@@ -119,7 +118,7 @@ namespace HealthGateway.Medication.Delegates
                             if (replyWrapper != null)
                             {
                                 retVal.ResultStatus = ResultType.Success;
-                                retVal.ResourcePayload = this.autoMapper.Map<IEnumerable<SpecialAuthorityRequest>, IEnumerable<MedicationRequest>>(replyWrapper.Items).ToList();
+                                retVal.ResourcePayload = this.autoMapper.Map<IEnumerable<SpecialAuthorityRequest>, IList<MedicationRequest>>(replyWrapper.Items);
                                 retVal.TotalResultCount = replyWrapper.Items.Count;
                                 retVal.PageSize = replyWrapper.Items.Count;
                                 retVal.PageIndex = 0;
