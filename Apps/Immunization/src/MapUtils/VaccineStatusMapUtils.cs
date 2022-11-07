@@ -14,31 +14,30 @@
 //  limitations under the License.
 // -------------------------------------------------------------------------
 
-namespace HealthGateway.Admin.Server.MapUtils
+namespace HealthGateway.Immunization.MapUtils
 {
     using AutoMapper;
-    using HealthGateway.Admin.Common.Models;
-    using HealthGateway.Database.Models;
+    using HealthGateway.Common.Models.PHSA;
+    using HealthGateway.Immunization.Models;
 
     /// <summary>
-    /// Static Helper classes for conversion of model objects.
+    /// Static helper class for conversion of model objects.
     /// </summary>
-    public static class UserFeedbackMapUtils
+    public static class VaccineStatusMapUtils
     {
         /// <summary>
-        /// Creates a UI model from a DB model.
+        /// Creates a UI model from a PHSA model.
         /// </summary>
-        /// <param name="userFeedback">The DB model to convert.</param>
-        /// <param name="email">The email address associated with the person who created the feedback.</param>
         /// <param name="mapper">The AutoMapper IMapper.</param>
+        /// <param name="phsaModel">The PHSA model to convert.</param>
+        /// <param name="personalHealthNumber">The patient's personal health number.</param>
         /// <returns>The created UI model.</returns>
-        public static UserFeedbackView ToUiModel(UserFeedback userFeedback, string email, IMapper mapper)
+        public static VaccineStatus ToUiModel(IMapper mapper, VaccineStatusResult phsaModel, string? personalHealthNumber)
         {
-            UserFeedbackView userFeedbackView = mapper.Map<UserFeedback, UserFeedbackView>(
-                userFeedback,
-                opts =>
-                    opts.AfterMap((_, dest) => dest.Email = email));
-            return userFeedbackView;
+            VaccineStatus uiModel = mapper.Map<VaccineStatusResult, VaccineStatus>(
+                phsaModel,
+                opts => opts.AfterMap((_, dest) => dest.PersonalHealthNumber = personalHealthNumber));
+            return uiModel;
         }
     }
 }

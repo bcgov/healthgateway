@@ -21,8 +21,8 @@ namespace HealthGateway.Immunization.Test.Controllers
     using DeepEqual.Syntax;
     using HealthGateway.Common.Data.Constants;
     using HealthGateway.Common.Data.ViewModels;
-    using HealthGateway.Common.Models.PHSA;
     using HealthGateway.Immunization.Controllers;
+    using HealthGateway.Immunization.Models;
     using HealthGateway.Immunization.Services;
     using Microsoft.Extensions.Logging;
     using Moq;

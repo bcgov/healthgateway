@@ -13,11 +13,12 @@
 //  See the License for the specific language governing permissions and
 //  limitations under the License.
 // -------------------------------------------------------------------------
-namespace HealthGateway.Common.Models.PHSA
+namespace HealthGateway.Immunization.Models
 {
     using System;
     using System.Text.Json.Serialization;
     using HealthGateway.Common.Constants.PHSA;
+    using HealthGateway.Common.Models.PHSA;
 
     /// <summary>
     /// The Vaccine Status model.
@@ -98,27 +99,5 @@ namespace HealthGateway.Common.Models.PHSA
         /// </summary>
         [JsonPropertyName("federalVaccineProof")]
         public EncodedMedia? FederalVaccineProof { get; set; } = new();
-
-        /// <summary>
-        /// Converts a VaccineStatusResult to a VaccineStatus model.
-        /// </summary>
-        /// <param name="model">The result model.</param>
-        /// <param name="personalHealthNumber">the patient's personal health number.</param>
-        /// <returns>The vaccine status model.</returns>
-        public static VaccineStatus FromModel(VaccineStatusResult model, string? personalHealthNumber = null)
-        {
-            return new VaccineStatus
-            {
-                Birthdate = model.Birthdate,
-                PersonalHealthNumber = personalHealthNumber,
-                FirstName = model.FirstName,
-                LastName = model.LastName,
-                Doses = model.DoseCount,
-                State = Enum.Parse<VaccineState>(model.StatusIndicator),
-                VaccineDate = model.VaccineDate,
-                QRCode = model.QRCode,
-                FederalVaccineProof = model.FederalVaccineProof,
-            };
-        }
     }
 }
