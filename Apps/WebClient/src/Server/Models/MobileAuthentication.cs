@@ -16,36 +16,32 @@
 namespace HealthGateway.WebClient.Models
 {
     using System;
+    using System.Diagnostics.CodeAnalysis;
 
     /// <summary>
-    /// A collection of configuration items for use by Health Gateway Mobile.
+    /// A collection of authentication configuration items for use by Health Gateway Mobile.
     /// </summary>
-    public class MobileConfiguration
+    public class MobileAuthentication
     {
         /// <summary>
-        /// Gets or sets a value indicating whether the mobile application should be considered online or not.
+        /// Gets or sets the Uri for the Authentication server.
         /// </summary>
-        public bool Online { get; set; }
+        public Uri? Endpoint { get; set; }
 
         /// <summary>
-        /// Gets or sets the base url for the endpoints to be used by the mobile application.
+        /// Gets or sets the ID of the Identity Provider to be used.
         /// </summary>
-        public Uri? BaseUrl { get; set; }
+        public string? IdentityProviderId { get; set; }
 
         /// <summary>
-        /// Gets or sets the Mobile Authentication Configuration.
+        /// Gets or sets the client id.
         /// </summary>
-        public MobileAuthentication? Authentication { get; set; }
+        public string? ClientId { get; set; }
 
         /// <summary>
-        /// Gets or sets the mobile version.
-        /// The use of this version is to trigger forced updates in the future.
+        /// Gets or sets the redirect URI.
         /// </summary>
-        public int Version { get; set; }
-
-        /// <summary>
-        /// Gets or sets a value indicating whether the mobile app should force an upgrade.
-        /// </summary>
-        public bool ForceUpdate { get; set; }
+        [SuppressMessage("Design", "CA1056:URI properties should not be strings", Justification = "Special URI Values")]
+        public string? RedirectUri { get; set; }
     }
 }
