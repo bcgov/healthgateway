@@ -31,15 +31,17 @@ namespace HealthGateway.ImmunizationTests.Utils
         /// <returns>A configured AutoMapper.</returns>
         public static IMapper InitializeAutoMapper()
         {
-            MapperConfiguration config = new MapperConfiguration(cfg =>
-            {
-                cfg.AddProfile(new AgentProfile());
-                cfg.AddProfile(new DefinitionProfile());
-                cfg.AddProfile(new EventProfile());
-                cfg.AddProfile(new ForecastProfile());
-                cfg.AddProfile(new LoadStateProfile());
-                cfg.AddProfile(new TargetDiseaseProfile());
-            });
+            MapperConfiguration config = new(
+                cfg =>
+                {
+                    cfg.AddProfile(new AgentProfile());
+                    cfg.AddProfile(new DefinitionProfile());
+                    cfg.AddProfile(new EventProfile());
+                    cfg.AddProfile(new ForecastProfile());
+                    cfg.AddProfile(new LoadStateProfile());
+                    cfg.AddProfile(new TargetDiseaseProfile());
+                    cfg.AddProfile(new VaccineStatusProfile());
+                });
 
             return config.CreateMapper();
         }
