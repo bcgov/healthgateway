@@ -423,21 +423,21 @@ export default class LandingView extends Vue {
                     <img
                         v-show="selectedPreviewDevice === 'laptop'"
                         src="@/assets/images/landing/preview-laptop.png"
-                        class="img-fluid mw-60"
+                        class="img-fluid device-preview"
                         data-testid="preview-image-laptop"
                         alt="Preview of Health Gateway on a Laptop"
                     />
                     <img
                         v-show="selectedPreviewDevice === 'tablet'"
                         src="@/assets/images/landing/preview-tablet.png"
-                        class="img-fluid mw-30"
+                        class="img-fluid device-preview"
                         data-testid="preview-image-tablet"
                         alt="Preview of Health Gateway on a Tablet"
                     />
                     <img
                         v-show="selectedPreviewDevice === 'smartphone'"
                         src="@/assets/images/landing/preview-smartphone.png"
-                        class="img-fluid mw-20"
+                        class="img-fluid device-preview"
                         data-testid="preview-image-smartphone"
                         alt="Preview of Health Gateway on a Smartphone"
                     />
@@ -537,6 +537,9 @@ export default class LandingView extends Vue {
 </template>
 
 <style lang="scss" scoped>
+@import "~bootstrap/scss/functions";
+@import "~bootstrap/scss/variables";
+@import "~bootstrap/scss/mixins/_breakpoints";
 @import "@/assets/scss/_variables.scss";
 
 .landing {
@@ -561,18 +564,6 @@ export default class LandingView extends Vue {
     .btn-auth-landing {
         background-color: #1a5a95;
         border-color: #1a5a95;
-    }
-
-    .mw-20 {
-        max-width: 20%;
-    }
-
-    .mw-30 {
-        max-width: 30%;
-    }
-
-    .mw-60 {
-        max-width: 60%;
     }
 
     .vaccine-card-banner {
@@ -603,6 +594,18 @@ export default class LandingView extends Vue {
 
         &[disabled] {
             color: $hg-brand-primary;
+        }
+    }
+
+    @include media-breakpoint-down(sm) {
+        .device-preview {
+            max-height: 212px;
+        }
+    }
+
+    @include media-breakpoint-up(md) {
+        .device-preview {
+            max-height: 412px;
         }
     }
 }
