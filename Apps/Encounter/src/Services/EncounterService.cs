@@ -114,7 +114,7 @@ namespace HealthGateway.Encounter.Services
                         if (response.ResourcePayload != null && response.ResourcePayload.Claims != null)
                         {
                             result.TotalResultCount = response.ResourcePayload.TotalRecords;
-                            result.ResourcePayload = result.ResourcePayload = this.autoMapper.Map<IEnumerable<Claim>, IEnumerable<EncounterModel>>(response.ResourcePayload.Claims)
+                            result.ResourcePayload = this.autoMapper.Map<IEnumerable<Claim>, IEnumerable<EncounterModel>>(response.ResourcePayload.Claims)
                                 .GroupBy(e => e.Id)
                                 .Select(g => g.First());
                         }

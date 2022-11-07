@@ -19,7 +19,7 @@ namespace HealthGateway.Medication.Models.Salesforce
     using System.Text.Json.Serialization;
 
     /// <summary>
-    /// Represents a Special Autrhority Request.
+    /// Represents a Special Authority Request.
     /// </summary>
     public class SpecialAuthorityRequest
     {
@@ -88,24 +88,5 @@ namespace HealthGateway.Medication.Models.Salesforce
         /// </summary>
         [JsonPropertyName("requestedDate")]
         public DateTime RequestedDate { get; set; }
-
-        /// <summary>
-        /// Creates a Medication request object from a Special Authority Request model.
-        /// </summary>
-        /// <returns>The newly created MedicationRequest object.</returns>
-        public MedicationRequest ToHGModel()
-        {
-            return new MedicationRequest
-            {
-                ReferenceNumber = this.ReferenceNumber,
-                DrugName = this.DrugName,
-                RequestStatus = this.RequestStatus,
-                PrescriberFirstName = this.PrescriberFirstName,
-                PrescriberLastName = this.PrescriberLastName,
-                RequestedDate = this.RequestedDate,
-                EffectiveDate = this.EffectiveDate,
-                ExpiryDate = this.ExpiryDate,
-            };
-        }
     }
 }

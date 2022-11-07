@@ -18,12 +18,14 @@ namespace HealthGateway.Medication.Delegates
     using System;
     using System.Collections.Generic;
     using System.Diagnostics;
+    using System.Linq;
     using System.Net;
     using System.Net.Http;
     using System.Net.Http.Headers;
     using System.Net.Mime;
     using System.Text.Json;
     using System.Threading.Tasks;
+    using AutoMapper;
     using HealthGateway.Common.AccessManagement.Authentication;
     using HealthGateway.Common.Data.Constants;
     using HealthGateway.Common.Data.ViewModels;
@@ -42,6 +44,7 @@ namespace HealthGateway.Medication.Delegates
     {
         private const string SalesforceConfigSectionKey = "Salesforce";
         private readonly IAuthenticationDelegate authDelegate;
+        private readonly IMapper autoMapper;
         private readonly IHttpClientService httpClientService;
 
         private readonly ILogger logger;
@@ -54,15 +57,18 @@ namespace HealthGateway.Medication.Delegates
         /// <param name="httpClientService">The injected http client service.</param>
         /// <param name="configuration">The injected configuration provider.</param>
         /// <param name="authDelegate">The delegate responsible authentication.</param>
+        /// <param name="autoMapper">The injected automapper provider.</param>
         public SalesforceDelegate(
             ILogger<SalesforceDelegate> logger,
             IHttpClientService httpClientService,
             IConfiguration configuration,
-            IAuthenticationDelegate authDelegate)
+            IAuthenticationDelegate authDelegate,
+            IMapper autoMapper)
         {
             this.logger = logger;
             this.httpClientService = httpClientService;
             this.authDelegate = authDelegate;
+            this.autoMapper = autoMapper;
 
             this.salesforceConfig = new Config();
             configuration.Bind(SalesforceConfigSectionKey, this.salesforceConfig);
@@ -113,7 +119,7 @@ namespace HealthGateway.Medication.Delegates
                             if (replyWrapper != null)
                             {
                                 retVal.ResultStatus = ResultType.Success;
-                                retVal.ResourcePayload = replyWrapper.ToHGModels();
+                                retVal.ResourcePayload = this.autoMapper.Map<IEnumerable<SpecialAuthorityRequest>, IEnumerable<MedicationRequest>>(replyWrapper.Items).ToList();
                                 retVal.TotalResultCount = replyWrapper.Items.Count;
                                 retVal.PageSize = replyWrapper.Items.Count;
                                 retVal.PageIndex = 0;

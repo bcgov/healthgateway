@@ -23,6 +23,7 @@ namespace HealthGateway.Medication.Services
     using System.Net;
     using System.Text.RegularExpressions;
     using System.Threading.Tasks;
+    using AutoMapper;
     using HealthGateway.Common.Constants;
     using HealthGateway.Common.Data.Constants;
     using HealthGateway.Common.Data.Models.ErrorHandling;
@@ -46,6 +47,7 @@ namespace HealthGateway.Medication.Services
     {
         private const int MaxLengthProtectiveWord = 8;
         private const int MinLengthProtectiveWord = 6;
+        private readonly IMapper autoMapper;
         private readonly IDrugLookupDelegate drugLookupDelegate;
         private readonly IHttpContextAccessor httpContextAccessor;
         private readonly ILogger logger;
@@ -60,18 +62,21 @@ namespace HealthGateway.Medication.Services
         /// <param name="patientService">The injected patient registry provider.</param>
         /// <param name="drugLookupDelegate">Injected drug lookup delegate.</param>
         /// <param name="medicationStatementDelegate">Injected medication statement delegate.</param>
+        /// <param name="autoMapper">The injected automapper provider.</param>
         public RestMedicationStatementService(
             ILogger<RestMedicationStatementService> logger,
             IHttpContextAccessor httpAccessor,
             IPatientService patientService,
             IDrugLookupDelegate drugLookupDelegate,
-            IMedStatementDelegate medicationStatementDelegate)
+            IMedStatementDelegate medicationStatementDelegate,
+            IMapper autoMapper)
         {
             this.logger = logger;
             this.httpContextAccessor = httpAccessor;
             this.patientService = patientService;
             this.drugLookupDelegate = drugLookupDelegate;
             this.medicationStatementDelegate = medicationStatementDelegate;
+            this.autoMapper = autoMapper;
         }
 
         private static ActivitySource Source { get; } = new(nameof(RestMedicationStatementService));
@@ -114,7 +119,7 @@ namespace HealthGateway.Medication.Services
                             if (response.ResourcePayload != null && response.ResourcePayload.Results != null)
                             {
                                 result.TotalResultCount = response.ResourcePayload.TotalRecords;
-                                result.ResourcePayload = MedicationStatementHistory.FromODRModelList(response.ResourcePayload.Results.ToList());
+                                result.ResourcePayload = this.autoMapper.Map<IEnumerable<MedicationResult>, IEnumerable<MedicationStatementHistory>>(response.ResourcePayload.Results).ToList();
                                 this.PopulateMedicationSummary(result.ResourcePayload.Select(r => r.MedicationSummary).ToList());
                             }
                             else
