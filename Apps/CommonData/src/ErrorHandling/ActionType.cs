@@ -13,7 +13,7 @@
 //  See the License for the specific language governing permissions and
 //  limitations under the License.
 // -------------------------------------------------------------------------
-namespace HealthGateway.Common.Data.Models.ErrorHandling
+namespace HealthGateway.Common.Data.ErrorHandling
 {
     using System;
     using System.Diagnostics.CodeAnalysis;
