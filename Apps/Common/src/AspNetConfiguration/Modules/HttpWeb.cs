@@ -78,9 +78,23 @@ namespace HealthGateway.Common.AspNetConfiguration.Modules
         /// <param name="blazor">If true, will add blazor optimizations for static files.</param>
         public static void UseHttp(IApplicationBuilder app, ILogger logger, IConfiguration configuration, IWebHostEnvironment environment, bool blazor = false)
         {
+            UseHttp(app, logger, configuration, environment, blazor, true);
+        }
+
+        /// <summary>
+        /// Configures the app to use http.
+        /// </summary>
+        /// <param name="app">The application builder provider.</param>
+        /// <param name="logger">The logger to use.</param>
+        /// <param name="configuration">The configuration to use.</param>
+        /// <param name="environment">The environment to use.</param>
+        /// <param name="blazor">If true, will add blazor optimizations for static files.</param>
+        /// <param name="useExceptionPage">If true, app will use development exception page.</param>
+        public static void UseHttp(IApplicationBuilder app, ILogger logger, IConfiguration configuration, IWebHostEnvironment environment, bool blazor, bool useExceptionPage)
+        {
             app.UseResponseCompression();
 
-            if (environment.IsDevelopment())
+            if (useExceptionPage && environment.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
             }
