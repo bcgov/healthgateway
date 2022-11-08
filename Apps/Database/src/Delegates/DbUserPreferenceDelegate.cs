@@ -29,7 +29,7 @@ namespace HealthGateway.Database.Delegates
     [ExcludeFromCodeCoverage]
     public class DbUserPreferenceDelegate : IUserPreferenceDelegate
     {
-        private readonly ILogger logger;
+        private readonly ILogger<DbUserPreferenceDelegate> logger;
         private readonly GatewayDbContext dbContext;
 
         /// <summary>
@@ -38,7 +38,7 @@ namespace HealthGateway.Database.Delegates
         /// <param name="logger">Injected Logger Provider.</param>
         /// <param name="dbContext">The context to be used when accessing the database.</param>
         public DbUserPreferenceDelegate(
-            ILogger<DbProfileDelegate> logger,
+            ILogger<DbUserPreferenceDelegate> logger,
             GatewayDbContext dbContext)
         {
             this.logger = logger;
