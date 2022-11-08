@@ -69,7 +69,7 @@ namespace HealthGateway.GatewayApi.Services
             this.logger.LogTrace("Validating sms... {ValidationCode}", validationCode);
 
             PrimitiveRequestResult<bool> retVal = new() { ResourcePayload = false, ResultStatus = ResultType.Success };
-            MessagingVerification? smsVerification = this.messageVerificationDelegate.GetLastForUser(hdid, MessagingVerificationType.SMS);
+            MessagingVerification? smsVerification = this.messageVerificationDelegate.GetLastForUser(hdid, MessagingVerificationType.Sms);
 
             if (smsVerification != null &&
                 smsVerification.UserProfileId == hdid &&
@@ -91,7 +91,7 @@ namespace HealthGateway.GatewayApi.Services
             }
             else
             {
-                smsVerification = this.messageVerificationDelegate.GetLastForUser(hdid, MessagingVerificationType.SMS);
+                smsVerification = this.messageVerificationDelegate.GetLastForUser(hdid, MessagingVerificationType.Sms);
                 if (smsVerification != null &&
                     !smsVerification.Validated)
                 {
@@ -124,7 +124,7 @@ namespace HealthGateway.GatewayApi.Services
             this.profileDelegate.Update(userProfile);
 
             bool isDeleted = string.IsNullOrEmpty(sanitizedSms);
-            MessagingVerification? lastSMSVerification = this.messageVerificationDelegate.GetLastForUser(hdid, MessagingVerificationType.SMS);
+            MessagingVerification? lastSMSVerification = this.messageVerificationDelegate.GetLastForUser(hdid, MessagingVerificationType.Sms);
             if (lastSMSVerification != null)
             {
                 this.logger.LogInformation("Expiring old sms validation for user {Hdid}", hdid);
@@ -175,7 +175,7 @@ namespace HealthGateway.GatewayApi.Services
                 UserProfileId = hdid,
                 SMSNumber = sms,
                 SMSValidationCode = CreateVerificationCode(),
-                VerificationType = MessagingVerificationType.SMS,
+                VerificationType = MessagingVerificationType.Sms,
                 ExpireDate = DateTime.UtcNow.AddDays(VerificationExpiryDays),
             };
 

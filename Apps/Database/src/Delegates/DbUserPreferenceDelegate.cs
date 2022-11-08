@@ -27,18 +27,18 @@ namespace HealthGateway.Database.Delegates
 
     /// <inheritdoc/>
     [ExcludeFromCodeCoverage]
-    public class DBUserPreferenceDelegate : IUserPreferenceDelegate
+    public class DbUserPreferenceDelegate : IUserPreferenceDelegate
     {
         private readonly ILogger logger;
         private readonly GatewayDbContext dbContext;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="DBUserPreferenceDelegate"/> class.
+        /// Initializes a new instance of the <see cref="DbUserPreferenceDelegate"/> class.
         /// </summary>
         /// <param name="logger">Injected Logger Provider.</param>
         /// <param name="dbContext">The context to be used when accessing the database.</param>
-        public DBUserPreferenceDelegate(
-            ILogger<DBProfileDelegate> logger,
+        public DbUserPreferenceDelegate(
+            ILogger<DbProfileDelegate> logger,
             GatewayDbContext dbContext)
         {
             this.logger = logger;
@@ -46,13 +46,13 @@ namespace HealthGateway.Database.Delegates
         }
 
         /// <inheritdoc/>
-        public DBResult<UserPreference> CreateUserPreference(UserPreference userPreference, bool commit = true)
+        public DbResult<UserPreference> CreateUserPreference(UserPreference userPreference, bool commit = true)
         {
             this.logger.LogTrace("Creating new User Preference in DB...");
-            DBResult<UserPreference> result = new()
+            DbResult<UserPreference> result = new()
             {
                 Payload = userPreference,
-                Status = DBStatusCode.Deferred,
+                Status = DbStatusCode.Deferred,
             };
             this.dbContext.UserPreference.Add(userPreference);
 
@@ -61,17 +61,17 @@ namespace HealthGateway.Database.Delegates
                 try
                 {
                     this.dbContext.SaveChanges();
-                    result.Status = DBStatusCode.Created;
+                    result.Status = DbStatusCode.Created;
                 }
                 catch (DbUpdateConcurrencyException e)
                 {
-                    result.Status = DBStatusCode.Concurrency;
+                    result.Status = DbStatusCode.Concurrency;
                     result.Message = e.Message;
                 }
                 catch (DbUpdateException e)
                 {
                     this.logger.LogError("Unable to create UserPreference to DB {Exception}", e.ToString());
-                    result.Status = DBStatusCode.Error;
+                    result.Status = DbStatusCode.Error;
                     result.Message = e.Message;
                 }
             }
@@ -80,13 +80,13 @@ namespace HealthGateway.Database.Delegates
         }
 
         /// <inheritdoc/>
-        public DBResult<UserPreference> UpdateUserPreference(UserPreference userPreference, bool commit = true)
+        public DbResult<UserPreference> UpdateUserPreference(UserPreference userPreference, bool commit = true)
         {
             this.logger.LogTrace("Updating User Preference in DB...");
-            DBResult<UserPreference> result = new()
+            DbResult<UserPreference> result = new()
             {
                 Payload = userPreference,
-                Status = DBStatusCode.Deferred,
+                Status = DbStatusCode.Deferred,
             };
             this.dbContext.UserPreference.Update(userPreference);
             this.dbContext.Entry(userPreference).Property(p => p.HdId).IsModified = false;
@@ -96,17 +96,17 @@ namespace HealthGateway.Database.Delegates
                 try
                 {
                     this.dbContext.SaveChanges();
-                    result.Status = DBStatusCode.Updated;
+                    result.Status = DbStatusCode.Updated;
                 }
                 catch (DbUpdateConcurrencyException e)
                 {
-                    result.Status = DBStatusCode.Concurrency;
+                    result.Status = DbStatusCode.Concurrency;
                     result.Message = e.Message;
                 }
                 catch (DbUpdateException e)
                 {
                     this.logger.LogError("Unable to update UserPreference to DB {Exception}", e.ToString());
-                    result.Status = DBStatusCode.Error;
+                    result.Status = DbStatusCode.Error;
                     result.Message = e.Message;
                 }
             }
@@ -115,13 +115,13 @@ namespace HealthGateway.Database.Delegates
         }
 
         /// <inheritdoc/>
-        public DBResult<IEnumerable<UserPreference>> GetUserPreferences(string hdid)
+        public DbResult<IEnumerable<UserPreference>> GetUserPreferences(string hdid)
         {
-            DBResult<IEnumerable<UserPreference>> result = new();
+            DbResult<IEnumerable<UserPreference>> result = new();
             result.Payload = this.dbContext.UserPreference
                 .Where(p => p.HdId == hdid)
                 .ToList();
-            result.Status = DBStatusCode.Read;
+            result.Status = DbStatusCode.Read;
             return result;
         }
     }

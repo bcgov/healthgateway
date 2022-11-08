@@ -81,8 +81,8 @@ namespace HealthGateway.Medication.Services.Test
             };
 
             Mock<IDrugLookupDelegate> mockDelegate = new();
-            mockDelegate.Setup(s => s.GetDrugProductsByDIN(It.IsAny<List<string>>())).Returns(fedData);
-            mockDelegate.Setup(s => s.GetPharmaCareDrugsByDIN(It.IsAny<List<string>>())).Returns(provData);
+            mockDelegate.Setup(s => s.GetDrugProductsByDin(It.IsAny<List<string>>())).Returns(fedData);
+            mockDelegate.Setup(s => s.GetPharmaCareDrugsByDin(It.IsAny<List<string>>())).Returns(provData);
 
             using ILoggerFactory loggerFactory = LoggerFactory.Create(builder => builder.AddConsole());
             ILogger<RestMedicationService> logger = loggerFactory.CreateLogger<RestMedicationService>();
@@ -129,8 +129,8 @@ namespace HealthGateway.Medication.Services.Test
             };
 
             Mock<IDrugLookupDelegate> mockDelegate = new();
-            mockDelegate.Setup(s => s.GetDrugProductsByDIN(It.IsAny<List<string>>())).Returns(fedData);
-            mockDelegate.Setup(s => s.GetPharmaCareDrugsByDIN(It.IsAny<List<string>>())).Returns(provData);
+            mockDelegate.Setup(s => s.GetDrugProductsByDin(It.IsAny<List<string>>())).Returns(fedData);
+            mockDelegate.Setup(s => s.GetPharmaCareDrugsByDin(It.IsAny<List<string>>())).Returns(provData);
 
             using ILoggerFactory loggerFactory = LoggerFactory.Create(builder => builder.AddConsole());
             ILogger<RestMedicationService> logger = loggerFactory.CreateLogger<RestMedicationService>();

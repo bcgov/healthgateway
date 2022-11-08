@@ -28,8 +28,9 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Moq;
-
 using Xunit;
+using AuthenticationService = HealthGateway.Admin.Services.AuthenticationService;
+using IAuthenticationService = HealthGateway.Admin.Services.IAuthenticationService;
 
 /// <summary>
 /// AuthenticationService's Unit Tests.
@@ -54,17 +55,17 @@ public class AuthenticationServiceTests
     public void ShouldAddLastLoginDateTimeWhenAdminUserProfileDoesNotExist()
     {
         // Arrange
-        DBResult<AdminUserProfile> getResult = new()
+        DbResult<AdminUserProfile> getResult = new()
         {
-            Status = DBStatusCode.NotFound,
+            Status = DbStatusCode.NotFound,
         };
 
         Mock<IAdminUserProfileDelegate> profileDelegateMock = new();
         profileDelegateMock.Setup(s => s.GetAdminUserProfile(It.IsAny<string>())).Returns(getResult);
 
-        DBResult<AdminUserProfile> insertResult = new()
+        DbResult<AdminUserProfile> insertResult = new()
         {
-            Status = DBStatusCode.Created,
+            Status = DbStatusCode.Created,
             Payload = new AdminUserProfile
             {
                 Username = "username",
@@ -72,8 +73,8 @@ public class AuthenticationServiceTests
         };
         profileDelegateMock.Setup(s => s.Add(It.IsAny<AdminUserProfile>())).Returns(insertResult);
 
-        Admin.Services.IAuthenticationService service = new Admin.Services.AuthenticationService(
-            new Mock<ILogger<Admin.Services.AuthenticationService>>().Object,
+        IAuthenticationService service = new AuthenticationService(
+            new Mock<ILogger<AuthenticationService>>().Object,
             this.GetHttpContextAccessor().Object,
             this.configuration,
             profileDelegateMock.Object);
@@ -98,24 +99,24 @@ public class AuthenticationServiceTests
             Username = "username",
         };
 
-        DBResult<AdminUserProfile> getResult = new()
+        DbResult<AdminUserProfile> getResult = new()
         {
-            Status = DBStatusCode.Read,
+            Status = DbStatusCode.Read,
             Payload = profile,
         };
 
         Mock<IAdminUserProfileDelegate> profileDelegateMock = new();
         profileDelegateMock.Setup(s => s.GetAdminUserProfile(It.IsAny<string>())).Returns(getResult);
 
-        DBResult<AdminUserProfile> updateResult = new()
+        DbResult<AdminUserProfile> updateResult = new()
         {
-            Status = DBStatusCode.Updated,
+            Status = DbStatusCode.Updated,
             Payload = profile,
         };
         profileDelegateMock.Setup(s => s.Update(It.IsAny<AdminUserProfile>(), true)).Returns(updateResult);
 
-        Admin.Services.IAuthenticationService service = new Admin.Services.AuthenticationService(
-            new Mock<ILogger<Admin.Services.AuthenticationService>>().Object,
+        IAuthenticationService service = new AuthenticationService(
+            new Mock<ILogger<AuthenticationService>>().Object,
             this.GetHttpContextAccessor().Object,
             this.configuration,
             profileDelegateMock.Object);
@@ -136,9 +137,9 @@ public class AuthenticationServiceTests
         };
 
         return new ConfigurationBuilder()
-            .AddJsonFile("appsettings.json", optional: true)
-            .AddJsonFile("appsettings.Development.json", optional: true)
-            .AddJsonFile("appsettings.local.json", optional: true)
+            .AddJsonFile("appsettings.json", true)
+            .AddJsonFile("appsettings.Development.json", true)
+            .AddJsonFile("appsettings.local.json", true)
             .AddInMemoryCollection(myConfiguration)
             .Build();
     }
@@ -176,15 +177,16 @@ public class AuthenticationServiceTests
         Mock<IHttpContextAccessor> httpContextAccessorMock = new();
         httpContextAccessorMock.Setup(s => s.HttpContext).Returns(httpContextMock.Object);
 
-        Mock<IAuthenticationService> authenticationMock = new();
+        Mock<Microsoft.AspNetCore.Authentication.IAuthenticationService> authenticationMock = new();
         httpContextAccessorMock
-            .Setup(x => x.HttpContext!.RequestServices.GetService(typeof(IAuthenticationService)))
+            .Setup(x => x.HttpContext!.RequestServices.GetService(typeof(Microsoft.AspNetCore.Authentication.IAuthenticationService)))
             .Returns(authenticationMock.Object);
         AuthenticateResult authResult = AuthenticateResult.Success(new AuthenticationTicket(claimsPrincipal, JwtBearerDefaults.AuthenticationScheme));
-        authResult.Properties.StoreTokens(new[]
-        {
-            new AuthenticationToken { Name = "access_token", Value = this.accessToken },
-        });
+        authResult.Properties.StoreTokens(
+            new[]
+            {
+                new AuthenticationToken { Name = "access_token", Value = this.accessToken },
+            });
         authenticationMock
             .Setup(x => x.AuthenticateAsync(httpContextAccessorMock.Object.HttpContext, It.IsAny<string>()))
             .ReturnsAsync(authResult);

@@ -35,7 +35,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test.Mock
         /// <param name="hdid">hdid.</param>
         /// <param name="userProfileHistoryData">user profile history.</param>
         /// <param name="limit">limit.</param>
-        public UserProfileDelegateMock(UserProfile userProfile, DBResult<UserProfile> userProfileData, string hdid, DBResult<IEnumerable<UserProfileHistory>> userProfileHistoryData, int limit)
+        public UserProfileDelegateMock(UserProfile userProfile, DbResult<UserProfile> userProfileData, string hdid, DbResult<IEnumerable<UserProfileHistory>> userProfileHistoryData, int limit)
         {
             this.Setup(s => s.GetUserProfile(hdid)).Returns(userProfileData);
             this.Setup(s => s.Update(userProfile, true)).Returns(userProfileData);
@@ -47,7 +47,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test.Mock
         /// </summary>
         /// <param name="userProfile">user profile.</param>
         /// <param name="insertResult">insert result.</param>
-        public UserProfileDelegateMock(UserProfile userProfile, DBResult<UserProfile> insertResult)
+        public UserProfileDelegateMock(UserProfile userProfile, DbResult<UserProfile> insertResult)
         {
             this.Setup(s => s.InsertUserProfile(It.Is<UserProfile>(x => x.HdId == userProfile.HdId))).Returns(insertResult);
         }
@@ -59,7 +59,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test.Mock
         /// <param name="userProfile">user profile.</param>
         /// <param name="userProfileDBResult">user profile from DBResult.</param>
         /// <param name="commit">commit.</param>
-        public UserProfileDelegateMock(string hdid, UserProfile userProfile, DBResult<UserProfile> userProfileDBResult, bool commit = true)
+        public UserProfileDelegateMock(string hdid, UserProfile userProfile, DbResult<UserProfile> userProfileDBResult, bool commit = true)
         {
             this.Setup(s => s.GetUserProfile(hdid)).Returns(userProfileDBResult);
             this.Setup(s => s.Update(userProfile, commit)).Returns(userProfileDBResult);

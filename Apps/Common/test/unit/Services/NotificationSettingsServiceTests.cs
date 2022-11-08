@@ -57,7 +57,7 @@ namespace HealthGateway.CommonTests.Services
             Mock<ILogger<NotificationSettingsService>> mockLogger = new();
             Mock<IBackgroundJobClient> mockJobClient = new();
             Mock<IResourceDelegateDelegate> mockResourceDelegateDelegate = new();
-            DBResult<IEnumerable<ResourceDelegate>> dbResult = new();
+            DbResult<IEnumerable<ResourceDelegate>> dbResult = new();
             dbResult.Payload = new List<ResourceDelegate>();
             mockResourceDelegateDelegate.Setup(s => s.Get(nsr.SubjectHdid, 0, 500)).Returns(dbResult);
             INotificationSettingsService service = new NotificationSettingsService(
@@ -92,7 +92,7 @@ namespace HealthGateway.CommonTests.Services
             Mock<ILogger<NotificationSettingsService>> mockLogger = new();
             Mock<IBackgroundJobClient> mockJobClient = new();
             Mock<IResourceDelegateDelegate> mockResourceDelegateDelegate = new();
-            DBResult<IEnumerable<ResourceDelegate>> dbResult = new();
+            DbResult<IEnumerable<ResourceDelegate>> dbResult = new();
             dbResult.Payload = new List<ResourceDelegate>
             {
                 new ResourceDelegate()
@@ -133,7 +133,7 @@ namespace HealthGateway.CommonTests.Services
             Mock<ILogger<NotificationSettingsService>> mockLogger = new();
             Mock<IBackgroundJobClient> mockJobClient = new();
             Mock<IResourceDelegateDelegate> mockResourceDelegateDelegate = new();
-            DBResult<IEnumerable<ResourceDelegate>> dbResult = new();
+            DbResult<IEnumerable<ResourceDelegate>> dbResult = new();
             dbResult.Payload = new List<ResourceDelegate>
             {
                 new ResourceDelegate()

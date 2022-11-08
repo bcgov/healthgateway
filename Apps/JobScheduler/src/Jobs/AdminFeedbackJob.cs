@@ -72,8 +72,8 @@ namespace Healthgateway.JobScheduler.Jobs
         [DisableConcurrentExecution(ConcurrencyTimeout)]
         public void SendEmail(ClientFeedback clientFeedback)
         {
-            DBResult<UserFeedback> dbResult = this.feedBackDelegate.GetUserFeedback(clientFeedback.UserFeedbackId);
-            if (dbResult.Status == DBStatusCode.Read)
+            DbResult<UserFeedback> dbResult = this.feedBackDelegate.GetUserFeedback(clientFeedback.UserFeedbackId);
+            if (dbResult.Status == DbStatusCode.Read)
             {
                 UserFeedback feedback = dbResult.Payload;
                 this.logger.LogDebug("Sending Email...");

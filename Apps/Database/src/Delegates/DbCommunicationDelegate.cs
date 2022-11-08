@@ -30,21 +30,21 @@ namespace HealthGateway.Database.Delegates
 
     /// <inheritdoc/>
     [ExcludeFromCodeCoverage]
-    public class DBCommunicationDelegate : ICommunicationDelegate
+    public class DbCommunicationDelegate : ICommunicationDelegate
     {
         private const string BannerCommunicationOverlapMessage = "Banner post could not be added because there is an existing banner post.";
         private const string UniqueConstraintSqlStateError = "23P01";
         private const string UniqueConstraintDatetimeRange = "unique_date_range";
-        private readonly ILogger<DBNoteDelegate> logger;
+        private readonly ILogger<DbNoteDelegate> logger;
         private readonly GatewayDbContext dbContext;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="DBCommunicationDelegate"/> class.
+        /// Initializes a new instance of the <see cref="DbCommunicationDelegate"/> class.
         /// </summary>
         /// <param name="logger">Injected Logger Provider.</param>
         /// <param name="dbContext">The context to be used when accessing the database.</param>
-        public DBCommunicationDelegate(
-            ILogger<DBNoteDelegate> logger,
+        public DbCommunicationDelegate(
+            ILogger<DbNoteDelegate> logger,
             GatewayDbContext dbContext)
         {
             this.logger = logger;
@@ -52,7 +52,7 @@ namespace HealthGateway.Database.Delegates
         }
 
         /// <inheritdoc/>
-        public DBResult<Communication?> GetNext(CommunicationType communicationType)
+        public DbResult<Communication?> GetNext(CommunicationType communicationType)
         {
             this.logger.LogTrace("Getting next non-expired Communication from DB...");
             Communication? communication = this.dbContext.Communication
@@ -62,9 +62,9 @@ namespace HealthGateway.Database.Delegates
                          DateTime.UtcNow < c.ExpiryDateTime)
                 .OrderBy(c => c.EffectiveDateTime)
                 .FirstOrDefault();
-            DBResult<Communication?> result = new()
+            DbResult<Communication?> result = new()
             {
-                Status = communication != null ? DBStatusCode.Read : DBStatusCode.NotFound,
+                Status = communication != null ? DbStatusCode.Read : DbStatusCode.NotFound,
                 Payload = communication,
             };
 
@@ -72,13 +72,13 @@ namespace HealthGateway.Database.Delegates
         }
 
         /// <inheritdoc/>
-        public DBResult<Communication> Add(Communication communication, bool commit = true)
+        public DbResult<Communication> Add(Communication communication, bool commit = true)
         {
             this.logger.LogTrace("Adding Communication to DB...");
-            DBResult<Communication> result = new()
+            DbResult<Communication> result = new()
             {
                 Payload = communication,
-                Status = DBStatusCode.Deferred,
+                Status = DbStatusCode.Deferred,
             };
 
             this.dbContext.Communication.Add(communication);
@@ -87,12 +87,12 @@ namespace HealthGateway.Database.Delegates
                 try
                 {
                     this.dbContext.SaveChanges();
-                    result.Status = DBStatusCode.Created;
+                    result.Status = DbStatusCode.Created;
                 }
                 catch (DbUpdateException e)
                 {
                     this.logger.LogError("Unable to save Communication to DB {Exception}", e.ToString());
-                    result.Status = DBStatusCode.Error;
+                    result.Status = DbStatusCode.Error;
                     result.Message = IsUniqueConstraintDbError(e) ? BannerCommunicationOverlapMessage : e.Message;
                 }
             }
@@ -102,25 +102,25 @@ namespace HealthGateway.Database.Delegates
         }
 
         /// <inheritdoc/>
-        public DBResult<IEnumerable<Communication>> GetAll()
+        public DbResult<IEnumerable<Communication>> GetAll()
         {
             this.logger.LogTrace("Getting all communication entries...");
-            DBResult<IEnumerable<Communication>> result = new();
+            DbResult<IEnumerable<Communication>> result = new();
             result.Payload = this.dbContext.Communication
                 .OrderBy(o => o.CreatedDateTime)
                 .ToList();
-            result.Status = result.Payload != null ? DBStatusCode.Read : DBStatusCode.NotFound;
+            result.Status = result.Payload != null ? DbStatusCode.Read : DbStatusCode.NotFound;
             return result;
         }
 
         /// <inheritdoc/>
-        public DBResult<Communication> Update(Communication communication, bool commit = true)
+        public DbResult<Communication> Update(Communication communication, bool commit = true)
         {
             this.logger.LogTrace("Updating Communication in DB...");
-            DBResult<Communication> result = new()
+            DbResult<Communication> result = new()
             {
                 Payload = communication,
-                Status = DBStatusCode.Deferred,
+                Status = DbStatusCode.Deferred,
             };
             this.dbContext.Communication.Update(communication);
             if (commit)
@@ -128,18 +128,18 @@ namespace HealthGateway.Database.Delegates
                 try
                 {
                     this.dbContext.SaveChanges();
-                    result.Status = DBStatusCode.Updated;
+                    result.Status = DbStatusCode.Updated;
                 }
                 catch (DbUpdateConcurrencyException e)
                 {
                     this.logger.LogError("Unable to update Communication to DB {Exception}", e.ToString());
-                    result.Status = DBStatusCode.Concurrency;
+                    result.Status = DbStatusCode.Concurrency;
                     result.Message = e.Message;
                 }
                 catch (DbUpdateException e)
                 {
                     this.logger.LogError("Unable to update Communication to DB {Exception}", e.ToString());
-                    result.Status = DBStatusCode.Error;
+                    result.Status = DbStatusCode.Error;
                     result.Message = IsUniqueConstraintDbError(e) ? BannerCommunicationOverlapMessage : e.Message;
                 }
             }
@@ -149,13 +149,13 @@ namespace HealthGateway.Database.Delegates
         }
 
         /// <inheritdoc/>
-        public DBResult<Communication> Delete(Communication communication, bool commit = true)
+        public DbResult<Communication> Delete(Communication communication, bool commit = true)
         {
             this.logger.LogTrace("Deleting Communication from DB...");
-            DBResult<Communication> result = new()
+            DbResult<Communication> result = new()
             {
                 Payload = communication,
-                Status = DBStatusCode.Deferred,
+                Status = DbStatusCode.Deferred,
             };
             this.dbContext.Communication.Remove(communication);
             if (commit)
@@ -163,11 +163,11 @@ namespace HealthGateway.Database.Delegates
                 try
                 {
                     this.dbContext.SaveChanges();
-                    result.Status = DBStatusCode.Deleted;
+                    result.Status = DbStatusCode.Deleted;
                 }
                 catch (DbUpdateException e)
                 {
-                    result.Status = DBStatusCode.Error;
+                    result.Status = DbStatusCode.Error;
                     result.Message = e.Message;
                 }
             }

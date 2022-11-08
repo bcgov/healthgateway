@@ -28,18 +28,18 @@ namespace HealthGateway.Database.Delegates
 
     /// <inheritdoc/>
     [ExcludeFromCodeCoverage]
-    public class DBFeedbackTagDelegate : IFeedbackTagDelegate
+    public class DbFeedbackTagDelegate : IFeedbackTagDelegate
     {
-        private readonly ILogger<DBFeedbackTagDelegate> logger;
+        private readonly ILogger<DbFeedbackTagDelegate> logger;
         private readonly GatewayDbContext dbContext;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="DBFeedbackTagDelegate"/> class.
+        /// Initializes a new instance of the <see cref="DbFeedbackTagDelegate"/> class.
         /// </summary>
         /// <param name="logger">Injected Logger Provider.</param>
         /// <param name="dbContext">The context to be used when accessing the database.</param>
-        public DBFeedbackTagDelegate(
-            ILogger<DBFeedbackTagDelegate> logger,
+        public DbFeedbackTagDelegate(
+            ILogger<DbFeedbackTagDelegate> logger,
             GatewayDbContext dbContext)
         {
             this.logger = logger;
@@ -47,13 +47,13 @@ namespace HealthGateway.Database.Delegates
         }
 
         /// <inheritdoc/>
-        public DBResult<UserFeedbackTag> Add(UserFeedbackTag feedbackTag, bool commit = true)
+        public DbResult<UserFeedbackTag> Add(UserFeedbackTag feedbackTag, bool commit = true)
         {
             this.logger.LogTrace("Adding UserFeedbackTag to DB...");
-            DBResult<UserFeedbackTag> result = new()
+            DbResult<UserFeedbackTag> result = new()
             {
                 Payload = feedbackTag,
-                Status = DBStatusCode.Deferred,
+                Status = DbStatusCode.Deferred,
             };
             this.dbContext.UserFeedbackTag.Add(feedbackTag);
             if (commit)
@@ -61,12 +61,12 @@ namespace HealthGateway.Database.Delegates
                 try
                 {
                     this.dbContext.SaveChanges();
-                    result.Status = DBStatusCode.Created;
+                    result.Status = DbStatusCode.Created;
                 }
                 catch (DbUpdateException e)
                 {
                     this.logger.LogError("Unable to save UserFeedbackTag to DB {Exception}", e.ToString());
-                    result.Status = DBStatusCode.Error;
+                    result.Status = DbStatusCode.Error;
                     result.Message = e.Message;
                 }
             }
@@ -76,13 +76,13 @@ namespace HealthGateway.Database.Delegates
         }
 
         /// <inheritdoc/>
-        public DBResult<UserFeedbackTag> Delete(UserFeedbackTag feedbackTag, bool commit = true)
+        public DbResult<UserFeedbackTag> Delete(UserFeedbackTag feedbackTag, bool commit = true)
         {
             this.logger.LogTrace("Deleting UserFeedbackTag from DB...");
-            DBResult<UserFeedbackTag> result = new()
+            DbResult<UserFeedbackTag> result = new()
             {
                 Payload = feedbackTag,
-                Status = DBStatusCode.Deferred,
+                Status = DbStatusCode.Deferred,
             };
 
             this.dbContext.UserFeedbackTag.Remove(feedbackTag);
@@ -91,11 +91,11 @@ namespace HealthGateway.Database.Delegates
                 try
                 {
                     this.dbContext.SaveChanges();
-                    result.Status = DBStatusCode.Deleted;
+                    result.Status = DbStatusCode.Deleted;
                 }
                 catch (DbUpdateConcurrencyException e)
                 {
-                    result.Status = DBStatusCode.Concurrency;
+                    result.Status = DbStatusCode.Concurrency;
                     result.Message = e.Message;
                 }
             }
@@ -105,12 +105,12 @@ namespace HealthGateway.Database.Delegates
         }
 
         /// <inheritdoc/>
-        public DBResult<IEnumerable<UserFeedbackTag>> GetUserFeedbackTagsByFeedbackId(Guid feedbackId)
+        public DbResult<IEnumerable<UserFeedbackTag>> GetUserFeedbackTagsByFeedbackId(Guid feedbackId)
         {
             this.logger.LogTrace("Getting user feedback tags from DB for Feedback Id: {FeedbackId}", feedbackId.ToString());
-            DBResult<IEnumerable<UserFeedbackTag>> result = new();
+            DbResult<IEnumerable<UserFeedbackTag>> result = new();
             result.Payload = this.dbContext.UserFeedbackTag.Where(t => t.UserFeedbackId == feedbackId).ToList();
-            result.Status = DBStatusCode.Read;
+            result.Status = DbStatusCode.Read;
             return result;
         }
     }

@@ -78,12 +78,12 @@ namespace HealthGateway.GatewayApi.Services
 
             Note note = NoteMapUtils.ToDbModel(userNote, this.cryptoDelegate, key, this.autoMapper);
 
-            DBResult<Note> dbNote = this.noteDelegate.AddNote(note);
+            DbResult<Note> dbNote = this.noteDelegate.AddNote(note);
             RequestResult<UserNote> result = new()
             {
                 ResourcePayload = NoteMapUtils.CreateFromDbModel(dbNote.Payload, this.cryptoDelegate, key, this.autoMapper),
-                ResultStatus = dbNote.Status == DBStatusCode.Created ? ResultType.Success : ResultType.Error,
-                ResultError = dbNote.Status == DBStatusCode.Created
+                ResultStatus = dbNote.Status == DbStatusCode.Created ? ResultType.Success : ResultType.Error,
+                ResultError = dbNote.Status == DbStatusCode.Created
                     ? null
                     : new RequestResultError
                     {
@@ -98,7 +98,7 @@ namespace HealthGateway.GatewayApi.Services
         public RequestResult<IEnumerable<UserNote>> GetNotes(string hdId, int page = 0, int pageSize = 500)
         {
             int offset = page * pageSize;
-            DBResult<IEnumerable<Note>> dbNotes = this.noteDelegate.GetNotes(hdId, offset, pageSize);
+            DbResult<IEnumerable<Note>> dbNotes = this.noteDelegate.GetNotes(hdId, offset, pageSize);
 
             UserProfile profile = this.profileDelegate.GetUserProfile(hdId).Payload;
             string? key = profile.EncryptionKey;
@@ -132,8 +132,8 @@ namespace HealthGateway.GatewayApi.Services
                 PageIndex = page,
                 PageSize = pageSize,
                 TotalResultCount = dbNotes.Payload.ToList().Count,
-                ResultStatus = dbNotes.Status == DBStatusCode.Read ? ResultType.Success : ResultType.Error,
-                ResultError = dbNotes.Status == DBStatusCode.Read
+                ResultStatus = dbNotes.Status == DbStatusCode.Read ? ResultType.Success : ResultType.Error,
+                ResultError = dbNotes.Status == DbStatusCode.Read
                     ? null
                     : new RequestResultError
                     {
@@ -165,12 +165,12 @@ namespace HealthGateway.GatewayApi.Services
 
             Note note = NoteMapUtils.ToDbModel(userNote, this.cryptoDelegate, key, this.autoMapper);
 
-            DBResult<Note> dbResult = this.noteDelegate.UpdateNote(note);
+            DbResult<Note> dbResult = this.noteDelegate.UpdateNote(note);
             RequestResult<UserNote> result = new()
             {
                 ResourcePayload = NoteMapUtils.CreateFromDbModel(dbResult.Payload, this.cryptoDelegate, key, this.autoMapper),
-                ResultStatus = dbResult.Status == DBStatusCode.Updated ? ResultType.Success : ResultType.Error,
-                ResultError = dbResult.Status == DBStatusCode.Updated
+                ResultStatus = dbResult.Status == DbStatusCode.Updated ? ResultType.Success : ResultType.Error,
+                ResultError = dbResult.Status == DbStatusCode.Updated
                     ? null
                     : new RequestResultError
                     {
@@ -201,12 +201,12 @@ namespace HealthGateway.GatewayApi.Services
             }
 
             Note note = NoteMapUtils.ToDbModel(userNote, this.cryptoDelegate, key, this.autoMapper);
-            DBResult<Note> dbResult = this.noteDelegate.DeleteNote(note);
+            DbResult<Note> dbResult = this.noteDelegate.DeleteNote(note);
             RequestResult<UserNote> result = new()
             {
                 ResourcePayload = NoteMapUtils.CreateFromDbModel(dbResult.Payload, this.cryptoDelegate, key, this.autoMapper),
-                ResultStatus = dbResult.Status == DBStatusCode.Deleted ? ResultType.Success : ResultType.Error,
-                ResultError = dbResult.Status == DBStatusCode.Deleted
+                ResultStatus = dbResult.Status == DbStatusCode.Deleted ? ResultType.Success : ResultType.Error,
+                ResultError = dbResult.Status == DbStatusCode.Deleted
                     ? null
                     : new RequestResultError
                     {

@@ -32,7 +32,7 @@ namespace HealthGateway.Database.Delegates
         /// </summary>
         /// <param name="profile">The profile to create.</param>
         /// <returns>A DB result which encapsulates the return object and status.</returns>
-        DBResult<UserProfile> InsertUserProfile(UserProfile profile);
+        DbResult<UserProfile> InsertUserProfile(UserProfile profile);
 
         /// <summary>
         /// Updates select attributes of the UserProfile object in the DB.
@@ -43,7 +43,7 @@ namespace HealthGateway.Database.Delegates
         /// <param name="profile">The profile to update.</param>
         /// <param name="commit">if true the transaction is persisted immediately.</param>
         /// <returns>A DB result which encapsulates the return object and status.</returns>
-        DBResult<UserProfile> Update(UserProfile profile, bool commit = true);
+        DbResult<UserProfile> Update(UserProfile profile, bool commit = true);
 
         /// <summary>
         /// Updates the specified UserProfile object in the DB.
@@ -53,21 +53,21 @@ namespace HealthGateway.Database.Delegates
         /// <param name="profile">The profile to update.</param>
         /// <param name="commit">if true the transaction is persisted immediately.</param>
         /// <returns>A DB result which encapsulates the return object and status.</returns>
-        public DBResult<UserProfile> UpdateComplete(UserProfile profile, bool commit = true);
+        public DbResult<UserProfile> UpdateComplete(UserProfile profile, bool commit = true);
 
         /// <summary>
         /// Fetches the UserProfile from the database.
         /// </summary>
         /// <param name="hdId">The unique profile key to find.</param>
         /// <returns>A DB result which encapsulates the return object and status.</returns>
-        DBResult<UserProfile> GetUserProfile(string hdId);
+        DbResult<UserProfile> GetUserProfile(string hdId);
 
         /// <summary>
         /// Fetches UserProfiles from the database.
         /// </summary>
         /// <param name="hdIds">The unique profile keys to find.</param>
         /// <returns>A DB result which encapsulates the return object and status.</returns>
-        DBResult<List<UserProfile>> GetUserProfiles(IList<string> hdIds);
+        DbResult<List<UserProfile>> GetUserProfiles(IList<string> hdIds);
 
         /// <summary>
         /// Fetches UserProfile from the database.
@@ -75,7 +75,7 @@ namespace HealthGateway.Database.Delegates
         /// <param name="queryType">The type of query to perform.</param>
         /// <param name="queryString">The value to query on.</param>
         /// <returns>A DB result which encapsulates the return object and status.</returns>
-        DBResult<List<UserProfile>> GetUserProfiles(UserQueryType queryType, string queryString);
+        DbResult<List<UserProfile>> GetUserProfiles(UserQueryType queryType, string queryString);
 
         /// <summary>
         /// Returns the list of all UserProfiles who have an email address and have
@@ -85,7 +85,7 @@ namespace HealthGateway.Database.Delegates
         /// <param name="page">The page to request, defaults to 0.</param>
         /// <param name="pagesize">The amount of records to retrieve in 1 request, defaults to 500.</param>
         /// <returns>A list of matching UserProfiles wrapped in a DBResult.</returns>
-        DBResult<List<UserProfile>> GetAllUserProfilesAfter(DateTime filterDateTime, int page = 0, int pagesize = 500);
+        DbResult<List<UserProfile>> GetAllUserProfilesAfter(DateTime filterDateTime, int page = 0, int pagesize = 500);
 
         /// <summary>
         /// Returns the list of all UserProfiles who have a closed date earlier than the supplied filter datetime.
@@ -94,7 +94,7 @@ namespace HealthGateway.Database.Delegates
         /// <param name="page">The page to request, defaults to 0.</param>
         /// <param name="pagesize">The amount of records to retrieve in 1 request, defaults to 500.</param>
         /// <returns>A list of matching UserProfiles wrapped in a DBResult.</returns>
-        DBResult<List<UserProfile>> GetClosedProfiles(DateTime filterDateTime, int page = 0, int pagesize = 500);
+        DbResult<List<UserProfile>> GetClosedProfiles(DateTime filterDateTime, int page = 0, int pagesize = 500);
 
         /// <summary>
         /// Returns the daily count of registered users from the database.
@@ -116,7 +116,7 @@ namespace HealthGateway.Database.Delegates
         /// <param name="page">The page to request.</param>
         /// <param name="pageSize">The amount of records to retrieve in 1 request.</param>
         /// <returns>A list of UserProfiles wrapped in a DBResult.</returns>
-        DBResult<IEnumerable<UserProfile>> GetAll(int page, int pageSize);
+        DbResult<IEnumerable<UserProfile>> GetAll(int page, int pageSize);
 
         /// <summary>
         /// Retrieves the count recurring users.
@@ -133,7 +133,7 @@ namespace HealthGateway.Database.Delegates
         /// <param name="hdid">The unique profile key to find.</param>
         /// <param name="limit">The number of rows to return.</param>
         /// <returns>A list of matching UserProfileHistory wrapped in a DBResult.</returns>
-        DBResult<IEnumerable<UserProfileHistory>> GetUserProfileHistories(string hdid, int limit);
+        DbResult<IEnumerable<UserProfileHistory>> GetUserProfileHistories(string hdid, int limit);
 
         /// <summary>
         /// Returns the list of logged in user year of birth counts over a date range.

@@ -19,11 +19,9 @@ namespace HealthGateway.GatewayApi.Test.Services
     using System.Linq;
     using HealthGateway.Common.Data.Models;
     using HealthGateway.Common.Data.ViewModels;
-    using HealthGateway.Common.Models;
     using HealthGateway.Common.Services;
     using HealthGateway.Database.Constants;
     using HealthGateway.Database.Delegates;
-    using HealthGateway.Database.Models;
     using HealthGateway.Database.Wrapper;
     using HealthGateway.GatewayApi.Services;
     using Microsoft.Extensions.Logging;
@@ -56,13 +54,13 @@ namespace HealthGateway.GatewayApi.Test.Services
             messagingVerificationDelegate.Setup(s => s.GetLastForUser(It.IsAny<string>(), It.IsAny<string>())).Returns(expectedResult);
 
             Mock<IUserProfileDelegate> userProfileDelegate = new();
-            DBResult<UserProfile> userProfileMock = new()
+            DbResult<UserProfile> userProfileMock = new()
             {
                 Payload = new UserProfile(),
-                Status = DBStatusCode.Read,
+                Status = DbStatusCode.Read,
             };
             userProfileDelegate.Setup(s => s.GetUserProfile(It.IsAny<string>())).Returns(userProfileMock);
-            userProfileDelegate.Setup(s => s.Update(It.IsAny<UserProfile>(), It.IsAny<bool>())).Returns(new DBResult<UserProfile>());
+            userProfileDelegate.Setup(s => s.Update(It.IsAny<UserProfile>(), It.IsAny<bool>())).Returns(new DbResult<UserProfile>());
 
             IUserSMSService service = new UserSMSService(
                 new Mock<ILogger<UserSMSService>>().Object,
@@ -94,13 +92,13 @@ namespace HealthGateway.GatewayApi.Test.Services
             messagingVerificationDelegate.Setup(s => s.GetLastForUser(It.IsAny<string>(), It.IsAny<string>())).Returns(expectedResult);
 
             Mock<IUserProfileDelegate> userProfileDelegate = new();
-            DBResult<UserProfile> userProfileMock = new()
+            DbResult<UserProfile> userProfileMock = new()
             {
                 Payload = new UserProfile(),
-                Status = DBStatusCode.Read,
+                Status = DbStatusCode.Read,
             };
             userProfileDelegate.Setup(s => s.GetUserProfile(It.IsAny<string>())).Returns(userProfileMock);
-            userProfileDelegate.Setup(s => s.Update(It.IsAny<UserProfile>(), It.IsAny<bool>())).Returns(new DBResult<UserProfile>());
+            userProfileDelegate.Setup(s => s.Update(It.IsAny<UserProfile>(), It.IsAny<bool>())).Returns(new DbResult<UserProfile>());
 
             IUserSMSService service = new UserSMSService(
                 new Mock<ILogger<UserSMSService>>().Object,
@@ -132,13 +130,13 @@ namespace HealthGateway.GatewayApi.Test.Services
             messagingVerificationDelegate.Setup(s => s.GetLastForUser(It.IsAny<string>(), It.IsAny<string>())).Returns(expectedResult);
 
             Mock<IUserProfileDelegate> userProfileDelegate = new();
-            DBResult<UserProfile> userProfileMock = new()
+            DbResult<UserProfile> userProfileMock = new()
             {
                 Payload = new UserProfile(),
-                Status = DBStatusCode.Read,
+                Status = DbStatusCode.Read,
             };
             userProfileDelegate.Setup(s => s.GetUserProfile(It.IsAny<string>())).Returns(userProfileMock);
-            userProfileDelegate.Setup(s => s.Update(It.IsAny<UserProfile>(), It.IsAny<bool>())).Returns(new DBResult<UserProfile>());
+            userProfileDelegate.Setup(s => s.Update(It.IsAny<UserProfile>(), It.IsAny<bool>())).Returns(new DbResult<UserProfile>());
 
             IUserSMSService service = new UserSMSService(
                 new Mock<ILogger<UserSMSService>>().Object,
@@ -160,7 +158,8 @@ namespace HealthGateway.GatewayApi.Test.Services
             Mock<IMessagingVerificationDelegate> messagingVerificationDelegateMock = new();
             messagingVerificationDelegateMock
                 .Setup(
-                    s => s.Insert(It.IsAny<MessagingVerification>())).Returns(Guid.Empty);
+                    s => s.Insert(It.IsAny<MessagingVerification>()))
+                .Returns(Guid.Empty);
 
             IUserSMSService service = new UserSMSService(
                 new Mock<ILogger<UserSMSService>>().Object,

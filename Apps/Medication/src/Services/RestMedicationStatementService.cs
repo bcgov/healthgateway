@@ -193,7 +193,7 @@ namespace HealthGateway.Medication.Services
                     uniqueDrugIdentifiers.Count);
 
                 // Retrieve the brand names using the Federal data
-                IList<DrugProduct> drugProducts = this.drugLookupDelegate.GetDrugProductsByDIN(uniqueDrugIdentifiers);
+                IList<DrugProduct> drugProducts = this.drugLookupDelegate.GetDrugProductsByDin(uniqueDrugIdentifiers);
                 Dictionary<string, DrugProduct> drugProductsDict = drugProducts.ToDictionary(pcd => pcd.DrugIdentificationNumber, pcd => pcd);
                 Dictionary<string, PharmaCareDrug> provincialDict = new();
                 if (uniqueDrugIdentifiers.Count > drugProductsDict.Count)
@@ -202,7 +202,7 @@ namespace HealthGateway.Medication.Services
                     List<string> notFoundDins = uniqueDrugIdentifiers.Where(din => !drugProductsDict.ContainsKey(din)).ToList();
 
                     // Retrieve the brand names using the provincial data
-                    IList<PharmaCareDrug> pharmaCareDrugs = this.drugLookupDelegate.GetPharmaCareDrugsByDIN(notFoundDins);
+                    IList<PharmaCareDrug> pharmaCareDrugs = this.drugLookupDelegate.GetPharmaCareDrugsByDin(notFoundDins);
                     provincialDict = pharmaCareDrugs.ToDictionary(dp => dp.DINPIN, dp => dp);
                 }
 

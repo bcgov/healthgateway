@@ -38,7 +38,7 @@ namespace HealthGateway.Common.Data.Models
         /// </summary>
         [Required]
         [MaxLength(10)]
-        public LegalAgreementType LegalAgreementCode { get; set; } = LegalAgreementType.TermsofService;
+        public LegalAgreementType LegalAgreementCode { get; set; } = LegalAgreementType.TermsOfService;
 
         /// <summary>
         /// Gets or sets the legal text.

@@ -96,10 +96,10 @@ namespace HealthGateway.Admin
             services.AddTransient<IAuthenticationService, AuthenticationService>();
             services.AddTransient<ISupportService, SupportService>();
             services.AddTransient<ICovidSupportService, CovidSupportService>();
-            services.AddTransient<IUserProfileDelegate, DBProfileDelegate>();
+            services.AddTransient<IUserProfileDelegate, DbProfileDelegate>();
 
             // Add delegates
-            services.AddTransient<IMessagingVerificationDelegate, DBMessagingVerificationDelegate>();
+            services.AddTransient<IMessagingVerificationDelegate, DbMessagingVerificationDelegate>();
             services.AddTransient<IImmunizationAdminDelegate, RestImmunizationAdminDelegate>();
             services.AddTransient<IVaccineStatusDelegate, RestVaccineStatusDelegate>();
             services.AddTransient<IVaccineProofDelegate, VaccineProofDelegate>();

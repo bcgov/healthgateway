@@ -19,7 +19,6 @@ namespace HealthGateway.Database.Delegates
     using System.Collections.Generic;
     using System.Diagnostics.CodeAnalysis;
     using System.Linq;
-    using System.Text.Json;
     using HealthGateway.Common.Data.Constants;
     using HealthGateway.Common.Data.Models;
     using HealthGateway.Database.Constants;
@@ -30,18 +29,18 @@ namespace HealthGateway.Database.Delegates
 
     /// <inheritdoc/>
     [ExcludeFromCodeCoverage]
-    public class DBEmailDelegate : IEmailDelegate
+    public class DbEmailDelegate : IEmailDelegate
     {
         private readonly ILogger logger;
         private readonly GatewayDbContext dbContext;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="DBEmailDelegate"/> class.
+        /// Initializes a new instance of the <see cref="DbEmailDelegate"/> class.
         /// </summary>
         /// <param name="logger">Injected Logger Provider.</param>
         /// <param name="dbContext">The context to be used when accessing the database.</param>
-        public DBEmailDelegate(
-            ILogger<DBEmailDelegate> logger,
+        public DbEmailDelegate(
+            ILogger<DbEmailDelegate> logger,
             GatewayDbContext dbContext)
         {
             this.logger = logger;
@@ -152,16 +151,16 @@ namespace HealthGateway.Database.Delegates
         }
 
         /// <inheritdoc/>
-        public DBResult<IList<Email>> GetEmails(int offset = 0, int pagesize = 1000)
+        public DbResult<IList<Email>> GetEmails(int offset = 0, int pagesize = 1000)
         {
             this.logger.LogTrace("Getting Emails...");
-            DBResult<IList<Email>> result = new();
+            DbResult<IList<Email>> result = new();
             result.Payload = this.dbContext.Email
                 .OrderByDescending(o => o.CreatedBy)
                 .Skip(offset)
                 .Take(pagesize)
                 .ToList();
-            result.Status = result.Payload != null ? DBStatusCode.Read : DBStatusCode.NotFound;
+            result.Status = result.Payload != null ? DbStatusCode.Read : DbStatusCode.NotFound;
             return result;
         }
 
