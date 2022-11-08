@@ -83,18 +83,18 @@ namespace HealthGateway.Database.Delegates
         /// </summary>
         /// <param name="filterDateTime">The profiles must have logged in prior to this date.</param>
         /// <param name="page">The page to request, defaults to 0.</param>
-        /// <param name="pagesize">The amount of records to retrieve in 1 request, defaults to 500.</param>
+        /// <param name="pageSize">The amount of records to retrieve in 1 request, defaults to 500.</param>
         /// <returns>A list of matching UserProfiles wrapped in a DBResult.</returns>
-        DbResult<List<UserProfile>> GetAllUserProfilesAfter(DateTime filterDateTime, int page = 0, int pagesize = 500);
+        DbResult<List<UserProfile>> GetAllUserProfilesAfter(DateTime filterDateTime, int page = 0, int pageSize = 500);
 
         /// <summary>
         /// Returns the list of all UserProfiles who have a closed date earlier than the supplied filter datetime.
         /// </summary>
         /// <param name="filterDateTime">The profiles must be closed and earlier than this date.</param>
         /// <param name="page">The page to request, defaults to 0.</param>
-        /// <param name="pagesize">The amount of records to retrieve in 1 request, defaults to 500.</param>
+        /// <param name="pageSize">The amount of records to retrieve in 1 request, defaults to 500.</param>
         /// <returns>A list of matching UserProfiles wrapped in a DBResult.</returns>
-        DbResult<List<UserProfile>> GetClosedProfiles(DateTime filterDateTime, int page = 0, int pagesize = 500);
+        DbResult<List<UserProfile>> GetClosedProfiles(DateTime filterDateTime, int page = 0, int pageSize = 500);
 
         /// <summary>
         /// Returns the daily count of registered users from the database.

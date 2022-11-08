@@ -42,7 +42,7 @@ namespace HealthGateway.Common.Data.Models
         public string? UserProfileId { get; set; }
 
         /// <summary>
-        /// Gets or sets a value indicating whether the messageing verification was validated.
+        /// Gets or sets a value indicating whether the messaging verification was validated.
         /// </summary>
         [Required]
         public bool Validated { get; set; }
@@ -66,7 +66,7 @@ namespace HealthGateway.Common.Data.Models
         public Guid InviteKey { get; set; }
 
         /// <summary>
-        /// Gets or sets the Verification type as defined by MEssaginVerificationTypeCode.
+        /// Gets or sets the Verification type as defined by MessagingVerificationTypeCode.
         /// </summary>
         [Required]
         [MaxLength(10)]
@@ -94,13 +94,13 @@ namespace HealthGateway.Common.Data.Models
         public DateTime ExpireDate { get; set; }
 
         /// <summary>
-        /// Gets or sets the attemped verification count.
+        /// Gets or sets the attempted verification count.
         /// </summary>
         [Required]
         public int VerificationAttempts { get; set; }
 
         /// <summary>
-        /// Gets or sets a value indicating whether the messageing verification was deleted.
+        /// Gets or sets a value indicating whether the messaging verification was deleted.
         /// </summary>
         [Required]
         public bool Deleted { get; set; }

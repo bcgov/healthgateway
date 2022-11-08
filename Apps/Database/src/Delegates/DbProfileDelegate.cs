@@ -209,30 +209,30 @@ namespace HealthGateway.Database.Delegates
         }
 
         /// <inheritdoc/>
-        public DbResult<List<UserProfile>> GetAllUserProfilesAfter(DateTime filterDateTime, int page = 0, int pagesize = 500)
+        public DbResult<List<UserProfile>> GetAllUserProfilesAfter(DateTime filterDateTime, int page = 0, int pageSize = 500)
         {
             DbResult<List<UserProfile>> result = new();
-            int offset = page * pagesize;
+            int offset = page * pageSize;
             result.Payload = this.dbContext.UserProfile
                 .Where(p => p.LastLoginDateTime < filterDateTime && p.ClosedDateTime == null && !string.IsNullOrWhiteSpace(p.Email))
                 .OrderBy(o => o.CreatedDateTime)
                 .Skip(offset)
-                .Take(pagesize)
+                .Take(pageSize)
                 .ToList();
             result.Status = DbStatusCode.Read;
             return result;
         }
 
         /// <inheritdoc/>
-        public DbResult<List<UserProfile>> GetClosedProfiles(DateTime filterDateTime, int page = 0, int pagesize = 500)
+        public DbResult<List<UserProfile>> GetClosedProfiles(DateTime filterDateTime, int page = 0, int pageSize = 500)
         {
             DbResult<List<UserProfile>> result = new();
-            int offset = page * pagesize;
+            int offset = page * pageSize;
             result.Payload = this.dbContext.UserProfile
                 .Where(p => p.ClosedDateTime != null && p.ClosedDateTime < filterDateTime)
                 .OrderBy(o => o.ClosedDateTime)
                 .Skip(offset)
-                .Take(pagesize)
+                .Take(pageSize)
                 .ToList();
             result.Status = DbStatusCode.Read;
             return result;

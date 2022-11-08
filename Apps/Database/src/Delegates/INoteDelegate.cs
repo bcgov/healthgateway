@@ -38,9 +38,9 @@ namespace HealthGateway.Database.Delegates
         /// </summary>
         /// <param name="hdId">The users health identifier id.</param>
         /// <param name="offset">The starting offset for the query.</param>
-        /// <param name="pagesize">The maximum amount of rows to return.</param>
+        /// <param name="pageSize">The maximum amount of rows to return.</param>
         /// <returns>A list of Notes wrapped in a DBResult.</returns>
-        DbResult<IEnumerable<Note>> GetNotes(string hdId, int offset = 0, int pagesize = 500);
+        DbResult<IEnumerable<Note>> GetNotes(string hdId, int offset = 0, int pageSize = 500);
 
         /// <summary>
         /// Add the given note.
