@@ -31,7 +31,7 @@ namespace HealthGateway.Database.Delegates
     [ExcludeFromCodeCoverage]
     public class DbRatingDelegate : IRatingDelegate
     {
-        private readonly ILogger logger;
+        private readonly ILogger<DbRatingDelegate> logger;
         private readonly GatewayDbContext dbContext;
 
         /// <summary>
@@ -40,7 +40,7 @@ namespace HealthGateway.Database.Delegates
         /// <param name="logger">Injected Logger Provider.</param>
         /// <param name="dbContext">The context to be used when accessing the database.</param>
         public DbRatingDelegate(
-            ILogger<DbFeedbackDelegate> logger,
+            ILogger<DbRatingDelegate> logger,
             GatewayDbContext dbContext)
         {
             this.logger = logger;

@@ -35,7 +35,7 @@ namespace HealthGateway.Database.Delegates
         private const string BannerCommunicationOverlapMessage = "Banner post could not be added because there is an existing banner post.";
         private const string UniqueConstraintSqlStateError = "23P01";
         private const string UniqueConstraintDatetimeRange = "unique_date_range";
-        private readonly ILogger<DbNoteDelegate> logger;
+        private readonly ILogger<DbCommunicationDelegate> logger;
         private readonly GatewayDbContext dbContext;
 
         /// <summary>
@@ -44,7 +44,7 @@ namespace HealthGateway.Database.Delegates
         /// <param name="logger">Injected Logger Provider.</param>
         /// <param name="dbContext">The context to be used when accessing the database.</param>
         public DbCommunicationDelegate(
-            ILogger<DbNoteDelegate> logger,
+            ILogger<DbCommunicationDelegate> logger,
             GatewayDbContext dbContext)
         {
             this.logger = logger;
