@@ -15,18 +15,16 @@
 //-------------------------------------------------------------------------
 namespace HealthGateway.LaboratoryTests.Mock
 {
-    using System;
     using System.Collections.Generic;
-    using System.Security.Claims;
+    using AutoMapper;
     using HealthGateway.Common.AccessManagement.Authentication;
-    using HealthGateway.Common.AccessManagement.Authentication.Models;
     using HealthGateway.Common.Data.ViewModels;
     using HealthGateway.Common.Models.PHSA;
     using HealthGateway.Laboratory.Factories;
     using HealthGateway.Laboratory.Models;
     using HealthGateway.Laboratory.Models.PHSA;
     using HealthGateway.Laboratory.Services;
-    using Microsoft.AspNetCore.Http;
+    using HealthGateway.LaboratoryTests.Utils;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.Logging;
     using Moq;
@@ -38,6 +36,7 @@ namespace HealthGateway.LaboratoryTests.Mock
     {
         private readonly LaboratoryService laboratoryService;
         private readonly IConfiguration configuration = GetIConfigurationRoot();
+        private readonly IMapper autoMapper = MapperUtil.InitializeAutoMapper();
 
         /// <summary>
         /// Initializes a new instance of the <see cref="LaboratoryServiceMock"/> class.
@@ -48,7 +47,8 @@ namespace HealthGateway.LaboratoryTests.Mock
                 this.configuration,
                 new Mock<ILogger<LaboratoryService>>().Object,
                 new Mock<ILaboratoryDelegateFactory>().Object,
-                new Mock<IAuthenticationDelegate>().Object);
+                new Mock<IAuthenticationDelegate>().Object,
+                this.autoMapper);
         }
 
         /// <summary>
@@ -59,10 +59,11 @@ namespace HealthGateway.LaboratoryTests.Mock
         public LaboratoryServiceMock(RequestResult<PhsaResult<List<PhsaCovid19Order>>> delegateResult, string token)
         {
             this.laboratoryService = new LaboratoryService(
-                 this.configuration,
-                 new Mock<ILogger<LaboratoryService>>().Object,
-                 new LaboratoryDelegateFactoryMock(new LaboratoryDelegateMock(delegateResult)).Object,
-                 GetMockAuthDelegate(token));
+                this.configuration,
+                new Mock<ILogger<LaboratoryService>>().Object,
+                new LaboratoryDelegateFactoryMock(new LaboratoryDelegateMock(delegateResult)).Object,
+                GetMockAuthDelegate(token),
+                this.autoMapper);
         }
 
         /// <summary>
@@ -73,10 +74,11 @@ namespace HealthGateway.LaboratoryTests.Mock
         public LaboratoryServiceMock(RequestResult<LaboratoryReport> delegateResult, string token)
         {
             this.laboratoryService = new LaboratoryService(
-                 this.configuration,
-                 new Mock<ILogger<LaboratoryService>>().Object,
-                 new LaboratoryDelegateFactoryMock(new LaboratoryDelegateMock(delegateResult)).Object,
-                 GetMockAuthDelegate(token));
+                this.configuration,
+                new Mock<ILogger<LaboratoryService>>().Object,
+                new LaboratoryDelegateFactoryMock(new LaboratoryDelegateMock(delegateResult)).Object,
+                GetMockAuthDelegate(token),
+                this.autoMapper);
         }
 
         /// <summary>
@@ -87,10 +89,11 @@ namespace HealthGateway.LaboratoryTests.Mock
         public LaboratoryServiceMock(RequestResult<PhsaResult<IEnumerable<CovidTestResult>>> delegateResult, string token)
         {
             this.laboratoryService = new LaboratoryService(
-                 this.configuration,
-                 new Mock<ILogger<LaboratoryService>>().Object,
-                 new LaboratoryDelegateFactoryMock(new LaboratoryDelegateMock(delegateResult, token)).Object,
-                 GetMockAuthDelegate(token));
+                this.configuration,
+                new Mock<ILogger<LaboratoryService>>().Object,
+                new LaboratoryDelegateFactoryMock(new LaboratoryDelegateMock(delegateResult, token)).Object,
+                GetMockAuthDelegate(token),
+                this.autoMapper);
         }
 
         /// <summary>
@@ -104,7 +107,8 @@ namespace HealthGateway.LaboratoryTests.Mock
                 this.configuration,
                 new Mock<ILogger<LaboratoryService>>().Object,
                 new LaboratoryDelegateFactoryMock(new LaboratoryDelegateMock(delegateResult)).Object,
-                GetMockAuthDelegate(token));
+                GetMockAuthDelegate(token),
+                this.autoMapper);
         }
 
         /// <summary>
@@ -124,9 +128,9 @@ namespace HealthGateway.LaboratoryTests.Mock
             };
 
             return new ConfigurationBuilder()
-                .AddJsonFile("appsettings.json", optional: true)
-                .AddJsonFile("appsettings.Development.json", optional: true)
-                .AddJsonFile("appsettings.local.json", optional: true)
+                .AddJsonFile("appsettings.json", true)
+                .AddJsonFile("appsettings.Development.json", true)
+                .AddJsonFile("appsettings.local.json", true)
                 .AddInMemoryCollection(myConfiguration)
                 .Build();
         }

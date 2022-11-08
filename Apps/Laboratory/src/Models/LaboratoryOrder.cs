@@ -19,31 +19,12 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.Json.Serialization;
-using HealthGateway.Laboratory.Models.PHSA;
 
 /// <summary>
 /// An instance of a Laboratory Order.
 /// </summary>
 public class LaboratoryOrder
 {
-    /// <summary>
-    /// Initializes a new instance of the <see cref="LaboratoryOrder"/> class.
-    /// </summary>
-    public LaboratoryOrder()
-    {
-        this.LaboratoryTests = new List<LaboratoryTest>();
-    }
-
-    /// <summary>
-    /// Initializes a new instance of the <see cref="LaboratoryOrder"/> class.
-    /// </summary>
-    /// <param name="laboratoryTests">The list of Laboratory Test records.</param>
-    [JsonConstructor]
-    public LaboratoryOrder(IList<LaboratoryTest> laboratoryTests)
-    {
-        this.LaboratoryTests = laboratoryTests;
-    }
-
     /// <summary>
     /// Gets or sets the id for the laboratory report.
     /// </summary>
@@ -105,47 +86,8 @@ public class LaboratoryOrder
     public bool ReportAvailable { get; set; }
 
     /// <summary>
-    /// Gets a list of PHSA Laboratory Tests.
+    /// Gets or sets the collection of laboratory tests.
     /// </summary>
     [JsonPropertyName("laboratoryTests")]
-    public IList<LaboratoryTest> LaboratoryTests { get; }
-
-    /// <summary>
-    /// Creates a <see cref="LaboratoryOrder"/> object from a PHSA model.
-    /// </summary>
-    /// <param name="model">The laboratory order result to convert.</param>
-    /// <returns>The newly created laboratory order object.</returns>
-    public static LaboratoryOrder FromPhsaModel(PhsaLaboratoryOrder model)
-    {
-        IList<LaboratoryTest> laboratoryTests =
-            model.LabBatteries != null ? model.LabBatteries.Select(LaboratoryTest.FromPhsaModel).ToList() : new List<LaboratoryTest>();
-
-        return new LaboratoryOrder(laboratoryTests)
-        {
-            LabPdfId = model.LabPdfId,
-            ReportingSource = model.ReportingSource,
-            ReportId = model.ReportId,
-            CollectionDateTime = model.CollectionDateTime,
-            TimelineDateTime = model.TimelineDateTime,
-            CommonName = model.CommonName,
-            OrderingProvider = model.OrderingProvider,
-            TestStatus = model.PlisTestStatus,
-            OrderStatus = model.PlisTestStatus switch
-            {
-                "Held" or "Partial" or "Pending" => "Pending",
-                _ => model.PlisTestStatus,
-            },
-            ReportAvailable = model.PdfReportAvailable,
-        };
-    }
-
-    /// <summary>
-    /// Creates a collection of <see cref="LaboratoryOrder"/> models from a collection of PHSA models.
-    /// </summary>
-    /// <param name="phsaOrders">The list of PHSA models to convert.</param>
-    /// <returns>A collection of <see cref="LaboratoryOrder"/> models.</returns>
-    public static IEnumerable<LaboratoryOrder> FromPhsaModelCollection(IEnumerable<PhsaLaboratoryOrder>? phsaOrders)
-    {
-        return phsaOrders != null ? phsaOrders.Select(FromPhsaModel) : Enumerable.Empty<LaboratoryOrder>();
-    }
+    public IEnumerable<LaboratoryTest> LaboratoryTests { get; set; } = Enumerable.Empty<LaboratoryTest>();
 }

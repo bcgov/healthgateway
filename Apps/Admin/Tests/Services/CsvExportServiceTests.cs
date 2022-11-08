@@ -23,6 +23,7 @@ namespace HealthGateway.Admin.Client.Services
     using HealthGateway.Admin.Server.Services;
     using HealthGateway.Common.AccessManagement.Administration;
     using HealthGateway.Common.AccessManagement.Authentication;
+    using HealthGateway.Common.Api;
     using HealthGateway.Database.Delegates;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.Logging;
@@ -58,7 +59,7 @@ namespace HealthGateway.Admin.Client.Services
             IInactiveUserService inactiveUserService = new InactiveUserService(
                 new Mock<IAuthenticationDelegate>().Object,
                 new Mock<IAdminUserProfileDelegate>().Object,
-                new Mock<IUserAdminDelegate>().Object,
+                new Mock<IKeycloakAdminApi>().Object,
                 new Mock<ILogger<InactiveUserService>>().Object,
                 this.configuration);
 

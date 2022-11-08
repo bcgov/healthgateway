@@ -30,6 +30,7 @@ namespace HealthGateway.MedicationTests.Delegates
     using HealthGateway.Common.Services;
     using HealthGateway.Medication.Delegates;
     using HealthGateway.Medication.Models;
+    using HealthGateway.MedicationTests.Utils;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.Logging;
     using Moq;
@@ -74,22 +75,25 @@ namespace HealthGateway.MedicationTests.Delegates
             IConfiguration configuration = CreateConfiguration(configurationParams);
 
             // Setup Authentication
-            string jwtJson = @"{ ""access_token"":""token"", ""expires_in"":500, ""refresh_expires_in"":0, ""refresh_token"":""refresh_token"", ""token_type"":""bearer"", ""not-before-policy"":25, ""session_state"":""session_state"", ""scope"":""scope"" }";
+            string jwtJson =
+                @"{ ""access_token"":""token"", ""expires_in"":500, ""refresh_expires_in"":0, ""refresh_token"":""refresh_token"", ""token_type"":""bearer"", ""not-before-policy"":25, ""session_state"":""session_state"", ""scope"":""scope"" }";
             JwtModel authorizationJWT = CreateJWTModel(jwtJson);
 
             Mock<IAuthenticationDelegate> mockAuthenticationDelegate = new();
             mockAuthenticationDelegate
-                .Setup(s => s.AuthenticateAsUser(
-                    It.Is<Uri>(x => x.ToString() == tokenUri.ToString()),
-                    It.Is<ClientCredentialsTokenRequest>(x => x.ClientId == tokenRequest.ClientId),
-                    true))
+                .Setup(
+                    s => s.AuthenticateAsUser(
+                        It.Is<Uri>(x => x.ToString() == tokenUri.ToString()),
+                        It.Is<ClientCredentialsTokenRequest>(x => x.ClientId == tokenRequest.ClientId),
+                        true))
                 .Returns(() => authorizationJWT);
 
             // Setup Http response
             using HttpResponseMessage httpResponseMessage = new()
             {
                 StatusCode = HttpStatusCode.OK,
-                Content = new StringContent("{\"items\":[{\"requestStatus\":\"Approved\",\"requestedDate\":\"2020-11-13T00:00:00.000Z\",\"referenceNumber\":\"00001046\",\"prescriberLastName\":\"Provider\",\"prescriberFirstName\":\"Test\",\"patientLastName\":null,\"patientIdentifier\":null,\"patientFirstName\":null,\"expiryDate\":null,\"effectiveDate\":null,\"drugName\":\"rabeprazole 10, 20 mg   NB4\"},{\"requestStatus\":\"Approved\",\"requestedDate\":\"2020-11-15T00:00:00.000Z\",\"referenceNumber\":\"00001048\",\"prescriberLastName\":null,\"prescriberFirstName\":null,\"patientLastName\":null,\"patientIdentifier\":null,\"patientFirstName\":null,\"expiryDate\":null,\"effectiveDate\":\"2021-02-17\",\"drugName\":\"abatacept w/e name here\"},{\"requestStatus\":\"Received\",\"requestedDate\":\"2020-11-15T00:00:00.000Z\",\"referenceNumber\":\"00001047\",\"prescriberLastName\":null,\"prescriberFirstName\":null,\"patientLastName\":null,\"patientIdentifier\":null,\"patientFirstName\":null,\"expiryDate\":null,\"effectiveDate\":null,\"drugName\":\"depakote sprinkle cap 125mg   (SAP)\"}]}"),
+                Content = new StringContent(
+                    "{\"items\":[{\"requestStatus\":\"Approved\",\"requestedDate\":\"2020-11-13T00:00:00.000Z\",\"referenceNumber\":\"00001046\",\"prescriberLastName\":\"Provider\",\"prescriberFirstName\":\"Test\",\"patientLastName\":null,\"patientIdentifier\":null,\"patientFirstName\":null,\"expiryDate\":null,\"effectiveDate\":null,\"drugName\":\"rabeprazole 10, 20 mg   NB4\"},{\"requestStatus\":\"Approved\",\"requestedDate\":\"2020-11-15T00:00:00.000Z\",\"referenceNumber\":\"00001048\",\"prescriberLastName\":null,\"prescriberFirstName\":null,\"patientLastName\":null,\"patientIdentifier\":null,\"patientFirstName\":null,\"expiryDate\":null,\"effectiveDate\":\"2021-02-17\",\"drugName\":\"abatacept w/e name here\"},{\"requestStatus\":\"Received\",\"requestedDate\":\"2020-11-15T00:00:00.000Z\",\"referenceNumber\":\"00001047\",\"prescriberLastName\":null,\"prescriberFirstName\":null,\"patientLastName\":null,\"patientIdentifier\":null,\"patientFirstName\":null,\"expiryDate\":null,\"effectiveDate\":null,\"drugName\":\"depakote sprinkle cap 125mg   (SAP)\"}]}"),
             };
             Mock<IHttpClientService> mockHttpClient = CreateHttpClient(httpResponseMessage, phn, authorizationJWT?.AccessToken);
 
@@ -98,7 +102,8 @@ namespace HealthGateway.MedicationTests.Delegates
                 CreateLogger(),
                 mockHttpClient.Object,
                 configuration,
-                mockAuthenticationDelegate.Object);
+                mockAuthenticationDelegate.Object,
+                MapperUtil.InitializeAutoMapper());
 
             // Test
             RequestResult<IList<MedicationRequest>> response = Task.Run(async () => await medDelegate.GetMedicationRequestsAsync(phn).ConfigureAwait(true)).Result;
@@ -144,10 +149,11 @@ namespace HealthGateway.MedicationTests.Delegates
             // Setup Authentication
             Mock<IAuthenticationDelegate> mockAuthenticationDelegate = new();
             mockAuthenticationDelegate
-                .Setup(s => s.AuthenticateAsUser(
-                    It.Is<Uri>(x => x.ToString() == tokenUri.ToString()),
-                    It.Is<ClientCredentialsTokenRequest>(x => x.ClientId == tokenRequest.ClientId),
-                    true))
+                .Setup(
+                    s => s.AuthenticateAsUser(
+                        It.Is<Uri>(x => x.ToString() == tokenUri.ToString()),
+                        It.Is<ClientCredentialsTokenRequest>(x => x.ClientId == tokenRequest.ClientId),
+                        true))
                 .Returns(() => new JwtModel());
 
             // Setup class to be tested
@@ -155,7 +161,8 @@ namespace HealthGateway.MedicationTests.Delegates
                 CreateLogger(),
                 new Mock<IHttpClientService>().Object,
                 configuration,
-                mockAuthenticationDelegate.Object);
+                mockAuthenticationDelegate.Object,
+                MapperUtil.InitializeAutoMapper());
 
             // Test
             RequestResult<IList<MedicationRequest>> response = Task.Run(async () => await medDelegate.GetMedicationRequestsAsync(phn).ConfigureAwait(true)).Result;
@@ -199,15 +206,17 @@ namespace HealthGateway.MedicationTests.Delegates
             IConfiguration configuration = CreateConfiguration(configurationParams);
 
             // Setup Authentication
-            string jwtJson = @"{ ""access_token"":""token"", ""expires_in"":500, ""refresh_expires_in"":0, ""refresh_token"":""refresh_token"", ""token_type"":""bearer"", ""not-before-policy"":25, ""session_state"":""session_state"", ""scope"":""scope"" }";
+            string jwtJson =
+                @"{ ""access_token"":""token"", ""expires_in"":500, ""refresh_expires_in"":0, ""refresh_token"":""refresh_token"", ""token_type"":""bearer"", ""not-before-policy"":25, ""session_state"":""session_state"", ""scope"":""scope"" }";
             JwtModel authorizationJWT = CreateJWTModel(jwtJson);
 
             Mock<IAuthenticationDelegate> mockAuthenticationDelegate = new();
             mockAuthenticationDelegate
-                .Setup(s => s.AuthenticateAsUser(
-                    It.Is<Uri>(x => x.ToString() == tokenUri.ToString()),
-                    It.Is<ClientCredentialsTokenRequest>(x => x.ClientId == tokenRequest.ClientId),
-                    true))
+                .Setup(
+                    s => s.AuthenticateAsUser(
+                        It.Is<Uri>(x => x.ToString() == tokenUri.ToString()),
+                        It.Is<ClientCredentialsTokenRequest>(x => x.ClientId == tokenRequest.ClientId),
+                        true))
                 .Returns(() => authorizationJWT);
 
             // Setup Http response
@@ -222,7 +231,8 @@ namespace HealthGateway.MedicationTests.Delegates
                 CreateLogger(),
                 mockHttpClient.Object,
                 configuration,
-                mockAuthenticationDelegate.Object);
+                mockAuthenticationDelegate.Object,
+                MapperUtil.InitializeAutoMapper());
 
             // Test
             RequestResult<IList<MedicationRequest>> response = Task.Run(async () => await medDelegate.GetMedicationRequestsAsync(phn).ConfigureAwait(true)).Result;
@@ -266,15 +276,17 @@ namespace HealthGateway.MedicationTests.Delegates
             IConfiguration configuration = CreateConfiguration(configurationParams);
 
             // Setup Authentication
-            string jwtJson = @"{ ""access_token"":""token"", ""expires_in"":500, ""refresh_expires_in"":0, ""refresh_token"":""refresh_token"", ""token_type"":""bearer"", ""not-before-policy"":25, ""session_state"":""session_state"", ""scope"":""scope"" }";
+            string jwtJson =
+                @"{ ""access_token"":""token"", ""expires_in"":500, ""refresh_expires_in"":0, ""refresh_token"":""refresh_token"", ""token_type"":""bearer"", ""not-before-policy"":25, ""session_state"":""session_state"", ""scope"":""scope"" }";
             JwtModel authorizationJWT = CreateJWTModel(jwtJson);
 
             Mock<IAuthenticationDelegate> mockAuthenticationDelegate = new();
             mockAuthenticationDelegate
-                .Setup(s => s.AuthenticateAsUser(
-                    It.Is<Uri>(x => x.ToString() == tokenUri.ToString()),
-                    It.Is<ClientCredentialsTokenRequest>(x => x.ClientId == tokenRequest.ClientId),
-                    true))
+                .Setup(
+                    s => s.AuthenticateAsUser(
+                        It.Is<Uri>(x => x.ToString() == tokenUri.ToString()),
+                        It.Is<ClientCredentialsTokenRequest>(x => x.ClientId == tokenRequest.ClientId),
+                        true))
                 .Returns(() => authorizationJWT);
 
             // Setup Http response
@@ -289,7 +301,8 @@ namespace HealthGateway.MedicationTests.Delegates
                 CreateLogger(),
                 mockHttpClient.Object,
                 configuration,
-                mockAuthenticationDelegate.Object);
+                mockAuthenticationDelegate.Object,
+                MapperUtil.InitializeAutoMapper());
 
             // Test
             RequestResult<IList<MedicationRequest>> response = Task.Run(async () => await medDelegate.GetMedicationRequestsAsync(phn).ConfigureAwait(true)).Result;
@@ -304,9 +317,9 @@ namespace HealthGateway.MedicationTests.Delegates
         private static IConfiguration CreateConfiguration(Dictionary<string, string> configParams)
         {
             return new ConfigurationBuilder()
-                .AddJsonFile("appsettings.json", optional: true)
-                .AddJsonFile("appsettings.Development.json", optional: true)
-                .AddJsonFile("appsettings.local.json", optional: true)
+                .AddJsonFile("appsettings.json", true)
+                .AddJsonFile("appsettings.Development.json", true)
+                .AddJsonFile("appsettings.local.json", true)
                 .AddInMemoryCollection(configParams)
                 .Build();
         }
@@ -328,15 +341,15 @@ namespace HealthGateway.MedicationTests.Delegates
         {
             Mock<HttpMessageHandler> handlerMock = new();
             handlerMock
-               .Protected()
-               .Setup<Task<HttpResponseMessage>>(
-                  "SendAsync",
-                  ItExpr.Is<HttpRequestMessage>(
-                      x => x.Headers.GetValues("phn").FirstOrDefault() == expectedPHN &&
-                       (x.Headers.Authorization != null ? x.Headers.Authorization.Parameter : string.Empty) == authorizationToken),
-                  ItExpr.IsAny<CancellationToken>())
-               .ReturnsAsync(stubResponse)
-               .Verifiable();
+                .Protected()
+                .Setup<Task<HttpResponseMessage>>(
+                    "SendAsync",
+                    ItExpr.Is<HttpRequestMessage>(
+                        x => x.Headers.GetValues("phn").FirstOrDefault() == expectedPHN &&
+                             (x.Headers.Authorization != null ? x.Headers.Authorization.Parameter : string.Empty) == authorizationToken),
+                    ItExpr.IsAny<CancellationToken>())
+                .ReturnsAsync(stubResponse)
+                .Verifiable();
 
             Mock<IHttpClientService> mockHttpClientService = new();
             mockHttpClientService

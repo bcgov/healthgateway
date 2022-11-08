@@ -17,6 +17,7 @@ namespace HealthGateway.Common.Models.PHSA
 {
     using System;
     using System.Collections.Generic;
+    using System.Linq;
     using System.Text.Json.Serialization;
 
     /// <summary>
@@ -24,24 +25,6 @@ namespace HealthGateway.Common.Models.PHSA
     /// </summary>
     public class CovidTestResult
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="CovidTestResult"/> class.
-        /// </summary>
-        public CovidTestResult()
-        {
-            this.ResultDescription = new List<string>();
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="CovidTestResult"/> class.
-        /// </summary>
-        /// <param name="resultDescription">The list of result descriptions.</param>
-        [JsonConstructor]
-        public CovidTestResult(IList<string> resultDescription)
-        {
-            this.ResultDescription = resultDescription;
-        }
-
         /// <summary>
         /// Gets or sets the first name and last initial of the patient.
         /// </summary>
@@ -103,10 +86,10 @@ namespace HealthGateway.Common.Models.PHSA
         public string ResultTitle { get; set; } = string.Empty;
 
         /// <summary>
-        /// Gets the result description.
+        /// Gets or sets the result description.
         /// </summary>
         [JsonPropertyName("resultDescription")]
-        public IList<string> ResultDescription { get; }
+        public IEnumerable<string> ResultDescription { get; set; } = Enumerable.Empty<string>();
 
         /// <summary>
         /// Gets or sets the result link.

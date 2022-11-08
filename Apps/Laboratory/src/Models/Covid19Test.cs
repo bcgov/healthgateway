@@ -18,7 +18,6 @@ namespace HealthGateway.Laboratory.Models;
 using System;
 using System.Collections.Generic;
 using System.Text.Json.Serialization;
-using HealthGateway.Laboratory.Models.PHSA;
 
 /// <summary>
 /// An instance of a COVID-19 Test.
@@ -126,35 +125,4 @@ public class Covid19Test
     /// </summary>
     [JsonPropertyName("loincName")]
     public string? LoincName { get; set; }
-
-    /// <summary>
-    /// Creates a Covid19Test object from a PHSA model.
-    /// </summary>
-    /// <param name="model">The PHSA model to convert.</param>
-    /// <returns>The newly created COVID-19 test object.</returns>
-    public static Covid19Test FromPhsaModel(PhsaCovid19Test model)
-    {
-        bool resultReady = model.TestStatus switch
-        {
-            "Final" or "Corrected" or "Amended" => true,
-            _ => false,
-        };
-
-        return new Covid19Test(model.ResultDescription)
-        {
-            Id = model.Id,
-            TestType = model.TestType,
-            OutOfRange = model.OutOfRange,
-            CollectedDateTime = model.CollectedDateTime,
-            TestStatus = model.TestStatus,
-            ResultReady = resultReady,
-            LabResultOutcome = model.LabResultOutcome,
-            FilteredLabResultOutcome = resultReady ? model.LabResultOutcome : string.Empty,
-            ResultLink = model.ResultLink,
-            ReceivedDateTime = model.ReceivedDateTime,
-            ResultDateTime = model.ResultDateTime,
-            Loinc = model.Loinc,
-            LoincName = model.LoincName,
-        };
-    }
 }

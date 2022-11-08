@@ -154,30 +154,27 @@ export default class Covid19LaboratoryOrderTimelineComponent extends Vue {
         </div>
         <div slot="details-body">
             <div
-                v-if="reportAvailable"
+                v-if="reportAvailable && entry.resultReady"
+                class="my-3"
                 data-testid="laboratoryReportAvailable"
-                class="mt-2 mb-n1"
             >
-                <b-spinner v-if="isLoadingDocument" class="mb-1" />
-                <span v-else data-testid="laboratoryReport">
-                    <strong class="align-bottom d-inline-block pb-1">
-                        Report:
-                    </strong>
-                    <hg-button
-                        v-if="entry.resultReady"
-                        data-testid="covid-result-download-btn"
-                        variant="link"
-                        class="p-1 ml-1"
-                        @click="showConfirmationModal()"
-                    >
-                        <hg-icon
-                            icon="download"
-                            size="medium"
-                            square
-                            aria-hidden="true"
-                        />
-                    </hg-button>
-                </span>
+                <hg-button
+                    data-testid="covid-result-download-btn"
+                    variant="secondary"
+                    :disabled="isLoadingDocument"
+                    @click="showConfirmationModal()"
+                >
+                    <b-spinner v-if="isLoadingDocument" class="mr-1" small />
+                    <hg-icon
+                        v-else
+                        icon="download"
+                        size="medium"
+                        square
+                        aria-hidden="true"
+                        class="mr-1"
+                    />
+                    <span>Download Full Report</span>
+                </hg-button>
             </div>
             <div class="my-2">
                 <div data-testid="laboratoryReportingLab">
@@ -190,7 +187,7 @@ export default class Covid19LaboratoryOrderTimelineComponent extends Vue {
                 :key="test.id"
                 :data-testid="`laboratoryTestBlock-${index}`"
             >
-                <hr />
+                <hr v-if="entry.tests.length > 1" />
                 <div data-testid="laboratoryTestType" class="my-2">
                     <strong
                         v-if="test.resultReady && entry.tests.length > 1"

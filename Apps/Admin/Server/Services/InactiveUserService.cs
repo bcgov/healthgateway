@@ -18,21 +18,24 @@ namespace HealthGateway.Admin.Server.Services;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http;
 using System.Threading.Tasks;
 using HealthGateway.Admin.Server.Models;
-using HealthGateway.Common.AccessManagement.Administration;
 using HealthGateway.Common.AccessManagement.Administration.Models;
 using HealthGateway.Common.AccessManagement.Authentication;
 using HealthGateway.Common.AccessManagement.Authentication.Models;
+using HealthGateway.Common.Api;
 using HealthGateway.Common.Constants;
 using HealthGateway.Common.Data.Constants;
 using HealthGateway.Common.Data.ViewModels;
+using HealthGateway.Common.ErrorHandling;
 using HealthGateway.Database.Constants;
 using HealthGateway.Database.Delegates;
 using HealthGateway.Database.Models;
 using HealthGateway.Database.Wrapper;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using Refit;
 
 /// <inheritdoc/>
 public class InactiveUserService : IInactiveUserService
@@ -40,7 +43,7 @@ public class InactiveUserService : IInactiveUserService
     private const string AuthConfigSectionName = "KeycloakAdmin:Authentication";
     private readonly IAuthenticationDelegate authDelegate;
     private readonly IAdminUserProfileDelegate adminUserProfileDelegate;
-    private readonly IUserAdminDelegate userAdminDelegate;
+    private readonly IKeycloakAdminApi keycloakAdminApi;
     private readonly ILogger logger;
     private readonly ClientCredentialsTokenRequest tokenRequest;
     private readonly Uri tokenUri;
@@ -50,19 +53,19 @@ public class InactiveUserService : IInactiveUserService
     /// </summary>
     /// <param name="authDelegate">The OAuth2 authentication service.</param>
     /// <param name="adminUserProfileDelegate">The admin user profile delegate to interact with the DB.</param>
-    /// <param name="userAdminDelegate">The user admin delegate to access identity access.</param>
+    /// <param name="keycloakAdminApi">The keycloak api to access identity access.</param>
     /// <param name="configuration">The configuration to use.</param>
     /// <param name="logger">Injected Logger Provider.</param>
     public InactiveUserService(
         IAuthenticationDelegate authDelegate,
         IAdminUserProfileDelegate adminUserProfileDelegate,
-        IUserAdminDelegate userAdminDelegate,
+        IKeycloakAdminApi keycloakAdminApi,
         ILogger<InactiveUserService> logger,
         IConfiguration configuration)
     {
         this.authDelegate = authDelegate;
         this.adminUserProfileDelegate = adminUserProfileDelegate;
-        this.userAdminDelegate = userAdminDelegate;
+        this.keycloakAdminApi = keycloakAdminApi;
         this.logger = logger;
 
         IConfigurationSection configSection = configuration.GetSection(AuthConfigSectionName);
@@ -103,39 +106,62 @@ public class InactiveUserService : IInactiveUserService
 
             // Get admin and support users from keycloak
             JwtModel jwtModel = this.authDelegate.AuthenticateAsUser(this.tokenUri, this.tokenRequest);
-            RequestResult<IEnumerable<UserRepresentation>> adminUsersResult = await this.userAdminDelegate.GetUsers(IdentityAccessRole.AdminUser, jwtModel).ConfigureAwait(true);
-            RequestResult<IEnumerable<UserRepresentation>> supportUsersResult = await this.userAdminDelegate.GetUsers(IdentityAccessRole.SupportUser, jwtModel).ConfigureAwait(true);
+            try
+            {
+                IApiResponse<IEnumerable<UserRepresentation>> adminUsersResult = await this.keycloakAdminApi.GetUsers(nameof(IdentityAccessRole.AdminUser), jwtModel.AccessToken).ConfigureAwait(true);
+                IApiResponse<IEnumerable<UserRepresentation>> supportUsersResult = await this.keycloakAdminApi.GetUsers(nameof(IdentityAccessRole.SupportUser), jwtModel.AccessToken).ConfigureAwait(true);
 
-            if (adminUsersResult.ResultStatus == ResultType.Success)
-            {
-                List<UserRepresentation> adminUsers = adminUsersResult.ResourcePayload.ToList();
-                this.PopulateUserDetails(inactiveUsers, adminUsers, IdentityAccessRole.AdminUser);
-                this.AddInactiveUser(inactiveUsers, activeUserProfiles, adminUsers, IdentityAccessRole.AdminUser);
+                if (adminUsersResult.IsSuccessStatusCode)
+                {
+                    List<UserRepresentation> adminUsers = adminUsersResult.Content?.ToList() ?? new();
+                    this.PopulateUserDetails(inactiveUsers, adminUsers, IdentityAccessRole.AdminUser);
+                    this.AddInactiveUser(inactiveUsers, activeUserProfiles, adminUsers, IdentityAccessRole.AdminUser);
+                }
+                else
+                {
+                    this.logger.LogError("Error communicating with Keycloak, http status code {Code} {Error}", adminUsersResult.StatusCode, adminUsersResult.Error?.ToString());
+                    requestResult.ResultStatus = ResultType.Error;
+                    requestResult.ResultError = new RequestResultError
+                        {
+                            ResultMessage = "Error communicating with Keycloak",
+                            ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.Keycloak),
+                        };
+                }
+
+                if (supportUsersResult.IsSuccessStatusCode)
+                {
+                    List<UserRepresentation> supportUsers = supportUsersResult.Content?.ToList() ?? new();
+                    this.PopulateUserDetails(inactiveUsers, supportUsers, IdentityAccessRole.SupportUser);
+                    this.AddInactiveUser(inactiveUsers, activeUserProfiles, supportUsers, IdentityAccessRole.SupportUser);
+                }
+                else
+                {
+                    this.logger.LogError("Error communicating with Keycloak, http status code {Code} {Error}", supportUsersResult.StatusCode, supportUsersResult.Error?.ToString());
+                    requestResult.ResultStatus = ResultType.Error;
+                    requestResult.ResultError = new RequestResultError
+                    {
+                        ResultMessage = "Error communicating with Keycloak",
+                        ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.Keycloak),
+                    };
+                }
+
+                if (requestResult.ResultStatus == ResultType.Success)
+                {
+                    this.logger.LogDebug("Inactive user with no keycloak match count: {Count}...", inactiveUsers.FindAll(x => x.UserId == null).Count);
+                    inactiveUsers.RemoveAll(x => x.UserId == null);
+                    requestResult.ResourcePayload = inactiveUsers;
+                    requestResult.TotalResultCount = inactiveUsers.Count;
+                }
             }
-            else
+            catch (HttpRequestException e)
             {
+                this.logger.LogError("Error communicating with Keycloak {Error}", e.ToString());
                 requestResult.ResultStatus = ResultType.Error;
-                requestResult.ResultError = adminUsersResult.ResultError;
-            }
-
-            if (supportUsersResult.ResultStatus == ResultType.Success)
-            {
-                List<UserRepresentation> supportUsers = supportUsersResult.ResourcePayload.ToList();
-                this.PopulateUserDetails(inactiveUsers, supportUsers, IdentityAccessRole.SupportUser);
-                this.AddInactiveUser(inactiveUsers, activeUserProfiles, supportUsers, IdentityAccessRole.SupportUser);
-            }
-            else
-            {
-                requestResult.ResultStatus = ResultType.Error;
-                requestResult.ResultError = supportUsersResult.ResultError;
-            }
-
-            if (requestResult.ResultStatus == ResultType.Success)
-            {
-                this.logger.LogDebug("Inactive user with no keycloak match count: {Count}...", inactiveUsers.FindAll(x => x.UserId == null).Count);
-                inactiveUsers.RemoveAll(x => x.UserId == null);
-                requestResult.ResourcePayload = inactiveUsers;
-                requestResult.TotalResultCount = inactiveUsers.Count;
+                requestResult.ResultError = new RequestResultError
+                {
+                    ResultMessage = "Error communicating with Keycloak",
+                    ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.Keycloak),
+                };
             }
         }
 

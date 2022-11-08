@@ -17,32 +17,14 @@ namespace HealthGateway.Laboratory.Models
 {
     using System;
     using System.Collections.Generic;
+    using System.Linq;
     using System.Text.Json.Serialization;
-    using HealthGateway.Common.Models.PHSA;
 
     /// <summary>
     /// The representation of a COVID-19 test record for public access.
     /// </summary>
     public class PublicCovidTestRecord
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="PublicCovidTestRecord"/> class.
-        /// </summary>
-        public PublicCovidTestRecord()
-        {
-            this.ResultDescription = new List<string>();
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="PublicCovidTestRecord"/> class.
-        /// </summary>
-        /// <param name="resultDescription">The list of result descriptions.</param>
-        [JsonConstructor]
-        public PublicCovidTestRecord(IList<string> resultDescription)
-        {
-            this.ResultDescription = resultDescription;
-        }
-
         /// <summary>
         /// Gets or sets the first name and last initial of the patient.
         /// </summary>
@@ -104,38 +86,15 @@ namespace HealthGateway.Laboratory.Models
         public string ResultTitle { get; set; } = string.Empty;
 
         /// <summary>
-        /// Gets the result description.
+        /// Gets or sets the result description.
         /// </summary>
         [JsonPropertyName("resultDescription")]
-        public IList<string> ResultDescription { get; }
+        public IEnumerable<string> ResultDescription { get; set; } = Enumerable.Empty<string>();
 
         /// <summary>
         /// Gets or sets the result link.
         /// </summary>
         [JsonPropertyName("resultLink")]
         public string ResultLink { get; set; } = string.Empty;
-
-        /// <summary>
-        /// Converts a PHSA CovidTestResult to a PublicCovidTestRecord model.
-        /// </summary>
-        /// <param name="model">The result model.</param>
-        /// <returns>The record model.</returns>
-        public static PublicCovidTestRecord FromModel(CovidTestResult model)
-        {
-            return new PublicCovidTestRecord(model.ResultDescription)
-            {
-                PatientDisplayName = model.PatientDisplayName,
-                Lab = model.Lab,
-                ReportId = model.ReportId,
-                TestName = model.TestName,
-                TestType = model.TestType,
-                TestStatus = model.TestStatus,
-                TestOutcome = model.TestOutcome,
-                ResultTitle = model.ResultTitle,
-                ResultLink = model.ResultLink,
-                CollectionDateTime = model.CollectionDateTime,
-                ResultDateTime = model.ResultDateTime,
-            };
-        }
     }
 }
