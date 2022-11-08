@@ -151,14 +151,14 @@ namespace HealthGateway.Database.Delegates
         }
 
         /// <inheritdoc/>
-        public DbResult<IList<Email>> GetEmails(int offset = 0, int pagesize = 1000)
+        public DbResult<IList<Email>> GetEmails(int offset = 0, int pageSize = 1000)
         {
             this.logger.LogTrace("Getting Emails...");
             DbResult<IList<Email>> result = new();
             result.Payload = this.dbContext.Email
                 .OrderByDescending(o => o.CreatedBy)
                 .Skip(offset)
-                .Take(pagesize)
+                .Take(pageSize)
                 .ToList();
             result.Status = DbStatusCode.Read;
             return result;

@@ -66,7 +66,7 @@ namespace HealthGateway.Database.Delegates
         }
 
         /// <inheritdoc/>
-        public DbResult<IEnumerable<Note>> GetNotes(string hdId, int offset = 0, int pagesize = 500)
+        public DbResult<IEnumerable<Note>> GetNotes(string hdId, int offset = 0, int pageSize = 500)
         {
             this.logger.LogTrace("Getting Notes for {HdId}...", hdId);
             DbResult<IEnumerable<Note>> result = new();
@@ -74,7 +74,7 @@ namespace HealthGateway.Database.Delegates
                 .Where(p => p.HdId == hdId)
                 .OrderBy(o => o.JournalDate)
                 .Skip(offset)
-                .Take(pagesize)
+                .Take(pageSize)
                 .ToList();
             result.Status = DbStatusCode.Read;
             return result;

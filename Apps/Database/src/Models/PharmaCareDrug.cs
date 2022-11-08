@@ -21,7 +21,7 @@ namespace HealthGateway.Database.Models
     using HealthGateway.Common.Data.Models;
 
     /// <summary>
-    /// Represents a row in the Pharmacare drug file
+    /// Represents a row in the PharmaCare drug file
     /// https://www2.gov.bc.ca/gov/content/health/practitioner-professional-resources/pharmacare/health-industry-professionals/downloadable-drug-data-files.
     /// </summary>
     public class PharmaCareDrug : AuditableEntity
@@ -170,7 +170,7 @@ namespace HealthGateway.Database.Models
         public decimal? RdpPrice { get; set; }
 
         /// <summary>
-        /// Gets or sets the Reference Drug Program execluded plans.
+        /// Gets or sets the Reference Drug Program excluded plans.
         /// Plan(s) under which the drug is not subject to RDP price reductions.
         /// </summary>
         [MaxLength(20)]
@@ -178,7 +178,7 @@ namespace HealthGateway.Database.Models
         public string? RdpExcludedPlans { get; set; }
 
         /// <summary>
-        /// Gets or sets the Canadian Federal Regularatory Code.
+        /// Gets or sets the Canadian Federal Regulatory Code.
         /// Valid values:
         /// A–Homeopathic Drug Products
         /// C–Controlled drugs(Controlled Drugs fall under Schedule G [all sections] in the Food and Drug Regulations)
@@ -237,7 +237,7 @@ namespace HealthGateway.Database.Models
         public string? LimitedUseFlag { get; set; }
 
         /// <summary>
-        /// Gets or sets the assoicated File Download ID.
+        /// Gets or sets the associated File Download ID.
         /// </summary>
         [Required]
         public Guid FileDownloadId { get; set; }
