@@ -15,12 +15,14 @@
 // -------------------------------------------------------------------------
 namespace HealthGateway.Common.Ui.Utils
 {
+    using System.Diagnostics.CodeAnalysis;
     using System.Threading.Tasks;
     using Microsoft.JSInterop;
 
     /// <summary>
     /// Extension methods for the <see cref="IJSRuntime"/> class.
     /// </summary>
+    [SuppressMessage("ReSharper", "InconsistentNaming", Justification = "Naming matches IJSRuntime type from external library")]
     public static class IJSRuntimeExtensionMethods
     {
         /// <summary>
