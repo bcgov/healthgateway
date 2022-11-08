@@ -77,13 +77,15 @@ namespace HealthGateway.Common.Data.Models
         /// Required if the VerificationType = MessagingVerificationType.SMS.
         /// </summary>
         [MaxLength(10)]
-        public string? SMSNumber { get; set; }
+        [Column("SMSNumber")]
+        public string? SmsNumber { get; set; }
 
         /// <summary>
         /// Gets or sets the SMS validation code for this verification.
         /// </summary>
         [MaxLength(6)]
-        public string? SMSValidationCode { get; set; }
+        [Column("SMSValidationCode")]
+        public string? SmsValidationCode { get; set; }
 
         /// <summary>
         /// Gets or sets the expire date for the messaging verification.

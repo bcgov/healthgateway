@@ -32,7 +32,7 @@ namespace HealthGateway.Common.MapProfiles
         {
             this.CreateMap<UserProfile, UserProfileModel>()
                 .ForMember(dest => dest.IsEmailVerified, opt => opt.MapFrom(src => !string.IsNullOrEmpty(src.Email)))
-                .ForMember(dest => dest.IsSMSNumberVerified, opt => opt.MapFrom(src => !string.IsNullOrEmpty(src.SMSNumber)))
+                .ForMember(dest => dest.IsSmsNumberVerified, opt => opt.MapFrom(src => !string.IsNullOrEmpty(src.SmsNumber)))
                 .ForMember(dest => dest.AcceptedTermsOfService, opt => opt.MapFrom(src => src.TermsOfServiceId != Guid.Empty))
                 .ReverseMap();
 

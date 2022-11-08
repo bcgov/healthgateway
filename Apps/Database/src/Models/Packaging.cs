@@ -28,7 +28,8 @@ namespace HealthGateway.Database.Models
         public Guid Id { get; set; }
 
         [MaxLength(12)]
-        public string? UPC { get; set; }
+        [Column("UPC")]
+        public string? Upc { get; set; }
 
         [MaxLength(40)]
         public string? PackageType { get; set; }

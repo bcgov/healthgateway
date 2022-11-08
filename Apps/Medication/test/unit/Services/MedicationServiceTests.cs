@@ -54,7 +54,7 @@ namespace HealthGateway.Medication.Services.Test
             {
                 new PharmaCareDrug()
                 {
-                    DINPIN = din,
+                    DinPin = din,
                     UpdatedDateTime = loadDate,
                 },
             };
@@ -106,7 +106,7 @@ namespace HealthGateway.Medication.Services.Test
             {
                 new PharmaCareDrug()
                 {
-                    DINPIN = din,
+                    DinPin = din,
                     UpdatedDateTime = loadDate,
                 },
             };

@@ -71,9 +71,9 @@ namespace HealthGateway.Database.Delegates
             IList<string> uniqueDrugIdentifers = drugIdentifiers.Distinct().ToList();
             DateTime now = DateTime.UtcNow;
             IList<PharmaCareDrug> retVal = this.dbContext.PharmaCareDrug
-                .Where(dp => uniqueDrugIdentifers.Contains(dp.DINPIN) && now > dp.EffectiveDate && now <= dp.EndDate)
+                .Where(dp => uniqueDrugIdentifers.Contains(dp.DinPin) && now > dp.EffectiveDate && now <= dp.EndDate)
                 .AsEnumerable()
-                .GroupBy(pcd => pcd.DINPIN)
+                .GroupBy(pcd => pcd.DinPin)
                 .Select(g => g.OrderByDescending(p => p.EndDate).First())
                 .ToList();
 
@@ -100,7 +100,7 @@ namespace HealthGateway.Database.Delegates
                 // Retrieve the brand names using the provincial data
                 IList<PharmaCareDrug> pharmaCareDrugs = this.GetPharmaCareDrugsByDin(notFoundDins);
 
-                Dictionary<string, string> provicialBrandNames = pharmaCareDrugs.ToDictionary(dp => dp.DINPIN, dp => dp.BrandName);
+                Dictionary<string, string> provicialBrandNames = pharmaCareDrugs.ToDictionary(dp => dp.DinPin, dp => dp.BrandName);
 
                 // Merge both data sets
                 provicialBrandNames.ToList().ForEach(x => brandNames.Add(x.Key, x.Value));

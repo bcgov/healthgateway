@@ -38,7 +38,8 @@ namespace HealthGateway.Database.Models
         /// </summary>
         [Required]
         [MaxLength(8)]
-        public string DINPIN { get; set; } = null!;
+        [Column("DINPIN")]
+        public string DinPin { get; set; } = null!;
 
         /// <summary>
         /// Gets or sets the Plan.
@@ -77,7 +78,8 @@ namespace HealthGateway.Database.Models
         /// See LCA transition information at main site under “Caveats”.
         /// </summary>
         [MaxLength(2)]
-        public string? LCAIndicator { get; set; }
+        [Column("LCAIndicator")]
+        public string? LcaIndicator { get; set; }
 
         /// <summary>
         /// Gets or sets the Pay Generic indicator.
@@ -141,36 +143,39 @@ namespace HealthGateway.Database.Models
         /// Note: a lower price may supersede the LCA price listed here for claim adjudication.Most often, this would be the RDP
         /// price.
         /// </summary>
-        [Column(TypeName = "decimal(8,4)")]
-        public decimal? LCAPrice { get; set; }
+        [Column("LCAPrice", TypeName = "decimal(8,4)")]
+        public decimal? LcaPrice { get; set; }
 
         /// <summary>
         /// Gets or sets the Reference Drug Program category.
         /// RDP Category (e.g., “0024”).
         /// </summary>
         [MaxLength(4)]
-        public string? RDPCategory { get; set; }
+        [Column("RDPCategory")]
+        public string? RdpCategory { get; set; }
 
         /// <summary>
         /// Gets or sets the Reference Drug Program sub-category.
         /// Reference Drug Sub-category (e.g., “0001”).
         /// </summary>
         [MaxLength(4)]
-        public string? RDPSubCategory { get; set; }
+        [Column("RDPSubCategory")]
+        public string? RdpSubCategory { get; set; }
 
         /// <summary>
         /// Gets or sets the Reference Drug Program price.
         /// Reference Drug Price per Day.
         /// </summary>
-        [Column(TypeName = "decimal(8,4)")]
-        public decimal? RDPPrice { get; set; }
+        [Column("RDPPrice", TypeName = "decimal(8,4)")]
+        public decimal? RdpPrice { get; set; }
 
         /// <summary>
         /// Gets or sets the Reference Drug Program execluded plans.
         /// Plan(s) under which the drug is not subject to RDP price reductions.
         /// </summary>
         [MaxLength(20)]
-        public string? RDPExcludedPlans { get; set; }
+        [Column("RDPExcludedPlans")]
+        public string? RdpExcludedPlans { get; set; }
 
         /// <summary>
         /// Gets or sets the Canadian Federal Regularatory Code.
@@ -195,7 +200,8 @@ namespace HealthGateway.Database.Models
         /// restrictive.
         /// </summary>
         [MaxLength(1)]
-        public string? CFRCode { get; set; }
+        [Column("CFRCode")]
+        public string? CfrCode { get; set; }
 
         /// <summary>
         /// Gets or sets the PharmaCare Plan description.

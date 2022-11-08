@@ -74,15 +74,15 @@ namespace HealthGateway.Medication.Services
                     PharmaCareDrug = pharmaCareDrug,
                 };
 
-                if (result.ContainsKey(pharmaCareDrug.DINPIN))
+                if (result.ContainsKey(pharmaCareDrug.DinPin))
                 {
-                    result[pharmaCareDrug.DINPIN].ProvincialData = provincialData;
+                    result[pharmaCareDrug.DinPin].ProvincialData = provincialData;
                 }
                 else
                 {
-                    result[pharmaCareDrug.DINPIN] = new MedicationInformation
+                    result[pharmaCareDrug.DinPin] = new MedicationInformation
                     {
-                        DIN = pharmaCareDrug.DINPIN,
+                        DIN = pharmaCareDrug.DinPin,
                         ProvincialData = provincialData,
                     };
                 }

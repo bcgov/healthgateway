@@ -76,18 +76,18 @@ namespace HealthGateway.GatewayApi.Services
                 !smsVerification.Validated &&
                 !smsVerification.Deleted &&
                 smsVerification.VerificationAttempts < MaxVerificationAttempts &&
-                smsVerification.SMSValidationCode == validationCode &&
+                smsVerification.SmsValidationCode == validationCode &&
                 smsVerification.ExpireDate >= DateTime.UtcNow)
             {
                 smsVerification.Validated = true;
                 this.messageVerificationDelegate.Update(smsVerification);
                 UserProfile userProfile = this.profileDelegate.GetUserProfile(hdid).Payload;
-                userProfile.SMSNumber = smsVerification.SMSNumber; // Gets the user sms number from the message sent.
+                userProfile.SmsNumber = smsVerification.SmsNumber; // Gets the user sms number from the message sent.
                 this.profileDelegate.Update(userProfile);
                 retVal.ResourcePayload = true;
 
                 // Update the notification settings
-                this.notificationSettingsService.QueueNotificationSettings(new NotificationSettingsRequest(userProfile, userProfile.Email, userProfile.SMSNumber));
+                this.notificationSettingsService.QueueNotificationSettings(new NotificationSettingsRequest(userProfile, userProfile.Email, userProfile.SmsNumber));
             }
             else
             {
@@ -120,7 +120,7 @@ namespace HealthGateway.GatewayApi.Services
             this.logger.LogTrace("Removing user sms number {Hdid}", hdid);
             string sanitizedSms = this.SanitizeSMS(sms);
             UserProfile userProfile = this.profileDelegate.GetUserProfile(hdid).Payload;
-            userProfile.SMSNumber = null;
+            userProfile.SmsNumber = null;
             this.profileDelegate.Update(userProfile);
 
             bool isDeleted = string.IsNullOrEmpty(sanitizedSms);
@@ -136,7 +136,7 @@ namespace HealthGateway.GatewayApi.Services
             {
                 this.logger.LogInformation("Adding new sms verification for user {Hdid}", hdid);
                 MessagingVerification messagingVerification = this.AddVerificationSMS(hdid, sanitizedSms);
-                notificationRequest.SMSVerificationCode = messagingVerification.SMSValidationCode;
+                notificationRequest.SMSVerificationCode = messagingVerification.SmsValidationCode;
             }
 
             // Update the notification settings
@@ -173,8 +173,8 @@ namespace HealthGateway.GatewayApi.Services
             MessagingVerification messagingVerification = new()
             {
                 UserProfileId = hdid,
-                SMSNumber = sms,
-                SMSValidationCode = CreateVerificationCode(),
+                SmsNumber = sms,
+                SmsValidationCode = CreateVerificationCode(),
                 VerificationType = MessagingVerificationType.Sms,
                 ExpireDate = DateTime.UtcNow.AddDays(VerificationExpiryDays),
             };

@@ -16,6 +16,7 @@
 namespace HealthGateway.Common.Data.ViewModels
 {
     using System;
+    using System.ComponentModel.DataAnnotations.Schema;
     using System.Diagnostics.CodeAnalysis;
     using HealthGateway.Common.Data.Constants;
 
@@ -65,12 +66,14 @@ namespace HealthGateway.Common.Data.ViewModels
         /// Gets or sets the SMS number for this verification.
         /// Required if the VerificationType = MessagingVerificationType.SMS.
         /// </summary>
-        public string? SMSNumber { get; set; }
+        [Column("SMSNumber")]
+        public string? SmsNumber { get; set; }
 
         /// <summary>
         /// Gets or sets the SMS validation code for this verification.
         /// </summary>
-        public string? SMSValidationCode { get; set; }
+        [Column("SMSValidationCode")]
+        public string? SmsValidationCode { get; set; }
 
         /// <summary>
         /// Gets or sets the expire date for the messaging verification.

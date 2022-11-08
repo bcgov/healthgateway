@@ -171,13 +171,13 @@ namespace HealthGateway.GatewayApi.Services
                 userProfile.Email = emailInvite?.Email?.To;
             }
 
-            if (!userProfile.IsSMSNumberVerified)
+            if (!userProfile.IsSmsNumberVerified)
             {
                 this.logger.LogTrace("Retrieving last sms invite... {Hdid}", hdid);
                 MessagingVerification? smsInvite =
                     this.messageVerificationDelegate.GetLastForUser(hdid, MessagingVerificationType.Sms);
                 this.logger.LogDebug("Finished retrieving sms invite... {Hdid}", hdid);
-                userProfile.SMSNumber = smsInvite?.SMSNumber;
+                userProfile.SmsNumber = smsInvite?.SmsNumber;
             }
 
             return new RequestResult<UserProfileModel>
@@ -249,7 +249,7 @@ namespace HealthGateway.GatewayApi.Services
                 IdentityManagementId = createProfileRequest.Profile.IdentityManagementId,
                 TermsOfServiceId = createProfileRequest.Profile.TermsOfServiceId,
                 Email = string.Empty,
-                SMSNumber = null,
+                SmsNumber = null,
                 CreatedBy = hdid,
                 UpdatedBy = hdid,
                 LastLoginDateTime = jwtAuthTime,
@@ -261,7 +261,7 @@ namespace HealthGateway.GatewayApi.Services
             if (insertResult.Status == DbStatusCode.Created)
             {
                 UserProfile dbModel = insertResult.Payload;
-                string? requestedSMSNumber = createProfileRequest.Profile.SMSNumber;
+                string? requestedSMSNumber = createProfileRequest.Profile.SmsNumber;
                 string? requestedEmail = createProfileRequest.Profile.Email;
 
                 RequestResult<TermsOfServiceModel> termsOfServiceResult = this.GetActiveTermsOfService();
@@ -282,8 +282,8 @@ namespace HealthGateway.GatewayApi.Services
                 if (!string.IsNullOrWhiteSpace(requestedSMSNumber))
                 {
                     MessagingVerification smsVerification = this.userSMSService.CreateUserSMS(hdid, requestedSMSNumber);
-                    notificationRequest.SMSVerificationCode = smsVerification.SMSValidationCode;
-                    userProfileModel.SMSNumber = requestedSMSNumber;
+                    notificationRequest.SMSVerificationCode = smsVerification.SmsValidationCode;
+                    userProfileModel.SmsNumber = requestedSMSNumber;
                 }
 
                 this.notificationSettingsService.QueueNotificationSettings(notificationRequest);

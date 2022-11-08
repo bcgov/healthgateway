@@ -133,8 +133,8 @@ namespace HealthGateway.Database.Context
                 .HasForeignKey(k => k.EmailStatusCode);
 
             ValueConverter<EmailFormat, string> emailFormatCodeConvertor = new(
-                v => EnumUtility.ToEnumString<EmailFormat>(v, false),
-                v => EnumUtility.ToEnum<EmailFormat>(v, false));
+                v => EnumUtility.ToEnumString<EmailFormat>(v, true),
+                v => EnumUtility.ToEnum<EmailFormat>(v, true));
 
             modelBuilder.Entity<Email>()
                 .Property(e => e.FormatCode)
@@ -305,8 +305,8 @@ namespace HealthGateway.Database.Context
                 .HasForeignKey(k => k.ProfileHdid);
 
             ValueConverter<ResourceDelegateReason, string> resourceDelegateReasonCodeConverter = new(
-                v => EnumUtility.ToEnumString<ResourceDelegateReason>(v, false),
-                v => EnumUtility.ToEnum<ResourceDelegateReason>(v, false));
+                v => EnumUtility.ToEnumString<ResourceDelegateReason>(v, true),
+                v => EnumUtility.ToEnum<ResourceDelegateReason>(v, true));
 
             modelBuilder.Entity<ResourceDelegate>()
                 .Property(e => e.ReasonCode)
@@ -577,7 +577,7 @@ namespace HealthGateway.Database.Context
                     },
                     new EmailFormatCode
                     {
-                        FormatCode = EmailFormat.HTML,
+                        FormatCode = EmailFormat.Html,
                         CreatedBy = UserId.DefaultUser,
                         CreatedDateTime = this.DefaultSeedDate,
                         UpdatedBy = UserId.DefaultUser,
@@ -632,7 +632,7 @@ namespace HealthGateway.Database.Context
                         Body = ReadResource("HealthGateway.Database.Assets.docs.EmailValidationTemplate.html"),
                         Priority = EmailPriority.Standard,
                         EffectiveDate = this.DefaultSeedDate,
-                        FormatCode = EmailFormat.HTML,
+                        FormatCode = EmailFormat.Html,
                         CreatedBy = UserId.DefaultUser,
                         CreatedDateTime = this.DefaultSeedDate,
                         UpdatedBy = UserId.DefaultUser,
@@ -647,7 +647,7 @@ namespace HealthGateway.Database.Context
                         Body = ReadResource("HealthGateway.Database.Assets.docs.EmailAccountClosed.html"),
                         Priority = EmailPriority.Low,
                         EffectiveDate = this.DefaultSeedDate,
-                        FormatCode = EmailFormat.HTML,
+                        FormatCode = EmailFormat.Html,
                         CreatedBy = UserId.DefaultUser,
                         CreatedDateTime = this.DefaultSeedDate,
                         UpdatedBy = UserId.DefaultUser,
@@ -662,7 +662,7 @@ namespace HealthGateway.Database.Context
                         Body = ReadResource("HealthGateway.Database.Assets.docs.EmailAccountRecovered.html"),
                         Priority = EmailPriority.Low,
                         EffectiveDate = this.DefaultSeedDate,
-                        FormatCode = EmailFormat.HTML,
+                        FormatCode = EmailFormat.Html,
                         CreatedBy = UserId.DefaultUser,
                         CreatedDateTime = this.DefaultSeedDate,
                         UpdatedBy = UserId.DefaultUser,
@@ -677,7 +677,7 @@ namespace HealthGateway.Database.Context
                         Body = ReadResource("HealthGateway.Database.Assets.docs.EmailAccountRemoved.html"),
                         Priority = EmailPriority.Low,
                         EffectiveDate = this.DefaultSeedDate,
-                        FormatCode = EmailFormat.HTML,
+                        FormatCode = EmailFormat.Html,
                         CreatedBy = UserId.DefaultUser,
                         CreatedDateTime = this.DefaultSeedDate,
                         UpdatedBy = UserId.DefaultUser,
@@ -692,7 +692,7 @@ namespace HealthGateway.Database.Context
                         Body = ReadResource("HealthGateway.Database.Assets.docs.AdminFeedback.html"),
                         Priority = EmailPriority.Low,
                         EffectiveDate = this.DefaultSeedDate,
-                        FormatCode = EmailFormat.HTML,
+                        FormatCode = EmailFormat.Html,
                         CreatedBy = UserId.DefaultUser,
                         CreatedDateTime = this.DefaultSeedDate,
                         UpdatedBy = UserId.DefaultUser,
@@ -919,7 +919,7 @@ namespace HealthGateway.Database.Context
                 .HasData(
                     new ResourceDelegateReasonCode
                     {
-                        ReasonTypeCode = ResourceDelegateReason.COVIDLab,
+                        ReasonTypeCode = ResourceDelegateReason.CovidLab,
                         Description = "Resource Delegation for Covid Laboratory",
                         CreatedBy = UserId.DefaultUser,
                         CreatedDateTime = this.DefaultSeedDate,

@@ -354,7 +354,7 @@ namespace HealthGateway.Medication.Services.Test
             {
                 new PharmaCareDrug
                 {
-                    DINPIN = this.din,
+                    DinPin = this.din,
                     BrandName = "Brand Name",
                 },
             };

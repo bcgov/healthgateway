@@ -280,7 +280,7 @@ namespace HealthGateway.CommonTests.Services
                     {
                         Id = Guid.NewGuid(),
                         Validated = true,
-                        SMSNumber = SmsNumber,
+                        SmsNumber = SmsNumber,
                     },
                     new()
                     {

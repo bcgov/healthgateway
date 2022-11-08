@@ -17,6 +17,7 @@ namespace HealthGateway.Common.Data.ViewModels
 {
     using System;
     using System.Collections.Generic;
+    using System.ComponentModel.DataAnnotations.Schema;
     using System.Text.Json.Serialization;
 
     /// <summary>
@@ -71,12 +72,14 @@ namespace HealthGateway.Common.Data.ViewModels
         /// <summary>
         /// Gets or sets the user SMS number.
         /// </summary>
-        public string? SMSNumber { get; set; }
+        [Column("SMSNumber")]
+        public string? SmsNumber { get; set; }
 
         /// <summary>
         /// Gets or sets a value indicating whether the user sms number was verified.
         /// </summary>
-        public bool IsSMSNumberVerified { get; set; }
+        [Column("IsSMSNumberVerified")]
+        public bool IsSmsNumberVerified { get; set; }
 
         /// <summary>
         /// Gets or sets a value indicating whether the user needs to be notified about new terms of service.
