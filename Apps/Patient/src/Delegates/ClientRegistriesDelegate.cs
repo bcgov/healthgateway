@@ -55,14 +55,14 @@ namespace HealthGateway.Patient.Delegates
         private static ActivitySource Source { get; } = new(nameof(ClientRegistriesDelegate));
 
         /// <inheritdoc/>
-        public async Task<ApiResult<PatientModel>> GetDemographicsAsync(OidType type, string value, bool disableIdValidation = false)
+        public async Task<ApiResult<PatientModel>> GetDemographicsAsync(OidType type, string identifier, bool disableIdValidation = false)
         {
-            this.logger.LogDebug("Getting patient for type: {Type} and value: {Value} started", type, value);
+            this.logger.LogDebug("Getting patient for type: {Type} and value: {Identifier} started", type, identifier);
             ApiResult<PatientModel> apiResult = new();
             using (Source.StartActivity())
             {
                 // Create request object
-                HCIM_IN_GetDemographicsRequest request = CreateRequest(type, value);
+                HCIM_IN_GetDemographicsRequest request = CreateRequest(type, identifier);
                 try
                 {
                     // Perform the request
