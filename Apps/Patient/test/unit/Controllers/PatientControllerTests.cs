@@ -13,7 +13,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //-------------------------------------------------------------------------
-namespace HealthGateway.Patient.Test.Controllers
+namespace HealthGateway.PatientTests.Controllers
 {
     using System;
     using DeepEqual.Syntax;
@@ -44,6 +44,7 @@ namespace HealthGateway.Patient.Test.Controllers
         public void GetPatients()
         {
             Mock<IPatientService> patientService = new();
+            Mock<Patient.Services.IPatientService> patientServiceV2 = new();
             RequestResult<PatientModel> mockResult = new()
             {
                 ResultStatus = ResultType.Success,
@@ -55,13 +56,13 @@ namespace HealthGateway.Patient.Test.Controllers
                     Gender = MockedGender,
                     HdId = MockedHdId,
                     PersonalHealthNumber = MockedPersonalHealthNumber,
-                    PhysicalAddress = new Address()
+                    PhysicalAddress = new Address
                     {
                         City = "Victoria",
                         State = "BC",
                         Country = "CA",
                     },
-                    PostalAddress = new Address()
+                    PostalAddress = new Address
                     {
                         City = "Vancouver",
                         State = "BC",
@@ -72,7 +73,7 @@ namespace HealthGateway.Patient.Test.Controllers
             RequestResult<PatientModel> expectedResult = new()
             {
                 ResultStatus = ResultType.Success,
-                ResourcePayload = new PatientModel()
+                ResourcePayload = new PatientModel
                 {
                     Birthdate = mockResult.ResourcePayload.Birthdate,
                     FirstName = mockResult.ResourcePayload.FirstName,
@@ -86,7 +87,7 @@ namespace HealthGateway.Patient.Test.Controllers
             };
             patientService.Setup(x => x.GetPatient(It.IsAny<string>(), PatientIdentifierType.HDID, false)).ReturnsAsync(mockResult);
 
-            PatientController patientController = new(patientService.Object);
+            PatientController patientController = new(patientService.Object, patientServiceV2.Object);
             RequestResult<PatientModel> actualResult = patientController.GetPatient("123").Result;
 
             expectedResult.ShouldDeepEqual(actualResult);
