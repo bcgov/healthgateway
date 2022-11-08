@@ -20,11 +20,16 @@ namespace HealthGateway.Admin.Client.Services
     using System.Collections.Generic;
     using System.Globalization;
     using System.IO;
+    using AutoMapper;
+    using DeepEqual.Syntax;
+    using HealthGateway.Admin.Client.Utils;
+    using HealthGateway.Admin.Server.Models;
     using HealthGateway.Admin.Server.Services;
-    using HealthGateway.Common.AccessManagement.Administration;
+    using HealthGateway.Common.AccessManagement.Administration.Models;
     using HealthGateway.Common.AccessManagement.Authentication;
     using HealthGateway.Common.Api;
     using HealthGateway.Database.Delegates;
+    using HealthGateway.Database.Models;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.Logging;
     using Moq;
@@ -35,6 +40,7 @@ namespace HealthGateway.Admin.Client.Services
     /// </summary>
     public class CsvExportServiceTests
     {
+        private readonly IMapper autoMapper = MapperUtil.InitializeAutoMapper();
         private readonly IConfiguration configuration;
 
         /// <summary>
@@ -61,7 +67,8 @@ namespace HealthGateway.Admin.Client.Services
                 new Mock<IAdminUserProfileDelegate>().Object,
                 new Mock<IKeycloakAdminApi>().Object,
                 new Mock<ILogger<InactiveUserService>>().Object,
-                this.configuration);
+                this.configuration,
+                MapperUtil.InitializeAutoMapper());
 
             ICsvExportService service = new CsvExportService(
                 new Mock<INoteDelegate>().Object,
@@ -78,6 +85,62 @@ namespace HealthGateway.Admin.Client.Services
             Stream yobCounts = service.GetYearOfBirthCounts(startPeriod, endPeriod, timeOffset);
 
             Assert.NotNull(yobCounts);
+        }
+
+        /// <summary>
+        /// Tests the mapping from AdminUserProfile to AdminUserProfileView.
+        /// </summary>
+        [Fact]
+        public void TestMapperAdminUserProfileViewFromAdminUserProfile()
+        {
+            AdminUserProfile adminUserProfile = new()
+            {
+                AdminUserProfileId = Guid.NewGuid(),
+                LastLoginDateTime = DateTime.Now,
+                Username = "username",
+            };
+            AdminUserProfileView expected = new()
+            {
+                AdminUserProfileId = adminUserProfile.AdminUserProfileId,
+                UserId = null,
+                LastLoginDateTime = adminUserProfile.LastLoginDateTime,
+                Username = adminUserProfile.Username,
+                Email = null,
+                FirstName = null,
+                LastName = null,
+                RealmRoles = null,
+            };
+            AdminUserProfileView actual = this.autoMapper.Map<AdminUserProfile, AdminUserProfileView>(adminUserProfile);
+            expected.ShouldDeepEqual(actual);
+        }
+
+        /// <summary>
+        /// Tests the mapping from UserRepresentation to AdminUserProfileView.
+        /// </summary>
+        [Fact]
+        public void TestMapperAdminUserProfileViewFromUserRepresentation()
+        {
+            UserRepresentation userRepresentation = new()
+            {
+                UserId = Guid.NewGuid(),
+                Username = "username",
+                Email = "email@email.com",
+                FirstName = "firstname",
+                LastName = "lastname",
+            };
+            AdminUserProfileView expected = new()
+            {
+                AdminUserProfileId = null,
+                UserId = userRepresentation.UserId,
+                LastLoginDateTime = null,
+                Username = userRepresentation.Username,
+                Email = userRepresentation.Email,
+                FirstName = userRepresentation.FirstName,
+                LastName = userRepresentation.LastName,
+                RealmRoles = null,
+            };
+            AdminUserProfileView actual = this.autoMapper.Map<UserRepresentation, AdminUserProfileView>(userRepresentation);
+            expected.ShouldDeepEqual(actual);
         }
 
         private static IConfigurationRoot GetIConfigurationRoot()

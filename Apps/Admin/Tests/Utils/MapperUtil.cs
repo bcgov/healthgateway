@@ -13,32 +13,27 @@
 //  See the License for the specific language governing permissions and
 //  limitations under the License.
 // -------------------------------------------------------------------------
-namespace HealthGateway.Admin.Server.Models.Immunization
+namespace HealthGateway.Admin.Client.Utils
 {
-    using System.Text.Json.Serialization;
-    using HealthGateway.Common.Models.PHSA;
+    using AutoMapper;
+    using HealthGateway.Admin.Server.MapProfiles;
 
     /// <summary>
-    /// The Load State record data model.
+    /// Static utility class to provide a fully initialized AutoMapper.
+    /// NOTE: Any newly added profiles will have to be registered.
     /// </summary>
-    public class LoadStateModel
+    public static class MapperUtil
     {
         /// <summary>
-        /// Gets or sets a value indicating whether the Load State is in the RefreshInProgress status.
+        /// Creates an AutoMapper.
         /// </summary>
-        [JsonPropertyName("refreshInProgress")]
-        public bool RefreshInProgress { get; set; }
-
-        /// <summary>
-        /// Creates a Load State Model object from a PHSA model.
-        /// </summary>
-        /// <param name="model">The Load State to convert.</param>
-        /// <returns>A LoadStateModel object.</returns>
-        public static LoadStateModel FromPhsaModel(PhsaLoadState model)
+        /// <returns>A configured AutoMapper.</returns>
+        public static IMapper InitializeAutoMapper()
         {
-            LoadStateModel returnValue = new();
-            returnValue.RefreshInProgress = model.RefreshInProgress;
-            return returnValue;
+            MapperConfiguration config = new(
+                cfg => { cfg.AddProfile(new AdminUserProfileViewProfile()); });
+
+            return config.CreateMapper();
         }
     }
 }
