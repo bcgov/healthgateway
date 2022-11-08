@@ -72,7 +72,7 @@ namespace HealthGateway.Medication.Services.Test
                         }));
 
             Mock<IDrugLookupDelegate> drugLookupDelegateMock = new();
-            drugLookupDelegateMock.Setup(p => p.GetDrugProductsByDIN(It.IsAny<List<string>>())).Returns(new List<DrugProduct>());
+            drugLookupDelegateMock.Setup(p => p.GetDrugProductsByDin(It.IsAny<List<string>>())).Returns(new List<DrugProduct>());
 
             Mock<IMedStatementDelegate> medStatementDelegateMock = new();
             RequestResult<MedicationHistoryResponse> requestResult = new();
@@ -139,7 +139,7 @@ namespace HealthGateway.Medication.Services.Test
                         }));
 
             Mock<IDrugLookupDelegate> drugLookupDelegateMock = new();
-            drugLookupDelegateMock.Setup(p => p.GetDrugProductsByDIN(It.IsAny<List<string>>())).Returns(new List<DrugProduct>());
+            drugLookupDelegateMock.Setup(p => p.GetDrugProductsByDin(It.IsAny<List<string>>())).Returns(new List<DrugProduct>());
 
             Mock<IMedStatementDelegate> medStatementDelegateMock = new();
             RequestResult<MedicationHistoryResponse> requestResult = new()
@@ -213,7 +213,7 @@ namespace HealthGateway.Medication.Services.Test
                 },
             };
 
-            drugLookupDelegateMock.Setup(p => p.GetDrugProductsByDIN(It.IsAny<List<string>>())).Returns(drugList);
+            drugLookupDelegateMock.Setup(p => p.GetDrugProductsByDin(It.IsAny<List<string>>())).Returns(drugList);
 
             Mock<IMedStatementDelegate> medStatementDelegateMock = new();
             RequestResult<MedicationHistoryResponse> requestResult = new()
@@ -287,7 +287,7 @@ namespace HealthGateway.Medication.Services.Test
                 },
             };
 
-            drugLookupDelegateMock.Setup(p => p.GetDrugProductsByDIN(It.IsAny<List<string>>())).Returns(drugList);
+            drugLookupDelegateMock.Setup(p => p.GetDrugProductsByDin(It.IsAny<List<string>>())).Returns(drugList);
             Mock<IMedStatementDelegate> medStatementDelegateMock = new();
             RequestResult<MedicationHistoryResponse> requestResult = new()
             {
@@ -359,8 +359,8 @@ namespace HealthGateway.Medication.Services.Test
                 },
             };
 
-            drugLookupDelegateMock.Setup(p => p.GetDrugProductsByDIN(It.IsAny<List<string>>())).Returns(new List<DrugProduct>());
-            drugLookupDelegateMock.Setup(p => p.GetPharmaCareDrugsByDIN(It.IsAny<List<string>>())).Returns(drugList);
+            drugLookupDelegateMock.Setup(p => p.GetDrugProductsByDin(It.IsAny<List<string>>())).Returns(new List<DrugProduct>());
+            drugLookupDelegateMock.Setup(p => p.GetPharmaCareDrugsByDin(It.IsAny<List<string>>())).Returns(drugList);
 
             Mock<IMedStatementDelegate> medStatementDelegateMock = new();
             RequestResult<MedicationHistoryResponse> requestResult = new()
@@ -424,7 +424,7 @@ namespace HealthGateway.Medication.Services.Test
                         }));
 
             Mock<IDrugLookupDelegate> drugLookupDelegateMock = new();
-            drugLookupDelegateMock.Setup(p => p.GetDrugProductsByDIN(It.IsAny<List<string>>())).Returns(new List<DrugProduct>());
+            drugLookupDelegateMock.Setup(p => p.GetDrugProductsByDin(It.IsAny<List<string>>())).Returns(new List<DrugProduct>());
 
             Mock<IMedStatementDelegate> medStatementDelegateMock = new();
             RequestResult<MedicationHistoryResponse> requestResult = new()
@@ -471,7 +471,7 @@ namespace HealthGateway.Medication.Services.Test
                         }));
 
             Mock<IDrugLookupDelegate> drugLookupDelegateMock = new();
-            drugLookupDelegateMock.Setup(p => p.GetDrugProductsByDIN(It.IsAny<List<string>>())).Returns(new List<DrugProduct>());
+            drugLookupDelegateMock.Setup(p => p.GetDrugProductsByDin(It.IsAny<List<string>>())).Returns(new List<DrugProduct>());
 
             Mock<IMedStatementDelegate> medStatementDelegateMock = new();
             RequestResult<MedicationHistoryResponse> requestResult = new()

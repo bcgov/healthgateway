@@ -28,18 +28,18 @@ namespace HealthGateway.Database.Delegates
 
     /// <inheritdoc/>
     [ExcludeFromCodeCoverage]
-    public class DBAdminTagDelegate : IAdminTagDelegate
+    public class DbAdminTagDelegate : IAdminTagDelegate
     {
-        private readonly ILogger<DBAdminTagDelegate> logger;
+        private readonly ILogger<DbAdminTagDelegate> logger;
         private readonly GatewayDbContext dbContext;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="DBAdminTagDelegate"/> class.
+        /// Initializes a new instance of the <see cref="DbAdminTagDelegate"/> class.
         /// </summary>
         /// <param name="logger">Injected Logger Provider.</param>
         /// <param name="dbContext">The context to be used when accessing the database.</param>
-        public DBAdminTagDelegate(
-            ILogger<DBAdminTagDelegate> logger,
+        public DbAdminTagDelegate(
+            ILogger<DbAdminTagDelegate> logger,
             GatewayDbContext dbContext)
         {
             this.logger = logger;
@@ -47,13 +47,13 @@ namespace HealthGateway.Database.Delegates
         }
 
         /// <inheritdoc/>
-        public DBResult<AdminTag> Add(AdminTag tag, bool commit = true)
+        public DbResult<AdminTag> Add(AdminTag tag, bool commit = true)
         {
             this.logger.LogTrace("Adding AdminTag to DB...");
-            DBResult<AdminTag> result = new()
+            DbResult<AdminTag> result = new()
             {
                 Payload = tag,
-                Status = DBStatusCode.Deferred,
+                Status = DbStatusCode.Deferred,
             };
             this.dbContext.AdminTag.Add(tag);
             if (commit)
@@ -61,12 +61,12 @@ namespace HealthGateway.Database.Delegates
                 try
                 {
                     this.dbContext.SaveChanges();
-                    result.Status = DBStatusCode.Created;
+                    result.Status = DbStatusCode.Created;
                 }
                 catch (DbUpdateException e)
                 {
                     this.logger.LogError("Unable to save AdminTag to DB {Exception}", e.ToString());
-                    result.Status = DBStatusCode.Error;
+                    result.Status = DbStatusCode.Error;
                     result.Message = e.Message;
                 }
             }
@@ -76,13 +76,13 @@ namespace HealthGateway.Database.Delegates
         }
 
         /// <inheritdoc/>
-        public DBResult<AdminTag> Delete(AdminTag tag, bool commit = true)
+        public DbResult<AdminTag> Delete(AdminTag tag, bool commit = true)
         {
             this.logger.LogTrace("Deleting AdminTag from DB...");
-            DBResult<AdminTag> result = new()
+            DbResult<AdminTag> result = new()
             {
                 Payload = tag,
-                Status = DBStatusCode.Deferred,
+                Status = DbStatusCode.Deferred,
             };
             this.dbContext.AdminTag.Remove(tag);
             if (commit)
@@ -90,11 +90,11 @@ namespace HealthGateway.Database.Delegates
                 try
                 {
                     this.dbContext.SaveChanges();
-                    result.Status = DBStatusCode.Deleted;
+                    result.Status = DbStatusCode.Deleted;
                 }
                 catch (DbUpdateConcurrencyException e)
                 {
-                    result.Status = DBStatusCode.Concurrency;
+                    result.Status = DbStatusCode.Concurrency;
                     result.Message = e.Message;
                 }
             }
@@ -104,24 +104,24 @@ namespace HealthGateway.Database.Delegates
         }
 
         /// <inheritdoc/>
-        public DBResult<IEnumerable<AdminTag>> GetAll()
+        public DbResult<IEnumerable<AdminTag>> GetAll()
         {
             this.logger.LogTrace("Getting all AdminTag from DB...");
-            DBResult<IEnumerable<AdminTag>> result = new();
+            DbResult<IEnumerable<AdminTag>> result = new();
             result.Payload = this.dbContext.AdminTag
                 .OrderBy(o => o.Name)
                 .ToList();
-            result.Status = result.Payload != null ? DBStatusCode.Read : DBStatusCode.NotFound;
+            result.Status = result.Payload != null ? DbStatusCode.Read : DbStatusCode.NotFound;
             return result;
         }
 
         /// <inheritdoc/>
-        public DBResult<IEnumerable<AdminTag>> GetAdminTags(ICollection<Guid> adminTagIds)
+        public DbResult<IEnumerable<AdminTag>> GetAdminTags(ICollection<Guid> adminTagIds)
         {
             this.logger.LogTrace("Getting admin tags from DB for Admin Tag Ids: {AdminTagId}", adminTagIds.ToString());
-            DBResult<IEnumerable<AdminTag>> result = new();
+            DbResult<IEnumerable<AdminTag>> result = new();
             result.Payload = this.dbContext.AdminTag.Where(t => adminTagIds.Contains(t.AdminTagId)).ToList();
-            result.Status = DBStatusCode.Read;
+            result.Status = DbStatusCode.Read;
             return result;
         }
     }

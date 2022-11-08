@@ -30,7 +30,7 @@ namespace HealthGateway.Database.Delegates
         /// </summary>
         /// <param name="rating">The rating to create.</param>
         /// <returns>A DB result which encapsulates the return object and status.</returns>
-        DBResult<Rating> InsertRating(Rating rating);
+        DbResult<Rating> InsertRating(Rating rating);
 
         /// <summary>
         /// Gets a paged list of Ratings from the database.
@@ -38,7 +38,7 @@ namespace HealthGateway.Database.Delegates
         /// <param name="page">The starting offset for the query.</param>
         /// <param name="pageSize">The maximum amount of rows to return.</param>
         /// <returns>A list of Ratings wrapped in a DBResult.</returns>
-        DBResult<IEnumerable<Rating>> GetAll(int page, int pageSize);
+        DbResult<IEnumerable<Rating>> GetAll(int page, int pageSize);
 
         /// <summary>
         /// Gets the ratings summary.

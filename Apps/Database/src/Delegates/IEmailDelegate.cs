@@ -120,7 +120,7 @@ namespace HealthGateway.Database.Delegates
         /// <param name="offset">The starting offset for the query.</param>
         /// <param name="pagesize">The maximum amount of rows to return.</param>
         /// <returns>A list of Notes wrapped in a DBResult.</returns>
-        DBResult<IList<Email>> GetEmails(int offset = 0, int pagesize = 1000);
+        DbResult<IList<Email>> GetEmails(int offset = 0, int pagesize = 1000);
 
         /// <summary>
         /// Deletes email records that were created after n days ago.

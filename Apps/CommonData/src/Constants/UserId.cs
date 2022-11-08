@@ -28,11 +28,11 @@ namespace HealthGateway.Common.Data.Constants
         /// <summary>
         /// The username for the DBMaintainer load application.
         /// </summary>
-        public const string DBMaintainer = "DBMaintainer";
+        public const string DbMaintainer = "DBMaintainer";
 
         /// <summary>
         /// The default HDID to use when unknown.
         /// </summary>
-        public const string UnknownHdId = "UnknownHDID";
+        public const string UnknownHdid = "UnknownHDID";
     }
 }

@@ -27,18 +27,18 @@ namespace HealthGateway.Database.Delegates
 
     /// <inheritdoc/>
     [ExcludeFromCodeCoverage]
-    public class DBLegalAgreementDelegate : ILegalAgreementDelegate
+    public class DbLegalAgreementDelegate : ILegalAgreementDelegate
     {
         private readonly GatewayDbContext dbContext;
         private readonly ILogger logger;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="DBLegalAgreementDelegate"/> class.
+        /// Initializes a new instance of the <see cref="DbLegalAgreementDelegate"/> class.
         /// </summary>
         /// <param name="logger">Injected Logger Provider.</param>
         /// <param name="dbContext">The context to be used when accessing the database.</param>
-        public DBLegalAgreementDelegate(
-            ILogger<DBLegalAgreementDelegate> logger,
+        public DbLegalAgreementDelegate(
+            ILogger<DbLegalAgreementDelegate> logger,
             GatewayDbContext dbContext)
         {
             this.logger = logger;
@@ -48,7 +48,7 @@ namespace HealthGateway.Database.Delegates
         /// <inheritdoc/>
         [SuppressMessage("Globalization", "CA1309:Use ordinal stringcomparison", Justification = "Ordinal doesn't work")]
         [SuppressMessage("Globalization", "CA1307:Specify StringComparison", Justification = "Ordinal doesn't work")]
-        public DBResult<LegalAgreement> GetActiveByAgreementType(LegalAgreementType agreementTypeCode)
+        public DbResult<LegalAgreement> GetActiveByAgreementType(LegalAgreementType agreementTypeCode)
         {
             this.logger.LogDebug("Getting active legal agreement by type {AgreementTypeCode}", agreementTypeCode);
             LegalAgreement legalAgreement = this.dbContext.LegalAgreement
@@ -57,10 +57,10 @@ namespace HealthGateway.Database.Delegates
                 .OrderByDescending(la => la.EffectiveDate)
                 .First();
 
-            return new DBResult<LegalAgreement>
+            return new DbResult<LegalAgreement>
             {
                 Payload = legalAgreement,
-                Status = DBStatusCode.Read,
+                Status = DbStatusCode.Read,
             };
         }
     }

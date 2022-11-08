@@ -29,6 +29,6 @@ namespace HealthGateway.Database.Delegates
         /// <param name="eventLog">The event to write.</param>
         /// <param name="commit">If true, the records will be deleted from the DB immediately.</param>
         /// <returns>A DB result which encapsulates the return objects and status.</returns>
-        DBResult<EventLog> WriteEventLog(EventLog eventLog, bool commit = true);
+        DbResult<EventLog> WriteEventLog(EventLog eventLog, bool commit = true);
     }
 }

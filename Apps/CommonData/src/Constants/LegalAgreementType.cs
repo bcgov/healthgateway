@@ -26,6 +26,6 @@ namespace HealthGateway.Common.Data.Constants
         /// The core representing Terms of Service.
         /// </summary>
         [EnumMember(Value = "ToS")]
-        TermsofService,
+        TermsOfService,
     }
 }

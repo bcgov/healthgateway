@@ -16,7 +16,6 @@
 namespace HealthGateway.Database.Delegates
 {
     using System.Diagnostics.CodeAnalysis;
-    using System.Text.Json;
     using HealthGateway.Database.Constants;
     using HealthGateway.Database.Context;
     using HealthGateway.Database.Models;
@@ -26,18 +25,18 @@ namespace HealthGateway.Database.Delegates
 
     /// <inheritdoc/>
     [ExcludeFromCodeCoverage]
-    public class DBEventLogDelegate : IEventLogDelegate
+    public class DbEventLogDelegate : IEventLogDelegate
     {
         private readonly ILogger logger;
         private readonly GatewayDbContext dbContext;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="DBEventLogDelegate"/> class.
+        /// Initializes a new instance of the <see cref="DbEventLogDelegate"/> class.
         /// </summary>
         /// <param name="logger">Injected Logger Provider.</param>
         /// <param name="dbContext">The context to be used when accessing the database.</param>
-        public DBEventLogDelegate(
-            ILogger<DBFeedbackDelegate> logger,
+        public DbEventLogDelegate(
+            ILogger<DbFeedbackDelegate> logger,
             GatewayDbContext dbContext)
         {
             this.logger = logger;
@@ -45,21 +44,21 @@ namespace HealthGateway.Database.Delegates
         }
 
         /// <inheritdoc/>
-        public DBResult<EventLog> WriteEventLog(EventLog eventLog, bool commit = true)
+        public DbResult<EventLog> WriteEventLog(EventLog eventLog, bool commit = true)
         {
             this.logger.LogTrace("Inserting event log to DB...");
-            DBResult<EventLog> result = new();
+            DbResult<EventLog> result = new();
             this.dbContext.Add(eventLog);
             if (commit)
             {
                 try
                 {
                     this.dbContext.SaveChanges();
-                    result.Status = DBStatusCode.Created;
+                    result.Status = DbStatusCode.Created;
                 }
                 catch (DbUpdateException e)
                 {
-                    result.Status = DBStatusCode.Error;
+                    result.Status = DbStatusCode.Error;
                     result.Message = e.Message;
                 }
             }

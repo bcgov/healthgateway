@@ -54,12 +54,12 @@ namespace HealthGateway.Admin.Server.Services
             if (communication.EffectiveDateTime < communication.ExpiryDateTime)
             {
                 this.logger.LogTrace("Adding communication... {Id)}", communication.Id.ToString());
-                DBResult<Database.Models.Communication> dbResult = this.communicationDelegate.Add(this.autoMapper.Map<Database.Models.Communication>(communication));
+                DbResult<Database.Models.Communication> dbResult = this.communicationDelegate.Add(this.autoMapper.Map<Database.Models.Communication>(communication));
                 return new RequestResult<Communication>
                 {
                     ResourcePayload = this.autoMapper.Map<Communication>(dbResult.Payload),
-                    ResultStatus = dbResult.Status == DBStatusCode.Created ? ResultType.Success : ResultType.Error,
-                    ResultError = dbResult.Status == DBStatusCode.Created
+                    ResultStatus = dbResult.Status == DbStatusCode.Created ? ResultType.Success : ResultType.Error,
+                    ResultError = dbResult.Status == DbStatusCode.Created
                         ? null
                         : new RequestResultError
                         {
@@ -88,12 +88,12 @@ namespace HealthGateway.Admin.Server.Services
             {
                 this.logger.LogTrace("Updating communication... {Id)}", communication.Id.ToString());
 
-                DBResult<Database.Models.Communication> dbResult = this.communicationDelegate.Update(this.autoMapper.Map<Database.Models.Communication>(communication));
+                DbResult<Database.Models.Communication> dbResult = this.communicationDelegate.Update(this.autoMapper.Map<Database.Models.Communication>(communication));
                 return new RequestResult<Communication>
                 {
                     ResourcePayload = this.autoMapper.Map<Communication>(dbResult.Payload),
-                    ResultStatus = dbResult.Status == DBStatusCode.Updated ? ResultType.Success : ResultType.Error,
-                    ResultError = dbResult.Status == DBStatusCode.Updated
+                    ResultStatus = dbResult.Status == DbStatusCode.Updated ? ResultType.Success : ResultType.Error,
+                    ResultError = dbResult.Status == DbStatusCode.Updated
                         ? null
                         : new RequestResultError
                         {
@@ -119,12 +119,12 @@ namespace HealthGateway.Admin.Server.Services
         public RequestResult<IEnumerable<Communication>> GetAll()
         {
             this.logger.LogTrace("Getting communication entries...");
-            DBResult<IEnumerable<Database.Models.Communication>> dbResult = this.communicationDelegate.GetAll();
+            DbResult<IEnumerable<Database.Models.Communication>> dbResult = this.communicationDelegate.GetAll();
             RequestResult<IEnumerable<Communication>> requestResult = new()
             {
                 ResourcePayload = this.autoMapper.Map<IEnumerable<Communication>>(dbResult.Payload),
-                ResultStatus = dbResult.Status == DBStatusCode.Read ? ResultType.Success : ResultType.Error,
-                ResultError = dbResult.Status == DBStatusCode.Read
+                ResultStatus = dbResult.Status == DbStatusCode.Read ? ResultType.Success : ResultType.Error,
+                ResultError = dbResult.Status == DbStatusCode.Read
                     ? null
                     : new RequestResultError
                     {
@@ -152,12 +152,12 @@ namespace HealthGateway.Admin.Server.Services
                 };
             }
 
-            DBResult<Database.Models.Communication> dbResult = this.communicationDelegate.Delete(this.autoMapper.Map<Database.Models.Communication>(communication));
+            DbResult<Database.Models.Communication> dbResult = this.communicationDelegate.Delete(this.autoMapper.Map<Database.Models.Communication>(communication));
             RequestResult<Communication> result = new()
             {
                 ResourcePayload = this.autoMapper.Map<Communication>(dbResult.Payload),
-                ResultStatus = dbResult.Status == DBStatusCode.Deleted ? ResultType.Success : ResultType.Error,
-                ResultError = dbResult.Status == DBStatusCode.Deleted
+                ResultStatus = dbResult.Status == DbStatusCode.Deleted ? ResultType.Success : ResultType.Error,
+                ResultError = dbResult.Status == DbStatusCode.Deleted
                     ? null
                     : new RequestResultError
                     {

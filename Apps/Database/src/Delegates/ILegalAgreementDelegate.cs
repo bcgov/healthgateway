@@ -29,6 +29,6 @@ namespace HealthGateway.Database.Delegates
         /// </summary>
         /// <param name="agreementTypeCode">The agreement type to filter the result.</param>
         /// <returns>A DB result which encapsulates the return object and status.</returns>
-        DBResult<LegalAgreement> GetActiveByAgreementType(LegalAgreementType agreementTypeCode);
+        DbResult<LegalAgreement> GetActiveByAgreementType(LegalAgreementType agreementTypeCode);
     }
 }

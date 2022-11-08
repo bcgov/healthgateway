@@ -17,14 +17,12 @@ namespace HealthGateway.GatewayApi.Test.Services
 {
     using System;
     using System.Collections.Generic;
-    using System.Linq;
     using HealthGateway.Common.Data.Constants;
     using HealthGateway.Common.Data.Models;
     using HealthGateway.Common.Data.ViewModels;
     using HealthGateway.Common.Services;
     using HealthGateway.Database.Constants;
     using HealthGateway.Database.Delegates;
-    using HealthGateway.Database.Models;
     using HealthGateway.Database.Wrapper;
     using HealthGateway.GatewayApi.Services;
     using Microsoft.AspNetCore.Http;
@@ -53,7 +51,7 @@ namespace HealthGateway.GatewayApi.Test.Services
                 VerificationAttempts = 0,
                 InviteKey = inviteKey,
                 ExpireDate = DateTime.Now.AddDays(1),
-                Email = new Email()
+                Email = new Email
                 {
                     To = "fakeemail@healthgateway.gov.bc.ca",
                 },
@@ -65,14 +63,14 @@ namespace HealthGateway.GatewayApi.Test.Services
             messagingVerificationDelegate.Setup(s => s.GetLastByInviteKey(It.IsAny<Guid>())).Returns(expectedResult);
 
             Mock<IUserProfileDelegate> userProfileDelegate = new();
-            DBResult<UserProfile> userProfileMock = new()
+            DbResult<UserProfile> userProfileMock = new()
             {
                 Payload = new UserProfile(),
-                Status = DBStatusCode.Read,
+                Status = DbStatusCode.Read,
             };
             userProfileDelegate.Setup(s => s.GetUserProfile(It.IsAny<string>())).Returns(userProfileMock);
             userProfileDelegate.Setup(s => s.Update(It.IsAny<UserProfile>(), It.IsAny<bool>()))
-                .Returns(new DBResult<UserProfile>());
+                .Returns(new DbResult<UserProfile>());
 
             IUserEmailService service = new UserEmailService(
                 new Mock<ILogger<UserEmailService>>().Object,
@@ -108,14 +106,14 @@ namespace HealthGateway.GatewayApi.Test.Services
             messagingVerificationDelegate.Setup(s => s.GetLastByInviteKey(It.IsAny<Guid>())).Returns(expectedResult);
 
             Mock<IUserProfileDelegate> userProfileDelegate = new();
-            DBResult<UserProfile> userProfileMock = new()
+            DbResult<UserProfile> userProfileMock = new()
             {
                 Payload = new UserProfile(),
-                Status = DBStatusCode.Read,
+                Status = DbStatusCode.Read,
             };
             userProfileDelegate.Setup(s => s.GetUserProfile(It.IsAny<string>())).Returns(userProfileMock);
             userProfileDelegate.Setup(s => s.Update(It.IsAny<UserProfile>(), It.IsAny<bool>()))
-                .Returns(new DBResult<UserProfile>());
+                .Returns(new DbResult<UserProfile>());
 
             IUserEmailService service = new UserEmailService(
                 new Mock<ILogger<UserEmailService>>().Object,
@@ -152,14 +150,14 @@ namespace HealthGateway.GatewayApi.Test.Services
             messagingVerificationDelegate.Setup(s => s.GetLastByInviteKey(It.IsAny<Guid>())).Returns(expectedResult);
 
             Mock<IUserProfileDelegate> userProfileDelegate = new();
-            DBResult<UserProfile> userProfileMock = new()
+            DbResult<UserProfile> userProfileMock = new()
             {
                 Payload = new UserProfile(),
-                Status = DBStatusCode.Read,
+                Status = DbStatusCode.Read,
             };
             userProfileDelegate.Setup(s => s.GetUserProfile(It.IsAny<string>())).Returns(userProfileMock);
             userProfileDelegate.Setup(s => s.Update(It.IsAny<UserProfile>(), It.IsAny<bool>()))
-                .Returns(new DBResult<UserProfile>());
+                .Returns(new DbResult<UserProfile>());
 
             IUserEmailService service = new UserEmailService(
                 new Mock<ILogger<UserEmailService>>().Object,
@@ -240,9 +238,9 @@ namespace HealthGateway.GatewayApi.Test.Services
             Dictionary<string, string> myConfiguration = new();
 
             return new ConfigurationBuilder()
-                .AddJsonFile("appsettings.json", optional: true)
-                .AddJsonFile("appsettings.Development.json", optional: true)
-                .AddJsonFile("appsettings.local.json", optional: true)
+                .AddJsonFile("appsettings.json", true)
+                .AddJsonFile("appsettings.Development.json", true)
+                .AddJsonFile("appsettings.local.json", true)
                 .AddInMemoryCollection(myConfiguration)
                 .Build();
         }

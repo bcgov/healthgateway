@@ -99,19 +99,19 @@ namespace HealthGateway.JobScheduler
             services.AddTransient<IFileDownloadService, FileDownloadService>();
             services.AddTransient<IDrugProductParser, FederalDrugProductParser>();
             services.AddTransient<IPharmaCareDrugParser, PharmaCareDrugParser>();
-            services.AddTransient<IApplicationSettingsDelegate, DBApplicationSettingsDelegate>();
-            services.AddTransient<IUserProfileDelegate, DBProfileDelegate>();
-            services.AddTransient<ICommunicationDelegate, DBCommunicationDelegate>();
-            services.AddTransient<IEmailDelegate, DBEmailDelegate>();
-            services.AddTransient<IMessagingVerificationDelegate, DBMessagingVerificationDelegate>();
+            services.AddTransient<IApplicationSettingsDelegate, DbApplicationSettingsDelegate>();
+            services.AddTransient<IUserProfileDelegate, DbProfileDelegate>();
+            services.AddTransient<ICommunicationDelegate, DbCommunicationDelegate>();
+            services.AddTransient<IEmailDelegate, DbEmailDelegate>();
+            services.AddTransient<IMessagingVerificationDelegate, DbMessagingVerificationDelegate>();
             services.AddTransient<IEmailQueueService, EmailQueueService>();
             services.AddTransient<INotificationSettingsDelegate, RestNotificationSettingsDelegate>();
             services.AddTransient<INotificationSettingsService, NotificationSettingsService>();
-            services.AddTransient<IResourceDelegateDelegate, DBResourceDelegateDelegate>();
-            services.AddTransient<IEventLogDelegate, DBEventLogDelegate>();
-            services.AddTransient<IFeedbackDelegate, DBFeedbackDelegate>();
+            services.AddTransient<IResourceDelegateDelegate, DbResourceDelegateDelegate>();
+            services.AddTransient<IEventLogDelegate, DbEventLogDelegate>();
+            services.AddTransient<IFeedbackDelegate, DbFeedbackDelegate>();
             services.AddTransient<ICommunicationService, CommunicationService>();
-            services.AddTransient<IWriteAuditEventDelegate, DBWriteAuditEventDelegate>();
+            services.AddTransient<IWriteAuditEventDelegate, DbWriteAuditEventDelegate>();
 
             // Add injection for KeyCloak User Admin
             services.AddTransient<IAuthenticationDelegate, AuthenticationDelegate>();
