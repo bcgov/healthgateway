@@ -30,21 +30,21 @@ using Refit;
 /// <summary>
 /// The effects for the feature.
 /// </summary>
-public class UserFeedbackViewEffects
+public class UserFeedbackEffects
 {
     /// <summary>
-    /// Initializes a new instance of the <see cref="UserFeedbackViewEffects"/> class.
+    /// Initializes a new instance of the <see cref="UserFeedbackEffects"/> class.
     /// </summary>
     /// <param name="logger">The injected logger.</param>
     /// <param name="api">The injected user feedback API.</param>
-    public UserFeedbackViewEffects(ILogger<UserFeedbackViewEffects> logger, IUserFeedbackApi api)
+    public UserFeedbackEffects(ILogger<UserFeedbackEffects> logger, IUserFeedbackApi api)
     {
         this.Logger = logger;
         this.Api = api;
     }
 
     [Inject]
-    private ILogger<UserFeedbackViewEffects> Logger { get; set; }
+    private ILogger<UserFeedbackEffects> Logger { get; set; }
 
     [Inject]
     private IUserFeedbackApi Api { get; set; }

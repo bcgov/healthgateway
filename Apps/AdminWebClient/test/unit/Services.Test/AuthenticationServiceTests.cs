@@ -15,19 +15,19 @@
 //-------------------------------------------------------------------------
 namespace HealthGateway.AdminWebClientTests.Services.Test;
 
+using System.Collections.Generic;
+using System.Net;
+using System.Security.Claims;
 using HealthGateway.Database.Constants;
 using HealthGateway.Database.Delegates;
 using HealthGateway.Database.Models;
 using HealthGateway.Database.Wrapper;
 using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Moq;
-using System.Collections.Generic;
-using System.Net;
-using System.Security.Claims;
 
 using Xunit;
 
@@ -176,9 +176,9 @@ public class AuthenticationServiceTests
         Mock<IHttpContextAccessor> httpContextAccessorMock = new();
         httpContextAccessorMock.Setup(s => s.HttpContext).Returns(httpContextMock.Object);
 
-        Mock<Microsoft.AspNetCore.Authentication.IAuthenticationService> authenticationMock = new();
+        Mock<IAuthenticationService> authenticationMock = new();
         httpContextAccessorMock
-            .Setup(x => x.HttpContext!.RequestServices.GetService(typeof(Microsoft.AspNetCore.Authentication.IAuthenticationService)))
+            .Setup(x => x.HttpContext!.RequestServices.GetService(typeof(IAuthenticationService)))
             .Returns(authenticationMock.Object);
         AuthenticateResult authResult = AuthenticateResult.Success(new AuthenticationTicket(claimsPrincipal, JwtBearerDefaults.AuthenticationScheme));
         authResult.Properties.StoreTokens(new[]
