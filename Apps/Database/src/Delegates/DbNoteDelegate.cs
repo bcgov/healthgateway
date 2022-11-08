@@ -144,10 +144,10 @@ namespace HealthGateway.Database.Delegates
             this.logger.LogTrace("Updating Note request in DB...");
             DbResult<IEnumerable<Note>> result = new()
             {
-                Payload = notes,
+                Payload = notes.ToList(),
                 Status = DbStatusCode.Deferred,
             };
-            this.dbContext.Note.UpdateRange(notes);
+            this.dbContext.Note.UpdateRange(result.Payload);
             if (commit)
             {
                 try
