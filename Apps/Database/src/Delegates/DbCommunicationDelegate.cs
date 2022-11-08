@@ -109,7 +109,7 @@ namespace HealthGateway.Database.Delegates
             result.Payload = this.dbContext.Communication
                 .OrderBy(o => o.CreatedDateTime)
                 .ToList();
-            result.Status = result.Payload != null ? DbStatusCode.Read : DbStatusCode.NotFound;
+            result.Status = DbStatusCode.Read;
             return result;
         }
 
@@ -179,12 +179,7 @@ namespace HealthGateway.Database.Delegates
         private static bool IsUniqueConstraintDbError(DbUpdateException exception)
         {
             PostgresException? postgresException = exception.InnerException as PostgresException;
-            if (postgresException?.SqlState == UniqueConstraintSqlStateError && postgresException?.ConstraintName == UniqueConstraintDatetimeRange)
-            {
-                return true;
-            }
-
-            return false;
+            return postgresException is { SqlState: UniqueConstraintSqlStateError, ConstraintName: UniqueConstraintDatetimeRange };
         }
     }
 }

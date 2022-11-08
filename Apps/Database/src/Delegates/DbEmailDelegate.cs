@@ -160,7 +160,7 @@ namespace HealthGateway.Database.Delegates
                 .Skip(offset)
                 .Take(pagesize)
                 .ToList();
-            result.Status = result.Payload != null ? DbStatusCode.Read : DbStatusCode.NotFound;
+            result.Status = DbStatusCode.Read;
             return result;
         }
 
