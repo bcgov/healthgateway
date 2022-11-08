@@ -111,7 +111,7 @@ namespace HealthGateway.Database.Delegates
             result.Payload = this.dbContext.AdminTag
                 .OrderBy(o => o.Name)
                 .ToList();
-            result.Status = result.Payload != null ? DbStatusCode.Read : DbStatusCode.NotFound;
+            result.Status = DbStatusCode.Read;
             return result;
         }
 

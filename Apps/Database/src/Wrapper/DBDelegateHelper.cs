@@ -40,7 +40,7 @@ namespace HealthGateway.Database.Wrapper
             {
                 Payload = query.Skip(offset).Take(pageSize).ToList(),
             };
-            result.Status = result.Payload != null ? DbStatusCode.Read : DbStatusCode.NotFound;
+            result.Status = DbStatusCode.Read;
             return result;
         }
     }

@@ -56,7 +56,7 @@ namespace HealthGateway.Database.Delegates
                 .Where(p => p.UserProfileId == hdId && p.ParentEntryId == parentEntryId)
                 .OrderBy(o => o.CreatedDateTime)
                 .ToList();
-            result.Status = result.Payload != null ? DbStatusCode.Read : DbStatusCode.NotFound;
+            result.Status = DbStatusCode.Read;
             return result;
         }
 
@@ -155,7 +155,7 @@ namespace HealthGateway.Database.Delegates
                 .Where(p => p.UserProfileId == hdId)
                 .OrderBy(o => o.CreatedDateTime)
                 .ToList();
-            result.Status = result.Payload != null ? DbStatusCode.Read : DbStatusCode.NotFound;
+            result.Status = DbStatusCode.Read;
             return result;
         }
 

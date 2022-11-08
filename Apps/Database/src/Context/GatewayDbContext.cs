@@ -111,7 +111,7 @@ namespace HealthGateway.Database.Context
                 .IsCyclic();
 
             // Create the unique index for the SHA256 hash
-            modelBuilder!.Entity<FileDownload>()
+            modelBuilder.Entity<FileDownload>()
                 .HasIndex(f => f.Hash)
                 .IsUnique();
 
