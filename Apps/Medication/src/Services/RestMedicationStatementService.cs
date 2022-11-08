@@ -203,7 +203,7 @@ namespace HealthGateway.Medication.Services
 
                     // Retrieve the brand names using the provincial data
                     IList<PharmaCareDrug> pharmaCareDrugs = this.drugLookupDelegate.GetPharmaCareDrugsByDin(notFoundDins);
-                    provincialDict = pharmaCareDrugs.ToDictionary(dp => dp.DINPIN, dp => dp);
+                    provincialDict = pharmaCareDrugs.ToDictionary(dp => dp.DinPin, dp => dp);
                 }
 
                 this.logger.LogDebug("Finished getting drugs from DB");

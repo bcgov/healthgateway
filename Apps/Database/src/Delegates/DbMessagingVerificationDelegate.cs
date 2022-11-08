@@ -57,7 +57,7 @@ namespace HealthGateway.Database.Delegates
             }
 
             if (messageVerification.VerificationType == MessagingVerificationType.Sms &&
-                (string.IsNullOrWhiteSpace(messageVerification.SMSNumber) || string.IsNullOrWhiteSpace(messageVerification.SMSValidationCode)))
+                (string.IsNullOrWhiteSpace(messageVerification.SmsNumber) || string.IsNullOrWhiteSpace(messageVerification.SmsValidationCode)))
             {
                 throw new ArgumentException("SMSNumber/SMSValidationCode cannot be null or empty when verification type is SMS");
             }

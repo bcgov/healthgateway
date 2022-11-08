@@ -56,7 +56,8 @@ namespace HealthGateway.Common.Data.Models
         /// Gets or sets the user SMS number.
         /// </summary>
         [MaxLength(10)]
-        public string? SMSNumber { get; set; }
+        [Column("SMSNumber")]
+        public string? SmsNumber { get; set; }
 
         /// <summary>
         /// Gets or sets the Closed datetime of the account.

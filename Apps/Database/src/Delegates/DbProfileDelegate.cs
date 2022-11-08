@@ -196,7 +196,7 @@ namespace HealthGateway.Database.Delegates
                     break;
                 case UserQueryType.Sms:
                     result.Payload = this.dbContext.UserProfile
-                        .Where(user => user.Verifications.Any(v => EF.Functions.ILike(v.SMSNumber, $"%{queryString}%")))
+                        .Where(user => user.Verifications.Any(v => EF.Functions.ILike(v.SmsNumber, $"%{queryString}%")))
                         .GroupBy(user => user.HdId)
                         .Select(x => x.First())
                         .ToList();

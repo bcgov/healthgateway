@@ -146,7 +146,7 @@ namespace HealthGateway.GatewayApi.Services
             this.profileDelegate.Update(userProfile);
 
             // Update the notification settings
-            this.notificationSettingsService.QueueNotificationSettings(new NotificationSettingsRequest(userProfile, userProfile.Email, userProfile.SMSNumber));
+            this.notificationSettingsService.QueueNotificationSettings(new NotificationSettingsRequest(userProfile, userProfile.Email, userProfile.SmsNumber));
 
             this.logger.LogDebug("Email validated");
 
@@ -180,7 +180,7 @@ namespace HealthGateway.GatewayApi.Services
             userProfile.Email = null;
 
             // Update the notification settings
-            this.notificationSettingsService.QueueNotificationSettings(new NotificationSettingsRequest(userProfile, userProfile.Email, userProfile.SMSNumber));
+            this.notificationSettingsService.QueueNotificationSettings(new NotificationSettingsRequest(userProfile, userProfile.Email, userProfile.SmsNumber));
 
             MessagingVerification? lastEmailVerification = this.messageVerificationDelegate.GetLastForUser(hdid, MessagingVerificationType.Email);
             if (lastEmailVerification != null)
