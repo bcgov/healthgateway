@@ -13,7 +13,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //-------------------------------------------------------------------------
-namespace HealthGateway.HGAdmin.Server
+namespace HealthGateway.Patient
 {
     using System.Diagnostics.CodeAnalysis;
     using System.Threading.Tasks;
@@ -58,8 +58,8 @@ namespace HealthGateway.HGAdmin.Server
             Patient.ConfigurePatientAccess(services, logger, configuration);
 
             // POC V2 Patient Access
-            services.AddTransient<IClientRegistriesDelegateV2, ClientRegistriesDelegateV2>();
-            services.AddTransient<IPatientServiceV2, PatientServiceV2>();
+            services.AddTransient<IClientRegistriesDelegate, ClientRegistriesDelegate>();
+            services.AddTransient<IPatientService, PatientService>();
 
             Utility.ConfigureTracing(services, logger, configuration);
 

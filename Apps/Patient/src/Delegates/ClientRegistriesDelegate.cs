@@ -25,7 +25,6 @@ namespace HealthGateway.Patient.Delegates
     using System.Threading.Tasks;
     using HealthGateway.Common.Constants;
     using HealthGateway.Common.Data.ViewModels;
-    using HealthGateway.Common.Delegates;
     using HealthGateway.Common.Exceptions;
     using HealthGateway.Common.Models;
     using Microsoft.Extensions.Logging;
@@ -34,19 +33,19 @@ namespace HealthGateway.Patient.Delegates
     /// <summary>
     /// The Client Registries delegate.
     /// </summary>
-    public class ClientRegistriesDelegateV2 : IClientRegistriesDelegateV2
+    public class ClientRegistriesDelegate : IClientRegistriesDelegate
     {
         private readonly QUPA_AR101102_PortType clientRegistriesClient;
-        private readonly ILogger<ClientRegistriesDelegateV2> logger;
+        private readonly ILogger<ClientRegistriesDelegate> logger;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="ClientRegistriesDelegateV2"/> class.
+        /// Initializes a new instance of the <see cref="ClientRegistriesDelegate"/> class.
         /// Constructor that requires an IEndpointBehavior for dependency injection.
         /// </summary>
         /// <param name="logger">The injected logger provider.</param>
         /// <param name="clientRegistriesClient">The injected client registries soap client.</param>
-        public ClientRegistriesDelegateV2(
-            ILogger<ClientRegistriesDelegateV2> logger,
+        public ClientRegistriesDelegate(
+            ILogger<ClientRegistriesDelegate> logger,
             QUPA_AR101102_PortType clientRegistriesClient)
         {
             this.logger = logger;
@@ -74,7 +73,10 @@ namespace HealthGateway.Patient.Delegates
                 catch (CommunicationException e)
                 {
                     this.logger.LogError("{Exception}", e.ToString());
-                    throw new ApiPatientException($"Not Found: Communication Exception when trying to retrieve patient information from {type}", "ClientRegistriesDelegate.GetDemographicsAsync", HttpStatusCode.NotFound);
+                    throw new ApiPatientException(
+                        $"Not Found: Communication Exception when trying to retrieve patient information from {type}",
+                        "ClientRegistriesDelegate.GetDemographicsAsync",
+                        HttpStatusCode.NotFound);
                 }
                 finally
                 {
@@ -85,7 +87,7 @@ namespace HealthGateway.Patient.Delegates
 
         private static HCIM_IN_GetDemographicsRequest CreateRequest(OidType oidType, string identifierValue)
         {
-            using (Source.StartActivity("CreateRequest"))
+            using (Source.StartActivity())
             {
                 HCIM_IN_GetDemographics request = new();
                 request.id = new II { root = "2.16.840.1.113883.3.51.1.1.1", extension = DateTimeOffset.Now.ToUnixTimeMilliseconds().ToString(CultureInfo.InvariantCulture) };
@@ -171,12 +173,10 @@ namespace HealthGateway.Patient.Delegates
 
         /// <summary>
         /// Rules for checking response codes.
-        ///
         /// "BCHCIM.GD.2.0018": set warning message.
         /// "BCHCIM.GD.2.0006": set warning message.
         /// "BCHCIM.GD.0.0019"", "BCHCIM.GD.0.0021", "BCHCIM.GD.0.0022", "BCHCIM.GD.0.0023": no warning message.
         /// "BCHCIM.GD.0.0013": set error message.
-        ///
         /// </summary>
         private void CheckResponseCode(ApiResult<PatientModel> apiResult, string responseCode)
         {
@@ -184,27 +184,27 @@ namespace HealthGateway.Patient.Delegates
             {
                 // BCHCIM.GD.2.0018 Not found
                 this.logger.LogWarning("Client Registry did not find any records. Returned message code: {ResponseCode}", responseCode);
-                apiResult.Warning = $"Client Registry did not find any records";
+                apiResult.Warning = "Client Registry did not find any records";
             }
 
             if (responseCode.Contains("BCHCIM.GD.2.0006", StringComparison.InvariantCulture))
             {
                 // Returned BCHCIM.GD.2.0006 Invalid PHN
                 this.logger.LogWarning("Personal Health Number is invalid. Returned message code: {ResponseCode}", responseCode);
-                apiResult.Warning = $"Personal Health Number is invalid";
+                apiResult.Warning = "Personal Health Number is invalid";
             }
 
             // Verify that the reply contains a result
             if (!responseCode.Contains("BCHCIM.GD.0.0013", StringComparison.InvariantCulture))
             {
                 this.logger.LogWarning("Client Registry did not return a person. Returned message code: {ResponseCode}", responseCode);
-                throw new ApiPatientException($"Not Found: Client Registry did not return a person", "ClientRegistriesDelegate.CheckResponseCode", HttpStatusCode.NotFound);
+                throw new ApiPatientException("Not Found: Client Registry did not return a person", "ClientRegistriesDelegate.CheckResponseCode", HttpStatusCode.NotFound);
             }
         }
 
         private void ParseResponse(ApiResult<PatientModel> apiResult, HCIM_IN_GetDemographicsResponse1 reply, bool disableIdValidation)
         {
-            using (Source.StartActivity("ParseResponse"))
+            using (Source.StartActivity())
             {
                 this.logger.LogDebug("Parsing patient response.");
 
@@ -218,7 +218,10 @@ namespace HealthGateway.Patient.Delegates
                 if (deceasedInd)
                 {
                     this.logger.LogWarning("Client Registry returned a person with the deceased indicator set to true. No PHN was populated.");
-                    throw new ApiPatientException($"Not Found: Client Registry returned a person with the deceased indicator set to true", "ClientRegistriesDelegate.ParseResponse", HttpStatusCode.NotFound);
+                    throw new ApiPatientException(
+                        "Not Found: Client Registry returned a person with the deceased indicator set to true",
+                        "ClientRegistriesDelegate.ParseResponse",
+                        HttpStatusCode.NotFound);
                 }
 
                 // Initialize model

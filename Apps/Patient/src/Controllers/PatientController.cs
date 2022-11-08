@@ -20,7 +20,6 @@ namespace HealthGateway.Patient.Controllers
     using HealthGateway.Common.Data.ViewModels;
     using HealthGateway.Common.Models;
     using HealthGateway.Common.Services;
-    using HealthGateway.Patient.Services;
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Mvc;
 
@@ -40,14 +39,14 @@ namespace HealthGateway.Patient.Controllers
         /// <summary>
         /// Gets or sets the patient data service v2.
         /// </summary>
-        private readonly IPatientServiceV2 serviceV2;
+        private readonly Services.IPatientService serviceV2;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="PatientController"/> class.
         /// </summary>
         /// <param name="patientService">The patient data service.</param>
         /// <param name="patientServiceV2">The V2 patient data service.</param>
-        public PatientController(IPatientService patientService, IPatientServiceV2 patientServiceV2)
+        public PatientController(IPatientService patientService, Services.IPatientService patientServiceV2)
         {
             this.service = patientService;
             this.serviceV2 = patientServiceV2;

@@ -97,7 +97,7 @@ namespace HealthGateway.Common.AspNetConfiguration.Modules
             services.AddProblemDetails(
                 setup =>
                 {
-                    setup.IncludeExceptionDetails = (ctx, env) => environment.IsDevelopment() || environment.IsStaging();
+                    setup.IncludeExceptionDetails = (ctx, env) => environment.IsDevelopment();
 
                     setup.Map<ApiPatientException>(
                         exception => new ApiProblemDetails

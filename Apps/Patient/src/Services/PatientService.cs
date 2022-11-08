@@ -25,7 +25,6 @@ namespace HealthGateway.Patient.Services
     using HealthGateway.Common.Data.ViewModels;
     using HealthGateway.Common.Exceptions;
     using HealthGateway.Common.Models;
-    using HealthGateway.Common.Services;
     using HealthGateway.Patient.Delegates;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.Logging;
@@ -33,7 +32,7 @@ namespace HealthGateway.Patient.Services
     /// <summary>
     /// The Patient data service.
     /// </summary>
-    public class PatientServiceV2 : IPatientServiceV2
+    public class PatientService : IPatientService
     {
         /// <summary>
         /// The generic cache domain to store patients against.
@@ -45,17 +44,17 @@ namespace HealthGateway.Patient.Services
         /// <summary>
         /// The injected logger delegate.
         /// </summary>
-        private readonly ILogger<PatientServiceV2> logger;
-        private readonly IClientRegistriesDelegateV2 patientDelegate;
+        private readonly ILogger<PatientService> logger;
+        private readonly IClientRegistriesDelegate patientDelegate;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="PatientServiceV2"/> class.
+        /// Initializes a new instance of the <see cref="PatientService"/> class.
         /// </summary>
         /// <param name="logger">The service Logger.</param>
         /// <param name="configuration">The Configuration to use.</param>
         /// <param name="patientDelegate">The injected client registries delegate.</param>
         /// <param name="cacheProvider">The provider responsible for caching.</param>
-        public PatientServiceV2(ILogger<PatientServiceV2> logger, IConfiguration configuration, IClientRegistriesDelegateV2 patientDelegate, ICacheProvider cacheProvider)
+        public PatientService(ILogger<PatientService> logger, IConfiguration configuration, IClientRegistriesDelegate patientDelegate, ICacheProvider cacheProvider)
         {
             this.logger = logger;
             this.patientDelegate = patientDelegate;
@@ -83,7 +82,7 @@ namespace HealthGateway.Patient.Services
                 if (identifierType == PatientIdentifierType.PHN && !PhnValidator.IsValid(identifier))
                 {
                     this.logger.LogDebug("The PHN provided is invalid");
-                    throw new ApiPatientException($"Not Found: PatientIdentifier is invalid", "PatientService.GetPatient", HttpStatusCode.NotFound);
+                    throw new ApiPatientException("Not Found: PatientIdentifier is invalid", "PatientService.GetPatient", HttpStatusCode.NotFound);
                 }
 
                 apiResult = await this.patientDelegate.GetDemographicsAsync(type, identifier, disableIdValidation).ConfigureAwait(true);

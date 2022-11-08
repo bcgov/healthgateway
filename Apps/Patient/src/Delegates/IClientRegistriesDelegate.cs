@@ -13,7 +13,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //-------------------------------------------------------------------------
-namespace HealthGateway.Patient.Services
+namespace HealthGateway.Patient.Delegates
 {
     using System.Threading.Tasks;
     using HealthGateway.Common.Constants;
@@ -23,15 +23,15 @@ namespace HealthGateway.Patient.Services
     /// <summary>
     /// The Patient data service.
     /// </summary>
-    public interface IPatientServiceV2
+    public interface IClientRegistriesDelegate
     {
         /// <summary>
         /// Gets the patient record.
         /// </summary>
-        /// <param name="identifier">The patient identifier.</param>
-        /// <param name="identifierType">The type of identifier being passed in.</param>
+        /// <param name="type">The oid type value.</param>
+        /// <param name="value">The associated oid type's value to retrieve the patient demographics information.</param>
         /// <param name="disableIdValidation">Disables the validation on HDID/PHN when true.</param>
-        /// <returns>The patient model.</returns>
-        Task<ApiResult<PatientModel>> GetPatient(string identifier, PatientIdentifierType identifierType = PatientIdentifierType.HDID, bool disableIdValidation = false);
+        /// <returns>The patient model wrapped in an api result object.</returns>
+        Task<ApiResult<PatientModel>> GetDemographicsAsync(OidType type, string value, bool disableIdValidation = false);
     }
 }

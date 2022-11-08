@@ -13,7 +13,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //-------------------------------------------------------------------------
-namespace HealthGateway.Patient.Test.Controllers
+namespace HealthGateway.PatientTests.Controllers
 {
     using System;
     using DeepEqual.Syntax;
@@ -23,7 +23,6 @@ namespace HealthGateway.Patient.Test.Controllers
     using HealthGateway.Common.Models;
     using HealthGateway.Common.Services;
     using HealthGateway.Patient.Controllers;
-    using HealthGateway.Patient.Services;
     using Moq;
     using Xunit;
 
@@ -45,7 +44,7 @@ namespace HealthGateway.Patient.Test.Controllers
         public void GetPatients()
         {
             Mock<IPatientService> patientService = new();
-            Mock<IPatientServiceV2> patientServiceV2 = new();
+            Mock<Patient.Services.IPatientService> patientServiceV2 = new();
             RequestResult<PatientModel> mockResult = new()
             {
                 ResultStatus = ResultType.Success,
