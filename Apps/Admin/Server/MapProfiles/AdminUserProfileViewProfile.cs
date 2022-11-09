@@ -13,32 +13,25 @@
 //  See the License for the specific language governing permissions and
 //  limitations under the License.
 // -------------------------------------------------------------------------
-namespace HealthGateway.Admin.Models.Immunization
+namespace HealthGateway.Admin.Server.MapProfiles
 {
-    using System.Text.Json.Serialization;
-    using HealthGateway.Common.Models.PHSA;
+    using AutoMapper;
+    using HealthGateway.Admin.Server.Models;
+    using HealthGateway.Common.AccessManagement.Administration.Models;
+    using HealthGateway.Database.Models;
 
     /// <summary>
-    /// The Load State record data model.
+    /// An AutoMapper profile class which defines mapping between DB/KeyCloak and UI Models.
     /// </summary>
-    public class LoadStateModel
+    public class AdminUserProfileViewProfile : Profile
     {
         /// <summary>
-        /// Gets or sets a value indicating whether the Load State is in the RefreshInProgress status.
+        /// Initializes a new instance of the <see cref="AdminUserProfileViewProfile"/> class.
         /// </summary>
-        [JsonPropertyName("refreshInProgress")]
-        public bool RefreshInProgress { get; set; }
-
-        /// <summary>
-        /// Creates a Load State Model object from a PHSA model.
-        /// </summary>
-        /// <param name="model">The Load State to convert.</param>
-        /// <returns>A LoadStateModel object.</returns>
-        public static LoadStateModel FromPHSAModel(PhsaLoadState model)
+        public AdminUserProfileViewProfile()
         {
-            LoadStateModel returnValue = new();
-            returnValue.RefreshInProgress = model.RefreshInProgress;
-            return returnValue;
+            this.CreateMap<AdminUserProfile, AdminUserProfileView>();
+            this.CreateMap<UserRepresentation, AdminUserProfileView>();
         }
     }
 }
