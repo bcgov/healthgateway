@@ -23,6 +23,7 @@ namespace HealthGateway.LaboratoryTests
     using HealthGateway.Common.Data.Constants;
     using HealthGateway.Common.Data.ErrorHandling;
     using HealthGateway.Common.Data.ViewModels;
+    using HealthGateway.Laboratory.Api;
     using HealthGateway.Laboratory.Delegates;
     using HealthGateway.Laboratory.Models.PHSA;
     using HealthGateway.Laboratory.Services;
