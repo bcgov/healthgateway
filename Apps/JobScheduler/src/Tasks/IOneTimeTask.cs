@@ -13,7 +13,7 @@
 //  See the License for the specific language governing permissions and
 //  limitations under the License.
 // -------------------------------------------------------------------------
-namespace Healthgateway.JobScheduler.Tasks
+namespace HealthGateway.JobScheduler.Tasks
 {
     /// <summary>
     /// A task that should be invoked only once from the OneTimeJob.

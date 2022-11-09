@@ -13,7 +13,7 @@
 //  See the License for the specific language governing permissions and
 //  limitations under the License.
 // -------------------------------------------------------------------------
-namespace Healthgateway.JobScheduler.Models
+namespace HealthGateway.JobScheduler.Models
 {
     /// <summary>
     /// Represents configuration for a job instance.

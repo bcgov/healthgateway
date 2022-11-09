@@ -13,14 +13,14 @@
 //  See the License for the specific language governing permissions and
 //  limitations under the License.
 // -------------------------------------------------------------------------
-namespace Healthgateway.JobScheduler.Utils
+namespace HealthGateway.JobScheduler.Utils
 {
     using System;
     using System.Linq.Expressions;
     using System.Runtime.InteropServices;
     using Hangfire;
     using HealthGateway.DrugMaintainer.Apps;
-    using Healthgateway.JobScheduler.Models;
+    using HealthGateway.JobScheduler.Models;
     using Microsoft.Extensions.Configuration;
 
     /// <summary>

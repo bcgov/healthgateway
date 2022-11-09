@@ -30,9 +30,9 @@ namespace HealthGateway.JobScheduler
     using HealthGateway.Common.Services;
     using HealthGateway.Database.Delegates;
     using HealthGateway.DrugMaintainer;
-    using Healthgateway.JobScheduler.Jobs;
+    using HealthGateway.JobScheduler.Jobs;
     using HealthGateway.JobScheduler.Listeners;
-    using Healthgateway.JobScheduler.Utils;
+    using HealthGateway.JobScheduler.Utils;
     using Microsoft.AspNetCore.Authentication.OpenIdConnect;
     using Microsoft.AspNetCore.Builder;
     using Microsoft.AspNetCore.Hosting;
