@@ -47,9 +47,9 @@ namespace HealthGateway.GatewayApi.Test.Controllers
                 UpdatedBy = Hdid,
             };
 
-            DBResult<UserFeedback> mockedDBResult = new()
+            DbResult<UserFeedback> mockedDBResult = new()
             {
-                Status = DBStatusCode.Created,
+                Status = DbStatusCode.Created,
                 Payload = userFeedback,
             };
 
@@ -75,9 +75,9 @@ namespace HealthGateway.GatewayApi.Test.Controllers
                 UpdatedBy = Hdid,
             };
 
-            DBResult<UserFeedback> mockedDBResult = new()
+            DbResult<UserFeedback> mockedDBResult = new()
             {
-                Status = DBStatusCode.Error,
+                Status = DbStatusCode.Error,
                 Payload = userFeedback,
             };
 
@@ -96,9 +96,9 @@ namespace HealthGateway.GatewayApi.Test.Controllers
         [Fact]
         public void ShouldCreateUserFeedbackWithBadRequestResultError()
         {
-            DBResult<UserFeedback> mockedDBResult = new()
+            DbResult<UserFeedback> mockedDBResult = new()
             {
-                Status = DBStatusCode.Error,
+                Status = DbStatusCode.Error,
             };
 
             Mock<IUserFeedbackService> userFeedbackServiceMock = new();

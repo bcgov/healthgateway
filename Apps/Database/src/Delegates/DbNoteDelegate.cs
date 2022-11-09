@@ -30,18 +30,18 @@ namespace HealthGateway.Database.Delegates
     /// Entity framework based implementation of the Note delegate.
     /// </summary>
     [ExcludeFromCodeCoverage]
-    public class DBNoteDelegate : INoteDelegate
+    public class DbNoteDelegate : INoteDelegate
     {
-        private readonly ILogger<DBNoteDelegate> logger;
+        private readonly ILogger<DbNoteDelegate> logger;
         private readonly GatewayDbContext dbContext;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="DBNoteDelegate"/> class.
+        /// Initializes a new instance of the <see cref="DbNoteDelegate"/> class.
         /// </summary>
         /// <param name="logger">Injected Logger Provider.</param>
         /// <param name="dbContext">The context to be used when accessing the database.</param>
-        public DBNoteDelegate(
-            ILogger<DBNoteDelegate> logger,
+        public DbNoteDelegate(
+            ILogger<DbNoteDelegate> logger,
             GatewayDbContext dbContext)
         {
             this.logger = logger;
@@ -49,45 +49,45 @@ namespace HealthGateway.Database.Delegates
         }
 
         /// <inheritdoc/>
-        public DBResult<Note> GetNote(Guid noteId, string hdid)
+        public DbResult<Note> GetNote(Guid noteId, string hdid)
         {
-            DBResult<Note> result = new()
+            DbResult<Note> result = new()
             {
-                Status = DBStatusCode.NotFound,
+                Status = DbStatusCode.NotFound,
             };
             Note? note = this.dbContext.Note.Find(noteId, hdid);
             if (note != null)
             {
                 result.Payload = note;
-                result.Status = DBStatusCode.Read;
+                result.Status = DbStatusCode.Read;
             }
 
             return result;
         }
 
         /// <inheritdoc/>
-        public DBResult<IEnumerable<Note>> GetNotes(string hdId, int offset = 0, int pagesize = 500)
+        public DbResult<IEnumerable<Note>> GetNotes(string hdId, int offset = 0, int pageSize = 500)
         {
             this.logger.LogTrace("Getting Notes for {HdId}...", hdId);
-            DBResult<IEnumerable<Note>> result = new();
+            DbResult<IEnumerable<Note>> result = new();
             result.Payload = this.dbContext.Note
                 .Where(p => p.HdId == hdId)
                 .OrderBy(o => o.JournalDate)
                 .Skip(offset)
-                .Take(pagesize)
+                .Take(pageSize)
                 .ToList();
-            result.Status = result.Payload != null ? DBStatusCode.Read : DBStatusCode.NotFound;
+            result.Status = DbStatusCode.Read;
             return result;
         }
 
         /// <inheritdoc/>
-        public DBResult<Note> AddNote(Note note, bool commit = true)
+        public DbResult<Note> AddNote(Note note, bool commit = true)
         {
             this.logger.LogTrace("Adding Note to DB...");
-            DBResult<Note> result = new()
+            DbResult<Note> result = new()
             {
                 Payload = note,
-                Status = DBStatusCode.Deferred,
+                Status = DbStatusCode.Deferred,
             };
             this.dbContext.Note.Add(note);
             if (commit)
@@ -95,12 +95,12 @@ namespace HealthGateway.Database.Delegates
                 try
                 {
                     this.dbContext.SaveChanges();
-                    result.Status = DBStatusCode.Created;
+                    result.Status = DbStatusCode.Created;
                 }
                 catch (DbUpdateException e)
                 {
                     this.logger.LogError("Unable to save note to DB {Exception}", e.ToString());
-                    result.Status = DBStatusCode.Error;
+                    result.Status = DbStatusCode.Error;
                     result.Message = e.Message;
                 }
             }
@@ -110,13 +110,13 @@ namespace HealthGateway.Database.Delegates
         }
 
         /// <inheritdoc/>
-        public DBResult<Note> UpdateNote(Note note, bool commit = true)
+        public DbResult<Note> UpdateNote(Note note, bool commit = true)
         {
             this.logger.LogTrace("Updating Note request in DB...");
-            DBResult<Note> result = new()
+            DbResult<Note> result = new()
             {
                 Payload = note,
-                Status = DBStatusCode.Deferred,
+                Status = DbStatusCode.Deferred,
             };
             this.dbContext.Note.Update(note);
             this.dbContext.Entry(note).Property(p => p.HdId).IsModified = false;
@@ -125,11 +125,11 @@ namespace HealthGateway.Database.Delegates
                 try
                 {
                     this.dbContext.SaveChanges();
-                    result.Status = DBStatusCode.Updated;
+                    result.Status = DbStatusCode.Updated;
                 }
                 catch (DbUpdateConcurrencyException e)
                 {
-                    result.Status = DBStatusCode.Concurrency;
+                    result.Status = DbStatusCode.Concurrency;
                     result.Message = e.Message;
                 }
             }
@@ -139,25 +139,25 @@ namespace HealthGateway.Database.Delegates
         }
 
         /// <inheritdoc/>
-        public DBResult<IEnumerable<Note>> BatchUpdate(IEnumerable<Note> notes, bool commit = true)
+        public DbResult<IEnumerable<Note>> BatchUpdate(IEnumerable<Note> notes, bool commit = true)
         {
             this.logger.LogTrace("Updating Note request in DB...");
-            DBResult<IEnumerable<Note>> result = new()
+            DbResult<IEnumerable<Note>> result = new()
             {
-                Payload = notes,
-                Status = DBStatusCode.Deferred,
+                Payload = notes.ToList(),
+                Status = DbStatusCode.Deferred,
             };
-            this.dbContext.Note.UpdateRange(notes);
+            this.dbContext.Note.UpdateRange(result.Payload);
             if (commit)
             {
                 try
                 {
                     this.dbContext.SaveChanges();
-                    result.Status = DBStatusCode.Updated;
+                    result.Status = DbStatusCode.Updated;
                 }
                 catch (DbUpdateConcurrencyException e)
                 {
-                    result.Status = DBStatusCode.Concurrency;
+                    result.Status = DbStatusCode.Concurrency;
                     result.Message = e.Message;
                 }
             }
@@ -167,13 +167,13 @@ namespace HealthGateway.Database.Delegates
         }
 
         /// <inheritdoc/>
-        public DBResult<Note> DeleteNote(Note note, bool commit = true)
+        public DbResult<Note> DeleteNote(Note note, bool commit = true)
         {
             this.logger.LogTrace("Deleting Note from DB...");
-            DBResult<Note> result = new()
+            DbResult<Note> result = new()
             {
                 Payload = note,
-                Status = DBStatusCode.Deferred,
+                Status = DbStatusCode.Deferred,
             };
             this.dbContext.Note.Remove(note);
             this.dbContext.Entry(note).Property(p => p.HdId).IsModified = false;
@@ -182,11 +182,11 @@ namespace HealthGateway.Database.Delegates
                 try
                 {
                     this.dbContext.SaveChanges();
-                    result.Status = DBStatusCode.Deleted;
+                    result.Status = DbStatusCode.Deleted;
                 }
                 catch (DbUpdateConcurrencyException e)
                 {
-                    result.Status = DBStatusCode.Concurrency;
+                    result.Status = DbStatusCode.Concurrency;
                     result.Message = e.Message;
                 }
             }
@@ -196,10 +196,10 @@ namespace HealthGateway.Database.Delegates
         }
 
         /// <inheritdoc/>
-        public DBResult<IEnumerable<Note>> GetAll(int page, int pageSize)
+        public DbResult<IEnumerable<Note>> GetAll(int page, int pageSize)
         {
             this.logger.LogTrace("Retrieving all the notes for the page #{Page} with pageSize: {PageSize}...", page, pageSize);
-            return DBDelegateHelper.GetPagedDBResult(
+            return DbDelegateHelper.GetPagedDbResult(
                 this.dbContext.Note
                     .OrderBy(note => note.CreatedDateTime),
                 page,

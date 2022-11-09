@@ -21,7 +21,7 @@ namespace HealthGateway.LaboratoryTests
     using System.Security.Claims;
     using HealthGateway.Common.AccessManagement.Authentication;
     using HealthGateway.Common.Data.Constants;
-    using HealthGateway.Common.Data.Models.ErrorHandling;
+    using HealthGateway.Common.Data.ErrorHandling;
     using HealthGateway.Common.Data.ViewModels;
     using HealthGateway.Laboratory.Delegates;
     using HealthGateway.Laboratory.Models.PHSA;

@@ -28,6 +28,6 @@ namespace HealthGateway.Common.Data.Constants
         /// <summary>
         /// The SMS type code.
         /// </summary>
-        public const string SMS = "SMS";
+        public const string Sms = "SMS";
     }
 }

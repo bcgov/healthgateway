@@ -72,8 +72,8 @@ namespace HealthGateway.GatewayApi.Controllers
             userFeedback.UserProfileId = hdid;
             userFeedback.CreatedBy = hdid;
             userFeedback.UpdatedBy = hdid;
-            DBResult<UserFeedback> result = this.userFeedbackService.CreateUserFeedback(userFeedback);
-            if (result.Status != DBStatusCode.Created)
+            DbResult<UserFeedback> result = this.userFeedbackService.CreateUserFeedback(userFeedback);
+            if (result.Status != DbStatusCode.Created)
             {
                 return new ConflictResult();
             }

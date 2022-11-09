@@ -96,13 +96,13 @@ public class InactiveUserService : IInactiveUserService
 
         // Inactive admin user profiles from DB
         TimeSpan timeSpan = new(0, timeOffset, 0);
-        DBResult<IEnumerable<AdminUserProfile>> inactiveProfileResult = this.adminUserProfileDelegate.GetInactiveAdminUserProfiles(inactiveDays, timeSpan);
+        DbResult<IEnumerable<AdminUserProfile>> inactiveProfileResult = this.adminUserProfileDelegate.GetInactiveAdminUserProfiles(inactiveDays, timeSpan);
 
         // Active admin user profiles from DB
-        DBResult<IEnumerable<AdminUserProfile>> activeProfileResult = this.adminUserProfileDelegate.GetActiveAdminUserProfiles(inactiveDays, timeSpan);
+        DbResult<IEnumerable<AdminUserProfile>> activeProfileResult = this.adminUserProfileDelegate.GetActiveAdminUserProfiles(inactiveDays, timeSpan);
 
         // Compare inactive users in DB to users in Keycloak
-        if (inactiveProfileResult.Status == DBStatusCode.Read && activeProfileResult.Status == DBStatusCode.Read)
+        if (inactiveProfileResult.Status == DbStatusCode.Read && activeProfileResult.Status == DbStatusCode.Read)
         {
             inactiveUsers.AddRange(this.autoMapper.Map<IEnumerable<AdminUserProfile>, IList<AdminUserProfileView>>(inactiveProfileResult.Payload));
             this.logger.LogDebug("Inactive db admin user profile count: {Count} since {InactiveDays} day(s)...", inactiveUsers.Count, inactiveDays);
@@ -117,9 +117,9 @@ public class InactiveUserService : IInactiveUserService
                 IApiResponse<IEnumerable<UserRepresentation>> supportUsersResult =
                     await this.keycloakAdminApi.GetUsers(nameof(IdentityAccessRole.SupportUser), jwtModel.AccessToken).ConfigureAwait(true);
 
-                if (adminUsersResult.IsSuccessStatusCode)
+                if (adminUsersResult.IsSuccessStatusCode && adminUsersResult.Content != null)
                 {
-                    List<UserRepresentation> adminUsers = adminUsersResult.Content?.ToList() ?? new();
+                    List<UserRepresentation> adminUsers = adminUsersResult.Content.ToList();
                     this.PopulateUserDetails(inactiveUsers, adminUsers, IdentityAccessRole.AdminUser);
                     this.AddInactiveUser(inactiveUsers, activeUserProfiles, adminUsers, IdentityAccessRole.AdminUser);
                 }
@@ -134,9 +134,9 @@ public class InactiveUserService : IInactiveUserService
                     };
                 }
 
-                if (supportUsersResult.IsSuccessStatusCode)
+                if (supportUsersResult.IsSuccessStatusCode && supportUsersResult.Content != null)
                 {
-                    List<UserRepresentation> supportUsers = supportUsersResult.Content?.ToList() ?? new();
+                    List<UserRepresentation> supportUsers = supportUsersResult.Content.ToList();
                     this.PopulateUserDetails(inactiveUsers, supportUsers, IdentityAccessRole.SupportUser);
                     this.AddInactiveUser(inactiveUsers, activeUserProfiles, supportUsers, IdentityAccessRole.SupportUser);
                 }

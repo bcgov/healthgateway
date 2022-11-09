@@ -30,7 +30,7 @@ namespace HealthGateway.Database.Delegates
         /// </summary>
         /// <param name="communicationType">The active communication type to retrieve.</param>
         /// <returns>The Communication wrapped in a DBResult.</returns>
-        DBResult<Communication?> GetNext(CommunicationType communicationType);
+        DbResult<Communication?> GetNext(CommunicationType communicationType);
 
         /// <summary>
         /// Add the given communication.
@@ -38,13 +38,13 @@ namespace HealthGateway.Database.Delegates
         /// <param name="communication">The communication to be added to the database.</param>
         /// <param name="commit">if true the transaction is persisted immediately.</param>
         /// <returns>The added communication wrapped in a DBResult.</returns>
-        DBResult<Communication> Add(Communication communication, bool commit = true);
+        DbResult<Communication> Add(Communication communication, bool commit = true);
 
         /// <summary>
         /// Get a list of all past communications.
         /// </summary>
         /// <returns>A list of all communications added, wrapped in a DBResult.</returns>
-        DBResult<IEnumerable<Communication>> GetAll();
+        DbResult<IEnumerable<Communication>> GetAll();
 
         /// <summary>
         /// Update the given communication.
@@ -52,7 +52,7 @@ namespace HealthGateway.Database.Delegates
         /// <param name="communication">The communication to be updated in the database.</param>
         /// <param name="commit">if true the transaction is persisted immediately.</param>
         /// <returns>The updated communication wrapped in a DBResult.</returns>
-        DBResult<Communication> Update(Communication communication, bool commit = true);
+        DbResult<Communication> Update(Communication communication, bool commit = true);
 
         /// <summary>
         /// Deletes the given communication from the database.
@@ -60,6 +60,6 @@ namespace HealthGateway.Database.Delegates
         /// <param name="communication">The communication to be deleted from the database.</param>
         /// <param name="commit">if true the transaction is persisted immediately.</param>
         /// <returns>A Communication wrapped in a DBResult.</returns>
-        DBResult<Communication> Delete(Communication communication, bool commit = true);
+        DbResult<Communication> Delete(Communication communication, bool commit = true);
     }
 }

@@ -15,56 +15,38 @@
 //-------------------------------------------------------------------------
 namespace HealthGateway.Database.Delegates
 {
-    using System.Data;
     using System.Diagnostics.CodeAnalysis;
     using HealthGateway.Database.Context;
+    using HealthGateway.Database.Models;
     using Microsoft.Extensions.Logging;
-    using Npgsql;
-    using NpgsqlTypes;
 
-    /// <summary>
-    /// Entity framework based implementation of the sequence delegate.
-    /// </summary>
+    /// <inheritdoc/>
     [ExcludeFromCodeCoverage]
-    public class DBSequenceDelegate : ISequenceDelegate
+    public class DbWriteAuditEventDelegate : IWriteAuditEventDelegate
     {
         private readonly ILogger logger;
         private readonly GatewayDbContext dbContext;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="DBSequenceDelegate"/> class.
+        /// Initializes a new instance of the <see cref="DbWriteAuditEventDelegate"/> class.
         /// </summary>
         /// <param name="logger">Injected Logger Provider.</param>
         /// <param name="dbContext">The context to be used when accessing the database context.</param>
-        public DBSequenceDelegate(
-            ILogger<DBSequenceDelegate> logger,
+        public DbWriteAuditEventDelegate(
+            ILogger<DbWriteAuditEventDelegate> logger,
             GatewayDbContext dbContext)
         {
             this.logger = logger;
             this.dbContext = dbContext;
         }
 
-        /// <summary>
-        /// Gets the next sequence number for the given sequence name.
-        /// </summary>
-        /// <param name="sequenceName">The sequence name.</param>
-        /// <returns>The next sequence value.</returns>
-        public long GetNextValueForSequence(string sequenceName)
+        /// <inheritdoc/>
+        public void WriteAuditEvent(AuditEvent auditEvent)
         {
-            this.logger.LogTrace("Getting next value for sequence from database... {SequenceName}", sequenceName);
-            NpgsqlParameter result = new("@result", NpgsqlDbType.Integer)
-            {
-                Direction = ParameterDirection.Output,
-            };
-            this.dbContext.ExecuteSqlCommand($"SELECT nextval('{sequenceName}')", result);
-            this.logger.LogDebug("Finished getting next value for sequence from database. {Result}", result.Value);
-
-            if (result.Value == null)
-            {
-                throw new NpgsqlException("Sequence could not be retrieved from database (result is null).");
-            }
-
-            return (long)result.Value;
+            this.logger.LogTrace("Writing audit event to DB... {Id}", auditEvent.Id);
+            this.dbContext.Add(auditEvent);
+            this.dbContext.SaveChanges();
+            this.logger.LogDebug("Finished writing audit event to DB... {Id}", auditEvent.Id);
         }
     }
 }

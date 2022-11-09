@@ -52,7 +52,7 @@ namespace HealthGateway.Common.AspNetConfiguration.Modules
             {
                 logger.LogInformation("Configuring Auditing to use Database");
                 services.AddScoped<IAuditLogger, DbAuditLogger>();
-                services.AddTransient<IWriteAuditEventDelegate, DBWriteAuditEventDelegate>();
+                services.AddTransient<IWriteAuditEventDelegate, DbWriteAuditEventDelegate>();
             }
         }
     }

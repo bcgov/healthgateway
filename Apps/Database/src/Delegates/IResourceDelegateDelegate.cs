@@ -32,7 +32,7 @@ namespace HealthGateway.Database.Delegates
         /// <param name="resourceDelegate">The resource delegate to create.</param>
         /// <param name="commit">Indicates if the transaction should be persisted immediately.</param>
         /// <returns>A DB result which encapsulates the return record and status.</returns>
-        DBResult<ResourceDelegate> Insert(ResourceDelegate resourceDelegate, bool commit);
+        DbResult<ResourceDelegate> Insert(ResourceDelegate resourceDelegate, bool commit);
 
         /// <summary>
         /// Gets the list of Resource Delegate records for a specific delegate Id from the database.
@@ -42,7 +42,7 @@ namespace HealthGateway.Database.Delegates
         /// <param name="pageSize">The amount of rows to fetch per call.</param>
         /// <returns>A list of resourceDelegates wrapped in a DBResult.</returns>
 #pragma warning disable CA1716 // Identifiers should not match keywords
-        DBResult<IEnumerable<ResourceDelegate>> Get(string delegateId, int page, int pageSize);
+        DbResult<IEnumerable<ResourceDelegate>> Get(string delegateId, int page, int pageSize);
 #pragma warning restore CA1716 // Identifiers should not match keywords
 
         /// <summary>
@@ -58,7 +58,7 @@ namespace HealthGateway.Database.Delegates
         /// <param name="resourceDelegate">The model to be deleted.</param>
         /// <param name="commit">Indicates if the transaction should be persisted immediately.</param>
         /// <returns>A DB result which encapsulates the return record and status.</returns>
-        DBResult<ResourceDelegate> Delete(ResourceDelegate resourceDelegate, bool commit);
+        DbResult<ResourceDelegate> Delete(ResourceDelegate resourceDelegate, bool commit);
 
         /// <summary>
         /// Finds a Resource Delegate record in the database.

@@ -95,8 +95,8 @@ namespace HealthGateway.Common.Services
             if (cacheEntry == null)
             {
                 this.logger.LogInformation("Active Communication not found in cache, getting from DB...");
-                DBResult<Communication?> dbResult = this.communicationDelegate.GetNext(communicationType);
-                if (dbResult.Status is DBStatusCode.Read or DBStatusCode.NotFound)
+                DbResult<Communication?> dbResult = this.communicationDelegate.GetNext(communicationType);
+                if (dbResult.Status is DbStatusCode.Read or DbStatusCode.NotFound)
                 {
                     cacheEntry = this.AddCommunicationToCache(dbResult.Payload, communicationType);
                 }

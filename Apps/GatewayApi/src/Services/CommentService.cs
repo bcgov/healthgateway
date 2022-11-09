@@ -77,11 +77,11 @@ namespace HealthGateway.GatewayApi.Services
             }
 
             Comment comment = CommentMapUtils.ToDbModel(userComment, this.cryptoDelegate, key, this.autoMapper);
-            DBResult<Comment> dbComment = this.commentDelegate.Add(comment);
+            DbResult<Comment> dbComment = this.commentDelegate.Add(comment);
             RequestResult<UserComment> result = new()
             {
                 ResourcePayload = CommentMapUtils.CreateFromDbModel(dbComment.Payload, this.cryptoDelegate, key, this.autoMapper),
-                ResultStatus = dbComment.Status == DBStatusCode.Created ? ResultType.Success : ResultType.Error,
+                ResultStatus = dbComment.Status == DbStatusCode.Created ? ResultType.Success : ResultType.Error,
                 ResultError = new RequestResultError
                 {
                     ResultMessage = dbComment.Message,
@@ -112,15 +112,15 @@ namespace HealthGateway.GatewayApi.Services
                 };
             }
 
-            DBResult<IEnumerable<Comment>> dbComments = this.commentDelegate.GetByParentEntry(hdId, parentEntryId);
+            DbResult<IEnumerable<Comment>> dbComments = this.commentDelegate.GetByParentEntry(hdId, parentEntryId);
             RequestResult<IEnumerable<UserComment>> result = new()
             {
                 ResourcePayload = dbComments.Payload.Select(c => CommentMapUtils.CreateFromDbModel(c, this.cryptoDelegate, key, this.autoMapper)),
                 TotalResultCount = dbComments.Payload.Count(),
                 PageIndex = 0,
                 PageSize = dbComments.Payload.Count(),
-                ResultStatus = dbComments.Status == DBStatusCode.Read ? ResultType.Success : ResultType.Error,
-                ResultError = dbComments.Status != DBStatusCode.Read
+                ResultStatus = dbComments.Status == DbStatusCode.Read ? ResultType.Success : ResultType.Error,
+                ResultError = dbComments.Status != DbStatusCode.Read
                     ? new RequestResultError
                     {
                         ResultMessage = dbComments.Message,
@@ -152,7 +152,7 @@ namespace HealthGateway.GatewayApi.Services
                 };
             }
 
-            DBResult<IEnumerable<Comment>> dbComments = this.commentDelegate.GetAll(hdId);
+            DbResult<IEnumerable<Comment>> dbComments = this.commentDelegate.GetAll(hdId);
             IEnumerable<UserComment> comments = dbComments.Payload.Select(c => CommentMapUtils.CreateFromDbModel(c, this.cryptoDelegate, key, this.autoMapper));
             IDictionary<string, IEnumerable<UserComment>> userCommentsByEntry = comments.GroupBy(x => x.ParentEntryId).ToDictionary(g => g.Key, g => g.AsEnumerable());
 
@@ -162,8 +162,8 @@ namespace HealthGateway.GatewayApi.Services
                 TotalResultCount = userCommentsByEntry.Count,
                 PageIndex = 0,
                 PageSize = userCommentsByEntry.Count,
-                ResultStatus = dbComments.Status == DBStatusCode.Read ? ResultType.Success : ResultType.Error,
-                ResultError = dbComments.Status != DBStatusCode.Read
+                ResultStatus = dbComments.Status == DbStatusCode.Read ? ResultType.Success : ResultType.Error,
+                ResultError = dbComments.Status != DbStatusCode.Read
                     ? new RequestResultError
                     {
                         ResultMessage = dbComments.Message,
@@ -195,12 +195,12 @@ namespace HealthGateway.GatewayApi.Services
 
             Comment comment = CommentMapUtils.ToDbModel(userComment, this.cryptoDelegate, key, this.autoMapper);
 
-            DBResult<Comment> dbResult = this.commentDelegate.Update(comment);
+            DbResult<Comment> dbResult = this.commentDelegate.Update(comment);
             RequestResult<UserComment> result = new()
             {
                 ResourcePayload = CommentMapUtils.CreateFromDbModel(dbResult.Payload, this.cryptoDelegate, key, this.autoMapper),
-                ResultStatus = dbResult.Status == DBStatusCode.Updated ? ResultType.Success : ResultType.Error,
-                ResultError = dbResult.Status != DBStatusCode.Updated
+                ResultStatus = dbResult.Status == DbStatusCode.Updated ? ResultType.Success : ResultType.Error,
+                ResultError = dbResult.Status != DbStatusCode.Updated
                     ? new RequestResultError
                     {
                         ResultMessage = dbResult.Message,
@@ -232,12 +232,12 @@ namespace HealthGateway.GatewayApi.Services
 
             Comment comment = CommentMapUtils.ToDbModel(userComment, this.cryptoDelegate, key, this.autoMapper);
 
-            DBResult<Comment> dbResult = this.commentDelegate.Delete(comment);
+            DbResult<Comment> dbResult = this.commentDelegate.Delete(comment);
             RequestResult<UserComment> result = new()
             {
                 ResourcePayload = CommentMapUtils.CreateFromDbModel(dbResult.Payload, this.cryptoDelegate, key, this.autoMapper),
-                ResultStatus = dbResult.Status == DBStatusCode.Deleted ? ResultType.Success : ResultType.Error,
-                ResultError = dbResult.Status != DBStatusCode.Deleted
+                ResultStatus = dbResult.Status == DbStatusCode.Deleted ? ResultType.Success : ResultType.Error,
+                ResultError = dbResult.Status != DbStatusCode.Deleted
                     ? new RequestResultError
                     {
                         ResultMessage = dbResult.Message,

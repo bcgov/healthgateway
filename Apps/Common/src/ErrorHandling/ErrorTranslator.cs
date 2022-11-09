@@ -17,7 +17,7 @@
 namespace HealthGateway.Common.ErrorHandling
 {
     using System;
-    using HealthGateway.Common.Data.Models.ErrorHandling;
+    using HealthGateway.Common.Data.ErrorHandling;
     using HealthGateway.Common.Data.ViewModels;
 
     /// <summary>

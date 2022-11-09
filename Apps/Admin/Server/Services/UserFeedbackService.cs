@@ -65,7 +65,7 @@ namespace HealthGateway.Admin.Server.Services
         public RequestResult<IList<UserFeedbackView>> GetUserFeedback()
         {
             this.logger.LogTrace("Retrieving user feedback...");
-            DBResult<IList<UserFeedback>> userFeedbackResult = this.feedbackDelegate.GetAllUserFeedbackEntries();
+            DbResult<IList<UserFeedback>> userFeedbackResult = this.feedbackDelegate.GetAllUserFeedbackEntries();
 
             this.logger.LogTrace("Retrieving user emails...");
             List<string> hdids = userFeedbackResult.Payload
@@ -73,7 +73,7 @@ namespace HealthGateway.Admin.Server.Services
                 .Select(f => f.UserProfileId!)
                 .Distinct()
                 .ToList();
-            DBResult<List<UserProfile>> userProfileResult = this.userProfileDelegate.GetUserProfiles(hdids);
+            DbResult<List<UserProfile>> userProfileResult = this.userProfileDelegate.GetUserProfiles(hdids);
             Dictionary<string, string?> profileEmails = userProfileResult.Payload.ToDictionary(p => p.HdId, p => p.Email);
 
             RequestResult<IList<UserFeedbackView>> result = new()
@@ -110,8 +110,8 @@ namespace HealthGateway.Admin.Server.Services
 
             this.feedbackDelegate.UpdateUserFeedback(this.autoMapper.Map<UserFeedback>(feedback));
 
-            DBResult<UserFeedback> userFeedbackResult = this.feedbackDelegate.GetUserFeedbackWithFeedbackTags(feedback.Id);
-            if (userFeedbackResult.Status == DBStatusCode.Read)
+            DbResult<UserFeedback> userFeedbackResult = this.feedbackDelegate.GetUserFeedbackWithFeedbackTags(feedback.Id);
+            if (userFeedbackResult.Status == DbStatusCode.Read)
             {
                 string email = this.GetUserEmail(userFeedbackResult.Payload.UserProfileId);
                 result.ResourcePayload = UserFeedbackMapUtils.ToUiModel(userFeedbackResult.Payload, email, this.autoMapper);
@@ -125,7 +125,7 @@ namespace HealthGateway.Admin.Server.Services
         public RequestResult<IList<AdminTagView>> GetAllTags()
         {
             this.logger.LogTrace("Retrieving admin tags");
-            DBResult<IEnumerable<AdminTag>> adminTags = this.adminTagDelegate.GetAll();
+            DbResult<IEnumerable<AdminTag>> adminTags = this.adminTagDelegate.GetAll();
 
             this.logger.LogDebug("Finished retrieving admin tags");
             IList<AdminTagView> adminTagViews = this.autoMapper.Map<IList<AdminTagView>>(adminTags.Payload);
@@ -146,8 +146,8 @@ namespace HealthGateway.Admin.Server.Services
             };
 
             this.logger.LogTrace("Creating new admin tag... {TagName}", tagName);
-            DBResult<AdminTag> tagResult = this.adminTagDelegate.Add(new() { Name = tagName });
-            if (tagResult.Status == DBStatusCode.Created)
+            DbResult<AdminTag> tagResult = this.adminTagDelegate.Add(new() { Name = tagName });
+            if (tagResult.Status == DbStatusCode.Created)
             {
                 retVal.ResultStatus = ResultType.Success;
                 retVal.ResourcePayload = this.autoMapper.Map<AdminTagView>(tagResult.Payload);
@@ -169,8 +169,8 @@ namespace HealthGateway.Admin.Server.Services
             };
 
             this.logger.LogTrace("Deleting admin tag... {TagName}", tag.Name);
-            DBResult<AdminTag> tagResult = this.adminTagDelegate.Delete(this.autoMapper.Map<AdminTag>(tag));
-            if (tagResult.Status == DBStatusCode.Deleted)
+            DbResult<AdminTag> tagResult = this.adminTagDelegate.Delete(this.autoMapper.Map<AdminTag>(tag));
+            if (tagResult.Status == DbStatusCode.Deleted)
             {
                 retVal.ResultStatus = ResultType.Success;
                 retVal.ResourcePayload = this.autoMapper.Map<AdminTagView>(tagResult.Payload);
@@ -193,10 +193,10 @@ namespace HealthGateway.Admin.Server.Services
                 ResultStatus = ResultType.Error,
             };
 
-            DBResult<UserFeedback> userFeedbackResult = this.feedbackDelegate.GetUserFeedbackWithFeedbackTags(userFeedbackId);
-            DBResult<IEnumerable<AdminTag>> adminTagResult = this.adminTagDelegate.GetAdminTags(adminTagIds);
+            DbResult<UserFeedback> userFeedbackResult = this.feedbackDelegate.GetUserFeedbackWithFeedbackTags(userFeedbackId);
+            DbResult<IEnumerable<AdminTag>> adminTagResult = this.adminTagDelegate.GetAdminTags(adminTagIds);
 
-            if (userFeedbackResult.Status == DBStatusCode.Read && adminTagResult.Status == DBStatusCode.Read)
+            if (userFeedbackResult.Status == DbStatusCode.Read && adminTagResult.Status == DbStatusCode.Read)
             {
                 UserFeedback userFeedback = userFeedbackResult.Payload;
                 IEnumerable<AdminTag> adminTags = adminTagResult.Payload;
@@ -212,9 +212,9 @@ namespace HealthGateway.Admin.Server.Services
                         userFeedbackTag.UserFeedbackId);
                 }
 
-                DBResult<UserFeedback> savedUserFeedbackResult = this.feedbackDelegate.UpdateUserFeedbackWithTagAssociations(userFeedback);
+                DbResult<UserFeedback> savedUserFeedbackResult = this.feedbackDelegate.UpdateUserFeedbackWithTagAssociations(userFeedback);
 
-                if (savedUserFeedbackResult.Status == DBStatusCode.Updated)
+                if (savedUserFeedbackResult.Status == DbStatusCode.Updated)
                 {
                     string email = this.GetUserEmail(userFeedback.UserProfileId);
                     result.ResourcePayload = UserFeedbackMapUtils.ToUiModel(userFeedback, email, this.autoMapper);
@@ -244,8 +244,8 @@ namespace HealthGateway.Admin.Server.Services
             string email = string.Empty;
             if (hdid != null)
             {
-                DBResult<UserProfile> userProfileResult = this.userProfileDelegate.GetUserProfile(hdid);
-                if (userProfileResult.Status == DBStatusCode.Read)
+                DbResult<UserProfile> userProfileResult = this.userProfileDelegate.GetUserProfile(hdid);
+                if (userProfileResult.Status == DbStatusCode.Read)
                 {
                     email = userProfileResult.Payload.Email ?? string.Empty;
                 }

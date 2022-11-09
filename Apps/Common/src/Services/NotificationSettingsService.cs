@@ -64,7 +64,7 @@ namespace HealthGateway.Common.Services
             this.jobClient.Enqueue<INotificationSettingsJob>(j => j.PushNotificationSettings(json));
 
             // Update the notification settings for any dependents
-            DBResult<IEnumerable<ResourceDelegate>> dbResult = this.resourceDelegateDelegate.Get(notificationSettings.SubjectHdid, 0, 500);
+            DbResult<IEnumerable<ResourceDelegate>> dbResult = this.resourceDelegateDelegate.Get(notificationSettings.SubjectHdid, 0, 500);
             foreach (ResourceDelegate resourceDelegate in dbResult.Payload)
             {
                 this.logger.LogDebug("Queueing Dependent Notification Settings.");

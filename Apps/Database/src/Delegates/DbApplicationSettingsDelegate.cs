@@ -26,18 +26,18 @@ namespace HealthGateway.Database.Delegates
     /// Entity framework based implementation of the Application Settings delegate.
     /// </summary>
     [ExcludeFromCodeCoverage]
-    public class DBApplicationSettingsDelegate : IApplicationSettingsDelegate
+    public class DbApplicationSettingsDelegate : IApplicationSettingsDelegate
     {
-        private readonly ILogger<DBApplicationSettingsDelegate> logger;
+        private readonly ILogger<DbApplicationSettingsDelegate> logger;
         private readonly GatewayDbContext dbContext;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="DBApplicationSettingsDelegate"/> class.
+        /// Initializes a new instance of the <see cref="DbApplicationSettingsDelegate"/> class.
         /// </summary>
         /// <param name="logger">Injected Logger Provider.</param>
         /// <param name="dbContext">The context to be used when accessing the database context.</param>
-        public DBApplicationSettingsDelegate(
-            ILogger<DBApplicationSettingsDelegate> logger,
+        public DbApplicationSettingsDelegate(
+            ILogger<DbApplicationSettingsDelegate> logger,
             GatewayDbContext dbContext)
         {
             this.logger = logger;
