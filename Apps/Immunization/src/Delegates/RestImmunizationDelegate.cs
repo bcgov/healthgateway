@@ -151,7 +151,7 @@ namespace HealthGateway.Immunization.Delegates
                 {
                     case HttpStatusCode.OK:
                         requestResult.ResultStatus = ResultType.Success;
-                        requestResult.ResourcePayload!.Result = response!.Content!.Result;
+                        requestResult.ResourcePayload!.Result = response.Content!.Result;
                         requestResult.TotalResultCount = 1;
                         break;
                     case HttpStatusCode.NoContent:

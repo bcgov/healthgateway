@@ -545,7 +545,7 @@ namespace HealthGateway.GatewayApi.Services
             };
 
             DbResult<UserProfile> profileResult = this.userProfileDelegate.GetUserProfile(hdid);
-            if (profileResult.Status == DbStatusCode.Read && profileResult.Payload != null)
+            if (profileResult.Status == DbStatusCode.Read)
             {
                 profileResult.Payload.TermsOfServiceId = termsOfServiceId;
                 profileResult = this.userProfileDelegate.Update(profileResult.Payload);
