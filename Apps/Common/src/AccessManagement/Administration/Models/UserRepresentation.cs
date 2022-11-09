@@ -16,6 +16,7 @@
 namespace HealthGateway.Common.AccessManagement.Administration.Models
 {
     using System;
+    using System.ComponentModel.DataAnnotations.Schema;
     using System.Diagnostics.CodeAnalysis;
     using System.Text.Json.Serialization;
 
@@ -26,10 +27,17 @@ namespace HealthGateway.Common.AccessManagement.Administration.Models
     public class UserRepresentation
     {
         /// <summary>
-        /// Gets or sets the user created timestamp.
+        /// Gets or sets the user created timestamp.as milliseconds from the Unix Epoch.
         /// </summary>
         [JsonPropertyName("createdTimeStamp")]
-        public DateTime? CreatedTimestamp { get; set; }
+        public long CreatedTimestamp { get; set; }
+
+        /// <summary>
+        /// Gets the Created Datetime of the user.
+        /// </summary>
+        [NotMapped]
+        public DateTime CreatedDatetime =>
+            DateTimeOffset.FromUnixTimeMilliseconds(this.CreatedTimestamp).DateTime;
 
         /// <summary>
         /// Gets or sets the user's email.
