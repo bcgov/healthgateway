@@ -26,8 +26,8 @@ namespace HealthGateway.Medication.Services
     /// </summary>
     public class RestMedicationService : IMedicationService
     {
-        private readonly ILogger logger;
         private readonly IDrugLookupDelegate drugLookupDelegate;
+        private readonly ILogger logger;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="RestMedicationService"/> class.
@@ -59,7 +59,7 @@ namespace HealthGateway.Medication.Services
                 };
                 result[drugProduct.DrugIdentificationNumber] = new MedicationInformation
                 {
-                    DIN = drugProduct.DrugIdentificationNumber,
+                    Din = drugProduct.DrugIdentificationNumber,
                     FederalData = federalData,
                 };
             }
@@ -82,7 +82,7 @@ namespace HealthGateway.Medication.Services
                 {
                     result[pharmaCareDrug.DINPIN] = new MedicationInformation
                     {
-                        DIN = pharmaCareDrug.DINPIN,
+                        Din = pharmaCareDrug.DINPIN,
                         ProvincialData = provincialData,
                     };
                 }

@@ -182,7 +182,7 @@ namespace HealthGateway.Medication.Services
         {
             using (Source.StartActivity())
             {
-                List<string> medicationIdentifiers = medSummaries.Select(s => s.DIN.PadLeft(8, '0')).ToList();
+                List<string> medicationIdentifiers = medSummaries.Select(s => s.Din.PadLeft(8, '0')).ToList();
 
                 this.logger.LogDebug("Getting drugs from DB");
                 this.logger.LogTrace("Identifiers: {MedicationIdentifiers}", string.Join(",", medicationIdentifiers));
@@ -210,7 +210,7 @@ namespace HealthGateway.Medication.Services
                 this.logger.LogTrace("Populating medication summary... {Count} records", medSummaries.Count);
                 foreach (MedicationSummary mdSummary in medSummaries)
                 {
-                    string din = mdSummary.DIN.PadLeft(8, '0');
+                    string din = mdSummary.Din.PadLeft(8, '0');
                     if (drugProductsDict.ContainsKey(din))
                     {
                         mdSummary.BrandName = drugProductsDict[din].BrandName;

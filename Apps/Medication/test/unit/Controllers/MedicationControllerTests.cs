@@ -19,7 +19,6 @@ namespace HealthGateway.Medication.Controllers.Test
     using System.Linq;
     using HealthGateway.Common.Data.ViewModels;
     using HealthGateway.Database.Models;
-    using HealthGateway.Medication.Controllers;
     using HealthGateway.Medication.Models;
     using HealthGateway.Medication.Services;
     using Moq;
@@ -64,12 +63,12 @@ namespace HealthGateway.Medication.Controllers.Test
             {
                 {
                     drugIdentifier,
-                    new MedicationInformation()
+                    new MedicationInformation
                     {
-                        DIN = drugIdentifier,
-                        FederalData = new FederalDrugSource()
+                        Din = drugIdentifier,
+                        FederalData = new FederalDrugSource
                         {
-                            DrugProduct = new DrugProduct()
+                            DrugProduct = new DrugProduct
                             {
                                 DrugCode = drugIdentifier,
                             },

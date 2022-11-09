@@ -23,7 +23,6 @@ namespace HealthGateway.Medication.Services.Test
     using HealthGateway.Database.Delegates;
     using HealthGateway.Database.Models;
     using HealthGateway.Medication.Models;
-    using HealthGateway.Medication.Services;
     using Microsoft.Extensions.Logging;
     using Moq;
     using Xunit;
@@ -43,7 +42,7 @@ namespace HealthGateway.Medication.Services.Test
             string din = "00000000";
             List<DrugProduct> fedData = new()
             {
-                new DrugProduct()
+                new DrugProduct
                 {
                     DrugIdentificationNumber = din,
                     UpdatedDateTime = loadDate,
@@ -52,7 +51,7 @@ namespace HealthGateway.Medication.Services.Test
 
             List<PharmaCareDrug> provData = new()
             {
-                new PharmaCareDrug()
+                new PharmaCareDrug
                 {
                     DINPIN = din,
                     UpdatedDateTime = loadDate,
@@ -63,15 +62,15 @@ namespace HealthGateway.Medication.Services.Test
             {
                 {
                     din,
-                    new MedicationInformation()
+                    new MedicationInformation
                     {
-                        DIN = din,
-                        FederalData = new FederalDrugSource()
+                        Din = din,
+                        FederalData = new FederalDrugSource
                         {
                             UpdateDateTime = loadDate,
                             DrugProduct = fedData.First(),
                         },
-                        ProvincialData = new ProvincialDrugSource()
+                        ProvincialData = new ProvincialDrugSource
                         {
                             UpdateDateTime = loadDate,
                             PharmaCareDrug = provData.First(),
@@ -104,7 +103,7 @@ namespace HealthGateway.Medication.Services.Test
 
             List<PharmaCareDrug> provData = new()
             {
-                new PharmaCareDrug()
+                new PharmaCareDrug
                 {
                     DINPIN = din,
                     UpdatedDateTime = loadDate,
@@ -115,11 +114,11 @@ namespace HealthGateway.Medication.Services.Test
             {
                 {
                     din,
-                    new MedicationInformation()
+                    new MedicationInformation
                     {
-                        DIN = din,
+                        Din = din,
 
-                        ProvincialData = new ProvincialDrugSource()
+                        ProvincialData = new ProvincialDrugSource
                         {
                             UpdateDateTime = loadDate,
                             PharmaCareDrug = provData.First(),

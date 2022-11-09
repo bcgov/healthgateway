@@ -33,7 +33,7 @@ namespace HealthGateway.Medication.Models.ODR
         /// Gets or sets the PHN for the request.
         /// </summary>
         [JsonPropertyName("phn")]
-        public string PHN { get; set; } = string.Empty;
+        public string Phn { get; set; } = string.Empty;
 
         /// <summary>
         /// Gets or sets the value to be applied to the Get operator.
