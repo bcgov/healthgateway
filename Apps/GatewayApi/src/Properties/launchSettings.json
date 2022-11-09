@@ -1,21 +1,20 @@
 {
-    "$schema": "http://json.schemastore.org/launchsettings.json",
-    "iisSettings": {
-        "windowsAuthentication": false,
-        "anonymousAuthentication": true,
-        "iisExpress": {
-            "applicationUrl": "http://localhost:3000"
-        }
-    },
-    "profiles": {
-        "GatewayApi": {
-            "commandName": "Project",
-            "launchBrowser": false,
-            "environmentVariables": {
-                "DOTNET_USE_POLLING_FILE_WATCHER": "1",
-                "ASPNETCORE_ENVIRONMENT": "Development"
-            },
-            "applicationUrl": "http://localhost:3000"
-        }
+  "$schema": "http://json.schemastore.org/launchsettings.json",
+  "iisSettings": {
+    "windowsAuthentication": false,
+    "anonymousAuthentication": true,
+    "iisExpress": {
+      "applicationUrl": "http://localhost:3000"
     }
+  },
+  "profiles": {
+    "GatewayApi": {
+      "commandName": "Project",
+      "applicationUrl": "http://localhost:3000",
+      "environmentVariables": {
+        "DOTNET_USE_POLLING_FILE_WATCHER": "1",
+        "ASPNETCORE_ENVIRONMENT": "Development"
+      }
+    }
+  }
 }

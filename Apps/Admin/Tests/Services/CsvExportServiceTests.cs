@@ -20,6 +20,7 @@ namespace HealthGateway.Admin.Client.Services
     using System.Collections.Generic;
     using System.Globalization;
     using System.IO;
+    using System.Linq;
     using AutoMapper;
     using DeepEqual.Syntax;
     using HealthGateway.Admin.Client.Utils;
@@ -145,7 +146,7 @@ namespace HealthGateway.Admin.Client.Services
 
         private static IConfigurationRoot GetIConfigurationRoot()
         {
-            Dictionary<string, string> myConfiguration = new()
+            Dictionary<string, string?> myConfiguration = new()
             {
                 { "EnabledRoles", "[ \"AdminUser\", \"AdminReviewer\", \"SupportUser\" ]" },
             };
@@ -154,7 +155,7 @@ namespace HealthGateway.Admin.Client.Services
                 .AddJsonFile("appsettings.json", true)
                 .AddJsonFile("appsettings.Development.json", true)
                 .AddJsonFile("appsettings.local.json", true)
-                .AddInMemoryCollection(myConfiguration)
+                .AddInMemoryCollection(myConfiguration.ToList<KeyValuePair<string, string?>>())
                 .Build();
         }
     }

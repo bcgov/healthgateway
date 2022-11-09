@@ -84,10 +84,12 @@ namespace Healthgateway.JobScheduler.Jobs
             this.dbContext = dbContext;
             this.profilesPageSize = configuration.GetValue<int>($"{JobKey}:{ProfilesPageSizeKey}");
             this.hoursBeforeDeletion = configuration.GetValue<int>($"{JobKey}:{HoursDeletionKey}") * -1;
-            this.emailTemplate = configuration.GetValue<string>($"{JobKey}:{EmailTemplateKey}");
+            this.emailTemplate = configuration.GetValue<string>($"{JobKey}:{EmailTemplateKey}") ??
+                throw new ArgumentNullException(nameof(configuration), $"{JobKey}:{EmailTemplateKey} is null");
 
             IConfigurationSection? configSection = configuration.GetSection(AuthConfigSectionName);
-            this.tokenUri = configSection.GetValue<Uri>(@"TokenUri");
+            this.tokenUri = configSection.GetValue<Uri>(@"TokenUri") ??
+                throw new ArgumentNullException(nameof(configuration), $"{AuthConfigSectionName} TokenUri is null");
 
             this.tokenRequest = new ClientCredentialsTokenRequest();
             configSection.Bind(this.tokenRequest);

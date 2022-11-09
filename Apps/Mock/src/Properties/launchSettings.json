@@ -1,21 +1,20 @@
 {
-    "iisSettings": {
-        "windowsAuthentication": false,
-        "anonymousAuthentication": true,
-        "iisExpress": {
-            "applicationUrl": "http://localhost:7000",
-            "sslPort": 0
-        }
-    },
-    "$schema": "http://json.schemastore.org/launchsettings.json",
-    "profiles": {
-        "HealthGateway.Mock": {
-            "commandName": "Project",
-            "launchBrowser": false,
-            "environmentVariables": {
-                "ASPNETCORE_ENVIRONMENT": "Development"
-            },
-            "applicationUrl": "http://localhost:7000;"
-        }
+  "iisSettings": {
+    "windowsAuthentication": false,
+    "anonymousAuthentication": true,
+    "iisExpress": {
+      "applicationUrl": "http://localhost:7000",
+      "sslPort": 0
     }
+  },
+  "$schema": "http://json.schemastore.org/launchsettings.json",
+  "profiles": {
+    "HealthGateway.Mock": {
+      "commandName": "Project",
+      "applicationUrl": "http://localhost:7000;",
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development"
+      }
+    }
+  }
 }

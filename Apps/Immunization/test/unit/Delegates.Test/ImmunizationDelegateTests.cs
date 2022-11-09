@@ -18,6 +18,7 @@ namespace HealthGateway.ImmunizationTests.Delegates.Test
     using System;
     using System.Collections.Generic;
     using System.Globalization;
+    using System.Linq;
     using System.Net;
     using System.Net.Http;
     using HealthGateway.Common.AccessManagement.Authentication;
@@ -204,7 +205,7 @@ namespace HealthGateway.ImmunizationTests.Delegates.Test
 
         private static IConfigurationRoot GetIConfigurationRoot()
         {
-            Dictionary<string, string> myConfiguration = new()
+            Dictionary<string, string?> myConfiguration = new()
             {
                 { "Section:Key", "Value" },
             };
@@ -213,7 +214,7 @@ namespace HealthGateway.ImmunizationTests.Delegates.Test
                 .AddJsonFile("appsettings.json", optional: true)
                 .AddJsonFile("appsettings.Development.json", optional: true)
                 .AddJsonFile("appsettings.local.json", optional: true)
-                .AddInMemoryCollection(myConfiguration)
+                .AddInMemoryCollection(myConfiguration.ToList<KeyValuePair<string, string?>>())
                 .Build();
         }
 

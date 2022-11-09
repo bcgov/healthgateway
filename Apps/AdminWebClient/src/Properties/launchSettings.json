@@ -1,17 +1,16 @@
 {
-    "iisSettings": {
-        "windowsAuthentication": false,
-        "anonymousAuthentication": true
-    },
-    "profiles": {
-        "HealthGateway.Admin": {
-            "commandName": "Project",
-            "launchBrowser": false,
-            "environmentVariables": {
-                "ASPNETCORE_ENVIRONMENT": "Development",
-                "ServerOnly": "false"
-            },
-            "applicationUrl": "http://localhost:5010"
-        }
+  "iisSettings": {
+    "windowsAuthentication": false,
+    "anonymousAuthentication": true
+  },
+  "profiles": {
+    "HealthGateway.Admin": {
+      "commandName": "Project",
+      "applicationUrl": "http://localhost:5010",
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development",
+        "ServerOnly": "false"
+      }
     }
+  }
 }

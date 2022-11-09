@@ -16,6 +16,7 @@
 namespace HealthGateway.AdminWebClientTests.Services.Test;
 
 using System.Collections.Generic;
+using System.Linq;
 using System.Net;
 using System.Security.Claims;
 using HealthGateway.Database.Constants;
@@ -130,7 +131,7 @@ public class AuthenticationServiceTests
 
     private static IConfigurationRoot GetIConfigurationRoot()
     {
-        Dictionary<string, string> myConfiguration = new()
+        Dictionary<string, string?> myConfiguration = new()
         {
             { "EnabledRoles", "[ \"AdminUser\", \"AdminReviewer\", \"SupportUser\" ]" },
         };
@@ -139,7 +140,7 @@ public class AuthenticationServiceTests
             .AddJsonFile("appsettings.json", optional: true)
             .AddJsonFile("appsettings.Development.json", optional: true)
             .AddJsonFile("appsettings.local.json", optional: true)
-            .AddInMemoryCollection(myConfiguration)
+            .AddInMemoryCollection(myConfiguration.ToList<KeyValuePair<string, string?>>())
             .Build();
     }
 

@@ -551,7 +551,7 @@ namespace HealthGateway.LaboratoryTests.Services
 
         private static IConfigurationRoot GetIConfigurationRoot()
         {
-            Dictionary<string, string>? myConfiguration = new()
+            Dictionary<string, string?> myConfiguration = new()
             {
                 { "Laboratory:BackOffMilliseconds", "0" },
             };
@@ -560,7 +560,7 @@ namespace HealthGateway.LaboratoryTests.Services
                 .AddJsonFile("appsettings.json", true)
                 .AddJsonFile("appsettings.Development.json", true)
                 .AddJsonFile("appsettings.local.json", true)
-                .AddInMemoryCollection(myConfiguration)
+                .AddInMemoryCollection(myConfiguration.ToList<KeyValuePair<string, string?>>())
                 .Build();
         }
     }

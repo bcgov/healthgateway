@@ -78,8 +78,8 @@ namespace HealthGateway.JobScheduler
             this.startupConfig.ConfigureAccessControl(services);
             this.startupConfig.ConfigureTracing(services);
 
-            string requiredUserRole = this.configuration.GetValue<string>("OpenIdConnect:UserRole");
-            string userRoleClaimType = this.configuration.GetValue<string>("OpenIdConnect:RolesClaim");
+            string? requiredUserRole = this.configuration.GetValue<string>("OpenIdConnect:UserRole");
+            string? userRoleClaimType = this.configuration.GetValue<string>("OpenIdConnect:RolesClaim");
 
             services.AddAuthorization(
                 options =>
@@ -115,7 +115,7 @@ namespace HealthGateway.JobScheduler
 
             // Add injection for KeyCloak User Admin
             services.AddTransient<IAuthenticationDelegate, AuthenticationDelegate>();
-            Uri baseUri = this.startupConfig.Configuration.GetValue<Uri>("KeycloakAdmin:BaseUrl");
+            Uri? baseUri = this.startupConfig.Configuration.GetValue<Uri>("KeycloakAdmin:BaseUrl");
             services.AddRefitClient<IKeycloakAdminApi>().ConfigureHttpClient(c => c.BaseAddress = baseUri);
 
             // Add Jobs

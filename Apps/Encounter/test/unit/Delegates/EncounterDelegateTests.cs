@@ -17,6 +17,7 @@ namespace HealthGateway.EncounterTests.Delegates
 {
     using System;
     using System.Collections.Generic;
+    using System.Linq;
     using System.Net;
     using System.Net.Http;
     using System.Threading;
@@ -238,14 +239,14 @@ namespace HealthGateway.EncounterTests.Delegates
 
         private static IConfigurationRoot GetLocalConfig()
         {
-            Dictionary<string, string> myConfiguration = new()
+            Dictionary<string, string?> myConfiguration = new()
             {
                 { "ODR:DynamicServiceLookup", "True" },
                 { "ODR:BaseEndpoint", "http://mockendpoint/" },
             };
 
             return new ConfigurationBuilder()
-                .AddInMemoryCollection(myConfiguration)
+                .AddInMemoryCollection(myConfiguration.ToList<KeyValuePair<string, string?>>())
                 .Build();
         }
     }

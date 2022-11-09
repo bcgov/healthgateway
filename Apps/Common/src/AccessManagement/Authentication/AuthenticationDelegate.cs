@@ -196,7 +196,8 @@ namespace HealthGateway.Common.AccessManagement.Authentication
         private (Uri TokenUri, ClientCredentialsTokenRequest TokenRequest) GetConfiguration(string sectionName)
         {
             IConfigurationSection? configSection = this.configuration.GetSection(sectionName);
-            Uri configUri = configSection.GetValue<Uri>(@"TokenUri");
+            Uri configUri = configSection.GetValue<Uri>(@"TokenUri") ??
+                            throw new ArgumentNullException(nameof(sectionName), $"{sectionName} does not contain a valid TokenUri");
             ClientCredentialsTokenRequest configTokenRequest = new();
             configSection.Bind(configTokenRequest); // Client ID, Client Secret, Audience, Username, Password
             return (configUri, configTokenRequest);

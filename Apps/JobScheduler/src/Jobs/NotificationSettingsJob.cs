@@ -67,8 +67,9 @@ namespace Healthgateway.JobScheduler.Jobs
             this.eventLogDelegate = eventLogDelegate;
             this.jobEnabled = configuration.GetSection(JobConfigKey).GetValue(JobEnabledKey, true);
 
-            IConfigurationSection? configSection = configuration?.GetSection(AuthConfigSectionName);
-            this.tokenUri = configSection.GetValue<Uri>(@"TokenUri");
+            IConfigurationSection configSection = configuration.GetSection(AuthConfigSectionName);
+            this.tokenUri = configSection.GetValue<Uri>(@"TokenUri") ??
+                            throw new ArgumentNullException(nameof(configuration), $"{AuthConfigSectionName} TokenUri is null");
 
             this.tokenRequest = new ClientCredentialsTokenRequest();
             configSection.Bind(this.tokenRequest); // Client ID, Client Secret, Audience, Username, Password

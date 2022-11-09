@@ -80,11 +80,11 @@ namespace HealthGateway.DrugMaintainer.Apps
         {
             this.Logger.LogInformation("Reading configuration for section {ConfigSectionName}", configSectionName);
             IConfigurationSection section = this.Configuration.GetSection(configSectionName);
-            Uri source = section.GetValue<Uri>("Url");
+            Uri? source = section.GetValue<Uri>("Url");
 
-            string programType = section.GetValue<string>("AppName");
+            string? programType = section.GetValue<string>("AppName");
             this.Logger.LogInformation("Program Type = {ProgramType}", programType);
-            string targetFolder = this.Configuration.GetSection(configSectionName).GetValue<string>("TargetFolder");
+            string? targetFolder = this.Configuration.GetSection(configSectionName).GetValue<string>("TargetFolder");
 
             FileDownload downloadedFile = this.DownloadFile(source, targetFolder);
             if (!this.FileProcessed(downloadedFile))

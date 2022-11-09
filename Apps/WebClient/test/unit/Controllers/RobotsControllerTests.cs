@@ -13,9 +13,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //-------------------------------------------------------------------------
-namespace HealthGateway.WebClient.Test.Controllers
+namespace HealthGateway.WebClientTests.Controllers
 {
     using System.Collections.Generic;
+    using System.Linq;
     using System.Net.Mime;
     using DeepEqual.Syntax;
     using HealthGateway.WebClient.Controllers;
@@ -44,12 +45,12 @@ namespace HealthGateway.WebClient.Test.Controllers
 
             string key = "robots.txt";
             string robotsContent = expectedResult.Content;
-            Dictionary<string, string> myConfiguration = new()
+            Dictionary<string, string?> myConfiguration = new()
             {
                 { key, robotsContent },
             };
             IConfigurationRoot configuration = new ConfigurationBuilder()
-                .AddInMemoryCollection(myConfiguration)
+                .AddInMemoryCollection(myConfiguration.ToList<KeyValuePair<string, string?>>())
                 .Build();
 
             using RobotsController controller = new(configuration);
@@ -73,7 +74,7 @@ namespace HealthGateway.WebClient.Test.Controllers
                 Content = string.Empty,
             };
 
-            Dictionary<string, string> myConfiguration = new();
+            IEnumerable<KeyValuePair<string, string?>> myConfiguration = new List<KeyValuePair<string, string?>>();
             IConfigurationRoot configuration = new ConfigurationBuilder()
                 .AddInMemoryCollection(myConfiguration)
                 .Build();

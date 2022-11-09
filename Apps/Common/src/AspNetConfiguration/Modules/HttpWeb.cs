@@ -121,7 +121,7 @@ namespace HealthGateway.Common.AspNetConfiguration.Modules
             app.UseHealthChecks("/health");
 
             // Enable CORS
-            string enableCors = configuration.GetValue("AllowOrigins", string.Empty);
+            string? enableCors = configuration.GetValue<string>("AllowOrigins");
             if (!string.IsNullOrEmpty(enableCors))
             {
                 app.UseCors(
@@ -203,7 +203,7 @@ namespace HealthGateway.Common.AspNetConfiguration.Modules
             if (enabled)
             {
                 logger.LogDebug("Using Forward Headers");
-                string basePath = section.GetValue<string>("BasePath");
+                string basePath = section.GetValue<string>("BasePath") ?? string.Empty;
                 if (!string.IsNullOrEmpty(basePath))
                 {
                     logger.LogInformation("Forward BasePath is set to {BasePath}, setting PathBase for app", basePath);
