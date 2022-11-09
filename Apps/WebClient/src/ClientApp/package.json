@@ -10,7 +10,7 @@
         "vue-help": "vue-cli-service help"
     },
     "devDependencies": {
-        "@types/luxon": "^1.27.0",
+        "@types/luxon": "^3.1.0",
         "@types/qrcode": "^1.5.0",
         "@types/vuelidate": "^0.7.15",
         "@types/webpack-env": "^1.18.0",
