@@ -93,7 +93,7 @@ namespace HealthGateway.Admin.Client.Components
             public BroadcastRow(ExtendedBroadcast model)
             {
                 this.Id = model.Id;
-                this.Subject = model.CategoryName ?? "-";
+                this.Subject = model.CategoryName;
                 this.EffectiveDate = DateFormatter.ToShortDateAndTime(model.ScheduledDateUtc.ToLocalTime());
                 this.ExpiryDate = model.ExpirationDateUtc == null ? "-" : DateFormatter.ToShortDateAndTime(model.ExpirationDateUtc.Value.ToLocalTime());
                 this.ActionType = BroadcastUtility.FormatActionType(model.ActionType);
