@@ -1137,14 +1137,7 @@ namespace HealthGateway.PatientTests.Delegates
         {
             // Setup
             string expectedResponseCode = "BCHCIM.GD.2.0018";
-
-            HCIM_IN_GetDemographicsResponseIdentifiedPerson subjectTarget = GetSubjectTarget();
-            Mock<QUPA_AR101102_PortType> clientMock = new();
-            clientMock.Setup(x => x.HCIM_IN_GetDemographicsAsync(It.IsAny<HCIM_IN_GetDemographicsRequest>())).ReturnsAsync(
-               GetDemographics(subjectTarget, expectedResponseCode));
-            IClientRegistriesDelegate patientDelegate = new ClientRegistriesDelegate(
-                new Mock<ILogger<ClientRegistriesDelegate>>().Object,
-                clientMock.Object);
+            IClientRegistriesDelegate patientDelegate = GetClientRegistriesDelegate(expectedResponseCode, false, true);
 
             // Act
             ApiResult<PatientModel> actual = await patientDelegate.GetDemographicsAsync(OidType.PHN, Phn).ConfigureAwait(true);
@@ -1162,14 +1155,7 @@ namespace HealthGateway.PatientTests.Delegates
         {
             // Setup
             string expectedResponseCode = "BCHCIM.GD.2.0006";
-
-            HCIM_IN_GetDemographicsResponseIdentifiedPerson subjectTarget = GetSubjectTarget();
-            Mock<QUPA_AR101102_PortType> clientMock = new();
-            clientMock.Setup(x => x.HCIM_IN_GetDemographicsAsync(It.IsAny<HCIM_IN_GetDemographicsRequest>())).ReturnsAsync(
-                GetDemographics(subjectTarget, expectedResponseCode));
-            IClientRegistriesDelegate patientDelegate = new ClientRegistriesDelegate(
-                new Mock<ILogger<ClientRegistriesDelegate>>().Object,
-                clientMock.Object);
+            IClientRegistriesDelegate patientDelegate = GetClientRegistriesDelegate(expectedResponseCode, false, true);
 
             // Act
             ApiResult<PatientModel> actual = await patientDelegate.GetDemographicsAsync(OidType.PHN, Phn).ConfigureAwait(true);
@@ -1186,13 +1172,7 @@ namespace HealthGateway.PatientTests.Delegates
         public async Task ShouldReturnWarningGivenNoLegalName()
         {
             // Setup
-            HCIM_IN_GetDemographicsResponseIdentifiedPerson subjectTarget = GetSubjectTarget(false, true);
-            Mock<QUPA_AR101102_PortType> clientMock = new();
-            clientMock.Setup(x => x.HCIM_IN_GetDemographicsAsync(It.IsAny<HCIM_IN_GetDemographicsRequest>())).ReturnsAsync(
-                GetDemographics(subjectTarget));
-            IClientRegistriesDelegate patientDelegate = new ClientRegistriesDelegate(
-                new Mock<ILogger<ClientRegistriesDelegate>>().Object,
-                clientMock.Object);
+            IClientRegistriesDelegate patientDelegate = GetClientRegistriesDelegate(false, true);
 
             // Act
             ApiResult<PatientModel> actual = await patientDelegate.GetDemographicsAsync(OidType.PHN, Phn).ConfigureAwait(true);
@@ -1209,13 +1189,7 @@ namespace HealthGateway.PatientTests.Delegates
         public async Task ShouldReturnWarningGivenNoIds()
         {
             // Setup
-            HCIM_IN_GetDemographicsResponseIdentifiedPerson subjectTarget = GetSubjectTarget(false, true, true);
-            Mock<QUPA_AR101102_PortType> clientMock = new();
-            clientMock.Setup(x => x.HCIM_IN_GetDemographicsAsync(It.IsAny<HCIM_IN_GetDemographicsRequest>())).ReturnsAsync(
-                GetDemographics(subjectTarget));
-            IClientRegistriesDelegate patientDelegate = new ClientRegistriesDelegate(
-                new Mock<ILogger<ClientRegistriesDelegate>>().Object,
-                clientMock.Object);
+            IClientRegistriesDelegate patientDelegate = GetClientRegistriesDelegate(false, true, true);
 
             // Act
             ApiResult<PatientModel> actual = await patientDelegate.GetDemographicsAsync(OidType.PHN, Phn).ConfigureAwait(true);
@@ -1232,11 +1206,7 @@ namespace HealthGateway.PatientTests.Delegates
         {
             // Setup
             string expectedDetail = $"Communication Exception when trying to retrieve patient information from {OidType.PHN}";
-            Mock<QUPA_AR101102_PortType> clientMock = new();
-            clientMock.Setup(x => x.HCIM_IN_GetDemographicsAsync(It.IsAny<HCIM_IN_GetDemographicsRequest>())).ThrowsAsync(new CommunicationException(string.Empty));
-            IClientRegistriesDelegate patientDelegate = new ClientRegistriesDelegate(
-                new Mock<ILogger<ClientRegistriesDelegate>>().Object,
-                clientMock.Object);
+            IClientRegistriesDelegate patientDelegate = GetClientRegistriesDelegate(false, false, false, true);
 
             // Act
             async Task Actual() => await patientDelegate.GetDemographicsAsync(OidType.PHN, Phn).ConfigureAwait(true);
@@ -1255,15 +1225,7 @@ namespace HealthGateway.PatientTests.Delegates
         {
             // Setup
             string expectedResponseCode = "BCHCIM.GD.0.0099";
-            HCIM_IN_GetDemographicsResponseIdentifiedPerson subjectTarget = GetSubjectTarget();
-
-            Mock<QUPA_AR101102_PortType> clientMock = new();
-            clientMock.Setup(x => x.HCIM_IN_GetDemographicsAsync(It.IsAny<HCIM_IN_GetDemographicsRequest>())).ReturnsAsync(
-               GetDemographics(subjectTarget, expectedResponseCode));
-
-            IClientRegistriesDelegate patientDelegate = new ClientRegistriesDelegate(
-                new Mock<ILogger<ClientRegistriesDelegate>>().Object,
-                clientMock.Object);
+            IClientRegistriesDelegate patientDelegate = GetClientRegistriesDelegate(expectedResponseCode);
 
             // Act
             async Task Actual() => await patientDelegate.GetDemographicsAsync(OidType.PHN, Phn).ConfigureAwait(true);
@@ -1281,15 +1243,7 @@ namespace HealthGateway.PatientTests.Delegates
         public async Task ShouldThrowApiPatientExceptionGivenDeceasedIndicatorTrue()
         {
             // Setup
-            HCIM_IN_GetDemographicsResponseIdentifiedPerson subjectTarget = GetSubjectTarget(true);
-
-            Mock<QUPA_AR101102_PortType> clientMock = new();
-            clientMock.Setup(x => x.HCIM_IN_GetDemographicsAsync(It.IsAny<HCIM_IN_GetDemographicsRequest>())).ReturnsAsync(
-                GetDemographics(subjectTarget));
-
-            IClientRegistriesDelegate patientDelegate = new ClientRegistriesDelegate(
-                new Mock<ILogger<ClientRegistriesDelegate>>().Object,
-                clientMock.Object);
+            IClientRegistriesDelegate patientDelegate = GetClientRegistriesDelegate(true);
 
             // Act
             async Task Actual() => await patientDelegate.GetDemographicsAsync(OidType.PHN, Phn).ConfigureAwait(true);
@@ -1297,6 +1251,46 @@ namespace HealthGateway.PatientTests.Delegates
             // Verify
             ApiPatientException exception = await Assert.ThrowsAsync<ApiPatientException>(Actual).ConfigureAwait(true);
             Assert.Equal(ErrorMessages.ClientRegistryReturnedDeceasedPerson, exception.Detail);
+        }
+
+        private static IClientRegistriesDelegate GetClientRegistriesDelegate(
+            bool deceasedInd = false,
+            bool noNames = false,
+            bool noIds = false,
+            bool throwsException = false)
+        {
+            return GetClientRegistriesDelegate(
+                ResponseCode,
+                deceasedInd,
+                noNames,
+                noIds,
+                throwsException);
+        }
+
+        private static IClientRegistriesDelegate GetClientRegistriesDelegate(
+            string expectedResponseCode = ResponseCode,
+            bool deceasedInd = false,
+            bool noNames = false,
+            bool noIds = false,
+            bool throwsException = false)
+        {
+            HCIM_IN_GetDemographicsResponseIdentifiedPerson subjectTarget = GetSubjectTarget(deceasedInd, noNames, noIds);
+
+            Mock<QUPA_AR101102_PortType> clientMock = new();
+
+            if (throwsException)
+            {
+                clientMock.Setup(x => x.HCIM_IN_GetDemographicsAsync(It.IsAny<HCIM_IN_GetDemographicsRequest>())).ThrowsAsync(new CommunicationException(string.Empty));
+            }
+            else
+            {
+                clientMock.Setup(x => x.HCIM_IN_GetDemographicsAsync(It.IsAny<HCIM_IN_GetDemographicsRequest>())).ReturnsAsync(
+                    GetDemographics(subjectTarget, expectedResponseCode));
+            }
+
+            return new ClientRegistriesDelegate(
+                new Mock<ILogger<ClientRegistriesDelegate>>().Object,
+                clientMock.Object);
         }
 
         private static HCIM_IN_GetDemographicsResponseIdentifiedPerson GetSubjectTarget(bool deceasedInd = false, bool noNames = false, bool noIds = false)
