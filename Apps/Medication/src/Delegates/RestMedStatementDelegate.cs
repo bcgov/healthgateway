@@ -47,9 +47,9 @@ namespace HealthGateway.Medication.Delegates
     /// </summary>
     public class RestMedStatementDelegate : IMedStatementDelegate
     {
-        private const string ODRConfigSectionKey = "ODR";
+        private const string OdrConfigSectionKey = "ODR";
         private const string ProtectiveWordCacheDomain = "ProtectiveWord";
-        private readonly Uri baseURL;
+        private readonly Uri baseUrl;
         private readonly ICacheProvider cacheProvider;
         private readonly IHashDelegate hashDelegate;
         private readonly IHttpClientService httpClientService;
@@ -77,7 +77,7 @@ namespace HealthGateway.Medication.Delegates
             this.cacheProvider = cacheProvider;
             this.hashDelegate = hashDelegate;
             this.odrConfig = new OdrConfig();
-            configuration.Bind(ODRConfigSectionKey, this.odrConfig);
+            configuration.Bind(OdrConfigSectionKey, this.odrConfig);
             if (this.odrConfig.DynamicServiceLookup)
             {
                 string? serviceHost = Environment.GetEnvironmentVariable($"{this.odrConfig.ServiceName}{this.odrConfig.ServiceHostSuffix}");
@@ -88,20 +88,21 @@ namespace HealthGateway.Medication.Delegates
                     { "servicePort", servicePort! },
                 };
 
-                this.baseURL = new Uri(StringManipulator.Replace(this.odrConfig.BaseEndpoint, replacementData)!);
+                this.baseUrl = new Uri(StringManipulator.Replace(this.odrConfig.BaseEndpoint, replacementData)!);
             }
             else
             {
-                this.baseURL = new Uri(this.odrConfig.BaseEndpoint);
+                this.baseUrl = new Uri(this.odrConfig.BaseEndpoint);
             }
 
-            logger.LogInformation("ODR Proxy URL resolved as {BaseUrl}", this.baseURL);
+            logger.LogInformation("ODR Proxy URL resolved as {BaseUrl}", this.baseUrl);
         }
 
-        private static ActivitySource Source { get; } = new(nameof(ClientRegistriesDelegate));
+        private static ActivitySource Source { get; } = new(nameof(RestMedStatementDelegate));
 
         /// <inheritdoc/>
         [SuppressMessage("Design", "CA1031:Do not catch general exception types", Justification = "Catch all required")]
+        [SuppressMessage("ReSharper", "ExplicitCallerInfoArgument", Justification = "Team decision")]
         public async Task<RequestResult<MedicationHistoryResponse>> GetMedicationStatementsAsync(OdrHistoryQuery query, string? protectiveWord, string hdid, string ipAddress)
         {
             using (Source.StartActivity())
@@ -129,7 +130,7 @@ namespace HealthGateway.Medication.Delegates
 
                             string json = JsonSerializer.Serialize(request);
                             using HttpContent content = new StringContent(json, null, MediaTypeNames.Application.Json);
-                            Uri endpoint = new(this.baseURL, this.odrConfig.PatientProfileEndpoint);
+                            Uri endpoint = new(this.baseUrl, this.odrConfig.PatientProfileEndpoint);
                             HttpResponseMessage response = await client.PostAsync(endpoint, content).ConfigureAwait(true);
                             string payload = await response.Content.ReadAsStringAsync().ConfigureAwait(true);
                             if (response.IsSuccessStatusCode)
@@ -200,11 +201,12 @@ namespace HealthGateway.Medication.Delegates
         }
 
         /// <inheritdoc/>
+        [SuppressMessage("ReSharper", "ExplicitCallerInfoArgument", Justification = "Team decision")]
         public bool ValidateProtectiveWord(string phn, string? protectiveWord, string hdid, string ipAddress)
         {
             using (Source.StartActivity())
             {
-                bool isValid = false;
+                bool isValid;
                 IHash? cacheHash = null;
                 if (this.odrConfig.CacheTTL > 0)
                 {
@@ -220,7 +222,7 @@ namespace HealthGateway.Medication.Delegates
                     this.logger.LogDebug("Unable to find Protective Word in Cache, fetching from source");
 
                     // The hash isn't in the cache, get Protective word hash from source
-                    IHash? hash = Task.Run(async () => await this.GetProtectiveWord(phn, hdid, ipAddress).ConfigureAwait(true)).Result;
+                    IHash hash = Task.Run(async () => await this.GetProtectiveWord(phn, hdid, ipAddress).ConfigureAwait(true)).Result;
                     if (this.odrConfig.CacheTTL > 0)
                     {
                         this.logger.LogDebug("Storing a copy of the Protective Word in the Cache");
@@ -263,22 +265,22 @@ namespace HealthGateway.Medication.Delegates
                 ProtectiveWord request = new()
                 {
                     Id = Guid.NewGuid(),
-                    RequestorHDID = hdid,
-                    RequestorIP = ipAddress,
+                    RequestorHdid = hdid,
+                    RequestorIp = ipAddress,
                     QueryResponse = new ProtectiveWordQueryResponse
                     {
-                        PHN = phn,
+                        Phn = phn,
                         Operator = ProtectiveWordOperator.Get,
                     },
                 };
-                JsonSerializerOptions? options = new()
+                JsonSerializerOptions options = new()
                 {
                     PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
                     DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
                     WriteIndented = true,
                 };
                 string json = JsonSerializer.Serialize(request, options);
-                Uri endpoint = new(this.baseURL, this.odrConfig.ProtectiveWordEndpoint);
+                Uri endpoint = new(this.baseUrl, this.odrConfig.ProtectiveWordEndpoint);
                 using HttpContent content = new StringContent(json, null, MediaTypeNames.Application.Json);
                 HttpResponseMessage response = await client.PostAsync(endpoint, content).ConfigureAwait(true);
                 string payload = await response.Content.ReadAsStringAsync().ConfigureAwait(true);

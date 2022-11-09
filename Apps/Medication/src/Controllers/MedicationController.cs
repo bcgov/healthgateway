@@ -60,7 +60,7 @@ namespace HealthGateway.Medication.Controllers
         public RequestResult<MedicationInformation> GetMedication(string drugIdentifier)
         {
             // The database requires the dins to be the same size and padded with zeroes on the left
-            string paddedDin = drugIdentifier!.PadLeft(8, '0');
+            string paddedDin = drugIdentifier.PadLeft(8, '0');
             IDictionary<string, MedicationInformation> medications = this.medicationService.GetMedications(new List<string> { paddedDin });
 
             RequestResult<MedicationInformation> result = new()

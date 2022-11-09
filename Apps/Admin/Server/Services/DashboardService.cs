@@ -18,19 +18,16 @@ namespace HealthGateway.Admin.Server.Services
     using System;
     using System.Collections.Generic;
     using System.Globalization;
-    using HealthGateway.Common.Services;
     using HealthGateway.Database.Delegates;
     using Microsoft.Extensions.Logging;
 
     /// <inheritdoc/>
     public class DashboardService : IDashboardService
     {
-        private readonly ILogger logger;
         private readonly IResourceDelegateDelegate dependentDelegate;
-        private readonly IUserProfileDelegate userProfileDelegate;
-        private readonly IMessagingVerificationDelegate messagingVerificationDelegate;
-        private readonly IPatientService patientService;
+        private readonly ILogger logger;
         private readonly IRatingDelegate ratingDelegate;
+        private readonly IUserProfileDelegate userProfileDelegate;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="DashboardService"/> class.
@@ -38,22 +35,16 @@ namespace HealthGateway.Admin.Server.Services
         /// <param name="logger">Injected Logger Provider.</param>
         /// <param name="dependentDelegate">The dependent delegate to interact with the DB.</param>
         /// <param name="userProfileDelegate">The user profile delegate to interact with the DB.</param>
-        /// <param name="messagingVerificationDelegate">The Messaging verification delegate to interact with the DB.</param>
-        /// <param name="patientService">The patient service to lookup HDIDs by PHN.</param>
         /// <param name="ratingDelegate">The rating delegate.</param>
         public DashboardService(
             ILogger<DashboardService> logger,
             IResourceDelegateDelegate dependentDelegate,
             IUserProfileDelegate userProfileDelegate,
-            IMessagingVerificationDelegate messagingVerificationDelegate,
-            IPatientService patientService,
             IRatingDelegate ratingDelegate)
         {
             this.logger = logger;
             this.dependentDelegate = dependentDelegate;
             this.userProfileDelegate = userProfileDelegate;
-            this.messagingVerificationDelegate = messagingVerificationDelegate;
-            this.patientService = patientService;
             this.ratingDelegate = ratingDelegate;
         }
 

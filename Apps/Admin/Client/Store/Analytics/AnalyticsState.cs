@@ -23,6 +23,4 @@ using Fluxor;
 /// State should be decorated with [FeatureState] for automatic discovery when services.AddFluxor is called.
 /// </summary>
 [FeatureState]
-public record AnalyticsState : BaseRequestState<HttpContent>
-{
-}
+public record AnalyticsState : BaseRequestState<HttpContent>;

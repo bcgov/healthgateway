@@ -48,15 +48,15 @@ namespace HealthGateway.MedicationTests.Delegates
     /// </summary>
     public class MedicationDelegateTests
     {
+        private readonly Uri baseURI;
         private readonly IConfiguration configuration;
-        private readonly ILoggerFactory loggerFactory;
-        private readonly string phn = "9735361219";
         private readonly string hdid = "EXTRIOYFPNX35TWEBUAJ3DNFDFXSYTBC6J4M76GYE3HC5ER2NKWQ";
         private readonly string ip = "10.0.0.1";
+        private readonly ILoggerFactory loggerFactory;
         private readonly OdrConfig odrConfig = new();
         private readonly string odrConfigSectionKey = "ODR";
-        private readonly Uri baseURI;
         private readonly Uri patientProfileEndpoint;
+        private readonly string phn = "9735361219";
         private readonly Uri protectiveWordEndpoint;
         private readonly OdrHistoryQuery query = new()
         {
@@ -90,19 +90,19 @@ namespace HealthGateway.MedicationTests.Delegates
                 RequestorHDID = this.hdid,
                 RequestorIP = this.ip,
                 Query = this.query,
-                Response = new MedicationHistoryResponse()
+                Response = new MedicationHistoryResponse
                 {
                     Id = Guid.Parse("ee37267e-cb2c-48e1-a3c9-16c36ce7466b"),
                     Pages = 1,
                     TotalRecords = 1,
                     Results = new List<MedicationResult>
                     {
-                        new MedicationResult()
+                        new()
                         {
-                            DIN = "00000000",
+                            Din = "00000000",
                             Directions = "Directions",
                             DispenseDate = DateTime.Now,
-                            DispensingPharmacy = new Pharmacy()
+                            DispensingPharmacy = new Pharmacy
                             {
                                 Address = new()
                                 {
@@ -120,7 +120,7 @@ namespace HealthGateway.MedicationTests.Delegates
                             },
                             GenericName = "Generic Name",
                             Id = 0,
-                            Practioner = new Name()
+                            Practioner = new Name
                             {
                                 GivenName = "Given",
                                 MiddleInitial = "I",
@@ -157,12 +157,15 @@ namespace HealthGateway.MedicationTests.Delegates
                 new Mock<ICacheProvider>().Object,
                 GetHashDelegate());
 
-            RequestResult<MedicationHistoryResponse> response = Task.Run(async () =>
-                await medStatementDelegate.GetMedicationStatementsAsync(
-                    this.query,
-                    string.Empty,
-                    string.Empty,
-                    string.Empty).ConfigureAwait(true)).Result;
+            RequestResult<MedicationHistoryResponse> response = Task.Run(
+                    async () =>
+                        await medStatementDelegate.GetMedicationStatementsAsync(
+                                this.query,
+                                string.Empty,
+                                string.Empty,
+                                string.Empty)
+                            .ConfigureAwait(true))
+                .Result;
 
             Assert.Equal(ResultType.Success, response.ResultStatus);
             medicationHistory.Response.ShouldDeepEqual(response.ResourcePayload);
@@ -180,16 +183,16 @@ namespace HealthGateway.MedicationTests.Delegates
                 RequestorHDID = this.hdid,
                 RequestorIP = this.ip,
                 Query = this.query,
-                Response = new MedicationHistoryResponse()
+                Response = new MedicationHistoryResponse
                 {
                     Id = Guid.Parse("ee37267e-cb2c-48e1-a3c9-16c36ce7466b"),
                     Pages = 1,
                     TotalRecords = 1,
                     Results = new List<MedicationResult>
                     {
-                        new MedicationResult()
+                        new()
                         {
-                            DIN = "00000000",
+                            Din = "00000000",
                         },
                     },
                 },
@@ -218,12 +221,15 @@ namespace HealthGateway.MedicationTests.Delegates
                 mockCacheProvider.Object,
                 mockHashDelegate);
 
-            RequestResult<MedicationHistoryResponse> response = Task.Run(async () =>
-                await medStatementDelegate.GetMedicationStatementsAsync(
-                    this.query,
-                    string.Empty,
-                    string.Empty,
-                    string.Empty).ConfigureAwait(true)).Result;
+            RequestResult<MedicationHistoryResponse> response = Task.Run(
+                    async () =>
+                        await medStatementDelegate.GetMedicationStatementsAsync(
+                                this.query,
+                                string.Empty,
+                                string.Empty,
+                                string.Empty)
+                            .ConfigureAwait(true))
+                .Result;
 
             Assert.Equal(ResultType.Success, response.ResultStatus);
             medicationHistory.Response.ShouldDeepEqual(response.ResourcePayload);
@@ -245,7 +251,7 @@ namespace HealthGateway.MedicationTests.Delegates
             Mock<HttpMessageHandler> handlerMock = GetHttpMessageHandler(protectedHttpResponseMessage, this.protectiveWordEndpoint);
             Mock<ICacheProvider> mockCacheProvider = new();
             Mock<IHashDelegate> mockHashDelegate = new();
-            IHash hash = new HmacHash()
+            IHash hash = new HmacHash
             {
                 Hash = $"{protectiveWordJson}-HASH",
             };
@@ -260,12 +266,15 @@ namespace HealthGateway.MedicationTests.Delegates
                 mockCacheProvider.Object,
                 mockHashDelegate.Object);
 
-            RequestResult<MedicationHistoryResponse> response = Task.Run(async () =>
-                await medStatementDelegate.GetMedicationStatementsAsync(
-                    this.query,
-                    string.Empty,
-                    string.Empty,
-                    string.Empty).ConfigureAwait(true)).Result;
+            RequestResult<MedicationHistoryResponse> response = Task.Run(
+                    async () =>
+                        await medStatementDelegate.GetMedicationStatementsAsync(
+                                this.query,
+                                string.Empty,
+                                string.Empty,
+                                string.Empty)
+                            .ConfigureAwait(true))
+                .Result;
 
             Assert.Equal(ResultType.ActionRequired, response.ResultStatus);
             Assert.Equal(ActionType.Protected, response?.ResultError?.ActionCode);
@@ -293,7 +302,7 @@ namespace HealthGateway.MedicationTests.Delegates
 
             Mock<ICacheProvider> mockCacheProvider = new();
             Mock<IHashDelegate> mockHashDelegate = new();
-            IHash hash = new HmacHash()
+            IHash hash = new HmacHash
             {
                 Hash = string.Empty,
             };
@@ -308,12 +317,15 @@ namespace HealthGateway.MedicationTests.Delegates
                 mockCacheProvider.Object,
                 mockHashDelegate.Object);
 
-            RequestResult<MedicationHistoryResponse> response = Task.Run(async () =>
-                await medStatementDelegate.GetMedicationStatementsAsync(
-                    this.query,
-                    string.Empty,
-                    string.Empty,
-                    string.Empty).ConfigureAwait(true)).Result;
+            RequestResult<MedicationHistoryResponse> response = Task.Run(
+                    async () =>
+                        await medStatementDelegate.GetMedicationStatementsAsync(
+                                this.query,
+                                string.Empty,
+                                string.Empty,
+                                string.Empty)
+                            .ConfigureAwait(true))
+                .Result;
 
             Assert.True(response.ResultStatus == ResultType.Error);
         }
@@ -331,19 +343,19 @@ namespace HealthGateway.MedicationTests.Delegates
             };
             Mock<HttpMessageHandler> handlerMock = new();
             handlerMock
-               .Protected()
-               .Setup<Task<HttpResponseMessage>>(
-                  "SendAsync",
-                  ItExpr.Is<HttpRequestMessage>(c => c.RequestUri == this.patientProfileEndpoint),
-                  ItExpr.IsAny<CancellationToken>())
-               .Throws<HttpRequestException>()
-               .Verifiable();
+                .Protected()
+                .Setup<Task<HttpResponseMessage>>(
+                    "SendAsync",
+                    ItExpr.Is<HttpRequestMessage>(c => c.RequestUri == this.patientProfileEndpoint),
+                    ItExpr.IsAny<CancellationToken>())
+                .Throws<HttpRequestException>()
+                .Verifiable();
 
             GetHttpMessageHandler(protectiveWordResponseMessage, this.protectiveWordEndpoint, handlerMock);
 
             Mock<ICacheProvider> mockCacheProvider = new();
             Mock<IHashDelegate> mockHashDelegate = new();
-            IHash hash = new HmacHash()
+            IHash hash = new HmacHash
             {
                 Hash = string.Empty,
             };
@@ -358,12 +370,15 @@ namespace HealthGateway.MedicationTests.Delegates
                 mockCacheProvider.Object,
                 mockHashDelegate.Object);
 
-            RequestResult<MedicationHistoryResponse> response = Task.Run(async () =>
-                await medStatementDelegate.GetMedicationStatementsAsync(
-                    this.query,
-                    string.Empty,
-                    string.Empty,
-                    string.Empty).ConfigureAwait(true)).Result;
+            RequestResult<MedicationHistoryResponse> response = Task.Run(
+                    async () =>
+                        await medStatementDelegate.GetMedicationStatementsAsync(
+                                this.query,
+                                string.Empty,
+                                string.Empty,
+                                string.Empty)
+                            .ConfigureAwait(true))
+                .Result;
 
             Assert.True(response.ResultStatus == ResultType.Error);
         }
@@ -382,7 +397,7 @@ namespace HealthGateway.MedicationTests.Delegates
             Mock<HttpMessageHandler> handlerMock = GetHttpMessageHandler(protectiveWordResponseMessage, this.protectiveWordEndpoint);
             Mock<ICacheProvider> mockCacheProvider = new();
             Mock<IHashDelegate> mockHashDelegate = new();
-            IHash hash = new HmacHash()
+            IHash hash = new HmacHash
             {
                 Hash = string.Empty,
             };
@@ -395,12 +410,15 @@ namespace HealthGateway.MedicationTests.Delegates
                 mockCacheProvider.Object,
                 mockHashDelegate.Object);
 
-            RequestResult<MedicationHistoryResponse> response = Task.Run(async () =>
-                await medStatementDelegate.GetMedicationStatementsAsync(
-                    this.query,
-                    string.Empty,
-                    string.Empty,
-                    string.Empty).ConfigureAwait(true)).Result;
+            RequestResult<MedicationHistoryResponse> response = Task.Run(
+                    async () =>
+                        await medStatementDelegate.GetMedicationStatementsAsync(
+                                this.query,
+                                string.Empty,
+                                string.Empty,
+                                string.Empty)
+                            .ConfigureAwait(true))
+                .Result;
 
             Assert.Equal(ResultType.Error, response.ResultStatus);
         }
@@ -429,12 +447,15 @@ namespace HealthGateway.MedicationTests.Delegates
                 mockCacheProvider.Object,
                 GetHashDelegate());
 
-            RequestResult<MedicationHistoryResponse> response = Task.Run(async () =>
-                await medStatementDelegate.GetMedicationStatementsAsync(
-                    this.query,
-                    string.Empty,
-                    string.Empty,
-                    string.Empty).ConfigureAwait(true)).Result;
+            RequestResult<MedicationHistoryResponse> response = Task.Run(
+                    async () =>
+                        await medStatementDelegate.GetMedicationStatementsAsync(
+                                this.query,
+                                string.Empty,
+                                string.Empty,
+                                string.Empty)
+                            .ConfigureAwait(true))
+                .Result;
 
             Assert.Equal(ResultType.Error, response.ResultStatus);
         }
@@ -454,7 +475,7 @@ namespace HealthGateway.MedicationTests.Delegates
 
             Mock<ICacheProvider> mockCacheProvider = new();
             Mock<IHashDelegate> mockHashDelegate = new();
-            IHash hash = new HmacHash()
+            IHash hash = new HmacHash
             {
                 Hash = string.Empty,
             };
@@ -469,12 +490,15 @@ namespace HealthGateway.MedicationTests.Delegates
                 mockCacheProvider.Object,
                 mockHashDelegate.Object);
 
-            RequestResult<MedicationHistoryResponse> response = Task.Run(async () =>
-                await medStatementDelegate.GetMedicationStatementsAsync(
-                    this.query,
-                    string.Empty,
-                    string.Empty,
-                    string.Empty).ConfigureAwait(true)).Result;
+            RequestResult<MedicationHistoryResponse> response = Task.Run(
+                    async () =>
+                        await medStatementDelegate.GetMedicationStatementsAsync(
+                                this.query,
+                                string.Empty,
+                                string.Empty,
+                                string.Empty)
+                            .ConfigureAwait(true))
+                .Result;
 
             Assert.Equal(ResultType.Error, response.ResultStatus);
         }
@@ -495,13 +519,15 @@ namespace HealthGateway.MedicationTests.Delegates
                 mockCacheProvider.Object,
                 mockHashDelegate.Object);
 
-            Assert.ThrowsAsync<NotImplementedException>(async () => await
-                medStatementDelegate.SetProtectiveWord(
-                    string.Empty,
-                    string.Empty,
-                    string.Empty,
-                    string.Empty,
-                    string.Empty).ConfigureAwait(true));
+            Assert.ThrowsAsync<NotImplementedException>(
+                async () => await
+                    medStatementDelegate.SetProtectiveWord(
+                            string.Empty,
+                            string.Empty,
+                            string.Empty,
+                            string.Empty,
+                            string.Empty)
+                        .ConfigureAwait(true));
         }
 
         /// <summary>
@@ -520,25 +546,27 @@ namespace HealthGateway.MedicationTests.Delegates
                 mockCacheProvider.Object,
                 mockHashDelegate.Object);
 
-            Assert.ThrowsAsync<NotImplementedException>(async () => await
-                medStatementDelegate.DeleteProtectiveWord(
-                    string.Empty,
-                    string.Empty,
-                    string.Empty,
-                    string.Empty).ConfigureAwait(true));
+            Assert.ThrowsAsync<NotImplementedException>(
+                async () => await
+                    medStatementDelegate.DeleteProtectiveWord(
+                            string.Empty,
+                            string.Empty,
+                            string.Empty,
+                            string.Empty)
+                        .ConfigureAwait(true));
         }
 
         private static Mock<HttpMessageHandler> GetHttpMessageHandler(HttpResponseMessage message, Uri endpoint, Mock<HttpMessageHandler>? mock = null)
         {
             Mock<HttpMessageHandler> handlerMock = mock ?? new Mock<HttpMessageHandler>();
             handlerMock
-               .Protected()
-               .Setup<Task<HttpResponseMessage>>(
-                  "SendAsync",
-                  ItExpr.Is<HttpRequestMessage>(c => c.RequestUri == endpoint),
-                  ItExpr.IsAny<CancellationToken>())
-               .ReturnsAsync(message)
-               .Verifiable();
+                .Protected()
+                .Setup<Task<HttpResponseMessage>>(
+                    "SendAsync",
+                    ItExpr.Is<HttpRequestMessage>(c => c.RequestUri == endpoint),
+                    ItExpr.IsAny<CancellationToken>())
+                .ReturnsAsync(message)
+                .Verifiable();
 
             return handlerMock;
         }
@@ -546,9 +574,9 @@ namespace HealthGateway.MedicationTests.Delegates
         private static IConfigurationRoot GetIConfigurationRoot()
         {
             return new ConfigurationBuilder()
-                .AddJsonFile("appsettings.json", optional: true)
-                .AddJsonFile("appsettings.Development.json", optional: true)
-                .AddJsonFile("appsettings.local.json", optional: true)
+                .AddJsonFile("appsettings.json", true)
+                .AddJsonFile("appsettings.Development.json", true)
+                .AddJsonFile("appsettings.local.json", true)
                 .Build();
         }
 
@@ -562,7 +590,7 @@ namespace HealthGateway.MedicationTests.Delegates
         private static IHashDelegate GetHashDelegate(string hashString = "")
         {
             Mock<IHashDelegate> mockHashDelegate = new();
-            IHash hash = new HmacHash()
+            IHash hash = new HmacHash
             {
                 Hash = hashString,
             };
@@ -576,11 +604,11 @@ namespace HealthGateway.MedicationTests.Delegates
             ProtectiveWord protectiveWord = new()
             {
                 Id = Guid.Parse("ed428f08-1c07-4439-b2a3-acbb16b8fb65"),
-                RequestorHDID = this.hdid,
-                RequestorIP = this.ip,
-                QueryResponse = new ProtectiveWordQueryResponse()
+                RequestorHdid = this.hdid,
+                RequestorIp = this.ip,
+                QueryResponse = new ProtectiveWordQueryResponse
                 {
-                    PHN = this.phn,
+                    Phn = this.phn,
                     Operator = ProtectiveWordOperator.Get,
                     Value = value,
                 },

@@ -13,7 +13,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //-------------------------------------------------------------------------
-namespace HealthGateway.WebClient.Models
+namespace HealthGateway.WebClient.Server.Models
 {
     /// <summary>
     /// An object representing a configured Health Gateway IdentityProvider.

@@ -227,7 +227,7 @@ namespace HealthGateway.Medication.Services.Test
                     {
                         new()
                         {
-                            DIN = this.din,
+                            Din = this.din,
                             GenericName = "Generic Name",
                         },
                     },
@@ -300,7 +300,7 @@ namespace HealthGateway.Medication.Services.Test
                     {
                         new()
                         {
-                            DIN = this.din,
+                            Din = this.din,
                             GenericName = "Generic Name",
                         },
                     },
@@ -374,7 +374,7 @@ namespace HealthGateway.Medication.Services.Test
                     {
                         new()
                         {
-                            DIN = this.din,
+                            Din = this.din,
                             GenericName = "Generic Name",
                         },
                     },

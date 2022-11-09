@@ -141,7 +141,7 @@ namespace HealthGateway.Admin.Delegates
         /// <returns>The wrapped vaccine details response.</returns>
         private async Task<RequestResult<PhsaResult<VaccineDetailsResponse>>> GetVaccineDetailsResponse(PatientModel patient, bool refresh)
         {
-            using Activity? activity = Source.StartActivity("GetVaccineDetails");
+            using Activity? activity = Source.StartActivity();
             this.logger.LogDebug("Getting vaccine details...");
             RequestResult<PhsaResult<VaccineDetailsResponse>> retVal;
             if (!string.IsNullOrEmpty(patient.PersonalHealthNumber) && patient.Birthdate != DateTime.MinValue)
@@ -189,7 +189,7 @@ namespace HealthGateway.Admin.Delegates
 
                     try
                     {
-                        using Activity? activity = Source.StartActivity("Communicating with PHSA");
+                        using Activity? activity = Source.StartActivity();
                         using HttpClient client = this.httpClientService.CreateDefaultHttpClient();
                         client.DefaultRequestHeaders.Accept.Clear();
                         client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("bearer", bearerToken);
