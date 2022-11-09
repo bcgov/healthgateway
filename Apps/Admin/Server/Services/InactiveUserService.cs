@@ -117,9 +117,9 @@ public class InactiveUserService : IInactiveUserService
                 IApiResponse<IEnumerable<UserRepresentation>> supportUsersResult =
                     await this.keycloakAdminApi.GetUsers(nameof(IdentityAccessRole.SupportUser), jwtModel.AccessToken).ConfigureAwait(true);
 
-                if (adminUsersResult.IsSuccessStatusCode)
+                if (adminUsersResult.IsSuccessStatusCode && adminUsersResult.Content != null)
                 {
-                    List<UserRepresentation> adminUsers = adminUsersResult.Content?.ToList() ?? new();
+                    List<UserRepresentation> adminUsers = adminUsersResult.Content.ToList();
                     this.PopulateUserDetails(inactiveUsers, adminUsers, IdentityAccessRole.AdminUser);
                     this.AddInactiveUser(inactiveUsers, activeUserProfiles, adminUsers, IdentityAccessRole.AdminUser);
                 }
@@ -134,9 +134,9 @@ public class InactiveUserService : IInactiveUserService
                     };
                 }
 
-                if (supportUsersResult.IsSuccessStatusCode)
+                if (supportUsersResult.IsSuccessStatusCode && supportUsersResult.Content != null)
                 {
-                    List<UserRepresentation> supportUsers = supportUsersResult.Content?.ToList() ?? new();
+                    List<UserRepresentation> supportUsers = supportUsersResult.Content.ToList();
                     this.PopulateUserDetails(inactiveUsers, supportUsers, IdentityAccessRole.SupportUser);
                     this.AddInactiveUser(inactiveUsers, activeUserProfiles, supportUsers, IdentityAccessRole.SupportUser);
                 }
