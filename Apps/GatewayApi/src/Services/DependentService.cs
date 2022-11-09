@@ -263,11 +263,6 @@ namespace HealthGateway.GatewayApi.Services
 
         private bool ValidateDependent(AddDependentRequest dependent, PatientModel patientModel)
         {
-            if (patientModel is null)
-            {
-                return false;
-            }
-
             if (!patientModel.LastName.Equals(dependent.LastName, StringComparison.OrdinalIgnoreCase))
             {
                 this.logger.LogInformation("Validate Dependent: LastName mismatch.");

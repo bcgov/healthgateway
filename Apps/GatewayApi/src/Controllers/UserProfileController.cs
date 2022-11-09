@@ -322,7 +322,7 @@ namespace HealthGateway.GatewayApi.Controllers
         [HttpPut]
         [Route("{hdid}/preference")]
         [Authorize(Policy = UserProfilePolicy.Write)]
-        public ActionResult<RequestResult<UserPreferenceModel>> UpdateUserPreference(string hdid, [FromBody] UserPreferenceModel userPreferenceModel)
+        public ActionResult<RequestResult<UserPreferenceModel>> UpdateUserPreference(string hdid, [FromBody] UserPreferenceModel? userPreferenceModel)
         {
             if (userPreferenceModel == null || string.IsNullOrEmpty(userPreferenceModel.Preference))
             {
@@ -353,7 +353,7 @@ namespace HealthGateway.GatewayApi.Controllers
         [HttpPost]
         [Route("{hdid}/preference")]
         [Authorize(Policy = UserProfilePolicy.Write)]
-        public ActionResult<RequestResult<UserPreferenceModel>> CreateUserPreference(string hdid, [FromBody] UserPreferenceModel userPreferenceModel)
+        public ActionResult<RequestResult<UserPreferenceModel>> CreateUserPreference(string hdid, [FromBody] UserPreferenceModel? userPreferenceModel)
         {
             if (userPreferenceModel == null)
             {
@@ -389,7 +389,7 @@ namespace HealthGateway.GatewayApi.Controllers
             return result;
         }
 
-        private void AddUserPreferences(UserProfileModel profile)
+        private void AddUserPreferences(UserProfileModel? profile)
         {
             if (profile != null)
             {

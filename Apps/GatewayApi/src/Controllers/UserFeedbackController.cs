@@ -62,7 +62,7 @@ namespace HealthGateway.GatewayApi.Controllers
         [HttpPost]
         [Route("{hdid}")]
         [Authorize(Policy = UserProfilePolicy.Write)]
-        public IActionResult CreateUserFeedback(string hdid, [FromBody] UserFeedback userFeedback)
+        public IActionResult CreateUserFeedback(string hdid, [FromBody] UserFeedback? userFeedback)
         {
             if (userFeedback == null)
             {

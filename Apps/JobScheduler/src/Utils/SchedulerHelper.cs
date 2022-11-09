@@ -16,7 +16,6 @@
 namespace Healthgateway.JobScheduler.Utils
 {
     using System;
-    using System.Diagnostics.Contracts;
     using System.Linq.Expressions;
     using System.Runtime.InteropServices;
     using Hangfire;
@@ -41,9 +40,8 @@ namespace Healthgateway.JobScheduler.Utils
         public static void ScheduleDrugLoadJob<T>(IConfiguration cfg, string key)
             where T : IDrugApp
         {
-            Contract.Requires(cfg != null);
-            JobConfiguration jc = GetJobConfiguration(cfg!, key);
-            ScheduleJob<T>(jc, GetLocalTimeZone(cfg!), j => j.Process(key!));
+            JobConfiguration jc = GetJobConfiguration(cfg, key);
+            ScheduleJob<T>(jc, GetLocalTimeZone(cfg), j => j.Process(key));
         }
 
         /// <summary>
@@ -55,9 +53,8 @@ namespace Healthgateway.JobScheduler.Utils
         /// <param name="methodCall">The expression to run on the class.</param>
         public static void ScheduleJob<T>(IConfiguration cfg, string key, Expression<Action<T>> methodCall)
         {
-            Contract.Requires(cfg != null);
-            JobConfiguration jc = GetJobConfiguration(cfg!, key);
-            ScheduleJob(jc, GetLocalTimeZone(cfg!), methodCall);
+            JobConfiguration jc = GetJobConfiguration(cfg, key);
+            ScheduleJob(jc, GetLocalTimeZone(cfg), methodCall);
         }
 
         /// <summary>
@@ -69,8 +66,7 @@ namespace Healthgateway.JobScheduler.Utils
         /// <param name="methodCall">The expression to run on the class.</param>
         public static void ScheduleJob<T>(JobConfiguration cfg, TimeZoneInfo tz, Expression<Action<T>> methodCall)
         {
-            Contract.Requires(cfg != null);
-            RecurringJob.AddOrUpdate(cfg!.Id, methodCall, cfg!.Schedule, tz);
+            RecurringJob.AddOrUpdate(cfg.Id, methodCall, cfg.Schedule, tz);
             if (cfg.Immediate)
             {
                 BackgroundJob.Schedule(methodCall, TimeSpan.FromSeconds(cfg.Delay));
@@ -87,12 +83,12 @@ namespace Healthgateway.JobScheduler.Utils
 
         private static T GetConfigurationValue<T>(IConfiguration cfg, string key)
         {
-            return cfg.GetValue<T>(key)!;
+            return cfg.GetValue<T>(key);
         }
 
         private static JobConfiguration GetJobConfiguration(IConfiguration cfg, string key)
         {
-            return cfg.GetSection(key).Get<JobConfiguration>()!;
+            return cfg.GetRequiredSection(key).Get<JobConfiguration>();
         }
     }
 }

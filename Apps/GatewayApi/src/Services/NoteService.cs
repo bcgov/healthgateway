@@ -111,21 +111,6 @@ namespace HealthGateway.GatewayApi.Services
                 dbNotes = this.noteDelegate.GetNotes(hdId, offset, pageSize);
             }
 
-            // Check that the key has been set
-            if (key == null)
-            {
-                this.logger.LogError("User does not have a key: {Hdid}", hdId);
-                return new RequestResult<IEnumerable<UserNote>>
-                {
-                    ResultStatus = ResultType.Error,
-                    ResultError = new RequestResultError
-                    {
-                        ResultMessage = "Profile Key not set",
-                        ErrorCode = ErrorTranslator.InternalError(ErrorType.InvalidState),
-                    },
-                };
-            }
-
             RequestResult<IEnumerable<UserNote>> result = new()
             {
                 ResourcePayload = dbNotes.Payload.Select(c => NoteMapUtils.CreateFromDbModel(c, this.cryptoDelegate, key, this.autoMapper)),
