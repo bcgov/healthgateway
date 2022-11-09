@@ -38,7 +38,6 @@ namespace HealthGateway.GatewayApi
     [ExcludeFromCodeCoverage]
     public class Startup
     {
-        private readonly IConfiguration configuration;
         private readonly StartupConfiguration startupConfig;
 
         /// <summary>
@@ -49,7 +48,6 @@ namespace HealthGateway.GatewayApi
         public Startup(IWebHostEnvironment env, IConfiguration configuration)
         {
             this.startupConfig = new StartupConfiguration(configuration, env);
-            this.configuration = configuration;
         }
 
         /// <summary>

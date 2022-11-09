@@ -30,7 +30,6 @@ namespace HealthGateway.GatewayApi.Controllers
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
-    using Microsoft.Extensions.Logging;
 
     /// <summary>
     /// Web API to handle user profile interactions.
@@ -43,7 +42,6 @@ namespace HealthGateway.GatewayApi.Controllers
     {
         private readonly IAuthenticationDelegate authenticationDelegate;
         private readonly IHttpContextAccessor httpContextAccessor;
-        private readonly ILogger logger;
         private readonly IUserEmailService userEmailService;
         private readonly IUserProfileService userProfileService;
         private readonly IUserSMSService userSmsService;
@@ -51,21 +49,18 @@ namespace HealthGateway.GatewayApi.Controllers
         /// <summary>
         /// Initializes a new instance of the <see cref="UserProfileController"/> class.
         /// </summary>
-        /// <param name="logger">The service Logger.</param>
         /// <param name="userProfileService">The injected user profile service.</param>
         /// <param name="httpContextAccessor">The injected http context accessor provider.</param>
         /// <param name="userEmailService">The injected user email service.</param>
         /// <param name="userSmsService">The injected user sms service.</param>
         /// <param name="authenticationDelegate">The injected authentication delegate.</param>
         public UserProfileController(
-            ILogger<UserProfileController> logger,
             IUserProfileService userProfileService,
             IHttpContextAccessor httpContextAccessor,
             IUserEmailService userEmailService,
             IUserSMSService userSmsService,
             IAuthenticationDelegate authenticationDelegate)
         {
-            this.logger = logger;
             this.userProfileService = userProfileService;
             this.httpContextAccessor = httpContextAccessor;
             this.userEmailService = userEmailService;

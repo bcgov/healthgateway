@@ -36,7 +36,7 @@ namespace HealthGateway.Immunization.MapProfiles
                     dest => dest.Immunization,
                     opt =>
                         opt.MapFrom(
-                            (src, dest, _, context) => new ImmunizationDefinition
+                            (src, _, _, context) => new ImmunizationDefinition
                             {
                                 Name = src.Name,
                                 ImmunizationAgents = context.Mapper.Map<IEnumerable<ImmunizationAgent>>(src.ImmunizationAgents),

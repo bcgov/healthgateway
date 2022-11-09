@@ -33,7 +33,6 @@ namespace HealthGateway.GatewayApi.Test.Controllers
     using Microsoft.AspNetCore.Authentication.JwtBearer;
     using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
-    using Microsoft.Extensions.Logging;
     using Moq;
     using Xunit;
 
@@ -107,7 +106,6 @@ namespace HealthGateway.GatewayApi.Test.Controllers
             Mock<IUserSMSService> smsServiceMock = new();
 
             UserProfileController service = new(
-                new Mock<ILogger<UserProfileController>>().Object,
                 userProfileServiceMock.Object,
                 httpContextAccessorMock.Object,
                 emailServiceMock.Object,
@@ -150,7 +148,6 @@ namespace HealthGateway.GatewayApi.Test.Controllers
             Mock<IUserSMSService> smsServiceMock = new();
 
             UserProfileController service = new(
-                new Mock<ILogger<UserProfileController>>().Object,
                 userProfileServiceMock.Object,
                 httpContextAccessorMock.Object,
                 emailServiceMock.Object,
@@ -175,7 +172,6 @@ namespace HealthGateway.GatewayApi.Test.Controllers
             userProfileServiceMock.Setup(s => s.ValidateMinimumAge(this.hdid)).ReturnsAsync(expected);
 
             UserProfileController controller = new(
-                new Mock<ILogger<UserProfileController>>().Object,
                 userProfileServiceMock.Object,
                 httpContextAccessorMock.Object,
                 new Mock<IUserEmailService>().Object,
@@ -317,7 +313,6 @@ namespace HealthGateway.GatewayApi.Test.Controllers
             Mock<IUserSMSService> smsServiceMock = new();
 
             UserProfileController service = new(
-                new Mock<ILogger<UserProfileController>>().Object,
                 userProfileServiceMock.Object,
                 httpContextAccessorMock.Object,
                 emailServiceMock.Object,
@@ -339,7 +334,6 @@ namespace HealthGateway.GatewayApi.Test.Controllers
 
             Mock<IHttpContextAccessor> httpContextAccessorMock = CreateValidHttpContext(this.token, this.userId, this.hdid);
             UserProfileController controller = new(
-                new Mock<ILogger<UserProfileController>>().Object,
                 new Mock<IUserProfileService>().Object,
                 httpContextAccessorMock.Object,
                 emailServiceMock.Object,
@@ -370,7 +364,6 @@ namespace HealthGateway.GatewayApi.Test.Controllers
 
             Mock<IHttpContextAccessor> httpContextAccessorMock = CreateValidHttpContext(this.token, this.userId, this.hdid);
             UserProfileController controller = new(
-                new Mock<ILogger<UserProfileController>>().Object,
                 new Mock<IUserProfileService>().Object,
                 httpContextAccessorMock.Object,
                 emailServiceMock.Object,
@@ -399,7 +392,6 @@ namespace HealthGateway.GatewayApi.Test.Controllers
 
             Mock<IHttpContextAccessor> httpContextAccessorMock = CreateValidHttpContext(this.token, this.userId, this.hdid);
             UserProfileController controller = new(
-                new Mock<ILogger<UserProfileController>>().Object,
                 new Mock<IUserProfileService>().Object,
                 httpContextAccessorMock.Object,
                 emailServiceMock.Object,
@@ -421,7 +413,6 @@ namespace HealthGateway.GatewayApi.Test.Controllers
 
             Mock<IHttpContextAccessor> httpContextAccessorMock = CreateValidHttpContext(this.token, this.userId, this.hdid);
             UserProfileController controller = new(
-                new Mock<ILogger<UserProfileController>>().Object,
                 new Mock<IUserProfileService>().Object,
                 httpContextAccessorMock.Object,
                 new Mock<IUserEmailService>().Object,
@@ -449,7 +440,6 @@ namespace HealthGateway.GatewayApi.Test.Controllers
 
             Mock<IHttpContextAccessor> httpContextAccessorMock = CreateValidHttpContext(this.token, this.userId, this.hdid);
             UserProfileController controller = new(
-                new Mock<ILogger<UserProfileController>>().Object,
                 new Mock<IUserProfileService>().Object,
                 httpContextAccessorMock.Object,
                 new Mock<IUserEmailService>().Object,
@@ -480,7 +470,6 @@ namespace HealthGateway.GatewayApi.Test.Controllers
 
             Mock<IHttpContextAccessor> httpContextAccessorMock = CreateValidHttpContext(this.token, this.userId, this.hdid);
             UserProfileController controller = new(
-                new Mock<ILogger<UserProfileController>>().Object,
                 new Mock<IUserProfileService>().Object,
                 httpContextAccessorMock.Object,
                 new Mock<IUserEmailService>().Object,
@@ -509,7 +498,6 @@ namespace HealthGateway.GatewayApi.Test.Controllers
             userProfileServiceMock.Setup(s => s.UpdateAcceptedTerms(this.hdid, It.IsAny<Guid>())).Returns(expected);
 
             UserProfileController controller = new(
-                new Mock<ILogger<UserProfileController>>().Object,
                 userProfileServiceMock.Object,
                 httpContextAccessorMock.Object,
                 new Mock<IUserEmailService>().Object,
@@ -597,7 +585,6 @@ namespace HealthGateway.GatewayApi.Test.Controllers
             Mock<IUserSMSService> smsServiceMock = new();
 
             UserProfileController service = new(
-                new Mock<ILogger<UserProfileController>>().Object,
                 userProfileServiceMock.Object,
                 httpContextAccessorMock.Object,
                 emailServiceMock.Object,
@@ -624,7 +611,6 @@ namespace HealthGateway.GatewayApi.Test.Controllers
             Mock<IUserSMSService> smsServiceMock = new();
 
             UserProfileController service = new(
-                new Mock<ILogger<UserProfileController>>().Object,
                 userProfileServiceMock.Object,
                 httpContextAccessorMock.Object,
                 emailServiceMock.Object,
@@ -651,7 +637,6 @@ namespace HealthGateway.GatewayApi.Test.Controllers
             Mock<IUserSMSService> smsServiceMock = new();
 
             UserProfileController service = new(
-                new Mock<ILogger<UserProfileController>>().Object,
                 userProfileServiceMock.Object,
                 httpContextAccessorMock.Object,
                 emailServiceMock.Object,
