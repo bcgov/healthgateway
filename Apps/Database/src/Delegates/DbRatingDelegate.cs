@@ -20,7 +20,6 @@ namespace HealthGateway.Database.Delegates
     using System.Diagnostics.CodeAnalysis;
     using System.Globalization;
     using System.Linq;
-    using System.Text.Json;
     using HealthGateway.Database.Constants;
     using HealthGateway.Database.Context;
     using HealthGateway.Database.Models;
@@ -30,18 +29,18 @@ namespace HealthGateway.Database.Delegates
 
     /// <inheritdoc/>
     [ExcludeFromCodeCoverage]
-    public class DBRatingDelegate : IRatingDelegate
+    public class DbRatingDelegate : IRatingDelegate
     {
-        private readonly ILogger logger;
+        private readonly ILogger<DbRatingDelegate> logger;
         private readonly GatewayDbContext dbContext;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="DBRatingDelegate"/> class.
+        /// Initializes a new instance of the <see cref="DbRatingDelegate"/> class.
         /// </summary>
         /// <param name="logger">Injected Logger Provider.</param>
         /// <param name="dbContext">The context to be used when accessing the database.</param>
-        public DBRatingDelegate(
-            ILogger<DBFeedbackDelegate> logger,
+        public DbRatingDelegate(
+            ILogger<DbRatingDelegate> logger,
             GatewayDbContext dbContext)
         {
             this.logger = logger;
@@ -49,19 +48,19 @@ namespace HealthGateway.Database.Delegates
         }
 
         /// <inheritdoc/>
-        public DBResult<Rating> InsertRating(Rating rating)
+        public DbResult<Rating> InsertRating(Rating rating)
         {
-            this.logger.LogTrace($"Inserting rating to DB");
-            DBResult<Rating> result = new();
+            this.logger.LogTrace("Inserting rating to DB");
+            DbResult<Rating> result = new();
             this.dbContext.Add(rating);
             try
             {
                 this.dbContext.SaveChanges();
-                result.Status = DBStatusCode.Created;
+                result.Status = DbStatusCode.Created;
             }
             catch (DbUpdateException e)
             {
-                result.Status = DBStatusCode.Error;
+                result.Status = DbStatusCode.Error;
                 result.Message = e.Message;
             }
 
@@ -70,10 +69,10 @@ namespace HealthGateway.Database.Delegates
         }
 
         /// <inheritdoc/>
-        public DBResult<IEnumerable<Rating>> GetAll(int page, int pageSize)
+        public DbResult<IEnumerable<Rating>> GetAll(int page, int pageSize)
         {
             this.logger.LogTrace("Retrieving all the ratings for the page #{Page} with pageSize: {PageSize}...", page, pageSize);
-            return DBDelegateHelper.GetPagedDBResult(
+            return DbDelegateHelper.GetPagedDbResult(
                 this.dbContext.Rating
                     .OrderBy(rating => rating.CreatedDateTime),
                 page,

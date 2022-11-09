@@ -29,18 +29,18 @@ namespace HealthGateway.Database.Delegates
 
     /// <inheritdoc/>
     [ExcludeFromCodeCoverage]
-    public class DBMessagingVerificationDelegate : IMessagingVerificationDelegate
+    public class DbMessagingVerificationDelegate : IMessagingVerificationDelegate
     {
         private readonly ILogger logger;
         private readonly GatewayDbContext dbContext;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="DBMessagingVerificationDelegate"/> class.
+        /// Initializes a new instance of the <see cref="DbMessagingVerificationDelegate"/> class.
         /// </summary>
         /// <param name="logger">Injected Logger Provider.</param>
         /// <param name="dbContext">The context to be used when accessing the database.</param>
-        public DBMessagingVerificationDelegate(
-            ILogger<DBMessagingVerificationDelegate> logger,
+        public DbMessagingVerificationDelegate(
+            ILogger<DbMessagingVerificationDelegate> logger,
             GatewayDbContext dbContext)
         {
             this.logger = logger;
@@ -56,8 +56,8 @@ namespace HealthGateway.Database.Delegates
                 throw new ArgumentException("Email cannot be null when verification type is Email");
             }
 
-            if (messageVerification.VerificationType == MessagingVerificationType.SMS &&
-                (string.IsNullOrWhiteSpace(messageVerification.SMSNumber) || string.IsNullOrWhiteSpace(messageVerification.SMSValidationCode)))
+            if (messageVerification.VerificationType == MessagingVerificationType.Sms &&
+                (string.IsNullOrWhiteSpace(messageVerification.SmsNumber) || string.IsNullOrWhiteSpace(messageVerification.SmsValidationCode)))
             {
                 throw new ArgumentException("SMSNumber/SMSValidationCode cannot be null or empty when verification type is SMS");
             }
@@ -135,8 +135,8 @@ namespace HealthGateway.Database.Delegates
             this.logger.LogDebug("Finished Expiring messaging verification from DB");
         }
 
-        /// <inheritdoc />
-        public DBResult<IEnumerable<MessagingVerification>> GetUserMessageVerifications(string hdid)
+        /// <inheritdoc/>
+        public DbResult<IEnumerable<MessagingVerification>> GetUserMessageVerifications(string hdid)
         {
             IList<MessagingVerification> verifications = this.dbContext.MessagingVerification.Where(mv => mv.UserProfileId == hdid)
                 .Include(mv => mv.Email)
@@ -144,10 +144,10 @@ namespace HealthGateway.Database.Delegates
                 .AsNoTracking()
                 .ToList();
 
-            DBResult<IEnumerable<MessagingVerification>> result = new()
+            DbResult<IEnumerable<MessagingVerification>> result = new()
             {
                 Payload = verifications,
-                Status = DBStatusCode.Read,
+                Status = DbStatusCode.Read,
             };
 
             return result;

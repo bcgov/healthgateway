@@ -1,4 +1,4 @@
-// -------------------------------------------------------------------------
+﻿// -------------------------------------------------------------------------
 //  Copyright © 2019 Province of British Columbia
 //
 //  Licensed under the Apache License, Version 2.0 (the "License");
@@ -15,30 +15,28 @@
 // -------------------------------------------------------------------------
 namespace HealthGateway.Database.Delegates
 {
-    using System;
     using System.Diagnostics.CodeAnalysis;
-    using System.Linq;
-    using HealthGateway.Common.Data.Constants;
-    using HealthGateway.Common.Data.Models;
     using HealthGateway.Database.Constants;
     using HealthGateway.Database.Context;
+    using HealthGateway.Database.Models;
     using HealthGateway.Database.Wrapper;
+    using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.Logging;
 
     /// <inheritdoc/>
     [ExcludeFromCodeCoverage]
-    public class DBLegalAgreementDelegate : ILegalAgreementDelegate
+    public class DbEventLogDelegate : IEventLogDelegate
     {
+        private readonly ILogger<DbEventLogDelegate> logger;
         private readonly GatewayDbContext dbContext;
-        private readonly ILogger logger;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="DBLegalAgreementDelegate"/> class.
+        /// Initializes a new instance of the <see cref="DbEventLogDelegate"/> class.
         /// </summary>
         /// <param name="logger">Injected Logger Provider.</param>
         /// <param name="dbContext">The context to be used when accessing the database.</param>
-        public DBLegalAgreementDelegate(
-            ILogger<DBLegalAgreementDelegate> logger,
+        public DbEventLogDelegate(
+            ILogger<DbEventLogDelegate> logger,
             GatewayDbContext dbContext)
         {
             this.logger = logger;
@@ -46,22 +44,27 @@ namespace HealthGateway.Database.Delegates
         }
 
         /// <inheritdoc/>
-        [SuppressMessage("Globalization", "CA1309:Use ordinal stringcomparison", Justification = "Ordinal doesn't work")]
-        [SuppressMessage("Globalization", "CA1307:Specify StringComparison", Justification = "Ordinal doesn't work")]
-        public DBResult<LegalAgreement> GetActiveByAgreementType(LegalAgreementType agreementTypeCode)
+        public DbResult<EventLog> WriteEventLog(EventLog eventLog, bool commit = true)
         {
-            this.logger.LogDebug("Getting active legal agreement by type {AgreementTypeCode}", agreementTypeCode);
-            LegalAgreement legalAgreement = this.dbContext.LegalAgreement
-                .Where(la => la.EffectiveDate <= DateTime.UtcNow)
-                .Where(la => agreementTypeCode.Equals(la.LegalAgreementCode))
-                .OrderByDescending(la => la.EffectiveDate)
-                .First();
-
-            return new DBResult<LegalAgreement>
+            this.logger.LogTrace("Inserting event log to DB...");
+            DbResult<EventLog> result = new();
+            this.dbContext.Add(eventLog);
+            if (commit)
             {
-                Payload = legalAgreement,
-                Status = DBStatusCode.Read,
-            };
+                try
+                {
+                    this.dbContext.SaveChanges();
+                    result.Status = DbStatusCode.Created;
+                }
+                catch (DbUpdateException e)
+                {
+                    result.Status = DbStatusCode.Error;
+                    result.Message = e.Message;
+                }
+            }
+
+            this.logger.LogDebug("Finished inserting event log to DB...");
+            return result;
         }
     }
 }

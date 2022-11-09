@@ -51,7 +51,7 @@ namespace HealthGateway.Medication.Models.ODR
         /// Gets or sets the DIN/PIN of the prescription.
         /// </summary>
         [JsonPropertyName("dinpin")]
-        public string DIN { get; set; } = string.Empty;
+        public string Din { get; set; } = string.Empty;
 
         /// <summary>
         /// Gets or sets the Generic name for the prescription.

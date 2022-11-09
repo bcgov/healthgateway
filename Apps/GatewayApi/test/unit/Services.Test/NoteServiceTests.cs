@@ -62,7 +62,7 @@ namespace HealthGateway.GatewayApi.Test.Services
         [Fact]
         public void ShouldGetNotesWithDbError()
         {
-            (RequestResult<IEnumerable<UserNote>> actualResult, _) = this.ExecuteGetNotes("abc", DBStatusCode.Error);
+            (RequestResult<IEnumerable<UserNote>> actualResult, _) = this.ExecuteGetNotes("abc", DbStatusCode.Error);
 
             Assert.Equal(ResultType.Error, actualResult.ResultStatus);
             Assert.True(actualResult?.ResultError?.ErrorCode.EndsWith("-CI-DB", StringComparison.InvariantCulture));
@@ -99,7 +99,7 @@ namespace HealthGateway.GatewayApi.Test.Services
         [Fact]
         public void ShouldInsertNoteWithDBError()
         {
-            (RequestResult<UserNote> actualResult, _) = this.ExecuteCreateNote(DBStatusCode.Error);
+            (RequestResult<UserNote> actualResult, _) = this.ExecuteCreateNote(DbStatusCode.Error);
 
             Assert.Equal(ResultType.Error, actualResult.ResultStatus);
             Assert.Equal(ErrorTranslator.ServiceError(ErrorType.CommunicationInternal, ServiceType.Database), actualResult.ResultError?.ErrorCode);
@@ -123,7 +123,7 @@ namespace HealthGateway.GatewayApi.Test.Services
         [Fact]
         public void ShouldUpdateNoteWithDBError()
         {
-            (RequestResult<UserNote> actualResult, _) = this.ExecuteUpdateNote(DBStatusCode.Error);
+            (RequestResult<UserNote> actualResult, _) = this.ExecuteUpdateNote(DbStatusCode.Error);
 
             Assert.Equal(ResultType.Error, actualResult.ResultStatus);
             Assert.Equal(ErrorTranslator.ServiceError(ErrorType.CommunicationInternal, ServiceType.Database), actualResult.ResultError?.ErrorCode);
@@ -148,7 +148,7 @@ namespace HealthGateway.GatewayApi.Test.Services
         [Fact]
         public void ShouldDeleteNoteWithDBError()
         {
-            (RequestResult<UserNote> actualResult, _) = this.ExecuteDeleteNote(DBStatusCode.Error);
+            (RequestResult<UserNote> actualResult, _) = this.ExecuteDeleteNote(DbStatusCode.Error);
 
             Assert.Equal(ResultType.Error, actualResult.ResultStatus);
             Assert.NotNull(actualResult.ResultError);
@@ -161,7 +161,7 @@ namespace HealthGateway.GatewayApi.Test.Services
         public void ShouldInsertNoteWithNoKeyError()
         {
             string? encryptionKey = null;
-            DBResult<UserProfile> profileDBResult = new()
+            DbResult<UserProfile> profileDBResult = new()
             {
                 Payload = new UserProfile
                     { EncryptionKey = encryptionKey },
@@ -197,7 +197,7 @@ namespace HealthGateway.GatewayApi.Test.Services
         public void ShouldUpdateNoteWithNoKeyError()
         {
             string? encryptionKey = null;
-            DBResult<UserProfile> profileDBResult = new()
+            DbResult<UserProfile> profileDBResult = new()
             {
                 Payload = new UserProfile
                     { EncryptionKey = encryptionKey },
@@ -233,7 +233,7 @@ namespace HealthGateway.GatewayApi.Test.Services
         public void ShouldDeleteNoteWithNoKeyError()
         {
             string? encryptionKey = null;
-            DBResult<UserProfile> profileDBResult = new()
+            DbResult<UserProfile> profileDBResult = new()
             {
                 Payload = new UserProfile
                     { EncryptionKey = encryptionKey },
@@ -262,9 +262,9 @@ namespace HealthGateway.GatewayApi.Test.Services
             Assert.Equal(ResultType.Error, actualResult.ResultStatus);
         }
 
-        private (RequestResult<IEnumerable<UserNote>> ActualResult, List<UserNote>? UserNoteList) ExecuteGetNotes(string? encryptionKey = null, DBStatusCode notesDBResultStatus = DBStatusCode.Read)
+        private (RequestResult<IEnumerable<UserNote>> ActualResult, List<UserNote>? UserNoteList) ExecuteGetNotes(string? encryptionKey = null, DbStatusCode notesDBResultStatus = DbStatusCode.Read)
         {
-            DBResult<UserProfile> profileDBResult = new()
+            DbResult<UserProfile> profileDBResult = new()
             {
                 Payload = new UserProfile
                     { EncryptionKey = encryptionKey },
@@ -301,7 +301,7 @@ namespace HealthGateway.GatewayApi.Test.Services
                 userNoteList = noteList.Select(c => NoteMapUtils.CreateFromDbModel(c, cryptoDelegateMock.Object, encryptionKey, autoMapper)).ToList();
             }
 
-            DBResult<IEnumerable<Note>> notesDBResult = new()
+            DbResult<IEnumerable<Note>> notesDBResult = new()
             {
                 Payload = noteList,
                 Status = notesDBResultStatus,
@@ -322,10 +322,10 @@ namespace HealthGateway.GatewayApi.Test.Services
             return (actualResult, userNoteList);
         }
 
-        private (RequestResult<UserNote> ActualResult, UserNote UserNote) ExecuteCreateNote(DBStatusCode dBStatusCode = DBStatusCode.Created)
+        private (RequestResult<UserNote> ActualResult, UserNote UserNote) ExecuteCreateNote(DbStatusCode dBStatusCode = DbStatusCode.Created)
         {
             string encryptionKey = "abc";
-            DBResult<UserProfile> profileDBResult = new()
+            DbResult<UserProfile> profileDBResult = new()
             {
                 Payload = new UserProfile
                     { EncryptionKey = encryptionKey },
@@ -348,7 +348,7 @@ namespace HealthGateway.GatewayApi.Test.Services
             IMapper autoMapper = MapperUtil.InitializeAutoMapper();
             Note note = NoteMapUtils.ToDbModel(userNote, cryptoDelegateMock.Object, encryptionKey, autoMapper);
 
-            DBResult<Note> insertResult = new()
+            DbResult<Note> insertResult = new()
             {
                 Payload = note,
                 Status = dBStatusCode,
@@ -368,10 +368,10 @@ namespace HealthGateway.GatewayApi.Test.Services
             return (actualResult, userNote);
         }
 
-        private (RequestResult<UserNote> ActualResult, UserNote UserNote) ExecuteUpdateNote(DBStatusCode dBStatusCode = DBStatusCode.Updated)
+        private (RequestResult<UserNote> ActualResult, UserNote UserNote) ExecuteUpdateNote(DbStatusCode dBStatusCode = DbStatusCode.Updated)
         {
             string encryptionKey = "abc";
-            DBResult<UserProfile> profileDBResult = new()
+            DbResult<UserProfile> profileDBResult = new()
             {
                 Payload = new UserProfile
                     { EncryptionKey = encryptionKey },
@@ -395,7 +395,7 @@ namespace HealthGateway.GatewayApi.Test.Services
             IMapper autoMapper = MapperUtil.InitializeAutoMapper();
             Note note = NoteMapUtils.ToDbModel(userNote, cryptoDelegateMock.Object, encryptionKey, autoMapper);
 
-            DBResult<Note> updateResult = new()
+            DbResult<Note> updateResult = new()
             {
                 Payload = note,
                 Status = dBStatusCode,
@@ -415,10 +415,10 @@ namespace HealthGateway.GatewayApi.Test.Services
             return (actualResult, userNote);
         }
 
-        private (RequestResult<UserNote> ActualResult, UserNote UserNote) ExecuteDeleteNote(DBStatusCode dBStatusCode = DBStatusCode.Deleted)
+        private (RequestResult<UserNote> ActualResult, UserNote UserNote) ExecuteDeleteNote(DbStatusCode dBStatusCode = DbStatusCode.Deleted)
         {
             string encryptionKey = "abc";
-            DBResult<UserProfile> profileDBResult = new()
+            DbResult<UserProfile> profileDBResult = new()
             {
                 Payload = new UserProfile
                     { EncryptionKey = encryptionKey },
@@ -441,7 +441,7 @@ namespace HealthGateway.GatewayApi.Test.Services
             IMapper autoMapper = MapperUtil.InitializeAutoMapper();
             Note note = NoteMapUtils.ToDbModel(userNote, cryptoDelegateMock.Object, encryptionKey, autoMapper);
 
-            DBResult<Note> deleteResult = new()
+            DbResult<Note> deleteResult = new()
             {
                 Payload = note,
                 Status = dBStatusCode,

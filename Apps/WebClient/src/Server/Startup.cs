@@ -14,14 +14,14 @@
 // limitations under the License.
 //-------------------------------------------------------------------------
 #pragma warning disable CA1303 //disable literal strings check
-namespace HealthGateway.WebClient
+namespace HealthGateway.WebClient.Server
 {
     using System;
     using System.Diagnostics;
     using System.Diagnostics.CodeAnalysis;
     using HealthGateway.Common.AspNetConfiguration;
     using HealthGateway.Common.Utils;
-    using HealthGateway.WebClient.Services;
+    using HealthGateway.WebClient.Server.Services;
     using Microsoft.AspNetCore.Builder;
     using Microsoft.AspNetCore.Hosting;
     using Microsoft.AspNetCore.Http;
@@ -41,8 +41,8 @@ namespace HealthGateway.WebClient
     [ExcludeFromCodeCoverage]
     public class Startup
     {
-        private readonly StartupConfiguration startupConfig;
         private readonly IConfiguration configuration;
+        private readonly StartupConfiguration startupConfig;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Startup"/> class.
@@ -130,8 +130,8 @@ namespace HealthGateway.WebClient
                     }
                 });
 
-            bool redirectToWWW = this.configuration.GetSection("WebClient").GetValue<bool>("RedirectToWWW");
-            if (redirectToWWW)
+            bool redirectToWww = this.configuration.GetSection("WebClient").GetValue<bool>("RedirectToWWW");
+            if (redirectToWww)
             {
                 RewriteOptions rewriteOption = new RewriteOptions()
                     .AddRedirectToWwwPermanent();

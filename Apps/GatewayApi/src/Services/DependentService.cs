@@ -23,8 +23,8 @@ namespace HealthGateway.GatewayApi.Services
     using AutoMapper;
     using HealthGateway.Common.Constants;
     using HealthGateway.Common.Data.Constants;
+    using HealthGateway.Common.Data.ErrorHandling;
     using HealthGateway.Common.Data.Models;
-    using HealthGateway.Common.Data.Models.ErrorHandling;
     using HealthGateway.Common.Data.ViewModels;
     using HealthGateway.Common.ErrorHandling;
     using HealthGateway.Common.Models;
@@ -153,9 +153,9 @@ namespace HealthGateway.GatewayApi.Services
                 ReasonObjectType = null,
                 ReasonObject = null,
             };
-            DBResult<ResourceDelegate> dbDependent = this.resourceDelegateDelegate.Insert(dependent, true);
+            DbResult<ResourceDelegate> dbDependent = this.resourceDelegateDelegate.Insert(dependent, true);
 
-            if (dbDependent.Status == DBStatusCode.Created)
+            if (dbDependent.Status == DbStatusCode.Created)
             {
                 this.logger.LogTrace("Finished adding dependent");
                 this.UpdateNotificationSettings(dependent.ResourceOwnerHdid, delegateHdId);
@@ -185,7 +185,7 @@ namespace HealthGateway.GatewayApi.Services
         {
             // Get Dependents from database
             int offset = page * pageSize;
-            DBResult<IEnumerable<ResourceDelegate>> dbResourceDelegates = this.resourceDelegateDelegate.Get(hdId, offset, pageSize);
+            DbResult<IEnumerable<ResourceDelegate>> dbResourceDelegates = this.resourceDelegateDelegate.Get(hdId, offset, pageSize);
 
             // Get Dependents Details from Patient service
             List<DependentModel> dependentModels = new();
@@ -239,9 +239,9 @@ namespace HealthGateway.GatewayApi.Services
         /// <inheritdoc/>
         public RequestResult<DependentModel> Remove(DependentModel dependent)
         {
-            DBResult<ResourceDelegate> dbDependent = this.resourceDelegateDelegate.Delete(this.autoMapper.Map<ResourceDelegate>(dependent), true);
+            DbResult<ResourceDelegate> dbDependent = this.resourceDelegateDelegate.Delete(this.autoMapper.Map<ResourceDelegate>(dependent), true);
 
-            if (dbDependent.Status == DBStatusCode.Deleted)
+            if (dbDependent.Status == DbStatusCode.Deleted)
             {
                 this.UpdateNotificationSettings(dependent.OwnerId, dependent.DelegateId, true);
             }
@@ -249,8 +249,8 @@ namespace HealthGateway.GatewayApi.Services
             RequestResult<DependentModel> result = new()
             {
                 ResourcePayload = new DependentModel(),
-                ResultStatus = dbDependent.Status == DBStatusCode.Deleted ? ResultType.Success : ResultType.Error,
-                ResultError = dbDependent.Status == DBStatusCode.Deleted
+                ResultStatus = dbDependent.Status == DbStatusCode.Deleted ? ResultType.Success : ResultType.Error,
+                ResultError = dbDependent.Status == DbStatusCode.Deleted
                     ? null
                     : new RequestResultError
                     {
@@ -293,11 +293,11 @@ namespace HealthGateway.GatewayApi.Services
 
         private void UpdateNotificationSettings(string dependentHdid, string delegateHdid, bool isDelete = false)
         {
-            DBResult<UserProfile> dbResult = this.userProfileDelegate.GetUserProfile(delegateHdid);
+            DbResult<UserProfile> dbResult = this.userProfileDelegate.GetUserProfile(delegateHdid);
             UserProfile delegateUserProfile = dbResult.Payload;
 
             // Update the notification settings
-            NotificationSettingsRequest request = new(delegateUserProfile, delegateUserProfile.Email, delegateUserProfile.SMSNumber)
+            NotificationSettingsRequest request = new(delegateUserProfile, delegateUserProfile.Email, delegateUserProfile.SmsNumber)
             {
                 SubjectHdid = dependentHdid,
             };

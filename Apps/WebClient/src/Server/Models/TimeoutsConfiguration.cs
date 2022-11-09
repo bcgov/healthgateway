@@ -13,7 +13,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //-------------------------------------------------------------------------
-namespace HealthGateway.WebClient.Models
+namespace HealthGateway.WebClient.Server.Models
 {
     /// <summary>
     /// Various timeout values used by the VUE WebClient application.
@@ -36,6 +36,6 @@ namespace HealthGateway.WebClient.Models
         /// Gets or sets the amount of time in minutes after which the user
         /// can retry the verification code.
         /// </summary>
-        public int ResendSMS { get; set; }
+        public int ResendSms { get; set; }
     }
 }

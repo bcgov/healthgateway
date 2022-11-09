@@ -104,7 +104,7 @@ namespace Healthgateway.JobScheduler.Jobs
             DateTime deleteDate = DateTime.UtcNow.AddHours(this.hoursBeforeDeletion);
             this.logger.LogInformation("Looking for closed accounts that are earlier than {DeleteDate}", deleteDate);
             int page = 0;
-            DBResult<List<UserProfile>> profileResult;
+            DbResult<List<UserProfile>> profileResult;
             do
             {
                 profileResult = this.profileDelegate.GetClosedProfiles(deleteDate, page, this.profilesPageSize);

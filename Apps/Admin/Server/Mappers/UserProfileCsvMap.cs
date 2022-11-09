@@ -32,7 +32,7 @@ namespace HealthGateway.Admin.Server.Mappers
         {
             this.AutoMap(CultureInfo.InvariantCulture);
             this.Map(m => m.Email).Ignore();
-            this.Map(m => m.SMSNumber).Ignore();
+            this.Map(m => m.SmsNumber).Ignore();
             this.Map(m => m.UpdatedBy).Ignore();
             this.Map(m => m.CreatedBy).Ignore();
             this.Map(m => m.EncryptionKey).Ignore();

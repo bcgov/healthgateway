@@ -19,7 +19,6 @@ namespace HealthGateway.Database.Delegates
     using System.Collections.Generic;
     using System.Diagnostics.CodeAnalysis;
     using System.Linq;
-    using System.Text.Json;
     using HealthGateway.Database.Constants;
     using HealthGateway.Database.Context;
     using HealthGateway.Database.Models;
@@ -29,18 +28,18 @@ namespace HealthGateway.Database.Delegates
 
     /// <inheritdoc/>
     [ExcludeFromCodeCoverage]
-    public class DBFeedbackDelegate : IFeedbackDelegate
+    public class DbFeedbackDelegate : IFeedbackDelegate
     {
         private readonly ILogger logger;
         private readonly GatewayDbContext dbContext;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="DBFeedbackDelegate"/> class.
+        /// Initializes a new instance of the <see cref="DbFeedbackDelegate"/> class.
         /// </summary>
         /// <param name="logger">Injected Logger Provider.</param>
         /// <param name="dbContext">The context to be used when accessing the database.</param>
-        public DBFeedbackDelegate(
-            ILogger<DBFeedbackDelegate> logger,
+        public DbFeedbackDelegate(
+            ILogger<DbFeedbackDelegate> logger,
             GatewayDbContext dbContext)
         {
             this.logger = logger;
@@ -48,19 +47,19 @@ namespace HealthGateway.Database.Delegates
         }
 
         /// <inheritdoc/>
-        public DBResult<UserFeedback> InsertUserFeedback(UserFeedback feedback)
+        public DbResult<UserFeedback> InsertUserFeedback(UserFeedback feedback)
         {
             this.logger.LogTrace("Inserting user feedback to DB...");
-            DBResult<UserFeedback> result = new();
+            DbResult<UserFeedback> result = new();
             this.dbContext.Add(feedback);
             try
             {
                 this.dbContext.SaveChanges();
-                result.Status = DBStatusCode.Created;
+                result.Status = DbStatusCode.Created;
             }
             catch (DbUpdateException e)
             {
-                result.Status = DBStatusCode.Error;
+                result.Status = DbStatusCode.Error;
                 result.Message = e.Message;
             }
 
@@ -86,21 +85,21 @@ namespace HealthGateway.Database.Delegates
         }
 
         /// <inheritdoc/>
-        public DBResult<UserFeedback> UpdateUserFeedbackWithTagAssociations(UserFeedback feedback)
+        public DbResult<UserFeedback> UpdateUserFeedbackWithTagAssociations(UserFeedback feedback)
         {
             this.logger.LogTrace("Updating the user feedback id {UserFeedbackId} with {NumberOfAssociations} admin tag association in DB", feedback.Id, feedback.Tags.Count);
             this.dbContext.Update(feedback);
-            DBResult<UserFeedback> result = new();
+            DbResult<UserFeedback> result = new();
 
             try
             {
                 this.dbContext.SaveChanges();
-                result.Status = DBStatusCode.Updated;
+                result.Status = DbStatusCode.Updated;
                 result.Payload = feedback;
             }
             catch (DbUpdateException e)
             {
-                result.Status = DBStatusCode.Error;
+                result.Status = DbStatusCode.Error;
                 result.Message = e.Message;
             }
 
@@ -108,20 +107,20 @@ namespace HealthGateway.Database.Delegates
         }
 
         /// <inheritdoc/>
-        public DBResult<UserFeedback> GetUserFeedback(Guid feedbackId)
+        public DbResult<UserFeedback> GetUserFeedback(Guid feedbackId)
         {
             this.logger.LogTrace("Getting user feedback from DB... {FeedbackId}", feedbackId);
             UserFeedback? feedback = this.dbContext.UserFeedback.Find(feedbackId);
-            DBResult<UserFeedback> result = new();
+            DbResult<UserFeedback> result = new();
             if (feedback != null)
             {
                 result.Payload = feedback;
-                result.Status = DBStatusCode.Read;
+                result.Status = DbStatusCode.Read;
             }
             else
             {
                 this.logger.LogInformation("Unable to find feedback using ID: {FeedbackId}", feedbackId);
-                result.Status = DBStatusCode.NotFound;
+                result.Status = DbStatusCode.NotFound;
             }
 
             this.logger.LogDebug("Finished getting user feedback from DB...");
@@ -129,7 +128,7 @@ namespace HealthGateway.Database.Delegates
         }
 
         /// <inheritdoc/>
-        public DBResult<UserFeedback> GetUserFeedbackWithFeedbackTags(Guid feedbackId)
+        public DbResult<UserFeedback> GetUserFeedbackWithFeedbackTags(Guid feedbackId)
         {
             this.logger.LogTrace("Getting user feedback with associations from DB {FeedbackId}", feedbackId);
             UserFeedback? feedback = this.dbContext.UserFeedback
@@ -138,24 +137,24 @@ namespace HealthGateway.Database.Delegates
                 .ThenInclude(t => t.AdminTag)
                 .SingleOrDefault();
 
-            DBResult<UserFeedback> result = new();
+            DbResult<UserFeedback> result = new();
             if (feedback != null)
             {
                 result.Payload = feedback;
-                result.Status = DBStatusCode.Read;
+                result.Status = DbStatusCode.Read;
             }
             else
             {
                 this.logger.LogInformation("Unable to find user feedback using ID: {FeedbackId}", feedbackId);
                 result.Message = $"Unable to find user feedback using ID: {feedbackId}";
-                result.Status = DBStatusCode.NotFound;
+                result.Status = DbStatusCode.NotFound;
             }
 
             return result;
         }
 
         /// <inheritdoc/>
-        public DBResult<IList<UserFeedback>> GetAllUserFeedbackEntries()
+        public DbResult<IList<UserFeedback>> GetAllUserFeedbackEntries()
         {
             this.logger.LogTrace("Getting all user feedback entries");
             IList<UserFeedback> feedback = this.dbContext.UserFeedback
@@ -164,10 +163,10 @@ namespace HealthGateway.Database.Delegates
                 .OrderByDescending(f => f.CreatedDateTime)
                 .ToList();
 
-            DBResult<IList<UserFeedback>> result = new()
+            DbResult<IList<UserFeedback>> result = new()
             {
                 Payload = feedback,
-                Status = DBStatusCode.Read,
+                Status = DbStatusCode.Read,
             };
             this.logger.LogDebug("Finished getting user feedback from DB...");
             return result;

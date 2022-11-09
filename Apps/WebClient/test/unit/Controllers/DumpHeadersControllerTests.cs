@@ -15,7 +15,7 @@
 //-------------------------------------------------------------------------
 namespace HealthGateway.WebClient.Test.Controllers
 {
-    using HealthGateway.WebClient.Controllers;
+    using HealthGateway.WebClient.Server.Controllers;
     using Microsoft.AspNetCore.Mvc;
     using Xunit;
 

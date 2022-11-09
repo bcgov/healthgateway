@@ -18,9 +18,7 @@ namespace HealthGateway.Database.Delegates
     using System;
     using System.Collections.Generic;
     using System.Diagnostics.CodeAnalysis;
-    using System.Globalization;
     using System.Linq;
-    using System.Text.Json;
     using HealthGateway.Database.Constants;
     using HealthGateway.Database.Context;
     using HealthGateway.Database.Models;
@@ -31,18 +29,18 @@ namespace HealthGateway.Database.Delegates
 
     /// <inheritdoc/>
     [ExcludeFromCodeCoverage]
-    public class DBResourceDelegateDelegate : IResourceDelegateDelegate
+    public class DbResourceDelegateDelegate : IResourceDelegateDelegate
     {
-        private readonly ILogger logger;
+        private readonly ILogger<DbResourceDelegateDelegate> logger;
         private readonly GatewayDbContext dbContext;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="DBResourceDelegateDelegate"/> class.
+        /// Initializes a new instance of the <see cref="DbResourceDelegateDelegate"/> class.
         /// </summary>
         /// <param name="logger">Injected Logger Provider.</param>
         /// <param name="dbContext">The context to be used when accessing the database.</param>
-        public DBResourceDelegateDelegate(
-            ILogger<DBFeedbackDelegate> logger,
+        public DbResourceDelegateDelegate(
+            ILogger<DbResourceDelegateDelegate> logger,
             GatewayDbContext dbContext)
         {
             this.logger = logger;
@@ -50,13 +48,13 @@ namespace HealthGateway.Database.Delegates
         }
 
         /// <inheritdoc/>
-        public DBResult<ResourceDelegate> Insert(ResourceDelegate resourceDelegate, bool commit)
+        public DbResult<ResourceDelegate> Insert(ResourceDelegate resourceDelegate, bool commit)
         {
             this.logger.LogTrace("Inserting resource delegate to DB...");
-            DBResult<ResourceDelegate> result = new()
+            DbResult<ResourceDelegate> result = new()
             {
                 Payload = resourceDelegate,
-                Status = DBStatusCode.Deferred,
+                Status = DbStatusCode.Deferred,
             };
 
             this.dbContext.Add(resourceDelegate);
@@ -65,11 +63,11 @@ namespace HealthGateway.Database.Delegates
                 try
                 {
                     this.dbContext.SaveChanges();
-                    result.Status = DBStatusCode.Created;
+                    result.Status = DbStatusCode.Created;
                 }
                 catch (DbUpdateException e)
                 {
-                    result.Status = DBStatusCode.Error;
+                    result.Status = DbStatusCode.Error;
 
                     if (e.InnerException is PostgresException { SqlState: PostgresErrorCodes.UniqueViolation })
                     {
@@ -88,10 +86,10 @@ namespace HealthGateway.Database.Delegates
         }
 
         /// <inheritdoc/>
-        public DBResult<IEnumerable<ResourceDelegate>> Get(string delegateId, int page, int pageSize)
+        public DbResult<IEnumerable<ResourceDelegate>> Get(string delegateId, int page, int pageSize)
         {
             this.logger.LogTrace("Getting resource delegates from DB... {DelegateId}", delegateId);
-            DBResult<IEnumerable<ResourceDelegate>> result = DBDelegateHelper.GetPagedDBResult(
+            DbResult<IEnumerable<ResourceDelegate>> result = DbDelegateHelper.GetPagedDbResult(
                 this.dbContext.ResourceDelegate
                     .Where(resourceDelegate => resourceDelegate.ProfileHdid == delegateId)
                     .OrderBy(resourceDelegate => resourceDelegate.CreatedDateTime),
@@ -117,12 +115,12 @@ namespace HealthGateway.Database.Delegates
         }
 
         /// <inheritdoc/>
-        public DBResult<ResourceDelegate> Delete(ResourceDelegate resourceDelegate, bool commit)
+        public DbResult<ResourceDelegate> Delete(ResourceDelegate resourceDelegate, bool commit)
         {
             this.logger.LogTrace("Deleting resourceDelegate from DB...");
-            DBResult<ResourceDelegate> result = new()
+            DbResult<ResourceDelegate> result = new()
             {
-                Status = DBStatusCode.Deferred,
+                Status = DbStatusCode.Deferred,
             };
             this.dbContext.ResourceDelegate.Remove(resourceDelegate);
 
@@ -131,11 +129,11 @@ namespace HealthGateway.Database.Delegates
                 try
                 {
                     this.dbContext.SaveChanges();
-                    result.Status = DBStatusCode.Deleted;
+                    result.Status = DbStatusCode.Deleted;
                 }
                 catch (DbUpdateConcurrencyException e)
                 {
-                    result.Status = DBStatusCode.Concurrency;
+                    result.Status = DbStatusCode.Concurrency;
                     result.Message = e.Message;
                 }
             }

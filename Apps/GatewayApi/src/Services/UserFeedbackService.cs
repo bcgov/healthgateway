@@ -60,12 +60,12 @@ namespace HealthGateway.GatewayApi.Services
         }
 
         /// <inheritdoc/>
-        public DBResult<UserFeedback> CreateUserFeedback(UserFeedback userFeedback)
+        public DbResult<UserFeedback> CreateUserFeedback(UserFeedback userFeedback)
         {
             this.logger.LogTrace("Creating user feedback...");
-            DBResult<UserFeedback> retVal = this.feedbackDelegate.InsertUserFeedback(userFeedback);
-            DBResult<UserProfile> dbResult = this.profileDelegate.GetUserProfile(userFeedback.UserProfileId);
-            if (dbResult.Status == DBStatusCode.Read)
+            DbResult<UserFeedback> retVal = this.feedbackDelegate.InsertUserFeedback(userFeedback);
+            DbResult<UserProfile> dbResult = this.profileDelegate.GetUserProfile(userFeedback.UserProfileId);
+            if (dbResult.Status == DbStatusCode.Read)
             {
                 string? clientEmail = dbResult.Payload.Email;
                 if (!string.IsNullOrWhiteSpace(clientEmail))
@@ -88,13 +88,13 @@ namespace HealthGateway.GatewayApi.Services
         public RequestResult<Rating> CreateRating(Rating rating)
         {
             this.logger.LogTrace("Creating rating...");
-            DBResult<Rating> dbRating = this.ratingDelegate.InsertRating(rating);
+            DbResult<Rating> dbRating = this.ratingDelegate.InsertRating(rating);
             this.logger.LogDebug("Finished creating user feedback.");
 
             RequestResult<Rating> result = new()
             {
                 ResourcePayload = dbRating.Payload,
-                ResultStatus = dbRating.Status == DBStatusCode.Created ? ResultType.Success : ResultType.Error,
+                ResultStatus = dbRating.Status == DbStatusCode.Created ? ResultType.Success : ResultType.Error,
                 ResultError = new RequestResultError
                 {
                     ResultMessage = dbRating.Message,

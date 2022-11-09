@@ -19,7 +19,6 @@ namespace HealthGateway.Admin.Server
     using System.Diagnostics.CodeAnalysis;
     using System.Threading.Tasks;
     using HealthGateway.Admin.Server.Services;
-    using HealthGateway.Common.AccessManagement.Administration;
     using HealthGateway.Common.AccessManagement.Authentication;
     using HealthGateway.Common.Api;
     using HealthGateway.Common.AspNetConfiguration;
@@ -135,16 +134,16 @@ namespace HealthGateway.Admin.Server
 
         private static void AddDelegates(IServiceCollection services)
         {
-            services.AddTransient<IMessagingVerificationDelegate, DBMessagingVerificationDelegate>();
-            services.AddTransient<IFeedbackDelegate, DBFeedbackDelegate>();
-            services.AddTransient<IRatingDelegate, DBRatingDelegate>();
-            services.AddTransient<IUserProfileDelegate, DBProfileDelegate>();
-            services.AddTransient<ICommunicationDelegate, DBCommunicationDelegate>();
-            services.AddTransient<INoteDelegate, DBNoteDelegate>();
-            services.AddTransient<IResourceDelegateDelegate, DBResourceDelegateDelegate>();
-            services.AddTransient<ICommentDelegate, DBCommentDelegate>();
-            services.AddTransient<IAdminTagDelegate, DBAdminTagDelegate>();
-            services.AddTransient<IFeedbackTagDelegate, DBFeedbackTagDelegate>();
+            services.AddTransient<IMessagingVerificationDelegate, DbMessagingVerificationDelegate>();
+            services.AddTransient<IFeedbackDelegate, DbFeedbackDelegate>();
+            services.AddTransient<IRatingDelegate, DbRatingDelegate>();
+            services.AddTransient<IUserProfileDelegate, DbProfileDelegate>();
+            services.AddTransient<ICommunicationDelegate, DbCommunicationDelegate>();
+            services.AddTransient<INoteDelegate, DbNoteDelegate>();
+            services.AddTransient<IResourceDelegateDelegate, DbResourceDelegateDelegate>();
+            services.AddTransient<ICommentDelegate, DbCommentDelegate>();
+            services.AddTransient<IAdminTagDelegate, DbAdminTagDelegate>();
+            services.AddTransient<IFeedbackTagDelegate, DbFeedbackTagDelegate>();
             services.AddTransient<IVaccineStatusDelegate, RestVaccineStatusDelegate>();
             services.AddTransient<IVaccineProofDelegate, VaccineProofDelegate>();
             services.AddTransient<IAdminUserProfileDelegate, DbAdminUserProfileDelegate>();

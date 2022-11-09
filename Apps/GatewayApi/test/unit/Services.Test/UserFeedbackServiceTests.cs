@@ -47,10 +47,10 @@ namespace HealthGateway.GatewayApi.Test.Services
                 Skip = false,
             };
 
-            DBResult<Rating> insertResult = new()
+            DbResult<Rating> insertResult = new()
             {
                 Payload = expectedRating,
-                Status = DBStatusCode.Created,
+                Status = DbStatusCode.Created,
             };
 
             Mock<IRatingDelegate> ratingDelegateMock = new();
@@ -84,10 +84,10 @@ namespace HealthGateway.GatewayApi.Test.Services
                 Skip = false,
             };
 
-            DBResult<Rating> insertResult = new()
+            DbResult<Rating> insertResult = new()
             {
                 Payload = expectedRating,
-                Status = DBStatusCode.Error,
+                Status = DbStatusCode.Error,
             };
 
             Mock<IRatingDelegate> ratingDelegateMock = new();
@@ -123,10 +123,10 @@ namespace HealthGateway.GatewayApi.Test.Services
                 IsReviewed = true,
             };
 
-            DBResult<UserFeedback> insertResult = new()
+            DbResult<UserFeedback> insertResult = new()
             {
                 Payload = expectedUserFeedback,
-                Status = DBStatusCode.Created,
+                Status = DbStatusCode.Created,
             };
 
             UserProfile profile = new()
@@ -134,10 +134,10 @@ namespace HealthGateway.GatewayApi.Test.Services
                 Email = "mock@email.com",
             };
 
-            DBResult<UserProfile> profileResult = new()
+            DbResult<UserProfile> profileResult = new()
             {
                 Payload = profile,
-                Status = DBStatusCode.Read,
+                Status = DbStatusCode.Read,
             };
 
             Mock<IFeedbackDelegate> userFeedbackDelegateMock = new();
@@ -159,9 +159,9 @@ namespace HealthGateway.GatewayApi.Test.Services
                 mockProfileDelegate.Object,
                 mockJobclient.Object);
 
-            DBResult<UserFeedback> actualResult = service.CreateUserFeedback(expectedUserFeedback);
+            DbResult<UserFeedback> actualResult = service.CreateUserFeedback(expectedUserFeedback);
 
-            Assert.Equal(DBStatusCode.Created, actualResult.Status);
+            Assert.Equal(DbStatusCode.Created, actualResult.Status);
             expectedUserFeedback.ShouldDeepEqual(actualResult.Payload);
         }
     }

@@ -24,11 +24,17 @@
 
 @code
 {
+    /// <summary>
+    /// Chip variants.
+    /// </summary>
     public IList<Variant> Variants { get; } = new List<Variant>
     {
         Variant.Text,
     };
 
+    /// <summary>
+    /// Colour settings.
+    /// </summary>
     public IList<Color> Colours { get; } = new List<Color>
     {
         Color.Default,

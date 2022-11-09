@@ -29,18 +29,18 @@ namespace HealthGateway.Database.Delegates
 
     /// <inheritdoc/>
     [ExcludeFromCodeCoverage]
-    public class DBProfileDelegate : IUserProfileDelegate
+    public class DbProfileDelegate : IUserProfileDelegate
     {
         private readonly GatewayDbContext dbContext;
         private readonly ILogger logger;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="DBProfileDelegate"/> class.
+        /// Initializes a new instance of the <see cref="DbProfileDelegate"/> class.
         /// </summary>
         /// <param name="logger">Injected Logger Provider.</param>
         /// <param name="dbContext">The context to be used when accessing the database.</param>
-        public DBProfileDelegate(
-            ILogger<DBProfileDelegate> logger,
+        public DbProfileDelegate(
+            ILogger<DbProfileDelegate> logger,
             GatewayDbContext dbContext)
         {
             this.logger = logger;
@@ -48,20 +48,20 @@ namespace HealthGateway.Database.Delegates
         }
 
         /// <inheritdoc/>
-        public DBResult<UserProfile> InsertUserProfile(UserProfile profile)
+        public DbResult<UserProfile> InsertUserProfile(UserProfile profile)
         {
             this.logger.LogTrace("Inserting user profile to DB...");
-            DBResult<UserProfile> result = new();
+            DbResult<UserProfile> result = new();
             this.dbContext.Add(profile);
             try
             {
                 this.dbContext.SaveChanges();
                 result.Payload = profile;
-                result.Status = DBStatusCode.Created;
+                result.Status = DbStatusCode.Created;
             }
             catch (DbUpdateException e)
             {
-                result.Status = DBStatusCode.Error;
+                result.Status = DbStatusCode.Error;
                 result.Message = e.Message;
             }
 
@@ -70,11 +70,11 @@ namespace HealthGateway.Database.Delegates
         }
 
         /// <inheritdoc/>
-        public DBResult<UserProfile> Update(UserProfile profile, bool commit = true)
+        public DbResult<UserProfile> Update(UserProfile profile, bool commit = true)
         {
             this.logger.LogTrace("Updating user profile in DB");
-            DBResult<UserProfile> result = this.GetUserProfile(profile.HdId);
-            if (result.Status == DBStatusCode.Read)
+            DbResult<UserProfile> result = this.GetUserProfile(profile.HdId);
+            if (result.Status == DbStatusCode.Read)
             {
                 // Copy certain attributes into the fetched User Profile
                 result.Payload.Email = profile.Email;
@@ -82,24 +82,24 @@ namespace HealthGateway.Database.Delegates
                 result.Payload.UpdatedBy = profile.UpdatedBy;
                 result.Payload.Version = profile.Version;
                 result.Payload.YearOfBirth = profile.YearOfBirth;
-                result.Status = DBStatusCode.Deferred;
+                result.Status = DbStatusCode.Deferred;
 
                 if (commit)
                 {
                     try
                     {
                         this.dbContext.SaveChanges();
-                        result.Status = DBStatusCode.Updated;
+                        result.Status = DbStatusCode.Updated;
                     }
                     catch (DbUpdateConcurrencyException e)
                     {
-                        result.Status = DBStatusCode.Concurrency;
+                        result.Status = DbStatusCode.Concurrency;
                         result.Message = e.Message;
                     }
                     catch (DbUpdateException e)
                     {
                         this.logger.LogError("Unable to update UserProfile to DB {Exception}", e.ToString());
-                        result.Status = DBStatusCode.Error;
+                        result.Status = DbStatusCode.Error;
                         result.Message = e.Message;
                     }
                 }
@@ -110,11 +110,11 @@ namespace HealthGateway.Database.Delegates
         }
 
         /// <inheritdoc/>
-        public DBResult<UserProfile> UpdateComplete(UserProfile profile, bool commit = true)
+        public DbResult<UserProfile> UpdateComplete(UserProfile profile, bool commit = true)
         {
-            DBResult<UserProfile> result = new()
+            DbResult<UserProfile> result = new()
             {
-                Status = DBStatusCode.Error,
+                Status = DbStatusCode.Error,
                 Payload = profile,
             };
 
@@ -125,17 +125,17 @@ namespace HealthGateway.Database.Delegates
                 try
                 {
                     this.dbContext.SaveChanges();
-                    result.Status = DBStatusCode.Updated;
+                    result.Status = DbStatusCode.Updated;
                 }
                 catch (DbUpdateConcurrencyException e)
                 {
-                    result.Status = DBStatusCode.Concurrency;
+                    result.Status = DbStatusCode.Concurrency;
                     result.Message = e.Message;
                 }
                 catch (DbUpdateException e)
                 {
                     this.logger.LogError("Unable to update UserProfile to DB {Exception}", e.ToString());
-                    result.Status = DBStatusCode.Error;
+                    result.Status = DbStatusCode.Error;
                     result.Message = e.Message;
                 }
             }
@@ -145,20 +145,20 @@ namespace HealthGateway.Database.Delegates
         }
 
         /// <inheritdoc/>
-        public DBResult<UserProfile> GetUserProfile(string hdId)
+        public DbResult<UserProfile> GetUserProfile(string hdId)
         {
             this.logger.LogTrace("Getting user profile from DB... {HdId}", hdId);
-            DBResult<UserProfile> result = new();
+            DbResult<UserProfile> result = new();
             UserProfile? profile = this.dbContext.UserProfile.Find(hdId);
             if (profile != null)
             {
                 result.Payload = profile;
-                result.Status = DBStatusCode.Read;
+                result.Status = DbStatusCode.Read;
             }
             else
             {
                 this.logger.LogInformation("Unable to find User by HDID {HdId}", hdId);
-                result.Status = DBStatusCode.NotFound;
+                result.Status = DbStatusCode.NotFound;
             }
 
             this.logger.LogDebug("Finished getting user profile from DB");
@@ -166,24 +166,24 @@ namespace HealthGateway.Database.Delegates
         }
 
         /// <inheritdoc/>
-        public DBResult<List<UserProfile>> GetUserProfiles(IList<string> hdIds)
+        public DbResult<List<UserProfile>> GetUserProfiles(IList<string> hdIds)
         {
             this.logger.LogTrace("Getting user profiles from DB...");
-            DBResult<List<UserProfile>> result = new();
+            DbResult<List<UserProfile>> result = new();
             result.Payload = this.dbContext.UserProfile
                 .Where(p => hdIds.Contains(p.HdId))
                 .ToList();
 
-            result.Status = DBStatusCode.Read;
+            result.Status = DbStatusCode.Read;
             this.logger.LogDebug("Finished getting user profiles from DB");
             return result;
         }
 
         /// <inheritdoc/>
-        public DBResult<List<UserProfile>> GetUserProfiles(UserQueryType queryType, string queryString)
+        public DbResult<List<UserProfile>> GetUserProfiles(UserQueryType queryType, string queryString)
         {
             this.logger.LogTrace("Getting user profiles via message verification from DB for type {QueryType}: {QueryString}", queryType, queryString);
-            DBResult<List<UserProfile>> result = new();
+            DbResult<List<UserProfile>> result = new();
 
             switch (queryType)
             {
@@ -194,47 +194,47 @@ namespace HealthGateway.Database.Delegates
                         .Select(x => x.First())
                         .ToList();
                     break;
-                case UserQueryType.SMS:
+                case UserQueryType.Sms:
                     result.Payload = this.dbContext.UserProfile
-                        .Where(user => user.Verifications.Any(v => EF.Functions.ILike(v.SMSNumber, $"%{queryString}%")))
+                        .Where(user => user.Verifications.Any(v => EF.Functions.ILike(v.SmsNumber, $"%{queryString}%")))
                         .GroupBy(user => user.HdId)
                         .Select(x => x.First())
                         .ToList();
                     break;
             }
 
-            result.Status = DBStatusCode.Read;
+            result.Status = DbStatusCode.Read;
             this.logger.LogDebug("Finished getting user profiles from DB");
             return result;
         }
 
         /// <inheritdoc/>
-        public DBResult<List<UserProfile>> GetAllUserProfilesAfter(DateTime filterDateTime, int page = 0, int pagesize = 500)
+        public DbResult<List<UserProfile>> GetAllUserProfilesAfter(DateTime filterDateTime, int page = 0, int pageSize = 500)
         {
-            DBResult<List<UserProfile>> result = new();
-            int offset = page * pagesize;
+            DbResult<List<UserProfile>> result = new();
+            int offset = page * pageSize;
             result.Payload = this.dbContext.UserProfile
                 .Where(p => p.LastLoginDateTime < filterDateTime && p.ClosedDateTime == null && !string.IsNullOrWhiteSpace(p.Email))
                 .OrderBy(o => o.CreatedDateTime)
                 .Skip(offset)
-                .Take(pagesize)
+                .Take(pageSize)
                 .ToList();
-            result.Status = DBStatusCode.Read;
+            result.Status = DbStatusCode.Read;
             return result;
         }
 
         /// <inheritdoc/>
-        public DBResult<List<UserProfile>> GetClosedProfiles(DateTime filterDateTime, int page = 0, int pagesize = 500)
+        public DbResult<List<UserProfile>> GetClosedProfiles(DateTime filterDateTime, int page = 0, int pageSize = 500)
         {
-            DBResult<List<UserProfile>> result = new();
-            int offset = page * pagesize;
+            DbResult<List<UserProfile>> result = new();
+            int offset = page * pageSize;
             result.Payload = this.dbContext.UserProfile
                 .Where(p => p.ClosedDateTime != null && p.ClosedDateTime < filterDateTime)
                 .OrderBy(o => o.ClosedDateTime)
                 .Skip(offset)
-                .Take(pagesize)
+                .Take(pageSize)
                 .ToList();
-            result.Status = DBStatusCode.Read;
+            result.Status = DbStatusCode.Read;
             return result;
         }
 
@@ -269,10 +269,10 @@ namespace HealthGateway.Database.Delegates
         }
 
         /// <inheritdoc/>
-        public DBResult<IEnumerable<UserProfile>> GetAll(int page, int pageSize)
+        public DbResult<IEnumerable<UserProfile>> GetAll(int page, int pageSize)
         {
             this.logger.LogTrace("Retrieving all the user profiles for the page #{Page} with pageSize: {PageSize}...", page, pageSize);
-            return DBDelegateHelper.GetPagedDBResult(
+            return DbDelegateHelper.GetPagedDbResult(
                 this.dbContext.UserProfile
                     .OrderBy(userProfile => userProfile.CreatedDateTime),
                 page,
@@ -299,14 +299,14 @@ namespace HealthGateway.Database.Delegates
         }
 
         /// <inheritdoc/>
-        public DBResult<IEnumerable<UserProfileHistory>> GetUserProfileHistories(string hdid, int limit)
+        public DbResult<IEnumerable<UserProfileHistory>> GetUserProfileHistories(string hdid, int limit)
         {
-            DBResult<IEnumerable<UserProfileHistory>> result = new();
+            DbResult<IEnumerable<UserProfileHistory>> result = new();
             result.Payload = this.dbContext.UserProfileHistory
                 .Where(p => p.HdId == hdid)
                 .OrderByDescending(p => p.LastLoginDateTime)
                 .Take(limit);
-            result.Status = DBStatusCode.Read;
+            result.Status = DbStatusCode.Read;
             return result;
         }
 

@@ -85,7 +85,7 @@ namespace HealthGateway.Medication
             services.AddTransient<IMedicationRequestService, MedicationRequestService>();
 
             // Add delegates
-            services.AddTransient<IDrugLookupDelegate, DBDrugLookupDelegate>();
+            services.AddTransient<IDrugLookupDelegate, DbDrugLookupDelegate>();
             services.AddTransient<IAuthenticationDelegate, AuthenticationDelegate>();
             services.AddTransient<IMedStatementDelegate, RestMedStatementDelegate>();
             services.AddTransient<IHashDelegate, HmacHashDelegate>();

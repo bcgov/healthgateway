@@ -19,7 +19,7 @@ namespace HealthGateway.WebClientTests.Controllers
     using System.Linq;
     using System.Net.Mime;
     using DeepEqual.Syntax;
-    using HealthGateway.WebClient.Controllers;
+    using HealthGateway.WebClient.Server.Controllers;
     using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.Extensions.Configuration;

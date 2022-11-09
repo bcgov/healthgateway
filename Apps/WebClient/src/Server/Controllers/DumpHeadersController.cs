@@ -13,7 +13,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //-------------------------------------------------------------------------
-namespace HealthGateway.WebClient.Controllers
+namespace HealthGateway.WebClient.Server.Controllers
 {
     using HealthGateway.Common.Filters;
     using Microsoft.AspNetCore.Mvc;

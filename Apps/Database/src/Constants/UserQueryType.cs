@@ -28,6 +28,6 @@ namespace HealthGateway.Database.Constants
         /// <summary>
         /// Query by the SMS Phone number.
         /// </summary>
-        SMS,
+        Sms,
     }
 }

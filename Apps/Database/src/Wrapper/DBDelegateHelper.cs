@@ -22,7 +22,7 @@ namespace HealthGateway.Database.Wrapper
     /// <summary>
     /// Utilities for DBDelegate including paging a LINQ Query.
     /// </summary>
-    public static class DBDelegateHelper
+    public static class DbDelegateHelper
     {
         /// <summary>
         /// Gets a list of DBModel records for a specific page.
@@ -32,15 +32,15 @@ namespace HealthGateway.Database.Wrapper
         /// <param name="pageSize">The maximum amount of rows to return.</param>
         /// <typeparam name="T">A DBModel type.</typeparam>
         /// <returns>A list of DBModel records wrapped in a DBResult.</returns>
-        public static DBResult<IEnumerable<T>> GetPagedDBResult<T>(IQueryable<T> query, int page, int pageSize)
+        public static DbResult<IEnumerable<T>> GetPagedDbResult<T>(IQueryable<T> query, int page, int pageSize)
             where T : class
         {
             int offset = page * pageSize;
-            DBResult<IEnumerable<T>> result = new()
+            DbResult<IEnumerable<T>> result = new()
             {
                 Payload = query.Skip(offset).Take(pageSize).ToList(),
             };
-            result.Status = result.Payload != null ? DBStatusCode.Read : DBStatusCode.NotFound;
+            result.Status = DbStatusCode.Read;
             return result;
         }
     }

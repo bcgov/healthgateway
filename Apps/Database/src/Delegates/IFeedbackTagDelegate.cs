@@ -31,7 +31,7 @@ namespace HealthGateway.Database.Delegates
         /// <param name="feedbackTag">The user feedback tag to be added to the database.</param>
         /// <param name="commit">if true the transaction is persisted immediately.</param>
         /// <returns>A user feedback tag wrapped in a DBResult.</returns>
-        DBResult<UserFeedbackTag> Add(UserFeedbackTag feedbackTag, bool commit = true);
+        DbResult<UserFeedbackTag> Add(UserFeedbackTag feedbackTag, bool commit = true);
 
         /// <summary>
         /// Deletes the given user feedback tag.
@@ -39,13 +39,13 @@ namespace HealthGateway.Database.Delegates
         /// <param name="feedbackTag">The user feedback tag to be deleted from database.</param>
         /// <param name="commit">if true the transaction is persisted immediately.</param>
         /// <returns>The result DBResult.</returns>
-        DBResult<UserFeedbackTag> Delete(UserFeedbackTag feedbackTag, bool commit = true);
+        DbResult<UserFeedbackTag> Delete(UserFeedbackTag feedbackTag, bool commit = true);
 
         /// <summary>
         /// Gets a list of user feedback tags by feedback id.
         /// </summary>
         /// <param name="feedbackId">The feedback id to search on.</param>
         /// <returns>An IEnumerable of UserFeedbackTag wrapped in a DBResult.</returns>
-        DBResult<IEnumerable<UserFeedbackTag>> GetUserFeedbackTagsByFeedbackId(Guid feedbackId);
+        DbResult<IEnumerable<UserFeedbackTag>> GetUserFeedbackTagsByFeedbackId(Guid feedbackId);
     }
 }

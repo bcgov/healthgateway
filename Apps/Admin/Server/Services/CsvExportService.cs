@@ -71,28 +71,28 @@ namespace HealthGateway.Admin.Server.Services
         /// <inheritdoc/>
         public Stream GetComments(DateTime? startDate, DateTime? endDate)
         {
-            DBResult<IEnumerable<Comment>> comments = this.commentDelegate.GetAll(Page, PageSize);
+            DbResult<IEnumerable<Comment>> comments = this.commentDelegate.GetAll(Page, PageSize);
             return GetStream<Comment, CommentCsvMap>(comments.Payload);
         }
 
         /// <inheritdoc/>
         public Stream GetNotes(DateTime? startDate, DateTime? endDate)
         {
-            DBResult<IEnumerable<Note>> notes = this.noteDelegate.GetAll(Page, PageSize);
+            DbResult<IEnumerable<Note>> notes = this.noteDelegate.GetAll(Page, PageSize);
             return GetStream<Note, NoteCsvMap>(notes.Payload);
         }
 
         /// <inheritdoc/>
         public Stream GetUserProfiles(DateTime? startDate, DateTime? endDate)
         {
-            DBResult<IEnumerable<UserProfile>> profiles = this.userProfileDelegate.GetAll(Page, PageSize);
+            DbResult<IEnumerable<UserProfile>> profiles = this.userProfileDelegate.GetAll(Page, PageSize);
             return GetStream<UserProfile, UserProfileCsvMap>(profiles.Payload);
         }
 
         /// <inheritdoc/>
         public Stream GetRatings(DateTime? startDate, DateTime? endDate)
         {
-            DBResult<IEnumerable<Rating>> profiles = this.ratingDelegate.GetAll(Page, PageSize);
+            DbResult<IEnumerable<Rating>> profiles = this.ratingDelegate.GetAll(Page, PageSize);
             return GetStream<Rating, UserProfileCsvMap>(profiles.Payload);
         }
 
@@ -112,7 +112,7 @@ namespace HealthGateway.Admin.Server.Services
         /// <inheritdoc/>
         public Stream GetUserFeedback()
         {
-            DBResult<IList<UserFeedback>> feedback = this.feedbackDelegate.GetAllUserFeedbackEntries();
+            DbResult<IList<UserFeedback>> feedback = this.feedbackDelegate.GetAllUserFeedbackEntries();
             return GetStream<UserFeedback, UserFeedbackCsvMap>(feedback.Payload);
         }
 

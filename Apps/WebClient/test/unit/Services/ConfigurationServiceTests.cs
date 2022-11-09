@@ -13,13 +13,13 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //-------------------------------------------------------------------------
-namespace HealthGateway.WebClient.Test.Services
+namespace HealthGateway.WebClientTests.Services.Test
 {
     using System;
     using System.Collections.Generic;
     using DeepEqual.Syntax;
-    using HealthGateway.WebClient.Models;
-    using HealthGateway.WebClient.Services;
+    using HealthGateway.WebClient.Server.Models;
+    using HealthGateway.WebClient.Server.Services;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.Logging;
     using Moq;
@@ -40,7 +40,8 @@ namespace HealthGateway.WebClient.Test.Services
         public ConfigurationServiceTests()
         {
             this.config = new ConfigurationBuilder()
-                .AddJsonFile("UnitTest.json").Build();
+                .AddJsonFile("UnitTest.json")
+                .Build();
 
             // Mock dependency injection of controller
             this.mockLog = new Mock<ILogger<ConfigurationService>>();
@@ -57,7 +58,7 @@ namespace HealthGateway.WebClient.Test.Services
         {
             ExternalConfiguration expectedResult = new()
             {
-                OpenIdConnect = new OpenIdConnectConfiguration()
+                OpenIdConnect = new OpenIdConnectConfiguration
                 {
                     Authority = "Authority",
                     ClientId = "ClientId",
@@ -69,9 +70,9 @@ namespace HealthGateway.WebClient.Test.Services
                         { "Logout", new Uri("https://localhost/logout") },
                     },
                 },
-                IdentityProviders = new IdentityProviderConfiguration[]
+                IdentityProviders = new[]
                 {
-                    new IdentityProviderConfiguration()
+                    new IdentityProviderConfiguration
                     {
                         Id = "Id",
                         Name = "Name",
@@ -80,22 +81,22 @@ namespace HealthGateway.WebClient.Test.Services
                         Disabled = true,
                     },
                 },
-                WebClient = new WebClientConfiguration()
+                WebClient = new WebClientConfiguration
                 {
                     LogLevel = "LogLevel",
-                    Timeouts = new TimeOutsConfiguration()
+                    Timeouts = new TimeOutsConfiguration
                     {
                         Idle = 10000,
                         LogoutRedirect = "LogoutRedirect",
                     },
-                    ExternalURLs = new Dictionary<string, Uri>
+                    ExternalUrLs = new Dictionary<string, Uri>
                     {
-                       {
-                           "External", new Uri("https://localhost/external")
-                       },
+                        {
+                            "External", new Uri("https://localhost/external")
+                        },
                     },
                 },
-                ServiceEndpoints = new Dictionary<string, Uri>()
+                ServiceEndpoints = new Dictionary<string, Uri>
                 {
                     {
                         "Service", new Uri("https://localhost/service")
