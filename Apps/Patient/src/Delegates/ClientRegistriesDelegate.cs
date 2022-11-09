@@ -74,7 +74,7 @@ namespace HealthGateway.Patient.Delegates
                 {
                     this.logger.LogError("{Exception}", e.ToString());
                     throw new ApiPatientException(
-                        $"Not Found: Communication Exception when trying to retrieve patient information from {type}",
+                        $"Communication Exception when trying to retrieve patient information from {type}",
                         "ClientRegistriesDelegate.GetDemographicsAsync",
                         HttpStatusCode.NotFound);
                 }
@@ -171,34 +171,37 @@ namespace HealthGateway.Patient.Delegates
             return retAddress;
         }
 
-        /// <summary>
-        /// Rules for checking response codes.
-        /// "BCHCIM.GD.2.0018": set warning message.
-        /// "BCHCIM.GD.2.0006": set warning message.
-        /// "BCHCIM.GD.0.0019"", "BCHCIM.GD.0.0021", "BCHCIM.GD.0.0022", "BCHCIM.GD.0.0023": no warning message.
-        /// "BCHCIM.GD.0.0013": set error message.
-        /// </summary>
         private void CheckResponseCode(ApiResult<PatientModel> apiResult, string responseCode)
         {
             if (responseCode.Contains("BCHCIM.GD.2.0018", StringComparison.InvariantCulture))
             {
                 // BCHCIM.GD.2.0018 Not found
                 this.logger.LogWarning("Client Registry did not find any records. Returned message code: {ResponseCode}", responseCode);
-                apiResult.Warning = "Client Registry did not find any records";
+                apiResult.Warning = ErrorMessages.ClientRegistryRecordsNotFound;
+                return;
             }
 
             if (responseCode.Contains("BCHCIM.GD.2.0006", StringComparison.InvariantCulture))
             {
                 // Returned BCHCIM.GD.2.0006 Invalid PHN
                 this.logger.LogWarning("Personal Health Number is invalid. Returned message code: {ResponseCode}", responseCode);
-                apiResult.Warning = "Personal Health Number is invalid";
+                apiResult.Warning = ErrorMessages.PhnInvalid;
+                return;
+            }
+
+            if (responseCode.Contains("BCHCIM.GD.0.0019", StringComparison.InvariantCulture) ||
+                responseCode.Contains("BCHCIM.GD.0.0021", StringComparison.InvariantCulture) ||
+                responseCode.Contains("BCHCIM.GD.0.0022", StringComparison.InvariantCulture) ||
+                responseCode.Contains("BCHCIM.GD.0.0023", StringComparison.InvariantCulture))
+            {
+                return;
             }
 
             // Verify that the reply contains a result
             if (!responseCode.Contains("BCHCIM.GD.0.0013", StringComparison.InvariantCulture))
             {
                 this.logger.LogWarning("Client Registry did not return a person. Returned message code: {ResponseCode}", responseCode);
-                throw new ApiPatientException("Not Found: Client Registry did not return a person", "ClientRegistriesDelegate.CheckResponseCode", HttpStatusCode.NotFound);
+                throw new ApiPatientException(ErrorMessages.ClientRegistryDoesNotReturnPerson, "ClientRegistriesDelegate.CheckResponseCode", HttpStatusCode.NotFound);
             }
         }
 
@@ -211,63 +214,66 @@ namespace HealthGateway.Patient.Delegates
                 string responseCode = reply.HCIM_IN_GetDemographicsResponse.controlActProcess.queryAck.queryResponseCode.code;
                 this.CheckResponseCode(apiResult, responseCode);
 
-                HCIM_IN_GetDemographicsResponseIdentifiedPerson retrievedPerson = reply.HCIM_IN_GetDemographicsResponse.controlActProcess.subject[0].target;
-
-                // If the deceased indicator is set and true, return an empty person.
-                bool deceasedInd = retrievedPerson.identifiedPerson.deceasedInd?.value ?? false;
-                if (deceasedInd)
+                if (apiResult.Warning == null)
                 {
-                    this.logger.LogWarning("Client Registry returned a person with the deceased indicator set to true. No PHN was populated.");
-                    throw new ApiPatientException(
-                        "Not Found: Client Registry returned a person with the deceased indicator set to true",
-                        "ClientRegistriesDelegate.ParseResponse",
-                        HttpStatusCode.NotFound);
-                }
+                    HCIM_IN_GetDemographicsResponseIdentifiedPerson retrievedPerson = reply.HCIM_IN_GetDemographicsResponse.controlActProcess.subject[0].target;
 
-                // Initialize model
-                string? dobStr = retrievedPerson.identifiedPerson.birthTime.value; // yyyyMMdd
-                DateTime dob = DateTime.ParseExact(dobStr, "yyyyMMdd", CultureInfo.InvariantCulture);
-                PatientModel patient = new()
-                {
-                    Birthdate = dob,
-                    Gender = retrievedPerson.identifiedPerson.administrativeGenderCode.code switch
+                    // If the deceased indicator is set and true, return an empty person.
+                    bool deceasedInd = retrievedPerson.identifiedPerson.deceasedInd?.value ?? false;
+                    if (deceasedInd)
                     {
-                        "F" => "Female",
-                        "M" => "Male",
-                        _ => "NotSpecified",
-                    },
-                };
+                        this.logger.LogWarning("Client Registry returned a person with the deceased indicator set to true. No PHN was populated.");
+                        throw new ApiPatientException(
+                            ErrorMessages.ClientRegistryReturnedDeceasedPerson,
+                            "ClientRegistriesDelegate.ParseResponse",
+                            HttpStatusCode.NotFound);
+                    }
 
-                // Populate names
-                if (!this.PopulateNames(retrievedPerson, patient))
-                {
-                    apiResult.Warning = ErrorMessages.InvalidServicesCard;
+                    // Initialize model
+                    string? dobStr = retrievedPerson.identifiedPerson.birthTime.value; // yyyyMMdd
+                    DateTime dob = DateTime.ParseExact(dobStr, "yyyyMMdd", CultureInfo.InvariantCulture);
+                    PatientModel patient = new()
+                    {
+                        Birthdate = dob,
+                        Gender = retrievedPerson.identifiedPerson.administrativeGenderCode.code switch
+                        {
+                            "F" => "Female",
+                            "M" => "Male",
+                            _ => "NotSpecified",
+                        },
+                    };
+
+                    // Populate names
+                    if (!this.PopulateNames(retrievedPerson, patient))
+                    {
+                        apiResult.Warning = ErrorMessages.InvalidServicesCard;
+                    }
+
+                    // Populate the PHN and HDID
+                    this.logger.LogDebug("ID Validation is set to {DisableIdValidation}", disableIdValidation);
+                    if (!this.PopulateIdentifiers(retrievedPerson, patient) && !disableIdValidation)
+                    {
+                        apiResult.Warning = ErrorMessages.InvalidServicesCard;
+                    }
+
+                    // Populate addresses
+                    AD[] addresses = retrievedPerson.addr;
+                    if (addresses != null)
+                    {
+                        patient.PhysicalAddress = MapAddress(addresses.FirstOrDefault(a => a.use.Any(u => u == cs_PostalAddressUse.PHYS)));
+                        patient.PostalAddress = MapAddress(addresses.FirstOrDefault(a => a.use.Any(u => u == cs_PostalAddressUse.PST)));
+                    }
+
+                    if (responseCode.Contains("BCHCIM.GD.0.0019", StringComparison.InvariantCulture) ||
+                        responseCode.Contains("BCHCIM.GD.0.0021", StringComparison.InvariantCulture) ||
+                        responseCode.Contains("BCHCIM.GD.0.0022", StringComparison.InvariantCulture) ||
+                        responseCode.Contains("BCHCIM.GD.0.0023", StringComparison.InvariantCulture))
+                    {
+                        patient.ResponseCode = responseCode;
+                    }
+
+                    apiResult.ResourcePayload = patient;
                 }
-
-                // Populate the PHN and HDID
-                this.logger.LogDebug("ID Validation is set to {DisableIdValidation}", disableIdValidation);
-                if (!this.PopulateIdentifiers(retrievedPerson, patient) && !disableIdValidation)
-                {
-                    apiResult.Warning = ErrorMessages.InvalidServicesCard;
-                }
-
-                // Populate addresses
-                AD[] addresses = retrievedPerson.addr;
-                if (addresses != null)
-                {
-                    patient.PhysicalAddress = MapAddress(addresses.FirstOrDefault(a => a.use.Any(u => u == cs_PostalAddressUse.PHYS)));
-                    patient.PostalAddress = MapAddress(addresses.FirstOrDefault(a => a.use.Any(u => u == cs_PostalAddressUse.PST)));
-                }
-
-                if (responseCode.Contains("BCHCIM.GD.0.0019", StringComparison.InvariantCulture) ||
-                    responseCode.Contains("BCHCIM.GD.0.0021", StringComparison.InvariantCulture) ||
-                    responseCode.Contains("BCHCIM.GD.0.0022", StringComparison.InvariantCulture) ||
-                    responseCode.Contains("BCHCIM.GD.0.0023", StringComparison.InvariantCulture))
-                {
-                    patient.ResponseCode = responseCode;
-                }
-
-                apiResult.ResourcePayload = patient;
             }
         }
 
