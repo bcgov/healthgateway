@@ -3,7 +3,6 @@ import {
     ErrorSourceType,
     ErrorType,
 } from "@/constants/errorType";
-import { ResultType } from "@/constants/resulttype";
 import UserPreferenceType from "@/constants/userPreferenceType";
 import { DateWrapper } from "@/models/dateWrapper";
 import { ResultError } from "@/models/errors";
@@ -268,7 +267,7 @@ export const actions: UserActions = {
             patientService
                 .getPatientData(context.state.user.hdid)
                 .then((result) => {
-                    if (result.resultStatus === ResultType.Success) {
+                    if (result.resourcePayload) {
                         context.commit(
                             "setPatientData",
                             result.resourcePayload
@@ -306,19 +305,9 @@ export const actions: UserActions = {
                                 resolve();
                             });
                     } else {
-                        if (result.resultError?.statusCode === 429) {
-                            logger.debug(
-                                "Patient retrieval failed because of too many requests"
-                            );
-                            context.commit(
-                                "setAppError",
-                                AppErrorType.TooManyRequests,
-                                { root: true }
-                            );
-                        } else {
-                            logger.debug("Patient retrieval failed");
-                            context.commit("setPatientRetrievalFailed");
-                        }
+                        logger.debug("Patient retrieval failed");
+                        context.commit("setPatientRetrievalFailed");
+
                         resolve();
                     }
                 })
