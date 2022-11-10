@@ -227,7 +227,7 @@ namespace HealthGateway.GatewayApi.Test.Services
                 new Mock<ILogger<UserProfileService>>().Object,
                 new Mock<IPatientService>().Object,
                 new Mock<IUserEmailService>().Object,
-                new Mock<IUserSMSService>().Object,
+                new Mock<IUserSmsService>().Object,
                 new Mock<IEmailQueueService>().Object,
                 new Mock<INotificationSettingsService>().Object,
                 mockUserProfileDelegate.Object,

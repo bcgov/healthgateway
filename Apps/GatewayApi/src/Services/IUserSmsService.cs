@@ -21,7 +21,7 @@ namespace HealthGateway.GatewayApi.Services
     /// <summary>
     /// The User SMS service.
     /// </summary>
-    public interface IUserSMSService
+    public interface IUserSmsService
     {
         /// <summary>
         /// Validates the SMS number that matches the given validation code.
@@ -29,7 +29,7 @@ namespace HealthGateway.GatewayApi.Services
         /// <param name="hdid">The requested user hdid.</param>
         /// <param name="validationCode">The SMS validation code.</param>
         /// <returns>Returns a request result containing true if the SMS verification was found and validated.</returns>
-        PrimitiveRequestResult<bool> ValidateSMS(string hdid, string validationCode);
+        PrimitiveRequestResult<bool> ValidateSms(string hdid, string validationCode);
 
         /// <summary>
         /// Create the user SMS number.
@@ -37,7 +37,7 @@ namespace HealthGateway.GatewayApi.Services
         /// <param name="hdid">The user hdid.</param>
         /// <param name="sms">SMS number to be set for the user.</param>
         /// <returns>returns true if the sms number was sucessfully created.</returns>
-        MessagingVerification CreateUserSMS(string hdid, string sms);
+        MessagingVerification CreateUserSms(string hdid, string sms);
 
         /// <summary>
         /// Updates the user SMS number.
@@ -45,6 +45,6 @@ namespace HealthGateway.GatewayApi.Services
         /// <param name="hdid">The user hdid.</param>
         /// <param name="sms">SMS number to be set for the user.</param>
         /// <returns>returns true if the sms number was sucessfully updated.</returns>
-        bool UpdateUserSMS(string hdid, string sms);
+        bool UpdateUserSms(string hdid, string sms);
     }
 }

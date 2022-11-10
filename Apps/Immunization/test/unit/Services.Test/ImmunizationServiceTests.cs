@@ -161,7 +161,7 @@ namespace HealthGateway.ImmunizationTests.Services.Test
                 ResourcePayload = new ImmunizationResult(
                     this.autoMapper.Map<LoadStateModel>(delegateResult.ResourcePayload?.LoadState),
                     new List<ImmunizationEvent>(),
-                    ImmunizationRecommendationMapUtils.FromPHSAModelList(delegateResult?.ResourcePayload?.Result?.Recommendations, this.autoMapper)),
+                    ImmunizationRecommendationMapUtils.FromPhsaModelList(delegateResult?.ResourcePayload?.Result?.Recommendations, this.autoMapper)),
                 PageIndex = delegateResult.PageIndex,
                 PageSize = delegateResult.PageSize,
                 TotalResultCount = delegateResult.TotalResultCount,

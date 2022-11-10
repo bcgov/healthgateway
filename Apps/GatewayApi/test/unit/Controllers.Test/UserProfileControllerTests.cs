@@ -103,7 +103,7 @@ namespace HealthGateway.GatewayApi.Test.Controllers
             Mock<IUserProfileService> userProfileServiceMock = new();
             userProfileServiceMock.Setup(s => s.CreateUserProfile(createUserRequest, It.IsAny<DateTime>(), It.IsAny<string>())).ReturnsAsync(expected);
             Mock<IUserEmailService> emailServiceMock = new();
-            Mock<IUserSMSService> smsServiceMock = new();
+            Mock<IUserSmsService> smsServiceMock = new();
 
             UserProfileController service = new(
                 userProfileServiceMock.Object,
@@ -145,7 +145,7 @@ namespace HealthGateway.GatewayApi.Test.Controllers
             Mock<IUserProfileService> userProfileServiceMock = new();
             userProfileServiceMock.Setup(s => s.CreateUserProfile(createUserRequest, It.IsAny<DateTime>(), It.IsAny<string>())).ReturnsAsync(expected);
             Mock<IUserEmailService> emailServiceMock = new();
-            Mock<IUserSMSService> smsServiceMock = new();
+            Mock<IUserSmsService> smsServiceMock = new();
 
             UserProfileController service = new(
                 userProfileServiceMock.Object,
@@ -175,7 +175,7 @@ namespace HealthGateway.GatewayApi.Test.Controllers
                 userProfileServiceMock.Object,
                 httpContextAccessorMock.Object,
                 new Mock<IUserEmailService>().Object,
-                new Mock<IUserSMSService>().Object,
+                new Mock<IUserSmsService>().Object,
                 new Mock<IAuthenticationDelegate>().Object);
 
             PrimitiveRequestResult<bool> actualResult = await controller.Validate(this.hdid).ConfigureAwait(true);
@@ -310,7 +310,7 @@ namespace HealthGateway.GatewayApi.Test.Controllers
 
             Mock<IHttpContextAccessor> httpContextAccessorMock = CreateValidHttpContext(this.token, this.userId, this.hdid);
             Mock<IUserEmailService> emailServiceMock = new();
-            Mock<IUserSMSService> smsServiceMock = new();
+            Mock<IUserSmsService> smsServiceMock = new();
 
             UserProfileController service = new(
                 userProfileServiceMock.Object,
@@ -337,7 +337,7 @@ namespace HealthGateway.GatewayApi.Test.Controllers
                 new Mock<IUserProfileService>().Object,
                 httpContextAccessorMock.Object,
                 emailServiceMock.Object,
-                new Mock<IUserSMSService>().Object,
+                new Mock<IUserSmsService>().Object,
                 new Mock<IAuthenticationDelegate>().Object);
 
             bool actualResult = controller.UpdateUserEmail(this.hdid, "emailadd@hgw.ca");
@@ -367,7 +367,7 @@ namespace HealthGateway.GatewayApi.Test.Controllers
                 new Mock<IUserProfileService>().Object,
                 httpContextAccessorMock.Object,
                 emailServiceMock.Object,
-                new Mock<IUserSMSService>().Object,
+                new Mock<IUserSmsService>().Object,
                 new Mock<IAuthenticationDelegate>().Object);
 
             ActionResult<PrimitiveRequestResult<bool>> actualResult = await controller.ValidateEmail(this.hdid, Guid.NewGuid()).ConfigureAwait(true);
@@ -395,7 +395,7 @@ namespace HealthGateway.GatewayApi.Test.Controllers
                 new Mock<IUserProfileService>().Object,
                 httpContextAccessorMock.Object,
                 emailServiceMock.Object,
-                new Mock<IUserSMSService>().Object,
+                new Mock<IUserSmsService>().Object,
                 new Mock<IAuthenticationDelegate>().Object);
 
             ActionResult<PrimitiveRequestResult<bool>> actualResult = await controller.ValidateEmail(this.hdid, Guid.NewGuid()).ConfigureAwait(true);
@@ -408,8 +408,8 @@ namespace HealthGateway.GatewayApi.Test.Controllers
         [Fact]
         public void ShouldUpdateUserSMSNumber()
         {
-            Mock<IUserSMSService> smsServiceMock = new();
-            smsServiceMock.Setup(s => s.UpdateUserSMS(It.IsAny<string>(), It.IsAny<string>())).Returns(true);
+            Mock<IUserSmsService> smsServiceMock = new();
+            smsServiceMock.Setup(s => s.UpdateUserSms(It.IsAny<string>(), It.IsAny<string>())).Returns(true);
 
             Mock<IHttpContextAccessor> httpContextAccessorMock = CreateValidHttpContext(this.token, this.userId, this.hdid);
             UserProfileController controller = new(
@@ -419,7 +419,7 @@ namespace HealthGateway.GatewayApi.Test.Controllers
                 smsServiceMock.Object,
                 new Mock<IAuthenticationDelegate>().Object);
 
-            bool actualResult = controller.UpdateUserSMSNumber(this.hdid, "250 123 456");
+            bool actualResult = controller.UpdateUserSmsNumber(this.hdid, "250 123 456");
             Assert.True(actualResult);
         }
 
@@ -435,8 +435,8 @@ namespace HealthGateway.GatewayApi.Test.Controllers
                 ResultStatus = ResultType.Success,
                 ResultError = null,
             };
-            Mock<IUserSMSService> smsServiceMock = new();
-            smsServiceMock.Setup(s => s.ValidateSMS(It.IsAny<string>(), It.IsAny<string>())).Returns(primitiveRequestResult);
+            Mock<IUserSmsService> smsServiceMock = new();
+            smsServiceMock.Setup(s => s.ValidateSms(It.IsAny<string>(), It.IsAny<string>())).Returns(primitiveRequestResult);
 
             Mock<IHttpContextAccessor> httpContextAccessorMock = CreateValidHttpContext(this.token, this.userId, this.hdid);
             UserProfileController controller = new(
@@ -446,7 +446,7 @@ namespace HealthGateway.GatewayApi.Test.Controllers
                 smsServiceMock.Object,
                 new Mock<IAuthenticationDelegate>().Object);
 
-            ActionResult<PrimitiveRequestResult<bool>> actualResult = Task.Run(async () => await controller.ValidateSMS(this.hdid, "205 123 4567").ConfigureAwait(true)).Result;
+            ActionResult<PrimitiveRequestResult<bool>> actualResult = Task.Run(async () => await controller.ValidateSms(this.hdid, "205 123 4567").ConfigureAwait(true)).Result;
 
             PrimitiveRequestResult<bool>? result = actualResult?.Value;
             Assert.Equal(ResultType.Success, result?.ResultStatus);
@@ -465,8 +465,8 @@ namespace HealthGateway.GatewayApi.Test.Controllers
                 ResultStatus = ResultType.Success,
                 ResultError = null,
             };
-            Mock<IUserSMSService> smsServiceMock = new();
-            smsServiceMock.Setup(s => s.ValidateSMS(It.IsAny<string>(), It.IsAny<string>())).Returns(primitiveRequestResult);
+            Mock<IUserSmsService> smsServiceMock = new();
+            smsServiceMock.Setup(s => s.ValidateSms(It.IsAny<string>(), It.IsAny<string>())).Returns(primitiveRequestResult);
 
             Mock<IHttpContextAccessor> httpContextAccessorMock = CreateValidHttpContext(this.token, this.userId, this.hdid);
             UserProfileController controller = new(
@@ -476,7 +476,7 @@ namespace HealthGateway.GatewayApi.Test.Controllers
                 smsServiceMock.Object,
                 new Mock<IAuthenticationDelegate>().Object);
 
-            ActionResult<PrimitiveRequestResult<bool>> actualResult = Task.Run(async () => await controller.ValidateSMS(this.hdid, "205 123 4567").ConfigureAwait(true)).Result;
+            ActionResult<PrimitiveRequestResult<bool>> actualResult = Task.Run(async () => await controller.ValidateSms(this.hdid, "205 123 4567").ConfigureAwait(true)).Result;
 
             PrimitiveRequestResult<bool>? result = actualResult.Value;
             Assert.Equal(ResultType.Success, result?.ResultStatus);
@@ -501,7 +501,7 @@ namespace HealthGateway.GatewayApi.Test.Controllers
                 userProfileServiceMock.Object,
                 httpContextAccessorMock.Object,
                 new Mock<IUserEmailService>().Object,
-                new Mock<IUserSMSService>().Object,
+                new Mock<IUserSmsService>().Object,
                 new Mock<IAuthenticationDelegate>().Object);
 
             RequestResult<UserProfileModel> actualResult = controller.UpdateAcceptedTerms(this.hdid, Guid.Empty);
@@ -582,7 +582,7 @@ namespace HealthGateway.GatewayApi.Test.Controllers
                         { ResourcePayload = userPreferencePayloadMock });
 
             Mock<IUserEmailService> emailServiceMock = new();
-            Mock<IUserSMSService> smsServiceMock = new();
+            Mock<IUserSmsService> smsServiceMock = new();
 
             UserProfileController service = new(
                 userProfileServiceMock.Object,
@@ -608,7 +608,7 @@ namespace HealthGateway.GatewayApi.Test.Controllers
             userProfileServiceMock.Setup(s => s.UpdateUserPreference(userPref)).Returns(result);
 
             Mock<IUserEmailService> emailServiceMock = new();
-            Mock<IUserSMSService> smsServiceMock = new();
+            Mock<IUserSmsService> smsServiceMock = new();
 
             UserProfileController service = new(
                 userProfileServiceMock.Object,
@@ -634,7 +634,7 @@ namespace HealthGateway.GatewayApi.Test.Controllers
             userProfileServiceMock.Setup(s => s.CreateUserPreference(userPref)).Returns(result);
 
             Mock<IUserEmailService> emailServiceMock = new();
-            Mock<IUserSMSService> smsServiceMock = new();
+            Mock<IUserSmsService> smsServiceMock = new();
 
             UserProfileController service = new(
                 userProfileServiceMock.Object,

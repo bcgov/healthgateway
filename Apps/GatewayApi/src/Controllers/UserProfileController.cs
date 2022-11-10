@@ -44,7 +44,7 @@ namespace HealthGateway.GatewayApi.Controllers
         private readonly IHttpContextAccessor httpContextAccessor;
         private readonly IUserEmailService userEmailService;
         private readonly IUserProfileService userProfileService;
-        private readonly IUserSMSService userSmsService;
+        private readonly IUserSmsService userSmsService;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="UserProfileController"/> class.
@@ -58,7 +58,7 @@ namespace HealthGateway.GatewayApi.Controllers
             IUserProfileService userProfileService,
             IHttpContextAccessor httpContextAccessor,
             IUserEmailService userEmailService,
-            IUserSMSService userSmsService,
+            IUserSmsService userSmsService,
             IAuthenticationDelegate authenticationDelegate)
         {
             this.userProfileService = userProfileService;
@@ -250,12 +250,12 @@ namespace HealthGateway.GatewayApi.Controllers
         [HttpGet]
         [Route("{hdid}/sms/validate/{validationCode}")]
         [Authorize(Policy = UserProfilePolicy.Write)]
-        public async Task<ActionResult<PrimitiveRequestResult<bool>>> ValidateSMS(string hdid, string validationCode)
+        public async Task<ActionResult<PrimitiveRequestResult<bool>>> ValidateSms(string hdid, string validationCode)
         {
             HttpContext? httpContext = this.httpContextAccessor.HttpContext;
             if (httpContext != null)
             {
-                PrimitiveRequestResult<bool> result = this.userSmsService.ValidateSMS(hdid, validationCode);
+                PrimitiveRequestResult<bool> result = this.userSmsService.ValidateSms(hdid, validationCode);
                 if (!result.ResourcePayload)
                 {
                     await Task.Delay(5000).ConfigureAwait(true);
@@ -302,9 +302,9 @@ namespace HealthGateway.GatewayApi.Controllers
         [HttpPut]
         [Route("{hdid}/sms")]
         [Authorize(Policy = UserProfilePolicy.Write)]
-        public bool UpdateUserSMSNumber(string hdid, [FromBody] string smsNumber)
+        public bool UpdateUserSmsNumber(string hdid, [FromBody] string smsNumber)
         {
-            return this.userSmsService.UpdateUserSMS(hdid, smsNumber);
+            return this.userSmsService.UpdateUserSms(hdid, smsNumber);
         }
 
         /// <summary>

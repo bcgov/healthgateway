@@ -20,12 +20,12 @@ namespace HealthGateway.JobScheduler.Models
     /// <summary>
     /// Represents the RocketChat Configuration.
     /// </summary>
-    public class HNClientResult
+    public class HnClientResult
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="HNClientResult"/> class.
+        /// Initializes a new instance of the <see cref="HnClientResult"/> class.
         /// </summary>
-        public HNClientResult()
+        public HnClientResult()
         {
         }
 
@@ -33,7 +33,7 @@ namespace HealthGateway.JobScheduler.Models
         /// Gets or sets the HL7 Message.
         /// </summary>
         [JsonPropertyName("message")]
-        public string? HL7Message { get; set; }
+        public string? Hl7Message { get; set; }
 
         /// <summary>
         /// Gets or sets a value indicating whether an error has occurred.
