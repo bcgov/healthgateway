@@ -66,9 +66,6 @@ namespace HealthGateway.Admin.Client.Layouts
         private NavigationManager NavigationManager { get; set; } = default!;
 
         [Inject]
-        private SignOutSessionStateManager SignOutManager { get; set; } = default!;
-
-        [Inject]
         private IState<ConfigurationState> ConfigurationState { get; set; } = default!;
 
         private bool UserInfoDisabled => !this.ConfigurationState.Value.Result?.Features["UserInfo"] ?? true;
@@ -175,7 +172,7 @@ namespace HealthGateway.Admin.Client.Layouts
             if (!activityDetected)
             {
                 // sign out
-                await this.LogOutAsync().ConfigureAwait(true);
+                this.LogOutAsync();
                 return;
             }
 
@@ -214,10 +211,9 @@ namespace HealthGateway.Admin.Client.Layouts
             this.DrawerOpen = !this.DrawerOpen;
         }
 
-        private async Task LogOutAsync()
+        private void LogOutAsync()
         {
-            await this.SignOutManager.SetSignOutState().ConfigureAwait(true);
-            this.NavigationManager.NavigateTo("authentication/logout");
+            this.NavigationManager.NavigateToLogout("authentication/logout");
         }
     }
 }
