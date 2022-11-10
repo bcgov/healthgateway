@@ -36,11 +36,11 @@ steps:
       command: "install"
       workingDir: "$(App.Home)/src/ClientApp"
 
-  - script: |
-      sudo dotnet workload restore
-    workingDirectory: "$(App.Home)"
-    displayName: "Workload Restore for $(App.Name)"
-    condition: and(succeeded(), eq(variables['WASMBuild'], true))
+  # - script: |
+  #     sudo dotnet workload restore
+  #   workingDirectory: "$(App.Home)"
+  #   displayName: "Workload Restore for $(App.Name)"
+  #   condition: and(succeeded(), eq(variables['WASMBuild'], true))
 
   - task: DotNetCoreCLI@2
     displayName: "Compiling code for $(App.Name)"
