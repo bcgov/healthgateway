@@ -140,7 +140,8 @@ namespace HealthGateway.ImmunizationTests.Delegates.Test
             PhsaResult<ImmunizationResponse> phsaResponse = new()
             {
                 Result = new ImmunizationResponse(
-                    new List<ImmunizationViewResponse>() { expectedViewResponse },
+                    new List<ImmunizationViewResponse>
+                        {expectedViewResponse},
                     new List<ImmunizationRecommendationResponse>()),
             };
 
@@ -193,7 +194,8 @@ namespace HealthGateway.ImmunizationTests.Delegates.Test
             PhsaResult<ImmunizationResponse> phsaResponse = new()
             {
                 Result = new ImmunizationResponse(
-                    new List<ImmunizationViewResponse>() { expectedViewResponse },
+                    new List<ImmunizationViewResponse>
+                        {expectedViewResponse},
                     new List<ImmunizationRecommendationResponse>()),
             };
 
@@ -207,14 +209,14 @@ namespace HealthGateway.ImmunizationTests.Delegates.Test
         {
             Dictionary<string, string?> myConfiguration = new()
             {
-                { "Section:Key", "Value" },
+                {"Section:Key", "Value"},
             };
 
             return new ConfigurationBuilder()
-                .AddJsonFile("appsettings.json", optional: true)
-                .AddJsonFile("appsettings.Development.json", optional: true)
-                .AddJsonFile("appsettings.local.json", optional: true)
-                .AddInMemoryCollection(myConfiguration.ToList<KeyValuePair<string, string?>>())
+                .AddJsonFile("appsettings.json", true)
+                .AddJsonFile("appsettings.Development.json", true)
+                .AddJsonFile("appsettings.local.json", true)
+                .AddInMemoryCollection(myConfiguration.ToList())
                 .Build();
         }
 
@@ -235,8 +237,9 @@ namespace HealthGateway.ImmunizationTests.Delegates.Test
             }
             else
             {
-                mockImmunizationClient.Setup(s =>
-                        s.GetImmunization(It.IsAny<string>(), AccessToken))
+                mockImmunizationClient.Setup(
+                        s =>
+                            s.GetImmunization(It.IsAny<string>(), AccessToken))
                     .ThrowsAsync(new HttpRequestException("Unit Test HTTP Request Exception"));
             }
 
@@ -266,8 +269,9 @@ namespace HealthGateway.ImmunizationTests.Delegates.Test
             }
             else
             {
-                mockImmunizationClient.Setup(s =>
-                        s.GetImmunizations(It.IsAny<Dictionary<string, string?>>(), AccessToken))
+                mockImmunizationClient.Setup(
+                        s =>
+                            s.GetImmunizations(It.IsAny<Dictionary<string, string?>>(), AccessToken))
                     .ThrowsAsync(new HttpRequestException("Unit Test HTTP Request Exception"));
             }
 

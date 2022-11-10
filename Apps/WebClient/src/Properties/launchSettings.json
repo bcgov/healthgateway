@@ -1,21 +1,21 @@
 {
-  "$schema": "http://json.schemastore.org/launchsettings.json",
-  "iisSettings": {
-    "windowsAuthentication": false,
-    "anonymousAuthentication": true,
-    "iisExpress": {
-      "applicationUrl": "http://localhost:5002"
+    "$schema": "http://json.schemastore.org/launchsettings.json",
+    "iisSettings": {
+        "windowsAuthentication": false,
+        "anonymousAuthentication": true,
+        "iisExpress": {
+            "applicationUrl": "http://localhost:5002"
+        }
+    },
+    "profiles": {
+        "HealthGateway.WebClient": {
+            "commandName": "Project",
+            "launchBrowser": true,
+            "applicationUrl": "http://localhost:5002;https://localhost:5001;",
+            "environmentVariables": {
+                "DOTNET_USE_POLLING_FILE_WATCHER": "1",
+                "ASPNETCORE_ENVIRONMENT": "Development"
+            }
+        }
     }
-  },
-  "profiles": {
-    "HealthGateway.WebClient": {
-      "commandName": "Project",
-      "launchBrowser": true,
-      "applicationUrl": "http://localhost:5002;https://localhost:5001;",
-      "environmentVariables": {
-        "DOTNET_USE_POLLING_FILE_WATCHER": "1",
-        "ASPNETCORE_ENVIRONMENT": "Development"
-      }
-    }
-  }
 }
