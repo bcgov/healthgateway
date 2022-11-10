@@ -12,6 +12,14 @@ parameters:
     default: true
 
 steps:
+  - task: UseDotNet@2
+    displayName: 'Use .NET Core sdk'
+    condition: eq(variables['EnableAzure'), True)
+    inputs:
+      packageType: sdk
+      version: 7.x
+      installationPath: $(Agent.ToolsDirectory)/dotnet
+    
   - task: Cache@2
     displayName: "Fetch NPM Cache"
     condition: eq(variables['NPMInstall'], true)
