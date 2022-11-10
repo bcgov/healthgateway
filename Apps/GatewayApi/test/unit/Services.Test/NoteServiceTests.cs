@@ -301,7 +301,7 @@ namespace HealthGateway.GatewayApi.Test.Services
                 userNoteList = noteList.Select(c => NoteMapUtils.CreateFromDbModel(c, cryptoDelegateMock.Object, encryptionKey, autoMapper)).ToList();
             }
 
-            DbResult<IEnumerable<Note>> notesDBResult = new()
+            DbResult<IList<Note>> notesDBResult = new()
             {
                 Payload = noteList,
                 Status = notesDBResultStatus,
