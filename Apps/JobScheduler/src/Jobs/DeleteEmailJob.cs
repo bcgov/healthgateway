@@ -29,7 +29,7 @@ namespace HealthGateway.JobScheduler.Jobs
         private readonly uint deleteAfterDays;
         private readonly int deleteMaxRows;
         private readonly IEmailDelegate emailDelegate;
-        private readonly ILogger<EmailJob> logger;
+        private readonly ILogger<DeleteEmailJob> logger;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="DeleteEmailJob"/> class.
@@ -39,7 +39,7 @@ namespace HealthGateway.JobScheduler.Jobs
         /// <param name="emailDelegate">The email delegate to use.</param>
         public DeleteEmailJob(
             IConfiguration configuration,
-            ILogger<EmailJob> logger,
+            ILogger<DeleteEmailJob> logger,
             IEmailDelegate emailDelegate)
         {
             this.logger = logger;
