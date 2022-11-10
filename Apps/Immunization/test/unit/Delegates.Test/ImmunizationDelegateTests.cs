@@ -141,7 +141,7 @@ namespace HealthGateway.ImmunizationTests.Delegates.Test
             {
                 Result = new ImmunizationResponse(
                     new List<ImmunizationViewResponse>
-                        {expectedViewResponse},
+                        { expectedViewResponse },
                     new List<ImmunizationRecommendationResponse>()),
             };
 
@@ -195,7 +195,7 @@ namespace HealthGateway.ImmunizationTests.Delegates.Test
             {
                 Result = new ImmunizationResponse(
                     new List<ImmunizationViewResponse>
-                        {expectedViewResponse},
+                        { expectedViewResponse },
                     new List<ImmunizationRecommendationResponse>()),
             };
 
@@ -209,7 +209,7 @@ namespace HealthGateway.ImmunizationTests.Delegates.Test
         {
             Dictionary<string, string?> myConfiguration = new()
             {
-                {"Section:Key", "Value"},
+                { "Section:Key", "Value" },
             };
 
             return new ConfigurationBuilder()
