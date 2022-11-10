@@ -133,6 +133,7 @@ namespace HealthGateway.Common.Auditing
                 case "ClinicalDocument":
                     return ApplicationType.ClinicalDocument;
                 case "ReSharperTestRunner":
+                case "ReSharperTestRunner64":
                 case "ReSharperTestRunnerArm64":
                 case "testhost":
                     return ApplicationType.Configuration;
