@@ -66,10 +66,10 @@ namespace HealthGateway.Database.Delegates
         }
 
         /// <inheritdoc/>
-        public DbResult<IEnumerable<Note>> GetNotes(string hdId, int offset = 0, int pageSize = 500)
+        public DbResult<IList<Note>> GetNotes(string hdId, int offset = 0, int pageSize = 500)
         {
             this.logger.LogTrace("Getting Notes for {HdId}...", hdId);
-            DbResult<IEnumerable<Note>> result = new();
+            DbResult<IList<Note>> result = new();
             result.Payload = this.dbContext.Note
                 .Where(p => p.HdId == hdId)
                 .OrderBy(o => o.JournalDate)
