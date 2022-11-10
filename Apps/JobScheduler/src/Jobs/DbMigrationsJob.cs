@@ -13,7 +13,7 @@
 //  See the License for the specific language governing permissions and
 //  limitations under the License.
 // -------------------------------------------------------------------------
-namespace Healthgateway.JobScheduler.Jobs
+namespace HealthGateway.JobScheduler.Jobs
 {
     using Hangfire;
     using HealthGateway.Database.Context;
@@ -23,19 +23,19 @@ namespace Healthgateway.JobScheduler.Jobs
     /// <summary>
     /// Runs the Database migrations as needed.
     /// </summary>
-    public class DBMigrationsJob
+    public class DbMigrationsJob
     {
         private const int ConcurrencyTimeout = 5 * 60; // 5 Minutes
         private readonly GatewayDbContext dbContext;
         private readonly ILogger logger;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="DBMigrationsJob"/> class.
+        /// Initializes a new instance of the <see cref="DbMigrationsJob"/> class.
         /// </summary>
         /// <param name="logger">The logger to use.</param>
         /// <param name="dbContext">The db context to use.</param>
-        public DBMigrationsJob(
-            ILogger<DBMigrationsJob> logger,
+        public DbMigrationsJob(
+            ILogger<DbMigrationsJob> logger,
             GatewayDbContext dbContext)
         {
             this.logger = logger;

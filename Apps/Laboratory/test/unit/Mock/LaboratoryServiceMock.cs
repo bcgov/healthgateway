@@ -139,7 +139,7 @@ namespace HealthGateway.LaboratoryTests.Mock
         private static IAuthenticationDelegate GetMockAuthDelegate(string token)
         {
             Mock<IAuthenticationDelegate> mockAuthDelegate = new();
-            mockAuthDelegate.Setup(s => s.AccessTokenAsUser()).Returns(token);
+            mockAuthDelegate.Setup(s => s.AccessTokenAsUser(IAuthenticationDelegate.DefaultAuthConfigSectionName)).Returns(token);
             mockAuthDelegate.Setup(s => s.FetchAuthenticatedUserToken()).Returns(token);
             return mockAuthDelegate.Object;
         }

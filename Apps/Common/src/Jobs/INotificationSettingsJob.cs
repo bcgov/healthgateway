@@ -23,7 +23,7 @@ namespace HealthGateway.Common.Jobs
         /// <summary>
         /// Sends an email immediately if Priority is standard or higher.
         /// </summary>
-        /// <param name="notificationSettingsJSON">The Notification settings serialized to send to PHSA.</param>
-        void PushNotificationSettings(string notificationSettingsJSON);
+        /// <param name="notificationSettingsJson">The Notification settings serialized to send to PHSA.</param>
+        void PushNotificationSettings(string notificationSettingsJson);
     }
 }

@@ -13,7 +13,7 @@
 //  See the License for the specific language governing permissions and
 //  limitations under the License.
 // -------------------------------------------------------------------------
-namespace Healthgateway.JobScheduler.Tasks
+namespace HealthGateway.JobScheduler.Tasks
 {
     using System.Collections.Generic;
     using System.Linq;
@@ -27,20 +27,20 @@ namespace Healthgateway.JobScheduler.Tasks
     /// Queries the Health Gateway DB for all current users with emails.
     /// Queues NotificationSettings job for each.
     /// </summary>
-    public class SendValidatedUsersToPHSA : IOneTimeTask
+    public class SendValidatedUsersToPhsa : IOneTimeTask
     {
         private readonly GatewayDbContext dbContext;
-        private readonly ILogger<SendValidatedUsersToPHSA> logger;
+        private readonly ILogger<SendValidatedUsersToPhsa> logger;
         private readonly INotificationSettingsService notificationSettingsService;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="SendValidatedUsersToPHSA"/> class.
+        /// Initializes a new instance of the <see cref="SendValidatedUsersToPhsa"/> class.
         /// </summary>
         /// <param name="logger">The logger to use.</param>
         /// <param name="dbContext">The db context to use.</param>
         /// <param name="notificationSettingsService">The notification settings service.</param>
-        public SendValidatedUsersToPHSA(
-            ILogger<SendValidatedUsersToPHSA> logger,
+        public SendValidatedUsersToPhsa(
+            ILogger<SendValidatedUsersToPhsa> logger,
             GatewayDbContext dbContext,
             INotificationSettingsService notificationSettingsService)
         {

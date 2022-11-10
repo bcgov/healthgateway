@@ -63,7 +63,7 @@ namespace HealthGateway.GatewayApi.Test.Services
             {
                 Data = JsonDocument.Parse("{}").RootElement,
                 Template = templateType,
-                Type = ReportFormatType.PDF,
+                Type = ReportFormatType.Pdf,
             };
 
             Mock<ICDogsDelegate> cdogsDelegateMock = new();

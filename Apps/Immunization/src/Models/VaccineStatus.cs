@@ -92,7 +92,7 @@ namespace HealthGateway.Immunization.Models
         /// Gets or sets the QR code.
         /// </summary>
         [JsonPropertyName("qrCode")]
-        public EncodedMedia QRCode { get; set; } = new();
+        public EncodedMedia QrCode { get; set; } = new();
 
         /// <summary>
         /// Gets or sets the Federal Proof of Vaccination document.

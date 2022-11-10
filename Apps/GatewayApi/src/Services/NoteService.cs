@@ -98,7 +98,7 @@ namespace HealthGateway.GatewayApi.Services
         public RequestResult<IEnumerable<UserNote>> GetNotes(string hdId, int page = 0, int pageSize = 500)
         {
             int offset = page * pageSize;
-            DbResult<IEnumerable<Note>> dbNotes = this.noteDelegate.GetNotes(hdId, offset, pageSize);
+            DbResult<IList<Note>> dbNotes = this.noteDelegate.GetNotes(hdId, offset, pageSize);
 
             UserProfile profile = this.profileDelegate.GetUserProfile(hdId).Payload;
             string? key = profile.EncryptionKey;
@@ -111,27 +111,12 @@ namespace HealthGateway.GatewayApi.Services
                 dbNotes = this.noteDelegate.GetNotes(hdId, offset, pageSize);
             }
 
-            // Check that the key has been set
-            if (key == null)
-            {
-                this.logger.LogError("User does not have a key: {Hdid}", hdId);
-                return new RequestResult<IEnumerable<UserNote>>
-                {
-                    ResultStatus = ResultType.Error,
-                    ResultError = new RequestResultError
-                    {
-                        ResultMessage = "Profile Key not set",
-                        ErrorCode = ErrorTranslator.InternalError(ErrorType.InvalidState),
-                    },
-                };
-            }
-
             RequestResult<IEnumerable<UserNote>> result = new()
             {
                 ResourcePayload = dbNotes.Payload.Select(c => NoteMapUtils.CreateFromDbModel(c, this.cryptoDelegate, key, this.autoMapper)),
                 PageIndex = page,
                 PageSize = pageSize,
-                TotalResultCount = dbNotes.Payload.ToList().Count,
+                TotalResultCount = dbNotes.Payload.Count,
                 ResultStatus = dbNotes.Status == DbStatusCode.Read ? ResultType.Success : ResultType.Error,
                 ResultError = dbNotes.Status == DbStatusCode.Read
                     ? null
@@ -217,12 +202,12 @@ namespace HealthGateway.GatewayApi.Services
             return result;
         }
 
-        private string EncryptFirstTime(UserProfile profile, IEnumerable<Note> dbNotes)
+        private string EncryptFirstTime(UserProfile profile, IList<Note> dbNotes)
         {
             string key = this.cryptoDelegate.GenerateKey();
             profile.EncryptionKey = key;
             this.profileDelegate.Update(profile, false);
-            foreach (Note note in dbNotes.ToList())
+            foreach (Note note in dbNotes)
             {
                 note.Title = this.cryptoDelegate.Encrypt(key, note.Title ?? string.Empty);
                 note.Text = this.cryptoDelegate.Encrypt(key, note.Text ?? string.Empty);

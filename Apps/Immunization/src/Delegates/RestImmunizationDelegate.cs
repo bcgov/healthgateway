@@ -39,7 +39,7 @@ namespace HealthGateway.Immunization.Delegates
         /// <summary>
         /// Configuration section key for PHSA values.
         /// </summary>
-        public const string PHSAConfigSectionKey = "PHSA";
+        public const string PhsaConfigSectionKey = "PHSA";
         private readonly ILogger logger;
         private readonly PhsaConfig phsaConfig;
 
@@ -63,7 +63,7 @@ namespace HealthGateway.Immunization.Delegates
             this.authenticationDelegate = authenticationDelegate;
             this.immunizationClient = immunizationClient;
             this.phsaConfig = new();
-            configuration.Bind(PHSAConfigSectionKey, this.phsaConfig);
+            configuration.Bind(PhsaConfigSectionKey, this.phsaConfig);
         }
 
         private static ActivitySource Source { get; } = new(nameof(RestImmunizationDelegate));
@@ -151,7 +151,7 @@ namespace HealthGateway.Immunization.Delegates
                 {
                     case HttpStatusCode.OK:
                         requestResult.ResultStatus = ResultType.Success;
-                        requestResult.ResourcePayload!.Result = response!.Content!.Result;
+                        requestResult.ResourcePayload!.Result = response.Content!.Result;
                         requestResult.TotalResultCount = 1;
                         break;
                     case HttpStatusCode.NoContent:

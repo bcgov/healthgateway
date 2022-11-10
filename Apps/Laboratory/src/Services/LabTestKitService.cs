@@ -25,7 +25,7 @@ namespace HealthGateway.Laboratory.Services
     using HealthGateway.Common.Data.Utils;
     using HealthGateway.Common.Data.ViewModels;
     using HealthGateway.Common.ErrorHandling;
-    using HealthGateway.Laboratory.Delegates;
+    using HealthGateway.Laboratory.Api;
     using HealthGateway.Laboratory.Models.PHSA;
     using Microsoft.Extensions.Logging;
 

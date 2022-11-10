@@ -25,11 +25,10 @@ namespace HealthGateway.GatewayApi.Services
     using HealthGateway.Common.Models;
     using HealthGateway.Common.Services;
     using HealthGateway.Database.Delegates;
-    using HealthGateway.Database.Models;
     using Microsoft.Extensions.Logging;
 
     /// <inheritdoc/>
-    public class UserSMSService : IUserSMSService
+    public class UserSmsService : IUserSmsService
     {
         /// <summary>
         /// The maximum verification attempts.
@@ -40,17 +39,17 @@ namespace HealthGateway.GatewayApi.Services
         private readonly IMessagingVerificationDelegate messageVerificationDelegate;
         private readonly INotificationSettingsService notificationSettingsService;
         private readonly IUserProfileDelegate profileDelegate;
-        private readonly Regex validSMSRegex;
+        private readonly Regex validSmsRegex;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="UserSMSService"/> class.
+        /// Initializes a new instance of the <see cref="UserSmsService"/> class.
         /// </summary>
         /// <param name="logger">Injected Logger Provider.</param>
         /// <param name="messageVerificationDelegate">The message verification delegate to interact with the DB.</param>
         /// <param name="profileDelegate">The profile delegate to interact with the DB.</param>
         /// <param name="notificationSettingsService">Notification settings delegate.</param>
-        public UserSMSService(
-            ILogger<UserSMSService> logger,
+        public UserSmsService(
+            ILogger<UserSmsService> logger,
             IMessagingVerificationDelegate messageVerificationDelegate,
             IUserProfileDelegate profileDelegate,
             INotificationSettingsService notificationSettingsService)
@@ -60,11 +59,11 @@ namespace HealthGateway.GatewayApi.Services
             this.profileDelegate = profileDelegate;
             this.notificationSettingsService = notificationSettingsService;
 
-            this.validSMSRegex = new Regex("[^0-9]");
+            this.validSmsRegex = new Regex("[^0-9]");
         }
 
         /// <inheritdoc/>
-        public PrimitiveRequestResult<bool> ValidateSMS(string hdid, string validationCode)
+        public PrimitiveRequestResult<bool> ValidateSms(string hdid, string validationCode)
         {
             this.logger.LogTrace("Validating sms... {ValidationCode}", validationCode);
 
@@ -105,37 +104,37 @@ namespace HealthGateway.GatewayApi.Services
         }
 
         /// <inheritdoc/>
-        public MessagingVerification CreateUserSMS(string hdid, string sms)
+        public MessagingVerification CreateUserSms(string hdid, string sms)
         {
             this.logger.LogInformation("Adding new sms verification for user {Hdid}", hdid);
-            string sanitizedSms = this.SanitizeSMS(sms);
-            MessagingVerification messagingVerification = this.AddVerificationSMS(hdid, sanitizedSms);
+            string sanitizedSms = this.SanitizeSms(sms);
+            MessagingVerification messagingVerification = this.AddVerificationSms(hdid, sanitizedSms);
             this.logger.LogDebug("Finished updating user sms");
             return messagingVerification;
         }
 
         /// <inheritdoc/>
-        public bool UpdateUserSMS(string hdid, string sms)
+        public bool UpdateUserSms(string hdid, string sms)
         {
             this.logger.LogTrace("Removing user sms number {Hdid}", hdid);
-            string sanitizedSms = this.SanitizeSMS(sms);
+            string sanitizedSms = this.SanitizeSms(sms);
             UserProfile userProfile = this.profileDelegate.GetUserProfile(hdid).Payload;
             userProfile.SmsNumber = null;
             this.profileDelegate.Update(userProfile);
 
             bool isDeleted = string.IsNullOrEmpty(sanitizedSms);
-            MessagingVerification? lastSMSVerification = this.messageVerificationDelegate.GetLastForUser(hdid, MessagingVerificationType.Sms);
-            if (lastSMSVerification != null)
+            MessagingVerification? lastSmsVerification = this.messageVerificationDelegate.GetLastForUser(hdid, MessagingVerificationType.Sms);
+            if (lastSmsVerification != null)
             {
                 this.logger.LogInformation("Expiring old sms validation for user {Hdid}", hdid);
-                this.messageVerificationDelegate.Expire(lastSMSVerification, isDeleted);
+                this.messageVerificationDelegate.Expire(lastSmsVerification, isDeleted);
             }
 
             NotificationSettingsRequest notificationRequest = new(userProfile, userProfile.Email, sanitizedSms);
             if (!isDeleted)
             {
                 this.logger.LogInformation("Adding new sms verification for user {Hdid}", hdid);
-                MessagingVerification messagingVerification = this.AddVerificationSMS(hdid, sanitizedSms);
+                MessagingVerification messagingVerification = this.AddVerificationSms(hdid, sanitizedSms);
                 notificationRequest.SMSVerificationCode = messagingVerification.SmsValidationCode;
             }
 
@@ -162,12 +161,12 @@ namespace HealthGateway.GatewayApi.Services
                     .Substring(0, 6);
         }
 
-        private string SanitizeSMS(string smsNumber)
+        private string SanitizeSms(string smsNumber)
         {
-            return this.validSMSRegex.Replace(smsNumber, string.Empty);
+            return this.validSmsRegex.Replace(smsNumber, string.Empty);
         }
 
-        private MessagingVerification AddVerificationSMS(string hdid, string sms)
+        private MessagingVerification AddVerificationSms(string hdid, string sms)
         {
             this.logger.LogInformation("Sending new sms verification for user {Hdid}", hdid);
             MessagingVerification messagingVerification = new()

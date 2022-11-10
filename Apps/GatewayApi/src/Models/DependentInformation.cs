@@ -45,7 +45,7 @@ namespace HealthGateway.GatewayApi.Models
         /// Gets or sets the Masked PHN of the dependent.
         /// </summary>
         [JsonPropertyName("PHN")]
-        public string PHN { get; set; } = string.Empty;
+        public string Phn { get; set; } = string.Empty;
 
         /// <summary>
         /// Gets or sets the Date Of Birth.

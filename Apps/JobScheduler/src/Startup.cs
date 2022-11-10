@@ -30,9 +30,9 @@ namespace HealthGateway.JobScheduler
     using HealthGateway.Common.Services;
     using HealthGateway.Database.Delegates;
     using HealthGateway.DrugMaintainer;
-    using Healthgateway.JobScheduler.Jobs;
+    using HealthGateway.JobScheduler.Jobs;
     using HealthGateway.JobScheduler.Listeners;
-    using Healthgateway.JobScheduler.Utils;
+    using HealthGateway.JobScheduler.Utils;
     using Microsoft.AspNetCore.Authentication.OpenIdConnect;
     using Microsoft.AspNetCore.Builder;
     using Microsoft.AspNetCore.Hosting;
@@ -175,7 +175,7 @@ namespace HealthGateway.JobScheduler
                 });
 
             // Schedule Health Gateway Jobs
-            BackgroundJob.Enqueue<DBMigrationsJob>(j => j.Migrate());
+            BackgroundJob.Enqueue<DbMigrationsJob>(j => j.Migrate());
             SchedulerHelper.ScheduleJob<IEmailJob>(this.configuration, "SendLowPriorityEmail", j => j.SendLowPriorityEmails());
             SchedulerHelper.ScheduleJob<IEmailJob>(this.configuration, "SendStandardPriorityEmail", j => j.SendStandardPriorityEmails());
             SchedulerHelper.ScheduleJob<IEmailJob>(this.configuration, "SendHighPriorityEmail", j => j.SendHighPriorityEmails());

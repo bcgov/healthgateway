@@ -16,6 +16,7 @@
 namespace HealthGateway.GatewayApi.Models
 {
     using System;
+    using System.Text.Json.Serialization;
 
     /// <summary>
     /// Object that defines the request for registering a dependent.
@@ -40,6 +41,7 @@ namespace HealthGateway.GatewayApi.Models
         /// <summary>
         /// Gets or sets the dependent's PHN.
         /// </summary>
-        public string PHN { get; set; } = string.Empty;
+        [JsonPropertyName("PHN")]
+        public string Phn { get; set; } = string.Empty;
     }
 }

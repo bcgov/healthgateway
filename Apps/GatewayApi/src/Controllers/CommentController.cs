@@ -61,7 +61,7 @@ namespace HealthGateway.GatewayApi.Controllers
         [HttpPost]
         [Route("{hdid}/[controller]")]
         [Authorize(Policy = UserProfilePolicy.Write)]
-        public ActionResult<RequestResult<UserComment>> Create(string hdid, [FromBody] UserComment comment)
+        public ActionResult<RequestResult<UserComment>> Create(string hdid, [FromBody] UserComment? comment)
         {
             if (comment == null)
             {
@@ -90,7 +90,7 @@ namespace HealthGateway.GatewayApi.Controllers
         [HttpPut]
         [Route("{hdid}/[controller]")]
         [Authorize(Policy = UserProfilePolicy.Write)]
-        public ActionResult<RequestResult<UserComment>> Update(string hdid, [FromBody] UserComment comment)
+        public ActionResult<RequestResult<UserComment>> Update(string hdid, [FromBody] UserComment? comment)
         {
             if (comment == null)
             {

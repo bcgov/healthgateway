@@ -13,7 +13,7 @@
 //  See the License for the specific language governing permissions and
 //  limitations under the License.
 // -------------------------------------------------------------------------
-namespace Healthgateway.JobScheduler.Jobs
+namespace HealthGateway.JobScheduler.Jobs
 {
     using Hangfire;
     using HealthGateway.Database.Delegates;
@@ -29,7 +29,7 @@ namespace Healthgateway.JobScheduler.Jobs
         private readonly uint deleteAfterDays;
         private readonly int deleteMaxRows;
         private readonly IEmailDelegate emailDelegate;
-        private readonly ILogger<EmailJob> logger;
+        private readonly ILogger<DeleteEmailJob> logger;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="DeleteEmailJob"/> class.
@@ -39,11 +39,11 @@ namespace Healthgateway.JobScheduler.Jobs
         /// <param name="emailDelegate">The email delegate to use.</param>
         public DeleteEmailJob(
             IConfiguration configuration,
-            ILogger<EmailJob> logger,
+            ILogger<DeleteEmailJob> logger,
             IEmailDelegate emailDelegate)
         {
             this.logger = logger;
-            this.emailDelegate = emailDelegate!;
+            this.emailDelegate = emailDelegate;
             IConfigurationSection section = configuration.GetSection("DeleteEmailJob");
             this.deleteMaxRows = section.GetValue("DeleteMaxRows", 1000);
             this.deleteAfterDays = section.GetValue<uint>("DeleteAfterDays", 30);

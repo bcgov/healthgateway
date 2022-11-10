@@ -178,7 +178,7 @@ namespace HealthGateway.GatewayApi.Test.Controllers
                     Version = (uint)i,
                     DependentInformation = new DependentInformation()
                     {
-                        PHN = $"{dependentModels}-{i}",
+                        Phn = $"{dependentModels}-{i}",
                         DateOfBirth = new DateTime(1980 + i, 1, 1),
                         Gender = "Female",
                         FirstName = "first",
