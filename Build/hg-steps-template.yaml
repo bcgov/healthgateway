@@ -60,26 +60,33 @@ steps:
       set -e
       export CollectCoverage=true
       export CoverletOutputFormat=cobertura
-    displayName: ".Net 7 Hack to pass properties to Unit Tests"
+      if [ "$(WASMBuild)" = True ] ; then
+          echo Running WASM Unit Tests
+          dotnet test $(App.Home)
+      else
+          echo Running Unit Tests
+          dotnet test $(App.Home)/test/unit/$(App.Name)Tests.csproj
+      fi
+    displayName: "Running Unit Tests for $(App.Name) .Net 7 Hack"
     condition: and(succeeded(), eq(variables['UnitTests'], true))
 
-  - task: DotNetCoreCLI@2
-    displayName: "Runing Unit Tests for $(App.Name)"
-    condition: and(succeeded(), and(eq(variables['WASMBuild'], false),eq(variables['UnitTests'], true)))
-    inputs:
-      command: "test"
-      projects: "$(App.Home)/test/unit/$(App.Name)Tests.csproj"
-      #arguments: "/p:CollectCoverage=true /p:CoverletOutputFormat=cobertura"
-      testRunTitle: "$(App.Name): Performing Unit Tests"
+  # - task: DotNetCoreCLI@2
+  #   displayName: "Runing Unit Tests for $(App.Name)"
+  #   condition: and(succeeded(), and(eq(variables['WASMBuild'], false),eq(variables['UnitTests'], true)))
+  #   inputs:
+  #     command: "test"
+  #     projects: "$(App.Home)/test/unit/$(App.Name)Tests.csproj"
+  #     arguments: "/p:CollectCoverage=true /p:CoverletOutputFormat=cobertura"
+  #     testRunTitle: "$(App.Name): Performing Unit Tests"
 
-  - task: DotNetCoreCLI@2
-    displayName: "Runing Unit Tests for Blazor Solution $(App.Name)"
-    condition: and(succeeded(), and(eq(variables['WASMBuild'], true),eq(variables['UnitTests'], true)))
-    inputs:
-      command: "test"
-      projects: "$(App.Home)"
-      #arguments: "/p:CollectCoverage=true /p:CoverletOutputFormat=cobertura"
-      testRunTitle: "$(App.Name): Performing Unit Tests"
+  # - task: DotNetCoreCLI@2
+  #   displayName: "Runing Unit Tests for Blazor Solution $(App.Name)"
+  #   condition: and(succeeded(), and(eq(variables['WASMBuild'], true),eq(variables['UnitTests'], true)))
+  #   inputs:
+  #     command: "test"
+  #     projects: "$(App.Home)"
+  #     arguments: "/p:CollectCoverage=true /p:CoverletOutputFormat=cobertura"
+  #     testRunTitle: "$(App.Name): Performing Unit Tests"
 
   - script: |
       set -e
