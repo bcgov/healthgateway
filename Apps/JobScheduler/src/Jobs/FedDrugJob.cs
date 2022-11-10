@@ -41,7 +41,7 @@ namespace HealthGateway.JobScheduler.Jobs
         /// <param name="downloadService">The download utility.</param>
         /// <param name="configuration">The IConfiguration to use.</param>
         /// <param name="drugDBContext">The database context to interact with.</param>
-        public FedDrugJob(ILogger<FedDrugDBApp> logger, IDrugProductParser parser, IFileDownloadService downloadService, IConfiguration configuration, GatewayDbContext drugDBContext)
+        public FedDrugJob(ILogger<FedDrugJob> logger, IDrugProductParser parser, IFileDownloadService downloadService, IConfiguration configuration, GatewayDbContext drugDBContext)
             : base(logger, parser, downloadService, configuration, drugDBContext)
         {
         }
