@@ -83,12 +83,12 @@ namespace HealthGateway.JobScheduler.Utils
 
         private static T GetConfigurationValue<T>(IConfiguration cfg, string key)
         {
-            return cfg.GetValue<T>(key);
+            return cfg.GetValue<T>(key)!;
         }
 
         private static JobConfiguration GetJobConfiguration(IConfiguration cfg, string key)
         {
-            return cfg.GetRequiredSection(key).Get<JobConfiguration>();
+            return cfg.GetRequiredSection(key).Get<JobConfiguration>()!;
         }
     }
 }
