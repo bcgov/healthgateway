@@ -46,7 +46,7 @@ namespace HealthGateway.Common.Data.ViewModels
         /// Gets or sets a warning.
         /// </summary>
         [JsonPropertyName("warning")]
-        public string? Warning { get; set; }
+        public ApiWarning? Warning { get; set; }
 
         /// <summary>
         /// Gets or sets the result payload.

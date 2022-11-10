@@ -24,6 +24,7 @@ namespace HealthGateway.Patient.Delegates
     using System.ServiceModel;
     using System.Threading.Tasks;
     using HealthGateway.Common.Constants;
+    using HealthGateway.Common.Data.Models.ErrorHandling;
     using HealthGateway.Common.Data.ViewModels;
     using HealthGateway.Common.Exceptions;
     using HealthGateway.Common.Models;
@@ -74,9 +75,9 @@ namespace HealthGateway.Patient.Delegates
                 {
                     this.logger.LogError("{Exception}", e.ToString());
                     throw new ApiPatientException(
-                        $"Communication Exception when trying to retrieve patient information from {type}",
+                        $"Communication Exception with client registry when trying to retrieve patient information from {type}",
                         "ClientRegistriesDelegate.GetDemographicsAsync",
-                        HttpStatusCode.NotFound);
+                        HttpStatusCode.BadGateway);
                 }
                 finally
                 {
@@ -89,46 +90,85 @@ namespace HealthGateway.Patient.Delegates
         {
             using (Source.StartActivity())
             {
-                HCIM_IN_GetDemographics request = new();
-                request.id = new II { root = "2.16.840.1.113883.3.51.1.1.1", extension = DateTimeOffset.Now.ToUnixTimeMilliseconds().ToString(CultureInfo.InvariantCulture) };
-                request.creationTime = new TS { value = DateTime.Now.ToString("yyyyMMddHHmmss", CultureInfo.InvariantCulture) };
-                request.versionCode = new CS { code = "V3PR1" };
-                request.interactionId = new II { root = "2.16.840.1.113883.3.51.1.1.2", extension = "HCIM_IN_GetDemographics" };
-                request.processingCode = new CS { code = "P" };
-                request.processingModeCode = new CS { code = "T" };
-                request.acceptAckCode = new CS { code = "NE" };
+                HCIM_IN_GetDemographics request = new()
+                    {
+                        id = new II { root = "2.16.840.1.113883.3.51.1.1.1", extension = DateTimeOffset.Now.ToUnixTimeMilliseconds().ToString(CultureInfo.InvariantCulture) },
+                        creationTime = new TS { value = DateTime.Now.ToString("yyyyMMddHHmmss", CultureInfo.InvariantCulture) },
+                        versionCode = new CS { code = "V3PR1" },
+                        interactionId = new II { root = "2.16.840.1.113883.3.51.1.1.2", extension = "HCIM_IN_GetDemographics" },
+                        processingCode = new CS { code = "P" },
+                        processingModeCode = new CS { code = "T" },
+                        acceptAckCode = new CS { code = "NE" },
+                        receiver = new MCCI_MT000100Receiver
+                        {
+                            typeCode = "RCV",
+                            device = new MCCI_MT000100Device
+                            {
+                                determinerCode = "INSTANCE", classCode = "DEV",
+                                id = new II { root = "2.16.840.1.113883.3.51.1.1.4", extension = "192.168.0.1" },
+                                asAgent = new MCCI_MT000100Agent
+                                {
+                                    classCode = "AGNT",
+                                    representedOrganization = new MCCI_MT000100Organization { determinerCode = "INSTANCE", classCode = "ORG" },
+                                },
+                            },
+                        },
+                    };
 
-                request.receiver = new MCCI_MT000100Receiver { typeCode = "RCV" };
-                request.receiver.device = new MCCI_MT000100Device { determinerCode = "INSTANCE", classCode = "DEV" };
-                request.receiver.device.id = new II { root = "2.16.840.1.113883.3.51.1.1.4", extension = "192.168.0.1" };
-                request.receiver.device.asAgent = new MCCI_MT000100Agent { classCode = "AGNT" };
-                request.receiver.device.asAgent.representedOrganization = new MCCI_MT000100Organization { determinerCode = "INSTANCE", classCode = "ORG" };
-                request.receiver.device.asAgent.representedOrganization = new MCCI_MT000100Organization { determinerCode = "INSTANCE", classCode = "ORG" };
-                request.receiver.device.asAgent.representedOrganization.id = new II { root = "2.16.840.1.113883.3.51.1.1.3", extension = "HCIM" };
-
-                request.sender = new MCCI_MT000100Sender { typeCode = "SND" };
-                request.sender.device = new MCCI_MT000100Device { determinerCode = "INSTANCE", classCode = "DEV" };
-                request.sender.device.id = new II { root = "2.16.840.1.113883.3.51.1.1.5", extension = "MOH_CRS" };
-                request.sender.device.asAgent = new MCCI_MT000100Agent { classCode = "AGNT" };
-                request.sender.device.asAgent.representedOrganization = new MCCI_MT000100Organization { determinerCode = "INSTANCE", classCode = "ORG" };
-                request.sender.device.asAgent.representedOrganization = new MCCI_MT000100Organization { determinerCode = "INSTANCE", classCode = "ORG" };
-                request.sender.device.asAgent.representedOrganization.id = new II { root = "2.16.840.1.113883.3.51.1.1.3", extension = "HGWAY" };
-
-                request.controlActProcess = new HCIM_IN_GetDemographicsQUQI_MT020001ControlActProcess { classCode = "ACCM", moodCode = "EVN" };
-                request.controlActProcess.effectiveTime = new IVL_TS { value = DateTime.Now.ToString("yyyyMMddHHmmss", CultureInfo.InvariantCulture) };
-                request.controlActProcess.dataEnterer = new QUQI_MT020001DataEnterer { typeCode = "CST", time = null, typeId = null };
-                request.controlActProcess.dataEnterer.assignedPerson = new COCT_MT090100AssignedPerson { classCode = "ENT" };
-
-                request.controlActProcess.dataEnterer.assignedPerson.id = new II { root = "2.16.840.1.113883.3.51.1.1.7", extension = "HLTHGTWAY" };
-
-                request.controlActProcess.queryByParameter = new HCIM_IN_GetDemographicsQUQI_MT020001QueryByParameter();
-                request.controlActProcess.queryByParameter.queryByParameterPayload = new HCIM_IN_GetDemographicsQueryByParameterPayload();
-                request.controlActProcess.queryByParameter.queryByParameterPayload.personid = new HCIM_IN_GetDemographicsPersonid();
-                request.controlActProcess.queryByParameter.queryByParameterPayload.personid.value = new II
+                request.receiver.device.asAgent.representedOrganization = new MCCI_MT000100Organization
                 {
-                    root = oidType.ToString(),
-                    extension = identifierValue,
-                    assigningAuthorityName = "LCTZ_IAS",
+                    determinerCode = "INSTANCE", classCode = "ORG",
+                    id = new II { root = "2.16.840.1.113883.3.51.1.1.3", extension = "HCIM" },
+                };
+
+                request.sender = new MCCI_MT000100Sender
+                {
+                    typeCode = "SND",
+                    device = new MCCI_MT000100Device
+                    {
+                        determinerCode = "INSTANCE", classCode = "DEV",
+                        id = new II { root = "2.16.840.1.113883.3.51.1.1.5", extension = "MOH_CRS" },
+                        asAgent = new MCCI_MT000100Agent
+                        {
+                            classCode = "AGNT",
+                            representedOrganization = new MCCI_MT000100Organization { determinerCode = "INSTANCE", classCode = "ORG" },
+                        },
+                    },
+                };
+                request.sender.device.asAgent.representedOrganization = new MCCI_MT000100Organization
+                {
+                    determinerCode = "INSTANCE", classCode = "ORG",
+                    id = new II { root = "2.16.840.1.113883.3.51.1.1.3", extension = "HGWAY" },
+                };
+
+                request.controlActProcess = new HCIM_IN_GetDemographicsQUQI_MT020001ControlActProcess
+                {
+                    classCode = "ACCM", moodCode = "EVN",
+                    effectiveTime = new IVL_TS { value = DateTime.Now.ToString("yyyyMMddHHmmss", CultureInfo.InvariantCulture) },
+                    dataEnterer = new QUQI_MT020001DataEnterer
+                    {
+                        typeCode = "CST", time = null, typeId = null,
+                        assignedPerson = new COCT_MT090100AssignedPerson
+                        {
+                            classCode = "ENT",
+                            id = new II { root = "2.16.840.1.113883.3.51.1.1.7", extension = "HLTHGTWAY" },
+                        },
+                    },
+                    queryByParameter = new HCIM_IN_GetDemographicsQUQI_MT020001QueryByParameter
+                        {
+                            queryByParameterPayload = new HCIM_IN_GetDemographicsQueryByParameterPayload
+                                {
+                                    personid = new HCIM_IN_GetDemographicsPersonid
+                                        {
+                                            value = new II
+                                            {
+                                                root = oidType.ToString(),
+                                                extension = identifierValue,
+                                                assigningAuthorityName = "LCTZ_IAS",
+                                            },
+                                        },
+                                },
+                        },
                 };
 
                 return new HCIM_IN_GetDemographicsRequest(request);
@@ -145,7 +185,7 @@ namespace HealthGateway.Patient.Delegates
                 {
                     switch (item)
                     {
-                        case ADStreetAddressLine line when line.Text != null:
+                        case ADStreetAddressLine { Text: { } } line:
                             foreach (string s in line.Text)
                             {
                                 retAddress.AddLine(s ?? string.Empty);
@@ -171,22 +211,20 @@ namespace HealthGateway.Patient.Delegates
             return retAddress;
         }
 
-        private void CheckResponseCode(ApiResult<PatientModel> apiResult, string responseCode)
+        private void CheckResponseCode(string responseCode)
         {
             if (responseCode.Contains("BCHCIM.GD.2.0018", StringComparison.InvariantCulture))
             {
                 // BCHCIM.GD.2.0018 Not found
                 this.logger.LogWarning("Client Registry did not find any records. Returned message code: {ResponseCode}", responseCode);
-                apiResult.Warning = ErrorMessages.ClientRegistryRecordsNotFound;
-                return;
+                throw new ApiPatientException(ErrorMessages.ClientRegistryRecordsNotFound, "ClientRegistriesDelegate.CheckResponseCode", HttpStatusCode.NotFound);
             }
 
             if (responseCode.Contains("BCHCIM.GD.2.0006", StringComparison.InvariantCulture))
             {
                 // Returned BCHCIM.GD.2.0006 Invalid PHN
                 this.logger.LogWarning("Personal Health Number is invalid. Returned message code: {ResponseCode}", responseCode);
-                apiResult.Warning = ErrorMessages.PhnInvalid;
-                return;
+                throw new ApiPatientException(ErrorMessages.PhnInvalid, "ClientRegistriesDelegate.CheckResponseCode", HttpStatusCode.NotFound);
             }
 
             if (responseCode.Contains("BCHCIM.GD.0.0019", StringComparison.InvariantCulture) ||
@@ -212,68 +250,77 @@ namespace HealthGateway.Patient.Delegates
                 this.logger.LogDebug("Parsing patient response.");
 
                 string responseCode = reply.HCIM_IN_GetDemographicsResponse.controlActProcess.queryAck.queryResponseCode.code;
-                this.CheckResponseCode(apiResult, responseCode);
+                this.CheckResponseCode(responseCode);
 
-                if (apiResult.Warning == null)
+                HCIM_IN_GetDemographicsResponseIdentifiedPerson retrievedPerson = reply.HCIM_IN_GetDemographicsResponse.controlActProcess.subject[0].target;
+
+                // If the deceased indicator is set and true, return an empty person.
+                bool deceasedInd = retrievedPerson.identifiedPerson.deceasedInd?.value ?? false;
+                if (deceasedInd)
                 {
-                    HCIM_IN_GetDemographicsResponseIdentifiedPerson retrievedPerson = reply.HCIM_IN_GetDemographicsResponse.controlActProcess.subject[0].target;
-
-                    // If the deceased indicator is set and true, return an empty person.
-                    bool deceasedInd = retrievedPerson.identifiedPerson.deceasedInd?.value ?? false;
-                    if (deceasedInd)
+                    this.logger.LogWarning("Client Registry returned a person with the deceased indicator set to true. No PHN was populated.");
+                    apiResult.Warning = new()
                     {
-                        this.logger.LogWarning("Client Registry returned a person with the deceased indicator set to true. No PHN was populated.");
-                        throw new ApiPatientException(
-                            ErrorMessages.ClientRegistryReturnedDeceasedPerson,
-                            "ClientRegistriesDelegate.ParseResponse",
-                            HttpStatusCode.NotFound);
-                    }
-
-                    // Initialize model
-                    string? dobStr = retrievedPerson.identifiedPerson.birthTime.value; // yyyyMMdd
-                    DateTime dob = DateTime.ParseExact(dobStr, "yyyyMMdd", CultureInfo.InvariantCulture);
-                    PatientModel patient = new()
-                    {
-                        Birthdate = dob,
-                        Gender = retrievedPerson.identifiedPerson.administrativeGenderCode.code switch
-                        {
-                            "F" => "Female",
-                            "M" => "Male",
-                            _ => "NotSpecified",
-                        },
+                        Code = ActionType.Deceased.Value,
+                        Message = ErrorMessages.ClientRegistryReturnedDeceasedPerson,
                     };
+                    return;
+                }
 
-                    // Populate names
-                    if (!this.PopulateNames(retrievedPerson, patient))
+                // Initialize model
+                string? dobStr = retrievedPerson.identifiedPerson.birthTime.value; // yyyyMMdd
+                DateTime dob = DateTime.ParseExact(dobStr, "yyyyMMdd", CultureInfo.InvariantCulture);
+                PatientModel patient = new()
+                {
+                    Birthdate = dob,
+                    Gender = retrievedPerson.identifiedPerson.administrativeGenderCode.code switch
                     {
-                        apiResult.Warning = ErrorMessages.InvalidServicesCard;
-                    }
+                        "F" => "Female",
+                        "M" => "Male",
+                        _ => "NotSpecified",
+                    },
+                };
 
-                    // Populate the PHN and HDID
-                    this.logger.LogDebug("ID Validation is set to {DisableIdValidation}", disableIdValidation);
-                    if (!this.PopulateIdentifiers(retrievedPerson, patient) && !disableIdValidation)
+                // Populate names
+                if (!this.PopulateNames(retrievedPerson, patient))
+                {
+                    apiResult.Warning = new()
                     {
-                        apiResult.Warning = ErrorMessages.InvalidServicesCard;
-                    }
+                        Code = ActionType.InvalidName.Value,
+                        Message = ErrorMessages.InvalidServicesCard,
+                    };
+                    return;
+                }
 
-                    // Populate addresses
-                    AD[] addresses = retrievedPerson.addr;
-                    if (addresses != null)
+                // Populate the PHN and HDID
+                this.logger.LogDebug("ID Validation is set to {DisableIdValidation}", disableIdValidation);
+                if (!this.PopulateIdentifiers(retrievedPerson, patient) && !disableIdValidation)
+                {
+                    apiResult.Warning = new()
                     {
-                        patient.PhysicalAddress = MapAddress(addresses.FirstOrDefault(a => a.use.Any(u => u == cs_PostalAddressUse.PHYS)));
-                        patient.PostalAddress = MapAddress(addresses.FirstOrDefault(a => a.use.Any(u => u == cs_PostalAddressUse.PST)));
-                    }
+                        Code = ActionType.NoHdId.Value,
+                        Message = ErrorMessages.InvalidServicesCard,
+                    };
+                    return;
+                }
 
-                    if (responseCode.Contains("BCHCIM.GD.0.0019", StringComparison.InvariantCulture) ||
+                // Populate addresses
+                AD[] addresses = retrievedPerson.addr;
+                if (addresses != null)
+                {
+                    patient.PhysicalAddress = MapAddress(addresses.FirstOrDefault(a => a.use.Any(u => u == cs_PostalAddressUse.PHYS)));
+                    patient.PostalAddress = MapAddress(addresses.FirstOrDefault(a => a.use.Any(u => u == cs_PostalAddressUse.PST)));
+                }
+
+                if (responseCode.Contains("BCHCIM.GD.0.0019", StringComparison.InvariantCulture) ||
                         responseCode.Contains("BCHCIM.GD.0.0021", StringComparison.InvariantCulture) ||
                         responseCode.Contains("BCHCIM.GD.0.0022", StringComparison.InvariantCulture) ||
                         responseCode.Contains("BCHCIM.GD.0.0023", StringComparison.InvariantCulture))
-                    {
-                        patient.ResponseCode = responseCode;
-                    }
-
-                    apiResult.ResourcePayload = patient;
+                {
+                    patient.ResponseCode = responseCode;
                 }
+
+                apiResult.ResourcePayload = patient;
             }
         }
 

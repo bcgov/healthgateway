@@ -21,6 +21,7 @@ namespace HealthGateway.PatientTests.Delegates
     using System.Threading.Tasks;
     using DeepEqual.Syntax;
     using HealthGateway.Common.Constants;
+    using HealthGateway.Common.Data.Models.ErrorHandling;
     using HealthGateway.Common.Data.ViewModels;
     using HealthGateway.Common.Exceptions;
     using HealthGateway.Common.Models;
@@ -128,7 +129,7 @@ namespace HealthGateway.PatientTests.Delegates
             ApiResult<PatientModel> actual = await patientDelegate.GetDemographicsAsync(OidType.PHN, "9875023209").ConfigureAwait(true);
 
             // Verify
-            Assert.NotEmpty(actual.Warning);
+            Assert.NotEmpty(actual.Warning?.Message);
         }
 
         /// <summary>
@@ -355,7 +356,7 @@ namespace HealthGateway.PatientTests.Delegates
         }
 
         /// <summary>
-        /// GetDemographicsByHDID - Invalid ID Error.
+        /// GetDemographics - Invalid ID Error.
         /// </summary>
         /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
         [Fact]
@@ -451,7 +452,8 @@ namespace HealthGateway.PatientTests.Delegates
             ApiResult<PatientModel> actual = await patientDelegate.GetDemographicsAsync(OidType.HDID, hdid).ConfigureAwait(true);
 
             // Verify
-            Assert.Equal(ErrorMessages.InvalidServicesCard, actual.Warning);
+            Assert.Equal(ActionType.NoHdId.Value, actual.Warning?.Code);
+            Assert.Equal(ErrorMessages.InvalidServicesCard, actual.Warning?.Message);
         }
 
         /// <summary>
@@ -1044,14 +1046,14 @@ namespace HealthGateway.PatientTests.Delegates
             HCIM_IN_GetDemographicsResponseIdentifiedPerson subjectTarget = new()
             {
                 id = new[]
+                {
+                    new II()
                     {
-                        new II()
-                        {
-                            root = "2.16.840.1.113883.3.51.1.1.6",
-                            extension = expectedHdId,
-                            displayable = true,
-                        },
+                        root = "2.16.840.1.113883.3.51.1.1.6",
+                        extension = expectedHdId,
+                        displayable = true,
                     },
+                },
                 identifiedPerson = new HCIM_IN_GetDemographicsResponsePerson()
                 {
                     id = new[]
@@ -1092,30 +1094,31 @@ namespace HealthGateway.PatientTests.Delegates
             };
 
             Mock<QUPA_AR101102_PortType> clientMock = new();
-            clientMock.Setup(x => x.HCIM_IN_GetDemographicsAsync(It.IsAny<HCIM_IN_GetDemographicsRequest>())).ReturnsAsync(
-                new HCIM_IN_GetDemographicsResponse1()
-                {
-                    HCIM_IN_GetDemographicsResponse = new HCIM_IN_GetDemographicsResponse()
+            clientMock.Setup(x => x.HCIM_IN_GetDemographicsAsync(It.IsAny<HCIM_IN_GetDemographicsRequest>()))
+                .ReturnsAsync(
+                    new HCIM_IN_GetDemographicsResponse1()
                     {
-                        controlActProcess = new HCIM_IN_GetDemographicsResponseQUQI_MT120001ControlActProcess()
+                        HCIM_IN_GetDemographicsResponse = new HCIM_IN_GetDemographicsResponse()
                         {
-                            queryAck = new HCIM_MT_QueryResponseQueryAck()
+                            controlActProcess = new HCIM_IN_GetDemographicsResponseQUQI_MT120001ControlActProcess()
                             {
-                                queryResponseCode = new CS()
+                                queryAck = new HCIM_MT_QueryResponseQueryAck()
                                 {
-                                    code = expectedResponseCode,
+                                    queryResponseCode = new CS()
+                                    {
+                                        code = expectedResponseCode,
+                                    },
+                                },
+                                subject = new[]
+                                {
+                                    new HCIM_IN_GetDemographicsResponseQUQI_MT120001Subject2()
+                                    {
+                                        target = subjectTarget,
+                                    },
                                 },
                             },
-                            subject = new[]
-                              {
-                                  new HCIM_IN_GetDemographicsResponseQUQI_MT120001Subject2()
-                                  {
-                                      target = subjectTarget,
-                                  },
-                              },
                         },
-                    },
-                });
+                    });
             using ILoggerFactory loggerFactory = LoggerFactory.Create(builder => builder.AddConsole());
             IClientRegistriesDelegate patientDelegate = new ClientRegistriesDelegate(
                 loggerFactory.CreateLogger<ClientRegistriesDelegate>(),
@@ -1126,42 +1129,6 @@ namespace HealthGateway.PatientTests.Delegates
 
             // Verify
             Assert.Contains("BCHCIM.GD.0.0023", actual.ResourcePayload?.ResponseCode, StringComparison.InvariantCultureIgnoreCase);
-        }
-
-        /// <summary>
-        /// Client registry get demographics returns warning given client registry records not found.
-        /// </summary>
-        /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
-        [Fact]
-        public async Task ShouldReturnWarningGivenClientRegistryRecordsNotFound()
-        {
-            // Setup
-            string expectedResponseCode = "BCHCIM.GD.2.0018";
-            IClientRegistriesDelegate patientDelegate = GetClientRegistriesDelegate(expectedResponseCode, false, true);
-
-            // Act
-            ApiResult<PatientModel> actual = await patientDelegate.GetDemographicsAsync(OidType.PHN, Phn).ConfigureAwait(true);
-
-            // Verify
-            Assert.Equal(ErrorMessages.ClientRegistryRecordsNotFound, actual.Warning);
-        }
-
-        /// <summary>
-        /// Client registry get demographics returns warning given client registry finds phn is invalid.
-        /// </summary>
-        /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
-        [Fact]
-        public async Task ShouldReturnWarningGivenClientRegistryPhnInvalid()
-        {
-            // Setup
-            string expectedResponseCode = "BCHCIM.GD.2.0006";
-            IClientRegistriesDelegate patientDelegate = GetClientRegistriesDelegate(expectedResponseCode, false, true);
-
-            // Act
-            ApiResult<PatientModel> actual = await patientDelegate.GetDemographicsAsync(OidType.PHN, Phn).ConfigureAwait(true);
-
-            // Verify
-            Assert.Equal(ErrorMessages.PhnInvalid, actual.Warning);
         }
 
         /// <summary>
@@ -1178,7 +1145,8 @@ namespace HealthGateway.PatientTests.Delegates
             ApiResult<PatientModel> actual = await patientDelegate.GetDemographicsAsync(OidType.PHN, Phn).ConfigureAwait(true);
 
             // Verify
-            Assert.Equal(ErrorMessages.InvalidServicesCard, actual.Warning);
+            Assert.Equal(ActionType.InvalidName.Value, actual.Warning?.Code);
+            Assert.Equal(ErrorMessages.InvalidServicesCard, actual.Warning?.Message);
         }
 
         /// <summary>
@@ -1189,23 +1157,60 @@ namespace HealthGateway.PatientTests.Delegates
         public async Task ShouldReturnWarningGivenNoIds()
         {
             // Setup
-            IClientRegistriesDelegate patientDelegate = GetClientRegistriesDelegate(false, true, true);
+            IClientRegistriesDelegate patientDelegate = GetClientRegistriesDelegate(false, false, true);
 
             // Act
             ApiResult<PatientModel> actual = await patientDelegate.GetDemographicsAsync(OidType.PHN, Phn).ConfigureAwait(true);
 
             // Verify
-            Assert.Equal(ErrorMessages.InvalidServicesCard, actual.Warning);
+            Assert.Equal(ActionType.NoHdId.Value, actual.Warning?.Code);
+            Assert.Equal(ErrorMessages.InvalidServicesCard, actual.Warning?.Message);
         }
 
         /// <summary>
-        /// Client registry get demographics throws ApiPatientException due to CommunicationException.
-        /// </summary>/// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
+        /// Client registry get demographics returns warning given user deceased indicator is true.
+        /// </summary>
+        /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
+        [Fact]
+        public async Task ShouldReturnWarningGivenDeceasedIndicatorTrue()
+        {
+            // Setup
+            IClientRegistriesDelegate patientDelegate = GetClientRegistriesDelegate(true);
+
+            // Act
+            ApiResult<PatientModel> actual = await patientDelegate.GetDemographicsAsync(OidType.PHN, Phn).ConfigureAwait(true);
+
+            // Verify
+            Assert.Equal(ActionType.Deceased.Value, actual.Warning?.Code);
+            Assert.Equal(ErrorMessages.ClientRegistryReturnedDeceasedPerson, actual.Warning?.Message);
+        }
+
+        /// <summary>
+        /// Client registry get demographics does not return warning for action type NoHdId given disabled id validation is set to false.
+        /// </summary>
+        /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
+        [Fact]
+        public async Task ShouldNotReturnWarningGivenDisabledIdValidationIsFalse()
+        {
+            // Setup
+            IClientRegistriesDelegate patientDelegate = GetClientRegistriesDelegate(false, false, true);
+
+            // Act
+            ApiResult<PatientModel> actual = await patientDelegate.GetDemographicsAsync(OidType.PHN, Phn, true).ConfigureAwait(true);
+
+            // Verify
+            Assert.Null(actual.Warning);
+        }
+
+        /// <summary>
+        /// Client registry get demographics throws ApiPatientException given CommunicationException.
+        /// </summary>
+        /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
         [Fact]
         public async Task ShouldThrowApiPatientExceptionGivenCommunicationException()
         {
             // Setup
-            string expectedDetail = $"Communication Exception when trying to retrieve patient information from {OidType.PHN}";
+            string expectedDetail = $"Communication Exception with client registry when trying to retrieve patient information from {OidType.PHN}";
             IClientRegistriesDelegate patientDelegate = GetClientRegistriesDelegate(false, false, false, true);
 
             // Act
@@ -1217,7 +1222,26 @@ namespace HealthGateway.PatientTests.Delegates
         }
 
         /// <summary>
-        /// Client registry get demographics throws api patient exception due to client registry not returning person.
+        /// Client registry get demographics throws api patient exception given client registry records not found.
+        /// </summary>
+        /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
+        [Fact]
+        public async Task ShouldThrowApiPatientExceptionGivenClientRegistryRecordsNotFound()
+        {
+            // Setup
+            string expectedResponseCode = "BCHCIM.GD.2.0018";
+            IClientRegistriesDelegate patientDelegate = GetClientRegistriesDelegate(expectedResponseCode, false, true);
+
+            // Act
+            async Task Actual() => await patientDelegate.GetDemographicsAsync(OidType.PHN, Phn).ConfigureAwait(true);
+
+            // Verify
+            ApiPatientException exception = await Assert.ThrowsAsync<ApiPatientException>(Actual).ConfigureAwait(true);
+            Assert.Equal(ErrorMessages.ClientRegistryRecordsNotFound, exception.Detail);
+        }
+
+        /// <summary>
+        /// Client registry get demographics throws api patient exception given client registry not returning person.
         /// </summary>
         /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
         [Fact]
@@ -1236,21 +1260,22 @@ namespace HealthGateway.PatientTests.Delegates
         }
 
         /// <summary>
-        /// Client registry get demographics throws api patient exception due to deceased indicator is true.
+        /// Client registry get demographics throws api patient exception given client registry finds phn is invalid.
         /// </summary>
         /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
         [Fact]
-        public async Task ShouldThrowApiPatientExceptionGivenDeceasedIndicatorTrue()
+        public async Task ShouldThrowApiPatientExceptionGivenClientRegistryPhnInvalid()
         {
             // Setup
-            IClientRegistriesDelegate patientDelegate = GetClientRegistriesDelegate(true);
+            string expectedResponseCode = "BCHCIM.GD.2.0006";
+            IClientRegistriesDelegate patientDelegate = GetClientRegistriesDelegate(expectedResponseCode, false, true);
 
             // Act
             async Task Actual() => await patientDelegate.GetDemographicsAsync(OidType.PHN, Phn).ConfigureAwait(true);
 
             // Verify
             ApiPatientException exception = await Assert.ThrowsAsync<ApiPatientException>(Actual).ConfigureAwait(true);
-            Assert.Equal(ErrorMessages.ClientRegistryReturnedDeceasedPerson, exception.Detail);
+            Assert.Equal(ErrorMessages.PhnInvalid, exception.Detail);
         }
 
         private static IClientRegistriesDelegate GetClientRegistriesDelegate(

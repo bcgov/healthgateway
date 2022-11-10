@@ -80,6 +80,11 @@ namespace HealthGateway.Common.Data.Models.ErrorHandling
         public static ActionType Warning => new("WARNING");
 
         /// <summary>
+        /// Gets the action that the user is deceased.
+        /// </summary>
+        public static ActionType Deceased => new("DECEASED");
+
+        /// <summary>
         /// Gets or sets the value that holds the internal representation of the ActionType.
         /// </summary>
         public string Value { get; set; }
