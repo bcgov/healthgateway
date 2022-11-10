@@ -24,9 +24,9 @@ namespace HealthGateway.Patient.Delegates
     using System.ServiceModel;
     using System.Threading.Tasks;
     using HealthGateway.Common.Constants;
+    using HealthGateway.Common.Data.ErrorHandling;
     using HealthGateway.Common.Data.Models.ErrorHandling;
     using HealthGateway.Common.Data.ViewModels;
-    using HealthGateway.Common.Exceptions;
     using HealthGateway.Common.Models;
     using Microsoft.Extensions.Logging;
     using ServiceReference;
@@ -74,7 +74,7 @@ namespace HealthGateway.Patient.Delegates
                 catch (CommunicationException e)
                 {
                     this.logger.LogError("{Exception}", e.ToString());
-                    throw new ApiPatientException(
+                    throw new ApiException(
                         $"Communication Exception with client registry when trying to retrieve patient information from {type}",
                         "ClientRegistriesDelegate.GetDemographicsAsync",
                         HttpStatusCode.BadGateway);
@@ -91,29 +91,29 @@ namespace HealthGateway.Patient.Delegates
             using (Source.StartActivity())
             {
                 HCIM_IN_GetDemographics request = new()
+                {
+                    id = new II { root = "2.16.840.1.113883.3.51.1.1.1", extension = DateTimeOffset.Now.ToUnixTimeMilliseconds().ToString(CultureInfo.InvariantCulture) },
+                    creationTime = new TS { value = DateTime.Now.ToString("yyyyMMddHHmmss", CultureInfo.InvariantCulture) },
+                    versionCode = new CS { code = "V3PR1" },
+                    interactionId = new II { root = "2.16.840.1.113883.3.51.1.1.2", extension = "HCIM_IN_GetDemographics" },
+                    processingCode = new CS { code = "P" },
+                    processingModeCode = new CS { code = "T" },
+                    acceptAckCode = new CS { code = "NE" },
+                    receiver = new MCCI_MT000100Receiver
                     {
-                        id = new II { root = "2.16.840.1.113883.3.51.1.1.1", extension = DateTimeOffset.Now.ToUnixTimeMilliseconds().ToString(CultureInfo.InvariantCulture) },
-                        creationTime = new TS { value = DateTime.Now.ToString("yyyyMMddHHmmss", CultureInfo.InvariantCulture) },
-                        versionCode = new CS { code = "V3PR1" },
-                        interactionId = new II { root = "2.16.840.1.113883.3.51.1.1.2", extension = "HCIM_IN_GetDemographics" },
-                        processingCode = new CS { code = "P" },
-                        processingModeCode = new CS { code = "T" },
-                        acceptAckCode = new CS { code = "NE" },
-                        receiver = new MCCI_MT000100Receiver
+                        typeCode = "RCV",
+                        device = new MCCI_MT000100Device
                         {
-                            typeCode = "RCV",
-                            device = new MCCI_MT000100Device
+                            determinerCode = "INSTANCE", classCode = "DEV",
+                            id = new II { root = "2.16.840.1.113883.3.51.1.1.4", extension = "192.168.0.1" },
+                            asAgent = new MCCI_MT000100Agent
                             {
-                                determinerCode = "INSTANCE", classCode = "DEV",
-                                id = new II { root = "2.16.840.1.113883.3.51.1.1.4", extension = "192.168.0.1" },
-                                asAgent = new MCCI_MT000100Agent
-                                {
-                                    classCode = "AGNT",
-                                    representedOrganization = new MCCI_MT000100Organization { determinerCode = "INSTANCE", classCode = "ORG" },
-                                },
+                                classCode = "AGNT",
+                                representedOrganization = new MCCI_MT000100Organization { determinerCode = "INSTANCE", classCode = "ORG" },
                             },
                         },
-                    };
+                    },
+                };
 
                 request.receiver.device.asAgent.representedOrganization = new MCCI_MT000100Organization
                 {
@@ -155,20 +155,20 @@ namespace HealthGateway.Patient.Delegates
                         },
                     },
                     queryByParameter = new HCIM_IN_GetDemographicsQUQI_MT020001QueryByParameter
+                    {
+                        queryByParameterPayload = new HCIM_IN_GetDemographicsQueryByParameterPayload
                         {
-                            queryByParameterPayload = new HCIM_IN_GetDemographicsQueryByParameterPayload
+                            personid = new HCIM_IN_GetDemographicsPersonid
+                            {
+                                value = new II
                                 {
-                                    personid = new HCIM_IN_GetDemographicsPersonid
-                                        {
-                                            value = new II
-                                            {
-                                                root = oidType.ToString(),
-                                                extension = identifierValue,
-                                                assigningAuthorityName = "LCTZ_IAS",
-                                            },
-                                        },
+                                    root = oidType.ToString(),
+                                    extension = identifierValue,
+                                    assigningAuthorityName = "LCTZ_IAS",
                                 },
+                            },
                         },
+                    },
                 };
 
                 return new HCIM_IN_GetDemographicsRequest(request);
@@ -217,14 +217,14 @@ namespace HealthGateway.Patient.Delegates
             {
                 // BCHCIM.GD.2.0018 Not found
                 this.logger.LogWarning("Client Registry did not find any records. Returned message code: {ResponseCode}", responseCode);
-                throw new ApiPatientException(ErrorMessages.ClientRegistryRecordsNotFound, "ClientRegistriesDelegate.CheckResponseCode", HttpStatusCode.NotFound);
+                throw new ApiException(ErrorMessages.ClientRegistryRecordsNotFound, "ClientRegistriesDelegate.CheckResponseCode", HttpStatusCode.NotFound);
             }
 
             if (responseCode.Contains("BCHCIM.GD.2.0006", StringComparison.InvariantCulture))
             {
                 // Returned BCHCIM.GD.2.0006 Invalid PHN
                 this.logger.LogWarning("Personal Health Number is invalid. Returned message code: {ResponseCode}", responseCode);
-                throw new ApiPatientException(ErrorMessages.PhnInvalid, "ClientRegistriesDelegate.CheckResponseCode", HttpStatusCode.NotFound);
+                throw new ApiException(ErrorMessages.PhnInvalid, "ClientRegistriesDelegate.CheckResponseCode", HttpStatusCode.NotFound);
             }
 
             if (responseCode.Contains("BCHCIM.GD.0.0019", StringComparison.InvariantCulture) ||
@@ -239,7 +239,7 @@ namespace HealthGateway.Patient.Delegates
             if (!responseCode.Contains("BCHCIM.GD.0.0013", StringComparison.InvariantCulture))
             {
                 this.logger.LogWarning("Client Registry did not return a person. Returned message code: {ResponseCode}", responseCode);
-                throw new ApiPatientException(ErrorMessages.ClientRegistryDoesNotReturnPerson, "ClientRegistriesDelegate.CheckResponseCode", HttpStatusCode.NotFound);
+                throw new ApiException(ErrorMessages.ClientRegistryDoesNotReturnPerson, "ClientRegistriesDelegate.CheckResponseCode", HttpStatusCode.NotFound);
             }
         }
 
@@ -313,9 +313,9 @@ namespace HealthGateway.Patient.Delegates
                 }
 
                 if (responseCode.Contains("BCHCIM.GD.0.0019", StringComparison.InvariantCulture) ||
-                        responseCode.Contains("BCHCIM.GD.0.0021", StringComparison.InvariantCulture) ||
-                        responseCode.Contains("BCHCIM.GD.0.0022", StringComparison.InvariantCulture) ||
-                        responseCode.Contains("BCHCIM.GD.0.0023", StringComparison.InvariantCulture))
+                    responseCode.Contains("BCHCIM.GD.0.0021", StringComparison.InvariantCulture) ||
+                    responseCode.Contains("BCHCIM.GD.0.0022", StringComparison.InvariantCulture) ||
+                    responseCode.Contains("BCHCIM.GD.0.0023", StringComparison.InvariantCulture))
                 {
                     patient.ResponseCode = responseCode;
                 }

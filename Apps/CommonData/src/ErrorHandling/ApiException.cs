@@ -13,69 +13,70 @@
 //  See the License for the specific language governing permissions and
 //  limitations under the License.
 // -------------------------------------------------------------------------
-namespace HealthGateway.Common.Exceptions
+namespace HealthGateway.Common.Data.ErrorHandling
 {
     using System;
     using System.Net;
+    using System.Runtime.Serialization;
     using HealthGateway.Common.Data.Models.ErrorHandling;
 
     /// <summary>
     /// Represents a custom api patient exception.
     /// </summary>
     [Serializable]
-    public class ApiPatientException : Exception
+    public class ApiException : Exception
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="ApiPatientException"/> class.
+        /// Initializes a new instance of the <see cref="ApiException"/> class.
         /// </summary>
         /// <param name="detail">The detail associated with the exception.</param>
         /// <param name="instance">The instance associated with the exception.</param>
         /// <param name="statusCode">The http status code associated with the exception.</param>
-        public ApiPatientException(string detail, string instance, HttpStatusCode statusCode)
+        public ApiException(string detail, string instance, HttpStatusCode statusCode)
         {
-            this.ProblemType = "api-patient-exception";
+            this.ProblemType = "api-exception";
             this.Detail = detail;
-            this.Title = "Api Patient Service Exception";
+            this.Title = "Custom Exception Handling";
             this.AdditionalInfo = "Please try again at a later time.";
             this.Instance = instance;
             this.StatusCode = (int)statusCode;
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="ApiPatientException"/> class.
+        /// Initializes a new instance of the <see cref="ApiException"/> class.
         /// </summary>
         /// <param name="message">The message associated with the exception.</param>
         /// <param name="innerException">The inner exception associated with the exception.</param>
-        public ApiPatientException(string message, Exception innerException)
+        public ApiException(string message, Exception innerException)
             : base(message, innerException)
         {
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="ApiPatientException"/> class.
+        /// Initializes a new instance of the <see cref="ApiException"/> class.
         /// </summary>
         /// <param name="message">The message associated with exception.</param>
-        public ApiPatientException(string message)
+        public ApiException(string message)
             : base(message)
         {
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="ApiPatientException"/> class.
+        /// Initializes a new instance of the <see cref="ApiException"/> class.
         /// </summary>
-        public ApiPatientException()
+        public ApiException()
         {
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="ApiPatientException"/> class.
+        /// Initializes a new instance of the <see cref="ApiException"/> class.
         /// </summary>
         /// <param name="serializationInfo">The serialization info associated with the exception.</param>
         /// <param name="streamingContext">The streaming context associated with the exception.</param>
-        protected ApiPatientException(System.Runtime.Serialization.SerializationInfo serializationInfo, System.Runtime.Serialization.StreamingContext streamingContext)
+        protected ApiException(SerializationInfo serializationInfo, StreamingContext streamingContext)
             : base(
-            serializationInfo,
-            streamingContext)
+                serializationInfo,
+                streamingContext)
         {
         }
 

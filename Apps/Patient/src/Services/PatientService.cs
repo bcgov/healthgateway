@@ -21,9 +21,9 @@ namespace HealthGateway.Patient.Services
     using System.Threading.Tasks;
     using HealthGateway.Common.CacheProviders;
     using HealthGateway.Common.Constants;
+    using HealthGateway.Common.Data.ErrorHandling;
     using HealthGateway.Common.Data.Utils;
     using HealthGateway.Common.Data.ViewModels;
-    using HealthGateway.Common.Exceptions;
     using HealthGateway.Common.Models;
     using HealthGateway.Patient.Delegates;
     using Microsoft.Extensions.Configuration;
@@ -73,6 +73,7 @@ namespace HealthGateway.Patient.Services
             {
                 ResourcePayload = this.GetFromCache(identifier, identifierType),
             };
+            apiResult.ResourcePayload = null;
 
             if (apiResult.ResourcePayload == null)
             {
@@ -82,7 +83,7 @@ namespace HealthGateway.Patient.Services
                 if (identifierType == PatientIdentifierType.PHN && !PhnValidator.IsValid(identifier))
                 {
                     this.logger.LogDebug("The PHN provided is invalid");
-                    throw new ApiPatientException(ErrorMessages.PhnInvalid, "PatientService.GetPatient", HttpStatusCode.NotFound);
+                    throw new ApiException(ErrorMessages.PhnInvalid, "PatientService.GetPatient", HttpStatusCode.NotFound);
                 }
 
                 apiResult = await this.patientDelegate.GetDemographicsAsync(type, identifier, disableIdValidation).ConfigureAwait(true);

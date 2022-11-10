@@ -19,8 +19,8 @@ namespace HealthGateway.PatientTests.Services
     using System.Threading.Tasks;
     using HealthGateway.Common.CacheProviders;
     using HealthGateway.Common.Constants;
+    using HealthGateway.Common.Data.ErrorHandling;
     using HealthGateway.Common.Data.ViewModels;
-    using HealthGateway.Common.Exceptions;
     using HealthGateway.Common.Models;
     using HealthGateway.Patient.Delegates;
     using HealthGateway.Patient.Services;
@@ -114,10 +114,13 @@ namespace HealthGateway.PatientTests.Services
             IPatientService service = GetPatientService(expectedPhn, expectedPhn);
 
             // Act
-            async Task Actual() => await service.GetPatient("abc123", PatientIdentifierType.PHN).ConfigureAwait(true);
+            async Task Actual()
+            {
+                await service.GetPatient("abc123", PatientIdentifierType.PHN).ConfigureAwait(true);
+            }
 
             // Verify
-            ApiPatientException exception = await Assert.ThrowsAsync<ApiPatientException>(Actual).ConfigureAwait(true);
+            ApiException exception = await Assert.ThrowsAsync<ApiException>(Actual).ConfigureAwait(true);
             Assert.Equal(ErrorMessages.PhnInvalid, exception.Detail);
         }
 
@@ -125,7 +128,7 @@ namespace HealthGateway.PatientTests.Services
         {
             ApiResult<PatientModel> requestResult = new()
             {
-                ResourcePayload = new PatientModel()
+                ResourcePayload = new PatientModel
                 {
                     FirstName = "John",
                     LastName = "Doe",

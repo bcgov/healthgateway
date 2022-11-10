@@ -23,8 +23,9 @@ namespace HealthGateway.Common.AspNetConfiguration.Modules
     using System.ServiceModel.Description;
     using System.ServiceModel.Dispatcher;
     using System.ServiceModel.Security;
+    using HealthGateway.Common.Data.ErrorHandling;
     using HealthGateway.Common.Delegates;
-    using HealthGateway.Common.Exceptions;
+    using HealthGateway.Common.ErrorHandling;
     using HealthGateway.Common.Services;
     using Hellang.Middleware.ProblemDetails;
     using Microsoft.AspNetCore.Builder;
@@ -99,7 +100,7 @@ namespace HealthGateway.Common.AspNetConfiguration.Modules
                 {
                     setup.IncludeExceptionDetails = (ctx, env) => environment.IsDevelopment();
 
-                    setup.Map<ApiPatientException>(
+                    setup.Map<ApiException>(
                         exception => new ApiProblemDetails
                         {
                             Title = exception.Title,
