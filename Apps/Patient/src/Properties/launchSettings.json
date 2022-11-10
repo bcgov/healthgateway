@@ -10,11 +10,10 @@
     "profiles": {
         "HealthGateway.Patient": {
             "commandName": "Project",
-            "launchBrowser": false,
+            "applicationUrl": "http://localhost:3002;",
             "environmentVariables": {
                 "ASPNETCORE_ENVIRONMENT": "Development"
-            },
-            "applicationUrl": "http://localhost:3002;"
+            }
         }
     }
 }

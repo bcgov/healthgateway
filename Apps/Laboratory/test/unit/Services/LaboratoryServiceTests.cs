@@ -25,7 +25,7 @@ namespace HealthGateway.LaboratoryTests.Services
     using HealthGateway.Common.AccessManagement.Authentication;
     using HealthGateway.Common.Constants.PHSA;
     using HealthGateway.Common.Data.Constants;
-    using HealthGateway.Common.Data.Models.ErrorHandling;
+    using HealthGateway.Common.Data.ErrorHandling;
     using HealthGateway.Common.Data.ViewModels;
     using HealthGateway.Common.Models.PHSA;
     using HealthGateway.Laboratory.Factories;
@@ -473,7 +473,7 @@ namespace HealthGateway.LaboratoryTests.Services
         public void ShouldGetCovidTestsWithInvalidPhn()
         {
             Mock<IAuthenticationDelegate> mockAuthDelegate = new();
-            mockAuthDelegate.Setup(s => s.AccessTokenAsUser()).Returns(TOKEN);
+            mockAuthDelegate.Setup(s => s.AccessTokenAsUser(IAuthenticationDelegate.DefaultAuthConfigSectionName)).Returns(TOKEN);
 
             ILaboratoryService service = new LaboratoryService(
                 this.configuration,
@@ -503,7 +503,7 @@ namespace HealthGateway.LaboratoryTests.Services
         public void ShouldGetCovidTestsWithInvalidDateOfBirth(string dateFormat)
         {
             Mock<IAuthenticationDelegate> mockAuthDelegate = new();
-            mockAuthDelegate.Setup(s => s.AccessTokenAsUser()).Returns(TOKEN);
+            mockAuthDelegate.Setup(s => s.AccessTokenAsUser(IAuthenticationDelegate.DefaultAuthConfigSectionName)).Returns(TOKEN);
 
             ILaboratoryService service = new LaboratoryService(
                 this.configuration,
@@ -532,7 +532,7 @@ namespace HealthGateway.LaboratoryTests.Services
         public void ShouldGetCovidTestsWithInvalidCollectionDate(string dateFormat)
         {
             Mock<IAuthenticationDelegate> mockAuthDelegate = new();
-            mockAuthDelegate.Setup(s => s.AccessTokenAsUser()).Returns(TOKEN);
+            mockAuthDelegate.Setup(s => s.AccessTokenAsUser(IAuthenticationDelegate.DefaultAuthConfigSectionName)).Returns(TOKEN);
             ILaboratoryService service = new LaboratoryService(
                 this.configuration,
                 new Mock<ILogger<LaboratoryService>>().Object,
@@ -551,7 +551,7 @@ namespace HealthGateway.LaboratoryTests.Services
 
         private static IConfigurationRoot GetIConfigurationRoot()
         {
-            Dictionary<string, string>? myConfiguration = new()
+            Dictionary<string, string?> myConfiguration = new()
             {
                 { "Laboratory:BackOffMilliseconds", "0" },
             };
@@ -560,7 +560,7 @@ namespace HealthGateway.LaboratoryTests.Services
                 .AddJsonFile("appsettings.json", true)
                 .AddJsonFile("appsettings.Development.json", true)
                 .AddJsonFile("appsettings.local.json", true)
-                .AddInMemoryCollection(myConfiguration)
+                .AddInMemoryCollection(myConfiguration.ToList<KeyValuePair<string, string?>>())
                 .Build();
         }
     }

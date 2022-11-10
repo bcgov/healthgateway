@@ -204,13 +204,13 @@ namespace HealthGateway.EncounterTests.Delegates
 
         private static IConfigurationRoot GetIConfigurationRoot()
         {
-            Dictionary<string, string> configuration = new()
+            Dictionary<string, string?> configuration = new()
             {
                 { "PHSA:FetchSize", ConfigFetchSize },
             };
 
             return new ConfigurationBuilder()
-                .AddInMemoryCollection(configuration)
+                .AddInMemoryCollection(configuration.ToList<KeyValuePair<string, string?>>())
                 .Build();
         }
     }

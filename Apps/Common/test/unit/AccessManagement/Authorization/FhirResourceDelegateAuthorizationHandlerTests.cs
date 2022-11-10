@@ -18,6 +18,7 @@ namespace HealthGateway.CommonTests.AccessManagement.Authorization
     using System;
     using System.Collections.Generic;
     using System.Globalization;
+    using System.Linq;
     using System.Security.Claims;
     using HealthGateway.Common.AccessManagement.Authorization.Claims;
     using HealthGateway.Common.AccessManagement.Authorization.Handlers;
@@ -267,12 +268,12 @@ namespace HealthGateway.CommonTests.AccessManagement.Authorization
 
         private static IConfigurationRoot GetConfiguration()
         {
-            Dictionary<string, string> configDictionary = new()
+            Dictionary<string, string?> configDictionary = new()
             {
                 { "Authorization:MaxDependentAge", MaxDependentAge.ToString(CultureInfo.CurrentCulture) },
             };
             return new ConfigurationBuilder()
-                .AddInMemoryCollection(configDictionary)
+                .AddInMemoryCollection(configDictionary.ToList<KeyValuePair<string, string?>>())
                 .Build();
         }
 

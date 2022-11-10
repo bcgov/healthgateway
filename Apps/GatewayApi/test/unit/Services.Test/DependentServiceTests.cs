@@ -17,11 +17,12 @@ namespace HealthGateway.GatewayApi.Test.Services
 {
     using System;
     using System.Collections.Generic;
+    using System.Linq;
     using System.Threading.Tasks;
     using HealthGateway.Common.Constants;
     using HealthGateway.Common.Data.Constants;
+    using HealthGateway.Common.Data.ErrorHandling;
     using HealthGateway.Common.Data.Models;
-    using HealthGateway.Common.Data.Models.ErrorHandling;
     using HealthGateway.Common.Data.ViewModels;
     using HealthGateway.Common.ErrorHandling;
     using HealthGateway.Common.Models;
@@ -69,7 +70,7 @@ namespace HealthGateway.GatewayApi.Test.Services
             // Validate masked PHN
             foreach (DependentModel model in actualResult.ResourcePayload!)
             {
-                Assert.Equal(model.DependentInformation.PHN, this.mockPHN);
+                Assert.Equal(model.DependentInformation.Phn, this.mockPHN);
             }
         }
 
@@ -129,12 +130,12 @@ namespace HealthGateway.GatewayApi.Test.Services
         [Fact]
         public void ValidateDependentWithDbError()
         {
-            DBResult<ResourceDelegate> insertResult = new()
+            DbResult<ResourceDelegate> insertResult = new()
             {
 #pragma warning disable CS8625 // Cannot convert null literal to non-nullable reference type.
                 Payload = null,
 #pragma warning restore CS8625 // Cannot convert null literal to non-nullable reference type.
-                Status = DBStatusCode.Error,
+                Status = DbStatusCode.Error,
             };
             AddDependentRequest addDependentRequest = this.SetupMockInput();
             IDependentService service = this.SetupMockDependentService(addDependentRequest, insertResult);
@@ -240,15 +241,15 @@ namespace HealthGateway.GatewayApi.Test.Services
             Mock<IResourceDelegateDelegate> mockDependentDelegate = new();
             mockDependentDelegate.Setup(s => s.Delete(It.Is<ResourceDelegate>(d => d.ResourceOwnerHdid == this.mockHdId && d.ProfileHdid == this.mockParentHdId), true))
                 .Returns(
-                    new DBResult<ResourceDelegate>
+                    new DbResult<ResourceDelegate>
                     {
-                        Status = DBStatusCode.Deleted,
+                        Status = DbStatusCode.Deleted,
                     });
 
             Mock<IUserProfileDelegate> mockUserProfileDelegate = new();
             mockUserProfileDelegate.Setup(s => s.GetUserProfile(this.mockParentHdId))
                 .Returns(
-                    new DBResult<UserProfile>
+                    new DbResult<UserProfile>
                         { Payload = new UserProfile() });
             Mock<INotificationSettingsService> mockNotificationSettingsService = new();
             mockNotificationSettingsService.Setup(s => s.QueueNotificationSettings(It.IsAny<NotificationSettingsRequest>()));
@@ -266,15 +267,15 @@ namespace HealthGateway.GatewayApi.Test.Services
             Assert.Equal(ResultType.Success, actualResult.ResultStatus);
         }
 
-        private static IConfigurationRoot GetIConfigurationRoot(Dictionary<string, string>? localConfig)
+        private static IConfigurationRoot GetIConfigurationRoot(Dictionary<string, string?>? localConfig)
         {
-            Dictionary<string, string> myConfiguration = localConfig ?? new();
+            Dictionary<string, string?> myConfiguration = localConfig ?? new();
 
             return new ConfigurationBuilder()
                 .AddJsonFile("appsettings.json", true)
                 .AddJsonFile("appsettings.Development.json", true)
                 .AddJsonFile("appsettings.local.json", true)
-                .AddInMemoryCollection(myConfiguration)
+                .AddInMemoryCollection(myConfiguration.ToList<KeyValuePair<string, string?>>())
                 .Build();
         }
 
@@ -315,9 +316,9 @@ namespace HealthGateway.GatewayApi.Test.Services
             // (1) Setup ResourceDelegateDelegate's mock
             IEnumerable<ResourceDelegate> expectedResourceDelegates = this.GenerateMockResourceDelegatesList();
 
-            DBResult<IEnumerable<ResourceDelegate>> readResult = new()
+            DbResult<IEnumerable<ResourceDelegate>> readResult = new()
             {
-                Status = DBStatusCode.Read,
+                Status = DbStatusCode.Read,
             };
             readResult.Payload = expectedResourceDelegates;
 
@@ -354,7 +355,7 @@ namespace HealthGateway.GatewayApi.Test.Services
 
         private IDependentService SetupMockDependentService(
             AddDependentRequest addDependentRequest,
-            DBResult<ResourceDelegate>? insertResult = null,
+            DbResult<ResourceDelegate>? insertResult = null,
             RequestResult<PatientModel>? patientResult = null)
         {
             Mock<IPatientService> mockPatientService = new();
@@ -364,7 +365,7 @@ namespace HealthGateway.GatewayApi.Test.Services
                 ResultStatus = ResultType.Success,
                 ResourcePayload = this.mockHdId,
             };
-            if (addDependentRequest.PHN.Equals(this.mockPHN, StringComparison.Ordinal))
+            if (addDependentRequest.Phn.Equals(this.mockPHN, StringComparison.Ordinal))
             {
                 // Test Scenario - Happy Path: HiId found for the mockPHN
                 patientHdIdResult.ResultStatus = ResultType.Success;
@@ -395,9 +396,9 @@ namespace HealthGateway.GatewayApi.Test.Services
 
             if (insertResult == null)
             {
-                insertResult = new DBResult<ResourceDelegate>
+                insertResult = new DbResult<ResourceDelegate>
                 {
-                    Status = DBStatusCode.Created,
+                    Status = DbStatusCode.Created,
                 };
             }
 
@@ -411,7 +412,7 @@ namespace HealthGateway.GatewayApi.Test.Services
             Mock<IUserProfileDelegate> mockUserProfileDelegate = new();
             mockUserProfileDelegate.Setup(s => s.GetUserProfile(this.mockParentHdId))
                 .Returns(
-                    new DBResult<UserProfile>
+                    new DbResult<UserProfile>
                         { Payload = new UserProfile() });
             Mock<INotificationSettingsService> mockNotificationSettingsService = new();
             mockNotificationSettingsService.Setup(s => s.QueueNotificationSettings(It.IsAny<NotificationSettingsRequest>()));
@@ -429,7 +430,7 @@ namespace HealthGateway.GatewayApi.Test.Services
         {
             return new AddDependentRequest
             {
-                PHN = this.mockPHN,
+                Phn = this.mockPHN,
                 FirstName = this.mockFirstName,
                 LastName = this.mockLastName,
                 DateOfBirth = this.mockDateOfBirth,

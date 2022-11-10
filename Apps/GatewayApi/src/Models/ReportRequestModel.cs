@@ -15,6 +15,7 @@
 //-------------------------------------------------------------------------
 namespace HealthGateway.GatewayApi.Models
 {
+    using System.Runtime.Serialization;
     using System.Text.Json;
     using System.Text.Json.Serialization;
 
@@ -27,17 +28,20 @@ namespace HealthGateway.GatewayApi.Models
         /// <summary>
         /// Indicates a PDF report.
         /// </summary>
-        PDF,
+        [EnumMember(Value = "PDF")]
+        Pdf,
 
         /// <summary>
         /// Indicates a CSV report.
         /// </summary>
-        CSV,
+        [EnumMember(Value = "CSV")]
+        Csv,
 
         /// <summary>
         /// Indicates a XLSX report.
         /// </summary>
-        XLSX,
+        [EnumMember(Value = "XLSX")]
+        Xlsx,
     }
 
     /// <summary>

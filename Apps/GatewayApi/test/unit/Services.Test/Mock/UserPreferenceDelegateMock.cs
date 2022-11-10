@@ -32,7 +32,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test.Mock
         /// </summary>
         /// <param name="readResult">readResult.</param>
         /// <param name="hdid">hdid.</param>
-        public UserPreferenceDelegateMock(DBResult<IEnumerable<UserPreference>> readResult, string hdid)
+        public UserPreferenceDelegateMock(DbResult<IEnumerable<UserPreference>> readResult, string hdid)
         {
             this.Setup(s => s.GetUserPreferences(hdid)).Returns(readResult);
         }
@@ -42,7 +42,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test.Mock
         /// </summary>
         /// <param name="readResult">read result.</param>
         /// <param name="action">action.</param>
-        public UserPreferenceDelegateMock(DBResult<UserPreference> readResult, string action)
+        public UserPreferenceDelegateMock(DbResult<UserPreference> readResult, string action)
         {
             if (action == TestConstants.UpdateAction)
             {

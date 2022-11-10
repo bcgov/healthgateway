@@ -13,7 +13,7 @@
 //  See the License for the specific language governing permissions and
 //  limitations under the License.
 // -------------------------------------------------------------------------
-namespace Healthgateway.JobScheduler.Jobs
+namespace HealthGateway.JobScheduler.Jobs
 {
     using System;
     using System.Collections.Generic;
@@ -61,19 +61,18 @@ namespace Healthgateway.JobScheduler.Jobs
             this.logger = logger;
             this.feedBackDelegate = feedBackDelegate;
             this.emailService = emailService;
-            IConfigurationSection section = configuration!.GetSection("Smtp");
-            this.host = section.GetValue<string>("Host");
+            IConfigurationSection section = configuration.GetSection("Smtp");
+            this.host = section.GetValue<string>("Host") ?? throw new ArgumentNullException(nameof(configuration), "SMTP Host is null");
             this.port = section.GetValue<int>("Port");
-            section = configuration.GetSection("AdminFeedback");
-            this.adminEmail = section.GetValue<string>("AdminEmail");
+            this.adminEmail = configuration.GetValue<string>("AdminFeedback:AdminEmail") ?? throw new ArgumentNullException(nameof(configuration), "Admin Email is null");
         }
 
         /// <inheritdoc/>
         [DisableConcurrentExecution(ConcurrencyTimeout)]
         public void SendEmail(ClientFeedback clientFeedback)
         {
-            DBResult<UserFeedback> dbResult = this.feedBackDelegate.GetUserFeedback(clientFeedback.UserFeedbackId);
-            if (dbResult.Status == DBStatusCode.Read)
+            DbResult<UserFeedback> dbResult = this.feedBackDelegate.GetUserFeedback(clientFeedback.UserFeedbackId);
+            if (dbResult.Status == DbStatusCode.Read)
             {
                 UserFeedback feedback = dbResult.Payload;
                 this.logger.LogDebug("Sending Email...");

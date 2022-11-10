@@ -16,6 +16,7 @@
 namespace HealthGateway.CommonTests.Services
 {
     using System.Collections.Generic;
+    using System.Linq;
     using HealthGateway.Common.AccessManagement.Authentication;
     using HealthGateway.Common.CacheProviders;
     using HealthGateway.Common.Data.Constants;
@@ -119,7 +120,7 @@ namespace HealthGateway.CommonTests.Services
 
         private static IConfigurationRoot GetIConfigurationRoot()
         {
-            Dictionary<string, string> configuration = new()
+            Dictionary<string, string?> configuration = new()
             {
                 { "TokenSwap:BaseUrl", "http://localhost" },
                 { "TokenSwap:ClientId", "healthgateway" },
@@ -128,7 +129,7 @@ namespace HealthGateway.CommonTests.Services
             };
 
             return new ConfigurationBuilder()
-                .AddInMemoryCollection(configuration)
+                .AddInMemoryCollection(configuration.ToList<KeyValuePair<string, string?>>())
                 .Build();
         }
 

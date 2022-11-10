@@ -75,10 +75,10 @@ namespace HealthGateway.GatewayApi.Services
         {
             switch (formatType)
             {
-                case ReportFormatType.PDF:
+                case ReportFormatType.Pdf:
                     return "docx";
-                case ReportFormatType.XLSX:
-                case ReportFormatType.CSV:
+                case ReportFormatType.Xlsx:
+                case ReportFormatType.Csv:
                     return "xlsx";
             }
 

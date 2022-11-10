@@ -30,7 +30,7 @@ namespace HealthGateway.Database.Delegates
         /// </summary>
         /// <param name="feedback">The feedback to create.</param>
         /// <returns>A DB result which encapsulates the return object and status.</returns>
-        DBResult<UserFeedback> InsertUserFeedback(UserFeedback feedback);
+        DbResult<UserFeedback> InsertUserFeedback(UserFeedback feedback);
 
         /// <summary>
         /// Updates the UserFeedback object in the DB.
@@ -47,26 +47,26 @@ namespace HealthGateway.Database.Delegates
         /// </summary>
         /// <param name="feedback">The feedback to update.</param>
         /// <returns>A DB result which encapsulates the return object and status.</returns>
-        DBResult<UserFeedback> UpdateUserFeedbackWithTagAssociations(UserFeedback feedback);
+        DbResult<UserFeedback> UpdateUserFeedbackWithTagAssociations(UserFeedback feedback);
 
         /// <summary>
         /// Fetches the UserFeedback from the database.
         /// </summary>
         /// <param name="feedbackId">The unique feedback id to find.</param>
         /// <returns>A DB result which encapsulates the return object and status.</returns>
-        DBResult<UserFeedback> GetUserFeedback(Guid feedbackId);
+        DbResult<UserFeedback> GetUserFeedback(Guid feedbackId);
 
         /// <summary>
         /// Fetches the UserFeedback with FeedbackTag associations from the database.
         /// </summary>
         /// <param name="feedbackId">The unique feedback id to find.</param>
         /// <returns>A DB result which encapsulates the return object and status.</returns>
-        DBResult<UserFeedback> GetUserFeedbackWithFeedbackTags(Guid feedbackId);
+        DbResult<UserFeedback> GetUserFeedbackWithFeedbackTags(Guid feedbackId);
 
         /// <summary>
         /// Fetches the UserFeedback with FeedbackTag associations from the database.
         /// </summary>
         /// <returns>A DB result which encapsulates the return objects and status.</returns>
-        DBResult<IList<UserFeedback>> GetAllUserFeedbackEntries();
+        DbResult<IList<UserFeedback>> GetAllUserFeedbackEntries();
     }
 }

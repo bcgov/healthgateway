@@ -18,17 +18,19 @@ namespace HealthGateway.Immunization.Services
     using System;
     using System.Globalization;
     using System.Threading.Tasks;
+    using AutoMapper;
     using HealthGateway.Common.AccessManagement.Authentication;
     using HealthGateway.Common.AccessManagement.Authentication.Models;
     using HealthGateway.Common.Constants;
     using HealthGateway.Common.Constants.PHSA;
     using HealthGateway.Common.Data.Constants;
-    using HealthGateway.Common.Data.Models.ErrorHandling;
+    using HealthGateway.Common.Data.ErrorHandling;
     using HealthGateway.Common.Data.Utils;
     using HealthGateway.Common.Data.ViewModels;
     using HealthGateway.Common.Delegates.PHSA;
     using HealthGateway.Common.ErrorHandling;
     using HealthGateway.Common.Models.PHSA;
+    using HealthGateway.Immunization.MapUtils;
     using HealthGateway.Immunization.Models;
     using Microsoft.AspNetCore.Authentication;
     using Microsoft.AspNetCore.Http;
@@ -40,11 +42,12 @@ namespace HealthGateway.Immunization.Services
     /// </summary>
     public class VaccineStatusService : IVaccineStatusService
     {
-        private const string PHSAConfigSectionKey = "PHSA";
+        private const string PhsaConfigSectionKey = "PHSA";
         private const string AuthConfigSectionName = "ClientAuthentication";
         private readonly IAuthenticationDelegate authDelegate;
         private readonly IHttpContextAccessor httpContextAccessor;
         private readonly ILogger<VaccineStatusService> logger;
+        private readonly IMapper autoMapper;
         private readonly PhsaConfig phsaConfig;
         private readonly ClientCredentialsTokenRequest tokenRequest;
         private readonly Uri tokenUri;
@@ -59,23 +62,27 @@ namespace HealthGateway.Immunization.Services
         /// <param name="authDelegate">The OAuth2 authentication service.</param>
         /// <param name="vaccineStatusDelegate">The injected vaccine status delegate.</param>
         /// <param name="httpContextAccessor">The injected http context accessor.</param>
+        /// <param name="autoMapper">The injected automapper.</param>
         public VaccineStatusService(
             IConfiguration configuration,
             ILogger<VaccineStatusService> logger,
             IAuthenticationDelegate authDelegate,
             IVaccineStatusDelegate vaccineStatusDelegate,
-            IHttpContextAccessor httpContextAccessor)
+            IHttpContextAccessor httpContextAccessor,
+            IMapper autoMapper)
         {
             this.authDelegate = authDelegate;
             this.vaccineStatusDelegate = vaccineStatusDelegate;
+            this.autoMapper = autoMapper;
 
-            IConfigurationSection? configSection = configuration?.GetSection(AuthConfigSectionName);
-            this.tokenUri = configSection.GetValue<Uri>(@"TokenUri");
+            IConfigurationSection configSection = configuration.GetSection(AuthConfigSectionName);
+            this.tokenUri = configSection.GetValue<Uri>(@"TokenUri") ??
+                            throw new ArgumentNullException(nameof(configuration), $"{AuthConfigSectionName} does not contain a valid TokenUri");
             this.tokenRequest = new ClientCredentialsTokenRequest();
             configSection.Bind(this.tokenRequest); // Client ID, Client Secret, Audience, Username, Password
 
             this.phsaConfig = new();
-            configuration.Bind(PHSAConfigSectionKey, this.phsaConfig);
+            configuration.Bind(PhsaConfigSectionKey, this.phsaConfig);
 
             this.httpContextAccessor = httpContextAccessor;
             this.logger = logger;
@@ -113,7 +120,7 @@ namespace HealthGateway.Immunization.Services
                     Loaded = payload.Loaded,
                     RetryIn = payload.RetryIn,
                     Document = payload.FederalVaccineProof ?? new(),
-                    QRCode = payload.QRCode,
+                    QrCode = payload.QrCode,
                 },
             };
 
@@ -156,7 +163,7 @@ namespace HealthGateway.Immunization.Services
                     Loaded = payload.Loaded,
                     RetryIn = payload.RetryIn,
                     Document = payload.FederalVaccineProof ?? new(),
-                    QRCode = payload.QRCode,
+                    QrCode = payload.QrCode,
                 },
             };
 
@@ -292,7 +299,7 @@ namespace HealthGateway.Immunization.Services
 
             if (payload != null)
             {
-                retVal.ResourcePayload = VaccineStatus.FromModel(payload, phn);
+                retVal.ResourcePayload = VaccineStatusMapUtils.ToUiModel(this.autoMapper, payload, phn);
                 retVal.ResourcePayload.State = retVal.ResourcePayload.State switch
                 {
                     var state when state == VaccineState.Threshold || state == VaccineState.Blocked => VaccineState.NotFound,

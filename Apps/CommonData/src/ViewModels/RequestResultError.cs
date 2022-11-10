@@ -18,7 +18,7 @@ namespace HealthGateway.Common.Data.ViewModels
     using System.Diagnostics;
     using System.Diagnostics.CodeAnalysis;
     using System.Text.Json.Serialization;
-    using HealthGateway.Common.Data.Models.ErrorHandling;
+    using HealthGateway.Common.Data.ErrorHandling;
 
     /// <summary>
     /// The RequestResultError model.

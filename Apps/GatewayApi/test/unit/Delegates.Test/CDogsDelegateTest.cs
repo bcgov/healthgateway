@@ -16,6 +16,7 @@
 namespace HealthGateway.GatewayApi.Test.Delegates
 {
     using System.Collections.Generic;
+    using System.Linq;
     using System.Net;
     using System.Net.Http;
     using System.Text.Json;
@@ -79,7 +80,7 @@ namespace HealthGateway.GatewayApi.Test.Delegates
 
         private static IConfigurationRoot GetIConfigurationRoot()
         {
-            Dictionary<string, string> myConfiguration = new()
+            Dictionary<string, string?> myConfiguration = new()
             {
                 { "ServiceEndpoints:HGCDogs", "https://some-test-url/CDogs/" },
             };
@@ -88,7 +89,7 @@ namespace HealthGateway.GatewayApi.Test.Delegates
                 .AddJsonFile("appsettings.json", optional: true)
                 .AddJsonFile("appsettings.Development.json", optional: true)
                 .AddJsonFile("appsettings.local.json", optional: true)
-                .AddInMemoryCollection(myConfiguration)
+                .AddInMemoryCollection(myConfiguration.ToList<KeyValuePair<string, string?>>())
                 .Build();
         }
 

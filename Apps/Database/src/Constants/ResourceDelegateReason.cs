@@ -15,6 +15,8 @@
 //-------------------------------------------------------------------------
 namespace HealthGateway.Database.Constants
 {
+    using System.Runtime.Serialization;
+
     /// <summary>
     /// ResourceDelegate Reasons for delegation.
     /// </summary>
@@ -23,11 +25,13 @@ namespace HealthGateway.Database.Constants
         /// <summary>
         /// Represents a delegation for Covid Laboratory.
         /// </summary>
-        COVIDLab,
+        [EnumMember(Value = "COVIDLab")]
+        CovidLab,
 
         /// <summary>
         /// Represents a delegation for attested access to youth data.
         /// </summary>
+        [EnumMember(Value = "Guardian")]
         Guardian,
     }
 }

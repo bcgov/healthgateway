@@ -351,7 +351,7 @@ namespace HealthGateway.EncounterTests.Services
 
         private static IConfigurationRoot GetIConfigurationRoot()
         {
-            Dictionary<string, string> configuration = new()
+            Dictionary<string, string?> configuration = new()
             {
                 { "PHSA:BaseUrl", ConfigBaseUrl },
                 { "PHSA:FetchSize", ConfigFetchSize },
@@ -359,7 +359,7 @@ namespace HealthGateway.EncounterTests.Services
             };
 
             return new ConfigurationBuilder()
-                .AddInMemoryCollection(configuration)
+                .AddInMemoryCollection(configuration.ToList<KeyValuePair<string, string?>>())
                 .Build();
         }
 

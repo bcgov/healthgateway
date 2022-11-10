@@ -79,7 +79,7 @@ namespace HealthGateway.Common.AspNetConfiguration.Modules
             IConfigurationSection section = configuration.GetSection("ForwardProxies");
             if (section.GetValue("Enabled", false))
             {
-                basePath = section.GetValue<string>("BasePath");
+                basePath = section.GetValue<string>("BasePath") ?? string.Empty;
             }
 
             logger.LogDebug("BasePath = {BasePath}", basePath);

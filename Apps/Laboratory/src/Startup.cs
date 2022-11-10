@@ -19,7 +19,7 @@ namespace HealthGateway.Laboratory
     using HealthGateway.Common.AccessManagement.Authentication;
     using HealthGateway.Common.AspNetConfiguration;
     using HealthGateway.Common.AspNetConfiguration.Modules;
-    using HealthGateway.Laboratory.Delegates;
+    using HealthGateway.Laboratory.Api;
     using HealthGateway.Laboratory.Factories;
     using HealthGateway.Laboratory.Models;
     using HealthGateway.Laboratory.Services;

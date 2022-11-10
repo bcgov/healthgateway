@@ -111,7 +111,7 @@ namespace HealthGateway.Database.Context
                 .IsCyclic();
 
             // Create the unique index for the SHA256 hash
-            modelBuilder!.Entity<FileDownload>()
+            modelBuilder.Entity<FileDownload>()
                 .HasIndex(f => f.Hash)
                 .IsUnique();
 
@@ -133,8 +133,8 @@ namespace HealthGateway.Database.Context
                 .HasForeignKey(k => k.EmailStatusCode);
 
             ValueConverter<EmailFormat, string> emailFormatCodeConvertor = new(
-                v => EnumUtility.ToEnumString<EmailFormat>(v, false),
-                v => EnumUtility.ToEnum<EmailFormat>(v, false));
+                v => EnumUtility.ToEnumString<EmailFormat>(v, true),
+                v => EnumUtility.ToEnum<EmailFormat>(v, true));
 
             modelBuilder.Entity<Email>()
                 .Property(e => e.FormatCode)
@@ -305,8 +305,8 @@ namespace HealthGateway.Database.Context
                 .HasForeignKey(k => k.ProfileHdid);
 
             ValueConverter<ResourceDelegateReason, string> resourceDelegateReasonCodeConverter = new(
-                v => EnumUtility.ToEnumString<ResourceDelegateReason>(v, false),
-                v => EnumUtility.ToEnum<ResourceDelegateReason>(v, false));
+                v => EnumUtility.ToEnumString<ResourceDelegateReason>(v, true),
+                v => EnumUtility.ToEnum<ResourceDelegateReason>(v, true));
 
             modelBuilder.Entity<ResourceDelegate>()
                 .Property(e => e.ReasonCode)
@@ -577,7 +577,7 @@ namespace HealthGateway.Database.Context
                     },
                     new EmailFormatCode
                     {
-                        FormatCode = EmailFormat.HTML,
+                        FormatCode = EmailFormat.Html,
                         CreatedBy = UserId.DefaultUser,
                         CreatedDateTime = this.DefaultSeedDate,
                         UpdatedBy = UserId.DefaultUser,
@@ -632,7 +632,7 @@ namespace HealthGateway.Database.Context
                         Body = ReadResource("HealthGateway.Database.Assets.docs.EmailValidationTemplate.html"),
                         Priority = EmailPriority.Standard,
                         EffectiveDate = this.DefaultSeedDate,
-                        FormatCode = EmailFormat.HTML,
+                        FormatCode = EmailFormat.Html,
                         CreatedBy = UserId.DefaultUser,
                         CreatedDateTime = this.DefaultSeedDate,
                         UpdatedBy = UserId.DefaultUser,
@@ -647,7 +647,7 @@ namespace HealthGateway.Database.Context
                         Body = ReadResource("HealthGateway.Database.Assets.docs.EmailAccountClosed.html"),
                         Priority = EmailPriority.Low,
                         EffectiveDate = this.DefaultSeedDate,
-                        FormatCode = EmailFormat.HTML,
+                        FormatCode = EmailFormat.Html,
                         CreatedBy = UserId.DefaultUser,
                         CreatedDateTime = this.DefaultSeedDate,
                         UpdatedBy = UserId.DefaultUser,
@@ -662,7 +662,7 @@ namespace HealthGateway.Database.Context
                         Body = ReadResource("HealthGateway.Database.Assets.docs.EmailAccountRecovered.html"),
                         Priority = EmailPriority.Low,
                         EffectiveDate = this.DefaultSeedDate,
-                        FormatCode = EmailFormat.HTML,
+                        FormatCode = EmailFormat.Html,
                         CreatedBy = UserId.DefaultUser,
                         CreatedDateTime = this.DefaultSeedDate,
                         UpdatedBy = UserId.DefaultUser,
@@ -677,7 +677,7 @@ namespace HealthGateway.Database.Context
                         Body = ReadResource("HealthGateway.Database.Assets.docs.EmailAccountRemoved.html"),
                         Priority = EmailPriority.Low,
                         EffectiveDate = this.DefaultSeedDate,
-                        FormatCode = EmailFormat.HTML,
+                        FormatCode = EmailFormat.Html,
                         CreatedBy = UserId.DefaultUser,
                         CreatedDateTime = this.DefaultSeedDate,
                         UpdatedBy = UserId.DefaultUser,
@@ -692,7 +692,7 @@ namespace HealthGateway.Database.Context
                         Body = ReadResource("HealthGateway.Database.Assets.docs.AdminFeedback.html"),
                         Priority = EmailPriority.Low,
                         EffectiveDate = this.DefaultSeedDate,
-                        FormatCode = EmailFormat.HTML,
+                        FormatCode = EmailFormat.Html,
                         CreatedBy = UserId.DefaultUser,
                         CreatedDateTime = this.DefaultSeedDate,
                         UpdatedBy = UserId.DefaultUser,
@@ -710,7 +710,7 @@ namespace HealthGateway.Database.Context
                 .HasData(
                     new LegalAgreementTypeCode
                     {
-                        LegalAgreementCode = LegalAgreementType.TermsofService,
+                        LegalAgreementCode = LegalAgreementType.TermsOfService,
                         Description = "Terms of Service",
                         CreatedBy = UserId.DefaultUser,
                         CreatedDateTime = this.DefaultSeedDate,
@@ -722,7 +722,7 @@ namespace HealthGateway.Database.Context
                     new LegalAgreement // Terms of Service as of Launch
                     {
                         Id = Guid.Parse("f5acf1de-2f5f-431e-955d-a837d5854182"),
-                        LegalAgreementCode = LegalAgreementType.TermsofService,
+                        LegalAgreementCode = LegalAgreementType.TermsOfService,
                         LegalText = ReadResource("HealthGateway.Database.Assets.Legal.TermsOfService.20191206.html"),
                         EffectiveDate = this.DefaultSeedDate,
                         CreatedBy = UserId.DefaultUser,
@@ -733,7 +733,7 @@ namespace HealthGateway.Database.Context
                     new LegalAgreement // Updated Terms of Service for Notes feature
                     {
                         Id = Guid.Parse("ec438d12-f8e2-4719-8444-28e35d34674c"),
-                        LegalAgreementCode = LegalAgreementType.TermsofService,
+                        LegalAgreementCode = LegalAgreementType.TermsOfService,
                         LegalText = ReadResource("HealthGateway.Database.Assets.Legal.TermsOfService.20200317.html"),
                         EffectiveDate = DateTime.ParseExact("03/18/2020", "MM/dd/yyyy", CultureInfo.InvariantCulture),
                         CreatedBy = UserId.DefaultUser,
@@ -744,7 +744,7 @@ namespace HealthGateway.Database.Context
                     new LegalAgreement // Updated Terms of Service for Lab/Covid Update
                     {
                         Id = Guid.Parse("1d94c170-5118-4aa6-ba31-e3e07274ccbd"),
-                        LegalAgreementCode = LegalAgreementType.TermsofService,
+                        LegalAgreementCode = LegalAgreementType.TermsOfService,
                         LegalText = ReadResource("HealthGateway.Database.Assets.Legal.TermsOfService.20200511.html"),
                         EffectiveDate = DateTime.ParseExact("07/31/2020", "MM/dd/yyyy", CultureInfo.InvariantCulture),
                         CreatedBy = UserId.DefaultUser,
@@ -755,7 +755,7 @@ namespace HealthGateway.Database.Context
                     new LegalAgreement // Updated Terms of Service for Dependents
                     {
                         Id = Guid.Parse("c99fd839-b4a2-40f9-b103-529efccd0dcd"),
-                        LegalAgreementCode = LegalAgreementType.TermsofService,
+                        LegalAgreementCode = LegalAgreementType.TermsOfService,
                         LegalText = ReadResource("HealthGateway.Database.Assets.Legal.TermsOfService.20201224.html"),
                         EffectiveDate = DateTime.ParseExact("01/07/2021", "MM/dd/yyyy", CultureInfo.InvariantCulture),
                         CreatedBy = UserId.DefaultUser,
@@ -766,7 +766,7 @@ namespace HealthGateway.Database.Context
                     new LegalAgreement // Updated Terms of Service Fix Contact
                     {
                         Id = Guid.Parse("eafeee76-8a64-49ee-81ba-ddfe2c01deb8"),
-                        LegalAgreementCode = LegalAgreementType.TermsofService,
+                        LegalAgreementCode = LegalAgreementType.TermsOfService,
                         LegalText = ReadResource("HealthGateway.Database.Assets.Legal.TermsOfService.20220519.html"),
                         EffectiveDate = DateTime.ParseExact("05/19/2022 Z", "MM/dd/yyyy K", CultureInfo.InvariantCulture).ToUniversalTime(),
                         CreatedBy = UserId.DefaultUser,
@@ -777,7 +777,7 @@ namespace HealthGateway.Database.Context
                     new LegalAgreement // Revamped Terms of Service
                     {
                         Id = Guid.Parse("2fab66e7-37c9-4b03-ba25-e8fad604dc7f"),
-                        LegalAgreementCode = LegalAgreementType.TermsofService,
+                        LegalAgreementCode = LegalAgreementType.TermsOfService,
                         LegalText = ReadResource("HealthGateway.Database.Assets.Legal.TermsOfService.20220607.html"),
                         EffectiveDate = DateTime.ParseExact("06/07/2022 Z", "MM/dd/yyyy K", CultureInfo.InvariantCulture).ToUniversalTime(),
                         CreatedBy = UserId.DefaultUser,
@@ -806,7 +806,7 @@ namespace HealthGateway.Database.Context
                     },
                     new MessagingVerificationTypeCode
                     {
-                        MessagingVerificationCode = MessagingVerificationType.SMS,
+                        MessagingVerificationCode = MessagingVerificationType.Sms,
                         Description = "SMS Verification Type Code",
                         CreatedBy = UserId.DefaultUser,
                         CreatedDateTime = this.DefaultSeedDate,
@@ -919,7 +919,7 @@ namespace HealthGateway.Database.Context
                 .HasData(
                     new ResourceDelegateReasonCode
                     {
-                        ReasonTypeCode = ResourceDelegateReason.COVIDLab,
+                        ReasonTypeCode = ResourceDelegateReason.CovidLab,
                         Description = "Resource Delegation for Covid Laboratory",
                         CreatedBy = UserId.DefaultUser,
                         CreatedDateTime = this.DefaultSeedDate,

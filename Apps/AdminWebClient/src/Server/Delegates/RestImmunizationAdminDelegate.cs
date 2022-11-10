@@ -16,7 +16,9 @@
 namespace HealthGateway.Admin.Delegates
 {
     using System;
+    using System.Collections.Generic;
     using System.Diagnostics;
+    using System.Diagnostics.CodeAnalysis;
     using System.Globalization;
     using System.Net;
     using System.Net.Http;
@@ -25,9 +27,9 @@ namespace HealthGateway.Admin.Delegates
     using System.Text;
     using System.Text.Json;
     using System.Threading.Tasks;
+    using AutoMapper;
     using HealthGateway.Admin.Models.CovidSupport;
     using HealthGateway.Admin.Models.Immunization;
-    using HealthGateway.Admin.Parsers.Immunization;
     using HealthGateway.Common.Data.Constants;
     using HealthGateway.Common.Data.ViewModels;
     using HealthGateway.Common.ErrorHandling;
@@ -43,10 +45,11 @@ namespace HealthGateway.Admin.Delegates
     public class RestImmunizationAdminDelegate : IImmunizationAdminDelegate
     {
         private const string PhsaConfigSectionKey = "PHSA";
-        private readonly ILogger logger;
+        private readonly IMapper autoMapper;
         private readonly IHttpClientService httpClientService;
-        private readonly PhsaConfig phsaConfig;
         private readonly IHttpContextAccessor httpContextAccessor;
+        private readonly ILogger logger;
+        private readonly PhsaConfig phsaConfig;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="RestImmunizationAdminDelegate"/> class.
@@ -55,20 +58,23 @@ namespace HealthGateway.Admin.Delegates
         /// <param name="httpClientService">The injected http client service.</param>
         /// <param name="configuration">The injected configuration provider.</param>
         /// <param name="httpContextAccessor">The Http Context accessor.</param>
+        /// <param name="autoMapper">The injected automapper provider.</param>
         public RestImmunizationAdminDelegate(
             ILogger<RestImmunizationAdminDelegate> logger,
             IHttpClientService httpClientService,
             IConfiguration configuration,
-            IHttpContextAccessor httpContextAccessor)
+            IHttpContextAccessor httpContextAccessor,
+            IMapper autoMapper)
         {
             this.logger = logger;
             this.httpClientService = httpClientService;
             this.httpContextAccessor = httpContextAccessor;
+            this.autoMapper = autoMapper;
             this.phsaConfig = new PhsaConfig();
             configuration.Bind(PhsaConfigSectionKey, this.phsaConfig);
         }
 
-        private static ActivitySource Source { get; } = new ActivitySource(nameof(RestImmunizationAdminDelegate));
+        private static ActivitySource Source { get; } = new(nameof(RestImmunizationAdminDelegate));
 
         /// <inheritdoc/>
         public async Task<RequestResult<VaccineDetails>> GetVaccineDetailsWithRetries(PatientModel patient, bool refresh)
@@ -97,7 +103,7 @@ namespace HealthGateway.Admin.Delegates
             if (response.ResultStatus == ResultType.Success && response.ResourcePayload != null)
             {
                 VaccineDetails vaccineDetails = new(
-                    VaccineDoseParser.FromPHSAModelList(response.ResourcePayload.Result?.Doses),
+                    this.autoMapper.Map<IEnumerable<VaccineDoseResponse>, IList<VaccineDose>>(response.ResourcePayload.Result?.Doses),
                     response.ResourcePayload.Result?.VaccineStatusResult)
                 {
                     Blocked = response.ResourcePayload.Result?.Blocked ?? false,
@@ -135,12 +141,12 @@ namespace HealthGateway.Admin.Delegates
         /// <returns>The wrapped vaccine details response.</returns>
         private async Task<RequestResult<PhsaResult<VaccineDetailsResponse>>> GetVaccineDetailsResponse(PatientModel patient, bool refresh)
         {
-            using Activity? activity = Source.StartActivity("GetVaccineDetails");
+            using Activity? activity = Source.StartActivity();
             this.logger.LogDebug("Getting vaccine details...");
             RequestResult<PhsaResult<VaccineDetailsResponse>> retVal;
             if (!string.IsNullOrEmpty(patient.PersonalHealthNumber) && patient.Birthdate != DateTime.MinValue)
             {
-                CovidImmunizationsRequest requestContent = new CovidImmunizationsRequest()
+                CovidImmunizationsRequest requestContent = new()
                 {
                     PersonalHealthNumber = patient.PersonalHealthNumber,
                     IgnoreCache = refresh,
@@ -148,14 +154,14 @@ namespace HealthGateway.Admin.Delegates
                 Uri endpoint = new($"{this.phsaConfig.BaseUrl}{this.phsaConfig.ImmunizationEndpoint}/VaccineValidationDetails");
                 using StringContent httpContent = new(JsonSerializer.Serialize(requestContent), Encoding.UTF8, "application/json");
                 retVal = await this.CallEndpoint<VaccineDetailsResponse>(endpoint, httpContent).ConfigureAwait(true);
-                this.logger.LogDebug($"Finished getting vaccine details");
+                this.logger.LogDebug("Finished getting vaccine details");
             }
             else
             {
                 retVal = new()
                 {
                     ResultStatus = ResultType.Error,
-                    ResultError = new RequestResultError()
+                    ResultError = new RequestResultError
                     {
                         ResultMessage = $"Patient PHN ({patient.PersonalHealthNumber}) or DOB ({patient.Birthdate}) Invalid",
                         ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.PHSA),
@@ -166,7 +172,7 @@ namespace HealthGateway.Admin.Delegates
             return retVal;
         }
 
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1031:Do not catch general exception types", Justification = "<Team Decision>")]
+        [SuppressMessage("Design", "CA1031:Do not catch general exception types", Justification = "<Team Decision>")]
         private async Task<RequestResult<PhsaResult<T>>> CallEndpoint<T>(Uri endpoint, StringContent content)
         {
             HttpContext? httpContext = this.httpContextAccessor.HttpContext;
@@ -183,7 +189,7 @@ namespace HealthGateway.Admin.Delegates
 
                     try
                     {
-                        using Activity? activity = Source.StartActivity("Communicating with PHSA");
+                        using Activity? activity = Source.StartActivity();
                         using HttpClient client = this.httpClientService.CreateDefaultHttpClient();
                         client.DefaultRequestHeaders.Accept.Clear();
                         client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("bearer", bearerToken);
@@ -207,7 +213,8 @@ namespace HealthGateway.Admin.Delegates
                                 }
                                 else
                                 {
-                                    retVal.ResultError = new RequestResultError() { ResultMessage = "Error with JSON data", ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.PHSA) };
+                                    retVal.ResultError = new RequestResultError
+                                        { ResultMessage = "Error with JSON data", ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.PHSA) };
                                 }
 
                                 break;
@@ -218,17 +225,26 @@ namespace HealthGateway.Admin.Delegates
                                 retVal.PageSize = int.Parse(this.phsaConfig.FetchSize, CultureInfo.InvariantCulture);
                                 break;
                             case HttpStatusCode.Forbidden:
-                                retVal.ResultError = new RequestResultError() { ResultMessage = $"DID Claim is missing or can not resolve PHN, HTTP Error {response.StatusCode}", ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.PHSA) };
+                                retVal.ResultError = new RequestResultError
+                                {
+                                    ResultMessage = $"DID Claim is missing or can not resolve PHN, HTTP Error {response.StatusCode}",
+                                    ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.PHSA),
+                                };
                                 break;
                             default:
-                                retVal.ResultError = new RequestResultError() { ResultMessage = $"Unable to connect to Immunizations Endpoint, HTTP Error {response.StatusCode}", ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.PHSA) };
+                                retVal.ResultError = new RequestResultError
+                                {
+                                    ResultMessage = $"Unable to connect to Immunizations Endpoint, HTTP Error {response.StatusCode}",
+                                    ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.PHSA),
+                                };
                                 this.logger.LogError("Unable to connect to endpoint {Endpoint}, HTTP Error {StatusCode}\\n{Payload}", endpoint, response.StatusCode, payload);
                                 break;
                         }
                     }
                     catch (Exception e)
                     {
-                        retVal.ResultError = new RequestResultError() { ResultMessage = $"Exception getting Immunization data: {e}", ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.PHSA) };
+                        retVal.ResultError = new RequestResultError
+                            { ResultMessage = $"Exception getting Immunization data: {e}", ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.PHSA) };
                         this.logger.LogError("Unexpected exception retrieving Immunization data {Exception}", e);
                     }
 
@@ -236,7 +252,7 @@ namespace HealthGateway.Admin.Delegates
                 }
             }
 
-            return new RequestResult<PhsaResult<T>>()
+            return new RequestResult<PhsaResult<T>>
             {
                 ResultStatus = ResultType.Error,
                 ResultError = new()

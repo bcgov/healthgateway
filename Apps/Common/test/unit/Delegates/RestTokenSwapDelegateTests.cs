@@ -16,6 +16,7 @@
 namespace HealthGateway.CommonTests.Delegates
 {
     using System.Collections.Generic;
+    using System.Linq;
     using System.Net;
     using System.Net.Http;
     using HealthGateway.Common.Api;
@@ -113,7 +114,7 @@ namespace HealthGateway.CommonTests.Delegates
 
         private static IConfigurationRoot GetIConfigurationRoot()
         {
-            Dictionary<string, string> configuration = new()
+            Dictionary<string, string?> configuration = new()
             {
                 { "TokenSwap:BaseUrl", "http://localhost" },
                 { "TokenSwap:ClientId", "healthgateway" },
@@ -122,7 +123,7 @@ namespace HealthGateway.CommonTests.Delegates
             };
 
             return new ConfigurationBuilder()
-                .AddInMemoryCollection(configuration)
+                .AddInMemoryCollection(configuration.ToList<KeyValuePair<string, string?>>())
                 .Build();
         }
 

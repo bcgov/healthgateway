@@ -52,7 +52,8 @@ namespace HealthGateway.Database.Models
         /// </summary>
         [MaxLength(15)]
         [Required]
-        public string? ClientIP { get; set; }
+        [Column("ClientIP")]
+        public string? ClientIp { get; set; }
 
         /// <summary>
         /// Gets or sets the application specific subject identifer.

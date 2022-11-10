@@ -20,22 +20,23 @@ namespace HealthGateway.Immunization.Test.Services
     using System.Globalization;
     using System.Security.Claims;
     using System.Threading.Tasks;
+    using AutoMapper;
     using DeepEqual.Syntax;
     using HealthGateway.Common.AccessManagement.Authentication;
     using HealthGateway.Common.AccessManagement.Authentication.Models;
-    using HealthGateway.Common.Constants;
     using HealthGateway.Common.Constants.PHSA;
     using HealthGateway.Common.Data.Constants;
-    using HealthGateway.Common.Data.Models.ErrorHandling;
+    using HealthGateway.Common.Data.ErrorHandling;
     using HealthGateway.Common.Data.ViewModels;
     using HealthGateway.Common.Delegates.PHSA;
     using HealthGateway.Common.Models.PHSA;
+    using HealthGateway.Immunization.Models;
     using HealthGateway.Immunization.Services;
+    using HealthGateway.ImmunizationTests.Utils;
     using Microsoft.AspNetCore.Authentication;
     using Microsoft.AspNetCore.Authentication.JwtBearer;
     using Microsoft.AspNetCore.Http;
     using Microsoft.Extensions.Configuration;
-    using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Logging;
     using Moq;
     using Xunit;
@@ -45,6 +46,7 @@ namespace HealthGateway.Immunization.Test.Services
     /// </summary>
     public class VaccineStatusServiceTests
     {
+        private readonly IMapper autoMapper = MapperUtil.InitializeAutoMapper();
         private readonly string phn = "9735353315";
         private readonly DateTime dob = new(1967, 06, 02);
         private readonly DateTime dov = new(2021, 07, 04);
@@ -71,10 +73,11 @@ namespace HealthGateway.Immunization.Test.Services
             RequestResult<PhsaResult<VaccineStatusResult>> delegateResult = new()
             {
                 ResultStatus = ResultType.Success,
-                ResourcePayload = new PhsaResult<VaccineStatusResult>()
+                ResourcePayload = new PhsaResult<VaccineStatusResult>
                 {
-                    LoadState = new PhsaLoadState() { RefreshInProgress = false, BackOffMilliseconds = 500 },
-                    Result = new VaccineStatusResult()
+                    LoadState = new PhsaLoadState
+                        { RefreshInProgress = false, BackOffMilliseconds = 500 },
+                    Result = new VaccineStatusResult
                     {
                         FirstName = "Bob",
                         LastName = "Test",
@@ -92,7 +95,7 @@ namespace HealthGateway.Immunization.Test.Services
             RequestResult<VaccineStatus> expectedResult = new()
             {
                 ResultStatus = delegateResult.ResultStatus,
-                ResourcePayload = new VaccineStatus()
+                ResourcePayload = new VaccineStatus
                 {
                     Loaded = true,
                     RetryIn = 0,
@@ -116,7 +119,8 @@ namespace HealthGateway.Immunization.Test.Services
                 new Mock<ILogger<VaccineStatusService>>().Object,
                 mockAuthDelegate.Object,
                 mockDelegate.Object,
-                this.GetHttpContextAccessor().Object);
+                this.GetHttpContextAccessor().Object,
+                this.autoMapper);
 
             if (isPublicEndpoint)
             {
@@ -135,7 +139,8 @@ namespace HealthGateway.Immunization.Test.Services
         }
 
         /// <summary>
-        /// GetPublicVaccineStatus and GetAuthenticatedVaccineStatus - get the error result when the status indicator is DataMismatch.
+        /// GetPublicVaccineStatus and GetAuthenticatedVaccineStatus - get the error result when the status indicator is
+        /// DataMismatch.
         /// </summary>
         /// <param name="isPublicEndpoint">check to determine if the test is for public or authenticated page.</param>
         [Theory]
@@ -146,10 +151,11 @@ namespace HealthGateway.Immunization.Test.Services
             RequestResult<PhsaResult<VaccineStatusResult>> delegateResult = new()
             {
                 ResultStatus = ResultType.ActionRequired,
-                ResourcePayload = new PhsaResult<VaccineStatusResult>()
+                ResourcePayload = new PhsaResult<VaccineStatusResult>
                 {
-                    LoadState = new PhsaLoadState() { RefreshInProgress = false, BackOffMilliseconds = 500 },
-                    Result = new VaccineStatusResult()
+                    LoadState = new PhsaLoadState
+                        { RefreshInProgress = false, BackOffMilliseconds = 500 },
+                    Result = new VaccineStatusResult
                     {
                         FirstName = "Bob",
                         LastName = "Test",
@@ -166,7 +172,7 @@ namespace HealthGateway.Immunization.Test.Services
             RequestResult<VaccineStatus> expectedResult = new()
             {
                 ResultStatus = delegateResult.ResultStatus,
-                ResourcePayload = new VaccineStatus()
+                ResourcePayload = new VaccineStatus
                 {
                     Loaded = true,
                     RetryIn = 0,
@@ -193,7 +199,8 @@ namespace HealthGateway.Immunization.Test.Services
                 new Mock<ILogger<VaccineStatusService>>().Object,
                 mockAuthDelegate.Object,
                 mockDelegate.Object,
-                this.GetHttpContextAccessor().Object);
+                this.GetHttpContextAccessor().Object,
+                this.autoMapper);
 
             if (isPublicEndpoint)
             {
@@ -226,10 +233,11 @@ namespace HealthGateway.Immunization.Test.Services
             RequestResult<PhsaResult<VaccineStatusResult>> delegateResult = new()
             {
                 ResultStatus = ResultType.ActionRequired,
-                ResourcePayload = new PhsaResult<VaccineStatusResult>()
+                ResourcePayload = new PhsaResult<VaccineStatusResult>
                 {
-                    LoadState = new PhsaLoadState() { RefreshInProgress = true, BackOffMilliseconds = 500 },
-                    Result = new VaccineStatusResult()
+                    LoadState = new PhsaLoadState
+                        { RefreshInProgress = true, BackOffMilliseconds = 500 },
+                    Result = new VaccineStatusResult
                     {
                         FirstName = "Bob",
                         LastName = "Test",
@@ -250,7 +258,7 @@ namespace HealthGateway.Immunization.Test.Services
             RequestResult<VaccineStatus> expectedResult = new()
             {
                 ResultStatus = delegateResult.ResultStatus,
-                ResourcePayload = new VaccineStatus()
+                ResourcePayload = new VaccineStatus
                 {
                     Loaded = true,
                     RetryIn = 10000,
@@ -277,7 +285,8 @@ namespace HealthGateway.Immunization.Test.Services
                 new Mock<ILogger<VaccineStatusService>>().Object,
                 mockAuthDelegate.Object,
                 mockDelegate.Object,
-                this.GetHttpContextAccessor().Object);
+                this.GetHttpContextAccessor().Object,
+                this.autoMapper);
 
             if (isPublicEndpoint)
             {
@@ -312,10 +321,11 @@ namespace HealthGateway.Immunization.Test.Services
             RequestResult<PhsaResult<VaccineStatusResult>> delegateResult = new()
             {
                 ResultStatus = ResultType.ActionRequired,
-                ResourcePayload = new PhsaResult<VaccineStatusResult>()
+                ResourcePayload = new PhsaResult<VaccineStatusResult>
                 {
-                    LoadState = new PhsaLoadState() { RefreshInProgress = false, BackOffMilliseconds = 500 },
-                    Result = new VaccineStatusResult()
+                    LoadState = new PhsaLoadState
+                        { RefreshInProgress = false, BackOffMilliseconds = 500 },
+                    Result = new VaccineStatusResult
                     {
                         FirstName = "Bob",
                         LastName = "Test",
@@ -336,7 +346,7 @@ namespace HealthGateway.Immunization.Test.Services
             RequestResult<VaccineStatus> expectedResult = new()
             {
                 ResultStatus = delegateResult.ResultStatus,
-                ResourcePayload = new VaccineStatus()
+                ResourcePayload = new VaccineStatus
                 {
                     Loaded = true,
                     RetryIn = 0,
@@ -363,7 +373,8 @@ namespace HealthGateway.Immunization.Test.Services
                 new Mock<ILogger<VaccineStatusService>>().Object,
                 mockAuthDelegate.Object,
                 mockDelegate.Object,
-                this.GetHttpContextAccessor().Object);
+                this.GetHttpContextAccessor().Object,
+                this.autoMapper);
 
             if (isPublicEndpoint)
             {
@@ -385,7 +396,8 @@ namespace HealthGateway.Immunization.Test.Services
         }
 
         /// <summary>
-        /// GetPublicVaccineProof and GetAuthenticatedVaccineProof - get the vaccine proof for public and authenticated site (happy path).
+        /// GetPublicVaccineProof and GetAuthenticatedVaccineProof - get the vaccine proof for public and authenticated site (happy
+        /// path).
         /// </summary>
         /// <param name="isPublicEndpoint">check to determine if the test is for public (true) or authenticated (false) page.</param>
         [Theory]
@@ -396,10 +408,11 @@ namespace HealthGateway.Immunization.Test.Services
             RequestResult<PhsaResult<VaccineStatusResult>> delegateResult = new()
             {
                 ResultStatus = ResultType.Success,
-                ResourcePayload = new PhsaResult<VaccineStatusResult>()
+                ResourcePayload = new PhsaResult<VaccineStatusResult>
                 {
-                    LoadState = new PhsaLoadState() { RefreshInProgress = false, BackOffMilliseconds = 500 },
-                    Result = new VaccineStatusResult()
+                    LoadState = new PhsaLoadState
+                        { RefreshInProgress = false, BackOffMilliseconds = 500 },
+                    Result = new VaccineStatusResult
                     {
                         FirstName = "Bob",
                         LastName = "Test",
@@ -422,7 +435,7 @@ namespace HealthGateway.Immunization.Test.Services
             RequestResult<VaccineStatus> expectedResult = new()
             {
                 ResultStatus = delegateResult.ResultStatus,
-                ResourcePayload = new VaccineStatus()
+                ResourcePayload = new VaccineStatus
                 {
                     Loaded = true,
                     RetryIn = 0,
@@ -451,14 +464,15 @@ namespace HealthGateway.Immunization.Test.Services
                 new Mock<ILogger<VaccineStatusService>>().Object,
                 mockAuthDelegate.Object,
                 mockDelegate.Object,
-                this.GetHttpContextAccessor().Object);
+                this.GetHttpContextAccessor().Object,
+                this.autoMapper);
 
             if (isPublicEndpoint)
             {
                 string dobString = this.dob.ToString("yyyy-MM-dd", CultureInfo.CurrentCulture);
                 string dovString = this.dov.ToString("yyyy-MM-dd", CultureInfo.CurrentCulture);
 
-                RequestResult<Models.VaccineProofDocument> actualResultPublic = Task.Run(async () => await service.GetPublicVaccineProof(this.phn, dobString, dovString).ConfigureAwait(true)).Result;
+                RequestResult<VaccineProofDocument> actualResultPublic = Task.Run(async () => await service.GetPublicVaccineProof(this.phn, dobString, dovString).ConfigureAwait(true)).Result;
 
                 Assert.Equal(expectedResult.ResourcePayload.FederalVaccineProof.Data, actualResultPublic.ResourcePayload?.Document.Data);
                 Assert.NotNull(actualResultPublic.ResourcePayload?.Document.Data);
@@ -466,7 +480,7 @@ namespace HealthGateway.Immunization.Test.Services
             }
             else
             {
-                RequestResult<Models.VaccineProofDocument> actualResultAuthenticated = Task.Run(async () => await service.GetAuthenticatedVaccineProof(this.hdid).ConfigureAwait(true)).Result;
+                RequestResult<VaccineProofDocument> actualResultAuthenticated = Task.Run(async () => await service.GetAuthenticatedVaccineProof(this.hdid).ConfigureAwait(true)).Result;
 
                 Assert.Equal(expectedResult.ResourcePayload.FederalVaccineProof.Data, actualResultAuthenticated.ResourcePayload?.Document.Data);
                 Assert.NotNull(actualResultAuthenticated.ResourcePayload?.Document.Data);
@@ -485,7 +499,8 @@ namespace HealthGateway.Immunization.Test.Services
                 new Mock<ILogger<VaccineStatusService>>().Object,
                 new Mock<IAuthenticationDelegate>().Object,
                 new Mock<IVaccineStatusDelegate>().Object,
-                this.GetHttpContextAccessor().Object);
+                this.GetHttpContextAccessor().Object,
+                this.autoMapper);
 
             string dobString = this.dob.ToString("yyyy-MM-dd", CultureInfo.CurrentCulture);
             string dovString = this.dov.ToString("yyyy-MM-dd", CultureInfo.CurrentCulture);
@@ -506,7 +521,8 @@ namespace HealthGateway.Immunization.Test.Services
                 new Mock<ILogger<VaccineStatusService>>().Object,
                 new Mock<IAuthenticationDelegate>().Object,
                 new Mock<IVaccineStatusDelegate>().Object,
-                this.GetHttpContextAccessor().Object);
+                this.GetHttpContextAccessor().Object,
+                this.autoMapper);
 
             string dovString = this.dov.ToString("yyyy-MM-dd", CultureInfo.CurrentCulture);
 
@@ -526,7 +542,8 @@ namespace HealthGateway.Immunization.Test.Services
                 new Mock<ILogger<VaccineStatusService>>().Object,
                 new Mock<IAuthenticationDelegate>().Object,
                 new Mock<IVaccineStatusDelegate>().Object,
-                this.GetHttpContextAccessor().Object);
+                this.GetHttpContextAccessor().Object,
+                this.autoMapper);
 
             string dobString = this.dob.ToString("yyyy-MM-dd", CultureInfo.CurrentCulture);
 
@@ -538,9 +555,9 @@ namespace HealthGateway.Immunization.Test.Services
         private static IConfigurationRoot GetIConfigurationRoot()
         {
             return new ConfigurationBuilder()
-                .AddJsonFile("appsettings.json", optional: true)
-                .AddJsonFile("appsettings.Development.json", optional: true)
-                .AddJsonFile("appsettings.local.json", optional: true)
+                .AddJsonFile("appsettings.json", true)
+                .AddJsonFile("appsettings.Development.json", true)
+                .AddJsonFile("appsettings.local.json", true)
                 .Build();
         }
 
@@ -565,10 +582,11 @@ namespace HealthGateway.Immunization.Test.Services
                 .Setup(x => x.HttpContext!.RequestServices.GetService(typeof(IAuthenticationService)))
                 .Returns(authenticationMock.Object);
             AuthenticateResult authResult = AuthenticateResult.Success(new AuthenticationTicket(claimsPrincipal, JwtBearerDefaults.AuthenticationScheme));
-            authResult.Properties.StoreTokens(new[]
-            {
-                new AuthenticationToken { Name = "access_token", Value = this.accessToken },
-            });
+            authResult.Properties.StoreTokens(
+                new[]
+                {
+                    new AuthenticationToken { Name = "access_token", Value = this.accessToken },
+                });
             authenticationMock
                 .Setup(x => x.AuthenticateAsync(httpContextAccessorMock.Object.HttpContext, It.IsAny<string>()))
                 .ReturnsAsync(authResult);

@@ -20,6 +20,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
+using AutoMapper;
 using HealthGateway.Admin.Server.Models;
 using HealthGateway.Common.AccessManagement.Administration.Models;
 using HealthGateway.Common.AccessManagement.Authentication;
@@ -41,8 +42,9 @@ using Refit;
 public class InactiveUserService : IInactiveUserService
 {
     private const string AuthConfigSectionName = "KeycloakAdmin:Authentication";
-    private readonly IAuthenticationDelegate authDelegate;
     private readonly IAdminUserProfileDelegate adminUserProfileDelegate;
+    private readonly IAuthenticationDelegate authDelegate;
+    private readonly IMapper autoMapper;
     private readonly IKeycloakAdminApi keycloakAdminApi;
     private readonly ILogger logger;
     private readonly ClientCredentialsTokenRequest tokenRequest;
@@ -56,20 +58,24 @@ public class InactiveUserService : IInactiveUserService
     /// <param name="keycloakAdminApi">The keycloak api to access identity access.</param>
     /// <param name="configuration">The configuration to use.</param>
     /// <param name="logger">Injected Logger Provider.</param>
+    /// <param name="autoMapper">The injected automapper provider.</param>
     public InactiveUserService(
         IAuthenticationDelegate authDelegate,
         IAdminUserProfileDelegate adminUserProfileDelegate,
         IKeycloakAdminApi keycloakAdminApi,
         ILogger<InactiveUserService> logger,
-        IConfiguration configuration)
+        IConfiguration configuration,
+        IMapper autoMapper)
     {
         this.authDelegate = authDelegate;
         this.adminUserProfileDelegate = adminUserProfileDelegate;
         this.keycloakAdminApi = keycloakAdminApi;
         this.logger = logger;
+        this.autoMapper = autoMapper;
 
         IConfigurationSection configSection = configuration.GetSection(AuthConfigSectionName);
-        this.tokenUri = configSection.GetValue<Uri>(@"TokenUri");
+        this.tokenUri = configSection.GetValue<Uri>(@"TokenUri") ??
+                        throw new ArgumentNullException(nameof(configuration), $"Configuration missing {AuthConfigSectionName} TokenUri");
 
         this.tokenRequest = new ClientCredentialsTokenRequest();
         configSection.Bind(this.tokenRequest);
@@ -91,15 +97,15 @@ public class InactiveUserService : IInactiveUserService
 
         // Inactive admin user profiles from DB
         TimeSpan timeSpan = new(0, timeOffset, 0);
-        DBResult<IEnumerable<AdminUserProfile>> inactiveProfileResult = this.adminUserProfileDelegate.GetInactiveAdminUserProfiles(inactiveDays, timeSpan);
+        DbResult<IEnumerable<AdminUserProfile>> inactiveProfileResult = this.adminUserProfileDelegate.GetInactiveAdminUserProfiles(inactiveDays, timeSpan);
 
         // Active admin user profiles from DB
-        DBResult<IEnumerable<AdminUserProfile>> activeProfileResult = this.adminUserProfileDelegate.GetActiveAdminUserProfiles(inactiveDays, timeSpan);
+        DbResult<IEnumerable<AdminUserProfile>> activeProfileResult = this.adminUserProfileDelegate.GetActiveAdminUserProfiles(inactiveDays, timeSpan);
 
         // Compare inactive users in DB to users in Keycloak
-        if (inactiveProfileResult.Status == DBStatusCode.Read && activeProfileResult.Status == DBStatusCode.Read)
+        if (inactiveProfileResult.Status == DbStatusCode.Read && activeProfileResult.Status == DbStatusCode.Read)
         {
-            inactiveUsers.AddRange(inactiveProfileResult.Payload.Select(AdminUserProfileView.FromDbModel).ToList());
+            inactiveUsers.AddRange(this.autoMapper.Map<IEnumerable<AdminUserProfile>, IList<AdminUserProfileView>>(inactiveProfileResult.Payload));
             this.logger.LogDebug("Inactive db admin user profile count: {Count} since {InactiveDays} day(s)...", inactiveUsers.Count, inactiveDays);
 
             List<AdminUserProfile> activeUserProfiles = activeProfileResult.Payload.ToList();
@@ -109,11 +115,12 @@ public class InactiveUserService : IInactiveUserService
             try
             {
                 IApiResponse<IEnumerable<UserRepresentation>> adminUsersResult = await this.keycloakAdminApi.GetUsers(nameof(IdentityAccessRole.AdminUser), jwtModel.AccessToken).ConfigureAwait(true);
-                IApiResponse<IEnumerable<UserRepresentation>> supportUsersResult = await this.keycloakAdminApi.GetUsers(nameof(IdentityAccessRole.SupportUser), jwtModel.AccessToken).ConfigureAwait(true);
+                IApiResponse<IEnumerable<UserRepresentation>> supportUsersResult =
+                    await this.keycloakAdminApi.GetUsers(nameof(IdentityAccessRole.SupportUser), jwtModel.AccessToken).ConfigureAwait(true);
 
-                if (adminUsersResult.IsSuccessStatusCode)
+                if (adminUsersResult.IsSuccessStatusCode && adminUsersResult.Content != null)
                 {
-                    List<UserRepresentation> adminUsers = adminUsersResult.Content?.ToList() ?? new();
+                    List<UserRepresentation> adminUsers = adminUsersResult.Content.ToList();
                     this.PopulateUserDetails(inactiveUsers, adminUsers, IdentityAccessRole.AdminUser);
                     this.AddInactiveUser(inactiveUsers, activeUserProfiles, adminUsers, IdentityAccessRole.AdminUser);
                 }
@@ -122,15 +129,15 @@ public class InactiveUserService : IInactiveUserService
                     this.logger.LogError("Error communicating with Keycloak, http status code {Code} {Error}", adminUsersResult.StatusCode, adminUsersResult.Error?.ToString());
                     requestResult.ResultStatus = ResultType.Error;
                     requestResult.ResultError = new RequestResultError
-                        {
-                            ResultMessage = "Error communicating with Keycloak",
-                            ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.Keycloak),
-                        };
+                    {
+                        ResultMessage = "Error communicating with Keycloak",
+                        ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.Keycloak),
+                    };
                 }
 
-                if (supportUsersResult.IsSuccessStatusCode)
+                if (supportUsersResult.IsSuccessStatusCode && supportUsersResult.Content != null)
                 {
-                    List<UserRepresentation> supportUsers = supportUsersResult.Content?.ToList() ?? new();
+                    List<UserRepresentation> supportUsers = supportUsersResult.Content.ToList();
                     this.PopulateUserDetails(inactiveUsers, supportUsers, IdentityAccessRole.SupportUser);
                     this.AddInactiveUser(inactiveUsers, activeUserProfiles, supportUsers, IdentityAccessRole.SupportUser);
                 }
@@ -202,7 +209,8 @@ public class InactiveUserService : IInactiveUserService
 
         foreach (UserRepresentation user in users)
         {
-            AdminUserProfileView adminUserProfile = AdminUserProfileView.FromKeycloakModel(user, role.ToString());
+            AdminUserProfileView adminUserProfile = this.autoMapper.Map<UserRepresentation, AdminUserProfileView>(user);
+            adminUserProfile.RealmRoles = role.ToString();
             inactiveUsers.Add(adminUserProfile);
         }
     }

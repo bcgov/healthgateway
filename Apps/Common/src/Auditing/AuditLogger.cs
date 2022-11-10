@@ -65,7 +65,7 @@ namespace HealthGateway.Common.Auditing
             auditEvent.TransactionName = @$"{routeValues["controller"]}\{routeValues["action"]}";
 
             auditEvent.Trace = context.TraceIdentifier;
-            auditEvent.ClientIP = context.Connection.RemoteIpAddress?.MapToIPv4().ToString() ?? "Unknown";
+            auditEvent.ClientIp = context.Connection.RemoteIpAddress?.MapToIPv4().ToString() ?? "Unknown";
             RouteData routeData = context.GetRouteData();
 
             // Some routes might not have the version
@@ -133,6 +133,7 @@ namespace HealthGateway.Common.Auditing
                 case "ClinicalDocument":
                     return ApplicationType.ClinicalDocument;
                 case "ReSharperTestRunner":
+                case "ReSharperTestRunnerArm64":
                 case "testhost":
                     return ApplicationType.Configuration;
                 default:

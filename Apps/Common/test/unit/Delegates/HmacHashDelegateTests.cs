@@ -18,6 +18,7 @@ namespace HealthGateway.CommonTests.Delegates
     using System;
     using System.Collections.Generic;
     using System.Globalization;
+    using System.Linq;
     using DeepEqual.Syntax;
     using HealthGateway.Common.Delegates;
     using HealthGateway.Common.Models;
@@ -44,7 +45,7 @@ namespace HealthGateway.CommonTests.Delegates
                 SaltLength = 8,
             };
 
-            Dictionary<string, string> myConfiguration = new()
+            Dictionary<string, string?> myConfiguration = new()
             {
                 { "HmacHash:PseudoRandomFunction", expectedConfig.PseudoRandomFunction.ToString() },
                 { "HmacHash:Iterations", expectedConfig.Iterations.ToString(CultureInfo.CurrentCulture) },
@@ -52,7 +53,7 @@ namespace HealthGateway.CommonTests.Delegates
             };
 
             IConfigurationRoot configuration = new ConfigurationBuilder()
-                .AddInMemoryCollection(myConfiguration)
+                .AddInMemoryCollection(myConfiguration.ToList<KeyValuePair<string, string?>>())
                 .Build();
 
             HmacHashDelegate hashDelegate = new(configuration);
@@ -74,10 +75,10 @@ namespace HealthGateway.CommonTests.Delegates
             };
 
             // test empty configuration
-            Dictionary<string, string> myConfiguration = new();
+            Dictionary<string, string?> myConfiguration = new();
 
             IConfigurationRoot configuration = new ConfigurationBuilder()
-                .AddInMemoryCollection(myConfiguration)
+                .AddInMemoryCollection(myConfiguration.ToList<KeyValuePair<string, string?>>())
                 .Build();
 
             HmacHashDelegate hashDelegate = new(configuration);
@@ -92,10 +93,10 @@ namespace HealthGateway.CommonTests.Delegates
         public void VerifyHash()
         {
             // default configuration
-            Dictionary<string, string> myConfiguration = new();
+            Dictionary<string, string?> myConfiguration = new();
 
             IConfigurationRoot configuration = new ConfigurationBuilder()
-                .AddInMemoryCollection(myConfiguration)
+                .AddInMemoryCollection(myConfiguration.ToList<KeyValuePair<string, string?>>())
                 .Build();
 
             HmacHashDelegate hashDelegate = new(configuration);
@@ -155,10 +156,10 @@ namespace HealthGateway.CommonTests.Delegates
             string? valueToHash = null;
 
             // default configuration
-            Dictionary<string, string> myConfiguration = new();
+            Dictionary<string, string?> myConfiguration = new();
 
             IConfigurationRoot configuration = new ConfigurationBuilder()
-                .AddInMemoryCollection(myConfiguration)
+                .AddInMemoryCollection(myConfiguration.ToList<KeyValuePair<string, string?>>())
                 .Build();
 
             HmacHashDelegate hashDelegate = new(configuration);

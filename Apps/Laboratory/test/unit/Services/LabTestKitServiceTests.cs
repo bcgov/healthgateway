@@ -21,8 +21,9 @@ namespace HealthGateway.LaboratoryTests
     using System.Security.Claims;
     using HealthGateway.Common.AccessManagement.Authentication;
     using HealthGateway.Common.Data.Constants;
-    using HealthGateway.Common.Data.Models.ErrorHandling;
+    using HealthGateway.Common.Data.ErrorHandling;
     using HealthGateway.Common.Data.ViewModels;
+    using HealthGateway.Laboratory.Api;
     using HealthGateway.Laboratory.Delegates;
     using HealthGateway.Laboratory.Models.PHSA;
     using HealthGateway.Laboratory.Services;
@@ -228,7 +229,7 @@ namespace HealthGateway.LaboratoryTests
                 .ThrowsAsync(httpRequestException);
 
             Mock<IAuthenticationDelegate> mockAuthDelegate = new();
-            mockAuthDelegate.Setup(s => s.AccessTokenAsUser()).Returns(this.accessToken);
+            mockAuthDelegate.Setup(s => s.AccessTokenAsUser(IAuthenticationDelegate.DefaultAuthConfigSectionName)).Returns(this.accessToken);
 
             LabTestKitService labTestKitService = new(
                 new Mock<ILogger<LabTestKitService>>().Object,
@@ -249,7 +250,7 @@ namespace HealthGateway.LaboratoryTests
             Mock<IAuthenticationDelegate> mockAuthDelegate = new();
             if (!nullToken)
             {
-                mockAuthDelegate.Setup(s => s.AccessTokenAsUser()).Returns(this.accessToken);
+                mockAuthDelegate.Setup(s => s.AccessTokenAsUser(IAuthenticationDelegate.DefaultAuthConfigSectionName)).Returns(this.accessToken);
             }
 
             LabTestKitService labTestKitService = new(

@@ -17,6 +17,7 @@ namespace HealthGateway.AdminWebClientTests.Services.Test
 {
     using System;
     using System.Collections.Generic;
+    using System.Linq;
     using System.Net;
     using System.Net.Http;
     using HealthGateway.Admin.Api;
@@ -25,7 +26,7 @@ namespace HealthGateway.AdminWebClientTests.Services.Test
     using HealthGateway.Admin.Services;
     using HealthGateway.Common.AccessManagement.Authentication;
     using HealthGateway.Common.Data.Constants;
-    using HealthGateway.Common.Data.Models.ErrorHandling;
+    using HealthGateway.Common.Data.ErrorHandling;
     using HealthGateway.Common.Data.ViewModels;
     using HealthGateway.Common.Delegates;
     using HealthGateway.Common.Delegates.PHSA;
@@ -140,7 +141,7 @@ namespace HealthGateway.AdminWebClientTests.Services.Test
 
         private static IConfigurationRoot GetIConfigurationRoot()
         {
-            Dictionary<string, string> myConfiguration = new()
+            Dictionary<string, string?> myConfiguration = new()
             {
                 { "Section:Key", "Value" },
             };
@@ -149,14 +150,14 @@ namespace HealthGateway.AdminWebClientTests.Services.Test
                 .AddJsonFile("appsettings.json", optional: true)
                 .AddJsonFile("appsettings.Development.json", optional: true)
                 .AddJsonFile("appsettings.local.json", optional: true)
-                .AddInMemoryCollection(myConfiguration)
+                .AddInMemoryCollection(myConfiguration.ToList<KeyValuePair<string, string?>>())
                 .Build();
         }
 
         private static ICovidSupportService GetCovidSupportService(HttpClient httpClient)
         {
             Mock<IAuthenticationDelegate> mockAuthDelegate = new();
-            mockAuthDelegate.Setup(s => s.AccessTokenAsUser()).Returns(AccessToken);
+            mockAuthDelegate.Setup(s => s.AccessTokenAsUser(IAuthenticationDelegate.DefaultAuthConfigSectionName)).Returns(AccessToken);
             IImmunizationAdminClient immunizationAdminClient = RestService.For<IImmunizationAdminClient>(httpClient);
             ICovidSupportService mockCovidSupportService = new CovidSupportService(
                 new Mock<ILogger<CovidSupportService>>().Object,
@@ -175,7 +176,7 @@ namespace HealthGateway.AdminWebClientTests.Services.Test
         private static ICovidSupportService GetCovidSupportService(CovidAssessmentResponse response, HttpStatusCode statusCode, bool throwException)
         {
             Mock<IAuthenticationDelegate> mockAuthDelegate = new();
-            mockAuthDelegate.Setup(s => s.AccessTokenAsUser()).Returns(AccessToken);
+            mockAuthDelegate.Setup(s => s.AccessTokenAsUser(IAuthenticationDelegate.DefaultAuthConfigSectionName)).Returns(AccessToken);
 
             Mock<IApiResponse<CovidAssessmentResponse>> mockApiResponse = new();
             mockApiResponse.Setup(s => s.Content).Returns(response);
@@ -212,7 +213,7 @@ namespace HealthGateway.AdminWebClientTests.Services.Test
         private static ICovidSupportService GetCovidSupportService(CovidAssessmentDetailsResponse response, HttpStatusCode statusCode, bool throwException)
         {
             Mock<IAuthenticationDelegate> mockAuthDelegate = new();
-            mockAuthDelegate.Setup(s => s.AccessTokenAsUser()).Returns(AccessToken);
+            mockAuthDelegate.Setup(s => s.AccessTokenAsUser(IAuthenticationDelegate.DefaultAuthConfigSectionName)).Returns(AccessToken);
 
             Mock<IApiResponse<CovidAssessmentDetailsResponse>> mockApiResponse = new();
             mockApiResponse.Setup(s => s.Content).Returns(response);

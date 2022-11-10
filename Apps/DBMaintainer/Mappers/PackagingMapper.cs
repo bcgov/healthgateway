@@ -36,7 +36,7 @@ namespace HealthGateway.DrugMaintainer
             this.Map(m => m.DrugProductId).Convert(row => drugProducts.First(d => d.DrugCode == row.Row.GetField(0)).Id);
 
             // UPC
-            this.Map(m => m.UPC).Index(1);
+            this.Map(m => m.Upc).Index(1);
 
             // PACKAGE_SIZE_UNIT
             this.Map(m => m.PackageSizeUnit).Index(2);

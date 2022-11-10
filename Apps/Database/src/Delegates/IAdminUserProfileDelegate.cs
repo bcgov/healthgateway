@@ -30,7 +30,7 @@ public interface IAdminUserProfileDelegate
     /// </summary>
     /// <param name="username">The unique username key to find.</param>
     /// <returns>A DB result which encapsulates the return object and status.</returns>
-    DBResult<AdminUserProfile> GetAdminUserProfile(string username);
+    DbResult<AdminUserProfile> GetAdminUserProfile(string username);
 
     /// <summary>
     /// Returns Active AdminUserProfile objects from the database.
@@ -38,7 +38,7 @@ public interface IAdminUserProfileDelegate
     /// <param name="activeDays">Users active within the last X days".</param>
     /// <param name="timeOffset">The clients offset to get to UTC.</param>
     /// <returns>An IEnumerable of AdminUserProfile objects wrapped in a DBResult.</returns>
-    DBResult<IEnumerable<AdminUserProfile>> GetActiveAdminUserProfiles(int activeDays, TimeSpan timeOffset);
+    DbResult<IEnumerable<AdminUserProfile>> GetActiveAdminUserProfiles(int activeDays, TimeSpan timeOffset);
 
     /// <summary>
     /// Returns Inactive AdminUserProfile objects from the database.
@@ -46,14 +46,14 @@ public interface IAdminUserProfileDelegate
     /// <param name="inactiveDays">Users inactive for at least X days.</param>
     /// <param name="timeOffset">The clients offset to get to UTC.</param>
     /// <returns>An IEnumerable of AdminUserProfile objects wrapped in a DBResult.</returns>
-    DBResult<IEnumerable<AdminUserProfile>> GetInactiveAdminUserProfiles(int inactiveDays, TimeSpan timeOffset);
+    DbResult<IEnumerable<AdminUserProfile>> GetInactiveAdminUserProfiles(int inactiveDays, TimeSpan timeOffset);
 
     /// <summary>
     /// Creates an AdminUserProfile object in the database.
     /// </summary>
     /// <param name="profile">The profile to create.</param>
     /// <returns>A DB result which encapsulates the return object and status.</returns>
-    DBResult<AdminUserProfile> Add(AdminUserProfile profile);
+    DbResult<AdminUserProfile> Add(AdminUserProfile profile);
 
     /// <summary>
     /// Updates the AdminUserProfile object in the DB.
@@ -63,5 +63,5 @@ public interface IAdminUserProfileDelegate
     /// <param name="profile">The profile to update.</param>
     /// <param name="commit">if true the transaction is persisted immediately.</param>
     /// <returns>A DB result which encapsulates the return object and status.</returns>
-    DBResult<AdminUserProfile> Update(AdminUserProfile profile, bool commit = true);
+    DbResult<AdminUserProfile> Update(AdminUserProfile profile, bool commit = true);
 }

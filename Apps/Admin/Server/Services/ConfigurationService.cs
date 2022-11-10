@@ -32,7 +32,7 @@ namespace HealthGateway.Admin.Server.Services
         public ConfigurationService(IConfiguration configuration)
         {
             this.config = new ExternalConfiguration();
-            this.config = configuration.Get<ExternalConfiguration>();
+            this.config = configuration.Get<ExternalConfiguration>() ?? new();
         }
 
         /// <summary>

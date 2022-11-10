@@ -30,9 +30,8 @@ namespace HealthGateway.Admin.Server.MapUtils
         /// </summary>
         /// <param name="userFeedback">The DB model to convert.</param>
         /// <param name="email">The email address associated with the person who created the feedback.</param>
-        /// <returns>The created UI model.</returns>
         /// <param name="mapper">The AutoMapper IMapper.</param>
-        /// <returns>The UserProfileModel.</returns>
+        /// <returns>The created UI model.</returns>
         public static UserFeedbackView ToUiModel(UserFeedback userFeedback, string email, IMapper mapper)
         {
             UserFeedbackView userFeedbackView = mapper.Map<UserFeedback, UserFeedbackView>(

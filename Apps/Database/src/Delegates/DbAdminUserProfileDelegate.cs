@@ -48,21 +48,21 @@ public class DbAdminUserProfileDelegate : IAdminUserProfileDelegate
     }
 
     /// <inheritdoc/>
-    public DBResult<AdminUserProfile> GetAdminUserProfile(string username)
+    public DbResult<AdminUserProfile> GetAdminUserProfile(string username)
     {
         this.logger.LogTrace("Getting admin user profile from DB with Username: {Username}", username);
-        DBResult<AdminUserProfile> result = new();
+        DbResult<AdminUserProfile> result = new();
         AdminUserProfile? profile = this.dbContext.AdminUserProfile.SingleOrDefault(profile => profile.Username == username);
 
         if (profile != null)
         {
             result.Payload = profile;
-            result.Status = DBStatusCode.Read;
+            result.Status = DbStatusCode.Read;
         }
         else
         {
             this.logger.LogInformation("Unable to find Admin User by Username: {Username}", username);
-            result.Status = DBStatusCode.NotFound;
+            result.Status = DbStatusCode.NotFound;
         }
 
         this.logger.LogTrace("Finished getting admin user profile from DB... {Result}", JsonSerializer.Serialize(result));
@@ -70,11 +70,11 @@ public class DbAdminUserProfileDelegate : IAdminUserProfileDelegate
     }
 
     /// <inheritdoc/>
-    public DBResult<IEnumerable<AdminUserProfile>> GetActiveAdminUserProfiles(int activeDays, TimeSpan timeOffset)
+    public DbResult<IEnumerable<AdminUserProfile>> GetActiveAdminUserProfiles(int activeDays, TimeSpan timeOffset)
     {
         this.logger.LogTrace("Retrieving all the active admin user profiles since {ActiveDays} day(s) ago...", activeDays);
 
-        DBResult<IEnumerable<AdminUserProfile>> result = new()
+        DbResult<IEnumerable<AdminUserProfile>> result = new()
         {
             Payload = this.dbContext.AdminUserProfile
                 .Where(
@@ -82,7 +82,7 @@ public class DbAdminUserProfileDelegate : IAdminUserProfileDelegate
                                GatewayDbContext.DateTrunc("days", DateTime.UtcNow.AddMinutes(timeOffset.TotalMinutes).AddDays(-activeDays)))
                 .OrderByDescending(profile => profile.LastLoginDateTime)
                 .ToList(),
-            Status = DBStatusCode.Read,
+            Status = DbStatusCode.Read,
         };
 
         this.logger.LogTrace("Finished retrieving {Count} active admin user profiles since {ActiveDays} day(s) ago...", result.Payload.Count(), activeDays);
@@ -90,11 +90,11 @@ public class DbAdminUserProfileDelegate : IAdminUserProfileDelegate
     }
 
     /// <inheritdoc/>
-    public DBResult<IEnumerable<AdminUserProfile>> GetInactiveAdminUserProfiles(int inactiveDays, TimeSpan timeOffset)
+    public DbResult<IEnumerable<AdminUserProfile>> GetInactiveAdminUserProfiles(int inactiveDays, TimeSpan timeOffset)
     {
         this.logger.LogTrace("Retrieving all the inactive admin user profiles for the past {InactiveDays} day(s)...", inactiveDays);
 
-        DBResult<IEnumerable<AdminUserProfile>> result = new()
+        DbResult<IEnumerable<AdminUserProfile>> result = new()
         {
             Payload = this.dbContext.AdminUserProfile
                 .Where(
@@ -102,7 +102,7 @@ public class DbAdminUserProfileDelegate : IAdminUserProfileDelegate
                                GatewayDbContext.DateTrunc("days", DateTime.UtcNow.AddMinutes(timeOffset.TotalMinutes).AddDays(-inactiveDays)))
                 .OrderByDescending(profile => profile.LastLoginDateTime)
                 .ToList(),
-            Status = DBStatusCode.Read,
+            Status = DbStatusCode.Read,
         };
 
         this.logger.LogTrace("Finished retrieving {Count} inactive admin user profiles for the past {InactiveDays} day(s)...", result.Payload.Count(), inactiveDays);
@@ -110,20 +110,20 @@ public class DbAdminUserProfileDelegate : IAdminUserProfileDelegate
     }
 
     /// <inheritdoc/>
-    public DBResult<AdminUserProfile> Add(AdminUserProfile profile)
+    public DbResult<AdminUserProfile> Add(AdminUserProfile profile)
     {
         this.logger.LogTrace("Inserting admin user profile to DB... {Profile}", JsonSerializer.Serialize(profile));
-        DBResult<AdminUserProfile> result = new();
+        DbResult<AdminUserProfile> result = new();
         this.dbContext.Add(profile);
         try
         {
             this.dbContext.SaveChanges();
             result.Payload = profile;
-            result.Status = DBStatusCode.Created;
+            result.Status = DbStatusCode.Created;
         }
         catch (DbUpdateException e)
         {
-            result.Status = DBStatusCode.Error;
+            result.Status = DbStatusCode.Error;
             result.Message = e.Message;
         }
 
@@ -132,35 +132,35 @@ public class DbAdminUserProfileDelegate : IAdminUserProfileDelegate
     }
 
     /// <inheritdoc/>
-    public DBResult<AdminUserProfile> Update(AdminUserProfile profile, bool commit = true)
+    public DbResult<AdminUserProfile> Update(AdminUserProfile profile, bool commit = true)
     {
         this.logger.LogTrace("Updating admin user profile in DB... {Profile}", JsonSerializer.Serialize(profile));
-        DBResult<AdminUserProfile> result = this.GetAdminUserProfile(profile.Username);
-        if (result.Status == DBStatusCode.Read)
+        DbResult<AdminUserProfile> result = this.GetAdminUserProfile(profile.Username);
+        if (result.Status == DbStatusCode.Read)
         {
             // Copy certain attributes into the fetched Admin User Profile
             result.Payload.LastLoginDateTime = profile.LastLoginDateTime;
             result.Payload.UpdatedBy = profile.UpdatedBy;
             result.Payload.Version = profile.Version;
-            result.Status = DBStatusCode.Deferred;
+            result.Status = DbStatusCode.Deferred;
 
             if (commit)
             {
                 try
                 {
                     this.dbContext.SaveChanges();
-                    result.Status = DBStatusCode.Updated;
+                    result.Status = DbStatusCode.Updated;
                 }
                 catch (DbUpdateConcurrencyException e)
                 {
                     this.logger.LogError(e, "Unable to update admin user profile to DB...");
-                    result.Status = DBStatusCode.Concurrency;
+                    result.Status = DbStatusCode.Concurrency;
                     result.Message = e.Message;
                 }
                 catch (DbUpdateException e)
                 {
                     this.logger.LogError(e, "Unable to update admin user profile to DB...");
-                    result.Status = DBStatusCode.Error;
+                    result.Status = DbStatusCode.Error;
                     result.Message = e.Message;
                 }
             }

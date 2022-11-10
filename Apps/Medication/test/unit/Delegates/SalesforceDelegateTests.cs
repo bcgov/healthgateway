@@ -63,14 +63,14 @@ namespace HealthGateway.MedicationTests.Delegates
                 Password = "TEST_PASSWORD",
                 Username = "TEST_USERNAME",
             };
-            Dictionary<string, string> configurationParams = new()
+            IEnumerable<KeyValuePair<string, string?>> configurationParams = new List<KeyValuePair<string, string?>>()
             {
-                { "Salesforce:Endpoint", endpoint },
-                { "Salesforce:TokenUri", tokenUri.ToString() },
-                { "Salesforce:ClientAuthentication:ClientId", tokenRequest.ClientId },
-                { "Salesforce:ClientAuthentication:ClientSecret", tokenRequest.ClientSecret },
-                { "Salesforce:ClientAuthentication:Username", tokenRequest.Username },
-                { "Salesforce:ClientAuthentication:Password", tokenRequest.Password },
+                new KeyValuePair<string, string?>("Salesforce:Endpoint", endpoint),
+                new KeyValuePair<string, string?>("Salesforce:TokenUri", tokenUri.ToString()),
+                new KeyValuePair<string, string?>("Salesforce:ClientAuthentication:ClientId", tokenRequest.ClientId),
+                new KeyValuePair<string, string?>("Salesforce:ClientAuthentication:ClientSecret", tokenRequest.ClientSecret),
+                new KeyValuePair<string, string?>("Salesforce:ClientAuthentication:Username", tokenRequest.Username),
+                new KeyValuePair<string, string?>("Salesforce:ClientAuthentication:Password", tokenRequest.Password),
             };
             IConfiguration configuration = CreateConfiguration(configurationParams);
 
@@ -135,14 +135,14 @@ namespace HealthGateway.MedicationTests.Delegates
                 Password = "TEST_PASSWORD",
                 Username = "TEST_USERNAME",
             };
-            Dictionary<string, string> configurationParams = new()
+            IEnumerable<KeyValuePair<string, string?>> configurationParams = new List<KeyValuePair<string, string?>>()
             {
-                { "Salesforce:Endpoint", endpoint },
-                { "Salesforce:TokenUri", tokenUri.ToString() },
-                { "Salesforce:ClientAuthentication:ClientId", tokenRequest.ClientId },
-                { "Salesforce:ClientAuthentication:ClientSecret", tokenRequest.ClientSecret },
-                { "Salesforce:ClientAuthentication:Username", tokenRequest.Username },
-                { "Salesforce:ClientAuthentication:Password", tokenRequest.Password },
+                new KeyValuePair<string, string?>("Salesforce:Endpoint", endpoint),
+                new KeyValuePair<string, string?>("Salesforce:TokenUri", tokenUri.ToString()),
+                new KeyValuePair<string, string?>("Salesforce:ClientAuthentication:ClientId", tokenRequest.ClientId),
+                new KeyValuePair<string, string?>("Salesforce:ClientAuthentication:ClientSecret", tokenRequest.ClientSecret),
+                new KeyValuePair<string, string?>("Salesforce:ClientAuthentication:Username", tokenRequest.Username),
+                new KeyValuePair<string, string?>("Salesforce:ClientAuthentication:Password", tokenRequest.Password),
             };
             IConfiguration configuration = CreateConfiguration(configurationParams);
 
@@ -194,14 +194,14 @@ namespace HealthGateway.MedicationTests.Delegates
                 Password = "TEST_PASSWORD",
                 Username = "TEST_USERNAME",
             };
-            Dictionary<string, string> configurationParams = new()
+            IEnumerable<KeyValuePair<string, string?>> configurationParams = new List<KeyValuePair<string, string?>>()
             {
-                { "Salesforce:Endpoint", endpoint },
-                { "Salesforce:TokenUri", tokenUri.ToString() },
-                { "Salesforce:ClientAuthentication:ClientId", tokenRequest.ClientId },
-                { "Salesforce:ClientAuthentication:ClientSecret", tokenRequest.ClientSecret },
-                { "Salesforce:ClientAuthentication:Username", tokenRequest.Username },
-                { "Salesforce:ClientAuthentication:Password", tokenRequest.Password },
+                new KeyValuePair<string, string?>("Salesforce:Endpoint", endpoint),
+                new KeyValuePair<string, string?>("Salesforce:TokenUri", tokenUri.ToString()),
+                new KeyValuePair<string, string?>("Salesforce:ClientAuthentication:ClientId", tokenRequest.ClientId),
+                new KeyValuePair<string, string?>("Salesforce:ClientAuthentication:ClientSecret", tokenRequest.ClientSecret),
+                new KeyValuePair<string, string?>("Salesforce:ClientAuthentication:Username", tokenRequest.Username),
+                new KeyValuePair<string, string?>("Salesforce:ClientAuthentication:Password", tokenRequest.Password),
             };
             IConfiguration configuration = CreateConfiguration(configurationParams);
 
@@ -264,14 +264,14 @@ namespace HealthGateway.MedicationTests.Delegates
                 Password = "TEST_PASSWORD",
                 Username = "TEST_USERNAME",
             };
-            Dictionary<string, string> configurationParams = new()
+            IEnumerable<KeyValuePair<string, string?>> configurationParams = new List<KeyValuePair<string, string?>>()
             {
-                { "Salesforce:Endpoint", endpoint },
-                { "Salesforce:TokenUri", tokenUri.ToString() },
-                { "Salesforce:ClientAuthentication:ClientId", tokenRequest.ClientId },
-                { "Salesforce:ClientAuthentication:ClientSecret", tokenRequest.ClientSecret },
-                { "Salesforce:ClientAuthentication:Username", tokenRequest.Username },
-                { "Salesforce:ClientAuthentication:Password", tokenRequest.Password },
+                new KeyValuePair<string, string?>("Salesforce:Endpoint", endpoint),
+                new KeyValuePair<string, string?>("Salesforce:TokenUri", tokenUri.ToString()),
+                new KeyValuePair<string, string?>("Salesforce:ClientAuthentication:ClientId", tokenRequest.ClientId),
+                new KeyValuePair<string, string?>("Salesforce:ClientAuthentication:ClientSecret", tokenRequest.ClientSecret),
+                new KeyValuePair<string, string?>("Salesforce:ClientAuthentication:Username", tokenRequest.Username),
+                new KeyValuePair<string, string?>("Salesforce:ClientAuthentication:Password", tokenRequest.Password),
             };
             IConfiguration configuration = CreateConfiguration(configurationParams);
 
@@ -314,7 +314,7 @@ namespace HealthGateway.MedicationTests.Delegates
             Assert.Equal(0, response.TotalResultCount);
         }
 
-        private static IConfiguration CreateConfiguration(Dictionary<string, string> configParams)
+        private static IConfiguration CreateConfiguration(IEnumerable<KeyValuePair<string, string?>> configParams)
         {
             return new ConfigurationBuilder()
                 .AddJsonFile("appsettings.json", true)

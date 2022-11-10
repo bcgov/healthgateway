@@ -13,7 +13,7 @@
 //  See the License for the specific language governing permissions and
 //  limitations under the License.
 // -------------------------------------------------------------------------
-namespace Healthgateway.JobScheduler.Jobs
+namespace HealthGateway.JobScheduler.Jobs
 {
     using Hangfire;
     using HealthGateway.Common.FileDownload;
@@ -38,9 +38,9 @@ namespace Healthgateway.JobScheduler.Jobs
         /// <param name="parser">The file parser.</param>
         /// <param name="downloadService">The download utility.</param>
         /// <param name="configuration">The IConfiguration to use.</param>
-        /// <param name="drugDBContext">The database context to interact with.</param>
-        public ProvincialDrugJob(ILogger<BcpProvDrugDbApp> logger, IPharmaCareDrugParser parser, IFileDownloadService downloadService, IConfiguration configuration, GatewayDbContext drugDBContext)
-            : base(logger, parser, downloadService, configuration, drugDBContext)
+        /// <param name="drugDbContext">The database context to interact with.</param>
+        public ProvincialDrugJob(ILogger<ProvincialDrugJob> logger, IPharmaCareDrugParser parser, IFileDownloadService downloadService, IConfiguration configuration, GatewayDbContext drugDbContext)
+            : base(logger, parser, downloadService, configuration, drugDbContext)
         {
         }
 
