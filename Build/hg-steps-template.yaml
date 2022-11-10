@@ -14,7 +14,7 @@ parameters:
 steps:
   - task: UseDotNet@2
     displayName: 'Use .NET Core sdk'
-    condition: eq(variables['EnableAzure'), True)
+    condition: eq(variables['EnableAzure'], True)
     inputs:
       packageType: sdk
       version: 7.x
