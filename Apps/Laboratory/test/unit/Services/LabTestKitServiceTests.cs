@@ -228,7 +228,7 @@ namespace HealthGateway.LaboratoryTests
                 .ThrowsAsync(httpRequestException);
 
             Mock<IAuthenticationDelegate> mockAuthDelegate = new();
-            mockAuthDelegate.Setup(s => s.AccessTokenAsUser()).Returns(this.accessToken);
+            mockAuthDelegate.Setup(s => s.AccessTokenAsUser(IAuthenticationDelegate.DefaultAuthConfigSectionName)).Returns(this.accessToken);
 
             LabTestKitService labTestKitService = new(
                 new Mock<ILogger<LabTestKitService>>().Object,
@@ -249,7 +249,7 @@ namespace HealthGateway.LaboratoryTests
             Mock<IAuthenticationDelegate> mockAuthDelegate = new();
             if (!nullToken)
             {
-                mockAuthDelegate.Setup(s => s.AccessTokenAsUser()).Returns(this.accessToken);
+                mockAuthDelegate.Setup(s => s.AccessTokenAsUser(IAuthenticationDelegate.DefaultAuthConfigSectionName)).Returns(this.accessToken);
             }
 
             LabTestKitService labTestKitService = new(

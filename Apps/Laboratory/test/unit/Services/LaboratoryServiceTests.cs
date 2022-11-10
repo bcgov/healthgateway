@@ -473,7 +473,7 @@ namespace HealthGateway.LaboratoryTests.Services
         public void ShouldGetCovidTestsWithInvalidPhn()
         {
             Mock<IAuthenticationDelegate> mockAuthDelegate = new();
-            mockAuthDelegate.Setup(s => s.AccessTokenAsUser()).Returns(TOKEN);
+            mockAuthDelegate.Setup(s => s.AccessTokenAsUser(IAuthenticationDelegate.DefaultAuthConfigSectionName)).Returns(TOKEN);
 
             ILaboratoryService service = new LaboratoryService(
                 this.configuration,
@@ -503,7 +503,7 @@ namespace HealthGateway.LaboratoryTests.Services
         public void ShouldGetCovidTestsWithInvalidDateOfBirth(string dateFormat)
         {
             Mock<IAuthenticationDelegate> mockAuthDelegate = new();
-            mockAuthDelegate.Setup(s => s.AccessTokenAsUser()).Returns(TOKEN);
+            mockAuthDelegate.Setup(s => s.AccessTokenAsUser(IAuthenticationDelegate.DefaultAuthConfigSectionName)).Returns(TOKEN);
 
             ILaboratoryService service = new LaboratoryService(
                 this.configuration,
@@ -532,7 +532,7 @@ namespace HealthGateway.LaboratoryTests.Services
         public void ShouldGetCovidTestsWithInvalidCollectionDate(string dateFormat)
         {
             Mock<IAuthenticationDelegate> mockAuthDelegate = new();
-            mockAuthDelegate.Setup(s => s.AccessTokenAsUser()).Returns(TOKEN);
+            mockAuthDelegate.Setup(s => s.AccessTokenAsUser(IAuthenticationDelegate.DefaultAuthConfigSectionName)).Returns(TOKEN);
             ILaboratoryService service = new LaboratoryService(
                 this.configuration,
                 new Mock<ILogger<LaboratoryService>>().Object,

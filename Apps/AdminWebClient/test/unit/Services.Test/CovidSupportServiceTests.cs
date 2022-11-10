@@ -157,7 +157,7 @@ namespace HealthGateway.AdminWebClientTests.Services.Test
         private static ICovidSupportService GetCovidSupportService(HttpClient httpClient)
         {
             Mock<IAuthenticationDelegate> mockAuthDelegate = new();
-            mockAuthDelegate.Setup(s => s.AccessTokenAsUser()).Returns(AccessToken);
+            mockAuthDelegate.Setup(s => s.AccessTokenAsUser(IAuthenticationDelegate.DefaultAuthConfigSectionName)).Returns(AccessToken);
             IImmunizationAdminClient immunizationAdminClient = RestService.For<IImmunizationAdminClient>(httpClient);
             ICovidSupportService mockCovidSupportService = new CovidSupportService(
                 new Mock<ILogger<CovidSupportService>>().Object,
@@ -176,7 +176,7 @@ namespace HealthGateway.AdminWebClientTests.Services.Test
         private static ICovidSupportService GetCovidSupportService(CovidAssessmentResponse response, HttpStatusCode statusCode, bool throwException)
         {
             Mock<IAuthenticationDelegate> mockAuthDelegate = new();
-            mockAuthDelegate.Setup(s => s.AccessTokenAsUser()).Returns(AccessToken);
+            mockAuthDelegate.Setup(s => s.AccessTokenAsUser(IAuthenticationDelegate.DefaultAuthConfigSectionName)).Returns(AccessToken);
 
             Mock<IApiResponse<CovidAssessmentResponse>> mockApiResponse = new();
             mockApiResponse.Setup(s => s.Content).Returns(response);
@@ -213,7 +213,7 @@ namespace HealthGateway.AdminWebClientTests.Services.Test
         private static ICovidSupportService GetCovidSupportService(CovidAssessmentDetailsResponse response, HttpStatusCode statusCode, bool throwException)
         {
             Mock<IAuthenticationDelegate> mockAuthDelegate = new();
-            mockAuthDelegate.Setup(s => s.AccessTokenAsUser()).Returns(AccessToken);
+            mockAuthDelegate.Setup(s => s.AccessTokenAsUser(IAuthenticationDelegate.DefaultAuthConfigSectionName)).Returns(AccessToken);
 
             Mock<IApiResponse<CovidAssessmentDetailsResponse>> mockApiResponse = new();
             mockApiResponse.Setup(s => s.Content).Returns(response);

@@ -34,11 +34,6 @@ namespace HealthGateway.Common.AccessManagement.Authentication
     /// </summary>
     public class AuthenticationDelegate : IAuthenticationDelegate
     {
-        /// <summary>
-        /// The default configuration section to retrieve auth information from.
-        /// </summary>
-        public const string DefaultAuthConfigSectionName = "ClientAuthentication";
-
         private const string CacheConfigSectionName = "AuthCache";
         private readonly ICacheProvider cacheProvider;
         private readonly IConfiguration configuration;
@@ -47,8 +42,6 @@ namespace HealthGateway.Common.AccessManagement.Authentication
 
         private readonly ILogger<IAuthenticationDelegate> logger;
         private readonly int tokenCacheMinutes;
-        private readonly ClientCredentialsTokenRequest tokenRequest;
-        private readonly Uri tokenUri;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="AuthenticationDelegate"/> class.
@@ -73,7 +66,6 @@ namespace HealthGateway.Common.AccessManagement.Authentication
 
             IConfigurationSection? configSection = configuration.GetSection(CacheConfigSectionName);
             this.tokenCacheMinutes = configSection?.GetValue("TokenCacheExpireMinutes", 0) ?? 0;
-            (this.tokenUri, this.tokenRequest) = this.GetConfiguration(DefaultAuthConfigSectionName);
         }
 
         /// <inheritdoc/>
@@ -92,13 +84,7 @@ namespace HealthGateway.Common.AccessManagement.Authentication
         }
 
         /// <inheritdoc/>
-        public string? AccessTokenAsUser()
-        {
-            return this.AccessTokenAsUser(this.tokenUri, this.tokenRequest);
-        }
-
-        /// <inheritdoc/>
-        public string? AccessTokenAsUser(string sectionName)
+        public string? AccessTokenAsUser(string sectionName = IAuthenticationDelegate.DefaultAuthConfigSectionName)
         {
             (Uri tUri, ClientCredentialsTokenRequest tRequest) = this.GetConfiguration(sectionName);
             return this.AccessTokenAsUser(tUri, tRequest);
