@@ -280,7 +280,7 @@ namespace HealthGateway.Admin
             IConfigurationSection section = this.configuration.GetSection("ForwardProxies");
             if (section.GetValue("Enabled", false))
             {
-                basePath = section.GetValue<string>("BasePath");
+                basePath = section.GetValue<string>("BasePath") ?? string.Empty;
             }
 
             this.logger.LogDebug("basePath = {BasePath}", basePath);

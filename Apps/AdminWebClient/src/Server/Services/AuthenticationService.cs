@@ -59,7 +59,7 @@ namespace HealthGateway.Admin.Services
         {
             this.logger = logger;
             this.httpContextAccessor = httpContextAccessor;
-            this.enabledRoles = configuration.GetSection("EnabledRoles").Get<string[]>();
+            this.enabledRoles = configuration.GetSection("EnabledRoles").Get<string[]>() ?? Array.Empty<string>();
             this.profileDelegate = profileDelegate;
         }
 
@@ -77,7 +77,7 @@ namespace HealthGateway.Admin.Services
                 this.logger.LogDebug("Getting Authentication data");
                 authData.User = new UserProfile
                 {
-                    Id = user.FindFirstValue("preferred_username"),
+                    Id = user.FindFirstValue("preferred_username") ?? string.Empty,
                     Name = user.FindFirstValue("name"),
                     Email = user.FindFirstValue(ClaimTypes.Email),
                 };

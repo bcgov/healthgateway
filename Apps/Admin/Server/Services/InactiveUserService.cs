@@ -74,7 +74,8 @@ public class InactiveUserService : IInactiveUserService
         this.autoMapper = autoMapper;
 
         IConfigurationSection configSection = configuration.GetSection(AuthConfigSectionName);
-        this.tokenUri = configSection.GetValue<Uri>(@"TokenUri");
+        this.tokenUri = configSection.GetValue<Uri>(@"TokenUri") ??
+                        throw new ArgumentNullException(nameof(configuration), $"Configuration missing {AuthConfigSectionName} TokenUri");
 
         this.tokenRequest = new ClientCredentialsTokenRequest();
         configSection.Bind(this.tokenRequest);

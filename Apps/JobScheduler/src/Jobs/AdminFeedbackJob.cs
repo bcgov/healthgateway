@@ -62,10 +62,9 @@ namespace Healthgateway.JobScheduler.Jobs
             this.feedBackDelegate = feedBackDelegate;
             this.emailService = emailService;
             IConfigurationSection section = configuration!.GetSection("Smtp");
-            this.host = section.GetValue<string>("Host");
+            this.host = section.GetValue<string>("Host") ?? throw new ArgumentNullException(nameof(configuration), "SMTP Host is null");
             this.port = section.GetValue<int>("Port");
-            section = configuration.GetSection("AdminFeedback");
-            this.adminEmail = section.GetValue<string>("AdminEmail");
+            this.adminEmail = configuration.GetValue<string>("AdminFeedback:AdminEmail") ?? throw new ArgumentNullException(nameof(configuration), "Admin Email is null");
         }
 
         /// <inheritdoc/>

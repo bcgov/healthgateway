@@ -17,6 +17,7 @@ namespace HealthGateway.GatewayApi.Test.Services
 {
     using System;
     using System.Collections.Generic;
+    using System.Linq;
     using System.Threading.Tasks;
     using AutoMapper;
     using HealthGateway.Common.Data.Constants;
@@ -275,7 +276,7 @@ namespace HealthGateway.GatewayApi.Test.Services
                 Payload = userProfile,
                 Status = dbStatus,
             };
-            Dictionary<string, string> localConfig = new()
+            Dictionary<string, string?> localConfig = new()
             {
                 { "WebClient:MinPatientAge", "0" },
                 { "WebClient:RegistrationStatus", registration },
@@ -333,7 +334,7 @@ namespace HealthGateway.GatewayApi.Test.Services
 
             UserProfileModel expected = UserProfileMapUtils.CreateFromDbModel(userProfile, userProfile.TermsOfServiceId, MapperUtil.InitializeAutoMapper());
 
-            Dictionary<string, string> localConfig = new()
+            Dictionary<string, string?> localConfig = new()
             {
                 { "WebClient:MinPatientAge", "0" },
             };
@@ -366,7 +367,7 @@ namespace HealthGateway.GatewayApi.Test.Services
                 Birthdate = DateTime.Now.AddYears(-15),
             };
 
-            Dictionary<string, string> localConfig = new()
+            Dictionary<string, string?> localConfig = new()
             {
                 { "WebClient:MinPatientAge", "19" },
             };
@@ -716,13 +717,13 @@ namespace HealthGateway.GatewayApi.Test.Services
             Assert.Null(actualResult.ResourcePayload?.ClosedDateTime);
         }
 
-        private static IConfigurationRoot GetIConfigurationRoot(Dictionary<string, string>? localConfig)
+        private static IConfigurationRoot GetIConfigurationRoot(Dictionary<string, string?>? localConfig)
         {
-            Dictionary<string, string> myConfiguration = localConfig ?? new();
+            Dictionary<string, string?> myConfiguration = localConfig ?? new();
 
             return new ConfigurationBuilder()
                 .AddJsonFile("UnitTest.json", true)
-                .AddInMemoryCollection(myConfiguration)
+                .AddInMemoryCollection(myConfiguration.ToList<KeyValuePair<string, string?>>())
                 .Build();
         }
     }

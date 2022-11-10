@@ -113,7 +113,7 @@ namespace HealthGateway.GatewayApi.Services
             this.userProfileHistoryRecordLimit = configuration.GetSection(WebClientConfigSection)
                 .GetValue(UserProfileHistoryRecordLimitKey, 4);
             this.registrationStatus = configuration.GetSection(WebClientConfigSection)
-                .GetValue(RegistrationStatusKey, RegistrationStatus.Open);
+                .GetValue<string>(RegistrationStatusKey) ?? RegistrationStatus.Open;
             this.minPatientAge = configuration.GetSection(WebClientConfigSection).GetValue(MinPatientAgeKey, 12);
             this.autoMapper = autoMapper;
         }

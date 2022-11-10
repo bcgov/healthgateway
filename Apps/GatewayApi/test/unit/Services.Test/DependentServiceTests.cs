@@ -17,6 +17,7 @@ namespace HealthGateway.GatewayApi.Test.Services
 {
     using System;
     using System.Collections.Generic;
+    using System.Linq;
     using System.Threading.Tasks;
     using HealthGateway.Common.Constants;
     using HealthGateway.Common.Data.Constants;
@@ -266,15 +267,15 @@ namespace HealthGateway.GatewayApi.Test.Services
             Assert.Equal(ResultType.Success, actualResult.ResultStatus);
         }
 
-        private static IConfigurationRoot GetIConfigurationRoot(Dictionary<string, string>? localConfig)
+        private static IConfigurationRoot GetIConfigurationRoot(Dictionary<string, string?>? localConfig)
         {
-            Dictionary<string, string> myConfiguration = localConfig ?? new();
+            Dictionary<string, string?> myConfiguration = localConfig ?? new();
 
             return new ConfigurationBuilder()
                 .AddJsonFile("appsettings.json", true)
                 .AddJsonFile("appsettings.Development.json", true)
                 .AddJsonFile("appsettings.local.json", true)
-                .AddInMemoryCollection(myConfiguration)
+                .AddInMemoryCollection(myConfiguration.ToList<KeyValuePair<string, string?>>())
                 .Build();
         }
 

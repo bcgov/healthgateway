@@ -37,7 +37,7 @@ namespace HealthGateway.WebClient.Server.Services
         {
             this.logger = logger;
             this.config = new ExternalConfiguration();
-            this.config = configuration.Get<ExternalConfiguration>();
+            this.config = configuration.Get<ExternalConfiguration>() ?? new();
             this.mobileConfig = new MobileConfiguration();
             configuration.Bind("MobileConfiguration", this.mobileConfig);
         }

@@ -127,7 +127,7 @@ namespace HealthGateway.Admin.Client.Pages
             if (QueryHelpers.ParseQuery(uri.Query).TryGetValue(UserQueryType.Hdid.ToString(), out StringValues hdid))
             {
                 this.Dispatcher.Dispatch(new SupportUserActions.LoadAction(UserQueryType.Hdid, StringManipulator.StripWhitespace(hdid)));
-                this.QueryParameter = hdid;
+                this.QueryParameter = hdid!;
                 this.SelectedQueryType = UserQueryType.Hdid;
             }
         }

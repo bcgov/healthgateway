@@ -75,8 +75,9 @@ namespace HealthGateway.Immunization.Services
             this.vaccineStatusDelegate = vaccineStatusDelegate;
             this.autoMapper = autoMapper;
 
-            IConfigurationSection? configSection = configuration?.GetSection(AuthConfigSectionName);
-            this.tokenUri = configSection.GetValue<Uri>(@"TokenUri");
+            IConfigurationSection configSection = configuration.GetSection(AuthConfigSectionName);
+            this.tokenUri = configSection.GetValue<Uri>(@"TokenUri") ??
+                            throw new ArgumentNullException(nameof(configuration), $"{AuthConfigSectionName} does not contain a valid TokenUri");
             this.tokenRequest = new ClientCredentialsTokenRequest();
             configSection.Bind(this.tokenRequest); // Client ID, Client Secret, Audience, Username, Password
 

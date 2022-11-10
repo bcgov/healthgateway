@@ -16,6 +16,7 @@
 namespace HealthGateway.AdminWebClientTests.Services.Test;
 
 using System.Collections.Generic;
+using System.Linq;
 using System.Net;
 using System.Security.Claims;
 using HealthGateway.Database.Constants;
@@ -131,16 +132,16 @@ public class AuthenticationServiceTests
 
     private static IConfigurationRoot GetIConfigurationRoot()
     {
-        Dictionary<string, string> myConfiguration = new()
+        Dictionary<string, string?> myConfiguration = new()
         {
-            { "EnabledRoles", "[ \"AdminUser\", \"AdminReviewer\", \"SupportUser\" ]" },
+            {"EnabledRoles", "[ \"AdminUser\", \"AdminReviewer\", \"SupportUser\" ]"},
         };
 
         return new ConfigurationBuilder()
             .AddJsonFile("appsettings.json", true)
             .AddJsonFile("appsettings.Development.json", true)
             .AddJsonFile("appsettings.local.json", true)
-            .AddInMemoryCollection(myConfiguration)
+            .AddInMemoryCollection(myConfiguration.ToList())
             .Build();
     }
 
@@ -163,7 +164,7 @@ public class AuthenticationServiceTests
 
         IHeaderDictionary headerDictionary = new HeaderDictionary
         {
-            { "Authorization", this.accessToken },
+            {"Authorization", this.accessToken},
         };
         Mock<HttpRequest> httpRequestMock = new();
         httpRequestMock.Setup(s => s.Headers).Returns(headerDictionary);
@@ -185,7 +186,7 @@ public class AuthenticationServiceTests
         authResult.Properties.StoreTokens(
             new[]
             {
-                new AuthenticationToken { Name = "access_token", Value = this.accessToken },
+                new AuthenticationToken {Name = "access_token", Value = this.accessToken},
             });
         authenticationMock
             .Setup(x => x.AuthenticateAsync(httpContextAccessorMock.Object.HttpContext, It.IsAny<string>()))

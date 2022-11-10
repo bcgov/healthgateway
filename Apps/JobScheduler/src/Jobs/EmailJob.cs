@@ -53,7 +53,7 @@ namespace Healthgateway.JobScheduler.Jobs
             this.logger = logger;
             this.emailDelegate = emailDelegate!;
             IConfigurationSection section = configuration!.GetSection("Smtp");
-            this.host = section.GetValue<string>("Host");
+            this.host = section.GetValue<string>("Host") ?? throw new ArgumentNullException(nameof(configuration), "SMTP Host is null");
             this.port = section.GetValue<int>("Port");
             section = configuration.GetSection("EmailJob");
             this.maxRetries = section.GetValue("MaxRetries", 9);
