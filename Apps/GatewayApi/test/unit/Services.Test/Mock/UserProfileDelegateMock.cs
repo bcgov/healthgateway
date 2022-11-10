@@ -57,12 +57,12 @@ namespace HealthGateway.GatewayApiTests.Services.Test.Mock
         /// </summary>
         /// <param name="hdid">hdid.</param>
         /// <param name="userProfile">user profile.</param>
-        /// <param name="userProfileDBResult">user profile from DBResult.</param>
+        /// <param name="userProfileDbResult">user profile from DBResult.</param>
         /// <param name="commit">commit.</param>
-        public UserProfileDelegateMock(string hdid, UserProfile userProfile, DbResult<UserProfile> userProfileDBResult, bool commit = true)
+        public UserProfileDelegateMock(string hdid, UserProfile userProfile, DbResult<UserProfile> userProfileDbResult, bool commit = true)
         {
-            this.Setup(s => s.GetUserProfile(hdid)).Returns(userProfileDBResult);
-            this.Setup(s => s.Update(userProfile, commit)).Returns(userProfileDBResult);
+            this.Setup(s => s.GetUserProfile(hdid)).Returns(userProfileDbResult);
+            this.Setup(s => s.Update(userProfile, commit)).Returns(userProfileDbResult);
         }
     }
 }

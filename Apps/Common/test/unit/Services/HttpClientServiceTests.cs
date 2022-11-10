@@ -44,8 +44,8 @@ namespace HealthGateway.CommonTests.Services
             };
 
             IConfiguration config = new ConfigurationBuilder()
-                                        .AddInMemoryCollection(configDictionary.ToList<KeyValuePair<string, string?>>())
-                                        .Build();
+                .AddInMemoryCollection(configDictionary.ToList())
+                .Build();
             HttpClientService service = new(mockHttpClientFactory.Object, config);
 
             using HttpClient client = service.CreateDefaultHttpClient();

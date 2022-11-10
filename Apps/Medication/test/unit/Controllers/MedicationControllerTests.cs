@@ -13,12 +13,13 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //-------------------------------------------------------------------------
-namespace HealthGateway.Medication.Controllers.Test
+namespace HealthGateway.MedicationTests.Controllers
 {
     using System.Collections.Generic;
     using System.Linq;
     using HealthGateway.Common.Data.ViewModels;
     using HealthGateway.Database.Models;
+    using HealthGateway.Medication.Controllers;
     using HealthGateway.Medication.Models;
     using HealthGateway.Medication.Services;
     using Moq;
@@ -110,7 +111,7 @@ namespace HealthGateway.Medication.Controllers.Test
 
             // Verify
             serviceMock.Verify(s => s.GetMedications(paddedDinList), Times.Once());
-            Assert.True(actual?.ResourcePayload?.Count == 0);
+            Assert.True(actual.ResourcePayload?.Count == 0);
         }
     }
 }

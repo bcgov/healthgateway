@@ -27,7 +27,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test.Mock
     using HealthGateway.Database.Models;
     using HealthGateway.Database.Wrapper;
     using HealthGateway.GatewayApi.Services;
-    using HealthGateway.GatewayApi.Test.Services.Utils;
+    using HealthGateway.GatewayApiTests.Services.Test.Utils;
     using Microsoft.AspNetCore.Http;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.Logging;
@@ -46,7 +46,6 @@ namespace HealthGateway.GatewayApiTests.Services.Test.Mock
         /// Initializes a new instance of the <see cref="UserProfileServiceMock"/> class.
         /// </summary>
         /// <param name="hdId">hdId.</param>
-        /// <param name="dbResultStatus">db result status.</param>
         /// <param name="userProfileData">user profile data.</param>
         /// <param name="userProfileDbResult">user profile from DbResult.</param>
         /// <param name="readResult">read result.</param>
@@ -56,7 +55,6 @@ namespace HealthGateway.GatewayApiTests.Services.Test.Mock
         /// <param name="userProfileHistoryDbResult">user profile history from DbResult.</param>
         public UserProfileServiceMock(
             string hdId,
-            DbStatusCode dbResultStatus,
             UserProfile userProfileData,
             DbResult<UserProfile> userProfileDbResult,
             DbResult<IEnumerable<UserPreference>> readResult,

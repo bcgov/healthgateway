@@ -13,7 +13,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //-------------------------------------------------------------------------
-namespace HealthGateway.GatewayApi.Test.Controllers
+namespace HealthGateway.GatewayApiTests.Controllers.Test
 {
     using System;
     using System.Collections.Generic;
@@ -78,10 +78,10 @@ namespace HealthGateway.GatewayApi.Test.Controllers
             Mock<IDependentService> dependentServiceMock = new();
             DependentModel expectedDependend = new()
             {
-                OwnerId = $"OWNER",
-                DelegateId = $"DELEGATER",
+                OwnerId = "OWNER",
+                DelegateId = "DELEGATER",
                 Version = 1U,
-                DependentInformation = new DependentInformation()
+                DependentInformation = new DependentInformation
                 {
                     DateOfBirth = new DateTime(1980, 1, 1),
                     Gender = "Female",
@@ -171,20 +171,21 @@ namespace HealthGateway.GatewayApi.Test.Controllers
 
             for (int i = 0; i < 10; i++)
             {
-                dependentModels.Add(new DependentModel()
-                {
-                    OwnerId = $"OWNER00{i}",
-                    DelegateId = $"DELEGATER00{i}",
-                    Version = (uint)i,
-                    DependentInformation = new DependentInformation()
+                dependentModels.Add(
+                    new DependentModel
                     {
-                        Phn = $"{dependentModels}-{i}",
-                        DateOfBirth = new DateTime(1980 + i, 1, 1),
-                        Gender = "Female",
-                        FirstName = "first",
-                        LastName = "last-{i}",
-                    },
-                });
+                        OwnerId = $"OWNER00{i}",
+                        DelegateId = $"DELEGATER00{i}",
+                        Version = (uint)i,
+                        DependentInformation = new DependentInformation
+                        {
+                            Phn = $"{dependentModels}-{i}",
+                            DateOfBirth = new DateTime(1980 + i, 1, 1),
+                            Gender = "Female",
+                            FirstName = "first",
+                            LastName = "last-{i}",
+                        },
+                    });
             }
 
             return dependentModels;
@@ -218,10 +219,11 @@ namespace HealthGateway.GatewayApi.Test.Controllers
             httpContextAccessorMock.Setup(s => s.HttpContext).Returns(httpContextMock.Object);
             Mock<IAuthenticationService> authenticationMock = new();
             AuthenticateResult authResult = AuthenticateResult.Success(new AuthenticationTicket(claimsPrincipal, JwtBearerDefaults.AuthenticationScheme));
-            authResult.Properties.StoreTokens(new[]
-            {
-                new AuthenticationToken { Name = "access_token", Value = token },
-            });
+            authResult.Properties.StoreTokens(
+                new[]
+                {
+                    new AuthenticationToken { Name = "access_token", Value = token },
+                });
             authenticationMock
                 .Setup(x => x.AuthenticateAsync(httpContextAccessorMock.Object.HttpContext, It.IsAny<string>()))
                 .ReturnsAsync(authResult);

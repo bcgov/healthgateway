@@ -14,7 +14,7 @@
 //  limitations under the License.
 // -------------------------------------------------------------------------
 
-namespace HealthGateway.GatewayApi.Test.Services.Utils
+namespace HealthGateway.GatewayApiTests.Services.Test.Utils
 {
     using AutoMapper;
     using HealthGateway.Common.MapProfiles;
@@ -22,7 +22,7 @@ namespace HealthGateway.GatewayApi.Test.Services.Utils
 
     /// <summary>
     /// Static utility class to provide a fully initialized AutoMapper.
-    /// NOTE:  Any newly added profiles will have to be registered.
+    /// NOTE: Any newly added profiles will have to be registered.
     /// </summary>
     public static class MapperUtil
     {
