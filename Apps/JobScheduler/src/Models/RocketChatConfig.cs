@@ -37,6 +37,6 @@ namespace HealthGateway.JobScheduler.Models
         /// <summary>
         /// Gets or sets the webhook URL to post the message to.
         /// </summary>
-        public Uri? WebHookURL { get; set; }
+        public Uri? WebHookUrl { get; set; }
     }
 }

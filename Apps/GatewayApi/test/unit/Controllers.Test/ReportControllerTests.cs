@@ -41,7 +41,7 @@ namespace HealthGateway.GatewayApi.Test.Controllers
             {
                 Data = default,
                 Template = TemplateType.Medication,
-                Type = ReportFormatType.PDF,
+                Type = ReportFormatType.Pdf,
             };
 
             RequestResult<ReportModel> expectedResult = new()

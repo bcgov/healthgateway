@@ -175,7 +175,7 @@ namespace HealthGateway.JobScheduler
                 });
 
             // Schedule Health Gateway Jobs
-            BackgroundJob.Enqueue<DBMigrationsJob>(j => j.Migrate());
+            BackgroundJob.Enqueue<DbMigrationsJob>(j => j.Migrate());
             SchedulerHelper.ScheduleJob<IEmailJob>(this.configuration, "SendLowPriorityEmail", j => j.SendLowPriorityEmails());
             SchedulerHelper.ScheduleJob<IEmailJob>(this.configuration, "SendStandardPriorityEmail", j => j.SendStandardPriorityEmails());
             SchedulerHelper.ScheduleJob<IEmailJob>(this.configuration, "SendHighPriorityEmail", j => j.SendHighPriorityEmails());

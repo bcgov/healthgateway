@@ -77,7 +77,7 @@ namespace HealthGateway.GatewayApi
             services.AddTransient<INoteService, NoteService>();
             services.AddTransient<ICommentService, CommentService>();
             services.AddTransient<ICommunicationService, CommunicationService>();
-            services.AddTransient<IUserSMSService, UserSMSService>();
+            services.AddTransient<IUserSmsService, UserSmsService>();
             services.AddTransient<INotificationSettingsService, NotificationSettingsService>();
             services.AddTransient<IDependentService, DependentService>();
             services.AddTransient<IUserPreferenceDelegate, DbUserPreferenceDelegate>();

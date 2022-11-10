@@ -70,7 +70,7 @@ namespace HealthGateway.GatewayApi.Test.Services
             // Validate masked PHN
             foreach (DependentModel model in actualResult.ResourcePayload!)
             {
-                Assert.Equal(model.DependentInformation.PHN, this.mockPHN);
+                Assert.Equal(model.DependentInformation.Phn, this.mockPHN);
             }
         }
 
@@ -365,7 +365,7 @@ namespace HealthGateway.GatewayApi.Test.Services
                 ResultStatus = ResultType.Success,
                 ResourcePayload = this.mockHdId,
             };
-            if (addDependentRequest.PHN.Equals(this.mockPHN, StringComparison.Ordinal))
+            if (addDependentRequest.Phn.Equals(this.mockPHN, StringComparison.Ordinal))
             {
                 // Test Scenario - Happy Path: HiId found for the mockPHN
                 patientHdIdResult.ResultStatus = ResultType.Success;
@@ -430,7 +430,7 @@ namespace HealthGateway.GatewayApi.Test.Services
         {
             return new AddDependentRequest
             {
-                PHN = this.mockPHN,
+                Phn = this.mockPHN,
                 FirstName = this.mockFirstName,
                 LastName = this.mockLastName,
                 DateOfBirth = this.mockDateOfBirth,

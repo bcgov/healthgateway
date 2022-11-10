@@ -42,7 +42,7 @@ namespace HealthGateway.Immunization.Services
     /// </summary>
     public class VaccineStatusService : IVaccineStatusService
     {
-        private const string PHSAConfigSectionKey = "PHSA";
+        private const string PhsaConfigSectionKey = "PHSA";
         private const string AuthConfigSectionName = "ClientAuthentication";
         private readonly IAuthenticationDelegate authDelegate;
         private readonly IHttpContextAccessor httpContextAccessor;
@@ -82,7 +82,7 @@ namespace HealthGateway.Immunization.Services
             configSection.Bind(this.tokenRequest); // Client ID, Client Secret, Audience, Username, Password
 
             this.phsaConfig = new();
-            configuration.Bind(PHSAConfigSectionKey, this.phsaConfig);
+            configuration.Bind(PhsaConfigSectionKey, this.phsaConfig);
 
             this.httpContextAccessor = httpContextAccessor;
             this.logger = logger;
@@ -120,7 +120,7 @@ namespace HealthGateway.Immunization.Services
                     Loaded = payload.Loaded,
                     RetryIn = payload.RetryIn,
                     Document = payload.FederalVaccineProof ?? new(),
-                    QRCode = payload.QRCode,
+                    QrCode = payload.QrCode,
                 },
             };
 
@@ -163,7 +163,7 @@ namespace HealthGateway.Immunization.Services
                     Loaded = payload.Loaded,
                     RetryIn = payload.RetryIn,
                     Document = payload.FederalVaccineProof ?? new(),
-                    QRCode = payload.QRCode,
+                    QrCode = payload.QrCode,
                 },
             };
 

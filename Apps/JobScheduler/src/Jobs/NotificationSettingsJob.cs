@@ -77,12 +77,12 @@ namespace HealthGateway.JobScheduler.Jobs
 
         /// <inheritdoc/>
         [DisableConcurrentExecution(ConcurrencyTimeout)]
-        public void PushNotificationSettings(string notificationSettingsJSON)
+        public void PushNotificationSettings(string notificationSettingsJson)
         {
             this.logger.LogDebug("Queueing Notification Settings push to PHSA...");
             if (this.jobEnabled)
             {
-                NotificationSettingsRequest? notificationSettings = JsonSerializer.Deserialize<NotificationSettingsRequest>(notificationSettingsJSON);
+                NotificationSettingsRequest? notificationSettings = JsonSerializer.Deserialize<NotificationSettingsRequest>(notificationSettingsJson);
                 if (notificationSettings != null)
                 {
                     string? accessToken = this.authDelegate.AuthenticateAsUser(this.tokenUri, this.tokenRequest).AccessToken;

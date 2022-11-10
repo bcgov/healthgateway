@@ -63,7 +63,7 @@ namespace HealthGateway.GatewayApi.Services
         private readonly IUserPreferenceDelegate userPreferenceDelegate;
         private readonly IUserProfileDelegate userProfileDelegate;
         private readonly int userProfileHistoryRecordLimit;
-        private readonly IUserSMSService userSMSService;
+        private readonly IUserSmsService userSmsService;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="UserProfileService"/> class.
@@ -71,7 +71,7 @@ namespace HealthGateway.GatewayApi.Services
         /// <param name="logger">Injected Logger Provider.</param>
         /// <param name="patientService">The patient service.</param>
         /// <param name="userEmailService">The User Email service.</param>
-        /// <param name="userSMSService">The User SMS service.</param>
+        /// <param name="userSmsService">The User SMS service.</param>
         /// <param name="emailQueueService">The email service to queue emails.</param>
         /// <param name="notificationSettingsService">The Notifications Settings service.</param>
         /// <param name="userProfileDelegate">The profile delegate to interact with the DB.</param>
@@ -86,7 +86,7 @@ namespace HealthGateway.GatewayApi.Services
             ILogger<UserProfileService> logger,
             IPatientService patientService,
             IUserEmailService userEmailService,
-            IUserSMSService userSMSService,
+            IUserSmsService userSmsService,
             IEmailQueueService emailQueueService,
             INotificationSettingsService notificationSettingsService,
             IUserProfileDelegate userProfileDelegate,
@@ -101,7 +101,7 @@ namespace HealthGateway.GatewayApi.Services
             this.logger = logger;
             this.patientService = patientService;
             this.userEmailService = userEmailService;
-            this.userSMSService = userSMSService;
+            this.userSmsService = userSmsService;
             this.emailQueueService = emailQueueService;
             this.notificationSettingsService = notificationSettingsService;
             this.userProfileDelegate = userProfileDelegate;
@@ -261,13 +261,13 @@ namespace HealthGateway.GatewayApi.Services
             if (insertResult.Status == DbStatusCode.Created)
             {
                 UserProfile dbModel = insertResult.Payload;
-                string? requestedSMSNumber = createProfileRequest.Profile.SmsNumber;
+                string? requestedSmsNumber = createProfileRequest.Profile.SmsNumber;
                 string? requestedEmail = createProfileRequest.Profile.Email;
 
                 RequestResult<TermsOfServiceModel> termsOfServiceResult = this.GetActiveTermsOfService();
                 UserProfileModel userProfileModel = UserProfileMapUtils.CreateFromDbModel(dbModel, termsOfServiceResult.ResourcePayload?.Id, this.autoMapper);
 
-                NotificationSettingsRequest notificationRequest = new(dbModel, requestedEmail, requestedSMSNumber);
+                NotificationSettingsRequest notificationRequest = new(dbModel, requestedEmail, requestedSmsNumber);
 
                 // Add email verification
                 if (!string.IsNullOrWhiteSpace(requestedEmail))
@@ -279,11 +279,11 @@ namespace HealthGateway.GatewayApi.Services
                 }
 
                 // Add SMS verification
-                if (!string.IsNullOrWhiteSpace(requestedSMSNumber))
+                if (!string.IsNullOrWhiteSpace(requestedSmsNumber))
                 {
-                    MessagingVerification smsVerification = this.userSMSService.CreateUserSMS(hdid, requestedSMSNumber);
+                    MessagingVerification smsVerification = this.userSmsService.CreateUserSms(hdid, requestedSmsNumber);
                     notificationRequest.SMSVerificationCode = smsVerification.SmsValidationCode;
-                    userProfileModel.SmsNumber = requestedSMSNumber;
+                    userProfileModel.SmsNumber = requestedSmsNumber;
                 }
 
                 this.notificationSettingsService.QueueNotificationSettings(notificationRequest);

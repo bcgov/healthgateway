@@ -31,7 +31,7 @@ namespace HealthGateway.GatewayApi.MapProfiles
         {
             this.CreateMap<PatientModel, DependentInformation>()
                 .ForMember(dest => dest.DateOfBirth, opt => opt.MapFrom(src => src.Birthdate))
-                .ForMember(dest => dest.PHN, opt => opt.MapFrom(src => src.PersonalHealthNumber))
+                .ForMember(dest => dest.Phn, opt => opt.MapFrom(src => src.PersonalHealthNumber))
                 .ReverseMap();
         }
     }

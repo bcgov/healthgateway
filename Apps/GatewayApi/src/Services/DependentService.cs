@@ -98,7 +98,7 @@ namespace HealthGateway.GatewayApi.Services
             }
 
             this.logger.LogTrace("Getting dependent details...");
-            RequestResult<PatientModel> patientResult = Task.Run(async () => await this.patientService.GetPatient(addDependentRequest.PHN, PatientIdentifierType.PHN).ConfigureAwait(true)).Result;
+            RequestResult<PatientModel> patientResult = Task.Run(async () => await this.patientService.GetPatient(addDependentRequest.Phn, PatientIdentifierType.PHN).ConfigureAwait(true)).Result;
             if (patientResult.ResultStatus == ResultType.Error)
             {
                 return new RequestResult<DependentModel>
@@ -121,12 +121,12 @@ namespace HealthGateway.GatewayApi.Services
                 };
             }
 
-            this.logger.LogDebug("Finished getting dependent details... {DependentPhn}", addDependentRequest.PHN);
+            this.logger.LogDebug("Finished getting dependent details... {DependentPhn}", addDependentRequest.Phn);
 
             // Verify dependent's details entered by user
             if (patientResult.ResourcePayload == null || !this.ValidateDependent(addDependentRequest, patientResult.ResourcePayload))
             {
-                this.logger.LogDebug("Dependent information does not match request: {DependentPhn}", addDependentRequest.PHN);
+                this.logger.LogDebug("Dependent information does not match request: {DependentPhn}", addDependentRequest.Phn);
                 return new RequestResult<DependentModel>
                 {
                     ResultStatus = ResultType.ActionRequired,
