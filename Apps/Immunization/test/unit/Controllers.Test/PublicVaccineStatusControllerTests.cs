@@ -13,7 +13,7 @@
 //  See the License for the specific language governing permissions and
 //  limitations under the License.
 // -------------------------------------------------------------------------
-namespace HealthGateway.Immunization.Test.Controllers
+namespace HealthGateway.ImmunizationTests.Controllers.Test
 {
     using System;
     using System.Globalization;

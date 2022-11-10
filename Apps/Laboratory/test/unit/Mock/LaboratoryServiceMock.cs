@@ -132,7 +132,7 @@ namespace HealthGateway.LaboratoryTests.Mock
                 .AddJsonFile("appsettings.json", true)
                 .AddJsonFile("appsettings.Development.json", true)
                 .AddJsonFile("appsettings.local.json", true)
-                .AddInMemoryCollection(myConfiguration.ToList<KeyValuePair<string, string?>>())
+                .AddInMemoryCollection(myConfiguration.ToList())
                 .Build();
         }
 

@@ -13,7 +13,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //-------------------------------------------------------------------------
-namespace HealthGateway.Medication.Controllers.Test
+namespace HealthGateway.MedicationTests.Controllers
 {
     using System;
     using System.Collections.Generic;
@@ -22,6 +22,7 @@ namespace HealthGateway.Medication.Controllers.Test
     using DeepEqual.Syntax;
     using HealthGateway.Common.Data.Constants;
     using HealthGateway.Common.Data.ViewModels;
+    using HealthGateway.Medication.Controllers;
     using HealthGateway.Medication.Models;
     using HealthGateway.Medication.Services;
     using Moq;

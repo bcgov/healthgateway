@@ -50,7 +50,7 @@ namespace HealthGateway.WebClientTests.Controllers
                 { key, robotsContent },
             };
             IConfigurationRoot configuration = new ConfigurationBuilder()
-                .AddInMemoryCollection(myConfiguration.ToList<KeyValuePair<string, string?>>())
+                .AddInMemoryCollection(myConfiguration.ToList())
                 .Build();
 
             using RobotsController controller = new(configuration);

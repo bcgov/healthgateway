@@ -13,7 +13,7 @@
 //  See the License for the specific language governing permissions and
 //  limitations under the License.
 // -------------------------------------------------------------------------
-namespace HealthGateway.Immunization.Test.Services
+namespace HealthGateway.ImmunizationTests.Services.Test
 {
     using System;
     using System.Collections.Generic;

@@ -13,7 +13,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //-------------------------------------------------------------------------
-namespace HealthGateway.Medication.Services.Test
+namespace HealthGateway.MedicationTests.Services
 {
     using System;
     using System.Collections.Generic;
@@ -23,6 +23,7 @@ namespace HealthGateway.Medication.Services.Test
     using HealthGateway.Database.Delegates;
     using HealthGateway.Database.Models;
     using HealthGateway.Medication.Models;
+    using HealthGateway.Medication.Services;
     using Microsoft.Extensions.Logging;
     using Moq;
     using Xunit;

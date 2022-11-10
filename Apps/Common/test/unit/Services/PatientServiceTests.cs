@@ -108,7 +108,7 @@ namespace HealthGateway.CommonTests.Services
                 ResultStatus = ResultType.Success,
                 TotalResultCount = 1,
                 PageSize = 1,
-                ResourcePayload = new PatientModel()
+                ResourcePayload = new PatientModel
                 {
                     FirstName = "John",
                     LastName = "Doe",
@@ -118,7 +118,7 @@ namespace HealthGateway.CommonTests.Services
 
             Mock<IClientRegistriesDelegate> patientDelegateMock = new();
             IConfigurationRoot configuration = new ConfigurationBuilder()
-                .AddInMemoryCollection(new Dictionary<string, string?>().ToList<KeyValuePair<string, string?>>())
+                .AddInMemoryCollection(new Dictionary<string, string?>().ToList())
                 .Build();
             patientDelegateMock.Setup(p => p.GetDemographicsByPHNAsync(It.IsAny<string>(), false)).ReturnsAsync(requestResult);
 
@@ -147,7 +147,7 @@ namespace HealthGateway.CommonTests.Services
                 ResultStatus = ResultType.Success,
                 TotalResultCount = 1,
                 PageSize = 1,
-                ResourcePayload = new PatientModel()
+                ResourcePayload = new PatientModel
                 {
                     FirstName = "John",
                     LastName = "Doe",
@@ -157,7 +157,7 @@ namespace HealthGateway.CommonTests.Services
 
             Mock<IClientRegistriesDelegate> patientDelegateMock = new();
             IConfigurationRoot configuration = new ConfigurationBuilder()
-                .AddInMemoryCollection(new Dictionary<string, string?>().ToList<KeyValuePair<string, string?>>())
+                .AddInMemoryCollection(new Dictionary<string, string?>().ToList())
                 .Build();
             patientDelegateMock.Setup(p => p.GetDemographicsByPHNAsync(It.IsAny<string>(), false)).ReturnsAsync(requestResult);
 
@@ -187,7 +187,7 @@ namespace HealthGateway.CommonTests.Services
                 ResultStatus = ResultType.Success,
                 TotalResultCount = 1,
                 PageSize = 1,
-                ResourcePayload = new PatientModel()
+                ResourcePayload = new PatientModel
                 {
                     FirstName = "John",
                     LastName = "Doe",
@@ -197,7 +197,7 @@ namespace HealthGateway.CommonTests.Services
 
             Mock<IClientRegistriesDelegate> patientDelegateMock = new();
             IConfigurationRoot configuration = new ConfigurationBuilder()
-                .AddInMemoryCollection(new Dictionary<string, string?>().ToList<KeyValuePair<string, string?>>())
+                .AddInMemoryCollection(new Dictionary<string, string?>().ToList())
                 .Build();
             patientDelegateMock.Setup(p => p.GetDemographicsByHDIDAsync(It.IsAny<string>(), false)).ReturnsAsync(requestResult);
 
@@ -221,7 +221,7 @@ namespace HealthGateway.CommonTests.Services
                 ResultStatus = ResultType.Success,
                 TotalResultCount = 1,
                 PageSize = 1,
-                ResourcePayload = new PatientModel()
+                ResourcePayload = new PatientModel
                 {
                     FirstName = "John",
                     LastName = "Doe",
@@ -231,7 +231,7 @@ namespace HealthGateway.CommonTests.Services
             };
             Mock<IClientRegistriesDelegate> patientDelegateMock = new();
             IConfigurationRoot config = new ConfigurationBuilder()
-                .AddInMemoryCollection(configDictionary.ToList<KeyValuePair<string, string?>>())
+                .AddInMemoryCollection(configDictionary.ToList())
                 .Build();
 
             patientDelegateMock.Setup(p => p.GetDemographicsByHDIDAsync(It.IsAny<string>(), false)).ReturnsAsync(requestResult);
@@ -257,7 +257,7 @@ namespace HealthGateway.CommonTests.Services
                 ResultStatus = ResultType.Success,
                 TotalResultCount = 1,
                 PageSize = 1,
-                ResourcePayload = new PatientModel()
+                ResourcePayload = new PatientModel
                 {
                     FirstName = "John",
                     LastName = "Doe",
@@ -268,7 +268,7 @@ namespace HealthGateway.CommonTests.Services
 
             Mock<IClientRegistriesDelegate> patientDelegateMock = new();
             IConfigurationRoot config = new ConfigurationBuilder()
-                .AddInMemoryCollection(configDictionary.ToList<KeyValuePair<string, string?>>())
+                .AddInMemoryCollection(configDictionary.ToList())
                 .Build();
 
             patientDelegateMock.Setup(p => p.GetDemographicsByHDIDAsync(It.IsAny<string>(), false)).ReturnsAsync(requestResult);

@@ -13,7 +13,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //-------------------------------------------------------------------------
-namespace HealthGateway.GatewayApi.Test.Controllers
+namespace HealthGateway.GatewayApiTests.Controllers.Test
 {
     using System;
     using System.Collections.Generic;
@@ -28,7 +28,7 @@ namespace HealthGateway.GatewayApi.Test.Controllers
     using HealthGateway.GatewayApi.MapUtils;
     using HealthGateway.GatewayApi.Models;
     using HealthGateway.GatewayApi.Services;
-    using HealthGateway.GatewayApi.Test.Services.Utils;
+    using HealthGateway.GatewayApiTests.Services.Test.Utils;
     using Microsoft.AspNetCore.Authentication;
     using Microsoft.AspNetCore.Authentication.JwtBearer;
     using Microsoft.AspNetCore.Http;
@@ -69,9 +69,9 @@ namespace HealthGateway.GatewayApi.Test.Controllers
             RequestResult<UserProfileModel> actualResult = await this.GetUserProfile(expected, null).ConfigureAwait(true);
 
             Assert.NotNull(actualResult);
-            Assert.Equal(ResultType.Success, actualResult?.ResultStatus);
-            Assert.NotNull(actualResult?.ResourcePayload);
-            Assert.Empty(actualResult?.ResourcePayload?.Preferences);
+            Assert.Equal(ResultType.Success, actualResult.ResultStatus);
+            Assert.NotNull(actualResult.ResourcePayload);
+            Assert.Empty(actualResult.ResourcePayload?.Preferences);
         }
 
         /// <summary>
@@ -200,7 +200,7 @@ namespace HealthGateway.GatewayApi.Test.Controllers
 
             RequestResult<UserPreferenceModel>? reqResult = actualResult.Value;
             Assert.NotNull(reqResult);
-            Assert.Equal(ResultType.Success, reqResult!.ResultStatus);
+            Assert.Equal(ResultType.Success, reqResult.ResultStatus);
             Assert.Equal(this.hdid, reqResult.ResourcePayload!.HdId);
             Assert.Equal(this.hdid, reqResult.ResourcePayload.CreatedBy);
             Assert.Equal(this.hdid, reqResult.ResourcePayload.UpdatedBy);
@@ -234,7 +234,7 @@ namespace HealthGateway.GatewayApi.Test.Controllers
 
             RequestResult<UserPreferenceModel>? reqResult = actualResult.Value;
             Assert.NotNull(reqResult);
-            Assert.Equal(ResultType.Success, reqResult!.ResultStatus);
+            Assert.Equal(ResultType.Success, reqResult.ResultStatus);
         }
 
         /// <summary>
@@ -406,7 +406,7 @@ namespace HealthGateway.GatewayApi.Test.Controllers
         /// UpdateUserSMSNumber - Happy Path.
         /// </summary>
         [Fact]
-        public void ShouldUpdateUserSMSNumber()
+        public void ShouldUpdateUserSmsNumber()
         {
             Mock<IUserSmsService> smsServiceMock = new();
             smsServiceMock.Setup(s => s.UpdateUserSms(It.IsAny<string>(), It.IsAny<string>())).Returns(true);
@@ -448,7 +448,7 @@ namespace HealthGateway.GatewayApi.Test.Controllers
 
             ActionResult<PrimitiveRequestResult<bool>> actualResult = Task.Run(async () => await controller.ValidateSms(this.hdid, "205 123 4567").ConfigureAwait(true)).Result;
 
-            PrimitiveRequestResult<bool>? result = actualResult?.Value;
+            PrimitiveRequestResult<bool>? result = actualResult.Value;
             Assert.Equal(ResultType.Success, result?.ResultStatus);
             Assert.Equal(true, result?.ResourcePayload);
         }

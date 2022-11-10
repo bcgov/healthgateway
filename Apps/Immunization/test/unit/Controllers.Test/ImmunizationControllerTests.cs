@@ -47,41 +47,42 @@ namespace HealthGateway.ImmunizationTests.Controllers.Test
                 ResultStatus = ResultType.Success,
                 TotalResultCount = 2,
                 ResourcePayload = new(
-                new LoadStateModel() { RefreshInProgress = false },
-                new List<ImmunizationEvent>
-                {
-                    new()
+                    new LoadStateModel
+                        { RefreshInProgress = false },
+                    new List<ImmunizationEvent>
                     {
-                        DateOfImmunization = DateTime.Today,
-                        ProviderOrClinic = "Mocked Clinic",
-                        Immunization = new ImmunizationDefinition()
+                        new()
                         {
-                            Name = "Mocked Name",
-                            ImmunizationAgents = new List<ImmunizationAgent>
+                            DateOfImmunization = DateTime.Today,
+                            ProviderOrClinic = "Mocked Clinic",
+                            Immunization = new ImmunizationDefinition
                             {
-                                new()
+                                Name = "Mocked Name",
+                                ImmunizationAgents = new List<ImmunizationAgent>
                                 {
-                                    Name = "mocked agent",
-                                    Code = "mocked code",
-                                    LotNumber = "mocekd lot number",
-                                    ProductName = "mocked product",
+                                    new()
+                                    {
+                                        Name = "mocked agent",
+                                        Code = "mocked code",
+                                        LotNumber = "mocekd lot number",
+                                        ProductName = "mocked product",
+                                    },
                                 },
                             },
                         },
-                    },
 
-                    // Add a blank agent
-                    new()
-                    {
-                        DateOfImmunization = DateTime.Today,
-                        Immunization = new ImmunizationDefinition()
+                        // Add a blank agent
+                        new()
                         {
-                            Name = "Mocked Name",
-                            ImmunizationAgents = new List<ImmunizationAgent>(),
+                            DateOfImmunization = DateTime.Today,
+                            Immunization = new ImmunizationDefinition
+                            {
+                                Name = "Mocked Name",
+                                ImmunizationAgents = new List<ImmunizationAgent>(),
+                            },
                         },
                     },
-                },
-                new List<ImmunizationRecommendation>()),
+                    new List<ImmunizationRecommendation>()),
             };
 
             Mock<IImmunizationService> svcMock = new();
@@ -93,16 +94,8 @@ namespace HealthGateway.ImmunizationTests.Controllers.Test
             RequestResult<ImmunizationResult> actual = await controller.GetImmunizations(this.hdid).ConfigureAwait(true);
 
             // Verify
-            Assert.True(actual != null && actual.ResultStatus == ResultType.Success);
-            int count = 0;
-            if (actual != null && actual.ResultStatus == ResultType.Success)
-            {
-                foreach (ImmunizationEvent? immz in actual.ResourcePayload!.Immunizations)
-                {
-                    count++;
-                }
-            }
-
+            Assert.True(actual.ResultStatus == ResultType.Success);
+            int count = actual.ResourcePayload?.Immunizations.Count ?? 0;
             Assert.Equal(2, count);
         }
 
@@ -121,7 +114,7 @@ namespace HealthGateway.ImmunizationTests.Controllers.Test
                 {
                     DateOfImmunization = DateTime.Today,
                     ProviderOrClinic = "Mocked Clinic",
-                    Immunization = new ImmunizationDefinition()
+                    Immunization = new ImmunizationDefinition
                     {
                         Name = "Mocked Name",
                         ImmunizationAgents = new List<ImmunizationAgent>

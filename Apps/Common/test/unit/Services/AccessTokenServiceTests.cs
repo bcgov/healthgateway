@@ -129,7 +129,7 @@ namespace HealthGateway.CommonTests.Services
             };
 
             return new ConfigurationBuilder()
-                .AddInMemoryCollection(configuration.ToList<KeyValuePair<string, string?>>())
+                .AddInMemoryCollection(configuration.ToList())
                 .Build();
         }
 

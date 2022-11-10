@@ -13,7 +13,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //-------------------------------------------------------------------------
-namespace HealthGateway.CommonTests.AccessManagement.Administration
+namespace HealthGateway.CommonTests.AccessManagement.Authentication
 {
     using System;
     using System.Collections.Generic;
@@ -149,7 +149,7 @@ namespace HealthGateway.CommonTests.AccessManagement.Administration
                 .AddJsonFile("appsettings.json", true)
                 .AddJsonFile("appsettings.Development.json", true)
                 .AddJsonFile("appsettings.local.json", true)
-                .AddInMemoryCollection(configParams.ToList<KeyValuePair<string, string?>>())
+                .AddInMemoryCollection(configParams.ToList())
                 .Build();
         }
     }

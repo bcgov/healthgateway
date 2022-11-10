@@ -13,7 +13,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //-------------------------------------------------------------------------
-namespace HealthGateway.WebClient.Test.Controllers
+namespace HealthGateway.WebClientTests.Controllers
 {
     using HealthGateway.WebClient.Server.Controllers;
     using Microsoft.AspNetCore.Mvc;
