@@ -65,13 +65,20 @@ steps:
       arguments: "/p:CollectCoverage=true /p:CoverletOutputFormat=cobertura"
       testRunTitle: "$(App.Name): Performing Unit Tests"
 
+  - script: |
+      set -e
+      export CollectCoverage=true
+      export CoverletOutputFormat=cobertura
+    displayName: ".Net 7 Hack to pass properties to Unit Tests"
+    condition: and(succeeded(), and(eq(variables['WASMBuild'], true),eq(variables['UnitTests'], true)))
+
   - task: DotNetCoreCLI@2
     displayName: "Runing Unit Tests for Blazor Solution $(App.Name)"
     condition: and(succeeded(), and(eq(variables['WASMBuild'], true),eq(variables['UnitTests'], true)))
     inputs:
       command: "test"
       projects: "$(App.Home)"
-      arguments: "/p:CollectCoverage=true /p:CoverletOutputFormat=cobertura"
+      #arguments: "/p:CollectCoverage=true /p:CoverletOutputFormat=cobertura"
       testRunTitle: "$(App.Name): Performing Unit Tests"
 
   - script: |
