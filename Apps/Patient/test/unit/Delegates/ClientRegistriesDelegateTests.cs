@@ -22,7 +22,6 @@ namespace HealthGateway.PatientTests.Delegates
     using DeepEqual.Syntax;
     using HealthGateway.Common.Constants;
     using HealthGateway.Common.Data.ErrorHandling;
-    using HealthGateway.Common.Data.Models.ErrorHandling;
     using HealthGateway.Common.Data.ViewModels;
     using HealthGateway.Common.Models;
     using HealthGateway.Patient.Delegates;

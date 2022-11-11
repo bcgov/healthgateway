@@ -18,7 +18,6 @@ namespace HealthGateway.Common.Data.ErrorHandling
     using System;
     using System.Net;
     using System.Runtime.Serialization;
-    using HealthGateway.Common.Data.Models.ErrorHandling;
 
     /// <summary>
     /// Represents a custom api patient exception.
