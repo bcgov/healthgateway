@@ -14,7 +14,6 @@
 //  limitations under the License.
 // -------------------------------------------------------------------------
 
-// ReSharper disable CollectionNeverUpdated.Local
 namespace HealthGateway.CommonTests.Delegates
 {
     using System;
@@ -72,10 +71,8 @@ namespace HealthGateway.CommonTests.Delegates
             };
 
             // test empty configuration
-            Dictionary<string, string?> myConfiguration = new();
-
             IConfigurationRoot configuration = new ConfigurationBuilder()
-                .AddInMemoryCollection(myConfiguration.ToList())
+                .AddInMemoryCollection(new Dictionary<string, string?>().ToList())
                 .Build();
 
             AesCryptoDelegate aesDelegate = new(configuration);
@@ -112,10 +109,8 @@ namespace HealthGateway.CommonTests.Delegates
         [Fact]
         public void VerifyEncryption()
         {
-            Dictionary<string, string?> myConfiguration = new();
-
             IConfigurationRoot configuration = new ConfigurationBuilder()
-                .AddInMemoryCollection(myConfiguration.ToList())
+                .AddInMemoryCollection(new Dictionary<string, string?>().ToList())
                 .Build();
 
             AesCryptoDelegate aesDelegate = new(configuration);
@@ -135,10 +130,8 @@ namespace HealthGateway.CommonTests.Delegates
         [Fact]
         public void VerifyEncryptedStringLength100()
         {
-            Dictionary<string, string?> myConfiguration = new();
-
             IConfigurationRoot configuration = new ConfigurationBuilder()
-                .AddInMemoryCollection(myConfiguration.ToList())
+                .AddInMemoryCollection(new Dictionary<string, string?>().ToList())
                 .Build();
 
             AesCryptoDelegate aesDelegate = new(configuration);
@@ -162,10 +155,8 @@ namespace HealthGateway.CommonTests.Delegates
         [Fact]
         public void VerifyEncryptedStringLength1000()
         {
-            Dictionary<string, string?> myConfiguration = new();
-
             IConfigurationRoot configuration = new ConfigurationBuilder()
-                .AddInMemoryCollection(myConfiguration.ToList())
+                .AddInMemoryCollection(new Dictionary<string, string?>().ToList())
                 .Build();
 
             AesCryptoDelegate aesDelegate = new(configuration);
@@ -199,10 +190,8 @@ namespace HealthGateway.CommonTests.Delegates
         [Fact]
         public void VerifyDecryption()
         {
-            Dictionary<string, string?> myConfiguration = new();
-
             IConfigurationRoot configuration = new ConfigurationBuilder()
-                .AddInMemoryCollection(myConfiguration.ToList())
+                .AddInMemoryCollection(new Dictionary<string, string?>().ToList())
                 .Build();
 
             AesCryptoDelegate aesDelegate = new(configuration);
@@ -222,10 +211,8 @@ namespace HealthGateway.CommonTests.Delegates
         [Fact]
         public void VerifyEncryptionWithIv()
         {
-            Dictionary<string, string?> myConfiguration = new();
-
             IConfigurationRoot configuration = new ConfigurationBuilder()
-                .AddInMemoryCollection(myConfiguration.ToList())
+                .AddInMemoryCollection(new Dictionary<string, string?>().ToList())
                 .Build();
 
             AesCryptoDelegate aesDelegate = new(configuration);
@@ -253,10 +240,8 @@ namespace HealthGateway.CommonTests.Delegates
         [Fact]
         public void VerifyDecryptionWithIv()
         {
-            Dictionary<string, string?> myConfiguration = new();
-
             IConfigurationRoot configuration = new ConfigurationBuilder()
-                .AddInMemoryCollection(myConfiguration.ToList())
+                .AddInMemoryCollection(new Dictionary<string, string?>().ToList())
                 .Build();
 
             AesCryptoDelegate aesDelegate = new(configuration);

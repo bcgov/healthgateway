@@ -14,7 +14,6 @@
 //  limitations under the License.
 // -------------------------------------------------------------------------
 
-// ReSharper disable CollectionNeverUpdated.Local
 namespace HealthGateway.CommonTests.Delegates
 {
     using System;
@@ -77,10 +76,8 @@ namespace HealthGateway.CommonTests.Delegates
             };
 
             // test empty configuration
-            Dictionary<string, string?> myConfiguration = new();
-
             IConfigurationRoot configuration = new ConfigurationBuilder()
-                .AddInMemoryCollection(myConfiguration.ToList())
+                .AddInMemoryCollection(new Dictionary<string, string?>().ToList())
                 .Build();
 
             HmacHashDelegate hashDelegate = new(configuration);
@@ -95,10 +92,8 @@ namespace HealthGateway.CommonTests.Delegates
         public void VerifyHash()
         {
             // default configuration
-            Dictionary<string, string?> myConfiguration = new();
-
             IConfigurationRoot configuration = new ConfigurationBuilder()
-                .AddInMemoryCollection(myConfiguration.ToList())
+                .AddInMemoryCollection(new Dictionary<string, string?>().ToList())
                 .Build();
 
             HmacHashDelegate hashDelegate = new(configuration);
@@ -158,10 +153,8 @@ namespace HealthGateway.CommonTests.Delegates
             string? valueToHash = null;
 
             // default configuration
-            Dictionary<string, string?> myConfiguration = new();
-
             IConfigurationRoot configuration = new ConfigurationBuilder()
-                .AddInMemoryCollection(myConfiguration.ToList())
+                .AddInMemoryCollection(new Dictionary<string, string?>().ToList())
                 .Build();
 
             HmacHashDelegate hashDelegate = new(configuration);
