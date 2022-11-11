@@ -118,9 +118,9 @@ namespace HealthGateway.Database.Delegates
         /// Gets a list of emails ordered by the create datetime descending.
         /// </summary>
         /// <param name="offset">The starting offset for the query.</param>
-        /// <param name="pagesize">The maximum amount of rows to return.</param>
+        /// <param name="pageSize">The maximum amount of rows to return.</param>
         /// <returns>A list of Notes wrapped in a DBResult.</returns>
-        DBResult<IList<Email>> GetEmails(int offset = 0, int pagesize = 1000);
+        DbResult<IList<Email>> GetEmails(int offset = 0, int pageSize = 1000);
 
         /// <summary>
         /// Deletes email records that were created after n days ago.

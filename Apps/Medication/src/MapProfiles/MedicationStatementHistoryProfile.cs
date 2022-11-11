@@ -40,7 +40,7 @@ namespace HealthGateway.Medication.MapProfiles
                         src =>
                             new MedicationSummary
                             {
-                                DIN = src.DIN,
+                                Din = src.Din,
                                 Quantity = src.Quantity,
                                 GenericName = src.GenericName,
                                 BrandName = "Unknown brand name",

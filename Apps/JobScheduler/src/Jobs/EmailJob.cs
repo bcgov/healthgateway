@@ -13,7 +13,7 @@
 //  See the License for the specific language governing permissions and
 //  limitations under the License.
 // -------------------------------------------------------------------------
-namespace Healthgateway.JobScheduler.Jobs
+namespace HealthGateway.JobScheduler.Jobs
 {
     using System;
     using System.Collections.Generic;
@@ -53,7 +53,7 @@ namespace Healthgateway.JobScheduler.Jobs
             this.logger = logger;
             this.emailDelegate = emailDelegate!;
             IConfigurationSection section = configuration!.GetSection("Smtp");
-            this.host = section.GetValue<string>("Host");
+            this.host = section.GetValue<string>("Host") ?? throw new ArgumentNullException(nameof(configuration), "SMTP Host is null");
             this.port = section.GetValue<int>("Port");
             section = configuration.GetSection("EmailJob");
             this.maxRetries = section.GetValue("MaxRetries", 9);
@@ -123,7 +123,7 @@ namespace Healthgateway.JobScheduler.Jobs
             msg.From.Add(new MailboxAddress("Health Gateway", email.From));
             msg.To.Add(MailboxAddress.Parse(email.To));
             msg.Subject = email.Subject;
-            msg.Body = new TextPart(email.FormatCode == EmailFormat.HTML ? TextFormat.Html : TextFormat.Plain)
+            msg.Body = new TextPart(email.FormatCode == EmailFormat.Html ? TextFormat.Html : TextFormat.Plain)
             {
                 Text = email.Body,
             };

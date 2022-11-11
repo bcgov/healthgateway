@@ -16,6 +16,7 @@
 namespace HealthGateway.CommonTests.Services
 {
     using System.Collections.Generic;
+    using System.Linq;
     using System.Net.Http;
     using HealthGateway.Common.Services;
     using Microsoft.Extensions.Configuration;
@@ -37,14 +38,14 @@ namespace HealthGateway.CommonTests.Services
             Mock<IHttpClientFactory> mockHttpClientFactory = new();
             using HttpClient httpClient = new();
             mockHttpClientFactory.Setup(s => s.CreateClient(It.IsAny<string>())).Returns(httpClient);
-            Dictionary<string, string> configDictionary = new()
+            Dictionary<string, string?> configDictionary = new()
             {
                 { "HttpClient:Timeout", $"00:00:{timeout}" },
             };
 
             IConfiguration config = new ConfigurationBuilder()
-                                        .AddInMemoryCollection(configDictionary)
-                                        .Build();
+                .AddInMemoryCollection(configDictionary.ToList())
+                .Build();
             HttpClientService service = new(mockHttpClientFactory.Object, config);
 
             using HttpClient client = service.CreateDefaultHttpClient();

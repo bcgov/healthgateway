@@ -57,7 +57,7 @@ namespace HealthGateway.Common.Services
         /// <returns>The HttpClient.</returns>
         public HttpClient SetTimeout(HttpClient client)
         {
-            string timeout = this.configService.GetSection("HttpClient").GetValue<string>("Timeout");
+            string? timeout = this.configService.GetSection("HttpClient").GetValue<string>("Timeout");
 
             if (!string.IsNullOrEmpty(timeout))
             {

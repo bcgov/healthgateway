@@ -13,9 +13,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //-------------------------------------------------------------------------
-namespace HealthGateway.WebClient.Services
+namespace HealthGateway.WebClient.Server.Services
 {
-    using HealthGateway.WebClient.Models;
+    using HealthGateway.WebClient.Server.Models;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.Logging;
 
@@ -24,8 +24,8 @@ namespace HealthGateway.WebClient.Services
     /// </summary>
     public class ConfigurationService : IConfigurationService
     {
-        private readonly ILogger logger;
         private readonly ExternalConfiguration config;
+        private readonly ILogger logger;
         private readonly MobileConfiguration mobileConfig;
 
         /// <summary>
@@ -37,7 +37,7 @@ namespace HealthGateway.WebClient.Services
         {
             this.logger = logger;
             this.config = new ExternalConfiguration();
-            this.config = configuration.Get<ExternalConfiguration>();
+            this.config = configuration.Get<ExternalConfiguration>() ?? new();
             this.mobileConfig = new MobileConfiguration();
             configuration.Bind("MobileConfiguration", this.mobileConfig);
         }

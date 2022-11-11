@@ -30,7 +30,7 @@ namespace HealthGateway.Database.Delegates
         /// <param name="userPreference">The preference to be created.</param>
         /// <param name="commit">Indicates whether it should commit to the database or defer.</param>
         /// <returns>A DB result which encapsulates the return object and status.</returns>
-        DBResult<UserPreference> CreateUserPreference(UserPreference userPreference, bool commit = true);
+        DbResult<UserPreference> CreateUserPreference(UserPreference userPreference, bool commit = true);
 
         /// <summary>
         /// Saves a UserPreference object in the database.
@@ -38,13 +38,13 @@ namespace HealthGateway.Database.Delegates
         /// <param name="userPreference">The preference to be saved.</param>
         /// <param name="commit">Indicates whether it should commit to the database or defer.</param>
         /// <returns>A DB result which encapsulates the return object and status.</returns>
-        DBResult<UserPreference> UpdateUserPreference(UserPreference userPreference, bool commit = true);
+        DbResult<UserPreference> UpdateUserPreference(UserPreference userPreference, bool commit = true);
 
         /// <summary>
         /// Fetches the UserPreference from the database.
         /// </summary>
         /// <param name="hdid">The unique user profile key to find.</param>
         /// <returns>A DB result which encapsulates the return object and status.</returns>
-        DBResult<IEnumerable<UserPreference>> GetUserPreferences(string hdid);
+        DbResult<IEnumerable<UserPreference>> GetUserPreferences(string hdid);
     }
 }

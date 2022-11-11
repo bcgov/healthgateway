@@ -17,6 +17,7 @@
 namespace HealthGateway.CommonTests.Delegates
 {
     using System.Collections.Generic;
+    using System.Linq;
     using System.Net;
     using System.Net.Http;
     using System.Text.Json;
@@ -87,13 +88,13 @@ namespace HealthGateway.CommonTests.Delegates
             CDogsRequestModel request = new()
             {
                 Data = JsonDocument.Parse("{}").RootElement,
-                Options = new CDogsOptionsModel()
+                Options = new CDogsOptionsModel
                 {
                     Overwrite = true,
                     ConvertTo = "pdf",
                     ReportName = "Test Report",
                 },
-                Template = new CDogsTemplateModel()
+                Template = new CDogsTemplateModel
                 {
                     Content = "Stuff",
                     FileType = "pdf",
@@ -116,7 +117,7 @@ namespace HealthGateway.CommonTests.Delegates
         {
             RequestResult<ReportModel> expected = new()
             {
-                ResultError = new RequestResultError()
+                ResultError = new RequestResultError
                 {
                     ResultMessage = $"Unable to connect to CDogs API, HTTP Error {HttpStatusCode.Forbidden}",
                     ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationInternal, ServiceType.CDogs),
@@ -137,13 +138,13 @@ namespace HealthGateway.CommonTests.Delegates
             CDogsRequestModel request = new()
             {
                 Data = JsonDocument.Parse("{}").RootElement,
-                Options = new CDogsOptionsModel()
+                Options = new CDogsOptionsModel
                 {
                     Overwrite = true,
                     ConvertTo = "pdf",
                     ReportName = "Test Report",
                 },
-                Template = new CDogsTemplateModel()
+                Template = new CDogsTemplateModel
                 {
                     Content = "Stuff",
                     FileType = "pdf",
@@ -176,16 +177,16 @@ namespace HealthGateway.CommonTests.Delegates
 
         private static IConfigurationRoot GetIConfigurationRoot()
         {
-            Dictionary<string, string> myConfiguration = new()
+            Dictionary<string, string?> myConfiguration = new()
             {
                 { "CDOGS:BaseEndpoint", "https://some-test-url/" },
                 { "CDOGS:DynamicServiceLookup", "true" },
             };
             return new ConfigurationBuilder()
-                .AddJsonFile("appsettings.json", optional: true)
-                .AddJsonFile("appsettings.Development.json", optional: true)
-                .AddJsonFile("appsettings.local.json", optional: true)
-                .AddInMemoryCollection(myConfiguration)
+                .AddJsonFile("appsettings.json", true)
+                .AddJsonFile("appsettings.Development.json", true)
+                .AddJsonFile("appsettings.local.json", true)
+                .AddInMemoryCollection(myConfiguration.ToList())
                 .Build();
         }
     }

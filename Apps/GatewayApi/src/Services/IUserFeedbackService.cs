@@ -29,7 +29,7 @@ namespace HealthGateway.GatewayApi.Services
         /// </summary>
         /// <param name="userFeedback">The user feedback model to be saved.</param>
         /// <returns>The wrapped user feedback.</returns>
-        DBResult<UserFeedback> CreateUserFeedback(UserFeedback userFeedback);
+        DbResult<UserFeedback> CreateUserFeedback(UserFeedback userFeedback);
 
         /// <summary>
         /// Saves the rating to the database.

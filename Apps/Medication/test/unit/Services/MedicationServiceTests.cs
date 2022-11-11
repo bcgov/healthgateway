@@ -13,7 +13,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //-------------------------------------------------------------------------
-namespace HealthGateway.Medication.Services.Test
+namespace HealthGateway.MedicationTests.Services
 {
     using System;
     using System.Collections.Generic;
@@ -43,7 +43,7 @@ namespace HealthGateway.Medication.Services.Test
             string din = "00000000";
             List<DrugProduct> fedData = new()
             {
-                new DrugProduct()
+                new DrugProduct
                 {
                     DrugIdentificationNumber = din,
                     UpdatedDateTime = loadDate,
@@ -52,9 +52,9 @@ namespace HealthGateway.Medication.Services.Test
 
             List<PharmaCareDrug> provData = new()
             {
-                new PharmaCareDrug()
+                new PharmaCareDrug
                 {
-                    DINPIN = din,
+                    DinPin = din,
                     UpdatedDateTime = loadDate,
                 },
             };
@@ -63,15 +63,15 @@ namespace HealthGateway.Medication.Services.Test
             {
                 {
                     din,
-                    new MedicationInformation()
+                    new MedicationInformation
                     {
-                        DIN = din,
-                        FederalData = new FederalDrugSource()
+                        Din = din,
+                        FederalData = new FederalDrugSource
                         {
                             UpdateDateTime = loadDate,
                             DrugProduct = fedData.First(),
                         },
-                        ProvincialData = new ProvincialDrugSource()
+                        ProvincialData = new ProvincialDrugSource
                         {
                             UpdateDateTime = loadDate,
                             PharmaCareDrug = provData.First(),
@@ -81,8 +81,8 @@ namespace HealthGateway.Medication.Services.Test
             };
 
             Mock<IDrugLookupDelegate> mockDelegate = new();
-            mockDelegate.Setup(s => s.GetDrugProductsByDIN(It.IsAny<List<string>>())).Returns(fedData);
-            mockDelegate.Setup(s => s.GetPharmaCareDrugsByDIN(It.IsAny<List<string>>())).Returns(provData);
+            mockDelegate.Setup(s => s.GetDrugProductsByDin(It.IsAny<List<string>>())).Returns(fedData);
+            mockDelegate.Setup(s => s.GetPharmaCareDrugsByDin(It.IsAny<List<string>>())).Returns(provData);
 
             using ILoggerFactory loggerFactory = LoggerFactory.Create(builder => builder.AddConsole());
             ILogger<RestMedicationService> logger = loggerFactory.CreateLogger<RestMedicationService>();
@@ -104,9 +104,9 @@ namespace HealthGateway.Medication.Services.Test
 
             List<PharmaCareDrug> provData = new()
             {
-                new PharmaCareDrug()
+                new PharmaCareDrug
                 {
-                    DINPIN = din,
+                    DinPin = din,
                     UpdatedDateTime = loadDate,
                 },
             };
@@ -115,11 +115,11 @@ namespace HealthGateway.Medication.Services.Test
             {
                 {
                     din,
-                    new MedicationInformation()
+                    new MedicationInformation
                     {
-                        DIN = din,
+                        Din = din,
 
-                        ProvincialData = new ProvincialDrugSource()
+                        ProvincialData = new ProvincialDrugSource
                         {
                             UpdateDateTime = loadDate,
                             PharmaCareDrug = provData.First(),
@@ -129,8 +129,8 @@ namespace HealthGateway.Medication.Services.Test
             };
 
             Mock<IDrugLookupDelegate> mockDelegate = new();
-            mockDelegate.Setup(s => s.GetDrugProductsByDIN(It.IsAny<List<string>>())).Returns(fedData);
-            mockDelegate.Setup(s => s.GetPharmaCareDrugsByDIN(It.IsAny<List<string>>())).Returns(provData);
+            mockDelegate.Setup(s => s.GetDrugProductsByDin(It.IsAny<List<string>>())).Returns(fedData);
+            mockDelegate.Setup(s => s.GetPharmaCareDrugsByDin(It.IsAny<List<string>>())).Returns(provData);
 
             using ILoggerFactory loggerFactory = LoggerFactory.Create(builder => builder.AddConsole());
             ILogger<RestMedicationService> logger = loggerFactory.CreateLogger<RestMedicationService>();

@@ -18,6 +18,7 @@ namespace HealthGateway.ImmunizationTests.Delegates.Test
     using System;
     using System.Collections.Generic;
     using System.Globalization;
+    using System.Linq;
     using System.Net;
     using System.Net.Http;
     using HealthGateway.Common.AccessManagement.Authentication;
@@ -44,15 +45,6 @@ namespace HealthGateway.ImmunizationTests.Delegates.Test
         private const string ForbiddenResultMessage = "DID Claim is missing or can not resolve PHN, HTTP Error Forbidden";
         private const string MethodNotAllowedResultMessage = "Unable to connect to Immunizations Endpoint, HTTP Error MethodNotAllowed";
         private const string RequestTimeoutResultMessage = "Unable to connect to Immunizations Endpoint, HTTP Error RequestTimeout";
-        private readonly IConfiguration configuration;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="ImmunizationDelegateTests"/> class.
-        /// </summary>
-        public ImmunizationDelegateTests()
-        {
-            this.configuration = GetIConfigurationRoot();
-        }
 
         /// <summary>
         /// Tests a various http status codes on Immunization View Response.
@@ -72,7 +64,7 @@ namespace HealthGateway.ImmunizationTests.Delegates.Test
             PhsaResult<ImmunizationViewResponse> expectedResult = new();
             RequestResult<PhsaResult<ImmunizationViewResponse>> actualResult = GetImmunizationDelegate(expectedResult, httpStatusCode, false).GetImmunization(It.IsAny<string>()).Result;
             Assert.True(actualResult.ResultStatus == resultStatus);
-            Assert.Equal(actualResult?.ResultError?.ResultMessage, resultMessage);
+            Assert.Equal(actualResult.ResultError?.ResultMessage, resultMessage);
         }
 
         /// <summary>
@@ -93,7 +85,7 @@ namespace HealthGateway.ImmunizationTests.Delegates.Test
             PhsaResult<ImmunizationResponse> expectedResult = new();
             RequestResult<PhsaResult<ImmunizationResponse>> actualResult = GetImmunizationDelegate(expectedResult, httpStatusCode, false).GetImmunizations(It.IsAny<string>()).Result;
             Assert.True(actualResult.ResultStatus == resultStatus);
-            Assert.Equal(actualResult?.ResultError?.ResultMessage, resultMessage);
+            Assert.Equal(actualResult.ResultError?.ResultMessage, resultMessage);
         }
 
         /// <summary>
@@ -139,7 +131,8 @@ namespace HealthGateway.ImmunizationTests.Delegates.Test
             PhsaResult<ImmunizationResponse> phsaResponse = new()
             {
                 Result = new ImmunizationResponse(
-                    new List<ImmunizationViewResponse>() { expectedViewResponse },
+                    new List<ImmunizationViewResponse>
+                        { expectedViewResponse },
                     new List<ImmunizationRecommendationResponse>()),
             };
 
@@ -192,7 +185,8 @@ namespace HealthGateway.ImmunizationTests.Delegates.Test
             PhsaResult<ImmunizationResponse> phsaResponse = new()
             {
                 Result = new ImmunizationResponse(
-                    new List<ImmunizationViewResponse>() { expectedViewResponse },
+                    new List<ImmunizationViewResponse>
+                        { expectedViewResponse },
                     new List<ImmunizationRecommendationResponse>()),
             };
 
@@ -204,16 +198,16 @@ namespace HealthGateway.ImmunizationTests.Delegates.Test
 
         private static IConfigurationRoot GetIConfigurationRoot()
         {
-            Dictionary<string, string> myConfiguration = new()
+            Dictionary<string, string?> myConfiguration = new()
             {
                 { "Section:Key", "Value" },
             };
 
             return new ConfigurationBuilder()
-                .AddJsonFile("appsettings.json", optional: true)
-                .AddJsonFile("appsettings.Development.json", optional: true)
-                .AddJsonFile("appsettings.local.json", optional: true)
-                .AddInMemoryCollection(myConfiguration)
+                .AddJsonFile("appsettings.json", true)
+                .AddJsonFile("appsettings.Development.json", true)
+                .AddJsonFile("appsettings.local.json", true)
+                .AddInMemoryCollection(myConfiguration.ToList())
                 .Build();
         }
 
@@ -234,8 +228,9 @@ namespace HealthGateway.ImmunizationTests.Delegates.Test
             }
             else
             {
-                mockImmunizationClient.Setup(s =>
-                        s.GetImmunization(It.IsAny<string>(), AccessToken))
+                mockImmunizationClient.Setup(
+                        s =>
+                            s.GetImmunization(It.IsAny<string>(), AccessToken))
                     .ThrowsAsync(new HttpRequestException("Unit Test HTTP Request Exception"));
             }
 
@@ -265,8 +260,9 @@ namespace HealthGateway.ImmunizationTests.Delegates.Test
             }
             else
             {
-                mockImmunizationClient.Setup(s =>
-                        s.GetImmunizations(It.IsAny<Dictionary<string, string?>>(), AccessToken))
+                mockImmunizationClient.Setup(
+                        s =>
+                            s.GetImmunizations(It.IsAny<Dictionary<string, string?>>(), AccessToken))
                     .ThrowsAsync(new HttpRequestException("Unit Test HTTP Request Exception"));
             }
 

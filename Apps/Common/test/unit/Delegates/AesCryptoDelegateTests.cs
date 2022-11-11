@@ -18,6 +18,7 @@ namespace HealthGateway.CommonTests.Delegates
     using System;
     using System.Collections.Generic;
     using System.Globalization;
+    using System.Linq;
     using System.Text;
     using DeepEqual.Syntax;
     using HealthGateway.Common.Delegates;
@@ -42,14 +43,14 @@ namespace HealthGateway.CommonTests.Delegates
                 Iv = Convert.ToBase64String(Encoding.ASCII.GetBytes("0123456789ABCDEF")),
             };
 
-            Dictionary<string, string> myConfiguration = new()
+            Dictionary<string, string?> myConfiguration = new()
             {
                 { "AESCrypto:KeySize", expectedConfig.KeySize.ToString(CultureInfo.CurrentCulture) },
                 { "AESCrypto:Iv", Convert.ToBase64String(Encoding.ASCII.GetBytes("0123456789ABCDEF")) },
             };
 
             IConfigurationRoot configuration = new ConfigurationBuilder()
-                .AddInMemoryCollection(myConfiguration)
+                .AddInMemoryCollection(myConfiguration.ToList<KeyValuePair<string, string?>>())
                 .Build();
 
             AesCryptoDelegate aesDelegate = new(configuration);
@@ -69,10 +70,10 @@ namespace HealthGateway.CommonTests.Delegates
             };
 
             // test empty configuration
-            Dictionary<string, string> myConfiguration = new();
+            Dictionary<string, string?> myConfiguration = new();
 
             IConfigurationRoot configuration = new ConfigurationBuilder()
-                .AddInMemoryCollection(myConfiguration)
+                .AddInMemoryCollection(myConfiguration.ToList<KeyValuePair<string, string?>>())
                 .Build();
 
             AesCryptoDelegate aesDelegate = new(configuration);
@@ -86,13 +87,13 @@ namespace HealthGateway.CommonTests.Delegates
         [Fact]
         public void VerifyKeyGeneration()
         {
-            Dictionary<string, string> myConfiguration = new()
+            Dictionary<string, string?> myConfiguration = new()
             {
                 { "AESCrypto:KeySize", "128" },
             };
 
             IConfigurationRoot configuration = new ConfigurationBuilder()
-                .AddInMemoryCollection(myConfiguration)
+                .AddInMemoryCollection(myConfiguration.ToList<KeyValuePair<string, string?>>())
                 .Build();
 
             AesCryptoDelegate aesDelegate = new(configuration);
@@ -109,10 +110,10 @@ namespace HealthGateway.CommonTests.Delegates
         [Fact]
         public void VerifyEncryption()
         {
-            Dictionary<string, string> myConfiguration = new();
+            Dictionary<string, string?> myConfiguration = new();
 
             IConfigurationRoot configuration = new ConfigurationBuilder()
-                .AddInMemoryCollection(myConfiguration)
+                .AddInMemoryCollection(myConfiguration.ToList<KeyValuePair<string, string?>>())
                 .Build();
 
             AesCryptoDelegate aesDelegate = new(configuration);
@@ -132,10 +133,10 @@ namespace HealthGateway.CommonTests.Delegates
         [Fact]
         public void VerifyEncrypedStringLength100()
         {
-            Dictionary<string, string> myConfiguration = new();
+            Dictionary<string, string?> myConfiguration = new();
 
             IConfigurationRoot configuration = new ConfigurationBuilder()
-                .AddInMemoryCollection(myConfiguration)
+                .AddInMemoryCollection(myConfiguration.ToList<KeyValuePair<string, string?>>())
                 .Build();
 
             AesCryptoDelegate aesDelegate = new(configuration);
@@ -159,10 +160,10 @@ namespace HealthGateway.CommonTests.Delegates
         [Fact]
         public void VerifyEncrypedStringLength1000()
         {
-            Dictionary<string, string> myConfiguration = new();
+            Dictionary<string, string?> myConfiguration = new();
 
             IConfigurationRoot configuration = new ConfigurationBuilder()
-                .AddInMemoryCollection(myConfiguration)
+                .AddInMemoryCollection(myConfiguration.ToList<KeyValuePair<string, string?>>())
                 .Build();
 
             AesCryptoDelegate aesDelegate = new(configuration);
@@ -196,10 +197,10 @@ namespace HealthGateway.CommonTests.Delegates
         [Fact]
         public void VerifyDecryption()
         {
-            Dictionary<string, string> myConfiguration = new();
+            Dictionary<string, string?> myConfiguration = new();
 
             IConfigurationRoot configuration = new ConfigurationBuilder()
-                .AddInMemoryCollection(myConfiguration)
+                .AddInMemoryCollection(myConfiguration.ToList<KeyValuePair<string, string?>>())
                 .Build();
 
             AesCryptoDelegate aesDelegate = new(configuration);
@@ -219,10 +220,10 @@ namespace HealthGateway.CommonTests.Delegates
         [Fact]
         public void VerifyEncryptionWithIV()
         {
-            Dictionary<string, string> myConfiguration = new();
+            Dictionary<string, string?> myConfiguration = new();
 
             IConfigurationRoot configuration = new ConfigurationBuilder()
-                .AddInMemoryCollection(myConfiguration)
+                .AddInMemoryCollection(myConfiguration.ToList<KeyValuePair<string, string?>>())
                 .Build();
 
             AesCryptoDelegate aesDelegate = new(configuration);
@@ -250,10 +251,10 @@ namespace HealthGateway.CommonTests.Delegates
         [Fact]
         public void VerifyDecryptionWithIV()
         {
-            Dictionary<string, string> myConfiguration = new();
+            Dictionary<string, string?> myConfiguration = new();
 
             IConfigurationRoot configuration = new ConfigurationBuilder()
-                .AddInMemoryCollection(myConfiguration)
+                .AddInMemoryCollection(myConfiguration.ToList<KeyValuePair<string, string?>>())
                 .Build();
 
             AesCryptoDelegate aesDelegate = new(configuration);

@@ -13,7 +13,7 @@
 //  See the License for the specific language governing permissions and
 //  limitations under the License.
 // -------------------------------------------------------------------------
-namespace HealthGateway.Common.Data.Models.ErrorHandling
+namespace HealthGateway.Common.Data.ErrorHandling
 {
     using System;
     using System.Diagnostics.CodeAnalysis;
@@ -85,9 +85,9 @@ namespace HealthGateway.Common.Data.Models.ErrorHandling
         public static ActionType Deceased => new("DECEASED");
 
         /// <summary>
-        /// Gets or sets the value that holds the internal representation of the ActionType.
+        /// Gets the value that holds the internal representation of the ActionType.
         /// </summary>
-        public string Value { get; set; }
+        public string Value { get; }
 
         /// <inheritdoc/>
         public override bool Equals(object? obj)

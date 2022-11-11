@@ -13,11 +13,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //-------------------------------------------------------------------------
-namespace HealthGateway.CommonTests.AccessManagement.Administration
+namespace HealthGateway.CommonTests.AccessManagement.Authentication
 {
     using System;
     using System.Collections.Generic;
     using System.Diagnostics.CodeAnalysis;
+    using System.Linq;
     using System.Net;
     using System.Net.Http;
     using System.Text.Json;
@@ -48,8 +49,9 @@ namespace HealthGateway.CommonTests.AccessManagement.Administration
         public void ShouldAuthenticateAsUser()
         {
             Uri tokenUri = new("http://testsite");
-            Dictionary<string, string> configurationParams = new()
+            Dictionary<string, string?> configurationParams = new()
             {
+                { "ClientAuthentication:TokenUri", tokenUri.ToString() },
                 { "AuthCache:TokenCacheExpireMinutes", "20" },
             };
             IConfiguration configuration = CreateConfiguration(configurationParams);
@@ -132,19 +134,22 @@ namespace HealthGateway.CommonTests.AccessManagement.Administration
                 .Verifiable();
             Mock<IHttpClientService> mockHttpClientService = new();
             mockHttpClientService.Setup(s => s.CreateDefaultHttpClient()).Returns(() => new HttpClient(handlerMock.Object));
-            Dictionary<string, string> extraConfig = new();
+            Dictionary<string, string?> extraConfig = new()
+            {
+                { "ClientAuthentication:TokenUri", tokenUri.ToString() },
+            };
             IAuthenticationDelegate authDelegate = new AuthenticationDelegate(logger, mockHttpClientService.Object, CreateConfiguration(extraConfig), new Mock<ICacheProvider>().Object, null);
             JwtModel actualModel = authDelegate.AuthenticateAsSystem(tokenUri, tokenRequest);
             expected.ShouldDeepEqual(actualModel);
         }
 
-        private static IConfiguration CreateConfiguration(Dictionary<string, string> configParams)
+        private static IConfiguration CreateConfiguration(Dictionary<string, string?> configParams)
         {
             return new ConfigurationBuilder()
                 .AddJsonFile("appsettings.json", true)
                 .AddJsonFile("appsettings.Development.json", true)
                 .AddJsonFile("appsettings.local.json", true)
-                .AddInMemoryCollection(configParams)
+                .AddInMemoryCollection(configParams.ToList())
                 .Build();
         }
     }

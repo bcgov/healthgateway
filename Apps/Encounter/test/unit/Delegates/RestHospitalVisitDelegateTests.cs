@@ -68,7 +68,7 @@ namespace HealthGateway.EncounterTests.Delegates
 
             // Assert
             Assert.True(actualResult.ResultStatus == resultStatus);
-            Assert.Equal(actualResult?.ResultError?.ResultMessage, resultMessage);
+            Assert.Equal(actualResult.ResultError?.ResultMessage, resultMessage);
         }
 
         /// <summary>
@@ -204,13 +204,13 @@ namespace HealthGateway.EncounterTests.Delegates
 
         private static IConfigurationRoot GetIConfigurationRoot()
         {
-            Dictionary<string, string> configuration = new()
+            Dictionary<string, string?> configuration = new()
             {
                 { "PHSA:FetchSize", ConfigFetchSize },
             };
 
             return new ConfigurationBuilder()
-                .AddInMemoryCollection(configuration)
+                .AddInMemoryCollection(configuration.ToList())
                 .Build();
         }
     }

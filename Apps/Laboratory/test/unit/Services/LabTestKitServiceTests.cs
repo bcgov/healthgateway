@@ -13,22 +13,17 @@
 //  See the License for the specific language governing permissions and
 //  limitations under the License.
 // -------------------------------------------------------------------------
-namespace HealthGateway.LaboratoryTests
+namespace HealthGateway.LaboratoryTests.Services
 {
-    using System.Collections.Generic;
     using System.Net;
     using System.Net.Http;
-    using System.Security.Claims;
     using HealthGateway.Common.AccessManagement.Authentication;
     using HealthGateway.Common.Data.Constants;
-    using HealthGateway.Common.Data.Models.ErrorHandling;
+    using HealthGateway.Common.Data.ErrorHandling;
     using HealthGateway.Common.Data.ViewModels;
-    using HealthGateway.Laboratory.Delegates;
+    using HealthGateway.Laboratory.Api;
     using HealthGateway.Laboratory.Models.PHSA;
     using HealthGateway.Laboratory.Services;
-    using Microsoft.AspNetCore.Authentication;
-    using Microsoft.AspNetCore.Authentication.JwtBearer;
-    using Microsoft.AspNetCore.Http;
     using Microsoft.Extensions.Logging;
     using Moq;
     using Xunit;
@@ -113,9 +108,10 @@ namespace HealthGateway.LaboratoryTests
                 StatusCode = HttpStatusCode.Conflict,
             };
             RequestResult<PublicLabTestKit> actualResult = this.GetLabTestKitService(httpResponse).RegisterLabTestKitAsync(CreatePublicLabTestKit("9735353315")).Result;
-            Assert.True(actualResult.ResultStatus == ResultType.ActionRequired &&
-                        actualResult.ResultError != null &&
-                        actualResult.ResultError.ActionCodeValue == ActionType.Processed.Value);
+            Assert.True(
+                actualResult.ResultStatus == ResultType.ActionRequired &&
+                actualResult.ResultError != null &&
+                actualResult.ResultError.ActionCodeValue == ActionType.Processed.Value);
         }
 
         /// <summary>
@@ -129,9 +125,10 @@ namespace HealthGateway.LaboratoryTests
                 StatusCode = HttpStatusCode.UnprocessableEntity,
             };
             RequestResult<PublicLabTestKit> actualResult = this.GetLabTestKitService(httpResponse).RegisterLabTestKitAsync(CreatePublicLabTestKit("9735353315")).Result;
-            Assert.True(actualResult.ResultStatus == ResultType.ActionRequired &&
-                        actualResult.ResultError != null &&
-                        actualResult.ResultError.ActionCodeValue == ActionType.Validation.Value);
+            Assert.True(
+                actualResult.ResultStatus == ResultType.ActionRequired &&
+                actualResult.ResultError != null &&
+                actualResult.ResultError.ActionCodeValue == ActionType.Validation.Value);
         }
 
         /// <summary>
@@ -145,9 +142,10 @@ namespace HealthGateway.LaboratoryTests
                 StatusCode = HttpStatusCode.OK,
             };
             RequestResult<PublicLabTestKit> actualResult = this.GetLabTestKitService(httpResponse).RegisterLabTestKitAsync(CreatePublicLabTestKit("BADPHN")).Result;
-            Assert.True(actualResult.ResultStatus == ResultType.ActionRequired &&
-                        actualResult.ResultError != null &&
-                        actualResult.ResultError.ActionCodeValue == ActionType.Validation.Value);
+            Assert.True(
+                actualResult.ResultStatus == ResultType.ActionRequired &&
+                actualResult.ResultError != null &&
+                actualResult.ResultError.ActionCodeValue == ActionType.Validation.Value);
         }
 
         /// <summary>
@@ -161,9 +159,10 @@ namespace HealthGateway.LaboratoryTests
                 StatusCode = HttpStatusCode.OK,
             };
             RequestResult<PublicLabTestKit> actualResult = this.GetLabTestKitService(httpResponse).RegisterLabTestKitAsync(CreatePublicLabTestKit(null)).Result;
-            Assert.True(actualResult.ResultStatus == ResultType.ActionRequired &&
-                        actualResult.ResultError != null &&
-                        actualResult.ResultError.ActionCodeValue == ActionType.Validation.Value);
+            Assert.True(
+                actualResult.ResultStatus == ResultType.ActionRequired &&
+                actualResult.ResultError != null &&
+                actualResult.ResultError.ActionCodeValue == ActionType.Validation.Value);
         }
 
         /// <summary>
@@ -228,7 +227,7 @@ namespace HealthGateway.LaboratoryTests
                 .ThrowsAsync(httpRequestException);
 
             Mock<IAuthenticationDelegate> mockAuthDelegate = new();
-            mockAuthDelegate.Setup(s => s.AccessTokenAsUser()).Returns(this.accessToken);
+            mockAuthDelegate.Setup(s => s.AccessTokenAsUser(IAuthenticationDelegate.DefaultAuthConfigSectionName)).Returns(this.accessToken);
 
             LabTestKitService labTestKitService = new(
                 new Mock<ILogger<LabTestKitService>>().Object,
@@ -249,7 +248,7 @@ namespace HealthGateway.LaboratoryTests
             Mock<IAuthenticationDelegate> mockAuthDelegate = new();
             if (!nullToken)
             {
-                mockAuthDelegate.Setup(s => s.AccessTokenAsUser()).Returns(this.accessToken);
+                mockAuthDelegate.Setup(s => s.AccessTokenAsUser(IAuthenticationDelegate.DefaultAuthConfigSectionName)).Returns(this.accessToken);
             }
 
             LabTestKitService labTestKitService = new(

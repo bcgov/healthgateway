@@ -13,7 +13,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //-------------------------------------------------------------------------
-namespace HealthGateway.Medication.Controllers.Test
+namespace HealthGateway.MedicationTests.Controllers
 {
     using System.Collections.Generic;
     using System.Linq;
@@ -64,12 +64,12 @@ namespace HealthGateway.Medication.Controllers.Test
             {
                 {
                     drugIdentifier,
-                    new MedicationInformation()
+                    new MedicationInformation
                     {
-                        DIN = drugIdentifier,
-                        FederalData = new FederalDrugSource()
+                        Din = drugIdentifier,
+                        FederalData = new FederalDrugSource
                         {
-                            DrugProduct = new DrugProduct()
+                            DrugProduct = new DrugProduct
                             {
                                 DrugCode = drugIdentifier,
                             },
@@ -111,7 +111,7 @@ namespace HealthGateway.Medication.Controllers.Test
 
             // Verify
             serviceMock.Verify(s => s.GetMedications(paddedDinList), Times.Once());
-            Assert.True(actual?.ResourcePayload?.Count == 0);
+            Assert.True(actual.ResourcePayload?.Count == 0);
         }
     }
 }

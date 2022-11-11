@@ -17,6 +17,7 @@ namespace HealthGateway.CommonTests.Services
 {
     using System;
     using System.Collections.Generic;
+    using System.Linq;
     using System.Net;
     using System.Net.Http;
     using System.Threading.Tasks;
@@ -37,7 +38,7 @@ namespace HealthGateway.CommonTests.Services
     /// </summary>
     public class PersonalAccountServiceTests
     {
-        private const string PersonalAccountsErrorMessage = $"Error with HTTP Request for Personal Accounts";
+        private const string PersonalAccountsErrorMessage = "Error with HTTP Request for Personal Accounts";
 
         /// <summary>
         /// Get Personal Account.
@@ -91,9 +92,9 @@ namespace HealthGateway.CommonTests.Services
             Guid id = Guid.NewGuid();
             PersonalAccount expectedPersonalAccount = GetPatientAccount(id);
 
-            HttpResponseMessage responseMessage = new HttpResponseMessage(HttpStatusCode.NotFound);
-            RefitSettings refitSettings = new RefitSettings();
-            ApiException apiException = ApiException.Create(It.IsAny<HttpRequestMessage>(), It.IsAny<HttpMethod>(), responseMessage, refitSettings, null).Result;
+            HttpResponseMessage responseMessage = new(HttpStatusCode.NotFound);
+            RefitSettings refitSettings = new();
+            ApiException apiException = ApiException.Create(It.IsAny<HttpRequestMessage>(), It.IsAny<HttpMethod>(), responseMessage, refitSettings).Result;
             responseMessage.Dispose();
 
             IPersonalAccountsService personalAccountsServiceService = GetPersonalAccountsService(expectedPersonalAccount, apiException, false, false);
@@ -128,7 +129,7 @@ namespace HealthGateway.CommonTests.Services
 
         private static IConfigurationRoot GetIConfigurationRoot()
         {
-            Dictionary<string, string> configuration = new()
+            Dictionary<string, string?> configuration = new()
             {
                 { "TokenSwap:BaseUrl", "http://localhost" },
                 { "TokenSwap:ClientId", "healthgateway" },
@@ -137,13 +138,13 @@ namespace HealthGateway.CommonTests.Services
             };
 
             return new ConfigurationBuilder()
-                .AddInMemoryCollection(configuration)
+                .AddInMemoryCollection(configuration.ToList())
                 .Build();
         }
 
         private static PersonalAccount GetPatientAccount(Guid id)
         {
-            return new PersonalAccount()
+            return new PersonalAccount
             {
                 Id = id,
                 CreationTimeStampUtc = DateTime.Today,
@@ -153,7 +154,7 @@ namespace HealthGateway.CommonTests.Services
 
         private static IPersonalAccountsService GetPersonalAccountsService(PersonalAccount content, ApiException? error, bool useCache, bool throwException)
         {
-            HttpResponseMessage responseMessage = new HttpResponseMessage(error == null ? HttpStatusCode.OK : HttpStatusCode.NotFound);
+            HttpResponseMessage responseMessage = new(error == null ? HttpStatusCode.OK : HttpStatusCode.NotFound);
 
             IApiResponse<PersonalAccount> apiResponse = new ApiResponse<PersonalAccount>(
                 responseMessage,

@@ -14,9 +14,9 @@
 // limitations under the License.
 //-------------------------------------------------------------------------
 
-namespace HealthGateway.WebClient.Services
+namespace HealthGateway.WebClient.Server.Services
 {
-    using HealthGateway.WebClient.Models;
+    using HealthGateway.WebClient.Server.Models;
 
     /// <summary>
     /// Webclient configuration.

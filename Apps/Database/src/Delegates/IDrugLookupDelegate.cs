@@ -28,20 +28,20 @@ namespace HealthGateway.Database.Delegates
         /// </summary>
         /// <param name="drugIdentifiers">List of drug identifiers.</param>
         /// <returns>A request results with the outcome of the lookup.</returns>
-        IList<DrugProduct> GetDrugProductsByDIN(IList<string> drugIdentifiers);
+        IList<DrugProduct> GetDrugProductsByDin(IList<string> drugIdentifiers);
 
         /// <summary>
         /// Retrieves PharmaCareDrug(s) that match a the drug identifier numbers (DINs) or provincial identifier numbers (PINs).
         /// </summary>
         /// <param name="drugIdentifiers">List of drug identifiers.</param>
         /// <returns>A request results with the outcome of the lookup.</returns>
-        IList<PharmaCareDrug> GetPharmaCareDrugsByDIN(IList<string> drugIdentifiers);
+        IList<PharmaCareDrug> GetPharmaCareDrugsByDin(IList<string> drugIdentifiers);
 
         /// <summary>
         /// Retrieves the brand names that match the drug identifier numbers (DINs) or provincial identifier numbers (PINs).
         /// </summary>
         /// <param name="drugIdentifiers">List of drug identifiers.</param>
         /// <returns>A dictionary with the drug identifier as key and the result brand name as value.</returns>
-        Dictionary<string, string> GetDrugsBrandNameByDIN(IList<string> drugIdentifiers);
+        Dictionary<string, string> GetDrugsBrandNameByDin(IList<string> drugIdentifiers);
     }
 }

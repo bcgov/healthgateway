@@ -78,12 +78,12 @@ namespace HealthGateway.GatewayApi.Services
 
             Note note = NoteMapUtils.ToDbModel(userNote, this.cryptoDelegate, key, this.autoMapper);
 
-            DBResult<Note> dbNote = this.noteDelegate.AddNote(note);
+            DbResult<Note> dbNote = this.noteDelegate.AddNote(note);
             RequestResult<UserNote> result = new()
             {
                 ResourcePayload = NoteMapUtils.CreateFromDbModel(dbNote.Payload, this.cryptoDelegate, key, this.autoMapper),
-                ResultStatus = dbNote.Status == DBStatusCode.Created ? ResultType.Success : ResultType.Error,
-                ResultError = dbNote.Status == DBStatusCode.Created
+                ResultStatus = dbNote.Status == DbStatusCode.Created ? ResultType.Success : ResultType.Error,
+                ResultError = dbNote.Status == DbStatusCode.Created
                     ? null
                     : new RequestResultError
                     {
@@ -98,7 +98,7 @@ namespace HealthGateway.GatewayApi.Services
         public RequestResult<IEnumerable<UserNote>> GetNotes(string hdId, int page = 0, int pageSize = 500)
         {
             int offset = page * pageSize;
-            DBResult<IEnumerable<Note>> dbNotes = this.noteDelegate.GetNotes(hdId, offset, pageSize);
+            DbResult<IList<Note>> dbNotes = this.noteDelegate.GetNotes(hdId, offset, pageSize);
 
             UserProfile profile = this.profileDelegate.GetUserProfile(hdId).Payload;
             string? key = profile.EncryptionKey;
@@ -111,29 +111,14 @@ namespace HealthGateway.GatewayApi.Services
                 dbNotes = this.noteDelegate.GetNotes(hdId, offset, pageSize);
             }
 
-            // Check that the key has been set
-            if (key == null)
-            {
-                this.logger.LogError("User does not have a key: {Hdid}", hdId);
-                return new RequestResult<IEnumerable<UserNote>>
-                {
-                    ResultStatus = ResultType.Error,
-                    ResultError = new RequestResultError
-                    {
-                        ResultMessage = "Profile Key not set",
-                        ErrorCode = ErrorTranslator.InternalError(ErrorType.InvalidState),
-                    },
-                };
-            }
-
             RequestResult<IEnumerable<UserNote>> result = new()
             {
                 ResourcePayload = dbNotes.Payload.Select(c => NoteMapUtils.CreateFromDbModel(c, this.cryptoDelegate, key, this.autoMapper)),
                 PageIndex = page,
                 PageSize = pageSize,
-                TotalResultCount = dbNotes.Payload.ToList().Count,
-                ResultStatus = dbNotes.Status == DBStatusCode.Read ? ResultType.Success : ResultType.Error,
-                ResultError = dbNotes.Status == DBStatusCode.Read
+                TotalResultCount = dbNotes.Payload.Count,
+                ResultStatus = dbNotes.Status == DbStatusCode.Read ? ResultType.Success : ResultType.Error,
+                ResultError = dbNotes.Status == DbStatusCode.Read
                     ? null
                     : new RequestResultError
                     {
@@ -165,12 +150,12 @@ namespace HealthGateway.GatewayApi.Services
 
             Note note = NoteMapUtils.ToDbModel(userNote, this.cryptoDelegate, key, this.autoMapper);
 
-            DBResult<Note> dbResult = this.noteDelegate.UpdateNote(note);
+            DbResult<Note> dbResult = this.noteDelegate.UpdateNote(note);
             RequestResult<UserNote> result = new()
             {
                 ResourcePayload = NoteMapUtils.CreateFromDbModel(dbResult.Payload, this.cryptoDelegate, key, this.autoMapper),
-                ResultStatus = dbResult.Status == DBStatusCode.Updated ? ResultType.Success : ResultType.Error,
-                ResultError = dbResult.Status == DBStatusCode.Updated
+                ResultStatus = dbResult.Status == DbStatusCode.Updated ? ResultType.Success : ResultType.Error,
+                ResultError = dbResult.Status == DbStatusCode.Updated
                     ? null
                     : new RequestResultError
                     {
@@ -201,12 +186,12 @@ namespace HealthGateway.GatewayApi.Services
             }
 
             Note note = NoteMapUtils.ToDbModel(userNote, this.cryptoDelegate, key, this.autoMapper);
-            DBResult<Note> dbResult = this.noteDelegate.DeleteNote(note);
+            DbResult<Note> dbResult = this.noteDelegate.DeleteNote(note);
             RequestResult<UserNote> result = new()
             {
                 ResourcePayload = NoteMapUtils.CreateFromDbModel(dbResult.Payload, this.cryptoDelegate, key, this.autoMapper),
-                ResultStatus = dbResult.Status == DBStatusCode.Deleted ? ResultType.Success : ResultType.Error,
-                ResultError = dbResult.Status == DBStatusCode.Deleted
+                ResultStatus = dbResult.Status == DbStatusCode.Deleted ? ResultType.Success : ResultType.Error,
+                ResultError = dbResult.Status == DbStatusCode.Deleted
                     ? null
                     : new RequestResultError
                     {
@@ -217,12 +202,12 @@ namespace HealthGateway.GatewayApi.Services
             return result;
         }
 
-        private string EncryptFirstTime(UserProfile profile, IEnumerable<Note> dbNotes)
+        private string EncryptFirstTime(UserProfile profile, IList<Note> dbNotes)
         {
             string key = this.cryptoDelegate.GenerateKey();
             profile.EncryptionKey = key;
             this.profileDelegate.Update(profile, false);
-            foreach (Note note in dbNotes.ToList())
+            foreach (Note note in dbNotes)
             {
                 note.Title = this.cryptoDelegate.Encrypt(key, note.Title ?? string.Empty);
                 note.Text = this.cryptoDelegate.Encrypt(key, note.Text ?? string.Empty);

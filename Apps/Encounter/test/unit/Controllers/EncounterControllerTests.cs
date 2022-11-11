@@ -85,8 +85,8 @@ namespace HealthGateway.EncounterTests.Controllers
             // Verify
             Assert.True(actual != null && actual.ResultStatus == ResultType.Success);
 
-            Assert.Equal(2, actual?.ResourcePayload?.Count());
-            Assert.Equal(2, actual?.TotalResultCount);
+            Assert.Equal(2, actual.ResourcePayload?.Count());
+            Assert.Equal(2, actual.TotalResultCount);
         }
 
         /// <summary>
@@ -125,8 +125,8 @@ namespace HealthGateway.EncounterTests.Controllers
             // Verify
             Assert.True(actual != null && actual.ResultStatus == ResultType.Success);
 
-            Assert.Equal(1, actual?.ResourcePayload?.HospitalVisits.Count());
-            Assert.Equal(1, actual?.TotalResultCount);
+            Assert.Equal(1, actual.ResourcePayload?.HospitalVisits.Count());
+            Assert.Equal(1, actual.TotalResultCount);
         }
     }
 }

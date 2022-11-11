@@ -15,6 +15,7 @@
 //-------------------------------------------------------------------------
 namespace HealthGateway.Common.AccessManagement.Authorization.Handlers
 {
+    using System;
     using System.Linq;
     using System.Security.Claims;
     using System.Threading.Tasks;
@@ -108,10 +109,10 @@ namespace HealthGateway.Common.AccessManagement.Authorization.Handlers
             bool retVal = false;
             if (context.User.HasClaim(c => c.Type == GatewayClaims.Scope))
             {
-                string scopeclaim = context.User.FindFirstValue(GatewayClaims.Scope);
-                string[] scopes = scopeclaim.Split(' ');
+                string scopeClaim = context.User.FindFirstValue(GatewayClaims.Scope) ?? string.Empty;
+                string[] scopes = scopeClaim.Split(' ');
                 this.logger.LogDebug("Performing system delegation validation for resource {ResourceHdid}", resourceHDID);
-                this.logger.LogDebug("Caller has the following scopes: {ScopeClaim}", scopeclaim);
+                this.logger.LogDebug("Caller has the following scopes: {ScopeClaim}", scopeClaim);
                 string[] systemDelegatedScopes = GetAcceptedScopes(System, requirement);
                 if (scopes.Intersect(systemDelegatedScopes).Any())
                 {

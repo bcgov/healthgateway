@@ -24,7 +24,7 @@ namespace HealthGateway.Immunization.Services
     using HealthGateway.Common.Constants;
     using HealthGateway.Common.Constants.PHSA;
     using HealthGateway.Common.Data.Constants;
-    using HealthGateway.Common.Data.Models.ErrorHandling;
+    using HealthGateway.Common.Data.ErrorHandling;
     using HealthGateway.Common.Data.Utils;
     using HealthGateway.Common.Data.ViewModels;
     using HealthGateway.Common.Delegates.PHSA;
@@ -42,7 +42,7 @@ namespace HealthGateway.Immunization.Services
     /// </summary>
     public class VaccineStatusService : IVaccineStatusService
     {
-        private const string PHSAConfigSectionKey = "PHSA";
+        private const string PhsaConfigSectionKey = "PHSA";
         private const string AuthConfigSectionName = "ClientAuthentication";
         private readonly IAuthenticationDelegate authDelegate;
         private readonly IHttpContextAccessor httpContextAccessor;
@@ -75,13 +75,14 @@ namespace HealthGateway.Immunization.Services
             this.vaccineStatusDelegate = vaccineStatusDelegate;
             this.autoMapper = autoMapper;
 
-            IConfigurationSection? configSection = configuration?.GetSection(AuthConfigSectionName);
-            this.tokenUri = configSection.GetValue<Uri>(@"TokenUri");
+            IConfigurationSection configSection = configuration.GetSection(AuthConfigSectionName);
+            this.tokenUri = configSection.GetValue<Uri>(@"TokenUri") ??
+                            throw new ArgumentNullException(nameof(configuration), $"{AuthConfigSectionName} does not contain a valid TokenUri");
             this.tokenRequest = new ClientCredentialsTokenRequest();
             configSection.Bind(this.tokenRequest); // Client ID, Client Secret, Audience, Username, Password
 
             this.phsaConfig = new();
-            configuration.Bind(PHSAConfigSectionKey, this.phsaConfig);
+            configuration.Bind(PhsaConfigSectionKey, this.phsaConfig);
 
             this.httpContextAccessor = httpContextAccessor;
             this.logger = logger;
@@ -119,7 +120,7 @@ namespace HealthGateway.Immunization.Services
                     Loaded = payload.Loaded,
                     RetryIn = payload.RetryIn,
                     Document = payload.FederalVaccineProof ?? new(),
-                    QRCode = payload.QRCode,
+                    QrCode = payload.QrCode,
                 },
             };
 
@@ -162,7 +163,7 @@ namespace HealthGateway.Immunization.Services
                     Loaded = payload.Loaded,
                     RetryIn = payload.RetryIn,
                     Document = payload.FederalVaccineProof ?? new(),
-                    QRCode = payload.QRCode,
+                    QrCode = payload.QrCode,
                 },
             };
 

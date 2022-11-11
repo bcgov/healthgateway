@@ -15,10 +15,10 @@
 // -------------------------------------------------------------------------
 namespace HealthGateway.CommonTests.Utils;
 
-using HealthGateway.Common.Utils;
 using System;
 using System.Globalization;
 using System.Security.Claims;
+using HealthGateway.Common.Utils;
 using Xunit;
 
 /// <summary>

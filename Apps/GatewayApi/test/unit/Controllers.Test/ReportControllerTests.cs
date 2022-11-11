@@ -13,7 +13,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //-------------------------------------------------------------------------
-namespace HealthGateway.GatewayApi.Test.Controllers
+namespace HealthGateway.GatewayApiTests.Controllers.Test
 {
     using DeepEqual.Syntax;
     using HealthGateway.Common.Data.Constants;
@@ -22,7 +22,6 @@ namespace HealthGateway.GatewayApi.Test.Controllers
     using HealthGateway.GatewayApi.Controllers;
     using HealthGateway.GatewayApi.Models;
     using HealthGateway.GatewayApi.Services;
-    using Microsoft.AspNetCore.Mvc;
     using Moq;
     using Xunit;
 
@@ -41,12 +40,12 @@ namespace HealthGateway.GatewayApi.Test.Controllers
             {
                 Data = default,
                 Template = TemplateType.Medication,
-                Type = ReportFormatType.PDF,
+                Type = ReportFormatType.Pdf,
             };
 
             RequestResult<ReportModel> expectedResult = new()
             {
-                ResourcePayload = new ReportModel()
+                ResourcePayload = new ReportModel
                 {
                     Data = "123",
                 },

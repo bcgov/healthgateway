@@ -36,7 +36,7 @@ namespace HealthGateway.Immunization.MapUtils
         /// <param name="models">The list of PHSA models to convert.</param>
         /// <param name="autoMapper">The automapper to use.</param>
         /// <returns>A list of ImmunizationRecommendation objects.</returns>
-        public static IList<ImmunizationRecommendation> FromPHSAModelList(IEnumerable<ImmunizationRecommendationResponse> models, IMapper autoMapper)
+        public static IList<ImmunizationRecommendation> FromPhsaModelList(IEnumerable<ImmunizationRecommendationResponse> models, IMapper autoMapper)
         {
             List<ImmunizationRecommendation> recommendations = new();
             models.ToList()
@@ -49,7 +49,7 @@ namespace HealthGateway.Immunization.MapUtils
 
                         recommendations.AddRange(
                             model.Recommendations.Select(
-                                recommendation => FromPHSAModel(model.RecommendationId, recommendation, autoMapper, recommendedVaccinations)));
+                                recommendation => FromPhsaModel(model.RecommendationId, recommendation, autoMapper, recommendedVaccinations)));
                     });
 
             return recommendations;
@@ -63,7 +63,7 @@ namespace HealthGateway.Immunization.MapUtils
         /// <param name="autoMapper">The automapper to use.</param>
         /// <param name="recommendedVaccinations">The recommended vaccinations.</param>
         /// <returns>The newly created ImmunizationEvent object.</returns>
-        private static ImmunizationRecommendation FromPHSAModel(string recommendationSetId, RecommendationResponse model, IMapper autoMapper, string recommendedVaccinations)
+        private static ImmunizationRecommendation FromPhsaModel(string recommendationSetId, RecommendationResponse model, IMapper autoMapper, string recommendedVaccinations)
         {
             DateCriterion? diseaseEligible = model.DateCriterions.FirstOrDefault(x => x.DateCriterionCode.Text == "Forecast by Disease Eligible Date");
             DateCriterion? diseaseDue = model.DateCriterions.FirstOrDefault(x => x.DateCriterionCode.Text == "Forecast by Disease Due Date");

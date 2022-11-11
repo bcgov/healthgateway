@@ -26,7 +26,7 @@ namespace HealthGateway.Medication.Services
     using AutoMapper;
     using HealthGateway.Common.Constants;
     using HealthGateway.Common.Data.Constants;
-    using HealthGateway.Common.Data.Models.ErrorHandling;
+    using HealthGateway.Common.Data.ErrorHandling;
     using HealthGateway.Common.Data.ViewModels;
     using HealthGateway.Common.ErrorHandling;
     using HealthGateway.Common.Models;
@@ -182,7 +182,7 @@ namespace HealthGateway.Medication.Services
         {
             using (Source.StartActivity())
             {
-                List<string> medicationIdentifiers = medSummaries.Select(s => s.DIN.PadLeft(8, '0')).ToList();
+                List<string> medicationIdentifiers = medSummaries.Select(s => s.Din.PadLeft(8, '0')).ToList();
 
                 this.logger.LogDebug("Getting drugs from DB");
                 this.logger.LogTrace("Identifiers: {MedicationIdentifiers}", string.Join(",", medicationIdentifiers));
@@ -193,7 +193,7 @@ namespace HealthGateway.Medication.Services
                     uniqueDrugIdentifiers.Count);
 
                 // Retrieve the brand names using the Federal data
-                IList<DrugProduct> drugProducts = this.drugLookupDelegate.GetDrugProductsByDIN(uniqueDrugIdentifiers);
+                IList<DrugProduct> drugProducts = this.drugLookupDelegate.GetDrugProductsByDin(uniqueDrugIdentifiers);
                 Dictionary<string, DrugProduct> drugProductsDict = drugProducts.ToDictionary(pcd => pcd.DrugIdentificationNumber, pcd => pcd);
                 Dictionary<string, PharmaCareDrug> provincialDict = new();
                 if (uniqueDrugIdentifiers.Count > drugProductsDict.Count)
@@ -202,15 +202,15 @@ namespace HealthGateway.Medication.Services
                     List<string> notFoundDins = uniqueDrugIdentifiers.Where(din => !drugProductsDict.ContainsKey(din)).ToList();
 
                     // Retrieve the brand names using the provincial data
-                    IList<PharmaCareDrug> pharmaCareDrugs = this.drugLookupDelegate.GetPharmaCareDrugsByDIN(notFoundDins);
-                    provincialDict = pharmaCareDrugs.ToDictionary(dp => dp.DINPIN, dp => dp);
+                    IList<PharmaCareDrug> pharmaCareDrugs = this.drugLookupDelegate.GetPharmaCareDrugsByDin(notFoundDins);
+                    provincialDict = pharmaCareDrugs.ToDictionary(dp => dp.DinPin, dp => dp);
                 }
 
                 this.logger.LogDebug("Finished getting drugs from DB");
                 this.logger.LogTrace("Populating medication summary... {Count} records", medSummaries.Count);
                 foreach (MedicationSummary mdSummary in medSummaries)
                 {
-                    string din = mdSummary.DIN.PadLeft(8, '0');
+                    string din = mdSummary.Din.PadLeft(8, '0');
                     if (drugProductsDict.ContainsKey(din))
                     {
                         mdSummary.BrandName = drugProductsDict[din].BrandName;

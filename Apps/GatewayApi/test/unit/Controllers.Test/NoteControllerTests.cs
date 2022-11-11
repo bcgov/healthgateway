@@ -13,7 +13,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //-------------------------------------------------------------------------
-namespace HealthGateway.GatewayApi.Test.Controllers
+namespace HealthGateway.GatewayApiTests.Controllers.Test
 {
     using System.Collections.Generic;
     using DeepEqual.Syntax;
@@ -22,7 +22,6 @@ namespace HealthGateway.GatewayApi.Test.Controllers
     using HealthGateway.GatewayApi.Controllers;
     using HealthGateway.GatewayApi.Models;
     using HealthGateway.GatewayApi.Services;
-    using Microsoft.AspNetCore.Mvc;
     using Moq;
     using Xunit;
 
@@ -41,7 +40,7 @@ namespace HealthGateway.GatewayApi.Test.Controllers
         {
             RequestResult<UserNote> expectedResult = new()
             {
-                ResourcePayload = new UserNote()
+                ResourcePayload = new UserNote
                 {
                     HdId = Hdid,
                     CreatedBy = Hdid,
@@ -68,7 +67,7 @@ namespace HealthGateway.GatewayApi.Test.Controllers
         {
             RequestResult<UserNote> expectedResult = new()
             {
-                ResourcePayload = new UserNote()
+                ResourcePayload = new UserNote
                 {
                     HdId = Hdid,
                     UpdatedBy = Hdid,
@@ -94,7 +93,7 @@ namespace HealthGateway.GatewayApi.Test.Controllers
         {
             RequestResult<UserNote> expectedResult = new()
             {
-                ResourcePayload = new UserNote()
+                ResourcePayload = new UserNote
                 {
                     HdId = Hdid,
                     UpdatedBy = Hdid,
@@ -121,11 +120,12 @@ namespace HealthGateway.GatewayApi.Test.Controllers
             List<UserNote> mockedNotes = new();
             for (int i = 0; i < 10; i++)
             {
-                mockedNotes.Add(new UserNote()
-                {
-                    Text = "note " + i,
-                    HdId = Hdid,
-                });
+                mockedNotes.Add(
+                    new UserNote
+                    {
+                        Text = "note " + i,
+                        HdId = Hdid,
+                    });
             }
 
             RequestResult<IEnumerable<UserNote>> expectedResult = new()
@@ -142,7 +142,7 @@ namespace HealthGateway.GatewayApi.Test.Controllers
             RequestResult<IEnumerable<UserNote>> actualResult = service.GetAll(Hdid);
 
             Assert.NotNull(actualResult);
-            Assert.Equal(ResultType.Success, actualResult?.ResultStatus);
+            Assert.Equal(ResultType.Success, actualResult.ResultStatus);
         }
     }
 }

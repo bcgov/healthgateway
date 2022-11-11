@@ -16,7 +16,6 @@
 namespace HealthGateway.Medication.Services
 {
     using System.Collections.Generic;
-    using System.Diagnostics;
     using System.Threading.Tasks;
     using HealthGateway.Common.Data.Constants;
     using HealthGateway.Common.Data.ViewModels;
@@ -30,8 +29,8 @@ namespace HealthGateway.Medication.Services
     /// </summary>
     public class MedicationRequestService : IMedicationRequestService
     {
-        private readonly IPatientService patientService;
         private readonly IMedicationRequestDelegate medicationRequestDelegate;
+        private readonly IPatientService patientService;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="MedicationRequestService"/> class.
@@ -45,8 +44,6 @@ namespace HealthGateway.Medication.Services
             this.patientService = patientService;
             this.medicationRequestDelegate = medicationRequestDelegate;
         }
-
-        private static ActivitySource Source { get; } = new(nameof(MedicationRequestService));
 
         /// <inheritdoc/>
         public async Task<RequestResult<IList<MedicationRequest>>> GetMedicationRequests(string hdid)

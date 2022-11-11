@@ -13,7 +13,7 @@
 //  See the License for the specific language governing permissions and
 //  limitations under the License.
 // -------------------------------------------------------------------------
-namespace Healthgateway.JobScheduler.Models
+namespace HealthGateway.JobScheduler.Models
 {
     using System;
 
@@ -37,6 +37,6 @@ namespace Healthgateway.JobScheduler.Models
         /// <summary>
         /// Gets or sets the webhook URL to post the message to.
         /// </summary>
-        public Uri? WebHookURL { get; set; }
+        public Uri? WebHookUrl { get; set; }
     }
 }

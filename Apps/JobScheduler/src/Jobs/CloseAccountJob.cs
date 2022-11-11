@@ -13,7 +13,7 @@
 //  See the License for the specific language governing permissions and
 //  limitations under the License.
 // -------------------------------------------------------------------------
-namespace Healthgateway.JobScheduler.Jobs
+namespace HealthGateway.JobScheduler.Jobs
 {
     using System;
     using System.Collections.Generic;
@@ -84,10 +84,12 @@ namespace Healthgateway.JobScheduler.Jobs
             this.dbContext = dbContext;
             this.profilesPageSize = configuration.GetValue<int>($"{JobKey}:{ProfilesPageSizeKey}");
             this.hoursBeforeDeletion = configuration.GetValue<int>($"{JobKey}:{HoursDeletionKey}") * -1;
-            this.emailTemplate = configuration.GetValue<string>($"{JobKey}:{EmailTemplateKey}");
+            this.emailTemplate = configuration.GetValue<string>($"{JobKey}:{EmailTemplateKey}") ??
+                throw new ArgumentNullException(nameof(configuration), $"{JobKey}:{EmailTemplateKey} is null");
 
             IConfigurationSection? configSection = configuration.GetSection(AuthConfigSectionName);
-            this.tokenUri = configSection.GetValue<Uri>(@"TokenUri");
+            this.tokenUri = configSection.GetValue<Uri>(@"TokenUri") ??
+                throw new ArgumentNullException(nameof(configuration), $"{AuthConfigSectionName} TokenUri is null");
 
             this.tokenRequest = new ClientCredentialsTokenRequest();
             configSection.Bind(this.tokenRequest);
@@ -102,7 +104,7 @@ namespace Healthgateway.JobScheduler.Jobs
             DateTime deleteDate = DateTime.UtcNow.AddHours(this.hoursBeforeDeletion);
             this.logger.LogInformation("Looking for closed accounts that are earlier than {DeleteDate}", deleteDate);
             int page = 0;
-            DBResult<List<UserProfile>> profileResult;
+            DbResult<List<UserProfile>> profileResult;
             do
             {
                 profileResult = this.profileDelegate.GetClosedProfiles(deleteDate, page, this.profilesPageSize);

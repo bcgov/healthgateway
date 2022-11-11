@@ -13,7 +13,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //-------------------------------------------------------------------------
-namespace HealthGateway.Medication.Services.Test
+namespace HealthGateway.MedicationTests.Services
 {
     using System;
     using System.Collections.Generic;
@@ -25,7 +25,7 @@ namespace HealthGateway.Medication.Services.Test
     using System.Threading.Tasks;
     using HealthGateway.Common.Constants;
     using HealthGateway.Common.Data.Constants;
-    using HealthGateway.Common.Data.Models.ErrorHandling;
+    using HealthGateway.Common.Data.ErrorHandling;
     using HealthGateway.Common.Data.ViewModels;
     using HealthGateway.Common.Models;
     using HealthGateway.Common.Models.ODR;
@@ -35,6 +35,7 @@ namespace HealthGateway.Medication.Services.Test
     using HealthGateway.Medication.Delegates;
     using HealthGateway.Medication.Models;
     using HealthGateway.Medication.Models.ODR;
+    using HealthGateway.Medication.Services;
     using HealthGateway.MedicationTests.Utils;
     using Microsoft.AspNetCore.Http;
     using Microsoft.Extensions.Logging;
@@ -72,7 +73,7 @@ namespace HealthGateway.Medication.Services.Test
                         }));
 
             Mock<IDrugLookupDelegate> drugLookupDelegateMock = new();
-            drugLookupDelegateMock.Setup(p => p.GetDrugProductsByDIN(It.IsAny<List<string>>())).Returns(new List<DrugProduct>());
+            drugLookupDelegateMock.Setup(p => p.GetDrugProductsByDin(It.IsAny<List<string>>())).Returns(new List<DrugProduct>());
 
             Mock<IMedStatementDelegate> medStatementDelegateMock = new();
             RequestResult<MedicationHistoryResponse> requestResult = new();
@@ -139,7 +140,7 @@ namespace HealthGateway.Medication.Services.Test
                         }));
 
             Mock<IDrugLookupDelegate> drugLookupDelegateMock = new();
-            drugLookupDelegateMock.Setup(p => p.GetDrugProductsByDIN(It.IsAny<List<string>>())).Returns(new List<DrugProduct>());
+            drugLookupDelegateMock.Setup(p => p.GetDrugProductsByDin(It.IsAny<List<string>>())).Returns(new List<DrugProduct>());
 
             Mock<IMedStatementDelegate> medStatementDelegateMock = new();
             RequestResult<MedicationHistoryResponse> requestResult = new()
@@ -213,7 +214,7 @@ namespace HealthGateway.Medication.Services.Test
                 },
             };
 
-            drugLookupDelegateMock.Setup(p => p.GetDrugProductsByDIN(It.IsAny<List<string>>())).Returns(drugList);
+            drugLookupDelegateMock.Setup(p => p.GetDrugProductsByDin(It.IsAny<List<string>>())).Returns(drugList);
 
             Mock<IMedStatementDelegate> medStatementDelegateMock = new();
             RequestResult<MedicationHistoryResponse> requestResult = new()
@@ -227,7 +228,7 @@ namespace HealthGateway.Medication.Services.Test
                     {
                         new()
                         {
-                            DIN = this.din,
+                            Din = this.din,
                             GenericName = "Generic Name",
                         },
                     },
@@ -247,7 +248,7 @@ namespace HealthGateway.Medication.Services.Test
             RequestResult<IList<MedicationStatementHistory>> actual = Task.Run(async () => await service.GetMedicationStatementsHistory(this.hdid, null).ConfigureAwait(true)).Result;
 
             // Verify
-            Assert.True(actual.ResultStatus == ResultType.Success && actual?.ResourcePayload?.Count == 1);
+            Assert.True(actual.ResultStatus == ResultType.Success && actual.ResourcePayload?.Count == 1);
         }
 
         /// <summary>
@@ -287,7 +288,7 @@ namespace HealthGateway.Medication.Services.Test
                 },
             };
 
-            drugLookupDelegateMock.Setup(p => p.GetDrugProductsByDIN(It.IsAny<List<string>>())).Returns(drugList);
+            drugLookupDelegateMock.Setup(p => p.GetDrugProductsByDin(It.IsAny<List<string>>())).Returns(drugList);
             Mock<IMedStatementDelegate> medStatementDelegateMock = new();
             RequestResult<MedicationHistoryResponse> requestResult = new()
             {
@@ -300,7 +301,7 @@ namespace HealthGateway.Medication.Services.Test
                     {
                         new()
                         {
-                            DIN = this.din,
+                            Din = this.din,
                             GenericName = "Generic Name",
                         },
                     },
@@ -320,7 +321,7 @@ namespace HealthGateway.Medication.Services.Test
             RequestResult<IList<MedicationStatementHistory>> actual = Task.Run(async () => await service.GetMedicationStatementsHistory(this.hdid, null).ConfigureAwait(true)).Result;
 
             // Verify
-            Assert.True(actual.ResultStatus == ResultType.Success && actual?.ResourcePayload?.Count == 1);
+            Assert.True(actual.ResultStatus == ResultType.Success && actual.ResourcePayload?.Count == 1);
         }
 
         /// <summary>
@@ -354,13 +355,13 @@ namespace HealthGateway.Medication.Services.Test
             {
                 new PharmaCareDrug
                 {
-                    DINPIN = this.din,
+                    DinPin = this.din,
                     BrandName = "Brand Name",
                 },
             };
 
-            drugLookupDelegateMock.Setup(p => p.GetDrugProductsByDIN(It.IsAny<List<string>>())).Returns(new List<DrugProduct>());
-            drugLookupDelegateMock.Setup(p => p.GetPharmaCareDrugsByDIN(It.IsAny<List<string>>())).Returns(drugList);
+            drugLookupDelegateMock.Setup(p => p.GetDrugProductsByDin(It.IsAny<List<string>>())).Returns(new List<DrugProduct>());
+            drugLookupDelegateMock.Setup(p => p.GetPharmaCareDrugsByDin(It.IsAny<List<string>>())).Returns(drugList);
 
             Mock<IMedStatementDelegate> medStatementDelegateMock = new();
             RequestResult<MedicationHistoryResponse> requestResult = new()
@@ -374,7 +375,7 @@ namespace HealthGateway.Medication.Services.Test
                     {
                         new()
                         {
-                            DIN = this.din,
+                            Din = this.din,
                             GenericName = "Generic Name",
                         },
                     },
@@ -394,7 +395,7 @@ namespace HealthGateway.Medication.Services.Test
             RequestResult<IList<MedicationStatementHistory>> actual = Task.Run(async () => await service.GetMedicationStatementsHistory(this.hdid, null).ConfigureAwait(true)).Result;
 
             // Verify
-            Assert.True(actual.ResultStatus == ResultType.Success && actual?.ResourcePayload?.Count == 1);
+            Assert.True(actual.ResultStatus == ResultType.Success && actual.ResourcePayload?.Count == 1);
         }
 
         /// <summary>
@@ -424,7 +425,7 @@ namespace HealthGateway.Medication.Services.Test
                         }));
 
             Mock<IDrugLookupDelegate> drugLookupDelegateMock = new();
-            drugLookupDelegateMock.Setup(p => p.GetDrugProductsByDIN(It.IsAny<List<string>>())).Returns(new List<DrugProduct>());
+            drugLookupDelegateMock.Setup(p => p.GetDrugProductsByDin(It.IsAny<List<string>>())).Returns(new List<DrugProduct>());
 
             Mock<IMedStatementDelegate> medStatementDelegateMock = new();
             RequestResult<MedicationHistoryResponse> requestResult = new()
@@ -450,7 +451,7 @@ namespace HealthGateway.Medication.Services.Test
             RequestResult<IList<MedicationStatementHistory>> actual = await service.GetMedicationStatementsHistory(this.hdid, null).ConfigureAwait(true);
 
             // Verify
-            Assert.True(actual?.ResourcePayload?.Count == 0);
+            Assert.True(actual.ResourcePayload?.Count == 0);
         }
 
         /// <summary>
@@ -471,7 +472,7 @@ namespace HealthGateway.Medication.Services.Test
                         }));
 
             Mock<IDrugLookupDelegate> drugLookupDelegateMock = new();
-            drugLookupDelegateMock.Setup(p => p.GetDrugProductsByDIN(It.IsAny<List<string>>())).Returns(new List<DrugProduct>());
+            drugLookupDelegateMock.Setup(p => p.GetDrugProductsByDin(It.IsAny<List<string>>())).Returns(new List<DrugProduct>());
 
             Mock<IMedStatementDelegate> medStatementDelegateMock = new();
             RequestResult<MedicationHistoryResponse> requestResult = new()
@@ -536,8 +537,8 @@ namespace HealthGateway.Medication.Services.Test
             // Run and Verify protective word too long
             RequestResult<IList<MedicationStatementHistory>> actual = await service.GetMedicationStatementsHistory(this.hdid, keyword).ConfigureAwait(true);
             Assert.Equal(ResultType.ActionRequired, actual.ResultStatus);
-            Assert.Equal(ActionType.Protected, actual?.ResultError?.ActionCode);
-            Assert.Equal(errorMessage, actual?.ResultError?.ResultMessage);
+            Assert.Equal(ActionType.Protected, actual.ResultError?.ActionCode);
+            Assert.Equal(errorMessage, actual.ResultError?.ResultMessage);
         }
     }
 }

@@ -54,7 +54,7 @@ namespace HealthGateway.Common.Models
             this.EmailEnabled = !string.IsNullOrWhiteSpace(emailAddress);
             this.SMSNumber = smsNumber;
             this.SMSEnabled = !string.IsNullOrWhiteSpace(smsNumber);
-            this.SMSVerified = smsNumber == userProfile.SMSNumber;
+            this.SMSVerified = smsNumber == userProfile.SmsNumber;
         }
 
         /// <summary>

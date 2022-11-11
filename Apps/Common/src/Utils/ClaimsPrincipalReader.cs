@@ -32,7 +32,7 @@ public static class ClaimsPrincipalReader
     public static DateTime GetAuthDateTime(ClaimsPrincipal claimsPrincipal)
     {
         // auth_time is not mandatory in a Bearer token.
-        string rowAuthTime = claimsPrincipal.FindFirstValue("auth_time");
+        string? rowAuthTime = claimsPrincipal.FindFirstValue("auth_time");
 
         // get token  "issued at time", which *is* mandatory in JWT bearer token.
         rowAuthTime ??= claimsPrincipal.FindFirstValue("iat");
