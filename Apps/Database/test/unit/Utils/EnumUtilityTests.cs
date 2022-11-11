@@ -13,7 +13,7 @@
 //  See the License for the specific language governing permissions and
 //  limitations under the License.
 // -------------------------------------------------------------------------
-namespace HealthGateway.DatabaseTests.Context
+namespace HealthGateway.DatabaseTests.Utils
 {
     using System;
     using HealthGateway.Database.Constants;
@@ -59,7 +59,7 @@ namespace HealthGateway.DatabaseTests.Context
         {
             AuditTransactionResult expected = AuditTransactionResult.Success;
 
-            AuditTransactionResult actual = EnumUtility.ToEnum<AuditTransactionResult>("Success", false);
+            AuditTransactionResult actual = EnumUtility.ToEnum<AuditTransactionResult>("Success");
 
             Assert.True(actual == expected);
         }
@@ -96,7 +96,7 @@ namespace HealthGateway.DatabaseTests.Context
         [Fact]
         public void ValidateExceptionToEnum()
         {
-            Assert.Throws<ArgumentException>(() => EnumUtility.ToEnum<AuditTransactionResult>("NOTAVALUE", false));
+            Assert.Throws<ArgumentException>(() => EnumUtility.ToEnum<AuditTransactionResult>("NOTAVALUE"));
         }
     }
 }

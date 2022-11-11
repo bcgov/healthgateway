@@ -13,7 +13,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //-------------------------------------------------------------------------
-namespace HealthGateway.Medication.Services.Test
+namespace HealthGateway.MedicationTests.Services
 {
     using System;
     using System.Collections.Generic;
@@ -35,6 +35,7 @@ namespace HealthGateway.Medication.Services.Test
     using HealthGateway.Medication.Delegates;
     using HealthGateway.Medication.Models;
     using HealthGateway.Medication.Models.ODR;
+    using HealthGateway.Medication.Services;
     using HealthGateway.MedicationTests.Utils;
     using Microsoft.AspNetCore.Http;
     using Microsoft.Extensions.Logging;
@@ -247,7 +248,7 @@ namespace HealthGateway.Medication.Services.Test
             RequestResult<IList<MedicationStatementHistory>> actual = Task.Run(async () => await service.GetMedicationStatementsHistory(this.hdid, null).ConfigureAwait(true)).Result;
 
             // Verify
-            Assert.True(actual.ResultStatus == ResultType.Success && actual?.ResourcePayload?.Count == 1);
+            Assert.True(actual.ResultStatus == ResultType.Success && actual.ResourcePayload?.Count == 1);
         }
 
         /// <summary>
@@ -320,7 +321,7 @@ namespace HealthGateway.Medication.Services.Test
             RequestResult<IList<MedicationStatementHistory>> actual = Task.Run(async () => await service.GetMedicationStatementsHistory(this.hdid, null).ConfigureAwait(true)).Result;
 
             // Verify
-            Assert.True(actual.ResultStatus == ResultType.Success && actual?.ResourcePayload?.Count == 1);
+            Assert.True(actual.ResultStatus == ResultType.Success && actual.ResourcePayload?.Count == 1);
         }
 
         /// <summary>
@@ -394,7 +395,7 @@ namespace HealthGateway.Medication.Services.Test
             RequestResult<IList<MedicationStatementHistory>> actual = Task.Run(async () => await service.GetMedicationStatementsHistory(this.hdid, null).ConfigureAwait(true)).Result;
 
             // Verify
-            Assert.True(actual.ResultStatus == ResultType.Success && actual?.ResourcePayload?.Count == 1);
+            Assert.True(actual.ResultStatus == ResultType.Success && actual.ResourcePayload?.Count == 1);
         }
 
         /// <summary>
@@ -450,7 +451,7 @@ namespace HealthGateway.Medication.Services.Test
             RequestResult<IList<MedicationStatementHistory>> actual = await service.GetMedicationStatementsHistory(this.hdid, null).ConfigureAwait(true);
 
             // Verify
-            Assert.True(actual?.ResourcePayload?.Count == 0);
+            Assert.True(actual.ResourcePayload?.Count == 0);
         }
 
         /// <summary>
@@ -536,8 +537,8 @@ namespace HealthGateway.Medication.Services.Test
             // Run and Verify protective word too long
             RequestResult<IList<MedicationStatementHistory>> actual = await service.GetMedicationStatementsHistory(this.hdid, keyword).ConfigureAwait(true);
             Assert.Equal(ResultType.ActionRequired, actual.ResultStatus);
-            Assert.Equal(ActionType.Protected, actual?.ResultError?.ActionCode);
-            Assert.Equal(errorMessage, actual?.ResultError?.ResultMessage);
+            Assert.Equal(ActionType.Protected, actual.ResultError?.ActionCode);
+            Assert.Equal(errorMessage, actual.ResultError?.ResultMessage);
         }
     }
 }

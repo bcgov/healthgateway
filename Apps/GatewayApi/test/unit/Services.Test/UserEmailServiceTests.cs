@@ -13,7 +13,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //-------------------------------------------------------------------------
-namespace HealthGateway.GatewayApi.Test.Services
+namespace HealthGateway.GatewayApiTests.Services.Test
 {
     using System;
     using System.Collections.Generic;
@@ -236,13 +236,11 @@ namespace HealthGateway.GatewayApi.Test.Services
 
         private static IConfigurationRoot GetIConfigurationRoot()
         {
-            Dictionary<string, string?> myConfiguration = new();
-
             return new ConfigurationBuilder()
                 .AddJsonFile("appsettings.json", true)
                 .AddJsonFile("appsettings.Development.json", true)
                 .AddJsonFile("appsettings.local.json", true)
-                .AddInMemoryCollection(myConfiguration.ToList())
+                .AddInMemoryCollection(new Dictionary<string, string?>().ToList())
                 .Build();
         }
     }

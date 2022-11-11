@@ -24,7 +24,6 @@ namespace HealthGateway.CommonTests.Services
     using HealthGateway.Common.Data.Constants;
     using HealthGateway.Common.Data.Models;
     using HealthGateway.Common.Services;
-    using HealthGateway.Database.Constants;
     using HealthGateway.Database.Delegates;
     using HealthGateway.Database.Models;
     using Microsoft.AspNetCore.Hosting;
@@ -70,25 +69,28 @@ namespace HealthGateway.CommonTests.Services
             Mock<IBackgroundJobClient> mockJobclient = new();
             Mock<IEmailDelegate> mockEmailDelegate = new();
             mockEmailDelegate.Setup(s => s.GetEmailTemplate(It.IsAny<string>())).Returns(emailTemplate);
-            mockEmailDelegate.Setup(s => s.InsertEmail(It.IsAny<Email>(), true)).Callback<Email, bool>((email, b) => email.Id = expectedEmailId);
+            mockEmailDelegate.Setup(s => s.InsertEmail(It.IsAny<Email>(), true)).Callback<Email, bool>((email, _) => email.Id = expectedEmailId);
 
             Mock<IWebHostEnvironment> mockWebHosting = new();
 
             IEmailQueueService emailService = new EmailQueueService(
-                        mockLogger.Object,
-                        mockJobclient.Object,
-                        mockEmailDelegate.Object,
-                        mockWebHosting.Object);
-            emailService.QueueNewEmail(expectedEmail, string.Empty, kv, true);
-            mockJobclient.Verify(x => x.Create(
-                     It.Is<Job>(job => job.Method.Name == "SendEmail" && (Guid)job.Args[0] == expectedEmailId),
-                     It.IsAny<EnqueuedState>()));
-            mockEmailDelegate.Verify(x => x.InsertEmail(
-                It.Is<Email>(email =>
-                    email.To == expectedEmail &&
-                    email.Subject == emailTemplate.Subject &&
-                    email.Body == expectedBody),
-                true));
+                mockLogger.Object,
+                mockJobclient.Object,
+                mockEmailDelegate.Object,
+                mockWebHosting.Object);
+            emailService.QueueNewEmail(expectedEmail, string.Empty, kv);
+            mockJobclient.Verify(
+                x => x.Create(
+                    It.Is<Job>(job => job.Method.Name == "SendEmail" && (Guid)job.Args[0] == expectedEmailId),
+                    It.IsAny<EnqueuedState>()));
+            mockEmailDelegate.Verify(
+                x => x.InsertEmail(
+                    It.Is<Email>(
+                        email =>
+                            email.To == expectedEmail &&
+                            email.Subject == emailTemplate.Subject &&
+                            email.Body == expectedBody),
+                    true));
         }
 
         /// <summary>
@@ -115,25 +117,28 @@ namespace HealthGateway.CommonTests.Services
             Mock<IBackgroundJobClient> mockJobclient = new();
             Mock<IEmailDelegate> mockEmailDelegate = new();
             mockEmailDelegate.Setup(s => s.GetEmailTemplate(It.IsAny<string>())).Returns(emailTemplate);
-            mockEmailDelegate.Setup(s => s.InsertEmail(It.IsAny<Email>(), true)).Callback<Email, bool>((email, b) => email.Id = expectedEmailId);
+            mockEmailDelegate.Setup(s => s.InsertEmail(It.IsAny<Email>(), true)).Callback<Email, bool>((email, _) => email.Id = expectedEmailId);
 
             Mock<IWebHostEnvironment> mockWebHosting = new();
             IEmailQueueService emailService = new EmailQueueService(
-                        mockLogger.Object,
-                        mockJobclient.Object,
-                        mockEmailDelegate.Object,
-                        mockWebHosting.Object);
-            emailService.QueueNewEmail(expectedEmail, string.Empty, true);
-            mockJobclient.Verify(x => x.Create(
-                     It.Is<Job>(job => job.Method.Name == "SendEmail" && (Guid)job.Args[0] == expectedEmailId),
-                     It.IsAny<EnqueuedState>()));
-            mockEmailDelegate.Verify(x => x.InsertEmail(
-                It.Is<Email>(email =>
-                    email.Id == expectedEmailId &&
-                    email.To == expectedEmail &&
-                    email.Subject == emailTemplate.Subject &&
-                    email.Body == emailTemplate.Body),
-                true));
+                mockLogger.Object,
+                mockJobclient.Object,
+                mockEmailDelegate.Object,
+                mockWebHosting.Object);
+            emailService.QueueNewEmail(expectedEmail, string.Empty);
+            mockJobclient.Verify(
+                x => x.Create(
+                    It.Is<Job>(job => job.Method.Name == "SendEmail" && (Guid)job.Args[0] == expectedEmailId),
+                    It.IsAny<EnqueuedState>()));
+            mockEmailDelegate.Verify(
+                x => x.InsertEmail(
+                    It.Is<Email>(
+                        email =>
+                            email.Id == expectedEmailId &&
+                            email.To == expectedEmail &&
+                            email.Subject == emailTemplate.Subject &&
+                            email.Body == emailTemplate.Body),
+                    true));
         }
 
         /// <summary>
@@ -164,12 +169,12 @@ namespace HealthGateway.CommonTests.Services
             mockEmailDelegate.Setup(s => s.GetEmail(It.IsAny<Guid>())).Returns(email);
             Mock<IWebHostEnvironment> mockWebHosting = new();
             IEmailQueueService emailService = new EmailQueueService(
-                        mockLogger.Object,
-                        mockJobclient.Object,
-                        mockEmailDelegate.Object,
-                        mockWebHosting.Object);
+                mockLogger.Object,
+                mockJobclient.Object,
+                mockEmailDelegate.Object,
+                mockWebHosting.Object);
 
-            Assert.Throws<ArgumentNullException>(() => emailService.CloneAndQueue(emailId, true));
+            Assert.Throws<ArgumentNullException>(() => emailService.CloneAndQueue(emailId));
         }
 
         /// <summary>
@@ -185,12 +190,12 @@ namespace HealthGateway.CommonTests.Services
             mockEmailDelegate.Setup(s => s.GetEmail(It.IsAny<Guid>())).Returns<Email>(null);
             Mock<IWebHostEnvironment> mockWebHosting = new();
             IEmailQueueService emailService = new EmailQueueService(
-                        mockLogger.Object,
-                        mockJobclient.Object,
-                        mockEmailDelegate.Object,
-                        mockWebHosting.Object);
+                mockLogger.Object,
+                mockJobclient.Object,
+                mockEmailDelegate.Object,
+                mockWebHosting.Object);
 
-            Assert.Throws<ArgumentException>(() => emailService.CloneAndQueue(emailId, true));
+            Assert.Throws<ArgumentException>(() => emailService.CloneAndQueue(emailId));
         }
 
         /// <summary>
@@ -215,27 +220,30 @@ namespace HealthGateway.CommonTests.Services
             Mock<IBackgroundJobClient> mockJobclient = new();
             Mock<IEmailDelegate> mockEmailDelegate = new();
             mockEmailDelegate.Setup(s => s.GetEmail(It.IsAny<Guid>())).Returns(expectedEmail);
-            mockEmailDelegate.Setup(s => s.InsertEmail(It.IsAny<Email>(), true)).Callback<Email, bool>((email, b) => email.Id = expectedNewEmailId);
+            mockEmailDelegate.Setup(s => s.InsertEmail(It.IsAny<Email>(), true)).Callback<Email, bool>((email, _) => email.Id = expectedNewEmailId);
             Mock<IWebHostEnvironment> mockWebHosting = new();
             IEmailQueueService emailService = new EmailQueueService(
-                        mockLogger.Object,
-                        mockJobclient.Object,
-                        mockEmailDelegate.Object,
-                        mockWebHosting.Object);
+                mockLogger.Object,
+                mockJobclient.Object,
+                mockEmailDelegate.Object,
+                mockWebHosting.Object);
 
-            emailService.CloneAndQueue(expectedEmail.Id, true);
+            emailService.CloneAndQueue(expectedEmail.Id);
 
-            mockJobclient.Verify(x => x.Create(
-                It.Is<Job>(job => job.Method.Name == "SendEmail" && job.Args[0] is Guid),
-                It.IsAny<EnqueuedState>()));
-            mockEmailDelegate.Verify(x => x.InsertEmail(
-                It.Is<Email>(email =>
-                    email.Id == expectedNewEmailId &&
-                    email.From == expectedEmail.From &&
-                    email.To == expectedEmail.To &&
-                    email.Subject == expectedEmail.Subject &&
-                    email.Body == expectedEmail.Body),
-                true));
+            mockJobclient.Verify(
+                x => x.Create(
+                    It.Is<Job>(job => job.Method.Name == "SendEmail" && job.Args[0] is Guid),
+                    It.IsAny<EnqueuedState>()));
+            mockEmailDelegate.Verify(
+                x => x.InsertEmail(
+                    It.Is<Email>(
+                        email =>
+                            email.Id == expectedNewEmailId &&
+                            email.From == expectedEmail.From &&
+                            email.To == expectedEmail.To &&
+                            email.Subject == expectedEmail.Subject &&
+                            email.Body == expectedEmail.Body),
+                    true));
         }
 
         /// <summary>
