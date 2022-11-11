@@ -53,7 +53,7 @@ namespace HealthGateway.EncounterTests.Delegates
         /// GetMSPVisits - Happy Path.
         /// </summary>
         [Fact]
-        public void ShouldGetMSPVisits()
+        public void ShouldGetMspVisits()
         {
             string content = @"
                    {
@@ -109,14 +109,14 @@ namespace HealthGateway.EncounterTests.Delegates
                 this.configuration);
             OdrHistoryQuery query = new()
             {
-                PHN = "123456789",
+                Phn = "123456789",
             };
 
-            RequestResult<MspVisitHistoryResponse> actualResult = Task.Run(async () => await mspVisitDelegate.GetMSPVisitHistoryAsync(query, string.Empty, string.Empty).ConfigureAwait(true)).Result;
+            RequestResult<MspVisitHistoryResponse> actualResult = Task.Run(async () => await mspVisitDelegate.GetMspVisitHistoryAsync(query, string.Empty, string.Empty).ConfigureAwait(true)).Result;
 
             Assert.Equal(ResultType.Success, actualResult.ResultStatus);
-            Assert.Single(actualResult?.ResourcePayload?.Claims);
-            Assert.Equal(1, actualResult?.TotalResultCount);
+            Assert.Single(actualResult.ResourcePayload?.Claims);
+            Assert.Equal(1, actualResult.TotalResultCount);
         }
 
         /// <summary>
@@ -148,12 +148,12 @@ namespace HealthGateway.EncounterTests.Delegates
                 GetLocalConfig());
             OdrHistoryQuery query = new()
             {
-                PHN = "123456789",
+                Phn = "123456789",
             };
 
             RequestResult<MspVisitHistoryResponse> actualResult = Task.Run(
                     async () =>
-                        await mspVisitDelegate.GetMSPVisitHistoryAsync(query, string.Empty, string.Empty).ConfigureAwait(true))
+                        await mspVisitDelegate.GetMspVisitHistoryAsync(query, string.Empty, string.Empty).ConfigureAwait(true))
                 .Result;
 
             Assert.Equal(ResultType.Error, actualResult.ResultStatus);
@@ -163,7 +163,7 @@ namespace HealthGateway.EncounterTests.Delegates
         /// GetMSPVisits - Unauthorized.
         /// </summary>
         [Fact]
-        public void ShouldErrorGetMSPVisits()
+        public void ShouldErrorGetMspVisits()
         {
             using HttpResponseMessage httpRequestMessage = new()
             {
@@ -187,10 +187,10 @@ namespace HealthGateway.EncounterTests.Delegates
                 this.configuration);
             OdrHistoryQuery query = new()
             {
-                PHN = "123456789",
+                Phn = "123456789",
             };
 
-            RequestResult<MspVisitHistoryResponse> actualResult = Task.Run(async () => await mspVisitDelegate.GetMSPVisitHistoryAsync(query, string.Empty, string.Empty).ConfigureAwait(true)).Result;
+            RequestResult<MspVisitHistoryResponse> actualResult = Task.Run(async () => await mspVisitDelegate.GetMspVisitHistoryAsync(query, string.Empty, string.Empty).ConfigureAwait(true)).Result;
 
             Assert.Equal(ResultType.Error, actualResult.ResultStatus);
         }
@@ -219,13 +219,13 @@ namespace HealthGateway.EncounterTests.Delegates
                 this.configuration);
             OdrHistoryQuery query = new()
             {
-                PHN = "123456789",
+                Phn = "123456789",
             };
 
-            RequestResult<MspVisitHistoryResponse> actualResult = Task.Run(async () => await mspVisitDelegate.GetMSPVisitHistoryAsync(query, string.Empty, string.Empty).ConfigureAwait(true)).Result;
+            RequestResult<MspVisitHistoryResponse> actualResult = Task.Run(async () => await mspVisitDelegate.GetMspVisitHistoryAsync(query, string.Empty, string.Empty).ConfigureAwait(true)).Result;
 
             Assert.True(actualResult.ResultStatus == ResultType.Error);
-            Assert.True(actualResult?.ResultError?.ErrorCode.EndsWith("-CE-ODR", StringComparison.InvariantCulture));
+            Assert.True(actualResult.ResultError?.ErrorCode.EndsWith("-CE-ODR", StringComparison.InvariantCulture));
         }
 
         private static IConfigurationRoot GetIConfigurationRoot()
@@ -246,7 +246,7 @@ namespace HealthGateway.EncounterTests.Delegates
             };
 
             return new ConfigurationBuilder()
-                .AddInMemoryCollection(myConfiguration.ToList<KeyValuePair<string, string?>>())
+                .AddInMemoryCollection(myConfiguration.ToList())
                 .Build();
         }
     }

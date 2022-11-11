@@ -56,12 +56,12 @@ namespace HealthGateway.Common.Delegates
         private static ActivitySource Source { get; } = new(nameof(ClientRegistriesDelegate));
 
         /// <inheritdoc/>
-        public async Task<RequestResult<PatientModel>> GetDemographicsByHDIDAsync(string hdid, bool disableIdValidation = false)
+        public async Task<RequestResult<PatientModel>> GetDemographicsByHdidAsync(string hdid, bool disableIdValidation = false)
         {
             using (Source.StartActivity())
             {
                 // Create request object
-                HCIM_IN_GetDemographicsRequest request = CreateRequest(OidType.HDID, hdid);
+                HCIM_IN_GetDemographicsRequest request = CreateRequest(OidType.Hdid, hdid);
                 try
                 {
                     // Perform the request
@@ -85,12 +85,12 @@ namespace HealthGateway.Common.Delegates
         }
 
         /// <inheritdoc/>
-        public async Task<RequestResult<PatientModel>> GetDemographicsByPHNAsync(string phn, bool disableIdValidation = false)
+        public async Task<RequestResult<PatientModel>> GetDemographicsByPhnAsync(string phn, bool disableIdValidation = false)
         {
             using (Source.StartActivity())
             {
                 // Create request object
-                HCIM_IN_GetDemographicsRequest request = CreateRequest(OidType.PHN, phn);
+                HCIM_IN_GetDemographicsRequest request = CreateRequest(OidType.Phn, phn);
                 try
                 {
                     // Perform the request
@@ -115,7 +115,7 @@ namespace HealthGateway.Common.Delegates
 
         private static HCIM_IN_GetDemographicsRequest CreateRequest(OidType oidType, string identifierValue)
         {
-            using (Source.StartActivity("CreatePatientSOAPRequest"))
+            using (Source.StartActivity())
             {
                 HCIM_IN_GetDemographics request = new();
                 request.id = new II { root = "2.16.840.1.113883.3.51.1.1.1", extension = DateTimeOffset.Now.ToUnixTimeMilliseconds().ToString(CultureInfo.InvariantCulture) };
@@ -268,7 +268,7 @@ namespace HealthGateway.Common.Delegates
 
         private RequestResult<PatientModel> ParseResponse(HCIM_IN_GetDemographicsResponse1 reply, bool disableIdValidation)
         {
-            using (Source.StartActivity("ParsePatientResponse"))
+            using (Source.StartActivity())
             {
                 this.logger.LogDebug("Parsing patient response.");
 
@@ -397,7 +397,7 @@ namespace HealthGateway.Common.Delegates
 
         private bool PopulateIdentifiers(HCIM_IN_GetDemographicsResponseIdentifiedPerson retrievedPerson, PatientModel patient)
         {
-            II? identifiedPersonId = retrievedPerson.identifiedPerson?.id?.FirstOrDefault(x => x.root == OidType.PHN.ToString());
+            II? identifiedPersonId = retrievedPerson.identifiedPerson?.id?.FirstOrDefault(x => x.root == OidType.Phn.ToString());
             if (identifiedPersonId == null)
             {
                 this.logger.LogWarning("Client Registry returned a person without a PHN");
@@ -407,7 +407,7 @@ namespace HealthGateway.Common.Delegates
                 patient.PersonalHealthNumber = identifiedPersonId.extension;
             }
 
-            II? subjectId = retrievedPerson.id?.FirstOrDefault(x => x.displayable && x.root == OidType.HDID.ToString());
+            II? subjectId = retrievedPerson.id?.FirstOrDefault(x => x.displayable && x.root == OidType.Hdid.ToString());
             if (subjectId == null)
             {
                 this.logger.LogWarning("Client Registry returned a person without an HDID");

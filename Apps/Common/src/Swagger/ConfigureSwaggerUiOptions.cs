@@ -50,19 +50,16 @@ namespace HealthGateway.Common.Swagger
         /// <param name="options">options.</param>
         public void Configure(SwaggerUIOptions options)
         {
-            if (options != null)
-            {
-                this.provider
-                    .ApiVersionDescriptions
-                    .ToList()
-                    .ForEach(
-                        description =>
-                        {
-                            options.SwaggerEndpoint(
-                                $"/{this.settings.RoutePrefixWithSlash}{description.GroupName}/swagger.json",
-                                description.GroupName.ToUpperInvariant());
-                        });
-            }
+            this.provider
+                .ApiVersionDescriptions
+                .ToList()
+                .ForEach(
+                    description =>
+                    {
+                        options.SwaggerEndpoint(
+                            $"/{this.settings.RoutePrefixWithSlash}{description.GroupName}/swagger.json",
+                            description.GroupName.ToUpperInvariant());
+                    });
         }
     }
 }

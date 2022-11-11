@@ -38,9 +38,9 @@ namespace HealthGateway.Common.Services
         /// The generic cache domain to store the Personal Account.
         /// </summary>
         private const string CacheDomain = "PersonalAccount";
+        private readonly ICacheProvider cacheProvider;
 
         private readonly ILogger<PersonalAccountsService> logger;
-        private readonly ICacheProvider cacheProvider;
         private readonly IPersonalAccountsApi personalAccountsApi;
         private readonly PhsaConfigV2 phsaConfig;
 
@@ -67,7 +67,7 @@ namespace HealthGateway.Common.Services
 
         private static ActivitySource Source { get; } = new(nameof(PersonalAccountsService));
 
-        /// <inheritdoc />
+        /// <inheritdoc/>
         public async Task<RequestResult<PersonalAccount?>> GetPatientAccountAsync(string hdid)
         {
             RequestResult<PersonalAccount?> requestResult = new()
@@ -92,7 +92,7 @@ namespace HealthGateway.Common.Services
                         requestResult.ResultError = new()
                         {
                             ResultMessage = $"API Exception {response.Error}",
-                            ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.PHSA),
+                            ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.Phsa),
                         };
                     }
                 }
@@ -102,7 +102,7 @@ namespace HealthGateway.Common.Services
                     requestResult.ResultError = new()
                     {
                         ResultMessage = "Error with HTTP Request for Personal Accounts",
-                        ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.PHSA),
+                        ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.Phsa),
                     };
                 }
             }
@@ -117,7 +117,7 @@ namespace HealthGateway.Common.Services
             return requestResult;
         }
 
-        /// <inheritdoc />
+        /// <inheritdoc/>
         public RequestResult<PersonalAccount?> GetPatientAccount(string hdid)
         {
             return this.GetPatientAccountAsync(hdid).Result;

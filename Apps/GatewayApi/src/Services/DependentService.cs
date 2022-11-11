@@ -98,7 +98,7 @@ namespace HealthGateway.GatewayApi.Services
             }
 
             this.logger.LogTrace("Getting dependent details...");
-            RequestResult<PatientModel> patientResult = Task.Run(async () => await this.patientService.GetPatient(addDependentRequest.Phn, PatientIdentifierType.PHN).ConfigureAwait(true)).Result;
+            RequestResult<PatientModel> patientResult = Task.Run(async () => await this.patientService.GetPatient(addDependentRequest.Phn, PatientIdentifierType.Phn).ConfigureAwait(true)).Result;
             if (patientResult.ResultStatus == ResultType.Error)
             {
                 return new RequestResult<DependentModel>
@@ -301,9 +301,9 @@ namespace HealthGateway.GatewayApi.Services
             {
                 request.EmailAddress = null;
                 request.EmailEnabled = false;
-                request.SMSNumber = null;
-                request.SMSEnabled = false;
-                request.SMSVerified = false;
+                request.SmsNumber = null;
+                request.SmsEnabled = false;
+                request.SmsVerified = false;
             }
 
             this.notificationSettingsService.QueueNotificationSettings(request);

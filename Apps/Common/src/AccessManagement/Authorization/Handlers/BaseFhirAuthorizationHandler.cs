@@ -15,7 +15,6 @@
 //-------------------------------------------------------------------------
 namespace HealthGateway.Common.AccessManagement.Authorization.Handlers
 {
-    using System;
     using System.Linq;
     using System.Security.Claims;
     using System.Threading.Tasks;
@@ -58,7 +57,7 @@ namespace HealthGateway.Common.AccessManagement.Authorization.Handlers
         /// </summary>
         /// <param name="requirement">The Fhir Requirement.</param>
         /// <returns>The resource hdid.</returns>
-        protected string? GetResourceHDID(FhirRequirement requirement)
+        protected string? GetResourceHdid(FhirRequirement requirement)
         {
             string? retVal = null;
             if (requirement.Lookup == FhirResourceLookup.Route)
@@ -77,21 +76,21 @@ namespace HealthGateway.Common.AccessManagement.Authorization.Handlers
         /// Check if the authenticated user is the owner of the resource being accessed.
         /// </summary>
         /// <param name="context">The authorization handler context.</param>
-        /// <param name="resourceHDID">The health data resource subject identifier.</param>
+        /// <param name="resourceHdid">The health data resource subject identifier.</param>
         /// <returns>True if the authenticated user is the owner of the resource, false otherwise.</returns>
-        protected bool IsOwner(AuthorizationHandlerContext context, string resourceHDID)
+        protected bool IsOwner(AuthorizationHandlerContext context, string resourceHdid)
         {
             bool retVal = false;
-            string? userHDID = context.User.FindFirst(c => c.Type == GatewayClaims.HDID)?.Value;
-            if (userHDID != null)
+            string? userHdid = context.User.FindFirst(c => c.Type == GatewayClaims.Hdid)?.Value;
+            if (userHdid != null)
             {
-                retVal = userHDID == resourceHDID;
-                string message = $"{userHDID} is {(!retVal ? "not " : string.Empty)}the resource owner";
+                retVal = userHdid == resourceHdid;
+                string message = $"{userHdid} is {(!retVal ? "not " : string.Empty)}the resource owner";
                 this.logger.LogDebug("{Message}", message);
             }
             else
             {
-                this.logger.LogDebug("Unable to validate resource owner for {ResourceHdid} as no HDID claims present", resourceHDID);
+                this.logger.LogDebug("Unable to validate resource owner for {ResourceHdid} as no HDID claims present", resourceHdid);
             }
 
             return retVal;
@@ -101,22 +100,22 @@ namespace HealthGateway.Common.AccessManagement.Authorization.Handlers
         /// Check if the authenticated user has system delegated access to the resource.
         /// </summary>
         /// <param name="context">The authorization handler context.</param>
-        /// <param name="resourceHDID">The health data resource subject identifier.</param>
+        /// <param name="resourceHdid">The health data resource subject identifier.</param>
         /// <param name="requirement">The Fhir requirement to satisfy.</param>
         /// <returns>True if the authenticated user has system delegated scope, false otherwise.</returns>
-        protected bool IsSystemDelegated(AuthorizationHandlerContext context, string resourceHDID, FhirRequirement requirement)
+        protected bool IsSystemDelegated(AuthorizationHandlerContext context, string resourceHdid, FhirRequirement requirement)
         {
             bool retVal = false;
             if (context.User.HasClaim(c => c.Type == GatewayClaims.Scope))
             {
                 string scopeClaim = context.User.FindFirstValue(GatewayClaims.Scope) ?? string.Empty;
                 string[] scopes = scopeClaim.Split(' ');
-                this.logger.LogDebug("Performing system delegation validation for resource {ResourceHdid}", resourceHDID);
+                this.logger.LogDebug("Performing system delegation validation for resource {ResourceHdid}", resourceHdid);
                 this.logger.LogDebug("Caller has the following scopes: {ScopeClaim}", scopeClaim);
                 string[] systemDelegatedScopes = GetAcceptedScopes(System, requirement);
                 if (scopes.Intersect(systemDelegatedScopes).Any())
                 {
-                    this.logger.LogDebug("Authorized caller as system to have {AccessType} access to resource {ResourceHdid}", requirement.AccessType, resourceHDID);
+                    this.logger.LogDebug("Authorized caller as system to have {AccessType} access to resource {ResourceHdid}", requirement.AccessType, resourceHdid);
                     retVal = true;
                 }
             }

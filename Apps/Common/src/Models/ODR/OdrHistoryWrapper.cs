@@ -33,12 +33,12 @@ namespace HealthGateway.Common.Models.ODR
         /// Gets or sets the HDID of the requestor.
         /// </summary>
         [JsonPropertyName("hdid")]
-        public string RequestorHDID { get; set; } = string.Empty;
+        public string RequestorHdid { get; set; } = string.Empty;
 
         /// <summary>
         /// Gets or sets the IP of the requestor.
         /// </summary>
         [JsonPropertyName("requestingIP")]
-        public string RequestorIP { get; set; } = string.Empty;
+        public string RequestorIp { get; set; } = string.Empty;
     }
 }

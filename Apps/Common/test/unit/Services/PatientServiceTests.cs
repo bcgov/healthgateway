@@ -55,7 +55,7 @@ namespace HealthGateway.CommonTests.Services
         [Fact]
         public void ShouldGetPatient()
         {
-            GetPatient(PatientIdentifierType.HDID, new Dictionary<string, string?>());
+            GetPatient(PatientIdentifierType.Hdid, new Dictionary<string, string?>());
         }
 
         /// <summary>
@@ -68,7 +68,7 @@ namespace HealthGateway.CommonTests.Services
             {
                 { "PatientService:CacheTTL", "90" },
             };
-            GetPatient(PatientIdentifierType.HDID, configDictionary, true);
+            GetPatient(PatientIdentifierType.Hdid, configDictionary, true);
         }
 
         /// <summary>
@@ -81,7 +81,7 @@ namespace HealthGateway.CommonTests.Services
             {
                 { "PatientService:CacheTTL", "90" },
             };
-            GetPatient(PatientIdentifierType.PHN, configDictionary);
+            GetPatient(PatientIdentifierType.Phn, configDictionary);
         }
 
         /// <summary>
@@ -94,7 +94,7 @@ namespace HealthGateway.CommonTests.Services
             {
                 { "PatientService:CacheTTL", "90" },
             };
-            GetPatient(PatientIdentifierType.HDID, configDictionary);
+            GetPatient(PatientIdentifierType.Hdid, configDictionary);
         }
 
         /// <summary>
@@ -120,7 +120,7 @@ namespace HealthGateway.CommonTests.Services
             IConfigurationRoot configuration = new ConfigurationBuilder()
                 .AddInMemoryCollection(new Dictionary<string, string?>().ToList())
                 .Build();
-            patientDelegateMock.Setup(p => p.GetDemographicsByPHNAsync(It.IsAny<string>(), false)).ReturnsAsync(requestResult);
+            patientDelegateMock.Setup(p => p.GetDemographicsByPhnAsync(It.IsAny<string>(), false)).ReturnsAsync(requestResult);
 
             IPatientService service = new PatientService(
                 new Mock<ILogger<PatientService>>().Object,
@@ -129,7 +129,7 @@ namespace HealthGateway.CommonTests.Services
                 new Mock<ICacheProvider>().Object);
 
             // Act
-            RequestResult<PatientModel> actual = Task.Run(async () => await service.GetPatient(Phn, PatientIdentifierType.PHN).ConfigureAwait(true)).Result;
+            RequestResult<PatientModel> actual = Task.Run(async () => await service.GetPatient(Phn, PatientIdentifierType.Phn).ConfigureAwait(true)).Result;
 
             // Verify
             Assert.Equal(ResultType.Success, actual.ResultStatus);
@@ -159,7 +159,7 @@ namespace HealthGateway.CommonTests.Services
             IConfigurationRoot configuration = new ConfigurationBuilder()
                 .AddInMemoryCollection(new Dictionary<string, string?>().ToList())
                 .Build();
-            patientDelegateMock.Setup(p => p.GetDemographicsByPHNAsync(It.IsAny<string>(), false)).ReturnsAsync(requestResult);
+            patientDelegateMock.Setup(p => p.GetDemographicsByPhnAsync(It.IsAny<string>(), false)).ReturnsAsync(requestResult);
 
             IPatientService service = new PatientService(
                 new Mock<ILogger<PatientService>>().Object,
@@ -168,7 +168,7 @@ namespace HealthGateway.CommonTests.Services
                 new Mock<ICacheProvider>().Object);
 
             // Act
-            RequestResult<PatientModel> actual = Task.Run(async () => await service.GetPatient("abc123", PatientIdentifierType.PHN).ConfigureAwait(true)).Result;
+            RequestResult<PatientModel> actual = Task.Run(async () => await service.GetPatient("abc123", PatientIdentifierType.Phn).ConfigureAwait(true)).Result;
 
             // Verify
             Assert.Equal(ResultType.ActionRequired, actual.ResultStatus);
@@ -199,7 +199,7 @@ namespace HealthGateway.CommonTests.Services
             IConfigurationRoot configuration = new ConfigurationBuilder()
                 .AddInMemoryCollection(new Dictionary<string, string?>().ToList())
                 .Build();
-            patientDelegateMock.Setup(p => p.GetDemographicsByHDIDAsync(It.IsAny<string>(), false)).ReturnsAsync(requestResult);
+            patientDelegateMock.Setup(p => p.GetDemographicsByHdidAsync(It.IsAny<string>(), false)).ReturnsAsync(requestResult);
 
             IPatientService service = new PatientService(
                 new Mock<ILogger<PatientService>>().Object,
@@ -234,7 +234,7 @@ namespace HealthGateway.CommonTests.Services
                 .AddInMemoryCollection(configDictionary.ToList())
                 .Build();
 
-            patientDelegateMock.Setup(p => p.GetDemographicsByHDIDAsync(It.IsAny<string>(), false)).ReturnsAsync(requestResult);
+            patientDelegateMock.Setup(p => p.GetDemographicsByHdidAsync(It.IsAny<string>(), false)).ReturnsAsync(requestResult);
 
             Mock<ICacheProvider> cacheProviderMock = new();
             cacheProviderMock.Setup(p => p.GetItem<PatientModel>(It.IsAny<string>())).Returns(returnNullPatientResult ? null : requestResult.ResourcePayload);
@@ -246,7 +246,7 @@ namespace HealthGateway.CommonTests.Services
                 cacheProviderMock.Object);
 
             // Act
-            RequestResult<string> actual = Task.Run(async () => await service.GetPatientPHN(Hdid).ConfigureAwait(true)).Result;
+            RequestResult<string> actual = Task.Run(async () => await service.GetPatientPhn(Hdid).ConfigureAwait(true)).Result;
             return actual;
         }
 
@@ -271,8 +271,8 @@ namespace HealthGateway.CommonTests.Services
                 .AddInMemoryCollection(configDictionary.ToList())
                 .Build();
 
-            patientDelegateMock.Setup(p => p.GetDemographicsByHDIDAsync(It.IsAny<string>(), false)).ReturnsAsync(requestResult);
-            patientDelegateMock.Setup(p => p.GetDemographicsByPHNAsync(It.IsAny<string>(), false)).ReturnsAsync(requestResult);
+            patientDelegateMock.Setup(p => p.GetDemographicsByHdidAsync(It.IsAny<string>(), false)).ReturnsAsync(requestResult);
+            patientDelegateMock.Setup(p => p.GetDemographicsByPhnAsync(It.IsAny<string>(), false)).ReturnsAsync(requestResult);
 
             Mock<ICacheProvider> cacheProviderMock = new();
             if (returnValidCache)
@@ -287,7 +287,7 @@ namespace HealthGateway.CommonTests.Services
                 cacheProviderMock.Object);
 
             // Act
-            RequestResult<PatientModel> actual = Task.Run(async () => await service.GetPatient(identifierType == PatientIdentifierType.HDID ? Hdid : Phn, identifierType).ConfigureAwait(true)).Result;
+            RequestResult<PatientModel> actual = Task.Run(async () => await service.GetPatient(identifierType == PatientIdentifierType.Hdid ? Hdid : Phn, identifierType).ConfigureAwait(true)).Result;
 
             // Verify
             Assert.Equal(ResultType.Success, actual.ResultStatus);

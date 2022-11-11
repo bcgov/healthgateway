@@ -91,7 +91,7 @@ namespace HealthGateway.Laboratory.Services
                         requestResult.ResultError = new()
                         {
                             ResultMessage = "Error with HTTP Request",
-                            ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.PHSA),
+                            ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.Phsa),
                         };
                     }
                 }
@@ -131,7 +131,7 @@ namespace HealthGateway.Laboratory.Services
                 requestResult.ResultError = new()
                 {
                     ResultMessage = "Error with HTTP Request",
-                    ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.PHSA),
+                    ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.Phsa),
                 };
             }
 
@@ -171,21 +171,21 @@ namespace HealthGateway.Laboratory.Services
                     requestResult.ResultError = new()
                     {
                         ResultMessage = "Request was not authorized",
-                        ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.PHSA),
+                        ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.Phsa),
                     };
                     break;
                 case HttpStatusCode.Forbidden:
                     requestResult.ResultError = new()
                     {
                         ResultMessage = $"DID Claim is missing or can not resolve PHN, HTTP Error {response.StatusCode}",
-                        ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.PHSA),
+                        ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.Phsa),
                     };
                     break;
                 default:
                     requestResult.ResultError = new()
                     {
                         ResultMessage = $"An unexpected error occurred, HTTP Error {response.StatusCode}",
-                        ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.PHSA),
+                        ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.Phsa),
                     };
                     break;
             }

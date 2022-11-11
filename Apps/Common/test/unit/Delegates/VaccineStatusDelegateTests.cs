@@ -45,11 +45,11 @@ namespace HealthGateway.CommonTests.Delegates
     /// </summary>
     public class VaccineStatusDelegateTests
     {
+        private readonly string accessToken = "XXDDXX";
         private readonly IConfiguration configuration;
-        private readonly string phn = "9735353315";
         private readonly DateTime dob = new(1990, 01, 05);
         private readonly string hdId = "43465786";
-        private readonly string accessToken = "XXDDXX";
+        private readonly string phn = "9735353315";
 
         /// <summary>
         /// Initializes a new instance of the <see cref="VaccineStatusDelegateTests"/> class.
@@ -294,10 +294,10 @@ namespace HealthGateway.CommonTests.Delegates
         {
             RequestResult<PhsaResult<VaccineStatusResult>> expected = new()
             {
-                ResultError = new RequestResultError()
+                ResultError = new RequestResultError
                 {
                     ResultMessage = $"DID Claim is missing or can not resolve PHN, HTTP Error {HttpStatusCode.Forbidden}",
-                    ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.PHSA),
+                    ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.Phsa),
                 },
             };
 
@@ -335,10 +335,10 @@ namespace HealthGateway.CommonTests.Delegates
         {
             RequestResult<PhsaResult<VaccineStatusResult>> expected = new()
             {
-                ResultError = new RequestResultError()
+                ResultError = new RequestResultError
                 {
                     ResultMessage = $"Unable to connect to Immunizations/VaccineStatus Endpoint, HTTP Error {HttpStatusCode.BadRequest}",
-                    ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.PHSA),
+                    ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.Phsa),
                 },
             };
 
@@ -378,7 +378,7 @@ namespace HealthGateway.CommonTests.Delegates
             {
                 PaperRecord = new EncodedMedia(),
                 WalletCard = new EncodedMedia(),
-                QRCode = new EncodedMedia(),
+                QrCode = new EncodedMedia(),
             };
 
             PhsaResult<RecordCard> phsaResponse = new()
@@ -409,7 +409,8 @@ namespace HealthGateway.CommonTests.Delegates
             };
 
             RequestResult<PhsaResult<RecordCard>> actualResult = await vaccineStatusDelegate
-                .GetRecordCard(recordCardQuery, this.accessToken).ConfigureAwait(true);
+                .GetRecordCard(recordCardQuery, this.accessToken)
+                .ConfigureAwait(true);
 
             Assert.Equal(ResultType.Success, actualResult.ResultStatus);
             Assert.NotNull(actualResult.ResourcePayload);
@@ -426,7 +427,7 @@ namespace HealthGateway.CommonTests.Delegates
             {
                 PaperRecord = new EncodedMedia(),
                 WalletCard = new EncodedMedia(),
-                QRCode = new EncodedMedia(),
+                QrCode = new EncodedMedia(),
             };
 
             PhsaResult<RecordCard> phsaResponse = new()
@@ -457,7 +458,8 @@ namespace HealthGateway.CommonTests.Delegates
             };
 
             RequestResult<PhsaResult<RecordCard>> actualResult = await vaccineStatusDelegate
-                .GetRecordCardWithRetries(recordCardQuery, this.accessToken).ConfigureAwait(true);
+                .GetRecordCardWithRetries(recordCardQuery, this.accessToken)
+                .ConfigureAwait(true);
 
             Assert.Equal(ResultType.Success, actualResult.ResultStatus);
             Assert.NotNull(actualResult.ResourcePayload);
@@ -490,7 +492,8 @@ namespace HealthGateway.CommonTests.Delegates
             };
 
             RequestResult<PhsaResult<RecordCard>> actualResult = await vaccineStatusDelegate
-                .GetRecordCard(recordCardQuery, this.accessToken).ConfigureAwait(true);
+                .GetRecordCard(recordCardQuery, this.accessToken)
+                .ConfigureAwait(true);
 
             Assert.Equal(ResultType.Success, actualResult.ResultStatus);
             Assert.NotNull(actualResult.ResourcePayload);
@@ -506,10 +509,10 @@ namespace HealthGateway.CommonTests.Delegates
         {
             RequestResult<PhsaResult<RecordCard>> expected = new()
             {
-                ResultError = new RequestResultError()
+                ResultError = new RequestResultError
                 {
                     ResultMessage = $"DID Claim is missing or can not resolve PHN, HTTP Error {HttpStatusCode.Forbidden}",
-                    ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.PHSA),
+                    ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.Phsa),
                 },
             };
 
@@ -533,7 +536,8 @@ namespace HealthGateway.CommonTests.Delegates
             };
 
             RequestResult<PhsaResult<RecordCard>> actualResult = await vaccineStatusDelegate
-                .GetRecordCard(recordCardQuery, this.accessToken).ConfigureAwait(true);
+                .GetRecordCard(recordCardQuery, this.accessToken)
+                .ConfigureAwait(true);
 
             Assert.NotNull(actualResult.ResultError);
             Assert.Equal(expected.ResultError.ErrorCode, actualResult.ResultError?.ErrorCode);
@@ -549,10 +553,10 @@ namespace HealthGateway.CommonTests.Delegates
         {
             RequestResult<PhsaResult<RecordCard>> expected = new()
             {
-                ResultError = new RequestResultError()
+                ResultError = new RequestResultError
                 {
                     ResultMessage = $"Unable to connect to record card Endpoint, HTTP Error {HttpStatusCode.BadRequest}",
-                    ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.PHSA),
+                    ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.Phsa),
                 },
             };
 
@@ -576,7 +580,8 @@ namespace HealthGateway.CommonTests.Delegates
             };
 
             RequestResult<PhsaResult<RecordCard>> actualResult = await vaccineStatusDelegate
-                .GetRecordCard(recordCardQuery, this.accessToken).ConfigureAwait(true);
+                .GetRecordCard(recordCardQuery, this.accessToken)
+                .ConfigureAwait(true);
 
             Assert.NotNull(actualResult.ResultError);
             Assert.Equal(expected.ResultError.ErrorCode, actualResult.ResultError?.ErrorCode);
@@ -587,13 +592,13 @@ namespace HealthGateway.CommonTests.Delegates
         {
             Mock<HttpMessageHandler> handlerMock = new();
             handlerMock
-               .Protected()
-               .Setup<Task<HttpResponseMessage>>(
-                  "SendAsync",
-                  ItExpr.IsAny<HttpRequestMessage>(),
-                  ItExpr.IsAny<CancellationToken>())
-               .ReturnsAsync(httpResponseMessage)
-               .Verifiable();
+                .Protected()
+                .Setup<Task<HttpResponseMessage>>(
+                    "SendAsync",
+                    ItExpr.IsAny<HttpRequestMessage>(),
+                    ItExpr.IsAny<CancellationToken>())
+                .ReturnsAsync(httpResponseMessage)
+                .Verifiable();
             Mock<IHttpClientService> mockHttpClientService = new();
             mockHttpClientService.Setup(s => s.CreateDefaultHttpClient()).Returns(() => new HttpClient(handlerMock.Object));
             return mockHttpClientService.Object;
@@ -606,10 +611,10 @@ namespace HealthGateway.CommonTests.Delegates
                 { "PHSA:BaseUrl", "https://some-test-url/" },
             };
             return new ConfigurationBuilder()
-                .AddJsonFile("appsettings.json", optional: true)
-                .AddJsonFile("appsettings.Development.json", optional: true)
-                .AddJsonFile("appsettings.local.json", optional: true)
-                .AddInMemoryCollection(myConfiguration.ToList<KeyValuePair<string, string?>>())
+                .AddJsonFile("appsettings.json", true)
+                .AddJsonFile("appsettings.Development.json", true)
+                .AddJsonFile("appsettings.local.json", true)
+                .AddInMemoryCollection(myConfiguration.ToList())
                 .Build();
         }
 
@@ -647,10 +652,11 @@ namespace HealthGateway.CommonTests.Delegates
                 .Setup(x => x.HttpContext!.RequestServices.GetService(typeof(IAuthenticationService)))
                 .Returns(authenticationMock.Object);
             AuthenticateResult authResult = AuthenticateResult.Success(new AuthenticationTicket(claimsPrincipal, JwtBearerDefaults.AuthenticationScheme));
-            authResult.Properties.StoreTokens(new[]
-            {
-                new AuthenticationToken { Name = "access_token", Value = this.accessToken },
-            });
+            authResult.Properties.StoreTokens(
+                new[]
+                {
+                    new AuthenticationToken { Name = "access_token", Value = this.accessToken },
+                });
             authenticationMock
                 .Setup(x => x.AuthenticateAsync(httpContextAccessorMock.Object.HttpContext, It.IsAny<string>()))
                 .ReturnsAsync(authResult);

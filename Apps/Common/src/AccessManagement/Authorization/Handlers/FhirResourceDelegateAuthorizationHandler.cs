@@ -74,23 +74,23 @@ namespace HealthGateway.Common.AccessManagement.Authorization.Handlers
                 context.PendingRequirements.OfType<FhirRequirement>();
             foreach (FhirRequirement requirement in pendingRequirements)
             {
-                string? resourceHDID = this.GetResourceHDID(requirement);
-                if (resourceHDID != null)
+                string? resourceHdid = this.GetResourceHdid(requirement);
+                if (resourceHdid != null)
                 {
                     if (requirement.SupportsUserDelegation)
                     {
-                        if (this.IsDelegated(context, resourceHDID, requirement))
+                        if (this.IsDelegated(context, resourceHdid, requirement))
                         {
                             context.Succeed(requirement);
                         }
                         else
                         {
-                            this.logger.LogDebug("Non-owner access to {ResourceHdid} rejected", resourceHDID);
+                            this.logger.LogDebug("Non-owner access to {ResourceHdid} rejected", resourceHdid);
                         }
                     }
                     else
                     {
-                        this.logger.LogDebug("Non-owner access to {ResourceHdid} rejected as user delegation is disabled", resourceHDID);
+                        this.logger.LogDebug("Non-owner access to {ResourceHdid} rejected as user delegation is disabled", resourceHdid);
                     }
                 }
                 else
@@ -106,30 +106,30 @@ namespace HealthGateway.Common.AccessManagement.Authorization.Handlers
         /// Check if the authenticated user has delegated read to the patient resource being accessed.
         /// </summary>
         /// <param name="context">The authorization handler context.</param>
-        /// <param name="resourceHDID">The health data resource subject identifier.</param>
+        /// <param name="resourceHdid">The health data resource subject identifier.</param>
         /// <param name="requirement">The Fhir requirement to satisfy.</param>
-        private bool IsDelegated(AuthorizationHandlerContext context, string resourceHDID, FhirRequirement requirement)
+        private bool IsDelegated(AuthorizationHandlerContext context, string resourceHdid, FhirRequirement requirement)
         {
             bool retVal = false;
-            this.logger.LogInformation("Performing user delegation validation for resource {ResourceHdid}", resourceHDID);
-            string? userHDID = context.User.FindFirst(c => c.Type == GatewayClaims.HDID)?.Value;
-            if (userHDID != null)
+            this.logger.LogInformation("Performing user delegation validation for resource {ResourceHdid}", resourceHdid);
+            string? userHdid = context.User.FindFirst(c => c.Type == GatewayClaims.Hdid)?.Value;
+            if (userHdid != null)
             {
-                if (this.resourceDelegateDelegate.Exists(resourceHDID, userHDID))
+                if (this.resourceDelegateDelegate.Exists(resourceHdid, userHdid))
                 {
-                    if (this.IsExpired(resourceHDID))
+                    if (this.IsExpired(resourceHdid))
                     {
-                        this.logger.LogError("Performing Observation delegation on resource {ResourceHdid} failed as delegation is expired.", resourceHDID);
+                        this.logger.LogError("Performing Observation delegation on resource {ResourceHdid} failed as delegation is expired.", resourceHdid);
                     }
                     else
                     {
-                        this.logger.LogInformation("Authorized user {UserHdid} to have {AccessType} access to Observation resource {ResourceHdid}", userHDID, requirement.AccessType, resourceHDID);
+                        this.logger.LogInformation("Authorized user {UserHdid} to have {AccessType} access to Observation resource {ResourceHdid}", userHdid, requirement.AccessType, resourceHdid);
                         retVal = true;
                     }
                 }
                 else
                 {
-                    this.logger.LogWarning("Delegation validation for User {UserHdid} on Observation resource {ResourceHdid} failed", userHDID, resourceHDID);
+                    this.logger.LogWarning("Delegation validation for User {UserHdid} on Observation resource {ResourceHdid} failed", userHdid, resourceHdid);
                 }
             }
 
@@ -139,17 +139,17 @@ namespace HealthGateway.Common.AccessManagement.Authorization.Handlers
         /// <summary>
         /// Checks if the resource delegate has expired.
         /// </summary>
-        /// <param name="resourceHDID">The resource hdid.</param>
+        /// <param name="resourceHdid">The resource hdid.</param>
         /// <returns>True if expired, false otherwise.</returns>
-        private bool IsExpired(string resourceHDID)
+        private bool IsExpired(string resourceHdid)
         {
             if (!this.maxDependentAge.HasValue)
             {
-                this.logger.LogInformation("Delegate expired check on resource {ResourceHdid} skipped as max dependent age is null", resourceHDID);
+                this.logger.LogInformation("Delegate expired check on resource {ResourceHdid} skipped as max dependent age is null", resourceHdid);
                 return false;
             }
 
-            RequestResult<PatientModel> patientResult = Task.Run(async () => await this.patientService.GetPatient(resourceHDID).ConfigureAwait(true)).Result;
+            RequestResult<PatientModel> patientResult = Task.Run(async () => await this.patientService.GetPatient(resourceHdid).ConfigureAwait(true)).Result;
 
             return patientResult.ResourcePayload!.Birthdate.AddYears(this.maxDependentAge.Value) < DateTime.Now;
         }

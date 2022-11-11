@@ -93,7 +93,7 @@ namespace HealthGateway.Medication.Delegates
                     retVal.ResultError = new RequestResultError
                     {
                         ResultMessage = "Unable to authenticate to retrieve Medication Requests",
-                        ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.SF),
+                        ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.Sf),
                     };
                     return retVal;
                 }
@@ -128,7 +128,7 @@ namespace HealthGateway.Medication.Delegates
                                 retVal.ResultError = new RequestResultError
                                 {
                                     ResultMessage = "Error with JSON data",
-                                    ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.SF),
+                                    ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.Sf),
                                 };
                             }
 
@@ -143,14 +143,14 @@ namespace HealthGateway.Medication.Delegates
                             retVal.ResultError = new RequestResultError
                             {
                                 ResultMessage = $"DID Claim is missing or can not resolve PHN, HTTP Error {response.StatusCode}",
-                                ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.SF),
+                                ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.Sf),
                             };
                             break;
                         default:
                             retVal.ResultError = new RequestResultError
                             {
                                 ResultMessage = $"Unable to connect to Medication Requests endpoint, HTTP Error {response.StatusCode}",
-                                ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.SF),
+                                ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.Sf),
                             };
                             this.logger.LogError("Unable to connect to endpoint {Endpoint}, HTTP Error {StatusCode}\n{Payload}", endpoint, response.StatusCode, payload);
                             break;
@@ -163,7 +163,7 @@ namespace HealthGateway.Medication.Delegates
                     retVal.ResultError = new RequestResultError
                     {
                         ResultMessage = $"Exception getting Medication Requests: {e}",
-                        ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.SF),
+                        ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.Sf),
                     };
                     this.logger.LogError("Unexpected exception in GetMedicationRequestsAsync {Exception}", e.ToString());
                 }

@@ -34,12 +34,13 @@ namespace HealthGateway.GatewayApiTests.Services.Test.Mock
         /// <param name="patientModel">patient model.</param>
         public PatientServiceMock(string hdid, PatientModel patientModel)
         {
-            this.Setup(s => s.GetPatient(hdid, PatientIdentifierType.HDID, false))
-                .ReturnsAsync(new RequestResult<PatientModel>
-                {
-                    ResultStatus = ResultType.Success,
-                    ResourcePayload = patientModel,
-                });
+            this.Setup(s => s.GetPatient(hdid, PatientIdentifierType.Hdid, false))
+                .ReturnsAsync(
+                    new RequestResult<PatientModel>
+                    {
+                        ResultStatus = ResultType.Success,
+                        ResourcePayload = patientModel,
+                    });
         }
     }
 }

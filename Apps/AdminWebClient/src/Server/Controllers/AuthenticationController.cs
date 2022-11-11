@@ -17,7 +17,7 @@ namespace HealthGateway.Admin.Controllers
 {
     using HealthGateway.Admin.Models;
     using HealthGateway.Admin.Services;
-    using HealthGateway.Common.Authorization.Admin;
+    using HealthGateway.Common.AccessManagement.Authorization.Admin;
     using Microsoft.AspNetCore.Authentication.OpenIdConnect;
     using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
@@ -33,8 +33,8 @@ namespace HealthGateway.Admin.Controllers
     public class AuthenticationController : Controller
     {
         private readonly IAuthenticationService authenticationService;
-        private readonly ILogger<AuthenticationController> logger;
         private readonly IHttpContextAccessor httpContextAccessor;
+        private readonly ILogger<AuthenticationController> logger;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="AuthenticationController"/> class.
@@ -54,7 +54,8 @@ namespace HealthGateway.Admin.Controllers
         /// </summary>
         /// <remarks>
         /// The /api/GetAuthenticationData route has been deprecated in favour of /api/auth/GetAuthenticationData.
-        /// This API will likely be replaced by client side authentication in the near future and is not meant to be consumed outside of the WebClient.
+        /// This API will likely be replaced by client side authentication in the near future and is not meant to be consumed
+        /// outside of the WebClient.
         /// </remarks>
         /// <returns>The authentication model representing the current ASP.Net Core Authentication cookie.</returns>
         [HttpGet]

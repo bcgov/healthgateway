@@ -38,6 +38,6 @@ namespace HealthGateway.Common.Models.PHSA
         /// Gets or sets the QR code encoded media.
         /// </summary>
         [JsonPropertyName("qrCode")]
-        public EncodedMedia QRCode { get; set; } = new();
+        public EncodedMedia QrCode { get; set; } = new();
     }
 }

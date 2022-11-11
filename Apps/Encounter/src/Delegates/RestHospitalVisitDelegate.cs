@@ -101,7 +101,7 @@ namespace HealthGateway.Encounter.Delegates
                 requestResult.ResultError = new()
                 {
                     ResultMessage = "Error with HTTP Request",
-                    ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.PHSA),
+                    ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.Phsa),
                 };
             }
 
@@ -130,7 +130,7 @@ namespace HealthGateway.Encounter.Delegates
                         {
                             ResultMessage =
                                 $"DID Claim is missing or can not resolve PHN, HTTP Error {response.StatusCode}",
-                            ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.PHSA),
+                            ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.Phsa),
                         };
                         break;
                     default:
@@ -140,7 +140,7 @@ namespace HealthGateway.Encounter.Delegates
                                 $"Unable to connect to Hospital Visits Endpoint, HTTP Error {response.StatusCode}",
                             ErrorCode = ErrorTranslator.ServiceError(
                                 ErrorType.CommunicationExternal,
-                                ServiceType.PHSA),
+                                ServiceType.Phsa),
                         };
                         this.logger.LogError("Unexpected status code returned: {StatusCode}", response.StatusCode.ToString());
                         break;
@@ -153,7 +153,7 @@ namespace HealthGateway.Encounter.Delegates
                 requestResult.ResultError = new()
                 {
                     ResultMessage = "An unexpected error occurred while processing external call",
-                    ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.PHSA),
+                    ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.Phsa),
                 };
             }
         }

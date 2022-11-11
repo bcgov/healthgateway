@@ -164,7 +164,7 @@ namespace HealthGateway.Admin.Delegates
                     ResultError = new RequestResultError
                     {
                         ResultMessage = $"Patient PHN ({patient.PersonalHealthNumber}) or DOB ({patient.Birthdate}) Invalid",
-                        ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.PHSA),
+                        ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.Phsa),
                     },
                 };
             }
@@ -214,7 +214,7 @@ namespace HealthGateway.Admin.Delegates
                                 else
                                 {
                                     retVal.ResultError = new RequestResultError
-                                        { ResultMessage = "Error with JSON data", ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.PHSA) };
+                                        { ResultMessage = "Error with JSON data", ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.Phsa) };
                                 }
 
                                 break;
@@ -228,14 +228,14 @@ namespace HealthGateway.Admin.Delegates
                                 retVal.ResultError = new RequestResultError
                                 {
                                     ResultMessage = $"DID Claim is missing or can not resolve PHN, HTTP Error {response.StatusCode}",
-                                    ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.PHSA),
+                                    ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.Phsa),
                                 };
                                 break;
                             default:
                                 retVal.ResultError = new RequestResultError
                                 {
                                     ResultMessage = $"Unable to connect to Immunizations Endpoint, HTTP Error {response.StatusCode}",
-                                    ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.PHSA),
+                                    ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.Phsa),
                                 };
                                 this.logger.LogError("Unable to connect to endpoint {Endpoint}, HTTP Error {StatusCode}\\n{Payload}", endpoint, response.StatusCode, payload);
                                 break;
@@ -244,7 +244,7 @@ namespace HealthGateway.Admin.Delegates
                     catch (Exception e)
                     {
                         retVal.ResultError = new RequestResultError
-                            { ResultMessage = $"Exception getting Immunization data: {e}", ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.PHSA) };
+                            { ResultMessage = $"Exception getting Immunization data: {e}", ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.Phsa) };
                         this.logger.LogError("Unexpected exception retrieving Immunization data {Exception}", e);
                     }
 
