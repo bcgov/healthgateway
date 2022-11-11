@@ -63,7 +63,7 @@ namespace HealthGateway.MedicationTests.Services
         {
             Mock<IHttpContextAccessor> httpContextAccessorMock = this.GetHttpContextAccessorMock();
             Mock<IPatientService> patientDelegateMock = new();
-            patientDelegateMock.Setup(s => s.GetPatientPHN(this.hdid))
+            patientDelegateMock.Setup(s => s.GetPatientPhn(this.hdid))
                 .Returns(
                     Task.FromResult(
                         new RequestResult<string>
@@ -76,8 +76,10 @@ namespace HealthGateway.MedicationTests.Services
             drugLookupDelegateMock.Setup(p => p.GetDrugProductsByDin(It.IsAny<List<string>>())).Returns(new List<DrugProduct>());
 
             Mock<IMedStatementDelegate> medStatementDelegateMock = new();
-            RequestResult<MedicationHistoryResponse> requestResult = new();
-            requestResult.ResourcePayload = new MedicationHistoryResponse();
+            RequestResult<MedicationHistoryResponse> requestResult = new()
+            {
+                ResourcePayload = new MedicationHistoryResponse(),
+            };
             medStatementDelegateMock.Setup(p => p.GetMedicationStatementsAsync(It.IsAny<OdrHistoryQuery>(), null, It.IsAny<string>(), this.ipAddress)).ReturnsAsync(requestResult);
 
             IMedicationStatementService service = new RestMedicationStatementService(
@@ -123,7 +125,7 @@ namespace HealthGateway.MedicationTests.Services
             Mock<IHttpContextAccessor> httpContextAccessorMock = this.GetHttpContextAccessorMock();
 
             Mock<IPatientService> patientDelegateMock = new();
-            patientDelegateMock.Setup(s => s.GetPatient(this.hdid, PatientIdentifierType.HDID, false))
+            patientDelegateMock.Setup(s => s.GetPatient(this.hdid, PatientIdentifierType.Hdid, false))
                 .Returns(
                     Task.FromResult(
                         new RequestResult<PatientModel>
@@ -146,8 +148,8 @@ namespace HealthGateway.MedicationTests.Services
             RequestResult<MedicationHistoryResponse> requestResult = new()
             {
                 ResultStatus = ResultType.Success,
+                ResourcePayload = new MedicationHistoryResponse(),
             };
-            requestResult.ResourcePayload = new MedicationHistoryResponse();
             medStatementDelegateMock.Setup(p => p.GetMedicationStatementsAsync(It.IsAny<OdrHistoryQuery>(), It.IsAny<string>(), It.IsAny<string>(), this.ipAddress)).ReturnsAsync(requestResult);
 
             IMedicationStatementService service = new RestMedicationStatementService(
@@ -173,7 +175,7 @@ namespace HealthGateway.MedicationTests.Services
             Mock<IHttpContextAccessor> httpContextAccessorMock = this.GetHttpContextAccessorMock();
 
             Mock<IPatientService> patientDelegateMock = new();
-            patientDelegateMock.Setup(s => s.GetPatient(this.hdid, PatientIdentifierType.HDID, false))
+            patientDelegateMock.Setup(s => s.GetPatient(this.hdid, PatientIdentifierType.Hdid, false))
                 .Returns(
                     Task.FromResult(
                         new RequestResult<PatientModel>
@@ -260,7 +262,7 @@ namespace HealthGateway.MedicationTests.Services
             Mock<IHttpContextAccessor> httpContextAccessorMock = this.GetHttpContextAccessorMock();
 
             Mock<IPatientService> patientDelegateMock = new();
-            patientDelegateMock.Setup(s => s.GetPatient(this.hdid, PatientIdentifierType.HDID, false))
+            patientDelegateMock.Setup(s => s.GetPatient(this.hdid, PatientIdentifierType.Hdid, false))
                 .Returns(
                     Task.FromResult(
                         new RequestResult<PatientModel>
@@ -332,7 +334,7 @@ namespace HealthGateway.MedicationTests.Services
         {
             Mock<IHttpContextAccessor> httpContextAccessorMock = this.GetHttpContextAccessorMock();
             Mock<IPatientService> patientDelegateMock = new();
-            patientDelegateMock.Setup(s => s.GetPatient(this.hdid, PatientIdentifierType.HDID, false))
+            patientDelegateMock.Setup(s => s.GetPatient(this.hdid, PatientIdentifierType.Hdid, false))
                 .Returns(
                     Task.FromResult(
                         new RequestResult<PatientModel>
@@ -408,7 +410,7 @@ namespace HealthGateway.MedicationTests.Services
             Mock<IHttpContextAccessor> httpContextAccessorMock = this.GetHttpContextAccessorMock();
 
             Mock<IPatientService> patientDelegateMock = new();
-            patientDelegateMock.Setup(s => s.GetPatient(this.hdid, PatientIdentifierType.HDID, false))
+            patientDelegateMock.Setup(s => s.GetPatient(this.hdid, PatientIdentifierType.Hdid, false))
                 .Returns(
                     Task.FromResult(
                         new RequestResult<PatientModel>
@@ -463,7 +465,7 @@ namespace HealthGateway.MedicationTests.Services
         {
             Mock<IHttpContextAccessor> httpContextAccessorMock = this.GetHttpContextAccessorMock();
             Mock<IPatientService> patientDelegateMock = new();
-            patientDelegateMock.Setup(s => s.GetPatient(this.hdid, PatientIdentifierType.HDID, false))
+            patientDelegateMock.Setup(s => s.GetPatient(this.hdid, PatientIdentifierType.Hdid, false))
                 .Returns(
                     Task.FromResult(
                         new RequestResult<PatientModel>

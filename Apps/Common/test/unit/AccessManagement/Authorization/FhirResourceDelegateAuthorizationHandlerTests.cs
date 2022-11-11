@@ -46,7 +46,7 @@ namespace HealthGateway.CommonTests.AccessManagement.Authorization
         private const int MaxDependentAge = 12;
 
         private readonly string hdid = "The User HDID";
-        private readonly string resourceHDID = "The User HDID";
+        private readonly string resourceHdid = "The User HDID";
         private readonly string token = "Fake Access Token";
         private readonly string userId = "User ID";
         private readonly string username = "User Name";
@@ -70,7 +70,7 @@ namespace HealthGateway.CommonTests.AccessManagement.Authorization
                 httpContextAccessorMock.Object,
                 new Mock<IPatientService>().Object,
                 new Mock<IResourceDelegateDelegate>().Object);
-            NameAuthorizationRequirement[] requirements = new[] { new NameAuthorizationRequirement(this.username) };
+            NameAuthorizationRequirement[] requirements = { new(this.username) };
 
             AuthorizationHandlerContext context = new(requirements, claimsPrincipal, null);
 
@@ -114,7 +114,7 @@ namespace HealthGateway.CommonTests.AccessManagement.Authorization
                 httpContextAccessorMock.Object,
                 new Mock<IPatientService>().Object,
                 new Mock<IResourceDelegateDelegate>().Object);
-            FhirRequirement[] requirements = new[] { new FhirRequirement(FhirResource.Patient, FhirAccessType.Read) };
+            FhirRequirement[] requirements = { new(FhirResource.Patient, FhirAccessType.Read) };
 
             AuthorizationHandlerContext context = new(requirements, claimsPrincipal, null);
 
@@ -143,7 +143,7 @@ namespace HealthGateway.CommonTests.AccessManagement.Authorization
                 httpContextAccessorMock.Object,
                 new Mock<IPatientService>().Object,
                 new Mock<IResourceDelegateDelegate>().Object);
-            FhirRequirement[] requirements = new[] { new FhirRequirement(FhirResource.Patient, FhirAccessType.Read, supportsUserDelegation: false) };
+            FhirRequirement[] requirements = { new(FhirResource.Patient, FhirAccessType.Read, supportsUserDelegation: false) };
 
             AuthorizationHandlerContext context = new(requirements, claimsPrincipal, null);
 
@@ -171,7 +171,7 @@ namespace HealthGateway.CommonTests.AccessManagement.Authorization
                 httpContextAccessorMock.Object,
                 new Mock<IPatientService>().Object,
                 new Mock<IResourceDelegateDelegate>().Object);
-            FhirRequirement[] requirements = new[] { new FhirRequirement(FhirResource.Patient, FhirAccessType.Read) };
+            FhirRequirement[] requirements = { new(FhirResource.Patient, FhirAccessType.Read) };
 
             AuthorizationHandlerContext context = new(requirements, claimsPrincipal, null);
 
@@ -201,11 +201,11 @@ namespace HealthGateway.CommonTests.AccessManagement.Authorization
                 loggerFactory.CreateLogger<FhirResourceDelegateAuthorizationHandler>();
 
             Mock<IResourceDelegateDelegate> mockDependentDelegate = new();
-            mockDependentDelegate.Setup(s => s.Exists(this.resourceHDID, this.hdid)).Returns(true);
+            mockDependentDelegate.Setup(s => s.Exists(this.resourceHdid, this.hdid)).Returns(true);
 
             Mock<IPatientService> mockPatientService = new();
             mockPatientService
-                .Setup(s => s.GetPatient(this.resourceHDID, PatientIdentifierType.HDID, false))
+                .Setup(s => s.GetPatient(this.resourceHdid, PatientIdentifierType.Hdid, false))
                 .ReturnsAsync(getPatientResult);
 
             FhirResourceDelegateAuthorizationHandler authHandler = new(
@@ -214,7 +214,7 @@ namespace HealthGateway.CommonTests.AccessManagement.Authorization
                 httpContextAccessorMock.Object,
                 mockPatientService.Object,
                 mockDependentDelegate.Object);
-            FhirRequirement[] requirements = new[] { new FhirRequirement(FhirResource.Observation, FhirAccessType.Read, supportsUserDelegation: true) };
+            FhirRequirement[] requirements = { new(FhirResource.Observation, FhirAccessType.Read, supportsUserDelegation: true) };
 
             AuthorizationHandlerContext context = new(requirements, claimsPrincipal, null);
 
@@ -243,11 +243,11 @@ namespace HealthGateway.CommonTests.AccessManagement.Authorization
             ILogger<FhirResourceDelegateAuthorizationHandler> logger = loggerFactory.CreateLogger<FhirResourceDelegateAuthorizationHandler>();
 
             Mock<IResourceDelegateDelegate> mockDependentDelegate = new();
-            mockDependentDelegate.Setup(s => s.Exists(this.resourceHDID, this.hdid)).Returns(true);
+            mockDependentDelegate.Setup(s => s.Exists(this.resourceHdid, this.hdid)).Returns(true);
 
             Mock<IPatientService> mockPatientService = new();
             mockPatientService
-                .Setup(s => s.GetPatient(this.resourceHDID, PatientIdentifierType.HDID, false))
+                .Setup(s => s.GetPatient(this.resourceHdid, PatientIdentifierType.Hdid, false))
                 .ReturnsAsync(getPatientResult);
 
             FhirResourceDelegateAuthorizationHandler authHandler = new(
@@ -256,7 +256,7 @@ namespace HealthGateway.CommonTests.AccessManagement.Authorization
                 httpContextAccessorMock.Object,
                 mockPatientService.Object,
                 mockDependentDelegate.Object);
-            FhirRequirement[] requirements = new[] { new FhirRequirement(FhirResource.Observation, FhirAccessType.Read, supportsUserDelegation: true) };
+            FhirRequirement[] requirements = { new(FhirResource.Observation, FhirAccessType.Read, supportsUserDelegation: true) };
 
             AuthorizationHandlerContext context = new(requirements, claimsPrincipal, null);
 
@@ -273,7 +273,7 @@ namespace HealthGateway.CommonTests.AccessManagement.Authorization
                 { "Authorization:MaxDependentAge", MaxDependentAge.ToString(CultureInfo.CurrentCulture) },
             };
             return new ConfigurationBuilder()
-                .AddInMemoryCollection(configDictionary.ToList<KeyValuePair<string, string?>>())
+                .AddInMemoryCollection(configDictionary.ToList())
                 .Build();
         }
 
@@ -283,7 +283,7 @@ namespace HealthGateway.CommonTests.AccessManagement.Authorization
             {
                 new Claim(ClaimTypes.Name, this.username),
                 new Claim(ClaimTypes.NameIdentifier, this.userId),
-                new Claim(GatewayClaims.HDID, this.hdid),
+                new Claim(GatewayClaims.Hdid, this.hdid),
             };
             ClaimsIdentity identity = new(claims, "TestAuth");
             return new ClaimsPrincipal(identity);
@@ -297,7 +297,7 @@ namespace HealthGateway.CommonTests.AccessManagement.Authorization
             };
             RouteValueDictionary routeValues = new()
             {
-                { "hdid", this.resourceHDID },
+                { "hdid", this.resourceHdid },
             };
             Mock<HttpRequest> httpRequestMock = new();
             httpRequestMock.Setup(s => s.Headers).Returns(headerDictionary);

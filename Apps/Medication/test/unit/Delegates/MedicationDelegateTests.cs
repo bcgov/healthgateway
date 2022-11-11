@@ -30,7 +30,6 @@ namespace HealthGateway.MedicationTests.Delegates
     using HealthGateway.Common.Data.ErrorHandling;
     using HealthGateway.Common.Data.ViewModels;
     using HealthGateway.Common.Delegates;
-    using HealthGateway.Common.Models;
     using HealthGateway.Common.Models.Cacheable;
     using HealthGateway.Common.Models.ODR;
     using HealthGateway.Common.Services;
@@ -48,7 +47,6 @@ namespace HealthGateway.MedicationTests.Delegates
     /// </summary>
     public class MedicationDelegateTests
     {
-        private readonly Uri baseURI;
         private readonly IConfiguration configuration;
         private readonly string hdid = "EXTRIOYFPNX35TWEBUAJ3DNFDFXSYTBC6J4M76GYE3HC5ER2NKWQ";
         private readonly string ip = "10.0.0.1";
@@ -62,7 +60,7 @@ namespace HealthGateway.MedicationTests.Delegates
         {
             StartDate = DateTime.Parse("1990/01/01", CultureInfo.CurrentCulture),
             EndDate = DateTime.Now,
-            PHN = "9735361219",
+            Phn = "9735361219",
         };
 
         /// <summary>
@@ -72,10 +70,10 @@ namespace HealthGateway.MedicationTests.Delegates
         {
             this.configuration = GetIConfigurationRoot();
             this.configuration.Bind(this.odrConfigSectionKey, this.odrConfig);
-            this.baseURI = new Uri(this.odrConfig.BaseEndpoint);
+            Uri baseUri = new(this.odrConfig.BaseEndpoint);
             this.loggerFactory = LoggerFactory.Create(builder => builder.AddConsole());
-            this.patientProfileEndpoint = new Uri(this.baseURI, this.odrConfig.PatientProfileEndpoint);
-            this.protectiveWordEndpoint = new Uri(this.baseURI, this.odrConfig.ProtectiveWordEndpoint);
+            this.patientProfileEndpoint = new Uri(baseUri, this.odrConfig.PatientProfileEndpoint);
+            this.protectiveWordEndpoint = new Uri(baseUri, this.odrConfig.ProtectiveWordEndpoint);
         }
 
         /// <summary>
@@ -87,8 +85,8 @@ namespace HealthGateway.MedicationTests.Delegates
             MedicationHistory medicationHistory = new()
             {
                 Id = Guid.Parse("ee37267e-cb2c-48e1-a3c9-16c36ce7466b"),
-                RequestorHDID = this.hdid,
-                RequestorIP = this.ip,
+                RequestorHdid = this.hdid,
+                RequestorIp = this.ip,
                 Query = this.query,
                 Response = new MedicationHistoryResponse
                 {
@@ -180,8 +178,8 @@ namespace HealthGateway.MedicationTests.Delegates
             MedicationHistory medicationHistory = new()
             {
                 Id = Guid.Parse("ee37267e-cb2c-48e1-a3c9-16c36ce7466b"),
-                RequestorHDID = this.hdid,
-                RequestorIP = this.ip,
+                RequestorHdid = this.hdid,
+                RequestorIp = this.ip,
                 Query = this.query,
                 Response = new MedicationHistoryResponse
                 {
@@ -277,8 +275,8 @@ namespace HealthGateway.MedicationTests.Delegates
                 .Result;
 
             Assert.Equal(ResultType.ActionRequired, response.ResultStatus);
-            Assert.Equal(ActionType.Protected, response?.ResultError?.ActionCode);
-            Assert.Equal(ErrorMessages.ProtectiveWordErrorMessage, response?.ResultError?.ResultMessage);
+            Assert.Equal(ActionType.Protected, response.ResultError?.ActionCode);
+            Assert.Equal(ErrorMessages.ProtectiveWordErrorMessage, response.ResultError?.ResultMessage);
         }
 
         /// <summary>
