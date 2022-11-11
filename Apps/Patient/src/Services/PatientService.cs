@@ -65,7 +65,7 @@ namespace HealthGateway.Patient.Services
         private static ActivitySource Source { get; } = new(nameof(PatientService));
 
         /// <inheritdoc/>
-        public async Task<ApiResult<PatientModel>> GetPatient(string identifier, PatientIdentifierType identifierType = PatientIdentifierType.HDID, bool disableIdValidation = false)
+        public async Task<ApiResult<PatientModel>> GetPatient(string identifier, PatientIdentifierType identifierType = PatientIdentifierType.Hdid, bool disableIdValidation = false)
         {
             using Activity? activity = Source.StartActivity();
 
@@ -80,7 +80,7 @@ namespace HealthGateway.Patient.Services
                 OidType type = GetOidType(identifierType);
                 this.logger.LogDebug("Starting GetPatient for identifier type: {IdentifierType}", identifierType);
 
-                if (identifierType == PatientIdentifierType.PHN && !PhnValidator.IsValid(identifier))
+                if (identifierType == PatientIdentifierType.Phn && !PhnValidator.IsValid(identifier))
                 {
                     this.logger.LogDebug("The PHN provided is invalid");
                     throw new ApiException(ErrorMessages.PhnInvalid, "PatientService.GetPatient", HttpStatusCode.NotFound);
@@ -102,7 +102,7 @@ namespace HealthGateway.Patient.Services
 
         private static OidType GetOidType(PatientIdentifierType type)
         {
-            return type == PatientIdentifierType.PHN ? OidType.PHN : OidType.HDID;
+            return type == PatientIdentifierType.Phn ? OidType.Phn : OidType.Hdid;
         }
 
         /// <summary>
@@ -119,11 +119,11 @@ namespace HealthGateway.Patient.Services
             {
                 switch (identifierType)
                 {
-                    case PatientIdentifierType.HDID:
+                    case PatientIdentifierType.Hdid:
                         this.logger.LogDebug("Querying Patient Cache by HDID");
                         retPatient = this.cacheProvider.GetItem<PatientModel>($"{PatientCacheDomain}:HDID:{identifier}");
                         break;
-                    case PatientIdentifierType.PHN:
+                    case PatientIdentifierType.Phn:
                         this.logger.LogDebug("Querying Patient Cache by PHN");
                         retPatient = this.cacheProvider.GetItem<PatientModel>($"{PatientCacheDomain}:PHN:{identifier}");
                         break;

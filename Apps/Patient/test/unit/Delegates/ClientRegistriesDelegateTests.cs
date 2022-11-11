@@ -126,7 +126,7 @@ namespace HealthGateway.PatientTests.Delegates
                 clientMock.Object);
 
             // Act
-            ApiResult<PatientModel> actual = await patientDelegate.GetDemographicsAsync(OidType.PHN, "9875023209").ConfigureAwait(true);
+            ApiResult<PatientModel> actual = await patientDelegate.GetDemographicsAsync(OidType.Phn, "9875023209").ConfigureAwait(true);
 
             // Verify
             Assert.NotEmpty(actual.Warning?.Message);
@@ -343,7 +343,7 @@ namespace HealthGateway.PatientTests.Delegates
                 clientMock.Object);
 
             // Act
-            ApiResult<PatientModel> actual = await patientDelegate.GetDemographicsAsync(OidType.HDID, expectedHdId).ConfigureAwait(true);
+            ApiResult<PatientModel> actual = await patientDelegate.GetDemographicsAsync(OidType.Hdid, expectedHdId).ConfigureAwait(true);
 
             // Verify
             Assert.Equal(expectedHdId, actual.ResourcePayload?.HdId);
@@ -451,7 +451,7 @@ namespace HealthGateway.PatientTests.Delegates
                 clientMock.Object);
 
             // Act
-            ApiResult<PatientModel> actual = await patientDelegate.GetDemographicsAsync(OidType.HDID, hdid).ConfigureAwait(true);
+            ApiResult<PatientModel> actual = await patientDelegate.GetDemographicsAsync(OidType.Hdid, hdid).ConfigureAwait(true);
 
             // Verify
             Assert.Equal(ActionType.NoHdId.Value, actual.Warning?.Code);
@@ -571,7 +571,7 @@ namespace HealthGateway.PatientTests.Delegates
                 clientMock.Object);
 
             // Act
-            ApiResult<PatientModel> actual = await patientDelegate.GetDemographicsAsync(OidType.HDID, expectedHdId).ConfigureAwait(true);
+            ApiResult<PatientModel> actual = await patientDelegate.GetDemographicsAsync(OidType.Hdid, expectedHdId).ConfigureAwait(true);
 
             // Verify
             Assert.Equal(expectedHdId, actual.ResourcePayload?.HdId);
@@ -719,7 +719,7 @@ namespace HealthGateway.PatientTests.Delegates
                 clientMock.Object);
 
             // Act
-            ApiResult<PatientModel> actual = await patientDelegate.GetDemographicsAsync(OidType.HDID, expectedHdId).ConfigureAwait(true);
+            ApiResult<PatientModel> actual = await patientDelegate.GetDemographicsAsync(OidType.Hdid, expectedHdId).ConfigureAwait(true);
 
             // Verify
             Assert.Equal(expectedHdId, actual.ResourcePayload?.HdId);
@@ -826,7 +826,7 @@ namespace HealthGateway.PatientTests.Delegates
                 clientMock.Object);
 
             // Act
-            ApiResult<PatientModel> actual = await patientDelegate.GetDemographicsAsync(OidType.PHN, expectedPhn).ConfigureAwait(true);
+            ApiResult<PatientModel> actual = await patientDelegate.GetDemographicsAsync(OidType.Phn, expectedPhn).ConfigureAwait(true);
 
             // Verify
             Assert.Contains("BCHCIM.GD.0.0019", actual.ResourcePayload?.ResponseCode, StringComparison.InvariantCultureIgnoreCase);
@@ -928,7 +928,7 @@ namespace HealthGateway.PatientTests.Delegates
                 clientMock.Object);
 
             // Act
-            ApiResult<PatientModel> actual = await patientDelegate.GetDemographicsAsync(OidType.PHN, expectedPhn).ConfigureAwait(true);
+            ApiResult<PatientModel> actual = await patientDelegate.GetDemographicsAsync(OidType.Phn, expectedPhn).ConfigureAwait(true);
 
             // Verify
             Assert.Contains("BCHCIM.GD.0.0021", actual.ResourcePayload?.ResponseCode, StringComparison.InvariantCultureIgnoreCase);
@@ -1030,7 +1030,7 @@ namespace HealthGateway.PatientTests.Delegates
                 clientMock.Object);
 
             // Act
-            ApiResult<PatientModel> actual = await patientDelegate.GetDemographicsAsync(OidType.PHN, expectedPhn).ConfigureAwait(true);
+            ApiResult<PatientModel> actual = await patientDelegate.GetDemographicsAsync(OidType.Phn, expectedPhn).ConfigureAwait(true);
 
             // Verify
             Assert.Contains("BCHCIM.GD.0.0022", actual.ResourcePayload?.ResponseCode, StringComparison.InvariantCultureIgnoreCase);
@@ -1132,7 +1132,7 @@ namespace HealthGateway.PatientTests.Delegates
                 clientMock.Object);
 
             // Act
-            ApiResult<PatientModel> actual = await patientDelegate.GetDemographicsAsync(OidType.PHN, expectedPhn).ConfigureAwait(true);
+            ApiResult<PatientModel> actual = await patientDelegate.GetDemographicsAsync(OidType.Phn, expectedPhn).ConfigureAwait(true);
 
             // Verify
             Assert.Contains("BCHCIM.GD.0.0023", actual.ResourcePayload?.ResponseCode, StringComparison.InvariantCultureIgnoreCase);
@@ -1149,7 +1149,7 @@ namespace HealthGateway.PatientTests.Delegates
             IClientRegistriesDelegate patientDelegate = GetClientRegistriesDelegate(false, true);
 
             // Act
-            ApiResult<PatientModel> actual = await patientDelegate.GetDemographicsAsync(OidType.PHN, Phn).ConfigureAwait(true);
+            ApiResult<PatientModel> actual = await patientDelegate.GetDemographicsAsync(OidType.Phn, Phn).ConfigureAwait(true);
 
             // Verify
             Assert.Equal(ActionType.InvalidName.Value, actual.Warning?.Code);
@@ -1167,7 +1167,7 @@ namespace HealthGateway.PatientTests.Delegates
             IClientRegistriesDelegate patientDelegate = GetClientRegistriesDelegate(false, false, true);
 
             // Act
-            ApiResult<PatientModel> actual = await patientDelegate.GetDemographicsAsync(OidType.PHN, Phn).ConfigureAwait(true);
+            ApiResult<PatientModel> actual = await patientDelegate.GetDemographicsAsync(OidType.Phn, Phn).ConfigureAwait(true);
 
             // Verify
             Assert.Equal(ActionType.NoHdId.Value, actual.Warning?.Code);
@@ -1185,7 +1185,7 @@ namespace HealthGateway.PatientTests.Delegates
             IClientRegistriesDelegate patientDelegate = GetClientRegistriesDelegate(true);
 
             // Act
-            ApiResult<PatientModel> actual = await patientDelegate.GetDemographicsAsync(OidType.PHN, Phn).ConfigureAwait(true);
+            ApiResult<PatientModel> actual = await patientDelegate.GetDemographicsAsync(OidType.Phn, Phn).ConfigureAwait(true);
 
             // Verify
             Assert.Equal(ActionType.Deceased.Value, actual.Warning?.Code);
@@ -1204,7 +1204,7 @@ namespace HealthGateway.PatientTests.Delegates
             IClientRegistriesDelegate patientDelegate = GetClientRegistriesDelegate(false, false, true);
 
             // Act
-            ApiResult<PatientModel> actual = await patientDelegate.GetDemographicsAsync(OidType.PHN, Phn, true).ConfigureAwait(true);
+            ApiResult<PatientModel> actual = await patientDelegate.GetDemographicsAsync(OidType.Phn, Phn, true).ConfigureAwait(true);
 
             // Verify
             Assert.Null(actual.Warning);
@@ -1218,13 +1218,13 @@ namespace HealthGateway.PatientTests.Delegates
         public async Task ShouldThrowApiPatientExceptionGivenCommunicationException()
         {
             // Setup
-            string expectedDetail = $"Communication Exception with client registry when trying to retrieve patient information from {OidType.PHN}";
+            string expectedDetail = $"Communication Exception with client registry when trying to retrieve patient information from {OidType.Phn}";
             IClientRegistriesDelegate patientDelegate = GetClientRegistriesDelegate(false, false, false, true);
 
             // Act
             async Task Actual()
             {
-                await patientDelegate.GetDemographicsAsync(OidType.PHN, Phn).ConfigureAwait(true);
+                await patientDelegate.GetDemographicsAsync(OidType.Phn, Phn).ConfigureAwait(true);
             }
 
             // Verify
@@ -1246,7 +1246,7 @@ namespace HealthGateway.PatientTests.Delegates
             // Act
             async Task Actual()
             {
-                await patientDelegate.GetDemographicsAsync(OidType.PHN, Phn).ConfigureAwait(true);
+                await patientDelegate.GetDemographicsAsync(OidType.Phn, Phn).ConfigureAwait(true);
             }
 
             // Verify
@@ -1268,7 +1268,7 @@ namespace HealthGateway.PatientTests.Delegates
             // Act
             async Task Actual()
             {
-                await patientDelegate.GetDemographicsAsync(OidType.PHN, Phn).ConfigureAwait(true);
+                await patientDelegate.GetDemographicsAsync(OidType.Phn, Phn).ConfigureAwait(true);
             }
 
             // Verify
@@ -1290,7 +1290,7 @@ namespace HealthGateway.PatientTests.Delegates
             // Act
             async Task Actual()
             {
-                await patientDelegate.GetDemographicsAsync(OidType.PHN, Phn).ConfigureAwait(true);
+                await patientDelegate.GetDemographicsAsync(OidType.Phn, Phn).ConfigureAwait(true);
             }
 
             // Verify

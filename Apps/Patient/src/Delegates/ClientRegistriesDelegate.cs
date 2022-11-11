@@ -364,7 +364,7 @@ namespace HealthGateway.Patient.Delegates
 
         private bool PopulateIdentifiers(HCIM_IN_GetDemographicsResponseIdentifiedPerson retrievedPerson, PatientModel patient)
         {
-            II? identifiedPersonId = retrievedPerson.identifiedPerson?.id?.FirstOrDefault(x => x.root == OidType.PHN.ToString());
+            II? identifiedPersonId = retrievedPerson.identifiedPerson?.id?.FirstOrDefault(x => x.root == OidType.Phn.ToString());
             if (identifiedPersonId == null)
             {
                 this.logger.LogWarning("Client Registry returned a person without a PHN");
@@ -374,7 +374,7 @@ namespace HealthGateway.Patient.Delegates
                 patient.PersonalHealthNumber = identifiedPersonId.extension;
             }
 
-            II? subjectId = retrievedPerson.id?.FirstOrDefault(x => x.displayable && x.root == OidType.HDID.ToString());
+            II? subjectId = retrievedPerson.id?.FirstOrDefault(x => x.displayable && x.root == OidType.Hdid.ToString());
             if (subjectId == null)
             {
                 this.logger.LogWarning("Client Registry returned a person without an HDID");

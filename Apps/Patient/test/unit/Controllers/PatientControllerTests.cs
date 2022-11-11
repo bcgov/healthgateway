@@ -86,9 +86,9 @@ namespace HealthGateway.PatientTests.Controllers
 
             // Assert
             Assert.IsType<OkObjectResult>(actualResult);
-            var okResult = actualResult as OkObjectResult;
+            OkObjectResult? okResult = actualResult as OkObjectResult;
             Assert.Equal(StatusCodes.Status200OK, okResult?.StatusCode);
-            var apiResult = Assert.IsAssignableFrom<ApiResult<PatientModel>>(okResult?.Value);
+            ApiResult<PatientModel> apiResult = Assert.IsAssignableFrom<ApiResult<PatientModel>>(okResult?.Value);
             Assert.Equal(MockedHdId, apiResult.ResourcePayload!.HdId);
         }
 
@@ -132,8 +132,8 @@ namespace HealthGateway.PatientTests.Controllers
                 ResourcePayload = GetPatientModel(),
             };
 
-            patientServiceV2.Setup(x => x.GetPatient(It.IsAny<string>(), PatientIdentifierType.HDID, false)).ReturnsAsync(apiResult);
-            patientServiceV1.Setup(x => x.GetPatient(It.IsAny<string>(), PatientIdentifierType.HDID, false)).ReturnsAsync(requestResult);
+            patientServiceV2.Setup(x => x.GetPatient(It.IsAny<string>(), PatientIdentifierType.Hdid, false)).ReturnsAsync(apiResult);
+            patientServiceV1.Setup(x => x.GetPatient(It.IsAny<string>(), PatientIdentifierType.Hdid, false)).ReturnsAsync(requestResult);
             return new(patientServiceV1.Object, patientServiceV2.Object);
         }
     }

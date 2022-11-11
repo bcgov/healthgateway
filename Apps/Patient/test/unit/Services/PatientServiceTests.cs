@@ -79,7 +79,7 @@ namespace HealthGateway.PatientTests.Services
             IPatientService service = GetPatientService(Phn, Phn, true);
 
             // Act
-            ApiResult<PatientModel> actual = Task.Run(async () => await service.GetPatient(Phn, PatientIdentifierType.PHN).ConfigureAwait(true)).Result;
+            ApiResult<PatientModel> actual = Task.Run(async () => await service.GetPatient(Phn, PatientIdentifierType.Phn).ConfigureAwait(true)).Result;
 
             // Verify
             Assert.Equal(Hdid, actual.ResourcePayload?.HdId);
@@ -95,7 +95,7 @@ namespace HealthGateway.PatientTests.Services
             IPatientService service = GetPatientService(Phn, Phn);
 
             // Act
-            ApiResult<PatientModel> actual = Task.Run(async () => await service.GetPatient(Phn, PatientIdentifierType.PHN).ConfigureAwait(true)).Result;
+            ApiResult<PatientModel> actual = Task.Run(async () => await service.GetPatient(Phn, PatientIdentifierType.Phn).ConfigureAwait(true)).Result;
 
             // Verify
             Assert.Equal(Phn, actual.ResourcePayload?.PersonalHealthNumber);
@@ -116,7 +116,7 @@ namespace HealthGateway.PatientTests.Services
             // Act
             async Task Actual()
             {
-                await service.GetPatient("abc123", PatientIdentifierType.PHN).ConfigureAwait(true);
+                await service.GetPatient("abc123", PatientIdentifierType.Phn).ConfigureAwait(true);
             }
 
             // Verify
@@ -145,8 +145,8 @@ namespace HealthGateway.PatientTests.Services
             IConfigurationRoot configuration = new ConfigurationBuilder()
                 .AddInMemoryCollection(configDictionary)
                 .Build();
-            patientDelegateMock.Setup(p => p.GetDemographicsAsync(OidType.HDID, expectedIdentifier, false)).ReturnsAsync(requestResult);
-            patientDelegateMock.Setup(p => p.GetDemographicsAsync(OidType.PHN, expectedIdentifier, false)).ReturnsAsync(requestResult);
+            patientDelegateMock.Setup(p => p.GetDemographicsAsync(OidType.Hdid, expectedIdentifier, false)).ReturnsAsync(requestResult);
+            patientDelegateMock.Setup(p => p.GetDemographicsAsync(OidType.Phn, expectedIdentifier, false)).ReturnsAsync(requestResult);
 
             Mock<ICacheProvider> cacheProviderMock = new();
             if (returnValidCache)
