@@ -73,7 +73,6 @@ namespace HealthGateway.Patient.Services
             {
                 ResourcePayload = this.GetFromCache(identifier, identifierType),
             };
-            apiResult.ResourcePayload = null;
 
             if (apiResult.ResourcePayload == null)
             {
