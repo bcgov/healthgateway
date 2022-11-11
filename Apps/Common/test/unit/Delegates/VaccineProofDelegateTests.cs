@@ -80,7 +80,7 @@ namespace HealthGateway.CommonTests.Delegates
             {
                 PageIndex = 0,
                 PageSize = null,
-                ResourcePayload = new VaccineProofResponse()
+                ResourcePayload = new VaccineProofResponse
                 {
                     Id = JobId,
                     Status = VaccineProofRequestStatus.Started,
@@ -203,7 +203,7 @@ namespace HealthGateway.CommonTests.Delegates
             {
                 PageIndex = 0,
                 PageSize = null,
-                ResourcePayload = new VaccineProofResponse()
+                ResourcePayload = new VaccineProofResponse
                 {
                     Id = JobId,
                     Status = VaccineProofRequestStatus.Started,
@@ -321,7 +321,7 @@ namespace HealthGateway.CommonTests.Delegates
             {
                 PageIndex = 0,
                 PageSize = null,
-                ResourcePayload = new ReportModel()
+                ResourcePayload = new ReportModel
                 {
                     FileName = "VaccineProof.pdf",
                 },
@@ -330,7 +330,7 @@ namespace HealthGateway.CommonTests.Delegates
                 TotalResultCount = 1,
             };
 
-            byte[] fileContents = new byte[1] { 1 };
+            byte[] fileContents = { 1 };
             using MemoryStream memoryStream = new(fileContents);
             using HttpResponseMessage httpResponseMessage = new()
             {
@@ -453,10 +453,10 @@ namespace HealthGateway.CommonTests.Delegates
             };
 
             return new ConfigurationBuilder()
-                .AddJsonFile("appsettings.json", optional: true)
-                .AddJsonFile("appsettings.Development.json", optional: true)
-                .AddJsonFile("appsettings.local.json", optional: true)
-                .AddInMemoryCollection(myConfiguration.ToList<KeyValuePair<string, string?>>())
+                .AddJsonFile("appsettings.json", true)
+                .AddJsonFile("appsettings.Development.json", true)
+                .AddJsonFile("appsettings.local.json", true)
+                .AddInMemoryCollection(myConfiguration.ToList())
                 .Build();
         }
 
@@ -464,13 +464,13 @@ namespace HealthGateway.CommonTests.Delegates
         {
             Mock<HttpMessageHandler> handlerMock = new();
             handlerMock
-               .Protected()
-               .Setup<Task<HttpResponseMessage>>(
-                  "SendAsync",
-                  ItExpr.IsAny<HttpRequestMessage>(),
-                  ItExpr.IsAny<CancellationToken>())
-               .ReturnsAsync(httpResponseMessage)
-               .Verifiable();
+                .Protected()
+                .Setup<Task<HttpResponseMessage>>(
+                    "SendAsync",
+                    ItExpr.IsAny<HttpRequestMessage>(),
+                    ItExpr.IsAny<CancellationToken>())
+                .ReturnsAsync(httpResponseMessage)
+                .Verifiable();
             Mock<IHttpClientService> mockHttpClientService = new();
             mockHttpClientService.Setup(s => s.CreateDefaultHttpClient()).Returns(() => new HttpClient(handlerMock.Object));
 

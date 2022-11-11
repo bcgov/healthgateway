@@ -13,7 +13,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //-------------------------------------------------------------------------
-namespace HealthGateway.GatewayApi.Test.Services
+namespace HealthGateway.GatewayApiTests.Services.Test
 {
     using System;
     using System.Collections.Generic;
@@ -33,7 +33,7 @@ namespace HealthGateway.GatewayApi.Test.Services
     using HealthGateway.Database.Wrapper;
     using HealthGateway.GatewayApi.Models;
     using HealthGateway.GatewayApi.Services;
-    using HealthGateway.GatewayApi.Test.Services.Utils;
+    using HealthGateway.GatewayApiTests.Services.Test.Utils;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.Logging;
     using Moq;
@@ -50,9 +50,9 @@ namespace HealthGateway.GatewayApi.Test.Services
         private readonly string mockGender = "Male";
         private readonly string mockHdId = "MockHdId";
         private readonly string mockLastName = "MockLastName";
-        private readonly string mockParentHdId = "MockFirstName";
-        private readonly string mockPHN = "MockPHN";
-        private readonly string noHdIdError = "Please ensure you are using a current BC Services Card.";
+        private readonly string mockParentHdid = "MockFirstName";
+        private readonly string mockPhn = "MockPHN";
+        private readonly string noHdidError = "Please ensure you are using a current BC Services Card.";
 
         /// <summary>
         /// GetDependents - Happy Path.
@@ -62,7 +62,7 @@ namespace HealthGateway.GatewayApi.Test.Services
         {
             IDependentService service = this.SetupMockForGetDependents();
 
-            RequestResult<IEnumerable<DependentModel>> actualResult = service.GetDependents(this.mockParentHdId);
+            RequestResult<IEnumerable<DependentModel>> actualResult = service.GetDependents(this.mockParentHdid);
 
             Assert.Equal(ResultType.Success, actualResult.ResultStatus);
             Assert.Equal(10, actualResult.TotalResultCount);
@@ -70,7 +70,7 @@ namespace HealthGateway.GatewayApi.Test.Services
             // Validate masked PHN
             foreach (DependentModel model in actualResult.ResourcePayload!)
             {
-                Assert.Equal(model.DependentInformation.Phn, this.mockPHN);
+                Assert.Equal(model.DependentInformation.Phn, this.mockPhn);
             }
         }
 
@@ -83,13 +83,13 @@ namespace HealthGateway.GatewayApi.Test.Services
             RequestResult<PatientModel> patientResult = new();
             IDependentService service = this.SetupMockForGetDependents(patientResult);
 
-            RequestResult<IEnumerable<DependentModel>> actualResult = service.GetDependents(this.mockParentHdId);
+            RequestResult<IEnumerable<DependentModel>> actualResult = service.GetDependents(this.mockParentHdid);
 
             Assert.Equal(ResultType.Error, actualResult.ResultStatus);
-            Assert.True(actualResult?.ResultError?.ErrorCode.EndsWith("-CE-PAT", StringComparison.InvariantCulture));
+            Assert.True(actualResult.ResultError?.ErrorCode.EndsWith("-CE-PAT", StringComparison.InvariantCulture));
             Assert.Equal(
                 "Communication Exception when trying to retrieve Dependent(s) - HdId: MockHdId-0; HdId: MockHdId-1; HdId: MockHdId-2; HdId: MockHdId-3; HdId: MockHdId-4; HdId: MockHdId-5; HdId: MockHdId-6; HdId: MockHdId-7; HdId: MockHdId-8; HdId: MockHdId-9;",
-                actualResult?.ResultError?.ResultMessage);
+                actualResult.ResultError?.ResultMessage);
         }
 
         /// <summary>
@@ -101,7 +101,7 @@ namespace HealthGateway.GatewayApi.Test.Services
             AddDependentRequest addDependentRequest = this.SetupMockInput();
             IDependentService service = this.SetupMockDependentService(addDependentRequest);
 
-            RequestResult<DependentModel> actualResult = service.AddDependent(this.mockParentHdId, addDependentRequest);
+            RequestResult<DependentModel> actualResult = service.AddDependent(this.mockParentHdid, addDependentRequest);
 
             Assert.Equal(ResultType.Success, actualResult.ResultStatus);
         }
@@ -118,10 +118,10 @@ namespace HealthGateway.GatewayApi.Test.Services
             // Test Scenario - Happy Path: Found HdId for the PHN, Found Patient.
             IDependentService service = this.SetupMockDependentService(addDependentRequest, null, patientResult);
 
-            RequestResult<DependentModel> actualResult = service.AddDependent(this.mockParentHdId, addDependentRequest);
+            RequestResult<DependentModel> actualResult = service.AddDependent(this.mockParentHdid, addDependentRequest);
 
             Assert.Equal(ResultType.Error, actualResult.ResultStatus);
-            Assert.True(actualResult?.ResultError?.ErrorCode.EndsWith("-CE-PAT", StringComparison.InvariantCulture));
+            Assert.True(actualResult.ResultError?.ErrorCode.EndsWith("-CE-PAT", StringComparison.InvariantCulture));
         }
 
         /// <summary>
@@ -140,7 +140,7 @@ namespace HealthGateway.GatewayApi.Test.Services
             AddDependentRequest addDependentRequest = this.SetupMockInput();
             IDependentService service = this.SetupMockDependentService(addDependentRequest, insertResult);
 
-            RequestResult<DependentModel> actualResult = service.AddDependent(this.mockParentHdId, addDependentRequest);
+            RequestResult<DependentModel> actualResult = service.AddDependent(this.mockParentHdid, addDependentRequest);
 
             Assert.Equal(ResultType.Error, actualResult.ResultStatus);
             string serviceError = ErrorTranslator.ServiceError(ErrorType.CommunicationInternal, ServiceType.Database);
@@ -157,7 +157,7 @@ namespace HealthGateway.GatewayApi.Test.Services
             addDependentRequest.FirstName = "wrong";
             IDependentService service = this.SetupMockDependentService(addDependentRequest);
 
-            RequestResult<DependentModel> actualResult = service.AddDependent(this.mockParentHdId, addDependentRequest);
+            RequestResult<DependentModel> actualResult = service.AddDependent(this.mockParentHdid, addDependentRequest);
 
             RequestResultError userError = ErrorTranslator.ActionRequired(ErrorMessages.DataMismatch, ActionType.DataMismatch);
             Assert.Equal(ResultType.ActionRequired, actualResult.ResultStatus);
@@ -175,7 +175,7 @@ namespace HealthGateway.GatewayApi.Test.Services
             addDependentRequest.LastName = "wrong";
             IDependentService service = this.SetupMockDependentService(addDependentRequest);
 
-            RequestResult<DependentModel> actualResult = service.AddDependent(this.mockParentHdId, addDependentRequest);
+            RequestResult<DependentModel> actualResult = service.AddDependent(this.mockParentHdid, addDependentRequest);
 
             RequestResultError userError = ErrorTranslator.ActionRequired(ErrorMessages.DataMismatch, ActionType.DataMismatch);
             Assert.Equal(ResultType.ActionRequired, actualResult.ResultStatus);
@@ -193,7 +193,7 @@ namespace HealthGateway.GatewayApi.Test.Services
             addDependentRequest.DateOfBirth = DateTime.Now;
             IDependentService service = this.SetupMockDependentService(addDependentRequest);
 
-            RequestResult<DependentModel> actualResult = service.AddDependent(this.mockParentHdId, addDependentRequest);
+            RequestResult<DependentModel> actualResult = service.AddDependent(this.mockParentHdid, addDependentRequest);
 
             RequestResultError userError = ErrorTranslator.ActionRequired(ErrorMessages.DataMismatch, ActionType.DataMismatch);
             Assert.Equal(ResultType.ActionRequired, actualResult.ResultStatus);
@@ -213,7 +213,7 @@ namespace HealthGateway.GatewayApi.Test.Services
                 ResourcePayload = new PatientModel
                 {
                     HdId = string.Empty,
-                    PersonalHealthNumber = this.mockPHN,
+                    PersonalHealthNumber = this.mockPhn,
                     FirstName = this.mockFirstName,
                     LastName = this.mockLastName,
                     Birthdate = this.mockDateOfBirth,
@@ -223,12 +223,12 @@ namespace HealthGateway.GatewayApi.Test.Services
             AddDependentRequest addDependentRequest = this.SetupMockInput();
             IDependentService service = this.SetupMockDependentService(addDependentRequest, patientResult: patientResult);
 
-            RequestResult<DependentModel> actualResult = service.AddDependent(this.mockParentHdId, addDependentRequest);
+            RequestResult<DependentModel> actualResult = service.AddDependent(this.mockParentHdid, addDependentRequest);
 
             RequestResultError userError = ErrorTranslator.ActionRequired(ErrorMessages.InvalidServicesCard, ActionType.NoHdId);
             Assert.Equal(ResultType.ActionRequired, actualResult.ResultStatus);
             Assert.Equal(userError.ErrorCode, actualResult.ResultError!.ErrorCode);
-            Assert.Equal(this.noHdIdError, actualResult.ResultError.ResultMessage);
+            Assert.Equal(this.noHdidError, actualResult.ResultError.ResultMessage);
         }
 
         /// <summary>
@@ -237,9 +237,9 @@ namespace HealthGateway.GatewayApi.Test.Services
         [Fact]
         public void ValidateRemove()
         {
-            DependentModel delegateModel = new() { OwnerId = this.mockHdId, DelegateId = this.mockParentHdId };
+            DependentModel delegateModel = new() { OwnerId = this.mockHdId, DelegateId = this.mockParentHdid };
             Mock<IResourceDelegateDelegate> mockDependentDelegate = new();
-            mockDependentDelegate.Setup(s => s.Delete(It.Is<ResourceDelegate>(d => d.ResourceOwnerHdid == this.mockHdId && d.ProfileHdid == this.mockParentHdId), true))
+            mockDependentDelegate.Setup(s => s.Delete(It.Is<ResourceDelegate>(d => d.ResourceOwnerHdid == this.mockHdId && d.ProfileHdid == this.mockParentHdid), true))
                 .Returns(
                     new DbResult<ResourceDelegate>
                     {
@@ -247,7 +247,7 @@ namespace HealthGateway.GatewayApi.Test.Services
                     });
 
             Mock<IUserProfileDelegate> mockUserProfileDelegate = new();
-            mockUserProfileDelegate.Setup(s => s.GetUserProfile(this.mockParentHdId))
+            mockUserProfileDelegate.Setup(s => s.GetUserProfile(this.mockParentHdid))
                 .Returns(
                     new DbResult<UserProfile>
                         { Payload = new UserProfile() });
@@ -275,7 +275,7 @@ namespace HealthGateway.GatewayApi.Test.Services
                 .AddJsonFile("appsettings.json", true)
                 .AddJsonFile("appsettings.Development.json", true)
                 .AddJsonFile("appsettings.local.json", true)
-                .AddInMemoryCollection(myConfiguration.ToList<KeyValuePair<string, string?>>())
+                .AddInMemoryCollection(myConfiguration.ToList())
                 .Build();
         }
 
@@ -303,7 +303,7 @@ namespace HealthGateway.GatewayApi.Test.Services
                 resourceDelegates.Add(
                     new ResourceDelegate
                     {
-                        ProfileHdid = this.mockParentHdId,
+                        ProfileHdid = this.mockParentHdid,
                         ResourceOwnerHdid = $"{this.mockHdId}-{i}",
                     });
             }
@@ -323,7 +323,7 @@ namespace HealthGateway.GatewayApi.Test.Services
             readResult.Payload = expectedResourceDelegates;
 
             Mock<IResourceDelegateDelegate> mockDependentDelegate = new();
-            mockDependentDelegate.Setup(s => s.Get(this.mockParentHdId, 0, 500)).Returns(readResult);
+            mockDependentDelegate.Setup(s => s.Get(this.mockParentHdid, 0, 500)).Returns(readResult);
 
             // (2) Setup PatientDelegate's mock
             Mock<IPatientService> mockPatientService = new();
@@ -336,7 +336,7 @@ namespace HealthGateway.GatewayApi.Test.Services
                     ResourcePayload = new PatientModel
                     {
                         HdId = this.mockHdId,
-                        PersonalHealthNumber = this.mockPHN,
+                        PersonalHealthNumber = this.mockPhn,
                         FirstName = this.mockFirstName,
                         LastName = this.mockLastName,
                         Birthdate = this.mockDateOfBirth,
@@ -365,7 +365,7 @@ namespace HealthGateway.GatewayApi.Test.Services
                 ResultStatus = ResultType.Success,
                 ResourcePayload = this.mockHdId,
             };
-            if (addDependentRequest.Phn.Equals(this.mockPHN, StringComparison.Ordinal))
+            if (addDependentRequest.Phn.Equals(this.mockPhn, StringComparison.Ordinal))
             {
                 // Test Scenario - Happy Path: HiId found for the mockPHN
                 patientHdIdResult.ResultStatus = ResultType.Success;
@@ -381,7 +381,7 @@ namespace HealthGateway.GatewayApi.Test.Services
                     ResourcePayload = new PatientModel
                     {
                         HdId = this.mockHdId,
-                        PersonalHealthNumber = this.mockPHN,
+                        PersonalHealthNumber = this.mockPhn,
                         FirstName = this.mockFirstName,
                         LastName = this.mockLastName,
                         Birthdate = this.mockDateOfBirth,
@@ -392,7 +392,7 @@ namespace HealthGateway.GatewayApi.Test.Services
 
             mockPatientService.Setup(s => s.GetPatient(It.IsAny<string>(), It.IsAny<PatientIdentifierType>(), false)).Returns(Task.FromResult(patientResult));
 
-            ResourceDelegate expectedDbDependent = new() { ProfileHdid = this.mockParentHdId, ResourceOwnerHdid = this.mockHdId };
+            ResourceDelegate expectedDbDependent = new() { ProfileHdid = this.mockParentHdid, ResourceOwnerHdid = this.mockHdId };
 
             if (insertResult == null)
             {
@@ -410,7 +410,7 @@ namespace HealthGateway.GatewayApi.Test.Services
                 .Returns(insertResult);
 
             Mock<IUserProfileDelegate> mockUserProfileDelegate = new();
-            mockUserProfileDelegate.Setup(s => s.GetUserProfile(this.mockParentHdId))
+            mockUserProfileDelegate.Setup(s => s.GetUserProfile(this.mockParentHdid))
                 .Returns(
                     new DbResult<UserProfile>
                         { Payload = new UserProfile() });
@@ -430,7 +430,7 @@ namespace HealthGateway.GatewayApi.Test.Services
         {
             return new AddDependentRequest
             {
-                Phn = this.mockPHN,
+                Phn = this.mockPhn,
                 FirstName = this.mockFirstName,
                 LastName = this.mockLastName,
                 DateOfBirth = this.mockDateOfBirth,

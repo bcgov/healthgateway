@@ -109,7 +109,7 @@ namespace HealthGateway.CommonTests.Delegates
 
             // Assert
             Assert.True(actualResult.ResultStatus == resultStatus);
-            Assert.Equal(actualResult?.ResultError?.ResultMessage, resultMessage);
+            Assert.Equal(actualResult.ResultError?.ResultMessage, resultMessage);
         }
 
         private static IConfigurationRoot GetIConfigurationRoot()
@@ -123,7 +123,7 @@ namespace HealthGateway.CommonTests.Delegates
             };
 
             return new ConfigurationBuilder()
-                .AddInMemoryCollection(configuration.ToList<KeyValuePair<string, string?>>())
+                .AddInMemoryCollection(configuration.ToList())
                 .Build();
         }
 

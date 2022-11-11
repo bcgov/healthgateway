@@ -13,7 +13,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //-------------------------------------------------------------------------
-namespace HealthGateway.WebClientTests.Services.Test
+namespace HealthGateway.WebClientTests.Services
 {
     using System;
     using System.Collections.Generic;
@@ -30,8 +30,6 @@ namespace HealthGateway.WebClientTests.Services.Test
     /// </summary>
     public class ConfigurationServiceTests
     {
-        private readonly IConfiguration config;
-        private readonly Mock<ILogger<ConfigurationService>> mockLog;
         private readonly ConfigurationService service;
 
         /// <summary>
@@ -39,15 +37,15 @@ namespace HealthGateway.WebClientTests.Services.Test
         /// </summary>
         public ConfigurationServiceTests()
         {
-            this.config = new ConfigurationBuilder()
+            IConfiguration config = new ConfigurationBuilder()
                 .AddJsonFile("UnitTest.json")
                 .Build();
 
             // Mock dependency injection of controller
-            this.mockLog = new Mock<ILogger<ConfigurationService>>();
+            Mock<ILogger<ConfigurationService>> mockLog = new();
 
             // Creates the controller passing mocked dependencies
-            this.service = new ConfigurationService(this.mockLog.Object, this.config);
+            this.service = new ConfigurationService(mockLog.Object, config);
         }
 
         /// <summary>

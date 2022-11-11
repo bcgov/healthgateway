@@ -13,7 +13,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //-------------------------------------------------------------------------
-namespace HealthGateway.GatewayApi.Test.Services
+namespace HealthGateway.GatewayApiTests.Services.Test
 {
     using System;
     using System.Linq;
@@ -29,17 +29,17 @@ namespace HealthGateway.GatewayApi.Test.Services
     using Xunit;
 
     /// <summary>
-    /// Unit Tests for UserSMSServiceTests.
+    /// Unit Tests for UserSmsService.
     /// </summary>
-    public class UserSMSServiceTests
+    public class UserSmsServiceTests
     {
         private const string HdIdMock = "hdIdMock";
 
         /// <summary>
-        /// ValidateSMS - Happy path scenario.
+        /// ValidateSms - Happy path scenario.
         /// </summary>
         [Fact]
-        public void ShouldValidateSMS()
+        public void ShouldValidateSms()
         {
             string smsValidationCode = "SMSValidationCodeMock";
             MessagingVerification expectedResult = new()
@@ -70,14 +70,14 @@ namespace HealthGateway.GatewayApi.Test.Services
 
             PrimitiveRequestResult<bool> actualResult = service.ValidateSms(HdIdMock, smsValidationCode);
 
-            Assert.True(actualResult?.ResourcePayload);
+            Assert.True(actualResult.ResourcePayload);
         }
 
         /// <summary>
-        /// ValidateSMS - Happy path scenario.
+        /// ValidateSms - Happy path scenario.
         /// </summary>
         [Fact]
-        public void ShouldValidateSMSWithInvalidInvite()
+        public void ShouldValidateSmsWithInvalidInvite()
         {
             string smsValidationCode = "SMSValidationCodeMock";
             MessagingVerification expectedResult = new()
@@ -108,11 +108,11 @@ namespace HealthGateway.GatewayApi.Test.Services
 
             PrimitiveRequestResult<bool> actualResult = service.ValidateSms(HdIdMock, smsValidationCode);
 
-            Assert.False(actualResult?.ResourcePayload);
+            Assert.False(actualResult.ResourcePayload);
         }
 
         /// <summary>
-        /// ValidateSMS - Update SMS Happy Path.
+        /// ValidateSms - Update SMS Happy Path.
         /// </summary>
         [Fact]
         public void ShouldValidateUpdate()
@@ -148,10 +148,10 @@ namespace HealthGateway.GatewayApi.Test.Services
         }
 
         /// <summary>
-        /// ValidateSMS - Happy path scenario.
+        /// ValidateSms - Happy path scenario.
         /// </summary>
         [Fact]
-        public void ShouldSanitizeSMS()
+        public void ShouldSanitizeSms()
         {
             string smsNumber = "1234561234";
 

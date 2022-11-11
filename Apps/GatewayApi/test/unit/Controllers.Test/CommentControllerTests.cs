@@ -13,7 +13,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //-------------------------------------------------------------------------
-namespace HealthGateway.GatewayApi.Test.Controllers
+namespace HealthGateway.GatewayApiTests.Controllers.Test
 {
     using System;
     using System.Collections.Generic;
@@ -42,7 +42,7 @@ namespace HealthGateway.GatewayApi.Test.Controllers
         {
             RequestResult<UserComment> expectedResult = new()
             {
-                ResourcePayload = new UserComment()
+                ResourcePayload = new UserComment
                 {
                     Id = Guid.NewGuid(),
                 },
@@ -88,7 +88,7 @@ namespace HealthGateway.GatewayApi.Test.Controllers
         {
             RequestResult<UserComment> expectedResult = new()
             {
-                ResourcePayload = new UserComment()
+                ResourcePayload = new UserComment
                 {
                     Id = Guid.NewGuid(),
                     UserProfileId = Hdid,
@@ -103,9 +103,9 @@ namespace HealthGateway.GatewayApi.Test.Controllers
 
             ActionResult<RequestResult<UserComment>> actualResult = service.Update(Hdid, expectedResult.ResourcePayload);
 
-            RequestResult<UserComment>? actualRequestResult = actualResult?.Value;
+            RequestResult<UserComment>? actualRequestResult = actualResult.Value;
             Assert.True(actualRequestResult != null && actualRequestResult.ResultStatus == ResultType.Success);
-            Assert.Equal(Hdid, actualRequestResult?.ResourcePayload!.UpdatedBy);
+            Assert.Equal(Hdid, actualRequestResult.ResourcePayload!.UpdatedBy);
         }
 
         /// <summary>
@@ -116,7 +116,7 @@ namespace HealthGateway.GatewayApi.Test.Controllers
         {
             RequestResult<UserComment> expectedResult = new()
             {
-                ResourcePayload = new UserComment()
+                ResourcePayload = new UserComment
                 {
                     Id = Guid.NewGuid(),
                 },
@@ -163,7 +163,7 @@ namespace HealthGateway.GatewayApi.Test.Controllers
         {
             RequestResult<UserComment> expectedResult = new()
             {
-                ResourcePayload = new UserComment()
+                ResourcePayload = new UserComment
                 {
                     Id = Guid.NewGuid(),
                     UserProfileId = Hdid,
@@ -178,9 +178,9 @@ namespace HealthGateway.GatewayApi.Test.Controllers
 
             ActionResult<RequestResult<UserComment>> actualResult = service.Delete(Hdid, expectedResult.ResourcePayload);
 
-            RequestResult<UserComment>? actualRequestResult = actualResult?.Value;
+            RequestResult<UserComment>? actualRequestResult = actualResult.Value;
             Assert.NotNull(actualRequestResult);
-            Assert.Equal(ResultType.Success, actualRequestResult?.ResultStatus);
+            Assert.Equal(ResultType.Success, actualRequestResult.ResultStatus);
             expectedResult.ShouldDeepEqual(actualRequestResult);
         }
 
@@ -192,7 +192,7 @@ namespace HealthGateway.GatewayApi.Test.Controllers
         {
             RequestResult<UserComment> expectedResult = new()
             {
-                ResourcePayload = new UserComment()
+                ResourcePayload = new UserComment
                 {
                     Id = Guid.NewGuid(),
                 },
@@ -218,11 +218,12 @@ namespace HealthGateway.GatewayApi.Test.Controllers
             List<UserComment> mockedComments = new();
             for (int i = 0; i < 10; i++)
             {
-                mockedComments.Add(new UserComment()
-                {
-                    Text = "comment " + i,
-                    UserProfileId = Hdid,
-                });
+                mockedComments.Add(
+                    new UserComment
+                    {
+                        Text = "comment " + i,
+                        UserProfileId = Hdid,
+                    });
             }
 
             RequestResult<IEnumerable<UserComment>> expectedResult = new()
@@ -239,7 +240,7 @@ namespace HealthGateway.GatewayApi.Test.Controllers
             RequestResult<IEnumerable<UserComment>> actualResult = service.GetAllForEntry(Hdid, "parentEntryIdMock");
 
             Assert.NotNull(actualResult);
-            Assert.Equal(ResultType.Success, actualResult?.ResultStatus);
+            Assert.Equal(ResultType.Success, actualResult.ResultStatus);
         }
     }
 }

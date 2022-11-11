@@ -45,15 +45,6 @@ namespace HealthGateway.ImmunizationTests.Delegates.Test
         private const string ForbiddenResultMessage = "DID Claim is missing or can not resolve PHN, HTTP Error Forbidden";
         private const string MethodNotAllowedResultMessage = "Unable to connect to Immunizations Endpoint, HTTP Error MethodNotAllowed";
         private const string RequestTimeoutResultMessage = "Unable to connect to Immunizations Endpoint, HTTP Error RequestTimeout";
-        private readonly IConfiguration configuration;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="ImmunizationDelegateTests"/> class.
-        /// </summary>
-        public ImmunizationDelegateTests()
-        {
-            this.configuration = GetIConfigurationRoot();
-        }
 
         /// <summary>
         /// Tests a various http status codes on Immunization View Response.
@@ -73,7 +64,7 @@ namespace HealthGateway.ImmunizationTests.Delegates.Test
             PhsaResult<ImmunizationViewResponse> expectedResult = new();
             RequestResult<PhsaResult<ImmunizationViewResponse>> actualResult = GetImmunizationDelegate(expectedResult, httpStatusCode, false).GetImmunization(It.IsAny<string>()).Result;
             Assert.True(actualResult.ResultStatus == resultStatus);
-            Assert.Equal(actualResult?.ResultError?.ResultMessage, resultMessage);
+            Assert.Equal(actualResult.ResultError?.ResultMessage, resultMessage);
         }
 
         /// <summary>
@@ -94,7 +85,7 @@ namespace HealthGateway.ImmunizationTests.Delegates.Test
             PhsaResult<ImmunizationResponse> expectedResult = new();
             RequestResult<PhsaResult<ImmunizationResponse>> actualResult = GetImmunizationDelegate(expectedResult, httpStatusCode, false).GetImmunizations(It.IsAny<string>()).Result;
             Assert.True(actualResult.ResultStatus == resultStatus);
-            Assert.Equal(actualResult?.ResultError?.ResultMessage, resultMessage);
+            Assert.Equal(actualResult.ResultError?.ResultMessage, resultMessage);
         }
 
         /// <summary>

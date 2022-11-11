@@ -88,13 +88,13 @@ namespace HealthGateway.CommonTests.Delegates
             CDogsRequestModel request = new()
             {
                 Data = JsonDocument.Parse("{}").RootElement,
-                Options = new CDogsOptionsModel()
+                Options = new CDogsOptionsModel
                 {
                     Overwrite = true,
                     ConvertTo = "pdf",
                     ReportName = "Test Report",
                 },
-                Template = new CDogsTemplateModel()
+                Template = new CDogsTemplateModel
                 {
                     Content = "Stuff",
                     FileType = "pdf",
@@ -117,7 +117,7 @@ namespace HealthGateway.CommonTests.Delegates
         {
             RequestResult<ReportModel> expected = new()
             {
-                ResultError = new RequestResultError()
+                ResultError = new RequestResultError
                 {
                     ResultMessage = $"Unable to connect to CDogs API, HTTP Error {HttpStatusCode.Forbidden}",
                     ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationInternal, ServiceType.CDogs),
@@ -138,13 +138,13 @@ namespace HealthGateway.CommonTests.Delegates
             CDogsRequestModel request = new()
             {
                 Data = JsonDocument.Parse("{}").RootElement,
-                Options = new CDogsOptionsModel()
+                Options = new CDogsOptionsModel
                 {
                     Overwrite = true,
                     ConvertTo = "pdf",
                     ReportName = "Test Report",
                 },
-                Template = new CDogsTemplateModel()
+                Template = new CDogsTemplateModel
                 {
                     Content = "Stuff",
                     FileType = "pdf",
@@ -183,10 +183,10 @@ namespace HealthGateway.CommonTests.Delegates
                 { "CDOGS:DynamicServiceLookup", "true" },
             };
             return new ConfigurationBuilder()
-                .AddJsonFile("appsettings.json", optional: true)
-                .AddJsonFile("appsettings.Development.json", optional: true)
-                .AddJsonFile("appsettings.local.json", optional: true)
-                .AddInMemoryCollection(myConfiguration.ToList<KeyValuePair<string, string?>>())
+                .AddJsonFile("appsettings.json", true)
+                .AddJsonFile("appsettings.Development.json", true)
+                .AddJsonFile("appsettings.local.json", true)
+                .AddInMemoryCollection(myConfiguration.ToList())
                 .Build();
         }
     }
