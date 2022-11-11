@@ -1,6 +1,7 @@
 import { Store } from "vuex";
 
 import AddDependentRequest from "@/models/addDependentRequest";
+import ApiResult from "@/models/apiResult";
 import { Dictionary } from "@/models/baseTypes";
 import ClinicalDocument from "@/models/clinicalDocument";
 import Communication, { CommunicationType } from "@/models/communication";
@@ -78,7 +79,7 @@ export interface IVaccinationStatusService {
 
 export interface IPatientService {
     initialize(config: ExternalConfiguration, http: IHttpDelegate): void;
-    getPatientData(hdid: string): Promise<RequestResult<PatientData>>;
+    getPatientData(hdid: string): Promise<ApiResult<PatientData>>;
 }
 
 export interface IMedicationService {

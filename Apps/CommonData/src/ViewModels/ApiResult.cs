@@ -25,33 +25,17 @@ namespace HealthGateway.Common.Data.ViewModels
         where T : class?
     {
         /// <summary>
-        /// Gets or sets a value indicating whether the PHSA Load State is in the RefreshInProgress status.
-        /// </summary>
-        [JsonPropertyName("refreshInProgress")]
-        public bool RefreshInProgress { get; set; }
-
-        /// <summary>
-        /// Gets or sets a value indicating the number of milliseconds to wait before re-querying.
-        /// </summary>
-        [JsonPropertyName("backOffMilliseconds")]
-        public int BackOffMilliseconds { get; set; }
-
-        /// <summary>
-        /// Gets or sets a value indicating whether the result is queued for retrieval in the backend.
-        /// </summary>
-        [JsonPropertyName("queued")]
-        public bool Queued { get; set; }
-
-        /// <summary>
         /// Gets or sets a warning.
         /// </summary>
         [JsonPropertyName("warning")]
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
         public ApiWarning? Warning { get; set; }
 
         /// <summary>
         /// Gets or sets the result payload.
         /// </summary>
         [JsonPropertyName("resourcePayload")]
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
         public T? ResourcePayload { get; set; }
     }
 }
