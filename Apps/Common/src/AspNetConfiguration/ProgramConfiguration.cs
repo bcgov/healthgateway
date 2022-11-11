@@ -68,7 +68,7 @@ namespace HealthGateway.Common.AspNetConfiguration
         /// <returns>Returns the configured WebApplicationBuilder.</returns>
         public static WebApplicationBuilder CreateWebAppBuilder(string[] args)
         {
-            WebApplicationBuilder? builder = WebApplication.CreateBuilder(args);
+            WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
             // Configure logging
             builder.Logging.ClearProviders();

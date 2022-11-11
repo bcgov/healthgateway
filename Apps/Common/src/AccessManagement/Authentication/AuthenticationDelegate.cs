@@ -96,7 +96,7 @@ namespace HealthGateway.Common.AccessManagement.Authentication
             string? accessToken = null;
             try
             {
-                accessToken = this.AuthenticateAsUser(tokenUri, tokenRequest, cacheEnabled)?.AccessToken;
+                accessToken = this.AuthenticateAsUser(tokenUri, tokenRequest, cacheEnabled).AccessToken;
             }
             catch (InvalidOperationException e)
             {

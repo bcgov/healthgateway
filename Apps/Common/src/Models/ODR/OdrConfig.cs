@@ -13,7 +13,7 @@
 //  See the License for the specific language governing permissions and
 //  limitations under the License.
 // -------------------------------------------------------------------------
-namespace HealthGateway.Common.Models
+namespace HealthGateway.Common.Models.ODR
 {
     /// <summary>
     /// The configuration for the ODR portion of the ResetMedStatement delegate.
@@ -48,7 +48,7 @@ namespace HealthGateway.Common.Models
         /// <summary>
         /// Gets or sets the endpoint path for the msp visits service.
         /// </summary>
-        public string MSPVisitsEndpoint { get; set; } = string.Empty;
+        public string MspVisitsEndpoint { get; set; } = string.Empty;
 
         /// <summary>
         /// Gets or sets the endpoint path for the protective word service.
@@ -58,7 +58,7 @@ namespace HealthGateway.Common.Models
         /// <summary>
         /// Gets or sets the time to live for cache objects.
         /// </summary>
-        public int CacheTTL { get; set; } = 1440;
+        public int CacheTtl { get; set; } = 1440;
 
         /// <summary>
         /// Gets or sets a value indicating whether dynamic service lookup should occur.

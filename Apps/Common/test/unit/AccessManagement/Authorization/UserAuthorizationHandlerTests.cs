@@ -40,7 +40,7 @@ namespace HealthGateway.CommonTests.AccessManagement.Authorization
         {
             // Setup
             string hdid = "The User HDID";
-            string resourceHDID = hdid;
+            string resourceHdid = hdid;
             string token = "Fake Access Token";
             string userId = "User ID";
             string username = "User Name";
@@ -49,7 +49,7 @@ namespace HealthGateway.CommonTests.AccessManagement.Authorization
             {
                 new Claim(ClaimTypes.Name, username),
                 new Claim(ClaimTypes.NameIdentifier, userId),
-                new Claim(GatewayClaims.HDID, hdid),
+                new Claim(GatewayClaims.Hdid, hdid),
             };
             ClaimsIdentity identity = new(claims, "TestAuth");
             ClaimsPrincipal claimsPrincipal = new(identity);
@@ -60,7 +60,7 @@ namespace HealthGateway.CommonTests.AccessManagement.Authorization
             };
             RouteValueDictionary routeValues = new()
             {
-                { "hdid", resourceHDID },
+                { "hdid", resourceHdid },
             };
             Mock<HttpRequest> httpRequestMock = new();
             httpRequestMock.Setup(s => s.Headers).Returns(headerDictionary);
@@ -77,7 +77,7 @@ namespace HealthGateway.CommonTests.AccessManagement.Authorization
             ILogger<UserAuthorizationHandler> logger = loggerFactory.CreateLogger<UserAuthorizationHandler>();
 
             UserAuthorizationHandler authHandler = new(logger, httpContextAccessorMock.Object);
-            UserRequirement[] requirements = new[] { new UserRequirement(true) };
+            UserRequirement[] requirements = { new(true) };
 
             AuthorizationHandlerContext context = new(requirements, claimsPrincipal, null);
 
@@ -95,7 +95,7 @@ namespace HealthGateway.CommonTests.AccessManagement.Authorization
         {
             // Setup
             string hdid = "The User HDID";
-            string resourceHDID = "The Resource HDID";
+            string resourceHdid = "The Resource HDID";
             string token = "Fake Access Token";
             string userId = "User ID";
             string username = "User Name";
@@ -104,7 +104,7 @@ namespace HealthGateway.CommonTests.AccessManagement.Authorization
             {
                 new Claim(ClaimTypes.Name, username),
                 new Claim(ClaimTypes.NameIdentifier, userId),
-                new Claim(GatewayClaims.HDID, hdid),
+                new Claim(GatewayClaims.Hdid, hdid),
             };
             ClaimsIdentity identity = new(claims, "TestAuth");
             ClaimsPrincipal claimsPrincipal = new(identity);
@@ -115,7 +115,7 @@ namespace HealthGateway.CommonTests.AccessManagement.Authorization
             };
             RouteValueDictionary routeValues = new()
             {
-                { "hdid", resourceHDID },
+                { "hdid", resourceHdid },
             };
             Mock<HttpRequest> httpRequestMock = new();
             httpRequestMock.Setup(s => s.Headers).Returns(headerDictionary);
@@ -132,7 +132,7 @@ namespace HealthGateway.CommonTests.AccessManagement.Authorization
             ILogger<UserAuthorizationHandler> logger = loggerFactory.CreateLogger<UserAuthorizationHandler>();
 
             UserAuthorizationHandler authHandler = new(logger, httpContextAccessorMock.Object);
-            UserRequirement[] requirements = new[] { new UserRequirement(true) };
+            UserRequirement[] requirements = { new(true) };
 
             AuthorizationHandlerContext context = new(requirements, claimsPrincipal, null);
 
@@ -146,11 +146,11 @@ namespace HealthGateway.CommonTests.AccessManagement.Authorization
         /// Handle Auth - Non-Owner Happy Path (Disabled Validate Ownership).
         /// </summary>
         [Fact]
-        public void ShouldAuthUserHasHDID()
+        public void ShouldAuthUserHasHdid()
         {
             // Setup
             string hdid = "The User HDID";
-            string resourceHDID = "The Resource HDID";
+            string resourceHdid = "The Resource HDID";
             string token = "Fake Access Token";
             string userId = "User ID";
             string username = "User Name";
@@ -159,7 +159,7 @@ namespace HealthGateway.CommonTests.AccessManagement.Authorization
             {
                 new Claim(ClaimTypes.Name, username),
                 new Claim(ClaimTypes.NameIdentifier, userId),
-                new Claim(GatewayClaims.HDID, hdid),
+                new Claim(GatewayClaims.Hdid, hdid),
             };
             ClaimsIdentity identity = new(claims, "TestAuth");
             ClaimsPrincipal claimsPrincipal = new(identity);
@@ -170,7 +170,7 @@ namespace HealthGateway.CommonTests.AccessManagement.Authorization
             };
             RouteValueDictionary routeValues = new()
             {
-                { "hdid", resourceHDID },
+                { "hdid", resourceHdid },
             };
             Mock<HttpRequest> httpRequestMock = new();
             httpRequestMock.Setup(s => s.Headers).Returns(headerDictionary);
@@ -187,7 +187,7 @@ namespace HealthGateway.CommonTests.AccessManagement.Authorization
             ILogger<UserAuthorizationHandler> logger = loggerFactory.CreateLogger<UserAuthorizationHandler>();
 
             UserAuthorizationHandler authHandler = new(logger, httpContextAccessorMock.Object);
-            UserRequirement[] requirements = new[] { new UserRequirement(false) };
+            UserRequirement[] requirements = { new(false) };
 
             AuthorizationHandlerContext context = new(requirements, claimsPrincipal, null);
 
@@ -201,11 +201,11 @@ namespace HealthGateway.CommonTests.AccessManagement.Authorization
         /// Handle Auth - Non-Owner No HdId Error (Disabled Validate Ownership).
         /// </summary>
         [Fact]
-        public void ShouldNotAuthUserNoHDID()
+        public void ShouldNotAuthUserNoHdid()
         {
             // Setup
             string hdid = "The User HDID";
-            string resourceHDID = hdid;
+            string resourceHdid = hdid;
             string token = "Fake Access Token";
             string userId = "User ID";
             string username = "User Name";
@@ -224,7 +224,7 @@ namespace HealthGateway.CommonTests.AccessManagement.Authorization
             };
             RouteValueDictionary routeValues = new()
             {
-                { "hdid", resourceHDID },
+                { "hdid", resourceHdid },
             };
             Mock<HttpRequest> httpRequestMock = new();
             httpRequestMock.Setup(s => s.Headers).Returns(headerDictionary);
@@ -241,7 +241,7 @@ namespace HealthGateway.CommonTests.AccessManagement.Authorization
             ILogger<UserAuthorizationHandler> logger = loggerFactory.CreateLogger<UserAuthorizationHandler>();
 
             UserAuthorizationHandler authHandler = new(logger, httpContextAccessorMock.Object);
-            UserRequirement[] requirements = new[] { new UserRequirement(false) };
+            UserRequirement[] requirements = { new(false) };
 
             AuthorizationHandlerContext context = new(requirements, claimsPrincipal, null);
 

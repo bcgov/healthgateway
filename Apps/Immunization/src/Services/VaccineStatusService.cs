@@ -45,9 +45,9 @@ namespace HealthGateway.Immunization.Services
         private const string PhsaConfigSectionKey = "PHSA";
         private const string AuthConfigSectionName = "ClientAuthentication";
         private readonly IAuthenticationDelegate authDelegate;
+        private readonly IMapper autoMapper;
         private readonly IHttpContextAccessor httpContextAccessor;
         private readonly ILogger<VaccineStatusService> logger;
-        private readonly IMapper autoMapper;
         private readonly PhsaConfig phsaConfig;
         private readonly ClientCredentialsTokenRequest tokenRequest;
         private readonly Uri tokenUri;
@@ -137,7 +137,7 @@ namespace HealthGateway.Immunization.Services
                     retVal.ResultError = new RequestResultError
                     {
                         ResultMessage = "Vaccine Proof document is not available.",
-                        ErrorCode = ErrorTranslator.ServiceError(ErrorType.InvalidState, ServiceType.PHSA),
+                        ErrorCode = ErrorTranslator.ServiceError(ErrorType.InvalidState, ServiceType.Phsa),
                     };
                 }
             }
@@ -180,7 +180,7 @@ namespace HealthGateway.Immunization.Services
                     retVal.ResultError = new RequestResultError
                     {
                         ResultMessage = "Vaccine Proof document is not available.",
-                        ErrorCode = ErrorTranslator.ServiceError(ErrorType.InvalidState, ServiceType.PHSA),
+                        ErrorCode = ErrorTranslator.ServiceError(ErrorType.InvalidState, ServiceType.Phsa),
                     };
                 }
             }

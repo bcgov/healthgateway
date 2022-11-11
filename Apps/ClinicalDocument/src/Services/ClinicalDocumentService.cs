@@ -91,7 +91,7 @@ namespace HealthGateway.ClinicalDocument.Services
                         requestResult.ResultError = new()
                         {
                             ResultMessage = $"API Exception {apiResponse.Error}",
-                            ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.PHSA),
+                            ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.Phsa),
                         };
                     }
                 }
@@ -106,7 +106,7 @@ namespace HealthGateway.ClinicalDocument.Services
                 requestResult.ResultError = new()
                 {
                     ResultMessage = "Error with HTTP Request for Clinical Documents",
-                    ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.PHSA),
+                    ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.Phsa),
                 };
             }
 
@@ -143,7 +143,7 @@ namespace HealthGateway.ClinicalDocument.Services
                         requestResult.ResultError = new()
                         {
                             ResultMessage = $"API Exception {apiResponse.Error}",
-                            ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.PHSA),
+                            ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.Phsa),
                         };
                     }
                 }
@@ -158,7 +158,7 @@ namespace HealthGateway.ClinicalDocument.Services
                 requestResult.ResultError = new()
                 {
                     ResultMessage = "Error with HTTP Request for Clinical Document file",
-                    ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.PHSA),
+                    ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.Phsa),
                 };
             }
 

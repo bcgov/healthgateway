@@ -40,11 +40,10 @@ namespace HealthGateway.Immunization.Delegates
         /// Configuration section key for PHSA values.
         /// </summary>
         public const string PhsaConfigSectionKey = "PHSA";
-        private readonly ILogger logger;
-        private readonly PhsaConfig phsaConfig;
-
         private readonly IAuthenticationDelegate authenticationDelegate;
         private readonly IImmunizationClient immunizationClient;
+        private readonly ILogger logger;
+        private readonly PhsaConfig phsaConfig;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="RestImmunizationDelegate"/> class.
@@ -89,7 +88,7 @@ namespace HealthGateway.Immunization.Delegates
                 requestResult.ResultError = new()
                 {
                     ResultMessage = "Error with HTTP Request",
-                    ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.PHSA),
+                    ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.Phsa),
                 };
             }
 
@@ -122,7 +121,7 @@ namespace HealthGateway.Immunization.Delegates
                 requestResult.ResultError = new()
                 {
                     ResultMessage = "Error with HTTP Request",
-                    ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.PHSA),
+                    ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.Phsa),
                 };
             }
 
@@ -165,7 +164,7 @@ namespace HealthGateway.Immunization.Delegates
                         {
                             ResultMessage =
                                 $"DID Claim is missing or can not resolve PHN, HTTP Error {response.StatusCode}",
-                            ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.PHSA),
+                            ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.Phsa),
                         };
                         break;
                     default:
@@ -175,7 +174,7 @@ namespace HealthGateway.Immunization.Delegates
                                 $"Unable to connect to Immunizations Endpoint, HTTP Error {response.StatusCode}",
                             ErrorCode = ErrorTranslator.ServiceError(
                                 ErrorType.CommunicationExternal,
-                                ServiceType.PHSA),
+                                ServiceType.Phsa),
                         };
                         this.logger.LogError("Unexpected status code returned: {StatusCode}", response.StatusCode.ToString());
                         break;
@@ -188,7 +187,7 @@ namespace HealthGateway.Immunization.Delegates
                 requestResult.ResultError = new()
                 {
                     ResultMessage = "An unexpected error occurred while processing external call",
-                    ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.PHSA),
+                    ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.Phsa),
                 };
             }
         }

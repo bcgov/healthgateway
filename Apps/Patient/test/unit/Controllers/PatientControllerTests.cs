@@ -13,7 +13,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //-------------------------------------------------------------------------
-namespace HealthGateway.Patient.Test.Controllers
+namespace HealthGateway.PatientTests.Controllers
 {
     using System;
     using DeepEqual.Syntax;
@@ -55,13 +55,13 @@ namespace HealthGateway.Patient.Test.Controllers
                     Gender = MockedGender,
                     HdId = MockedHdId,
                     PersonalHealthNumber = MockedPersonalHealthNumber,
-                    PhysicalAddress = new Address()
+                    PhysicalAddress = new Address
                     {
                         City = "Victoria",
                         State = "BC",
                         Country = "CA",
                     },
-                    PostalAddress = new Address()
+                    PostalAddress = new Address
                     {
                         City = "Vancouver",
                         State = "BC",
@@ -72,7 +72,7 @@ namespace HealthGateway.Patient.Test.Controllers
             RequestResult<PatientModel> expectedResult = new()
             {
                 ResultStatus = ResultType.Success,
-                ResourcePayload = new PatientModel()
+                ResourcePayload = new PatientModel
                 {
                     Birthdate = mockResult.ResourcePayload.Birthdate,
                     FirstName = mockResult.ResourcePayload.FirstName,
@@ -84,7 +84,7 @@ namespace HealthGateway.Patient.Test.Controllers
                     PostalAddress = mockResult.ResourcePayload.PostalAddress,
                 },
             };
-            patientService.Setup(x => x.GetPatient(It.IsAny<string>(), PatientIdentifierType.HDID, false)).ReturnsAsync(mockResult);
+            patientService.Setup(x => x.GetPatient(It.IsAny<string>(), PatientIdentifierType.Hdid, false)).ReturnsAsync(mockResult);
 
             PatientController patientController = new(patientService.Object);
             RequestResult<PatientModel> actualResult = patientController.GetPatient("123").Result;

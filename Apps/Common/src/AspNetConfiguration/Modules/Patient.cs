@@ -18,7 +18,6 @@ namespace HealthGateway.Common.AspNetConfiguration.Modules
     using System;
     using System.Diagnostics.CodeAnalysis;
     using System.IO;
-    using System.Runtime.CompilerServices;
     using System.Security.Cryptography.X509Certificates;
     using System.ServiceModel;
     using System.ServiceModel.Description;
@@ -26,7 +25,6 @@ namespace HealthGateway.Common.AspNetConfiguration.Modules
     using System.ServiceModel.Security;
     using HealthGateway.Common.Delegates;
     using HealthGateway.Common.Services;
-    using HealthGateway.Database.Delegates;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Logging;

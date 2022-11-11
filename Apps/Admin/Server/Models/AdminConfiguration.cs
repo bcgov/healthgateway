@@ -41,10 +41,10 @@ namespace HealthGateway.Admin.Server.Models
         public TimeOutsConfiguration? Timeouts { get; set; }
 
         /// <summary>
-        /// Gets or sets the ExternalURLs used by the Admin.
+        /// Gets or sets the ExternalUrls used by the Admin.
         /// </summary>
 #pragma warning disable CA2227 //disable read-only Dictionary
-        public Dictionary<string, Uri> ExternalUrLs { get; set; } = new();
+        public Dictionary<string, Uri> ExternalUrls { get; set; } = new();
 
         /// <summary>
         /// Gets or sets the unix timezone id.

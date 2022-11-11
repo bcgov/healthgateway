@@ -38,7 +38,7 @@ namespace HealthGateway.Common.ErrorHandling
         /// <summary>
         /// Gets the ODRRecords service code.
         /// </summary>
-        public static ServiceType ODRRecords => new("ODR");
+        public static ServiceType OdrRecords => new("ODR");
 
         /// <summary>
         /// Gets the Medication service code.
@@ -63,12 +63,12 @@ namespace HealthGateway.Common.ErrorHandling
         /// <summary>
         /// Gets the PHSA service code.
         /// </summary>
-        public static ServiceType PHSA => new("PHSA");
+        public static ServiceType Phsa => new("PHSA");
 
         /// <summary>
         /// Gets the Salesforce service code.
         /// </summary>
-        public static ServiceType SF => new("SF");
+        public static ServiceType Sf => new("SF");
 
         /// <summary>
         /// Gets the CDogs service code.
@@ -78,12 +78,12 @@ namespace HealthGateway.Common.ErrorHandling
         /// <summary>
         /// Gets the SFTP service code.
         /// </summary>
-        public static ServiceType SFTP => new("SFTP");
+        public static ServiceType Sftp => new("SFTP");
 
         /// <summary>
         /// Gets the BCMP service code.
         /// </summary>
-        public static ServiceType BCMP => new("BCMP");
+        public static ServiceType Bcmp => new("BCMP");
 
         /// <summary>
         /// Gets the Keycloak service code.

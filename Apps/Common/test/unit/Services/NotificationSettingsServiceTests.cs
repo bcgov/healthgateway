@@ -47,28 +47,31 @@ namespace HealthGateway.CommonTests.Services
             {
                 EmailEnabled = true,
                 EmailAddress = "mock@mock.com",
-                SMSEnabled = true,
-                SMSNumber = "2505555555",
+                SmsEnabled = true,
+                SmsNumber = "2505555555",
                 SubjectHdid = "hdid",
-                SMSVerificationCode = "123456",
-                SMSVerified = false,
+                SmsVerificationCode = "123456",
+                SmsVerified = false,
             };
 
             Mock<ILogger<NotificationSettingsService>> mockLogger = new();
             Mock<IBackgroundJobClient> mockJobClient = new();
             Mock<IResourceDelegateDelegate> mockResourceDelegateDelegate = new();
-            DbResult<IEnumerable<ResourceDelegate>> dbResult = new();
-            dbResult.Payload = new List<ResourceDelegate>();
+            DbResult<IEnumerable<ResourceDelegate>> dbResult = new()
+            {
+                Payload = new List<ResourceDelegate>(),
+            };
             mockResourceDelegateDelegate.Setup(s => s.Get(nsr.SubjectHdid, 0, 500)).Returns(dbResult);
             INotificationSettingsService service = new NotificationSettingsService(
-                                mockLogger.Object,
-                                mockJobClient.Object,
-                                mockResourceDelegateDelegate.Object);
+                mockLogger.Object,
+                mockJobClient.Object,
+                mockResourceDelegateDelegate.Object);
 
             string expectedJobParm = JsonSerializer.Serialize(nsr);
             service.QueueNotificationSettings(nsr);
 
-            mockJobClient.Verify(x => x.Create(
+            mockJobClient.Verify(
+                x => x.Create(
                     It.Is<Job>(job => job.Method.Name == "PushNotificationSettings" && (string)job.Args[0] == expectedJobParm),
                     It.IsAny<EnqueuedState>()));
         }
@@ -83,31 +86,33 @@ namespace HealthGateway.CommonTests.Services
             {
                 EmailEnabled = true,
                 EmailAddress = "mock@mock.com",
-                SMSEnabled = true,
-                SMSNumber = "2505555555",
+                SmsEnabled = true,
+                SmsNumber = "2505555555",
                 SubjectHdid = "hdid",
-                SMSVerified = false,
+                SmsVerified = false,
             };
 
             Mock<ILogger<NotificationSettingsService>> mockLogger = new();
             Mock<IBackgroundJobClient> mockJobClient = new();
             Mock<IResourceDelegateDelegate> mockResourceDelegateDelegate = new();
-            DbResult<IEnumerable<ResourceDelegate>> dbResult = new();
-            dbResult.Payload = new List<ResourceDelegate>
+            DbResult<IEnumerable<ResourceDelegate>> dbResult = new()
             {
-                new ResourceDelegate()
+                Payload = new List<ResourceDelegate>
                 {
-                    ProfileHdid = Hdid,
+                    new()
+                    {
+                        ProfileHdid = Hdid,
+                    },
                 },
             };
             mockResourceDelegateDelegate.Setup(s => s.Get(nsr.SubjectHdid, 0, 500)).Returns(dbResult);
 
             INotificationSettingsService service = new NotificationSettingsService(
-                                mockLogger.Object,
-                                mockJobClient.Object,
-                                mockResourceDelegateDelegate.Object);
+                mockLogger.Object,
+                mockJobClient.Object,
+                mockResourceDelegateDelegate.Object);
 
-            Assert.True(nsr.SMSVerificationCode == null);
+            Assert.True(nsr.SmsVerificationCode == null);
 
             Assert.Throws<InvalidOperationException>(() => service.QueueNotificationSettings(nsr));
         }
@@ -123,34 +128,37 @@ namespace HealthGateway.CommonTests.Services
             {
                 EmailEnabled = true,
                 EmailAddress = "mock@mock.com",
-                SMSEnabled = true,
-                SMSVerificationCode = verificationCode,
-                SMSNumber = "2505555555",
+                SmsEnabled = true,
+                SmsVerificationCode = verificationCode,
+                SmsNumber = "2505555555",
                 SubjectHdid = "hdid",
-                SMSVerified = false,
+                SmsVerified = false,
             };
 
             Mock<ILogger<NotificationSettingsService>> mockLogger = new();
             Mock<IBackgroundJobClient> mockJobClient = new();
             Mock<IResourceDelegateDelegate> mockResourceDelegateDelegate = new();
-            DbResult<IEnumerable<ResourceDelegate>> dbResult = new();
-            dbResult.Payload = new List<ResourceDelegate>
+            DbResult<IEnumerable<ResourceDelegate>> dbResult = new()
             {
-                new ResourceDelegate()
+                Payload = new List<ResourceDelegate>
                 {
-                    ProfileHdid = Hdid,
+                    new()
+                    {
+                        ProfileHdid = Hdid,
+                    },
                 },
             };
             mockResourceDelegateDelegate.Setup(s => s.Get(nsr.SubjectHdid, 0, 500)).Returns(dbResult);
 
             INotificationSettingsService service = new NotificationSettingsService(
-                                mockLogger.Object,
-                                mockJobClient.Object,
-                                mockResourceDelegateDelegate.Object);
+                mockLogger.Object,
+                mockJobClient.Object,
+                mockResourceDelegateDelegate.Object);
 
             service.QueueNotificationSettings(nsr);
 
-            mockJobClient.Verify(x => x.Create(
+            mockJobClient.Verify(
+                x => x.Create(
                     It.Is<Job>(job => job.Method.Name == "PushNotificationSettings" && job.Args[0] is string),
                     It.IsAny<EnqueuedState>()));
         }

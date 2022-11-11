@@ -85,7 +85,7 @@ namespace HealthGateway.CommonTests.Delegates
                 = this.GetNotificationSettings(HttpStatusCode.OK, expectedRequestResult, true);
 
             Assert.Equal(expectedResult.ResultStatus, actualResult.ResultStatus);
-            Assert.Contains("Exception getting Notification Settings:", actualResult?.ResultError?.ResultMessage, StringComparison.CurrentCulture);
+            Assert.Contains("Exception getting Notification Settings:", actualResult.ResultError?.ResultMessage, StringComparison.CurrentCulture);
         }
 
         /// <summary>
@@ -101,7 +101,7 @@ namespace HealthGateway.CommonTests.Delegates
 
             (RequestResult<NotificationSettingsResponse> actualResult, _) = this.GetNotificationSettings(HttpStatusCode.BadRequest, expectedRequestResult);
 
-            Assert.Equal($"Unable to connect to Notification Settings Endpoint, HTTP Error {HttpStatusCode.BadRequest}", actualResult?.ResultError?.ResultMessage);
+            Assert.Equal($"Unable to connect to Notification Settings Endpoint, HTTP Error {HttpStatusCode.BadRequest}", actualResult.ResultError?.ResultMessage);
         }
 
         /// <summary>
@@ -123,7 +123,10 @@ namespace HealthGateway.CommonTests.Delegates
             };
             using ILoggerFactory loggerFactory = LoggerFactory.Create(builder => builder.AddConsole());
             Mock<IHttpClientService> mockHttpClientService = GetHttpClientServiceMock(httpResponseMessage);
-            INotificationSettingsDelegate nsDelegate = new RestNotificationSettingsDelegate(loggerFactory.CreateLogger<RestNotificationSettingsDelegate>(), mockHttpClientService.Object, this.configuration);
+            INotificationSettingsDelegate nsDelegate = new RestNotificationSettingsDelegate(
+                loggerFactory.CreateLogger<RestNotificationSettingsDelegate>(),
+                mockHttpClientService.Object,
+                this.configuration);
             RequestResult<NotificationSettingsResponse> actualResult = Task.Run(async () => await nsDelegate.GetNotificationSettings(string.Empty).ConfigureAwait(true)).Result;
 
             actualResult.ShouldDeepEqual(expected);
@@ -138,7 +141,10 @@ namespace HealthGateway.CommonTests.Delegates
             RequestResult<NotificationSettingsResponse> expected = new()
             {
                 ResultStatus = ResultType.Error,
-                ResultError = new RequestResultError() { ResultMessage = "DID Claim is missing or can not resolve PHN, HTTP Error Forbidden", ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.PHSA) },
+                ResultError = new RequestResultError
+                {
+                    ResultMessage = "DID Claim is missing or can not resolve PHN, HTTP Error Forbidden", ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.Phsa),
+                },
             };
             using HttpResponseMessage httpResponseMessage = new()
             {
@@ -147,7 +153,10 @@ namespace HealthGateway.CommonTests.Delegates
             };
             using ILoggerFactory loggerFactory = LoggerFactory.Create(builder => builder.AddConsole());
             Mock<IHttpClientService> mockHttpClientService = GetHttpClientServiceMock(httpResponseMessage);
-            INotificationSettingsDelegate nsDelegate = new RestNotificationSettingsDelegate(loggerFactory.CreateLogger<RestNotificationSettingsDelegate>(), mockHttpClientService.Object, this.configuration);
+            INotificationSettingsDelegate nsDelegate = new RestNotificationSettingsDelegate(
+                loggerFactory.CreateLogger<RestNotificationSettingsDelegate>(),
+                mockHttpClientService.Object,
+                this.configuration);
             RequestResult<NotificationSettingsResponse> actualResult = Task.Run(async () => await nsDelegate.GetNotificationSettings(string.Empty).ConfigureAwait(true)).Result;
 
             expected.ShouldDeepEqual(actualResult);
@@ -186,7 +195,7 @@ namespace HealthGateway.CommonTests.Delegates
                 = this.SetNotificationSettings(HttpStatusCode.OK, expectedRequestResult, true);
 
             Assert.Equal(expectedResult.ResultStatus, actualResult.ResultStatus);
-            Assert.Contains("Exception getting Notification Settings:", actualResult?.ResultError?.ResultMessage, StringComparison.CurrentCulture);
+            Assert.Contains("Exception getting Notification Settings:", actualResult.ResultError?.ResultMessage, StringComparison.CurrentCulture);
         }
 
         /// <summary>
@@ -202,7 +211,7 @@ namespace HealthGateway.CommonTests.Delegates
 
             (RequestResult<NotificationSettingsResponse> actualResult, _) = this.SetNotificationSettings(HttpStatusCode.BadRequest, expectedRequestResult);
 
-            Assert.Contains("Bad Request, HTTP Error BadRequest", actualResult?.ResultError?.ResultMessage, StringComparison.CurrentCulture);
+            Assert.Contains("Bad Request, HTTP Error BadRequest", actualResult.ResultError?.ResultMessage, StringComparison.CurrentCulture);
         }
 
         /// <summary>
@@ -214,11 +223,11 @@ namespace HealthGateway.CommonTests.Delegates
             RequestResult<NotificationSettingsResponse> expected = new()
             {
                 ResultStatus = ResultType.Success,
-                ResourcePayload = new NotificationSettingsResponse()
+                ResourcePayload = new NotificationSettingsResponse
                 {
-                    SMSEnabled = true,
-                    SMSNumber = "5551231234",
-                    SMSScope = new List<NotificationTarget>
+                    SmsEnabled = true,
+                    SmsNumber = "5551231234",
+                    SmsScope = new List<NotificationTarget>
                     {
                         NotificationTarget.Covid19,
                     },
@@ -233,7 +242,7 @@ namespace HealthGateway.CommonTests.Delegates
             };
             NotificationSettingsRequest request = new(expected.ResourcePayload)
             {
-                SMSVerificationCode = "1234",
+                SmsVerificationCode = "1234",
             };
             string json = JsonSerializer.Serialize(request);
 
@@ -244,7 +253,10 @@ namespace HealthGateway.CommonTests.Delegates
             };
             using ILoggerFactory loggerFactory = LoggerFactory.Create(builder => builder.AddConsole());
             Mock<IHttpClientService> mockHttpClientService = GetHttpClientServiceMock(httpResponseMessage);
-            INotificationSettingsDelegate nsDelegate = new RestNotificationSettingsDelegate(loggerFactory.CreateLogger<RestNotificationSettingsDelegate>(), mockHttpClientService.Object, this.configuration);
+            INotificationSettingsDelegate nsDelegate = new RestNotificationSettingsDelegate(
+                loggerFactory.CreateLogger<RestNotificationSettingsDelegate>(),
+                mockHttpClientService.Object,
+                this.configuration);
             RequestResult<NotificationSettingsResponse> actualResult = Task.Run(async () => await nsDelegate.SetNotificationSettings(request, string.Empty).ConfigureAwait(true)).Result;
 
             expected.ShouldDeepEqual(actualResult);
@@ -260,22 +272,23 @@ namespace HealthGateway.CommonTests.Delegates
             RequestResult<NotificationSettingsResponse> expected = new()
             {
                 ResultStatus = ResultType.Error,
-                ResultError = new RequestResultError() { ResultMessage = $"Bad Request, HTTP Error BadRequest\nDetails:\n{errMsg}", ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.PHSA) },
+                ResultError = new RequestResultError
+                    { ResultMessage = $"Bad Request, HTTP Error BadRequest\nDetails:\n{errMsg}", ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.Phsa) },
             };
             NotificationSettingsRequest notificationSettings = new()
             {
-                SMSEnabled = true,
-                SMSNumber = "5551231234",
-                SMSScope = new List<NotificationTarget>
-                    {
-                        NotificationTarget.Covid19,
-                    },
+                SmsEnabled = true,
+                SmsNumber = "5551231234",
+                SmsScope = new List<NotificationTarget>
+                {
+                    NotificationTarget.Covid19,
+                },
                 EmailEnabled = true,
                 EmailAddress = "DrGateway@HealthGateway.gov.bc.ca",
                 EmailScope = new List<NotificationTarget>
-                    {
-                        NotificationTarget.Covid19,
-                    },
+                {
+                    NotificationTarget.Covid19,
+                },
             };
             using HttpResponseMessage httpResponseMessage = new()
             {
@@ -284,7 +297,10 @@ namespace HealthGateway.CommonTests.Delegates
             };
             using ILoggerFactory loggerFactory = LoggerFactory.Create(builder => builder.AddConsole());
             Mock<IHttpClientService> mockHttpClientService = GetHttpClientServiceMock(httpResponseMessage);
-            INotificationSettingsDelegate nsDelegate = new RestNotificationSettingsDelegate(loggerFactory.CreateLogger<RestNotificationSettingsDelegate>(), mockHttpClientService.Object, this.configuration);
+            INotificationSettingsDelegate nsDelegate = new RestNotificationSettingsDelegate(
+                loggerFactory.CreateLogger<RestNotificationSettingsDelegate>(),
+                mockHttpClientService.Object,
+                this.configuration);
             RequestResult<NotificationSettingsResponse> actualResult = Task.Run(async () => await nsDelegate.SetNotificationSettings(notificationSettings, string.Empty).ConfigureAwait(true)).Result;
 
             expected.ShouldDeepEqual(actualResult);
@@ -299,22 +315,25 @@ namespace HealthGateway.CommonTests.Delegates
             RequestResult<NotificationSettingsRequest> expected = new()
             {
                 ResultStatus = ResultType.Error,
-                ResultError = new RequestResultError() { ResultMessage = "DID Claim is missing or can not resolve PHN, HTTP Error Forbidden", ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.PHSA) },
+                ResultError = new RequestResultError
+                {
+                    ResultMessage = "DID Claim is missing or can not resolve PHN, HTTP Error Forbidden", ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.Phsa),
+                },
             };
             NotificationSettingsRequest notificationSettings = new()
             {
-                SMSEnabled = true,
-                SMSNumber = "5551231234",
-                SMSScope = new List<NotificationTarget>
-                    {
-                        NotificationTarget.Covid19,
-                    },
+                SmsEnabled = true,
+                SmsNumber = "5551231234",
+                SmsScope = new List<NotificationTarget>
+                {
+                    NotificationTarget.Covid19,
+                },
                 EmailEnabled = true,
                 EmailAddress = "DrGateway@HealthGateway.gov.bc.ca",
                 EmailScope = new List<NotificationTarget>
-                    {
-                        NotificationTarget.Covid19,
-                    },
+                {
+                    NotificationTarget.Covid19,
+                },
             };
             using HttpResponseMessage httpResponseMessage = new()
             {
@@ -323,7 +342,10 @@ namespace HealthGateway.CommonTests.Delegates
             };
             using ILoggerFactory loggerFactory = LoggerFactory.Create(builder => builder.AddConsole());
             Mock<IHttpClientService> mockHttpClientService = GetHttpClientServiceMock(httpResponseMessage);
-            INotificationSettingsDelegate nsDelegate = new RestNotificationSettingsDelegate(loggerFactory.CreateLogger<RestNotificationSettingsDelegate>(), mockHttpClientService.Object, this.configuration);
+            INotificationSettingsDelegate nsDelegate = new RestNotificationSettingsDelegate(
+                loggerFactory.CreateLogger<RestNotificationSettingsDelegate>(),
+                mockHttpClientService.Object,
+                this.configuration);
             RequestResult<NotificationSettingsResponse> actualResult = Task.Run(async () => await nsDelegate.SetNotificationSettings(notificationSettings, string.Empty).ConfigureAwait(true)).Result;
 
             expected.ShouldDeepEqual(actualResult);
@@ -337,10 +359,10 @@ namespace HealthGateway.CommonTests.Delegates
             };
 
             return new ConfigurationBuilder()
-                .AddJsonFile("appsettings.json", optional: true)
-                .AddJsonFile("appsettings.Development.json", optional: true)
-                .AddJsonFile("appsettings.local.json", optional: true)
-                .AddInMemoryCollection(myConfiguration.ToList<KeyValuePair<string, string?>>())
+                .AddJsonFile("appsettings.json", true)
+                .AddJsonFile("appsettings.Development.json", true)
+                .AddJsonFile("appsettings.local.json", true)
+                .AddInMemoryCollection(myConfiguration.ToList())
                 .Build();
         }
 
@@ -348,13 +370,13 @@ namespace HealthGateway.CommonTests.Delegates
         {
             Mock<HttpMessageHandler> handlerMock = new();
             handlerMock
-               .Protected()
-               .Setup<Task<HttpResponseMessage>>(
-                  "SendAsync",
-                  ItExpr.IsAny<HttpRequestMessage>(),
-                  ItExpr.IsAny<CancellationToken>())
-               .ReturnsAsync(httpResponseMessage)
-               .Verifiable();
+                .Protected()
+                .Setup<Task<HttpResponseMessage>>(
+                    "SendAsync",
+                    ItExpr.IsAny<HttpRequestMessage>(),
+                    ItExpr.IsAny<CancellationToken>())
+                .ReturnsAsync(httpResponseMessage)
+                .Verifiable();
             Mock<IHttpClientService> mockHttpClientService = new();
             mockHttpClientService.Setup(s => s.CreateDefaultHttpClient()).Returns(() => new HttpClient(handlerMock.Object));
 
@@ -373,7 +395,8 @@ namespace HealthGateway.CommonTests.Delegates
             RequestResult<NotificationSettingsResponse> expectedRequestResult,
             bool throwException = false)
         {
-            string json = @"{""smsEnabled"": true, ""smsCellNumber"": ""5551231234"", ""smsVerified"": true, ""smsScope"": [""COVID19""], ""emailEnabled"": true, ""emailAddress"": ""email@email.blah"", ""emailScope"": [""COVID19""]}";
+            string json =
+                @"{""smsEnabled"": true, ""smsCellNumber"": ""5551231234"", ""smsVerified"": true, ""smsScope"": [""COVID19""], ""emailEnabled"": true, ""emailAddress"": ""email@email.blah"", ""emailScope"": [""COVID19""]}";
 
             expectedRequestResult.ResourcePayload = JsonSerializer.Deserialize<NotificationSettingsResponse>(json);
             using HttpResponseMessage httpResponseMessage = new()
@@ -383,7 +406,10 @@ namespace HealthGateway.CommonTests.Delegates
             };
             using ILoggerFactory loggerFactory = LoggerFactory.Create(builder => builder.AddConsole());
             Mock<IHttpClientService> mockHttpClientService = GetHttpClientServiceMock(httpResponseMessage);
-            INotificationSettingsDelegate nsDelegate = new RestNotificationSettingsDelegate(loggerFactory.CreateLogger<RestNotificationSettingsDelegate>(), mockHttpClientService.Object, this.configuration);
+            INotificationSettingsDelegate nsDelegate = new RestNotificationSettingsDelegate(
+                loggerFactory.CreateLogger<RestNotificationSettingsDelegate>(),
+                mockHttpClientService.Object,
+                this.configuration);
             RequestResult<NotificationSettingsResponse> actualResult = Task.Run(async () => await nsDelegate.GetNotificationSettings(string.Empty).ConfigureAwait(true)).Result;
             return (actualResult, expectedRequestResult);
         }
@@ -400,25 +426,25 @@ namespace HealthGateway.CommonTests.Delegates
             RequestResult<NotificationSettingsResponse> expectedRequestResult,
             bool throwException = false)
         {
-            expectedRequestResult.ResourcePayload = new NotificationSettingsResponse()
+            expectedRequestResult.ResourcePayload = new NotificationSettingsResponse
             {
-                SMSEnabled = true,
-                SMSNumber = "5551231234",
-                SMSScope = new List<NotificationTarget>
-                    {
-                        NotificationTarget.Covid19,
-                    },
+                SmsEnabled = true,
+                SmsNumber = "5551231234",
+                SmsScope = new List<NotificationTarget>
+                {
+                    NotificationTarget.Covid19,
+                },
                 EmailEnabled = true,
                 EmailAddress = "DrGateway@HealthGateway.gov.bc.ca",
                 EmailScope = new List<NotificationTarget>
-                    {
-                        NotificationTarget.Covid19,
-                    },
+                {
+                    NotificationTarget.Covid19,
+                },
             };
 
             NotificationSettingsRequest request = new(expectedRequestResult.ResourcePayload)
             {
-                SMSVerificationCode = "1234",
+                SmsVerificationCode = "1234",
             };
             string json = JsonSerializer.Serialize(request);
             using HttpResponseMessage httpResponseMessage = new()
@@ -428,7 +454,10 @@ namespace HealthGateway.CommonTests.Delegates
             };
             Mock<IHttpClientService> mockHttpClientService = GetHttpClientServiceMock(httpResponseMessage);
             using ILoggerFactory loggerFactory = LoggerFactory.Create(builder => builder.AddConsole());
-            INotificationSettingsDelegate nsDelegate = new RestNotificationSettingsDelegate(loggerFactory.CreateLogger<RestNotificationSettingsDelegate>(), mockHttpClientService.Object, this.configuration);
+            INotificationSettingsDelegate nsDelegate = new RestNotificationSettingsDelegate(
+                loggerFactory.CreateLogger<RestNotificationSettingsDelegate>(),
+                mockHttpClientService.Object,
+                this.configuration);
             RequestResult<NotificationSettingsResponse> actualResult = Task.Run(async () => await nsDelegate.SetNotificationSettings(request, string.Empty).ConfigureAwait(true)).Result;
             return (actualResult, expectedRequestResult);
         }

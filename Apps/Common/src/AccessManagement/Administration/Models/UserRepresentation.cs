@@ -16,7 +16,6 @@
 namespace HealthGateway.Common.AccessManagement.Administration.Models
 {
     using System;
-    using System.ComponentModel.DataAnnotations.Schema;
     using System.Diagnostics.CodeAnalysis;
     using System.Text.Json.Serialization;
 

@@ -35,10 +35,10 @@ namespace HealthGateway.Common.Services
     /// <inheritdoc/>
     public class SupportService : ISupportService
     {
-        private readonly IUserProfileDelegate userProfileDelegate;
+        private readonly IMapper autoMapper;
         private readonly IMessagingVerificationDelegate messagingVerificationDelegate;
         private readonly IPatientService patientService;
-        private readonly IMapper autoMapper;
+        private readonly IUserProfileDelegate userProfileDelegate;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="SupportService"/> class.
@@ -84,7 +84,7 @@ namespace HealthGateway.Common.Services
             switch (queryType)
             {
                 case UserQueryType.Phn:
-                    this.PopulateSupportUser(result, PatientIdentifierType.PHN, queryString);
+                    this.PopulateSupportUser(result, PatientIdentifierType.Phn, queryString);
                     break;
                 case UserQueryType.Email:
                     this.PopulateSupportUser(result, Database.Constants.UserQueryType.Email, queryString);
@@ -93,7 +93,7 @@ namespace HealthGateway.Common.Services
                     this.PopulateSupportUser(result, Database.Constants.UserQueryType.Sms, queryString);
                     break;
                 case UserQueryType.Hdid:
-                    this.PopulateSupportUser(result, PatientIdentifierType.HDID, queryString);
+                    this.PopulateSupportUser(result, PatientIdentifierType.Hdid, queryString);
                     break;
             }
 

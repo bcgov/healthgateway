@@ -135,7 +135,7 @@ namespace HealthGateway.GatewayApi.Services
             {
                 this.logger.LogInformation("Adding new sms verification for user {Hdid}", hdid);
                 MessagingVerification messagingVerification = this.AddVerificationSms(hdid, sanitizedSms);
-                notificationRequest.SMSVerificationCode = messagingVerification.SmsValidationCode;
+                notificationRequest.SmsVerificationCode = messagingVerification.SmsValidationCode;
             }
 
             // Update the notification settings

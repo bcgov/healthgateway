@@ -103,7 +103,7 @@ namespace HealthGateway.Medication.Services
                         {
                             StartDate = patient.Birthdate,
                             EndDate = DateTime.Now,
-                            PHN = patient.PersonalHealthNumber,
+                            Phn = patient.PersonalHealthNumber,
                             PageSize = 20000,
                         };
                         IPAddress? address = this.httpContextAccessor.HttpContext?.Connection.RemoteIpAddress;

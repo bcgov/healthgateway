@@ -52,15 +52,15 @@ namespace HealthGateway.Common.Models
             this.SubjectHdid = userProfile.HdId;
             this.EmailAddress = emailAddress;
             this.EmailEnabled = !string.IsNullOrWhiteSpace(emailAddress);
-            this.SMSNumber = smsNumber;
-            this.SMSEnabled = !string.IsNullOrWhiteSpace(smsNumber);
-            this.SMSVerified = smsNumber == userProfile.SmsNumber;
+            this.SmsNumber = smsNumber;
+            this.SmsEnabled = !string.IsNullOrWhiteSpace(smsNumber);
+            this.SmsVerified = smsNumber == userProfile.SmsNumber;
         }
 
         /// <summary>
         /// Gets or sets the code used to validate the ownership of the number.
         /// </summary>
         [JsonPropertyName("smsVerificationCode")]
-        public string? SMSVerificationCode { get; set; }
+        public string? SmsVerificationCode { get; set; }
     }
 }
