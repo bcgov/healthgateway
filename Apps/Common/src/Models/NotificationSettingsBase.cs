@@ -39,10 +39,10 @@ namespace HealthGateway.Common.Models
         protected NotificationSettingsBase(NotificationSettingsBase notificationSettings)
         {
             this.SubjectHdid = notificationSettings.SubjectHdid;
-            this.SMSEnabled = notificationSettings.SMSEnabled;
-            this.SMSNumber = notificationSettings.SMSNumber;
-            this.SMSVerified = notificationSettings.SMSVerified;
-            this.SMSScope = notificationSettings.SMSScope.ToList();
+            this.SmsEnabled = notificationSettings.SmsEnabled;
+            this.SmsNumber = notificationSettings.SmsNumber;
+            this.SmsVerified = notificationSettings.SmsVerified;
+            this.SmsScope = notificationSettings.SmsScope.ToList();
             this.EmailAddress = notificationSettings.EmailAddress;
             this.EmailEnabled = notificationSettings.EmailEnabled;
             this.EmailScope = notificationSettings.EmailScope.ToList();
@@ -58,25 +58,25 @@ namespace HealthGateway.Common.Models
         /// Gets or sets a value indicating whether SMS notifications are enabled.
         /// </summary>
         [JsonPropertyName("smsEnabled")]
-        public bool SMSEnabled { get; set; }
+        public bool SmsEnabled { get; set; }
 
         /// <summary>
         /// Gets or sets the number to be used for SMS notifications.
         /// </summary>
         [JsonPropertyName("smsCellNumber")]
-        public string? SMSNumber { get; set; }
+        public string? SmsNumber { get; set; }
 
         /// <summary>
         /// Gets or sets a value indicating whether the SMS number has been validated.
         /// </summary>
         [JsonPropertyName("smsVerified")]
-        public bool SMSVerified { get; set; }
+        public bool SmsVerified { get; set; }
 
         /// <summary>
         /// Gets or sets the SMS scope.
         /// </summary>
         [JsonPropertyName("smsScope")]
-        public IEnumerable<NotificationTarget> SMSScope { get; set; } = new List<NotificationTarget> { NotificationTarget.Covid19 };
+        public IEnumerable<NotificationTarget> SmsScope { get; set; } = new List<NotificationTarget> { NotificationTarget.Covid19 };
 
         /// <summary>
         /// Gets or sets a value indicating whether Email notifications are enabled.

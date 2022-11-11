@@ -38,8 +38,8 @@ namespace HealthGateway.Common.Delegates.PHSA
         /// Configuration section key for PHSA values.
         /// </summary>
         private readonly ILogger logger;
-        private readonly ITokenSwapApi tokenSwapApi;
         private readonly PhsaConfigV2 phsaConfigV2;
+        private readonly ITokenSwapApi tokenSwapApi;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="RestTokenSwapDelegate"/> class.
@@ -87,7 +87,7 @@ namespace HealthGateway.Common.Delegates.PHSA
                 requestResult.ResultError = new()
                 {
                     ResultMessage = "Error with HTTP Request",
-                    ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.PHSA),
+                    ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.Phsa),
                 };
             }
 
@@ -97,14 +97,17 @@ namespace HealthGateway.Common.Delegates.PHSA
         /// <summary>
         /// Gets the form parameters to swap tokens.
         /// </summary>
-        private IEnumerable<KeyValuePair<string, string>> FormParameters(string accessToken) => new Dictionary<string, string>
+        private IEnumerable<KeyValuePair<string, string>> FormParameters(string accessToken)
         {
-            ["client_id"] = this.phsaConfigV2.ClientId,
-            ["client_secret"] = this.phsaConfigV2.ClientSecret,
-            ["grant_type"] = this.phsaConfigV2.GrantType,
-            ["scope"] = this.phsaConfigV2.Scope,
-            ["token"] = accessToken,
-        };
+            return new Dictionary<string, string>
+            {
+                ["client_id"] = this.phsaConfigV2.ClientId,
+                ["client_secret"] = this.phsaConfigV2.ClientSecret,
+                ["grant_type"] = this.phsaConfigV2.GrantType,
+                ["scope"] = this.phsaConfigV2.Scope,
+                ["token"] = accessToken,
+            };
+        }
 
         private void ProcessResponse<T>(RequestResult<T> requestResult, IApiResponse<T> response)
             where T : class
@@ -125,7 +128,7 @@ namespace HealthGateway.Common.Delegates.PHSA
                                 $"Unable to connect to Token Endpoint, HTTP Error {response.StatusCode}",
                             ErrorCode = ErrorTranslator.ServiceError(
                                 ErrorType.CommunicationExternal,
-                                ServiceType.PHSA),
+                                ServiceType.Phsa),
                         };
                         this.logger.LogError("Unexpected status code returned: {StatusCode}", response.StatusCode.ToString());
                         break;
@@ -138,7 +141,7 @@ namespace HealthGateway.Common.Delegates.PHSA
                 requestResult.ResultError = new()
                 {
                     ResultMessage = "An unexpected error occurred while processing external call",
-                    ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.PHSA),
+                    ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.Phsa),
                 };
             }
         }

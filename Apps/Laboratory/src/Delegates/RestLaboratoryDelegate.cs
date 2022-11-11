@@ -121,7 +121,7 @@ namespace HealthGateway.Laboratory.Delegates
                                 retVal.ResultError = new RequestResultError
                                 {
                                     ResultMessage = "Error with JSON data",
-                                    ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.PHSA),
+                                    ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.Phsa),
                                 };
                             }
 
@@ -138,14 +138,14 @@ namespace HealthGateway.Laboratory.Delegates
                             retVal.ResultError = new RequestResultError
                             {
                                 ResultMessage = $"DID Claim is missing or can not resolve PHN, HTTP Error {response.StatusCode}",
-                                ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.PHSA),
+                                ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.Phsa),
                             };
                             break;
                         default:
                             retVal.ResultError = new RequestResultError
                             {
                                 ResultMessage = $"Unable to connect to Labs Endpoint, HTTP Error {response.StatusCode}",
-                                ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.PHSA),
+                                ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.Phsa),
                             };
                             this.logger.LogError("Unable to connect to endpoint {Endpoint}, HTTP Error {StatusCode}\n{Payload}", endpoint, response.StatusCode.ToString(), payload);
                             break;
@@ -158,7 +158,7 @@ namespace HealthGateway.Laboratory.Delegates
                     retVal.ResultError = new RequestResultError
                     {
                         ResultMessage = $"Exception getting Covid19 Orders: {e}",
-                        ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.PHSA),
+                        ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.Phsa),
                     };
                     this.logger.LogError("Unexpected exception in Get Covid19 Orders {Exception}", e.ToString());
                 }
@@ -227,7 +227,7 @@ namespace HealthGateway.Laboratory.Delegates
                                 retVal.ResultError = new RequestResultError
                                 {
                                     ResultMessage = "Error with JSON data",
-                                    ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.PHSA),
+                                    ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.Phsa),
                                 };
                             }
 
@@ -236,21 +236,21 @@ namespace HealthGateway.Laboratory.Delegates
                             retVal.ResultError = new RequestResultError
                             {
                                 ResultMessage = "Report not found.",
-                                ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.PHSA),
+                                ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.Phsa),
                             };
                             break;
                         case HttpStatusCode.Forbidden:
                             retVal.ResultError = new RequestResultError
                             {
                                 ResultMessage = $"DID Claim is missing or can not resolve PHN, HTTP Error {response.StatusCode}",
-                                ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.PHSA),
+                                ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.Phsa),
                             };
                             break;
                         default:
                             retVal.ResultError = new RequestResultError
                             {
                                 ResultMessage = $"Unable to connect to Labs Endpoint, HTTP Error {response.StatusCode}",
-                                ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.PHSA),
+                                ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.Phsa),
                             };
                             this.logger.LogError("Unable to connect to endpoint {Endpoint}, HTTP Error {StatusCode}\n{Payload}", endpoint, response.StatusCode.ToString(), payload);
                             break;
@@ -263,7 +263,7 @@ namespace HealthGateway.Laboratory.Delegates
                     retVal.ResultError = new RequestResultError
                     {
                         ResultMessage = $"Exception getting Lab Report: {e}",
-                        ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.PHSA),
+                        ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.Phsa),
                     };
                     this.logger.LogError("Unexpected exception in Lab Report {Exception}", e.ToString());
                 }
@@ -319,7 +319,7 @@ namespace HealthGateway.Laboratory.Delegates
                             retVal.ResultError = new RequestResultError
                             {
                                 ResultMessage = "Error with JSON data",
-                                ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.PHSA),
+                                ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.Phsa),
                             };
                         }
 
@@ -336,14 +336,14 @@ namespace HealthGateway.Laboratory.Delegates
                         retVal.ResultError = new RequestResultError
                         {
                             ResultMessage = $"DID Claim is missing or can not resolve PHN, HTTP Error {response.StatusCode}",
-                            ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.PHSA),
+                            ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.Phsa),
                         };
                         break;
                     default:
                         retVal.ResultError = new RequestResultError
                         {
                             ResultMessage = $"Unable to connect to Labs Endpoint, HTTP Error {response.StatusCode}",
-                            ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.PHSA),
+                            ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.Phsa),
                         };
                         this.logger.LogError("Unable to connect to endpoint {Endpoint}, HTTP Error {StatusCode}\n{Payload}", endpoint, response.StatusCode.ToString(), payload);
                         break;
@@ -356,7 +356,7 @@ namespace HealthGateway.Laboratory.Delegates
                 retVal.ResultError = new RequestResultError
                 {
                     ResultMessage = $"Exception getting laboratory summary: {e}",
-                    ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.PHSA),
+                    ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.Phsa),
                 };
                 this.logger.LogError("Unexpected exception in getting laboratory summary {Exception}", e.ToString());
             }
@@ -419,7 +419,7 @@ namespace HealthGateway.Laboratory.Delegates
                             retVal.ResultError = new RequestResultError
                             {
                                 ResultMessage = "Error with JSON data",
-                                ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.PHSA),
+                                ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.Phsa),
                             };
                         }
 
@@ -428,14 +428,14 @@ namespace HealthGateway.Laboratory.Delegates
                         retVal.ResultError = new RequestResultError
                         {
                             ResultMessage = $"DID Claim is missing or can not resolve PHN, HTTP Error {response.StatusCode}",
-                            ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.PHSA),
+                            ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.Phsa),
                         };
                         break;
                     default:
                         retVal.ResultError = new RequestResultError
                         {
                             ResultMessage = $"Unable to connect to Laboratory PublicCovidTestsEndPoint, HTTP Error {response.StatusCode}",
-                            ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.PHSA),
+                            ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.Phsa),
                         };
                         this.logger.LogError("Unable to connect to endpoint {EndpointString}, HTTP Error {StatusCode}\n{Payload}", endpointString, response.StatusCode.ToString(), payload);
                         break;
@@ -448,7 +448,7 @@ namespace HealthGateway.Laboratory.Delegates
                 retVal.ResultError = new RequestResultError
                 {
                     ResultMessage = $"Exception getting public COVID-19 test results: {e}",
-                    ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.PHSA),
+                    ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.Phsa),
                 };
                 this.logger.LogError("Unexpected exception retrieving public COVID-19 test results {Exception}", e.ToString());
             }

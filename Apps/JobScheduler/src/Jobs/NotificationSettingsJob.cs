@@ -101,7 +101,7 @@ namespace HealthGateway.JobScheduler.Jobs
                         {
                             EventSource = this.notificationSettingsDelegate.GetType().Name,
                             EventName = "SMS Rejected",
-                            EventDescription = notificationSettings.SMSNumber ?? string.Empty,
+                            EventDescription = notificationSettings.SmsNumber ?? string.Empty,
                         };
                         this.eventLogDelegate.WriteEventLog(eventLog);
                     }

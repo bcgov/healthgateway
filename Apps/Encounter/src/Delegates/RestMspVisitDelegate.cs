@@ -27,7 +27,6 @@ namespace HealthGateway.Encounter.Delegates
     using HealthGateway.Common.Data.Utils;
     using HealthGateway.Common.Data.ViewModels;
     using HealthGateway.Common.ErrorHandling;
-    using HealthGateway.Common.Models;
     using HealthGateway.Common.Models.ODR;
     using HealthGateway.Common.Services;
     using HealthGateway.Encounter.Models.ODR;
@@ -39,8 +38,8 @@ namespace HealthGateway.Encounter.Delegates
     /// </summary>
     public class RestMspVisitDelegate : IMspVisitDelegate
     {
-        private const string ODRConfigSectionKey = "ODR";
-        private readonly Uri baseURL;
+        private const string OdrConfigSectionKey = "ODR";
+        private readonly Uri baseUrl;
         private readonly IHttpClientService httpClientService;
 
         private readonly ILogger logger;
@@ -60,7 +59,7 @@ namespace HealthGateway.Encounter.Delegates
             this.logger = logger;
             this.httpClientService = httpClientService;
             this.odrConfig = new OdrConfig();
-            configuration.Bind(ODRConfigSectionKey, this.odrConfig);
+            configuration.Bind(OdrConfigSectionKey, this.odrConfig);
             if (this.odrConfig.DynamicServiceLookup)
             {
                 string? serviceHost = Environment.GetEnvironmentVariable($"{this.odrConfig.ServiceName}{this.odrConfig.ServiceHostSuffix}");
@@ -70,25 +69,25 @@ namespace HealthGateway.Encounter.Delegates
                     { "serviceHost", serviceHost! },
                     { "servicePort", servicePort! },
                 };
-                this.baseURL = new Uri(StringManipulator.Replace(this.odrConfig.BaseEndpoint, replacementData)!);
+                this.baseUrl = new Uri(StringManipulator.Replace(this.odrConfig.BaseEndpoint, replacementData)!);
             }
             else
             {
-                this.baseURL = new Uri(this.odrConfig.BaseEndpoint);
+                this.baseUrl = new Uri(this.odrConfig.BaseEndpoint);
             }
 
-            logger.LogDebug("ODR Proxy URL resolved as {BaseUrl}", this.baseURL);
+            logger.LogDebug("ODR Proxy URL resolved as {BaseUrl}", this.baseUrl);
         }
 
         private static ActivitySource Source { get; } = new(nameof(RestMspVisitDelegate));
 
         /// <inheritdoc/>
-        public async Task<RequestResult<MspVisitHistoryResponse>> GetMSPVisitHistoryAsync(OdrHistoryQuery query, string hdid, string ipAddress)
+        public async Task<RequestResult<MspVisitHistoryResponse>> GetMspVisitHistoryAsync(OdrHistoryQuery query, string hdid, string ipAddress)
         {
             using (Source.StartActivity())
             {
                 RequestResult<MspVisitHistoryResponse> retVal = new();
-                this.logger.LogTrace("Getting MSP visits... {Phn}", query.PHN.Substring(0, 3));
+                this.logger.LogTrace("Getting MSP visits... {Phn}", query.Phn.Substring(0, 3));
 
                 using HttpClient client = this.httpClientService.CreateDefaultHttpClient();
                 client.DefaultRequestHeaders.Accept.Clear();
@@ -97,15 +96,15 @@ namespace HealthGateway.Encounter.Delegates
                 MspVisitHistory request = new()
                 {
                     Id = Guid.NewGuid(),
-                    RequestorHDID = hdid,
-                    RequestorIP = ipAddress,
+                    RequestorHdid = hdid,
+                    RequestorIp = ipAddress,
                     Query = query,
                 };
                 try
                 {
                     string json = JsonSerializer.Serialize(request);
                     using HttpContent content = new StringContent(json, null, MediaTypeNames.Application.Json);
-                    Uri endpoint = new(this.baseURL, this.odrConfig.MSPVisitsEndpoint);
+                    Uri endpoint = new(this.baseUrl, this.odrConfig.MspVisitsEndpoint);
                     HttpResponseMessage response = await client.PostAsync(endpoint, content).ConfigureAwait(true);
                     string payload = await response.Content.ReadAsStringAsync().ConfigureAwait(true);
                     if (response.IsSuccessStatusCode)
@@ -121,7 +120,7 @@ namespace HealthGateway.Encounter.Delegates
                         retVal.ResultError = new RequestResultError
                         {
                             ResultMessage = $"Invalid HTTP Response code of {response.StatusCode} from ODR with reason {response.ReasonPhrase}",
-                            ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.ODRRecords),
+                            ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.OdrRecords),
                         };
                         this.logger.LogError("MSP Visits endpoint error message... {Message}", retVal.ResultError.ResultMessage);
                     }
@@ -134,7 +133,7 @@ namespace HealthGateway.Encounter.Delegates
                     retVal.ResultError = new RequestResultError
                     {
                         ResultMessage = e.ToString(),
-                        ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.ODRRecords),
+                        ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.OdrRecords),
                     };
                     this.logger.LogError("Unable to post message {Exception}", e);
                 }

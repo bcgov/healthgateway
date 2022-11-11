@@ -63,7 +63,7 @@ namespace HealthGateway.Common.Models.PHSA
         /// Gets or sets the QR code associated with the Vaccine Status.
         /// </summary>
         [JsonPropertyName("qrCode")]
-        public EncodedMedia QRCode { get; set; } = new();
+        public EncodedMedia QrCode { get; set; } = new();
 
         /// <summary>
         /// Gets or sets the Proof of Vaccination associated with the Vaccine Status.

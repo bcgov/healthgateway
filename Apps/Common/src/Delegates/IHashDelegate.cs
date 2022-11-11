@@ -16,7 +16,6 @@
 
 namespace HealthGateway.Common.Delegates
 {
-    using System;
     using HealthGateway.Common.Models.Cacheable;
 
     /// <summary>

@@ -40,7 +40,7 @@ namespace HealthGateway.Common.Delegates.PHSA
     /// </summary>
     public class RestVaccineStatusDelegate : IVaccineStatusDelegate
     {
-        private const string PHSAConfigSectionKey = "PHSA";
+        private const string PhsaConfigSectionKey = "PHSA";
         private readonly IHttpClientService httpClientService;
 
         private readonly IHttpContextAccessor httpContextAccessor;
@@ -64,7 +64,7 @@ namespace HealthGateway.Common.Delegates.PHSA
             this.httpClientService = httpClientService;
             this.httpContextAccessor = httpContextAccessor;
             this.phsaConfig = new PhsaConfig();
-            configuration.Bind(PHSAConfigSectionKey, this.phsaConfig);
+            configuration.Bind(PhsaConfigSectionKey, this.phsaConfig);
         }
 
         private static ActivitySource Source { get; } = new(nameof(RestVaccineStatusDelegate));
@@ -146,7 +146,7 @@ namespace HealthGateway.Common.Delegates.PHSA
                             retVal.ResultError = new RequestResultError
                             {
                                 ResultMessage = "Error with JSON data",
-                                ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.PHSA),
+                                ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.Phsa),
                             };
                         }
 
@@ -155,14 +155,14 @@ namespace HealthGateway.Common.Delegates.PHSA
                         retVal.ResultError = new RequestResultError
                         {
                             ResultMessage = $"DID Claim is missing or can not resolve PHN, HTTP Error {response.StatusCode}",
-                            ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.PHSA),
+                            ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.Phsa),
                         };
                         break;
                     default:
                         retVal.ResultError = new RequestResultError
                         {
                             ResultMessage = $"Unable to connect to Immunizations/VaccineStatus Endpoint, HTTP Error {response.StatusCode}",
-                            ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.PHSA),
+                            ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.Phsa),
                         };
                         this.logger.LogError("Unable to connect to endpoint {EndpointString}, HTTP Error {StatusCode}\n{Payload}", endpointString, response.StatusCode, payload);
                         break;
@@ -175,7 +175,7 @@ namespace HealthGateway.Common.Delegates.PHSA
                 retVal.ResultError = new RequestResultError
                 {
                     ResultMessage = $"Exception getting vaccine status: {e}",
-                    ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.PHSA),
+                    ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.Phsa),
                 };
                 this.logger.LogError("Unexpected exception retrieving vaccine status {Exception}", e);
             }
@@ -191,7 +191,7 @@ namespace HealthGateway.Common.Delegates.PHSA
         /// <inheritdoc/>
         public async Task<RequestResult<PhsaResult<VaccineStatusResult>>> GetVaccineStatusWithRetries(VaccineStatusQuery query, string accessToken, bool isPublicEndpoint)
         {
-            using Activity? activity = Source.StartActivity("RetryGetVaccineStatus");
+            using Activity? activity = Source.StartActivity();
             RequestResult<PhsaResult<VaccineStatusResult>> retVal = new()
             {
                 ResultStatus = ResultType.Error,
@@ -224,7 +224,7 @@ namespace HealthGateway.Common.Delegates.PHSA
                 retVal.ResultError = new RequestResultError
                 {
                     ResultMessage = "Refresh in progress",
-                    ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.PHSA),
+                    ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.Phsa),
                 };
             }
             else if (response.ResultStatus == ResultType.Success)
@@ -287,7 +287,7 @@ namespace HealthGateway.Common.Delegates.PHSA
                             retVal.ResultError = new RequestResultError
                             {
                                 ResultMessage = "Error with JSON data",
-                                ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.PHSA),
+                                ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.Phsa),
                             };
                         }
 
@@ -304,14 +304,14 @@ namespace HealthGateway.Common.Delegates.PHSA
                         retVal.ResultError = new RequestResultError
                         {
                             ResultMessage = $"DID Claim is missing or can not resolve PHN, HTTP Error {response.StatusCode}",
-                            ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.PHSA),
+                            ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.Phsa),
                         };
                         break;
                     default:
                         retVal.ResultError = new RequestResultError
                         {
                             ResultMessage = $"Unable to connect to record card Endpoint, HTTP Error {response.StatusCode}",
-                            ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.PHSA),
+                            ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.Phsa),
                         };
                         this.logger.LogError("Unable to connect to endpoint {EndpointString}, HTTP Error {StatusCode}\n{Payload}", endpointString, response.StatusCode, payload);
                         break;
@@ -324,7 +324,7 @@ namespace HealthGateway.Common.Delegates.PHSA
                 retVal.ResultError = new RequestResultError
                 {
                     ResultMessage = $"Exception getting record card: {e}",
-                    ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.PHSA),
+                    ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.Phsa),
                 };
                 this.logger.LogError("Unexpected exception retrieving record card {Exception}", e);
             }
@@ -336,7 +336,7 @@ namespace HealthGateway.Common.Delegates.PHSA
         /// <inheritdoc/>
         public async Task<RequestResult<PhsaResult<RecordCard>>> GetRecordCardWithRetries(RecordCardQuery query, string accessToken)
         {
-            using Activity? activity = Source.StartActivity("RetryGetRecordCard");
+            using Activity? activity = Source.StartActivity();
             RequestResult<PhsaResult<RecordCard>> retVal = new()
             {
                 ResultStatus = ResultType.Error,
@@ -369,7 +369,7 @@ namespace HealthGateway.Common.Delegates.PHSA
                 retVal.ResultError = new RequestResultError
                 {
                     ResultMessage = "Refresh in progress",
-                    ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.PHSA),
+                    ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.Phsa),
                 };
             }
             else if (response.ResultStatus == ResultType.Success)

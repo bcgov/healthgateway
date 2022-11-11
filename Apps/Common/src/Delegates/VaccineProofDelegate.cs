@@ -220,7 +220,7 @@ namespace HealthGateway.Common.Delegates
                             retVal.ResultError = new RequestResultError
                             {
                                 ResultMessage = "Empty file returned from BC Mail Plus",
-                                ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.BCMP),
+                                ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.Bcmp),
                             };
                         }
 
@@ -233,7 +233,7 @@ namespace HealthGateway.Common.Delegates
                         retVal.ResultError = new RequestResultError
                         {
                             ResultMessage = $"HTTP Error {response.StatusCode} encountered from BC Mail Plus",
-                            ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.BCMP),
+                            ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.Bcmp),
                         };
                         break;
                 }
@@ -243,7 +243,7 @@ namespace HealthGateway.Common.Delegates
                 retVal.ResultError = new RequestResultError
                 {
                     ResultMessage = $"Exception while fetching Vaccine Proof: {e}",
-                    ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.BCMP),
+                    ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.Bcmp),
                 };
                 this.logger.LogError("Unexpected exception while fetching Vaccine Proof {Exception}", e);
             }
@@ -278,7 +278,7 @@ namespace HealthGateway.Common.Delegates
                             retVal.ResultError = new RequestResultError
                             {
                                 ResultMessage = "Error encountered from BC Mail Plus",
-                                ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.BCMP),
+                                ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.Bcmp),
                             };
                             this.logger.LogWarning("Error Details:{NewLine}{Payload}", Environment.NewLine, payload);
                         }
@@ -296,7 +296,7 @@ namespace HealthGateway.Common.Delegates
                                 retVal.ResultError = new RequestResultError
                                 {
                                     ResultMessage = "Error with JSON data",
-                                    ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.BCMP),
+                                    ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.Bcmp),
                                 };
                             }
                         }
@@ -306,7 +306,7 @@ namespace HealthGateway.Common.Delegates
                         retVal.ResultError = new RequestResultError
                         {
                             ResultMessage = $"Unable to connect to BC Mail Plus Endpoint, HTTP Error {response.StatusCode}",
-                            ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.BCMP),
+                            ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.Bcmp),
                         };
                         this.logger.LogError("Unable to connect to endpoint {EndpointString}, HTTP Error {StatusCode}\n{Payload}", endpointString, response.StatusCode, payload);
                         break;
@@ -319,7 +319,7 @@ namespace HealthGateway.Common.Delegates
                 retVal.ResultError = new RequestResultError
                 {
                     ResultMessage = $"Exception while sending HTTP request to BC Mail Plus: {e}",
-                    ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.BCMP),
+                    ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.Bcmp),
                 };
                 this.logger.LogError("Unexpected exception while sending HTTP request to BC Mail Plus {Exception}", e);
             }

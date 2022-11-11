@@ -77,9 +77,9 @@ namespace HealthGateway.Common.FileDownload
 
                 using (Stream hashStream = File.OpenRead(filePath))
                 {
-                    using (SHA256 mySHA256 = SHA256.Create())
+                    using (SHA256 mySha256 = SHA256.Create())
                     {
-                        byte[] hashValue = mySHA256.ComputeHash(hashStream);
+                        byte[] hashValue = mySha256.ComputeHash(hashStream);
                         fd.Hash = Convert.ToBase64String(hashValue);
                     }
                 }

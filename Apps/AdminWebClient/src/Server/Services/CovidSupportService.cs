@@ -106,7 +106,7 @@ namespace HealthGateway.Admin.Services
             this.logger.LogTrace("For PHN: {Phn}", phn);
             this.logger.LogDebug("For Refresh: {Refresh}", refresh);
 
-            RequestResult<PatientModel> patientResult = await this.patientService.GetPatient(phn, PatientIdentifierType.PHN, true).ConfigureAwait(true);
+            RequestResult<PatientModel> patientResult = await this.patientService.GetPatient(phn, PatientIdentifierType.Phn, true).ConfigureAwait(true);
 
             if (patientResult.ResultStatus == ResultType.Success)
             {
@@ -165,7 +165,7 @@ namespace HealthGateway.Admin.Services
             this.logger.LogDebug("Mailing document");
             this.logger.LogTrace("For PHN: {Phn}", request.PersonalHealthNumber);
 
-            RequestResult<PatientModel> patientResult = await this.patientService.GetPatient(request.PersonalHealthNumber, PatientIdentifierType.PHN, true).ConfigureAwait(true);
+            RequestResult<PatientModel> patientResult = await this.patientService.GetPatient(request.PersonalHealthNumber, PatientIdentifierType.Phn, true).ConfigureAwait(true);
 
             if (patientResult.ResultStatus != ResultType.Success)
             {
@@ -222,7 +222,7 @@ namespace HealthGateway.Admin.Services
                         ResultError = new RequestResultError
                         {
                             ResultMessage = "Vaccine status not found",
-                            ErrorCode = ErrorTranslator.ServiceError(ErrorType.InvalidState, ServiceType.PHSA),
+                            ErrorCode = ErrorTranslator.ServiceError(ErrorType.InvalidState, ServiceType.Phsa),
                         },
                     };
                 }
@@ -241,7 +241,7 @@ namespace HealthGateway.Admin.Services
                     VaccineProofRequest vaccineProofRequest = new()
                     {
                         Status = requestState,
-                        SmartHealthCardQr = vaccineStatusResult.ResourcePayload.Result.QRCode.Data!,
+                        SmartHealthCardQr = vaccineStatusResult.ResourcePayload.Result.QrCode.Data!,
                     };
 
                     RequestResult<VaccineProofResponse> vaccineProofResponse =
@@ -284,7 +284,7 @@ namespace HealthGateway.Admin.Services
             this.logger.LogDebug("Retrieving vaccine record");
             this.logger.LogTrace("For PHN: {Phn}", phn);
 
-            RequestResult<PatientModel> patientResult = await this.patientService.GetPatient(phn, PatientIdentifierType.PHN, true).ConfigureAwait(true);
+            RequestResult<PatientModel> patientResult = await this.patientService.GetPatient(phn, PatientIdentifierType.Phn, true).ConfigureAwait(true);
 
             if (patientResult.ResultStatus != ResultType.Success)
             {
@@ -344,7 +344,7 @@ namespace HealthGateway.Admin.Services
                 requestResult.ResultError = new RequestResultError
                 {
                     ResultMessage = "Error with HTTP Request",
-                    ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.PHSA),
+                    ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.Phsa),
                 };
             }
 
@@ -385,7 +385,7 @@ namespace HealthGateway.Admin.Services
                     requestResult.ResultError = new RequestResultError
                     {
                         ResultMessage = "Error with HTTP Request",
-                        ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.PHSA),
+                        ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.Phsa),
                     };
                 }
             }
@@ -416,7 +416,7 @@ namespace HealthGateway.Admin.Services
                         requestResult.ResultError = new RequestResultError
                         {
                             ResultMessage = "No Details found",
-                            ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.PHSA),
+                            ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.Phsa),
                         };
                         break;
 
@@ -425,7 +425,7 @@ namespace HealthGateway.Admin.Services
                         requestResult.ResultError = new RequestResultError
                         {
                             ResultMessage = "Request was not authorized",
-                            ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.PHSA),
+                            ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.Phsa),
                         };
                         break;
 
@@ -434,14 +434,14 @@ namespace HealthGateway.Admin.Services
                         requestResult.ResultError = new RequestResultError
                         {
                             ResultMessage = $"Missing Required Data Element, HTTP Error {response.StatusCode}",
-                            ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.PHSA),
+                            ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.Phsa),
                         };
                         break;
                     default:
                         requestResult.ResultError = new RequestResultError
                         {
                             ResultMessage = $"An unexpected error occurred, HTTP Error {response.StatusCode}",
-                            ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.PHSA),
+                            ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.Phsa),
                         };
                         break;
                 }
@@ -453,7 +453,7 @@ namespace HealthGateway.Admin.Services
                 requestResult.ResultError = new RequestResultError
                 {
                     ResultMessage = "An unexpected error occurred while processing external call",
-                    ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.PHSA),
+                    ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.Phsa),
                 };
             }
         }
@@ -523,7 +523,7 @@ namespace HealthGateway.Admin.Services
                 VaccineProofRequest request = new()
                 {
                     Status = requestState,
-                    SmartHealthCardQr = vaccineStatusResult.QRCode.Data!,
+                    SmartHealthCardQr = vaccineStatusResult.QrCode.Data!,
                 };
 
                 RequestResult<VaccineProofResponse> proofGenerate = await this.vaccineProofDelegate.GenerateAsync(this.vaccineCardConfig.PrintTemplate, request).ConfigureAwait(true);
@@ -553,7 +553,7 @@ namespace HealthGateway.Admin.Services
                     else
                     {
                         retVal.ResultError = assetResult.ResultError ?? new RequestResultError
-                            { ResultMessage = "Unable to obtain Vaccine Proof PDF", ErrorCode = ErrorTranslator.ServiceError(ErrorType.InvalidState, ServiceType.BCMP) };
+                            { ResultMessage = "Unable to obtain Vaccine Proof PDF", ErrorCode = ErrorTranslator.ServiceError(ErrorType.InvalidState, ServiceType.Bcmp) };
                     }
                 }
                 else
@@ -564,7 +564,7 @@ namespace HealthGateway.Admin.Services
             else
             {
                 retVal.ResultError = new RequestResultError
-                    { ResultMessage = "Vaccine status is unknown", ErrorCode = ErrorTranslator.ServiceError(ErrorType.InvalidState, ServiceType.BCMP) };
+                    { ResultMessage = "Vaccine status is unknown", ErrorCode = ErrorTranslator.ServiceError(ErrorType.InvalidState, ServiceType.Bcmp) };
             }
 
             return retVal;
