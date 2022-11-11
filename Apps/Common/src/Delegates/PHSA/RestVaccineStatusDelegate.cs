@@ -83,7 +83,7 @@ namespace HealthGateway.Common.Delegates.PHSA
                 query.IncludeFederalVaccineProof);
 
             HttpContent? content = null;
-            Uri endpoint = null!;
+            Uri endpoint;
             string endpointString = this.phsaConfig.BaseUrl.ToString();
             HttpContext? httpContext = this.httpContextAccessor.HttpContext;
             string? ipAddress = httpContext?.Connection.RemoteIpAddress?.MapToIPv4().ToString();

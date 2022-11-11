@@ -189,7 +189,7 @@ namespace HealthGateway.Laboratory.Delegates
                 };
                 try
                 {
-                    Uri endpoint = null!;
+                    Uri endpoint;
                     string endpointString = this.labConfig.BaseUrl.ToString();
 
                     if (isCovid19)
