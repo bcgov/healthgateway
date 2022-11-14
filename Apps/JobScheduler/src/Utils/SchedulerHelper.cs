@@ -19,7 +19,7 @@ namespace HealthGateway.JobScheduler.Utils
     using System.Linq.Expressions;
     using System.Runtime.InteropServices;
     using Hangfire;
-    using HealthGateway.DrugMaintainer.Apps;
+    using HealthGateway.DBMaintainer.Apps;
     using HealthGateway.JobScheduler.Models;
     using Microsoft.Extensions.Configuration;
 

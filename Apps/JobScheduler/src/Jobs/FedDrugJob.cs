@@ -18,8 +18,8 @@ namespace HealthGateway.JobScheduler.Jobs
     using Hangfire;
     using HealthGateway.Common.FileDownload;
     using HealthGateway.Database.Context;
-    using HealthGateway.DrugMaintainer;
-    using HealthGateway.DrugMaintainer.Apps;
+    using HealthGateway.DBMaintainer.Apps;
+    using HealthGateway.DBMaintainer.Parsers;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.Logging;
 
@@ -28,7 +28,7 @@ namespace HealthGateway.JobScheduler.Jobs
     /// Reads the AllFiles zip as located and documented at
     /// https://www.canada.ca/en/health-canada/services/drugs-health-products/drug-products/drug-product-database/what-data-extract-drug-product-database.html.
     /// </summary>
-    public class FedDrugJob : FedDrugDBApp
+    public class FedDrugJob : FedDrugDbApp
     {
         private const int ConcurrencyTimeout = 15 * 60; // Set the ConcurrentTimeout to 15 minutes
         private const int MaxConcurrency = 4; // We allow a maximum of 4 instances of this job (Active, Cancelled, Marketed, and Dormant)

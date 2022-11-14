@@ -29,7 +29,7 @@ namespace HealthGateway.JobScheduler
     using HealthGateway.Common.Jobs;
     using HealthGateway.Common.Services;
     using HealthGateway.Database.Delegates;
-    using HealthGateway.DrugMaintainer;
+    using HealthGateway.DBMaintainer.Parsers;
     using HealthGateway.JobScheduler.Jobs;
     using HealthGateway.JobScheduler.Listeners;
     using HealthGateway.JobScheduler.Utils;

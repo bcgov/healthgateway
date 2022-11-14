@@ -33,31 +33,31 @@ namespace HealthGateway.Mock.Models
         /// Gets or sets a value indicating whether SMS notifications are enabled.
         /// </summary>
         [JsonPropertyName("smsEnabled")]
-        public bool SMSEnabled { get; set; }
+        public bool SmsEnabled { get; set; }
 
         /// <summary>
         /// Gets or sets the number to be used for SMS notifications.
         /// </summary>
         [JsonPropertyName("smsCellNumber")]
-        public string? SMSNumber { get; set; }
+        public string? SmsNumber { get; set; }
 
         /// <summary>
         /// Gets or sets a value indicating whether the SMS number has been validated.
         /// </summary>
         [JsonPropertyName("smsVerified")]
-        public bool SMSVerified { get; set; }
+        public bool SmsVerified { get; set; }
 
         /// <summary>
         /// Gets or sets the SMS scope.
         /// </summary>
         [JsonPropertyName("smsScope")]
-        public IEnumerable<string> SMSScope { get; set; } = new List<string> { "COVID19" };
+        public IEnumerable<string> SmsScope { get; set; } = new List<string> { "COVID19" };
 
         /// <summary>
         /// Gets or sets the code used to validate the ownership of the number.
         /// </summary>
         [JsonPropertyName("smsVerificationCode")]
-        public string? SMSVerificationCode { get; set; }
+        public string? SmsVerificationCode { get; set; }
 
         /// <summary>
         /// Gets or sets a value indicating whether Email notifications are enabled.
