@@ -64,8 +64,8 @@ namespace HealthGateway.Common.AccessManagement.Authentication
             this.cacheProvider = cacheProvider;
             this.httpContextAccessor = httpContextAccessor;
 
-            IConfigurationSection? configSection = configuration.GetSection(CacheConfigSectionName);
-            this.tokenCacheMinutes = configSection?.GetValue("TokenCacheExpireMinutes", 0) ?? 0;
+            IConfigurationSection configSection = configuration.GetSection(CacheConfigSectionName);
+            this.tokenCacheMinutes = configSection.GetValue("TokenCacheExpireMinutes", 0);
         }
 
         /// <inheritdoc/>
@@ -181,7 +181,7 @@ namespace HealthGateway.Common.AccessManagement.Authentication
 
         private (Uri TokenUri, ClientCredentialsTokenRequest TokenRequest) GetConfiguration(string sectionName)
         {
-            IConfigurationSection? configSection = this.configuration.GetSection(sectionName);
+            IConfigurationSection configSection = this.configuration.GetSection(sectionName);
             Uri configUri = configSection.GetValue<Uri>(@"TokenUri") ??
                             throw new ArgumentNullException(nameof(sectionName), $"{sectionName} does not contain a valid TokenUri");
             ClientCredentialsTokenRequest configTokenRequest = new();
