@@ -282,7 +282,7 @@ namespace HealthGateway.GatewayApi.Services
                 if (!string.IsNullOrWhiteSpace(requestedSmsNumber))
                 {
                     MessagingVerification smsVerification = this.userSmsService.CreateUserSms(hdid, requestedSmsNumber);
-                    notificationRequest.SMSVerificationCode = smsVerification.SmsValidationCode;
+                    notificationRequest.SmsVerificationCode = smsVerification.SmsValidationCode;
                     userProfileModel.SmsNumber = requestedSmsNumber;
                 }
 

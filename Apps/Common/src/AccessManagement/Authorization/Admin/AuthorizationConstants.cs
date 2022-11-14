@@ -13,10 +13,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //-------------------------------------------------------------------------
-namespace HealthGateway.Common.Authorization.Admin
+namespace HealthGateway.Common.AccessManagement.Authorization.Admin
 {
     /// <summary>
-    /// A class with constants representing the various authorization settings not needing to be comfigurable.
+    /// A class with constants representing the various authorization settings not needing to be configurable.
     /// </summary>
     public static class AuthorizationConstants
     {

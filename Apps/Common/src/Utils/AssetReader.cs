@@ -34,8 +34,8 @@ namespace HealthGateway.Common.Utils
         /// <returns>The read asset as a string.</returns>
         public static string? Read(string asset, bool toBase64 = false)
         {
-            Assembly? assembly = Assembly.GetCallingAssembly();
-            Stream? resourceStream = assembly!.GetManifestResourceStream(asset);
+            Assembly assembly = Assembly.GetCallingAssembly();
+            Stream? resourceStream = assembly.GetManifestResourceStream(asset);
             if (resourceStream == null)
             {
                 return null;

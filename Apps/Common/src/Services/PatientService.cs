@@ -28,6 +28,7 @@ namespace HealthGateway.Common.Services
     using HealthGateway.Common.Models;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.Logging;
+    using Microsoft.IdentityModel.Tokens;
 
     /// <summary>
     /// The Patient data service.
@@ -65,7 +66,7 @@ namespace HealthGateway.Common.Services
         private static ActivitySource Source { get; } = new(nameof(PatientService));
 
         /// <inheritdoc/>
-        public async Task<RequestResult<string>> GetPatientPHN(string hdid)
+        public async Task<RequestResult<string>> GetPatientPhn(string hdid)
         {
             using Activity? activity = Source.StartActivity();
             RequestResult<string> retVal = new()
@@ -78,14 +79,11 @@ namespace HealthGateway.Common.Services
                 ResultStatus = ResultType.Error,
             };
             RequestResult<PatientModel> patientResult = await this.GetPatient(hdid).ConfigureAwait(true);
-            if (patientResult != null)
+            retVal.ResultError = patientResult.ResultError;
+            retVal.ResultStatus = patientResult.ResultStatus;
+            if (patientResult.ResultStatus == ResultType.Success && patientResult.ResourcePayload != null)
             {
-                retVal.ResultError = patientResult.ResultError;
-                retVal.ResultStatus = patientResult.ResultStatus;
-                if (patientResult.ResultStatus == ResultType.Success && patientResult.ResourcePayload != null)
-                {
-                    retVal.ResourcePayload = patientResult.ResourcePayload.PersonalHealthNumber;
-                }
+                retVal.ResourcePayload = patientResult.ResourcePayload.PersonalHealthNumber;
             }
 
             activity?.Stop();
@@ -93,7 +91,7 @@ namespace HealthGateway.Common.Services
         }
 
         /// <inheritdoc/>
-        public async Task<RequestResult<PatientModel>> GetPatient(string identifier, PatientIdentifierType identifierType = PatientIdentifierType.HDID, bool disableIdValidation = false)
+        public async Task<RequestResult<PatientModel>> GetPatient(string identifier, PatientIdentifierType identifierType = PatientIdentifierType.Hdid, bool disableIdValidation = false)
         {
             using Activity? activity = Source.StartActivity();
             RequestResult<PatientModel> requestResult = new();
@@ -102,15 +100,15 @@ namespace HealthGateway.Common.Services
             {
                 switch (identifierType)
                 {
-                    case PatientIdentifierType.HDID:
+                    case PatientIdentifierType.Hdid:
                         this.logger.LogDebug("Performing Patient lookup by HDID");
-                        requestResult = await this.patientDelegate.GetDemographicsByHDIDAsync(identifier, disableIdValidation).ConfigureAwait(true);
+                        requestResult = await this.patientDelegate.GetDemographicsByHdidAsync(identifier, disableIdValidation).ConfigureAwait(true);
                         break;
-                    case PatientIdentifierType.PHN:
+                    case PatientIdentifierType.Phn:
                         this.logger.LogDebug("Performing Patient lookup by PHN");
                         if (PhnValidator.IsValid(identifier))
                         {
-                            requestResult = await this.patientDelegate.GetDemographicsByPHNAsync(identifier, disableIdValidation).ConfigureAwait(true);
+                            requestResult = await this.patientDelegate.GetDemographicsByPhnAsync(identifier, disableIdValidation).ConfigureAwait(true);
                         }
                         else
                         {
@@ -166,11 +164,11 @@ namespace HealthGateway.Common.Services
             {
                 switch (identifierType)
                 {
-                    case PatientIdentifierType.HDID:
+                    case PatientIdentifierType.Hdid:
                         this.logger.LogDebug("Querying Patient Cache by HDID");
                         retPatient = this.cacheProvider.GetItem<PatientModel>($"{PatientCacheDomain}:HDID:{identifier}");
                         break;
-                    case PatientIdentifierType.PHN:
+                    case PatientIdentifierType.Phn:
                         this.logger.LogDebug("Querying Patient Cache by PHN");
                         retPatient = this.cacheProvider.GetItem<PatientModel>($"{PatientCacheDomain}:PHN:{identifier}");
                         break;
@@ -196,12 +194,12 @@ namespace HealthGateway.Common.Services
             {
                 this.logger.LogDebug("Attempting to cache patient: {Hdid}", hdid);
                 TimeSpan expiry = TimeSpan.FromMinutes(this.cacheTtl);
-                if (patient.HdId != null)
+                if (!patient.HdId.IsNullOrEmpty())
                 {
                     this.cacheProvider.AddItem($"{PatientCacheDomain}:HDID:{patient.HdId}", patient, expiry);
                 }
 
-                if (patient.PersonalHealthNumber != null)
+                if (!patient.PersonalHealthNumber.IsNullOrEmpty())
                 {
                     this.cacheProvider.AddItem($"{PatientCacheDomain}:PHN:{patient.PersonalHealthNumber}", patient, expiry);
                 }

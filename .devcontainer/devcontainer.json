@@ -1,0 +1,77 @@
+{
+  "name": "HealthGateway Codespace",
+  "image": "mcr.microsoft.com/vscode/devcontainers/dotnet:latest",
+  "features": {
+    "azure-cli": "latest",
+    "ghcr.io/devcontainers/features/github-cli:1": {
+      "version": "latest"
+    },
+    "ghcr.io/devcontainers/features/docker-in-docker:1": {
+      "version": "latest"
+    },
+    "ghcr.io/devcontainers/features/node:1": {
+      "version": "lts"
+    }
+  },
+  "extensions": [
+    "ms-dotnettools.csharp",
+    "ms-azuretools.vscode-docker",
+    "redhat.vscode-yaml",
+    "DavidAnson.vscode-markdownlint",
+    "dbaeumer.vscode-eslint",
+    "eamodio.gitlens",
+    "esbenp.prettier-vscode",
+    "formulahendry.auto-close-tag",
+    "formulahendry.auto-rename-tag",
+    "octref.vetur",
+    "shd101wyy.markdown-preview-enhanced",
+    "steoates.autoimport",
+    "hashicorp.terraform"
+  ],
+  "settings": {
+    "terminal.integrated.shell.linux": "/bin/bash",
+    "eslint.workingDirectories": [{ "mode": "auto" }],
+    "dotnet-test-explorer.testProjectPath": "**/*Tests.csproj",
+    "search.exclude": {
+      "**/bin": true,
+      "**/obj": true,
+      "**/dist": true,
+      "**/node_modules": true
+    },
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "editor.formatOnSave": true,
+    "editor.guides.bracketPairs": true,
+    "[csharp]": {
+      "editor.defaultFormatter": "ms-dotnettools.csharp",
+      "editor.formatOnSave": false
+    },
+    "omnisharp.defaultLaunchSolution": "HealthGateway.sln",
+    "jest.disabledWorkspaceFolders": [
+      "Admin_ClientApp",
+      "AdminWebClient",
+      "Common",
+      "Database",
+      "DBMaintainer",
+      "Documentation",
+      "Immunization",
+      "JobScheduler",
+      "Laboratory",
+      "Medication",
+      "ODRProxy",
+      "Patient",
+      "WebClient",
+      "Encounter",
+      "Mock",
+      "tests",
+      "sampler",
+      "Design"
+    ]
+  },
+  "forwardPorts": [
+    3000, 3001, 3002, 3003, 3004, 3005, 3005, 5002, 5005, 5010, 5027
+  ],
+  "workspaceMount": "source=${localWorkspaceFolder},target=/workspace,type=bind",
+  "workspaceFolder": "/workspace/Apps",
+  // "postCreateCommand": "dotnet restore",
+  "remoteUser": "vscode"
+}

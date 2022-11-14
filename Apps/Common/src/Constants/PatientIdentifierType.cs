@@ -23,11 +23,11 @@ namespace HealthGateway.Common.Constants
         /// <summary>
         /// Specifies that the query should be by HDID.
         /// </summary>
-        HDID,
+        Hdid,
 
         /// <summary>
-        /// Specifies that the query shoudld be by PHN.
+        /// Specifies that the query should be by PHN.
         /// </summary>
-        PHN,
+        Phn,
     }
 }

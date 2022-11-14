@@ -39,8 +39,7 @@ namespace HealthGateway.Common.Delegates
     /// </summary>
     public class CDogsDelegate : ICDogsDelegate
     {
-        private const string CDOGSConfigSectionKey = "CDOGS";
-        private readonly CDogsConfig cdogsConfig;
+        private const string CdogsConfigSectionKey = "CDOGS";
         private readonly IHttpClientService httpClientService;
         private readonly ILogger<CDogsDelegate> logger;
         private readonly Uri serviceEndpoint;
@@ -58,23 +57,23 @@ namespace HealthGateway.Common.Delegates
         {
             this.logger = logger;
             this.httpClientService = httpClientService;
-            this.cdogsConfig = new CDogsConfig();
-            configuration.Bind(CDOGSConfigSectionKey, this.cdogsConfig);
-            if (this.cdogsConfig.DynamicServiceLookup)
+            CDogsConfig cdogsConfig = new();
+            configuration.Bind(CdogsConfigSectionKey, cdogsConfig);
+            if (cdogsConfig.DynamicServiceLookup)
             {
-                string? serviceHost = Environment.GetEnvironmentVariable($"{this.cdogsConfig.ServiceName}{this.cdogsConfig.ServiceHostSuffix}");
-                string? servicePort = Environment.GetEnvironmentVariable($"{this.cdogsConfig.ServiceName}{this.cdogsConfig.ServicePortSuffix}");
+                string? serviceHost = Environment.GetEnvironmentVariable($"{cdogsConfig.ServiceName}{cdogsConfig.ServiceHostSuffix}");
+                string? servicePort = Environment.GetEnvironmentVariable($"{cdogsConfig.ServiceName}{cdogsConfig.ServicePortSuffix}");
                 Dictionary<string, string> replacementData = new()
                 {
                     { "serviceHost", serviceHost! },
                     { "servicePort", servicePort! },
                 };
 
-                this.serviceEndpoint = new Uri(StringManipulator.Replace(this.cdogsConfig.BaseEndpoint, replacementData)!);
+                this.serviceEndpoint = new Uri(StringManipulator.Replace(cdogsConfig.BaseEndpoint, replacementData)!);
             }
             else
             {
-                this.serviceEndpoint = new Uri(this.cdogsConfig.BaseEndpoint);
+                this.serviceEndpoint = new Uri(cdogsConfig.BaseEndpoint);
             }
 
             logger.LogInformation("CDogs URL resolved as {ServiceEndpoint}", this.serviceEndpoint);
@@ -98,7 +97,7 @@ namespace HealthGateway.Common.Delegates
                 try
                 {
                     Uri endpoint = new($"{this.serviceEndpoint}api/v2/template/render");
-                    HttpResponseMessage? response = await client.PostAsync(endpoint, httpContent).ConfigureAwait(true);
+                    HttpResponseMessage response = await client.PostAsync(endpoint, httpContent).ConfigureAwait(true);
                     byte[] payload = await response.Content.ReadAsByteArrayAsync().ConfigureAwait(true);
                     this.logger.LogTrace("CDogs Response status code: {ResponseStatusCode}", response.StatusCode);
 

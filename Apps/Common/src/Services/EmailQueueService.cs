@@ -101,7 +101,7 @@ namespace HealthGateway.Common.Services
         /// <inheritdoc/>
         public void CloneAndQueue(Guid emailId, bool shouldCommit = true)
         {
-            Email oldEmail = this.emailDelegate.GetEmail(emailId);
+            Email? oldEmail = this.emailDelegate.GetEmail(emailId);
             if (oldEmail != null)
             {
                 Email email = new()

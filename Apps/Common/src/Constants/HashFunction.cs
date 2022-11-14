@@ -23,16 +23,16 @@ namespace HealthGateway.Common.Constants
         /// <summary>
         /// The HMAC algorithm (RFC 2104) using the SHA-1 hash function (FIPS 180-4).
         /// </summary>
-        HMACSHA1 = 0,
+        HmacSha1 = 0,
 
         /// <summary>
         /// The HMAC algorithm (RFC 2104) using the SHA-256 hash function (FIPS 180-4).
         /// </summary>
-        HMACSHA256 = 1,
+        HmacSha256 = 1,
 
         /// <summary>
         /// The HMAC algorithm (RFC 2104) using the SHA-512 hash function (FIPS 180-4).
         /// </summary>
-        HMACSHA512 = 2,
+        HmacSha512 = 2,
     }
 }

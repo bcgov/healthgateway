@@ -16,7 +16,6 @@
 namespace HealthGateway.Common.AspNetConfiguration.Modules
 {
     using System.Diagnostics.CodeAnalysis;
-    using System.Runtime.CompilerServices;
     using HealthGateway.Common.Auditing;
     using HealthGateway.Common.Filters;
     using HealthGateway.Database.Delegates;
@@ -41,7 +40,7 @@ namespace HealthGateway.Common.AspNetConfiguration.Modules
             logger.LogDebug("Configuring Audit Services...");
             services.AddMvc(options => options.Filters.Add(typeof(AuditFilter)));
 
-            bool redisAuditing = configuration.GetValue<bool>("RedisAuditing", false);
+            bool redisAuditing = configuration.GetValue("RedisAuditing", false);
             if (redisAuditing)
             {
                 logger.LogInformation("Configuring Auditing to use Redis");

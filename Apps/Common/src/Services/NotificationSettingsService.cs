@@ -31,8 +31,8 @@ namespace HealthGateway.Common.Services
     /// </summary>
     public class NotificationSettingsService : INotificationSettingsService
     {
-        private readonly ILogger<NotificationSettingsService> logger;
         private readonly IBackgroundJobClient jobClient;
+        private readonly ILogger<NotificationSettingsService> logger;
         private readonly IResourceDelegateDelegate resourceDelegateDelegate;
 
         /// <summary>
@@ -54,7 +54,7 @@ namespace HealthGateway.Common.Services
         /// <inheritdoc/>
         public void QueueNotificationSettings(NotificationSettingsRequest notificationSettings)
         {
-            if (notificationSettings.SMSEnabled && !notificationSettings.SMSVerified && string.IsNullOrEmpty(notificationSettings.SMSVerificationCode))
+            if (notificationSettings.SmsEnabled && !notificationSettings.SmsVerified && string.IsNullOrEmpty(notificationSettings.SmsVerificationCode))
             {
                 throw new InvalidOperationException();
             }
@@ -77,12 +77,12 @@ namespace HealthGateway.Common.Services
                 };
 
                 // Only populate SMS number if it has been verified
-                if (notificationSettings.SMSVerified)
+                if (notificationSettings.SmsVerified)
                 {
-                    dependentNotificationSettings.SMSNumber = notificationSettings.SMSNumber;
-                    dependentNotificationSettings.SMSEnabled = notificationSettings.SMSEnabled;
-                    dependentNotificationSettings.SMSScope = notificationSettings.SMSScope;
-                    dependentNotificationSettings.SMSVerified = notificationSettings.SMSVerified;
+                    dependentNotificationSettings.SmsNumber = notificationSettings.SmsNumber;
+                    dependentNotificationSettings.SmsEnabled = notificationSettings.SmsEnabled;
+                    dependentNotificationSettings.SmsScope = notificationSettings.SmsScope;
+                    dependentNotificationSettings.SmsVerified = notificationSettings.SmsVerified;
                 }
 
                 string delegateJson = JsonSerializer.Serialize(dependentNotificationSettings);

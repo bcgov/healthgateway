@@ -33,7 +33,6 @@ namespace HealthGateway.Medication.Delegates
     using HealthGateway.Common.Data.ViewModels;
     using HealthGateway.Common.Delegates;
     using HealthGateway.Common.ErrorHandling;
-    using HealthGateway.Common.Models;
     using HealthGateway.Common.Models.Cacheable;
     using HealthGateway.Common.Models.ODR;
     using HealthGateway.Common.Services;
@@ -110,11 +109,11 @@ namespace HealthGateway.Medication.Delegates
                 RequestResult<MedicationHistoryResponse> retVal = new();
                 try
                 {
-                    if (this.ValidateProtectiveWord(query.PHN, protectiveWord, hdid, ipAddress))
+                    if (this.ValidateProtectiveWord(query.Phn, protectiveWord, hdid, ipAddress))
                     {
                         using (Source.StartActivity("ODRQuery"))
                         {
-                            this.logger.LogTrace("Getting medication statements... {Phn}", query.PHN.Substring(0, 3));
+                            this.logger.LogTrace("Getting medication statements... {Phn}", query.Phn.Substring(0, 3));
 
                             using HttpClient client = this.httpClientService.CreateDefaultHttpClient();
                             client.DefaultRequestHeaders.Accept.Clear();
@@ -123,8 +122,8 @@ namespace HealthGateway.Medication.Delegates
                             MedicationHistory request = new()
                             {
                                 Id = Guid.NewGuid(),
-                                RequestorHDID = hdid,
-                                RequestorIP = ipAddress,
+                                RequestorHdid = hdid,
+                                RequestorIp = ipAddress,
                                 Query = query,
                             };
 
@@ -147,7 +146,7 @@ namespace HealthGateway.Medication.Delegates
                                     retVal.ResultError = new RequestResultError
                                     {
                                         ResultMessage = "Unable to deserialize ODR response",
-                                        ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.ODRRecords),
+                                        ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.OdrRecords),
                                     };
                                     this.logger.LogError("{ResultErrorMessage}", retVal.ResultError.ResultMessage);
                                 }
@@ -158,7 +157,7 @@ namespace HealthGateway.Medication.Delegates
                                 retVal.ResultError = new RequestResultError
                                 {
                                     ResultMessage = $"Invalid HTTP Response code of ${response.StatusCode} from ODR with reason ${response.ReasonPhrase}",
-                                    ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.ODRRecords),
+                                    ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.OdrRecords),
                                 };
                                 this.logger.LogError("{ResultErrorMessage}", retVal.ResultError.ResultMessage);
                             }
@@ -179,7 +178,7 @@ namespace HealthGateway.Medication.Delegates
                     retVal.ResultError = new RequestResultError
                     {
                         ResultMessage = e.ToString(),
-                        ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.ODRRecords),
+                        ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.OdrRecords),
                     };
                     this.logger.LogError("Error with Medication Service: {Exception}", e.ToString());
                 }
@@ -208,7 +207,7 @@ namespace HealthGateway.Medication.Delegates
             {
                 bool isValid;
                 IHash? cacheHash = null;
-                if (this.odrConfig.CacheTTL > 0)
+                if (this.odrConfig.CacheTtl > 0)
                 {
                     this.logger.LogDebug("Attempting to fetch Protective Word from Cache");
                     using (Source.StartActivity("GetCacheObject"))
@@ -223,12 +222,12 @@ namespace HealthGateway.Medication.Delegates
 
                     // The hash isn't in the cache, get Protective word hash from source
                     IHash hash = Task.Run(async () => await this.GetProtectiveWord(phn, hdid, ipAddress).ConfigureAwait(true)).Result;
-                    if (this.odrConfig.CacheTTL > 0)
+                    if (this.odrConfig.CacheTtl > 0)
                     {
                         this.logger.LogDebug("Storing a copy of the Protective Word in the Cache");
                         using (Source.StartActivity("CacheObject"))
                         {
-                            this.cacheProvider.AddItem($"{ProtectiveWordCacheDomain}:{hdid}", hash, TimeSpan.FromMinutes(this.odrConfig.CacheTTL));
+                            this.cacheProvider.AddItem($"{ProtectiveWordCacheDomain}:{hdid}", hash, TimeSpan.FromMinutes(this.odrConfig.CacheTtl));
                         }
                     }
 

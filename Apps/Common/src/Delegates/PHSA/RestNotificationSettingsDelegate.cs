@@ -98,7 +98,7 @@ namespace HealthGateway.Common.Delegates.PHSA
                             retVal.ResultError = new RequestResultError
                             {
                                 ResultMessage = "Error with JSON data",
-                                ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.PHSA),
+                                ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.Phsa),
                             };
                         }
 
@@ -113,14 +113,14 @@ namespace HealthGateway.Common.Delegates.PHSA
                         retVal.ResultError = new RequestResultError
                         {
                             ResultMessage = $"DID Claim is missing or can not resolve PHN, HTTP Error {response.StatusCode}",
-                            ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.PHSA),
+                            ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.Phsa),
                         };
                         break;
                     default:
                         retVal.ResultError = new RequestResultError
                         {
                             ResultMessage = $"Unable to connect to Notification Settings Endpoint, HTTP Error {response.StatusCode}",
-                            ErrorCode = ErrorTranslator.ServiceError(ErrorType.SMSInvalid, ServiceType.PHSA),
+                            ErrorCode = ErrorTranslator.ServiceError(ErrorType.SmsInvalid, ServiceType.Phsa),
                         };
                         this.logger.LogError("Unable to connect to endpoint {Endpoint}, HTTP Error {StatusCode}\n{Payload}", endpoint, response.StatusCode, payload);
                         break;
@@ -133,7 +133,7 @@ namespace HealthGateway.Common.Delegates.PHSA
                 retVal.ResultError = new RequestResultError
                 {
                     ResultMessage = $"Exception getting Notification Settings: {e}",
-                    ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.PHSA),
+                    ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.Phsa),
                 };
                 this.logger.LogError("Unexpected exception in GetNotificationSettings {Exception}", e);
             }
@@ -187,11 +187,11 @@ namespace HealthGateway.Common.Delegates.PHSA
                         break;
                     case HttpStatusCode.UnprocessableEntity:
                         retVal.ResultStatus = ResultType.ActionRequired;
-                        this.logger.LogInformation("PHSA has indicated that the SMS number is invalid: {SksNumber}", notificationSettings.SMSNumber);
+                        this.logger.LogInformation("PHSA has indicated that the SMS number is invalid: {SksNumber}", notificationSettings.SmsNumber);
                         retVal.ResultError = new RequestResultError
                         {
-                            ResultMessage = $"PHSA has indicated that the SMS number is invalid: {notificationSettings.SMSNumber}",
-                            ErrorCode = ErrorTranslator.ServiceError(ErrorType.SMSInvalid, ServiceType.PHSA),
+                            ResultMessage = $"PHSA has indicated that the SMS number is invalid: {notificationSettings.SmsNumber}",
+                            ErrorCode = ErrorTranslator.ServiceError(ErrorType.SmsInvalid, ServiceType.Phsa),
                         };
                         break;
                     case HttpStatusCode.BadRequest:
@@ -199,7 +199,7 @@ namespace HealthGateway.Common.Delegates.PHSA
                         retVal.ResultError = new RequestResultError
                         {
                             ResultMessage = $"Bad Request, HTTP Error {response.StatusCode}\nDetails:\n{payload}",
-                            ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.PHSA),
+                            ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.Phsa),
                         };
                         break;
                     case HttpStatusCode.Forbidden:
@@ -207,14 +207,14 @@ namespace HealthGateway.Common.Delegates.PHSA
                         retVal.ResultError = new RequestResultError
                         {
                             ResultMessage = $"DID Claim is missing or can not resolve PHN, HTTP Error {response.StatusCode}",
-                            ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.PHSA),
+                            ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.Phsa),
                         };
                         break;
                     default:
                         retVal.ResultError = new RequestResultError
                         {
                             ResultMessage = $"Unable to connect to Notification Settings Endpoint, HTTP Error {response.StatusCode}",
-                            ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.PHSA),
+                            ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.Phsa),
                         };
                         this.logger.LogError("Unable to connect to endpoint {Endpoint}, HTTP Error {StatusCode}\n{Payload}", endpoint, response.StatusCode, payload);
                         break;
@@ -227,7 +227,7 @@ namespace HealthGateway.Common.Delegates.PHSA
                 retVal.ResultError = new RequestResultError
                 {
                     ResultMessage = $"Exception getting Notification Settings: {e}",
-                    ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.PHSA),
+                    ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.Phsa),
                 };
                 this.logger.LogError("Unexpected exception in GetNotificationSettings {Exception}", e);
             }

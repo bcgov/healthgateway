@@ -38,7 +38,7 @@ namespace HealthGateway.Common.Swagger
         /// <param name="context">The current operation filter context.</param>
         public void Apply(OpenApiOperation operation, OperationFilterContext context)
         {
-            if (operation != null && context != null && operation.Parameters != null)
+            if (operation.Parameters != null)
             {
                 foreach (OpenApiParameter parameter in operation.Parameters)
                 {
@@ -47,7 +47,7 @@ namespace HealthGateway.Common.Swagger
 
                     if (parameter.Description == null)
                     {
-                        parameter.Description = description.ModelMetadata?.Description;
+                        parameter.Description = description.ModelMetadata.Description;
                     }
 
                     if (routeInfo == null)
