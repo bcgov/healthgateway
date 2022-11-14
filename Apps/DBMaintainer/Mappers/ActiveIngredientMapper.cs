@@ -13,7 +13,7 @@
 //  See the License for the specific language governing permissions and
 //  limitations under the License.
 // -------------------------------------------------------------------------
-namespace HealthGateway.DrugMaintainer
+namespace HealthGateway.DBMaintainer.Mappers
 {
     using System.Collections.Generic;
     using System.Linq;
@@ -21,9 +21,9 @@ namespace HealthGateway.DrugMaintainer
     using HealthGateway.Database.Models;
 
     /// <summary>
-    /// Mapping class to which maps the read file to the relavent model object.
+    /// Mapping class to which maps the read file to the relevant model object.
     /// </summary>
-    public class ActiveIngredientMapper : ClassMap<ActiveIngredient>
+    public sealed class ActiveIngredientMapper : ClassMap<ActiveIngredient>
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="ActiveIngredientMapper"/> class.
