@@ -59,5 +59,25 @@ namespace HealthGateway.Common.Constants
         /// Error message to return when a patient phn was not found.
         /// </summary>
         public const string PhnNotFoundErrorMessage = "PHN could not be retrieved";
+
+        /// <summary>
+        /// Error message to return when client registry did not find any records.
+        /// </summary>
+        public const string ClientRegistryRecordsNotFound = "Client Registry did not find any records";
+
+        /// <summary>
+        /// Error message to return when phn is invalid.
+        /// </summary>
+        public const string PhnInvalid = "Personal Health Number is invalid";
+
+        /// <summary>
+        /// Error message to return when client registry did not return a person.
+        /// </summary>
+        public const string ClientRegistryDoesNotReturnPerson = "Client Registry did not return a person";
+
+        /// <summary>
+        /// Error message to return when client registry returns a deceased peron.
+        /// </summary>
+        public const string ClientRegistryReturnedDeceasedPerson = "Client Registry returned a person with the deceased indicator set to true";
     }
 }
