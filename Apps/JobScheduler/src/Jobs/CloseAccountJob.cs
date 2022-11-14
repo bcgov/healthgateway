@@ -87,7 +87,7 @@ namespace HealthGateway.JobScheduler.Jobs
             this.emailTemplate = configuration.GetValue<string>($"{JobKey}:{EmailTemplateKey}") ??
                 throw new ArgumentNullException(nameof(configuration), $"{JobKey}:{EmailTemplateKey} is null");
 
-            IConfigurationSection? configSection = configuration.GetSection(AuthConfigSectionName);
+            IConfigurationSection configSection = configuration.GetSection(AuthConfigSectionName);
             this.tokenUri = configSection.GetValue<Uri>(@"TokenUri") ??
                 throw new ArgumentNullException(nameof(configuration), $"{AuthConfigSectionName} TokenUri is null");
 

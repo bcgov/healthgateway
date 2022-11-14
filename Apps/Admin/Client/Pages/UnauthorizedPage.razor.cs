@@ -32,9 +32,6 @@ public partial class UnauthorizedPage : ComponentBase
     [Inject]
     private NavigationManager NavigationManager { get; set; } = default!;
 
-    [Inject]
-    private SignOutSessionStateManager SignOutManager { get; set; } = default!;
-
     /// <inheritdoc/>
     protected override async Task OnInitializedAsync()
     {
@@ -45,9 +42,8 @@ public partial class UnauthorizedPage : ComponentBase
         }
     }
 
-    private async Task LogOutAsync()
+    private void LogOut()
     {
-        await this.SignOutManager.SetSignOutState().ConfigureAwait(true);
-        this.NavigationManager.NavigateTo("authentication/logout", replace: true);
+        this.NavigationManager.NavigateToLogout("authentication/logout");
     }
 }

@@ -33,7 +33,7 @@ namespace HealthGateway.Common.Swagger
         /// <param name="settings">settings.</param>
         public ConfigureSwaggerOptions(IOptions<SwaggerSettings> settings)
         {
-            this.settings = settings.Value ?? new SwaggerSettings();
+            this.settings = settings.Value;
         }
 
         /// <inheritdoc/>

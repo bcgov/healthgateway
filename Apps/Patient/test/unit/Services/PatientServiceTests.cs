@@ -16,6 +16,7 @@
 namespace HealthGateway.PatientTests.Services
 {
     using System.Collections.Generic;
+    using System.Linq;
     using System.Threading.Tasks;
     using HealthGateway.Common.CacheProviders;
     using HealthGateway.Common.Constants;
@@ -138,12 +139,12 @@ namespace HealthGateway.PatientTests.Services
             };
 
             Mock<IClientRegistriesDelegate> patientDelegateMock = new();
-            Dictionary<string, string> configDictionary = new()
+            Dictionary<string, string?> configDictionary = new()
             {
                 { "PatientService:CacheTTL", "90" },
             };
             IConfigurationRoot configuration = new ConfigurationBuilder()
-                .AddInMemoryCollection(configDictionary)
+                .AddInMemoryCollection(configDictionary.ToList())
                 .Build();
             patientDelegateMock.Setup(p => p.GetDemographicsAsync(OidType.Hdid, expectedIdentifier, false)).ReturnsAsync(requestResult);
             patientDelegateMock.Setup(p => p.GetDemographicsAsync(OidType.Phn, expectedIdentifier, false)).ReturnsAsync(requestResult);
