@@ -18,8 +18,8 @@ namespace HealthGateway.JobScheduler.Jobs
     using Hangfire;
     using HealthGateway.Common.FileDownload;
     using HealthGateway.Database.Context;
-    using HealthGateway.DrugMaintainer;
-    using HealthGateway.DrugMaintainer.Apps;
+    using HealthGateway.DBMaintainer.Apps;
+    using HealthGateway.DBMaintainer.Parsers;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.Logging;
 

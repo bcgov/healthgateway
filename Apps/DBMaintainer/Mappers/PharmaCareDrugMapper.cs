@@ -13,7 +13,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //-------------------------------------------------------------------------
-namespace HealthGateway.DrugMaintainer
+namespace HealthGateway.DBMaintainer.Mappers
 {
     using CsvHelper.Configuration;
     using HealthGateway.Database.Models;
@@ -21,7 +21,7 @@ namespace HealthGateway.DrugMaintainer
     /// <summary>
     /// Performs a mapping from the read file to the model object.
     /// </summary>
-    public class PharmaCareDrugMapper : ClassMap<PharmaCareDrug>
+    public sealed class PharmaCareDrugMapper : ClassMap<PharmaCareDrug>
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="PharmaCareDrugMapper"/> class.
@@ -56,7 +56,7 @@ namespace HealthGateway.DrugMaintainer
             this.Map(m => m.LimitedUseFlag).Name("Ltd Use Flag");
 
             // Map the Filedownload to each object
-            this.Map(m => m.FileDownload).Convert(row => filedownload);
+            this.Map(m => m.FileDownload).Convert(_ => filedownload);
         }
     }
 }

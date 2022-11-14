@@ -13,7 +13,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //-------------------------------------------------------------------------
-namespace HealthGateway.DrugMaintainer
+namespace HealthGateway.DBMaintainer.Parsers
 {
     using System;
     using System.Collections.Generic;
@@ -24,6 +24,7 @@ namespace HealthGateway.DrugMaintainer
     using CsvHelper.Configuration;
     using CsvHelper.TypeConversion;
     using HealthGateway.Database.Models;
+    using HealthGateway.DBMaintainer.Mappers;
     using Microsoft.Extensions.Logging;
 
     /// <summary>

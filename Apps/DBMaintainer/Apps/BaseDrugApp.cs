@@ -13,7 +13,7 @@
 //  See the License for the specific language governing permissions and
 //  limitations under the License.
 // -------------------------------------------------------------------------
-namespace HealthGateway.DrugMaintainer.Apps
+namespace HealthGateway.DBMaintainer.Apps
 {
     using System;
     using System.Collections.Generic;
@@ -40,14 +40,14 @@ namespace HealthGateway.DrugMaintainer.Apps
         /// <param name="parser">The file parser.</param>
         /// <param name="downloadService">The download utility.</param>
         /// <param name="configuration">The IConfiguration to use.</param>
-        /// <param name="drugDBContext">The database context to interact with.</param>
-        protected BaseDrugApp(ILogger logger, T parser, IFileDownloadService downloadService, IConfiguration configuration, GatewayDbContext drugDBContext)
+        /// <param name="drugDbContext">The database context to interact with.</param>
+        protected BaseDrugApp(ILogger logger, T parser, IFileDownloadService downloadService, IConfiguration configuration, GatewayDbContext drugDbContext)
         {
             this.Logger = logger;
             this.Parser = parser;
             this.DownloadService = downloadService;
             this.Configuration = configuration;
-            this.DrugDbContext = drugDBContext;
+            this.DrugDbContext = drugDbContext;
         }
 
         /// <summary>
@@ -115,14 +115,14 @@ namespace HealthGateway.DrugMaintainer.Apps
         /// Processes the downloaded file.
         /// </summary>
         /// <param name="sourceFolder">The source folder.</param>
-        /// <param name="downloadedFile">The filedownload to process.</param>
+        /// <param name="downloadedFile">The file download to process.</param>
         public abstract void ProcessDownload(string sourceFolder, FileDownload downloadedFile);
 
         /// <summary>
         /// Adds the processed file to the DB to ensure we don't process again.
         /// </summary>
         /// <param name="downloadedFile">The FileDownload to add to the DB.</param>
-        protected void AddFileToDB(FileDownload downloadedFile)
+        protected void AddFileToDb(FileDownload downloadedFile)
         {
             this.Logger.LogInformation("Marking file with hash {Hash} as processed in DB", downloadedFile.Hash);
             this.DrugDbContext.FileDownload.Add(downloadedFile);

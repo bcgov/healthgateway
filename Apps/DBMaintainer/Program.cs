@@ -13,7 +13,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //-------------------------------------------------------------------------
-namespace HealthGateway.DrugMaintainer
+namespace HealthGateway.DBMaintainer
 {
     using System;
     using System.Diagnostics.CodeAnalysis;
@@ -21,7 +21,8 @@ namespace HealthGateway.DrugMaintainer
     using HealthGateway.Common.FileDownload;
     using HealthGateway.Common.Services;
     using HealthGateway.Database.Context;
-    using HealthGateway.DrugMaintainer.Apps;
+    using HealthGateway.DBMaintainer.Apps;
+    using HealthGateway.DBMaintainer.Parsers;
     using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
@@ -42,7 +43,7 @@ namespace HealthGateway.DrugMaintainer
             IHost host = CreateWebHostBuilder(args).Build();
 
             // Process Federal file
-            FedDrugDBApp? fedDrugApp = host.Services.GetService<FedDrugDBApp>();
+            FedDrugDbApp? fedDrugApp = host.Services.GetService<FedDrugDbApp>();
             if (fedDrugApp != null)
             {
                 fedDrugApp.Process("FedApprovedDatabase");
@@ -102,7 +103,7 @@ namespace HealthGateway.DrugMaintainer
                         services.AddTransient<IPharmaCareDrugParser, PharmaCareDrugParser>();
 
                         // Add app
-                        services.AddTransient<FedDrugDBApp>();
+                        services.AddTransient<FedDrugDbApp>();
                         services.AddTransient<BcpProvDrugDbApp>();
                     })
                 .ConfigureLogging(

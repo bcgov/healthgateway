@@ -47,7 +47,7 @@ namespace HealthGateway.Mock.Controllers
             {
                 { "${uuid}", request.Id },
                 { "${hdid}", request.HdId },
-                { "${requestingIP}", request.RequestingIP },
+                { "${requestingIP}", request.RequestingIp },
             };
             string? fixtureString = AssetReader.Read("HealthGateway.Mock.Assets.Encounter.json");
             return new ContentResult { Content = ReplaceVariables(fixtureString!, variables), ContentType = "application/json" };
@@ -67,7 +67,7 @@ namespace HealthGateway.Mock.Controllers
             {
                 { "${uuid}", request.Id },
                 { "${hdid}", request.HdId },
-                { "${requestingIP}", request.RequestingIP },
+                { "${requestingIP}", request.RequestingIp },
             };
             string? fixtureString = AssetReader.Read("HealthGateway.Mock.Assets.Medication.json");
             return new ContentResult { Content = ReplaceVariables(fixtureString!, variables), ContentType = "application/json" };
@@ -87,7 +87,7 @@ namespace HealthGateway.Mock.Controllers
             {
                 { "${uuid}", request.Id },
                 { "${hdid}", request.HdId },
-                { "${requestingIP}", request.RequestingIP },
+                { "${requestingIP}", request.RequestingIp },
             };
 
             // Protected User HDID
