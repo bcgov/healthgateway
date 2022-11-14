@@ -42,7 +42,7 @@ public partial class UnauthorizedPage : ComponentBase
         }
     }
 
-    private void LogOutAsync()
+    private void LogOut()
     {
         this.NavigationManager.NavigateToLogout("authentication/logout");
     }

@@ -172,7 +172,7 @@ namespace HealthGateway.Admin.Client.Layouts
             if (!activityDetected)
             {
                 // sign out
-                this.LogOutAsync();
+                this.LogOut();
                 return;
             }
 
@@ -211,7 +211,7 @@ namespace HealthGateway.Admin.Client.Layouts
             this.DrawerOpen = !this.DrawerOpen;
         }
 
-        private void LogOutAsync()
+        private void LogOut()
         {
             this.NavigationManager.NavigateToLogout("authentication/logout");
         }
