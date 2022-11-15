@@ -642,54 +642,54 @@ export default class HomeView extends Vue {
                     </div>
                 </hg-card-button>
             </b-col>
-            <b-col v-if="showImmunizationRecordButton" class="p-3">
-                <hg-card-button
-                    title="Add Vaccines"
-                    data-testid="immunization-record-card"
-                    @click="handleClickImmunizationRecord()"
-                >
-                    <template #icon>
-                        <hg-icon
-                            class="quick-link-card-icon align-self-center"
-                            icon="upload"
-                            size="large"
-                            square
-                        />
-                    </template>
-                    <template #menu>
-                        <b-nav align="right">
-                            <b-nav-item-dropdown
-                                right
-                                text=""
-                                :no-caret="true"
-                                menu-class="quick-link-menu"
-                                toggle-class="quick-link-menu-button"
-                            >
-                                <template slot="button-content">
-                                    <hg-icon
-                                        icon="ellipsis-v"
-                                        size="medium"
-                                        data-testid="quick-link-menu-button"
-                                    />
-                                </template>
-                                <b-dropdown-item
-                                    data-testid="remove-quick-link-button"
-                                    @click.stop="
-                                        handleClickRemoveImmunizationRecordQuickLink()
-                                    "
-                                >
-                                    Remove
-                                </b-dropdown-item>
-                            </b-nav-item-dropdown>
-                        </b-nav>
-                    </template>
-                    <div>
-                        Add immunizations from family practice or travel
-                        clinics. This helps make sure your immunization records
-                        and forecasts are up to date in Health Gateway.
-                    </div>
-                </hg-card-button>
-            </b-col>
+            <!--            <b-col v-if="showImmunizationRecordButton" class="p-3">-->
+            <!--                <hg-card-button-->
+            <!--                    title="Add Vaccines"-->
+            <!--                    data-testid="immunization-record-card"-->
+            <!--                    @click="handleClickImmunizationRecord()"-->
+            <!--                >-->
+            <!--                    <template #icon>-->
+            <!--                        <hg-icon-->
+            <!--                            class="quick-link-card-icon align-self-center"-->
+            <!--                            icon="upload"-->
+            <!--                            size="large"-->
+            <!--                            square-->
+            <!--                        />-->
+            <!--                    </template>-->
+            <!--                    <template #menu>-->
+            <!--                        <b-nav align="right">-->
+            <!--                            <b-nav-item-dropdown-->
+            <!--                                right-->
+            <!--                                text=""-->
+            <!--                                :no-caret="true"-->
+            <!--                                menu-class="quick-link-menu"-->
+            <!--                                toggle-class="quick-link-menu-button"-->
+            <!--                            >-->
+            <!--                                <template slot="button-content">-->
+            <!--                                    <hg-icon-->
+            <!--                                        icon="ellipsis-v"-->
+            <!--                                        size="medium"-->
+            <!--                                        data-testid="quick-link-menu-button"-->
+            <!--                                    />-->
+            <!--                                </template>-->
+            <!--                                <b-dropdown-item-->
+            <!--                                    data-testid="remove-quick-link-button"-->
+            <!--                                    @click.stop="-->
+            <!--                                        handleClickRemoveImmunizationRecordQuickLink()-->
+            <!--                                    "-->
+            <!--                                >-->
+            <!--                                    Remove-->
+            <!--                                </b-dropdown-item>-->
+            <!--                            </b-nav-item-dropdown>-->
+            <!--                        </b-nav>-->
+            <!--                    </template>-->
+            <!--                    <div>-->
+            <!--                        Add immunizations from family practice or travel-->
+            <!--                        clinics. This helps make sure your immunization records-->
+            <!--                        and forecasts are up to date in Health Gateway.-->
+            <!--                    </div>-->
+            <!--                </hg-card-button>-->
+            <!--            </b-col>-->
             <b-col v-for="card in quickLinkCards" :key="card.title" class="p-3">
                 <hg-card-button
                     :title="card.title"
