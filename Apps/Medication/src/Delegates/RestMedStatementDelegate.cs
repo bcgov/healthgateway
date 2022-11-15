@@ -16,7 +16,6 @@
 namespace HealthGateway.Medication.Delegates
 {
     using System;
-    using System.Collections.Generic;
     using System.Diagnostics;
     using System.Diagnostics.CodeAnalysis;
     using System.Net.Http;
@@ -75,24 +74,16 @@ namespace HealthGateway.Medication.Delegates
             this.httpClientService = httpClientService;
             this.cacheProvider = cacheProvider;
             this.hashDelegate = hashDelegate;
+
             this.odrConfig = new OdrConfig();
             configuration.Bind(OdrConfigSectionKey, this.odrConfig);
-            if (this.odrConfig.DynamicServiceLookup)
-            {
-                string? serviceHost = Environment.GetEnvironmentVariable($"{this.odrConfig.ServiceName}{this.odrConfig.ServiceHostSuffix}");
-                string? servicePort = Environment.GetEnvironmentVariable($"{this.odrConfig.ServiceName}{this.odrConfig.ServicePortSuffix}");
-                Dictionary<string, string> replacementData = new()
-                {
-                    { "serviceHost", serviceHost! },
-                    { "servicePort", servicePort! },
-                };
-
-                this.baseUrl = new Uri(StringManipulator.Replace(this.odrConfig.BaseEndpoint, replacementData));
-            }
-            else
-            {
-                this.baseUrl = new Uri(this.odrConfig.BaseEndpoint);
-            }
+            string endpoint = this.odrConfig.DynamicServiceLookup
+                ? ConfigurationUtility.ConstructServiceEndpoint(
+                    this.odrConfig.BaseEndpoint,
+                    $"{this.odrConfig.ServiceName}{this.odrConfig.ServiceHostSuffix}",
+                    $"{this.odrConfig.ServiceName}{this.odrConfig.ServicePortSuffix}")
+                : this.odrConfig.BaseEndpoint;
+            this.baseUrl = new Uri(endpoint);
 
             logger.LogInformation("ODR Proxy URL resolved as {BaseUrl}", this.baseUrl);
         }
