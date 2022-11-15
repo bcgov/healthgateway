@@ -9,7 +9,7 @@
         <NoWarn>CA1848</NoWarn>
     </PropertyGroup>
     <ItemGroup>
-        <PackageReference Include="Microsoft.CodeAnalysis" Version="4.3.1" ExcludeAssets="All"/>
+        <PackageReference Include="Microsoft.CodeAnalysis" Version="4.4.0" ExcludeAssets="All"/>
         <PackageReference Include="SonarAnalyzer.CSharp" Version="8.48.0.56517">
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
             <PrivateAssets>all</PrivateAssets>
