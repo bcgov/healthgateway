@@ -69,7 +69,7 @@ namespace HealthGateway.Encounter.Delegates
                     { "serviceHost", serviceHost! },
                     { "servicePort", servicePort! },
                 };
-                this.baseUrl = new Uri(StringManipulator.Replace(this.odrConfig.BaseEndpoint, replacementData)!);
+                this.baseUrl = new Uri(StringManipulator.Replace(this.odrConfig.BaseEndpoint, replacementData));
             }
             else
             {
