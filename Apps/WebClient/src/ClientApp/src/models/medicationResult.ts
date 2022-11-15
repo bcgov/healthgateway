@@ -91,7 +91,7 @@ class PharmaCareDrug {
     public benefitGroupList?: string;
     public brandName?: string;
     public cfrCode?: string;
-    public dinpin?: string;
+    public dinPin?: string;
     public dosageForm?: string;
     public effectiveDate?: string;
     public endDate?: string;
