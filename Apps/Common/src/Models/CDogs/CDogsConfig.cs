@@ -16,10 +16,15 @@
 namespace HealthGateway.Common.Models.CDogs
 {
     /// <summary>
-    /// The configuration for the ODR portion of the ResetMedStatement delegate.
+    /// The configuration for the Common Document Generation Service (CDOGS).
     /// </summary>
     public class CDogsConfig
     {
+        /// <summary>
+        /// Configuration section key for CDOGS.
+        /// </summary>
+        public const string CDogsConfigSectionKey = "CDOGS";
+
         /// <summary>
         /// Gets or sets the OpenShift service name.
         /// </summary>
