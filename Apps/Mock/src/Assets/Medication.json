@@ -9,7 +9,7 @@
             {
                 "recordId": 4906316254,
                 "rxNumber": "9529523",
-                "dinpin": "66999990",
+                "dinPin": "66999990",
                 "dateDispensed": "2019-12-30",
                 "quantity": 390,
                 "refills": 2,
@@ -36,7 +36,7 @@
             {
                 "recordId": 4906316425,
                 "rxNumber": "133920",
-                "dinpin": "2391724",
+                "dinPin": "2391724",
                 "dateDispensed": "2019-12-29",
                 "genericName": "ZOPICLONE",
                 "quantity": 30,
@@ -64,12 +64,12 @@
             {
                 "recordId": 4906316389,
                 "rxNumber": "6787902",
-                "dinpin": "2391724",
+                "dinPin": "2391724",
                 "dateDispensed": "2019-12-25",
                 "genericName": "ZOPICLONE",
                 "quantity": 8,
                 "refills": 4,
-                "directions": "TAKE 2 TABLETS AT BEDTIME (DISPENSE WITH METHADONE MON\/THURS)",
+                "directions": "TAKE 2 TABLETS AT BEDTIME (DISPENSE WITH METHADONE MON/THURS)",
                 "rxStatus": "F",
                 "practitioner": {
                     "lastName": "PZVVPS",
@@ -92,7 +92,7 @@
             {
                 "recordId": 4906316323,
                 "rxNumber": "9528727",
-                "dinpin": "66999990",
+                "dinPin": "66999990",
                 "dateDispensed": "2019-12-25",
                 "quantity": 520,
                 "refills": 2,
@@ -119,12 +119,12 @@
             {
                 "recordId": 4906316322,
                 "rxNumber": "6784060",
-                "dinpin": "2391724",
+                "dinPin": "2391724",
                 "dateDispensed": "2019-12-22",
                 "genericName": "ZOPICLONE",
                 "quantity": 6,
                 "refills": 7,
-                "directions": "TAKE 2 TABLETS AT BEDTIME (DISPENSE WITH METHADONE MON\/THURS)",
+                "directions": "TAKE 2 TABLETS AT BEDTIME (DISPENSE WITH METHADONE MON/THURS)",
                 "rxStatus": "F",
                 "practitioner": {
                     "lastName": "PZVVPS",
@@ -147,7 +147,7 @@
             {
                 "recordId": 4906316290,
                 "rxNumber": "9528362",
-                "dinpin": "66999990",
+                "dinPin": "66999990",
                 "dateDispensed": "2019-12-22",
                 "quantity": 390,
                 "refills": 5,
@@ -174,7 +174,7 @@
             {
                 "recordId": 4906316388,
                 "rxNumber": "9528058",
-                "dinpin": "66999990",
+                "dinPin": "66999990",
                 "dateDispensed": "2019-12-18",
                 "quantity": 520,
                 "refills": 4,
@@ -201,12 +201,12 @@
             {
                 "recordId": 4906316252,
                 "rxNumber": "6779221",
-                "dinpin": "2391724",
+                "dinPin": "2391724",
                 "dateDispensed": "2019-12-18",
                 "genericName": "ZOPICLONE",
                 "quantity": 8,
                 "refills": 6,
-                "directions": "TAKE 2 TABLETS AT BEDTIME (DISPENSE WITH METHADONE MON\/THURS)",
+                "directions": "TAKE 2 TABLETS AT BEDTIME (DISPENSE WITH METHADONE MON/THURS)",
                 "rxStatus": "F",
                 "practitioner": {
                     "lastName": "PZVVPS",
@@ -229,12 +229,12 @@
             {
                 "recordId": 4906316424,
                 "rxNumber": "6771554",
-                "dinpin": "2391724",
+                "dinPin": "2391724",
                 "dateDispensed": "2019-12-15",
                 "genericName": "ZOPICLONE",
                 "quantity": 6,
                 "refills": 9,
-                "directions": "TAKE 2 TABLETS AT BEDTIME (DISPENSE WITH METHADONE MON\/THURS)",
+                "directions": "TAKE 2 TABLETS AT BEDTIME (DISPENSE WITH METHADONE MON/THURS)",
                 "rxStatus": "F",
                 "practitioner": {
                     "lastName": "PZVVPS",
@@ -257,7 +257,7 @@
             {
                 "recordId": 4906316387,
                 "rxNumber": "9527373",
-                "dinpin": "66999990",
+                "dinPin": "66999990",
                 "dateDispensed": "2019-12-15",
                 "quantity": 390,
                 "refills": 0,
@@ -284,12 +284,12 @@
             {
                 "recordId": 4906316321,
                 "rxNumber": "6765892",
-                "dinpin": "2391724",
+                "dinPin": "2391724",
                 "dateDispensed": "2019-12-11",
                 "genericName": "ZOPICLONE",
                 "quantity": 8,
                 "refills": 7,
-                "directions": "TAKE 2 TABLETS AT BEDTIME (DISPENSE WITH METHADONE MON\/THURS)",
+                "directions": "TAKE 2 TABLETS AT BEDTIME (DISPENSE WITH METHADONE MON/THURS)",
                 "rxStatus": "F",
                 "practitioner": {
                     "lastName": "PZVVPS",
@@ -312,7 +312,7 @@
             {
                 "recordId": 4906316251,
                 "rxNumber": "9526890",
-                "dinpin": "66999990",
+                "dinPin": "66999990",
                 "dateDispensed": "2019-12-11",
                 "quantity": 520,
                 "refills": 0,
@@ -339,7 +339,7 @@
             {
                 "recordId": 4906316249,
                 "rxNumber": "9526588",
-                "dinpin": "66999990",
+                "dinPin": "66999990",
                 "dateDispensed": "2019-12-08",
                 "quantity": 390,
                 "refills": 2,
@@ -366,12 +366,12 @@
             {
                 "recordId": 4906316250,
                 "rxNumber": "6761692",
-                "dinpin": "2391724",
+                "dinPin": "2391724",
                 "dateDispensed": "2019-12-08",
                 "genericName": "ZOPICLONE",
                 "quantity": 6,
                 "refills": 11,
-                "directions": "TAKE 2 TABLETS AT BEDTIME (DISPENSE WITH METHADONE MON\/THURS)",
+                "directions": "TAKE 2 TABLETS AT BEDTIME (DISPENSE WITH METHADONE MON/THURS)",
                 "rxStatus": "F",
                 "practitioner": {
                     "lastName": "PZVVPS",
@@ -394,7 +394,7 @@
             {
                 "recordId": 4906316289,
                 "rxNumber": "6759997",
-                "dinpin": "2212048",
+                "dinPin": "2212048",
                 "dateDispensed": "2019-12-06",
                 "genericName": "CYCLOBENZAPRINE HCL",
                 "quantity": 40,
@@ -422,12 +422,12 @@
             {
                 "recordId": 4906316248,
                 "rxNumber": "6757015",
-                "dinpin": "2391724",
+                "dinPin": "2391724",
                 "dateDispensed": "2019-12-04",
                 "genericName": "ZOPICLONE",
                 "quantity": 8,
                 "refills": 9,
-                "directions": "TAKE 2 TABLETS AT BEDTIME (DISPENSE WITH METHADONE MON\/THURS)",
+                "directions": "TAKE 2 TABLETS AT BEDTIME (DISPENSE WITH METHADONE MON/THURS)",
                 "rxStatus": "F",
                 "practitioner": {
                     "lastName": "PZVVPS",
@@ -450,7 +450,7 @@
             {
                 "recordId": 4906316421,
                 "rxNumber": "9526149",
-                "dinpin": "66999990",
+                "dinPin": "66999990",
                 "dateDispensed": "2019-12-04",
                 "quantity": 520,
                 "refills": 2,
@@ -477,7 +477,7 @@
             {
                 "recordId": 4906316247,
                 "rxNumber": "9525666",
-                "dinpin": "66999990",
+                "dinPin": "66999990",
                 "dateDispensed": "2019-12-02",
                 "quantity": 240,
                 "refills": 0,
@@ -504,12 +504,12 @@
             {
                 "recordId": 4906316320,
                 "rxNumber": "6749024",
-                "dinpin": "2263238",
+                "dinPin": "2263238",
                 "dateDispensed": "2019-11-28",
                 "genericName": "ESCITALOPRAM OXALATE",
                 "quantity": 45,
                 "refills": 2,
-                "directions": "TAKE 1 1\/2 TABLETS DAILY",
+                "directions": "TAKE 1 1/2 TABLETS DAILY",
                 "rxStatus": "F",
                 "practitioner": {
                     "lastName": "XZGLK",
@@ -532,7 +532,7 @@
             {
                 "recordId": 4906316246,
                 "rxNumber": "9525209",
-                "dinpin": "66999990",
+                "dinPin": "66999990",
                 "dateDispensed": "2019-11-28",
                 "quantity": 480,
                 "refills": 0,
@@ -559,7 +559,7 @@
             {
                 "recordId": 4906316419,
                 "rxNumber": "132003",
-                "dinpin": "2391724",
+                "dinPin": "2391724",
                 "dateDispensed": "2019-11-25",
                 "genericName": "ZOPICLONE",
                 "quantity": 30,
@@ -587,7 +587,7 @@
             {
                 "recordId": 4906316420,
                 "rxNumber": "6741032",
-                "dinpin": "2391724",
+                "dinPin": "2391724",
                 "dateDispensed": "2019-11-25",
                 "genericName": "ZOPICLONE",
                 "quantity": 6,
@@ -615,7 +615,7 @@
             {
                 "recordId": 4906316319,
                 "rxNumber": "9524761",
-                "dinpin": "66999990",
+                "dinPin": "66999990",
                 "dateDispensed": "2019-11-25",
                 "quantity": 360,
                 "refills": 2,
@@ -642,7 +642,7 @@
             {
                 "recordId": 4906316453,
                 "rxNumber": "6735849",
-                "dinpin": "496499",
+                "dinPin": "496499",
                 "dateDispensed": "2019-11-20",
                 "genericName": "PROPRANOLOL HCL",
                 "quantity": 180,
@@ -670,7 +670,7 @@
             {
                 "recordId": 4906316318,
                 "rxNumber": "6735848",
-                "dinpin": "2391724",
+                "dinPin": "2391724",
                 "dateDispensed": "2019-11-20",
                 "genericName": "ZOPICLONE",
                 "quantity": 10,
@@ -698,7 +698,7 @@
             {
                 "recordId": 4906316418,
                 "rxNumber": "9524261",
-                "dinpin": "66999990",
+                "dinPin": "66999990",
                 "dateDispensed": "2019-11-20",
                 "quantity": 600,
                 "refills": 1,
@@ -725,7 +725,7 @@
             {
                 "recordId": 4906316385,
                 "rxNumber": "6730407",
-                "dinpin": "2391724",
+                "dinPin": "2391724",
                 "dateDispensed": "2019-11-18",
                 "genericName": "ZOPICLONE",
                 "quantity": 4,
@@ -753,7 +753,7 @@
             {
                 "recordId": 4906316417,
                 "rxNumber": "9523851",
-                "dinpin": "66999990",
+                "dinPin": "66999990",
                 "dateDispensed": "2019-11-18",
                 "quantity": 240,
                 "refills": 0,
@@ -780,7 +780,7 @@
             {
                 "recordId": 4906316452,
                 "rxNumber": "6725349",
-                "dinpin": "2391724",
+                "dinPin": "2391724",
                 "dateDispensed": "2019-11-14",
                 "genericName": "ZOPICLONE",
                 "quantity": 8,
@@ -808,7 +808,7 @@
             {
                 "recordId": 4906316317,
                 "rxNumber": "9523368",
-                "dinpin": "66999990",
+                "dinPin": "66999990",
                 "dateDispensed": "2019-11-14",
                 "quantity": 480,
                 "refills": 0,
@@ -835,7 +835,7 @@
             {
                 "recordId": 4906316383,
                 "rxNumber": "6720653",
-                "dinpin": "2391724",
+                "dinPin": "2391724",
                 "dateDispensed": "2019-11-11",
                 "genericName": "ZOPICLONE",
                 "quantity": 6,
@@ -863,7 +863,7 @@
             {
                 "recordId": 4906316384,
                 "rxNumber": "9522819",
-                "dinpin": "66999990",
+                "dinPin": "66999990",
                 "dateDispensed": "2019-11-11",
                 "quantity": 360,
                 "refills": 2,
@@ -890,7 +890,7 @@
             {
                 "recordId": 4906316451,
                 "rxNumber": "6714887",
-                "dinpin": "2391724",
+                "dinPin": "2391724",
                 "dateDispensed": "2019-11-06",
                 "genericName": "ZOPICLONE",
                 "quantity": 10,
@@ -918,7 +918,7 @@
             {
                 "recordId": 4906316382,
                 "rxNumber": "9522428",
-                "dinpin": "66999990",
+                "dinPin": "66999990",
                 "dateDispensed": "2019-11-06",
                 "quantity": 600,
                 "refills": 1,
@@ -945,7 +945,7 @@
             {
                 "recordId": 4906316315,
                 "rxNumber": "6709369",
-                "dinpin": "2391724",
+                "dinPin": "2391724",
                 "dateDispensed": "2019-11-04",
                 "genericName": "ZOPICLONE",
                 "quantity": 6,
@@ -973,7 +973,7 @@
             {
                 "recordId": 4906316316,
                 "rxNumber": "9521925",
-                "dinpin": "66999990",
+                "dinPin": "66999990",
                 "dateDispensed": "2019-11-04",
                 "quantity": 360,
                 "refills": 0,
@@ -1000,7 +1000,7 @@
             {
                 "recordId": 4906316414,
                 "rxNumber": "6706402",
-                "dinpin": "2391724",
+                "dinPin": "2391724",
                 "dateDispensed": "2019-10-31",
                 "genericName": "ZOPICLONE",
                 "quantity": 8,
@@ -1028,7 +1028,7 @@
             {
                 "recordId": 4906316415,
                 "rxNumber": "9521449",
-                "dinpin": "66999990",
+                "dinPin": "66999990",
                 "dateDispensed": "2019-10-31",
                 "quantity": 480,
                 "refills": 0,
@@ -1055,7 +1055,7 @@
             {
                 "recordId": 4906316245,
                 "rxNumber": "6700214",
-                "dinpin": "2391724",
+                "dinPin": "2391724",
                 "dateDispensed": "2019-10-29",
                 "genericName": "ZOPICLONE",
                 "quantity": 8,
@@ -1083,7 +1083,7 @@
             {
                 "recordId": 4906316314,
                 "rxNumber": "9520963",
-                "dinpin": "66999990",
+                "dinPin": "66999990",
                 "dateDispensed": "2019-10-28",
                 "quantity": 360,
                 "refills": 2,
@@ -1110,7 +1110,7 @@
             {
                 "recordId": 4906316312,
                 "rxNumber": "6695688",
-                "dinpin": "2391724",
+                "dinPin": "2391724",
                 "dateDispensed": "2019-10-24",
                 "genericName": "ZOPICLONE",
                 "quantity": 8,
@@ -1138,7 +1138,7 @@
             {
                 "recordId": 4906316313,
                 "rxNumber": "9520439",
-                "dinpin": "66999990",
+                "dinPin": "66999990",
                 "dateDispensed": "2019-10-24",
                 "quantity": 480,
                 "refills": 2,
@@ -1165,7 +1165,7 @@
             {
                 "recordId": 4906316380,
                 "rxNumber": "6695683",
-                "dinpin": "496499",
+                "dinPin": "496499",
                 "dateDispensed": "2019-10-24",
                 "genericName": "PROPRANOLOL HCL",
                 "quantity": 60,
@@ -1193,7 +1193,7 @@
             {
                 "recordId": 4906316412,
                 "rxNumber": "6693509",
-                "dinpin": "496499",
+                "dinPin": "496499",
                 "dateDispensed": "2019-10-23",
                 "genericName": "PROPRANOLOL HCL",
                 "quantity": 2,
@@ -1221,7 +1221,7 @@
             {
                 "recordId": 4906316450,
                 "rxNumber": "9519969",
-                "dinpin": "66999990",
+                "dinPin": "66999990",
                 "dateDispensed": "2019-10-21",
                 "quantity": 360,
                 "refills": 0,
@@ -1248,7 +1248,7 @@
             {
                 "recordId": 4906316243,
                 "rxNumber": "9519422",
-                "dinpin": "66999990",
+                "dinPin": "66999990",
                 "dateDispensed": "2019-10-17",
                 "quantity": 480,
                 "refills": 0,
@@ -1275,7 +1275,7 @@
             {
                 "recordId": 4906316285,
                 "rxNumber": "9518822",
-                "dinpin": "66999990",
+                "dinPin": "66999990",
                 "dateDispensed": "2019-10-14",
                 "quantity": 360,
                 "refills": 2,
@@ -1302,7 +1302,7 @@
             {
                 "recordId": 4906316284,
                 "rxNumber": "6675485",
-                "dinpin": "2042258",
+                "dinPin": "2042258",
                 "dateDispensed": "2019-10-11",
                 "genericName": "PROPRANOLOL HCL",
                 "quantity": 100,
@@ -1330,7 +1330,7 @@
             {
                 "recordId": 4906316241,
                 "rxNumber": "6675484",
-                "dinpin": "2240550",
+                "dinPin": "2240550",
                 "dateDispensed": "2019-10-11",
                 "genericName": "OXYBUTYNIN CHLORIDE",
                 "quantity": 30,
@@ -1358,7 +1358,7 @@
             {
                 "recordId": 4906316242,
                 "rxNumber": "6675483",
-                "dinpin": "2391724",
+                "dinPin": "2391724",
                 "dateDispensed": "2019-10-11",
                 "genericName": "ZOPICLONE",
                 "quantity": 60,
@@ -1386,7 +1386,7 @@
             {
                 "recordId": 4906316310,
                 "rxNumber": "9518381",
-                "dinpin": "66999990",
+                "dinPin": "66999990",
                 "dateDispensed": "2019-10-10",
                 "quantity": 480,
                 "refills": 2,
@@ -1413,7 +1413,7 @@
             {
                 "recordId": 4906316378,
                 "rxNumber": "6669943",
-                "dinpin": "496499",
+                "dinPin": "496499",
                 "dateDispensed": "2019-10-08",
                 "genericName": "PROPRANOLOL HCL",
                 "quantity": 30,
@@ -1441,7 +1441,7 @@
             {
                 "recordId": 4906316240,
                 "rxNumber": "6669942",
-                "dinpin": "2042258",
+                "dinPin": "2042258",
                 "dateDispensed": "2019-10-08",
                 "genericName": "PROPRANOLOL HCL",
                 "quantity": 30,
@@ -1469,7 +1469,7 @@
             {
                 "recordId": 4906316377,
                 "rxNumber": "9517879",
-                "dinpin": "66999990",
+                "dinPin": "66999990",
                 "dateDispensed": "2019-10-07",
                 "quantity": 360,
                 "refills": 4,
@@ -1496,7 +1496,7 @@
             {
                 "recordId": 4906316448,
                 "rxNumber": "9517364",
-                "dinpin": "66999990",
+                "dinPin": "66999990",
                 "dateDispensed": "2019-10-03",
                 "quantity": 480,
                 "refills": 4,
@@ -1523,7 +1523,7 @@
             {
                 "recordId": 4906316411,
                 "rxNumber": "9516868",
-                "dinpin": "66999990",
+                "dinPin": "66999990",
                 "dateDispensed": "2019-09-30",
                 "quantity": 360,
                 "refills": 7,
@@ -1550,7 +1550,7 @@
             {
                 "recordId": 4906316309,
                 "rxNumber": "9516351",
-                "dinpin": "66999990",
+                "dinPin": "66999990",
                 "dateDispensed": "2019-09-26",
                 "quantity": 480,
                 "refills": 6,
@@ -1577,7 +1577,7 @@
             {
                 "recordId": 4906316239,
                 "rxNumber": "6647982",
-                "dinpin": "2391724",
+                "dinPin": "2391724",
                 "dateDispensed": "2019-09-24",
                 "genericName": "ZOPICLONE",
                 "quantity": 60,
@@ -1605,7 +1605,7 @@
             {
                 "recordId": 4906316376,
                 "rxNumber": "6647979",
-                "dinpin": "2263238",
+                "dinPin": "2263238",
                 "dateDispensed": "2019-09-24",
                 "genericName": "ESCITALOPRAM OXALATE",
                 "quantity": 45,
@@ -1633,7 +1633,7 @@
             {
                 "recordId": 4906316375,
                 "rxNumber": "6645967",
-                "dinpin": "2391724",
+                "dinPin": "2391724",
                 "dateDispensed": "2019-09-23",
                 "genericName": "ZOPICLONE",
                 "quantity": 6,
@@ -1661,7 +1661,7 @@
             {
                 "recordId": 4906316308,
                 "rxNumber": "9515810",
-                "dinpin": "66999990",
+                "dinPin": "66999990",
                 "dateDispensed": "2019-09-23",
                 "quantity": 360,
                 "refills": 9,
@@ -1688,7 +1688,7 @@
             {
                 "recordId": 4906316307,
                 "rxNumber": "6643116",
-                "dinpin": "2391724",
+                "dinPin": "2391724",
                 "dateDispensed": "2019-09-19",
                 "genericName": "ZOPICLONE",
                 "quantity": 8,
@@ -1716,11 +1716,11 @@
             {
                 "recordId": 4906316447,
                 "rxNumber": "9515452",
-                "dinpin": "66999990",
+                "dinPin": "66999990",
                 "dateDispensed": "2019-09-19",
                 "quantity": 480,
                 "refills": 7,
-                "directions": ".. SHAKE WELL .. 120MLS DAILY . MAY BE POISONOUS TO OTHERS . SPLIT 40\/80 . SEPT",
+                "directions": ".. SHAKE WELL .. 120MLS DAILY . MAY BE POISONOUS TO OTHERS . SPLIT 40/80 . SEPT",
                 "rxStatus": "F",
                 "practitioner": {
                     "lastName": "PZVVPS",
@@ -1743,7 +1743,7 @@
             {
                 "recordId": 4906316283,
                 "rxNumber": "6636699",
-                "dinpin": "2391724",
+                "dinPin": "2391724",
                 "dateDispensed": "2019-09-16",
                 "genericName": "ZOPICLONE",
                 "quantity": 6,
@@ -1771,7 +1771,7 @@
             {
                 "recordId": 4906316374,
                 "rxNumber": "9514787",
-                "dinpin": "66999990",
+                "dinPin": "66999990",
                 "dateDispensed": "2019-09-16",
                 "quantity": 360,
                 "refills": 0,
@@ -1798,7 +1798,7 @@
             {
                 "recordId": 4906316281,
                 "rxNumber": "6631604",
-                "dinpin": "2391724",
+                "dinPin": "2391724",
                 "dateDispensed": "2019-09-12",
                 "genericName": "ZOPICLONE",
                 "quantity": 8,
@@ -1826,7 +1826,7 @@
             {
                 "recordId": 4906316282,
                 "rxNumber": "9514304",
-                "dinpin": "66999990",
+                "dinPin": "66999990",
                 "dateDispensed": "2019-09-12",
                 "quantity": 480,
                 "refills": 0,
@@ -1853,7 +1853,7 @@
             {
                 "recordId": 4906316373,
                 "rxNumber": "6626999",
-                "dinpin": "2042258",
+                "dinPin": "2042258",
                 "dateDispensed": "2019-09-09",
                 "genericName": "PROPRANOLOL HCL",
                 "quantity": 30,
@@ -1881,7 +1881,7 @@
             {
                 "recordId": 4906316237,
                 "rxNumber": "6626998",
-                "dinpin": "496499",
+                "dinPin": "496499",
                 "dateDispensed": "2019-09-09",
                 "genericName": "PROPRANOLOL HCL",
                 "quantity": 60,
@@ -1909,7 +1909,7 @@
             {
                 "recordId": 4906316409,
                 "rxNumber": "9513773",
-                "dinpin": "66999990",
+                "dinPin": "66999990",
                 "dateDispensed": "2019-09-09",
                 "quantity": 360,
                 "refills": 2,
@@ -1936,7 +1936,7 @@
             {
                 "recordId": 4906316280,
                 "rxNumber": "1481776",
-                "dinpin": "1926799",
+                "dinPin": "1926799",
                 "dateDispensed": "2019-09-06",
                 "genericName": "ZOPICLONE",
                 "quantity": 3,
@@ -1963,7 +1963,7 @@
             {
                 "recordId": 4906316372,
                 "rxNumber": "9513307",
-                "dinpin": "66999990",
+                "dinPin": "66999990",
                 "dateDispensed": "2019-09-05",
                 "quantity": 480,
                 "refills": 2,
@@ -1990,7 +1990,7 @@
             {
                 "recordId": 4906316445,
                 "rxNumber": "1481562",
-                "dinpin": "1926799",
+                "dinPin": "1926799",
                 "dateDispensed": "2019-09-05",
                 "genericName": "ZOPICLONE",
                 "quantity": 3,
@@ -2017,7 +2017,7 @@
             {
                 "recordId": 4906316371,
                 "rxNumber": "1481416",
-                "dinpin": "1926799",
+                "dinPin": "1926799",
                 "dateDispensed": "2019-09-04",
                 "genericName": "ZOPICLONE",
                 "quantity": 3,
@@ -2044,7 +2044,7 @@
             {
                 "recordId": 4906316235,
                 "rxNumber": "9503352",
-                "dinpin": "66999990",
+                "dinPin": "66999990",
                 "dateDispensed": "2019-09-04",
                 "quantity": 480,
                 "refills": 2,
@@ -2071,7 +2071,7 @@
             {
                 "recordId": 4906316444,
                 "rxNumber": "9512987",
-                "dinpin": "66999990",
+                "dinPin": "66999990",
                 "dateDispensed": "2019-09-02",
                 "quantity": 360,
                 "refills": 4,
@@ -2098,7 +2098,7 @@
             {
                 "recordId": 4906316370,
                 "rxNumber": "9512988",
-                "dinpin": "66999990",
+                "dinPin": "66999990",
                 "dateDispensed": "2019-08-29",
                 "quantity": 480,
                 "refills": 3,
@@ -2125,9 +2125,9 @@
             {
                 "recordId": 4906316368,
                 "rxNumber": "1587307",
-                "dinpin": "2252716",
+                "dinPin": "2252716",
                 "dateDispensed": "2019-08-26",
-                "genericName": "CIPROFLOXACIN HCL\/DEXAMETH",
+                "genericName": "CIPROFLOXACIN HCL/DEXAMETH",
                 "quantity": 7.5,
                 "refills": 0,
                 "directions": ".. SHAKE WELL .. INSTILL 3 DROPS INTO THE AFFECTED EAR(S) TWICE A DAY FOR 5 DAYS",
@@ -2152,7 +2152,7 @@
             {
                 "recordId": 4906316278,
                 "rxNumber": "1587306",
-                "dinpin": "2237250",
+                "dinPin": "2237250",
                 "dateDispensed": "2019-08-26",
                 "genericName": "TRYPTOPHAN",
                 "quantity": 30,
@@ -2179,7 +2179,7 @@
             {
                 "recordId": 4906316443,
                 "rxNumber": "1587305",
-                "dinpin": "2391724",
+                "dinPin": "2391724",
                 "dateDispensed": "2019-08-26",
                 "genericName": "ZOPICLONE",
                 "quantity": 60,
@@ -2206,7 +2206,7 @@
             {
                 "recordId": 4906316232,
                 "rxNumber": "9512989",
-                "dinpin": "66999990",
+                "dinPin": "66999990",
                 "dateDispensed": "2019-08-26",
                 "quantity": 360,
                 "refills": 1,
@@ -2233,7 +2233,7 @@
             {
                 "recordId": 4906316233,
                 "rxNumber": "6604955",
-                "dinpin": "2391724",
+                "dinPin": "2391724",
                 "dateDispensed": "2019-08-26",
                 "genericName": "ZOPICLONE",
                 "quantity": 6,
@@ -2261,7 +2261,7 @@
             {
                 "recordId": 4906316231,
                 "rxNumber": "6604416",
-                "dinpin": "2391724",
+                "dinPin": "2391724",
                 "dateDispensed": "2019-08-25",
                 "genericName": "ZOPICLONE",
                 "quantity": 2,
@@ -2289,7 +2289,7 @@
             {
                 "recordId": 4906316366,
                 "rxNumber": "9512990",
-                "dinpin": "66999990",
+                "dinPin": "66999990",
                 "dateDispensed": "2019-08-22",
                 "quantity": 480,
                 "refills": 0,
@@ -2316,7 +2316,7 @@
             {
                 "recordId": 4906316304,
                 "rxNumber": "6602389",
-                "dinpin": "2391724",
+                "dinPin": "2391724",
                 "dateDispensed": "2019-08-22",
                 "genericName": "ZOPICLONE",
                 "quantity": 4,
@@ -2344,7 +2344,7 @@
             {
                 "recordId": 4906316365,
                 "rxNumber": "6594727",
-                "dinpin": "2391724",
+                "dinPin": "2391724",
                 "dateDispensed": "2019-08-19",
                 "genericName": "ZOPICLONE",
                 "quantity": 4,
@@ -2372,7 +2372,7 @@
             {
                 "recordId": 4906316229,
                 "rxNumber": "9510837",
-                "dinpin": "66999990",
+                "dinPin": "66999990",
                 "dateDispensed": "2019-08-19",
                 "quantity": 360,
                 "refills": 0,
@@ -2399,7 +2399,7 @@
             {
                 "recordId": 4906316364,
                 "rxNumber": "9510390",
-                "dinpin": "66999990",
+                "dinPin": "66999990",
                 "dateDispensed": "2019-08-15",
                 "quantity": 480,
                 "refills": 0,
@@ -2426,7 +2426,7 @@
             {
                 "recordId": 4906316442,
                 "rxNumber": "6589972",
-                "dinpin": "2391724",
+                "dinPin": "2391724",
                 "dateDispensed": "2019-08-15",
                 "genericName": "ZOPICLONE",
                 "quantity": 8,
@@ -2454,7 +2454,7 @@
             {
                 "recordId": 4906316363,
                 "rxNumber": "6585837",
-                "dinpin": "496499",
+                "dinPin": "496499",
                 "dateDispensed": "2019-08-12",
                 "genericName": "PROPRANOLOL HCL",
                 "quantity": 60,
@@ -2482,7 +2482,7 @@
             {
                 "recordId": 4906316404,
                 "rxNumber": "6584474",
-                "dinpin": "2391724",
+                "dinPin": "2391724",
                 "dateDispensed": "2019-08-12",
                 "genericName": "ZOPICLONE",
                 "quantity": 6,
@@ -2510,7 +2510,7 @@
             {
                 "recordId": 4906316405,
                 "rxNumber": "9509864",
-                "dinpin": "66999990",
+                "dinPin": "66999990",
                 "dateDispensed": "2019-08-12",
                 "quantity": 360,
                 "refills": 2,
@@ -2537,7 +2537,7 @@
             {
                 "recordId": 4906316227,
                 "rxNumber": "6581903",
-                "dinpin": "2042258",
+                "dinPin": "2042258",
                 "dateDispensed": "2019-08-08",
                 "genericName": "PROPRANOLOL HCL",
                 "quantity": 30,
@@ -2565,7 +2565,7 @@
             {
                 "recordId": 4906316228,
                 "rxNumber": "6581498",
-                "dinpin": "2391724",
+                "dinPin": "2391724",
                 "dateDispensed": "2019-08-08",
                 "genericName": "ZOPICLONE",
                 "quantity": 8,
@@ -2593,7 +2593,7 @@
             {
                 "recordId": 4906316441,
                 "rxNumber": "9509359",
-                "dinpin": "66999990",
+                "dinPin": "66999990",
                 "dateDispensed": "2019-08-08",
                 "quantity": 480,
                 "refills": 2,
@@ -2620,7 +2620,7 @@
             {
                 "recordId": 4906316362,
                 "rxNumber": "6575296",
-                "dinpin": "2391724",
+                "dinPin": "2391724",
                 "dateDispensed": "2019-08-05",
                 "genericName": "ZOPICLONE",
                 "quantity": 6,
@@ -2648,7 +2648,7 @@
             {
                 "recordId": 4906316440,
                 "rxNumber": "9508808",
-                "dinpin": "66999990",
+                "dinPin": "66999990",
                 "dateDispensed": "2019-04-09",
                 "quantity": 360,
                 "refills": 4,
@@ -2675,7 +2675,7 @@
             {
                 "recordId": 4906316440,
                 "rxNumber": "9508808",
-                "dinpin": "66999990",
+                "dinPin": "66999990",
                 "dateDispensed": "2019-08-05",
                 "quantity": 360,
                 "refills": 4,
@@ -2702,7 +2702,7 @@
             {
                 "recordId": 4906316439,
                 "rxNumber": "6569948",
-                "dinpin": "2391724",
+                "dinPin": "2391724",
                 "dateDispensed": "2019-08-01",
                 "genericName": "ZOPICLONE",
                 "quantity": 8,
@@ -2730,7 +2730,7 @@
             {
                 "recordId": 4906316226,
                 "rxNumber": "9508464",
-                "dinpin": "66999990",
+                "dinPin": "66999990",
                 "dateDispensed": "2019-08-01",
                 "quantity": 480,
                 "refills": 4,
@@ -2757,7 +2757,7 @@
             {
                 "recordId": 4906316361,
                 "rxNumber": "6563750",
-                "dinpin": "2391724",
+                "dinPin": "2391724",
                 "dateDispensed": "2019-07-29",
                 "genericName": "ZOPICLONE",
                 "quantity": 6,
@@ -2785,7 +2785,7 @@
             {
                 "recordId": 4906316276,
                 "rxNumber": "9507939",
-                "dinpin": "66999990",
+                "dinPin": "66999990",
                 "dateDispensed": "2019-07-29",
                 "quantity": 360,
                 "refills": 7,
@@ -2812,7 +2812,7 @@
             {
                 "recordId": 4906316225,
                 "rxNumber": "6560719",
-                "dinpin": "2391724",
+                "dinPin": "2391724",
                 "dateDispensed": "2019-07-25",
                 "genericName": "ZOPICLONE",
                 "quantity": 8,
@@ -2840,7 +2840,7 @@
             {
                 "recordId": 4906316275,
                 "rxNumber": "9507481",
-                "dinpin": "66999990",
+                "dinPin": "66999990",
                 "dateDispensed": "2019-07-25",
                 "quantity": 480,
                 "refills": 6,
@@ -2867,7 +2867,7 @@
             {
                 "recordId": 4906316400,
                 "rxNumber": "6553826",
-                "dinpin": "2391724",
+                "dinPin": "2391724",
                 "dateDispensed": "2019-07-22",
                 "genericName": "ZOPICLONE",
                 "quantity": 6,
@@ -2895,7 +2895,7 @@
             {
                 "recordId": 4906316401,
                 "rxNumber": "9506950",
-                "dinpin": "66999990",
+                "dinPin": "66999990",
                 "dateDispensed": "2019-07-22",
                 "quantity": 360,
                 "refills": 0,
@@ -2922,7 +2922,7 @@
             {
                 "recordId": 4906316399,
                 "rxNumber": "6549916",
-                "dinpin": "2391724",
+                "dinPin": "2391724",
                 "dateDispensed": "2019-07-18",
                 "genericName": "ZOPICLONE",
                 "quantity": 10,
@@ -2950,7 +2950,7 @@
             {
                 "recordId": 4906316274,
                 "rxNumber": "9506473",
-                "dinpin": "66999990",
+                "dinPin": "66999990",
                 "dateDispensed": "2019-07-18",
                 "quantity": 480,
                 "refills": 0,
@@ -2977,7 +2977,7 @@
             {
                 "recordId": 4906316222,
                 "rxNumber": "6585833",
-                "dinpin": "496499",
+                "dinPin": "496499",
                 "dateDispensed": "2019-07-17",
                 "genericName": "PROPRANOLOL HCL",
                 "quantity": 30,
@@ -3005,7 +3005,7 @@
             {
                 "recordId": 4906316224,
                 "rxNumber": "6547728",
-                "dinpin": "2042258",
+                "dinPin": "2042258",
                 "dateDispensed": "2019-07-17",
                 "genericName": "PROPRANOLOL HCL",
                 "quantity": 30,
@@ -3033,12 +3033,12 @@
             {
                 "recordId": 4906316397,
                 "rxNumber": "6543195",
-                "dinpin": "2391724",
+                "dinPin": "2391724",
                 "dateDispensed": "2019-07-15",
                 "genericName": "ZOPICLONE",
                 "quantity": 7.5,
                 "refills": 0,
-                "directions": "2 1\/2 TABLETS AT BEDTIME (EMERGENCY FILL)",
+                "directions": "2 1/2 TABLETS AT BEDTIME (EMERGENCY FILL)",
                 "rxStatus": "F",
                 "practitioner": {
                     "lastName": "WWZFTADU",
@@ -3061,7 +3061,7 @@
             {
                 "recordId": 4906316302,
                 "rxNumber": "9505923",
-                "dinpin": "66999990",
+                "dinPin": "66999990",
                 "dateDispensed": "2019-07-15",
                 "quantity": 360,
                 "refills": 2,
@@ -3088,12 +3088,12 @@
             {
                 "recordId": 4906316075,
                 "rxNumber": "6538936",
-                "dinpin": "2391724",
+                "dinPin": "2391724",
                 "dateDispensed": "2019-07-11",
                 "genericName": "ZOPICLONE",
                 "quantity": 10,
                 "refills": 0,
-                "directions": "2 1\/2 TABLETS AT BEDTIME (EMERGENCY FILL)",
+                "directions": "2 1/2 TABLETS AT BEDTIME (EMERGENCY FILL)",
                 "rxStatus": "F",
                 "practitioner": {
                     "lastName": "WWZFTADU",
@@ -3116,7 +3116,7 @@
             {
                 "recordId": 4906316076,
                 "rxNumber": "9505418",
-                "dinpin": "66999990",
+                "dinPin": "66999990",
                 "dateDispensed": "2019-07-11",
                 "quantity": 480,
                 "refills": 2,
@@ -3143,12 +3143,12 @@
             {
                 "recordId": 4906316074,
                 "rxNumber": "6533146",
-                "dinpin": "2391724",
+                "dinPin": "2391724",
                 "dateDispensed": "2019-07-10",
                 "genericName": "ZOPICLONE",
                 "quantity": 2.5,
                 "refills": 4,
-                "directions": "2 1\/2 TABLETS AT BEDTIME AS NEEDED",
+                "directions": "2 1/2 TABLETS AT BEDTIME AS NEEDED",
                 "rxStatus": "F",
                 "practitioner": {
                     "lastName": "PZVVPS",
@@ -3171,7 +3171,7 @@
             {
                 "recordId": 4906316396,
                 "rxNumber": "9499044",
-                "dinpin": "66999990",
+                "dinPin": "66999990",
                 "dateDispensed": "2019-05-29",
                 "quantity": 720,
                 "refills": 0,
@@ -3198,7 +3198,7 @@
             {
                 "recordId": 4906316273,
                 "rxNumber": "9498311",
-                "dinpin": "66999990",
+                "dinPin": "66999990",
                 "dateDispensed": "2019-05-26",
                 "quantity": 360,
                 "refills": 1,
@@ -3225,7 +3225,7 @@
             {
                 "recordId": 4906316360,
                 "rxNumber": "9497838",
-                "dinpin": "66999990",
+                "dinPin": "66999990",
                 "dateDispensed": "2019-05-22",
                 "quantity": 480,
                 "refills": 1,
@@ -3252,7 +3252,7 @@
             {
                 "recordId": 4906316359,
                 "rxNumber": "9497349",
-                "dinpin": "66999990",
+                "dinPin": "66999990",
                 "dateDispensed": "2019-05-20",
                 "quantity": 240,
                 "refills": 5,
@@ -3279,7 +3279,7 @@
             {
                 "recordId": 4906316358,
                 "rxNumber": "9496802",
-                "dinpin": "66999990",
+                "dinPin": "66999990",
                 "dateDispensed": "2019-05-15",
                 "quantity": 600,
                 "refills": 2,
@@ -3306,7 +3306,7 @@
             {
                 "recordId": 4906316438,
                 "rxNumber": "1002987",
-                "dinpin": "2263254",
+                "dinPin": "2263254",
                 "dateDispensed": "2019-05-13",
                 "genericName": "ESCITALOPRAM OXALATE",
                 "quantity": 150,
@@ -3334,7 +3334,7 @@
             {
                 "recordId": 4906316356,
                 "rxNumber": "1002986",
-                "dinpin": "2046121",
+                "dinPin": "2046121",
                 "dateDispensed": "2019-05-13",
                 "genericName": "CLONIDINE HCL",
                 "quantity": 360,
@@ -3362,7 +3362,7 @@
             {
                 "recordId": 4906316272,
                 "rxNumber": "1002985",
-                "dinpin": "2391724",
+                "dinPin": "2391724",
                 "dateDispensed": "2019-05-13",
                 "genericName": "ZOPICLONE",
                 "quantity": 180,
@@ -3390,7 +3390,7 @@
             {
                 "recordId": 4906316271,
                 "rxNumber": "9496216",
-                "dinpin": "66999990",
+                "dinPin": "66999990",
                 "dateDispensed": "2019-05-12",
                 "quantity": 360,
                 "refills": 6,
@@ -3417,7 +3417,7 @@
             {
                 "recordId": 4906316355,
                 "rxNumber": "9495670",
-                "dinpin": "66999990",
+                "dinPin": "66999990",
                 "dateDispensed": "2019-05-08",
                 "quantity": 480,
                 "refills": 5,
@@ -3444,7 +3444,7 @@
             {
                 "recordId": 4906316395,
                 "rxNumber": "9495285",
-                "dinpin": "66999990",
+                "dinPin": "66999990",
                 "dateDispensed": "2019-05-06",
                 "quantity": 360,
                 "refills": 8,
@@ -3471,7 +3471,7 @@
             {
                 "recordId": 4906316405,
                 "rxNumber": "9509864",
-                "dinpin": "66999990",
+                "dinPin": "66999990",
                 "dateDispensed": "2019-08-05",
                 "quantity": 360,
                 "refills": 2,
@@ -3494,11 +3494,11 @@
                         "country": "CAN"
                     }
                 }
-            },           
+            },
             {
                 "recordId": 4906316354,
                 "rxNumber": "9495060",
-                "dinpin": "66999990",
+                "dinPin": "66999990",
                 "dateDispensed": "2019-05-05",
                 "quantity": 120,
                 "refills": 0,
@@ -3525,7 +3525,7 @@
             {
                 "recordId": 4906316393,
                 "rxNumber": "537192",
-                "dinpin": "2391724",
+                "dinPin": "2391724",
                 "dateDispensed": "2019-05-01",
                 "genericName": "ZOPICLONE",
                 "quantity": 60,
@@ -3554,7 +3554,7 @@
             {
                 "recordId": 4906316394,
                 "rxNumber": "9494509",
-                "dinpin": "66999990",
+                "dinPin": "66999990",
                 "dateDispensed": "2019-05-01",
                 "quantity": 480,
                 "refills": 0,
@@ -3581,7 +3581,7 @@
             {
                 "recordId": 4906316437,
                 "rxNumber": "9493947",
-                "dinpin": "66999990",
+                "dinPin": "66999990",
                 "dateDispensed": "2019-04-28",
                 "quantity": 360,
                 "refills": 1,
@@ -3608,7 +3608,7 @@
             {
                 "recordId": 4906316220,
                 "rxNumber": "9924826",
-                "dinpin": "66999990",
+                "dinPin": "66999990",
                 "dateDispensed": "2019-04-26",
                 "quantity": 240,
                 "refills": 0,
@@ -3636,7 +3636,7 @@
             {
                 "recordId": 4906316436,
                 "rxNumber": "9924793",
-                "dinpin": "66999990",
+                "dinPin": "66999990",
                 "dateDispensed": "2019-04-24",
                 "quantity": 240,
                 "refills": 1,
@@ -3664,7 +3664,7 @@
             {
                 "recordId": 4906316353,
                 "rxNumber": "7395960",
-                "dinpin": "2046121",
+                "dinPin": "2046121",
                 "dateDispensed": "2019-04-24",
                 "genericName": "CLONIDINE HCL",
                 "quantity": 100,
@@ -3693,7 +3693,7 @@
             {
                 "recordId": 4906316392,
                 "rxNumber": "7395959",
-                "dinpin": "2391724",
+                "dinPin": "2391724",
                 "dateDispensed": "2019-04-24",
                 "genericName": "ZOPICLONE",
                 "quantity": 60,
@@ -3722,7 +3722,7 @@
             {
                 "recordId": 4906316391,
                 "rxNumber": "9493126",
-                "dinpin": "66999990",
+                "dinPin": "66999990",
                 "dateDispensed": "2019-04-21",
                 "quantity": 840,
                 "refills": 1,
@@ -3749,7 +3749,7 @@
             {
                 "recordId": 4906316073,
                 "rxNumber": "9492403",
-                "dinpin": "66999990",
+                "dinPin": "66999990",
                 "dateDispensed": "2019-04-17",
                 "quantity": 480,
                 "refills": 3,
@@ -3776,7 +3776,7 @@
             {
                 "recordId": 4906316166,
                 "rxNumber": "9492047",
-                "dinpin": "66999990",
+                "dinPin": "66999990",
                 "dateDispensed": "2019-04-15",
                 "quantity": 240,
                 "refills": 9,
@@ -3803,7 +3803,7 @@
             {
                 "recordId": 4906316211,
                 "rxNumber": "9491821",
-                "dinpin": "66999990",
+                "dinPin": "66999990",
                 "dateDispensed": "2019-04-14",
                 "quantity": 120,
                 "refills": 0,
@@ -3830,7 +3830,7 @@
             {
                 "recordId": 4906316352,
                 "rxNumber": "9491514",
-                "dinpin": "66999990",
+                "dinPin": "66999990",
                 "dateDispensed": "2019-04-10",
                 "quantity": 480,
                 "refills": 0,
@@ -3857,7 +3857,7 @@
             {
                 "recordId": 4906316269,
                 "rxNumber": "1001368",
-                "dinpin": "2271958",
+                "dinPin": "2271958",
                 "dateDispensed": "2019-04-08",
                 "genericName": "ZOPICLONE",
                 "quantity": 120,
@@ -3885,7 +3885,7 @@
             {
                 "recordId": 4906316268,
                 "rxNumber": "9490768",
-                "dinpin": "66999990",
+                "dinPin": "66999990",
                 "dateDispensed": "2019-04-07",
                 "quantity": 360,
                 "refills": 0,
@@ -3912,7 +3912,7 @@
             {
                 "recordId": 4906316219,
                 "rxNumber": "1023115",
-                "dinpin": "2046121",
+                "dinPin": "2046121",
                 "dateDispensed": "2019-04-04",
                 "genericName": "CLONIDINE HCL",
                 "quantity": 100,
@@ -3940,7 +3940,7 @@
             {
                 "recordId": 4906316267,
                 "rxNumber": "9490250",
-                "dinpin": "66999990",
+                "dinPin": "66999990",
                 "dateDispensed": "2019-04-03",
                 "quantity": 480,
                 "refills": 0,
@@ -3967,7 +3967,7 @@
             {
                 "recordId": 4906316072,
                 "rxNumber": "542078",
-                "dinpin": "2240606",
+                "dinPin": "2240606",
                 "dateDispensed": "2019-03-31",
                 "genericName": "ZOPICLONE",
                 "quantity": 60,
@@ -3994,7 +3994,7 @@
             {
                 "recordId": 4906316217,
                 "rxNumber": "9489756",
-                "dinpin": "66999990",
+                "dinPin": "66999990",
                 "dateDispensed": "2019-03-31",
                 "quantity": 360,
                 "refills": 2,
@@ -4021,7 +4021,7 @@
             {
                 "recordId": 4906316216,
                 "rxNumber": "9489377",
-                "dinpin": "66999990",
+                "dinPin": "66999990",
                 "dateDispensed": "2019-03-27",
                 "quantity": 480,
                 "refills": 2,
@@ -4048,7 +4048,7 @@
             {
                 "recordId": 4906316266,
                 "rxNumber": "1000810",
-                "dinpin": "2271958",
+                "dinPin": "2271958",
                 "dateDispensed": "2019-03-24",
                 "genericName": "ZOPICLONE",
                 "quantity": 60,
@@ -4076,7 +4076,7 @@
             {
                 "recordId": 4906316164,
                 "rxNumber": "9488793",
-                "dinpin": "66999990",
+                "dinPin": "66999990",
                 "dateDispensed": "2019-03-24",
                 "quantity": 360,
                 "refills": 4,
@@ -4103,7 +4103,7 @@
             {
                 "recordId": 4906316163,
                 "rxNumber": "9488315",
-                "dinpin": "66999990",
+                "dinPin": "66999990",
                 "dateDispensed": "2019-03-20",
                 "quantity": 480,
                 "refills": 4,
@@ -4130,7 +4130,7 @@
             {
                 "recordId": 4906316070,
                 "rxNumber": "6333569",
-                "dinpin": "2046121",
+                "dinPin": "2046121",
                 "dateDispensed": "2019-03-17",
                 "genericName": "CLONIDINE HCL",
                 "quantity": 120,
@@ -4158,7 +4158,7 @@
             {
                 "recordId": 4906316071,
                 "rxNumber": "9487776",
-                "dinpin": "66999990",
+                "dinPin": "66999990",
                 "dateDispensed": "2019-03-17",
                 "quantity": 360,
                 "refills": 7,
@@ -4185,7 +4185,7 @@
             {
                 "recordId": 4906316210,
                 "rxNumber": "9487450",
-                "dinpin": "66999990",
+                "dinPin": "66999990",
                 "dateDispensed": "2019-03-13",
                 "quantity": 480,
                 "refills": 6,
@@ -4212,7 +4212,7 @@
             {
                 "recordId": 4906316215,
                 "rxNumber": "6325025",
-                "dinpin": "2240606",
+                "dinPin": "2240606",
                 "dateDispensed": "2019-03-12",
                 "genericName": "ZOPICLONE",
                 "quantity": 60,
@@ -4240,7 +4240,7 @@
             {
                 "recordId": 4906316214,
                 "rxNumber": "9485412",
-                "dinpin": "2247701",
+                "dinPin": "2247701",
                 "dateDispensed": "2019-02-28",
                 "genericName": "METHADONE HCL",
                 "quantity": 60,
@@ -4268,7 +4268,7 @@
             {
                 "recordId": 4906316162,
                 "rxNumber": "9485220",
-                "dinpin": "66999990",
+                "dinPin": "66999990",
                 "dateDispensed": "2019-02-27",
                 "quantity": 120,
                 "refills": 0,
@@ -4295,7 +4295,7 @@
             {
                 "recordId": 4906316213,
                 "rxNumber": "9485050",
-                "dinpin": "66999990",
+                "dinPin": "66999990",
                 "dateDispensed": "2019-02-26",
                 "quantity": 120,
                 "refills": 1,
@@ -4322,7 +4322,7 @@
             {
                 "recordId": 4906316265,
                 "rxNumber": "9484612",
-                "dinpin": "66999990",
+                "dinPin": "66999990",
                 "dateDispensed": "2019-02-24",
                 "quantity": 240,
                 "refills": 1,
@@ -4349,12 +4349,12 @@
             {
                 "recordId": 4906316350,
                 "rxNumber": "537168",
-                "dinpin": "2046148",
+                "dinPin": "2046148",
                 "dateDispensed": "2019-02-23",
                 "genericName": "CLONIDINE HCL",
                 "quantity": 60,
                 "refills": 0,
-                "directions": "TAKE 1\/2 TABLET DAILY AS NEEDED",
+                "directions": "TAKE 1/2 TABLET DAILY AS NEEDED",
                 "rxStatus": "F",
                 "practitioner": {
                     "lastName": "MGMJT",
@@ -4376,7 +4376,7 @@
             {
                 "recordId": 4906316264,
                 "rxNumber": "537167",
-                "dinpin": "2240606",
+                "dinPin": "2240606",
                 "dateDispensed": "2019-02-23",
                 "genericName": "ZOPICLONE",
                 "quantity": 120,
@@ -4403,7 +4403,7 @@
             {
                 "recordId": 4906316212,
                 "rxNumber": "9484303",
-                "dinpin": "66999990",
+                "dinPin": "66999990",
                 "dateDispensed": "2019-02-21",
                 "quantity": 360,
                 "refills": 1,
@@ -4430,7 +4430,7 @@
             {
                 "recordId": 4906316349,
                 "rxNumber": "9484093",
-                "dinpin": "66999990",
+                "dinPin": "66999990",
                 "dateDispensed": "2019-02-20",
                 "quantity": 120,
                 "refills": 7,
@@ -4457,7 +4457,7 @@
             {
                 "recordId": 4906316161,
                 "rxNumber": "9483907",
-                "dinpin": "66999990",
+                "dinPin": "66999990",
                 "dateDispensed": "2019-02-19",
                 "quantity": 120,
                 "refills": 8,
@@ -4484,7 +4484,7 @@
             {
                 "recordId": 4906316348,
                 "rxNumber": "9483464",
-                "dinpin": "66999990",
+                "dinPin": "66999990",
                 "dateDispensed": "2019-02-17",
                 "quantity": 240,
                 "refills": 4,
@@ -4511,7 +4511,7 @@
             {
                 "recordId": 4906316208,
                 "rxNumber": "6861696",
-                "dinpin": "2391724",
+                "dinPin": "2391724",
                 "dateDispensed": "2018-02-14",
                 "genericName": "ZOPICLONE",
                 "quantity": 15,
@@ -4539,7 +4539,7 @@
             {
                 "recordId": 4906316207,
                 "rxNumber": "6858459",
-                "dinpin": "2391724",
+                "dinPin": "2391724",
                 "dateDispensed": "2018-02-12",
                 "genericName": "ZOPICLONE",
                 "quantity": 8,
@@ -4567,7 +4567,7 @@
             {
                 "recordId": 4906316121,
                 "rxNumber": "9535061",
-                "dinpin": "66999997",
+                "dinPin": "66999997",
                 "dateDispensed": "2018-02-12",
                 "quantity": 56,
                 "refills": 3,
@@ -4594,7 +4594,7 @@
             {
                 "recordId": 4906316263,
                 "rxNumber": "6854482",
-                "dinpin": "2391724",
+                "dinPin": "2391724",
                 "dateDispensed": "2018-02-10",
                 "genericName": "ZOPICLONE",
                 "quantity": 4,
@@ -4622,7 +4622,7 @@
             {
                 "recordId": 4906316160,
                 "rxNumber": "9534673",
-                "dinpin": "66999997",
+                "dinPin": "66999997",
                 "dateDispensed": "2018-02-10",
                 "quantity": 28,
                 "refills": 9,
@@ -4649,7 +4649,7 @@
             {
                 "recordId": 4906316120,
                 "rxNumber": "9534344",
-                "dinpin": "66999997",
+                "dinPin": "66999997",
                 "dateDispensed": "2018-02-05",
                 "quantity": 70,
                 "refills": 4,
@@ -4676,7 +4676,7 @@
             {
                 "recordId": 4906316262,
                 "rxNumber": "6849177",
-                "dinpin": "2391724",
+                "dinPin": "2391724",
                 "dateDispensed": "2018-02-05",
                 "genericName": "ZOPICLONE",
                 "quantity": 10,
@@ -4704,7 +4704,7 @@
             {
                 "recordId": 4906316119,
                 "rxNumber": "9529717",
-                "dinpin": "66999990",
+                "dinPin": "66999990",
                 "dateDispensed": "2017-07-26",
                 "quantity": 520,
                 "refills": 1,
@@ -4731,12 +4731,12 @@
             {
                 "recordId": 4906316159,
                 "rxNumber": "6800007",
-                "dinpin": "2391724",
+                "dinPin": "2391724",
                 "dateDispensed": "2017-07-26",
                 "genericName": "ZOPICLONE",
                 "quantity": 6,
                 "refills": 4,
-                "directions": "TAKE 2 TABLETS AT BEDTIME (DISPENSE WITH METHADONE MON\/FRI",
+                "directions": "TAKE 2 TABLETS AT BEDTIME (DISPENSE WITH METHADONE MON/FRI",
                 "rxStatus": "F",
                 "practitioner": {
                     "lastName": "PZVVPS",
@@ -4759,7 +4759,7 @@
             {
                 "recordId": 4906316206,
                 "rxNumber": "1480741",
-                "dinpin": "1926799",
+                "dinPin": "1926799",
                 "dateDispensed": "2017-06-27",
                 "genericName": "ZOPICLONE",
                 "quantity": 3,
@@ -4786,7 +4786,7 @@
             {
                 "recordId": 4906316117,
                 "rxNumber": "1480412",
-                "dinpin": "1926799",
+                "dinPin": "1926799",
                 "dateDispensed": "2017-06-26",
                 "genericName": "ZOPICLONE",
                 "quantity": 3,
@@ -4813,7 +4813,7 @@
             {
                 "recordId": 4906316116,
                 "rxNumber": "1479809",
-                "dinpin": "402753",
+                "dinPin": "402753",
                 "dateDispensed": "2017-06-25",
                 "genericName": "PROPRANOLOL HCL",
                 "quantity": 7,
@@ -4840,7 +4840,7 @@
             {
                 "recordId": 4906315985,
                 "rxNumber": "1479807",
-                "dinpin": "1926799",
+                "dinPin": "1926799",
                 "dateDispensed": "2017-06-25",
                 "genericName": "ZOPICLONE",
                 "quantity": 3,
@@ -4867,7 +4867,7 @@
             {
                 "recordId": 4906316261,
                 "rxNumber": "9502768",
-                "dinpin": "66999990",
+                "dinPin": "66999990",
                 "dateDispensed": "2017-06-25",
                 "quantity": 360,
                 "refills": 0,
@@ -4894,7 +4894,7 @@
             {
                 "recordId": 4906316069,
                 "rxNumber": "1479664",
-                "dinpin": "1926799",
+                "dinPin": "1926799",
                 "dateDispensed": "2017-06-24",
                 "genericName": "ZOPICLONE",
                 "quantity": 3,
@@ -4921,7 +4921,7 @@
             {
                 "recordId": 4906316204,
                 "rxNumber": "1479279",
-                "dinpin": "1926799",
+                "dinPin": "1926799",
                 "dateDispensed": "2017-06-23",
                 "genericName": "ZOPICLONE",
                 "quantity": 3,
@@ -4948,7 +4948,7 @@
             {
                 "recordId": 4906316114,
                 "rxNumber": "1479126",
-                "dinpin": "1926799",
+                "dinPin": "1926799",
                 "dateDispensed": "2017-06-22",
                 "genericName": "ZOPICLONE",
                 "quantity": 3,
@@ -4975,7 +4975,7 @@
             {
                 "recordId": 4906316158,
                 "rxNumber": "1478839",
-                "dinpin": "1926799",
+                "dinPin": "1926799",
                 "dateDispensed": "2017-06-21",
                 "genericName": "ZOPICLONE",
                 "quantity": 3,
@@ -5002,7 +5002,7 @@
             {
                 "recordId": 4906315984,
                 "rxNumber": "9502265",
-                "dinpin": "66999990",
+                "dinPin": "66999990",
                 "dateDispensed": "2017-06-21",
                 "quantity": 480,
                 "refills": 0,
@@ -5029,7 +5029,7 @@
             {
                 "recordId": 4906316260,
                 "rxNumber": "1478280",
-                "dinpin": "1926799",
+                "dinPin": "1926799",
                 "dateDispensed": "2017-06-20",
                 "genericName": "ZOPICLONE",
                 "quantity": 3,
@@ -5056,7 +5056,7 @@
             {
                 "recordId": 4906316113,
                 "rxNumber": "1478017",
-                "dinpin": "1926799",
+                "dinPin": "1926799",
                 "dateDispensed": "2017-06-19",
                 "genericName": "ZOPICLONE",
                 "quantity": 3,
@@ -5083,7 +5083,7 @@
             {
                 "recordId": 4906316111,
                 "rxNumber": "1477164",
-                "dinpin": "1926799",
+                "dinPin": "1926799",
                 "dateDispensed": "2017-06-18",
                 "genericName": "ZOPICLONE",
                 "quantity": 3,
@@ -5110,7 +5110,7 @@
             {
                 "recordId": 4906315983,
                 "rxNumber": "1477163",
-                "dinpin": "402753",
+                "dinPin": "402753",
                 "dateDispensed": "2017-06-18",
                 "genericName": "PROPRANOLOL HCL",
                 "quantity": 7,
@@ -5137,7 +5137,7 @@
             {
                 "recordId": 4906316259,
                 "rxNumber": "1477162",
-                "dinpin": "2042258",
+                "dinPin": "2042258",
                 "dateDispensed": "2017-06-18",
                 "genericName": "PROPRANOLOL HCL",
                 "quantity": 28,
@@ -5164,7 +5164,7 @@
             {
                 "recordId": 4906316112,
                 "rxNumber": "9501683",
-                "dinpin": "66999990",
+                "dinPin": "66999990",
                 "dateDispensed": "2017-06-18",
                 "quantity": 360,
                 "refills": 2,
@@ -5191,7 +5191,7 @@
             {
                 "recordId": 4906316157,
                 "rxNumber": "9501164",
-                "dinpin": "66999990",
+                "dinPin": "66999990",
                 "dateDispensed": "2017-06-14",
                 "quantity": 480,
                 "refills": 2,
@@ -5218,7 +5218,7 @@
             {
                 "recordId": 4906316110,
                 "rxNumber": "9500627",
-                "dinpin": "66999990",
+                "dinPin": "66999990",
                 "dateDispensed": "2017-06-11",
                 "quantity": 360,
                 "refills": 4,
@@ -5245,7 +5245,7 @@
             {
                 "recordId": 4906315982,
                 "rxNumber": "9500138",
-                "dinpin": "66999990",
+                "dinPin": "66999990",
                 "dateDispensed": "2017-06-07",
                 "quantity": 480,
                 "refills": 4,
@@ -5272,7 +5272,7 @@
             {
                 "recordId": 4906316067,
                 "rxNumber": "6475787",
-                "dinpin": "2391724",
+                "dinPin": "2391724",
                 "dateDispensed": "2017-06-06",
                 "genericName": "ZOPICLONE",
                 "quantity": 60,
@@ -5300,7 +5300,7 @@
             {
                 "recordId": 4906316066,
                 "rxNumber": "9499927",
-                "dinpin": "66999990",
+                "dinPin": "66999990",
                 "dateDispensed": "2017-06-05",
                 "quantity": 240,
                 "refills": 0,
@@ -5327,7 +5327,7 @@
             {
                 "recordId": 4906316257,
                 "rxNumber": "6924771",
-                "dinpin": "2391724",
+                "dinPin": "2391724",
                 "dateDispensed": "2017-04-03",
                 "genericName": "ZOPICLONE",
                 "quantity": 15,
@@ -5355,7 +5355,7 @@
             {
                 "recordId": 4906316065,
                 "rxNumber": "9541291",
-                "dinpin": "66999997",
+                "dinPin": "66999997",
                 "dateDispensed": "2017-04-03",
                 "quantity": 56,
                 "refills": 0,
@@ -5382,7 +5382,7 @@
             {
                 "recordId": 4906316156,
                 "rxNumber": "6915367",
-                "dinpin": "496499",
+                "dinPin": "496499",
                 "dateDispensed": "2016-06-02",
                 "genericName": "PROPRANOLOL HCL",
                 "quantity": 30,
@@ -5410,12 +5410,12 @@
             {
                 "recordId": 4906315981,
                 "rxNumber": "6532503",
-                "dinpin": "2391724",
+                "dinPin": "2391724",
                 "dateDispensed": "2015-09-16",
                 "genericName": "ZOPICLONE",
                 "quantity": 2.5,
                 "refills": 5,
-                "directions": "2 1\/2 TABLETS AT BEDTIME AS NEEDED",
+                "directions": "2 1/2 TABLETS AT BEDTIME AS NEEDED",
                 "rxStatus": "F",
                 "practitioner": {
                     "lastName": "PZVVPS",
@@ -5438,12 +5438,12 @@
             {
                 "recordId": 4906316063,
                 "rxNumber": "6529366",
-                "dinpin": "2391724",
+                "dinPin": "2391724",
                 "dateDispensed": "2015-09-15",
                 "genericName": "ZOPICLONE",
                 "quantity": 2.5,
                 "refills": 6,
-                "directions": "2 1\/2 TABLETS AT BEDTIME AS NEEDED",
+                "directions": "2 1/2 TABLETS AT BEDTIME AS NEEDED",
                 "rxStatus": "F",
                 "practitioner": {
                     "lastName": "PZVVPS",
@@ -5466,7 +5466,7 @@
             {
                 "recordId": 4906316064,
                 "rxNumber": "9504841",
-                "dinpin": "66999990",
+                "dinPin": "66999990",
                 "dateDispensed": "2015-09-15",
                 "quantity": 360,
                 "refills": 0,
@@ -5493,12 +5493,12 @@
             {
                 "recordId": 4906316202,
                 "rxNumber": "6526932",
-                "dinpin": "2391724",
+                "dinPin": "2391724",
                 "dateDispensed": "2015-09-14",
                 "genericName": "ZOPICLONE",
                 "quantity": 2.5,
                 "refills": 7,
-                "directions": "2 1\/2 TABLETS AT BEDTIME AS NEEDED",
+                "directions": "2 1/2 TABLETS AT BEDTIME AS NEEDED",
                 "rxStatus": "F",
                 "practitioner": {
                     "lastName": "PZVVPS",
@@ -5521,12 +5521,12 @@
             {
                 "recordId": 4906316030,
                 "rxNumber": "6526739",
-                "dinpin": "2391724",
+                "dinPin": "2391724",
                 "dateDispensed": "2015-09-12",
                 "genericName": "ZOPICLONE",
                 "quantity": 5,
                 "refills": 4,
-                "directions": "2 1\/2 TABLETS AT BEDTIME AS NEEDED",
+                "directions": "2 1/2 TABLETS AT BEDTIME AS NEEDED",
                 "rxStatus": "F",
                 "practitioner": {
                     "lastName": "PZVVPS",
@@ -5549,12 +5549,12 @@
             {
                 "recordId": 4906316108,
                 "rxNumber": "6524351",
-                "dinpin": "2391724",
+                "dinPin": "2391724",
                 "dateDispensed": "2015-09-11",
                 "genericName": "ZOPICLONE",
                 "quantity": 2.5,
                 "refills": 10,
-                "directions": "2 1\/2 TABLETS AT BEDTIME AS NEEDED",
+                "directions": "2 1/2 TABLETS AT BEDTIME AS NEEDED",
                 "rxStatus": "F",
                 "practitioner": {
                     "lastName": "PZVVPS",
@@ -5577,7 +5577,7 @@
             {
                 "recordId": 4906316109,
                 "rxNumber": "9504306",
-                "dinpin": "66999990",
+                "dinPin": "66999990",
                 "dateDispensed": "2015-09-11",
                 "quantity": 480,
                 "refills": 0,
@@ -5604,12 +5604,12 @@
             {
                 "recordId": 4906316155,
                 "rxNumber": "6524241",
-                "dinpin": "2391724",
+                "dinPin": "2391724",
                 "dateDispensed": "2015-09-10",
                 "genericName": "ZOPICLONE",
                 "quantity": 2.5,
                 "refills": 11,
-                "directions": "2 1\/2 TABLETS AT BEDTIME AS NEEDED",
+                "directions": "2 1/2 TABLETS AT BEDTIME AS NEEDED",
                 "rxStatus": "F",
                 "practitioner": {
                     "lastName": "PZVVPS",
@@ -5632,12 +5632,12 @@
             {
                 "recordId": 4906316154,
                 "rxNumber": "6521335",
-                "dinpin": "2391724",
+                "dinPin": "2391724",
                 "dateDispensed": "2015-09-09",
                 "genericName": "ZOPICLONE",
                 "quantity": 2.5,
                 "refills": 12,
-                "directions": "2 1\/2 TABLETS AT BEDTIME AS NEEDED",
+                "directions": "2 1/2 TABLETS AT BEDTIME AS NEEDED",
                 "rxStatus": "F",
                 "practitioner": {
                     "lastName": "PZVVPS",
@@ -5660,12 +5660,12 @@
             {
                 "recordId": 4906315979,
                 "rxNumber": "6519484",
-                "dinpin": "2391724",
+                "dinPin": "2391724",
                 "dateDispensed": "2015-09-08",
                 "genericName": "ZOPICLONE",
                 "quantity": 2.5,
                 "refills": 0,
-                "directions": "2 1\/2 TABLETS AT BEDTIME AS NEEDED",
+                "directions": "2 1/2 TABLETS AT BEDTIME AS NEEDED",
                 "rxStatus": "F",
                 "practitioner": {
                     "lastName": "PZVVPS",
@@ -5688,7 +5688,7 @@
             {
                 "recordId": 4906315980,
                 "rxNumber": "9503705",
-                "dinpin": "66999990",
+                "dinPin": "66999990",
                 "dateDispensed": "2015-09-08",
                 "quantity": 360,
                 "refills": 2,
@@ -5715,7 +5715,7 @@
             {
                 "recordId": 4906316029,
                 "rxNumber": "1482029",
-                "dinpin": "1926799",
+                "dinPin": "1926799",
                 "dateDispensed": "2015-09-07",
                 "genericName": "ZOPICLONE",
                 "quantity": 3,
@@ -5742,7 +5742,7 @@
             {
                 "recordId": 4906316201,
                 "rxNumber": "9540821",
-                "dinpin": "66999997",
+                "dinPin": "66999997",
                 "dateDispensed": "2014-03-31",
                 "quantity": 42,
                 "refills": 1,
@@ -5769,7 +5769,7 @@
             {
                 "recordId": 4906316199,
                 "rxNumber": "6915366",
-                "dinpin": "2391724",
+                "dinPin": "2391724",
                 "dateDispensed": "2014-03-27",
                 "genericName": "ZOPICLONE",
                 "quantity": 15,
@@ -5797,7 +5797,7 @@
             {
                 "recordId": 4906315978,
                 "rxNumber": "9540376",
-                "dinpin": "66999997",
+                "dinPin": "66999997",
                 "dateDispensed": "2014-03-27",
                 "quantity": 56,
                 "refills": 0,
@@ -5824,7 +5824,7 @@
             {
                 "recordId": 4906316153,
                 "rxNumber": "6915364",
-                "dinpin": "2263238",
+                "dinPin": "2263238",
                 "dateDispensed": "2014-03-27",
                 "genericName": "ESCITALOPRAM OXALATE",
                 "quantity": 60,
@@ -5852,7 +5852,7 @@
             {
                 "recordId": 4906316200,
                 "rxNumber": "6915365",
-                "dinpin": "2042258",
+                "dinPin": "2042258",
                 "dateDispensed": "2014-03-27",
                 "genericName": "PROPRANOLOL HCL",
                 "quantity": 30,
@@ -5880,7 +5880,7 @@
             {
                 "recordId": 4906315977,
                 "rxNumber": "9539911",
-                "dinpin": "66999997",
+                "dinPin": "66999997",
                 "dateDispensed": "2014-03-24",
                 "quantity": 42,
                 "refills": 1,
@@ -5907,7 +5907,7 @@
             {
                 "recordId": 4906316198,
                 "rxNumber": "6905404",
-                "dinpin": "2391724",
+                "dinPin": "2391724",
                 "dateDispensed": "2014-03-20",
                 "genericName": "ZOPICLONE",
                 "quantity": 20,
@@ -5935,7 +5935,7 @@
             {
                 "recordId": 4906316028,
                 "rxNumber": "9539452",
-                "dinpin": "66999997",
+                "dinPin": "66999997",
                 "dateDispensed": "2014-03-20",
                 "quantity": 56,
                 "refills": 1,
@@ -5962,7 +5962,7 @@
             {
                 "recordId": 4906316152,
                 "rxNumber": "9539001",
-                "dinpin": "66999997",
+                "dinPin": "66999997",
                 "dateDispensed": "2014-03-17",
                 "quantity": 42,
                 "refills": 3,
@@ -5989,7 +5989,7 @@
             {
                 "recordId": 4906316062,
                 "rxNumber": "9538598",
-                "dinpin": "66999997",
+                "dinPin": "66999997",
                 "dateDispensed": "2014-03-13",
                 "quantity": 56,
                 "refills": 3,
@@ -6016,7 +6016,7 @@
             {
                 "recordId": 4906315975,
                 "rxNumber": "6892766",
-                "dinpin": "2391724",
+                "dinPin": "2391724",
                 "dateDispensed": "2014-03-11",
                 "genericName": "ZOPICLONE",
                 "quantity": 20,
@@ -6044,7 +6044,7 @@
             {
                 "recordId": 4906315976,
                 "rxNumber": "6892764",
-                "dinpin": "496499",
+                "dinPin": "496499",
                 "dateDispensed": "2014-03-11",
                 "genericName": "PROPRANOLOL HCL",
                 "quantity": 30,
@@ -6072,7 +6072,7 @@
             {
                 "recordId": 4906316197,
                 "rxNumber": "9538125",
-                "dinpin": "66999997",
+                "dinPin": "66999997",
                 "dateDispensed": "2014-03-10",
                 "quantity": 42,
                 "refills": 6,
@@ -6099,7 +6099,7 @@
             {
                 "recordId": 4906316151,
                 "rxNumber": "6886542",
-                "dinpin": "2391724",
+                "dinPin": "2391724",
                 "dateDispensed": "2014-03-06",
                 "genericName": "ZOPICLONE",
                 "quantity": 11,
@@ -6127,7 +6127,7 @@
             {
                 "recordId": 4906316196,
                 "rxNumber": "9537689",
-                "dinpin": "66999997",
+                "dinPin": "66999997",
                 "dateDispensed": "2014-03-06",
                 "quantity": 56,
                 "refills": 5,
@@ -6154,7 +6154,7 @@
             {
                 "recordId": 4906316107,
                 "rxNumber": "9537255",
-                "dinpin": "66999997",
+                "dinPin": "66999997",
                 "dateDispensed": "2014-03-03",
                 "quantity": 42,
                 "refills": 8,
@@ -6181,7 +6181,7 @@
             {
                 "recordId": 4906316106,
                 "rxNumber": "6880409",
-                "dinpin": "2263238",
+                "dinPin": "2263238",
                 "dateDispensed": "2014-03-01",
                 "genericName": "ESCITALOPRAM OXALATE",
                 "quantity": 60,
@@ -6209,7 +6209,7 @@
             {
                 "recordId": 4906315973,
                 "rxNumber": "6877512",
-                "dinpin": "2391724",
+                "dinPin": "2391724",
                 "dateDispensed": "2014-02-27",
                 "genericName": "ZOPICLONE",
                 "quantity": 15,
@@ -6237,7 +6237,7 @@
             {
                 "recordId": 4906316150,
                 "rxNumber": "9536845",
-                "dinpin": "66999997",
+                "dinPin": "66999997",
                 "dateDispensed": "2014-02-27",
                 "quantity": 56,
                 "refills": 0,
@@ -6264,7 +6264,7 @@
             {
                 "recordId": 4906316105,
                 "rxNumber": "6872437",
-                "dinpin": "496499",
+                "dinPin": "496499",
                 "dateDispensed": "2014-02-24",
                 "genericName": "PROPRANOLOL HCL",
                 "quantity": 30,
@@ -6292,7 +6292,7 @@
             {
                 "recordId": 4906316061,
                 "rxNumber": "9536417",
-                "dinpin": "66999997",
+                "dinPin": "66999997",
                 "dateDispensed": "2014-02-24",
                 "quantity": 42,
                 "refills": 1,
@@ -6319,7 +6319,7 @@
             {
                 "recordId": 4906316103,
                 "rxNumber": "6868480",
-                "dinpin": "2042258",
+                "dinPin": "2042258",
                 "dateDispensed": "2014-02-20",
                 "genericName": "PROPRANOLOL HCL",
                 "quantity": 30,
@@ -6347,7 +6347,7 @@
             {
                 "recordId": 4906316027,
                 "rxNumber": "9535971",
-                "dinpin": "66999997",
+                "dinPin": "66999997",
                 "dateDispensed": "2014-02-20",
                 "quantity": 56,
                 "refills": 1,
@@ -6374,7 +6374,7 @@
             {
                 "recordId": 4906316104,
                 "rxNumber": "6868479",
-                "dinpin": "2391724",
+                "dinPin": "2391724",
                 "dateDispensed": "2014-02-20",
                 "genericName": "ZOPICLONE",
                 "quantity": 15,
@@ -6402,7 +6402,7 @@
             {
                 "recordId": 4906316026,
                 "rxNumber": "9535488",
-                "dinpin": "66999997",
+                "dinPin": "66999997",
                 "dateDispensed": "2014-02-17",
                 "quantity": 42,
                 "refills": 3,
@@ -6429,7 +6429,7 @@
             {
                 "recordId": 4906316194,
                 "rxNumber": "6844117",
-                "dinpin": "2042258",
+                "dinPin": "2042258",
                 "dateDispensed": "2014-02-03",
                 "genericName": "PROPRANOLOL HCL",
                 "quantity": 30,
@@ -6457,7 +6457,7 @@
             {
                 "recordId": 4906316101,
                 "rxNumber": "6844116",
-                "dinpin": "496499",
+                "dinPin": "496499",
                 "dateDispensed": "2014-02-03",
                 "genericName": "PROPRANOLOL HCL",
                 "quantity": 30,
@@ -6485,7 +6485,7 @@
             {
                 "recordId": 4906316025,
                 "rxNumber": "9533913",
-                "dinpin": "29246",
+                "dinPin": "29246",
                 "dateDispensed": "2014-02-03",
                 "genericName": "TESTOSTERONE ENANTHATE",
                 "quantity": 5,
@@ -6513,7 +6513,7 @@
             {
                 "recordId": 4906316195,
                 "rxNumber": "6843674",
-                "dinpin": "2391724",
+                "dinPin": "2391724",
                 "dateDispensed": "2014-02-03",
                 "genericName": "ZOPICLONE",
                 "quantity": 6,
@@ -6541,7 +6541,7 @@
             {
                 "recordId": 4906316149,
                 "rxNumber": "9533770",
-                "dinpin": "66999990",
+                "dinPin": "66999990",
                 "dateDispensed": "2014-02-03",
                 "quantity": 420,
                 "refills": 0,
@@ -6568,7 +6568,7 @@
             {
                 "recordId": 4906316100,
                 "rxNumber": "6839943",
-                "dinpin": "2263238",
+                "dinPin": "2263238",
                 "dateDispensed": "2014-01-30",
                 "genericName": "ESCITALOPRAM OXALATE",
                 "quantity": 60,
@@ -6596,7 +6596,7 @@
             {
                 "recordId": 4906316024,
                 "rxNumber": "9533315",
-                "dinpin": "66999990",
+                "dinPin": "66999990",
                 "dateDispensed": "2014-01-30",
                 "quantity": 560,
                 "refills": 0,
@@ -6623,7 +6623,7 @@
             {
                 "recordId": 4906315972,
                 "rxNumber": "6839700",
-                "dinpin": "2391724",
+                "dinPin": "2391724",
                 "dateDispensed": "2014-01-30",
                 "genericName": "ZOPICLONE",
                 "quantity": 8,
@@ -6651,7 +6651,7 @@
             {
                 "recordId": 4906315970,
                 "rxNumber": "6834090",
-                "dinpin": "2391724",
+                "dinPin": "2391724",
                 "dateDispensed": "2014-01-27",
                 "genericName": "ZOPICLONE",
                 "quantity": 8,
@@ -6679,7 +6679,7 @@
             {
                 "recordId": 4906315971,
                 "rxNumber": "9532848",
-                "dinpin": "66999990",
+                "dinPin": "66999990",
                 "dateDispensed": "2014-01-27",
                 "quantity": 420,
                 "refills": 2,
@@ -6706,7 +6706,7 @@
             {
                 "recordId": 4906315969,
                 "rxNumber": "9532543",
-                "dinpin": "66999990",
+                "dinPin": "66999990",
                 "dateDispensed": "2014-01-23",
                 "quantity": 560,
                 "refills": 2,
@@ -6733,7 +6733,7 @@
             {
                 "recordId": 4906316147,
                 "rxNumber": "6829022",
-                "dinpin": "2391724",
+                "dinPin": "2391724",
                 "dateDispensed": "2014-01-23",
                 "genericName": "ZOPICLONE",
                 "quantity": 10,
@@ -6761,7 +6761,7 @@
             {
                 "recordId": 4906316192,
                 "rxNumber": "9532533",
-                "dinpin": "29246",
+                "dinPin": "29246",
                 "dateDispensed": "2014-01-23",
                 "genericName": "TESTOSTERONE ENANTHATE",
                 "quantity": 5,
@@ -6789,7 +6789,7 @@
             {
                 "recordId": 4906315968,
                 "rxNumber": "9531917",
-                "dinpin": "66999990",
+                "dinPin": "66999990",
                 "dateDispensed": "2014-01-20",
                 "quantity": 420,
                 "refills": 0,
@@ -6816,7 +6816,7 @@
             {
                 "recordId": 4906316023,
                 "rxNumber": "6821533",
-                "dinpin": "2391724",
+                "dinPin": "2391724",
                 "dateDispensed": "2014-01-17",
                 "genericName": "ZOPICLONE",
                 "quantity": 10,
@@ -6844,7 +6844,7 @@
             {
                 "recordId": 4906316191,
                 "rxNumber": "6821522",
-                "dinpin": "2240550",
+                "dinPin": "2240550",
                 "dateDispensed": "2014-01-17",
                 "genericName": "OXYBUTYNIN CHLORIDE",
                 "quantity": 90,
@@ -6872,12 +6872,12 @@
             {
                 "recordId": 4906316022,
                 "rxNumber": "6816828",
-                "dinpin": "2391724",
+                "dinPin": "2391724",
                 "dateDispensed": "2014-01-16",
                 "genericName": "ZOPICLONE",
                 "quantity": 6,
                 "refills": 7,
-                "directions": "TAKE 1 AND 1\/2 TABLETS AT BEDTIME (DISPENSE WITH METHADONE MON\/THURS)",
+                "directions": "TAKE 1 AND 1/2 TABLETS AT BEDTIME (DISPENSE WITH METHADONE MON/THURS)",
                 "rxStatus": "F",
                 "practitioner": {
                     "lastName": "PZVVPS",
@@ -6900,7 +6900,7 @@
             {
                 "recordId": 4906316099,
                 "rxNumber": "9531482",
-                "dinpin": "66999990",
+                "dinPin": "66999990",
                 "dateDispensed": "2014-01-16",
                 "quantity": 560,
                 "refills": 0,
@@ -6927,12 +6927,12 @@
             {
                 "recordId": 4906315966,
                 "rxNumber": "6812966",
-                "dinpin": "2391724",
+                "dinPin": "2391724",
                 "dateDispensed": "2014-01-13",
                 "genericName": "ZOPICLONE",
                 "quantity": 4.5,
                 "refills": 11,
-                "directions": "TAKE 1 AND 1\/2 TABLETS AT BEDTIME (DISPENSE WITH METHADONE MON\/THURS)",
+                "directions": "TAKE 1 AND 1/2 TABLETS AT BEDTIME (DISPENSE WITH METHADONE MON/THURS)",
                 "rxStatus": "F",
                 "practitioner": {
                     "lastName": "PZVVPS",
@@ -6955,7 +6955,7 @@
             {
                 "recordId": 4906316021,
                 "rxNumber": "9530993",
-                "dinpin": "66999990",
+                "dinPin": "66999990",
                 "dateDispensed": "2014-01-13",
                 "quantity": 420,
                 "refills": 2,
@@ -6982,12 +6982,12 @@
             {
                 "recordId": 4906316190,
                 "rxNumber": "6808063",
-                "dinpin": "2391724",
+                "dinPin": "2391724",
                 "dateDispensed": "2014-01-09",
                 "genericName": "ZOPICLONE",
                 "quantity": 6,
                 "refills": 9,
-                "directions": "TAKE 1 AND 1\/2 TABLETS AT BEDTIME (DISPENSE WITH METHADONE MON\/THURS)",
+                "directions": "TAKE 1 AND 1/2 TABLETS AT BEDTIME (DISPENSE WITH METHADONE MON/THURS)",
                 "rxStatus": "F",
                 "practitioner": {
                     "lastName": "PZVVPS",
@@ -7010,7 +7010,7 @@
             {
                 "recordId": 4906316060,
                 "rxNumber": "9530610",
-                "dinpin": "66999990",
+                "dinPin": "66999990",
                 "dateDispensed": "2014-01-09",
                 "quantity": 560,
                 "refills": 2,
@@ -7037,7 +7037,7 @@
             {
                 "recordId": 4906316059,
                 "rxNumber": "9530237",
-                "dinpin": "66999990",
+                "dinPin": "66999990",
                 "dateDispensed": "2014-01-07",
                 "quantity": 260,
                 "refills": 1,
@@ -7064,12 +7064,12 @@
             {
                 "recordId": 4906316058,
                 "rxNumber": "6802334",
-                "dinpin": "2391724",
+                "dinPin": "2391724",
                 "dateDispensed": "2014-01-06",
                 "genericName": "ZOPICLONE",
                 "quantity": 8,
                 "refills": 2,
-                "directions": "TAKE 2 TABLETS AT BEDTIME (DISPENSE WITH METHADONE MON\/FRI",
+                "directions": "TAKE 2 TABLETS AT BEDTIME (DISPENSE WITH METHADONE MON/FRI",
                 "rxStatus": "F",
                 "practitioner": {
                     "lastName": "PZVVPS",
@@ -7092,12 +7092,12 @@
             {
                 "recordId": 4906316019,
                 "rxNumber": "6802591",
-                "dinpin": "2263238",
+                "dinPin": "2263238",
                 "dateDispensed": "2014-01-06",
                 "genericName": "ESCITALOPRAM OXALATE",
                 "quantity": 45,
                 "refills": 1,
-                "directions": "TAKE 1 1\/2 TABLETS DAILY",
+                "directions": "TAKE 1 1/2 TABLETS DAILY",
                 "rxStatus": "F",
                 "practitioner": {
                     "lastName": "XZGLK",
@@ -7120,12 +7120,12 @@
             {
                 "recordId": 4906316018,
                 "rxNumber": "6800007",
-                "dinpin": "2391724",
+                "dinPin": "2391724",
                 "dateDispensed": "2014-01-03",
                 "genericName": "ZOPICLONE",
                 "quantity": 6,
                 "refills": 4,
-                "directions": "TAKE 2 TABLETS AT BEDTIME (DISPENSE WITH METHADONE MON\/FRI",
+                "directions": "TAKE 2 TABLETS AT BEDTIME (DISPENSE WITH METHADONE MON/FRI",
                 "rxStatus": "F",
                 "practitioner": {
                     "lastName": "PZVVPS",
@@ -7148,7 +7148,7 @@
             {
                 "recordId": 4906316098,
                 "rxNumber": "9529717",
-                "dinpin": "66999990",
+                "dinPin": "66999990",
                 "dateDispensed": "2014-01-03",
                 "quantity": 520,
                 "refills": 1,
