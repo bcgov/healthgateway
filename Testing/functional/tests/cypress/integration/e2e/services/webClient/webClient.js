@@ -3,7 +3,7 @@ describe("WebClient Service", () => {
         cy.logout();
         cy.readConfig().then((config) => {
             cy.log(
-                "Verifying Swagger exists for GatewayAPI at ${config.serviceEndpoints.GatewayApi}/swagger"
+                "Verifying Swagger exists for GatewayAPI at ${config.serviceEndpoints.GatewayApi}swagger"
             );
             cy.request({
                 method: "GET",
@@ -21,7 +21,7 @@ describe("WebClient Service", () => {
         cy.logout();
         cy.readConfig().then((config) => {
             cy.log(
-                "Verifying swagger.json payload for GatewayAPI at ${config.serviceEndpoints.GatewayApi}/swagger"
+                "Verifying swagger.json payload for GatewayAPI at ${config.serviceEndpoints.GatewayApi}swagger"
             );
             cy.request({
                 method: "GET",
