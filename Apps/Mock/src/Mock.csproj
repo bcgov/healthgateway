@@ -35,7 +35,6 @@
     <EmbeddedResource Include="Assets\LabReport.json" />
     <EmbeddedResource Include="Assets\Medication.json" />
     <EmbeddedResource Include="Assets\MedicationRequest.json" />
-    <EmbeddedResource Include="Assets\NotificationSettings-Get.json" />
     <EmbeddedResource Include="Assets\NotificationSettings-Put.json" />
     <EmbeddedResource Include="Assets\ProtectiveWord.json" />
     <EmbeddedResource Include="Assets\Patient.xml" />

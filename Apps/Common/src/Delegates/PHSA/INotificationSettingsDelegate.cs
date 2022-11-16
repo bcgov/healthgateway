@@ -20,17 +20,10 @@ namespace HealthGateway.Common.Delegates.PHSA
     using HealthGateway.Common.Models;
 
     /// <summary>
-    /// Interface that defines a delegate to get and set Notification Settings at PHSA.
+    /// Interface that defines a delegate to set notification settings at PHSA.
     /// </summary>
     public interface INotificationSettingsDelegate
     {
-        /// <summary>
-        /// Gets the Notification Settings for authenticated user.
-        /// </summary>
-        /// <param name="bearerToken">The access token of the authenticated user.</param>
-        /// <returns>The Notification Settings wrapped in a RequestResult.</returns>
-        Task<RequestResult<NotificationSettingsResponse>> GetNotificationSettings(string bearerToken);
-
         /// <summary>
         /// Creates or Updates the Notification Settings at PHSA.
         /// </summary>

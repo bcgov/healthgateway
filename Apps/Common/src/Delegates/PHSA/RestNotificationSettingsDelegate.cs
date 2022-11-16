@@ -63,87 +63,6 @@ namespace HealthGateway.Common.Delegates.PHSA
         }
 
         /// <inheritdoc/>
-        public async Task<RequestResult<NotificationSettingsResponse>> GetNotificationSettings(string bearerToken)
-        {
-            RequestResult<NotificationSettingsResponse> retVal = new()
-            {
-                ResultStatus = ResultType.Error,
-            };
-            Stopwatch timer = new();
-            timer.Start();
-            this.logger.LogTrace("Getting Notification Settings from PHSA...");
-            using HttpClient client = this.httpClientService.CreateDefaultHttpClient();
-            client.DefaultRequestHeaders.Accept.Clear();
-            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("bearer", bearerToken);
-            client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue(MediaTypeNames.Application.Json));
-            try
-            {
-                Uri endpoint = new(this.nsConfig.Endpoint);
-                HttpResponseMessage response = await client.GetAsync(endpoint).ConfigureAwait(true);
-                string payload = await response.Content.ReadAsStringAsync().ConfigureAwait(true);
-                this.logger.LogTrace("Response: {Response}", response);
-                this.logger.LogTrace("Payload: {Payload}", payload);
-                switch (response.StatusCode)
-                {
-                    case HttpStatusCode.OK:
-                        NotificationSettingsResponse? notificationSettings = JsonSerializer.Deserialize<NotificationSettingsResponse>(payload);
-                        if (notificationSettings != null)
-                        {
-                            retVal.ResultStatus = ResultType.Success;
-                            retVal.ResourcePayload = notificationSettings;
-                            retVal.TotalResultCount = 1;
-                        }
-                        else
-                        {
-                            retVal.ResultError = new RequestResultError
-                            {
-                                ResultMessage = "Error with JSON data",
-                                ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.Phsa),
-                            };
-                        }
-
-                        break;
-                    case HttpStatusCode.NoContent: // No Notification Settings exits for this user
-                        retVal.ResultStatus = ResultType.Success;
-                        retVal.ResourcePayload = new NotificationSettingsResponse();
-                        retVal.TotalResultCount = 0;
-                        break;
-                    case HttpStatusCode.Forbidden:
-                        this.logger.LogError("Error Details: {Payload}", payload);
-                        retVal.ResultError = new RequestResultError
-                        {
-                            ResultMessage = $"DID Claim is missing or can not resolve PHN, HTTP Error {response.StatusCode}",
-                            ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.Phsa),
-                        };
-                        break;
-                    default:
-                        retVal.ResultError = new RequestResultError
-                        {
-                            ResultMessage = $"Unable to connect to Notification Settings Endpoint, HTTP Error {response.StatusCode}",
-                            ErrorCode = ErrorTranslator.ServiceError(ErrorType.SmsInvalid, ServiceType.Phsa),
-                        };
-                        this.logger.LogError("Unable to connect to endpoint {Endpoint}, HTTP Error {StatusCode}\n{Payload}", endpoint, response.StatusCode, payload);
-                        break;
-                }
-            }
-#pragma warning disable CA1031 // Do not catch general exception types
-            catch (Exception e)
-#pragma warning restore CA1031 // Do not catch general exception types
-            {
-                retVal.ResultError = new RequestResultError
-                {
-                    ResultMessage = $"Exception getting Notification Settings: {e}",
-                    ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.Phsa),
-                };
-                this.logger.LogError("Unexpected exception in GetNotificationSettings {Exception}", e);
-            }
-
-            timer.Stop();
-            this.logger.LogDebug("Finished getting Notification Settings, Time Elapsed: {Elapsed}", timer.Elapsed);
-            return retVal;
-        }
-
-        /// <inheritdoc/>
         public async Task<RequestResult<NotificationSettingsResponse>> SetNotificationSettings(NotificationSettingsRequest notificationSettings, string bearerToken)
         {
             RequestResult<NotificationSettingsResponse> retVal = new()
@@ -226,14 +145,14 @@ namespace HealthGateway.Common.Delegates.PHSA
             {
                 retVal.ResultError = new RequestResultError
                 {
-                    ResultMessage = $"Exception getting Notification Settings: {e}",
+                    ResultMessage = $"Exception setting Notification Settings: {e}",
                     ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.Phsa),
                 };
-                this.logger.LogError("Unexpected exception in GetNotificationSettings {Exception}", e);
+                this.logger.LogError("Unexpected exception in SetNotificationSettings {Exception}", e);
             }
 
             timer.Stop();
-            this.logger.LogDebug("Finished getting Notification Settings, Time Elapsed: {Elapsed}", timer.Elapsed);
+            this.logger.LogDebug("Finished setting Notification Settings, Time Elapsed: {Elapsed}", timer.Elapsed);
             return retVal;
         }
     }
