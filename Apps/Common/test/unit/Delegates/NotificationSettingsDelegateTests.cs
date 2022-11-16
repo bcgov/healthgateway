@@ -53,116 +53,6 @@ namespace HealthGateway.CommonTests.Delegates
         }
 
         /// <summary>
-        /// GetNotificationSettings - Happy Path.
-        /// </summary>
-        [Fact]
-        public void ValidateGetNotificationSettings200()
-        {
-            RequestResult<NotificationSettingsResponse> expectedRequestResult = new()
-            {
-                ResultStatus = ResultType.Success,
-                TotalResultCount = 1,
-            };
-
-            (RequestResult<NotificationSettingsResponse> actualResult, RequestResult<NotificationSettingsResponse> expectedResult)
-                = this.GetNotificationSettings(HttpStatusCode.OK, expectedRequestResult);
-
-            expectedResult.ShouldDeepEqual(actualResult);
-        }
-
-        /// <summary>
-        /// GetNotificationSettings - Unknown Exception.
-        /// </summary>
-        [Fact]
-        public void ValidateGetNotificationSettingsCatchException()
-        {
-            RequestResult<NotificationSettingsResponse> expectedRequestResult = new()
-            {
-                ResultStatus = ResultType.Error,
-            };
-
-            (RequestResult<NotificationSettingsResponse> actualResult, RequestResult<NotificationSettingsResponse> expectedResult)
-                = this.GetNotificationSettings(HttpStatusCode.OK, expectedRequestResult, true);
-
-            Assert.Equal(expectedResult.ResultStatus, actualResult.ResultStatus);
-            Assert.Contains("Exception getting Notification Settings:", actualResult.ResultError?.ResultMessage, StringComparison.CurrentCulture);
-        }
-
-        /// <summary>
-        /// GetNotificationSettings - Bad Request.
-        /// </summary>
-        [Fact]
-        public void ValidateGetNotificationSettingsUnableToConnect()
-        {
-            RequestResult<NotificationSettingsResponse> expectedRequestResult = new()
-            {
-                ResultStatus = ResultType.Error,
-            };
-
-            (RequestResult<NotificationSettingsResponse> actualResult, _) = this.GetNotificationSettings(HttpStatusCode.BadRequest, expectedRequestResult);
-
-            Assert.Equal($"Unable to connect to Notification Settings Endpoint, HTTP Error {HttpStatusCode.BadRequest}", actualResult.ResultError?.ResultMessage);
-        }
-
-        /// <summary>
-        /// GetNotificationSettings - No Content.
-        /// </summary>
-        [Fact]
-        public void ValidateGetNotificationSettings204()
-        {
-            RequestResult<NotificationSettingsResponse> expected = new()
-            {
-                ResourcePayload = new NotificationSettingsResponse(),
-                ResultStatus = ResultType.Success,
-                TotalResultCount = 0,
-            };
-            using HttpResponseMessage httpResponseMessage = new()
-            {
-                StatusCode = HttpStatusCode.NoContent,
-                Content = new StringContent(string.Empty),
-            };
-            using ILoggerFactory loggerFactory = LoggerFactory.Create(builder => builder.AddConsole());
-            Mock<IHttpClientService> mockHttpClientService = GetHttpClientServiceMock(httpResponseMessage);
-            INotificationSettingsDelegate nsDelegate = new RestNotificationSettingsDelegate(
-                loggerFactory.CreateLogger<RestNotificationSettingsDelegate>(),
-                mockHttpClientService.Object,
-                this.configuration);
-            RequestResult<NotificationSettingsResponse> actualResult = Task.Run(async () => await nsDelegate.GetNotificationSettings(string.Empty).ConfigureAwait(true)).Result;
-
-            actualResult.ShouldDeepEqual(expected);
-        }
-
-        /// <summary>
-        /// GetNotificationSettings - Forbidden.
-        /// </summary>
-        [Fact]
-        public void ValidateGetNotificationSettings403()
-        {
-            RequestResult<NotificationSettingsResponse> expected = new()
-            {
-                ResultStatus = ResultType.Error,
-                ResultError = new RequestResultError
-                {
-                    ResultMessage = "DID Claim is missing or can not resolve PHN, HTTP Error Forbidden", ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.Phsa),
-                },
-            };
-            using HttpResponseMessage httpResponseMessage = new()
-            {
-                StatusCode = HttpStatusCode.Forbidden,
-                Content = new StringContent(string.Empty),
-            };
-            using ILoggerFactory loggerFactory = LoggerFactory.Create(builder => builder.AddConsole());
-            Mock<IHttpClientService> mockHttpClientService = GetHttpClientServiceMock(httpResponseMessage);
-            INotificationSettingsDelegate nsDelegate = new RestNotificationSettingsDelegate(
-                loggerFactory.CreateLogger<RestNotificationSettingsDelegate>(),
-                mockHttpClientService.Object,
-                this.configuration);
-            RequestResult<NotificationSettingsResponse> actualResult = Task.Run(async () => await nsDelegate.GetNotificationSettings(string.Empty).ConfigureAwait(true)).Result;
-
-            expected.ShouldDeepEqual(actualResult);
-        }
-
-        /// <summary>
         /// SetNotificationSettings - Happy Path.
         /// </summary>
         [Fact]
@@ -195,7 +85,7 @@ namespace HealthGateway.CommonTests.Delegates
                 = this.SetNotificationSettings(HttpStatusCode.OK, expectedRequestResult, true);
 
             Assert.Equal(expectedResult.ResultStatus, actualResult.ResultStatus);
-            Assert.Contains("Exception getting Notification Settings:", actualResult.ResultError?.ResultMessage, StringComparison.CurrentCulture);
+            Assert.Contains("Exception setting Notification Settings:", actualResult.ResultError?.ResultMessage, StringComparison.CurrentCulture);
         }
 
         /// <summary>
@@ -383,44 +273,6 @@ namespace HealthGateway.CommonTests.Delegates
             return mockHttpClientService;
         }
 
-        /// <summary>
-        /// Get Notification Settings.
-        /// </summary>
-        /// <param name="expectedResponseStatusCode">expectedResponseStatusCode.</param>
-        /// <param name="expectedRequestResult">expectedRequestResult.</param>
-        /// <param name="throwException">Throw exception indicator.</param>
-        /// <returns>The notification settings.</returns>
-        private (RequestResult<NotificationSettingsResponse> ActualResult, RequestResult<NotificationSettingsResponse> ExpectedRequestResult) GetNotificationSettings(
-            HttpStatusCode expectedResponseStatusCode,
-            RequestResult<NotificationSettingsResponse> expectedRequestResult,
-            bool throwException = false)
-        {
-            string json =
-                @"{""smsEnabled"": true, ""smsCellNumber"": ""5551231234"", ""smsVerified"": true, ""smsScope"": [""COVID19""], ""emailEnabled"": true, ""emailAddress"": ""email@email.blah"", ""emailScope"": [""COVID19""]}";
-
-            expectedRequestResult.ResourcePayload = JsonSerializer.Deserialize<NotificationSettingsResponse>(json);
-            using HttpResponseMessage httpResponseMessage = new()
-            {
-                StatusCode = expectedResponseStatusCode,
-                Content = throwException ? null : new StringContent(json),
-            };
-            using ILoggerFactory loggerFactory = LoggerFactory.Create(builder => builder.AddConsole());
-            Mock<IHttpClientService> mockHttpClientService = GetHttpClientServiceMock(httpResponseMessage);
-            INotificationSettingsDelegate nsDelegate = new RestNotificationSettingsDelegate(
-                loggerFactory.CreateLogger<RestNotificationSettingsDelegate>(),
-                mockHttpClientService.Object,
-                this.configuration);
-            RequestResult<NotificationSettingsResponse> actualResult = Task.Run(async () => await nsDelegate.GetNotificationSettings(string.Empty).ConfigureAwait(true)).Result;
-            return (actualResult, expectedRequestResult);
-        }
-
-        /// <summary>
-        /// Get Notification Settings.
-        /// </summary>
-        /// <param name="expectedResponseStatusCode">expectedResponseStatusCode.</param>
-        /// <param name="expectedRequestResult">expectedRequestResult.</param>
-        /// <param name="throwException">Throw exception indicator.</param>
-        /// <returns>Mocked notification settings.</returns>
         private (RequestResult<NotificationSettingsResponse> ActualResult, RequestResult<NotificationSettingsResponse> ExpectedRequestResult) SetNotificationSettings(
             HttpStatusCode expectedResponseStatusCode,
             RequestResult<NotificationSettingsResponse> expectedRequestResult,
