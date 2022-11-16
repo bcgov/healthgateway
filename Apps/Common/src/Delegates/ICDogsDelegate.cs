@@ -21,14 +21,14 @@ namespace HealthGateway.Common.Delegates
     using HealthGateway.Common.Models.CDogs;
 
     /// <summary>
-    /// The CDogs report service.
+    /// The delegate for accessing CDOGS.
     /// </summary>
     public interface ICDogsDelegate
     {
         /// <summary>
         /// Generates a report based on the request model provided.
         /// </summary>
-        /// <param name="request">The cdogs request model.</param>
+        /// <param name="request">The CDOGS request model.</param>
         /// <returns>The report data.</returns>
         Task<RequestResult<ReportModel>> GenerateReportAsync(CDogsRequestModel request);
     }
