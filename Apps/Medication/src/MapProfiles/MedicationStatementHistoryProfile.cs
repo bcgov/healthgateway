@@ -32,7 +32,7 @@ namespace HealthGateway.Medication.MapProfiles
             this.CreateMap<MedicationResult, MedicationStatementHistory>()
                 .ForMember(dest => dest.PrescriptionStatus, opt => opt.Ignore())
                 .ForMember(dest => dest.DispensedDate, opt => opt.MapFrom(src => src.DispenseDate))
-                .ForMember(dest => dest.PractitionerSurname, opt => opt.MapFrom(src => src.Practioner != null ? src.Practioner.Surname : string.Empty))
+                .ForMember(dest => dest.PractitionerSurname, opt => opt.MapFrom(src => src.Practitioner != null ? src.Practitioner.Surname : string.Empty))
                 .ForMember(dest => dest.PrescriptionIdentifier, opt => opt.MapFrom(src => src.PrescriptionNumber))
                 .ForMember(
                     dest => dest.MedicationSummary,

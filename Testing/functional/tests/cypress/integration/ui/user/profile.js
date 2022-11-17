@@ -144,7 +144,7 @@ describe("User Profile - Validate Address", () => {
     it("Verify user has combined address", () => {
         cy.intercept(
             "GET",
-            `**/Patient/P6FFO433A5WPMVTGM7T4ZVWBKCSVNAYGTWTU3J2LWMGUMERKI72A`,
+            `**/Patient/P6FFO433A5WPMVTGM7T4ZVWBKCSVNAYGTWTU3J2LWMGUMERKI72A*`,
             {
                 fixture: "PatientService/patientCombinedAddress.json",
             }
@@ -166,7 +166,7 @@ describe("User Profile - Validate Address", () => {
     it("Verify user has different addresses", () => {
         cy.intercept(
             "GET",
-            `**/Patient/P6FFO433A5WPMVTGM7T4ZVWBKCSVNAYGTWTU3J2LWMGUMERKI72A`,
+            `**/Patient/P6FFO433A5WPMVTGM7T4ZVWBKCSVNAYGTWTU3J2LWMGUMERKI72A*`,
             {
                 fixture: "PatientService/patientDifferentAddress.json",
             }
@@ -197,7 +197,7 @@ describe("User Profile - Validate Address", () => {
     it("Verify user has no address", () => {
         cy.intercept(
             "GET",
-            `**/Patient/P6FFO433A5WPMVTGM7T4ZVWBKCSVNAYGTWTU3J2LWMGUMERKI72A`,
+            `**/Patient/P6FFO433A5WPMVTGM7T4ZVWBKCSVNAYGTWTU3J2LWMGUMERKI72A*`,
             {
                 fixture: "PatientService/patientNoAddress.json",
             }
@@ -217,7 +217,7 @@ describe("User Profile - Validate Address", () => {
     it("Verify user has only physical address", () => {
         cy.intercept(
             "GET",
-            `**/Patient/P6FFO433A5WPMVTGM7T4ZVWBKCSVNAYGTWTU3J2LWMGUMERKI72A`,
+            `**/Patient/P6FFO433A5WPMVTGM7T4ZVWBKCSVNAYGTWTU3J2LWMGUMERKI72A*`,
             {
                 fixture: "PatientService/patientOnlyPhysicalAddress.json",
             }
@@ -243,7 +243,7 @@ describe("User Profile - Validate Address", () => {
     it("Verify user has only postal address", () => {
         cy.intercept(
             "GET",
-            `**/Patient/P6FFO433A5WPMVTGM7T4ZVWBKCSVNAYGTWTU3J2LWMGUMERKI72A`,
+            `**/Patient/P6FFO433A5WPMVTGM7T4ZVWBKCSVNAYGTWTU3J2LWMGUMERKI72A*`,
             {
                 fixture: "PatientService/patientOnlyPostalAddress.json",
             }
