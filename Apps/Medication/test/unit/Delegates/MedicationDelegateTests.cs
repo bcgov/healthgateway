@@ -118,7 +118,7 @@ namespace HealthGateway.MedicationTests.Delegates
                             },
                             GenericName = "Generic Name",
                             Id = 0,
-                            Practioner = new Name
+                            Practitioner = new Name
                             {
                                 GivenName = "Given",
                                 MiddleInitial = "I",
