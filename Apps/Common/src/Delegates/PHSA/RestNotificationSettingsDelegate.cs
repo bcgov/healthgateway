@@ -17,142 +17,74 @@ namespace HealthGateway.Common.Delegates.PHSA
 {
     using System;
     using System.Diagnostics;
-    using System.Net;
     using System.Net.Http;
-    using System.Net.Http.Headers;
-    using System.Net.Mime;
-    using System.Text;
-    using System.Text.Json;
-    using System.Text.Json.Serialization;
     using System.Threading.Tasks;
+    using HealthGateway.Common.Api;
     using HealthGateway.Common.Data.Constants;
     using HealthGateway.Common.Data.ViewModels;
     using HealthGateway.Common.ErrorHandling;
     using HealthGateway.Common.Models;
-    using HealthGateway.Common.Services;
-    using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.Logging;
+    using Refit;
 
     /// <summary>
     /// Implementation that uses HTTP to sends notification settings to PHSA.
     /// </summary>
     public class RestNotificationSettingsDelegate : INotificationSettingsDelegate
     {
-        private const string NotificationSettingsConfigSectionKey = "NotificationSettings";
-        private const string SubjectResourceHeader = "patient";
-        private readonly IHttpClientService httpClientService;
-
         private readonly ILogger logger;
-        private readonly NotificationSettingsConfig nsConfig;
+        private readonly INotificationSettingsApi notificationSettingsApi;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="RestNotificationSettingsDelegate"/> class.
         /// </summary>
         /// <param name="logger">Injected Logger Provider.</param>
-        /// <param name="httpClientService">The injected http client service.</param>
-        /// <param name="configuration">The injected configuration provider.</param>
+        /// <param name="notificationSettingsApi">The injected Refit API.</param>
         public RestNotificationSettingsDelegate(
             ILogger<RestNotificationSettingsDelegate> logger,
-            IHttpClientService httpClientService,
-            IConfiguration configuration)
+            INotificationSettingsApi notificationSettingsApi)
         {
             this.logger = logger;
-            this.httpClientService = httpClientService;
-            this.nsConfig = new NotificationSettingsConfig();
-            configuration.Bind(NotificationSettingsConfigSectionKey, this.nsConfig);
+            this.notificationSettingsApi = notificationSettingsApi;
         }
 
+        private static ActivitySource Source { get; } = new(nameof(RestNotificationSettingsDelegate));
+
         /// <inheritdoc/>
-        public async Task<RequestResult<NotificationSettingsResponse>> SetNotificationSettings(NotificationSettingsRequest notificationSettings, string bearerToken)
+        public async Task<RequestResult<NotificationSettingsResponse>> SetNotificationSettingsAsync(NotificationSettingsRequest notificationSettings, string bearerToken)
         {
+            using Activity? activity = Source.StartActivity();
             RequestResult<NotificationSettingsResponse> retVal = new()
             {
                 ResultStatus = ResultType.Error,
             };
-            Stopwatch timer = new();
-            timer.Start();
-            this.logger.LogDebug("Sending Notification Settings to PHSA...");
+
+            this.logger.LogDebug("Sending notification settings to PHSA...");
             this.logger.LogTrace("Bearer token: {BearerToken}", bearerToken);
-            using HttpClient client = this.httpClientService.CreateDefaultHttpClient();
-            client.DefaultRequestHeaders.Clear();
-            client.DefaultRequestHeaders.Accept.Clear();
-            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("bearer", bearerToken);
-            client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue(MediaTypeNames.Application.Json));
-            client.DefaultRequestHeaders.Add(SubjectResourceHeader, notificationSettings.SubjectHdid);
+
             try
             {
-                Uri endpoint = new(this.nsConfig.Endpoint);
-                JsonSerializerOptions options = new()
-                {
-                    PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
-                    DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
-                    WriteIndented = true,
-                };
-                string json = JsonSerializer.Serialize(notificationSettings, options);
-                using HttpContent content = new StringContent(json, Encoding.UTF8, MediaTypeNames.Application.Json);
-                this.logger.LogTrace("Http content: {Json}", json);
-                HttpResponseMessage response = await client.PutAsync(endpoint, content).ConfigureAwait(true);
-                string payload = await response.Content.ReadAsStringAsync().ConfigureAwait(true);
-                this.logger.LogTrace("Response: {Response}", response);
-                this.logger.LogTrace("Payload: {Payload}", payload);
-                switch (response.StatusCode)
-                {
-                    case HttpStatusCode.Created:
-                    case HttpStatusCode.OK:
-                        NotificationSettingsResponse? nsResponse = JsonSerializer.Deserialize<NotificationSettingsResponse>(payload, options);
-                        retVal.ResultStatus = ResultType.Success;
-                        retVal.TotalResultCount = 1;
-                        retVal.ResourcePayload = nsResponse;
-                        break;
-                    case HttpStatusCode.UnprocessableEntity:
-                        retVal.ResultStatus = ResultType.ActionRequired;
-                        this.logger.LogInformation("PHSA has indicated that the SMS number is invalid: {SksNumber}", notificationSettings.SmsNumber);
-                        retVal.ResultError = new RequestResultError
-                        {
-                            ResultMessage = $"PHSA has indicated that the SMS number is invalid: {notificationSettings.SmsNumber}",
-                            ErrorCode = ErrorTranslator.ServiceError(ErrorType.SmsInvalid, ServiceType.Phsa),
-                        };
-                        break;
-                    case HttpStatusCode.BadRequest:
-                        this.logger.LogError("Error Details: {Payload}", payload);
-                        retVal.ResultError = new RequestResultError
-                        {
-                            ResultMessage = $"Bad Request, HTTP Error {response.StatusCode}\nDetails:\n{payload}",
-                            ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.Phsa),
-                        };
-                        break;
-                    case HttpStatusCode.Forbidden:
-                        this.logger.LogError("Error Details: {Payload}", payload);
-                        retVal.ResultError = new RequestResultError
-                        {
-                            ResultMessage = $"DID Claim is missing or can not resolve PHN, HTTP Error {response.StatusCode}",
-                            ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.Phsa),
-                        };
-                        break;
-                    default:
-                        retVal.ResultError = new RequestResultError
-                        {
-                            ResultMessage = $"Unable to connect to Notification Settings Endpoint, HTTP Error {response.StatusCode}",
-                            ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.Phsa),
-                        };
-                        this.logger.LogError("Unable to connect to endpoint {Endpoint}, HTTP Error {StatusCode}\n{Payload}", endpoint, response.StatusCode, payload);
-                        break;
-                }
+                NotificationSettingsResponse notificationSettingsResponse = await this.notificationSettingsApi.SetNotificationSettingsAsync(
+                        bearerToken,
+                        notificationSettings.SubjectHdid,
+                        notificationSettings)
+                    .ConfigureAwait(true);
+
+                retVal.ResultStatus = ResultType.Success;
+                retVal.TotalResultCount = 1;
+                retVal.ResourcePayload = notificationSettingsResponse;
             }
-#pragma warning disable CA1031 // Do not catch general exception types
-            catch (Exception e)
-#pragma warning restore CA1031 // Do not catch general exception types
+            catch (Exception e) when (e is ApiException or HttpRequestException)
             {
                 retVal.ResultError = new RequestResultError
                 {
-                    ResultMessage = $"Exception setting Notification Settings: {e}",
+                    ResultMessage = "Error while sending notification settings to PHSA",
                     ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.Phsa),
                 };
                 this.logger.LogError("Unexpected exception in SetNotificationSettings {Exception}", e);
             }
 
-            timer.Stop();
-            this.logger.LogDebug("Finished setting Notification Settings, Time Elapsed: {Elapsed}", timer.Elapsed);
+            this.logger.LogDebug("Finished sending notification settings to PHSA");
             return retVal;
         }
     }
