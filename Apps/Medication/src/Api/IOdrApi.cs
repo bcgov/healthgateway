@@ -30,7 +30,7 @@ namespace HealthGateway.Medication.Api
         /// <param name="request">The request to query.</param>
         /// <returns>The MedicationHistory.</returns>
         [Post("/odr/patientProfile")]
-        Task<MedicationHistory> GetMedicationHistory(MedicationHistory request);
+        Task<MedicationHistory> GetMedicationHistoryAsync(MedicationHistory request);
 
         /// <summary>
         /// Gets the Protective Word.

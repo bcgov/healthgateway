@@ -114,17 +114,15 @@ namespace HealthGateway.Medication
                     $"{odrConfig.ServiceName}{odrConfig.ServiceHostSuffix}",
                     $"{odrConfig.ServiceName}{odrConfig.ServicePortSuffix}")
                 : odrConfig.BaseEndpoint;
-            JsonSerializerOptions options = new()
-            {
-                PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
-                DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
-                WriteIndented = true,
-            };
-            RefitSettings settings = new()
-            {
-                ContentSerializer = new SystemTextJsonContentSerializer(options),
-            };
-            services.AddRefitClient<IOdrApi>(settings)
+            services.AddRefitClient<IOdrApi>(new RefitSettings()
+                {
+                    // These are required for the ODR Proxy Protective Word
+                    ContentSerializer = new SystemTextJsonContentSerializer(new()
+                    {
+                        PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+                        DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
+                    }),
+                })
                 .ConfigureHttpClient(c => c.BaseAddress = new Uri(endpoint));
         }
 

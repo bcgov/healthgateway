@@ -97,7 +97,7 @@ namespace HealthGateway.Medication.Delegates
                                 Query = query,
                             };
 
-                            MedicationHistory medicationHistory = await this.odrApi.GetMedicationHistory(request).ConfigureAwait(true);
+                            MedicationHistory medicationHistory = await this.odrApi.GetMedicationHistoryAsync(request).ConfigureAwait(true);
                             retVal.ResultStatus = ResultType.Success;
                             retVal.ResourcePayload = medicationHistory.Response;
                             this.logger.LogDebug("Finished getting medication statements");
