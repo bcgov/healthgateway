@@ -18,10 +18,10 @@ namespace HealthGateway.DBMaintainer
     using System;
     using System.Diagnostics.CodeAnalysis;
     using System.IO;
-    using HealthGateway.Common.FileDownload;
     using HealthGateway.Common.Services;
     using HealthGateway.Database.Context;
     using HealthGateway.DBMaintainer.Apps;
+    using HealthGateway.DBMaintainer.FileDownload;
     using HealthGateway.DBMaintainer.Parsers;
     using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.Configuration;
