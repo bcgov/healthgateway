@@ -17,9 +17,9 @@ namespace HealthGateway.DBMaintainer.Apps
 {
     using System;
     using System.IO;
-    using HealthGateway.Common.FileDownload;
     using HealthGateway.Database.Context;
     using HealthGateway.Database.Models;
+    using HealthGateway.DBMaintainer.FileDownload;
     using HealthGateway.DBMaintainer.Parsers;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.Logging;

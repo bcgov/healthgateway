@@ -13,7 +13,7 @@ describe("Authenticated User - Home Page", () => {
         );
 
         cy.get("[data-testid=bc-vaccine-card-card]").should("be.visible");
-        cy.get("[data-testid=immunization-record-card]").should("be.visible");
+        //cy.get("[data-testid=immunization-record-card]").should("be.visible");
         cy.get("[data-testid=health-records-card]").should("be.visible");
     });
 

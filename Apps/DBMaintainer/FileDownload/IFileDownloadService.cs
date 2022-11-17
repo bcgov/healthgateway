@@ -13,7 +13,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //-------------------------------------------------------------------------
-namespace HealthGateway.Common.FileDownload
+namespace HealthGateway.DBMaintainer.FileDownload
 {
     using System;
     using System.Threading.Tasks;

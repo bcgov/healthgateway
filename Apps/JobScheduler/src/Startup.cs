@@ -25,10 +25,10 @@ namespace HealthGateway.JobScheduler
     using HealthGateway.Common.AspNetConfiguration;
     using HealthGateway.Common.AspNetConfiguration.Modules;
     using HealthGateway.Common.Delegates.PHSA;
-    using HealthGateway.Common.FileDownload;
     using HealthGateway.Common.Jobs;
     using HealthGateway.Common.Services;
     using HealthGateway.Database.Delegates;
+    using HealthGateway.DBMaintainer.FileDownload;
     using HealthGateway.DBMaintainer.Parsers;
     using HealthGateway.JobScheduler.Jobs;
     using HealthGateway.JobScheduler.Listeners;

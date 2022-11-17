@@ -51,7 +51,7 @@ describe("Medication Service", () => {
         });
     });
 
-    it("Verify GetMedication ProvincialDrug", () => {
+    it("Verify GetMedication FEDDrug", () => {
         const drugIdentifier = "02391724";
         cy.get("@config").then((config) => {
             cy.log(
@@ -72,7 +72,7 @@ describe("Medication Service", () => {
         });
     });
 
-    it("Verify GetMedication FEDDrug", () => {
+    it("Verify GetMedication ProvincialDrug", () => {
         const drugIdentifier = "66999990";
         cy.get("@config").then((config) => {
             cy.log(
