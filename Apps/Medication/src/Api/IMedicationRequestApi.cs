@@ -13,29 +13,24 @@
 //  See the License for the specific language governing permissions and
 //  limitations under the License.
 // -------------------------------------------------------------------------
-namespace HealthGateway.Medication.Models.Salesforce
+namespace HealthGateway.Medication.Api
 {
-    using System;
-    using HealthGateway.Common.AccessManagement.Authentication.Models;
+    using System.Threading.Tasks;
+    using HealthGateway.Medication.Models.Salesforce;
+    using Refit;
 
     /// <summary>
-    /// Provides configuration data for the Salesforce delegate.
+    /// Special Authority/MedicationRequest API that connects to Salesforce backend.
     /// </summary>
-    public class Config
+    public interface IMedicationRequestApi
     {
         /// <summary>
-        /// Gets or sets the Salesforce external endpoint.
+        /// Retrieves the wrapped response of MedicationRequests.
         /// </summary>
-        public Uri Endpoint { get; set; } = null!;
-
-        /// <summary>
-        /// Gets or sets the Salesforce token Uri.
-        /// </summary>
-        public Uri TokenUri { get; set; } = null!;
-
-        /// <summary>
-        /// Gets or sets the total number of records to retrieve in one call.
-        /// </summary>
-        public ClientCredentialsTokenRequest ClientAuthentication { get; set; } = new();
+        /// <param name="phn">The PHN to query.</param>
+        /// <param name="token">The access token to be used for the authorize header.</param>
+        /// <returns>A list of MedicationRequest objects.</returns>
+        [Get("")]
+        Task<ResponseWrapper?> GetMedicationRequestsAsync([Header("phn")] string phn, [Authorize] string token);
     }
 }

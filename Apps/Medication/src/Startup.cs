@@ -21,12 +21,15 @@ namespace HealthGateway.Medication
     using HealthGateway.Common.AspNetConfiguration;
     using HealthGateway.Common.Delegates;
     using HealthGateway.Database.Delegates;
+    using HealthGateway.Medication.Api;
     using HealthGateway.Medication.Delegates;
+    using HealthGateway.Medication.Models.Salesforce;
     using HealthGateway.Medication.Services;
     using Microsoft.AspNetCore.Builder;
     using Microsoft.AspNetCore.Hosting;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
+    using Refit;
 
     /// <summary>
     /// Configures the application during startup.
@@ -91,6 +94,12 @@ namespace HealthGateway.Medication
             services.AddTransient<IHashDelegate, HmacHashDelegate>();
             services.AddTransient<IMedicationRequestDelegate, SalesforceDelegate>();
             services.AddTransient<IAuthenticationDelegate, AuthenticationDelegate>();
+
+            // Add API Clients
+            Config sfConfig = new();
+            this.startupConfig.Configuration.Bind(SalesforceDelegate.SalesforceConfigSectionKey, sfConfig);
+            services.AddRefitClient<IMedicationRequestApi>()
+                .ConfigureHttpClient(c => c.BaseAddress = sfConfig.Endpoint);
         }
 
         /// <summary>
