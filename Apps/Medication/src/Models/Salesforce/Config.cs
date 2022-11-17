@@ -24,6 +24,11 @@ namespace HealthGateway.Medication.Models.Salesforce
     public class Config
     {
         /// <summary>
+        /// The key used to lookup Salesforce configuration.
+        /// </summary>
+        public const string SalesforceConfigSectionKey = "Salesforce";
+
+        /// <summary>
         /// Gets or sets the Salesforce external endpoint.
         /// </summary>
         public Uri Endpoint { get; set; } = null!;

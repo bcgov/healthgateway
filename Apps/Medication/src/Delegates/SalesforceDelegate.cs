@@ -38,10 +38,6 @@ namespace HealthGateway.Medication.Delegates
     /// </summary>
     public class SalesforceDelegate : IMedicationRequestDelegate
     {
-        /// <summary>
-        /// The key used to lookup Salesforce configuration.
-        /// </summary>
-        public const string SalesforceConfigSectionKey = "Salesforce";
         private readonly IAuthenticationDelegate authDelegate;
         private readonly IMapper autoMapper;
         private readonly ISpecialAuthorityApi specialAuthorityApi;
@@ -70,7 +66,7 @@ namespace HealthGateway.Medication.Delegates
             this.autoMapper = autoMapper;
 
             this.salesforceConfig = new Config();
-            configuration.Bind(SalesforceConfigSectionKey, this.salesforceConfig);
+            configuration.Bind(Config.SalesforceConfigSectionKey, this.salesforceConfig);
         }
 
         private static ActivitySource Source { get; } = new(nameof(ClientRegistriesDelegate));
@@ -100,8 +96,8 @@ namespace HealthGateway.Medication.Delegates
 
                 try
                 {
-                    ResponseWrapper? replyWrapper = await this.specialAuthorityApi.GetSpecialAuthorityRequests(phn, accessToken).ConfigureAwait(true);
-                    retVal.ResourcePayload = replyWrapper != null ? this.autoMapper.Map<IEnumerable<SpecialAuthorityRequest>, IList<MedicationRequest>>(replyWrapper.Items) : new List<MedicationRequest>();
+                    ResponseWrapper replyWrapper = await this.specialAuthorityApi.GetSpecialAuthorityRequests(phn, accessToken).ConfigureAwait(true);
+                    retVal.ResourcePayload = this.autoMapper.Map<IEnumerable<SpecialAuthorityRequest>, IList<MedicationRequest>>(replyWrapper.Items);
                     retVal.TotalResultCount = retVal.ResourcePayload?.Count;
                     retVal.PageSize = retVal.ResourcePayload?.Count;
                     retVal.PageIndex = 0;

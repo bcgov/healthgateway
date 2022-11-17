@@ -97,7 +97,7 @@ namespace HealthGateway.Medication
 
             // Add API Clients
             Config sfConfig = new();
-            this.startupConfig.Configuration.Bind(SalesforceDelegate.SalesforceConfigSectionKey, sfConfig);
+            this.startupConfig.Configuration.Bind(Config.SalesforceConfigSectionKey, sfConfig);
             services.AddRefitClient<ISpecialAuthorityApi>()
                 .ConfigureHttpClient(c => c.BaseAddress = sfConfig.Endpoint);
         }

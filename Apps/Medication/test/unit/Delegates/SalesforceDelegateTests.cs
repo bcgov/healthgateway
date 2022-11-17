@@ -89,7 +89,7 @@ namespace HealthGateway.MedicationTests.Delegates
             Mock<ISpecialAuthorityApi> mockSpecialAuthorityApi = new();
             mockSpecialAuthorityApi
                 .Setup(s => s.GetSpecialAuthorityRequests(It.IsAny<string>(), It.IsAny<string>()))
-                .ReturnsAsync(result);
+                .ReturnsAsync(result!);
 
             // Setup class to be tested
             IMedicationRequestDelegate medDelegate = new SalesforceDelegate(
@@ -234,77 +234,6 @@ namespace HealthGateway.MedicationTests.Delegates
             Assert.Equal(ResultType.Error, response.ResultStatus);
             Assert.NotNull(response.ResultError);
             Assert.NotNull(response.ResultError?.ErrorCode);
-        }
-
-        /// <summary>
-        /// GetMedicationRequests - Not Found.
-        /// </summary>
-        [Fact]
-        public void ShouldEmptyIfNoContent()
-        {
-            // Setup
-
-            // Input Parameters
-            string phn = "9735361219";
-
-            // Setup Configuration
-            string endpoint = "https://test-endpoint";
-            Uri tokenUri = new("https://localhost");
-            ClientCredentialsTokenRequest tokenRequest = new()
-            {
-                ClientId = "TEST_CLIENTID",
-                ClientSecret = "TEST_CLIENT_SECRET",
-                Password = "TEST_PASSWORD",
-                Username = "TEST_USERNAME",
-            };
-            IEnumerable<KeyValuePair<string, string?>> configurationParams = new List<KeyValuePair<string, string?>>
-            {
-                new("Salesforce:Endpoint", endpoint),
-                new("Salesforce:TokenUri", tokenUri.ToString()),
-                new("Salesforce:ClientAuthentication:ClientId", tokenRequest.ClientId),
-                new("Salesforce:ClientAuthentication:ClientSecret", tokenRequest.ClientSecret),
-                new("Salesforce:ClientAuthentication:Username", tokenRequest.Username),
-                new("Salesforce:ClientAuthentication:Password", tokenRequest.Password),
-            };
-            IConfiguration configuration = CreateConfiguration(configurationParams);
-
-            // Setup Authentication
-            string jwtJson =
-                @"{ ""access_token"":""token"", ""expires_in"":500, ""refresh_expires_in"":0, ""refresh_token"":""refresh_token"", ""token_type"":""bearer"", ""not-before-policy"":25, ""session_state"":""session_state"", ""scope"":""scope"" }";
-            JwtModel authorizationJwt = CreateJwtModel(jwtJson);
-
-            Mock<IAuthenticationDelegate> mockAuthenticationDelegate = new();
-            mockAuthenticationDelegate
-                .Setup(
-                    s => s.AuthenticateAsUser(
-                        It.Is<Uri>(x => x.ToString() == tokenUri.ToString()),
-                        It.Is<ClientCredentialsTokenRequest>(x => x.ClientId == tokenRequest.ClientId),
-                        true))
-                .Returns(() => authorizationJwt);
-
-            // Setup Http response
-            ResponseWrapper? result = null;
-            Mock<ISpecialAuthorityApi> mockSpecialAuthorityApi = new();
-            mockSpecialAuthorityApi
-                .Setup(s => s.GetSpecialAuthorityRequests(It.IsAny<string>(), It.IsAny<string>()))
-                .ReturnsAsync(result);
-
-            // Setup class to be tested
-            IMedicationRequestDelegate medDelegate = new SalesforceDelegate(
-                CreateLogger(),
-                mockSpecialAuthorityApi.Object,
-                configuration,
-                mockAuthenticationDelegate.Object,
-                MapperUtil.InitializeAutoMapper());
-
-            // Test
-            RequestResult<IList<MedicationRequest>> response = Task.Run(async () => await medDelegate.GetMedicationRequestsAsync(phn).ConfigureAwait(true)).Result;
-
-            // Verify
-            Assert.Equal(ResultType.Success, response.ResultStatus);
-            Assert.Null(response.ResultError);
-            Assert.Null(response.ResultError?.ErrorCode);
-            Assert.Equal(0, response.TotalResultCount);
         }
 
         private static IConfiguration CreateConfiguration(IEnumerable<KeyValuePair<string, string?>> configParams)
