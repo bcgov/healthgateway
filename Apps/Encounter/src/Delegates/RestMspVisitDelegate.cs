@@ -28,6 +28,7 @@ namespace HealthGateway.Encounter.Delegates
     using HealthGateway.Common.ErrorHandling;
     using HealthGateway.Common.Models.ODR;
     using HealthGateway.Common.Services;
+    using HealthGateway.Encounter.Api;
     using HealthGateway.Encounter.Models.ODR;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.Logging;
@@ -40,6 +41,7 @@ namespace HealthGateway.Encounter.Delegates
         private const string OdrConfigSectionKey = "ODR";
         private readonly Uri baseUrl;
         private readonly IHttpClientService httpClientService;
+        private readonly IMspVisitApi mspVisitApi;
 
         private readonly ILogger logger;
         private readonly OdrConfig odrConfig;
@@ -49,14 +51,17 @@ namespace HealthGateway.Encounter.Delegates
         /// </summary>
         /// <param name="logger">Injected Logger Provider.</param>
         /// <param name="httpClientService">The injected http client service.</param>
+        /// <param name="mspVisitApi">The injected client to use for msp visit api calls.</param>
         /// <param name="configuration">The injected configuration provider.</param>
         public RestMspVisitDelegate(
             ILogger<RestMspVisitDelegate> logger,
             IHttpClientService httpClientService,
+            IMspVisitApi mspVisitApi,
             IConfiguration configuration)
         {
             this.logger = logger;
             this.httpClientService = httpClientService;
+            this.mspVisitApi = mspVisitApi;
 
             this.odrConfig = new OdrConfig();
             configuration.Bind(OdrConfigSectionKey, this.odrConfig);

@@ -26,6 +26,7 @@ namespace HealthGateway.EncounterTests.Delegates
     using HealthGateway.Common.Data.ViewModels;
     using HealthGateway.Common.Models.ODR;
     using HealthGateway.Common.Services;
+    using HealthGateway.Encounter.Api;
     using HealthGateway.Encounter.Delegates;
     using HealthGateway.Encounter.Models.ODR;
     using Microsoft.Extensions.Configuration;
@@ -103,9 +104,11 @@ namespace HealthGateway.EncounterTests.Delegates
                 .Verifiable();
             Mock<IHttpClientService> mockHttpClientService = new();
             mockHttpClientService.Setup(s => s.CreateDefaultHttpClient()).Returns(() => new HttpClient(handlerMock.Object));
+            Mock<IMspVisitApi> mockMspVisitApi = new();
             IMspVisitDelegate mspVisitDelegate = new RestMspVisitDelegate(
                 new Mock<ILogger<RestMspVisitDelegate>>().Object,
                 mockHttpClientService.Object,
+                mockMspVisitApi.Object,
                 this.configuration);
             OdrHistoryQuery query = new()
             {
@@ -141,10 +144,11 @@ namespace HealthGateway.EncounterTests.Delegates
                 .Verifiable();
             Mock<IHttpClientService> mockHttpClientService = new();
             mockHttpClientService.Setup(s => s.CreateDefaultHttpClient()).Returns(() => new HttpClient(handlerMock.Object));
-
+            Mock<IMspVisitApi> mockMspVisitApi = new();
             IMspVisitDelegate mspVisitDelegate = new RestMspVisitDelegate(
                 new Mock<ILogger<RestMspVisitDelegate>>().Object,
                 mockHttpClientService.Object,
+                mockMspVisitApi.Object,
                 GetLocalConfig());
             OdrHistoryQuery query = new()
             {
@@ -181,9 +185,11 @@ namespace HealthGateway.EncounterTests.Delegates
                 .Verifiable();
             Mock<IHttpClientService> mockHttpClientService = new();
             mockHttpClientService.Setup(s => s.CreateDefaultHttpClient()).Returns(() => new HttpClient(handlerMock.Object));
+            Mock<IMspVisitApi> mockMspVisitApi = new();
             IMspVisitDelegate mspVisitDelegate = new RestMspVisitDelegate(
                 new Mock<ILogger<RestMspVisitDelegate>>().Object,
                 mockHttpClientService.Object,
+                mockMspVisitApi.Object,
                 this.configuration);
             OdrHistoryQuery query = new()
             {
@@ -213,9 +219,11 @@ namespace HealthGateway.EncounterTests.Delegates
             using ILoggerFactory loggerFactory = LoggerFactory.Create(builder => builder.AddConsole());
             Mock<IHttpClientService> mockHttpClientService = new();
             mockHttpClientService.Setup(s => s.CreateDefaultHttpClient()).Returns(() => new HttpClient(handlerMock.Object));
+            Mock<IMspVisitApi> mockMspVisitApi = new();
             IMspVisitDelegate mspVisitDelegate = new RestMspVisitDelegate(
                 loggerFactory.CreateLogger<RestMspVisitDelegate>(),
                 mockHttpClientService.Object,
+                mockMspVisitApi.Object,
                 this.configuration);
             OdrHistoryQuery query = new()
             {
