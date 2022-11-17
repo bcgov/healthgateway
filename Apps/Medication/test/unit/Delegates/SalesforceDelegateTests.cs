@@ -86,9 +86,9 @@ namespace HealthGateway.MedicationTests.Delegates
             string jsonStr =
                 "{\"items\":[{\"requestStatus\":\"Approved\",\"requestedDate\":\"2020-11-13T00:00:00.000Z\",\"referenceNumber\":\"00001046\",\"prescriberLastName\":\"Provider\",\"prescriberFirstName\":\"Test\",\"patientLastName\":null,\"patientIdentifier\":null,\"patientFirstName\":null,\"expiryDate\":null,\"effectiveDate\":null,\"drugName\":\"rabeprazole 10, 20 mg   NB4\"},{\"requestStatus\":\"Approved\",\"requestedDate\":\"2020-11-15T00:00:00.000Z\",\"referenceNumber\":\"00001048\",\"prescriberLastName\":null,\"prescriberFirstName\":null,\"patientLastName\":null,\"patientIdentifier\":null,\"patientFirstName\":null,\"expiryDate\":null,\"effectiveDate\":\"2021-02-17\",\"drugName\":\"abatacept w/e name here\"},{\"requestStatus\":\"Received\",\"requestedDate\":\"2020-11-15T00:00:00.000Z\",\"referenceNumber\":\"00001047\",\"prescriberLastName\":null,\"prescriberFirstName\":null,\"patientLastName\":null,\"patientIdentifier\":null,\"patientFirstName\":null,\"expiryDate\":null,\"effectiveDate\":null,\"drugName\":\"depakote sprinkle cap 125mg   (SAP)\"}]}";
             ResponseWrapper? result = JsonSerializer.Deserialize<ResponseWrapper>(jsonStr);
-            Mock<IMedicationRequestApi> mockMedicationRequestAPi = new();
+            Mock<ISpecialAuthorityApi> mockMedicationRequestAPi = new();
             mockMedicationRequestAPi
-                .Setup(s => s.GetMedicationRequestsAsync(It.IsAny<string>(), It.IsAny<string>()))
+                .Setup(s => s.GetSpecialAuthorityRequests(It.IsAny<string>(), It.IsAny<string>()))
                 .ReturnsAsync(result);
 
             // Setup class to be tested
@@ -153,7 +153,7 @@ namespace HealthGateway.MedicationTests.Delegates
             // Setup class to be tested
             IMedicationRequestDelegate medDelegate = new SalesforceDelegate(
                 CreateLogger(),
-                new Mock<IMedicationRequestApi>().Object,
+                new Mock<ISpecialAuthorityApi>().Object,
                 configuration,
                 mockAuthenticationDelegate.Object,
                 MapperUtil.InitializeAutoMapper());
@@ -214,9 +214,9 @@ namespace HealthGateway.MedicationTests.Delegates
                 .Returns(() => authorizationJwt);
 
             // Setup response
-            Mock<IMedicationRequestApi> mockMedicationRequestAPi = new();
+            Mock<ISpecialAuthorityApi> mockMedicationRequestAPi = new();
             mockMedicationRequestAPi
-                .Setup(s => s.GetMedicationRequestsAsync(It.IsAny<string>(), It.IsAny<string>()))
+                .Setup(s => s.GetSpecialAuthorityRequests(It.IsAny<string>(), It.IsAny<string>()))
                 .ThrowsAsync(new HttpRequestException("A Test Exception"));
 
             // Setup class to be tested
@@ -284,9 +284,9 @@ namespace HealthGateway.MedicationTests.Delegates
 
             // Setup Http response
             ResponseWrapper? result = null;
-            Mock<IMedicationRequestApi> mockMedicationRequestApi = new();
+            Mock<ISpecialAuthorityApi> mockMedicationRequestApi = new();
             mockMedicationRequestApi
-                .Setup(s => s.GetMedicationRequestsAsync(It.IsAny<string>(), It.IsAny<string>()))
+                .Setup(s => s.GetSpecialAuthorityRequests(It.IsAny<string>(), It.IsAny<string>()))
                 .ReturnsAsync(result);
 
             // Setup class to be tested

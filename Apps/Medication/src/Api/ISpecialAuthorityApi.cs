@@ -20,17 +20,17 @@ namespace HealthGateway.Medication.Api
     using Refit;
 
     /// <summary>
-    /// Special Authority/MedicationRequest API that connects to Salesforce backend.
+    /// Special Authority API that connects to Salesforce backend.
     /// </summary>
-    public interface IMedicationRequestApi
+    public interface ISpecialAuthorityApi
     {
         /// <summary>
         /// Retrieves the wrapped response of MedicationRequests.
         /// </summary>
         /// <param name="phn">The PHN to query.</param>
         /// <param name="token">The access token to be used for the authorize header.</param>
-        /// <returns>A list of MedicationRequest objects.</returns>
+        /// <returns>A wrapped response of SpecialAuthority requests.</returns>
         [Get("")]
-        Task<ResponseWrapper?> GetMedicationRequestsAsync([Header("phn")] string phn, [Authorize] string token);
+        Task<ResponseWrapper?> GetSpecialAuthorityRequests([Header("phn")] string phn, [Authorize] string token);
     }
 }

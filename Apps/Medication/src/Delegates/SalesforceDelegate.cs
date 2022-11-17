@@ -44,7 +44,7 @@ namespace HealthGateway.Medication.Delegates
         public const string SalesforceConfigSectionKey = "Salesforce";
         private readonly IAuthenticationDelegate authDelegate;
         private readonly IMapper autoMapper;
-        private readonly IMedicationRequestApi medicationRequestApi;
+        private readonly ISpecialAuthorityApi specialAuthorityApi;
 
         private readonly ILogger logger;
         private readonly Config salesforceConfig;
@@ -53,19 +53,19 @@ namespace HealthGateway.Medication.Delegates
         /// Initializes a new instance of the <see cref="SalesforceDelegate"/> class.
         /// </summary>
         /// <param name="logger">Injected Logger Provider.</param>
-        /// <param name="medicationRequestApi">The injected medication request api.</param>
+        /// <param name="specialAuthorityApi">The injected special authority api.</param>
         /// <param name="configuration">The injected configuration provider.</param>
         /// <param name="authDelegate">The delegate responsible authentication.</param>
         /// <param name="autoMapper">The injected automapper provider.</param>
         public SalesforceDelegate(
             ILogger<SalesforceDelegate> logger,
-            IMedicationRequestApi medicationRequestApi,
+            ISpecialAuthorityApi specialAuthorityApi,
             IConfiguration configuration,
             IAuthenticationDelegate authDelegate,
             IMapper autoMapper)
         {
             this.logger = logger;
-            this.medicationRequestApi = medicationRequestApi;
+            this.specialAuthorityApi = specialAuthorityApi;
             this.authDelegate = authDelegate;
             this.autoMapper = autoMapper;
 
@@ -100,7 +100,7 @@ namespace HealthGateway.Medication.Delegates
 
                 try
                 {
-                    ResponseWrapper? replyWrapper = await this.medicationRequestApi.GetMedicationRequestsAsync(phn, accessToken).ConfigureAwait(true);
+                    ResponseWrapper? replyWrapper = await this.specialAuthorityApi.GetSpecialAuthorityRequests(phn, accessToken).ConfigureAwait(true);
                     retVal.ResourcePayload = replyWrapper != null ? this.autoMapper.Map<IEnumerable<SpecialAuthorityRequest>, IList<MedicationRequest>>(replyWrapper.Items) : new List<MedicationRequest>();
                     retVal.TotalResultCount = retVal.ResourcePayload?.Count;
                     retVal.PageSize = retVal.ResourcePayload?.Count;
