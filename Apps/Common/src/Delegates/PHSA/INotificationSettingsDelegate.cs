@@ -30,6 +30,6 @@ namespace HealthGateway.Common.Delegates.PHSA
         /// <param name="notificationSettings">The notification settings request to send to PHSA.</param>
         /// <param name="bearerToken">The access token of the authenticated user.</param>
         /// <returns>The notification settings response returned from PHSA wrapped in a RequestResult.</returns>
-        Task<RequestResult<NotificationSettingsResponse>> SetNotificationSettings(NotificationSettingsRequest notificationSettings, string bearerToken);
+        Task<RequestResult<NotificationSettingsResponse>> SetNotificationSettingsAsync(NotificationSettingsRequest notificationSettings, string bearerToken);
     }
 }

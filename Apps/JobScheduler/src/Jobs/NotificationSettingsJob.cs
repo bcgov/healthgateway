@@ -94,7 +94,7 @@ namespace HealthGateway.JobScheduler.Jobs
                     }
 
                     RequestResult<NotificationSettingsResponse> retVal =
-                        Task.Run(async () => await this.notificationSettingsDelegate.SetNotificationSettings(notificationSettings, accessToken).ConfigureAwait(true)).Result;
+                        Task.Run(async () => await this.notificationSettingsDelegate.SetNotificationSettingsAsync(notificationSettings, accessToken).ConfigureAwait(true)).Result;
                     if (retVal.ResultStatus == ResultType.ActionRequired)
                     {
                         EventLog eventLog = new()

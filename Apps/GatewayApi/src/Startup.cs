@@ -23,7 +23,6 @@ namespace HealthGateway.GatewayApi
     using HealthGateway.Common.AspNetConfiguration;
     using HealthGateway.Common.Data.Utils;
     using HealthGateway.Common.Delegates;
-    using HealthGateway.Common.Delegates.PHSA;
     using HealthGateway.Common.MapProfiles;
     using HealthGateway.Common.Models.CDogs;
     using HealthGateway.Common.Services;
@@ -100,7 +99,6 @@ namespace HealthGateway.GatewayApi
             services.AddTransient<ICommentDelegate, DbCommentDelegate>();
             services.AddTransient<ICryptoDelegate, AesCryptoDelegate>();
             services.AddTransient<ICommunicationDelegate, DbCommunicationDelegate>();
-            services.AddTransient<INotificationSettingsDelegate, RestNotificationSettingsDelegate>();
             services.AddTransient<IUserPreferenceDelegate, DbUserPreferenceDelegate>();
             services.AddTransient<IResourceDelegateDelegate, DbResourceDelegateDelegate>();
             services.AddTransient<ICDogsDelegate, CDogsDelegate>();

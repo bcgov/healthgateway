@@ -16,12 +16,17 @@
 namespace HealthGateway.Common.Models
 {
     /// <summary>
-    /// Provides configuration data for the Notifications Settings PHSA API.
+    /// Provides configuration data for the PHSA notifications settings API.
     /// </summary>
     public class NotificationSettingsConfig
     {
         /// <summary>
-        /// Gets or sets the PHSA Notification Settings external endpoint.
+        /// Configuration section key for the PHSA notification settings API.
+        /// </summary>
+        public const string NotificationSettingsConfigSectionKey = "NotificationSettings";
+
+        /// <summary>
+        /// Gets or sets the external endpoint for the PHSA notification settings API.
         /// </summary>
         public string Endpoint { get; set; } = string.Empty;
     }
