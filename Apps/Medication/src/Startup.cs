@@ -16,10 +16,15 @@
 #pragma warning disable CA1303 //disable literal strings check
 namespace HealthGateway.Medication
 {
+    using System;
     using System.Diagnostics.CodeAnalysis;
+    using System.Text.Json;
+    using System.Text.Json.Serialization;
     using HealthGateway.Common.AccessManagement.Authentication;
     using HealthGateway.Common.AspNetConfiguration;
+    using HealthGateway.Common.Data.Utils;
     using HealthGateway.Common.Delegates;
+    using HealthGateway.Common.Models.ODR;
     using HealthGateway.Database.Delegates;
     using HealthGateway.Medication.Api;
     using HealthGateway.Medication.Delegates;
@@ -100,6 +105,27 @@ namespace HealthGateway.Medication
             this.startupConfig.Configuration.Bind(Config.SalesforceConfigSectionKey, sfConfig);
             services.AddRefitClient<ISpecialAuthorityApi>()
                 .ConfigureHttpClient(c => c.BaseAddress = sfConfig.Endpoint);
+
+            OdrConfig odrConfig = new OdrConfig();
+            this.startupConfig.Configuration.Bind(OdrConfig.OdrConfigSectionKey, odrConfig);
+            string endpoint = odrConfig.DynamicServiceLookup
+                ? ConfigurationUtility.ConstructServiceEndpoint(
+                    odrConfig.BaseEndpoint,
+                    $"{odrConfig.ServiceName}{odrConfig.ServiceHostSuffix}",
+                    $"{odrConfig.ServiceName}{odrConfig.ServicePortSuffix}")
+                : odrConfig.BaseEndpoint;
+            JsonSerializerOptions options = new()
+            {
+                PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+                DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
+                WriteIndented = true,
+            };
+            RefitSettings settings = new()
+            {
+                ContentSerializer = new SystemTextJsonContentSerializer(options),
+            };
+            services.AddRefitClient<IOdrApi>(settings)
+                .ConfigureHttpClient(c => c.BaseAddress = new Uri(endpoint));
         }
 
         /// <summary>
