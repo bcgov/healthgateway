@@ -111,9 +111,11 @@ namespace HealthGateway.Laboratory.Delegates
                         else
                         {
                             this.logger.LogError("Error while retrieving Covid19 Orders... {Error}", e);
+                            HttpStatusCode? statusCode = (e as ApiException)?.StatusCode ?? ((HttpRequestException)e).StatusCode;
+
                             retVal.ResultError = new()
                             {
-                                ResultMessage = "Error while retrieving Covid19 Orders",
+                                ResultMessage = $"Status: {statusCode}. Error while retrieving Covid19 Orders",
                                 ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.Phsa),
                             };
                         }
@@ -172,9 +174,11 @@ namespace HealthGateway.Laboratory.Delegates
                     catch (Exception e) when (e is ApiException or HttpRequestException)
                     {
                         this.logger.LogError("Error retrieving Laboratory Report...{Error}", e);
+                        HttpStatusCode? statusCode = (e as ApiException)?.StatusCode ?? ((HttpRequestException)e).StatusCode;
+
                         retVal.ResultError = new()
                         {
-                            ResultMessage = e is ApiException { StatusCode: HttpStatusCode.NoContent } ? "Laboratory Report not found" : "Error retrieving Laboratory Report",
+                            ResultMessage = statusCode == HttpStatusCode.NoContent ? "Laboratory Report not found" : $"Status: {statusCode}. Error retrieving Laboratory Report",
                             ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.Phsa),
                         };
                     }
@@ -234,9 +238,11 @@ namespace HealthGateway.Laboratory.Delegates
                     else
                     {
                         this.logger.LogError("Error while retrieving Laboratory Summary... {Error}", e);
+                        HttpStatusCode? statusCode = (e as ApiException)?.StatusCode ?? ((HttpRequestException)e).StatusCode;
+
                         retVal.ResultError = new()
                         {
-                            ResultMessage = "Error while retrieving Laboratory Summary",
+                            ResultMessage = $"Status: {statusCode}. Error while retrieving Laboratory Summary",
                             ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.Phsa),
                         };
                     }
@@ -287,9 +293,11 @@ namespace HealthGateway.Laboratory.Delegates
             catch (Exception e) when (e is ApiException or HttpRequestException)
             {
                 this.logger.LogError("Error while retrieving Covid19 Test Results... {Error}", e);
+                HttpStatusCode? statusCode = (e as ApiException)?.StatusCode ?? ((HttpRequestException)e).StatusCode;
+
                 retVal.ResultError = new()
                 {
-                    ResultMessage = "Error while retrieving Covid19 Test Results",
+                    ResultMessage = $"Status: {statusCode}. Error while retrieving Covid19 Test Results",
                     ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.Phsa),
                 };
             }

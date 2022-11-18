@@ -27,10 +27,9 @@ namespace HealthGateway.Encounter.Api
         /// <summary>
         /// Returns a list of msp visits.
         /// </summary>
-        /// <param name="query">The Encounter statement query execute against the ODR.</param>
-        /// <param name="token">The bearer token to authorize the call.</param>
+        /// <param name="request">The Encounter request to execute against ODR.</param>
         /// <returns>The Encounter Model response wrapped in an Api Response.</returns>
         [Post("/odr/mspVisits")]
-        Task<IApiResponse<MspVisitHistory>> GetMspVisits(MspVisitHistory query, [Authorize] string token);
+        Task<MspVisitHistory> GetMspVisitsAsync(MspVisitHistory request);
     }
 }

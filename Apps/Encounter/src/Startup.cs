@@ -17,6 +17,8 @@ namespace HealthGateway.Encounter
 {
     using System;
     using System.Diagnostics.CodeAnalysis;
+    using System.Text.Json;
+    using System.Text.Json.Serialization;
     using HealthGateway.Common.AccessManagement.Authentication;
     using HealthGateway.Common.AspNetConfiguration;
     using HealthGateway.Common.Data.Utils;
@@ -86,7 +88,18 @@ namespace HealthGateway.Encounter
             // Add API Clients
             services.AddRefitClient<IHospitalVisitApi>()
                 .ConfigureHttpClient(c => c.BaseAddress = phsaConfig.BaseUrl);
-            services.AddRefitClient<IMspVisitApi>().ConfigureHttpClient(c => c.BaseAddress = GetOdrBaseUrl(odrConfig));
+            services.AddRefitClient<IMspVisitApi>(
+                    new RefitSettings
+                    {
+                        // These are required for the ODR Proxy Protective Word
+                        ContentSerializer = new SystemTextJsonContentSerializer(
+                            new()
+                            {
+                                PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+                                DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
+                            }),
+                    })
+                .ConfigureHttpClient(c => c.BaseAddress = GetOdrBaseUrl(odrConfig));
         }
 
         /// <summary>
