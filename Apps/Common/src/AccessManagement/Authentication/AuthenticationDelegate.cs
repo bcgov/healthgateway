@@ -23,7 +23,6 @@ namespace HealthGateway.Common.AccessManagement.Authentication
     using System.Threading.Tasks;
     using HealthGateway.Common.AccessManagement.Authentication.Models;
     using HealthGateway.Common.CacheProviders;
-    using HealthGateway.Common.Services;
     using Microsoft.AspNetCore.Authentication;
     using Microsoft.AspNetCore.Http;
     using Microsoft.Extensions.Configuration;
@@ -37,7 +36,7 @@ namespace HealthGateway.Common.AccessManagement.Authentication
         private const string CacheConfigSectionName = "AuthCache";
         private readonly ICacheProvider cacheProvider;
         private readonly IConfiguration configuration;
-        private readonly IHttpClientService httpClientService;
+        private readonly IHttpClientFactory httpClientFactory;
         private readonly IHttpContextAccessor? httpContextAccessor;
 
         private readonly ILogger<IAuthenticationDelegate> logger;
@@ -47,19 +46,19 @@ namespace HealthGateway.Common.AccessManagement.Authentication
         /// Initializes a new instance of the <see cref="AuthenticationDelegate"/> class.
         /// </summary>
         /// <param name="logger">The injected logger provider.</param>
-        /// <param name="httpClientService">The injected http client service.</param>
+        /// <param name="httpClientFactory">The injected http client factory.</param>
         /// <param name="configuration">The injected configuration provider.</param>
         /// <param name="cacheProvider">The injected cache provider.</param>
         /// <param name="httpContextAccessor">The Http Context accessor.</param>
         public AuthenticationDelegate(
             ILogger<AuthenticationDelegate> logger,
-            IHttpClientService httpClientService,
+            IHttpClientFactory httpClientFactory,
             IConfiguration configuration,
             ICacheProvider cacheProvider,
             IHttpContextAccessor? httpContextAccessor)
         {
             this.logger = logger;
-            this.httpClientService = httpClientService;
+            this.httpClientFactory = httpClientFactory;
             this.configuration = configuration;
             this.cacheProvider = cacheProvider;
             this.httpContextAccessor = httpContextAccessor;
@@ -194,7 +193,7 @@ namespace HealthGateway.Common.AccessManagement.Authentication
             JwtModel? authModel = null;
             try
             {
-                using HttpClient client = this.httpClientService.CreateDefaultHttpClient();
+                using HttpClient client = this.httpClientFactory.CreateClient();
 
                 IEnumerable<KeyValuePair<string?, string?>> oauthParams = new[]
                 {
@@ -231,7 +230,7 @@ namespace HealthGateway.Common.AccessManagement.Authentication
             JwtModel? authModel = null;
             try
             {
-                using HttpClient client = this.httpClientService.CreateDefaultHttpClient();
+                using HttpClient client = this.httpClientFactory.CreateClient();
 
                 IEnumerable<KeyValuePair<string?, string?>> oauthParams = new[]
                 {
