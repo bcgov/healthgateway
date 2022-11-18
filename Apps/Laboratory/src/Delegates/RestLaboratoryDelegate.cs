@@ -23,7 +23,6 @@ namespace HealthGateway.Laboratory.Delegates
     using System.Net;
     using System.Net.Http;
     using System.Threading.Tasks;
-    using HealthGateway.Common.AccessManagement.Authentication;
     using HealthGateway.Common.Data.Constants;
     using HealthGateway.Common.Data.ViewModels;
     using HealthGateway.Common.ErrorHandling;
@@ -41,7 +40,6 @@ namespace HealthGateway.Laboratory.Delegates
     public class RestLaboratoryDelegate : ILaboratoryDelegate
     {
         private const string LabConfigSectionKey = "Laboratory";
-        private readonly IAuthenticationDelegate authenticationDelegate;
         private readonly ILaboratoryApi laboratoryApi;
         private readonly LaboratoryConfig labConfig;
 
@@ -52,17 +50,14 @@ namespace HealthGateway.Laboratory.Delegates
         /// </summary>
         /// <param name="logger">Injected Logger Provider.</param>
         /// <param name="laboratoryApi">The client to use for laboratory api calls.</param>
-        /// <param name="authenticationDelegate">The auth delegate to fetch tokens.</param>
         /// <param name="configuration">The injected configuration provider.</param>
         public RestLaboratoryDelegate(
             ILogger<RestLaboratoryDelegate> logger,
             ILaboratoryApi laboratoryApi,
-            IAuthenticationDelegate authenticationDelegate,
             IConfiguration configuration)
         {
             this.logger = logger;
             this.laboratoryApi = laboratoryApi;
-            this.authenticationDelegate = authenticationDelegate;
             this.labConfig = new LaboratoryConfig();
             configuration.Bind(LabConfigSectionKey, this.labConfig);
         }
@@ -89,46 +84,33 @@ namespace HealthGateway.Laboratory.Delegates
                     ["subjectHdid"] = hdid,
                 };
 
-                string? accessToken = this.authenticationDelegate.FetchAuthenticatedUserToken();
-                if (accessToken != null)
+                try
                 {
-                    try
-                    {
-                        PhsaResult<List<PhsaCovid19Order>> response =
-                            await this.laboratoryApi.GetCovid19OrdersAsync(query, accessToken).ConfigureAwait(true);
-                        retVal.ResultStatus = ResultType.Success;
-                        retVal.ResourcePayload = response;
-                        retVal.TotalResultCount = retVal.ResourcePayload.Result!.Count;
-                    }
-                    catch (Exception e) when (e is ApiException or HttpRequestException)
-                    {
-                        if (e is ApiException { StatusCode: HttpStatusCode.NoContent })
-                        {
-                            retVal.ResultStatus = ResultType.Success;
-                            retVal.ResourcePayload = new() { Result = new() };
-                            retVal.TotalResultCount = 0;
-                        }
-                        else
-                        {
-                            this.logger.LogError("Error while retrieving Covid19 Orders... {Error}", e);
-                            HttpStatusCode? statusCode = (e as ApiException)?.StatusCode ?? ((HttpRequestException)e).StatusCode;
-
-                            retVal.ResultError = new()
-                            {
-                                ResultMessage = $"Status: {statusCode}. Error while retrieving Covid19 Orders",
-                                ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.Phsa),
-                            };
-                        }
-                    }
+                    PhsaResult<List<PhsaCovid19Order>> response =
+                        await this.laboratoryApi.GetCovid19OrdersAsync(query, bearerToken).ConfigureAwait(true);
+                    retVal.ResultStatus = ResultType.Success;
+                    retVal.ResourcePayload = response;
+                    retVal.TotalResultCount = retVal.ResourcePayload.Result!.Count;
                 }
-                else
+                catch (Exception e) when (e is ApiException or HttpRequestException)
                 {
-                    retVal.ResultError = new()
+                    if (e is ApiException { StatusCode: HttpStatusCode.NoContent })
                     {
-                        ResultMessage = "Error while retrieving Covid19 Orders - Unable to acquire authentication token",
-                        ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.Keycloak),
-                    };
-                    this.logger.LogError("Error while retrieving Covid19 Orders - Unable to acquire authentication token");
+                        retVal.ResultStatus = ResultType.Success;
+                        retVal.ResourcePayload = new() { Result = new() };
+                        retVal.TotalResultCount = 0;
+                    }
+                    else
+                    {
+                        this.logger.LogError("Error while retrieving Covid19 Orders... {Error}", e);
+                        HttpStatusCode? statusCode = (e as ApiException)?.StatusCode ?? ((HttpRequestException)e).StatusCode;
+
+                        retVal.ResultError = new()
+                        {
+                            ResultMessage = $"Status: {statusCode}. Error while retrieving Covid19 Orders",
+                            ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.Phsa),
+                        };
+                    }
                 }
 
                 this.logger.LogDebug("Finished getting Covid19 Orders");
@@ -154,43 +136,30 @@ namespace HealthGateway.Laboratory.Delegates
                     ["subjectHdid"] = hdid,
                 };
 
-                string? accessToken = this.authenticationDelegate.FetchAuthenticatedUserToken();
-                if (accessToken != null)
+                try
                 {
-                    try
+                    if (isCovid19)
                     {
-                        if (isCovid19)
-                        {
-                            retVal.ResourcePayload = await this.laboratoryApi.GetLaboratoryReportAsync(id, query, accessToken).ConfigureAwait(true);
-                        }
-                        else
-                        {
-                            retVal.ResourcePayload = await this.laboratoryApi.GetPlisLaboratoryReportAsync(id, query, accessToken).ConfigureAwait(true);
-                        }
-
-                        retVal.ResultStatus = ResultType.Success;
-                        retVal.TotalResultCount = 1;
+                        retVal.ResourcePayload = await this.laboratoryApi.GetLaboratoryReportAsync(id, query, bearerToken).ConfigureAwait(true);
                     }
-                    catch (Exception e) when (e is ApiException or HttpRequestException)
+                    else
                     {
-                        this.logger.LogError("Error retrieving Laboratory Report...{Error}", e);
-                        HttpStatusCode? statusCode = (e as ApiException)?.StatusCode ?? ((HttpRequestException)e).StatusCode;
-
-                        retVal.ResultError = new()
-                        {
-                            ResultMessage = statusCode == HttpStatusCode.NoContent ? "Laboratory Report not found" : $"Status: {statusCode}. Error retrieving Laboratory Report",
-                            ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.Phsa),
-                        };
+                        retVal.ResourcePayload = await this.laboratoryApi.GetPlisLaboratoryReportAsync(id, query, bearerToken).ConfigureAwait(true);
                     }
+
+                    retVal.ResultStatus = ResultType.Success;
+                    retVal.TotalResultCount = 1;
                 }
-                else
+                catch (Exception e) when (e is ApiException or HttpRequestException)
                 {
+                    this.logger.LogError("Error retrieving Laboratory Report...{Error}", e);
+                    HttpStatusCode? statusCode = (e as ApiException)?.StatusCode ?? ((HttpRequestException)e).StatusCode;
+
                     retVal.ResultError = new()
                     {
-                        ResultMessage = "Error retrieving Laboratory Report - Unable to acquire authentication token",
-                        ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.Keycloak),
+                        ResultMessage = statusCode == HttpStatusCode.NoContent ? "Laboratory Report not found" : $"Status: {statusCode}. Error retrieving Laboratory Report",
+                        ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.Phsa),
                     };
-                    this.logger.LogError("Error retrieving Laboratory Report - Unable to acquire authentication token");
                 }
 
                 this.logger.LogDebug("Finished getting Laboratory Report");
@@ -216,46 +185,33 @@ namespace HealthGateway.Laboratory.Delegates
                 ["subjectHdid"] = hdid,
             };
 
-            string? accessToken = this.authenticationDelegate.FetchAuthenticatedUserToken();
-            if (accessToken != null)
+            try
             {
-                try
-                {
-                    PhsaResult<PhsaLaboratorySummary> response =
-                        await this.laboratoryApi.GetPlisLaboratorySummaryAsync(query, accessToken).ConfigureAwait(true);
-                    retVal.ResultStatus = ResultType.Success;
-                    retVal.ResourcePayload = response;
-                    retVal.TotalResultCount = retVal.ResourcePayload.Result!.LabOrderCount;
-                }
-                catch (Exception e) when (e is ApiException or HttpRequestException)
-                {
-                    if (e is ApiException { StatusCode: HttpStatusCode.NoContent })
-                    {
-                        retVal.ResultStatus = ResultType.Success;
-                        retVal.ResourcePayload = new() { Result = new() };
-                        retVal.TotalResultCount = 0;
-                    }
-                    else
-                    {
-                        this.logger.LogError("Error while retrieving Laboratory Summary... {Error}", e);
-                        HttpStatusCode? statusCode = (e as ApiException)?.StatusCode ?? ((HttpRequestException)e).StatusCode;
-
-                        retVal.ResultError = new()
-                        {
-                            ResultMessage = $"Status: {statusCode}. Error while retrieving Laboratory Summary",
-                            ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.Phsa),
-                        };
-                    }
-                }
+                PhsaResult<PhsaLaboratorySummary> response =
+                    await this.laboratoryApi.GetPlisLaboratorySummaryAsync(query, bearerToken).ConfigureAwait(true);
+                retVal.ResultStatus = ResultType.Success;
+                retVal.ResourcePayload = response;
+                retVal.TotalResultCount = retVal.ResourcePayload.Result!.LabOrderCount;
             }
-            else
+            catch (Exception e) when (e is ApiException or HttpRequestException)
             {
-                retVal.ResultError = new()
+                if (e is ApiException { StatusCode: HttpStatusCode.NoContent })
                 {
-                    ResultMessage = "Error while retrieving Laboratory Summary - Unable to acquire authentication token",
-                    ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.Keycloak),
-                };
-                this.logger.LogError("Error while retrieving Laboratory Summary - Unable to acquire authentication token");
+                    retVal.ResultStatus = ResultType.Success;
+                    retVal.ResourcePayload = new() { Result = new() };
+                    retVal.TotalResultCount = 0;
+                }
+                else
+                {
+                    this.logger.LogError("Error while retrieving Laboratory Summary... {Error}", e);
+                    HttpStatusCode? statusCode = (e as ApiException)?.StatusCode ?? ((HttpRequestException)e).StatusCode;
+
+                    retVal.ResultError = new()
+                    {
+                        ResultMessage = $"Status: {statusCode}. Error while retrieving Laboratory Summary",
+                        ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.Phsa),
+                    };
+                }
             }
 
             this.logger.LogDebug("Finished getting laboratory summary");

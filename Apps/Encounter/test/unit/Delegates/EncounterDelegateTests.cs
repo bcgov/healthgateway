@@ -116,7 +116,7 @@ namespace HealthGateway.EncounterTests.Delegates
         /// GetMSPVisits - Handles api exception.
         /// </summary>
         [Fact]
-        public void ShouldHandleApiException()
+        public void ShouldGetMspVisitsHandleApiException()
         {
             string expectedMessage = $"Status: {HttpStatusCode.Unauthorized}. Error while retrieving Msp Visits";
             OdrHistoryQuery query = new()
@@ -125,9 +125,9 @@ namespace HealthGateway.EncounterTests.Delegates
             };
 
             // Arrange
-            ApiException mockApiException = MockRefitException.CreateApiException(HttpStatusCode.Unauthorized, HttpMethod.Post);
+            ApiException mockException = MockRefitException.CreateApiException(HttpStatusCode.Unauthorized, HttpMethod.Post);
             Mock<IMspVisitApi> mockMspVisitApi = new();
-            mockMspVisitApi.Setup(s => s.GetMspVisitsAsync(It.IsAny<MspVisitHistory>())).ThrowsAsync(mockApiException);
+            mockMspVisitApi.Setup(s => s.GetMspVisitsAsync(It.IsAny<MspVisitHistory>())).ThrowsAsync(mockException);
             IMspVisitDelegate mspVisitDelegate = new RestMspVisitDelegate(new Mock<ILogger<RestMspVisitDelegate>>().Object, mockMspVisitApi.Object);
 
             // Act
@@ -145,7 +145,7 @@ namespace HealthGateway.EncounterTests.Delegates
         /// GetMSPVisits - Handles api exception.
         /// </summary>
         [Fact]
-        public void ShouldHandleHttpRequestException()
+        public void ShouldGetMspVisitsHandleHttpRequestException()
         {
             string expectedMessage = $"Status: {HttpStatusCode.InternalServerError}. Error while retrieving Msp Visits";
 
@@ -155,9 +155,9 @@ namespace HealthGateway.EncounterTests.Delegates
             };
 
             // Arrange
-            HttpRequestException mockHttpRequestException = MockRefitException.CreateHttpRequestException("Internal Server Error", HttpStatusCode.InternalServerError);
+            HttpRequestException mockException = MockRefitException.CreateHttpRequestException("Internal Server Error", HttpStatusCode.InternalServerError);
             Mock<IMspVisitApi> mockMspVisitApi = new();
-            mockMspVisitApi.Setup(s => s.GetMspVisitsAsync(It.IsAny<MspVisitHistory>())).ThrowsAsync(mockHttpRequestException);
+            mockMspVisitApi.Setup(s => s.GetMspVisitsAsync(It.IsAny<MspVisitHistory>())).ThrowsAsync(mockException);
             IMspVisitDelegate mspVisitDelegate = new RestMspVisitDelegate(new Mock<ILogger<RestMspVisitDelegate>>().Object, mockMspVisitApi.Object);
 
             // Act
