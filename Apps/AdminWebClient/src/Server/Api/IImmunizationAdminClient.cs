@@ -17,6 +17,8 @@ namespace HealthGateway.Admin.Api;
 
 using System.Threading.Tasks;
 using HealthGateway.Admin.Models.CovidSupport;
+using HealthGateway.Admin.Models.Immunization;
+using HealthGateway.Common.Models.PHSA;
 using Refit;
 
 /// <summary>
@@ -41,4 +43,13 @@ public interface IImmunizationAdminClient
     /// <returns>The details to help support covid anti viral therapeutic assessment.</returns>
     [Post("/api/v1/Support/Immunizations/AntiViralSupportDetails")]
     Task<IApiResponse<CovidAssessmentDetailsResponse>> GetCovidAssessmentDetails([Body] CovidAssessmentDetailsRequest request, [Authorize] string token);
+
+    /// <summary>
+    /// Gets the vaccine validation details for the provided patient information.
+    /// </summary>
+    /// <param name="request">The covid immunization details request to identify the patient.</param>
+    /// <param name="token">The bearer token to authorize the call.</param>
+    /// <returns>The vaccine validation details for the patient request.</returns>
+    [Post("/api/v1/Support/Immunizations/VaccineValidationDetails")]
+    Task<IApiResponse<PhsaResult<VaccineDetailsResponse>>> GetVaccineDetails([Body] CovidImmunizationsRequest request, [Authorize] string token);
 }
