@@ -15,7 +15,6 @@
 // -------------------------------------------------------------------------
 namespace HealthGateway.Common.Data.Tests.Utils
 {
-    using System.Collections.Generic;
     using HealthGateway.Common.Data.Utils;
     using Xunit;
 
@@ -30,14 +29,14 @@ namespace HealthGateway.Common.Data.Tests.Utils
         [Fact]
         public void ShouldReplace()
         {
-            string inStr = "PARM1=${PARM1}, PARM2=${PARM2}, PARM3=${PARM3}";
-            string expected1 = "PARM1=PARM1, PARM2=${PARM2}, PARM3=${PARM3}";
-            string expected2 = "PARM1=PARM1, PARM2=PARM2, PARM3=${PARM3}";
-            string expected3 = "PARM1=PARM1, PARM2=PARM2, PARM3=PARM3";
+            string inStr = "PARAM1=${PARAM1}, PARAM2=${PARAM2}, PARAM3=${PARAM3}";
+            string expected1 = "PARAM1=PARAM1, PARAM2=${PARAM2}, PARAM3=${PARAM3}";
+            string expected2 = "PARAM1=PARAM1, PARAM2=PARAM2, PARAM3=${PARAM3}";
+            string expected3 = "PARAM1=PARAM1, PARAM2=PARAM2, PARAM3=PARAM3";
 
-            string? actual1 = StringManipulator.Replace(inStr, "PARM1", "PARM1");
-            string? actual2 = StringManipulator.Replace(expected1, "PARM2", "PARM2");
-            string? actual3 = StringManipulator.Replace(expected2, "PARM3", "PARM3");
+            string actual1 = StringManipulator.Replace(inStr, new() { ["PARAM1"] = "PARAM1" });
+            string actual2 = StringManipulator.Replace(expected1, new() { ["PARAM2"] = "PARAM2" });
+            string actual3 = StringManipulator.Replace(expected2, new() { ["PARAM3"] = "PARAM3" });
 
             Assert.Equal(expected1, actual1);
             Assert.Equal(expected2, actual2);
@@ -45,34 +44,24 @@ namespace HealthGateway.Common.Data.Tests.Utils
         }
 
         /// <summary>
-        /// Replace - Happy Path (With Dict).
+        /// Replace Multiple - Happy Path.
         /// </summary>
         [Fact]
-        public void ShouldReplaceDictionary()
+        public void ShouldReplaceMultiple()
         {
-            Dictionary<string, string> data = new()
-            {
-                { "PARM1", "PARM1" },
-                { "PARM2", "PARM2" },
-                { "PARM3", "PARM3" },
-            };
-            string inStr = "PARM1=${PARM1}, PARM2=${PARM2}, PARM3=${PARM3}";
-            string expected = "PARM1=PARM1, PARM2=PARM2, PARM3=PARM3";
+            string inStr = "PARAM1=${PARAM1}, PARAM2=${PARAM2}, PARAM3=${PARAM3}";
+            string expected = "PARAM1=PARAM1, PARAM2=PARAM2, PARAM3=PARAM3";
 
-            string? result = StringManipulator.Replace(inStr, data);
+            string result = StringManipulator.Replace(
+                inStr,
+                new()
+                {
+                    ["PARAM1"] = "PARAM1",
+                    ["PARAM2"] = "PARAM2",
+                    ["PARAM3"] = "PARAM3",
+                });
 
             Assert.True(result == expected);
-        }
-
-        /// <summary>
-        /// Replace - Nullable.
-        /// </summary>
-        [Fact]
-        public void ShouldNullReturnNull()
-        {
-            string? result = StringManipulator.Replace(null, "KEY", "VALUE");
-
-            Assert.True(result is null);
         }
 
         /// <summary>

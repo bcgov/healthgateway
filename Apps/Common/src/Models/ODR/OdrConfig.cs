@@ -21,6 +21,11 @@ namespace HealthGateway.Common.Models.ODR
     public class OdrConfig
     {
         /// <summary>
+        /// The section key to lookup the configuration for ODR services.
+        /// </summary>
+        public const string OdrConfigSectionKey = "ODR";
+
+        /// <summary>
         /// Gets or sets the OpenShift service name.
         /// </summary>
         public string ServiceName { get; set; } = "ODRPROXY_SERVICE";

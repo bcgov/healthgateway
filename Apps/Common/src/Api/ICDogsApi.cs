@@ -1,4 +1,4 @@
-﻿// -------------------------------------------------------------------------
+// -------------------------------------------------------------------------
 //  Copyright © 2019 Province of British Columbia
 //
 //  Licensed under the Apache License, Version 2.0 (the "License");
@@ -13,21 +13,24 @@
 //  See the License for the specific language governing permissions and
 //  limitations under the License.
 // -------------------------------------------------------------------------
-namespace HealthGateway.Common.Models
+namespace HealthGateway.Common.Api
 {
+    using System.Net.Http;
+    using System.Threading.Tasks;
+    using HealthGateway.Common.Models.CDogs;
+    using Refit;
+
     /// <summary>
-    /// Provides configuration data for the PHSA notifications settings API.
+    /// Refit interface to interact with the Common Document Generation Service (CDOGS).
     /// </summary>
-    public class NotificationSettingsConfig
+    public interface ICDogsApi
     {
         /// <summary>
-        /// Configuration section key for the PHSA notification settings API.
+        /// Generates a document.
         /// </summary>
-        public const string NotificationSettingsConfigSectionKey = "NotificationSettings";
-
-        /// <summary>
-        /// Gets or sets the external endpoint for the PHSA notification settings API.
-        /// </summary>
-        public string Endpoint { get; set; } = string.Empty;
+        /// <param name="request">Model containing an inline template and set of substitution variables.</param>
+        /// <returns>HttpResponseMessage containing the raw binary-encoded PDF that was generated.</returns>
+        [Post("/api/v2/template/render")]
+        Task<HttpResponseMessage> GenerateDocument([Body] CDogsRequestModel request);
     }
 }

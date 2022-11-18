@@ -16,67 +16,36 @@
 namespace HealthGateway.Common.Delegates
 {
     using System;
-    using System.Collections.Generic;
     using System.Diagnostics;
     using System.Net.Http;
-    using System.Net.Http.Headers;
-    using System.Net.Mime;
-    using System.Text;
-    using System.Text.Json;
     using System.Threading.Tasks;
+    using HealthGateway.Common.Api;
     using HealthGateway.Common.Data.Constants;
-    using HealthGateway.Common.Data.Utils;
     using HealthGateway.Common.Data.ViewModels;
     using HealthGateway.Common.ErrorHandling;
     using HealthGateway.Common.Models;
     using HealthGateway.Common.Models.CDogs;
-    using HealthGateway.Common.Services;
-    using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.Logging;
 
     /// <summary>
-    /// The CDogs report generator delegate.
+    /// The CDOGS report generator delegate.
     /// </summary>
     public class CDogsDelegate : ICDogsDelegate
     {
-        private const string CdogsConfigSectionKey = "CDOGS";
-        private readonly IHttpClientService httpClientService;
+        private readonly ICDogsApi cdogsApi;
         private readonly ILogger<CDogsDelegate> logger;
-        private readonly Uri serviceEndpoint;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="CDogsDelegate"/> class.
         /// </summary>
-        /// <param name="logger">Injected Logger Provider.</param>
-        /// <param name="httpClientService">The injected http client service.</param>
-        /// <param name="configuration">The injected configuration provider.</param>
+        /// <param name="logger">The injected Logger Provider.</param>
+        /// <param name="cdogsApi">The injected Refit API.</param>
         public CDogsDelegate(
             ILogger<CDogsDelegate> logger,
-            IHttpClientService httpClientService,
-            IConfiguration configuration)
+            ICDogsApi cdogsApi)
         {
             this.logger = logger;
-            this.httpClientService = httpClientService;
-            CDogsConfig cdogsConfig = new();
-            configuration.Bind(CdogsConfigSectionKey, cdogsConfig);
-            if (cdogsConfig.DynamicServiceLookup)
-            {
-                string? serviceHost = Environment.GetEnvironmentVariable($"{cdogsConfig.ServiceName}{cdogsConfig.ServiceHostSuffix}");
-                string? servicePort = Environment.GetEnvironmentVariable($"{cdogsConfig.ServiceName}{cdogsConfig.ServicePortSuffix}");
-                Dictionary<string, string> replacementData = new()
-                {
-                    { "serviceHost", serviceHost! },
-                    { "servicePort", servicePort! },
-                };
-
-                this.serviceEndpoint = new Uri(StringManipulator.Replace(cdogsConfig.BaseEndpoint, replacementData)!);
-            }
-            else
-            {
-                this.serviceEndpoint = new Uri(cdogsConfig.BaseEndpoint);
-            }
-
-            logger.LogInformation("CDogs URL resolved as {ServiceEndpoint}", this.serviceEndpoint);
+            this.cdogsApi = cdogsApi;
         }
 
         private static ActivitySource Source { get; } = new(nameof(CDogsDelegate));
@@ -90,14 +59,10 @@ namespace HealthGateway.Common.Delegates
                 {
                     ResultStatus = ResultType.Error,
                 };
-                using HttpClient client = this.httpClientService.CreateDefaultHttpClient();
-                client.DefaultRequestHeaders.Accept.Clear();
-                client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue(MediaTypeNames.Application.Json));
-                using StringContent httpContent = new(JsonSerializer.Serialize(request), Encoding.UTF8, MediaTypeNames.Application.Json);
+
                 try
                 {
-                    Uri endpoint = new($"{this.serviceEndpoint}api/v2/template/render");
-                    HttpResponseMessage response = await client.PostAsync(endpoint, httpContent).ConfigureAwait(true);
+                    HttpResponseMessage response = await this.cdogsApi.GenerateDocument(request).ConfigureAwait(true);
                     byte[] payload = await response.Content.ReadAsByteArrayAsync().ConfigureAwait(true);
                     this.logger.LogTrace("CDogs Response status code: {ResponseStatusCode}", response.StatusCode);
 
@@ -118,7 +83,7 @@ namespace HealthGateway.Common.Delegates
                             ResultMessage = $"Unable to connect to CDogs API, HTTP Error {response.StatusCode}",
                             ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationInternal, ServiceType.CDogs),
                         };
-                        this.logger.LogError("Unable to connect to endpoint {Endpoint}, HTTP Error {StatusCode}\n{Payload}", endpoint, response.StatusCode, payload);
+                        this.logger.LogError("Unable to connect to CDogs API, HTTP Error {StatusCode}\n{Payload}", response.StatusCode, payload);
                     }
                 }
 #pragma warning disable CA1031 // Do not catch general exception types

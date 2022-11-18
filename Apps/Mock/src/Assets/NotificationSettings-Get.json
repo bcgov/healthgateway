@@ -1,9 +1,0 @@
-{
-    "smsEnabled": true,
-    "smsCellNumber": "5551231234",
-    "smsVerified": true,
-    "smsScope": ["COVID19"],
-    "emailEnabled": true,
-    "emailAddress": "email@email.blah",
-    "emailScope": ["COVID19"]
-}

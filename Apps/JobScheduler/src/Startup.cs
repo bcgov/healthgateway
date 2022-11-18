@@ -26,6 +26,7 @@ namespace HealthGateway.JobScheduler
     using HealthGateway.Common.AspNetConfiguration.Modules;
     using HealthGateway.Common.Delegates.PHSA;
     using HealthGateway.Common.Jobs;
+    using HealthGateway.Common.Models;
     using HealthGateway.Common.Services;
     using HealthGateway.Database.Delegates;
     using HealthGateway.DBMaintainer.FileDownload;
@@ -112,6 +113,11 @@ namespace HealthGateway.JobScheduler
             services.AddTransient<IFeedbackDelegate, DbFeedbackDelegate>();
             services.AddTransient<ICommunicationService, CommunicationService>();
             services.AddTransient<IWriteAuditEventDelegate, DbWriteAuditEventDelegate>();
+
+            // Add API Clients
+            NotificationSettingsConfig notificationSettingsConfig = new();
+            this.startupConfig.Configuration.Bind(NotificationSettingsConfig.NotificationSettingsConfigSectionKey, notificationSettingsConfig);
+            services.AddRefitClient<INotificationSettingsApi>().ConfigureHttpClient(c => c.BaseAddress = new Uri(notificationSettingsConfig.Endpoint));
 
             // Add injection for KeyCloak User Admin
             services.AddTransient<IAuthenticationDelegate, AuthenticationDelegate>();

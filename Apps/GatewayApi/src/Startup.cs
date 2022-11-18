@@ -16,12 +16,15 @@
 #pragma warning disable CA1303 //disable literal strings check
 namespace HealthGateway.GatewayApi
 {
+    using System;
     using System.Diagnostics.CodeAnalysis;
     using HealthGateway.Common.AccessManagement.Authentication;
+    using HealthGateway.Common.Api;
     using HealthGateway.Common.AspNetConfiguration;
+    using HealthGateway.Common.Data.Utils;
     using HealthGateway.Common.Delegates;
-    using HealthGateway.Common.Delegates.PHSA;
     using HealthGateway.Common.MapProfiles;
+    using HealthGateway.Common.Models.CDogs;
     using HealthGateway.Common.Services;
     using HealthGateway.Common.Utils;
     using HealthGateway.Database.Delegates;
@@ -31,6 +34,7 @@ namespace HealthGateway.GatewayApi
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
+    using Refit;
 
     /// <summary>
     /// Configures the application during startup.
@@ -95,10 +99,23 @@ namespace HealthGateway.GatewayApi
             services.AddTransient<ICommentDelegate, DbCommentDelegate>();
             services.AddTransient<ICryptoDelegate, AesCryptoDelegate>();
             services.AddTransient<ICommunicationDelegate, DbCommunicationDelegate>();
-            services.AddTransient<INotificationSettingsDelegate, RestNotificationSettingsDelegate>();
             services.AddTransient<IUserPreferenceDelegate, DbUserPreferenceDelegate>();
             services.AddTransient<IResourceDelegateDelegate, DbResourceDelegateDelegate>();
             services.AddTransient<ICDogsDelegate, CDogsDelegate>();
+
+            // Add API Clients
+            CDogsConfig cdogsConfig = new();
+            this.startupConfig.Configuration.Bind(CDogsConfig.CDogsConfigSectionKey, cdogsConfig);
+            string cdogsEndpoint = cdogsConfig.BaseEndpoint;
+            if (cdogsConfig.DynamicServiceLookup)
+            {
+                cdogsEndpoint = ConfigurationUtility.ConstructServiceEndpoint(
+                    cdogsConfig.BaseEndpoint,
+                    $"{cdogsConfig.ServiceName}{cdogsConfig.ServiceHostSuffix}",
+                    $"{cdogsConfig.ServiceName}{cdogsConfig.ServicePortSuffix}");
+            }
+
+            services.AddRefitClient<ICDogsApi>().ConfigureHttpClient(c => c.BaseAddress = new Uri(cdogsEndpoint));
 
             services.Configure<ApiBehaviorOptions>(options => options.SuppressModelStateInvalidFilter = true);
 

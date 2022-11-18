@@ -157,8 +157,8 @@ namespace HealthGateway.Common.Services
             {
                 From = emailTemplate.From,
                 Priority = emailTemplate.Priority,
-                Subject = StringManipulator.Replace(emailTemplate.Subject, keyValues),
-                Body = StringManipulator.Replace(emailTemplate.Body, keyValues),
+                Subject = StringManipulator.Replace(emailTemplate.Subject!, keyValues),
+                Body = StringManipulator.Replace(emailTemplate.Body!, keyValues),
                 FormatCode = emailTemplate.FormatCode,
             };
         }
