@@ -1,4 +1,4 @@
-﻿// -------------------------------------------------------------------------
+// -------------------------------------------------------------------------
 //  Copyright © 2019 Province of British Columbia
 //
 //  Licensed under the Apache License, Version 2.0 (the "License");
@@ -13,21 +13,24 @@
 //  See the License for the specific language governing permissions and
 //  limitations under the License.
 // -------------------------------------------------------------------------
-namespace HealthGateway.Common.Models
+namespace HealthGateway.Medication.Api
 {
+    using System.Threading.Tasks;
+    using HealthGateway.Medication.Models.Salesforce;
+    using Refit;
+
     /// <summary>
-    /// Provides configuration data for the PHSA notifications settings API.
+    /// Special Authority API that connects to Salesforce backend.
     /// </summary>
-    public class NotificationSettingsConfig
+    public interface ISpecialAuthorityApi
     {
         /// <summary>
-        /// Configuration section key for the PHSA notification settings API.
+        /// Retrieves the wrapped response of MedicationRequests.
         /// </summary>
-        public const string NotificationSettingsConfigSectionKey = "NotificationSettings";
-
-        /// <summary>
-        /// Gets or sets the external endpoint for the PHSA notification settings API.
-        /// </summary>
-        public string Endpoint { get; set; } = string.Empty;
+        /// <param name="phn">The PHN to query.</param>
+        /// <param name="token">The access token to be used for the authorize header.</param>
+        /// <returns>A wrapped response of SpecialAuthority requests.</returns>
+        [Get("")]
+        Task<ResponseWrapper> GetSpecialAuthorityRequests([Header("phn")] string phn, [Authorize] string token);
     }
 }

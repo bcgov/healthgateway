@@ -16,17 +16,25 @@
 #pragma warning disable CA1303 //disable literal strings check
 namespace HealthGateway.Medication
 {
+    using System;
     using System.Diagnostics.CodeAnalysis;
+    using System.Text.Json;
+    using System.Text.Json.Serialization;
     using HealthGateway.Common.AccessManagement.Authentication;
     using HealthGateway.Common.AspNetConfiguration;
+    using HealthGateway.Common.Data.Utils;
     using HealthGateway.Common.Delegates;
+    using HealthGateway.Common.Models.ODR;
     using HealthGateway.Database.Delegates;
+    using HealthGateway.Medication.Api;
     using HealthGateway.Medication.Delegates;
+    using HealthGateway.Medication.Models.Salesforce;
     using HealthGateway.Medication.Services;
     using Microsoft.AspNetCore.Builder;
     using Microsoft.AspNetCore.Hosting;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
+    using Refit;
 
     /// <summary>
     /// Configures the application during startup.
@@ -91,6 +99,31 @@ namespace HealthGateway.Medication
             services.AddTransient<IHashDelegate, HmacHashDelegate>();
             services.AddTransient<IMedicationRequestDelegate, SalesforceDelegate>();
             services.AddTransient<IAuthenticationDelegate, AuthenticationDelegate>();
+
+            // Add API Clients
+            Config sfConfig = new();
+            this.startupConfig.Configuration.Bind(Config.SalesforceConfigSectionKey, sfConfig);
+            services.AddRefitClient<ISpecialAuthorityApi>()
+                .ConfigureHttpClient(c => c.BaseAddress = sfConfig.Endpoint);
+
+            OdrConfig odrConfig = new OdrConfig();
+            this.startupConfig.Configuration.Bind(OdrConfig.OdrConfigSectionKey, odrConfig);
+            string endpoint = odrConfig.DynamicServiceLookup
+                ? ConfigurationUtility.ConstructServiceEndpoint(
+                    odrConfig.BaseEndpoint,
+                    $"{odrConfig.ServiceName}{odrConfig.ServiceHostSuffix}",
+                    $"{odrConfig.ServiceName}{odrConfig.ServicePortSuffix}")
+                : odrConfig.BaseEndpoint;
+            services.AddRefitClient<IOdrApi>(new RefitSettings()
+                {
+                    // These are required for the ODR Proxy Protective Word
+                    ContentSerializer = new SystemTextJsonContentSerializer(new()
+                    {
+                        PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+                        DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
+                    }),
+                })
+                .ConfigureHttpClient(c => c.BaseAddress = new Uri(endpoint));
         }
 
         /// <summary>

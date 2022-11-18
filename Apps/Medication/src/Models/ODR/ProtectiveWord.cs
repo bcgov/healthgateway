@@ -16,6 +16,7 @@
 namespace HealthGateway.Medication.Models.ODR
 {
     using System;
+    using System.Diagnostics.CodeAnalysis;
     using System.Text.Json.Serialization;
 
     /// <summary>
@@ -45,6 +46,7 @@ namespace HealthGateway.Medication.Models.ODR
         /// Gets or sets the QueryRequest for the MedicationHistory integration.
         /// </summary>
         [JsonPropertyName("maintainProtectiveWord")]
-        public ProtectiveWordQueryResponse? QueryResponse { get; set; }
+        [SuppressMessage("StyleCop.CSharp.OrderingRules", "SA1206:DeclarationKeywordsMustFollowOrder", Justification = "Ordering conflict")]
+        public required ProtectiveWordQueryResponse QueryResponse { get; set; }
     }
 }

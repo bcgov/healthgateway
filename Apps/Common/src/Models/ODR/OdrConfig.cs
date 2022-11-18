@@ -21,7 +21,7 @@ namespace HealthGateway.Common.Models.ODR
     public class OdrConfig
     {
         /// <summary>
-        /// The section key to use when binding this object.
+        /// The section key to lookup the configuration for ODR services.
         /// </summary>
         public const string OdrConfigSectionKey = "ODR";
 

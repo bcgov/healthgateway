@@ -3,11 +3,11 @@ describe("WebClient Service", () => {
         cy.logout();
         cy.readConfig().then((config) => {
             cy.log(
-                "Verifying Swagger exists for GatewayAPI at ${config.serviceEndpoints.GatewayApi}/swagger"
+                "Verifying Swagger exists for GatewayAPI at ${config.serviceEndpoints.GatewayApi}swagger"
             );
             cy.request({
                 method: "GET",
-                url: `${config.serviceEndpoints.GatewayApi}/swagger/index.html`,
+                url: `${config.serviceEndpoints.GatewayApi}swagger/index.html`,
                 followRedirect: false,
                 failOnStatusCode: false,
             }).should((response) => {
@@ -21,11 +21,11 @@ describe("WebClient Service", () => {
         cy.logout();
         cy.readConfig().then((config) => {
             cy.log(
-                "Verifying wwagger.json payload for GatewayAPI at ${config.serviceEndpoints.GatewayApi}/swagger"
+                "Verifying swagger.json payload for GatewayAPI at ${config.serviceEndpoints.GatewayApi}swagger"
             );
             cy.request({
                 method: "GET",
-                url: `${config.serviceEndpoints.GatewayApi}/swagger/v1/swagger.json`,
+                url: `${config.serviceEndpoints.GatewayApi}swagger/v1/swagger.json`,
                 followRedirect: false,
                 failOnStatusCode: false,
             }).should((response) => {

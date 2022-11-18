@@ -72,7 +72,6 @@
   <ItemGroup>
     <Folder Include="AspNetConfiguration\" />
     <Folder Include="Auditing\" />
-    <Folder Include="FileDownload\" />
     <Folder Include="Filters\" />
     <Folder Include="resources\" />
     <Folder Include="ServiceReference\" />

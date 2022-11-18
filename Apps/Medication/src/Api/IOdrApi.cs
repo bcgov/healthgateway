@@ -13,34 +13,31 @@
 //  See the License for the specific language governing permissions and
 //  limitations under the License.
 // -------------------------------------------------------------------------
-namespace HealthGateway.Medication.Models.Salesforce
+namespace HealthGateway.Medication.Api
 {
-    using System;
-    using HealthGateway.Common.AccessManagement.Authentication.Models;
+    using System.Threading.Tasks;
+    using HealthGateway.Medication.Models.ODR;
+    using Refit;
 
     /// <summary>
-    /// Provides configuration data for the Salesforce delegate.
+    /// API to interact with ODR for Medication History and ProtectiveWord.
     /// </summary>
-    public class Config
+    public interface IOdrApi
     {
         /// <summary>
-        /// The key used to lookup Salesforce configuration.
+        /// Gets the Medication History for the supplied request.
         /// </summary>
-        public const string SalesforceConfigSectionKey = "Salesforce";
+        /// <param name="request">The request to query.</param>
+        /// <returns>The MedicationHistory.</returns>
+        [Post("/odr/patientProfile")]
+        Task<MedicationHistory> GetMedicationHistoryAsync(MedicationHistory request);
 
         /// <summary>
-        /// Gets or sets the Salesforce external endpoint.
+        /// Gets the Protective Word.
         /// </summary>
-        public Uri Endpoint { get; set; } = null!;
-
-        /// <summary>
-        /// Gets or sets the Salesforce token Uri.
-        /// </summary>
-        public Uri TokenUri { get; set; } = null!;
-
-        /// <summary>
-        /// Gets or sets the total number of records to retrieve in one call.
-        /// </summary>
-        public ClientCredentialsTokenRequest ClientAuthentication { get; set; } = new();
+        /// <param name="request">The protective word request.</param>
+        /// <returns>The ProtectiveWord.</returns>
+        [Post("/odr/maintainProtectiveWord")]
+        Task<ProtectiveWord> GetProtectiveWordAsync(ProtectiveWord request);
     }
 }
