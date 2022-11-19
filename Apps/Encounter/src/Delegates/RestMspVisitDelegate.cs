@@ -17,58 +17,37 @@ namespace HealthGateway.Encounter.Delegates
 {
     using System;
     using System.Diagnostics;
+    using System.Net;
     using System.Net.Http;
-    using System.Net.Http.Headers;
-    using System.Net.Mime;
-    using System.Text.Json;
     using System.Threading.Tasks;
     using HealthGateway.Common.Data.Constants;
-    using HealthGateway.Common.Data.Utils;
     using HealthGateway.Common.Data.ViewModels;
     using HealthGateway.Common.ErrorHandling;
     using HealthGateway.Common.Models.ODR;
-    using HealthGateway.Common.Services;
+    using HealthGateway.Encounter.Api;
     using HealthGateway.Encounter.Models.ODR;
-    using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.Logging;
+    using Refit;
 
     /// <summary>
     /// ODR Implementation for Rest Medication Statements.
     /// </summary>
     public class RestMspVisitDelegate : IMspVisitDelegate
     {
-        private const string OdrConfigSectionKey = "ODR";
-        private readonly Uri baseUrl;
-        private readonly IHttpClientService httpClientService;
-
+        private readonly IMspVisitApi mspVisitApi;
         private readonly ILogger logger;
-        private readonly OdrConfig odrConfig;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="RestMspVisitDelegate"/> class.
         /// </summary>
         /// <param name="logger">Injected Logger Provider.</param>
-        /// <param name="httpClientService">The injected http client service.</param>
-        /// <param name="configuration">The injected configuration provider.</param>
+        /// <param name="mspVisitApi">The injected client to use for msp visit api calls.</param>
         public RestMspVisitDelegate(
             ILogger<RestMspVisitDelegate> logger,
-            IHttpClientService httpClientService,
-            IConfiguration configuration)
+            IMspVisitApi mspVisitApi)
         {
             this.logger = logger;
-            this.httpClientService = httpClientService;
-
-            this.odrConfig = new OdrConfig();
-            configuration.Bind(OdrConfigSectionKey, this.odrConfig);
-            string endpoint = this.odrConfig.DynamicServiceLookup
-                ? ConfigurationUtility.ConstructServiceEndpoint(
-                    this.odrConfig.BaseEndpoint,
-                    $"{this.odrConfig.ServiceName}{this.odrConfig.ServiceHostSuffix}",
-                    $"{this.odrConfig.ServiceName}{this.odrConfig.ServicePortSuffix}")
-                : this.odrConfig.BaseEndpoint;
-            this.baseUrl = new Uri(endpoint);
-
-            logger.LogDebug("ODR Proxy URL resolved as {BaseUrl}", this.baseUrl);
+            this.mspVisitApi = mspVisitApi;
         }
 
         private static ActivitySource Source { get; } = new(nameof(RestMspVisitDelegate));
@@ -78,13 +57,13 @@ namespace HealthGateway.Encounter.Delegates
         {
             using (Source.StartActivity())
             {
-                RequestResult<MspVisitHistoryResponse> retVal = new();
                 this.logger.LogTrace("Getting MSP visits... {Phn}", query.Phn.Substring(0, 3));
 
-                using HttpClient client = this.httpClientService.CreateDefaultHttpClient();
-                client.DefaultRequestHeaders.Accept.Clear();
-                client.DefaultRequestHeaders.Accept.Add(
-                    new MediaTypeWithQualityHeaderValue(MediaTypeNames.Application.Json));
+                RequestResult<MspVisitHistoryResponse> retVal = new()
+                {
+                    ResultStatus = ResultType.Error,
+                };
+
                 MspVisitHistory request = new()
                 {
                     Id = Guid.NewGuid(),
@@ -92,42 +71,23 @@ namespace HealthGateway.Encounter.Delegates
                     RequestorIp = ipAddress,
                     Query = query,
                 };
+
                 try
                 {
-                    string json = JsonSerializer.Serialize(request);
-                    using HttpContent content = new StringContent(json, null, MediaTypeNames.Application.Json);
-                    Uri endpoint = new(this.baseUrl, this.odrConfig.MspVisitsEndpoint);
-                    HttpResponseMessage response = await client.PostAsync(endpoint, content).ConfigureAwait(true);
-                    string payload = await response.Content.ReadAsStringAsync().ConfigureAwait(true);
-                    if (response.IsSuccessStatusCode)
-                    {
-                        MspVisitHistory? visitHistory = JsonSerializer.Deserialize<MspVisitHistory>(payload);
-                        retVal.ResultStatus = ResultType.Success;
-                        retVal.ResourcePayload = visitHistory?.Response;
-                        retVal.TotalResultCount = visitHistory?.Response?.TotalRecords;
-                    }
-                    else
-                    {
-                        retVal.ResultStatus = ResultType.Error;
-                        retVal.ResultError = new RequestResultError
-                        {
-                            ResultMessage = $"Invalid HTTP Response code of {response.StatusCode} from ODR with reason {response.ReasonPhrase}",
-                            ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.OdrRecords),
-                        };
-                        this.logger.LogError("MSP Visits endpoint error message... {Message}", retVal.ResultError.ResultMessage);
-                    }
+                    MspVisitHistory visitHistory = await this.mspVisitApi.GetMspVisitsAsync(request).ConfigureAwait(true);
+                    retVal.ResultStatus = ResultType.Success;
+                    retVal.ResourcePayload = visitHistory.Response;
+                    retVal.TotalResultCount = visitHistory.Response?.TotalRecords;
                 }
-#pragma warning disable CA1031 // Do not catch general exception types
-                catch (Exception e)
-#pragma warning restore CA1031 // Do not catch general exception types
+                catch (Exception e) when (e is ApiException or HttpRequestException)
                 {
-                    retVal.ResultStatus = ResultType.Error;
-                    retVal.ResultError = new RequestResultError
+                    this.logger.LogError("Error while retrieving Msp Visits... {Error}", e);
+                    HttpStatusCode? statusCode = (e as ApiException)?.StatusCode ?? ((HttpRequestException)e).StatusCode;
+                    retVal.ResultError = new()
                     {
-                        ResultMessage = e.ToString(),
-                        ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.OdrRecords),
+                        ResultMessage = $"Status: {statusCode}. Error while retrieving Msp Visits",
+                        ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.Phsa),
                     };
-                    this.logger.LogError("Unable to post message {Exception}", e);
                 }
 
                 this.logger.LogDebug("Finished getting MSP visits");

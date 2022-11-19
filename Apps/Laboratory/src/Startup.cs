@@ -77,6 +77,8 @@ namespace HealthGateway.Laboratory
             this.startupConfig.Configuration.Bind(LaboratoryService.LabConfigSectionKey, labConfig);
             services.AddRefitClient<ILabTestKitClient>()
                 .ConfigureHttpClient(c => c.BaseAddress = labConfig.BaseUrl);
+            services.AddRefitClient<ILaboratoryApi>()
+                .ConfigureHttpClient(c => c.BaseAddress = labConfig.BaseUrl);
 
             services.AddAutoMapper(typeof(Startup));
         }

@@ -20,18 +20,18 @@ namespace HealthGateway.EncounterTests.Delegates
     using System.Linq;
     using System.Net;
     using System.Net.Http;
-    using System.Threading;
     using System.Threading.Tasks;
     using HealthGateway.Common.Data.Constants;
     using HealthGateway.Common.Data.ViewModels;
     using HealthGateway.Common.Models.ODR;
-    using HealthGateway.Common.Services;
+    using HealthGateway.Common.Utils;
+    using HealthGateway.Encounter.Api;
     using HealthGateway.Encounter.Delegates;
+    using HealthGateway.Encounter.Models;
     using HealthGateway.Encounter.Models.ODR;
-    using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.Logging;
     using Moq;
-    using Moq.Protected;
+    using Refit;
     using Xunit;
 
     /// <summary>
@@ -39,215 +39,136 @@ namespace HealthGateway.EncounterTests.Delegates
     /// </summary>
     public class EncounterDelegateTests
     {
-        private readonly IConfiguration configuration;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="EncounterDelegateTests"/> class.
-        /// </summary>
-        public EncounterDelegateTests()
-        {
-            this.configuration = GetIConfigurationRoot();
-        }
-
         /// <summary>
         /// GetMSPVisits - Happy Path.
         /// </summary>
         [Fact]
         public void ShouldGetMspVisits()
         {
-            string content = @"
-                   {
-                        ""uuid"": ""7c51465c-7a7d-489f-b186-8755ae094d09"",
-                        ""hdid"": ""P6FFO433A5WPMVTGM7T4ZVWBKCSVNAYGTWTU3J2LWMGUMERKI72A"",
-                        ""getMspVisitHistoryResponse"": {
-                            ""totalRecords"":  1,
-                            ""totalPages"": 1,
-                            ""claims"": [
-                            {
-                                ""claimId"": 1,
-                                ""serviceDate"": ""2020-05-27"",
-                                ""feeDesc"": ""TACROLIMUS"",
-                                ""diagnosticCode"": {
-                                    ""diagCode1"": ""01L"",
-                                    ""diagCode2"": ""02L"",
-                                    ""diagCode3"": ""03L""
-                                },
-                                ""specialtyDesc"": ""LABORATORY MEDICINE"",
-                                ""practitionerName"": ""PRACTITIONER NAME"",
-                                ""locationName"": ""PAYEE NAME"",
-                                ""locationAddress"": {
-                                    ""addrLine1"": ""address line 1"",
-                                    ""addrLine2"": ""address line 2"",
-                                    ""addrLine3"": ""address line 3"",
-                                    ""addrLine4"": ""address line 4"",
-                                    ""city"": ""city"",
-                                    ""postalCode"": ""V9V9V9"",
-                                    ""province"": ""BC""
-                                }
-                            }]
-                        }
-                    }";
-            using HttpResponseMessage httpResponseMessage = new()
-            {
-                StatusCode = HttpStatusCode.OK,
-                Content = new StringContent(content),
-            };
-            Mock<HttpMessageHandler> handlerMock = new();
-            handlerMock
-                .Protected()
-                .Setup<Task<HttpResponseMessage>>(
-                    "SendAsync",
-                    ItExpr.IsAny<HttpRequestMessage>(),
-                    ItExpr.IsAny<CancellationToken>())
-                .ReturnsAsync(httpResponseMessage)
-                .Verifiable();
-            Mock<IHttpClientService> mockHttpClientService = new();
-            mockHttpClientService.Setup(s => s.CreateDefaultHttpClient()).Returns(() => new HttpClient(handlerMock.Object));
-            IMspVisitDelegate mspVisitDelegate = new RestMspVisitDelegate(
-                new Mock<ILogger<RestMspVisitDelegate>>().Object,
-                mockHttpClientService.Object,
-                this.configuration);
+            Guid expectedMspHistoryResponseId = Guid.NewGuid();
+            int expectedClaimId = 1005;
+
             OdrHistoryQuery query = new()
             {
                 Phn = "123456789",
             };
 
+            // Arrange
+            MspVisitHistory mockResponse = new()
+            {
+                Id = Guid.NewGuid(),
+                RequestorHdid = "P6FFO433A5WPMVTGM7T4ZVWBKCSVNAYGTWTU3J2LWMGUMERKI72A",
+                Response = new MspVisitHistoryResponse
+                {
+                    Id = expectedMspHistoryResponseId,
+                    Pages = 1,
+                    TotalRecords = 1,
+                    Claims = new List<Claim>
+                    {
+                        new()
+                        {
+                            ClaimId = expectedClaimId,
+                            ServiceDate = DateTime.Now,
+                            FeeDesc = "Fee Desc",
+                            DiagnosticCode = new DiagnosticCode
+                            {
+                                DiagCode1 = "01L",
+                                DiagCode2 = "02L",
+                                DiagCode3 = "03L",
+                            },
+                            SpecialtyDesc = "LABORATORY MEDICINE",
+                            PractitionerName = "PRACTITIONER NAME",
+                            LocationName = "PAYEE NAME",
+                            LocationAddress = new LocationAddress
+                            {
+                                AddrLine1 = "Address Line 1",
+                                AddrLine2 = "Address Line 2",
+                                AddrLine3 = "Address Line 3",
+                                AddrLine4 = "Address Line 4",
+                                City = "City",
+                                PostalCode = "V9V9V9",
+                                Province = "BC",
+                            },
+                        },
+                    },
+                },
+            };
+
+            Mock<IMspVisitApi> mockMspVisitApi = new();
+            mockMspVisitApi.Setup(s => s.GetMspVisitsAsync(It.IsAny<MspVisitHistory>())).ReturnsAsync(mockResponse);
+
+            IMspVisitDelegate mspVisitDelegate = new RestMspVisitDelegate(
+                new Mock<ILogger<RestMspVisitDelegate>>().Object,
+                mockMspVisitApi.Object);
+
+            // Act
             RequestResult<MspVisitHistoryResponse> actualResult = Task.Run(async () => await mspVisitDelegate.GetMspVisitHistoryAsync(query, string.Empty, string.Empty).ConfigureAwait(true)).Result;
 
+            // Verify
             Assert.Equal(ResultType.Success, actualResult.ResultStatus);
             Assert.Single(actualResult.ResourcePayload?.Claims);
             Assert.Equal(1, actualResult.TotalResultCount);
+            Assert.Equal(expectedMspHistoryResponseId, actualResult.ResourcePayload.Id);
+            Assert.Equal(expectedClaimId, actualResult.ResourcePayload.Claims.First().ClaimId);
         }
 
         /// <summary>
-        /// GetMSPVisits - Dynamic Lookup Error.
+        /// GetMSPVisits - Handles api exception.
         /// </summary>
         [Fact]
-        public void ShouldErrorDynamicLookup()
+        public void ShouldGetMspVisitsHandleApiException()
         {
-            using HttpResponseMessage httpResponseMessage = new()
-            {
-                StatusCode = HttpStatusCode.Unauthorized,
-                Content = new StringContent(string.Empty),
-            };
-            Mock<HttpMessageHandler> handlerMock = new();
-            handlerMock
-                .Protected()
-                .Setup<Task<HttpResponseMessage>>(
-                    "SendAsync",
-                    ItExpr.IsAny<HttpRequestMessage>(),
-                    ItExpr.IsAny<CancellationToken>())
-                .ReturnsAsync(httpResponseMessage)
-                .Verifiable();
-            Mock<IHttpClientService> mockHttpClientService = new();
-            mockHttpClientService.Setup(s => s.CreateDefaultHttpClient()).Returns(() => new HttpClient(handlerMock.Object));
-
-            IMspVisitDelegate mspVisitDelegate = new RestMspVisitDelegate(
-                new Mock<ILogger<RestMspVisitDelegate>>().Object,
-                mockHttpClientService.Object,
-                GetLocalConfig());
+            string expectedMessage = $"Status: {HttpStatusCode.Unauthorized}. Error while retrieving Msp Visits";
             OdrHistoryQuery query = new()
             {
                 Phn = "123456789",
             };
 
+            // Arrange
+            ApiException mockException = MockRefitException.CreateApiException(HttpStatusCode.Unauthorized, HttpMethod.Post);
+            Mock<IMspVisitApi> mockMspVisitApi = new();
+            mockMspVisitApi.Setup(s => s.GetMspVisitsAsync(It.IsAny<MspVisitHistory>())).ThrowsAsync(mockException);
+            IMspVisitDelegate mspVisitDelegate = new RestMspVisitDelegate(new Mock<ILogger<RestMspVisitDelegate>>().Object, mockMspVisitApi.Object);
+
+            // Act
             RequestResult<MspVisitHistoryResponse> actualResult = Task.Run(
                     async () =>
                         await mspVisitDelegate.GetMspVisitHistoryAsync(query, string.Empty, string.Empty).ConfigureAwait(true))
                 .Result;
 
+            // Verify
             Assert.Equal(ResultType.Error, actualResult.ResultStatus);
+            Assert.Equal(expectedMessage, actualResult.ResultError!.ResultMessage);
         }
 
         /// <summary>
-        /// GetMSPVisits - Unauthorized.
+        /// GetMSPVisits - Handles api exception.
         /// </summary>
         [Fact]
-        public void ShouldErrorGetMspVisits()
+        public void ShouldGetMspVisitsHandleHttpRequestException()
         {
-            using HttpResponseMessage httpRequestMessage = new()
-            {
-                StatusCode = HttpStatusCode.Unauthorized,
-                Content = new StringContent(string.Empty),
-            };
-            Mock<HttpMessageHandler> handlerMock = new();
-            handlerMock
-                .Protected()
-                .Setup<Task<HttpResponseMessage>>(
-                    "SendAsync",
-                    ItExpr.IsAny<HttpRequestMessage>(),
-                    ItExpr.IsAny<CancellationToken>())
-                .ReturnsAsync(httpRequestMessage)
-                .Verifiable();
-            Mock<IHttpClientService> mockHttpClientService = new();
-            mockHttpClientService.Setup(s => s.CreateDefaultHttpClient()).Returns(() => new HttpClient(handlerMock.Object));
-            IMspVisitDelegate mspVisitDelegate = new RestMspVisitDelegate(
-                new Mock<ILogger<RestMspVisitDelegate>>().Object,
-                mockHttpClientService.Object,
-                this.configuration);
+            string expectedMessage = $"Status: {HttpStatusCode.InternalServerError}. Error while retrieving Msp Visits";
+
             OdrHistoryQuery query = new()
             {
                 Phn = "123456789",
             };
 
-            RequestResult<MspVisitHistoryResponse> actualResult = Task.Run(async () => await mspVisitDelegate.GetMspVisitHistoryAsync(query, string.Empty, string.Empty).ConfigureAwait(true)).Result;
+            // Arrange
+            HttpRequestException mockException = MockRefitException.CreateHttpRequestException("Internal Server Error", HttpStatusCode.InternalServerError);
+            Mock<IMspVisitApi> mockMspVisitApi = new();
+            mockMspVisitApi.Setup(s => s.GetMspVisitsAsync(It.IsAny<MspVisitHistory>())).ThrowsAsync(mockException);
+            IMspVisitDelegate mspVisitDelegate = new RestMspVisitDelegate(new Mock<ILogger<RestMspVisitDelegate>>().Object, mockMspVisitApi.Object);
 
+            // Act
+            RequestResult<MspVisitHistoryResponse> actualResult = Task.Run(
+                    async () =>
+                        await mspVisitDelegate.GetMspVisitHistoryAsync(query, string.Empty, string.Empty).ConfigureAwait(true))
+                .Result;
+
+            // Verify
             Assert.Equal(ResultType.Error, actualResult.ResultStatus);
-        }
-
-        /// <summary>
-        /// GetMSPVisits - Unknown Error.
-        /// </summary>
-        [Fact]
-        public void ShouldException()
-        {
-            Mock<HttpMessageHandler> handlerMock = new();
-            handlerMock
-                .Protected()
-                .Setup<Task<HttpResponseMessage>>(
-                    "SendAsync",
-                    ItExpr.IsAny<HttpRequestMessage>(),
-                    ItExpr.IsAny<CancellationToken>())
-                .Throws<HttpRequestException>()
-                .Verifiable();
-            using ILoggerFactory loggerFactory = LoggerFactory.Create(builder => builder.AddConsole());
-            Mock<IHttpClientService> mockHttpClientService = new();
-            mockHttpClientService.Setup(s => s.CreateDefaultHttpClient()).Returns(() => new HttpClient(handlerMock.Object));
-            IMspVisitDelegate mspVisitDelegate = new RestMspVisitDelegate(
-                loggerFactory.CreateLogger<RestMspVisitDelegate>(),
-                mockHttpClientService.Object,
-                this.configuration);
-            OdrHistoryQuery query = new()
-            {
-                Phn = "123456789",
-            };
-
-            RequestResult<MspVisitHistoryResponse> actualResult = Task.Run(async () => await mspVisitDelegate.GetMspVisitHistoryAsync(query, string.Empty, string.Empty).ConfigureAwait(true)).Result;
-
-            Assert.True(actualResult.ResultStatus == ResultType.Error);
-            Assert.True(actualResult.ResultError?.ErrorCode.EndsWith("-CE-ODR", StringComparison.InvariantCulture));
-        }
-
-        private static IConfigurationRoot GetIConfigurationRoot()
-        {
-            return new ConfigurationBuilder()
-                .AddJsonFile("appsettings.json", true)
-                .AddJsonFile("appsettings.Development.json", true)
-                .AddJsonFile("appsettings.local.json", true)
-                .Build();
-        }
-
-        private static IConfigurationRoot GetLocalConfig()
-        {
-            Dictionary<string, string?> myConfiguration = new()
-            {
-                { "ODR:DynamicServiceLookup", "True" },
-                { "ODR:BaseEndpoint", "http://mockendpoint/" },
-            };
-
-            return new ConfigurationBuilder()
-                .AddInMemoryCollection(myConfiguration.ToList())
-                .Build();
+            Assert.Equal(expectedMessage, actualResult.ResultError!.ResultMessage);
         }
     }
 }
