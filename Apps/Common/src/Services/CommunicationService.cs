@@ -142,7 +142,8 @@ namespace HealthGateway.Common.Services
                     {
                         this.logger.LogInformation("{Action} ChangeEvent for Communication {Id} found in Cache", changeEvent.Action, communication.Id);
                         this.RemoveCommunicationFromCache(communication.CommunicationTypeCode);
-                        if (changeEvent.Action is Insert or Update)
+                        if (changeEvent.Action is Insert or Update &&
+                            communication.CommunicationStatusCode is CommunicationStatus.New)
                         {
                             this.AddCommunicationToCache(communication, communication.CommunicationTypeCode);
                         }
@@ -155,7 +156,8 @@ namespace HealthGateway.Common.Services
                     else
                     {
                         // Check the new comm to see if it is effective earlier and not expired
-                        if (DateTime.UtcNow < communication.ExpiryDateTime && communication.EffectiveDateTime < cachedComm.EffectiveDateTime)
+                        if (DateTime.UtcNow < communication.ExpiryDateTime && communication.EffectiveDateTime < cachedComm.EffectiveDateTime &&
+                            communication.CommunicationStatusCode is CommunicationStatus.New)
                         {
                             this.logger.LogInformation("{Action} ChangeEvent for Communication {Id} replacing {CachedId}", changeEvent.Action, communication.Id, cachedComm.Id);
                             this.AddCommunicationToCache(communication, communication.CommunicationTypeCode);
@@ -169,7 +171,8 @@ namespace HealthGateway.Common.Services
                 else
                 {
                     this.logger.LogInformation("No Communications in the Cache, processing {Action} for communication {Id}", changeEvent.Action, communication.Id);
-                    if (changeEvent.Action is Insert or Update)
+                    if (changeEvent.Action is Insert or Update &&
+                        communication.CommunicationStatusCode is CommunicationStatus.New)
                     {
                         this.AddCommunicationToCache(communication, communication.CommunicationTypeCode);
                     }
