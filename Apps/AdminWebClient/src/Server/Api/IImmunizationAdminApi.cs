@@ -24,7 +24,7 @@ using Refit;
 /// <summary>
 /// Interface that defines a client api to access administrative immunization data.
 /// </summary>
-public interface IImmunizationAdminClient
+public interface IImmunizationAdminApi
 {
     /// <summary>
     /// Submit a completed Anti Viral screening form.

@@ -52,7 +52,7 @@ namespace HealthGateway.Admin.Services
         private readonly IAuthenticationDelegate authenticationDelegate;
         private readonly BcMailPlusConfig bcmpConfig;
         private readonly IHttpContextAccessor httpContextAccessor;
-        private readonly IImmunizationAdminClient immunizationAdminClient;
+        private readonly IImmunizationAdminApi immunizationAdminApi;
         private readonly IImmunizationAdminDelegate immunizationDelegate;
         private readonly ILogger<CovidSupportService> logger;
         private readonly IPatientService patientService;
@@ -70,7 +70,7 @@ namespace HealthGateway.Admin.Services
         /// <param name="httpContextAccessor">The Http Context accessor.</param>
         /// <param name="configuration">The configuration to use.</param>
         /// <param name="vaccineProofDelegate">The injected delegate to get the vaccine proof.</param>
-        /// <param name="immunizationAdminClient">The api client to use for immunization.</param>
+        /// <param name="immunizationAdminApi">The api client to use for immunization.</param>
         /// <param name="authenticationDelegate">The auth delegate to fetch tokens.</param>
         public CovidSupportService(
             ILogger<CovidSupportService> logger,
@@ -80,7 +80,7 @@ namespace HealthGateway.Admin.Services
             IHttpContextAccessor httpContextAccessor,
             IConfiguration configuration,
             IVaccineProofDelegate vaccineProofDelegate,
-            IImmunizationAdminClient immunizationAdminClient,
+            IImmunizationAdminApi immunizationAdminApi,
             IAuthenticationDelegate authenticationDelegate)
         {
             this.logger = logger;
@@ -89,7 +89,7 @@ namespace HealthGateway.Admin.Services
             this.vaccineStatusDelegate = vaccineStatusDelegate;
             this.httpContextAccessor = httpContextAccessor;
             this.vaccineProofDelegate = vaccineProofDelegate;
-            this.immunizationAdminClient = immunizationAdminClient;
+            this.immunizationAdminApi = immunizationAdminApi;
             this.authenticationDelegate = authenticationDelegate;
 
             this.bcmpConfig = new();
@@ -335,7 +335,7 @@ namespace HealthGateway.Admin.Services
             try
             {
                 IApiResponse<CovidAssessmentResponse> response =
-                    await this.immunizationAdminClient.SubmitCovidAssessment(request, accessToken).ConfigureAwait(true);
+                    await this.immunizationAdminApi.SubmitCovidAssessment(request, accessToken).ConfigureAwait(true);
                 this.ProcessResponse(requestResult, response);
             }
             catch (HttpRequestException e)
@@ -372,7 +372,7 @@ namespace HealthGateway.Admin.Services
                 try
                 {
                     IApiResponse<CovidAssessmentDetailsResponse> response =
-                        await this.immunizationAdminClient.GetCovidAssessmentDetails(
+                        await this.immunizationAdminApi.GetCovidAssessmentDetails(
                                 new CovidAssessmentDetailsRequest
                                     { Phn = phn },
                                 accessToken)
