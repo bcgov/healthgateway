@@ -220,10 +220,10 @@ namespace HealthGateway.LaboratoryTests.Services
         private LabTestKitService GetLabTestKitServiceException()
         {
             HttpRequestException httpRequestException = new("Error with HTTP Request");
-            Mock<ILabTestKitClient> mockLabTestKitClient = new();
-            mockLabTestKitClient.Setup(s => s.RegisterLabTest(It.IsAny<PublicLabTestKit>(), It.IsAny<string>()))
+            Mock<ILabTestKitApi> mockLabTestKitApi = new();
+            mockLabTestKitApi.Setup(s => s.RegisterLabTest(It.IsAny<PublicLabTestKit>(), It.IsAny<string>()))
                 .ThrowsAsync(httpRequestException);
-            mockLabTestKitClient.Setup(s => s.RegisterLabTest(It.IsAny<string>(), It.IsAny<LabTestKit>(), It.IsAny<string>()))
+            mockLabTestKitApi.Setup(s => s.RegisterLabTest(It.IsAny<string>(), It.IsAny<LabTestKit>(), It.IsAny<string>()))
                 .ThrowsAsync(httpRequestException);
 
             Mock<IAuthenticationDelegate> mockAuthDelegate = new();
@@ -232,17 +232,17 @@ namespace HealthGateway.LaboratoryTests.Services
             LabTestKitService labTestKitService = new(
                 new Mock<ILogger<LabTestKitService>>().Object,
                 mockAuthDelegate.Object,
-                mockLabTestKitClient.Object);
+                mockLabTestKitApi.Object);
 
             return labTestKitService;
         }
 
         private LabTestKitService GetLabTestKitService(HttpResponseMessage responseMessage, bool nullToken = false)
         {
-            Mock<ILabTestKitClient> mockLabTestKitClient = new();
-            mockLabTestKitClient.Setup(s => s.RegisterLabTest(It.IsAny<PublicLabTestKit>(), It.IsAny<string>()))
+            Mock<ILabTestKitApi> mockLabTestKitApi = new();
+            mockLabTestKitApi.Setup(s => s.RegisterLabTest(It.IsAny<PublicLabTestKit>(), It.IsAny<string>()))
                 .ReturnsAsync(responseMessage);
-            mockLabTestKitClient.Setup(s => s.RegisterLabTest(It.IsAny<string>(), It.IsAny<LabTestKit>(), It.IsAny<string>()))
+            mockLabTestKitApi.Setup(s => s.RegisterLabTest(It.IsAny<string>(), It.IsAny<LabTestKit>(), It.IsAny<string>()))
                 .ReturnsAsync(responseMessage);
 
             Mock<IAuthenticationDelegate> mockAuthDelegate = new();
@@ -254,7 +254,7 @@ namespace HealthGateway.LaboratoryTests.Services
             LabTestKitService labTestKitService = new(
                 new Mock<ILogger<LabTestKitService>>().Object,
                 mockAuthDelegate.Object,
-                mockLabTestKitClient.Object);
+                mockLabTestKitApi.Object);
 
             return labTestKitService;
         }

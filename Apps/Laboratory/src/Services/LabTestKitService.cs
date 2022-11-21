@@ -33,7 +33,7 @@ namespace HealthGateway.Laboratory.Services
     public class LabTestKitService : ILabTestKitService
     {
         private readonly IAuthenticationDelegate authenticationDelegate;
-        private readonly ILabTestKitClient labTestKitClient;
+        private readonly ILabTestKitApi labTestKitApi;
         private readonly ILogger<LabTestKitService> logger;
 
         /// <summary>
@@ -41,15 +41,15 @@ namespace HealthGateway.Laboratory.Services
         /// </summary>
         /// <param name="logger">The injected logger.</param>
         /// <param name="authenticationDelegate">The auth delegate to fetch tokens.</param>
-        /// <param name="labTestKitClient">The client to use for lab tests.</param>
+        /// <param name="labTestKitApi">The client to use for lab tests.</param>
         public LabTestKitService(
             ILogger<LabTestKitService> logger,
             IAuthenticationDelegate authenticationDelegate,
-            ILabTestKitClient labTestKitClient)
+            ILabTestKitApi labTestKitApi)
         {
             this.logger = logger;
             this.authenticationDelegate = authenticationDelegate;
-            this.labTestKitClient = labTestKitClient;
+            this.labTestKitApi = labTestKitApi;
         }
 
         /// <inheritdoc/>
@@ -82,7 +82,7 @@ namespace HealthGateway.Laboratory.Services
                     try
                     {
                         HttpResponseMessage response =
-                            await this.labTestKitClient.RegisterLabTest(testKit, accessToken).ConfigureAwait(true);
+                            await this.labTestKitApi.RegisterLabTest(testKit, accessToken).ConfigureAwait(true);
                         ProcessResponse(requestResult, response);
                     }
                     catch (HttpRequestException e)
@@ -122,7 +122,7 @@ namespace HealthGateway.Laboratory.Services
             try
             {
                 HttpResponseMessage response =
-                    await this.labTestKitClient.RegisterLabTest(hdid, testKit, accessToken).ConfigureAwait(true);
+                    await this.labTestKitApi.RegisterLabTest(hdid, testKit, accessToken).ConfigureAwait(true);
                 ProcessResponse(requestResult, response);
             }
             catch (HttpRequestException e)
