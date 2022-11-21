@@ -257,13 +257,8 @@ namespace HealthGateway.Patient.Delegates
                 bool deceasedInd = retrievedPerson.identifiedPerson.deceasedInd?.value ?? false;
                 if (deceasedInd)
                 {
-                    this.logger.LogWarning("Client Registry returned a person with the deceased indicator set to true. No PHN was populated.");
-                    apiResult.Warning = new()
-                    {
-                        Code = ActionType.Deceased.Value,
-                        Message = ErrorMessages.ClientRegistryReturnedDeceasedPerson,
-                    };
-                    return;
+                    this.logger.LogWarning("Client Registry returned a person with the deceased indicator set to true. No PHN was populated. {ActionType}", ActionType.Deceased.Value);
+                    throw new ApiException(ErrorMessages.ClientRegistryReturnedDeceasedPerson, "ClientRegistriesDelegate.ParseResponse", HttpStatusCode.NotFound);
                 }
 
                 // Initialize model
@@ -283,24 +278,16 @@ namespace HealthGateway.Patient.Delegates
                 // Populate names
                 if (!this.PopulateNames(retrievedPerson, patient))
                 {
-                    apiResult.Warning = new()
-                    {
-                        Code = ActionType.InvalidName.Value,
-                        Message = ErrorMessages.InvalidServicesCard,
-                    };
-                    return;
+                    this.logger.LogWarning("Client Registry is unable to determine patient name due to missing legal name. Action Type: {ActionType}", ActionType.InvalidName.Value);
+                    throw new ApiException(ErrorMessages.InvalidServicesCard, "ClientRegistriesDelegate.ParseResponse", HttpStatusCode.NotFound);
                 }
 
                 // Populate the PHN and HDID
                 this.logger.LogDebug("ID Validation is set to {DisableIdValidation}", disableIdValidation);
                 if (!this.PopulateIdentifiers(retrievedPerson, patient) && !disableIdValidation)
                 {
-                    apiResult.Warning = new()
-                    {
-                        Code = ActionType.NoHdId.Value,
-                        Message = ErrorMessages.InvalidServicesCard,
-                    };
-                    return;
+                    this.logger.LogWarning("Client Registry was unable to retrieve identifiers. Action Type: {ActionType}", ActionType.NoHdId.Value);
+                    throw new ApiException(ErrorMessages.InvalidServicesCard, "ClientRegistriesDelegate.ParseResponse", HttpStatusCode.NotFound);
                 }
 
                 // Populate addresses
