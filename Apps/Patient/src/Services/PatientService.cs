@@ -45,19 +45,19 @@ namespace HealthGateway.Patient.Services
         /// The injected logger delegate.
         /// </summary>
         private readonly ILogger<PatientService> logger;
-        private readonly IClientRegistriesDelegate patientDelegate;
+        private readonly IClientRegistriesDelegate clientRegistriesDelegate;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="PatientService"/> class.
         /// </summary>
         /// <param name="logger">The service Logger.</param>
         /// <param name="configuration">The Configuration to use.</param>
-        /// <param name="patientDelegate">The injected client registries delegate.</param>
+        /// <param name="clientRegistriesDelegate">The injected client registries delegate.</param>
         /// <param name="cacheProvider">The provider responsible for caching.</param>
-        public PatientService(ILogger<PatientService> logger, IConfiguration configuration, IClientRegistriesDelegate patientDelegate, ICacheProvider cacheProvider)
+        public PatientService(ILogger<PatientService> logger, IConfiguration configuration, IClientRegistriesDelegate clientRegistriesDelegate, ICacheProvider cacheProvider)
         {
             this.logger = logger;
-            this.patientDelegate = patientDelegate;
+            this.clientRegistriesDelegate = clientRegistriesDelegate;
             this.cacheProvider = cacheProvider;
             this.cacheTtl = configuration.GetSection("PatientService").GetValue("CacheTTL", 0);
         }
@@ -85,7 +85,7 @@ namespace HealthGateway.Patient.Services
                     throw new ApiException(ErrorMessages.PhnInvalid, "PatientService.GetPatient", HttpStatusCode.NotFound);
                 }
 
-                apiResult = await this.patientDelegate.GetDemographicsAsync(type, identifier, disableIdValidation).ConfigureAwait(true);
+                apiResult = await this.clientRegistriesDelegate.GetDemographicsAsync(type, identifier, disableIdValidation).ConfigureAwait(true);
 
                 // Only cache if validation is enabled (as some clients could get invalid data) and when successful.
                 if (!disableIdValidation && apiResult.ResourcePayload != null)
