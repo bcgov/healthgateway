@@ -29,7 +29,6 @@ namespace HealthGateway.AdminWebClientTests.Services.Test
     using HealthGateway.Common.Data.ErrorHandling;
     using HealthGateway.Common.Data.ViewModels;
     using HealthGateway.Common.Delegates;
-    using HealthGateway.Common.Delegates.PHSA;
     using HealthGateway.Common.Services;
     using Microsoft.AspNetCore.Http;
     using Microsoft.Extensions.Configuration;

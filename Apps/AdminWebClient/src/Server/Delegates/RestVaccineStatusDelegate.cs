@@ -13,7 +13,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //-------------------------------------------------------------------------
-namespace HealthGateway.Common.Delegates.PHSA
+namespace HealthGateway.Admin.Delegates
 {
     using System;
     using System.Collections.Generic;
@@ -70,8 +70,58 @@ namespace HealthGateway.Common.Delegates.PHSA
         private static ActivitySource Source { get; } = new(nameof(RestVaccineStatusDelegate));
 
         /// <inheritdoc/>
+        public async Task<RequestResult<PhsaResult<VaccineStatusResult>>> GetVaccineStatusWithRetries(VaccineStatusQuery query, string accessToken, bool isPublicEndpoint)
+        {
+            using Activity? activity = Source.StartActivity();
+            RequestResult<PhsaResult<VaccineStatusResult>> retVal = new()
+            {
+                ResultStatus = ResultType.Error,
+                PageIndex = 0,
+            };
+
+            RequestResult<PhsaResult<VaccineStatusResult>> response;
+            int attemptCount = 0;
+            bool refreshInProgress;
+            do
+            {
+                response = await this.GetVaccineStatus(query, accessToken, isPublicEndpoint).ConfigureAwait(true);
+
+                refreshInProgress = response.ResultStatus == ResultType.Success &&
+                                    response.ResourcePayload != null &&
+                                    response.ResourcePayload.LoadState.RefreshInProgress;
+
+                attemptCount++;
+                if (refreshInProgress && attemptCount <= this.phsaConfig.MaxRetries)
+                {
+                    this.logger.LogDebug("Refresh in progress, trying again....");
+                    await Task.Delay(Math.Max(response.ResourcePayload!.LoadState.BackOffMilliseconds, this.phsaConfig.BackOffMilliseconds)).ConfigureAwait(true);
+                }
+            }
+            while (refreshInProgress && attemptCount <= this.phsaConfig.MaxRetries);
+
+            if (refreshInProgress)
+            {
+                this.logger.LogDebug("Maximum retry attempts reached.");
+                retVal.ResultError = new RequestResultError
+                {
+                    ResultMessage = "Refresh in progress",
+                    ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.Phsa),
+                };
+            }
+            else if (response.ResultStatus == ResultType.Success)
+            {
+                retVal = response;
+            }
+            else
+            {
+                retVal.ResultError = response.ResultError;
+            }
+
+            return retVal;
+        }
+
         [SuppressMessage("Maintainability", "CA1506:Avoid excessive class coupling", Justification = "Team decision")]
-        public async Task<RequestResult<PhsaResult<VaccineStatusResult>>> GetVaccineStatus(VaccineStatusQuery query, string accessToken, bool isPublicEndpoint)
+        private async Task<RequestResult<PhsaResult<VaccineStatusResult>>> GetVaccineStatus(VaccineStatusQuery query, string accessToken, bool isPublicEndpoint)
         {
             using Activity? activity = Source.StartActivity();
             this.logger.LogDebug(
@@ -185,57 +235,6 @@ namespace HealthGateway.Common.Delegates.PHSA
             }
 
             this.logger.LogDebug("Finished getting vaccine status {Hdid} {PersonalHealthNumber} {DateOfBirth}", query.HdId, query.PersonalHealthNumber, query.DateOfBirth);
-            return retVal;
-        }
-
-        /// <inheritdoc/>
-        public async Task<RequestResult<PhsaResult<VaccineStatusResult>>> GetVaccineStatusWithRetries(VaccineStatusQuery query, string accessToken, bool isPublicEndpoint)
-        {
-            using Activity? activity = Source.StartActivity();
-            RequestResult<PhsaResult<VaccineStatusResult>> retVal = new()
-            {
-                ResultStatus = ResultType.Error,
-                PageIndex = 0,
-            };
-
-            RequestResult<PhsaResult<VaccineStatusResult>> response;
-            int attemptCount = 0;
-            bool refreshInProgress;
-            do
-            {
-                response = await this.GetVaccineStatus(query, accessToken, isPublicEndpoint).ConfigureAwait(true);
-
-                refreshInProgress = response.ResultStatus == ResultType.Success &&
-                                    response.ResourcePayload != null &&
-                                    response.ResourcePayload.LoadState.RefreshInProgress;
-
-                attemptCount++;
-                if (refreshInProgress && attemptCount <= this.phsaConfig.MaxRetries)
-                {
-                    this.logger.LogDebug("Refresh in progress, trying again....");
-                    await Task.Delay(Math.Max(response.ResourcePayload!.LoadState.BackOffMilliseconds, this.phsaConfig.BackOffMilliseconds)).ConfigureAwait(true);
-                }
-            }
-            while (refreshInProgress && attemptCount <= this.phsaConfig.MaxRetries);
-
-            if (refreshInProgress)
-            {
-                this.logger.LogDebug("Maximum retry attempts reached.");
-                retVal.ResultError = new RequestResultError
-                {
-                    ResultMessage = "Refresh in progress",
-                    ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.Phsa),
-                };
-            }
-            else if (response.ResultStatus == ResultType.Success)
-            {
-                retVal = response;
-            }
-            else
-            {
-                retVal.ResultError = response.ResultError;
-            }
-
             return retVal;
         }
     }

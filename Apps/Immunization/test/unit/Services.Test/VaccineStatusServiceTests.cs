@@ -28,8 +28,8 @@ namespace HealthGateway.ImmunizationTests.Services.Test
     using HealthGateway.Common.Data.Constants;
     using HealthGateway.Common.Data.ErrorHandling;
     using HealthGateway.Common.Data.ViewModels;
-    using HealthGateway.Common.Delegates.PHSA;
     using HealthGateway.Common.Models.PHSA;
+    using HealthGateway.Immunization.Delegates;
     using HealthGateway.Immunization.Models;
     using HealthGateway.Immunization.Services;
     using HealthGateway.ImmunizationTests.Utils;

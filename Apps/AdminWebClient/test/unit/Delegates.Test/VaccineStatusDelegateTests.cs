@@ -13,7 +13,7 @@
 //  See the License for the specific language governing permissions and
 //  limitations under the License.
 // -------------------------------------------------------------------------
-namespace HealthGateway.CommonTests.Delegates
+namespace HealthGateway.AdminWebClientTests.Delegates.Test
 {
     using System;
     using System.Collections.Generic;
@@ -24,10 +24,10 @@ namespace HealthGateway.CommonTests.Delegates
     using System.Text.Json;
     using System.Threading;
     using System.Threading.Tasks;
+    using HealthGateway.Admin.Delegates;
     using HealthGateway.Common.Constants.PHSA;
     using HealthGateway.Common.Data.Constants;
     using HealthGateway.Common.Data.ViewModels;
-    using HealthGateway.Common.Delegates.PHSA;
     using HealthGateway.Common.ErrorHandling;
     using HealthGateway.Common.Models.PHSA;
     using HealthGateway.Common.Services;
@@ -57,142 +57,6 @@ namespace HealthGateway.CommonTests.Delegates
         public VaccineStatusDelegateTests()
         {
             this.configuration = GetIConfigurationRoot();
-        }
-
-        /// <summary>
-        /// GetVaccineStatus - Happy Path.
-        /// </summary>
-        /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
-        [Fact]
-        public async Task GetVaccineStatus()
-        {
-            VaccineStatusResult expectedVaccineStatus = new()
-            {
-                FirstName = "Bob",
-                StatusIndicator = "Exempt",
-            };
-
-            PhsaResult<VaccineStatusResult> phsaResponse = new()
-            {
-                Result = expectedVaccineStatus,
-            };
-
-            string json = JsonSerializer.Serialize(phsaResponse);
-
-            using ILoggerFactory loggerFactory = LoggerFactory.Create(builder => builder.AddConsole());
-            using HttpResponseMessage httpResponseMessage = new()
-            {
-                StatusCode = HttpStatusCode.OK,
-                Content = new StringContent(json),
-            };
-            IHttpClientService httpClientService = GetHttpClientService(httpResponseMessage);
-
-            IVaccineStatusDelegate vaccineStatusDelegate = new RestVaccineStatusDelegate(
-                loggerFactory.CreateLogger<RestVaccineStatusDelegate>(),
-                httpClientService,
-                this.configuration,
-                this.GetHttpContextAccessor().Object);
-            VaccineStatusQuery query = new()
-            {
-                PersonalHealthNumber = this.phn,
-                DateOfBirth = this.dob,
-            };
-
-            RequestResult<PhsaResult<VaccineStatusResult>> actualResult = await vaccineStatusDelegate.GetVaccineStatus(query, this.accessToken, true).ConfigureAwait(true);
-
-            Assert.Equal(ResultType.Success, actualResult.ResultStatus);
-            Assert.NotNull(actualResult.ResourcePayload);
-        }
-
-        /// <summary>
-        /// GetVaccineStatus - not public end point.
-        /// </summary>
-        /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
-        [Fact]
-        public async Task GetVaccineStatusNotPublicEndPoint()
-        {
-            VaccineStatusResult expectedVaccineStatus = new()
-            {
-                FirstName = "Bob",
-                StatusIndicator = "Exempt",
-            };
-
-            PhsaResult<VaccineStatusResult> phsaResponse = new()
-            {
-                Result = expectedVaccineStatus,
-            };
-
-            string json = JsonSerializer.Serialize(phsaResponse);
-
-            using ILoggerFactory loggerFactory = LoggerFactory.Create(builder => builder.AddConsole());
-            using HttpResponseMessage httpResponseMessage = new()
-            {
-                StatusCode = HttpStatusCode.OK,
-                Content = new StringContent(json),
-            };
-            IHttpClientService httpClientService = GetHttpClientService(httpResponseMessage);
-
-            IVaccineStatusDelegate vaccineStatusDelegate = new RestVaccineStatusDelegate(
-                loggerFactory.CreateLogger<RestVaccineStatusDelegate>(),
-                httpClientService,
-                this.configuration,
-                this.GetHttpContextAccessor().Object);
-            VaccineStatusQuery query = new()
-            {
-                PersonalHealthNumber = this.phn,
-                DateOfBirth = this.dob,
-            };
-
-            RequestResult<PhsaResult<VaccineStatusResult>> actualResult = await vaccineStatusDelegate.GetVaccineStatus(query, this.accessToken, false).ConfigureAwait(true);
-
-            Assert.Equal(ResultType.Success, actualResult.ResultStatus);
-            Assert.NotNull(actualResult.ResourcePayload);
-        }
-
-        /// <summary>
-        /// GetVaccineStatus - not public end point with HdId.
-        /// </summary>
-        /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
-        [Fact]
-        public async Task GetVaccineStatusNotPublicEndPointWithHdId()
-        {
-            VaccineStatusResult expectedVaccineStatus = new()
-            {
-                FirstName = "Bob",
-                StatusIndicator = "Exempt",
-            };
-
-            PhsaResult<VaccineStatusResult> phsaResponse = new()
-            {
-                Result = expectedVaccineStatus,
-            };
-
-            string json = JsonSerializer.Serialize(phsaResponse);
-
-            using ILoggerFactory loggerFactory = LoggerFactory.Create(builder => builder.AddConsole());
-            using HttpResponseMessage httpResponseMessage = new()
-            {
-                StatusCode = HttpStatusCode.OK,
-                Content = new StringContent(json),
-            };
-            IHttpClientService httpClientService = GetHttpClientService(httpResponseMessage);
-
-            IVaccineStatusDelegate vaccineStatusDelegate = new RestVaccineStatusDelegate(
-                loggerFactory.CreateLogger<RestVaccineStatusDelegate>(),
-                httpClientService,
-                this.configuration,
-                this.GetHttpContextAccessor().Object);
-            VaccineStatusQuery query = new()
-            {
-                PersonalHealthNumber = this.phn,
-                DateOfBirth = this.dob,
-                HdId = this.hdId,
-            };
-
-            RequestResult<PhsaResult<VaccineStatusResult>> actualResult = await vaccineStatusDelegate.GetVaccineStatus(query, this.accessToken, false).ConfigureAwait(true);
-
-            Assert.Equal(ResultType.Success, actualResult.ResultStatus);
-            Assert.NotNull(actualResult.ResourcePayload);
         }
 
         /// <summary>
@@ -241,11 +105,102 @@ namespace HealthGateway.CommonTests.Delegates
         }
 
         /// <summary>
-        /// GetVaccineStatus - Not Found.
+        /// GetVaccineStatusWithRetries - not public end point.
         /// </summary>
         /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
         [Fact]
-        public async Task GetVaccineStatusNoContent()
+        public async Task GetVaccineStatusWithRetriesNotPublicEndPoint()
+        {
+            VaccineStatusResult expectedVaccineStatus = new()
+            {
+                FirstName = "Bob",
+                StatusIndicator = "Exempt",
+            };
+
+            PhsaResult<VaccineStatusResult> phsaResponse = new()
+            {
+                Result = expectedVaccineStatus,
+            };
+
+            string json = JsonSerializer.Serialize(phsaResponse);
+
+            using ILoggerFactory loggerFactory = LoggerFactory.Create(builder => builder.AddConsole());
+            using HttpResponseMessage httpResponseMessage = new()
+            {
+                StatusCode = HttpStatusCode.OK,
+                Content = new StringContent(json),
+            };
+            IHttpClientService httpClientService = GetHttpClientService(httpResponseMessage);
+
+            IVaccineStatusDelegate vaccineStatusDelegate = new RestVaccineStatusDelegate(
+                loggerFactory.CreateLogger<RestVaccineStatusDelegate>(),
+                httpClientService,
+                this.configuration,
+                this.GetHttpContextAccessor().Object);
+            VaccineStatusQuery query = new()
+            {
+                PersonalHealthNumber = this.phn,
+                DateOfBirth = this.dob,
+            };
+
+            RequestResult<PhsaResult<VaccineStatusResult>> actualResult = await vaccineStatusDelegate.GetVaccineStatusWithRetries(query, this.accessToken, false).ConfigureAwait(true);
+
+            Assert.Equal(ResultType.Success, actualResult.ResultStatus);
+            Assert.NotNull(actualResult.ResourcePayload);
+        }
+
+        /// <summary>
+        /// GetVaccineStatusWithRetries - not public end point with HdId.
+        /// </summary>
+        /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
+        [Fact]
+        public async Task GetVaccineStatusWithRetriesNotPublicEndPointWithHdId()
+        {
+            VaccineStatusResult expectedVaccineStatus = new()
+            {
+                FirstName = "Bob",
+                StatusIndicator = "Exempt",
+            };
+
+            PhsaResult<VaccineStatusResult> phsaResponse = new()
+            {
+                Result = expectedVaccineStatus,
+            };
+
+            string json = JsonSerializer.Serialize(phsaResponse);
+
+            using ILoggerFactory loggerFactory = LoggerFactory.Create(builder => builder.AddConsole());
+            using HttpResponseMessage httpResponseMessage = new()
+            {
+                StatusCode = HttpStatusCode.OK,
+                Content = new StringContent(json),
+            };
+            IHttpClientService httpClientService = GetHttpClientService(httpResponseMessage);
+
+            IVaccineStatusDelegate vaccineStatusDelegate = new RestVaccineStatusDelegate(
+                loggerFactory.CreateLogger<RestVaccineStatusDelegate>(),
+                httpClientService,
+                this.configuration,
+                this.GetHttpContextAccessor().Object);
+            VaccineStatusQuery query = new()
+            {
+                PersonalHealthNumber = this.phn,
+                DateOfBirth = this.dob,
+                HdId = this.hdId,
+            };
+
+            RequestResult<PhsaResult<VaccineStatusResult>> actualResult = await vaccineStatusDelegate.GetVaccineStatusWithRetries(query, this.accessToken, false).ConfigureAwait(true);
+
+            Assert.Equal(ResultType.Success, actualResult.ResultStatus);
+            Assert.NotNull(actualResult.ResourcePayload);
+        }
+
+        /// <summary>
+        /// GetVaccineStatusWithRetries - Not Found.
+        /// </summary>
+        /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
+        [Fact]
+        public async Task GetVaccineStatusWithRetriesNoContent()
         {
             VaccineStatusResult expectedVaccineStatus = new()
             {
@@ -278,7 +233,7 @@ namespace HealthGateway.CommonTests.Delegates
                 DateOfBirth = this.dob,
             };
 
-            RequestResult<PhsaResult<VaccineStatusResult>> actualResult = await vaccineStatusDelegate.GetVaccineStatus(query, this.accessToken, true).ConfigureAwait(true);
+            RequestResult<PhsaResult<VaccineStatusResult>> actualResult = await vaccineStatusDelegate.GetVaccineStatusWithRetries(query, this.accessToken, true).ConfigureAwait(true);
 
             Assert.Equal(ResultType.Success, actualResult.ResultStatus);
             Assert.NotNull(actualResult.ResourcePayload);
@@ -286,11 +241,11 @@ namespace HealthGateway.CommonTests.Delegates
         }
 
         /// <summary>
-        /// GetVaccineStatus - Http exception.
+        /// GetVaccineStatusWithRetries - Http exception.
         /// </summary>
         /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
         [Fact]
-        public async Task GetVaccineStatusCatchException403()
+        public async Task GetVaccineStatusWithRetriesCatchException403()
         {
             RequestResult<PhsaResult<VaccineStatusResult>> expected = new()
             {
@@ -319,7 +274,7 @@ namespace HealthGateway.CommonTests.Delegates
                 DateOfBirth = this.dob,
             };
 
-            RequestResult<PhsaResult<VaccineStatusResult>> actualResult = await vaccineStatusDelegate.GetVaccineStatus(query, this.accessToken, true).ConfigureAwait(true);
+            RequestResult<PhsaResult<VaccineStatusResult>> actualResult = await vaccineStatusDelegate.GetVaccineStatusWithRetries(query, this.accessToken, true).ConfigureAwait(true);
 
             Assert.NotNull(actualResult.ResultError);
             Assert.Equal(expected.ResultError.ErrorCode, actualResult.ResultError?.ErrorCode);
@@ -327,11 +282,11 @@ namespace HealthGateway.CommonTests.Delegates
         }
 
         /// <summary>
-        /// GetVaccineStatus - default Http exception handling.
+        /// GetVaccineStatusWithRetries - default Http exception handling.
         /// </summary>
         /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
         [Fact]
-        public async Task GetVaccineStatusCatchExceptionOther()
+        public async Task GetVaccineStatusWithRetriesCatchExceptionOther()
         {
             RequestResult<PhsaResult<VaccineStatusResult>> expected = new()
             {
@@ -360,7 +315,7 @@ namespace HealthGateway.CommonTests.Delegates
                 DateOfBirth = this.dob,
             };
 
-            RequestResult<PhsaResult<VaccineStatusResult>> actualResult = await vaccineStatusDelegate.GetVaccineStatus(query, this.accessToken, true).ConfigureAwait(true);
+            RequestResult<PhsaResult<VaccineStatusResult>> actualResult = await vaccineStatusDelegate.GetVaccineStatusWithRetries(query, this.accessToken, true).ConfigureAwait(true);
 
             Assert.NotNull(actualResult.ResultError);
             Assert.Equal(expected.ResultError.ErrorCode, actualResult.ResultError?.ErrorCode);
