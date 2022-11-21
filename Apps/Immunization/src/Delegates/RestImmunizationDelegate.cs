@@ -41,7 +41,7 @@ namespace HealthGateway.Immunization.Delegates
         /// </summary>
         public const string PhsaConfigSectionKey = "PHSA";
         private readonly IAuthenticationDelegate authenticationDelegate;
-        private readonly IImmunizationClient immunizationClient;
+        private readonly IImmunizationApi immunizationApi;
         private readonly ILogger logger;
         private readonly PhsaConfig phsaConfig;
 
@@ -51,16 +51,16 @@ namespace HealthGateway.Immunization.Delegates
         /// <param name="logger">Injected Logger Provider.</param>
         /// <param name="configuration">The injected configuration provider.</param>
         /// <param name="authenticationDelegate">The auth delegate to fetch tokens.</param>
-        /// <param name="immunizationClient">The client to use for immunization api calls..</param>
+        /// <param name="immunizationApi">The client to use for immunization api calls..</param>
         public RestImmunizationDelegate(
             ILogger<RestImmunizationDelegate> logger,
             IConfiguration configuration,
             IAuthenticationDelegate authenticationDelegate,
-            IImmunizationClient immunizationClient)
+            IImmunizationApi immunizationApi)
         {
             this.logger = logger;
             this.authenticationDelegate = authenticationDelegate;
-            this.immunizationClient = immunizationClient;
+            this.immunizationApi = immunizationApi;
             this.phsaConfig = new();
             configuration.Bind(PhsaConfigSectionKey, this.phsaConfig);
         }
@@ -79,7 +79,7 @@ namespace HealthGateway.Immunization.Delegates
             try
             {
                 IApiResponse<PhsaResult<ImmunizationViewResponse>> response =
-                    await this.immunizationClient.GetImmunization(immunizationId, accessToken).ConfigureAwait(true);
+                    await this.immunizationApi.GetImmunization(immunizationId, accessToken).ConfigureAwait(true);
                 this.ProcessResponse(requestResult, response);
             }
             catch (HttpRequestException e)
@@ -112,7 +112,7 @@ namespace HealthGateway.Immunization.Delegates
             try
             {
                 IApiResponse<PhsaResult<ImmunizationResponse>> response =
-                    await this.immunizationClient.GetImmunizations(query, accessToken).ConfigureAwait(true);
+                    await this.immunizationApi.GetImmunizations(query, accessToken).ConfigureAwait(true);
                 this.ProcessResponse(requestResult, response);
             }
             catch (HttpRequestException e)

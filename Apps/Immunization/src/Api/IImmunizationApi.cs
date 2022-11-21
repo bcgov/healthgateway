@@ -23,7 +23,7 @@ using Refit;
 /// <summary>
 /// Interface that defines a client api to retrieve immunization information.
 /// </summary>
-public interface IImmunizationClient
+public interface IImmunizationApi
 {
     /// <summary>
     /// Returns the matching immunization for the given id.
