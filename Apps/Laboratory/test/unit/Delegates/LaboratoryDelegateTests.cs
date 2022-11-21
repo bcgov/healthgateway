@@ -487,7 +487,7 @@ namespace HealthGateway.LaboratoryTests.Delegates
             string expectedMessage = $"Status: {HttpStatusCode.Unauthorized}. Error while retrieving Covid19 Test Results";
 
             // Arrange
-            ApiException mockException = MockRefitException.CreateApiException(HttpStatusCode.Unauthorized, HttpMethod.Get);
+            ApiException mockException = MockRefitException.CreateApiException(HttpStatusCode.Unauthorized, HttpMethod.Post);
             Mock<ILaboratoryApi> mockLaboratoryApi = new();
             mockLaboratoryApi.Setup(s => s.GetPublicCovidLabSummaryAsync(It.IsAny<Dictionary<string, string?>>(), It.IsAny<string>())).ThrowsAsync(mockException);
 
