@@ -25,12 +25,23 @@ namespace HealthGateway.Immunization.Delegates
     public interface IVaccineStatusDelegate
     {
         /// <summary>
-        /// Returns the vaccine status for the given patient.
+        /// Retrieves the vaccine status for a given patient as an authenticated user.
+        /// </summary>
+        /// <param name="hdid">The HDID identifying the subject of the request.</param>
+        /// <param name="includeFederalPvc">
+        /// A value indicating if the federal proof of vaccination should be included in the
+        /// response.
+        /// </param>
+        /// <param name="accessToken">The bearer token to authorize the call.</param>
+        /// <returns>The vaccine status result for the given patient.</returns>
+        Task<RequestResult<PhsaResult<VaccineStatusResult>>> GetVaccineStatus(string hdid, bool includeFederalPvc, string accessToken);
+
+        /// <summary>
+        /// Retrieves the vaccine status for the patient identified by the query.
         /// </summary>
         /// <param name="query">The vaccine status query.</param>
-        /// <param name="accessToken">The connection access token.</param>
-        /// <param name="isPublicEndpoint">Indicates whether it should use the public endpoint.</param>
+        /// <param name="accessToken">The bearer token to authorize the call.</param>
         /// <returns>The vaccine status result for the given patient.</returns>
-        Task<RequestResult<PhsaResult<VaccineStatusResult>>> GetVaccineStatus(VaccineStatusQuery query, string accessToken, bool isPublicEndpoint);
+        Task<RequestResult<PhsaResult<VaccineStatusResult>>> GetVaccineStatusPublic(VaccineStatusQuery query, string accessToken);
     }
 }

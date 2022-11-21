@@ -16,61 +16,49 @@
 namespace HealthGateway.Admin.Delegates
 {
     using System;
-    using System.Collections.Generic;
     using System.Diagnostics;
-    using System.Diagnostics.CodeAnalysis;
-    using System.Net;
     using System.Net.Http;
-    using System.Net.Http.Headers;
-    using System.Net.Mime;
-    using System.Text.Json;
     using System.Threading.Tasks;
+    using HealthGateway.Admin.Api;
     using HealthGateway.Common.Data.Constants;
     using HealthGateway.Common.Data.ViewModels;
     using HealthGateway.Common.ErrorHandling;
     using HealthGateway.Common.Models.PHSA;
-    using HealthGateway.Common.Services;
-    using Microsoft.AspNetCore.Http;
-    using Microsoft.AspNetCore.WebUtilities;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.Logging;
+    using Refit;
 
     /// <summary>
     /// Implementation that uses HTTP to retrieve immunization information.
     /// </summary>
     public class RestVaccineStatusDelegate : IVaccineStatusDelegate
     {
-        private const string PhsaConfigSectionKey = "PHSA";
-        private readonly IHttpClientService httpClientService;
-
-        private readonly IHttpContextAccessor httpContextAccessor;
         private readonly ILogger logger;
+        private readonly IImmunizationAdminApi immunizationAdminApi;
         private readonly PhsaConfig phsaConfig;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="RestVaccineStatusDelegate"/> class.
         /// </summary>
         /// <param name="logger">Injected Logger Provider.</param>
-        /// <param name="httpClientService">The injected http client service.</param>
+        /// <param name="immunizationAdminApi">The injected Refit API for accessing vaccine statuses for admin users.</param>
         /// <param name="configuration">The injected configuration provider.</param>
-        /// <param name="httpContextAccessor">The HTTP Context accessor.</param>
         public RestVaccineStatusDelegate(
             ILogger<RestVaccineStatusDelegate> logger,
-            IHttpClientService httpClientService,
-            IConfiguration configuration,
-            IHttpContextAccessor httpContextAccessor)
+            IImmunizationAdminApi immunizationAdminApi,
+            IConfiguration configuration)
         {
             this.logger = logger;
-            this.httpClientService = httpClientService;
-            this.httpContextAccessor = httpContextAccessor;
+            this.immunizationAdminApi = immunizationAdminApi;
+
             this.phsaConfig = new PhsaConfig();
-            configuration.Bind(PhsaConfigSectionKey, this.phsaConfig);
+            configuration.Bind(PhsaConfig.ConfigurationSectionKey, this.phsaConfig);
         }
 
         private static ActivitySource Source { get; } = new(nameof(RestVaccineStatusDelegate));
 
         /// <inheritdoc/>
-        public async Task<RequestResult<PhsaResult<VaccineStatusResult>>> GetVaccineStatusWithRetries(VaccineStatusQuery query, string accessToken, bool isPublicEndpoint)
+        public async Task<RequestResult<PhsaResult<VaccineStatusResult>>> GetVaccineStatusWithRetries(string phn, DateTime dateOfBirth, string accessToken)
         {
             using Activity? activity = Source.StartActivity();
             RequestResult<PhsaResult<VaccineStatusResult>> retVal = new()
@@ -84,7 +72,7 @@ namespace HealthGateway.Admin.Delegates
             bool refreshInProgress;
             do
             {
-                response = await this.GetVaccineStatus(query, accessToken, isPublicEndpoint).ConfigureAwait(true);
+                response = await this.GetVaccineStatus(phn, dateOfBirth, accessToken).ConfigureAwait(true);
 
                 refreshInProgress = response.ResultStatus == ResultType.Success &&
                                     response.ResourcePayload != null &&
@@ -120,121 +108,48 @@ namespace HealthGateway.Admin.Delegates
             return retVal;
         }
 
-        [SuppressMessage("Maintainability", "CA1506:Avoid excessive class coupling", Justification = "Team decision")]
-        private async Task<RequestResult<PhsaResult<VaccineStatusResult>>> GetVaccineStatus(VaccineStatusQuery query, string accessToken, bool isPublicEndpoint)
+        private async Task<RequestResult<PhsaResult<VaccineStatusResult>>> GetVaccineStatus(string phn, DateTime dateOfBirth, string accessToken)
         {
             using Activity? activity = Source.StartActivity();
-            this.logger.LogDebug(
-                "Getting vaccine status {Hdid} {PersonalHealthNumber} {DateOfBirth} {DateOfVaccine} {IncludeFederalVaccineProof}...",
-                query.HdId,
-                query.PersonalHealthNumber,
-                query.DateOfBirth,
-                query.DateOfVaccine,
-                query.IncludeFederalVaccineProof);
-
-            HttpContent? content = null;
-            Uri endpoint;
-            string endpointString = this.phsaConfig.BaseUrl.ToString();
-            HttpContext? httpContext = this.httpContextAccessor.HttpContext;
-            string? ipAddress = httpContext?.Connection.RemoteIpAddress?.MapToIPv4().ToString();
+            this.logger.LogDebug("Getting vaccine status for PHN {PersonalHealthNumber}, DoB {DateOfBirth}.", phn, dateOfBirth);
 
             RequestResult<PhsaResult<VaccineStatusResult>> retVal = new()
             {
                 ResultStatus = ResultType.Error,
-                PageIndex = 0,
             };
 
             try
             {
-                string json = JsonSerializer.Serialize(query);
-                using HttpClient client = this.httpClientService.CreateDefaultHttpClient();
-                if (isPublicEndpoint)
+                VaccineStatusQuery query = new()
                 {
-                    endpointString += this.phsaConfig.PublicVaccineStatusEndpoint;
-                    endpoint = new Uri(endpointString);
-                    content = new StringContent(json, null, MediaTypeNames.Application.Json);
-                }
-                else if (!string.IsNullOrEmpty(query.HdId))
+                    PersonalHealthNumber = phn,
+                    DateOfBirth = dateOfBirth,
+                };
+
+                PhsaResult<VaccineStatusResult> phsaResult = await this.immunizationAdminApi.GetVaccineStatus(query, accessToken).ConfigureAwait(true);
+
+                if (phsaResult.Result != null)
                 {
-                    Dictionary<string, string?> queryDict = new()
-                    {
-                        ["subjectHdid"] = query.HdId,
-                        ["federalPvc"] = query.IncludeFederalVaccineProof.ToString(),
-                    };
-                    endpointString += this.phsaConfig.VaccineStatusEndpoint;
-                    endpoint = new Uri(QueryHelpers.AddQueryString(endpointString, queryDict));
-                }
-                else
-                {
-                    endpointString += this.phsaConfig.VaccineStatusEndpoint;
-                    endpoint = new Uri(endpointString);
-                    content = new StringContent(json, null, MediaTypeNames.Application.Json);
-                }
-
-                client.DefaultRequestHeaders.Accept.Clear();
-                client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue(MediaTypeNames.Application.Json));
-                client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("bearer", accessToken);
-                client.DefaultRequestHeaders.Add("X-Forward-For", ipAddress);
-
-                HttpResponseMessage response = await client.PostAsync(endpoint, content).ConfigureAwait(true);
-                string payload = await response.Content.ReadAsStringAsync().ConfigureAwait(true);
-                this.logger.LogTrace("Response: {Response}", response);
-
-                switch (response.StatusCode)
-                {
-                    case HttpStatusCode.OK:
-                        this.logger.LogTrace("Response payload: {Payload}", payload);
-                        PhsaResult<VaccineStatusResult>? phsaResult = JsonSerializer.Deserialize<PhsaResult<VaccineStatusResult>>(payload);
-                        if (phsaResult != null && phsaResult.Result != null)
-                        {
-                            retVal.ResultStatus = ResultType.Success;
-                            retVal.ResourcePayload = phsaResult;
-                            retVal.TotalResultCount = 1;
-                        }
-                        else
-                        {
-                            retVal.ResultError = new RequestResultError
-                            {
-                                ResultMessage = "Error with JSON data",
-                                ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.Phsa),
-                            };
-                        }
-
-                        break;
-                    case HttpStatusCode.Forbidden:
-                        retVal.ResultError = new RequestResultError
-                        {
-                            ResultMessage = $"DID Claim is missing or can not resolve PHN, HTTP Error {response.StatusCode}",
-                            ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.Phsa),
-                        };
-                        break;
-                    default:
-                        retVal.ResultError = new RequestResultError
-                        {
-                            ResultMessage = $"Unable to connect to Immunizations/VaccineStatus Endpoint, HTTP Error {response.StatusCode}",
-                            ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.Phsa),
-                        };
-                        this.logger.LogError("Unable to connect to endpoint {EndpointString}, HTTP Error {StatusCode}\n{Payload}", endpointString, response.StatusCode, payload);
-                        break;
+                    retVal.ResultStatus = ResultType.Success;
+                    retVal.ResourcePayload = phsaResult;
+                    retVal.TotalResultCount = 1;
                 }
             }
-#pragma warning disable CA1031 // Do not catch general exception types
-            catch (Exception e)
-#pragma warning restore CA1031 // Do not catch general exception types
+            catch (Exception e) when (e is ApiException or HttpRequestException)
+            {
+                this.logger.LogError("Unexpected exception in GetVaccineStatus {Exception}", e);
+            }
+
+            if (retVal.ResourcePayload == null)
             {
                 retVal.ResultError = new RequestResultError
                 {
-                    ResultMessage = $"Exception getting vaccine status: {e}",
+                    ResultMessage = "Error getting vaccine status",
                     ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.Phsa),
                 };
-                this.logger.LogError("Unexpected exception retrieving vaccine status {Exception}", e);
-            }
-            finally
-            {
-                content?.Dispose();
             }
 
-            this.logger.LogDebug("Finished getting vaccine status {Hdid} {PersonalHealthNumber} {DateOfBirth}", query.HdId, query.PersonalHealthNumber, query.DateOfBirth);
+            this.logger.LogDebug("Finished getting vaccine status for PHN {PersonalHealthNumber}", phn);
             return retVal;
         }
     }

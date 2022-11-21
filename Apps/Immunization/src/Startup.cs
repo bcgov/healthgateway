@@ -77,6 +77,8 @@ namespace HealthGateway.Immunization
             this.startupConfig.Configuration.Bind(RestImmunizationDelegate.PhsaConfigSectionKey, phsaConfig);
             services.AddRefitClient<IImmunizationApi>()
                 .ConfigureHttpClient(c => c.BaseAddress = phsaConfig.BaseUrl);
+            services.AddRefitClient<IImmunizationPublicApi>()
+                .ConfigureHttpClient(c => c.BaseAddress = phsaConfig.BaseUrl);
 
             services.AddAutoMapper(typeof(Startup));
         }

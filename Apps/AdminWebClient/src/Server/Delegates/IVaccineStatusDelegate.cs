@@ -15,6 +15,7 @@
 //-------------------------------------------------------------------------
 namespace HealthGateway.Admin.Delegates
 {
+    using System;
     using System.Threading.Tasks;
     using HealthGateway.Common.Data.ViewModels;
     using HealthGateway.Common.Models.PHSA;
@@ -27,10 +28,10 @@ namespace HealthGateway.Admin.Delegates
         /// <summary>
         /// Returns the vaccine status for the given patient, retrying multiple times if there is a refresh in progress.
         /// </summary>
-        /// <param name="query">The vaccine status query.</param>
+        /// <param name="phn">The PHN identifying the patient.</param>
+        /// <param name="dateOfBirth">The date of birth of the patient.</param>
         /// <param name="accessToken">The connection access token.</param>
-        /// <param name="isPublicEndpoint">Indicates whether it should use the public endpoint.</param>
         /// <returns>The vaccine status result for the given patient.</returns>
-        Task<RequestResult<PhsaResult<VaccineStatusResult>>> GetVaccineStatusWithRetries(VaccineStatusQuery query, string accessToken, bool isPublicEndpoint);
+        Task<RequestResult<PhsaResult<VaccineStatusResult>>> GetVaccineStatusWithRetries(string phn, DateTime dateOfBirth, string accessToken);
     }
 }
