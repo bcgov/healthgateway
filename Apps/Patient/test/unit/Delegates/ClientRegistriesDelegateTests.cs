@@ -46,7 +46,7 @@ namespace HealthGateway.PatientTests.Delegates
         /// </summary>
         /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
         [Fact]
-        public async Task ShouldGetDemographicsThrowsApiExceptionGivenNoHdid()
+        public async Task GetDemographicsThrowsApiExceptionGivenNoHdid()
         {
             // Setup
             string expectedResponseCode = "BCHCIM.GD.0.0013";
@@ -365,7 +365,7 @@ namespace HealthGateway.PatientTests.Delegates
         /// </summary>
         /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
         [Fact]
-        public async Task ShouldGetDemographicsThrowsApiExceptionGivenInvalidIdentifier()
+        public async Task GetDemographicsThrowsApiExceptionGivenInvalidIdentifier()
         {
             // Setup
             string hdid = "EXTRIOYFPNX35TWEBUAJ3DNFDFXSYTBC6J4M76GYE3HC5ER2NKWQ";
@@ -1150,7 +1150,7 @@ namespace HealthGateway.PatientTests.Delegates
         /// </summary>
         /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
         [Fact]
-        public async Task ShouldGetDemographicsThrowsApiExceptionGivenNoLegalName()
+        public async Task GetDemographicsThrowsApiExceptionGivenNoLegalName()
         {
             // Setup
             IClientRegistriesDelegate clientRegistryDelegate = GetClientRegistriesDelegate(false, true);
@@ -1171,7 +1171,7 @@ namespace HealthGateway.PatientTests.Delegates
         /// </summary>
         /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
         [Fact]
-        public async Task ShouldGetDemographicsThrowsApiExceptionGivenNoIds()
+        public async Task GetDemographicsThrowsApiExceptionGivenNoIds()
         {
             // Setup
             IClientRegistriesDelegate clientRegistryDelegate = GetClientRegistriesDelegate(false, false, true);
@@ -1192,7 +1192,7 @@ namespace HealthGateway.PatientTests.Delegates
         /// </summary>
         /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
         [Fact]
-        public async Task ShouldGetDemographicsThrowsApiExceptionGivenDeceasedIndicatorTrue()
+        public async Task GetDemographicsThrowsApiExceptionGivenDeceasedIndicatorTrue()
         {
             // Setup
             IClientRegistriesDelegate clientRegistryDelegate = GetClientRegistriesDelegate(true);
@@ -1231,7 +1231,7 @@ namespace HealthGateway.PatientTests.Delegates
         /// </summary>
         /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
         [Fact]
-        public async Task ShouldGetDemographicsThrowApiPatientExceptionGivenCommunicationException()
+        public async Task GetDemographicsThrowsApiPatientExceptionGivenCommunicationException()
         {
             // Setup
             string expectedDetail = $"Communication Exception with client registry when trying to retrieve patient information from {OidType.Phn}";
@@ -1253,7 +1253,7 @@ namespace HealthGateway.PatientTests.Delegates
         /// </summary>
         /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
         [Fact]
-        public async Task ShouldGetDemographicsThrowApiPatientExceptionGivenClientRegistryRecordsNotFound()
+        public async Task GetDemographicsThrowsApiPatientExceptionGivenClientRegistryRecordsNotFound()
         {
             // Setup
             string expectedResponseCode = "BCHCIM.GD.2.0018";
@@ -1275,7 +1275,7 @@ namespace HealthGateway.PatientTests.Delegates
         /// </summary>
         /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
         [Fact]
-        public async Task ShouldGetDemographicsThrowApiPatientExceptionGivenClientRegistryDoesNotReturnPerson()
+        public async Task GetDemographicsThrowsApiPatientExceptionGivenClientRegistryDoesNotReturnPerson()
         {
             // Setup
             string expectedResponseCode = "BCHCIM.GD.0.0099";
@@ -1297,7 +1297,7 @@ namespace HealthGateway.PatientTests.Delegates
         /// </summary>
         /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
         [Fact]
-        public async Task ShouldGetDemographicsThrowApiPatientExceptionGivenClientRegistryPhnInvalid()
+        public async Task GetDemographicsThrowsApiPatientExceptionGivenClientRegistryPhnInvalid()
         {
             // Setup
             string expectedResponseCode = "BCHCIM.GD.2.0006";

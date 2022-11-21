@@ -107,7 +107,7 @@ namespace HealthGateway.LaboratoryTests.Delegates
         /// </summary>
         /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
         [Fact]
-        public async Task ShouldGetCovid19OrderHandlesHttpStatusCodeNoContent()
+        public async Task GetCovid19OrderHandlesHttpStatusCodeNoContent()
         {
             // Arrange
             Mock<ILogger<RestLaboratoryDelegate>> mockLogger = new();
@@ -134,7 +134,7 @@ namespace HealthGateway.LaboratoryTests.Delegates
         /// </summary>
         /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
         [Fact]
-        public async Task ShouldGetCovid19OrdersHandleApiException()
+        public async Task GetCovid19OrdersHandleApiException()
         {
             string expectedMessage = $"Status: {HttpStatusCode.Unauthorized}. Error while retrieving Covid19 Orders";
 
@@ -162,7 +162,7 @@ namespace HealthGateway.LaboratoryTests.Delegates
         /// </summary>
         /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
         [Fact]
-        public async Task ShouldGetCovid19OrdersHandleHttpRequestException()
+        public async Task GetCovid19OrdersHandleHttpRequestException()
         {
             string expectedMessage = $"Status: {HttpStatusCode.InternalServerError}. Error while retrieving Covid19 Orders";
 
@@ -222,7 +222,7 @@ namespace HealthGateway.LaboratoryTests.Delegates
         /// </summary>
         /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
         [Fact]
-        public async Task ShouldGetCovid19LabReportHandlesHttpStatusCodeNoContent()
+        public async Task GetCovid19LabReportHandlesHttpStatusCodeNoContent()
         {
             string expectedMessage = "Laboratory Report not found";
 
@@ -249,7 +249,7 @@ namespace HealthGateway.LaboratoryTests.Delegates
         /// </summary>
         /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
         [Fact]
-        public async Task ShouldGetCovid19LabReportHandlesApiException()
+        public async Task GetCovid19LabReportHandlesApiException()
         {
             string expectedMessage = $"Status: {HttpStatusCode.Unauthorized}. Error retrieving Laboratory Report";
 
@@ -277,7 +277,7 @@ namespace HealthGateway.LaboratoryTests.Delegates
         /// </summary>
         /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
         [Fact]
-        public async Task ShouldGetCovid19LabReportHandlesHttpRequestException()
+        public async Task GetCovid19LabReportHandlesHttpRequestException()
         {
             string expectedMessage = $"Status: {HttpStatusCode.InternalServerError}. Error retrieving Laboratory Report";
 
@@ -338,7 +338,7 @@ namespace HealthGateway.LaboratoryTests.Delegates
         /// </summary>
         /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
         [Fact]
-        public async Task ShouldGetPlisLabReportHandlesHttpStatusCodeNoContent()
+        public async Task GetPlisLabReportHandlesHttpStatusCodeNoContent()
         {
             string expectedMessage = "Laboratory Report not found";
 
@@ -366,7 +366,7 @@ namespace HealthGateway.LaboratoryTests.Delegates
         /// </summary>
         /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
         [Fact]
-        public async Task ShouldGetPlisLabReportHandlesApiException()
+        public async Task GetPlisLabReportHandlesApiException()
         {
             string expectedMessage = $"Status: {HttpStatusCode.Unauthorized}. Error retrieving Laboratory Report";
 
@@ -394,7 +394,7 @@ namespace HealthGateway.LaboratoryTests.Delegates
         /// </summary>
         /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
         [Fact]
-        public async Task ShouldGetPlisLabReportHandlesHttpRequestException()
+        public async Task GetPlisLabReportHandlesHttpRequestException()
         {
             string expectedMessage = $"Status: {HttpStatusCode.InternalServerError}. Error retrieving Laboratory Report";
 
@@ -482,7 +482,7 @@ namespace HealthGateway.LaboratoryTests.Delegates
         /// </summary>
         /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
         [Fact]
-        public async Task ShouldGetPublicTestResultsHandlesApiException()
+        public async Task GetPublicTestResultsHandlesApiException()
         {
             string expectedMessage = $"Status: {HttpStatusCode.Unauthorized}. Error while retrieving Covid19 Test Results";
 
@@ -512,7 +512,7 @@ namespace HealthGateway.LaboratoryTests.Delegates
         /// </summary>
         /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
         [Fact]
-        public async Task ShouldGetPublicTestResultsHandlesHttpRequestException()
+        public async Task GetPublicTestResultsHandlesHttpRequestException()
         {
             string expectedMessage = $"Status: {HttpStatusCode.InternalServerError}. Error while retrieving Covid19 Test Results";
 
@@ -577,7 +577,7 @@ namespace HealthGateway.LaboratoryTests.Delegates
         /// </summary>
         /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
         [Fact]
-        public async Task ShouldGetLaboratorySummaryHandlesHttpStatusCodeNoContent()
+        public async Task GetLaboratorySummaryHandlesHttpStatusCodeNoContent()
         {
             // Arrange
             Mock<ILogger<RestLaboratoryDelegate>> mockLogger = new();
@@ -604,7 +604,7 @@ namespace HealthGateway.LaboratoryTests.Delegates
         /// </summary>
         /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
         [Fact]
-        public async Task ShouldGetLaboratorySummaryHandleApiException()
+        public async Task GetLaboratorySummaryHandleApiException()
         {
             string expectedMessage = $"Status: {HttpStatusCode.Unauthorized}. Error while retrieving Laboratory Summary";
 
@@ -632,7 +632,7 @@ namespace HealthGateway.LaboratoryTests.Delegates
         /// </summary>
         /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
         [Fact]
-        public async Task ShouldGetLaboratorySummaryHandleHttpRequestException()
+        public async Task GetLaboratorySummaryHandleHttpRequestException()
         {
             string expectedMessage = $"Status: {HttpStatusCode.InternalServerError}. Error while retrieving Laboratory Summary";
 
