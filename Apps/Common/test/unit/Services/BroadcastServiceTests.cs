@@ -18,8 +18,8 @@ namespace HealthGateway.CommonTests.Services
     using System;
     using System.Collections.Generic;
     using System.Linq;
-    using System.Net;
     using System.Net.Http;
+    using System.Threading.Tasks;
     using HealthGateway.Common.Api;
     using HealthGateway.Common.Data.Constants;
     using HealthGateway.Common.Data.Models;
@@ -29,7 +29,6 @@ namespace HealthGateway.CommonTests.Services
     using HealthGateway.CommonTests.Utils;
     using Microsoft.Extensions.Logging;
     using Moq;
-    using Refit;
     using Xunit;
 
     /// <summary>
@@ -38,17 +37,16 @@ namespace HealthGateway.CommonTests.Services
     public class BroadcastServiceTests
     {
         private const string CategoryName = "Test Category Name";
-        private const string UnexpectedErrorMessage = "An unexpected error occurred while processing external call";
         private const string ThrownExceptionMessage = "Error with HTTP Request";
 
         /// <summary>
-        /// CreateBroadcast.
+        /// CreateBroadcastAsync.
         /// </summary>
         [Fact]
         public void ShouldCreateBroadcast()
         {
             // Arrange
-            IBroadcastService service = GetBroadcastService(null, HttpStatusCode.OK, false);
+            IBroadcastService service = GetBroadcastService(null, false);
 
             // Act
             RequestResult<Broadcast> actualResult = service.CreateBroadcastAsync(new Broadcast()).Result;
@@ -61,32 +59,13 @@ namespace HealthGateway.CommonTests.Services
         }
 
         /// <summary>
-        /// CreateBroadcast - api returns error.
-        /// </summary>
-        [Fact]
-        public void CreateBroadcastShouldReturnsError()
-        {
-            // Arrange
-            IBroadcastService service = GetBroadcastService(null, HttpStatusCode.InternalServerError, false);
-
-            // Act
-            RequestResult<Broadcast> actualResult = service.CreateBroadcastAsync(new Broadcast()).Result;
-
-            // Assert
-            Assert.Equal(ResultType.Error, actualResult.ResultStatus);
-            Assert.Null(actualResult.ResourcePayload);
-            Assert.NotNull(actualResult.ResultError);
-            Assert.Equal(UnexpectedErrorMessage, actualResult.ResultError?.ResultMessage);
-        }
-
-        /// <summary>
-        /// CreateBroadcast - api throws exception.
+        /// CreateBroadcastAsync - api throws exception.
         /// </summary>
         [Fact]
         public void CreateBroadcastShouldThrowsException()
         {
             // Arrange
-            IBroadcastService service = GetBroadcastService(null, null, true);
+            IBroadcastService service = GetBroadcastService(null, true);
 
             // Act
             RequestResult<Broadcast> actualResult = service.CreateBroadcastAsync(new Broadcast()).Result;
@@ -99,14 +78,14 @@ namespace HealthGateway.CommonTests.Services
         }
 
         /// <summary>
-        /// GetBroadcasts - api returns one row.
+        /// GetBroadcastsAsync - api returns one row.
         /// </summary>
         [Fact]
         public void ShouldGetBroadcasts()
         {
             // Arrange
             Guid expectedId = Guid.NewGuid();
-            IBroadcastService service = GetBroadcastService(expectedId, HttpStatusCode.OK, false);
+            IBroadcastService service = GetBroadcastService(expectedId, false);
 
             // Act
             RequestResult<IEnumerable<Broadcast>> actualResult = service.GetBroadcastsAsync().Result;
@@ -120,13 +99,13 @@ namespace HealthGateway.CommonTests.Services
         }
 
         /// <summary>
-        /// GetBroadcasts - returns no rows.
+        /// GetBroadcastsAsync - returns no rows.
         /// </summary>
         [Fact]
         public void ShouldGetBroadcastsNoRowsReturned()
         {
             // Arrange
-            IBroadcastService service = GetBroadcastService(null, HttpStatusCode.OK, false);
+            IBroadcastService service = GetBroadcastService(null, false);
 
             // Act
             RequestResult<IEnumerable<Broadcast>> actualResult = service.GetBroadcastsAsync().Result;
@@ -139,32 +118,13 @@ namespace HealthGateway.CommonTests.Services
         }
 
         /// <summary>
-        /// GetBroadcasts - api returns error.
-        /// </summary>
-        [Fact]
-        public void GetBroadcastsShouldReturnsError()
-        {
-            // Arrange
-            IBroadcastService service = GetBroadcastService(null, HttpStatusCode.InternalServerError, false);
-
-            // Act
-            RequestResult<IEnumerable<Broadcast>> actualResult = service.GetBroadcastsAsync().Result;
-
-            // Assert
-            Assert.Equal(ResultType.Error, actualResult.ResultStatus);
-            Assert.Null(actualResult.ResourcePayload);
-            Assert.NotNull(actualResult.ResultError);
-            Assert.Equal(UnexpectedErrorMessage, actualResult.ResultError?.ResultMessage);
-        }
-
-        /// <summary>
-        /// GetBroadcasts - api throws exception.
+        /// GetBroadcastsAsync - api throws exception.
         /// </summary>
         [Fact]
         public void GetBroadcastsShouldThrowsException()
         {
             // Arrange
-            IBroadcastService service = GetBroadcastService(null, null, true);
+            IBroadcastService service = GetBroadcastService(null, true);
 
             // Act
             RequestResult<IEnumerable<Broadcast>> actualResult = service.GetBroadcastsAsync().Result;
@@ -177,7 +137,7 @@ namespace HealthGateway.CommonTests.Services
         }
 
         /// <summary>
-        /// UpdateBroadcast.
+        /// UpdateBroadcastAsync.
         /// </summary>
         [Fact]
         public void ShouldUpdateBroadcast()
@@ -189,7 +149,7 @@ namespace HealthGateway.CommonTests.Services
             {
                 Id = expectedId,
             };
-            IBroadcastService service = GetBroadcastService(expectedId, HttpStatusCode.OK, false);
+            IBroadcastService service = GetBroadcastService(expectedId, false);
 
             // Act
             RequestResult<Broadcast> actualResult = service.UpdateBroadcastAsync(broadcast).Result;
@@ -202,32 +162,7 @@ namespace HealthGateway.CommonTests.Services
         }
 
         /// <summary>
-        /// UpdateBroadcast - api returns error.
-        /// </summary>
-        [Fact]
-        public void UpdateBroadcastShouldReturnsError()
-        {
-            Guid expectedId = Guid.NewGuid();
-
-            // Arrange
-            Broadcast broadcast = new()
-            {
-                Id = expectedId,
-            };
-            IBroadcastService service = GetBroadcastService(null, HttpStatusCode.InternalServerError, false);
-
-            // Act
-            RequestResult<Broadcast> actualResult = service.UpdateBroadcastAsync(broadcast).Result;
-
-            // Assert
-            Assert.Equal(ResultType.Error, actualResult.ResultStatus);
-            Assert.Null(actualResult.ResourcePayload);
-            Assert.NotNull(actualResult.ResultError);
-            Assert.Equal(UnexpectedErrorMessage, actualResult.ResultError?.ResultMessage);
-        }
-
-        /// <summary>
-        /// CreateBroadcast - api throws exception.
+        /// CreateBroadcastAsync - api throws exception.
         /// </summary>
         [Fact]
         public void UpdateBroadcastShouldThrowsException()
@@ -239,7 +174,7 @@ namespace HealthGateway.CommonTests.Services
             {
                 Id = expectedId,
             };
-            IBroadcastService service = GetBroadcastService(null, null, true);
+            IBroadcastService service = GetBroadcastService(null, true);
 
             // Act
             RequestResult<Broadcast> actualResult = service.UpdateBroadcastAsync(broadcast).Result;
@@ -252,7 +187,7 @@ namespace HealthGateway.CommonTests.Services
         }
 
         /// <summary>
-        /// DeleteBroadcast.
+        /// DeleteBroadcastAsync.
         /// </summary>
         [Fact]
         public void ShouldDeleteBroadcast()
@@ -264,7 +199,7 @@ namespace HealthGateway.CommonTests.Services
             {
                 Id = expectedId,
             };
-            IBroadcastService service = GetBroadcastService(expectedId, HttpStatusCode.OK, false);
+            IBroadcastService service = GetBroadcastService(expectedId, false);
 
             // Act
             RequestResult<Broadcast> actualResult = service.DeleteBroadcastAsync(broadcast).Result;
@@ -277,32 +212,7 @@ namespace HealthGateway.CommonTests.Services
         }
 
         /// <summary>
-        /// DeleteBroadcast - api returns error.
-        /// </summary>
-        [Fact]
-        public void DeleteBroadcastShouldReturnError()
-        {
-            Guid expectedId = Guid.NewGuid();
-
-            // Arrange
-            Broadcast broadcast = new()
-            {
-                Id = expectedId,
-            };
-            IBroadcastService service = GetBroadcastService(null, HttpStatusCode.InternalServerError, false);
-
-            // Act
-            RequestResult<Broadcast> actualResult = service.DeleteBroadcastAsync(broadcast).Result;
-
-            // Assert
-            Assert.Equal(ResultType.Error, actualResult.ResultStatus);
-            Assert.Null(actualResult.ResourcePayload);
-            Assert.NotNull(actualResult.ResultError);
-            Assert.Equal(UnexpectedErrorMessage, actualResult.ResultError?.ResultMessage);
-        }
-
-        /// <summary>
-        /// DeleteBroadcast - api throws exception.
+        /// DeleteBroadcastAsync - api throws exception.
         /// </summary>
         [Fact]
         public void DeleteBroadcastShouldThrowException()
@@ -314,7 +224,7 @@ namespace HealthGateway.CommonTests.Services
             {
                 Id = expectedId,
             };
-            IBroadcastService service = GetBroadcastService(null, null, true);
+            IBroadcastService service = GetBroadcastService(null, true);
 
             // Act
             RequestResult<Broadcast> actualResult = service.DeleteBroadcastAsync(broadcast).Result;
@@ -338,44 +248,35 @@ namespace HealthGateway.CommonTests.Services
             return response;
         }
 
-        private static IBroadcastService GetBroadcastService(Guid? id, HttpStatusCode? statusCode, bool throwException)
+        private static IBroadcastService GetBroadcastService(Guid? id, bool throwException)
         {
-            Mock<IApiResponse> mockApiDeleteResponse = new();
-            mockApiDeleteResponse.Setup(r => r.StatusCode).Returns(statusCode ?? HttpStatusCode.OK);
+            BroadcastResponse response = new()
+            {
+                Id = id ?? Guid.Empty,
+                CategoryName = CategoryName,
+            };
 
-            Mock<IApiResponse<BroadcastResponse>> mockApiUpdateResponse = new();
-            mockApiUpdateResponse.Setup(r => r.Content).Returns(GetApiResponse(id));
-            mockApiUpdateResponse.Setup(r => r.StatusCode).Returns(statusCode ?? HttpStatusCode.OK);
-
-            Mock<IApiResponse<BroadcastResponse>> mockApiCreateResponse = new();
-            mockApiCreateResponse.Setup(r => r.Content).Returns(GetApiResponse(null));
-            mockApiCreateResponse.Setup(r => r.StatusCode).Returns(statusCode ?? HttpStatusCode.OK);
-
-            Mock<IApiResponse<IEnumerable<BroadcastResponse>>> mockApiGetResponse = new();
-            List<BroadcastResponse> responses = new();
+            List<BroadcastResponse> apiGetResponse = new();
             if (id != null)
             {
-                responses.Add(GetApiResponse(id));
+                apiGetResponse.Add(GetApiResponse(id));
             }
-
-            mockApiGetResponse.Setup(r => r.Content).Returns(responses);
-            mockApiGetResponse.Setup(r => r.StatusCode).Returns(statusCode ?? HttpStatusCode.OK);
 
             Mock<ISystemBroadcastApi> mockSystemBroadcastApi = new();
 
             if (!throwException)
             {
-                mockSystemBroadcastApi.Setup(s => s.GetBroadcasts()).ReturnsAsync(mockApiGetResponse.Object);
-                mockSystemBroadcastApi.Setup(s => s.UpdateBroadcast(It.IsAny<string>(), It.IsAny<BroadcastRequest>())).ReturnsAsync(mockApiUpdateResponse.Object);
-                mockSystemBroadcastApi.Setup(s => s.CreateBroadcast(It.IsAny<BroadcastRequest>())).ReturnsAsync(mockApiCreateResponse.Object);
-                mockSystemBroadcastApi.Setup(s => s.DeleteBroadcast(It.IsAny<string>())).ReturnsAsync(mockApiDeleteResponse.Object);
+                mockSystemBroadcastApi.Setup(s => s.GetBroadcastsAsync()).ReturnsAsync(apiGetResponse);
+                mockSystemBroadcastApi.Setup(s => s.UpdateBroadcastAsync(It.IsAny<string>(), It.IsAny<BroadcastRequest>())).ReturnsAsync(response);
+                mockSystemBroadcastApi.Setup(s => s.CreateBroadcastAsync(It.IsAny<BroadcastRequest>())).ReturnsAsync(response);
+                mockSystemBroadcastApi.Setup(s => s.DeleteBroadcastAsync(It.IsAny<string>())).Returns(Task.CompletedTask);
             }
             else
             {
-                mockSystemBroadcastApi.Setup(s => s.GetBroadcasts()).ThrowsAsync(new HttpRequestException(string.Empty));
-                mockSystemBroadcastApi.Setup(s => s.UpdateBroadcast(It.IsAny<string>(), It.IsAny<BroadcastRequest>())).ThrowsAsync(new HttpRequestException(string.Empty));
-                mockSystemBroadcastApi.Setup(s => s.CreateBroadcast(It.IsAny<BroadcastRequest>())).ThrowsAsync(new HttpRequestException(string.Empty));
-                mockSystemBroadcastApi.Setup(s => s.DeleteBroadcast(It.IsAny<string>())).ThrowsAsync(new HttpRequestException(string.Empty));
+                mockSystemBroadcastApi.Setup(s => s.GetBroadcastsAsync()).ThrowsAsync(new HttpRequestException(string.Empty));
+                mockSystemBroadcastApi.Setup(s => s.UpdateBroadcastAsync(It.IsAny<string>(), It.IsAny<BroadcastRequest>())).ThrowsAsync(new HttpRequestException(string.Empty));
+                mockSystemBroadcastApi.Setup(s => s.CreateBroadcastAsync(It.IsAny<BroadcastRequest>())).ThrowsAsync(new HttpRequestException(string.Empty));
+                mockSystemBroadcastApi.Setup(s => s.DeleteBroadcastAsync(It.IsAny<string>())).ThrowsAsync(new HttpRequestException(string.Empty));
             }
 
             return new BroadcastService(
