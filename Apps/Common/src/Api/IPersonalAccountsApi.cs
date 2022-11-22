@@ -30,7 +30,7 @@ namespace HealthGateway.Common.Api
         /// <param name="hdid">The HDID to lookup.</param>
         /// <returns>The Personal Account matching the id.</returns>
         [Get("/personal-accounts/hdid/{hdid}")]
-        Task<IApiResponse<PersonalAccount>> AccountLookupByHdid(string hdid);
+        Task<PersonalAccount> AccountLookupByHdidAsync(string hdid);
 
         /// <summary>
         /// Retrieves the Personal Account by PID.
@@ -38,7 +38,7 @@ namespace HealthGateway.Common.Api
         /// <param name="pid">The PID to lookup.</param>
         /// <returns>The Personal Account matching the id.</returns>
         [Get("/personal-accounts/pid/{pid}")]
-        Task<IApiResponse<PersonalAccount>> AccountLookupByPid(string pid);
+        Task<PersonalAccount> AccountLookupByPidAsync(string pid);
 
         /// <summary>
         /// Retrieves the Personal Account by Account ID.
@@ -46,6 +46,6 @@ namespace HealthGateway.Common.Api
         /// <param name="accountId">The AccountID to lookup.</param>
         /// <returns>The Personal Account matching the id.</returns>
         [Get("/personal-accounts/accountid/{accountId}")]
-        Task<IApiResponse<PersonalAccount>> AccountLookupById(string accountId);
+        Task<PersonalAccount> AccountLookupByIdAsync(string accountId);
     }
 }
