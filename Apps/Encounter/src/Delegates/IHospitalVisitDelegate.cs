@@ -31,6 +31,6 @@ namespace HealthGateway.Encounter.Delegates
         /// </summary>
         /// <param name="hdid">The hdid patient id.</param>
         /// <returns>The PhsaResult including the load state and the list of hospital visits available for the user hdid.</returns>
-        Task<RequestResult<PhsaResult<IEnumerable<HospitalVisit>>>> GetHospitalVisits(string hdid);
+        Task<RequestResult<PhsaResult<IEnumerable<HospitalVisit>>>> GetHospitalVisitsAsync(string hdid);
     }
 }

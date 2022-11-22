@@ -15,6 +15,7 @@
 //-------------------------------------------------------------------------
 namespace HealthGateway.Encounter.Delegates
 {
+    using System;
     using System.Collections.Generic;
     using System.Diagnostics;
     using System.Globalization;
@@ -66,7 +67,7 @@ namespace HealthGateway.Encounter.Delegates
         private static ActivitySource Source { get; } = new(nameof(RestHospitalVisitDelegate));
 
         /// <inheritdoc/>
-        public async Task<RequestResult<PhsaResult<IEnumerable<HospitalVisit>>>> GetHospitalVisits(string hdid)
+        public async Task<RequestResult<PhsaResult<IEnumerable<HospitalVisit>>>> GetHospitalVisitsAsync(string hdid)
         {
             using Activity? activity = Source.StartActivity();
             this.logger.LogDebug("Getting hospital visits for hdid: {Hdid}", hdid);
@@ -91,71 +92,25 @@ namespace HealthGateway.Encounter.Delegates
 
             try
             {
-                IApiResponse<PhsaResult<IEnumerable<HospitalVisit>>> response =
-                    await this.hospitalVisitApi.GetHospitalVisits(query, accessToken).ConfigureAwait(true);
-                this.ProcessResponse(requestResult, response);
+                PhsaResult<IEnumerable<HospitalVisit>> response =
+                    await this.hospitalVisitApi.GetHospitalVisitsAsync(query, accessToken).ConfigureAwait(true);
+                requestResult.ResultStatus = ResultType.Success;
+                requestResult.ResourcePayload!.Result = response.Result;
+                requestResult.TotalResultCount = requestResult.ResourcePayload.Result.Count();
             }
-            catch (HttpRequestException e)
+            catch (Exception e) when (e is ApiException or HttpRequestException)
             {
-                this.logger.LogCritical("HTTP Request Exception {Error}", e.ToString());
+                this.logger.LogError("Error while retrieving Hospital Visits... {Error}", e);
+                HttpStatusCode? statusCode = (e as ApiException)?.StatusCode ?? ((HttpRequestException)e).StatusCode;
                 requestResult.ResultError = new()
                 {
-                    ResultMessage = "Error with HTTP Request",
+                    ResultMessage = $"Status: {statusCode}. Error while retrieving Hospital Visits",
                     ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.Phsa),
                 };
             }
 
             this.logger.LogDebug("Finished getting hospital visits for hdid: {Hdid}", hdid);
             return requestResult;
-        }
-
-        private void ProcessResponse<T>(RequestResult<PhsaResult<IEnumerable<T>>> requestResult, IApiResponse<PhsaResult<IEnumerable<T>>> response)
-            where T : class
-        {
-            if (response.Error is null)
-            {
-                switch (response.StatusCode)
-                {
-                    case HttpStatusCode.OK:
-                        requestResult.ResultStatus = ResultType.Success;
-                        requestResult.ResourcePayload!.Result = response.Content!.Result;
-                        requestResult.TotalResultCount = requestResult.ResourcePayload.Result.Count();
-                        break;
-                    case HttpStatusCode.NoContent:
-                        requestResult.ResultStatus = ResultType.Success;
-                        requestResult.TotalResultCount = 0;
-                        break;
-                    case HttpStatusCode.Forbidden:
-                        requestResult.ResultError = new()
-                        {
-                            ResultMessage =
-                                $"DID Claim is missing or can not resolve PHN, HTTP Error {response.StatusCode}",
-                            ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.Phsa),
-                        };
-                        break;
-                    default:
-                        requestResult.ResultError = new()
-                        {
-                            ResultMessage =
-                                $"Unable to connect to Hospital Visits Endpoint, HTTP Error {response.StatusCode}",
-                            ErrorCode = ErrorTranslator.ServiceError(
-                                ErrorType.CommunicationExternal,
-                                ServiceType.Phsa),
-                        };
-                        this.logger.LogError("Unexpected status code returned: {StatusCode}", response.StatusCode.ToString());
-                        break;
-                }
-            }
-            else
-            {
-                this.logger.LogError("Exception: {Error}", response.Error.ToString());
-                this.logger.LogError("Http Payload: {Content}", response.Error.Content);
-                requestResult.ResultError = new()
-                {
-                    ResultMessage = "An unexpected error occurred while processing external call",
-                    ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.Phsa),
-                };
-            }
         }
     }
 }
