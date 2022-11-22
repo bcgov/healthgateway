@@ -71,6 +71,12 @@ public class CommunicationsEffects
                 this.Logger.LogInformation("Communication added successfully!");
                 dispatcher.Dispatch(new CommunicationsActions.AddSuccessAction(response));
             }
+            else
+            {
+                RequestError error = StoreUtility.FormatRequestError(response.ResultError);
+                this.Logger.LogError("Error adding communication, reason: {ErrorMessage}", error.Message);
+                dispatcher.Dispatch(new CommunicationsActions.AddFailAction(error));
+            }
         }
         catch (Exception e) when (e is ApiException or HttpRequestException)
         {
@@ -98,6 +104,12 @@ public class CommunicationsEffects
             {
                 this.Logger.LogInformation("Communications loaded successfully!");
                 dispatcher.Dispatch(new CommunicationsActions.LoadSuccessAction(response));
+            }
+            else
+            {
+                RequestError error = StoreUtility.FormatRequestError(response.ResultError);
+                this.Logger.LogError("Error loading communication, reason: {ErrorMessage}", error.Message);
+                dispatcher.Dispatch(new CommunicationsActions.LoadFailAction(error));
             }
         }
         catch (Exception e) when (e is ApiException or HttpRequestException)
@@ -128,6 +140,12 @@ public class CommunicationsEffects
                 this.Logger.LogInformation("Communication updated successfully!");
                 dispatcher.Dispatch(new CommunicationsActions.UpdateSuccessAction(response));
             }
+            else
+            {
+                RequestError error = StoreUtility.FormatRequestError(response.ResultError);
+                this.Logger.LogError("Error updating communication, reason: {ErrorMessage}", error.Message);
+                dispatcher.Dispatch(new CommunicationsActions.UpdateFailAction(error));
+            }
         }
         catch (Exception e) when (e is ApiException or HttpRequestException)
         {
@@ -156,6 +174,12 @@ public class CommunicationsEffects
             {
                 this.Logger.LogInformation("Communication deleted successfully!");
                 dispatcher.Dispatch(new CommunicationsActions.DeleteSuccessAction(response));
+            }
+            else
+            {
+                RequestError error = StoreUtility.FormatRequestError(response.ResultError);
+                this.Logger.LogError("Error deleting communication, reason: {ErrorMessage}", error.Message);
+                dispatcher.Dispatch(new CommunicationsActions.UpdateFailAction(error));
             }
         }
         catch (Exception e) when (e is ApiException or HttpRequestException)

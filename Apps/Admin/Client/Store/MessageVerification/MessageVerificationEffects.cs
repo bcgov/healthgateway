@@ -70,6 +70,12 @@ namespace HealthGateway.Admin.Client.Store.MessageVerification
                     this.Logger.LogInformation("Messaging verifications loaded successfully!");
                     dispatcher.Dispatch(new MessageVerificationActions.LoadSuccessAction(response, action.Hdid));
                 }
+                else
+                {
+                    RequestError error = StoreUtility.FormatRequestError(response.ResultError);
+                    this.Logger.LogError("Error loading messaging verifications, reason: {ErrorMessage}", error.Message);
+                    dispatcher.Dispatch(new MessageVerificationActions.LoadFailAction(error));
+                }
             }
             catch (Exception e) when (e is ApiException or HttpRequestException)
             {
