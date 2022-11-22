@@ -16,7 +16,9 @@
 
 namespace HealthGateway.Admin.Client.Store.SupportUser
 {
+    using System;
     using System.Collections.Generic;
+    using System.Net.Http;
     using System.Threading.Tasks;
     using Fluxor;
     using HealthGateway.Admin.Client.Services;
@@ -60,24 +62,33 @@ namespace HealthGateway.Admin.Client.Store.SupportUser
         {
             this.Logger.LogInformation("Loading users");
 
-            ApiResponse<RequestResult<IEnumerable<SupportUser>>> response = await this.SupportApi.GetSupportUsers(action.QueryType, action.QueryString).ConfigureAwait(true);
-            if (response.IsSuccessStatusCode && response.Content != null && response.Content.ResultStatus == ResultType.Success)
+            try
             {
-                this.Logger.LogInformation("Users loaded successfully!");
-                dispatcher.Dispatch(new SupportUserActions.LoadSuccessAction(response.Content));
-                return;
+                RequestResult<IEnumerable<SupportUser>> response = await this.SupportApi.GetSupportUsers(action.QueryType, action.QueryString).ConfigureAwait(true);
+                if (response.ResultStatus == ResultType.Success)
+                {
+                    this.Logger.LogInformation("Users loaded successfully!");
+                    dispatcher.Dispatch(new SupportUserActions.LoadSuccessAction(response));
+                }
+                else if (response.ResultStatus == ResultType.ActionRequired)
+                {
+                    this.Logger.LogInformation("Users loaded with warning message: {WarningMessage}", response.ResultError?.ResultMessage);
+                    dispatcher.Dispatch(new SupportUserActions.LoadSuccessAction(response));
+                }
+                else
+                {
+                    RequestError error = StoreUtility.FormatRequestError(response?.ResultError);
+                    this.Logger.LogError("Error loading users, reason: {ErrorMessage}", error.Message);
+                    dispatcher.Dispatch(new SupportUserActions.LoadFailAction(error));
+                }
             }
-
-            if (response.IsSuccessStatusCode && response.Content != null && response.Content.ResultStatus == ResultType.ActionRequired)
+            catch (Exception e) when (e is ApiException or HttpRequestException)
             {
-                this.Logger.LogInformation("Users loaded with warning message: {WarningMessage}", response.Content.ResultError?.ResultMessage);
-                dispatcher.Dispatch(new SupportUserActions.LoadSuccessAction(response.Content));
-                return;
+                this.Logger.LogError("Error loading users...{Error}", e);
+                RequestError error = StoreUtility.FormatRequestError(e);
+                this.Logger.LogError("Error loading users, reason: {ErrorMessage}", error.Message);
+                dispatcher.Dispatch(new SupportUserActions.LoadFailAction(error));
             }
-
-            RequestError error = StoreUtility.FormatRequestError(response.Error, response.Content?.ResultError);
-            this.Logger.LogError("Error loading users, reason: {ErrorMessage}", error.Message);
-            dispatcher.Dispatch(new SupportUserActions.LoadFailAction(error));
         }
     }
 }
