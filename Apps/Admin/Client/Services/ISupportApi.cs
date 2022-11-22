@@ -33,7 +33,7 @@ public interface ISupportApi
     /// <param name="queryString">queryString.</param>
     /// <returns>The list of SupportUser objects.</returns>
     [Get("/Users?queryType={queryType}&queryString={queryString}")]
-    Task<ApiResponse<RequestResult<IEnumerable<SupportUser>>>> GetSupportUsers(UserQueryType queryType, string queryString);
+    Task<RequestResult<IEnumerable<SupportUser>>> GetSupportUsers(UserQueryType queryType, string queryString);
 
     /// <summary>
     /// Gets the list of messaging verification models from the server.
