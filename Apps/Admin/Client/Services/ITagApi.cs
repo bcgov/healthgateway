@@ -32,14 +32,14 @@ public interface ITagApi
     /// <param name="tagName">The tag name.</param>
     /// <returns>The wrapped model.</returns>
     [Post("/")]
-    Task<ApiResponse<RequestResult<AdminTagView>>> Add([Body(BodySerializationMethod.Serialized)] string tagName);
+    Task<RequestResult<AdminTagView>> AddAsync([Body(BodySerializationMethod.Serialized)] string tagName);
 
     /// <summary>
     /// Gets all tags.
     /// </summary>
     /// <returns>The wrapped collection of models.</returns>
     [Get("/")]
-    Task<ApiResponse<RequestResult<IEnumerable<AdminTagView>>>> GetAll();
+    Task<RequestResult<IEnumerable<AdminTagView>>> GetAllAsync();
 
     /// <summary>
     /// Deletes a tag.
@@ -47,5 +47,5 @@ public interface ITagApi
     /// <param name="tag">The model to delete.</param>
     /// <returns>The wrapped model.</returns>
     [Delete("/")]
-    Task<ApiResponse<RequestResult<AdminTagView>>> Delete([Body] AdminTagView tag);
+    Task<RequestResult<AdminTagView>> DeleteAsync([Body] AdminTagView tag);
 }
