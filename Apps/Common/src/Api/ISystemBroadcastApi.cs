@@ -30,7 +30,7 @@ namespace HealthGateway.Common.Api
         /// </summary>
         /// <returns>A response containing the collection of broadcasts.</returns>
         [Get("/system-broadcasts")]
-        Task<IApiResponse<IEnumerable<BroadcastResponse>>> GetBroadcasts();
+        Task<IEnumerable<BroadcastResponse>> GetBroadcastsAsync();
 
         /// <summary>
         /// Creates a broadcast.
@@ -38,7 +38,7 @@ namespace HealthGateway.Common.Api
         /// <param name="request">The broadcast to create.</param>
         /// <returns>A response containing the broadcast that was created.</returns>
         [Post("/system-broadcasts")]
-        Task<IApiResponse<BroadcastResponse>> CreateBroadcast([Body] BroadcastRequest request);
+        Task<BroadcastResponse> CreateBroadcastAsync([Body] BroadcastRequest request);
 
         /// <summary>
         /// Updates a broadcast.
@@ -47,7 +47,7 @@ namespace HealthGateway.Common.Api
         /// <param name="request">The broadcast values to update.</param>
         /// <returns>A response containing the broadcast that was updated.</returns>
         [Put("/system-broadcasts/{id}")]
-        Task<IApiResponse<BroadcastResponse>> UpdateBroadcast(string id, [Body] BroadcastRequest request);
+        Task<BroadcastResponse> UpdateBroadcastAsync(string id, [Body] BroadcastRequest request);
 
         /// <summary>
         /// Deletes a broadcast.
@@ -55,6 +55,6 @@ namespace HealthGateway.Common.Api
         /// <param name="id">The id of the broadcast that is being deleted.</param>
         /// <returns>A response indicating success or failure.</returns>
         [Delete("/system-broadcasts/{id}")]
-        Task<IApiResponse> DeleteBroadcast(string id);
+        Task DeleteBroadcastAsync(string id);
     }
 }
