@@ -20,7 +20,6 @@ namespace HealthGateway.Encounter.Delegates
     using System.Diagnostics;
     using System.Globalization;
     using System.Linq;
-    using System.Net;
     using System.Net.Http;
     using System.Threading.Tasks;
     using HealthGateway.Common.AccessManagement.Authentication;
@@ -101,10 +100,10 @@ namespace HealthGateway.Encounter.Delegates
             catch (Exception e) when (e is ApiException or HttpRequestException)
             {
                 this.logger.LogError("Error while retrieving Hospital Visits... {Error}", e);
-                HttpStatusCode? statusCode = (e as ApiException)?.StatusCode ?? ((HttpRequestException)e).StatusCode;
+
                 requestResult.ResultError = new()
                 {
-                    ResultMessage = $"Status: {statusCode}. Error while retrieving Hospital Visits",
+                    ResultMessage = "Error while retrieving Hospital Visits",
                     ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.Phsa),
                 };
             }

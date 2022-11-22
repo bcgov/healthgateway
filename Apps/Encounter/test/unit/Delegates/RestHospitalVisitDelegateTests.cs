@@ -41,6 +41,7 @@ namespace HealthGateway.EncounterTests.Delegates
     {
         private const string AccessToken = "access_token";
         private const string ConfigFetchSize = "25";
+        private const string ExpectedExceptionMessage = "Error while retrieving Hospital Visits";
 
         /// <summary>
         /// GetHospitalVisits - api returns one row.
@@ -84,9 +85,9 @@ namespace HealthGateway.EncounterTests.Delegates
             // Assert
             Assert.Equal(ResultType.Success, actualResult.ResultStatus);
             Assert.NotNull(actualResult.ResourcePayload);
-            Assert.True(actualResult.ResourcePayload.Result.Count() == 2);
-            Assert.True(actualResult.TotalResultCount == 2);
-            Assert.True(actualResult.PageSize == int.Parse(ConfigFetchSize, CultureInfo.InvariantCulture));
+            Assert.Equal(2, actualResult.ResourcePayload.Result.Count());
+            Assert.Equal(2, actualResult.TotalResultCount);
+            Assert.Equal(int.Parse(ConfigFetchSize, CultureInfo.InvariantCulture), actualResult.PageSize);
         }
 
         /// <summary>
@@ -95,8 +96,6 @@ namespace HealthGateway.EncounterTests.Delegates
         [Fact]
         public void GetHospitalVisitShouldHandleApiException()
         {
-            string expectedMessage = $"Status: {HttpStatusCode.Unauthorized}. Error while retrieving Hospital Visits";
-
             // Arrange
             ApiException mockException = MockRefitException.CreateApiException(HttpStatusCode.Unauthorized, HttpMethod.Post);
 
@@ -115,9 +114,9 @@ namespace HealthGateway.EncounterTests.Delegates
 
             // Assert
             Assert.Equal(ResultType.Error, actualResult.ResultStatus);
-            Assert.Equal(expectedMessage, actualResult.ResultError?.ResultMessage);
-            Assert.True(actualResult.TotalResultCount == 0);
-            Assert.True(actualResult.PageSize == int.Parse(ConfigFetchSize, CultureInfo.InvariantCulture));
+            Assert.Equal(ExpectedExceptionMessage, actualResult.ResultError?.ResultMessage);
+            Assert.Equal(0, actualResult.TotalResultCount);
+            Assert.Equal(int.Parse(ConfigFetchSize, CultureInfo.InvariantCulture), actualResult.PageSize);
         }
 
         /// <summary>
@@ -126,8 +125,6 @@ namespace HealthGateway.EncounterTests.Delegates
         [Fact]
         public void GetHospitalVisitShouldHandleHttpRequestException()
         {
-            string expectedMessage = $"Status: {HttpStatusCode.InternalServerError}. Error while retrieving Hospital Visits";
-
             // Arrange
             HttpRequestException mockException = MockRefitException.CreateHttpRequestException("Internal Server Error", HttpStatusCode.InternalServerError);
 
@@ -146,9 +143,9 @@ namespace HealthGateway.EncounterTests.Delegates
 
             // Assert
             Assert.Equal(ResultType.Error, actualResult.ResultStatus);
-            Assert.Equal(expectedMessage, actualResult.ResultError?.ResultMessage);
-            Assert.True(actualResult.TotalResultCount == 0);
-            Assert.True(actualResult.PageSize == int.Parse(ConfigFetchSize, CultureInfo.InvariantCulture));
+            Assert.Equal(ExpectedExceptionMessage, actualResult.ResultError?.ResultMessage);
+            Assert.Equal(0, actualResult.TotalResultCount);
+            Assert.Equal(int.Parse(ConfigFetchSize, CultureInfo.InvariantCulture), actualResult.PageSize);
         }
 
         private static IConfigurationRoot GetIConfigurationRoot()
