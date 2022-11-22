@@ -39,12 +39,12 @@ namespace HealthGateway.Common.Api
         /// Returns users for the role passed in.
         /// </summary>
         /// <param name="role">The requested users role.</param>
-        /// <param name="token">The bearer token to authorize the call.</param>
         /// <param name="first">The first record to return.</param>
         /// <param name="max">The maximum results to return.</param>
+        /// <param name="token">The bearer token to authorize the call.</param>
         /// <returns>An Enumerable of UserRepresentation objects.</returns>
         [Get("/roles/{role}/users?first={first}&max={max}")]
-        Task<IApiResponse<IEnumerable<UserRepresentation>>> GetUsers(string role, [Authorize] string token, int first = 0, int max = -1);
+        Task<IApiResponse<IEnumerable<UserRepresentation>>> GetUsers(string role, int first, int max, [Authorize] string token);
 
         /// <summary>
         /// Delete a User account from the Identity and Access Management system.

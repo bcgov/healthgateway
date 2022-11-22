@@ -23,7 +23,7 @@ namespace HealthGateway.Laboratory.Api
     /// <summary>
     /// Interface that defines a client api to register lab tests.
     /// </summary>
-    public interface ILabTestKitClient
+    public interface ILabTestKitApi
     {
         /// <summary>
         /// Registers a lab test kit for a public user.

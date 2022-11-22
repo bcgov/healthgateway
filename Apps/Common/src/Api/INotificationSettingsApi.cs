@@ -27,11 +27,11 @@ namespace HealthGateway.Common.Api
         /// <summary>
         /// Creates or updates notification settings.
         /// </summary>
-        /// <param name="token">The bearer token to authorize the request.</param>
-        /// <param name="hdid">The subject's HDID.</param>
         /// <param name="request">The notification settings request to be sent.</param>
+        /// <param name="hdid">The subject's HDID.</param>
+        /// <param name="token">The bearer token to authorize the request.</param>
         /// <returns>The notification settings response received.</returns>
         [Put("/")]
-        Task<NotificationSettingsResponse> SetNotificationSettingsAsync([Authorize] string token, [Header("patient")] string hdid, [Body] NotificationSettingsRequest request);
+        Task<NotificationSettingsResponse> SetNotificationSettingsAsync([Body] NotificationSettingsRequest request, [Header("patient")] string hdid, [Authorize] string token);
     }
 }

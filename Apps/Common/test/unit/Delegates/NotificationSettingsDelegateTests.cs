@@ -56,7 +56,7 @@ namespace HealthGateway.CommonTests.Delegates
 
             Mock<ILogger<RestNotificationSettingsDelegate>> mockLogger = new();
             Mock<INotificationSettingsApi> mockNotificationSettingsApi = new();
-            mockNotificationSettingsApi.Setup(s => s.SetNotificationSettingsAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<NotificationSettingsRequest>()))
+            mockNotificationSettingsApi.Setup(s => s.SetNotificationSettingsAsync(It.IsAny<NotificationSettingsRequest>(), It.IsAny<string>(), It.IsAny<string>()))
                 .ReturnsAsync(response);
 
             RestNotificationSettingsDelegate notificationSettingsDelegate = new(mockLogger.Object, mockNotificationSettingsApi.Object);
@@ -87,7 +87,7 @@ namespace HealthGateway.CommonTests.Delegates
 
             Mock<ILogger<RestNotificationSettingsDelegate>> mockLogger = new();
             Mock<INotificationSettingsApi> mockNotificationSettingsApi = new();
-            mockNotificationSettingsApi.Setup(s => s.SetNotificationSettingsAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<NotificationSettingsRequest>()))
+            mockNotificationSettingsApi.Setup(s => s.SetNotificationSettingsAsync(It.IsAny<NotificationSettingsRequest>(), It.IsAny<string>(), It.IsAny<string>()))
                 .ThrowsAsync(new HttpRequestException(null, null, HttpStatusCode.BadRequest));
 
             RestNotificationSettingsDelegate notificationSettingsDelegate = new(mockLogger.Object, mockNotificationSettingsApi.Object);
@@ -123,7 +123,7 @@ namespace HealthGateway.CommonTests.Delegates
             using HttpResponseMessage responseMessage = new(HttpStatusCode.NotFound);
             ApiException apiException = await ApiException.Create(requestMessage, HttpMethod.Put, responseMessage, new()).ConfigureAwait(true);
 
-            mockNotificationSettingsApi.Setup(s => s.SetNotificationSettingsAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<NotificationSettingsRequest>()))
+            mockNotificationSettingsApi.Setup(s => s.SetNotificationSettingsAsync(It.IsAny<NotificationSettingsRequest>(), It.IsAny<string>(), It.IsAny<string>()))
                 .ThrowsAsync(apiException);
 
             RestNotificationSettingsDelegate notificationSettingsDelegate = new(mockLogger.Object, mockNotificationSettingsApi.Object);

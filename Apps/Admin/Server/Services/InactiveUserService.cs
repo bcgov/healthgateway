@@ -114,9 +114,13 @@ public class InactiveUserService : IInactiveUserService
             JwtModel jwtModel = this.authDelegate.AuthenticateAsUser(this.tokenUri, this.tokenRequest);
             try
             {
-                IApiResponse<IEnumerable<UserRepresentation>> adminUsersResult = await this.keycloakAdminApi.GetUsers(nameof(IdentityAccessRole.AdminUser), jwtModel.AccessToken).ConfigureAwait(true);
+                const int firstRecord = 0;
+                const int maxRecords = -1;
+
+                IApiResponse<IEnumerable<UserRepresentation>> adminUsersResult =
+                    await this.keycloakAdminApi.GetUsers(nameof(IdentityAccessRole.AdminUser), firstRecord, maxRecords, jwtModel.AccessToken).ConfigureAwait(true);
                 IApiResponse<IEnumerable<UserRepresentation>> supportUsersResult =
-                    await this.keycloakAdminApi.GetUsers(nameof(IdentityAccessRole.SupportUser), jwtModel.AccessToken).ConfigureAwait(true);
+                    await this.keycloakAdminApi.GetUsers(nameof(IdentityAccessRole.SupportUser), firstRecord, maxRecords, jwtModel.AccessToken).ConfigureAwait(true);
 
                 if (adminUsersResult.IsSuccessStatusCode && adminUsersResult.Content != null)
                 {

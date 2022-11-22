@@ -64,10 +64,8 @@ namespace HealthGateway.Common.Delegates.PHSA
 
             try
             {
-                NotificationSettingsResponse notificationSettingsResponse = await this.notificationSettingsApi.SetNotificationSettingsAsync(
-                        bearerToken,
-                        notificationSettings.SubjectHdid,
-                        notificationSettings)
+                NotificationSettingsResponse notificationSettingsResponse = await this.notificationSettingsApi
+                    .SetNotificationSettingsAsync(notificationSettings, notificationSettings.SubjectHdid, bearerToken)
                     .ConfigureAwait(true);
 
                 retVal.ResultStatus = ResultType.Success;

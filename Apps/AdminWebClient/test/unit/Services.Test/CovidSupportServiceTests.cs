@@ -158,7 +158,7 @@ namespace HealthGateway.AdminWebClientTests.Services.Test
         {
             Mock<IAuthenticationDelegate> mockAuthDelegate = new();
             mockAuthDelegate.Setup(s => s.AccessTokenAsUser(IAuthenticationDelegate.DefaultAuthConfigSectionName)).Returns(AccessToken);
-            IImmunizationAdminClient immunizationAdminClient = RestService.For<IImmunizationAdminClient>(httpClient);
+            IImmunizationAdminApi immunizationAdminApi = RestService.For<IImmunizationAdminApi>(httpClient);
             ICovidSupportService mockCovidSupportService = new CovidSupportService(
                 new Mock<ILogger<CovidSupportService>>().Object,
                 new Mock<IPatientService>().Object,
@@ -167,7 +167,7 @@ namespace HealthGateway.AdminWebClientTests.Services.Test
                 new Mock<IHttpContextAccessor>().Object,
                 GetIConfigurationRoot(),
                 new Mock<IVaccineProofDelegate>().Object,
-                immunizationAdminClient,
+                immunizationAdminApi,
                 mockAuthDelegate.Object);
 
             return mockCovidSupportService;
@@ -182,7 +182,7 @@ namespace HealthGateway.AdminWebClientTests.Services.Test
             mockApiResponse.Setup(s => s.Content).Returns(response);
             mockApiResponse.Setup(s => s.StatusCode).Returns(statusCode);
 
-            Mock<IImmunizationAdminClient> mockAdminDelegate = new();
+            Mock<IImmunizationAdminApi> mockAdminDelegate = new();
             if (!throwException)
             {
                 mockAdminDelegate.Setup(
@@ -221,7 +221,7 @@ namespace HealthGateway.AdminWebClientTests.Services.Test
             mockApiResponse.Setup(s => s.Content).Returns(response);
             mockApiResponse.Setup(s => s.StatusCode).Returns(statusCode);
 
-            Mock<IImmunizationAdminClient> mockAdminDelegate = new();
+            Mock<IImmunizationAdminApi> mockAdminDelegate = new();
             if (!throwException)
             {
                 mockAdminDelegate.Setup(

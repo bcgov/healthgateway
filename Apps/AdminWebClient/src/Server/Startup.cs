@@ -115,7 +115,7 @@ namespace HealthGateway.Admin
             // Add API Clients
             PhsaConfig phsaConfig = new();
             this.startupConfig.Configuration.Bind(PhsaConfigSectionKey, phsaConfig);
-            services.AddRefitClient<IImmunizationAdminClient>()
+            services.AddRefitClient<IImmunizationAdminApi>()
                 .ConfigureHttpClient(c => c.BaseAddress = phsaConfig.BaseUrl);
 
             services.AddAutoMapper(typeof(Startup), typeof(UserProfileProfile), typeof(MessagingVerificationProfile));
