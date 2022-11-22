@@ -30,7 +30,7 @@ namespace HealthGateway.Admin.Client.Utils
         /// </summary>
         /// <param name="resultError">An error returned from the server.</param>
         /// <returns>The generated <see cref="RequestError"/>.</returns>
-        public static RequestError FormatRequestError(RequestResultError resultError)
+        public static RequestError FormatRequestError(RequestResultError? resultError)
         {
             return FormatRequestError(null, resultError);
         }
