@@ -80,28 +80,16 @@ namespace HealthGateway.Common.Services
             {
                 try
                 {
-                    IApiResponse<PersonalAccount> response = await this.personalAccountsApi.AccountLookupByHdid(hdid).ConfigureAwait(true);
-                    if (response.IsSuccessStatusCode)
-                    {
-                        account = response.Content;
-                        this.PutCache(hdid, account);
-                    }
-                    else
-                    {
-                        this.logger.LogCritical("API Exception {Error}", response.Error?.ToString());
-                        requestResult.ResultError = new()
-                        {
-                            ResultMessage = $"API Exception {response.Error}",
-                            ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.Phsa),
-                        };
-                    }
+                    PersonalAccount response = await this.personalAccountsApi.AccountLookupByHdidAsync(hdid).ConfigureAwait(true);
+                    account = response;
+                    this.PutCache(hdid, account);
                 }
-                catch (HttpRequestException e)
+                catch (Exception e) when (e is ApiException or HttpRequestException)
                 {
-                    this.logger.LogCritical("HTTP Request Exception {Error}", e.ToString());
+                    this.logger.LogCritical("Request Exception {Error}", e.ToString());
                     requestResult.ResultError = new()
                     {
-                        ResultMessage = "Error with HTTP Request for Personal Accounts",
+                        ResultMessage = "Error with request for Personal Accounts",
                         ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.Phsa),
                     };
                 }
