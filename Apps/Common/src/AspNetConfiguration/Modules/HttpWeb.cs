@@ -49,8 +49,6 @@ namespace HealthGateway.Common.AspNetConfiguration.Modules
 
             services.AddResponseCompression(options => options.EnableForHttps = true);
 
-            services.AddHttpClient<IHttpClientService, HttpClientService>();
-            services.AddTransient<IHttpClientService, HttpClientService>();
             services.AddTransient<IHttpContextAccessor, HttpContextAccessor>();
 
             if (dbHealth)
