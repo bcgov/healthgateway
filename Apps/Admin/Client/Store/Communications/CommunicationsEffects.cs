@@ -16,7 +16,9 @@
 
 namespace HealthGateway.Admin.Client.Store.Communications;
 
+using System;
 using System.Collections.Generic;
+using System.Net.Http;
 using System.Threading.Tasks;
 using Fluxor;
 using HealthGateway.Admin.Client.Services;
@@ -61,17 +63,22 @@ public class CommunicationsEffects
     {
         this.Logger.LogInformation("Adding communication");
 
-        ApiResponse<RequestResult<Communication>> response = await this.Api.Add(action.Communication).ConfigureAwait(true);
-        if (response.IsSuccessStatusCode && response.Content != null && response.Content.ResultStatus == ResultType.Success)
+        try
         {
-            this.Logger.LogInformation("Communication added successfully!");
-            dispatcher.Dispatch(new CommunicationsActions.AddSuccessAction(response.Content));
-            return;
+            RequestResult<Communication> response = await this.Api.Add(action.Communication).ConfigureAwait(true);
+            if (response.ResultStatus == ResultType.Success)
+            {
+                this.Logger.LogInformation("Communication added successfully!");
+                dispatcher.Dispatch(new CommunicationsActions.AddSuccessAction(response));
+            }
         }
-
-        RequestError error = StoreUtility.FormatRequestError(response.Error, response.Content?.ResultError);
-        this.Logger.LogError("Error adding communication, reason: {ErrorMessage}", error.Message);
-        dispatcher.Dispatch(new CommunicationsActions.AddFailAction(error));
+        catch (Exception e) when (e is ApiException or HttpRequestException)
+        {
+            this.Logger.LogError("Error adding communication...{Error}", e);
+            RequestError error = StoreUtility.FormatRequestError(e);
+            this.Logger.LogError("Error adding communication, reason: {ErrorMessage}", error.Message);
+            dispatcher.Dispatch(new CommunicationsActions.AddFailAction(error));
+        }
     }
 
     /// <summary>
@@ -84,17 +91,22 @@ public class CommunicationsEffects
     {
         this.Logger.LogInformation("Loading communications");
 
-        ApiResponse<RequestResult<IEnumerable<Communication>>> response = await this.Api.GetAll().ConfigureAwait(true);
-        if (response.IsSuccessStatusCode && response.Content != null && response.Content.ResultStatus == ResultType.Success)
+        try
         {
-            this.Logger.LogInformation("Communications loaded successfully!");
-            dispatcher.Dispatch(new CommunicationsActions.LoadSuccessAction(response.Content));
-            return;
+            RequestResult<IEnumerable<Communication>> response = await this.Api.GetAll().ConfigureAwait(true);
+            if (response.ResultStatus == ResultType.Success)
+            {
+                this.Logger.LogInformation("Communications loaded successfully!");
+                dispatcher.Dispatch(new CommunicationsActions.LoadSuccessAction(response));
+            }
         }
-
-        RequestError error = StoreUtility.FormatRequestError(response.Error, response.Content?.ResultError);
-        this.Logger.LogError("Error loading communications, reason: {ErrorMessage}", error.Message);
-        dispatcher.Dispatch(new CommunicationsActions.LoadFailAction(error));
+        catch (Exception e) when (e is ApiException or HttpRequestException)
+        {
+            this.Logger.LogError("Error loading communications...{Error}", e);
+            RequestError error = StoreUtility.FormatRequestError(e);
+            this.Logger.LogError("Error loading communications, reason: {ErrorMessage}", error.Message);
+            dispatcher.Dispatch(new CommunicationsActions.LoadFailAction(error));
+        }
     }
 
     /// <summary>
@@ -108,17 +120,22 @@ public class CommunicationsEffects
     {
         this.Logger.LogInformation("Updating communication");
 
-        ApiResponse<RequestResult<Communication>> response = await this.Api.Update(action.Communication).ConfigureAwait(true);
-        if (response.IsSuccessStatusCode && response.Content != null && response.Content.ResultStatus == ResultType.Success)
+        try
         {
-            this.Logger.LogInformation("Communication updated successfully!");
-            dispatcher.Dispatch(new CommunicationsActions.UpdateSuccessAction(response.Content));
-            return;
+            RequestResult<Communication> response = await this.Api.Update(action.Communication).ConfigureAwait(true);
+            if (response.ResultStatus == ResultType.Success)
+            {
+                this.Logger.LogInformation("Communication updated successfully!");
+                dispatcher.Dispatch(new CommunicationsActions.UpdateSuccessAction(response));
+            }
         }
-
-        RequestError error = StoreUtility.FormatRequestError(response.Error, response.Content?.ResultError);
-        this.Logger.LogError("Error updating communication, reason: {ErrorMessage}", error.Message);
-        dispatcher.Dispatch(new CommunicationsActions.UpdateFailAction(error));
+        catch (Exception e) when (e is ApiException or HttpRequestException)
+        {
+            this.Logger.LogError("Error updating communication...{Error}", e);
+            RequestError error = StoreUtility.FormatRequestError(e);
+            this.Logger.LogError("Error updating communication, reason: {ErrorMessage}", error.Message);
+            dispatcher.Dispatch(new CommunicationsActions.UpdateFailAction(error));
+        }
     }
 
     /// <summary>
@@ -132,16 +149,21 @@ public class CommunicationsEffects
     {
         this.Logger.LogInformation("Deleting communication");
 
-        ApiResponse<RequestResult<Communication>> response = await this.Api.Delete(action.Communication).ConfigureAwait(true);
-        if (response.IsSuccessStatusCode && response.Content != null && response.Content.ResultStatus == ResultType.Success)
+        try
         {
-            this.Logger.LogInformation("Communication deleted successfully!");
-            dispatcher.Dispatch(new CommunicationsActions.DeleteSuccessAction(response.Content));
-            return;
+            RequestResult<Communication> response = await this.Api.Delete(action.Communication).ConfigureAwait(true);
+            if (response.ResultStatus == ResultType.Success)
+            {
+                this.Logger.LogInformation("Communication deleted successfully!");
+                dispatcher.Dispatch(new CommunicationsActions.DeleteSuccessAction(response));
+            }
         }
-
-        RequestError error = StoreUtility.FormatRequestError(response.Error, response.Content?.ResultError);
-        this.Logger.LogError("Error deleting communication, reason: {ErrorMessage}", error.Message);
-        dispatcher.Dispatch(new CommunicationsActions.DeleteFailAction(error));
+        catch (Exception e) when (e is ApiException or HttpRequestException)
+        {
+            this.Logger.LogError("Error deleting communication...{Error}", e);
+            RequestError error = StoreUtility.FormatRequestError(e);
+            this.Logger.LogError("Error deleting communication, reason: {ErrorMessage}", error.Message);
+            dispatcher.Dispatch(new CommunicationsActions.DeleteFailAction(error));
+        }
     }
 }
