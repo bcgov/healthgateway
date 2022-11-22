@@ -65,7 +65,7 @@ public class CommunicationsEffects
 
         try
         {
-            RequestResult<Communication> response = await this.Api.Add(action.Communication).ConfigureAwait(true);
+            RequestResult<Communication> response = await this.Api.AddAsync(action.Communication).ConfigureAwait(true);
             if (response.ResultStatus == ResultType.Success)
             {
                 this.Logger.LogInformation("Communication added successfully!");
@@ -93,7 +93,7 @@ public class CommunicationsEffects
 
         try
         {
-            RequestResult<IEnumerable<Communication>> response = await this.Api.GetAll().ConfigureAwait(true);
+            RequestResult<IEnumerable<Communication>> response = await this.Api.GetAllAsync().ConfigureAwait(true);
             if (response.ResultStatus == ResultType.Success)
             {
                 this.Logger.LogInformation("Communications loaded successfully!");
@@ -122,7 +122,7 @@ public class CommunicationsEffects
 
         try
         {
-            RequestResult<Communication> response = await this.Api.Update(action.Communication).ConfigureAwait(true);
+            RequestResult<Communication> response = await this.Api.UpdateAsync(action.Communication).ConfigureAwait(true);
             if (response.ResultStatus == ResultType.Success)
             {
                 this.Logger.LogInformation("Communication updated successfully!");
@@ -151,7 +151,7 @@ public class CommunicationsEffects
 
         try
         {
-            RequestResult<Communication> response = await this.Api.Delete(action.Communication).ConfigureAwait(true);
+            RequestResult<Communication> response = await this.Api.DeleteAsync(action.Communication).ConfigureAwait(true);
             if (response.ResultStatus == ResultType.Success)
             {
                 this.Logger.LogInformation("Communication deleted successfully!");

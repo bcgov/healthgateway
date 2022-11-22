@@ -64,7 +64,7 @@ namespace HealthGateway.Admin.Client.Store.SupportUser
 
             try
             {
-                RequestResult<IEnumerable<SupportUser>> response = await this.SupportApi.GetSupportUsers(action.QueryType, action.QueryString).ConfigureAwait(true);
+                RequestResult<IEnumerable<SupportUser>> response = await this.SupportApi.GetSupportUsersAsync(action.QueryType, action.QueryString).ConfigureAwait(true);
                 if (response.ResultStatus == ResultType.Success)
                 {
                     this.Logger.LogInformation("Users loaded successfully!");

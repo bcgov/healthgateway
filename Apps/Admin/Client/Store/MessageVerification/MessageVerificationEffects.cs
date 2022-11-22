@@ -64,7 +64,7 @@ namespace HealthGateway.Admin.Client.Store.MessageVerification
 
             try
             {
-                RequestResult<IEnumerable<MessagingVerificationModel>> response = await this.SupportApi.GetMessagingVerifications(action.Hdid).ConfigureAwait(true);
+                RequestResult<IEnumerable<MessagingVerificationModel>> response = await this.SupportApi.GetMessagingVerificationsAsync(action.Hdid).ConfigureAwait(true);
                 if (response.ResultStatus == ResultType.Success)
                 {
                     this.Logger.LogInformation("Messaging verifications loaded successfully!");
