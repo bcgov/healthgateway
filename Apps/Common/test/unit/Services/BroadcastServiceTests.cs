@@ -250,11 +250,7 @@ namespace HealthGateway.CommonTests.Services
 
         private static IBroadcastService GetBroadcastService(Guid? id, bool throwException)
         {
-            BroadcastResponse response = new()
-            {
-                Id = id ?? Guid.Empty,
-                CategoryName = CategoryName,
-            };
+            BroadcastResponse response = GetApiResponse(id);
 
             List<BroadcastResponse> apiGetResponse = new();
             if (id != null)
