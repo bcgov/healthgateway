@@ -60,10 +60,9 @@ public class BroadcastsEffects
     public async Task HandleAddAction(BroadcastsActions.AddAction action, IDispatcher dispatcher)
     {
         this.Logger.LogInformation("Adding broadcast");
-
-        RequestResult<Broadcast> response = await this.Api.Add(action.Broadcast).ConfigureAwait(true);
         try
         {
+            RequestResult<Broadcast> response = await this.Api.Add(action.Broadcast).ConfigureAwait(true);
             if (response is { ResourcePayload: { }, ResultStatus: ResultType.Success })
             {
                 this.Logger.LogInformation("Broadcast added successfully!");
@@ -92,10 +91,9 @@ public class BroadcastsEffects
     public async Task HandleLoadAction(IDispatcher dispatcher)
     {
         this.Logger.LogInformation("Loading broadcasts");
-
-        RequestResult<IEnumerable<Broadcast>> response = await this.Api.GetAll().ConfigureAwait(true);
         try
         {
+            RequestResult<IEnumerable<Broadcast>> response = await this.Api.GetAll().ConfigureAwait(true);
             if (response is { ResourcePayload: { }, ResultStatus: ResultType.Success })
             {
                 this.Logger.LogInformation("Broadcasts loaded successfully!");
@@ -125,7 +123,6 @@ public class BroadcastsEffects
     public async Task HandleUpdateAction(BroadcastsActions.UpdateAction action, IDispatcher dispatcher)
     {
         this.Logger.LogInformation("Updating broadcast");
-
         try
         {
             RequestResult<Broadcast> response = await this.Api.Update(action.Broadcast).ConfigureAwait(true);
@@ -158,7 +155,6 @@ public class BroadcastsEffects
     public async Task HandleDeleteAction(BroadcastsActions.DeleteAction action, IDispatcher dispatcher)
     {
         this.Logger.LogInformation("Deleting broadcast");
-
         try
         {
             RequestResult<Broadcast> response = await this.Api.Delete(action.Broadcast).ConfigureAwait(true);
