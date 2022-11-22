@@ -41,5 +41,5 @@ public interface ISupportApi
     /// <param name="hdid">The hdid associated with the messaging verification.</param>
     /// <returns>The list of MessagingVerificationModel objects.</returns>
     [Get("/Verifications?hdid={hdid}")]
-    Task<ApiResponse<RequestResult<IEnumerable<MessagingVerificationModel>>>> GetMessagingVerifications(string hdid);
+    Task<RequestResult<IEnumerable<MessagingVerificationModel>>> GetMessagingVerifications(string hdid);
 }
