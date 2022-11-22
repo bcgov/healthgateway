@@ -72,7 +72,8 @@ namespace HealthGateway.Common.Delegates.PHSA
 
             try
             {
-                using FormUrlEncodedContent content = new(this.FormParameters(accessToken));
+                IEnumerable<KeyValuePair<string, string>> formData = this.FormParameters(accessToken);
+                using FormUrlEncodedContent content = new(formData);
                 content.Headers.Clear();
                 content.Headers.Add(@"Content-Type", @"application/x-www-form-urlencoded");
 

@@ -30,16 +30,16 @@ namespace HealthGateway.Admin.Client.Services
         /// Adds a broadcast.
         /// </summary>
         /// <param name="broadcast">The model to add.</param>
-        /// <returns>The wrapped model.</returns>
+        /// <returns>The Broadcast model.</returns>
         [Post("/")]
-        Task<ApiResponse<RequestResult<Broadcast>>> Add([Body] Broadcast broadcast);
+        Task<RequestResult<Broadcast>> Add([Body] Broadcast broadcast);
 
         /// <summary>
         /// Gets all broadcasts.
         /// </summary>
-        /// <returns>The wrapped collection of models.</returns>
+        /// <returns>The collection of models.</returns>
         [Get("/")]
-        Task<ApiResponse<RequestResult<IEnumerable<Broadcast>>>> GetAll();
+        Task<RequestResult<IEnumerable<Broadcast>>> GetAll();
 
         /// <summary>
         /// Updates a broadcast.
@@ -47,7 +47,7 @@ namespace HealthGateway.Admin.Client.Services
         /// <param name="broadcast">The model to update.</param>
         /// <returns>The wrapped model.</returns>
         [Put("/")]
-        Task<ApiResponse<RequestResult<Broadcast>>> Update([Body] Broadcast broadcast);
+        Task<RequestResult<Broadcast>> Update([Body] Broadcast broadcast);
 
         /// <summary>
         /// Deletes a broadcast.
@@ -55,6 +55,6 @@ namespace HealthGateway.Admin.Client.Services
         /// <param name="broadcast">The model to delete.</param>
         /// <returns>The wrapped model.</returns>
         [Delete("/")]
-        Task<ApiResponse<RequestResult<Broadcast>>> Delete([Body] Broadcast broadcast);
+        Task<RequestResult<Broadcast>> Delete([Body] Broadcast broadcast);
     }
 }
