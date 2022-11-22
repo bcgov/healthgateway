@@ -25,7 +25,6 @@ namespace HealthGateway.Admin
     using HealthGateway.Common.AccessManagement.Authorization.Admin;
     using HealthGateway.Common.AspNetConfiguration;
     using HealthGateway.Common.Delegates;
-    using HealthGateway.Common.Delegates.PHSA;
     using HealthGateway.Common.MapProfiles;
     using HealthGateway.Common.Models.PHSA;
     using HealthGateway.Common.Services;

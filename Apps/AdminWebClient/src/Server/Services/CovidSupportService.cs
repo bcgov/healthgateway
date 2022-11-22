@@ -31,7 +31,6 @@ namespace HealthGateway.Admin.Services
     using HealthGateway.Common.Data.Utils;
     using HealthGateway.Common.Data.ViewModels;
     using HealthGateway.Common.Delegates;
-    using HealthGateway.Common.Delegates.PHSA;
     using HealthGateway.Common.ErrorHandling;
     using HealthGateway.Common.Models;
     using HealthGateway.Common.Models.PHSA;
@@ -197,14 +196,8 @@ namespace HealthGateway.Admin.Services
             }
 
             DateTime birthdate = patientResult.ResourcePayload!.Birthdate;
-
-            VaccineStatusQuery statusQuery = new()
-            {
-                PersonalHealthNumber = request.PersonalHealthNumber,
-                DateOfBirth = birthdate,
-            };
             RequestResult<PhsaResult<VaccineStatusResult>> vaccineStatusResult =
-                await this.vaccineStatusDelegate.GetVaccineStatusWithRetries(statusQuery, bearerToken, false).ConfigureAwait(true);
+                await this.vaccineStatusDelegate.GetVaccineStatusWithRetries(request.PersonalHealthNumber, birthdate, bearerToken).ConfigureAwait(true);
 
             PrimitiveRequestResult<bool> retVal = new();
 
@@ -462,13 +455,8 @@ namespace HealthGateway.Admin.Services
         {
             this.logger.LogDebug("Retrieving vaccine card document");
             this.logger.LogTrace("For PHN: {Phn}", phn);
-            VaccineStatusQuery statusQuery = new()
-            {
-                PersonalHealthNumber = phn,
-                DateOfBirth = birthdate,
-            };
             RequestResult<PhsaResult<VaccineStatusResult>> statusResult =
-                await this.vaccineStatusDelegate.GetVaccineStatusWithRetries(statusQuery, bearerToken, false).ConfigureAwait(true);
+                await this.vaccineStatusDelegate.GetVaccineStatusWithRetries(phn, birthdate, bearerToken).ConfigureAwait(true);
 
             if (statusResult.ResultStatus != ResultType.Success)
             {
