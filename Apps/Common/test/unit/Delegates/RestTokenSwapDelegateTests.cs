@@ -36,8 +36,7 @@ namespace HealthGateway.CommonTests.Delegates
     public class RestTokenSwapDelegateTests
     {
         private const string AccessToken = "access_token";
-        private const string HttpExceptionMessage = "Error with HTTP Request";
-        private const string InternalServerErrorMessage = "Unable to connect to Token Endpoint, HTTP Error InternalServerError";
+        private const string HttpExceptionMessage = "Error with Token Swap API";
 
         /// <summary>
         /// Swap token - Happy Path.
@@ -54,7 +53,7 @@ namespace HealthGateway.CommonTests.Delegates
                 Scope = "file.read",
             };
 
-            ITokenSwapDelegate tokenSwapDelegate = GetTokenSwapDelegate(expectedTokenSwapResponse, HttpStatusCode.OK, false);
+            ITokenSwapDelegate tokenSwapDelegate = GetTokenSwapDelegate(expectedTokenSwapResponse, false);
 
             // Act
             RequestResult<TokenSwapResponse> actualResult = tokenSwapDelegate.SwapToken(It.IsAny<string>()).Result;
@@ -80,36 +79,13 @@ namespace HealthGateway.CommonTests.Delegates
                 Scope = "file.read",
             };
 
-            ITokenSwapDelegate tokenSwapDelegate = GetTokenSwapDelegate(expectedTokenSwapResponse, HttpStatusCode.OK, true);
+            ITokenSwapDelegate tokenSwapDelegate = GetTokenSwapDelegate(expectedTokenSwapResponse, true);
 
             // Act
             RequestResult<TokenSwapResponse> actualResult = tokenSwapDelegate.SwapToken(It.IsAny<string>()).Result;
 
             Assert.Equal(ResultType.Error, actualResult.ResultStatus);
             Assert.Equal(HttpExceptionMessage, actualResult.ResultError?.ResultMessage);
-        }
-
-        /// <summary>
-        /// Tests various http status codes on Token Swap Response.
-        /// </summary>
-        /// <param name="httpStatusCode">The http status code to return from the mock.</param>
-        /// <param name="resultStatus">The result code to return from the mock.</param>
-        /// <param name="resultMessage">The result message from the mock.</param>
-        [Theory]
-        [InlineData(HttpStatusCode.OK, ResultType.Success, null)]
-        [InlineData(HttpStatusCode.InternalServerError, ResultType.Error, InternalServerErrorMessage)]
-        public void GetTokenSwapResponse(HttpStatusCode httpStatusCode, ResultType resultStatus, string resultMessage)
-        {
-            // Arrange
-            TokenSwapResponse expectedTokenSwapResponse = new();
-            ITokenSwapDelegate tokenSwapDelegate = GetTokenSwapDelegate(expectedTokenSwapResponse, httpStatusCode, false);
-
-            // Act
-            RequestResult<TokenSwapResponse> actualResult = tokenSwapDelegate.SwapToken(It.IsAny<string>()).Result;
-
-            // Assert
-            Assert.True(actualResult.ResultStatus == resultStatus);
-            Assert.Equal(actualResult.ResultError?.ResultMessage, resultMessage);
         }
 
         private static IConfigurationRoot GetIConfigurationRoot()
@@ -127,17 +103,13 @@ namespace HealthGateway.CommonTests.Delegates
                 .Build();
         }
 
-        private static ITokenSwapDelegate GetTokenSwapDelegate(TokenSwapResponse response, HttpStatusCode statusCode, bool throwException)
+        private static ITokenSwapDelegate GetTokenSwapDelegate(TokenSwapResponse response, bool throwException)
         {
-            Mock<IApiResponse<TokenSwapResponse>> mockApiResponse = new();
-            mockApiResponse.Setup(s => s.Content).Returns(response);
-            mockApiResponse.Setup(s => s.StatusCode).Returns(statusCode);
-
             Mock<ITokenSwapApi> mockTokenSwapApi = new();
             if (!throwException)
             {
                 mockTokenSwapApi.Setup(s => s.SwapToken(It.IsAny<FormUrlEncodedContent>()))
-                    .ReturnsAsync(mockApiResponse.Object);
+                    .ReturnsAsync(response);
             }
             else
             {

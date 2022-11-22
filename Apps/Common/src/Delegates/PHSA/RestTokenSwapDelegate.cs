@@ -15,6 +15,7 @@
 //-------------------------------------------------------------------------
 namespace HealthGateway.Common.Delegates.PHSA
 {
+    using System;
     using System.Collections.Generic;
     using System.Diagnostics;
     using System.Net;
@@ -75,18 +76,17 @@ namespace HealthGateway.Common.Delegates.PHSA
                 using FormUrlEncodedContent content = new(this.FormParameters(accessToken));
                 content.Headers.Clear();
                 content.Headers.Add(@"Content-Type", @"application/x-www-form-urlencoded");
-
-                IApiResponse<TokenSwapResponse> response =
-                    await this.tokenSwapApi.SwapToken(content).ConfigureAwait(true);
-
-                this.ProcessResponse(requestResult, response);
+                TokenSwapResponse response = await this.tokenSwapApi.SwapToken(content).ConfigureAwait(true);
+                requestResult.ResultStatus = ResultType.Success;
+                requestResult.ResourcePayload = response;
+                requestResult.TotalResultCount = 1;
             }
-            catch (HttpRequestException e)
+            catch (Exception e) when (e is ApiException or HttpRequestException)
             {
-                this.logger.LogCritical("HTTP Request Exception {Error}", e.ToString());
+                this.logger.LogCritical("TokenSwap API Exception {Exception}", e.ToString());
                 requestResult.ResultError = new()
                 {
-                    ResultMessage = "Error with HTTP Request",
+                    ResultMessage = "Error with Token Swap API",
                     ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.Phsa),
                 };
             }
@@ -107,43 +107,6 @@ namespace HealthGateway.Common.Delegates.PHSA
                 ["scope"] = this.phsaConfigV2.Scope,
                 ["token"] = accessToken,
             };
-        }
-
-        private void ProcessResponse<T>(RequestResult<T> requestResult, IApiResponse<T> response)
-            where T : class
-        {
-            if (response.Error is null)
-            {
-                switch (response.StatusCode)
-                {
-                    case HttpStatusCode.OK:
-                        requestResult.ResultStatus = ResultType.Success;
-                        requestResult.ResourcePayload = response.Content;
-                        requestResult.TotalResultCount = 1;
-                        break;
-                    default:
-                        requestResult.ResultError = new()
-                        {
-                            ResultMessage =
-                                $"Unable to connect to Token Endpoint, HTTP Error {response.StatusCode}",
-                            ErrorCode = ErrorTranslator.ServiceError(
-                                ErrorType.CommunicationExternal,
-                                ServiceType.Phsa),
-                        };
-                        this.logger.LogError("Unexpected status code returned: {StatusCode}", response.StatusCode.ToString());
-                        break;
-                }
-            }
-            else
-            {
-                this.logger.LogError("Exception: {Error}", response.Error.ToString());
-                this.logger.LogError("Http Payload: {Content}", response.Error.Content);
-                requestResult.ResultError = new()
-                {
-                    ResultMessage = "An unexpected error occurred while processing external call",
-                    ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.Phsa),
-                };
-            }
         }
     }
 }
