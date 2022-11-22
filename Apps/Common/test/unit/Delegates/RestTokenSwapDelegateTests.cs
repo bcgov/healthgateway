@@ -17,7 +17,6 @@ namespace HealthGateway.CommonTests.Delegates
 {
     using System.Collections.Generic;
     using System.Linq;
-    using System.Net;
     using System.Net.Http;
     using HealthGateway.Common.Api;
     using HealthGateway.Common.Data.Constants;
@@ -27,7 +26,6 @@ namespace HealthGateway.CommonTests.Delegates
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.Logging;
     using Moq;
-    using Refit;
     using Xunit;
 
     /// <summary>

@@ -117,56 +117,24 @@ public class InactiveUserService : IInactiveUserService
                 const int firstRecord = 0;
                 const int maxRecords = -1;
 
-                IApiResponse<IEnumerable<UserRepresentation>> adminUsersResult =
+                List<UserRepresentation> adminUsers =
                     await this.keycloakAdminApi.GetUsers(nameof(IdentityAccessRole.AdminUser), firstRecord, maxRecords, jwtModel.AccessToken).ConfigureAwait(true);
-                IApiResponse<IEnumerable<UserRepresentation>> supportUsersResult =
+                this.PopulateUserDetails(inactiveUsers, adminUsers, IdentityAccessRole.AdminUser);
+                this.AddInactiveUser(inactiveUsers, activeUserProfiles, adminUsers, IdentityAccessRole.AdminUser);
+
+                List<UserRepresentation> supportUsers =
                     await this.keycloakAdminApi.GetUsers(nameof(IdentityAccessRole.SupportUser), firstRecord, maxRecords, jwtModel.AccessToken).ConfigureAwait(true);
+                this.PopulateUserDetails(inactiveUsers, supportUsers, IdentityAccessRole.SupportUser);
+                this.AddInactiveUser(inactiveUsers, activeUserProfiles, supportUsers, IdentityAccessRole.SupportUser);
 
-                if (adminUsersResult.IsSuccessStatusCode && adminUsersResult.Content != null)
-                {
-                    List<UserRepresentation> adminUsers = adminUsersResult.Content.ToList();
-                    this.PopulateUserDetails(inactiveUsers, adminUsers, IdentityAccessRole.AdminUser);
-                    this.AddInactiveUser(inactiveUsers, activeUserProfiles, adminUsers, IdentityAccessRole.AdminUser);
-                }
-                else
-                {
-                    this.logger.LogError("Error communicating with Keycloak, http status code {Code} {Error}", adminUsersResult.StatusCode, adminUsersResult.Error?.ToString());
-                    requestResult.ResultStatus = ResultType.Error;
-                    requestResult.ResultError = new RequestResultError
-                    {
-                        ResultMessage = "Error communicating with Keycloak",
-                        ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.Keycloak),
-                    };
-                }
-
-                if (supportUsersResult.IsSuccessStatusCode && supportUsersResult.Content != null)
-                {
-                    List<UserRepresentation> supportUsers = supportUsersResult.Content.ToList();
-                    this.PopulateUserDetails(inactiveUsers, supportUsers, IdentityAccessRole.SupportUser);
-                    this.AddInactiveUser(inactiveUsers, activeUserProfiles, supportUsers, IdentityAccessRole.SupportUser);
-                }
-                else
-                {
-                    this.logger.LogError("Error communicating with Keycloak, http status code {Code} {Error}", supportUsersResult.StatusCode, supportUsersResult.Error?.ToString());
-                    requestResult.ResultStatus = ResultType.Error;
-                    requestResult.ResultError = new RequestResultError
-                    {
-                        ResultMessage = "Error communicating with Keycloak",
-                        ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.Keycloak),
-                    };
-                }
-
-                if (requestResult.ResultStatus == ResultType.Success)
-                {
-                    this.logger.LogDebug("Inactive user with no keycloak match count: {Count}...", inactiveUsers.FindAll(x => x.UserId == null).Count);
-                    inactiveUsers.RemoveAll(x => x.UserId == null);
-                    requestResult.ResourcePayload = inactiveUsers;
-                    requestResult.TotalResultCount = inactiveUsers.Count;
-                }
+                this.logger.LogDebug("Inactive user with no keycloak match count: {Count}...", inactiveUsers.FindAll(x => x.UserId == null).Count);
+                inactiveUsers.RemoveAll(x => x.UserId == null);
+                requestResult.ResourcePayload = inactiveUsers;
+                requestResult.TotalResultCount = inactiveUsers.Count;
             }
-            catch (HttpRequestException e)
+            catch (Exception e) when (e is ApiException or HttpRequestException)
             {
-                this.logger.LogError("Error communicating with Keycloak {Error}", e.ToString());
+                this.logger.LogError("Error communicating with Keycloak, exception: {Exception}",  e.ToString());
                 requestResult.ResultStatus = ResultType.Error;
                 requestResult.ResultError = new RequestResultError
                 {
