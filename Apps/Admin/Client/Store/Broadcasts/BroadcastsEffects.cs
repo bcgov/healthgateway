@@ -16,7 +16,9 @@
 
 namespace HealthGateway.Admin.Client.Store.Broadcasts;
 
+using System;
 using System.Collections.Generic;
+using System.Net.Http;
 using System.Threading.Tasks;
 using Fluxor;
 using HealthGateway.Admin.Client.Services;
@@ -74,9 +76,9 @@ public class BroadcastsEffects
             this.Logger.LogError("Error adding broadcast, reason: {ErrorMessage}", error.Message);
             dispatcher.Dispatch(new BroadcastsActions.AddFailAction(error));
         }
-        catch (ApiException e)
+        catch (Exception e) when (e is ApiException or HttpRequestException)
         {
-            RequestError error = StoreUtility.FormatRequestError(e, null);
+            RequestError error = StoreUtility.FormatRequestError(e);
             this.Logger.LogError("Error adding broadcast, reason: {Exception}", e.ToString());
             dispatcher.Dispatch(new BroadcastsActions.AddFailAction(error));
         }
@@ -105,9 +107,9 @@ public class BroadcastsEffects
             this.Logger.LogError("Error loading broadcasts, reason: {ErrorMessage}", error.Message);
             dispatcher.Dispatch(new BroadcastsActions.LoadFailAction(error));
         }
-        catch (ApiException e)
+        catch (Exception e) when (e is ApiException or HttpRequestException)
         {
-            RequestError error = StoreUtility.FormatRequestError(e, null);
+            RequestError error = StoreUtility.FormatRequestError(e);
             this.Logger.LogError("Error loading broadcasts, reason: {Exception}", e.ToString());
             dispatcher.Dispatch(new BroadcastsActions.AddFailAction(error));
         }
@@ -137,9 +139,9 @@ public class BroadcastsEffects
             this.Logger.LogError("Error updating broadcast, reason: {ErrorMessage}", error.Message);
             dispatcher.Dispatch(new BroadcastsActions.UpdateFailAction(error));
         }
-        catch (ApiException e)
+        catch (Exception e) when (e is ApiException or HttpRequestException)
         {
-            RequestError error = StoreUtility.FormatRequestError(e, null);
+            RequestError error = StoreUtility.FormatRequestError(e);
             this.Logger.LogError("Error updating broadcasts, reason: {Exception}", e.ToString());
             dispatcher.Dispatch(new BroadcastsActions.AddFailAction(error));
         }
@@ -169,9 +171,9 @@ public class BroadcastsEffects
             this.Logger.LogError("Error deleting broadcast, reason: {ErrorMessage}", error.Message);
             dispatcher.Dispatch(new BroadcastsActions.DeleteFailAction(error));
         }
-        catch (ApiException e)
+        catch (Exception e) when (e is ApiException or HttpRequestException)
         {
-            RequestError error = StoreUtility.FormatRequestError(e, null);
+            RequestError error = StoreUtility.FormatRequestError(e);
             this.Logger.LogError("Error deleting broadcast, reason: {Exception}", e.ToString());
             dispatcher.Dispatch(new BroadcastsActions.AddFailAction(error));
         }
