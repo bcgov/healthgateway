@@ -22,7 +22,6 @@ namespace HealthGateway.Admin.Client.Store.MessageVerification
     using System.Threading.Tasks;
     using Fluxor;
     using HealthGateway.Admin.Client.Services;
-    using HealthGateway.Admin.Client.Store.SupportUser;
     using HealthGateway.Admin.Client.Utils;
     using HealthGateway.Common.Data.Constants;
     using HealthGateway.Common.Data.ViewModels;
@@ -65,11 +64,17 @@ namespace HealthGateway.Admin.Client.Store.MessageVerification
 
             try
             {
-                RequestResult<IEnumerable<MessagingVerificationModel>> response = await this.SupportApi.GetMessagingVerifications(action.Hdid).ConfigureAwait(true);
+                RequestResult<IEnumerable<MessagingVerificationModel>> response = await this.SupportApi.GetMessagingVerificationsAsync(action.Hdid).ConfigureAwait(true);
                 if (response.ResultStatus == ResultType.Success)
                 {
                     this.Logger.LogInformation("Messaging verifications loaded successfully!");
                     dispatcher.Dispatch(new MessageVerificationActions.LoadSuccessAction(response, action.Hdid));
+                }
+                else
+                {
+                    RequestError error = StoreUtility.FormatRequestError(response.ResultError);
+                    this.Logger.LogError("Error loading messaging verifications, reason: {ErrorMessage}", error.Message);
+                    dispatcher.Dispatch(new MessageVerificationActions.LoadFailAction(error));
                 }
             }
             catch (Exception e) when (e is ApiException or HttpRequestException)
@@ -77,7 +82,7 @@ namespace HealthGateway.Admin.Client.Store.MessageVerification
                 this.Logger.LogError("Error loading messaging verifications...{Error}", e);
                 RequestError error = StoreUtility.FormatRequestError(e);
                 this.Logger.LogError("Error loading messaging verifications, reason: {ErrorMessage}", error.Message);
-                dispatcher.Dispatch(new SupportUserActions.LoadFailAction(error));
+                dispatcher.Dispatch(new MessageVerificationActions.LoadFailAction(error));
             }
         }
     }
