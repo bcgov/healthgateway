@@ -61,6 +61,6 @@ public interface IImmunizationAdminApi
     /// <returns>
     /// A PhsaResult containing the vaccine status of a given patient.
     /// </returns>
-    [Get("/api/v1/Support/Immunizations/VaccineStatusIndicator")]
+    [Post("/api/v1/Support/Immunizations/VaccineStatusIndicator")]
     Task<PhsaResult<VaccineStatusResult>> GetVaccineStatus(VaccineStatusQuery query, [Authorize] string token);
 }

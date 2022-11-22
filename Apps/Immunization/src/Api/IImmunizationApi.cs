@@ -54,6 +54,6 @@ public interface IImmunizationApi
     /// <returns>
     /// A PhsaResult containing the vaccine status of a given patient.
     /// </returns>
-    [Get("/api/v1/Immunizations/VaccineStatusIndicator?subjectHdid={hdid}&federalPvc={federalPvc}")]
+    [Post("/api/v1/Immunizations/VaccineStatusIndicator?subjectHdid={subjectHdid}&federalPvc={federalPvc}")]
     Task<PhsaResult<VaccineStatusResult>> GetVaccineStatus(string subjectHdid, bool federalPvc, [Authorize] string token);
 }
