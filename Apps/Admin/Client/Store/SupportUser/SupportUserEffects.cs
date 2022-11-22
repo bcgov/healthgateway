@@ -60,7 +60,7 @@ namespace HealthGateway.Admin.Client.Store.SupportUser
         [EffectMethod]
         public async Task HandleLoadAction(SupportUserActions.LoadAction action, IDispatcher dispatcher)
         {
-            this.Logger.LogInformation("Loading users");
+            this.Logger.LogInformation("Loading users!");
 
             try
             {
@@ -77,7 +77,7 @@ namespace HealthGateway.Admin.Client.Store.SupportUser
                 }
                 else
                 {
-                    RequestError error = StoreUtility.FormatRequestError(response?.ResultError);
+                    RequestError error = StoreUtility.FormatRequestError(response.ResultError);
                     this.Logger.LogError("Error loading users, reason: {ErrorMessage}", error.Message);
                     dispatcher.Dispatch(new SupportUserActions.LoadFailAction(error));
                 }
