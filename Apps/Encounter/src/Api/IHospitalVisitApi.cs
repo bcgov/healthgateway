@@ -36,6 +36,6 @@ namespace HealthGateway.Encounter.Api
         /// the subject id in the query.
         /// </returns>
         [Get("/api/v1/HospitalVisits")]
-        Task<IApiResponse<PhsaResult<IEnumerable<HospitalVisit>>>> GetHospitalVisits(Dictionary<string, string?> query, [Authorize] string token);
+        Task<PhsaResult<IEnumerable<HospitalVisit>>> GetHospitalVisitsAsync(Dictionary<string, string?> query, [Authorize] string token);
     }
 }

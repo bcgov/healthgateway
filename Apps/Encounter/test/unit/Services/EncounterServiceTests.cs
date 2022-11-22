@@ -367,7 +367,7 @@ namespace HealthGateway.EncounterTests.Services
             RequestResult<PhsaResult<IEnumerable<HospitalVisit>>> hospitalVisitResult)
         {
             Mock<IHospitalVisitDelegate> mockHospitalVisitDelegate = new();
-            mockHospitalVisitDelegate.Setup(d => d.GetHospitalVisits(It.IsAny<string>())).Returns(Task.FromResult(hospitalVisitResult));
+            mockHospitalVisitDelegate.Setup(d => d.GetHospitalVisitsAsync(It.IsAny<string>())).Returns(Task.FromResult(hospitalVisitResult));
 
             return new EncounterService(
                 new Mock<ILogger<EncounterService>>().Object,
