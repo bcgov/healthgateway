@@ -97,7 +97,6 @@ namespace HealthGateway.DBMaintainer
                         services.AddHttpClient();
 
                         // Add services
-                        services.AddTransient<IHttpClientService, HttpClientService>();
                         services.AddTransient<IFileDownloadService, FileDownloadService>();
                         services.AddTransient<IDrugProductParser, FederalDrugProductParser>();
                         services.AddTransient<IPharmaCareDrugParser, PharmaCareDrugParser>();
