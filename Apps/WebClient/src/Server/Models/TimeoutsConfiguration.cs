@@ -15,6 +15,8 @@
 //-------------------------------------------------------------------------
 namespace HealthGateway.WebClient.Server.Models
 {
+    using System.Text.Json.Serialization;
+
     /// <summary>
     /// Various timeout values used by the VUE WebClient application.
     /// </summary>
@@ -36,6 +38,7 @@ namespace HealthGateway.WebClient.Server.Models
         /// Gets or sets the amount of time in minutes after which the user
         /// can retry the verification code.
         /// </summary>
+        [JsonPropertyName("resendSMS")]
         public int ResendSms { get; set; }
     }
 }
