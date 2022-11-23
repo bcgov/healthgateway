@@ -40,13 +40,13 @@ Users are not maintained in Terraform as Terraform constantly sees these resourc
 To load Health Gateway Administrator Users in Development perform the following
 
 ```console
-pwsh ./ProcessUsers.ps1 -SecretsFile dev.secrets.json -UsersFile admin_users.json
+pwsh ./ProcessUsers.ps1 -SecretsFile dev.secrets.json -UsersFile users/admin_users.json
 ```
 
 To remove the same users run
 
 ```console
-pwsh ./ProcessUsers.ps1 -SecretsFile dev.secrets.json -UsersFile admin_users.json -Remove
+pwsh ./ProcessUsers.ps1 -SecretsFile dev.secrets.json -UsersFile users/admin_users.json -Remove
 ```
 
 In the development Keycloak environments additional users should be created for functional tests and load testing.  
@@ -63,4 +63,18 @@ and to remove these users
 ```console
 pwsh ./ProcessUsers.ps1 -SecretsFile dev.secrets.json -UsersFile dev_users.json -Remove
 pwsh ./ProcessUsers.ps1 -SecretsFile dev.secrets.json -UsersFile k6_users.json -Remove
+```
+
+## Loading Existing Silver Users
+
+Extract existing SupportUser users from Silver Keycloak with 
+
+```console
+pwsh ./ExtractUsers.ps1 -SecretsFile prodsilver.secrets.json -Role SupportUser > users/prodSupportUsers.json
+```
+
+and then load into Gold Keycloak with
+
+```console
+pwsh ./ProcessUsers.ps1 -SecretsFile prod.secrets.json -UsersFile users/prodSupportUsers.json
 ```

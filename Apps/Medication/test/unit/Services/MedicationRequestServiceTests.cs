@@ -13,7 +13,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //-------------------------------------------------------------------------
-namespace HealthGateway.Medication.Services.Test
+namespace HealthGateway.MedicationTests.Services
 {
     using System.Collections.Generic;
     using System.Threading.Tasks;
@@ -46,7 +46,8 @@ namespace HealthGateway.Medication.Services.Test
             // Setup Patient result
             RequestResult<PatientModel> patientResult = new()
             {
-                ResourcePayload = new PatientModel() { PersonalHealthNumber = phn },
+                ResourcePayload = new PatientModel
+                    { PersonalHealthNumber = phn },
                 ResultStatus = ResultType.Success,
             };
             Mock<IPatientService> mockPatientService = CreatePatientService(hdid, patientResult);
@@ -56,8 +57,10 @@ namespace HealthGateway.Medication.Services.Test
                 ResultStatus = ResultType.Success,
                 ResourcePayload = new List<MedicationRequest>
                 {
-                    new MedicationRequest() { ReferenceNumber = "abc" },
-                    new MedicationRequest() { ReferenceNumber = "xyz" },
+                    new()
+                        { ReferenceNumber = "abc" },
+                    new()
+                        { ReferenceNumber = "xyz" },
                 },
                 TotalResultCount = 2,
             };
@@ -65,7 +68,7 @@ namespace HealthGateway.Medication.Services.Test
             Mock<IMedicationRequestDelegate> mockDelegate = new();
             mockDelegate
                 .Setup(s => s.GetMedicationRequestsAsync(phn))
-                    .ReturnsAsync(expectedDelegateResult);
+                .ReturnsAsync(expectedDelegateResult);
 
             IMedicationRequestService service = new MedicationRequestService(
                 mockPatientService.Object,
@@ -76,8 +79,8 @@ namespace HealthGateway.Medication.Services.Test
 
             // Verify
             Assert.Equal(ResultType.Success, response.ResultStatus);
-            Assert.Equal(2, response?.TotalResultCount);
-            Assert.Equal(2, response?.ResourcePayload?.Count);
+            Assert.Equal(2, response.TotalResultCount);
+            Assert.Equal(2, response.ResourcePayload?.Count);
         }
 
         /// <summary>
@@ -120,7 +123,8 @@ namespace HealthGateway.Medication.Services.Test
             // Setup Patient result
             RequestResult<PatientModel> patientResult = new()
             {
-                ResourcePayload = new PatientModel() { PersonalHealthNumber = phn },
+                ResourcePayload = new PatientModel
+                    { PersonalHealthNumber = phn },
                 ResultStatus = ResultType.Success,
             };
             Mock<IPatientService> mockPatientService = CreatePatientService(hdid, patientResult);
@@ -133,7 +137,7 @@ namespace HealthGateway.Medication.Services.Test
             Mock<IMedicationRequestDelegate> mockDelegate = new();
             mockDelegate
                 .Setup(s => s.GetMedicationRequestsAsync(phn))
-                    .ReturnsAsync(expectedDelegateResult);
+                .ReturnsAsync(expectedDelegateResult);
 
             IMedicationRequestService service = new MedicationRequestService(
                 mockPatientService.Object,

@@ -19,7 +19,6 @@ namespace HealthGateway.Common.AspNetConfiguration.Modules
     using System.Diagnostics.CodeAnalysis;
     using System.Net;
     using HealthGateway.Common.Models;
-    using HealthGateway.Common.Services;
     using HealthGateway.Database.Context;
     using Microsoft.AspNetCore.Builder;
     using Microsoft.AspNetCore.Hosting;
@@ -49,8 +48,6 @@ namespace HealthGateway.Common.AspNetConfiguration.Modules
 
             services.AddResponseCompression(options => options.EnableForHttps = true);
 
-            services.AddHttpClient<IHttpClientService, HttpClientService>();
-            services.AddTransient<IHttpClientService, HttpClientService>();
             services.AddTransient<IHttpContextAccessor, HttpContextAccessor>();
 
             if (dbHealth)
@@ -78,9 +75,23 @@ namespace HealthGateway.Common.AspNetConfiguration.Modules
         /// <param name="blazor">If true, will add blazor optimizations for static files.</param>
         public static void UseHttp(IApplicationBuilder app, ILogger logger, IConfiguration configuration, IWebHostEnvironment environment, bool blazor = false)
         {
+            UseHttp(app, logger, configuration, environment, blazor, true);
+        }
+
+        /// <summary>
+        /// Configures the app to use http.
+        /// </summary>
+        /// <param name="app">The application builder provider.</param>
+        /// <param name="logger">The logger to use.</param>
+        /// <param name="configuration">The configuration to use.</param>
+        /// <param name="environment">The environment to use.</param>
+        /// <param name="blazor">If true, will add blazor optimizations for static files.</param>
+        /// <param name="useExceptionPage">If true, app will use development exception page.</param>
+        public static void UseHttp(IApplicationBuilder app, ILogger logger, IConfiguration configuration, IWebHostEnvironment environment, bool blazor, bool useExceptionPage)
+        {
             app.UseResponseCompression();
 
-            if (environment.IsDevelopment())
+            if (useExceptionPage && environment.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
             }
@@ -121,7 +132,7 @@ namespace HealthGateway.Common.AspNetConfiguration.Modules
             app.UseHealthChecks("/health");
 
             // Enable CORS
-            string enableCors = configuration.GetValue("AllowOrigins", string.Empty);
+            string? enableCors = configuration.GetValue<string>("AllowOrigins");
             if (!string.IsNullOrEmpty(enableCors))
             {
                 app.UseCors(
@@ -203,7 +214,7 @@ namespace HealthGateway.Common.AspNetConfiguration.Modules
             if (enabled)
             {
                 logger.LogDebug("Using Forward Headers");
-                string basePath = section.GetValue<string>("BasePath");
+                string basePath = section.GetValue<string>("BasePath") ?? string.Empty;
                 if (!string.IsNullOrEmpty(basePath))
                 {
                     logger.LogInformation("Forward BasePath is set to {BasePath}, setting PathBase for app", basePath);

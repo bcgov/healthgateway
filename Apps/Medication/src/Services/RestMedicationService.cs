@@ -26,8 +26,8 @@ namespace HealthGateway.Medication.Services
     /// </summary>
     public class RestMedicationService : IMedicationService
     {
-        private readonly ILogger logger;
         private readonly IDrugLookupDelegate drugLookupDelegate;
+        private readonly ILogger logger;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="RestMedicationService"/> class.
@@ -49,7 +49,7 @@ namespace HealthGateway.Medication.Services
             IDictionary<string, MedicationInformation> result = new Dictionary<string, MedicationInformation>();
 
             // Retrieve drug information from the Federal soruce
-            IList<DrugProduct> drugProducts = this.drugLookupDelegate.GetDrugProductsByDIN(medicationDinList);
+            IList<DrugProduct> drugProducts = this.drugLookupDelegate.GetDrugProductsByDin(medicationDinList);
             foreach (DrugProduct drugProduct in drugProducts)
             {
                 FederalDrugSource federalData = new()
@@ -59,13 +59,13 @@ namespace HealthGateway.Medication.Services
                 };
                 result[drugProduct.DrugIdentificationNumber] = new MedicationInformation
                 {
-                    DIN = drugProduct.DrugIdentificationNumber,
+                    Din = drugProduct.DrugIdentificationNumber,
                     FederalData = federalData,
                 };
             }
 
             // Retrieve drug information from the Provincial source and append it to the result if previously added.
-            IList<PharmaCareDrug> pharmaCareDrugs = this.drugLookupDelegate.GetPharmaCareDrugsByDIN(medicationDinList);
+            IList<PharmaCareDrug> pharmaCareDrugs = this.drugLookupDelegate.GetPharmaCareDrugsByDin(medicationDinList);
             foreach (PharmaCareDrug pharmaCareDrug in pharmaCareDrugs)
             {
                 ProvincialDrugSource provincialData = new()
@@ -74,15 +74,15 @@ namespace HealthGateway.Medication.Services
                     PharmaCareDrug = pharmaCareDrug,
                 };
 
-                if (result.ContainsKey(pharmaCareDrug.DINPIN))
+                if (result.ContainsKey(pharmaCareDrug.DinPin))
                 {
-                    result[pharmaCareDrug.DINPIN].ProvincialData = provincialData;
+                    result[pharmaCareDrug.DinPin].ProvincialData = provincialData;
                 }
                 else
                 {
-                    result[pharmaCareDrug.DINPIN] = new MedicationInformation
+                    result[pharmaCareDrug.DinPin] = new MedicationInformation
                     {
-                        DIN = pharmaCareDrug.DINPIN,
+                        Din = pharmaCareDrug.DinPin,
                         ProvincialData = provincialData,
                     };
                 }

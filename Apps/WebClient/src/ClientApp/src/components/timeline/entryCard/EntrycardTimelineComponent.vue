@@ -8,7 +8,6 @@ import { Getter } from "vuex-class";
 
 import EventBus, { EventMessageName } from "@/eventbus";
 import type { WebClientConfiguration } from "@/models/configData";
-import { DateWrapper } from "@/models/dateWrapper";
 import TimelineEntry from "@/models/timelineEntry";
 import User from "@/models/user";
 import container from "@/plugins/container";
@@ -72,14 +71,7 @@ export default class EntrycardTimelineComponent extends Vue {
     }
 
     private get dateString(): string {
-        const today = new DateWrapper();
-        if (this.entry.date.isSame(today, "day")) {
-            return "Today";
-        } else if (this.entry.date.year() === today.year()) {
-            return this.entry.date.format("MMM d");
-        } else {
-            return this.entry.date.format();
-        }
+        return this.entry.date.format();
     }
 
     private get isCommentEnabled(): boolean {

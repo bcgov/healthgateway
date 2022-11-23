@@ -27,6 +27,9 @@
 
 @code
 {
+    /// <summary>
+    /// Alert severity.
+    /// </summary>
     public IList<(Severity severity, string message)> Severities { get; } = new List<(Severity severity, string message)>
     {
         (Severity.Normal,"The reactor type is RBMK-1000"),

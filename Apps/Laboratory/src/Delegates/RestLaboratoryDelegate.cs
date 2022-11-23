@@ -18,27 +18,21 @@ namespace HealthGateway.Laboratory.Delegates
     using System;
     using System.Collections.Generic;
     using System.Diagnostics;
-    using System.Diagnostics.CodeAnalysis;
+    using System.Globalization;
     using System.Linq;
     using System.Net;
     using System.Net.Http;
-    using System.Net.Http.Headers;
-    using System.Net.Mime;
-    using System.Text.Json;
-    using System.Text.Json.Serialization;
     using System.Threading.Tasks;
     using HealthGateway.Common.Data.Constants;
     using HealthGateway.Common.Data.ViewModels;
     using HealthGateway.Common.ErrorHandling;
     using HealthGateway.Common.Models.PHSA;
-    using HealthGateway.Common.Services;
-    using HealthGateway.Common.Utils;
+    using HealthGateway.Laboratory.Api;
     using HealthGateway.Laboratory.Models;
     using HealthGateway.Laboratory.Models.PHSA;
-    using Microsoft.AspNetCore.Http;
-    using Microsoft.AspNetCore.WebUtilities;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.Logging;
+    using Refit;
 
     /// <summary>
     /// Implementation that uses HTTP to retrieve laboratory information.
@@ -46,8 +40,7 @@ namespace HealthGateway.Laboratory.Delegates
     public class RestLaboratoryDelegate : ILaboratoryDelegate
     {
         private const string LabConfigSectionKey = "Laboratory";
-        private readonly IHttpClientService httpClientService;
-        private readonly IHttpContextAccessor httpContextAccessor;
+        private readonly ILaboratoryApi laboratoryApi;
         private readonly LaboratoryConfig labConfig;
 
         private readonly ILogger logger;
@@ -56,18 +49,15 @@ namespace HealthGateway.Laboratory.Delegates
         /// Initializes a new instance of the <see cref="RestLaboratoryDelegate"/> class.
         /// </summary>
         /// <param name="logger">Injected Logger Provider.</param>
-        /// <param name="httpClientService">The injected http client service.</param>
-        /// <param name="httpContextAccessor">The HTTP Context accessor.</param>
+        /// <param name="laboratoryApi">The client to use for laboratory api calls.</param>
         /// <param name="configuration">The injected configuration provider.</param>
         public RestLaboratoryDelegate(
             ILogger<RestLaboratoryDelegate> logger,
-            IHttpClientService httpClientService,
-            IHttpContextAccessor httpContextAccessor,
+            ILaboratoryApi laboratoryApi,
             IConfiguration configuration)
         {
             this.logger = logger;
-            this.httpClientService = httpClientService;
-            this.httpContextAccessor = httpContextAccessor;
+            this.laboratoryApi = laboratoryApi;
             this.labConfig = new LaboratoryConfig();
             configuration.Bind(LabConfigSectionKey, this.labConfig);
         }
@@ -79,91 +69,51 @@ namespace HealthGateway.Laboratory.Delegates
         {
             using (Source.StartActivity())
             {
+                this.logger.LogDebug("Getting covid19 orders...");
+
                 RequestResult<PhsaResult<List<PhsaCovid19Order>>> retVal = new()
                 {
                     ResultStatus = ResultType.Error,
                     PageIndex = pageIndex,
+                    PageSize = int.Parse(this.labConfig.FetchSize, CultureInfo.InvariantCulture),
                 };
 
-                this.logger.LogDebug("Getting covid19 orders...");
-                using HttpClient client = this.httpClientService.CreateDefaultHttpClient();
-                client.DefaultRequestHeaders.Accept.Clear();
-                client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("bearer", bearerToken);
-                client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue(MediaTypeNames.Application.Json));
                 Dictionary<string, string?> query = new()
                 {
                     ["limit"] = this.labConfig.FetchSize,
                     ["subjectHdid"] = hdid,
                 };
+
                 try
                 {
-                    string endpointString = $"{this.labConfig.BaseUrl}{this.labConfig.LabOrdersEndpoint}";
-                    Uri endpoint = new(QueryHelpers.AddQueryString(endpointString, query));
-                    HttpResponseMessage response = await client.GetAsync(endpoint).ConfigureAwait(true);
-                    string payload = await response.Content.ReadAsStringAsync().ConfigureAwait(true);
-                    this.logger.LogTrace("Response: {Response}", response);
-                    switch (response.StatusCode)
+                    PhsaResult<List<PhsaCovid19Order>> response =
+                        await this.laboratoryApi.GetCovid19OrdersAsync(query, bearerToken).ConfigureAwait(true);
+                    retVal.ResultStatus = ResultType.Success;
+                    retVal.ResourcePayload = response;
+                    retVal.TotalResultCount = retVal.ResourcePayload.Result!.Count;
+                }
+                catch (Exception e) when (e is ApiException or HttpRequestException)
+                {
+                    if (e is ApiException { StatusCode: HttpStatusCode.NoContent })
                     {
-                        case HttpStatusCode.OK:
-                            this.logger.LogTrace("Response payload: {Payload}", payload);
-                            PhsaResult<List<PhsaCovid19Order>>? phsaResult = JsonSerializer.Deserialize<PhsaResult<List<PhsaCovid19Order>>>(payload);
-                            if (phsaResult != null)
-                            {
-                                retVal.ResultStatus = ResultType.Success;
-                                retVal.ResourcePayload = phsaResult;
-                                retVal.TotalResultCount = phsaResult.Result?.Count ?? 0;
-#pragma warning disable CA1305 // Specify IFormatProvider
-                                retVal.PageSize = int.Parse(this.labConfig.FetchSize);
-#pragma warning restore CA1305 // Specify IFormatProvider
-                            }
-                            else
-                            {
-                                retVal.ResultError = new RequestResultError
-                                {
-                                    ResultMessage = "Error with JSON data",
-                                    ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.PHSA),
-                                };
-                            }
+                        retVal.ResultStatus = ResultType.Success;
+                        retVal.ResourcePayload = new() { Result = new() };
+                        retVal.TotalResultCount = 0;
+                    }
+                    else
+                    {
+                        this.logger.LogError("Error while retrieving Covid19 Orders... {Error}", e);
+                        HttpStatusCode? statusCode = (e as ApiException)?.StatusCode ?? ((HttpRequestException)e).StatusCode;
 
-                            break;
-                        case HttpStatusCode.NoContent: // No Lab exits for this user
-                            retVal.ResultStatus = ResultType.Success;
-                            retVal.ResourcePayload = new() { Result = new() };
-                            retVal.TotalResultCount = 0;
-#pragma warning disable CA1305 // Specify IFormatProvider
-                            retVal.PageSize = int.Parse(this.labConfig.FetchSize);
-#pragma warning restore CA1305 // Specify IFormatProvider
-                            break;
-                        case HttpStatusCode.Forbidden:
-                            retVal.ResultError = new RequestResultError
-                            {
-                                ResultMessage = $"DID Claim is missing or can not resolve PHN, HTTP Error {response.StatusCode}",
-                                ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.PHSA),
-                            };
-                            break;
-                        default:
-                            retVal.ResultError = new RequestResultError
-                            {
-                                ResultMessage = $"Unable to connect to Labs Endpoint, HTTP Error {response.StatusCode}",
-                                ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.PHSA),
-                            };
-                            this.logger.LogError("Unable to connect to endpoint {Endpoint}, HTTP Error {StatusCode}\n{Payload}", endpoint, response.StatusCode.ToString(), payload);
-                            break;
+                        retVal.ResultError = new()
+                        {
+                            ResultMessage = $"Status: {statusCode}. Error while retrieving Covid19 Orders",
+                            ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.Phsa),
+                        };
                     }
                 }
-#pragma warning disable CA1031 // Do not catch general exception types
-                catch (Exception e)
-#pragma warning restore CA1031 // Do not catch general exception types
-                {
-                    retVal.ResultError = new RequestResultError
-                    {
-                        ResultMessage = $"Exception getting Covid19 Orders: {e}",
-                        ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.PHSA),
-                    };
-                    this.logger.LogError("Unexpected exception in Get Covid19 Orders {Exception}", e.ToString());
-                }
 
-                this.logger.LogDebug("Finished getting Laboratory Orders");
+                this.logger.LogDebug("Finished getting Covid19 Orders");
                 return retVal;
             }
         }
@@ -173,99 +123,43 @@ namespace HealthGateway.Laboratory.Delegates
         {
             using (Source.StartActivity())
             {
+                this.logger.LogTrace("Getting laboratory report... {Id}", id);
+
                 RequestResult<LaboratoryReport> retVal = new()
                 {
                     ResultStatus = ResultType.Error,
+                    TotalResultCount = 0,
                 };
 
-                this.logger.LogTrace("Getting laboratory report... {Id}", id);
-                using HttpClient client = this.httpClientService.CreateDefaultHttpClient();
-                client.DefaultRequestHeaders.Accept.Clear();
-                client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("bearer", bearerToken);
-                client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue(MediaTypeNames.Application.Json));
                 Dictionary<string, string?> query = new()
                 {
                     ["subjectHdid"] = hdid,
                 };
+
                 try
                 {
-                    Uri endpoint = null!;
-                    string endpointString = this.labConfig.BaseUrl.ToString();
-
                     if (isCovid19)
                     {
-                        endpointString += $"{this.labConfig.LabOrdersEndpoint}/{id}/LabReportDocument";
-                        endpoint = new(QueryHelpers.AddQueryString(endpointString, query));
+                        retVal.ResourcePayload = await this.laboratoryApi.GetLaboratoryReportAsync(id, query, bearerToken).ConfigureAwait(true);
                     }
                     else
                     {
-                        endpointString += $"{this.labConfig.PlisLabEndPoint}/{id}/LabReportDocument";
-                        endpoint = new(QueryHelpers.AddQueryString(endpointString, query));
+                        retVal.ResourcePayload = await this.laboratoryApi.GetPlisLaboratoryReportAsync(id, query, bearerToken).ConfigureAwait(true);
                     }
 
-                    HttpResponseMessage response = await client.GetAsync(endpoint).ConfigureAwait(true);
-                    string payload = await response.Content.ReadAsStringAsync().ConfigureAwait(true);
-                    this.logger.LogTrace("Get laboratory report response payload: {Payload}", payload);
-                    switch (response.StatusCode)
-                    {
-                        case HttpStatusCode.OK:
-                            JsonSerializerOptions options = new()
-                            {
-                                PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
-                                DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
-                                WriteIndented = true,
-                            };
-                            LaboratoryReport? report = JsonSerializer.Deserialize<LaboratoryReport>(payload, options);
-                            if (report != null)
-                            {
-                                retVal.ResultStatus = ResultType.Success;
-                                retVal.ResourcePayload = report;
-                                retVal.TotalResultCount = 1;
-                            }
-                            else
-                            {
-                                retVal.ResultError = new RequestResultError
-                                {
-                                    ResultMessage = "Error with JSON data",
-                                    ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.PHSA),
-                                };
-                            }
-
-                            break;
-                        case HttpStatusCode.NoContent: // No report found.
-                            retVal.ResultError = new RequestResultError
-                            {
-                                ResultMessage = "Report not found.",
-                                ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.PHSA),
-                            };
-                            break;
-                        case HttpStatusCode.Forbidden:
-                            retVal.ResultError = new RequestResultError
-                            {
-                                ResultMessage = $"DID Claim is missing or can not resolve PHN, HTTP Error {response.StatusCode}",
-                                ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.PHSA),
-                            };
-                            break;
-                        default:
-                            retVal.ResultError = new RequestResultError
-                            {
-                                ResultMessage = $"Unable to connect to Labs Endpoint, HTTP Error {response.StatusCode}",
-                                ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.PHSA),
-                            };
-                            this.logger.LogError("Unable to connect to endpoint {Endpoint}, HTTP Error {StatusCode}\n{Payload}", endpoint, response.StatusCode.ToString(), payload);
-                            break;
-                    }
+                    retVal.ResultStatus = ResultType.Success;
+                    retVal.TotalResultCount = 1;
                 }
-#pragma warning disable CA1031 // Do not catch general exception types
-                catch (Exception e)
-#pragma warning restore CA1031 // Do not catch general exception types
+                catch (Exception e) when (e is ApiException or HttpRequestException)
                 {
-                    retVal.ResultError = new RequestResultError
+                    this.logger.LogError("Error retrieving Laboratory Report...{Error}", e);
+                    HttpStatusCode? statusCode = (e as ApiException)?.StatusCode ?? ((HttpRequestException)e).StatusCode;
+
+                    retVal.ResultError = new()
                     {
-                        ResultMessage = $"Exception getting Lab Report: {e}",
-                        ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.PHSA),
+                        ResultMessage = statusCode == HttpStatusCode.NoContent ? "Laboratory Report not found" : $"Status: {statusCode}. Error retrieving Laboratory Report",
+                        ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.Phsa),
                     };
-                    this.logger.LogError("Unexpected exception in Lab Report {Exception}", e.ToString());
                 }
 
                 this.logger.LogDebug("Finished getting Laboratory Report");
@@ -278,102 +172,58 @@ namespace HealthGateway.Laboratory.Delegates
         {
             using Activity? activity = Source.StartActivity();
 
+            this.logger.LogDebug("Getting laboratory summary...");
+
             RequestResult<PhsaResult<PhsaLaboratorySummary>> retVal = new()
             {
                 ResultStatus = ResultType.Error,
+                PageSize = int.Parse(this.labConfig.FetchSize, CultureInfo.InvariantCulture),
             };
 
-            this.logger.LogDebug("Getting laboratory summary...");
-            using HttpClient client = this.httpClientService.CreateDefaultHttpClient();
-            client.DefaultRequestHeaders.Accept.Clear();
-            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("bearer", bearerToken);
-            client.DefaultRequestHeaders.Accept.Add(
-                new MediaTypeWithQualityHeaderValue(MediaTypeNames.Application.Json));
             Dictionary<string, string?> query = new()
             {
                 ["subjectHdid"] = hdid,
             };
+
             try
             {
-                string endpointString = $"{this.labConfig.BaseUrl}{this.labConfig.PlisLabEndPoint}/LabSummary";
-                Uri endpoint = new(QueryHelpers.AddQueryString(endpointString, query));
-                HttpResponseMessage response = await client.GetAsync(endpoint).ConfigureAwait(true);
-                string payload = await response.Content.ReadAsStringAsync().ConfigureAwait(true);
-                this.logger.LogTrace("Response: {Response}", response);
-                switch (response.StatusCode)
+                PhsaResult<PhsaLaboratorySummary> response =
+                    await this.laboratoryApi.GetPlisLaboratorySummaryAsync(query, bearerToken).ConfigureAwait(true);
+                retVal.ResultStatus = ResultType.Success;
+                retVal.ResourcePayload = response;
+                retVal.TotalResultCount = retVal.ResourcePayload.Result!.LabOrderCount;
+            }
+            catch (Exception e) when (e is ApiException or HttpRequestException)
+            {
+                if (e is ApiException { StatusCode: HttpStatusCode.NoContent })
                 {
-                    case HttpStatusCode.OK:
-                        this.logger.LogTrace("Response payload: {Payload}", payload);
-                        PhsaResult<PhsaLaboratorySummary>? phsaResult = JsonSerializer.Deserialize<PhsaResult<PhsaLaboratorySummary>>(payload);
-                        if (phsaResult != null)
-                        {
-                            retVal.ResultStatus = ResultType.Success;
-                            retVal.ResourcePayload = phsaResult;
-                            retVal.TotalResultCount = phsaResult.Result != null ? phsaResult.Result.LabOrderCount : 0;
-#pragma warning disable CA1305 // Specify IFormatProvider
-                            retVal.PageSize = int.Parse(this.labConfig.FetchSize);
-#pragma warning restore CA1305 // Specify IFormatProvider
-                        }
-                        else
-                        {
-                            retVal.ResultError = new RequestResultError
-                            {
-                                ResultMessage = "Error with JSON data",
-                                ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.PHSA),
-                            };
-                        }
+                    retVal.ResultStatus = ResultType.Success;
+                    retVal.ResourcePayload = new() { Result = new() };
+                    retVal.TotalResultCount = 0;
+                }
+                else
+                {
+                    this.logger.LogError("Error while retrieving Laboratory Summary... {Error}", e);
+                    HttpStatusCode? statusCode = (e as ApiException)?.StatusCode ?? ((HttpRequestException)e).StatusCode;
 
-                        break;
-                    case HttpStatusCode.NoContent: // No Lab exits for this user
-                        retVal.ResultStatus = ResultType.Success;
-                        retVal.ResourcePayload = new() { Result = new() };
-                        retVal.TotalResultCount = 0;
-#pragma warning disable CA1305 // Specify IFormatProvider
-                        retVal.PageSize = int.Parse(this.labConfig.FetchSize);
-#pragma warning restore CA1305 // Specify IFormatProvider
-                        break;
-                    case HttpStatusCode.Forbidden:
-                        retVal.ResultError = new RequestResultError
-                        {
-                            ResultMessage = $"DID Claim is missing or can not resolve PHN, HTTP Error {response.StatusCode}",
-                            ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.PHSA),
-                        };
-                        break;
-                    default:
-                        retVal.ResultError = new RequestResultError
-                        {
-                            ResultMessage = $"Unable to connect to Labs Endpoint, HTTP Error {response.StatusCode}",
-                            ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.PHSA),
-                        };
-                        this.logger.LogError("Unable to connect to endpoint {Endpoint}, HTTP Error {StatusCode}\n{Payload}", endpoint, response.StatusCode.ToString(), payload);
-                        break;
+                    retVal.ResultError = new()
+                    {
+                        ResultMessage = $"Status: {statusCode}. Error while retrieving Laboratory Summary",
+                        ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.Phsa),
+                    };
                 }
             }
-#pragma warning disable CA1031 // Do not catch general exception types
-            catch (Exception e)
-#pragma warning restore CA1031 // Do not catch general exception types
-            {
-                retVal.ResultError = new RequestResultError
-                {
-                    ResultMessage = $"Exception getting laboratory summary: {e}",
-                    ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.PHSA),
-                };
-                this.logger.LogError("Unexpected exception in getting laboratory summary {Exception}", e.ToString());
-            }
 
-            this.logger.LogDebug("Finished getting Laboratory Orders");
+            this.logger.LogDebug("Finished getting laboratory summary");
             return retVal;
         }
 
         /// <inheritdoc/>
-        [SuppressMessage("Maintainability", "CA1506:Avoid excessive class coupling", Justification = "Team decision")]
         public async Task<RequestResult<PhsaResult<IEnumerable<CovidTestResult>>>> GetPublicTestResults(string accessToken, string phn, DateOnly dateOfBirth, DateOnly collectionDate)
         {
             using Activity? activity = Source.StartActivity();
-            this.logger.LogDebug("Getting public COVID-19 test results {Phn} {DateOfBirth} {CollectionDate}...", phn, dateOfBirth, collectionDate);
 
-            HttpContext? httpContext = this.httpContextAccessor.HttpContext;
-            string? ipAddress = httpContext?.Connection.RemoteIpAddress?.MapToIPv4().ToString();
+            this.logger.LogDebug("Getting public COVID-19 Test Results");
 
             RequestResult<PhsaResult<IEnumerable<CovidTestResult>>> retVal = new()
             {
@@ -381,79 +231,34 @@ namespace HealthGateway.Laboratory.Delegates
                 PageIndex = 0,
             };
 
+            Dictionary<string, string?> query = new()
+            {
+                ["phn"] = phn,
+                ["dateOfBirth"] = dateOfBirth.ToString("yyyy-MM-dd", CultureInfo.CurrentCulture),
+                ["collectionDate"] = collectionDate.ToString("yyyy-MM-dd", CultureInfo.CurrentCulture),
+            };
+
             try
             {
-                JsonSerializerOptions serializerOptions = new()
-                {
-                    Converters = { new DateOnlyJsonConverter() },
-                };
-                string json = JsonSerializer.Serialize(new { phn, dateOfBirth, collectionDate }, serializerOptions);
-                using HttpClient client = this.httpClientService.CreateDefaultHttpClient();
-
-                string endpointString = $"{this.labConfig.BaseUrl}{this.labConfig.PublicCovidTestsEndPoint}";
-                Uri endpoint = new(endpointString);
-                using HttpContent content = new StringContent(json, null, MediaTypeNames.Application.Json);
-
-                client.DefaultRequestHeaders.Accept.Clear();
-                client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue(MediaTypeNames.Application.Json));
-                client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("bearer", accessToken);
-                client.DefaultRequestHeaders.Add("X-Forward-For", ipAddress);
-
-                HttpResponseMessage response = await client.PostAsync(endpoint, content).ConfigureAwait(true);
-                string payload = await response.Content.ReadAsStringAsync().ConfigureAwait(true);
-                this.logger.LogTrace("Response: {Response}", response);
-
-                switch (response.StatusCode)
-                {
-                    case HttpStatusCode.OK:
-                        this.logger.LogTrace("Response payload: {Payload}", payload);
-                        PhsaResult<IEnumerable<CovidTestResult>>? phsaResult = JsonSerializer.Deserialize<PhsaResult<IEnumerable<CovidTestResult>>>(payload);
-                        if (phsaResult != null && phsaResult.Result != null)
-                        {
-                            retVal.ResultStatus = ResultType.Success;
-                            retVal.ResourcePayload = phsaResult;
-                            retVal.TotalResultCount = phsaResult.Result.Count();
-                        }
-                        else
-                        {
-                            retVal.ResultError = new RequestResultError
-                            {
-                                ResultMessage = "Error with JSON data",
-                                ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.PHSA),
-                            };
-                        }
-
-                        break;
-                    case HttpStatusCode.Forbidden:
-                        retVal.ResultError = new RequestResultError
-                        {
-                            ResultMessage = $"DID Claim is missing or can not resolve PHN, HTTP Error {response.StatusCode}",
-                            ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.PHSA),
-                        };
-                        break;
-                    default:
-                        retVal.ResultError = new RequestResultError
-                        {
-                            ResultMessage = $"Unable to connect to Laboratory PublicCovidTestsEndPoint, HTTP Error {response.StatusCode}",
-                            ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.PHSA),
-                        };
-                        this.logger.LogError("Unable to connect to endpoint {EndpointString}, HTTP Error {StatusCode}\n{Payload}", endpointString, response.StatusCode.ToString(), payload);
-                        break;
-                }
+                PhsaResult<IEnumerable<CovidTestResult>> response =
+                    await this.laboratoryApi.GetPublicCovidLabSummaryAsync(query, accessToken).ConfigureAwait(true);
+                retVal.ResultStatus = ResultType.Success;
+                retVal.ResourcePayload = response;
+                retVal.TotalResultCount = retVal.ResourcePayload.Result!.Count();
             }
-#pragma warning disable CA1031 // Do not catch general exception types
-            catch (Exception e)
-#pragma warning restore CA1031 // Do not catch general exception types
+            catch (Exception e) when (e is ApiException or HttpRequestException)
             {
-                retVal.ResultError = new RequestResultError
+                this.logger.LogError("Error while retrieving Covid19 Test Results... {Error}", e);
+                HttpStatusCode? statusCode = (e as ApiException)?.StatusCode ?? ((HttpRequestException)e).StatusCode;
+
+                retVal.ResultError = new()
                 {
-                    ResultMessage = $"Exception getting public COVID-19 test results: {e}",
-                    ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.PHSA),
+                    ResultMessage = $"Status: {statusCode}. Error while retrieving Covid19 Test Results",
+                    ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.Phsa),
                 };
-                this.logger.LogError("Unexpected exception retrieving public COVID-19 test results {Exception}", e.ToString());
             }
 
-            this.logger.LogDebug("Finished getting public COVID-19 test results {Phn} {DateOfBirth} {CollectionDate}...", phn, dateOfBirth, collectionDate);
+            this.logger.LogDebug("Finished getting public COVID-19 Test results");
             return retVal;
         }
     }

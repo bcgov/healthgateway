@@ -73,7 +73,7 @@ describe("Authentication", () => {
                 .type(Cypress.env("idir.username"));
             cy.get("#password")
                 .should("be.visible")
-                .type(Cypress.env("idir.password"));
+                .type(Cypress.env("idir.password"), { log: false });
             cy.get('input[name="btnSubmit"]').should("be.visible").click();
             cy.contains("h1", "403");
             cy.contains("h2", "IDIR Login");

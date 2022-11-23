@@ -12,6 +12,14 @@ parameters:
     default: true
 
 steps:
+  - task: UseDotNet@2
+    displayName: 'Use .NET Core sdk'
+    condition: eq(variables['EnableAzure'], True)
+    inputs:
+      packageType: sdk
+      version: 7.x
+      installationPath: $(Agent.ToolsDirectory)/dotnet
+    
   - task: Cache@2
     displayName: "Fetch NPM Cache"
     condition: eq(variables['NPMInstall'], true)
@@ -28,11 +36,11 @@ steps:
       command: "install"
       workingDir: "$(App.Home)/src/ClientApp"
 
-  - script: |
-      sudo dotnet workload restore
-    workingDirectory: "$(App.Home)"
-    displayName: "Workload Restore for $(App.Name)"
-    condition: and(succeeded(), eq(variables['WASMBuild'], true))
+  # - script: |
+  #     sudo dotnet workload restore
+  #   workingDirectory: "$(App.Home)"
+  #   displayName: "Workload Restore for $(App.Name)"
+  #   condition: and(succeeded(), eq(variables['WASMBuild'], true))
 
   - task: DotNetCoreCLI@2
     displayName: "Compiling code for $(App.Name)"
@@ -48,23 +56,37 @@ steps:
       projects: "$(App.Home)"
       arguments: "--no-incremental /warnaserror"
 
-  - task: DotNetCoreCLI@2
-    displayName: "Runing Unit Tests for $(App.Name)"
-    condition: and(succeeded(), and(eq(variables['WASMBuild'], false),eq(variables['UnitTests'], true)))
-    inputs:
-      command: "test"
-      projects: "$(App.Home)/test/unit/$(App.Name)Tests.csproj"
-      arguments: "/p:CollectCoverage=true /p:CoverletOutputFormat=cobertura"
-      testRunTitle: "$(App.Name): Performing Unit Tests"
+  - script: |
+      set -e
+      export CollectCoverage=true
+      export CoverletOutputFormat=cobertura
+      if [ "$(WASMBuild)" = True ] ; then
+          echo Running WASM Unit Tests
+          dotnet test $(App.Home)
+      else
+          echo Running Unit Tests
+          dotnet test $(App.Home)/test/unit/$(App.Name)Tests.csproj
+      fi
+    displayName: "Running Unit Tests for $(App.Name) .Net 7 Hack"
+    condition: and(succeeded(), eq(variables['UnitTests'], true))
 
-  - task: DotNetCoreCLI@2
-    displayName: "Runing Unit Tests for Blazor Solution $(App.Name)"
-    condition: and(succeeded(), and(eq(variables['WASMBuild'], true),eq(variables['UnitTests'], true)))
-    inputs:
-      command: "test"
-      projects: "$(App.Home)"
-      arguments: "/p:CollectCoverage=true /p:CoverletOutputFormat=cobertura"
-      testRunTitle: "$(App.Name): Performing Unit Tests"
+  # - task: DotNetCoreCLI@2
+  #   displayName: "Runing Unit Tests for $(App.Name)"
+  #   condition: and(succeeded(), and(eq(variables['WASMBuild'], false),eq(variables['UnitTests'], true)))
+  #   inputs:
+  #     command: "test"
+  #     projects: "$(App.Home)/test/unit/$(App.Name)Tests.csproj"
+  #     arguments: "/p:CollectCoverage=true /p:CoverletOutputFormat=cobertura"
+  #     testRunTitle: "$(App.Name): Performing Unit Tests"
+
+  # - task: DotNetCoreCLI@2
+  #   displayName: "Runing Unit Tests for Blazor Solution $(App.Name)"
+  #   condition: and(succeeded(), and(eq(variables['WASMBuild'], true),eq(variables['UnitTests'], true)))
+  #   inputs:
+  #     command: "test"
+  #     projects: "$(App.Home)"
+  #     arguments: "/p:CollectCoverage=true /p:CoverletOutputFormat=cobertura"
+  #     testRunTitle: "$(App.Name): Performing Unit Tests"
 
   - script: |
       set -e

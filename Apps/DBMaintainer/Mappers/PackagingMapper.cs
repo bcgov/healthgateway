@@ -13,7 +13,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //-------------------------------------------------------------------------
-namespace HealthGateway.DrugMaintainer
+namespace HealthGateway.DBMaintainer.Mappers
 {
     using System.Collections.Generic;
     using System.Linq;
@@ -23,7 +23,7 @@ namespace HealthGateway.DrugMaintainer
     /// <summary>
     /// Mapping class to which maps the read file to the relavent model object.
     /// </summary>
-    public class PackagingMapper : ClassMap<Packaging>
+    public sealed class PackagingMapper : ClassMap<Packaging>
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="PackagingMapper"/> class.
@@ -36,7 +36,7 @@ namespace HealthGateway.DrugMaintainer
             this.Map(m => m.DrugProductId).Convert(row => drugProducts.First(d => d.DrugCode == row.Row.GetField(0)).Id);
 
             // UPC
-            this.Map(m => m.UPC).Index(1);
+            this.Map(m => m.Upc).Index(1);
 
             // PACKAGE_SIZE_UNIT
             this.Map(m => m.PackageSizeUnit).Index(2);

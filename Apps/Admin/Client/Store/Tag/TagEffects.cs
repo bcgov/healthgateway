@@ -16,13 +16,14 @@
 
 namespace HealthGateway.Admin.Client.Store.Tag;
 
+using System;
 using System.Collections.Generic;
+using System.Net.Http;
 using System.Threading.Tasks;
 using Fluxor;
 using HealthGateway.Admin.Client.Services;
 using HealthGateway.Admin.Client.Utils;
 using HealthGateway.Admin.Common.Models;
-using HealthGateway.Common.Data.Constants;
 using HealthGateway.Common.Data.ViewModels;
 using Microsoft.AspNetCore.Components;
 using Microsoft.Extensions.Logging;
@@ -61,17 +62,18 @@ public class TagEffects
     {
         this.Logger.LogInformation("Adding tag");
 
-        ApiResponse<RequestResult<AdminTagView>> response = await this.Api.Add(action.TagName).ConfigureAwait(true);
-        if (response.IsSuccessStatusCode && response.Content != null && response.Content.ResultStatus == ResultType.Success)
+        try
         {
+            RequestResult<AdminTagView> response = await this.Api.AddAsync(action.TagName).ConfigureAwait(true);
             this.Logger.LogInformation("AdminTagView added successfully!");
-            dispatcher.Dispatch(new TagActions.AddSuccessAction(response.Content));
-            return;
+            dispatcher.Dispatch(new TagActions.AddSuccessAction(response));
         }
-
-        RequestError error = StoreUtility.FormatRequestError(response.Error, response.Content?.ResultError);
-        this.Logger.LogError("Error adding tag, reason: {ErrorMessage}", error.Message);
-        dispatcher.Dispatch(new TagActions.AddFailAction(error));
+        catch (Exception e) when (e is ApiException or HttpRequestException)
+        {
+            RequestError error = StoreUtility.FormatRequestError(e);
+            this.Logger.LogError("Error adding tag, reason: {Exception}", e.ToString());
+            dispatcher.Dispatch(new TagActions.AddFailAction(error));
+        }
     }
 
     /// <summary>
@@ -84,17 +86,18 @@ public class TagEffects
     {
         this.Logger.LogInformation("Loading Tag");
 
-        ApiResponse<RequestResult<IEnumerable<AdminTagView>>> response = await this.Api.GetAll().ConfigureAwait(true);
-        if (response.IsSuccessStatusCode && response.Content != null && response.Content.ResultStatus == ResultType.Success)
+        try
         {
+            RequestResult<IEnumerable<AdminTagView>> response = await this.Api.GetAllAsync().ConfigureAwait(true);
             this.Logger.LogInformation("Tag loaded successfully!");
-            dispatcher.Dispatch(new TagActions.LoadSuccessAction(response.Content));
-            return;
+            dispatcher.Dispatch(new TagActions.LoadSuccessAction(response));
         }
-
-        RequestError error = StoreUtility.FormatRequestError(response.Error, response.Content?.ResultError);
-        this.Logger.LogError("Error loading Tag, reason: {ErrorMessage}", error.Message);
-        dispatcher.Dispatch(new TagActions.LoadFailAction(error));
+        catch (Exception e) when (e is ApiException or HttpRequestException)
+        {
+            RequestError error = StoreUtility.FormatRequestError(e);
+            this.Logger.LogError("Error loading Tag, reason: {Exception}", e.ToString());
+            dispatcher.Dispatch(new TagActions.LoadFailAction(error));
+        }
     }
 
     /// <summary>
@@ -108,16 +111,17 @@ public class TagEffects
     {
         this.Logger.LogInformation("Deleting tag");
 
-        ApiResponse<RequestResult<AdminTagView>> response = await this.Api.Delete(action.AdminTagView).ConfigureAwait(true);
-        if (response.IsSuccessStatusCode && response.Content != null && response.Content.ResultStatus == ResultType.Success)
+        try
         {
+            RequestResult<AdminTagView> response = await this.Api.DeleteAsync(action.AdminTagView).ConfigureAwait(true);
             this.Logger.LogInformation("Tag deleted successfully!");
-            dispatcher.Dispatch(new TagActions.DeleteSuccessAction(response.Content));
-            return;
+            dispatcher.Dispatch(new TagActions.DeleteSuccessAction(response));
         }
-
-        RequestError error = StoreUtility.FormatRequestError(response.Error, response.Content?.ResultError);
-        this.Logger.LogError("Error deleting tag, reason: {ErrorMessage}", error.Message);
-        dispatcher.Dispatch(new TagActions.DeleteFailAction(error));
+        catch (Exception e) when (e is ApiException or HttpRequestException)
+        {
+            RequestError error = StoreUtility.FormatRequestError(e);
+            this.Logger.LogError("Error deleting tag, reason: {ErrorMessage}", e.ToString());
+            dispatcher.Dispatch(new TagActions.DeleteFailAction(error));
+        }
     }
 }

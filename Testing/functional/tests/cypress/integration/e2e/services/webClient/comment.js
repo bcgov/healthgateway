@@ -13,7 +13,7 @@ describe("WebClient Comment Service", () => {
     it("Verify Get Comment Unauthorized", () => {
         cy.get("@config").then((config) => {
             cy.request({
-                url: `${config.serviceEndpoints.GatewayApi}${BASEURL}/${HDID}/Comment/`,
+                url: `${config.serviceEndpoints.GatewayApi}${BASEURL}${HDID}/Comment/`,
                 followRedirect: false,
                 failOnStatusCode: false,
             }).should((response) => {
@@ -27,7 +27,7 @@ describe("WebClient Comment Service", () => {
             cy.log("Tokens", tokens);
             cy.get("@config").then((config) => {
                 cy.request({
-                    url: `${config.serviceEndpoints.GatewayApi}${BASEURL}/${BOGUSHDID}/Comment/`,
+                    url: `${config.serviceEndpoints.GatewayApi}${BASEURL}${BOGUSHDID}/Comment/`,
                     followRedirect: false,
                     failOnStatusCode: false,
                     auth: {
@@ -48,7 +48,7 @@ describe("WebClient Comment Service", () => {
             cy.log("Tokens", tokens);
             cy.get("@config").then((config) => {
                 cy.request({
-                    url: `${config.serviceEndpoints.GatewayApi}${BASEURL}/${HDID}/Comment/`,
+                    url: `${config.serviceEndpoints.GatewayApi}${BASEURL}${HDID}/Comment/`,
                     followRedirect: false,
                     auth: {
                         bearer: tokens.access_token,
@@ -73,7 +73,7 @@ describe("WebClient Comment Service", () => {
         cy.get("@config").then((config) => {
             cy.request({
                 method: "POST",
-                url: `${config.serviceEndpoints.GatewayApi}${BASEURL}/${HDID}/Comment/`,
+                url: `${config.serviceEndpoints.GatewayApi}${BASEURL}${HDID}/Comment/`,
                 followRedirect: false,
                 failOnStatusCode: false,
             }).should((response) => {
@@ -88,7 +88,7 @@ describe("WebClient Comment Service", () => {
             cy.get("@config").then((config) => {
                 cy.request({
                     method: "POST",
-                    url: `${config.serviceEndpoints.GatewayApi}${BASEURL}/${BOGUSHDID}/Comment/`,
+                    url: `${config.serviceEndpoints.GatewayApi}${BASEURL}${BOGUSHDID}/Comment/`,
                     followRedirect: false,
                     failOnStatusCode: false,
                     auth: {
@@ -108,7 +108,7 @@ describe("WebClient Comment Service", () => {
         cy.get("@config").then((config) => {
             cy.request({
                 method: "PUT",
-                url: `${config.serviceEndpoints.GatewayApi}${BASEURL}/${HDID}/Comment/`,
+                url: `${config.serviceEndpoints.GatewayApi}${BASEURL}${HDID}/Comment/`,
                 followRedirect: false,
                 failOnStatusCode: false,
             }).should((response) => {
@@ -123,7 +123,7 @@ describe("WebClient Comment Service", () => {
             cy.get("@config").then((config) => {
                 cy.request({
                     method: "PUT",
-                    url: `${config.serviceEndpoints.GatewayApi}${BASEURL}/${BOGUSHDID}/Comment/`,
+                    url: `${config.serviceEndpoints.GatewayApi}${BASEURL}${BOGUSHDID}/Comment/`,
                     followRedirect: false,
                     failOnStatusCode: false,
                     auth: {
@@ -143,7 +143,7 @@ describe("WebClient Comment Service", () => {
         cy.get("@config").then((config) => {
             cy.request({
                 method: "DELETE",
-                url: `${config.serviceEndpoints.GatewayApi}${BASEURL}/${HDID}/Comment/`,
+                url: `${config.serviceEndpoints.GatewayApi}${BASEURL}${HDID}/Comment/`,
                 followRedirect: false,
                 failOnStatusCode: false,
             }).should((response) => {
@@ -158,7 +158,7 @@ describe("WebClient Comment Service", () => {
             cy.get("@config").then((config) => {
                 cy.request({
                     method: "DELETE",
-                    url: `${config.serviceEndpoints.GatewayApi}${BASEURL}/${BOGUSHDID}/Comment/`,
+                    url: `${config.serviceEndpoints.GatewayApi}${BASEURL}${BOGUSHDID}/Comment/`,
                     followRedirect: false,
                     failOnStatusCode: false,
                     auth: {

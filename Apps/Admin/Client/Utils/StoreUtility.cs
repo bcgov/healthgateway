@@ -16,9 +16,9 @@
 
 namespace HealthGateway.Admin.Client.Utils
 {
+    using System;
     using HealthGateway.Admin.Client.Store;
     using HealthGateway.Common.Data.ViewModels;
-    using Refit;
 
     /// <summary>
     /// Utilities for interacting with the application store.
@@ -28,10 +28,20 @@ namespace HealthGateway.Admin.Client.Utils
         /// <summary>
         /// Formats errors returned from external requests.
         /// </summary>
-        /// <param name="apiException">An exception returned by Refit.</param>
         /// <param name="resultError">An error returned from the server.</param>
         /// <returns>The generated <see cref="RequestError"/>.</returns>
-        public static RequestError FormatRequestError(ApiException? apiException, RequestResultError? resultError)
+        public static RequestError FormatRequestError(RequestResultError? resultError)
+        {
+            return FormatRequestError(null, resultError);
+        }
+
+    /// <summary>
+        /// Formats errors returned from external requests.
+        /// </summary>
+        /// <param name="exception">An exception returned by Refit.</param>
+        /// <param name="resultError">An error returned from the server.</param>
+        /// <returns>The generated <see cref="RequestError"/>.</returns>
+        public static RequestError FormatRequestError(Exception? exception, RequestResultError? resultError = null)
         {
             if (resultError is not null)
             {
@@ -47,11 +57,11 @@ namespace HealthGateway.Admin.Client.Utils
                 };
             }
 
-            if (apiException is not null)
+            if (exception is not null)
             {
                 return new()
                 {
-                    Message = apiException.Message,
+                    Message = exception.Message,
                 };
             }
 

@@ -19,7 +19,7 @@ namespace HealthGateway.Medication.Models.Salesforce
     using System.Text.Json.Serialization;
 
     /// <summary>
-    /// Represents a Special Autrhority Request.
+    /// Represents a Special Authority Request.
     /// </summary>
     public class ResponseWrapper
     {
@@ -45,21 +45,5 @@ namespace HealthGateway.Medication.Models.Salesforce
         /// </summary>
         [JsonPropertyName("items")]
         public IList<SpecialAuthorityRequest> Items { get; } = new List<SpecialAuthorityRequest>();
-
-        /// <summary>
-        /// Creates a List of Medication Request object from an SpecialAuthorityRequest model.
-        /// </summary>
-        /// <returns>A list of MedicationRequest objects.</returns>
-        public IList<MedicationRequest> ToHGModels()
-        {
-            IList<MedicationRequest> objects = new List<MedicationRequest>();
-
-            foreach (SpecialAuthorityRequest requestModel in this.Items)
-            {
-                objects.Add(requestModel.ToHGModel());
-            }
-
-            return objects;
-        }
     }
 }

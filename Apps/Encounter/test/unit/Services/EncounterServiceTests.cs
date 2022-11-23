@@ -111,7 +111,7 @@ namespace HealthGateway.EncounterTests.Services
             string hdid = "MOCKHDID";
 
             Mock<IMspVisitDelegate> mockMspDelegate = new();
-            mockMspDelegate.Setup(s => s.GetMSPVisitHistoryAsync(It.IsAny<OdrHistoryQuery>(), It.IsAny<string>(), It.IsAny<string>())).ReturnsAsync(delegateResult);
+            mockMspDelegate.Setup(s => s.GetMspVisitHistoryAsync(It.IsAny<OdrHistoryQuery>(), It.IsAny<string>(), It.IsAny<string>())).ReturnsAsync(delegateResult);
 
             Mock<IPatientService> mockPatientService = new();
             mockPatientService.Setup(s => s.GetPatient(It.IsAny<string>(), It.IsAny<PatientIdentifierType>(), false)).ReturnsAsync(this.patientResult);
@@ -154,7 +154,7 @@ namespace HealthGateway.EncounterTests.Services
             string hdid = "MOCKHDID";
 
             Mock<IMspVisitDelegate> mockMspDelegate = new();
-            mockMspDelegate.Setup(s => s.GetMSPVisitHistoryAsync(It.IsAny<OdrHistoryQuery>(), It.IsAny<string>(), It.IsAny<string>())).Returns(Task.FromResult(delegateResult));
+            mockMspDelegate.Setup(s => s.GetMspVisitHistoryAsync(It.IsAny<OdrHistoryQuery>(), It.IsAny<string>(), It.IsAny<string>())).Returns(Task.FromResult(delegateResult));
 
             Mock<IPatientService> mockPatientService = new();
             mockPatientService.Setup(s => s.GetPatient(It.IsAny<string>(), It.IsAny<PatientIdentifierType>(), false)).Returns(Task.FromResult(this.patientResult));
@@ -189,7 +189,7 @@ namespace HealthGateway.EncounterTests.Services
             using ILoggerFactory loggerFactory = LoggerFactory.Create(builder => builder.AddConsole());
 
             Mock<IMspVisitDelegate> mockMspDelegate = new();
-            mockMspDelegate.Setup(s => s.GetMSPVisitHistoryAsync(It.IsAny<OdrHistoryQuery>(), It.IsAny<string>(), It.IsAny<string>())).Returns(Task.FromResult(delegateResult));
+            mockMspDelegate.Setup(s => s.GetMspVisitHistoryAsync(It.IsAny<OdrHistoryQuery>(), It.IsAny<string>(), It.IsAny<string>())).Returns(Task.FromResult(delegateResult));
 
             RequestResult<PatientModel> errorPatientResult = new()
             {
@@ -351,7 +351,7 @@ namespace HealthGateway.EncounterTests.Services
 
         private static IConfigurationRoot GetIConfigurationRoot()
         {
-            Dictionary<string, string> configuration = new()
+            Dictionary<string, string?> configuration = new()
             {
                 { "PHSA:BaseUrl", ConfigBaseUrl },
                 { "PHSA:FetchSize", ConfigFetchSize },
@@ -359,7 +359,7 @@ namespace HealthGateway.EncounterTests.Services
             };
 
             return new ConfigurationBuilder()
-                .AddInMemoryCollection(configuration)
+                .AddInMemoryCollection(configuration.ToList())
                 .Build();
         }
 
@@ -367,7 +367,7 @@ namespace HealthGateway.EncounterTests.Services
             RequestResult<PhsaResult<IEnumerable<HospitalVisit>>> hospitalVisitResult)
         {
             Mock<IHospitalVisitDelegate> mockHospitalVisitDelegate = new();
-            mockHospitalVisitDelegate.Setup(d => d.GetHospitalVisits(It.IsAny<string>())).Returns(Task.FromResult(hospitalVisitResult));
+            mockHospitalVisitDelegate.Setup(d => d.GetHospitalVisitsAsync(It.IsAny<string>())).Returns(Task.FromResult(hospitalVisitResult));
 
             return new EncounterService(
                 new Mock<ILogger<EncounterService>>().Object,

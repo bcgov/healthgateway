@@ -13,7 +13,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //-------------------------------------------------------------------------
-namespace HealthGateway.Medication.Controllers.Test
+namespace HealthGateway.MedicationTests.Controllers
 {
     using System;
     using System.Collections.Generic;
@@ -25,7 +25,6 @@ namespace HealthGateway.Medication.Controllers.Test
     using HealthGateway.Medication.Controllers;
     using HealthGateway.Medication.Models;
     using HealthGateway.Medication.Services;
-    using Microsoft.AspNetCore.Mvc;
     using Moq;
     using Xunit;
 
@@ -48,14 +47,14 @@ namespace HealthGateway.Medication.Controllers.Test
                 ResultStatus = ResultType.Success,
                 ResourcePayload = new List<MedicationStatementHistory>
                 {
-                    new MedicationStatementHistory()
+                    new()
                     {
                         PrescriptionIdentifier = "identifier",
                         PrescriptionStatus = 'M',
                         DispensedDate = DateTime.Parse("09/28/2020", CultureInfo.CurrentCulture),
                         DateEntered = DateTime.Parse("09/28/2020", CultureInfo.CurrentCulture),
                         Directions = "Directions",
-                        DispensingPharmacy = new Pharmacy()
+                        DispensingPharmacy = new Pharmacy
                         {
                             AddressLine1 = "Line 1",
                             AddressLine2 = "Line 2",
@@ -68,9 +67,9 @@ namespace HealthGateway.Medication.Controllers.Test
                             PharmacyId = "ID",
                             PhoneNumber = "2222222222",
                         },
-                        MedicationSummary = new MedicationSummary()
+                        MedicationSummary = new MedicationSummary
                         {
-                            DIN = "02242163",
+                            Din = "02242163",
                             BrandName = "KADIAN 10MG CAPSULE",
                             DrugDiscontinuedDate = DateTime.Parse("09/28/2020", CultureInfo.CurrentCulture),
                             Form = "Form",

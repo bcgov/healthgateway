@@ -16,59 +16,60 @@
 namespace HealthGateway.Admin.Delegates
 {
     using System;
+    using System.Collections.Generic;
     using System.Diagnostics;
+    using System.Diagnostics.CodeAnalysis;
     using System.Globalization;
-    using System.Net;
     using System.Net.Http;
-    using System.Net.Http.Headers;
-    using System.Net.Mime;
-    using System.Text;
-    using System.Text.Json;
     using System.Threading.Tasks;
+    using AutoMapper;
+    using HealthGateway.Admin.Api;
     using HealthGateway.Admin.Models.CovidSupport;
     using HealthGateway.Admin.Models.Immunization;
-    using HealthGateway.Admin.Parsers.Immunization;
+    using HealthGateway.Common.AccessManagement.Authentication;
     using HealthGateway.Common.Data.Constants;
     using HealthGateway.Common.Data.ViewModels;
     using HealthGateway.Common.ErrorHandling;
     using HealthGateway.Common.Models;
     using HealthGateway.Common.Models.PHSA;
-    using HealthGateway.Common.Services;
-    using Microsoft.AspNetCore.Authentication;
-    using Microsoft.AspNetCore.Http;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.Logging;
+    using Refit;
 
     /// <inheritdoc/>
     public class RestImmunizationAdminDelegate : IImmunizationAdminDelegate
     {
         private const string PhsaConfigSectionKey = "PHSA";
+        private readonly IMapper autoMapper;
+        private readonly IImmunizationAdminApi immunizationAdminApi;
+        private readonly IAuthenticationDelegate authenticationDelegate;
         private readonly ILogger logger;
-        private readonly IHttpClientService httpClientService;
         private readonly PhsaConfig phsaConfig;
-        private readonly IHttpContextAccessor httpContextAccessor;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="RestImmunizationAdminDelegate"/> class.
         /// </summary>
         /// <param name="logger">Injected Logger Provider.</param>
-        /// <param name="httpClientService">The injected http client service.</param>
+        /// <param name="immunizationAdminApi">The injected client for immunization admin api calls.</param>
         /// <param name="configuration">The injected configuration provider.</param>
-        /// <param name="httpContextAccessor">The Http Context accessor.</param>
+        /// <param name="authenticationDelegate">The auth delegate to fetch tokens.</param>
+        /// <param name="autoMapper">The injected automapper provider.</param>
         public RestImmunizationAdminDelegate(
             ILogger<RestImmunizationAdminDelegate> logger,
-            IHttpClientService httpClientService,
+            IImmunizationAdminApi immunizationAdminApi,
             IConfiguration configuration,
-            IHttpContextAccessor httpContextAccessor)
+            IAuthenticationDelegate authenticationDelegate,
+            IMapper autoMapper)
         {
             this.logger = logger;
-            this.httpClientService = httpClientService;
-            this.httpContextAccessor = httpContextAccessor;
+            this.immunizationAdminApi = immunizationAdminApi;
+            this.authenticationDelegate = authenticationDelegate;
+            this.autoMapper = autoMapper;
             this.phsaConfig = new PhsaConfig();
             configuration.Bind(PhsaConfigSectionKey, this.phsaConfig);
         }
 
-        private static ActivitySource Source { get; } = new ActivitySource(nameof(RestImmunizationAdminDelegate));
+        private static ActivitySource Source { get; } = new(nameof(RestImmunizationAdminDelegate));
 
         /// <inheritdoc/>
         public async Task<RequestResult<VaccineDetails>> GetVaccineDetailsWithRetries(PatientModel patient, bool refresh)
@@ -97,7 +98,7 @@ namespace HealthGateway.Admin.Delegates
             if (response.ResultStatus == ResultType.Success && response.ResourcePayload != null)
             {
                 VaccineDetails vaccineDetails = new(
-                    VaccineDoseParser.FromPHSAModelList(response.ResourcePayload.Result?.Doses),
+                    this.autoMapper.Map<IEnumerable<VaccineDoseResponse>, IList<VaccineDose>>(response.ResourcePayload.Result?.Doses),
                     response.ResourcePayload.Result?.VaccineStatusResult)
                 {
                     Blocked = response.ResourcePayload.Result?.Blocked ?? false,
@@ -135,30 +136,28 @@ namespace HealthGateway.Admin.Delegates
         /// <returns>The wrapped vaccine details response.</returns>
         private async Task<RequestResult<PhsaResult<VaccineDetailsResponse>>> GetVaccineDetailsResponse(PatientModel patient, bool refresh)
         {
-            using Activity? activity = Source.StartActivity("GetVaccineDetails");
+            using Activity? activity = Source.StartActivity();
             this.logger.LogDebug("Getting vaccine details...");
             RequestResult<PhsaResult<VaccineDetailsResponse>> retVal;
             if (!string.IsNullOrEmpty(patient.PersonalHealthNumber) && patient.Birthdate != DateTime.MinValue)
             {
-                CovidImmunizationsRequest requestContent = new CovidImmunizationsRequest()
+                CovidImmunizationsRequest requestContent = new()
                 {
                     PersonalHealthNumber = patient.PersonalHealthNumber,
                     IgnoreCache = refresh,
                 };
-                Uri endpoint = new($"{this.phsaConfig.BaseUrl}{this.phsaConfig.ImmunizationEndpoint}/VaccineValidationDetails");
-                using StringContent httpContent = new(JsonSerializer.Serialize(requestContent), Encoding.UTF8, "application/json");
-                retVal = await this.CallEndpoint<VaccineDetailsResponse>(endpoint, httpContent).ConfigureAwait(true);
-                this.logger.LogDebug($"Finished getting vaccine details");
+                retVal = await this.ProcessResponse(requestContent).ConfigureAwait(true);
+                this.logger.LogDebug("Finished getting vaccine details");
             }
             else
             {
                 retVal = new()
                 {
                     ResultStatus = ResultType.Error,
-                    ResultError = new RequestResultError()
+                    ResultError = new RequestResultError
                     {
                         ResultMessage = $"Patient PHN ({patient.PersonalHealthNumber}) or DOB ({patient.Birthdate}) Invalid",
-                        ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.PHSA),
+                        ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.Phsa),
                     },
                 };
             }
@@ -166,77 +165,47 @@ namespace HealthGateway.Admin.Delegates
             return retVal;
         }
 
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1031:Do not catch general exception types", Justification = "<Team Decision>")]
-        private async Task<RequestResult<PhsaResult<T>>> CallEndpoint<T>(Uri endpoint, StringContent content)
+        [SuppressMessage("Design", "CA1031:Do not catch general exception types", Justification = "<Team Decision>")]
+        private async Task<RequestResult<PhsaResult<VaccineDetailsResponse>>> ProcessResponse(CovidImmunizationsRequest request)
         {
-            HttpContext? httpContext = this.httpContextAccessor.HttpContext;
-            if (httpContext != null)
+            string? bearerToken = this.authenticationDelegate.FetchAuthenticatedUserToken();
+            if (bearerToken != null)
             {
-                string? bearerToken = await httpContext.GetTokenAsync("access_token").ConfigureAwait(true);
-                if (bearerToken != null)
+                RequestResult<PhsaResult<VaccineDetailsResponse>> retVal = new()
                 {
-                    RequestResult<PhsaResult<T>> retVal = new()
+                    ResultStatus = ResultType.Error,
+                    PageIndex = 0,
+                    ResourcePayload = new PhsaResult<VaccineDetailsResponse>
                     {
-                        ResultStatus = ResultType.Error,
-                        PageIndex = 0,
-                    };
+                        Result = null,
+                    },
+                    TotalResultCount = 0,
+                };
 
-                    try
-                    {
-                        using Activity? activity = Source.StartActivity("Communicating with PHSA");
-                        using HttpClient client = this.httpClientService.CreateDefaultHttpClient();
-                        client.DefaultRequestHeaders.Accept.Clear();
-                        client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("bearer", bearerToken);
-                        client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue(MediaTypeNames.Application.Json));
+                try
+                {
+                    using Activity? activity = Source.StartActivity();
 
-                        HttpResponseMessage response = await client.PostAsync(endpoint, content).ConfigureAwait(true);
-                        string payload = await response.Content.ReadAsStringAsync().ConfigureAwait(true);
-                        this.logger.LogTrace("Response: {Response}", response);
-
-                        switch (response.StatusCode)
-                        {
-                            case HttpStatusCode.OK:
-                                this.logger.LogTrace("Response payload: {Payload}", payload);
-                                PhsaResult<T>? phsaResult = JsonSerializer.Deserialize<PhsaResult<T>>(payload);
-                                if (phsaResult != null && phsaResult.Result != null)
-                                {
-                                    retVal.ResultStatus = ResultType.Success;
-                                    retVal.ResourcePayload = phsaResult;
-                                    retVal.TotalResultCount = 1;
-                                    retVal.PageSize = int.Parse(this.phsaConfig.FetchSize, CultureInfo.InvariantCulture);
-                                }
-                                else
-                                {
-                                    retVal.ResultError = new RequestResultError() { ResultMessage = "Error with JSON data", ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.PHSA) };
-                                }
-
-                                break;
-                            case HttpStatusCode.NoContent: // No Immunizations exits for this user
-                                retVal.ResultStatus = ResultType.Success;
-                                retVal.ResourcePayload = new PhsaResult<T>();
-                                retVal.TotalResultCount = 0;
-                                retVal.PageSize = int.Parse(this.phsaConfig.FetchSize, CultureInfo.InvariantCulture);
-                                break;
-                            case HttpStatusCode.Forbidden:
-                                retVal.ResultError = new RequestResultError() { ResultMessage = $"DID Claim is missing or can not resolve PHN, HTTP Error {response.StatusCode}", ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.PHSA) };
-                                break;
-                            default:
-                                retVal.ResultError = new RequestResultError() { ResultMessage = $"Unable to connect to Immunizations Endpoint, HTTP Error {response.StatusCode}", ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.PHSA) };
-                                this.logger.LogError("Unable to connect to endpoint {Endpoint}, HTTP Error {StatusCode}\\n{Payload}", endpoint, response.StatusCode, payload);
-                                break;
-                        }
-                    }
-                    catch (Exception e)
-                    {
-                        retVal.ResultError = new RequestResultError() { ResultMessage = $"Exception getting Immunization data: {e}", ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.PHSA) };
-                        this.logger.LogError("Unexpected exception retrieving Immunization data {Exception}", e);
-                    }
-
-                    return retVal;
+                    IApiResponse<PhsaResult<VaccineDetailsResponse>> response = await this.immunizationAdminApi.GetVaccineDetails(request, bearerToken).ConfigureAwait(true);
+                    retVal.ResultStatus = ResultType.Success;
+                    retVal.ResourcePayload!.Result = response.Content!.Result;
+                    retVal.TotalResultCount = 1;
+                    retVal.PageSize = int.Parse(this.phsaConfig.FetchSize, CultureInfo.InvariantCulture);
                 }
+                catch (Exception e) when (e is ApiException or HttpRequestException)
+                {
+                    retVal.ResultError = new RequestResultError
+                    {
+                        ResultMessage = $"Exception getting Immunization data: {e}",
+                        ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.Phsa),
+                    };
+                    this.logger.LogError("Unexpected exception retrieving Immunization data {Exception}", e);
+                }
+
+                return retVal;
             }
 
-            return new RequestResult<PhsaResult<T>>()
+            return new RequestResult<PhsaResult<VaccineDetailsResponse>>
             {
                 ResultStatus = ResultType.Error,
                 ResultError = new()

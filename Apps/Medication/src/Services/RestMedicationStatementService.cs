@@ -23,9 +23,10 @@ namespace HealthGateway.Medication.Services
     using System.Net;
     using System.Text.RegularExpressions;
     using System.Threading.Tasks;
+    using AutoMapper;
     using HealthGateway.Common.Constants;
     using HealthGateway.Common.Data.Constants;
-    using HealthGateway.Common.Data.Models.ErrorHandling;
+    using HealthGateway.Common.Data.ErrorHandling;
     using HealthGateway.Common.Data.ViewModels;
     using HealthGateway.Common.ErrorHandling;
     using HealthGateway.Common.Models;
@@ -46,6 +47,7 @@ namespace HealthGateway.Medication.Services
     {
         private const int MaxLengthProtectiveWord = 8;
         private const int MinLengthProtectiveWord = 6;
+        private readonly IMapper autoMapper;
         private readonly IDrugLookupDelegate drugLookupDelegate;
         private readonly IHttpContextAccessor httpContextAccessor;
         private readonly ILogger logger;
@@ -60,18 +62,21 @@ namespace HealthGateway.Medication.Services
         /// <param name="patientService">The injected patient registry provider.</param>
         /// <param name="drugLookupDelegate">Injected drug lookup delegate.</param>
         /// <param name="medicationStatementDelegate">Injected medication statement delegate.</param>
+        /// <param name="autoMapper">The injected automapper provider.</param>
         public RestMedicationStatementService(
             ILogger<RestMedicationStatementService> logger,
             IHttpContextAccessor httpAccessor,
             IPatientService patientService,
             IDrugLookupDelegate drugLookupDelegate,
-            IMedStatementDelegate medicationStatementDelegate)
+            IMedStatementDelegate medicationStatementDelegate,
+            IMapper autoMapper)
         {
             this.logger = logger;
             this.httpContextAccessor = httpAccessor;
             this.patientService = patientService;
             this.drugLookupDelegate = drugLookupDelegate;
             this.medicationStatementDelegate = medicationStatementDelegate;
+            this.autoMapper = autoMapper;
         }
 
         private static ActivitySource Source { get; } = new(nameof(RestMedicationStatementService));
@@ -98,7 +103,7 @@ namespace HealthGateway.Medication.Services
                         {
                             StartDate = patient.Birthdate,
                             EndDate = DateTime.Now,
-                            PHN = patient.PersonalHealthNumber,
+                            Phn = patient.PersonalHealthNumber,
                             PageSize = 20000,
                         };
                         IPAddress? address = this.httpContextAccessor.HttpContext?.Connection.RemoteIpAddress;
@@ -114,7 +119,7 @@ namespace HealthGateway.Medication.Services
                             if (response.ResourcePayload != null && response.ResourcePayload.Results != null)
                             {
                                 result.TotalResultCount = response.ResourcePayload.TotalRecords;
-                                result.ResourcePayload = MedicationStatementHistory.FromODRModelList(response.ResourcePayload.Results.ToList());
+                                result.ResourcePayload = this.autoMapper.Map<IEnumerable<MedicationResult>, IList<MedicationStatementHistory>>(response.ResourcePayload.Results);
                                 this.PopulateMedicationSummary(result.ResourcePayload.Select(r => r.MedicationSummary).ToList());
                             }
                             else
@@ -177,7 +182,7 @@ namespace HealthGateway.Medication.Services
         {
             using (Source.StartActivity())
             {
-                List<string> medicationIdentifiers = medSummaries.Select(s => s.DIN.PadLeft(8, '0')).ToList();
+                List<string> medicationIdentifiers = medSummaries.Select(s => s.Din.PadLeft(8, '0')).ToList();
 
                 this.logger.LogDebug("Getting drugs from DB");
                 this.logger.LogTrace("Identifiers: {MedicationIdentifiers}", string.Join(",", medicationIdentifiers));
@@ -188,24 +193,24 @@ namespace HealthGateway.Medication.Services
                     uniqueDrugIdentifiers.Count);
 
                 // Retrieve the brand names using the Federal data
-                IList<DrugProduct> drugProducts = this.drugLookupDelegate.GetDrugProductsByDIN(uniqueDrugIdentifiers);
+                IList<DrugProduct> drugProducts = this.drugLookupDelegate.GetDrugProductsByDin(uniqueDrugIdentifiers);
                 Dictionary<string, DrugProduct> drugProductsDict = drugProducts.ToDictionary(pcd => pcd.DrugIdentificationNumber, pcd => pcd);
-                Dictionary<string, PharmaCareDrug> provicialDict = new();
+                Dictionary<string, PharmaCareDrug> provincialDict = new();
                 if (uniqueDrugIdentifiers.Count > drugProductsDict.Count)
                 {
                     // Get the DINs not found on the previous query
                     List<string> notFoundDins = uniqueDrugIdentifiers.Where(din => !drugProductsDict.ContainsKey(din)).ToList();
 
                     // Retrieve the brand names using the provincial data
-                    IList<PharmaCareDrug> pharmaCareDrugs = this.drugLookupDelegate.GetPharmaCareDrugsByDIN(notFoundDins);
-                    provicialDict = pharmaCareDrugs.ToDictionary(dp => dp.DINPIN, dp => dp);
+                    IList<PharmaCareDrug> pharmaCareDrugs = this.drugLookupDelegate.GetPharmaCareDrugsByDin(notFoundDins);
+                    provincialDict = pharmaCareDrugs.ToDictionary(dp => dp.DinPin, dp => dp);
                 }
 
                 this.logger.LogDebug("Finished getting drugs from DB");
                 this.logger.LogTrace("Populating medication summary... {Count} records", medSummaries.Count);
                 foreach (MedicationSummary mdSummary in medSummaries)
                 {
-                    string din = mdSummary.DIN.PadLeft(8, '0');
+                    string din = mdSummary.Din.PadLeft(8, '0');
                     if (drugProductsDict.ContainsKey(din))
                     {
                         mdSummary.BrandName = drugProductsDict[din].BrandName;
@@ -214,11 +219,11 @@ namespace HealthGateway.Medication.Services
                         mdSummary.StrengthUnit = drugProductsDict[din].ActiveIngredient?.StrengthUnit ?? string.Empty;
                         mdSummary.Manufacturer = drugProductsDict[din].Company?.CompanyName ?? string.Empty;
                     }
-                    else if (provicialDict.ContainsKey(din))
+                    else if (provincialDict.ContainsKey(din))
                     {
                         mdSummary.IsPin = true;
-                        mdSummary.BrandName = provicialDict[din].BrandName;
-                        mdSummary.Form = provicialDict[din].DosageForm ?? string.Empty;
+                        mdSummary.BrandName = provincialDict[din].BrandName;
+                        mdSummary.Form = provincialDict[din].DosageForm ?? string.Empty;
                     }
                 }
 

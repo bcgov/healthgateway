@@ -21,7 +21,7 @@ namespace HealthGateway.Database.Wrapper
     /// Class that represents the result of a request. Contains members for handling pagination and error resolution.
     /// </summary>
     /// <typeparam name="T">The payload type.</typeparam>
-    public class DBResult<T>
+    public class DbResult<T>
         where T : class?
     {
         /// <summary>
@@ -32,7 +32,7 @@ namespace HealthGateway.Database.Wrapper
         /// <summary>
         /// Gets or sets the Status of the request.
         /// </summary>
-        public DBStatusCode Status { get; set; }
+        public DbStatusCode Status { get; set; }
 
         /// <summary>
         /// Gets or sets the message depending on the result type.

@@ -23,7 +23,6 @@ namespace HealthGateway.Common.AccessManagement.Authentication
     using System.Threading.Tasks;
     using HealthGateway.Common.AccessManagement.Authentication.Models;
     using HealthGateway.Common.CacheProviders;
-    using HealthGateway.Common.Services;
     using Microsoft.AspNetCore.Authentication;
     using Microsoft.AspNetCore.Http;
     using Microsoft.Extensions.Configuration;
@@ -34,46 +33,38 @@ namespace HealthGateway.Common.AccessManagement.Authentication
     /// </summary>
     public class AuthenticationDelegate : IAuthenticationDelegate
     {
-        /// <summary>
-        /// The default configuration section to retrieve auth information from.
-        /// </summary>
-        public const string DefaultAuthConfigSectionName = "ClientAuthentication";
-
         private const string CacheConfigSectionName = "AuthCache";
         private readonly ICacheProvider cacheProvider;
         private readonly IConfiguration configuration;
-        private readonly IHttpClientService httpClientService;
+        private readonly IHttpClientFactory httpClientFactory;
         private readonly IHttpContextAccessor? httpContextAccessor;
 
         private readonly ILogger<IAuthenticationDelegate> logger;
         private readonly int tokenCacheMinutes;
-        private readonly ClientCredentialsTokenRequest tokenRequest;
-        private readonly Uri tokenUri;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="AuthenticationDelegate"/> class.
         /// </summary>
         /// <param name="logger">The injected logger provider.</param>
-        /// <param name="httpClientService">The injected http client service.</param>
+        /// <param name="httpClientFactory">The injected http client factory.</param>
         /// <param name="configuration">The injected configuration provider.</param>
         /// <param name="cacheProvider">The injected cache provider.</param>
         /// <param name="httpContextAccessor">The Http Context accessor.</param>
         public AuthenticationDelegate(
             ILogger<AuthenticationDelegate> logger,
-            IHttpClientService httpClientService,
+            IHttpClientFactory httpClientFactory,
             IConfiguration configuration,
             ICacheProvider cacheProvider,
             IHttpContextAccessor? httpContextAccessor)
         {
             this.logger = logger;
-            this.httpClientService = httpClientService;
+            this.httpClientFactory = httpClientFactory;
             this.configuration = configuration;
             this.cacheProvider = cacheProvider;
             this.httpContextAccessor = httpContextAccessor;
 
-            IConfigurationSection? configSection = configuration.GetSection(CacheConfigSectionName);
-            this.tokenCacheMinutes = configSection?.GetValue("TokenCacheExpireMinutes", 0) ?? 0;
-            (this.tokenUri, this.tokenRequest) = this.GetConfiguration(DefaultAuthConfigSectionName);
+            IConfigurationSection configSection = configuration.GetSection(CacheConfigSectionName);
+            this.tokenCacheMinutes = configSection.GetValue("TokenCacheExpireMinutes", 0);
         }
 
         /// <inheritdoc/>
@@ -92,13 +83,7 @@ namespace HealthGateway.Common.AccessManagement.Authentication
         }
 
         /// <inheritdoc/>
-        public string? AccessTokenAsUser()
-        {
-            return this.AccessTokenAsUser(this.tokenUri, this.tokenRequest);
-        }
-
-        /// <inheritdoc/>
-        public string? AccessTokenAsUser(string sectionName)
+        public string? AccessTokenAsUser(string sectionName = IAuthenticationDelegate.DefaultAuthConfigSectionName)
         {
             (Uri tUri, ClientCredentialsTokenRequest tRequest) = this.GetConfiguration(sectionName);
             return this.AccessTokenAsUser(tUri, tRequest);
@@ -110,7 +95,7 @@ namespace HealthGateway.Common.AccessManagement.Authentication
             string? accessToken = null;
             try
             {
-                accessToken = this.AuthenticateAsUser(tokenUri, tokenRequest, cacheEnabled)?.AccessToken;
+                accessToken = this.AuthenticateAsUser(tokenUri, tokenRequest, cacheEnabled).AccessToken;
             }
             catch (InvalidOperationException e)
             {
@@ -195,8 +180,9 @@ namespace HealthGateway.Common.AccessManagement.Authentication
 
         private (Uri TokenUri, ClientCredentialsTokenRequest TokenRequest) GetConfiguration(string sectionName)
         {
-            IConfigurationSection? configSection = this.configuration.GetSection(sectionName);
-            Uri configUri = configSection.GetValue<Uri>(@"TokenUri");
+            IConfigurationSection configSection = this.configuration.GetSection(sectionName);
+            Uri configUri = configSection.GetValue<Uri>(@"TokenUri") ??
+                            throw new ArgumentNullException(nameof(sectionName), $"{sectionName} does not contain a valid TokenUri");
             ClientCredentialsTokenRequest configTokenRequest = new();
             configSection.Bind(configTokenRequest); // Client ID, Client Secret, Audience, Username, Password
             return (configUri, configTokenRequest);
@@ -207,7 +193,7 @@ namespace HealthGateway.Common.AccessManagement.Authentication
             JwtModel? authModel = null;
             try
             {
-                using HttpClient client = this.httpClientService.CreateDefaultHttpClient();
+                using HttpClient client = this.httpClientFactory.CreateClient();
 
                 IEnumerable<KeyValuePair<string?, string?>> oauthParams = new[]
                 {
@@ -244,7 +230,7 @@ namespace HealthGateway.Common.AccessManagement.Authentication
             JwtModel? authModel = null;
             try
             {
-                using HttpClient client = this.httpClientService.CreateDefaultHttpClient();
+                using HttpClient client = this.httpClientFactory.CreateClient();
 
                 IEnumerable<KeyValuePair<string?, string?>> oauthParams = new[]
                 {

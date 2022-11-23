@@ -101,7 +101,7 @@ namespace HealthGateway.Common.Services
         /// <inheritdoc/>
         public void CloneAndQueue(Guid emailId, bool shouldCommit = true)
         {
-            Email oldEmail = this.emailDelegate.GetEmail(emailId);
+            Email? oldEmail = this.emailDelegate.GetEmail(emailId);
             if (oldEmail != null)
             {
                 Email email = new()
@@ -157,8 +157,8 @@ namespace HealthGateway.Common.Services
             {
                 From = emailTemplate.From,
                 Priority = emailTemplate.Priority,
-                Subject = StringManipulator.Replace(emailTemplate.Subject, keyValues),
-                Body = StringManipulator.Replace(emailTemplate.Body, keyValues),
+                Subject = StringManipulator.Replace(emailTemplate.Subject!, keyValues),
+                Body = StringManipulator.Replace(emailTemplate.Body!, keyValues),
                 FormatCode = emailTemplate.FormatCode,
             };
         }

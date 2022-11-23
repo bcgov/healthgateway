@@ -22,10 +22,9 @@ namespace HealthGateway.Admin
     using HealthGateway.Admin.Delegates;
     using HealthGateway.Admin.Services;
     using HealthGateway.Common.AccessManagement.Authentication;
+    using HealthGateway.Common.AccessManagement.Authorization.Admin;
     using HealthGateway.Common.AspNetConfiguration;
-    using HealthGateway.Common.Authorization.Admin;
     using HealthGateway.Common.Delegates;
-    using HealthGateway.Common.Delegates.PHSA;
     using HealthGateway.Common.MapProfiles;
     using HealthGateway.Common.Models.PHSA;
     using HealthGateway.Common.Services;
@@ -96,10 +95,10 @@ namespace HealthGateway.Admin
             services.AddTransient<IAuthenticationService, AuthenticationService>();
             services.AddTransient<ISupportService, SupportService>();
             services.AddTransient<ICovidSupportService, CovidSupportService>();
-            services.AddTransient<IUserProfileDelegate, DBProfileDelegate>();
+            services.AddTransient<IUserProfileDelegate, DbProfileDelegate>();
 
             // Add delegates
-            services.AddTransient<IMessagingVerificationDelegate, DBMessagingVerificationDelegate>();
+            services.AddTransient<IMessagingVerificationDelegate, DbMessagingVerificationDelegate>();
             services.AddTransient<IImmunizationAdminDelegate, RestImmunizationAdminDelegate>();
             services.AddTransient<IVaccineStatusDelegate, RestVaccineStatusDelegate>();
             services.AddTransient<IVaccineProofDelegate, VaccineProofDelegate>();
@@ -115,7 +114,7 @@ namespace HealthGateway.Admin
             // Add API Clients
             PhsaConfig phsaConfig = new();
             this.startupConfig.Configuration.Bind(PhsaConfigSectionKey, phsaConfig);
-            services.AddRefitClient<IImmunizationAdminClient>()
+            services.AddRefitClient<IImmunizationAdminApi>()
                 .ConfigureHttpClient(c => c.BaseAddress = phsaConfig.BaseUrl);
 
             services.AddAutoMapper(typeof(Startup), typeof(UserProfileProfile), typeof(MessagingVerificationProfile));
@@ -280,7 +279,7 @@ namespace HealthGateway.Admin
             IConfigurationSection section = this.configuration.GetSection("ForwardProxies");
             if (section.GetValue("Enabled", false))
             {
-                basePath = section.GetValue<string>("BasePath");
+                basePath = section.GetValue<string>("BasePath") ?? string.Empty;
             }
 
             this.logger.LogDebug("basePath = {BasePath}", basePath);

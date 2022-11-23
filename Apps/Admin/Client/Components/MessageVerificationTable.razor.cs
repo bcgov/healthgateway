@@ -52,14 +52,14 @@ namespace HealthGateway.Admin.Client.Components
                 this.EmailOrSms = model.VerificationType switch
                 {
                     MessagingVerificationType.Email => model.Email ?? "N/A",
-                    _ => model.SMSNumber ?? "N/A",
+                    _ => model.SmsNumber ?? "N/A",
                 };
                 this.Verified = model.Validated ? "true" : "false";
                 this.VerificationDate = model.UpdatedDateTime;
                 this.VerificationCode = model.VerificationType switch
                 {
                     MessagingVerificationType.Email => "-",
-                    _ => model.SMSValidationCode ?? "-",
+                    _ => model.SmsValidationCode ?? "-",
                 };
             }
 

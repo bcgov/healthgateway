@@ -154,14 +154,14 @@ namespace HealthGateway.ImmunizationTests.Services.Test
         {
             ImmunizationRecommendationResponse immzRecommendationResponse = this.GetImmzRecommendationResponse();
             Mock<IImmunizationDelegate> mockDelegate = new();
-            RequestResult<PhsaResult<ImmunizationResponse>> delegateResult = GetPHSAResult(immzRecommendationResponse);
+            RequestResult<PhsaResult<ImmunizationResponse>> delegateResult = GetPhsaResult(immzRecommendationResponse);
             RequestResult<ImmunizationResult> expectedResult = new()
             {
                 ResultStatus = delegateResult.ResultStatus,
                 ResourcePayload = new ImmunizationResult(
                     this.autoMapper.Map<LoadStateModel>(delegateResult.ResourcePayload?.LoadState),
                     new List<ImmunizationEvent>(),
-                    ImmunizationRecommendationMapUtils.FromPHSAModelList(delegateResult?.ResourcePayload?.Result?.Recommendations, this.autoMapper)),
+                    ImmunizationRecommendationMapUtils.FromPhsaModelList(delegateResult.ResourcePayload?.Result?.Recommendations, this.autoMapper)),
                 PageIndex = delegateResult.PageIndex,
                 PageSize = delegateResult.PageSize,
                 TotalResultCount = delegateResult.TotalResultCount,
@@ -182,13 +182,13 @@ namespace HealthGateway.ImmunizationTests.Services.Test
                 item => Assert.Equal(this.antigenName, item.Name));
             Assert.Equal(this.antigenName, recomendationResult.Immunization.ImmunizationAgents.First().Name);
             Assert.Collection(
-                recomendationResult?.TargetDiseases,
-                item => Assert.Equal(immzRecommendationResponse.Recommendations.First().TargetDisease?.TargetDiseaseCodes?.FirstOrDefault()?.Code, item.Code));
-            Assert.Equal(this.diseaseName, recomendationResult?.TargetDiseases.First().Name);
-            Assert.Equal(DateTime.Parse(this.diseaseEligibleDateString, CultureInfo.CurrentCulture), recomendationResult?.DiseaseEligibleDate);
-            Assert.Null(recomendationResult?.DiseaseDueDate);
-            Assert.Null(recomendationResult?.AgentDueDate);
-            Assert.Null(recomendationResult?.AgentEligibleDate);
+                recomendationResult.TargetDiseases,
+                item => Assert.Equal(immzRecommendationResponse.Recommendations.First().TargetDisease?.TargetDiseaseCodes.FirstOrDefault()?.Code, item.Code));
+            Assert.Equal(this.diseaseName, recomendationResult.TargetDiseases.First().Name);
+            Assert.Equal(DateTime.Parse(this.diseaseEligibleDateString, CultureInfo.CurrentCulture), recomendationResult.DiseaseEligibleDate);
+            Assert.Null(recomendationResult.DiseaseDueDate);
+            Assert.Null(recomendationResult.AgentDueDate);
+            Assert.Null(recomendationResult.AgentEligibleDate);
         }
 
         /// <summary>
@@ -582,7 +582,7 @@ namespace HealthGateway.ImmunizationTests.Services.Test
         }
         */
 
-        private static RequestResult<PhsaResult<ImmunizationResponse>> GetPHSAResult(ImmunizationRecommendationResponse immzRecommendationResponse)
+        private static RequestResult<PhsaResult<ImmunizationResponse>> GetPhsaResult(ImmunizationRecommendationResponse immzRecommendationResponse)
         {
             return new RequestResult<PhsaResult<ImmunizationResponse>>
             {

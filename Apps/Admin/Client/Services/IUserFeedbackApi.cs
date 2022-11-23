@@ -32,7 +32,7 @@ public interface IUserFeedbackApi
     /// </summary>
     /// <returns>The wrapped collection of models.</returns>
     [Get("/")]
-    Task<ApiResponse<RequestResult<IEnumerable<UserFeedbackView>>>> GetAll();
+    Task<RequestResult<IEnumerable<UserFeedbackView>>> GetAllAsync();
 
     /// <summary>
     /// Updates a user feedback.
@@ -40,7 +40,7 @@ public interface IUserFeedbackApi
     /// <param name="userFeedbackView">The model to update.</param>
     /// <returns>The wrapped model.</returns>
     [Patch("/")]
-    Task<ApiResponse<RequestResult<UserFeedbackView>>> Update([Body] UserFeedbackView userFeedbackView);
+    Task<RequestResult<UserFeedbackView>> UpdateAsync([Body] UserFeedbackView userFeedbackView);
 
     /// <summary>
     /// Associate existing admin tags to the feedback with matching id.
@@ -49,5 +49,5 @@ public interface IUserFeedbackApi
     /// <param name="tagIds">The collection of tag IDs.</param>
     /// <param name="feedbackId">The feedback ID.</param>
     [Put("/{feedbackId}/Tag")]
-    Task<ApiResponse<RequestResult<UserFeedbackView>>> AssociateTags([Body] IEnumerable<Guid> tagIds, Guid feedbackId);
+    Task<RequestResult<UserFeedbackView>> AssociateTagsAsync([Body] IEnumerable<Guid> tagIds, Guid feedbackId);
 }

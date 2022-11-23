@@ -17,9 +17,8 @@ namespace HealthGateway.CommonTests.Services
 {
     using System;
     using System.Collections.Generic;
-    using System.Net;
+    using System.Linq;
     using System.Net.Http;
-    using System.Threading.Tasks;
     using HealthGateway.Common.Api;
     using HealthGateway.Common.CacheProviders;
     using HealthGateway.Common.Data.Constants;
@@ -29,7 +28,6 @@ namespace HealthGateway.CommonTests.Services
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.Logging;
     using Moq;
-    using Refit;
     using Xunit;
 
     /// <summary>
@@ -37,7 +35,7 @@ namespace HealthGateway.CommonTests.Services
     /// </summary>
     public class PersonalAccountServiceTests
     {
-        private const string PersonalAccountsErrorMessage = $"Error with HTTP Request for Personal Accounts";
+        private const string PersonalAccountsErrorMessage = "Error with request for Personal Accounts";
 
         /// <summary>
         /// Get Personal Account.
@@ -49,7 +47,7 @@ namespace HealthGateway.CommonTests.Services
             Guid id = Guid.NewGuid();
             PersonalAccount expectedPersonalAccount = GetPatientAccount(id);
 
-            IPersonalAccountsService personalAccountsServiceService = GetPersonalAccountsService(expectedPersonalAccount, null, false, false);
+            IPersonalAccountsService personalAccountsServiceService = GetPersonalAccountsService(expectedPersonalAccount, false, false);
 
             // Act
             RequestResult<PersonalAccount?> actualResult = personalAccountsServiceService.GetPatientAccount(It.IsAny<string>());
@@ -70,7 +68,7 @@ namespace HealthGateway.CommonTests.Services
             Guid id = Guid.NewGuid();
             PersonalAccount expectedPersonalAccount = GetPatientAccount(id);
 
-            IPersonalAccountsService personalAccountsServiceService = GetPersonalAccountsService(expectedPersonalAccount, null, true, false);
+            IPersonalAccountsService personalAccountsServiceService = GetPersonalAccountsService(expectedPersonalAccount, true, false);
 
             // Act
             RequestResult<PersonalAccount?> actualResult = personalAccountsServiceService.GetPatientAccount(It.IsAny<string>());
@@ -79,31 +77,6 @@ namespace HealthGateway.CommonTests.Services
             Assert.Equal(ResultType.Success, actualResult.ResultStatus);
             Assert.NotNull(actualResult.ResourcePayload);
             Assert.Equal(id, actualResult.ResourcePayload?.Id);
-        }
-
-        /// <summary>
-        /// Get Personal Account returns ApiException.
-        /// </summary>
-        [Fact]
-        public void ShouldGetPatientAccountReturnsApiException()
-        {
-            // Arrange
-            Guid id = Guid.NewGuid();
-            PersonalAccount expectedPersonalAccount = GetPatientAccount(id);
-
-            HttpResponseMessage responseMessage = new HttpResponseMessage(HttpStatusCode.NotFound);
-            RefitSettings refitSettings = new RefitSettings();
-            ApiException apiException = ApiException.Create(It.IsAny<HttpRequestMessage>(), It.IsAny<HttpMethod>(), responseMessage, refitSettings, null).Result;
-            responseMessage.Dispose();
-
-            IPersonalAccountsService personalAccountsServiceService = GetPersonalAccountsService(expectedPersonalAccount, apiException, false, false);
-
-            // Act
-            RequestResult<PersonalAccount?> actualResult = personalAccountsServiceService.GetPatientAccount(It.IsAny<string>());
-
-            // Assert
-            Assert.Equal(ResultType.Error, actualResult.ResultStatus);
-            Assert.Null(actualResult.ResourcePayload);
         }
 
         /// <summary>
@@ -116,7 +89,7 @@ namespace HealthGateway.CommonTests.Services
             Guid id = Guid.NewGuid();
             PersonalAccount expectedPersonalAccount = GetPatientAccount(id);
 
-            IPersonalAccountsService personalAccountsServiceService = GetPersonalAccountsService(expectedPersonalAccount, null, false, true);
+            IPersonalAccountsService personalAccountsServiceService = GetPersonalAccountsService(expectedPersonalAccount, false, true);
 
             // Act
             RequestResult<PersonalAccount?> actualResult = personalAccountsServiceService.GetPatientAccount(It.IsAny<string>());
@@ -128,7 +101,7 @@ namespace HealthGateway.CommonTests.Services
 
         private static IConfigurationRoot GetIConfigurationRoot()
         {
-            Dictionary<string, string> configuration = new()
+            Dictionary<string, string?> configuration = new()
             {
                 { "TokenSwap:BaseUrl", "http://localhost" },
                 { "TokenSwap:ClientId", "healthgateway" },
@@ -137,13 +110,13 @@ namespace HealthGateway.CommonTests.Services
             };
 
             return new ConfigurationBuilder()
-                .AddInMemoryCollection(configuration)
+                .AddInMemoryCollection(configuration.ToList())
                 .Build();
         }
 
         private static PersonalAccount GetPatientAccount(Guid id)
         {
-            return new PersonalAccount()
+            return new PersonalAccount
             {
                 Id = id,
                 CreationTimeStampUtc = DateTime.Today,
@@ -151,31 +124,20 @@ namespace HealthGateway.CommonTests.Services
             };
         }
 
-        private static IPersonalAccountsService GetPersonalAccountsService(PersonalAccount content, ApiException? error, bool useCache, bool throwException)
+        private static IPersonalAccountsService GetPersonalAccountsService(PersonalAccount content, bool useCache, bool throwException)
         {
-            HttpResponseMessage responseMessage = new HttpResponseMessage(error == null ? HttpStatusCode.OK : HttpStatusCode.NotFound);
-
-            IApiResponse<PersonalAccount> apiResponse = new ApiResponse<PersonalAccount>(
-                responseMessage,
-                content,
-                It.IsAny<RefitSettings>(),
-                error);
-
             Mock<ICacheProvider> cacheProviderMock = new();
             cacheProviderMock.Setup(p => p.GetItem<PersonalAccount>(It.IsAny<string>())).Returns(useCache ? content : null);
 
             Mock<IPersonalAccountsApi> personalAccountsApiMock = new();
             if (!throwException)
             {
-                personalAccountsApiMock.Setup(p => p.AccountLookupByHdid(It.IsAny<string>())).Returns(Task.FromResult(apiResponse));
+                personalAccountsApiMock.Setup(p => p.AccountLookupByHdidAsync(It.IsAny<string>())).ReturnsAsync(content);
             }
             else
             {
-                personalAccountsApiMock.Setup(p => p.AccountLookupByHdid(It.IsAny<string>())).ThrowsAsync(new HttpRequestException("Unit Test HTTP Request Exception"));
+                personalAccountsApiMock.Setup(p => p.AccountLookupByHdidAsync(It.IsAny<string>())).ThrowsAsync(new HttpRequestException("Unit Test HTTP Request Exception"));
             }
-
-            apiResponse.Dispose();
-            responseMessage.Dispose();
 
             return new PersonalAccountsService(
                 new Mock<ILogger<PersonalAccountsService>>().Object,

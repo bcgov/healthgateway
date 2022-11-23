@@ -26,10 +26,10 @@ namespace HealthGateway.Common.AccessManagement.Administration.Models
     public class UserRepresentation
     {
         /// <summary>
-        /// Gets or sets the user created timestamp.
+        /// Gets or sets the user created timestamp as milliseconds from the Unix Epoch.
         /// </summary>
         [JsonPropertyName("createdTimeStamp")]
-        public DateTime? CreatedTimestamp { get; set; }
+        public long CreatedTimestamp { get; set; }
 
         /// <summary>
         /// Gets or sets the user's email.

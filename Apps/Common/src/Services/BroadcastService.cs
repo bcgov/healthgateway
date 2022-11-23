@@ -15,10 +15,10 @@
 // -------------------------------------------------------------------------
 namespace HealthGateway.Common.Services
 {
+    using System;
     using System.Collections.Generic;
     using System.Diagnostics;
     using System.Linq;
-    using System.Net;
     using System.Net.Http;
     using System.Threading.Tasks;
     using AutoMapper;
@@ -67,31 +67,18 @@ namespace HealthGateway.Common.Services
             try
             {
                 BroadcastRequest broadcastRequest = this.autoMapper.Map<BroadcastRequest>(broadcast);
-                IApiResponse<BroadcastResponse> response = await this.systemBroadcastApi.CreateBroadcast(broadcastRequest).ConfigureAwait(true);
-
-                if (response.StatusCode == HttpStatusCode.OK && response.Error is null && response.Content is not null)
-                {
-                    requestResult.ResultStatus = ResultType.Success;
-                    requestResult.ResourcePayload = this.autoMapper.Map<Broadcast>(response.Content);
-                    requestResult.TotalResultCount = 1;
-                }
-                else
-                {
-                    this.logger.LogError("Broadcast request returned unsuccessful response");
-                    requestResult.ResultError = new()
-                    {
-                        ResultMessage = "An unexpected error occurred while processing external call",
-                        ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.PHSA),
-                    };
-                }
+                BroadcastResponse response = await this.systemBroadcastApi.CreateBroadcastAsync(broadcastRequest).ConfigureAwait(true);
+                requestResult.ResultStatus = ResultType.Success;
+                requestResult.ResourcePayload = this.autoMapper.Map<Broadcast>(response);
+                requestResult.TotalResultCount = 1;
             }
-            catch (HttpRequestException e)
+            catch (Exception e) when (e is ApiException or HttpRequestException)
             {
                 this.logger.LogCritical("HTTP Request Exception {Error}", e.ToString());
                 requestResult.ResultError = new()
                 {
                     ResultMessage = "Error with HTTP Request",
-                    ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.PHSA),
+                    ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.Phsa),
                 };
             }
 
@@ -112,31 +99,18 @@ namespace HealthGateway.Common.Services
 
             try
             {
-                IApiResponse<IEnumerable<BroadcastResponse>> response = await this.systemBroadcastApi.GetBroadcasts().ConfigureAwait(true);
-
-                if (response.StatusCode == HttpStatusCode.OK && response.Error is null && response.Content is not null)
-                {
-                    requestResult.ResultStatus = ResultType.Success;
-                    requestResult.ResourcePayload = this.autoMapper.Map<List<Broadcast>>(response.Content);
-                    requestResult.TotalResultCount = requestResult.ResourcePayload.Count();
-                }
-                else
-                {
-                    this.logger.LogError("Broadcast request returned unsuccessful response");
-                    requestResult.ResultError = new()
-                    {
-                        ResultMessage = "An unexpected error occurred while processing external call",
-                        ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.PHSA),
-                    };
-                }
+                IEnumerable<BroadcastResponse> response = await this.systemBroadcastApi.GetBroadcastsAsync().ConfigureAwait(true);
+                requestResult.ResultStatus = ResultType.Success;
+                requestResult.ResourcePayload = this.autoMapper.Map<List<Broadcast>>(response);
+                requestResult.TotalResultCount = requestResult.ResourcePayload.Count();
             }
-            catch (HttpRequestException e)
+            catch (Exception e) when (e is ApiException or HttpRequestException)
             {
                 this.logger.LogCritical("HTTP Request Exception {Error}", e.ToString());
                 requestResult.ResultError = new()
                 {
                     ResultMessage = "Error with HTTP Request",
-                    ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.PHSA),
+                    ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.Phsa),
                 };
             }
 
@@ -158,31 +132,18 @@ namespace HealthGateway.Common.Services
             try
             {
                 BroadcastRequest broadcastRequest = this.autoMapper.Map<BroadcastRequest>(broadcast);
-                IApiResponse<BroadcastResponse> response = await this.systemBroadcastApi.UpdateBroadcast(broadcast.Id.ToString(), broadcastRequest).ConfigureAwait(true);
-
-                if (response.StatusCode == HttpStatusCode.OK && response.Error is null && response.Content is not null)
-                {
-                    requestResult.ResultStatus = ResultType.Success;
-                    requestResult.ResourcePayload = this.autoMapper.Map<Broadcast>(response.Content);
-                    requestResult.TotalResultCount = 1;
-                }
-                else
-                {
-                    this.logger.LogError("Broadcast request returned unsuccessful response");
-                    requestResult.ResultError = new()
-                    {
-                        ResultMessage = "An unexpected error occurred while processing external call",
-                        ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.PHSA),
-                    };
-                }
+                BroadcastResponse response = await this.systemBroadcastApi.UpdateBroadcastAsync(broadcast.Id.ToString(), broadcastRequest).ConfigureAwait(true);
+                requestResult.ResultStatus = ResultType.Success;
+                requestResult.ResourcePayload = this.autoMapper.Map<Broadcast>(response);
+                requestResult.TotalResultCount = 1;
             }
-            catch (HttpRequestException e)
+            catch (Exception e) when (e is ApiException or HttpRequestException)
             {
                 this.logger.LogCritical("HTTP Request Exception {Error}", e.ToString());
                 requestResult.ResultError = new()
                 {
                     ResultMessage = "Error with HTTP Request",
-                    ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.PHSA),
+                    ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.Phsa),
                 };
             }
 
@@ -203,31 +164,18 @@ namespace HealthGateway.Common.Services
 
             try
             {
-                IApiResponse response = await this.systemBroadcastApi.DeleteBroadcast(broadcast.Id.ToString()).ConfigureAwait(true);
-
-                if (response.StatusCode == HttpStatusCode.OK && response.Error is null)
-                {
-                    requestResult.ResultStatus = ResultType.Success;
-                    requestResult.ResourcePayload = broadcast;
-                    requestResult.TotalResultCount = 1;
-                }
-                else
-                {
-                    this.logger.LogError("Broadcast delete returned unsuccessful response");
-                    requestResult.ResultError = new()
-                    {
-                        ResultMessage = "An unexpected error occurred while processing external call",
-                        ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.PHSA),
-                    };
-                }
+                await this.systemBroadcastApi.DeleteBroadcastAsync(broadcast.Id.ToString()).ConfigureAwait(true);
+                requestResult.ResultStatus = ResultType.Success;
+                requestResult.ResourcePayload = broadcast;
+                requestResult.TotalResultCount = 1;
             }
-            catch (HttpRequestException e)
+            catch (Exception e) when (e is ApiException or HttpRequestException)
             {
                 this.logger.LogCritical("HTTP Request Exception {Error}", e.ToString());
                 requestResult.ResultError = new()
                 {
                     ResultMessage = "Error with HTTP Request",
-                    ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.PHSA),
+                    ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.Phsa),
                 };
             }
 

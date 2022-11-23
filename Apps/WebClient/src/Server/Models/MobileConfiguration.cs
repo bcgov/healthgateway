@@ -13,7 +13,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //-------------------------------------------------------------------------
-namespace HealthGateway.WebClient.Models
+namespace HealthGateway.WebClient.Server.Models
 {
     using System;
 
@@ -33,24 +33,14 @@ namespace HealthGateway.WebClient.Models
         public Uri? BaseUrl { get; set; }
 
         /// <summary>
-        /// Gets or sets the URL for OpenId authentication.
+        /// Gets or sets the Mobile Authentication Configuration.
         /// </summary>
-        public Uri? OpenIdUrl { get; set; }
-
-        /// <summary>
-        /// Gets or sets the client id for OpenId authentication.
-        /// </summary>
-        public string? OpenIdClientId { get; set; }
+        public MobileAuthentication? Authentication { get; set; }
 
         /// <summary>
         /// Gets or sets the mobile version.
         /// The use of this version is to trigger forced updates in the future.
         /// </summary>
         public int Version { get; set; }
-
-        /// <summary>
-        /// Gets or sets a value indicating whether the mobile app should force an upgrade.
-        /// </summary>
-        public bool ForceUpdate { get; set; }
     }
 }

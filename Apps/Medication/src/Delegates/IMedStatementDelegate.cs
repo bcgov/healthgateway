@@ -44,7 +44,7 @@ namespace HealthGateway.Medication.Delegates
         /// <param name="hdid">The HDID of the user querying.</param>
         /// <param name="ipAddress">The IP of the user querying.</param>
         /// <returns>True if the protective word was updated.</returns>
-        Task<bool> SetProtectiveWord(string phn, string newProtectiveWord, string protectiveWord, string hdid, string ipAddress);
+        Task<bool> SetProtectiveWordAsync(string phn, string newProtectiveWord, string protectiveWord, string hdid, string ipAddress);
 
         /// <summary>
         /// Deletes the protective word from the user.
@@ -54,7 +54,7 @@ namespace HealthGateway.Medication.Delegates
         /// <param name="hdid">The HDID of the user querying.</param>
         /// <param name="ipAddress">The IP of the user querying.</param>
         /// <returns>True if the protective word was removed.</returns>
-        Task<bool> DeleteProtectiveWord(string phn, string protectiveWord, string hdid, string ipAddress);
+        Task<bool> DeleteProtectiveWordAsync(string phn, string protectiveWord, string hdid, string ipAddress);
 
         /// <summary>
         /// Validates the protective word.
@@ -64,6 +64,6 @@ namespace HealthGateway.Medication.Delegates
         /// <param name="hdid">The HDID of the user querying.</param>
         /// <param name="ipAddress">The IP of the user querying.</param>
         /// <returns>returns true if the supplied protectiveword.</returns>
-        bool ValidateProtectiveWord(string phn, string protectiveWord, string hdid, string ipAddress);
+        Task<bool> ValidateProtectiveWordAsync(string phn, string protectiveWord, string hdid, string ipAddress);
     }
 }

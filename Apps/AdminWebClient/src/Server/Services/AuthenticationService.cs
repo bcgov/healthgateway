@@ -26,6 +26,7 @@ namespace HealthGateway.Admin.Services
     using HealthGateway.Common.Utils;
     using HealthGateway.Database.Constants;
     using HealthGateway.Database.Delegates;
+    using HealthGateway.Database.Models;
     using HealthGateway.Database.Wrapper;
     using Microsoft.AspNetCore.Authentication;
     using Microsoft.AspNetCore.Authentication.Cookies;
@@ -34,7 +35,6 @@ namespace HealthGateway.Admin.Services
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.Logging;
-    using UserProfile = HealthGateway.Admin.Models.UserProfile;
 
 #pragma warning disable CA1303 // disable literal strings check
 
@@ -59,7 +59,7 @@ namespace HealthGateway.Admin.Services
         {
             this.logger = logger;
             this.httpContextAccessor = httpContextAccessor;
-            this.enabledRoles = configuration.GetSection("EnabledRoles").Get<string[]>();
+            this.enabledRoles = configuration.GetSection("EnabledRoles").Get<string[]>() ?? Array.Empty<string>();
             this.profileDelegate = profileDelegate;
         }
 
@@ -69,7 +69,7 @@ namespace HealthGateway.Admin.Services
         /// <returns>The AuthData containing the token and user information.</returns>
         public AuthenticationData GetAuthenticationData()
         {
-            AuthenticationData authData = new AuthenticationData();
+            AuthenticationData authData = new();
             ClaimsPrincipal? user = this.httpContextAccessor.HttpContext?.User;
             authData.IsAuthenticated = user?.Identity?.IsAuthenticated ?? false;
             if (authData.IsAuthenticated && user != null)
@@ -77,7 +77,7 @@ namespace HealthGateway.Admin.Services
                 this.logger.LogDebug("Getting Authentication data");
                 authData.User = new UserProfile
                 {
-                    Id = user.FindFirstValue("preferred_username"),
+                    Id = user.FindFirstValue("preferred_username") ?? string.Empty,
                     Name = user.FindFirstValue("name"),
                     Email = user.FindFirstValue(ClaimTypes.Email),
                 };
@@ -110,7 +110,7 @@ namespace HealthGateway.Admin.Services
             this.logger.LogDebug("Getting Authentication properties with redirectPath={RedirectPath}", redirectPath);
             Contract.Requires(redirectPath != null);
 
-            AuthenticationProperties authProps = new AuthenticationProperties()
+            AuthenticationProperties authProps = new()
             {
                 RedirectUri = redirectPath,
             };
@@ -118,7 +118,7 @@ namespace HealthGateway.Admin.Services
             return authProps;
         }
 
-        /// <inheritdoc />
+        /// <inheritdoc/>
         public void SetLastLoginDateTime()
         {
             ClaimsPrincipal? user = this.httpContextAccessor.HttpContext?.User;
@@ -127,18 +127,18 @@ namespace HealthGateway.Admin.Services
             {
                 DateTime jwtAuthTime = ClaimsPrincipalReader.GetAuthDateTime(user);
 
-                DBResult<Database.Models.AdminUserProfile> result = this.profileDelegate.GetAdminUserProfile(username: authData.User.Id);
-                if (result.Status == DBStatusCode.NotFound)
+                DbResult<AdminUserProfile> result = this.profileDelegate.GetAdminUserProfile(username: authData.User.Id);
+                if (result.Status == DbStatusCode.NotFound)
                 {
                     // Create profile
-                    Database.Models.AdminUserProfile newProfile = new()
+                    AdminUserProfile newProfile = new()
                     {
                         // Keycloak always creates username in lowercase
                         Username = authData.User.Id,
                         LastLoginDateTime = jwtAuthTime,
                     };
-                    DBResult<Database.Models.AdminUserProfile> insertResult = this.profileDelegate.Add(newProfile);
-                    if (insertResult.Status == DBStatusCode.Error)
+                    DbResult<AdminUserProfile> insertResult = this.profileDelegate.Add(newProfile);
+                    if (insertResult.Status == DbStatusCode.Error)
                     {
                         this.logger.LogError("Unable to add admin user profile to DB.... {Result}", JsonSerializer.Serialize(insertResult));
                     }
@@ -147,8 +147,8 @@ namespace HealthGateway.Admin.Services
                 {
                     // Update profile
                     result.Payload.LastLoginDateTime = jwtAuthTime;
-                    DBResult<Database.Models.AdminUserProfile> updateResult = this.profileDelegate.Update(result.Payload);
-                    if (updateResult.Status == DBStatusCode.Error)
+                    DbResult<AdminUserProfile> updateResult = this.profileDelegate.Update(result.Payload);
+                    if (updateResult.Status == DbStatusCode.Error)
                     {
                         this.logger.LogError("Unable to update admin user profile to DB... {Result}", JsonSerializer.Serialize(updateResult));
                     }

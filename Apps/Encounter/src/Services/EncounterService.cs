@@ -23,7 +23,7 @@ namespace HealthGateway.Encounter.Services
     using System.Threading.Tasks;
     using AutoMapper;
     using HealthGateway.Common.Data.Constants;
-    using HealthGateway.Common.Data.Models.ErrorHandling;
+    using HealthGateway.Common.Data.ErrorHandling;
     using HealthGateway.Common.Data.ViewModels;
     using HealthGateway.Common.ErrorHandling;
     using HealthGateway.Common.Models;
@@ -99,12 +99,12 @@ namespace HealthGateway.Encounter.Services
                     {
                         StartDate = patient.Birthdate,
                         EndDate = DateTime.Now,
-                        PHN = patient.PersonalHealthNumber,
+                        Phn = patient.PersonalHealthNumber,
                         PageSize = 20000,
                     };
                     IPAddress address = this.httpContextAccessor.HttpContext!.Connection.RemoteIpAddress!;
                     string ipv4Address = address.MapToIPv4().ToString();
-                    RequestResult<MspVisitHistoryResponse> response = await this.mspVisitDelegate.GetMSPVisitHistoryAsync(mspHistoryQuery, hdid, ipv4Address).ConfigureAwait(true);
+                    RequestResult<MspVisitHistoryResponse> response = await this.mspVisitDelegate.GetMspVisitHistoryAsync(mspHistoryQuery, hdid, ipv4Address).ConfigureAwait(true);
                     result.ResultStatus = response.ResultStatus;
                     result.ResultError = response.ResultError;
                     if (response.ResultStatus == ResultType.Success)
@@ -114,7 +114,9 @@ namespace HealthGateway.Encounter.Services
                         if (response.ResourcePayload != null && response.ResourcePayload.Claims != null)
                         {
                             result.TotalResultCount = response.ResourcePayload.TotalRecords;
-                            result.ResourcePayload = EncounterModel.FromODRClaimModelList(response.ResourcePayload.Claims.ToList());
+                            result.ResourcePayload = this.autoMapper.Map<IEnumerable<Claim>, IEnumerable<EncounterModel>>(response.ResourcePayload.Claims)
+                                .GroupBy(e => e.Id)
+                                .Select(g => g.First());
                         }
                         else
                         {
@@ -144,7 +146,7 @@ namespace HealthGateway.Encounter.Services
                     TotalResultCount = 0,
                 };
 
-                RequestResult<PhsaResult<IEnumerable<HospitalVisit>>> hospitalVisitResult = await this.hospitalVisitDelegate.GetHospitalVisits(hdid).ConfigureAwait(true);
+                RequestResult<PhsaResult<IEnumerable<HospitalVisit>>> hospitalVisitResult = await this.hospitalVisitDelegate.GetHospitalVisitsAsync(hdid).ConfigureAwait(true);
 
                 if (hospitalVisitResult.ResultStatus == ResultType.Success && hospitalVisitResult.ResourcePayload != null)
                 {

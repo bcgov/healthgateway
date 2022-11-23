@@ -24,6 +24,7 @@ namespace HealthGateway.EncounterTests.Delegates
     using HealthGateway.Common.Data.Constants;
     using HealthGateway.Common.Data.ViewModels;
     using HealthGateway.Common.Models.PHSA;
+    using HealthGateway.Common.Utils;
     using HealthGateway.Encounter.Api;
     using HealthGateway.Encounter.Delegates;
     using HealthGateway.Encounter.Models.PHSA;
@@ -40,36 +41,7 @@ namespace HealthGateway.EncounterTests.Delegates
     {
         private const string AccessToken = "access_token";
         private const string ConfigFetchSize = "25";
-        private const string ForbiddenResultMessage = "DID Claim is missing or can not resolve PHN, HTTP Error Forbidden";
-        private const string InternalServerErrorMessage = "Unable to connect to Hospital Visits Endpoint, HTTP Error InternalServerError";
-        private const string HttpExceptionMessage = "Error with HTTP Request";
-
-        /// <summary>
-        /// Tests various http status codes on Hospital Visit Response.
-        /// </summary>
-        /// <param name="httpStatusCode">The http status code to return from the mock.</param>
-        /// <param name="resultStatus">The result code to return from the mock.</param>
-        /// <param name="resultMessage">The result message from the mock.</param>
-        [Theory]
-        [InlineData(HttpStatusCode.OK, ResultType.Success, null)]
-        [InlineData(HttpStatusCode.NoContent, ResultType.Success, null)]
-        [InlineData(HttpStatusCode.Forbidden, ResultType.Error, ForbiddenResultMessage)]
-        [InlineData(HttpStatusCode.InternalServerError, ResultType.Error, InternalServerErrorMessage)]
-        public void ShouldGetHospitalVisitsResponses(HttpStatusCode httpStatusCode, ResultType resultStatus, string resultMessage)
-        {
-            // Arrange
-            PhsaResult<IEnumerable<HospitalVisit>> expectedResult = new()
-            {
-                Result = new List<HospitalVisit>(),
-            };
-
-            // Act
-            RequestResult<PhsaResult<IEnumerable<HospitalVisit>>> actualResult = GetHospitalVisitDelegate(expectedResult, httpStatusCode, false).GetHospitalVisits(It.IsAny<string>()).Result;
-
-            // Assert
-            Assert.True(actualResult.ResultStatus == resultStatus);
-            Assert.Equal(actualResult?.ResultError?.ResultMessage, resultMessage);
-        }
+        private const string ExpectedExceptionMessage = "Error while retrieving Hospital Visits";
 
         /// <summary>
         /// GetHospitalVisits - api returns one row.
@@ -97,120 +69,94 @@ namespace HealthGateway.EncounterTests.Delegates
                 },
             };
 
-            // Act
-            RequestResult<PhsaResult<IEnumerable<HospitalVisit>>> actualResult = GetHospitalVisitDelegate(phsaResponse, HttpStatusCode.OK, false).GetHospitalVisits(It.IsAny<string>()).Result;
-
-            // Assert
-            Assert.Equal(ResultType.Success, actualResult.ResultStatus);
-            Assert.NotNull(actualResult.ResourcePayload);
-            Assert.True(actualResult.ResourcePayload.Result.Count() == 2);
-            Assert.True(actualResult.TotalResultCount == 2);
-            Assert.True(actualResult.PageSize == int.Parse(ConfigFetchSize, CultureInfo.InvariantCulture));
-        }
-
-        /// <summary>
-        /// GetHospitalVisits - api returns no rows.
-        /// </summary>
-        [Fact]
-        public void GetHospitalVisitsShouldReturnNoRows()
-        {
-            // Arrange
-            PhsaResult<IEnumerable<HospitalVisit>> phsaResponse = new()
-            {
-                Result = new List<HospitalVisit>(),
-            };
-
-            // Act
-            RequestResult<PhsaResult<IEnumerable<HospitalVisit>>> actualResult = GetHospitalVisitDelegate(phsaResponse, HttpStatusCode.OK, false).GetHospitalVisits(It.IsAny<string>()).Result;
-
-            // Assert
-            Assert.Equal(ResultType.Success, actualResult.ResultStatus);
-            Assert.NotNull(actualResult.ResourcePayload);
-            Assert.Empty(actualResult.ResourcePayload.Result);
-            Assert.True(actualResult.TotalResultCount == 0);
-            Assert.True(actualResult.PageSize == int.Parse(ConfigFetchSize, CultureInfo.InvariantCulture));
-        }
-
-        /// <summary>
-        /// GetHospitalVisits - api returns no content error.
-        /// </summary>
-        [Fact]
-        public void GetHospitalVisitsShouldReturnNoContentError()
-        {
-            // Arrange
-            PhsaResult<IEnumerable<HospitalVisit>> phsaResponse = new()
-            {
-                Result = new List<HospitalVisit>(),
-            };
-
-            // Act
-            RequestResult<PhsaResult<IEnumerable<HospitalVisit>>> actualResult = GetHospitalVisitDelegate(phsaResponse, HttpStatusCode.NoContent, false).GetHospitalVisits(It.IsAny<string>()).Result;
-
-            // Assert
-            Assert.Equal(ResultType.Success, actualResult.ResultStatus);
-            Assert.NotNull(actualResult.ResourcePayload);
-            Assert.Empty(actualResult.ResourcePayload.Result);
-            Assert.True(actualResult.TotalResultCount == 0);
-            Assert.True(actualResult.PageSize == int.Parse(ConfigFetchSize, CultureInfo.InvariantCulture));
-        }
-
-        /// <summary>
-        /// GetHospitalVisits - api throws Exception.
-        /// </summary>
-        [Fact]
-        public void GetImmunizationShouldThrowException()
-        {
-            // Arrange and Act
-            RequestResult<PhsaResult<IEnumerable<HospitalVisit>>> actualResult = GetHospitalVisitDelegate(null, null, true).GetHospitalVisits(It.IsAny<string>()).Result;
-
-            // Assert
-            Assert.Equal(ResultType.Error, actualResult.ResultStatus);
-            Assert.Equal(HttpExceptionMessage, actualResult.ResultError?.ResultMessage);
-            Assert.True(actualResult.TotalResultCount == 0);
-            Assert.True(actualResult.PageSize == int.Parse(ConfigFetchSize, CultureInfo.InvariantCulture));
-        }
-
-        private static IHospitalVisitDelegate GetHospitalVisitDelegate(PhsaResult<IEnumerable<HospitalVisit>>? response, HttpStatusCode? statusCode, bool throwException)
-        {
             Mock<IAuthenticationDelegate> mockAuthDelegate = new();
             mockAuthDelegate.Setup(s => s.FetchAuthenticatedUserToken()).Returns(AccessToken);
-
             Mock<IHospitalVisitApi> mockHospitalVisitApi = new();
-            if (!throwException)
-            {
-                Mock<IApiResponse<PhsaResult<IEnumerable<HospitalVisit>>>> mockApiResponse = new();
-                mockApiResponse.Setup(s => s.Content).Returns(response);
-                mockApiResponse.Setup(s => s.StatusCode).Returns(statusCode ?? HttpStatusCode.OK);
-
-                mockHospitalVisitApi.Setup(s => s.GetHospitalVisits(It.IsAny<Dictionary<string, string?>>(), AccessToken))
-                    .ReturnsAsync(mockApiResponse.Object);
-            }
-            else
-            {
-                mockHospitalVisitApi.Setup(
-                        s =>
-                            s.GetHospitalVisits(It.IsAny<Dictionary<string, string?>>(), AccessToken))
-                    .ThrowsAsync(new HttpRequestException(string.Empty));
-            }
-
+            mockHospitalVisitApi.Setup(s => s.GetHospitalVisitsAsync(It.IsAny<Dictionary<string, string?>>(), AccessToken)).ReturnsAsync(phsaResponse);
             IHospitalVisitDelegate hospitalVisitDelegate = new RestHospitalVisitDelegate(
                 mockAuthDelegate.Object,
                 mockHospitalVisitApi.Object,
                 new Mock<ILogger<RestHospitalVisitDelegate>>().Object,
                 GetIConfigurationRoot());
 
-            return hospitalVisitDelegate;
+            // Act
+            RequestResult<PhsaResult<IEnumerable<HospitalVisit>>> actualResult = hospitalVisitDelegate.GetHospitalVisitsAsync(It.IsAny<string>()).Result;
+
+            // Assert
+            Assert.Equal(ResultType.Success, actualResult.ResultStatus);
+            Assert.NotNull(actualResult.ResourcePayload);
+            Assert.Equal(2, actualResult.ResourcePayload.Result.Count());
+            Assert.Equal(2, actualResult.TotalResultCount);
+            Assert.Equal(int.Parse(ConfigFetchSize, CultureInfo.InvariantCulture), actualResult.PageSize);
+        }
+
+        /// <summary>
+        /// GetHospitalVisits - api throws Http Request Exception.
+        /// </summary>
+        [Fact]
+        public void GetHospitalVisitShouldHandleApiException()
+        {
+            // Arrange
+            ApiException mockException = MockRefitException.CreateApiException(HttpStatusCode.Unauthorized, HttpMethod.Post);
+
+            Mock<IAuthenticationDelegate> mockAuthDelegate = new();
+            mockAuthDelegate.Setup(s => s.FetchAuthenticatedUserToken()).Returns(AccessToken);
+            Mock<IHospitalVisitApi> mockHospitalVisitApi = new();
+            mockHospitalVisitApi.Setup(s => s.GetHospitalVisitsAsync(It.IsAny<Dictionary<string, string?>>(), AccessToken)).ThrowsAsync(mockException);
+            IHospitalVisitDelegate hospitalVisitDelegate = new RestHospitalVisitDelegate(
+                mockAuthDelegate.Object,
+                mockHospitalVisitApi.Object,
+                new Mock<ILogger<RestHospitalVisitDelegate>>().Object,
+                GetIConfigurationRoot());
+
+            // Act
+            RequestResult<PhsaResult<IEnumerable<HospitalVisit>>> actualResult = hospitalVisitDelegate.GetHospitalVisitsAsync(It.IsAny<string>()).Result;
+
+            // Assert
+            Assert.Equal(ResultType.Error, actualResult.ResultStatus);
+            Assert.Equal(ExpectedExceptionMessage, actualResult.ResultError?.ResultMessage);
+            Assert.Equal(0, actualResult.TotalResultCount);
+            Assert.Equal(int.Parse(ConfigFetchSize, CultureInfo.InvariantCulture), actualResult.PageSize);
+        }
+
+        /// <summary>
+        /// GetHospitalVisits - api throws Http Request Exception.
+        /// </summary>
+        [Fact]
+        public void GetHospitalVisitShouldHandleHttpRequestException()
+        {
+            // Arrange
+            HttpRequestException mockException = MockRefitException.CreateHttpRequestException("Internal Server Error", HttpStatusCode.InternalServerError);
+
+            Mock<IAuthenticationDelegate> mockAuthDelegate = new();
+            mockAuthDelegate.Setup(s => s.FetchAuthenticatedUserToken()).Returns(AccessToken);
+            Mock<IHospitalVisitApi> mockHospitalVisitApi = new();
+            mockHospitalVisitApi.Setup(s => s.GetHospitalVisitsAsync(It.IsAny<Dictionary<string, string?>>(), AccessToken)).ThrowsAsync(mockException);
+            IHospitalVisitDelegate hospitalVisitDelegate = new RestHospitalVisitDelegate(
+                mockAuthDelegate.Object,
+                mockHospitalVisitApi.Object,
+                new Mock<ILogger<RestHospitalVisitDelegate>>().Object,
+                GetIConfigurationRoot());
+
+            // Act
+            RequestResult<PhsaResult<IEnumerable<HospitalVisit>>> actualResult = hospitalVisitDelegate.GetHospitalVisitsAsync(It.IsAny<string>()).Result;
+
+            // Assert
+            Assert.Equal(ResultType.Error, actualResult.ResultStatus);
+            Assert.Equal(ExpectedExceptionMessage, actualResult.ResultError?.ResultMessage);
+            Assert.Equal(0, actualResult.TotalResultCount);
+            Assert.Equal(int.Parse(ConfigFetchSize, CultureInfo.InvariantCulture), actualResult.PageSize);
         }
 
         private static IConfigurationRoot GetIConfigurationRoot()
         {
-            Dictionary<string, string> configuration = new()
+            Dictionary<string, string?> configuration = new()
             {
                 { "PHSA:FetchSize", ConfigFetchSize },
             };
 
             return new ConfigurationBuilder()
-                .AddInMemoryCollection(configuration)
+                .AddInMemoryCollection(configuration.ToList())
                 .Build();
         }
     }

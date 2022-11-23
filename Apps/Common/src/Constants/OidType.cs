@@ -36,12 +36,12 @@ namespace HealthGateway.Common.Constants
         /// <summary>
         /// Gets an OID representing hdid.
         /// </summary>
-        public static OidType HDID => new("2.16.840.1.113883.3.51.1.1.6");
+        public static OidType Hdid => new("2.16.840.1.113883.3.51.1.1.6");
 
         /// <summary>
         /// Gets an OID representing hdid.
         /// </summary>
-        public static OidType PHN => new("2.16.840.1.113883.3.51.1.1.6.1");
+        public static OidType Phn => new("2.16.840.1.113883.3.51.1.1.6.1");
 
         /// <summary>
         /// Determines whether two specified types have the same value.

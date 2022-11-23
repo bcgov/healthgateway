@@ -54,8 +54,8 @@ namespace HealthGateway.Common.AccessManagement.Authorization.Handlers
         /// <returns>The Authorization Result.</returns>
         public Task HandleAsync(AuthorizationHandlerContext context)
         {
-            string? resourceHDID = this.httpContextAccessor.HttpContext?.Request.RouteValues[RouteResourceIdentifier] as string;
-            foreach (UserRequirement requirement in context.PendingRequirements.OfType<UserRequirement>().Where(requirement => this.Authorize(context, resourceHDID, requirement)))
+            string? resourceHdid = this.httpContextAccessor.HttpContext?.Request.RouteValues[RouteResourceIdentifier] as string;
+            foreach (UserRequirement requirement in context.PendingRequirements.OfType<UserRequirement>().Where(requirement => this.Authorize(context, resourceHdid, requirement)))
             {
                 context.Succeed(requirement);
             }
@@ -67,30 +67,30 @@ namespace HealthGateway.Common.AccessManagement.Authorization.Handlers
         /// Check if the authenticated user has an HDID and optionally the owner of the User resource being accessed.
         /// </summary>
         /// <param name="context">The authorization handler context.</param>
-        /// <param name="resourceHDID">The health data resource subject identifier.</param>
+        /// <param name="resourceHdid">The health data resource subject identifier.</param>
         /// <param name="requirement">The requirement to validate.</param>
-        private bool Authorize(AuthorizationHandlerContext context, string? resourceHDID, UserRequirement requirement)
+        private bool Authorize(AuthorizationHandlerContext context, string? resourceHdid, UserRequirement requirement)
         {
             bool retVal = false;
             ClaimsPrincipal user = context.User;
-            string? userHDID = user.FindFirst(c => c.Type == GatewayClaims.HDID)?.Value;
-            if (userHDID != null)
+            string? userHdid = user.FindFirst(c => c.Type == GatewayClaims.Hdid)?.Value;
+            if (userHdid != null)
             {
                 if (requirement.ValidateOwnership)
                 {
-                    retVal = userHDID == resourceHDID;
-                    string message = $"{userHDID} is {(!retVal ? "not " : string.Empty)}the resource owner";
+                    retVal = userHdid == resourceHdid;
+                    string message = $"{userHdid} is {(!retVal ? "not " : string.Empty)}the resource owner";
                     this.logger.LogInformation("{Message}", message);
                 }
                 else
                 {
                     retVal = true;
-                    this.logger.LogInformation("User has claim {GatewayClaimsHdid} and has been authorized", GatewayClaims.HDID);
+                    this.logger.LogInformation("User has claim {GatewayClaimsHdid} and has been authorized", GatewayClaims.Hdid);
                 }
             }
             else
             {
-                this.logger.LogDebug("Unable to validate resource owner for {ResourceHdid} as no HDID claims present", resourceHDID);
+                this.logger.LogDebug("Unable to validate resource owner for {ResourceHdid} as no HDID claims present", resourceHdid);
             }
 
             return retVal;

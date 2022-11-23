@@ -19,7 +19,6 @@ namespace HealthGateway.Common.Auditing
     using System.Diagnostics;
     using System.Diagnostics.CodeAnalysis;
     using System.Text.Json;
-    using HealthGateway.Database.Delegates;
     using HealthGateway.Database.Models;
     using Microsoft.Extensions.Logging;
     using StackExchange.Redis;
@@ -44,16 +43,16 @@ namespace HealthGateway.Common.Auditing
         /// The queue name to use to store audit records while being written to the db.
         /// </summary>
         public const string ProcessingQueueName = "Processing";
-
-        private readonly ILogger<DbAuditLogger> logger;
         private readonly IConnectionMultiplexer connectionMultiplexer;
+
+        private readonly ILogger<RedisAuditLogger> logger;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="RedisAuditLogger"/> class.
         /// </summary>
         /// <param name="logger">The logger.</param>
         /// <param name="connectionMultiplexer">The injected connection multiplexer.</param>
-        public RedisAuditLogger(ILogger<DbAuditLogger> logger, IConnectionMultiplexer connectionMultiplexer)
+        public RedisAuditLogger(ILogger<RedisAuditLogger> logger, IConnectionMultiplexer connectionMultiplexer)
         {
             this.logger = logger;
             this.connectionMultiplexer = connectionMultiplexer;

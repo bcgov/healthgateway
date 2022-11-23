@@ -77,11 +77,11 @@ namespace HealthGateway.Common.Models
         {
             Dictionary<string, string> keyValues = new()
             {
-                { "HOST", this.Host },
-                { "ENV", this.JobEnvironment },
-                { "TOKEN", this.Token },
+                ["HOST"] = this.Host,
+                ["ENV"] = this.JobEnvironment,
+                ["TOKEN"] = this.Token,
             };
-            return StringManipulator.Replace(this.Endpoint, keyValues)!;
+            return StringManipulator.Replace(this.Endpoint, keyValues);
         }
     }
 }

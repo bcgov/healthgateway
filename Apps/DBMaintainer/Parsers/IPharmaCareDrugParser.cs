@@ -13,7 +13,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //-------------------------------------------------------------------------
-namespace HealthGateway.DrugMaintainer
+namespace HealthGateway.DBMaintainer.Parsers
 {
     using System.Collections.Generic;
     using HealthGateway.Database.Models;

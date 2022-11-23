@@ -24,7 +24,7 @@ namespace HealthGateway.Medication.Models.ODR
     public class MedicationResult
     {
         /// <summary>
-        /// Gets or sets the unique identifer for this record.
+        /// Gets or sets the unique identifier for this record.
         /// </summary>
         [JsonPropertyName("recordId")]
         public long Id { get; set; }
@@ -51,7 +51,7 @@ namespace HealthGateway.Medication.Models.ODR
         /// Gets or sets the DIN/PIN of the prescription.
         /// </summary>
         [JsonPropertyName("dinpin")]
-        public string DIN { get; set; } = string.Empty;
+        public string Din { get; set; } = string.Empty;
 
         /// <summary>
         /// Gets or sets the Generic name for the prescription.
@@ -78,10 +78,10 @@ namespace HealthGateway.Medication.Models.ODR
         public string Directions { get; set; } = string.Empty;
 
         /// <summary>
-        /// Gets or sets the Practioners name.
+        /// Gets or sets the Practitioner's name.
         /// </summary>
         [JsonPropertyName("practitioner")]
-        public Name? Practioner { get; set; }
+        public Name? Practitioner { get; set; }
 
         /// <summary>
         /// Gets or sets the Dispensing Pharmacy of the prescription.

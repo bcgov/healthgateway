@@ -26,6 +26,11 @@ namespace HealthGateway.Common.AccessManagement.Authentication
     public interface IAuthenticationDelegate
     {
         /// <summary>
+        /// The default configuration section to retrieve auth information from.
+        /// </summary>
+        public const string DefaultAuthConfigSectionName = "ClientAuthentication";
+
+        /// <summary>
         /// Authenticates as a 'system admin account' concept, using OAuth 2.0 Client Credentials Grant.
         /// </summary>
         /// <param name="tokenUri">Uri to request the the token from.</param>
@@ -34,17 +39,11 @@ namespace HealthGateway.Common.AccessManagement.Authentication
         JwtModel AuthenticateAsSystem(Uri tokenUri, ClientCredentialsTokenRequest tokenRequest);
 
         /// <summary>
-        /// Authenticates a resource owner user with direct grant from the default configuration section.
-        /// </summary>
-        /// <returns>The access token for the user information provided in configuration.</returns>
-        string? AccessTokenAsUser();
-
-        /// <summary>
         /// Authenticates a resource owner user with direct grant from a defined configuration section.
         /// </summary>
         /// <param name="sectionName">The configuration section used to lookup values.</param>
         /// <returns>The access token for the user information provided in configuration.</returns>
-        string? AccessTokenAsUser(string sectionName);
+        string? AccessTokenAsUser(string sectionName = DefaultAuthConfigSectionName);
 
         /// <summary>
         /// Authenticates a resource owner user with direct grant, no user intervention.

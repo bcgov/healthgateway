@@ -63,7 +63,7 @@ namespace HealthGateway.GatewayApi.Services
         private readonly IUserPreferenceDelegate userPreferenceDelegate;
         private readonly IUserProfileDelegate userProfileDelegate;
         private readonly int userProfileHistoryRecordLimit;
-        private readonly IUserSMSService userSMSService;
+        private readonly IUserSmsService userSmsService;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="UserProfileService"/> class.
@@ -71,7 +71,7 @@ namespace HealthGateway.GatewayApi.Services
         /// <param name="logger">Injected Logger Provider.</param>
         /// <param name="patientService">The patient service.</param>
         /// <param name="userEmailService">The User Email service.</param>
-        /// <param name="userSMSService">The User SMS service.</param>
+        /// <param name="userSmsService">The User SMS service.</param>
         /// <param name="emailQueueService">The email service to queue emails.</param>
         /// <param name="notificationSettingsService">The Notifications Settings service.</param>
         /// <param name="userProfileDelegate">The profile delegate to interact with the DB.</param>
@@ -86,7 +86,7 @@ namespace HealthGateway.GatewayApi.Services
             ILogger<UserProfileService> logger,
             IPatientService patientService,
             IUserEmailService userEmailService,
-            IUserSMSService userSMSService,
+            IUserSmsService userSmsService,
             IEmailQueueService emailQueueService,
             INotificationSettingsService notificationSettingsService,
             IUserProfileDelegate userProfileDelegate,
@@ -101,7 +101,7 @@ namespace HealthGateway.GatewayApi.Services
             this.logger = logger;
             this.patientService = patientService;
             this.userEmailService = userEmailService;
-            this.userSMSService = userSMSService;
+            this.userSmsService = userSmsService;
             this.emailQueueService = emailQueueService;
             this.notificationSettingsService = notificationSettingsService;
             this.userProfileDelegate = userProfileDelegate;
@@ -113,7 +113,7 @@ namespace HealthGateway.GatewayApi.Services
             this.userProfileHistoryRecordLimit = configuration.GetSection(WebClientConfigSection)
                 .GetValue(UserProfileHistoryRecordLimitKey, 4);
             this.registrationStatus = configuration.GetSection(WebClientConfigSection)
-                .GetValue(RegistrationStatusKey, RegistrationStatus.Open);
+                .GetValue<string>(RegistrationStatusKey) ?? RegistrationStatus.Open;
             this.minPatientAge = configuration.GetSection(WebClientConfigSection).GetValue(MinPatientAgeKey, 12);
             this.autoMapper = autoMapper;
         }
@@ -122,10 +122,10 @@ namespace HealthGateway.GatewayApi.Services
         public async Task<RequestResult<UserProfileModel>> GetUserProfile(string hdid, DateTime jwtAuthTime)
         {
             this.logger.LogTrace("Getting user profile... {Hdid}", hdid);
-            DBResult<UserProfile> retVal = this.userProfileDelegate.GetUserProfile(hdid);
+            DbResult<UserProfile> retVal = this.userProfileDelegate.GetUserProfile(hdid);
             this.logger.LogDebug("Finished getting user profile...{Hdid}", hdid);
 
-            if (retVal.Status == DBStatusCode.NotFound)
+            if (retVal.Status == DbStatusCode.NotFound)
             {
                 return new RequestResult<UserProfileModel>
                 {
@@ -152,7 +152,7 @@ namespace HealthGateway.GatewayApi.Services
             RequestResult<TermsOfServiceModel> termsOfServiceResult = this.GetActiveTermsOfService();
             UserProfileModel userProfile =
                 UserProfileMapUtils.CreateFromDbModel(retVal.Payload, termsOfServiceResult.ResourcePayload?.Id, this.autoMapper);
-            DBResult<IEnumerable<UserProfileHistory>> userProfileHistoryDbResult =
+            DbResult<IEnumerable<UserProfileHistory>> userProfileHistoryDbResult =
                 this.userProfileDelegate.GetUserProfileHistories(hdid, this.userProfileHistoryRecordLimit);
 
             // Populate most recent login date time
@@ -171,19 +171,19 @@ namespace HealthGateway.GatewayApi.Services
                 userProfile.Email = emailInvite?.Email?.To;
             }
 
-            if (!userProfile.IsSMSNumberVerified)
+            if (!userProfile.IsSmsNumberVerified)
             {
                 this.logger.LogTrace("Retrieving last sms invite... {Hdid}", hdid);
                 MessagingVerification? smsInvite =
-                    this.messageVerificationDelegate.GetLastForUser(hdid, MessagingVerificationType.SMS);
+                    this.messageVerificationDelegate.GetLastForUser(hdid, MessagingVerificationType.Sms);
                 this.logger.LogDebug("Finished retrieving sms invite... {Hdid}", hdid);
-                userProfile.SMSNumber = smsInvite?.SMSNumber;
+                userProfile.SmsNumber = smsInvite?.SmsNumber;
             }
 
             return new RequestResult<UserProfileModel>
             {
-                ResultStatus = retVal.Status != DBStatusCode.Error ? ResultType.Success : ResultType.Error,
-                ResultError = retVal.Status != DBStatusCode.Error
+                ResultStatus = retVal.Status != DbStatusCode.Error ? ResultType.Success : ResultType.Error,
+                ResultError = retVal.Status != DbStatusCode.Error
                     ? null
                     : new RequestResultError
                     {
@@ -249,25 +249,25 @@ namespace HealthGateway.GatewayApi.Services
                 IdentityManagementId = createProfileRequest.Profile.IdentityManagementId,
                 TermsOfServiceId = createProfileRequest.Profile.TermsOfServiceId,
                 Email = string.Empty,
-                SMSNumber = null,
+                SmsNumber = null,
                 CreatedBy = hdid,
                 UpdatedBy = hdid,
                 LastLoginDateTime = jwtAuthTime,
                 EncryptionKey = this.cryptoDelegate.GenerateKey(),
                 YearOfBirth = birthDate?.Year.ToString(CultureInfo.InvariantCulture),
             };
-            DBResult<UserProfile> insertResult = this.userProfileDelegate.InsertUserProfile(newProfile);
+            DbResult<UserProfile> insertResult = this.userProfileDelegate.InsertUserProfile(newProfile);
 
-            if (insertResult.Status == DBStatusCode.Created)
+            if (insertResult.Status == DbStatusCode.Created)
             {
                 UserProfile dbModel = insertResult.Payload;
-                string? requestedSMSNumber = createProfileRequest.Profile.SMSNumber;
+                string? requestedSmsNumber = createProfileRequest.Profile.SmsNumber;
                 string? requestedEmail = createProfileRequest.Profile.Email;
 
                 RequestResult<TermsOfServiceModel> termsOfServiceResult = this.GetActiveTermsOfService();
                 UserProfileModel userProfileModel = UserProfileMapUtils.CreateFromDbModel(dbModel, termsOfServiceResult.ResourcePayload?.Id, this.autoMapper);
 
-                NotificationSettingsRequest notificationRequest = new(dbModel, requestedEmail, requestedSMSNumber);
+                NotificationSettingsRequest notificationRequest = new(dbModel, requestedEmail, requestedSmsNumber);
 
                 // Add email verification
                 if (!string.IsNullOrWhiteSpace(requestedEmail))
@@ -279,11 +279,11 @@ namespace HealthGateway.GatewayApi.Services
                 }
 
                 // Add SMS verification
-                if (!string.IsNullOrWhiteSpace(requestedSMSNumber))
+                if (!string.IsNullOrWhiteSpace(requestedSmsNumber))
                 {
-                    MessagingVerification smsVerification = this.userSMSService.CreateUserSMS(hdid, requestedSMSNumber);
-                    notificationRequest.SMSVerificationCode = smsVerification.SMSValidationCode;
-                    userProfileModel.SMSNumber = requestedSMSNumber;
+                    MessagingVerification smsVerification = this.userSmsService.CreateUserSms(hdid, requestedSmsNumber);
+                    notificationRequest.SmsVerificationCode = smsVerification.SmsValidationCode;
+                    userProfileModel.SmsNumber = requestedSmsNumber;
                 }
 
                 this.notificationSettingsService.QueueNotificationSettings(notificationRequest);
@@ -314,9 +314,9 @@ namespace HealthGateway.GatewayApi.Services
         {
             this.logger.LogTrace("Closing user profile... {Hdid}", hdid);
 
-            DBResult<UserProfile> retrieveResult = this.userProfileDelegate.GetUserProfile(hdid);
+            DbResult<UserProfile> retrieveResult = this.userProfileDelegate.GetUserProfile(hdid);
 
-            if (retrieveResult.Status == DBStatusCode.Read)
+            if (retrieveResult.Status == DbStatusCode.Read)
             {
                 RequestResult<TermsOfServiceModel> termsOfServiceResult = this.GetActiveTermsOfService();
 
@@ -334,7 +334,7 @@ namespace HealthGateway.GatewayApi.Services
 
                 profile.ClosedDateTime = DateTime.UtcNow;
                 profile.IdentityManagementId = userId;
-                DBResult<UserProfile> updateResult = this.userProfileDelegate.Update(profile);
+                DbResult<UserProfile> updateResult = this.userProfileDelegate.Update(profile);
                 if (!string.IsNullOrWhiteSpace(profile.Email))
                 {
                     this.QueueEmail(profile.Email, EmailTemplateName.AccountClosedTemplate);
@@ -365,9 +365,9 @@ namespace HealthGateway.GatewayApi.Services
         {
             this.logger.LogTrace("Recovering user profile... {Hdid}", hdid);
 
-            DBResult<UserProfile> retrieveResult = this.userProfileDelegate.GetUserProfile(hdid);
+            DbResult<UserProfile> retrieveResult = this.userProfileDelegate.GetUserProfile(hdid);
 
-            if (retrieveResult.Status == DBStatusCode.Read)
+            if (retrieveResult.Status == DbStatusCode.Read)
             {
                 RequestResult<TermsOfServiceModel> termsOfServiceResult = this.GetActiveTermsOfService();
                 UserProfile profile = retrieveResult.Payload;
@@ -385,7 +385,7 @@ namespace HealthGateway.GatewayApi.Services
                 // Remove values set for deletion
                 profile.ClosedDateTime = null;
                 profile.IdentityManagementId = null;
-                DBResult<UserProfile> updateResult = this.userProfileDelegate.Update(profile);
+                DbResult<UserProfile> updateResult = this.userProfileDelegate.Update(profile);
                 if (!string.IsNullOrWhiteSpace(profile.Email))
                 {
                     this.QueueEmail(profile.Email, EmailTemplateName.AccountRecoveredTemplate);
@@ -414,14 +414,14 @@ namespace HealthGateway.GatewayApi.Services
         public RequestResult<TermsOfServiceModel> GetActiveTermsOfService()
         {
             this.logger.LogDebug("Getting active terms of service...");
-            DBResult<LegalAgreement> retVal =
-                this.legalAgreementDelegate.GetActiveByAgreementType(LegalAgreementType.TermsofService);
+            DbResult<LegalAgreement> retVal =
+                this.legalAgreementDelegate.GetActiveByAgreementType(LegalAgreementType.TermsOfService);
 
             return new RequestResult<TermsOfServiceModel>
             {
-                ResultStatus = retVal.Status != DBStatusCode.Error ? ResultType.Success : ResultType.Error,
+                ResultStatus = retVal.Status != DbStatusCode.Error ? ResultType.Success : ResultType.Error,
                 ResourcePayload = this.autoMapper.Map<TermsOfServiceModel>(retVal.Payload),
-                ResultError = retVal.Status != DBStatusCode.Error
+                ResultError = retVal.Status != DbStatusCode.Error
                     ? null
                     : new RequestResultError
                     {
@@ -438,14 +438,14 @@ namespace HealthGateway.GatewayApi.Services
 
             UserPreference userPreference = this.autoMapper.Map<UserPreference>(userPreferenceModel);
 
-            DBResult<UserPreference> dbResult = this.userPreferenceDelegate.UpdateUserPreference(userPreference);
+            DbResult<UserPreference> dbResult = this.userPreferenceDelegate.UpdateUserPreference(userPreference);
             this.logger.LogDebug("Finished updating user preference... {Preference} for {Hdid}", userPreferenceModel.Preference, userPreferenceModel.HdId);
 
             RequestResult<UserPreferenceModel> requestResult = new()
             {
                 ResourcePayload = this.autoMapper.Map<UserPreferenceModel>(dbResult.Payload),
-                ResultStatus = dbResult.Status == DBStatusCode.Updated ? ResultType.Success : ResultType.Error,
-                ResultError = dbResult.Status == DBStatusCode.Updated
+                ResultStatus = dbResult.Status == DbStatusCode.Updated ? ResultType.Success : ResultType.Error,
+                ResultError = dbResult.Status == DbStatusCode.Updated
                     ? null
                     : new RequestResultError
                     {
@@ -461,14 +461,14 @@ namespace HealthGateway.GatewayApi.Services
         {
             this.logger.LogTrace("Creating user preference... {Preference} for {Hdid}", userPreferenceModel.Preference, userPreferenceModel.HdId);
             UserPreference userPreference = this.autoMapper.Map<UserPreference>(userPreferenceModel);
-            DBResult<UserPreference> dbResult = this.userPreferenceDelegate.CreateUserPreference(userPreference);
+            DbResult<UserPreference> dbResult = this.userPreferenceDelegate.CreateUserPreference(userPreference);
             this.logger.LogDebug("Finished creating user preference... {Preference} for {Hdid}", userPreferenceModel.Preference, userPreferenceModel.HdId);
 
             RequestResult<UserPreferenceModel> requestResult = new()
             {
                 ResourcePayload = this.autoMapper.Map<UserPreferenceModel>(dbResult.Payload),
-                ResultStatus = dbResult.Status == DBStatusCode.Created ? ResultType.Success : ResultType.Error,
-                ResultError = dbResult.Status == DBStatusCode.Created
+                ResultStatus = dbResult.Status == DbStatusCode.Created ? ResultType.Success : ResultType.Error,
+                ResultError = dbResult.Status == DbStatusCode.Created
                     ? null
                     : new RequestResultError
                     {
@@ -483,14 +483,14 @@ namespace HealthGateway.GatewayApi.Services
         public RequestResult<Dictionary<string, UserPreferenceModel>> GetUserPreferences(string hdid)
         {
             this.logger.LogTrace("Getting user preference... {Hdid}", hdid);
-            DBResult<IEnumerable<UserPreference>> dbResult = this.userPreferenceDelegate.GetUserPreferences(hdid);
+            DbResult<IEnumerable<UserPreference>> dbResult = this.userPreferenceDelegate.GetUserPreferences(hdid);
             RequestResult<Dictionary<string, UserPreferenceModel>> requestResult =
                 new()
                 {
                     ResourcePayload = this.autoMapper.Map<IEnumerable<UserPreferenceModel>>(dbResult.Payload)
                         .ToDictionary(x => x.Preference, x => x),
-                    ResultStatus = dbResult.Status == DBStatusCode.Read ? ResultType.Success : ResultType.Error,
-                    ResultError = dbResult.Status == DBStatusCode.Read
+                    ResultStatus = dbResult.Status == DbStatusCode.Read ? ResultType.Success : ResultType.Error,
+                    ResultError = dbResult.Status == DbStatusCode.Read
                         ? null
                         : new RequestResultError
                         {
@@ -544,12 +544,12 @@ namespace HealthGateway.GatewayApi.Services
                 ResultStatus = ResultType.Error,
             };
 
-            DBResult<UserProfile> profileResult = this.userProfileDelegate.GetUserProfile(hdid);
-            if (profileResult.Status == DBStatusCode.Read && profileResult.Payload != null)
+            DbResult<UserProfile> profileResult = this.userProfileDelegate.GetUserProfile(hdid);
+            if (profileResult.Status == DbStatusCode.Read)
             {
                 profileResult.Payload.TermsOfServiceId = termsOfServiceId;
                 profileResult = this.userProfileDelegate.Update(profileResult.Payload);
-                if (profileResult.Status == DBStatusCode.Updated)
+                if (profileResult.Status == DbStatusCode.Updated)
                 {
                     RequestResult<TermsOfServiceModel> termsOfServiceResult = this.GetActiveTermsOfService();
 

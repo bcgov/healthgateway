@@ -13,7 +13,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //-------------------------------------------------------------------------
-namespace HealthGateway.GatewayApi.Test.Services
+namespace HealthGateway.GatewayApiTests.Services.Test
 {
     using System.Text.Json;
     using DeepEqual.Syntax;
@@ -63,7 +63,7 @@ namespace HealthGateway.GatewayApi.Test.Services
             {
                 Data = JsonDocument.Parse("{}").RootElement,
                 Template = templateType,
-                Type = ReportFormatType.PDF,
+                Type = ReportFormatType.Pdf,
             };
 
             Mock<ICDogsDelegate> cdogsDelegateMock = new();

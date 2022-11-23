@@ -15,16 +15,15 @@
 //-------------------------------------------------------------------------
 namespace HealthGateway.Admin.Server
 {
+    using System;
     using System.Diagnostics.CodeAnalysis;
     using System.Threading.Tasks;
     using HealthGateway.Admin.Server.Services;
-    using HealthGateway.Common.AccessManagement.Administration;
     using HealthGateway.Common.AccessManagement.Authentication;
     using HealthGateway.Common.Api;
     using HealthGateway.Common.AspNetConfiguration;
     using HealthGateway.Common.AspNetConfiguration.Modules;
     using HealthGateway.Common.Delegates;
-    using HealthGateway.Common.Delegates.PHSA;
     using HealthGateway.Common.MapProfiles;
     using HealthGateway.Common.Models.PHSA;
     using HealthGateway.Common.Services;
@@ -74,6 +73,10 @@ namespace HealthGateway.Admin.Server
             services.AddRefitClient<ISystemBroadcastApi>()
                 .ConfigureHttpClient(c => c.BaseAddress = phsaConfig.BaseUrl)
                 .AddHttpMessageHandler<AuthHeaderHandler>();
+
+            Uri? baseUri = configuration.GetValue<Uri>("KeycloakAdmin:BaseUrl");
+            services.AddRefitClient<IKeycloakAdminApi>()
+                .ConfigureHttpClient(c => c.BaseAddress = baseUri);
 
             services.AddAutoMapper(typeof(Program), typeof(BroadcastProfile), typeof(UserProfileProfile), typeof(MessagingVerificationProfile));
 
@@ -130,21 +133,19 @@ namespace HealthGateway.Admin.Server
 
         private static void AddDelegates(IServiceCollection services)
         {
-            services.AddTransient<IMessagingVerificationDelegate, DBMessagingVerificationDelegate>();
-            services.AddTransient<IFeedbackDelegate, DBFeedbackDelegate>();
-            services.AddTransient<IRatingDelegate, DBRatingDelegate>();
-            services.AddTransient<IUserProfileDelegate, DBProfileDelegate>();
-            services.AddTransient<ICommunicationDelegate, DBCommunicationDelegate>();
-            services.AddTransient<INoteDelegate, DBNoteDelegate>();
-            services.AddTransient<IResourceDelegateDelegate, DBResourceDelegateDelegate>();
-            services.AddTransient<ICommentDelegate, DBCommentDelegate>();
-            services.AddTransient<IAdminTagDelegate, DBAdminTagDelegate>();
-            services.AddTransient<IFeedbackTagDelegate, DBFeedbackTagDelegate>();
-            services.AddTransient<IVaccineStatusDelegate, RestVaccineStatusDelegate>();
+            services.AddTransient<IMessagingVerificationDelegate, DbMessagingVerificationDelegate>();
+            services.AddTransient<IFeedbackDelegate, DbFeedbackDelegate>();
+            services.AddTransient<IRatingDelegate, DbRatingDelegate>();
+            services.AddTransient<IUserProfileDelegate, DbProfileDelegate>();
+            services.AddTransient<ICommunicationDelegate, DbCommunicationDelegate>();
+            services.AddTransient<INoteDelegate, DbNoteDelegate>();
+            services.AddTransient<IResourceDelegateDelegate, DbResourceDelegateDelegate>();
+            services.AddTransient<ICommentDelegate, DbCommentDelegate>();
+            services.AddTransient<IAdminTagDelegate, DbAdminTagDelegate>();
+            services.AddTransient<IFeedbackTagDelegate, DbFeedbackTagDelegate>();
             services.AddTransient<IVaccineProofDelegate, VaccineProofDelegate>();
             services.AddTransient<IAdminUserProfileDelegate, DbAdminUserProfileDelegate>();
             services.AddTransient<IAuthenticationDelegate, AuthenticationDelegate>();
-            services.AddTransient<IUserAdminDelegate, KeycloakUserAdminDelegate>();
         }
     }
 }

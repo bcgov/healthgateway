@@ -32,9 +32,9 @@ namespace HealthGateway.GatewayApiTests.Services.Test.Mock
         /// <param name="termsOfService">terms of service.</param>
         public LegalAgreementDelegateMock(LegalAgreement termsOfService)
         {
-            this.Setup(s => s.GetActiveByAgreementType(LegalAgreementType.TermsofService))
+            this.Setup(s => s.GetActiveByAgreementType(LegalAgreementType.TermsOfService))
                 .Returns(
-                    new DBResult<LegalAgreement>
+                    new DbResult<LegalAgreement>
                         { Payload = termsOfService });
         }
     }

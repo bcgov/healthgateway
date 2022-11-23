@@ -13,7 +13,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //-------------------------------------------------------------------------
-namespace HealthGateway.GatewayApi.Test.Controllers
+namespace HealthGateway.GatewayApiTests.Controllers.Test
 {
     using DeepEqual.Syntax;
     using HealthGateway.Common.Data.Constants;
@@ -47,14 +47,14 @@ namespace HealthGateway.GatewayApi.Test.Controllers
                 UpdatedBy = Hdid,
             };
 
-            DBResult<UserFeedback> mockedDBResult = new()
+            DbResult<UserFeedback> mockedDbResult = new()
             {
-                Status = DBStatusCode.Created,
+                Status = DbStatusCode.Created,
                 Payload = userFeedback,
             };
 
             Mock<IUserFeedbackService> userFeedbackServiceMock = new();
-            userFeedbackServiceMock.Setup(s => s.CreateUserFeedback(It.IsAny<UserFeedback>())).Returns(mockedDBResult);
+            userFeedbackServiceMock.Setup(s => s.CreateUserFeedback(It.IsAny<UserFeedback>())).Returns(mockedDbResult);
 
             UserFeedbackController controller = new(userFeedbackServiceMock.Object);
             IActionResult actualResult = controller.CreateUserFeedback(Hdid, userFeedback);
@@ -75,14 +75,14 @@ namespace HealthGateway.GatewayApi.Test.Controllers
                 UpdatedBy = Hdid,
             };
 
-            DBResult<UserFeedback> mockedDBResult = new()
+            DbResult<UserFeedback> mockedDbResult = new()
             {
-                Status = DBStatusCode.Error,
+                Status = DbStatusCode.Error,
                 Payload = userFeedback,
             };
 
             Mock<IUserFeedbackService> userFeedbackServiceMock = new();
-            userFeedbackServiceMock.Setup(s => s.CreateUserFeedback(It.IsAny<UserFeedback>())).Returns(mockedDBResult);
+            userFeedbackServiceMock.Setup(s => s.CreateUserFeedback(It.IsAny<UserFeedback>())).Returns(mockedDbResult);
 
             UserFeedbackController controller = new(userFeedbackServiceMock.Object);
             IActionResult actualResult = controller.CreateUserFeedback(Hdid, userFeedback);
@@ -96,13 +96,13 @@ namespace HealthGateway.GatewayApi.Test.Controllers
         [Fact]
         public void ShouldCreateUserFeedbackWithBadRequestResultError()
         {
-            DBResult<UserFeedback> mockedDBResult = new()
+            DbResult<UserFeedback> mockedDbResult = new()
             {
-                Status = DBStatusCode.Error,
+                Status = DbStatusCode.Error,
             };
 
             Mock<IUserFeedbackService> userFeedbackServiceMock = new();
-            userFeedbackServiceMock.Setup(s => s.CreateUserFeedback(It.IsAny<UserFeedback>())).Returns(mockedDBResult);
+            userFeedbackServiceMock.Setup(s => s.CreateUserFeedback(It.IsAny<UserFeedback>())).Returns(mockedDbResult);
 
             UserFeedbackController controller = new(userFeedbackServiceMock.Object);
 #pragma warning disable CS8625 // Cannot convert null literal to non-nullable reference type.

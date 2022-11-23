@@ -53,7 +53,7 @@ namespace HealthGateway.Common.Delegates
         /// <param name="prf">The pseudorandom function to use for the hash.</param>
         /// <param name="iterations">The number of iterations to process over the hash.</param>
         /// <returns>The hash object.</returns>
-        public static HmacHash HMACHash(
+        public static HmacHash HmacHash(
             string? key,
             byte[] salt,
             KeyDerivationPrf prf = HmacHashDelegateConfig.DefaultPseudoRandomFunction,
@@ -61,7 +61,7 @@ namespace HealthGateway.Common.Delegates
         {
             HmacHash retHash = new()
             {
-                PseudoRandomFunction = HashFunction.HMACSHA512,
+                PseudoRandomFunction = HashFunction.HmacSha512,
                 Iterations = iterations,
             };
 
@@ -98,10 +98,10 @@ namespace HealthGateway.Common.Delegates
         /// <returns>true if the key generates the same hash.</returns>
         public static bool Compare(string? key, HmacHash? compareHash)
         {
-            bool result = false;
+            bool result;
             if (key != null && compareHash != null && compareHash.Hash != null && compareHash.Salt != null)
             {
-                HmacHash keyHash = HMACHash(
+                HmacHash keyHash = HmacHash(
                     key,
                     Convert.FromBase64String(compareHash.Salt),
                     (KeyDerivationPrf)compareHash.PseudoRandomFunction,
@@ -133,7 +133,7 @@ namespace HealthGateway.Common.Delegates
         /// <inheritdoc/>
         public IHash Hash(string? key)
         {
-            return this.HMACHash(key);
+            return this.HmacHash(key);
         }
 
         /// <inheritdoc/>
@@ -147,9 +147,9 @@ namespace HealthGateway.Common.Delegates
         /// </summary>
         /// <param name="key">The string to hash.</param>
         /// <returns>The newly created HMAC Hash.</returns>
-        public HmacHash HMACHash(string? key)
+        public HmacHash HmacHash(string? key)
         {
-            return HMACHash(
+            return HmacHash(
                 key,
                 GenerateSalt(this.HashConfig.SaltLength),
                 this.HashConfig.PseudoRandomFunction,

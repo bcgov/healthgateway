@@ -33,26 +33,6 @@ namespace HealthGateway.Common.Models.PHSA
         public Uri BaseUrl { get; set; } = null!;
 
         /// <summary>
-        /// Gets or sets the immunization endpoint.
-        /// </summary>
-        public string ImmunizationEndpoint { get; set; } = string.Empty;
-
-        /// <summary>
-        /// Gets or sets the public vaccine status endpoint.
-        /// </summary>
-        public string PublicVaccineStatusEndpoint { get; set; } = string.Empty;
-
-        /// <summary>
-        /// Gets or sets the vaccine status endpoint.
-        /// </summary>
-        public string VaccineStatusEndpoint { get; set; } = string.Empty;
-
-        /// <summary>
-        /// Gets or sets the record card endpoint.
-        /// </summary>
-        public string RecordCardEndpoint { get; set; } = string.Empty;
-
-        /// <summary>
         /// Gets or sets the total number of records to retrieve in one call.
         /// </summary>
         public string FetchSize { get; set; } = string.Empty;

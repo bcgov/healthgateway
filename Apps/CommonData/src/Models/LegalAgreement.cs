@@ -21,7 +21,7 @@ namespace HealthGateway.Common.Data.Models
     using HealthGateway.Common.Data.Constants;
 
     /// <summary>
-    /// A represntation of Legal Agreements for Health Gateway.
+    /// A representation of Legal Agreements for Health Gateway.
     /// These agreements are open ended but do have an effective date.
     /// </summary>
     public class LegalAgreement : AuditableEntity
@@ -38,7 +38,7 @@ namespace HealthGateway.Common.Data.Models
         /// </summary>
         [Required]
         [MaxLength(10)]
-        public LegalAgreementType LegalAgreementCode { get; set; } = LegalAgreementType.TermsofService;
+        public LegalAgreementType LegalAgreementCode { get; set; } = LegalAgreementType.TermsOfService;
 
         /// <summary>
         /// Gets or sets the legal text.

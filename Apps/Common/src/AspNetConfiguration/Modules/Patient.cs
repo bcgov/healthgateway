@@ -18,17 +18,21 @@ namespace HealthGateway.Common.AspNetConfiguration.Modules
     using System;
     using System.Diagnostics.CodeAnalysis;
     using System.IO;
-    using System.Runtime.CompilerServices;
     using System.Security.Cryptography.X509Certificates;
     using System.ServiceModel;
     using System.ServiceModel.Description;
     using System.ServiceModel.Dispatcher;
     using System.ServiceModel.Security;
+    using HealthGateway.Common.Data.ErrorHandling;
     using HealthGateway.Common.Delegates;
+    using HealthGateway.Common.ErrorHandling;
     using HealthGateway.Common.Services;
-    using HealthGateway.Database.Delegates;
+    using Hellang.Middleware.ProblemDetails;
+    using Microsoft.AspNetCore.Builder;
+    using Microsoft.AspNetCore.Hosting;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
+    using Microsoft.Extensions.Hosting;
     using Microsoft.Extensions.Logging;
     using ServiceReference;
 
@@ -59,8 +63,8 @@ namespace HealthGateway.Common.AspNetConfiguration.Modules
                     {
                         // Load Certificate
                         // Note: As per reading we do not have to dispose of the certificate.
-                        string clientCertificatePath = clientConfiguration.GetSection("ClientCertificate").GetValue<string>("Path");
-                        string certificatePassword = clientConfiguration.GetSection("ClientCertificate").GetValue<string>("Password");
+                        string? clientCertificatePath = clientConfiguration.GetSection("ClientCertificate").GetValue<string>("Path");
+                        string? certificatePassword = clientConfiguration.GetSection("ClientCertificate").GetValue<string>("Password");
                         X509Certificate2 clientRegistriesCertificate = new(File.ReadAllBytes(clientCertificatePath), certificatePassword);
                         client.ClientCredentials.ClientCertificate.Certificate = clientRegistriesCertificate;
                         client.Endpoint.EndpointBehaviors.Add(s.GetService<IEndpointBehavior>());
@@ -82,6 +86,41 @@ namespace HealthGateway.Common.AspNetConfiguration.Modules
             services.AddTransient<IClientRegistriesDelegate, ClientRegistriesDelegate>();
             services.AddTransient<IPatientService, PatientService>();
             GatewayCache.ConfigureCaching(services, logger, configuration);
+        }
+
+        /// <summary>
+        /// Configures patient service to use Problem Details exception handling.
+        /// </summary>
+        /// <param name="services">The service collection to add forward proxies into.</param>
+        /// <param name="environment">The environment the services are associated with.</param>
+        public static void ConfigurePatientExceptionHandling(IServiceCollection services, IWebHostEnvironment environment)
+        {
+            services.AddProblemDetails(
+                setup =>
+                {
+                    setup.IncludeExceptionDetails = (_, _) => environment.IsDevelopment();
+
+                    setup.Map<ApiException>(
+                        exception => new ApiProblemDetails
+                        {
+                            Title = exception.Title,
+                            Detail = exception.Detail,
+                            Status = exception.StatusCode,
+                            Type = exception.ProblemType,
+                            Instance = exception.Instance,
+                            AdditionalInfo = exception.AdditionalInfo,
+                        });
+                });
+        }
+
+        /// <summary>
+        /// Configures patient service to use the specified exception handling.
+        /// </summary>
+        /// <param name="app">The application builder where modules are specified to be used.</param>
+        /// <param name="environment">The environment the services are associated with.</param>
+        public static void ConfigurePatientExceptionHandling(IApplicationBuilder app, IWebHostEnvironment environment)
+        {
+            app.UseProblemDetails();
         }
     }
 }

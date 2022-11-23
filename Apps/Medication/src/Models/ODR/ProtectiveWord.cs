@@ -16,6 +16,7 @@
 namespace HealthGateway.Medication.Models.ODR
 {
     using System;
+    using System.Diagnostics.CodeAnalysis;
     using System.Text.Json.Serialization;
 
     /// <summary>
@@ -33,18 +34,19 @@ namespace HealthGateway.Medication.Models.ODR
         /// Gets or sets the HDID of the requestor.
         /// </summary>
         [JsonPropertyName("hdid")]
-        public string RequestorHDID { get; set; } = string.Empty;
+        public string RequestorHdid { get; set; } = string.Empty;
 
         /// <summary>
         /// Gets or sets the IP of the requestor.
         /// </summary>
         [JsonPropertyName("requestingIP")]
-        public string RequestorIP { get; set; } = string.Empty;
+        public string RequestorIp { get; set; } = string.Empty;
 
         /// <summary>
         /// Gets or sets the QueryRequest for the MedicationHistory integration.
         /// </summary>
         [JsonPropertyName("maintainProtectiveWord")]
-        public ProtectiveWordQueryResponse? QueryResponse { get; set; }
+        [SuppressMessage("StyleCop.CSharp.OrderingRules", "SA1206:DeclarationKeywordsMustFollowOrder", Justification = "Ordering conflict")]
+        public required ProtectiveWordQueryResponse QueryResponse { get; set; }
     }
 }

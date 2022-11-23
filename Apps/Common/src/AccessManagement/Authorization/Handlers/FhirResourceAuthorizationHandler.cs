@@ -53,22 +53,22 @@ namespace HealthGateway.Common.AccessManagement.Authorization.Handlers
         {
             foreach (FhirRequirement requirement in context.PendingRequirements.OfType<FhirRequirement>())
             {
-                string? resourceHDID = this.GetResourceHDID(requirement);
-                if (resourceHDID == null)
+                string? resourceHdid = this.GetResourceHdid(requirement);
+                if (resourceHdid == null)
                 {
                     this.logger.LogWarning("Fhir resource Handler has been invoked without route resource being specified, ignoring");
                 }
-                else if (this.IsOwner(context, resourceHDID))
+                else if (this.IsOwner(context, resourceHdid))
                 {
                     context.Succeed(requirement);
                 }
-                else if (requirement.SupportsSystemDelegation && this.IsSystemDelegated(context, resourceHDID, requirement))
+                else if (requirement.SupportsSystemDelegation && this.IsSystemDelegated(context, resourceHdid, requirement))
                 {
                     context.Succeed(requirement);
                 }
                 else
                 {
-                    this.logger.LogDebug("Non-owner access to {ResourceHdid} rejected; Supports delegation: {SupportsSystemDelegation}", resourceHDID, requirement.SupportsSystemDelegation);
+                    this.logger.LogDebug("Non-owner access to {ResourceHdid} rejected; Supports delegation: {SupportsSystemDelegation}", resourceHdid, requirement.SupportsSystemDelegation);
                 }
             }
 

@@ -21,11 +21,11 @@ namespace HealthGateway.Laboratory.Services
     using System.Threading.Tasks;
     using HealthGateway.Common.AccessManagement.Authentication;
     using HealthGateway.Common.Data.Constants;
-    using HealthGateway.Common.Data.Models.ErrorHandling;
+    using HealthGateway.Common.Data.ErrorHandling;
     using HealthGateway.Common.Data.Utils;
     using HealthGateway.Common.Data.ViewModels;
     using HealthGateway.Common.ErrorHandling;
-    using HealthGateway.Laboratory.Delegates;
+    using HealthGateway.Laboratory.Api;
     using HealthGateway.Laboratory.Models.PHSA;
     using Microsoft.Extensions.Logging;
 
@@ -33,7 +33,7 @@ namespace HealthGateway.Laboratory.Services
     public class LabTestKitService : ILabTestKitService
     {
         private readonly IAuthenticationDelegate authenticationDelegate;
-        private readonly ILabTestKitClient labTestKitClient;
+        private readonly ILabTestKitApi labTestKitApi;
         private readonly ILogger<LabTestKitService> logger;
 
         /// <summary>
@@ -41,15 +41,15 @@ namespace HealthGateway.Laboratory.Services
         /// </summary>
         /// <param name="logger">The injected logger.</param>
         /// <param name="authenticationDelegate">The auth delegate to fetch tokens.</param>
-        /// <param name="labTestKitClient">The client to use for lab tests.</param>
+        /// <param name="labTestKitApi">The client to use for lab tests.</param>
         public LabTestKitService(
             ILogger<LabTestKitService> logger,
             IAuthenticationDelegate authenticationDelegate,
-            ILabTestKitClient labTestKitClient)
+            ILabTestKitApi labTestKitApi)
         {
             this.logger = logger;
             this.authenticationDelegate = authenticationDelegate;
-            this.labTestKitClient = labTestKitClient;
+            this.labTestKitApi = labTestKitApi;
         }
 
         /// <inheritdoc/>
@@ -82,7 +82,7 @@ namespace HealthGateway.Laboratory.Services
                     try
                     {
                         HttpResponseMessage response =
-                            await this.labTestKitClient.RegisterLabTest(testKit, accessToken).ConfigureAwait(true);
+                            await this.labTestKitApi.RegisterLabTest(testKit, accessToken).ConfigureAwait(true);
                         ProcessResponse(requestResult, response);
                     }
                     catch (HttpRequestException e)
@@ -91,7 +91,7 @@ namespace HealthGateway.Laboratory.Services
                         requestResult.ResultError = new()
                         {
                             ResultMessage = "Error with HTTP Request",
-                            ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.PHSA),
+                            ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.Phsa),
                         };
                     }
                 }
@@ -122,7 +122,7 @@ namespace HealthGateway.Laboratory.Services
             try
             {
                 HttpResponseMessage response =
-                    await this.labTestKitClient.RegisterLabTest(hdid, testKit, accessToken).ConfigureAwait(true);
+                    await this.labTestKitApi.RegisterLabTest(hdid, testKit, accessToken).ConfigureAwait(true);
                 ProcessResponse(requestResult, response);
             }
             catch (HttpRequestException e)
@@ -131,7 +131,7 @@ namespace HealthGateway.Laboratory.Services
                 requestResult.ResultError = new()
                 {
                     ResultMessage = "Error with HTTP Request",
-                    ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.PHSA),
+                    ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.Phsa),
                 };
             }
 
@@ -171,21 +171,21 @@ namespace HealthGateway.Laboratory.Services
                     requestResult.ResultError = new()
                     {
                         ResultMessage = "Request was not authorized",
-                        ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.PHSA),
+                        ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.Phsa),
                     };
                     break;
                 case HttpStatusCode.Forbidden:
                     requestResult.ResultError = new()
                     {
                         ResultMessage = $"DID Claim is missing or can not resolve PHN, HTTP Error {response.StatusCode}",
-                        ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.PHSA),
+                        ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.Phsa),
                     };
                     break;
                 default:
                     requestResult.ResultError = new()
                     {
                         ResultMessage = $"An unexpected error occurred, HTTP Error {response.StatusCode}",
-                        ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.PHSA),
+                        ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.Phsa),
                     };
                     break;
             }

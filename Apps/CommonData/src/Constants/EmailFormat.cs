@@ -15,6 +15,8 @@
 // -------------------------------------------------------------------------
 namespace HealthGateway.Common.Data.Constants
 {
+    using System.Runtime.Serialization;
+
     /// <summary>
     /// Represents the format of emails.
     /// </summary>
@@ -23,11 +25,13 @@ namespace HealthGateway.Common.Data.Constants
         /// <summary>
         /// Constant value to represent Text email.
         /// </summary>
+        [EnumMember(Value = "Text")]
         Text,
 
         /// <summary>
         /// Constant value to represent HTML email.
         /// </summary>
-        HTML,
+        [EnumMember(Value = "HTML")]
+        Html,
     }
 }

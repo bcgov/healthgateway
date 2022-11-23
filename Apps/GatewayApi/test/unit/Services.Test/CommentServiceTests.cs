@@ -13,7 +13,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //-------------------------------------------------------------------------
-namespace HealthGateway.GatewayApi.Test.Services
+namespace HealthGateway.GatewayApiTests.Services.Test
 {
     using System;
     using System.Collections.Generic;
@@ -31,7 +31,7 @@ namespace HealthGateway.GatewayApi.Test.Services
     using HealthGateway.GatewayApi.MapUtils;
     using HealthGateway.GatewayApi.Models;
     using HealthGateway.GatewayApi.Services;
-    using HealthGateway.GatewayApi.Test.Services.Utils;
+    using HealthGateway.GatewayApiTests.Services.Test.Utils;
     using Microsoft.Extensions.Logging;
     using Moq;
     using Xunit;
@@ -62,10 +62,10 @@ namespace HealthGateway.GatewayApi.Test.Services
         [Fact]
         public void ShouldGetCommentsWithDbError()
         {
-            (RequestResult<IEnumerable<UserComment>> actualResult, _) = this.ExecuteGetComments("abc", DBStatusCode.Error);
+            (RequestResult<IEnumerable<UserComment>> actualResult, _) = this.ExecuteGetComments("abc", DbStatusCode.Error);
 
             Assert.Equal(ResultType.Error, actualResult.ResultStatus);
-            Assert.True(actualResult?.ResultError?.ErrorCode.EndsWith("-CI-DB", StringComparison.InvariantCulture));
+            Assert.True(actualResult.ResultError?.ErrorCode.EndsWith("-CI-DB", StringComparison.InvariantCulture));
         }
 
         /// <summary>
@@ -84,9 +84,9 @@ namespace HealthGateway.GatewayApi.Test.Services
         /// InsertComment - Database Error.
         /// </summary>
         [Fact]
-        public void ShouldInsertCommentWithDBError()
+        public void ShouldInsertCommentWithDbError()
         {
-            (RequestResult<UserComment> actualResult, _) = this.ExecuteInsertComment(DBStatusCode.Error);
+            (RequestResult<UserComment> actualResult, _) = this.ExecuteInsertComment(DbStatusCode.Error);
 
             Assert.Equal(ResultType.Error, actualResult.ResultStatus);
             Assert.NotNull(actualResult.ResultError);
@@ -108,9 +108,9 @@ namespace HealthGateway.GatewayApi.Test.Services
         /// UpdateComment - Database Error.
         /// </summary>
         [Fact]
-        public void ShouldUpdateCommentWithDBError()
+        public void ShouldUpdateCommentWithDbError()
         {
-            (RequestResult<UserComment> actualResult, _) = this.ExecuteUpdateComment(DBStatusCode.Error);
+            (RequestResult<UserComment> actualResult, _) = this.ExecuteUpdateComment(DbStatusCode.Error);
 
             Assert.Equal(ResultType.Error, actualResult.ResultStatus);
             Assert.NotNull(actualResult.ResultError);
@@ -132,9 +132,9 @@ namespace HealthGateway.GatewayApi.Test.Services
         /// DeleteComment - Database Error.
         /// </summary>
         [Fact]
-        public void ShouldDeleteCommentWithDBError()
+        public void ShouldDeleteCommentWithDbError()
         {
-            (RequestResult<UserComment> actualResult, _) = this.ExecuteDeleteComment(DBStatusCode.Error);
+            (RequestResult<UserComment> actualResult, _) = this.ExecuteDeleteComment(DbStatusCode.Error);
 
             Assert.Equal(ResultType.Error, actualResult.ResultStatus);
             Assert.NotNull(actualResult.ResultError);
@@ -147,14 +147,14 @@ namespace HealthGateway.GatewayApi.Test.Services
         public void ShouldGetCommentsWithNoKeyError()
         {
             string? encryptionKey = null;
-            DBResult<UserProfile> profileDBResult = new()
+            DbResult<UserProfile> profileDbResult = new()
             {
                 Payload = new UserProfile
                     { EncryptionKey = encryptionKey },
             };
 
             Mock<IUserProfileDelegate> profileDelegateMock = new();
-            profileDelegateMock.Setup(s => s.GetUserProfile(this.hdid)).Returns(profileDBResult);
+            profileDelegateMock.Setup(s => s.GetUserProfile(this.hdid)).Returns(profileDbResult);
 
             ICommentService service = new CommentService(
                 new Mock<ILogger<CommentService>>().Object,
@@ -175,14 +175,14 @@ namespace HealthGateway.GatewayApi.Test.Services
         public void ShouldInsertCommentWithNoKeyError()
         {
             string? encryptionKey = null;
-            DBResult<UserProfile> profileDBResult = new()
+            DbResult<UserProfile> profileDbResult = new()
             {
                 Payload = new UserProfile
                     { EncryptionKey = encryptionKey },
             };
 
             Mock<IUserProfileDelegate> profileDelegateMock = new();
-            profileDelegateMock.Setup(s => s.GetUserProfile(this.hdid)).Returns(profileDBResult);
+            profileDelegateMock.Setup(s => s.GetUserProfile(this.hdid)).Returns(profileDbResult);
 
             UserComment userComment = new()
             {
@@ -212,14 +212,14 @@ namespace HealthGateway.GatewayApi.Test.Services
         public void ShouldUpdateCommentWithNoKeyError()
         {
             string? encryptionKey = null;
-            DBResult<UserProfile> profileDBResult = new()
+            DbResult<UserProfile> profileDbResult = new()
             {
                 Payload = new UserProfile
                     { EncryptionKey = encryptionKey },
             };
 
             Mock<IUserProfileDelegate> profileDelegateMock = new();
-            profileDelegateMock.Setup(s => s.GetUserProfile(this.hdid)).Returns(profileDBResult);
+            profileDelegateMock.Setup(s => s.GetUserProfile(this.hdid)).Returns(profileDbResult);
 
             UserComment userComment = new()
             {
@@ -249,14 +249,14 @@ namespace HealthGateway.GatewayApi.Test.Services
         public void ShouldDeleteCommentWithNoKeyError()
         {
             string? encryptionKey = null;
-            DBResult<UserProfile> profileDBResult = new()
+            DbResult<UserProfile> profileDbResult = new()
             {
                 Payload = new UserProfile
                     { EncryptionKey = encryptionKey },
             };
 
             Mock<IUserProfileDelegate> profileDelegateMock = new();
-            profileDelegateMock.Setup(s => s.GetUserProfile(this.hdid)).Returns(profileDBResult);
+            profileDelegateMock.Setup(s => s.GetUserProfile(this.hdid)).Returns(profileDbResult);
 
             UserComment userComment = new()
             {
@@ -279,17 +279,17 @@ namespace HealthGateway.GatewayApi.Test.Services
             Assert.Equal(ResultType.Error, actualResult.ResultStatus);
         }
 
-        private (RequestResult<UserComment> ActualResult, UserComment UserComment) ExecuteDeleteComment(DBStatusCode dBStatusCode = DBStatusCode.Deleted)
+        private (RequestResult<UserComment> ActualResult, UserComment UserComment) ExecuteDeleteComment(DbStatusCode dBStatusCode = DbStatusCode.Deleted)
         {
             string encryptionKey = "abc";
-            DBResult<UserProfile> profileDBResult = new()
+            DbResult<UserProfile> profileDbResult = new()
             {
                 Payload = new UserProfile
                     { EncryptionKey = encryptionKey },
             };
 
             Mock<IUserProfileDelegate> profileDelegateMock = new();
-            profileDelegateMock.Setup(s => s.GetUserProfile(this.hdid)).Returns(profileDBResult);
+            profileDelegateMock.Setup(s => s.GetUserProfile(this.hdid)).Returns(profileDbResult);
 
             Mock<ICryptoDelegate> cryptoDelegateMock = new();
             cryptoDelegateMock.Setup(s => s.Encrypt(It.IsAny<string>(), It.IsAny<string>())).Returns((string key, string text) => text + key);
@@ -306,7 +306,7 @@ namespace HealthGateway.GatewayApi.Test.Services
             IMapper autoMapper = MapperUtil.InitializeAutoMapper();
             Comment comment = CommentMapUtils.ToDbModel(userComment, cryptoDelegateMock.Object, encryptionKey, autoMapper);
 
-            DBResult<Comment> deleteResult = new()
+            DbResult<Comment> deleteResult = new()
             {
                 Payload = comment,
                 Status = dBStatusCode,
@@ -326,17 +326,17 @@ namespace HealthGateway.GatewayApi.Test.Services
             return (actualResult, userComment);
         }
 
-        private (RequestResult<UserComment> ActualResult, UserComment UserComment) ExecuteUpdateComment(DBStatusCode dBStatusCode = DBStatusCode.Updated)
+        private (RequestResult<UserComment> ActualResult, UserComment UserComment) ExecuteUpdateComment(DbStatusCode dBStatusCode = DbStatusCode.Updated)
         {
             string encryptionKey = "abc";
-            DBResult<UserProfile> profileDBResult = new()
+            DbResult<UserProfile> profileDbResult = new()
             {
                 Payload = new UserProfile
                     { EncryptionKey = encryptionKey },
             };
 
             Mock<IUserProfileDelegate> profileDelegateMock = new();
-            profileDelegateMock.Setup(s => s.GetUserProfile(this.hdid)).Returns(profileDBResult);
+            profileDelegateMock.Setup(s => s.GetUserProfile(this.hdid)).Returns(profileDbResult);
 
             Mock<ICryptoDelegate> cryptoDelegateMock = new();
             cryptoDelegateMock.Setup(s => s.Encrypt(It.IsAny<string>(), It.IsAny<string>())).Returns((string key, string text) => text + key);
@@ -354,7 +354,7 @@ namespace HealthGateway.GatewayApi.Test.Services
             IMapper autoMapper = MapperUtil.InitializeAutoMapper();
             Comment comment = CommentMapUtils.ToDbModel(userComment, cryptoDelegateMock.Object, encryptionKey, autoMapper);
 
-            DBResult<Comment> updateResult = new()
+            DbResult<Comment> updateResult = new()
             {
                 Payload = comment,
                 Status = dBStatusCode,
@@ -376,16 +376,16 @@ namespace HealthGateway.GatewayApi.Test.Services
 
         private (RequestResult<IEnumerable<UserComment>> ActualResult, List<UserComment> UserCommentList) ExecuteGetComments(
             string? encryptionKey = null,
-            DBStatusCode dbResultStatus = DBStatusCode.Read)
+            DbStatusCode dbResultStatus = DbStatusCode.Read)
         {
-            DBResult<UserProfile> profileDBResult = new()
+            DbResult<UserProfile> profileDbResult = new()
             {
                 Payload = new UserProfile
                     { EncryptionKey = encryptionKey },
             };
 
             Mock<IUserProfileDelegate> profileDelegateMock = new();
-            profileDelegateMock.Setup(s => s.GetUserProfile(this.hdid)).Returns(profileDBResult);
+            profileDelegateMock.Setup(s => s.GetUserProfile(this.hdid)).Returns(profileDbResult);
 
             Mock<ICryptoDelegate> cryptoDelegateMock = new();
             cryptoDelegateMock.Setup(s => s.Encrypt(It.IsAny<string>(), It.IsAny<string>())).Returns((string key, string text) => text + key);
@@ -413,14 +413,14 @@ namespace HealthGateway.GatewayApi.Test.Services
             IMapper autoMapper = MapperUtil.InitializeAutoMapper();
             List<UserComment> userCommentList = commentList.Select(c => CommentMapUtils.CreateFromDbModel(c, cryptoDelegateMock.Object, encryptionKey, autoMapper)).ToList();
 
-            DBResult<IEnumerable<Comment>> commentsDBResult = new()
+            DbResult<IEnumerable<Comment>> commentsDbResult = new()
             {
                 Payload = commentList,
                 Status = dbResultStatus,
             };
 
             Mock<ICommentDelegate> commentDelegateMock = new();
-            commentDelegateMock.Setup(s => s.GetByParentEntry(this.hdid, this.parentEntryId)).Returns(commentsDBResult);
+            commentDelegateMock.Setup(s => s.GetByParentEntry(this.hdid, this.parentEntryId)).Returns(commentsDbResult);
 
             ICommentService service = new CommentService(
                 new Mock<ILogger<CommentService>>().Object,
@@ -434,17 +434,17 @@ namespace HealthGateway.GatewayApi.Test.Services
             return (actualResult, userCommentList);
         }
 
-        private (RequestResult<UserComment> ActualResult, UserComment UserComment) ExecuteInsertComment(DBStatusCode dBStatusCode = DBStatusCode.Created)
+        private (RequestResult<UserComment> ActualResult, UserComment UserComment) ExecuteInsertComment(DbStatusCode dBStatusCode = DbStatusCode.Created)
         {
             string encryptionKey = "abc";
-            DBResult<UserProfile> profileDBResult = new()
+            DbResult<UserProfile> profileDbResult = new()
             {
                 Payload = new UserProfile
                     { EncryptionKey = encryptionKey },
             };
 
             Mock<IUserProfileDelegate> profileDelegateMock = new();
-            profileDelegateMock.Setup(s => s.GetUserProfile(this.hdid)).Returns(profileDBResult);
+            profileDelegateMock.Setup(s => s.GetUserProfile(this.hdid)).Returns(profileDbResult);
 
             Mock<ICryptoDelegate> cryptoDelegateMock = new();
             cryptoDelegateMock.Setup(s => s.Encrypt(It.IsAny<string>(), It.IsAny<string>())).Returns((string key, string text) => text + key);
@@ -461,7 +461,7 @@ namespace HealthGateway.GatewayApi.Test.Services
             IMapper autoMapper = MapperUtil.InitializeAutoMapper();
             Comment comment = CommentMapUtils.ToDbModel(userComment, cryptoDelegateMock.Object, encryptionKey, autoMapper);
 
-            DBResult<Comment> insertResult = new()
+            DbResult<Comment> insertResult = new()
             {
                 Payload = comment,
                 Status = dBStatusCode,

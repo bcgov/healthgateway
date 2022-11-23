@@ -1,10 +1,10 @@
 import { injectable } from "inversify";
 
 import { ServiceCode } from "@/constants/serviceCodes";
+import ApiResult from "@/models/apiResult";
 import { ExternalConfiguration } from "@/models/configData";
 import { HttpError } from "@/models/errors";
 import PatientData from "@/models/patientData";
-import RequestResult from "@/models/requestResult";
 import container from "@/plugins/container";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import { IHttpDelegate, ILogger, IPatientService } from "@/services/interfaces";
@@ -25,13 +25,13 @@ export class RestPatientService implements IPatientService {
         this.http = http;
     }
 
-    public getPatientData(hdid: string): Promise<RequestResult<PatientData>> {
+    public getPatientData(hdid: string): Promise<ApiResult<PatientData>> {
         return new Promise((resolve, reject) =>
             this.http
-                .get<RequestResult<PatientData>>(
-                    `${this.baseUri}${this.PATIENT_BASE_URI}/${hdid}`
+                .get<ApiResult<PatientData>>(
+                    `${this.baseUri}${this.PATIENT_BASE_URI}/${hdid}?api-version=2.0`
                 )
-                .then((requestResult) => resolve(requestResult))
+                .then((apiResult) => resolve(apiResult))
                 .catch((err: HttpError) => {
                     this.logger.error(
                         `Error in RestPatientService.getPatientData()`

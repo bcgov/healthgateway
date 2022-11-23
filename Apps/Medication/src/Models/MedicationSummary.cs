@@ -25,7 +25,7 @@ namespace HealthGateway.Medication.Models
         /// <summary>
         /// Gets or sets the Drug Identification Number for the prescribed medication.
         /// </summary>
-        public string DIN { get; set; } = string.Empty;
+        public string Din { get; set; } = string.Empty;
 
         /// <summary>
         /// Gets or sets the brand name of the  medication.

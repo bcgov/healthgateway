@@ -15,7 +15,7 @@
 //-------------------------------------------------------------------------
 namespace HealthGateway.JobScheduler.Controllers
 {
-    using HealthGateway.Common.Authorization.Admin;
+    using HealthGateway.Common.AccessManagement.Authorization.Admin;
     using Microsoft.AspNetCore.Authentication.Cookies;
     using Microsoft.AspNetCore.Authentication.OpenIdConnect;
     using Microsoft.AspNetCore.Http;
@@ -27,8 +27,8 @@ namespace HealthGateway.JobScheduler.Controllers
     /// </summary>
     public class JobSchedulerController : Controller
     {
-        private readonly ILogger<JobSchedulerController> logger;
         private readonly IHttpContextAccessor httpContextAccessor;
+        private readonly ILogger<JobSchedulerController> logger;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="JobSchedulerController"/> class.

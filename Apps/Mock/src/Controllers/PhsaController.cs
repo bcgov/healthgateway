@@ -130,19 +130,6 @@ namespace HealthGateway.Mock.Controllers
         }
 
         /// <summary>
-        /// Gets mock data for notification settings.
-        /// </summary>
-        /// <returns>The mocked notification settings json.</returns>
-        [HttpGet]
-        [Route("notificationSettings")]
-        [Produces("application/json")]
-        public ContentResult GetNotificationSettings()
-        {
-            string? payload = AssetReader.Read("HealthGateway.Mock.Assets.NotificationSettings-Get.json");
-            return new ContentResult { Content = payload!, ContentType = "application/json" };
-        }
-
-        /// <summary>
         /// Mocks the endpoint for updating notification settings.
         /// </summary>
         /// <param name="request">The new notification settings.</param>

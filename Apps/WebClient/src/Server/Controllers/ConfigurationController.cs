@@ -13,10 +13,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //-------------------------------------------------------------------------
-namespace HealthGateway.WebClient.Controllers
+namespace HealthGateway.WebClient.Server.Controllers
 {
-    using HealthGateway.WebClient.Models;
-    using HealthGateway.WebClient.Services;
+    using HealthGateway.WebClient.Server.Models;
+    using HealthGateway.WebClient.Server.Services;
     using Microsoft.AspNetCore.Mvc;
 
     /// <summary>
@@ -47,7 +47,7 @@ namespace HealthGateway.WebClient.Controllers
         public ExternalConfiguration Index()
         {
             ExternalConfiguration config = this.configservice.GetConfiguration();
-            config.WebClient.ClientIP = this.HttpContext.Connection.RemoteIpAddress?.MapToIPv4().ToString();
+            config.WebClient.ClientIp = this.HttpContext.Connection.RemoteIpAddress?.MapToIPv4().ToString();
             return config;
         }
 

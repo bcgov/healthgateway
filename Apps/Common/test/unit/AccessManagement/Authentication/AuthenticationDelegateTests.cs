@@ -13,11 +13,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //-------------------------------------------------------------------------
-namespace HealthGateway.CommonTests.AccessManagement.Administration
+namespace HealthGateway.CommonTests.AccessManagement.Authentication
 {
     using System;
     using System.Collections.Generic;
     using System.Diagnostics.CodeAnalysis;
+    using System.Linq;
     using System.Net;
     using System.Net.Http;
     using System.Text.Json;
@@ -27,7 +28,6 @@ namespace HealthGateway.CommonTests.AccessManagement.Administration
     using HealthGateway.Common.AccessManagement.Authentication;
     using HealthGateway.Common.AccessManagement.Authentication.Models;
     using HealthGateway.Common.CacheProviders;
-    using HealthGateway.Common.Services;
     using Microsoft.Extensions.Caching.Memory;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.Logging;
@@ -48,8 +48,9 @@ namespace HealthGateway.CommonTests.AccessManagement.Administration
         public void ShouldAuthenticateAsUser()
         {
             Uri tokenUri = new("http://testsite");
-            Dictionary<string, string> configurationParams = new()
+            Dictionary<string, string?> configurationParams = new()
             {
+                { "ClientAuthentication:TokenUri", tokenUri.ToString() },
                 { "AuthCache:TokenCacheExpireMinutes", "20" },
             };
             IConfiguration configuration = CreateConfiguration(configurationParams);
@@ -84,10 +85,10 @@ namespace HealthGateway.CommonTests.AccessManagement.Administration
                     ItExpr.IsAny<CancellationToken>())
                 .ReturnsAsync(httpResponseMessage)
                 .Verifiable();
-            Mock<IHttpClientService> mockHttpClientService = new();
-            mockHttpClientService.Setup(s => s.CreateDefaultHttpClient()).Returns(() => new HttpClient(handlerMock.Object));
+            Mock<IHttpClientFactory> mockHttpClientFactory = new();
+            mockHttpClientFactory.Setup(s => s.CreateClient(It.IsAny<string>())).Returns(() => new HttpClient(handlerMock.Object));
 
-            IAuthenticationDelegate authDelegate = new AuthenticationDelegate(logger, mockHttpClientService.Object, configuration, cacheProvider, null);
+            IAuthenticationDelegate authDelegate = new AuthenticationDelegate(logger, mockHttpClientFactory.Object, configuration, cacheProvider, null);
             JwtModel actualModel = authDelegate.AuthenticateAsUser(tokenUri, tokenRequest);
             expected.ShouldDeepEqual(actualModel);
 
@@ -101,6 +102,7 @@ namespace HealthGateway.CommonTests.AccessManagement.Administration
         /// <summary>
         /// AuthenticateAsSystem - Happy Path.
         /// </summary>
+        [SuppressMessage("Maintainability", "CA1506:Avoid excessive class coupling", Justification = "Deferred Refactor")]
         [Fact]
         public void ShouldAuthenticateAsSystem()
         {
@@ -130,21 +132,24 @@ namespace HealthGateway.CommonTests.AccessManagement.Administration
                     ItExpr.IsAny<CancellationToken>())
                 .ReturnsAsync(httpResponseMessage)
                 .Verifiable();
-            Mock<IHttpClientService> mockHttpClientService = new();
-            mockHttpClientService.Setup(s => s.CreateDefaultHttpClient()).Returns(() => new HttpClient(handlerMock.Object));
-            Dictionary<string, string> extraConfig = new();
-            IAuthenticationDelegate authDelegate = new AuthenticationDelegate(logger, mockHttpClientService.Object, CreateConfiguration(extraConfig), new Mock<ICacheProvider>().Object, null);
+            Mock<IHttpClientFactory> mockHttpClientFactory = new();
+            mockHttpClientFactory.Setup(s => s.CreateClient(It.IsAny<string>())).Returns(() => new HttpClient(handlerMock.Object));
+            Dictionary<string, string?> extraConfig = new()
+            {
+                { "ClientAuthentication:TokenUri", tokenUri.ToString() },
+            };
+            IAuthenticationDelegate authDelegate = new AuthenticationDelegate(logger, mockHttpClientFactory.Object, CreateConfiguration(extraConfig), new Mock<ICacheProvider>().Object, null);
             JwtModel actualModel = authDelegate.AuthenticateAsSystem(tokenUri, tokenRequest);
             expected.ShouldDeepEqual(actualModel);
         }
 
-        private static IConfiguration CreateConfiguration(Dictionary<string, string> configParams)
+        private static IConfiguration CreateConfiguration(Dictionary<string, string?> configParams)
         {
             return new ConfigurationBuilder()
                 .AddJsonFile("appsettings.json", true)
                 .AddJsonFile("appsettings.Development.json", true)
                 .AddJsonFile("appsettings.local.json", true)
-                .AddInMemoryCollection(configParams)
+                .AddInMemoryCollection(configParams.ToList())
                 .Build();
         }
     }

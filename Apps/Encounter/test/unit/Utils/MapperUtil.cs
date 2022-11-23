@@ -30,10 +30,12 @@ namespace HealthGateway.EncounterTests.Utils
         /// <returns>A configured AutoMapper.</returns>
         public static IMapper InitializeAutoMapper()
         {
-            MapperConfiguration config = new MapperConfiguration(cfg =>
-            {
-                cfg.AddProfile(new HospitalVisitModelProfile());
-            });
+            MapperConfiguration config = new(
+                cfg =>
+                {
+                    cfg.AddProfile(new HospitalVisitModelProfile());
+                    cfg.AddProfile(new EncounterModelProfile());
+                });
 
             return config.CreateMapper();
         }

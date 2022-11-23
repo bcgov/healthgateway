@@ -33,23 +33,20 @@ namespace HealthGateway.Common.Swagger
         /// <param name="settings">settings.</param>
         public ConfigureSwaggerOptions(IOptions<SwaggerSettings> settings)
         {
-            this.settings = settings?.Value ?? new SwaggerSettings();
+            this.settings = settings.Value;
         }
 
         /// <inheritdoc/>
         public void Configure(SwaggerOptions options)
         {
-            if (options != null)
+            options.RouteTemplate = this.settings.RouteTemplatePrefix + "/{documentName}/swagger.json";
+            if (!string.IsNullOrEmpty(this.settings.BasePath))
             {
-                options.RouteTemplate = this.settings.RouteTemplatePrefix + "/{documentName}/swagger.json";
-                if (!string.IsNullOrEmpty(this.settings.BasePath))
-                {
-                    options.PreSerializeFilters.Add(
-                        (swaggerDoc, httpReq) => swaggerDoc.Servers = new List<OpenApiServer>
-                        {
-                            new() { Url = $"{httpReq.Scheme}://{httpReq.Host.Value}{this.settings.BasePath}" },
-                        });
-                }
+                options.PreSerializeFilters.Add(
+                    (swaggerDoc, httpReq) => swaggerDoc.Servers = new List<OpenApiServer>
+                    {
+                        new() { Url = $"{httpReq.Scheme}://{httpReq.Host.Value}{this.settings.BasePath}" },
+                    });
             }
         }
     }

@@ -13,7 +13,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //-------------------------------------------------------------------------
-namespace HealthGateway.Patient.Test.Controllers
+namespace HealthGateway.PatientTests.Controllers
 {
     using System;
     using DeepEqual.Syntax;
@@ -23,6 +23,8 @@ namespace HealthGateway.Patient.Test.Controllers
     using HealthGateway.Common.Models;
     using HealthGateway.Common.Services;
     using HealthGateway.Patient.Controllers;
+    using Microsoft.AspNetCore.Http;
+    using Microsoft.AspNetCore.Mvc;
     using Moq;
     using Xunit;
 
@@ -36,60 +38,103 @@ namespace HealthGateway.Patient.Test.Controllers
         private const string MockedLastName = "mockedLastName";
         private const string MockedGender = "Male";
         private const string MockedPersonalHealthNumber = "mockedPersonalHealthNumber";
+        private static readonly DateTime MockedBirthDate = DateTime.Now;
 
         /// <summary>
         /// GetPatients Test.
         /// </summary>
         [Fact]
-        public void GetPatients()
+        public void ShouldGetPatientsV1()
         {
-            Mock<IPatientService> patientService = new();
-            RequestResult<PatientModel> mockResult = new()
-            {
-                ResultStatus = ResultType.Success,
-                ResourcePayload = new()
-                {
-                    Birthdate = DateTime.Now,
-                    FirstName = MockedFirstName,
-                    LastName = MockedLastName,
-                    Gender = MockedGender,
-                    HdId = MockedHdId,
-                    PersonalHealthNumber = MockedPersonalHealthNumber,
-                    PhysicalAddress = new Address()
-                    {
-                        City = "Victoria",
-                        State = "BC",
-                        Country = "CA",
-                    },
-                    PostalAddress = new Address()
-                    {
-                        City = "Vancouver",
-                        State = "BC",
-                        Country = "CA",
-                    },
-                },
-            };
+            // Arrange
+            PatientController patientController = GetPatientController();
+            PatientModel patientModel = GetPatientModel();
             RequestResult<PatientModel> expectedResult = new()
             {
                 ResultStatus = ResultType.Success,
-                ResourcePayload = new PatientModel()
+                ResourcePayload = new PatientModel
                 {
-                    Birthdate = mockResult.ResourcePayload.Birthdate,
-                    FirstName = mockResult.ResourcePayload.FirstName,
-                    LastName = mockResult.ResourcePayload.LastName,
-                    Gender = mockResult.ResourcePayload.Gender,
-                    HdId = mockResult.ResourcePayload.HdId,
-                    PersonalHealthNumber = mockResult.ResourcePayload.PersonalHealthNumber,
-                    PhysicalAddress = mockResult.ResourcePayload.PhysicalAddress,
-                    PostalAddress = mockResult.ResourcePayload.PostalAddress,
+                    Birthdate = patientModel.Birthdate,
+                    FirstName = patientModel.FirstName,
+                    LastName = patientModel.LastName,
+                    Gender = patientModel.Gender,
+                    HdId = patientModel.HdId,
+                    PersonalHealthNumber = patientModel.PersonalHealthNumber,
+                    PhysicalAddress = patientModel.PhysicalAddress,
+                    PostalAddress = patientModel.PostalAddress,
                 },
             };
-            patientService.Setup(x => x.GetPatient(It.IsAny<string>(), PatientIdentifierType.HDID, false)).ReturnsAsync(mockResult);
 
-            PatientController patientController = new(patientService.Object);
+            // Act
             RequestResult<PatientModel> actualResult = patientController.GetPatient("123").Result;
 
+            // Assert
             expectedResult.ShouldDeepEqual(actualResult);
+        }
+
+        /// <summary>
+        /// GetPatients V2 Test.
+        /// </summary>
+        [Fact]
+        public void ShouldGetPatientsV2()
+        {
+            // Arrange
+            PatientController patientController = GetPatientController();
+
+            // Act
+            IActionResult actualResult = patientController.GetPatientV2("123").Result;
+
+            // Assert
+            Assert.IsType<OkObjectResult>(actualResult);
+            OkObjectResult? okResult = actualResult as OkObjectResult;
+            Assert.Equal(StatusCodes.Status200OK, okResult?.StatusCode);
+            ApiResult<PatientModel> apiResult = Assert.IsAssignableFrom<ApiResult<PatientModel>>(okResult?.Value);
+            Assert.Equal(MockedHdId, apiResult.ResourcePayload!.HdId);
+        }
+
+        private static PatientModel GetPatientModel()
+        {
+            return new()
+            {
+                Birthdate = MockedBirthDate,
+                FirstName = MockedFirstName,
+                LastName = MockedLastName,
+                Gender = MockedGender,
+                HdId = MockedHdId,
+                PersonalHealthNumber = MockedPersonalHealthNumber,
+                PhysicalAddress = new Address
+                {
+                    City = "Victoria",
+                    State = "BC",
+                    Country = "CA",
+                },
+                PostalAddress = new Address
+                {
+                    City = "Vancouver",
+                    State = "BC",
+                    Country = "CA",
+                },
+            };
+        }
+
+        private static PatientController GetPatientController()
+        {
+            Mock<IPatientService> patientServiceV1 = new();
+            Mock<Patient.Services.IPatientService> patientServiceV2 = new();
+            RequestResult<PatientModel> requestResult = new()
+            {
+                ResultStatus = ResultType.Success,
+                ResourcePayload = GetPatientModel(),
+            };
+
+            ApiResult<PatientModel> apiResult = new()
+            {
+                ResourcePayload = GetPatientModel(),
+            };
+
+            patientServiceV2.Setup(x => x.GetPatient(It.IsAny<string>(), PatientIdentifierType.Hdid, false)).ReturnsAsync(apiResult);
+            patientServiceV1.Setup(x => x.GetPatient(It.IsAny<string>(), PatientIdentifierType.Hdid, false)).ReturnsAsync(requestResult);
+            return new(patientServiceV1.Object, patientServiceV2.Object);
         }
     }
 }

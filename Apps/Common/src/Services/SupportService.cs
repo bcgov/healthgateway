@@ -22,13 +22,12 @@ namespace HealthGateway.Common.Services
     using AutoMapper;
     using HealthGateway.Common.Constants;
     using HealthGateway.Common.Data.Constants;
+    using HealthGateway.Common.Data.ErrorHandling;
     using HealthGateway.Common.Data.Models;
-    using HealthGateway.Common.Data.Models.ErrorHandling;
     using HealthGateway.Common.Data.ViewModels;
     using HealthGateway.Common.Models;
     using HealthGateway.Database.Constants;
     using HealthGateway.Database.Delegates;
-    using HealthGateway.Database.Models;
     using HealthGateway.Database.Wrapper;
     using Microsoft.IdentityModel.Tokens;
     using UserQueryType = HealthGateway.Common.Data.Constants.UserQueryType;
@@ -36,10 +35,10 @@ namespace HealthGateway.Common.Services
     /// <inheritdoc/>
     public class SupportService : ISupportService
     {
-        private readonly IUserProfileDelegate userProfileDelegate;
+        private readonly IMapper autoMapper;
         private readonly IMessagingVerificationDelegate messagingVerificationDelegate;
         private readonly IPatientService patientService;
-        private readonly IMapper autoMapper;
+        private readonly IUserProfileDelegate userProfileDelegate;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="SupportService"/> class.
@@ -63,7 +62,7 @@ namespace HealthGateway.Common.Services
         /// <inheritdoc/>
         public RequestResult<IEnumerable<MessagingVerificationModel>> GetMessageVerifications(string hdid)
         {
-            DBResult<IEnumerable<MessagingVerification>> dbResult = this.messagingVerificationDelegate.GetUserMessageVerifications(hdid);
+            DbResult<IEnumerable<MessagingVerification>> dbResult = this.messagingVerificationDelegate.GetUserMessageVerifications(hdid);
             IList<MessagingVerificationModel> verificationModels = this.autoMapper.Map<IList<MessagingVerificationModel>>(dbResult.Payload);
             RequestResult<IEnumerable<MessagingVerificationModel>> result = new()
             {
@@ -85,16 +84,16 @@ namespace HealthGateway.Common.Services
             switch (queryType)
             {
                 case UserQueryType.Phn:
-                    this.PopulateSupportUser(result, PatientIdentifierType.PHN, queryString);
+                    this.PopulateSupportUser(result, PatientIdentifierType.Phn, queryString);
                     break;
                 case UserQueryType.Email:
                     this.PopulateSupportUser(result, Database.Constants.UserQueryType.Email, queryString);
                     break;
                 case UserQueryType.Sms:
-                    this.PopulateSupportUser(result, Database.Constants.UserQueryType.SMS, queryString);
+                    this.PopulateSupportUser(result, Database.Constants.UserQueryType.Sms, queryString);
                     break;
                 case UserQueryType.Hdid:
-                    this.PopulateSupportUser(result, PatientIdentifierType.HDID, queryString);
+                    this.PopulateSupportUser(result, PatientIdentifierType.Hdid, queryString);
                     break;
             }
 
@@ -126,8 +125,8 @@ namespace HealthGateway.Common.Services
             if (patientResult.ResultStatus == ResultType.Success && patientResult.ResourcePayload != null)
             {
                 List<SupportUser> supportUsers = new();
-                DBResult<UserProfile> dbResult = this.userProfileDelegate.GetUserProfile(patientResult.ResourcePayload.HdId);
-                if (dbResult.Status == DBStatusCode.Read)
+                DbResult<UserProfile> dbResult = this.userProfileDelegate.GetUserProfile(patientResult.ResourcePayload.HdId);
+                if (dbResult.Status == DbStatusCode.Read)
                 {
                     SupportUser supportUser = this.autoMapper.Map<SupportUser>(dbResult.Payload);
                     supportUser.PersonalHealthNumber = patientResult.ResourcePayload.PersonalHealthNumber;
@@ -156,7 +155,7 @@ namespace HealthGateway.Common.Services
 
         private void PopulateSupportUser(RequestResult<IEnumerable<SupportUser>> result, Database.Constants.UserQueryType queryType, string queryString)
         {
-            DBResult<List<UserProfile>> dbResult = this.userProfileDelegate.GetUserProfiles(queryType, queryString);
+            DbResult<List<UserProfile>> dbResult = this.userProfileDelegate.GetUserProfiles(queryType, queryString);
             result.ResourcePayload = this.autoMapper.Map<IEnumerable<SupportUser>>(dbResult.Payload);
             result.ResultStatus = ResultType.Success;
         }

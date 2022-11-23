@@ -72,6 +72,6 @@ namespace HealthGateway.Database.Delegates
         /// </summary>
         /// <param name="hdid">The hdid associated with the messaging verification.</param>
         /// <returns>A list of users matching the query.</returns>
-        DBResult<IEnumerable<MessagingVerification>> GetUserMessageVerifications(string hdid);
+        DbResult<IEnumerable<MessagingVerification>> GetUserMessageVerifications(string hdid);
     }
 }

@@ -18,6 +18,7 @@ namespace HealthGateway.CommonTests.Delegates
     using System;
     using System.Collections.Generic;
     using System.IO;
+    using System.Linq;
     using System.Net;
     using System.Net.Http;
     using System.Text.Json;
@@ -29,7 +30,6 @@ namespace HealthGateway.CommonTests.Delegates
     using HealthGateway.Common.Delegates;
     using HealthGateway.Common.Models;
     using HealthGateway.Common.Models.BCMailPlus;
-    using HealthGateway.Common.Services;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.Logging;
     using Moq;
@@ -79,7 +79,7 @@ namespace HealthGateway.CommonTests.Delegates
             {
                 PageIndex = 0,
                 PageSize = null,
-                ResourcePayload = new VaccineProofResponse()
+                ResourcePayload = new VaccineProofResponse
                 {
                     Id = JobId,
                     Status = VaccineProofRequestStatus.Started,
@@ -106,7 +106,7 @@ namespace HealthGateway.CommonTests.Delegates
 
             IVaccineProofDelegate vaccineProofDelegate = new VaccineProofDelegate(
                 loggerFactory.CreateLogger<VaccineProofDelegate>(),
-                GetHttpClientServiceMock(httpResponseMessage).Object,
+                GetHttpClientFactoryMock(httpResponseMessage).Object,
                 this.configuration);
 
             Task<RequestResult<VaccineProofResponse>> task = vaccineProofDelegate.MailAsync(VaccineProofTemplate.Provincial, request, this.address);
@@ -142,7 +142,7 @@ namespace HealthGateway.CommonTests.Delegates
 
             IVaccineProofDelegate vaccineProofDelegate = new VaccineProofDelegate(
                 loggerFactory.CreateLogger<VaccineProofDelegate>(),
-                GetHttpClientServiceMock(httpResponseMessage).Object,
+                GetHttpClientFactoryMock(httpResponseMessage).Object,
                 this.configuration);
 
             Task<RequestResult<VaccineProofResponse>> task = vaccineProofDelegate.MailAsync(VaccineProofTemplate.Provincial, request, this.address);
@@ -175,7 +175,7 @@ namespace HealthGateway.CommonTests.Delegates
 
             IVaccineProofDelegate vaccineProofDelegate = new VaccineProofDelegate(
                 loggerFactory.CreateLogger<VaccineProofDelegate>(),
-                GetHttpClientServiceMock(httpResponseMessage).Object,
+                GetHttpClientFactoryMock(httpResponseMessage).Object,
                 this.configuration);
 
             Task<RequestResult<VaccineProofResponse>> task = vaccineProofDelegate.MailAsync(VaccineProofTemplate.Provincial, request, this.address);
@@ -202,7 +202,7 @@ namespace HealthGateway.CommonTests.Delegates
             {
                 PageIndex = 0,
                 PageSize = null,
-                ResourcePayload = new VaccineProofResponse()
+                ResourcePayload = new VaccineProofResponse
                 {
                     Id = JobId,
                     Status = VaccineProofRequestStatus.Started,
@@ -229,7 +229,7 @@ namespace HealthGateway.CommonTests.Delegates
 
             IVaccineProofDelegate vaccineProofDelegate = new VaccineProofDelegate(
                 loggerFactory.CreateLogger<VaccineProofDelegate>(),
-                GetHttpClientServiceMock(httpResponseMessage).Object,
+                GetHttpClientFactoryMock(httpResponseMessage).Object,
                 this.configuration);
 
             Task<RequestResult<VaccineProofResponse>> task = vaccineProofDelegate.GenerateAsync(VaccineProofTemplate.Provincial, request);
@@ -265,7 +265,7 @@ namespace HealthGateway.CommonTests.Delegates
 
             IVaccineProofDelegate vaccineProofDelegate = new VaccineProofDelegate(
                 loggerFactory.CreateLogger<VaccineProofDelegate>(),
-                GetHttpClientServiceMock(httpResponseMessage).Object,
+                GetHttpClientFactoryMock(httpResponseMessage).Object,
                 this.configuration);
 
             Task<RequestResult<VaccineProofResponse>> task = vaccineProofDelegate.GenerateAsync(VaccineProofTemplate.Provincial, request);
@@ -298,7 +298,7 @@ namespace HealthGateway.CommonTests.Delegates
 
             IVaccineProofDelegate vaccineProofDelegate = new VaccineProofDelegate(
                 loggerFactory.CreateLogger<VaccineProofDelegate>(),
-                GetHttpClientServiceMock(httpResponseMessage).Object,
+                GetHttpClientFactoryMock(httpResponseMessage).Object,
                 this.configuration);
 
             Task<RequestResult<VaccineProofResponse>> task = vaccineProofDelegate.GenerateAsync(VaccineProofTemplate.Provincial, request);
@@ -320,7 +320,7 @@ namespace HealthGateway.CommonTests.Delegates
             {
                 PageIndex = 0,
                 PageSize = null,
-                ResourcePayload = new ReportModel()
+                ResourcePayload = new ReportModel
                 {
                     FileName = "VaccineProof.pdf",
                 },
@@ -329,7 +329,7 @@ namespace HealthGateway.CommonTests.Delegates
                 TotalResultCount = 1,
             };
 
-            byte[] fileContents = new byte[1] { 1 };
+            byte[] fileContents = { 1 };
             using MemoryStream memoryStream = new(fileContents);
             using HttpResponseMessage httpResponseMessage = new()
             {
@@ -341,7 +341,7 @@ namespace HealthGateway.CommonTests.Delegates
 
             IVaccineProofDelegate vaccineProofDelegate = new VaccineProofDelegate(
                 loggerFactory.CreateLogger<VaccineProofDelegate>(),
-                GetHttpClientServiceMock(httpResponseMessage).Object,
+                GetHttpClientFactoryMock(httpResponseMessage).Object,
                 this.configuration);
 
             Task<RequestResult<ReportModel>> task = vaccineProofDelegate.GetAssetAsync(jobUri);
@@ -370,7 +370,7 @@ namespace HealthGateway.CommonTests.Delegates
 
             IVaccineProofDelegate vaccineProofDelegate = new VaccineProofDelegate(
                 loggerFactory.CreateLogger<VaccineProofDelegate>(),
-                GetHttpClientServiceMock(httpResponseMessage).Object,
+                GetHttpClientFactoryMock(httpResponseMessage).Object,
                 this.configuration);
 
             Task<RequestResult<ReportModel>> task = vaccineProofDelegate.GetAssetAsync(jobUri);
@@ -400,7 +400,7 @@ namespace HealthGateway.CommonTests.Delegates
 
             IVaccineProofDelegate vaccineProofDelegate = new VaccineProofDelegate(
                 loggerFactory.CreateLogger<VaccineProofDelegate>(),
-                GetHttpClientServiceMock(httpResponseMessage).Object,
+                GetHttpClientFactoryMock(httpResponseMessage).Object,
                 this.configuration);
 
             Task<RequestResult<ReportModel>> task = vaccineProofDelegate.GetAssetAsync(jobUri);
@@ -428,7 +428,7 @@ namespace HealthGateway.CommonTests.Delegates
 
             IVaccineProofDelegate vaccineProofDelegate = new VaccineProofDelegate(
                 loggerFactory.CreateLogger<VaccineProofDelegate>(),
-                GetHttpClientServiceMock(httpResponseMessage).Object,
+                GetHttpClientFactoryMock(httpResponseMessage).Object,
                 this.configuration);
 
             Task<RequestResult<ReportModel>> task = vaccineProofDelegate.GetAssetAsync(jobUri);
@@ -441,7 +441,7 @@ namespace HealthGateway.CommonTests.Delegates
 
         private static IConfigurationRoot GetIConfigurationRoot()
         {
-            Dictionary<string, string> myConfiguration = new()
+            Dictionary<string, string?> myConfiguration = new()
             {
                 { "BCMailPlus:Endpoint", "https://${HOST}/${ENV}/auth=${TOKEN}/JSON/" },
                 { "BCMailPlus:Host", "bcmaildirect.gov.bc.ca" },
@@ -452,28 +452,28 @@ namespace HealthGateway.CommonTests.Delegates
             };
 
             return new ConfigurationBuilder()
-                .AddJsonFile("appsettings.json", optional: true)
-                .AddJsonFile("appsettings.Development.json", optional: true)
-                .AddJsonFile("appsettings.local.json", optional: true)
-                .AddInMemoryCollection(myConfiguration)
+                .AddJsonFile("appsettings.json", true)
+                .AddJsonFile("appsettings.Development.json", true)
+                .AddJsonFile("appsettings.local.json", true)
+                .AddInMemoryCollection(myConfiguration.ToList())
                 .Build();
         }
 
-        private static Mock<IHttpClientService> GetHttpClientServiceMock(HttpResponseMessage httpResponseMessage)
+        private static Mock<IHttpClientFactory> GetHttpClientFactoryMock(HttpResponseMessage httpResponseMessage)
         {
             Mock<HttpMessageHandler> handlerMock = new();
             handlerMock
-               .Protected()
-               .Setup<Task<HttpResponseMessage>>(
-                  "SendAsync",
-                  ItExpr.IsAny<HttpRequestMessage>(),
-                  ItExpr.IsAny<CancellationToken>())
-               .ReturnsAsync(httpResponseMessage)
-               .Verifiable();
-            Mock<IHttpClientService> mockHttpClientService = new();
-            mockHttpClientService.Setup(s => s.CreateDefaultHttpClient()).Returns(() => new HttpClient(handlerMock.Object));
+                .Protected()
+                .Setup<Task<HttpResponseMessage>>(
+                    "SendAsync",
+                    ItExpr.IsAny<HttpRequestMessage>(),
+                    ItExpr.IsAny<CancellationToken>())
+                .ReturnsAsync(httpResponseMessage)
+                .Verifiable();
+            Mock<IHttpClientFactory> mockHttpClientFactory = new();
+            mockHttpClientFactory.Setup(s => s.CreateClient(It.IsAny<string>())).Returns(() => new HttpClient(handlerMock.Object));
 
-            return mockHttpClientService;
+            return mockHttpClientFactory;
         }
     }
 }

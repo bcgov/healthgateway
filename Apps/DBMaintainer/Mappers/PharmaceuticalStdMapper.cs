@@ -13,7 +13,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //-------------------------------------------------------------------------
-namespace HealthGateway.DrugMaintainer
+namespace HealthGateway.DBMaintainer.Mappers
 {
     using System.Collections.Generic;
     using System.Linq;
@@ -23,7 +23,7 @@ namespace HealthGateway.DrugMaintainer
     /// <summary>
     /// Mapping class to which maps the read file to the relavent model object.
     /// </summary>
-    public class PharmaceuticalStdMapper : ClassMap<PharmaceuticalStd>
+    public sealed class PharmaceuticalStdMapper : ClassMap<PharmaceuticalStd>
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="PharmaceuticalStdMapper"/> class.

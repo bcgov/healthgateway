@@ -13,10 +13,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //-------------------------------------------------------------------------
-namespace HealthGateway.Medication.Services.Test
+namespace HealthGateway.MedicationTests.Services
 {
     using System;
     using System.Collections.Generic;
+    using System.Diagnostics.CodeAnalysis;
     using System.Globalization;
     using System.Net;
     using System.Security.Claims;
@@ -24,7 +25,7 @@ namespace HealthGateway.Medication.Services.Test
     using System.Threading.Tasks;
     using HealthGateway.Common.Constants;
     using HealthGateway.Common.Data.Constants;
-    using HealthGateway.Common.Data.Models.ErrorHandling;
+    using HealthGateway.Common.Data.ErrorHandling;
     using HealthGateway.Common.Data.ViewModels;
     using HealthGateway.Common.Models;
     using HealthGateway.Common.Models.ODR;
@@ -35,6 +36,7 @@ namespace HealthGateway.Medication.Services.Test
     using HealthGateway.Medication.Models;
     using HealthGateway.Medication.Models.ODR;
     using HealthGateway.Medication.Services;
+    using HealthGateway.MedicationTests.Utils;
     using Microsoft.AspNetCore.Http;
     using Microsoft.Extensions.Logging;
     using Moq;
@@ -45,12 +47,12 @@ namespace HealthGateway.Medication.Services.Test
     /// </summary>
     public class MedicationStatementServiceTests
     {
-        private readonly string hdid = "EXTRIOYFPNX35TWEBUAJ3DNFDFXSYTBC6J4M76GYE3HC5ER2NKWQ";
-        private readonly string phn = "0009735353315";
-        private readonly string userId = "1001";
-        private readonly string ipAddress = "10.0.0.1";
         private readonly string din = "00000000";
+        private readonly string hdid = "EXTRIOYFPNX35TWEBUAJ3DNFDFXSYTBC6J4M76GYE3HC5ER2NKWQ";
+        private readonly string ipAddress = "10.0.0.1";
+        private readonly string phn = "0009735353315";
         private readonly string protectiveWord = "TestWord";
+        private readonly string userId = "1001";
 
         /// <summary>
         /// GetMedicationStatementsHistory - Invalid Keyword.
@@ -61,19 +63,23 @@ namespace HealthGateway.Medication.Services.Test
         {
             Mock<IHttpContextAccessor> httpContextAccessorMock = this.GetHttpContextAccessorMock();
             Mock<IPatientService> patientDelegateMock = new();
-            patientDelegateMock.Setup(s => s.GetPatientPHN(this.hdid)).Returns(Task.FromResult(
-                new RequestResult<string>()
-                {
-                    ResourcePayload = this.phn,
-                    ResultStatus = ResultType.Success,
-                }));
+            patientDelegateMock.Setup(s => s.GetPatientPhn(this.hdid))
+                .Returns(
+                    Task.FromResult(
+                        new RequestResult<string>
+                        {
+                            ResourcePayload = this.phn,
+                            ResultStatus = ResultType.Success,
+                        }));
 
             Mock<IDrugLookupDelegate> drugLookupDelegateMock = new();
-            drugLookupDelegateMock.Setup(p => p.GetDrugProductsByDIN(It.IsAny<List<string>>())).Returns(new List<DrugProduct>());
+            drugLookupDelegateMock.Setup(p => p.GetDrugProductsByDin(It.IsAny<List<string>>())).Returns(new List<DrugProduct>());
 
             Mock<IMedStatementDelegate> medStatementDelegateMock = new();
-            RequestResult<MedicationHistoryResponse> requestResult = new();
-            requestResult.ResourcePayload = new MedicationHistoryResponse();
+            RequestResult<MedicationHistoryResponse> requestResult = new()
+            {
+                ResourcePayload = new MedicationHistoryResponse(),
+            };
             medStatementDelegateMock.Setup(p => p.GetMedicationStatementsAsync(It.IsAny<OdrHistoryQuery>(), null, It.IsAny<string>(), this.ipAddress)).ReturnsAsync(requestResult);
 
             IMedicationStatementService service = new RestMedicationStatementService(
@@ -81,7 +87,8 @@ namespace HealthGateway.Medication.Services.Test
                 httpContextAccessorMock.Object,
                 patientDelegateMock.Object,
                 drugLookupDelegateMock.Object,
-                medStatementDelegateMock.Object);
+                medStatementDelegateMock.Object,
+                MapperUtil.InitializeAutoMapper());
 
             // Run and Verify protective word too long
             await this.VerifyProtectiveWordError("TOOLONG4U", ErrorMessages.ProtectiveWordTooLong, service).ConfigureAwait(true);
@@ -118,29 +125,31 @@ namespace HealthGateway.Medication.Services.Test
             Mock<IHttpContextAccessor> httpContextAccessorMock = this.GetHttpContextAccessorMock();
 
             Mock<IPatientService> patientDelegateMock = new();
-            patientDelegateMock.Setup(s => s.GetPatient(this.hdid, PatientIdentifierType.HDID, false)).Returns(Task.FromResult(
-                new RequestResult<PatientModel>()
-                {
-                    ResourcePayload = new PatientModel()
-                    {
-                        Birthdate = DateTime.Parse("2000/01/31", CultureInfo.CurrentCulture),
-                        FirstName = "Patient",
-                        LastName = "Zero",
-                        HdId = this.hdid,
-                        PersonalHealthNumber = this.phn,
-                    },
-                    ResultStatus = ResultType.Success,
-                }));
+            patientDelegateMock.Setup(s => s.GetPatient(this.hdid, PatientIdentifierType.Hdid, false))
+                .Returns(
+                    Task.FromResult(
+                        new RequestResult<PatientModel>
+                        {
+                            ResourcePayload = new PatientModel
+                            {
+                                Birthdate = DateTime.Parse("2000/01/31", CultureInfo.CurrentCulture),
+                                FirstName = "Patient",
+                                LastName = "Zero",
+                                HdId = this.hdid,
+                                PersonalHealthNumber = this.phn,
+                            },
+                            ResultStatus = ResultType.Success,
+                        }));
 
             Mock<IDrugLookupDelegate> drugLookupDelegateMock = new();
-            drugLookupDelegateMock.Setup(p => p.GetDrugProductsByDIN(It.IsAny<List<string>>())).Returns(new List<DrugProduct>());
+            drugLookupDelegateMock.Setup(p => p.GetDrugProductsByDin(It.IsAny<List<string>>())).Returns(new List<DrugProduct>());
 
             Mock<IMedStatementDelegate> medStatementDelegateMock = new();
             RequestResult<MedicationHistoryResponse> requestResult = new()
             {
                 ResultStatus = ResultType.Success,
+                ResourcePayload = new MedicationHistoryResponse(),
             };
-            requestResult.ResourcePayload = new MedicationHistoryResponse();
             medStatementDelegateMock.Setup(p => p.GetMedicationStatementsAsync(It.IsAny<OdrHistoryQuery>(), It.IsAny<string>(), It.IsAny<string>(), this.ipAddress)).ReturnsAsync(requestResult);
 
             IMedicationStatementService service = new RestMedicationStatementService(
@@ -148,7 +157,8 @@ namespace HealthGateway.Medication.Services.Test
                 httpContextAccessorMock.Object,
                 patientDelegateMock.Object,
                 drugLookupDelegateMock.Object,
-                medStatementDelegateMock.Object);
+                medStatementDelegateMock.Object,
+                MapperUtil.InitializeAutoMapper());
 
             // Run and Verify
             RequestResult<IList<MedicationStatementHistory>> actual = await service.GetMedicationStatementsHistory(this.hdid, this.protectiveWord).ConfigureAwait(true);
@@ -159,65 +169,68 @@ namespace HealthGateway.Medication.Services.Test
         /// GetMedicationStatementsHistory - Happy Path.
         /// </summary>
         [Fact]
+        [SuppressMessage("Maintainability", "CA1506:Avoid excessive class coupling", Justification = "Team decision")]
         public void ShouldGetMedications()
         {
             Mock<IHttpContextAccessor> httpContextAccessorMock = this.GetHttpContextAccessorMock();
 
             Mock<IPatientService> patientDelegateMock = new();
-            patientDelegateMock.Setup(s => s.GetPatient(this.hdid, PatientIdentifierType.HDID, false)).Returns(Task.FromResult(
-                new RequestResult<PatientModel>()
-                {
-                    ResourcePayload = new PatientModel()
-                    {
-                        Birthdate = DateTime.Parse("2000/01/31", CultureInfo.CurrentCulture),
-                        FirstName = "Patient",
-                        LastName = "Zero",
-                        HdId = this.hdid,
-                        PersonalHealthNumber = this.phn,
-                    },
-                    ResultStatus = ResultType.Success,
-                }));
+            patientDelegateMock.Setup(s => s.GetPatient(this.hdid, PatientIdentifierType.Hdid, false))
+                .Returns(
+                    Task.FromResult(
+                        new RequestResult<PatientModel>
+                        {
+                            ResourcePayload = new PatientModel
+                            {
+                                Birthdate = DateTime.Parse("2000/01/31", CultureInfo.CurrentCulture),
+                                FirstName = "Patient",
+                                LastName = "Zero",
+                                HdId = this.hdid,
+                                PersonalHealthNumber = this.phn,
+                            },
+                            ResultStatus = ResultType.Success,
+                        }));
 
             Mock<IDrugLookupDelegate> drugLookupDelegateMock = new();
 
             // We need two tests, one for Fed data and one for Provincial data
             List<DrugProduct> drugList = new()
             {
-                new DrugProduct()
+                new DrugProduct
                 {
                     DrugIdentificationNumber = this.din,
                     BrandName = "Brand Name",
-                    Form = new Form()
+                    Form = new Form
                     {
                         PharmaceuticalForm = "PharmaceuticalForm",
                     },
-                    ActiveIngredient = new ActiveIngredient()
+                    ActiveIngredient = new ActiveIngredient
                     {
                         Strength = "strength",
                         StrengthUnit = "strengthunit",
                     },
-                    Company = new Company()
+                    Company = new Company
                     {
                         CompanyName = "Company",
                     },
                 },
             };
 
-            drugLookupDelegateMock.Setup(p => p.GetDrugProductsByDIN(It.IsAny<List<string>>())).Returns(drugList);
+            drugLookupDelegateMock.Setup(p => p.GetDrugProductsByDin(It.IsAny<List<string>>())).Returns(drugList);
 
             Mock<IMedStatementDelegate> medStatementDelegateMock = new();
             RequestResult<MedicationHistoryResponse> requestResult = new()
             {
                 ResultStatus = ResultType.Success,
-                ResourcePayload = new MedicationHistoryResponse()
+                ResourcePayload = new MedicationHistoryResponse
                 {
                     TotalRecords = 1,
                     Pages = 1,
                     Results = new List<MedicationResult>
                     {
-                        new MedicationResult()
+                        new()
                         {
-                            DIN = this.din,
+                            Din = this.din,
                             GenericName = "Generic Name",
                         },
                     },
@@ -230,13 +243,14 @@ namespace HealthGateway.Medication.Services.Test
                 httpContextAccessorMock.Object,
                 patientDelegateMock.Object,
                 drugLookupDelegateMock.Object,
-                medStatementDelegateMock.Object);
+                medStatementDelegateMock.Object,
+                MapperUtil.InitializeAutoMapper());
 
             // Act
             RequestResult<IList<MedicationStatementHistory>> actual = Task.Run(async () => await service.GetMedicationStatementsHistory(this.hdid, null).ConfigureAwait(true)).Result;
 
             // Verify
-            Assert.True(actual.ResultStatus == ResultType.Success && actual?.ResourcePayload?.Count == 1);
+            Assert.True(actual.ResultStatus == ResultType.Success && actual.ResourcePayload?.Count == 1);
         }
 
         /// <summary>
@@ -248,46 +262,48 @@ namespace HealthGateway.Medication.Services.Test
             Mock<IHttpContextAccessor> httpContextAccessorMock = this.GetHttpContextAccessorMock();
 
             Mock<IPatientService> patientDelegateMock = new();
-            patientDelegateMock.Setup(s => s.GetPatient(this.hdid, PatientIdentifierType.HDID, false)).Returns(Task.FromResult(
-                new RequestResult<PatientModel>()
-                {
-                    ResourcePayload = new PatientModel()
-                    {
-                        Birthdate = DateTime.Parse("2000/01/31", CultureInfo.CurrentCulture),
-                        FirstName = "Patient",
-                        LastName = "Zero",
-                        HdId = this.hdid,
-                        PersonalHealthNumber = this.phn,
-                    },
-                    ResultStatus = ResultType.Success,
-                }));
+            patientDelegateMock.Setup(s => s.GetPatient(this.hdid, PatientIdentifierType.Hdid, false))
+                .Returns(
+                    Task.FromResult(
+                        new RequestResult<PatientModel>
+                        {
+                            ResourcePayload = new PatientModel
+                            {
+                                Birthdate = DateTime.Parse("2000/01/31", CultureInfo.CurrentCulture),
+                                FirstName = "Patient",
+                                LastName = "Zero",
+                                HdId = this.hdid,
+                                PersonalHealthNumber = this.phn,
+                            },
+                            ResultStatus = ResultType.Success,
+                        }));
 
             Mock<IDrugLookupDelegate> drugLookupDelegateMock = new();
 
             // We need two tests, one for Fed data and one for Provincial data
             List<DrugProduct> drugList = new()
             {
-                new DrugProduct()
+                new DrugProduct
                 {
                     DrugIdentificationNumber = this.din,
                     BrandName = "Brand Name",
                 },
             };
 
-            drugLookupDelegateMock.Setup(p => p.GetDrugProductsByDIN(It.IsAny<List<string>>())).Returns(drugList);
+            drugLookupDelegateMock.Setup(p => p.GetDrugProductsByDin(It.IsAny<List<string>>())).Returns(drugList);
             Mock<IMedStatementDelegate> medStatementDelegateMock = new();
             RequestResult<MedicationHistoryResponse> requestResult = new()
             {
                 ResultStatus = ResultType.Success,
-                ResourcePayload = new MedicationHistoryResponse()
+                ResourcePayload = new MedicationHistoryResponse
                 {
                     TotalRecords = 1,
                     Pages = 1,
                     Results = new List<MedicationResult>
                     {
-                        new MedicationResult()
+                        new()
                         {
-                            DIN = this.din,
+                            Din = this.din,
                             GenericName = "Generic Name",
                         },
                     },
@@ -300,13 +316,14 @@ namespace HealthGateway.Medication.Services.Test
                 httpContextAccessorMock.Object,
                 patientDelegateMock.Object,
                 drugLookupDelegateMock.Object,
-                medStatementDelegateMock.Object);
+                medStatementDelegateMock.Object,
+                MapperUtil.InitializeAutoMapper());
 
             // Act
             RequestResult<IList<MedicationStatementHistory>> actual = Task.Run(async () => await service.GetMedicationStatementsHistory(this.hdid, null).ConfigureAwait(true)).Result;
 
             // Verify
-            Assert.True(actual.ResultStatus == ResultType.Success && actual?.ResourcePayload?.Count == 1);
+            Assert.True(actual.ResultStatus == ResultType.Success && actual.ResourcePayload?.Count == 1);
         }
 
         /// <summary>
@@ -317,48 +334,50 @@ namespace HealthGateway.Medication.Services.Test
         {
             Mock<IHttpContextAccessor> httpContextAccessorMock = this.GetHttpContextAccessorMock();
             Mock<IPatientService> patientDelegateMock = new();
-            patientDelegateMock.Setup(s => s.GetPatient(this.hdid, PatientIdentifierType.HDID, false)).Returns(Task.FromResult(
-                new RequestResult<PatientModel>()
-                {
-                    ResourcePayload = new PatientModel()
-                    {
-                        Birthdate = DateTime.Parse("2000/01/31", CultureInfo.CurrentCulture),
-                        FirstName = "Patient",
-                        LastName = "Zero",
-                        HdId = this.hdid,
-                        PersonalHealthNumber = this.phn,
-                    },
-                    ResultStatus = ResultType.Success,
-                }));
+            patientDelegateMock.Setup(s => s.GetPatient(this.hdid, PatientIdentifierType.Hdid, false))
+                .Returns(
+                    Task.FromResult(
+                        new RequestResult<PatientModel>
+                        {
+                            ResourcePayload = new PatientModel
+                            {
+                                Birthdate = DateTime.Parse("2000/01/31", CultureInfo.CurrentCulture),
+                                FirstName = "Patient",
+                                LastName = "Zero",
+                                HdId = this.hdid,
+                                PersonalHealthNumber = this.phn,
+                            },
+                            ResultStatus = ResultType.Success,
+                        }));
 
             Mock<IDrugLookupDelegate> drugLookupDelegateMock = new();
 
             // We need two tests, one for Fed data and one for Provincial data
             List<PharmaCareDrug> drugList = new()
             {
-                new PharmaCareDrug()
+                new PharmaCareDrug
                 {
-                    DINPIN = this.din,
+                    DinPin = this.din,
                     BrandName = "Brand Name",
                 },
             };
 
-            drugLookupDelegateMock.Setup(p => p.GetDrugProductsByDIN(It.IsAny<List<string>>())).Returns(new List<DrugProduct>());
-            drugLookupDelegateMock.Setup(p => p.GetPharmaCareDrugsByDIN(It.IsAny<List<string>>())).Returns(drugList);
+            drugLookupDelegateMock.Setup(p => p.GetDrugProductsByDin(It.IsAny<List<string>>())).Returns(new List<DrugProduct>());
+            drugLookupDelegateMock.Setup(p => p.GetPharmaCareDrugsByDin(It.IsAny<List<string>>())).Returns(drugList);
 
             Mock<IMedStatementDelegate> medStatementDelegateMock = new();
             RequestResult<MedicationHistoryResponse> requestResult = new()
             {
                 ResultStatus = ResultType.Success,
-                ResourcePayload = new MedicationHistoryResponse()
+                ResourcePayload = new MedicationHistoryResponse
                 {
                     TotalRecords = 1,
                     Pages = 1,
                     Results = new List<MedicationResult>
                     {
-                        new MedicationResult()
+                        new()
                         {
-                            DIN = this.din,
+                            Din = this.din,
                             GenericName = "Generic Name",
                         },
                     },
@@ -371,13 +390,14 @@ namespace HealthGateway.Medication.Services.Test
                 httpContextAccessorMock.Object,
                 patientDelegateMock.Object,
                 drugLookupDelegateMock.Object,
-                medStatementDelegateMock.Object);
+                medStatementDelegateMock.Object,
+                MapperUtil.InitializeAutoMapper());
 
             // Act
             RequestResult<IList<MedicationStatementHistory>> actual = Task.Run(async () => await service.GetMedicationStatementsHistory(this.hdid, null).ConfigureAwait(true)).Result;
 
             // Verify
-            Assert.True(actual.ResultStatus == ResultType.Success && actual?.ResourcePayload?.Count == 1);
+            Assert.True(actual.ResultStatus == ResultType.Success && actual.ResourcePayload?.Count == 1);
         }
 
         /// <summary>
@@ -390,28 +410,30 @@ namespace HealthGateway.Medication.Services.Test
             Mock<IHttpContextAccessor> httpContextAccessorMock = this.GetHttpContextAccessorMock();
 
             Mock<IPatientService> patientDelegateMock = new();
-            patientDelegateMock.Setup(s => s.GetPatient(this.hdid, PatientIdentifierType.HDID, false)).Returns(Task.FromResult(
-                new RequestResult<PatientModel>()
-                {
-                    ResourcePayload = new PatientModel()
-                    {
-                        Birthdate = DateTime.Parse("2000/01/31", CultureInfo.CurrentCulture),
-                        FirstName = "Patient",
-                        LastName = "Zero",
-                        HdId = this.hdid,
-                        PersonalHealthNumber = this.phn,
-                    },
-                    ResultStatus = ResultType.Success,
-                }));
+            patientDelegateMock.Setup(s => s.GetPatient(this.hdid, PatientIdentifierType.Hdid, false))
+                .Returns(
+                    Task.FromResult(
+                        new RequestResult<PatientModel>
+                        {
+                            ResourcePayload = new PatientModel
+                            {
+                                Birthdate = DateTime.Parse("2000/01/31", CultureInfo.CurrentCulture),
+                                FirstName = "Patient",
+                                LastName = "Zero",
+                                HdId = this.hdid,
+                                PersonalHealthNumber = this.phn,
+                            },
+                            ResultStatus = ResultType.Success,
+                        }));
 
             Mock<IDrugLookupDelegate> drugLookupDelegateMock = new();
-            drugLookupDelegateMock.Setup(p => p.GetDrugProductsByDIN(It.IsAny<List<string>>())).Returns(new List<DrugProduct>());
+            drugLookupDelegateMock.Setup(p => p.GetDrugProductsByDin(It.IsAny<List<string>>())).Returns(new List<DrugProduct>());
 
             Mock<IMedStatementDelegate> medStatementDelegateMock = new();
             RequestResult<MedicationHistoryResponse> requestResult = new()
             {
                 ResultStatus = ResultType.Success,
-                ResourcePayload = new MedicationHistoryResponse()
+                ResourcePayload = new MedicationHistoryResponse
                 {
                     TotalRecords = 0,
                 },
@@ -424,13 +446,14 @@ namespace HealthGateway.Medication.Services.Test
                 httpContextAccessorMock.Object,
                 patientDelegateMock.Object,
                 drugLookupDelegateMock.Object,
-                medStatementDelegateMock.Object);
+                medStatementDelegateMock.Object,
+                MapperUtil.InitializeAutoMapper());
 
             // Act
             RequestResult<IList<MedicationStatementHistory>> actual = await service.GetMedicationStatementsHistory(this.hdid, null).ConfigureAwait(true);
 
             // Verify
-            Assert.True(actual?.ResourcePayload?.Count == 0);
+            Assert.True(actual.ResourcePayload?.Count == 0);
         }
 
         /// <summary>
@@ -442,20 +465,22 @@ namespace HealthGateway.Medication.Services.Test
         {
             Mock<IHttpContextAccessor> httpContextAccessorMock = this.GetHttpContextAccessorMock();
             Mock<IPatientService> patientDelegateMock = new();
-            patientDelegateMock.Setup(s => s.GetPatient(this.hdid, PatientIdentifierType.HDID, false)).Returns(Task.FromResult(
-                new RequestResult<PatientModel>()
-                {
-                    ResultStatus = ResultType.Error,
-                }));
+            patientDelegateMock.Setup(s => s.GetPatient(this.hdid, PatientIdentifierType.Hdid, false))
+                .Returns(
+                    Task.FromResult(
+                        new RequestResult<PatientModel>
+                        {
+                            ResultStatus = ResultType.Error,
+                        }));
 
             Mock<IDrugLookupDelegate> drugLookupDelegateMock = new();
-            drugLookupDelegateMock.Setup(p => p.GetDrugProductsByDIN(It.IsAny<List<string>>())).Returns(new List<DrugProduct>());
+            drugLookupDelegateMock.Setup(p => p.GetDrugProductsByDin(It.IsAny<List<string>>())).Returns(new List<DrugProduct>());
 
             Mock<IMedStatementDelegate> medStatementDelegateMock = new();
             RequestResult<MedicationHistoryResponse> requestResult = new()
             {
                 ResultStatus = ResultType.Success,
-                ResourcePayload = new MedicationHistoryResponse()
+                ResourcePayload = new MedicationHistoryResponse
                 {
                     TotalRecords = 0,
                 },
@@ -468,7 +493,8 @@ namespace HealthGateway.Medication.Services.Test
                 httpContextAccessorMock.Object,
                 patientDelegateMock.Object,
                 drugLookupDelegateMock.Object,
-                medStatementDelegateMock.Object);
+                medStatementDelegateMock.Object,
+                MapperUtil.InitializeAutoMapper());
 
             // Act
             RequestResult<IList<MedicationStatementHistory>> actual = await service.GetMedicationStatementsHistory(this.hdid, null).ConfigureAwait(true);
@@ -513,8 +539,8 @@ namespace HealthGateway.Medication.Services.Test
             // Run and Verify protective word too long
             RequestResult<IList<MedicationStatementHistory>> actual = await service.GetMedicationStatementsHistory(this.hdid, keyword).ConfigureAwait(true);
             Assert.Equal(ResultType.ActionRequired, actual.ResultStatus);
-            Assert.Equal(ActionType.Protected, actual?.ResultError?.ActionCode);
-            Assert.Equal(errorMessage, actual?.ResultError?.ResultMessage);
+            Assert.Equal(ActionType.Protected, actual.ResultError?.ActionCode);
+            Assert.Equal(errorMessage, actual.ResultError?.ResultMessage);
         }
     }
 }

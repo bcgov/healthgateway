@@ -104,9 +104,21 @@ resource "keycloak_openid_user_property_protocol_mapper" "hgadmin_username" {
 resource "keycloak_openid_user_realm_role_protocol_mapper" "hgadmin_realmroles" {
   realm_id            = data.keycloak_realm.hg_realm.id
   client_id           = keycloak_openid_client.hgadmin_client.id
-  name                = "realm roles"
+  name                = "hangfire roles"
   multivalued         = true
   claim_name          = "user_realm_roles"
+  claim_value_type    = "String"
+  add_to_id_token     = true
+  add_to_access_token = true
+  add_to_userinfo     = true
+}
+
+resource "keycloak_openid_user_realm_role_protocol_mapper" "hgadmin_realmroles2" {
+  realm_id            = data.keycloak_realm.hg_realm.id
+  client_id           = keycloak_openid_client.hgadmin_client.id
+  name                = "realm roles"
+  multivalued         = true
+  claim_name          = "roles"
   claim_value_type    = "String"
   add_to_id_token     = true
   add_to_access_token = true

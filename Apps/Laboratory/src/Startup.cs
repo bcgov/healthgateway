@@ -19,7 +19,7 @@ namespace HealthGateway.Laboratory
     using HealthGateway.Common.AccessManagement.Authentication;
     using HealthGateway.Common.AspNetConfiguration;
     using HealthGateway.Common.AspNetConfiguration.Modules;
-    using HealthGateway.Laboratory.Delegates;
+    using HealthGateway.Laboratory.Api;
     using HealthGateway.Laboratory.Factories;
     using HealthGateway.Laboratory.Models;
     using HealthGateway.Laboratory.Services;
@@ -75,8 +75,12 @@ namespace HealthGateway.Laboratory
             // Add API Clients
             LaboratoryConfig labConfig = new();
             this.startupConfig.Configuration.Bind(LaboratoryService.LabConfigSectionKey, labConfig);
-            services.AddRefitClient<ILabTestKitClient>()
+            services.AddRefitClient<ILabTestKitApi>()
                 .ConfigureHttpClient(c => c.BaseAddress = labConfig.BaseUrl);
+            services.AddRefitClient<ILaboratoryApi>()
+                .ConfigureHttpClient(c => c.BaseAddress = labConfig.BaseUrl);
+
+            services.AddAutoMapper(typeof(Startup));
         }
 
         /// <summary>

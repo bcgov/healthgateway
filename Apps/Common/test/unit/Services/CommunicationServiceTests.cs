@@ -105,19 +105,19 @@ namespace HealthGateway.CommonTests.Services
         /// <param name="dbStatusCode">The status returned from the DB Delegate.</param>
         /// <param name="communicationType">The type of Communication to retrieve.</param>
         [Theory]
-        [InlineData(DBStatusCode.Read, CommunicationType.Banner)]
-        [InlineData(DBStatusCode.NotFound, CommunicationType.Banner)]
-        [InlineData(DBStatusCode.Error, CommunicationType.Banner)]
-        [InlineData(DBStatusCode.Read, CommunicationType.InApp)]
-        [InlineData(DBStatusCode.NotFound, CommunicationType.InApp)]
-        [InlineData(DBStatusCode.Error, CommunicationType.InApp)]
-        [InlineData(DBStatusCode.Read, CommunicationType.Mobile)]
-        [InlineData(DBStatusCode.NotFound, CommunicationType.Mobile)]
-        [InlineData(DBStatusCode.Error, CommunicationType.Mobile)]
-        public void ShouldGetActiveCommunicationFromDb(DBStatusCode dbStatusCode, CommunicationType communicationType)
+        [InlineData(DbStatusCode.Read, CommunicationType.Banner)]
+        [InlineData(DbStatusCode.NotFound, CommunicationType.Banner)]
+        [InlineData(DbStatusCode.Error, CommunicationType.Banner)]
+        [InlineData(DbStatusCode.Read, CommunicationType.InApp)]
+        [InlineData(DbStatusCode.NotFound, CommunicationType.InApp)]
+        [InlineData(DbStatusCode.Error, CommunicationType.InApp)]
+        [InlineData(DbStatusCode.Read, CommunicationType.Mobile)]
+        [InlineData(DbStatusCode.NotFound, CommunicationType.Mobile)]
+        [InlineData(DbStatusCode.Error, CommunicationType.Mobile)]
+        public void ShouldGetActiveCommunicationFromDb(DbStatusCode dbStatusCode, CommunicationType communicationType)
         {
             Communication? communication = null;
-            if (dbStatusCode == DBStatusCode.Read)
+            if (dbStatusCode == DbStatusCode.Read)
             {
                 communication = new()
                 {
@@ -128,7 +128,7 @@ namespace HealthGateway.CommonTests.Services
                 };
             }
 
-            DBResult<Communication?> dbResult = new()
+            DbResult<Communication?> dbResult = new()
             {
                 Status = dbStatusCode,
                 Payload = communication,
@@ -147,11 +147,11 @@ namespace HealthGateway.CommonTests.Services
 
             RequestResult<Communication?> actualResult = service.GetActiveCommunication(communicationType);
 
-            if (dbStatusCode is DBStatusCode.Read or DBStatusCode.NotFound)
+            if (dbStatusCode is DbStatusCode.Read or DbStatusCode.NotFound)
             {
                 Assert.NotNull(actualResult);
                 Assert.Equal(ResultType.Success, actualResult.ResultStatus);
-                if (dbStatusCode == DBStatusCode.Read)
+                if (dbStatusCode == DbStatusCode.Read)
                 {
                     Assert.True(dbResult.Payload.IsDeepEqual(actualResult.ResourcePayload));
                     Assert.Equal(1, actualResult.TotalResultCount);

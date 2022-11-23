@@ -13,10 +13,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //-------------------------------------------------------------------------
-namespace HealthGateway.GatewayApi.Test.Services
+namespace HealthGateway.GatewayApiTests.Services.Test
 {
     using System;
     using System.Collections.Generic;
+    using System.Linq;
     using System.Threading.Tasks;
     using AutoMapper;
     using HealthGateway.Common.Data.Constants;
@@ -34,9 +35,9 @@ namespace HealthGateway.GatewayApi.Test.Services
     using HealthGateway.GatewayApi.MapUtils;
     using HealthGateway.GatewayApi.Models;
     using HealthGateway.GatewayApi.Services;
-    using HealthGateway.GatewayApi.Test.Services.Utils;
     using HealthGateway.GatewayApiTests.Services.Test.Constants;
     using HealthGateway.GatewayApiTests.Services.Test.Mock;
+    using HealthGateway.GatewayApiTests.Services.Test.Utils;
     using Microsoft.AspNetCore.Http;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.Logging;
@@ -57,10 +58,10 @@ namespace HealthGateway.GatewayApi.Test.Services
         /// <param name="dBStatus">Db Status code.</param>
         /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
         [Theory]
-        [InlineData(DBStatusCode.Read)]
-        [InlineData(DBStatusCode.Error)]
-        [InlineData(DBStatusCode.NotFound)]
-        public async Task ShouldGetUserProfile(DBStatusCode dBStatus)
+        [InlineData(DbStatusCode.Read)]
+        [InlineData(DbStatusCode.Error)]
+        [InlineData(DbStatusCode.NotFound)]
+        public async Task ShouldGetUserProfile(DbStatusCode dBStatus)
         {
             // Arrange
             UserProfile userProfile = new()
@@ -70,7 +71,7 @@ namespace HealthGateway.GatewayApi.Test.Services
                 LastLoginDateTime = DateTime.Today,
             };
 
-            DBResult<UserProfile> userProfileDBResult = new()
+            DbResult<UserProfile> userProfileDbResult = new()
             {
                 Payload = userProfile,
                 Status = dBStatus,
@@ -97,7 +98,7 @@ namespace HealthGateway.GatewayApi.Test.Services
                 userProfileHistoryMinus2,
             };
 
-            DBResult<IEnumerable<UserProfileHistory>> userProfileHistoryDBResult = new()
+            DbResult<IEnumerable<UserProfileHistory>> userProfileHistoryDbResult = new()
             {
                 Payload = userProfileHistories,
                 Status = dBStatus,
@@ -125,30 +126,29 @@ namespace HealthGateway.GatewayApi.Test.Services
             List<UserPreference> userPreferences = new();
             userPreferences.Add(dbUserPreference);
 
-            DBResult<IEnumerable<UserPreference>> readResult = new()
+            DbResult<IEnumerable<UserPreference>> readResult = new()
             {
                 Payload = userPreferences,
-                Status = DBStatusCode.Read,
+                Status = DbStatusCode.Read,
             };
 
             UserProfileModel expected = UserProfileMapUtils.CreateFromDbModel(userProfile, Guid.Empty, MapperUtil.InitializeAutoMapper());
 
             IUserProfileService service = new UserProfileServiceMock(
                 this.hdid,
-                dBStatus,
                 userProfile,
-                userProfileDBResult,
+                userProfileDbResult,
                 readResult,
                 termsOfService,
                 patientModel,
                 GetIConfigurationRoot(null),
-                userProfileHistoryDBResult).UserProfileServiceMockInstance();
+                userProfileHistoryDbResult).UserProfileServiceMockInstance();
 
             // Act
             RequestResult<UserProfileModel> actualResult = await service.GetUserProfile(this.hdid, DateTime.Now).ConfigureAwait(true);
 
             // Assert
-            if (dBStatus == DBStatusCode.Read)
+            if (dBStatus == DbStatusCode.Read)
             {
                 Assert.Equal(ResultType.Success, actualResult.ResultStatus);
                 Assert.Equal(this.hdid, expected.HdId);
@@ -159,16 +159,16 @@ namespace HealthGateway.GatewayApi.Test.Services
                 Assert.Equal(actualResult.ResourcePayload?.LastLoginDateTimes[2], userProfileHistoryMinus2.LastLoginDateTime);
             }
 
-            if (dBStatus == DBStatusCode.Error)
+            if (dBStatus == DbStatusCode.Error)
             {
                 Assert.Equal(ResultType.Error, actualResult.ResultStatus);
-                Assert.True(actualResult?.ResultError?.ErrorCode.EndsWith("-CI-DB", StringComparison.InvariantCulture));
+                Assert.True(actualResult.ResultError?.ErrorCode.EndsWith("-CI-DB", StringComparison.InvariantCulture));
             }
 
-            if (dBStatus == DBStatusCode.NotFound)
+            if (dBStatus == DbStatusCode.NotFound)
             {
-                Assert.Equal(ResultType.Success, actualResult?.ResultStatus);
-                Assert.Null(actualResult?.ResourcePayload?.HdId);
+                Assert.Equal(ResultType.Success, actualResult.ResultStatus);
+                Assert.Null(actualResult.ResourcePayload?.HdId);
             }
         }
 
@@ -179,10 +179,10 @@ namespace HealthGateway.GatewayApi.Test.Services
         /// <param name="updatedStatus"> the status to return from the mock db delegate after the update.</param>
         /// <param name="resultStatus"> The expected RequestResult status.</param>
         [Theory]
-        [InlineData(DBStatusCode.Read, DBStatusCode.Updated, ResultType.Success)]
-        [InlineData(DBStatusCode.NotFound, DBStatusCode.Error, ResultType.Error)]
-        [InlineData(DBStatusCode.Read, DBStatusCode.Error, ResultType.Error)]
-        public void ShouldUpdateTerms(DBStatusCode readStatus, DBStatusCode updatedStatus, ResultType resultStatus)
+        [InlineData(DbStatusCode.Read, DbStatusCode.Updated, ResultType.Success)]
+        [InlineData(DbStatusCode.NotFound, DbStatusCode.Error, ResultType.Error)]
+        [InlineData(DbStatusCode.Read, DbStatusCode.Error, ResultType.Error)]
+        public void ShouldUpdateTerms(DbStatusCode readStatus, DbStatusCode updatedStatus, ResultType resultStatus)
         {
             UserProfile userProfile = new()
             {
@@ -191,42 +191,42 @@ namespace HealthGateway.GatewayApi.Test.Services
                 Email = "unit.test@hgw.ca",
             };
 
-            DBResult<UserProfile> readProfileDBResult = new()
+            DbResult<UserProfile> readProfileDbResult = new()
             {
                 Payload = userProfile,
                 Status = readStatus,
             };
 
-            DBResult<UserProfile> updatedProfileDBResult = new()
+            DbResult<UserProfile> updatedProfileDbResult = new()
             {
                 Payload = userProfile,
                 Status = updatedStatus,
             };
 
-            DBResult<LegalAgreement> tosDbResult = new()
+            DbResult<LegalAgreement> tosDbResult = new()
             {
-                Status = DBStatusCode.Read,
+                Status = DbStatusCode.Read,
                 Payload = new LegalAgreement
                 {
                     Id = Guid.Empty,
                     CreatedBy = "MockData",
                     CreatedDateTime = DateTime.UtcNow,
                     EffectiveDate = DateTime.UtcNow,
-                    LegalAgreementCode = LegalAgreementType.TermsofService,
+                    LegalAgreementCode = LegalAgreementType.TermsOfService,
                     LegalText = "Mock Terms of Service",
                 },
             };
 
             Mock<ILegalAgreementDelegate> mockLegalAgreementDelegate = new();
-            mockLegalAgreementDelegate.Setup(s => s.GetActiveByAgreementType(LegalAgreementType.TermsofService)).Returns(tosDbResult);
+            mockLegalAgreementDelegate.Setup(s => s.GetActiveByAgreementType(LegalAgreementType.TermsOfService)).Returns(tosDbResult);
             Mock<IUserProfileDelegate> mockUserProfileDelegate = new();
-            mockUserProfileDelegate.Setup(s => s.GetUserProfile(It.IsAny<string>())).Returns(readProfileDBResult);
-            mockUserProfileDelegate.Setup(s => s.Update(It.IsAny<UserProfile>(), true)).Returns(updatedProfileDBResult);
+            mockUserProfileDelegate.Setup(s => s.GetUserProfile(It.IsAny<string>())).Returns(readProfileDbResult);
+            mockUserProfileDelegate.Setup(s => s.Update(It.IsAny<UserProfile>(), true)).Returns(updatedProfileDbResult);
             IUserProfileService service = new UserProfileService(
                 new Mock<ILogger<UserProfileService>>().Object,
                 new Mock<IPatientService>().Object,
                 new Mock<IUserEmailService>().Object,
-                new Mock<IUserSMSService>().Object,
+                new Mock<IUserSmsService>().Object,
                 new Mock<IEmailQueueService>().Object,
                 new Mock<INotificationSettingsService>().Object,
                 mockUserProfileDelegate.Object,
@@ -253,9 +253,9 @@ namespace HealthGateway.GatewayApi.Test.Services
         /// <param name="registration">Registration status code.</param>
         /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
         [Theory]
-        [InlineData(DBStatusCode.Created, RegistrationStatus.Open)]
-        [InlineData(DBStatusCode.Error, RegistrationStatus.Closed)]
-        public async Task ShouldInsertUserProfile(DBStatusCode dbStatus, string registration)
+        [InlineData(DbStatusCode.Created, RegistrationStatus.Open)]
+        [InlineData(DbStatusCode.Error, RegistrationStatus.Closed)]
+        public async Task ShouldInsertUserProfile(DbStatusCode dbStatus, string registration)
         {
             // Arrange
             UserProfile userProfile = new()
@@ -270,17 +270,17 @@ namespace HealthGateway.GatewayApi.Test.Services
                 Birthdate = DateTime.Now.AddYears(-20),
             };
 
-            DBResult<UserProfile> userProfileDBResult = new()
+            DbResult<UserProfile> userProfileDbResult = new()
             {
                 Payload = userProfile,
                 Status = dbStatus,
             };
-            Dictionary<string, string> localConfig = new()
+            Dictionary<string, string?> localConfig = new()
             {
                 { "WebClient:MinPatientAge", "0" },
                 { "WebClient:RegistrationStatus", registration },
             };
-            IUserProfileService service = new UserProfileServiceMock("abc", userProfile, userProfileDBResult, this.hdid, GetIConfigurationRoot(localConfig), patientModel)
+            IUserProfileService service = new UserProfileServiceMock("abc", userProfile, userProfileDbResult, this.hdid, GetIConfigurationRoot(localConfig), patientModel)
                 .UserProfileServiceMockInstance();
 
             // Act
@@ -292,12 +292,12 @@ namespace HealthGateway.GatewayApi.Test.Services
                 .ConfigureAwait(true);
 
             // Assert
-            if (dbStatus == DBStatusCode.Created && registration == RegistrationStatus.Open)
+            if (dbStatus == DbStatusCode.Created && registration == RegistrationStatus.Open)
             {
                 Assert.Equal(ResultType.Success, actualResult.ResultStatus);
             }
 
-            if (dbStatus == DBStatusCode.Error && registration == RegistrationStatus.Closed)
+            if (dbStatus == DbStatusCode.Error && registration == RegistrationStatus.Closed)
             {
                 Assert.Equal(ResultType.Error, actualResult.ResultStatus);
                 Assert.Equal(ErrorTranslator.InternalError(ErrorType.InvalidState), actualResult.ResultError?.ErrorCode);
@@ -325,15 +325,15 @@ namespace HealthGateway.GatewayApi.Test.Services
                 Birthdate = DateTime.Now.AddYears(-20),
             };
 
-            DBResult<UserProfile> insertResult = new()
+            DbResult<UserProfile> insertResult = new()
             {
                 Payload = userProfile,
-                Status = DBStatusCode.Created,
+                Status = DbStatusCode.Created,
             };
 
             UserProfileModel expected = UserProfileMapUtils.CreateFromDbModel(userProfile, userProfile.TermsOfServiceId, MapperUtil.InitializeAutoMapper());
 
-            Dictionary<string, string> localConfig = new()
+            Dictionary<string, string?> localConfig = new()
             {
                 { "WebClient:MinPatientAge", "0" },
             };
@@ -366,7 +366,7 @@ namespace HealthGateway.GatewayApi.Test.Services
                 Birthdate = DateTime.Now.AddYears(-15),
             };
 
-            Dictionary<string, string> localConfig = new()
+            Dictionary<string, string?> localConfig = new()
             {
                 { "WebClient:MinPatientAge", "19" },
             };
@@ -387,9 +387,9 @@ namespace HealthGateway.GatewayApi.Test.Services
         /// </summary>
         /// <param name="dBStatusCode">Db status code.</param>
         [Theory]
-        [InlineData(DBStatusCode.Read)]
-        [InlineData(DBStatusCode.Error)]
-        public void ShouldGetUserPreference(DBStatusCode dBStatusCode)
+        [InlineData(DbStatusCode.Read)]
+        [InlineData(DbStatusCode.Error)]
+        public void ShouldGetUserPreference(DbStatusCode dBStatusCode)
         {
             // Arrange
             UserProfile userProfile = new()
@@ -398,7 +398,7 @@ namespace HealthGateway.GatewayApi.Test.Services
                 TermsOfServiceId = this.termsOfServiceGuid,
             };
 
-            DBResult<UserProfile> userProfileDBResult = new()
+            DbResult<UserProfile> userProfileDbResult = new()
             {
                 Payload = userProfile,
                 Status = dBStatusCode,
@@ -426,27 +426,27 @@ namespace HealthGateway.GatewayApi.Test.Services
             UserPreference userPreference = autoMapper.Map<UserPreference>(userPreferenceModel);
             dbUserPreferences.Add(userPreference);
 
-            DBResult<IEnumerable<UserPreference>> readResult = new()
+            DbResult<IEnumerable<UserPreference>> readResult = new()
             {
                 Payload = dbUserPreferences,
                 Status = dBStatusCode,
             };
 
-            IUserProfileService service = new UserProfileServiceMock(this.hdid, userProfile, userProfileDBResult, readResult, new MessagingVerification(), termsOfService, GetIConfigurationRoot(null))
+            IUserProfileService service = new UserProfileServiceMock(this.hdid, userProfile, userProfileDbResult, readResult, new MessagingVerification(), termsOfService, GetIConfigurationRoot(null))
                 .UserProfileServiceMockInstance();
 
             // Act
             RequestResult<Dictionary<string, UserPreferenceModel>> actualResult = service.GetUserPreferences(this.hdid);
 
             // Assert
-            if (dBStatusCode == DBStatusCode.Read)
+            if (dBStatusCode == DbStatusCode.Read)
             {
                 Assert.Equal(ResultType.Success, actualResult.ResultStatus);
                 Assert.Equal(actualResult.ResourcePayload?.Count, userPreferences.Count);
                 Assert.Equal(actualResult.ResourcePayload?["TutorialPopover"].Value, userPreferences[0].Value);
             }
 
-            if (dBStatusCode == DBStatusCode.Error)
+            if (dBStatusCode == DbStatusCode.Error)
             {
                 Assert.Equal(ResultType.Error, actualResult.ResultStatus);
                 Assert.Equal(ErrorTranslator.ServiceError(ErrorType.CommunicationInternal, ServiceType.Database), actualResult.ResultError?.ErrorCode);
@@ -458,9 +458,9 @@ namespace HealthGateway.GatewayApi.Test.Services
         /// </summary>
         /// <param name="dBStatusCode">dBStatusCode.</param>
         [Theory]
-        [InlineData(DBStatusCode.Created)]
-        [InlineData(DBStatusCode.Error)]
-        public void ShouldCreateUserPreference(DBStatusCode dBStatusCode)
+        [InlineData(DbStatusCode.Created)]
+        [InlineData(DbStatusCode.Error)]
+        public void ShouldCreateUserPreference(DbStatusCode dBStatusCode)
         {
             // Arrange
             UserPreferenceModel userPreferenceModel = new()
@@ -471,7 +471,7 @@ namespace HealthGateway.GatewayApi.Test.Services
             };
             IMapper autoMapper = MapperUtil.InitializeAutoMapper();
             UserPreference userPreference = autoMapper.Map<UserPreference>(userPreferenceModel);
-            DBResult<UserPreference> readResult = new()
+            DbResult<UserPreference> readResult = new()
             {
                 Payload = userPreference,
                 Status = dBStatusCode,
@@ -483,12 +483,12 @@ namespace HealthGateway.GatewayApi.Test.Services
             RequestResult<UserPreferenceModel> actualResult = service.CreateUserPreference(userPreferenceModel);
 
             // Assert
-            if (dBStatusCode == DBStatusCode.Created)
+            if (dBStatusCode == DbStatusCode.Created)
             {
                 Assert.Equal(ResultType.Success, actualResult.ResultStatus);
             }
 
-            if (dBStatusCode == DBStatusCode.Error)
+            if (dBStatusCode == DbStatusCode.Error)
             {
                 Assert.Equal(ResultType.Error, actualResult.ResultStatus);
                 Assert.Equal(ErrorTranslator.ServiceError(ErrorType.CommunicationInternal, ServiceType.Database), actualResult.ResultError?.ErrorCode);
@@ -500,9 +500,9 @@ namespace HealthGateway.GatewayApi.Test.Services
         /// </summary>
         /// <param name="dBStatusCode">dBStatusCode.</param>
         [Theory]
-        [InlineData(DBStatusCode.Updated)]
-        [InlineData(DBStatusCode.Error)]
-        public void ShouldUpdateUserPreference(DBStatusCode dBStatusCode)
+        [InlineData(DbStatusCode.Updated)]
+        [InlineData(DbStatusCode.Error)]
+        public void ShouldUpdateUserPreference(DbStatusCode dBStatusCode)
         {
             // Arrange
             UserPreferenceModel userPreferenceModel = new()
@@ -513,7 +513,7 @@ namespace HealthGateway.GatewayApi.Test.Services
             };
             IMapper autoMapper = MapperUtil.InitializeAutoMapper();
             UserPreference userPreference = autoMapper.Map<UserPreference>(userPreferenceModel);
-            DBResult<UserPreference> readResult = new()
+            DbResult<UserPreference> readResult = new()
             {
                 Payload = userPreference,
                 Status = dBStatusCode,
@@ -525,12 +525,12 @@ namespace HealthGateway.GatewayApi.Test.Services
             RequestResult<UserPreferenceModel> actualResult = service.UpdateUserPreference(userPreferenceModel);
 
             // Assert
-            if (dBStatusCode == DBStatusCode.Updated)
+            if (dBStatusCode == DbStatusCode.Updated)
             {
                 Assert.Equal(ResultType.Success, actualResult.ResultStatus);
             }
 
-            if (dBStatusCode == DBStatusCode.Error)
+            if (dBStatusCode == DbStatusCode.Error)
             {
                 Assert.Equal(ResultType.Error, actualResult.ResultStatus);
                 Assert.Equal(ErrorTranslator.ServiceError(ErrorType.CommunicationInternal, ServiceType.Database), actualResult.ResultError?.ErrorCode);
@@ -550,10 +550,10 @@ namespace HealthGateway.GatewayApi.Test.Services
                 TermsOfServiceId = this.termsOfServiceGuid,
             };
 
-            DBResult<UserProfile> userProfileDBResult = new()
+            DbResult<UserProfile> userProfileDbResult = new()
             {
                 Payload = userProfile,
-                Status = DBStatusCode.Read,
+                Status = DbStatusCode.Read,
             };
 
             IHeaderDictionary headerDictionary = new HeaderDictionary
@@ -561,7 +561,7 @@ namespace HealthGateway.GatewayApi.Test.Services
                 { "referer", "http://localhost/" },
             };
 
-            IUserProfileService service = new UserProfileServiceMock(this.hdid, userProfile, userProfileDBResult, headerDictionary, GetIConfigurationRoot(null), false)
+            IUserProfileService service = new UserProfileServiceMock(this.hdid, userProfile, userProfileDbResult, headerDictionary, GetIConfigurationRoot(null), false)
                 .UserProfileServiceMockInstance();
 
             // Act
@@ -585,10 +585,10 @@ namespace HealthGateway.GatewayApi.Test.Services
                 TermsOfServiceId = this.termsOfServiceGuid,
                 ClosedDateTime = DateTime.Today,
             };
-            DBResult<UserProfile> userProfileDBResult = new()
+            DbResult<UserProfile> userProfileDbResult = new()
             {
                 Payload = userProfile,
-                Status = DBStatusCode.Read,
+                Status = DbStatusCode.Read,
             };
 
             IHeaderDictionary headerDictionary = new HeaderDictionary
@@ -596,7 +596,7 @@ namespace HealthGateway.GatewayApi.Test.Services
                 { "referer", "http://localhost/" },
             };
 
-            IUserProfileService service = new UserProfileServiceMock(this.hdid, userProfile, userProfileDBResult, headerDictionary, GetIConfigurationRoot(null), false)
+            IUserProfileService service = new UserProfileServiceMock(this.hdid, userProfile, userProfileDbResult, headerDictionary, GetIConfigurationRoot(null), false)
                 .UserProfileServiceMockInstance();
 
             // Act
@@ -621,10 +621,10 @@ namespace HealthGateway.GatewayApi.Test.Services
                 Email = "unit.test@hgw.ca",
             };
 
-            DBResult<UserProfile> userProfileDBResult = new()
+            DbResult<UserProfile> userProfileDbResult = new()
             {
                 Payload = userProfile,
-                Status = DBStatusCode.Read,
+                Status = DbStatusCode.Read,
             };
 
             IHeaderDictionary headerDictionary = new HeaderDictionary
@@ -632,7 +632,7 @@ namespace HealthGateway.GatewayApi.Test.Services
                 { "referer", "http://localhost/" },
             };
 
-            IUserProfileService service = new UserProfileServiceMock(this.hdid, userProfile, userProfileDBResult, headerDictionary, GetIConfigurationRoot(null), false)
+            IUserProfileService service = new UserProfileServiceMock(this.hdid, userProfile, userProfileDbResult, headerDictionary, GetIConfigurationRoot(null), false)
                 .UserProfileServiceMockInstance();
 
             // Act
@@ -658,10 +658,10 @@ namespace HealthGateway.GatewayApi.Test.Services
                 Email = "unit.test@hgw.ca",
             };
 
-            DBResult<UserProfile> userProfileDBResult = new()
+            DbResult<UserProfile> userProfileDbResult = new()
             {
                 Payload = userProfile,
-                Status = DBStatusCode.Read,
+                Status = DbStatusCode.Read,
             };
 
             IHeaderDictionary headerDictionary = new HeaderDictionary
@@ -669,7 +669,7 @@ namespace HealthGateway.GatewayApi.Test.Services
                 { "referer", "http://localhost/" },
             };
 
-            IUserProfileService service = new UserProfileServiceMock(this.hdid, userProfile, userProfileDBResult, headerDictionary, GetIConfigurationRoot(null), false)
+            IUserProfileService service = new UserProfileServiceMock(this.hdid, userProfile, userProfileDbResult, headerDictionary, GetIConfigurationRoot(null), false)
                 .UserProfileServiceMockInstance();
 
             // Act
@@ -694,10 +694,10 @@ namespace HealthGateway.GatewayApi.Test.Services
                 ClosedDateTime = null,
             };
 
-            DBResult<UserProfile> userProfileDBResult = new()
+            DbResult<UserProfile> userProfileDbResult = new()
             {
                 Payload = userProfile,
-                Status = DBStatusCode.Read,
+                Status = DbStatusCode.Read,
             };
 
             IHeaderDictionary headerDictionary = new HeaderDictionary
@@ -705,7 +705,7 @@ namespace HealthGateway.GatewayApi.Test.Services
                 { "referer", "http://localhost/" },
             };
 
-            IUserProfileService service = new UserProfileServiceMock(this.hdid, userProfile, userProfileDBResult, headerDictionary, GetIConfigurationRoot(null), false)
+            IUserProfileService service = new UserProfileServiceMock(this.hdid, userProfile, userProfileDbResult, headerDictionary, GetIConfigurationRoot(null), false)
                 .UserProfileServiceMockInstance();
 
             // Act
@@ -716,13 +716,13 @@ namespace HealthGateway.GatewayApi.Test.Services
             Assert.Null(actualResult.ResourcePayload?.ClosedDateTime);
         }
 
-        private static IConfigurationRoot GetIConfigurationRoot(Dictionary<string, string>? localConfig)
+        private static IConfigurationRoot GetIConfigurationRoot(Dictionary<string, string?>? localConfig)
         {
-            Dictionary<string, string> myConfiguration = localConfig ?? new();
+            Dictionary<string, string?> myConfiguration = localConfig ?? new();
 
             return new ConfigurationBuilder()
                 .AddJsonFile("UnitTest.json", true)
-                .AddInMemoryCollection(myConfiguration)
+                .AddInMemoryCollection(myConfiguration.ToList())
                 .Build();
         }
     }

@@ -13,16 +13,17 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //-------------------------------------------------------------------------
-namespace HealthGateway.LaboratoryTests
+namespace HealthGateway.LaboratoryTests.Factories
 {
     using System;
-    using HealthGateway.Common.Services;
+    using HealthGateway.Laboratory.Api;
     using HealthGateway.Laboratory.Delegates;
     using HealthGateway.Laboratory.Factories;
     using HealthGateway.Laboratory.Services;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Logging;
+    using Refit;
     using Xunit;
 
     /// <summary>
@@ -57,9 +58,9 @@ namespace HealthGateway.LaboratoryTests
         private static IConfigurationRoot GetIConfigurationRoot()
         {
             return new ConfigurationBuilder()
-                .AddJsonFile("appsettings.json", optional: true)
-                .AddJsonFile("appsettings.Development.json", optional: true)
-                .AddJsonFile("appsettings.local.json", optional: true)
+                .AddJsonFile("appsettings.json", true)
+                .AddJsonFile("appsettings.Development.json", true)
+                .AddJsonFile("appsettings.local.json", true)
                 .Build();
         }
 
@@ -72,10 +73,8 @@ namespace HealthGateway.LaboratoryTests
             services.AddLogging(logging => logging.AddConsole());
             services.AddSingleton<RestLaboratoryDelegate>();
 
-            services.AddHttpClient<IHttpClientService, HttpClientService>();
-            services.AddTransient<IHttpClientService, HttpClientService>();
-
-            services.AddHttpContextAccessor();
+            services.AddRefitClient<ILaboratoryApi>()
+                .ConfigureHttpClient(c => c.BaseAddress = new Uri("http://localhost:5002/"));
 
             IConfigurationRoot config = GetIConfigurationRoot();
             services.AddSingleton<IConfiguration>(config);

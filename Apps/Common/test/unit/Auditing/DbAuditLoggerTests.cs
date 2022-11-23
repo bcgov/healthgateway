@@ -43,7 +43,7 @@ namespace HealthGateway.CommonTests.Auditing
             AuditEvent expected = new()
             {
                 ApplicationType = ApplicationType.Configuration,
-                ClientIP = "127.0.0.1",
+                ClientIp = "127.0.0.1",
                 Trace = ctx.TraceIdentifier,
                 TransactionName = @"\",
                 TransactionResultCode = AuditTransactionResult.Success,
@@ -72,7 +72,7 @@ namespace HealthGateway.CommonTests.Auditing
             AuditEvent expected = new()
             {
                 ApplicationType = ApplicationType.Configuration,
-                ClientIP = "127.0.0.1",
+                ClientIp = "127.0.0.1",
                 Trace = ctx.TraceIdentifier,
                 TransactionName = @"\",
                 TransactionResultCode = AuditTransactionResult.Unauthorized,
@@ -87,7 +87,7 @@ namespace HealthGateway.CommonTests.Auditing
             dbAuditLogger.PopulateWithHttpContext(ctx, actual);
 
             Assert.True(actual.TransactionResultCode == AuditTransactionResult.Unauthorized);
-            expected.IsDeepEqual(actual);
+            Assert.True(expected.IsDeepEqual(actual));
         }
 
         /// <summary>
@@ -102,7 +102,7 @@ namespace HealthGateway.CommonTests.Auditing
             AuditEvent expected = new()
             {
                 ApplicationType = ApplicationType.Configuration,
-                ClientIP = "127.0.0.1",
+                ClientIp = "127.0.0.1",
                 Trace = ctx.TraceIdentifier,
                 TransactionName = @"\",
                 TransactionResultCode = AuditTransactionResult.Failure,
@@ -117,7 +117,7 @@ namespace HealthGateway.CommonTests.Auditing
             dbAuditLogger.PopulateWithHttpContext(ctx, actual);
 
             Assert.True(actual.TransactionResultCode == AuditTransactionResult.Failure);
-            expected.IsDeepEqual(actual);
+            Assert.True(expected.IsDeepEqual(actual));
         }
 
         /// <summary>
@@ -131,7 +131,7 @@ namespace HealthGateway.CommonTests.Auditing
             AuditEvent expected = new()
             {
                 ApplicationType = ApplicationType.Configuration,
-                ClientIP = "127.0.0.1",
+                ClientIp = "127.0.0.1",
                 Trace = ctx.TraceIdentifier,
                 TransactionName = @"\",
                 TransactionResultCode = AuditTransactionResult.Success,
@@ -166,7 +166,7 @@ namespace HealthGateway.CommonTests.Auditing
             AuditEvent expected = new()
             {
                 ApplicationType = ApplicationType.Configuration,
-                ClientIP = "127.0.0.1",
+                ClientIp = "127.0.0.1",
                 Trace = ctx.TraceIdentifier,
                 TransactionName = @"\",
                 TransactionResultCode = AuditTransactionResult.Success,

@@ -18,7 +18,7 @@ namespace HealthGateway.Database.Constants
     /// <summary>
     /// The set of programs.
     /// </summary>
-    public enum DBStatusCode
+    public enum DbStatusCode
     {
         /// <summary>
         /// Represents that an object was created.

@@ -19,7 +19,6 @@ namespace HealthGateway.Immunization.Controllers
     using HealthGateway.Common.AccessManagement.Authorization.Policy;
     using HealthGateway.Common.Data.ViewModels;
     using HealthGateway.Common.Filters;
-    using HealthGateway.Common.Models.PHSA;
     using HealthGateway.Immunization.Models;
     using HealthGateway.Immunization.Services;
     using Microsoft.AspNetCore.Authorization;
@@ -36,7 +35,7 @@ namespace HealthGateway.Immunization.Controllers
     [TypeFilter(typeof(AvailabilityFilter))]
     public class AuthenticatedVaccineStatusController : ControllerBase
     {
-        private readonly ILogger logger;
+        private readonly ILogger<AuthenticatedVaccineStatusController> logger;
         private readonly IVaccineStatusService vaccineStatusService;
 
         /// <summary>
@@ -45,7 +44,7 @@ namespace HealthGateway.Immunization.Controllers
         /// <param name="logger">Injected Logger Provider.</param>
         /// <param name="vaccineStatusService">The injected vaccine status service.</param>
         public AuthenticatedVaccineStatusController(
-            ILogger<ImmunizationController> logger,
+            ILogger<AuthenticatedVaccineStatusController> logger,
             IVaccineStatusService vaccineStatusService)
         {
             this.logger = logger;

@@ -1,4 +1,4 @@
-FROM healthopenshift/hg-base:1.0.0.402
+FROM healthopenshift/hg-base:latest
 COPY . .
 EXPOSE 8080
 ENTRYPOINT ["dotnet","WebClient.dll"]

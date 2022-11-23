@@ -13,13 +13,13 @@
 //  See the License for the specific language governing permissions and
 //  limitations under the License.
 // -------------------------------------------------------------------------
-namespace Healthgateway.JobScheduler.Jobs
+namespace HealthGateway.JobScheduler.Jobs
 {
     using Hangfire;
-    using HealthGateway.Common.FileDownload;
     using HealthGateway.Database.Context;
-    using HealthGateway.DrugMaintainer;
-    using HealthGateway.DrugMaintainer.Apps;
+    using HealthGateway.DBMaintainer.Apps;
+    using HealthGateway.DBMaintainer.FileDownload;
+    using HealthGateway.DBMaintainer.Parsers;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.Logging;
 
@@ -28,7 +28,7 @@ namespace Healthgateway.JobScheduler.Jobs
     /// Reads the AllFiles zip as located and documented at
     /// https://www.canada.ca/en/health-canada/services/drugs-health-products/drug-products/drug-product-database/what-data-extract-drug-product-database.html.
     /// </summary>
-    public class FedDrugJob : FedDrugDBApp
+    public class FedDrugJob : FedDrugDbApp
     {
         private const int ConcurrencyTimeout = 15 * 60; // Set the ConcurrentTimeout to 15 minutes
         private const int MaxConcurrency = 4; // We allow a maximum of 4 instances of this job (Active, Cancelled, Marketed, and Dormant)
@@ -40,9 +40,9 @@ namespace Healthgateway.JobScheduler.Jobs
         /// <param name="parser">The file parser.</param>
         /// <param name="downloadService">The download utility.</param>
         /// <param name="configuration">The IConfiguration to use.</param>
-        /// <param name="drugDBContext">The database context to interact with.</param>
-        public FedDrugJob(ILogger<FedDrugDBApp> logger, IDrugProductParser parser, IFileDownloadService downloadService, IConfiguration configuration, GatewayDbContext drugDBContext)
-            : base(logger, parser, downloadService, configuration, drugDBContext)
+        /// <param name="drugDbContext">The database context to interact with.</param>
+        public FedDrugJob(ILogger<FedDrugJob> logger, IDrugProductParser parser, IFileDownloadService downloadService, IConfiguration configuration, GatewayDbContext drugDbContext)
+            : base(logger, parser, downloadService, configuration, drugDbContext)
         {
         }
 

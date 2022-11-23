@@ -31,16 +31,16 @@ namespace HealthGateway.Database.Delegates
         /// <param name="noteId">The Note ID to retrieve.</param>
         /// <param name="hdid">The user hdid.</param>
         /// <returns>The note wrapped in a DBResult.</returns>
-        DBResult<Note> GetNote(Guid noteId, string hdid);
+        DbResult<Note> GetNote(Guid noteId, string hdid);
 
         /// <summary>
         /// Gets a list of notes ordered by the journal datetime for the given HdId.
         /// </summary>
         /// <param name="hdId">The users health identifier id.</param>
         /// <param name="offset">The starting offset for the query.</param>
-        /// <param name="pagesize">The maximum amount of rows to return.</param>
+        /// <param name="pageSize">The maximum amount of rows to return.</param>
         /// <returns>A list of Notes wrapped in a DBResult.</returns>
-        DBResult<IEnumerable<Note>> GetNotes(string hdId, int offset = 0, int pagesize = 500);
+        DbResult<IList<Note>> GetNotes(string hdId, int offset = 0, int pageSize = 500);
 
         /// <summary>
         /// Add the given note.
@@ -48,7 +48,7 @@ namespace HealthGateway.Database.Delegates
         /// <param name="note">The note to be added to the backend.</param>
         /// <param name="commit">if true the transaction is persisted immediately.</param>
         /// <returns>A Note wrapped in a DBResult.</returns>
-        DBResult<Note> AddNote(Note note, bool commit = true);
+        DbResult<Note> AddNote(Note note, bool commit = true);
 
         /// <summary>
         /// Update the supplied note.
@@ -56,7 +56,7 @@ namespace HealthGateway.Database.Delegates
         /// <param name="note">The note to be updated in the backend.</param>
         /// <param name="commit">if true the transaction is persisted immediately.</param>
         /// <returns>A Note wrapped in a DBResult.</returns>
-        DBResult<Note> UpdateNote(Note note, bool commit = true);
+        DbResult<Note> UpdateNote(Note note, bool commit = true);
 
         /// <summary>
         /// Update the list of suplied notes.
@@ -64,7 +64,7 @@ namespace HealthGateway.Database.Delegates
         /// <param name="notes">The notes to be updated in the backend.</param>
         /// <param name="commit">if true the transaction is persisted immediately.</param>
         /// <returns>A List of Notes wrapped in a DBResult.</returns>
-        DBResult<IEnumerable<Note>> BatchUpdate(IEnumerable<Note> notes, bool commit = true);
+        DbResult<IEnumerable<Note>> BatchUpdate(IEnumerable<Note> notes, bool commit = true);
 
         /// <summary>
         /// Deletes the supplied note.
@@ -72,7 +72,7 @@ namespace HealthGateway.Database.Delegates
         /// <param name="note">The note to be deleted in the backend.</param>
         /// <param name="commit">if true the transaction is persisted immediately.</param>
         /// <returns>A Note wrapped in a DBResult.</returns>
-        DBResult<Note> DeleteNote(Note note, bool commit = true);
+        DbResult<Note> DeleteNote(Note note, bool commit = true);
 
         /// <summary>
         /// Gets a list of all the notes ordered by the CreatedDateTime in assending order.
@@ -80,6 +80,6 @@ namespace HealthGateway.Database.Delegates
         /// <param name="page">The starting offset for the query.</param>
         /// <param name="pageSize">The maximum amount of rows to return.</param>
         /// <returns>A list of Notes wrapped in a DBResult.</returns>
-        DBResult<IEnumerable<Note>> GetAll(int page, int pageSize);
+        DbResult<IEnumerable<Note>> GetAll(int page, int pageSize);
     }
 }

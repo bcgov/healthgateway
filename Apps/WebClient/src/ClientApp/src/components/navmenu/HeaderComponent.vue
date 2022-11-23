@@ -198,7 +198,7 @@ export default class HeaderComponent extends Vue {
             <!-- Hamburger toggle -->
             <hg-button
                 v-if="isSidebarButtonShown"
-                class="m-2"
+                class="my-2 ml-2"
                 variant="icon"
                 @click="handleToggleClick"
             >
@@ -211,7 +211,7 @@ export default class HeaderComponent extends Vue {
             </hg-button>
 
             <!-- Brand -->
-            <b-navbar-brand class="my-2 mr-0 ml-md-2 d-flex">
+            <b-navbar-brand class="my-2 mr-0 ml-2 d-flex">
                 <router-link to="/">
                     <img
                         class="img-fluid d-none d-md-block"
@@ -297,7 +297,6 @@ export default class HeaderComponent extends Vue {
                     v-else-if="isLogInButtonShown"
                     id="menuBtnLogin"
                     data-testid="loginBtn"
-                    class="nav-link"
                     link-classes="d-flex align-items-center"
                     to="/login"
                 >
@@ -308,7 +307,6 @@ export default class HeaderComponent extends Vue {
                     v-else-if="isLogOutButtonShown"
                     id="header-log-out-button"
                     data-testid="header-log-out-button"
-                    class="nav-link"
                     link-classes="d-flex align-items-center"
                     to="/logout"
                 >
@@ -376,10 +374,6 @@ nav {
             width: 1.5em;
             height: 1.5em;
         }
-    }
-
-    .nav-link {
-        cursor: pointer;
     }
 
     .background-secondary {

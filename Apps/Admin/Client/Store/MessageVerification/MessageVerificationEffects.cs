@@ -16,7 +16,9 @@
 
 namespace HealthGateway.Admin.Client.Store.MessageVerification
 {
+    using System;
     using System.Collections.Generic;
+    using System.Net.Http;
     using System.Threading.Tasks;
     using Fluxor;
     using HealthGateway.Admin.Client.Services;
@@ -60,17 +62,28 @@ namespace HealthGateway.Admin.Client.Store.MessageVerification
         {
             this.Logger.LogInformation("Loading messaging verifications");
 
-            ApiResponse<RequestResult<IEnumerable<MessagingVerificationModel>>> response = await this.SupportApi.GetMessagingVerifications(action.Hdid).ConfigureAwait(true);
-            if (response.IsSuccessStatusCode && response.Content != null && response.Content.ResultStatus == ResultType.Success)
+            try
             {
-                this.Logger.LogInformation("Messaging verifications loaded successfully!");
-                dispatcher.Dispatch(new MessageVerificationActions.LoadSuccessAction(response.Content, action.Hdid));
-                return;
+                RequestResult<IEnumerable<MessagingVerificationModel>> response = await this.SupportApi.GetMessagingVerificationsAsync(action.Hdid).ConfigureAwait(true);
+                if (response.ResultStatus == ResultType.Success)
+                {
+                    this.Logger.LogInformation("Messaging verifications loaded successfully!");
+                    dispatcher.Dispatch(new MessageVerificationActions.LoadSuccessAction(response, action.Hdid));
+                }
+                else
+                {
+                    RequestError error = StoreUtility.FormatRequestError(response.ResultError);
+                    this.Logger.LogError("Error loading messaging verifications, reason: {ErrorMessage}", error.Message);
+                    dispatcher.Dispatch(new MessageVerificationActions.LoadFailAction(error));
+                }
             }
-
-            RequestError error = StoreUtility.FormatRequestError(response.Error, response.Content?.ResultError);
-            this.Logger.LogError("Error loading messaging verifications, reason: {ErrorMessage}", error.Message);
-            dispatcher.Dispatch(new MessageVerificationActions.LoadFailAction(error));
+            catch (Exception e) when (e is ApiException or HttpRequestException)
+            {
+                this.Logger.LogError("Error loading messaging verifications...{Error}", e);
+                RequestError error = StoreUtility.FormatRequestError(e);
+                this.Logger.LogError("Error loading messaging verifications, reason: {ErrorMessage}", error.Message);
+                dispatcher.Dispatch(new MessageVerificationActions.LoadFailAction(error));
+            }
         }
     }
 }

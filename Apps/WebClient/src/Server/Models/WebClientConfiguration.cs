@@ -13,11 +13,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //-------------------------------------------------------------------------
-namespace HealthGateway.WebClient.Models
+namespace HealthGateway.WebClient.Server.Models
 {
     using System;
     using System.Collections.Generic;
     using System.Diagnostics.CodeAnalysis;
+    using System.Text.Json.Serialization;
 
     /// <summary>
     /// Configuration data to be used by the Health Gateway Webclient.
@@ -43,7 +44,8 @@ namespace HealthGateway.WebClient.Models
         /// Gets or sets the ExternalURLs used by the Webclient.
         /// </summary>
         [SuppressMessage("Usage", "CA2227:Collection properties should be read only", Justification = "Team decision")]
-        public Dictionary<string, Uri> ExternalURLs { get; set; } = new();
+        [JsonPropertyName("externalURLs")]
+        public Dictionary<string, Uri> ExternalUrLs { get; set; } = new();
 
         /// <summary>
         /// Gets or sets the state for each of our modules.
@@ -80,6 +82,7 @@ namespace HealthGateway.WebClient.Models
         /// Gets or sets the client IP address.
         /// This value is populated at runtime with the client invoking the web service.
         /// </summary>
-        public string? ClientIP { get; set; }
+        [JsonPropertyName("clientIP")]
+        public string? ClientIp { get; set; }
     }
 }

@@ -17,6 +17,14 @@ jobs:
   - job: AnalyzeProjects
     timeoutInMinutes: 120
     steps:
+      - task: UseDotNet@2
+        displayName: 'Use .NET Core sdk'
+        condition: eq(variables['EnableAzure'], True)
+        inputs:
+          packageType: sdk
+          version: 7.x
+          installationPath: $(Agent.ToolsDirectory)/dotnet
+
       # - script: |
       #     npm --prefix WebClient/src/ClientApp install --only=dev
       #     npm --prefix WebClient/src/ClientApp test

@@ -16,12 +16,15 @@
 #pragma warning disable CA1303 //disable literal strings check
 namespace HealthGateway.GatewayApi
 {
+    using System;
     using System.Diagnostics.CodeAnalysis;
     using HealthGateway.Common.AccessManagement.Authentication;
+    using HealthGateway.Common.Api;
     using HealthGateway.Common.AspNetConfiguration;
+    using HealthGateway.Common.Data.Utils;
     using HealthGateway.Common.Delegates;
-    using HealthGateway.Common.Delegates.PHSA;
     using HealthGateway.Common.MapProfiles;
+    using HealthGateway.Common.Models.CDogs;
     using HealthGateway.Common.Services;
     using HealthGateway.Common.Utils;
     using HealthGateway.Database.Delegates;
@@ -31,6 +34,7 @@ namespace HealthGateway.GatewayApi
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
+    using Refit;
 
     /// <summary>
     /// Configures the application during startup.
@@ -38,7 +42,6 @@ namespace HealthGateway.GatewayApi
     [ExcludeFromCodeCoverage]
     public class Startup
     {
-        private readonly IConfiguration configuration;
         private readonly StartupConfiguration startupConfig;
 
         /// <summary>
@@ -49,7 +52,6 @@ namespace HealthGateway.GatewayApi
         public Startup(IWebHostEnvironment env, IConfiguration configuration)
         {
             this.startupConfig = new StartupConfiguration(configuration, env);
-            this.configuration = configuration;
         }
 
         /// <summary>
@@ -79,28 +81,41 @@ namespace HealthGateway.GatewayApi
             services.AddTransient<INoteService, NoteService>();
             services.AddTransient<ICommentService, CommentService>();
             services.AddTransient<ICommunicationService, CommunicationService>();
-            services.AddTransient<IUserSMSService, UserSMSService>();
+            services.AddTransient<IUserSmsService, UserSmsService>();
             services.AddTransient<INotificationSettingsService, NotificationSettingsService>();
             services.AddTransient<IDependentService, DependentService>();
-            services.AddTransient<IUserPreferenceDelegate, DBUserPreferenceDelegate>();
+            services.AddTransient<IUserPreferenceDelegate, DbUserPreferenceDelegate>();
             services.AddTransient<IReportService, ReportService>();
 
             // Add delegates
-            services.AddTransient<IUserProfileDelegate, DBProfileDelegate>();
-            services.AddTransient<IUserPreferenceDelegate, DBUserPreferenceDelegate>();
-            services.AddTransient<IEmailDelegate, DBEmailDelegate>();
-            services.AddTransient<IMessagingVerificationDelegate, DBMessagingVerificationDelegate>();
-            services.AddTransient<IFeedbackDelegate, DBFeedbackDelegate>();
-            services.AddTransient<IRatingDelegate, DBRatingDelegate>();
-            services.AddTransient<ILegalAgreementDelegate, DBLegalAgreementDelegate>();
-            services.AddTransient<INoteDelegate, DBNoteDelegate>();
-            services.AddTransient<ICommentDelegate, DBCommentDelegate>();
+            services.AddTransient<IUserProfileDelegate, DbProfileDelegate>();
+            services.AddTransient<IUserPreferenceDelegate, DbUserPreferenceDelegate>();
+            services.AddTransient<IEmailDelegate, DbEmailDelegate>();
+            services.AddTransient<IMessagingVerificationDelegate, DbMessagingVerificationDelegate>();
+            services.AddTransient<IFeedbackDelegate, DbFeedbackDelegate>();
+            services.AddTransient<IRatingDelegate, DbRatingDelegate>();
+            services.AddTransient<ILegalAgreementDelegate, DbLegalAgreementDelegate>();
+            services.AddTransient<INoteDelegate, DbNoteDelegate>();
+            services.AddTransient<ICommentDelegate, DbCommentDelegate>();
             services.AddTransient<ICryptoDelegate, AesCryptoDelegate>();
-            services.AddTransient<ICommunicationDelegate, DBCommunicationDelegate>();
-            services.AddTransient<INotificationSettingsDelegate, RestNotificationSettingsDelegate>();
-            services.AddTransient<IUserPreferenceDelegate, DBUserPreferenceDelegate>();
-            services.AddTransient<IResourceDelegateDelegate, DBResourceDelegateDelegate>();
+            services.AddTransient<ICommunicationDelegate, DbCommunicationDelegate>();
+            services.AddTransient<IUserPreferenceDelegate, DbUserPreferenceDelegate>();
+            services.AddTransient<IResourceDelegateDelegate, DbResourceDelegateDelegate>();
             services.AddTransient<ICDogsDelegate, CDogsDelegate>();
+
+            // Add API Clients
+            CDogsConfig cdogsConfig = new();
+            this.startupConfig.Configuration.Bind(CDogsConfig.CDogsConfigSectionKey, cdogsConfig);
+            string cdogsEndpoint = cdogsConfig.BaseEndpoint;
+            if (cdogsConfig.DynamicServiceLookup)
+            {
+                cdogsEndpoint = ConfigurationUtility.ConstructServiceEndpoint(
+                    cdogsConfig.BaseEndpoint,
+                    $"{cdogsConfig.ServiceName}{cdogsConfig.ServiceHostSuffix}",
+                    $"{cdogsConfig.ServiceName}{cdogsConfig.ServicePortSuffix}");
+            }
+
+            services.AddRefitClient<ICDogsApi>().ConfigureHttpClient(c => c.BaseAddress = new Uri(cdogsEndpoint));
 
             services.Configure<ApiBehaviorOptions>(options => options.SuppressModelStateInvalidFilter = true);
 

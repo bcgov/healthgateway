@@ -65,11 +65,11 @@ namespace HealthGateway.Common.Auditing
             auditEvent.TransactionName = @$"{routeValues["controller"]}\{routeValues["action"]}";
 
             auditEvent.Trace = context.TraceIdentifier;
-            auditEvent.ClientIP = context.Connection.RemoteIpAddress?.MapToIPv4().ToString() ?? "Unknown";
+            auditEvent.ClientIp = context.Connection.RemoteIpAddress?.MapToIPv4().ToString() ?? "Unknown";
             RouteData routeData = context.GetRouteData();
 
             // Some routes might not have the version
-            auditEvent.TransactionVersion = routeData?.Values["version"] != null ? routeData.Values["version"]?.ToString() : string.Empty;
+            auditEvent.TransactionVersion = routeData.Values["version"] != null ? routeData.Values["version"]?.ToString() : string.Empty;
         }
 
         /// <summary>
@@ -92,7 +92,7 @@ namespace HealthGateway.Common.Auditing
             }
 
             // Client/Request errors codes other than unauthorized and forbidden (4xx)
-            if (statusCode >= 400 && statusCode < 500)
+            if (statusCode < 500)
             {
                 return AuditTransactionResult.Failure;
             }
@@ -133,6 +133,8 @@ namespace HealthGateway.Common.Auditing
                 case "ClinicalDocument":
                     return ApplicationType.ClinicalDocument;
                 case "ReSharperTestRunner":
+                case "ReSharperTestRunner64":
+                case "ReSharperTestRunnerArm64":
                 case "testhost":
                     return ApplicationType.Configuration;
                 default:

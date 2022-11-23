@@ -15,23 +15,25 @@
 //-------------------------------------------------------------------------
 namespace HealthGateway.JobScheduler
 {
+    using System;
     using System.Collections.Generic;
     using Hangfire;
     using Hangfire.Dashboard;
     using Hangfire.PostgreSql;
-    using HealthGateway.Common.AccessManagement.Administration;
     using HealthGateway.Common.AccessManagement.Authentication;
+    using HealthGateway.Common.Api;
     using HealthGateway.Common.AspNetConfiguration;
     using HealthGateway.Common.AspNetConfiguration.Modules;
     using HealthGateway.Common.Delegates.PHSA;
-    using HealthGateway.Common.FileDownload;
     using HealthGateway.Common.Jobs;
+    using HealthGateway.Common.Models;
     using HealthGateway.Common.Services;
     using HealthGateway.Database.Delegates;
-    using HealthGateway.DrugMaintainer;
-    using Healthgateway.JobScheduler.Jobs;
+    using HealthGateway.DBMaintainer.FileDownload;
+    using HealthGateway.DBMaintainer.Parsers;
+    using HealthGateway.JobScheduler.Jobs;
     using HealthGateway.JobScheduler.Listeners;
-    using Healthgateway.JobScheduler.Utils;
+    using HealthGateway.JobScheduler.Utils;
     using Microsoft.AspNetCore.Authentication.OpenIdConnect;
     using Microsoft.AspNetCore.Builder;
     using Microsoft.AspNetCore.Hosting;
@@ -39,6 +41,7 @@ namespace HealthGateway.JobScheduler
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Hosting;
     using Microsoft.Extensions.Logging;
+    using Refit;
 
     /// <summary>
     /// The startup class.
@@ -76,8 +79,8 @@ namespace HealthGateway.JobScheduler
             this.startupConfig.ConfigureAccessControl(services);
             this.startupConfig.ConfigureTracing(services);
 
-            string requiredUserRole = this.configuration.GetValue<string>("OpenIdConnect:UserRole");
-            string userRoleClaimType = this.configuration.GetValue<string>("OpenIdConnect:RolesClaim");
+            string? requiredUserRole = this.configuration.GetValue<string>("OpenIdConnect:UserRole");
+            string? userRoleClaimType = this.configuration.GetValue<string>("OpenIdConnect:RolesClaim");
 
             services.AddAuthorization(
                 options =>
@@ -97,23 +100,29 @@ namespace HealthGateway.JobScheduler
             services.AddTransient<IFileDownloadService, FileDownloadService>();
             services.AddTransient<IDrugProductParser, FederalDrugProductParser>();
             services.AddTransient<IPharmaCareDrugParser, PharmaCareDrugParser>();
-            services.AddTransient<IApplicationSettingsDelegate, DBApplicationSettingsDelegate>();
-            services.AddTransient<IUserProfileDelegate, DBProfileDelegate>();
-            services.AddTransient<ICommunicationDelegate, DBCommunicationDelegate>();
-            services.AddTransient<IEmailDelegate, DBEmailDelegate>();
-            services.AddTransient<IMessagingVerificationDelegate, DBMessagingVerificationDelegate>();
+            services.AddTransient<IApplicationSettingsDelegate, DbApplicationSettingsDelegate>();
+            services.AddTransient<IUserProfileDelegate, DbProfileDelegate>();
+            services.AddTransient<ICommunicationDelegate, DbCommunicationDelegate>();
+            services.AddTransient<IEmailDelegate, DbEmailDelegate>();
+            services.AddTransient<IMessagingVerificationDelegate, DbMessagingVerificationDelegate>();
             services.AddTransient<IEmailQueueService, EmailQueueService>();
             services.AddTransient<INotificationSettingsDelegate, RestNotificationSettingsDelegate>();
             services.AddTransient<INotificationSettingsService, NotificationSettingsService>();
-            services.AddTransient<IResourceDelegateDelegate, DBResourceDelegateDelegate>();
-            services.AddTransient<IEventLogDelegate, DBEventLogDelegate>();
-            services.AddTransient<IFeedbackDelegate, DBFeedbackDelegate>();
+            services.AddTransient<IResourceDelegateDelegate, DbResourceDelegateDelegate>();
+            services.AddTransient<IEventLogDelegate, DbEventLogDelegate>();
+            services.AddTransient<IFeedbackDelegate, DbFeedbackDelegate>();
             services.AddTransient<ICommunicationService, CommunicationService>();
-            services.AddTransient<IWriteAuditEventDelegate, DBWriteAuditEventDelegate>();
+            services.AddTransient<IWriteAuditEventDelegate, DbWriteAuditEventDelegate>();
+
+            // Add API Clients
+            NotificationSettingsConfig notificationSettingsConfig = new();
+            this.startupConfig.Configuration.Bind(NotificationSettingsConfig.NotificationSettingsConfigSectionKey, notificationSettingsConfig);
+            services.AddRefitClient<INotificationSettingsApi>().ConfigureHttpClient(c => c.BaseAddress = new Uri(notificationSettingsConfig.Endpoint));
 
             // Add injection for KeyCloak User Admin
             services.AddTransient<IAuthenticationDelegate, AuthenticationDelegate>();
-            services.AddTransient<IUserAdminDelegate, KeycloakUserAdminDelegate>();
+            Uri? baseUri = this.startupConfig.Configuration.GetValue<Uri>("KeycloakAdmin:BaseUrl");
+            services.AddRefitClient<IKeycloakAdminApi>().ConfigureHttpClient(c => c.BaseAddress = baseUri);
 
             // Add Jobs
             services.AddTransient<FedDrugJob>();
@@ -142,7 +151,7 @@ namespace HealthGateway.JobScheduler
         /// <param name="env">The passed in Environment.</param>
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
-            this.logger.LogInformation("Hosting Environment: {EnvironmentName}", env!.EnvironmentName);
+            this.logger.LogInformation("Hosting Environment: {EnvironmentName}", env.EnvironmentName);
             this.startupConfig.UseForwardHeaders(app);
             this.startupConfig.UseHttp(app);
             this.startupConfig.UseContentSecurityPolicy(app);
@@ -172,7 +181,7 @@ namespace HealthGateway.JobScheduler
                 });
 
             // Schedule Health Gateway Jobs
-            BackgroundJob.Enqueue<DBMigrationsJob>(j => j.Migrate());
+            BackgroundJob.Enqueue<DbMigrationsJob>(j => j.Migrate());
             SchedulerHelper.ScheduleJob<IEmailJob>(this.configuration, "SendLowPriorityEmail", j => j.SendLowPriorityEmails());
             SchedulerHelper.ScheduleJob<IEmailJob>(this.configuration, "SendStandardPriorityEmail", j => j.SendStandardPriorityEmails());
             SchedulerHelper.ScheduleJob<IEmailJob>(this.configuration, "SendHighPriorityEmail", j => j.SendHighPriorityEmails());

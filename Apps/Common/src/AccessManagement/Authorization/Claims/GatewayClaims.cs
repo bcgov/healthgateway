@@ -28,6 +28,6 @@ namespace HealthGateway.Common.AccessManagement.Authorization.Claims
         /// <summary>
         /// Policy claims requiring an HDID.
         /// </summary>
-        public const string HDID = "hdid";
+        public const string Hdid = "hdid";
     }
 }
