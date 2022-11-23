@@ -73,14 +73,14 @@ namespace HealthGateway.Common.Data.ViewModels
         /// Gets or sets the user SMS number.
         /// </summary>
         [Column("SMSNumber")]
-        [JsonPropertyName("SMSNumber")]
+        [JsonPropertyName("smsNumber")]
         public string? SmsNumber { get; set; }
 
         /// <summary>
         /// Gets or sets a value indicating whether the user sms number was verified.
         /// </summary>
         [Column("IsSMSNumberVerified")]
-        [JsonPropertyName("IsSMSNumberVerified")]
+        [JsonPropertyName("isSMSNumberVerified")]
         public bool IsSmsNumberVerified { get; set; }
 
         /// <summary>
