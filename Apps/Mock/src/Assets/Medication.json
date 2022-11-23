@@ -69,7 +69,7 @@
                 "genericName": "ZOPICLONE",
                 "quantity": 8,
                 "refills": 4,
-                "directions": "TAKE 2 TABLETS AT BEDTIME (DISPENSE WITH METHADONE MON\/THURS)",
+                "directions": "TAKE 2 TABLETS AT BEDTIME (DISPENSE WITH METHADONE MON/THURS)",
                 "rxStatus": "F",
                 "practitioner": {
                     "lastName": "PZVVPS",
@@ -124,7 +124,7 @@
                 "genericName": "ZOPICLONE",
                 "quantity": 6,
                 "refills": 7,
-                "directions": "TAKE 2 TABLETS AT BEDTIME (DISPENSE WITH METHADONE MON\/THURS)",
+                "directions": "TAKE 2 TABLETS AT BEDTIME (DISPENSE WITH METHADONE MON/THURS)",
                 "rxStatus": "F",
                 "practitioner": {
                     "lastName": "PZVVPS",
@@ -206,7 +206,7 @@
                 "genericName": "ZOPICLONE",
                 "quantity": 8,
                 "refills": 6,
-                "directions": "TAKE 2 TABLETS AT BEDTIME (DISPENSE WITH METHADONE MON\/THURS)",
+                "directions": "TAKE 2 TABLETS AT BEDTIME (DISPENSE WITH METHADONE MON/THURS)",
                 "rxStatus": "F",
                 "practitioner": {
                     "lastName": "PZVVPS",
@@ -234,7 +234,7 @@
                 "genericName": "ZOPICLONE",
                 "quantity": 6,
                 "refills": 9,
-                "directions": "TAKE 2 TABLETS AT BEDTIME (DISPENSE WITH METHADONE MON\/THURS)",
+                "directions": "TAKE 2 TABLETS AT BEDTIME (DISPENSE WITH METHADONE MON/THURS)",
                 "rxStatus": "F",
                 "practitioner": {
                     "lastName": "PZVVPS",
@@ -289,7 +289,7 @@
                 "genericName": "ZOPICLONE",
                 "quantity": 8,
                 "refills": 7,
-                "directions": "TAKE 2 TABLETS AT BEDTIME (DISPENSE WITH METHADONE MON\/THURS)",
+                "directions": "TAKE 2 TABLETS AT BEDTIME (DISPENSE WITH METHADONE MON/THURS)",
                 "rxStatus": "F",
                 "practitioner": {
                     "lastName": "PZVVPS",
@@ -371,7 +371,7 @@
                 "genericName": "ZOPICLONE",
                 "quantity": 6,
                 "refills": 11,
-                "directions": "TAKE 2 TABLETS AT BEDTIME (DISPENSE WITH METHADONE MON\/THURS)",
+                "directions": "TAKE 2 TABLETS AT BEDTIME (DISPENSE WITH METHADONE MON/THURS)",
                 "rxStatus": "F",
                 "practitioner": {
                     "lastName": "PZVVPS",
@@ -427,7 +427,7 @@
                 "genericName": "ZOPICLONE",
                 "quantity": 8,
                 "refills": 9,
-                "directions": "TAKE 2 TABLETS AT BEDTIME (DISPENSE WITH METHADONE MON\/THURS)",
+                "directions": "TAKE 2 TABLETS AT BEDTIME (DISPENSE WITH METHADONE MON/THURS)",
                 "rxStatus": "F",
                 "practitioner": {
                     "lastName": "PZVVPS",
@@ -509,7 +509,7 @@
                 "genericName": "ESCITALOPRAM OXALATE",
                 "quantity": 45,
                 "refills": 2,
-                "directions": "TAKE 1 1\/2 TABLETS DAILY",
+                "directions": "TAKE 1 1/2 TABLETS DAILY",
                 "rxStatus": "F",
                 "practitioner": {
                     "lastName": "XZGLK",
@@ -1720,7 +1720,7 @@
                 "dateDispensed": "2019-09-19",
                 "quantity": 480,
                 "refills": 7,
-                "directions": ".. SHAKE WELL .. 120MLS DAILY . MAY BE POISONOUS TO OTHERS . SPLIT 40\/80 . SEPT",
+                "directions": ".. SHAKE WELL .. 120MLS DAILY . MAY BE POISONOUS TO OTHERS . SPLIT 40/80 . SEPT",
                 "rxStatus": "F",
                 "practitioner": {
                     "lastName": "PZVVPS",
@@ -2127,7 +2127,7 @@
                 "rxNumber": "1587307",
                 "dinpin": "2252716",
                 "dateDispensed": "2019-08-26",
-                "genericName": "CIPROFLOXACIN HCL\/DEXAMETH",
+                "genericName": "CIPROFLOXACIN HCL/DEXAMETH",
                 "quantity": 7.5,
                 "refills": 0,
                 "directions": ".. SHAKE WELL .. INSTILL 3 DROPS INTO THE AFFECTED EAR(S) TWICE A DAY FOR 5 DAYS",
@@ -3038,7 +3038,7 @@
                 "genericName": "ZOPICLONE",
                 "quantity": 7.5,
                 "refills": 0,
-                "directions": "2 1\/2 TABLETS AT BEDTIME (EMERGENCY FILL)",
+                "directions": "2 1/2 TABLETS AT BEDTIME (EMERGENCY FILL)",
                 "rxStatus": "F",
                 "practitioner": {
                     "lastName": "WWZFTADU",
@@ -3093,7 +3093,7 @@
                 "genericName": "ZOPICLONE",
                 "quantity": 10,
                 "refills": 0,
-                "directions": "2 1\/2 TABLETS AT BEDTIME (EMERGENCY FILL)",
+                "directions": "2 1/2 TABLETS AT BEDTIME (EMERGENCY FILL)",
                 "rxStatus": "F",
                 "practitioner": {
                     "lastName": "WWZFTADU",
@@ -3148,7 +3148,7 @@
                 "genericName": "ZOPICLONE",
                 "quantity": 2.5,
                 "refills": 4,
-                "directions": "2 1\/2 TABLETS AT BEDTIME AS NEEDED",
+                "directions": "2 1/2 TABLETS AT BEDTIME AS NEEDED",
                 "rxStatus": "F",
                 "practitioner": {
                     "lastName": "PZVVPS",
@@ -3494,7 +3494,7 @@
                         "country": "CAN"
                     }
                 }
-            },           
+            },
             {
                 "recordId": 4906316354,
                 "rxNumber": "9495060",
@@ -4354,7 +4354,7 @@
                 "genericName": "CLONIDINE HCL",
                 "quantity": 60,
                 "refills": 0,
-                "directions": "TAKE 1\/2 TABLET DAILY AS NEEDED",
+                "directions": "TAKE 1/2 TABLET DAILY AS NEEDED",
                 "rxStatus": "F",
                 "practitioner": {
                     "lastName": "MGMJT",
@@ -4736,7 +4736,7 @@
                 "genericName": "ZOPICLONE",
                 "quantity": 6,
                 "refills": 4,
-                "directions": "TAKE 2 TABLETS AT BEDTIME (DISPENSE WITH METHADONE MON\/FRI",
+                "directions": "TAKE 2 TABLETS AT BEDTIME (DISPENSE WITH METHADONE MON/FRI",
                 "rxStatus": "F",
                 "practitioner": {
                     "lastName": "PZVVPS",
@@ -5415,7 +5415,7 @@
                 "genericName": "ZOPICLONE",
                 "quantity": 2.5,
                 "refills": 5,
-                "directions": "2 1\/2 TABLETS AT BEDTIME AS NEEDED",
+                "directions": "2 1/2 TABLETS AT BEDTIME AS NEEDED",
                 "rxStatus": "F",
                 "practitioner": {
                     "lastName": "PZVVPS",
@@ -5443,7 +5443,7 @@
                 "genericName": "ZOPICLONE",
                 "quantity": 2.5,
                 "refills": 6,
-                "directions": "2 1\/2 TABLETS AT BEDTIME AS NEEDED",
+                "directions": "2 1/2 TABLETS AT BEDTIME AS NEEDED",
                 "rxStatus": "F",
                 "practitioner": {
                     "lastName": "PZVVPS",
@@ -5498,7 +5498,7 @@
                 "genericName": "ZOPICLONE",
                 "quantity": 2.5,
                 "refills": 7,
-                "directions": "2 1\/2 TABLETS AT BEDTIME AS NEEDED",
+                "directions": "2 1/2 TABLETS AT BEDTIME AS NEEDED",
                 "rxStatus": "F",
                 "practitioner": {
                     "lastName": "PZVVPS",
@@ -5526,7 +5526,7 @@
                 "genericName": "ZOPICLONE",
                 "quantity": 5,
                 "refills": 4,
-                "directions": "2 1\/2 TABLETS AT BEDTIME AS NEEDED",
+                "directions": "2 1/2 TABLETS AT BEDTIME AS NEEDED",
                 "rxStatus": "F",
                 "practitioner": {
                     "lastName": "PZVVPS",
@@ -5554,7 +5554,7 @@
                 "genericName": "ZOPICLONE",
                 "quantity": 2.5,
                 "refills": 10,
-                "directions": "2 1\/2 TABLETS AT BEDTIME AS NEEDED",
+                "directions": "2 1/2 TABLETS AT BEDTIME AS NEEDED",
                 "rxStatus": "F",
                 "practitioner": {
                     "lastName": "PZVVPS",
@@ -5609,7 +5609,7 @@
                 "genericName": "ZOPICLONE",
                 "quantity": 2.5,
                 "refills": 11,
-                "directions": "2 1\/2 TABLETS AT BEDTIME AS NEEDED",
+                "directions": "2 1/2 TABLETS AT BEDTIME AS NEEDED",
                 "rxStatus": "F",
                 "practitioner": {
                     "lastName": "PZVVPS",
@@ -5637,7 +5637,7 @@
                 "genericName": "ZOPICLONE",
                 "quantity": 2.5,
                 "refills": 12,
-                "directions": "2 1\/2 TABLETS AT BEDTIME AS NEEDED",
+                "directions": "2 1/2 TABLETS AT BEDTIME AS NEEDED",
                 "rxStatus": "F",
                 "practitioner": {
                     "lastName": "PZVVPS",
@@ -5665,7 +5665,7 @@
                 "genericName": "ZOPICLONE",
                 "quantity": 2.5,
                 "refills": 0,
-                "directions": "2 1\/2 TABLETS AT BEDTIME AS NEEDED",
+                "directions": "2 1/2 TABLETS AT BEDTIME AS NEEDED",
                 "rxStatus": "F",
                 "practitioner": {
                     "lastName": "PZVVPS",
@@ -6877,7 +6877,7 @@
                 "genericName": "ZOPICLONE",
                 "quantity": 6,
                 "refills": 7,
-                "directions": "TAKE 1 AND 1\/2 TABLETS AT BEDTIME (DISPENSE WITH METHADONE MON\/THURS)",
+                "directions": "TAKE 1 AND 1/2 TABLETS AT BEDTIME (DISPENSE WITH METHADONE MON/THURS)",
                 "rxStatus": "F",
                 "practitioner": {
                     "lastName": "PZVVPS",
@@ -6932,7 +6932,7 @@
                 "genericName": "ZOPICLONE",
                 "quantity": 4.5,
                 "refills": 11,
-                "directions": "TAKE 1 AND 1\/2 TABLETS AT BEDTIME (DISPENSE WITH METHADONE MON\/THURS)",
+                "directions": "TAKE 1 AND 1/2 TABLETS AT BEDTIME (DISPENSE WITH METHADONE MON/THURS)",
                 "rxStatus": "F",
                 "practitioner": {
                     "lastName": "PZVVPS",
@@ -6987,7 +6987,7 @@
                 "genericName": "ZOPICLONE",
                 "quantity": 6,
                 "refills": 9,
-                "directions": "TAKE 1 AND 1\/2 TABLETS AT BEDTIME (DISPENSE WITH METHADONE MON\/THURS)",
+                "directions": "TAKE 1 AND 1/2 TABLETS AT BEDTIME (DISPENSE WITH METHADONE MON/THURS)",
                 "rxStatus": "F",
                 "practitioner": {
                     "lastName": "PZVVPS",
@@ -7069,7 +7069,7 @@
                 "genericName": "ZOPICLONE",
                 "quantity": 8,
                 "refills": 2,
-                "directions": "TAKE 2 TABLETS AT BEDTIME (DISPENSE WITH METHADONE MON\/FRI",
+                "directions": "TAKE 2 TABLETS AT BEDTIME (DISPENSE WITH METHADONE MON/FRI",
                 "rxStatus": "F",
                 "practitioner": {
                     "lastName": "PZVVPS",
@@ -7097,7 +7097,7 @@
                 "genericName": "ESCITALOPRAM OXALATE",
                 "quantity": 45,
                 "refills": 1,
-                "directions": "TAKE 1 1\/2 TABLETS DAILY",
+                "directions": "TAKE 1 1/2 TABLETS DAILY",
                 "rxStatus": "F",
                 "practitioner": {
                     "lastName": "XZGLK",
@@ -7125,7 +7125,7 @@
                 "genericName": "ZOPICLONE",
                 "quantity": 6,
                 "refills": 4,
-                "directions": "TAKE 2 TABLETS AT BEDTIME (DISPENSE WITH METHADONE MON\/FRI",
+                "directions": "TAKE 2 TABLETS AT BEDTIME (DISPENSE WITH METHADONE MON/FRI",
                 "rxStatus": "F",
                 "practitioner": {
                     "lastName": "PZVVPS",

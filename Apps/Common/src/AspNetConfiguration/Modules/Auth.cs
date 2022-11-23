@@ -22,11 +22,11 @@ namespace HealthGateway.Common.AspNetConfiguration.Modules
     using System.Security.Claims;
     using System.Text.Json;
     using System.Threading.Tasks;
+    using HealthGateway.Common.AccessManagement.Authorization.Admin;
     using HealthGateway.Common.AccessManagement.Authorization.Handlers;
     using HealthGateway.Common.AccessManagement.Authorization.Policy;
     using HealthGateway.Common.AccessManagement.Authorization.Requirements;
     using HealthGateway.Common.Auditing;
-    using HealthGateway.Common.Authorization.Admin;
     using HealthGateway.Common.Constants;
     using HealthGateway.Database.Constants;
     using HealthGateway.Database.Delegates;
@@ -348,15 +348,12 @@ namespace HealthGateway.Common.AspNetConfiguration.Modules
                             OnTokenValidated = ctx =>
                             {
                                 JwtSecurityToken accessToken = ctx.SecurityToken;
-                                if (accessToken != null)
+                                if (ctx.Principal?.Identity is not ClaimsIdentity claimsIdentity)
                                 {
-                                    if (ctx.Principal?.Identity is not ClaimsIdentity claimsIdentity)
-                                    {
-                                        throw new TypeAccessException(@"Error setting access_token: ctx.Principal.Identity is not a ClaimsIdentity object.");
-                                    }
-
-                                    claimsIdentity.AddClaim(new Claim("access_token", accessToken.RawData));
+                                    throw new TypeAccessException(@"Error setting access_token: ctx.Principal.Identity is not a ClaimsIdentity object.");
                                 }
+
+                                claimsIdentity.AddClaim(new Claim("access_token", accessToken.RawData));
 
                                 return Task.CompletedTask;
                             },

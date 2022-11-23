@@ -43,7 +43,7 @@ namespace HealthGateway.CommonTests.AccessManagement.Authorization
         {
             // Setup
             string hdid = "The User HDID";
-            string resourceHDID = hdid;
+            string resourceHdid = hdid;
             string token = "Fake Access Token";
             string userId = "User ID";
             string username = "User Name";
@@ -52,7 +52,7 @@ namespace HealthGateway.CommonTests.AccessManagement.Authorization
             {
                 new Claim(ClaimTypes.Name, username),
                 new Claim(ClaimTypes.NameIdentifier, userId),
-                new Claim(GatewayClaims.HDID, hdid),
+                new Claim(GatewayClaims.Hdid, hdid),
             };
             ClaimsIdentity identity = new(claims, "TestAuth");
             ClaimsPrincipal claimsPrincipal = new(identity);
@@ -63,7 +63,7 @@ namespace HealthGateway.CommonTests.AccessManagement.Authorization
             };
             RouteValueDictionary routeValues = new()
             {
-                { "hdid", resourceHDID },
+                { "hdid", resourceHdid },
             };
             Mock<HttpRequest> httpRequestMock = new();
             httpRequestMock.Setup(s => s.Headers).Returns(headerDictionary);
@@ -80,7 +80,7 @@ namespace HealthGateway.CommonTests.AccessManagement.Authorization
             ILogger<FhirResourceAuthorizationHandler> logger = loggerFactory.CreateLogger<FhirResourceAuthorizationHandler>();
 
             FhirResourceAuthorizationHandler authHandler = new(logger, httpContextAccessorMock.Object);
-            NameAuthorizationRequirement[] requirements = new[] { new NameAuthorizationRequirement(username) };
+            NameAuthorizationRequirement[] requirements = { new(username) };
 
             AuthorizationHandlerContext context = new(requirements, claimsPrincipal, null);
 
@@ -106,7 +106,7 @@ namespace HealthGateway.CommonTests.AccessManagement.Authorization
             {
                 new Claim(ClaimTypes.Name, username),
                 new Claim(ClaimTypes.NameIdentifier, userId),
-                new Claim(GatewayClaims.HDID, hdid),
+                new Claim(GatewayClaims.Hdid, hdid),
             };
             ClaimsIdentity identity = new(claims, "TestAuth");
             ClaimsPrincipal claimsPrincipal = new(identity);
@@ -131,7 +131,7 @@ namespace HealthGateway.CommonTests.AccessManagement.Authorization
             ILogger<FhirResourceAuthorizationHandler> logger = loggerFactory.CreateLogger<FhirResourceAuthorizationHandler>();
 
             FhirResourceAuthorizationHandler authHandler = new(logger, httpContextAccessorMock.Object);
-            FhirRequirement[] requirements = new[] { new FhirRequirement(FhirResource.Patient, FhirAccessType.Read) };
+            FhirRequirement[] requirements = { new(FhirResource.Patient, FhirAccessType.Read) };
 
             AuthorizationHandlerContext context = new(requirements, claimsPrincipal, null);
 
@@ -149,7 +149,7 @@ namespace HealthGateway.CommonTests.AccessManagement.Authorization
         {
             // Setup
             string hdid = "The User HDID";
-            string resourceHDID = hdid;
+            string resourceHdid = hdid;
             string token = "Fake Access Token";
             string userId = "User ID";
             string username = "User Name";
@@ -169,7 +169,7 @@ namespace HealthGateway.CommonTests.AccessManagement.Authorization
             };
             RouteValueDictionary routeValues = new()
             {
-                { "hdid", resourceHDID },
+                { "hdid", resourceHdid },
             };
             Mock<HttpRequest> httpRequestMock = new();
             httpRequestMock.Setup(s => s.Headers).Returns(headerDictionary);
@@ -186,7 +186,7 @@ namespace HealthGateway.CommonTests.AccessManagement.Authorization
             ILogger<FhirResourceAuthorizationHandler> logger = loggerFactory.CreateLogger<FhirResourceAuthorizationHandler>();
 
             FhirResourceAuthorizationHandler authHandler = new(logger, httpContextAccessorMock.Object);
-            FhirRequirement[] requirements = new[] { new FhirRequirement(FhirResource.Patient, FhirAccessType.Read, supportsSystemDelegation: false) };
+            FhirRequirement[] requirements = { new(FhirResource.Patient, FhirAccessType.Read, supportsSystemDelegation: false) };
 
             AuthorizationHandlerContext context = new(requirements, claimsPrincipal, null);
 
@@ -204,7 +204,7 @@ namespace HealthGateway.CommonTests.AccessManagement.Authorization
         {
             // Setup
             string hdid = "The User HDID";
-            string resourceHDID = hdid;
+            string resourceHdid = hdid;
             string token = "Fake Access Token";
             string userId = "User ID";
             string username = "User Name";
@@ -224,7 +224,7 @@ namespace HealthGateway.CommonTests.AccessManagement.Authorization
             };
             RouteValueDictionary routeValues = new()
             {
-                { "hdid", resourceHDID },
+                { "hdid", resourceHdid },
             };
             Mock<HttpRequest> httpRequestMock = new();
             httpRequestMock.Setup(s => s.Headers).Returns(headerDictionary);
@@ -241,7 +241,7 @@ namespace HealthGateway.CommonTests.AccessManagement.Authorization
             ILogger<FhirResourceAuthorizationHandler> logger = loggerFactory.CreateLogger<FhirResourceAuthorizationHandler>();
 
             FhirResourceAuthorizationHandler authHandler = new(logger, httpContextAccessorMock.Object);
-            FhirRequirement[] requirements = new[] { new FhirRequirement(FhirResource.Patient, FhirAccessType.Read) };
+            FhirRequirement[] requirements = { new(FhirResource.Patient, FhirAccessType.Read) };
 
             AuthorizationHandlerContext context = new(requirements, claimsPrincipal, null);
 
@@ -259,7 +259,7 @@ namespace HealthGateway.CommonTests.AccessManagement.Authorization
         {
             // Setup
             string hdid = "The User HDID";
-            string resourceHDID = hdid;
+            string resourceHdid = hdid;
             string token = "Fake Access Token";
             string userId = "User ID";
             string username = "User Name";
@@ -277,7 +277,7 @@ namespace HealthGateway.CommonTests.AccessManagement.Authorization
             };
             RouteValueDictionary routeValues = new()
             {
-                { "hdid", resourceHDID },
+                { "hdid", resourceHdid },
             };
             Mock<HttpRequest> httpRequestMock = new();
             httpRequestMock.Setup(s => s.Headers).Returns(headerDictionary);
@@ -294,7 +294,7 @@ namespace HealthGateway.CommonTests.AccessManagement.Authorization
             ILogger<FhirResourceAuthorizationHandler> logger = loggerFactory.CreateLogger<FhirResourceAuthorizationHandler>();
 
             FhirResourceAuthorizationHandler authHandler = new(logger, httpContextAccessorMock.Object);
-            FhirRequirement[] requirements = new[] { new FhirRequirement(FhirResource.Patient, FhirAccessType.Read) };
+            FhirRequirement[] requirements = { new(FhirResource.Patient, FhirAccessType.Read) };
 
             AuthorizationHandlerContext context = new(requirements, claimsPrincipal, null);
 
@@ -312,7 +312,7 @@ namespace HealthGateway.CommonTests.AccessManagement.Authorization
         {
             // Setup
             string hdid = "The User HDID";
-            string resourceHDID = hdid;
+            string resourceHdid = hdid;
             string token = "Fake Access Token";
             string userId = "User ID";
             string username = "User Name";
@@ -321,7 +321,7 @@ namespace HealthGateway.CommonTests.AccessManagement.Authorization
             {
                 new Claim(ClaimTypes.Name, username),
                 new Claim(ClaimTypes.NameIdentifier, userId),
-                new Claim(GatewayClaims.HDID, hdid),
+                new Claim(GatewayClaims.Hdid, hdid),
             };
             ClaimsIdentity identity = new(claims, "TestAuth");
             ClaimsPrincipal claimsPrincipal = new(identity);
@@ -332,7 +332,7 @@ namespace HealthGateway.CommonTests.AccessManagement.Authorization
             };
             RouteValueDictionary routeValues = new()
             {
-                { "hdid", resourceHDID },
+                { "hdid", resourceHdid },
             };
             Mock<HttpRequest> httpRequestMock = new();
             httpRequestMock.Setup(s => s.Headers).Returns(headerDictionary);
@@ -349,7 +349,7 @@ namespace HealthGateway.CommonTests.AccessManagement.Authorization
             ILogger<FhirResourceAuthorizationHandler> logger = loggerFactory.CreateLogger<FhirResourceAuthorizationHandler>();
 
             FhirResourceAuthorizationHandler authHandler = new(logger, httpContextAccessorMock.Object);
-            FhirRequirement[] requirements = new[] { new FhirRequirement(FhirResource.Patient, FhirAccessType.Read) };
+            FhirRequirement[] requirements = { new(FhirResource.Patient, FhirAccessType.Read) };
 
             AuthorizationHandlerContext context = new(requirements, claimsPrincipal, null);
 
@@ -367,7 +367,7 @@ namespace HealthGateway.CommonTests.AccessManagement.Authorization
         {
             // Setup
             string hdid = "The User HDID";
-            string resourceHDID = hdid;
+            string resourceHdid = hdid;
             string token = "Fake Access Token";
             string userId = "User ID";
             string username = "User Name";
@@ -376,7 +376,7 @@ namespace HealthGateway.CommonTests.AccessManagement.Authorization
             {
                 new Claim(ClaimTypes.Name, username),
                 new Claim(ClaimTypes.NameIdentifier, userId),
-                new Claim(GatewayClaims.HDID, hdid),
+                new Claim(GatewayClaims.Hdid, hdid),
             };
             ClaimsIdentity identity = new(claims, "TestAuth");
             ClaimsPrincipal claimsPrincipal = new(identity);
@@ -385,10 +385,11 @@ namespace HealthGateway.CommonTests.AccessManagement.Authorization
             {
                 { "Authorization", token },
             };
-            IQueryCollection query = new QueryCollection(new Dictionary<string, StringValues>()
-            {
-                { "hdid", resourceHDID },
-            });
+            IQueryCollection query = new QueryCollection(
+                new Dictionary<string, StringValues>
+                {
+                    { "hdid", resourceHdid },
+                });
             Mock<HttpRequest> httpRequestMock = new();
             httpRequestMock.Setup(s => s.Headers).Returns(headerDictionary);
             httpRequestMock.Setup(s => s.Query).Returns(query);
@@ -404,7 +405,7 @@ namespace HealthGateway.CommonTests.AccessManagement.Authorization
             ILogger<FhirResourceAuthorizationHandler> logger = loggerFactory.CreateLogger<FhirResourceAuthorizationHandler>();
 
             FhirResourceAuthorizationHandler authHandler = new(logger, httpContextAccessorMock.Object);
-            FhirRequirement[] requirements = new[] { new FhirRequirement(FhirResource.Patient, FhirAccessType.Read, fhirLookup: FhirResourceLookup.Parameter) };
+            FhirRequirement[] requirements = { new(FhirResource.Patient, FhirAccessType.Read, FhirResourceLookup.Parameter) };
 
             AuthorizationHandlerContext context = new(requirements, claimsPrincipal, null);
 
@@ -422,7 +423,7 @@ namespace HealthGateway.CommonTests.AccessManagement.Authorization
         {
             // Setup
             string hdid = "The User HDID";
-            string resourceHDID = "The Resource HDID";
+            string resourceHdid = "The Resource HDID";
             string token = "Fake Access Token";
             string userId = "User ID";
             string username = "User Name";
@@ -431,7 +432,7 @@ namespace HealthGateway.CommonTests.AccessManagement.Authorization
             {
                 new Claim(ClaimTypes.Name, username),
                 new Claim(ClaimTypes.NameIdentifier, userId),
-                new Claim(GatewayClaims.HDID, hdid),
+                new Claim(GatewayClaims.Hdid, hdid),
             };
             ClaimsIdentity identity = new(claims, "TestAuth");
             ClaimsPrincipal claimsPrincipal = new(identity);
@@ -442,7 +443,7 @@ namespace HealthGateway.CommonTests.AccessManagement.Authorization
             };
             RouteValueDictionary routeValues = new()
             {
-                { "hdid", resourceHDID },
+                { "hdid", resourceHdid },
             };
             Mock<HttpRequest> httpRequestMock = new();
             httpRequestMock.Setup(s => s.Headers).Returns(headerDictionary);
@@ -459,7 +460,7 @@ namespace HealthGateway.CommonTests.AccessManagement.Authorization
             ILogger<FhirResourceAuthorizationHandler> logger = loggerFactory.CreateLogger<FhirResourceAuthorizationHandler>();
 
             FhirResourceAuthorizationHandler authHandler = new(logger, httpContextAccessorMock.Object);
-            FhirRequirement[] requirements = new[] { new FhirRequirement(FhirResource.Patient, FhirAccessType.Read) };
+            FhirRequirement[] requirements = { new(FhirResource.Patient, FhirAccessType.Read) };
 
             AuthorizationHandlerContext context = new(requirements, claimsPrincipal, null);
 
@@ -477,7 +478,7 @@ namespace HealthGateway.CommonTests.AccessManagement.Authorization
         {
             // Setup
             string hdid = "The User HDID";
-            string resourceHDID = hdid;
+            string resourceHdid = hdid;
             string token = "Fake Access Token";
             string userId = "User ID";
             string username = "User Name";
@@ -497,7 +498,7 @@ namespace HealthGateway.CommonTests.AccessManagement.Authorization
             };
             RouteValueDictionary routeValues = new()
             {
-                { "hdid", resourceHDID },
+                { "hdid", resourceHdid },
             };
             Mock<HttpRequest> httpRequestMock = new();
             httpRequestMock.Setup(s => s.Headers).Returns(headerDictionary);
@@ -514,7 +515,7 @@ namespace HealthGateway.CommonTests.AccessManagement.Authorization
             ILogger<FhirResourceAuthorizationHandler> logger = loggerFactory.CreateLogger<FhirResourceAuthorizationHandler>();
 
             FhirResourceAuthorizationHandler authHandler = new(logger, httpContextAccessorMock.Object);
-            FhirRequirement[] requirements = new[] { new FhirRequirement(FhirResource.Patient, FhirAccessType.Read) };
+            FhirRequirement[] requirements = { new(FhirResource.Patient, FhirAccessType.Read) };
 
             AuthorizationHandlerContext context = new(requirements, claimsPrincipal, null);
 
@@ -532,7 +533,7 @@ namespace HealthGateway.CommonTests.AccessManagement.Authorization
         {
             // Setup
             string hdid = "The User HDID";
-            string resourceHDID = "The Resource HDID";
+            string resourceHdid = "The Resource HDID";
             string token = "Fake Access Token";
             string userId = "User ID";
             string username = "User Name";
@@ -541,7 +542,7 @@ namespace HealthGateway.CommonTests.AccessManagement.Authorization
             {
                 new Claim(ClaimTypes.Name, username),
                 new Claim(ClaimTypes.NameIdentifier, userId),
-                new Claim(GatewayClaims.HDID, hdid),
+                new Claim(GatewayClaims.Hdid, hdid),
                 new Claim(GatewayClaims.Scope, scopes),
             };
             ClaimsIdentity identity = new(claims, "TestAuth");
@@ -553,7 +554,7 @@ namespace HealthGateway.CommonTests.AccessManagement.Authorization
             };
             RouteValueDictionary routeValues = new()
             {
-                { "hdid", resourceHDID },
+                { "hdid", resourceHdid },
             };
             Mock<HttpRequest> httpRequestMock = new();
             httpRequestMock.Setup(s => s.Headers).Returns(headerDictionary);
@@ -570,7 +571,7 @@ namespace HealthGateway.CommonTests.AccessManagement.Authorization
             ILogger<FhirResourceAuthorizationHandler> logger = loggerFactory.CreateLogger<FhirResourceAuthorizationHandler>();
 
             FhirResourceAuthorizationHandler authHandler = new(logger, httpContextAccessorMock.Object);
-            FhirRequirement[] requirements = new[] { new FhirRequirement(FhirResource.Patient, FhirAccessType.Read) };
+            FhirRequirement[] requirements = { new(FhirResource.Patient, FhirAccessType.Read) };
 
             AuthorizationHandlerContext context = new(requirements, claimsPrincipal, null);
 
@@ -588,7 +589,7 @@ namespace HealthGateway.CommonTests.AccessManagement.Authorization
         {
             // Setup
             string hdid = "The User HDID";
-            string resourceHDID = hdid;
+            string resourceHdid = hdid;
             string token = "Fake Access Token";
             string userId = "User ID";
             string username = "User Name";
@@ -597,7 +598,7 @@ namespace HealthGateway.CommonTests.AccessManagement.Authorization
             {
                 new Claim(ClaimTypes.Name, username),
                 new Claim(ClaimTypes.NameIdentifier, userId),
-                new Claim(GatewayClaims.HDID, hdid),
+                new Claim(GatewayClaims.Hdid, hdid),
             };
             ClaimsIdentity identity = new(claims, "TestAuth");
             ClaimsPrincipal claimsPrincipal = new(identity);
@@ -608,7 +609,7 @@ namespace HealthGateway.CommonTests.AccessManagement.Authorization
             };
             RouteValueDictionary routeValues = new()
             {
-                { "hdid", resourceHDID },
+                { "hdid", resourceHdid },
             };
             Mock<HttpRequest> httpRequestMock = new();
             httpRequestMock.Setup(s => s.Headers).Returns(headerDictionary);
@@ -625,7 +626,7 @@ namespace HealthGateway.CommonTests.AccessManagement.Authorization
             ILogger<FhirResourceAuthorizationHandler> logger = loggerFactory.CreateLogger<FhirResourceAuthorizationHandler>();
 
             FhirResourceAuthorizationHandler authHandler = new(logger, httpContextAccessorMock.Object);
-            FhirRequirement[] requirements = new[] { new FhirRequirement(FhirResource.Patient, FhirAccessType.Write) };
+            FhirRequirement[] requirements = { new(FhirResource.Patient, FhirAccessType.Write) };
 
             AuthorizationHandlerContext context = new(requirements, claimsPrincipal, null);
 
@@ -643,7 +644,7 @@ namespace HealthGateway.CommonTests.AccessManagement.Authorization
         {
             // Setup
             string hdid = "The User HDID";
-            string resourceHDID = hdid;
+            string resourceHdid = hdid;
             string token = "Fake Access Token";
             string userId = "User ID";
             string username = "User Name";
@@ -663,7 +664,7 @@ namespace HealthGateway.CommonTests.AccessManagement.Authorization
             };
             RouteValueDictionary routeValues = new()
             {
-                { "hdid", resourceHDID },
+                { "hdid", resourceHdid },
             };
             Mock<HttpRequest> httpRequestMock = new();
             httpRequestMock.Setup(s => s.Headers).Returns(headerDictionary);
@@ -680,7 +681,7 @@ namespace HealthGateway.CommonTests.AccessManagement.Authorization
             ILogger<FhirResourceAuthorizationHandler> logger = loggerFactory.CreateLogger<FhirResourceAuthorizationHandler>();
 
             FhirResourceAuthorizationHandler authHandler = new(logger, httpContextAccessorMock.Object);
-            FhirRequirement[] requirements = new[] { new FhirRequirement(FhirResource.Patient, FhirAccessType.Write) };
+            FhirRequirement[] requirements = { new(FhirResource.Patient, FhirAccessType.Write) };
 
             AuthorizationHandlerContext context = new(requirements, claimsPrincipal, null);
 
@@ -698,7 +699,7 @@ namespace HealthGateway.CommonTests.AccessManagement.Authorization
         {
             // Setup
             string hdid = "The User HDID";
-            string resourceHDID = "The Resource HDID";
+            string resourceHdid = "The Resource HDID";
             string token = "Fake Access Token";
             string userId = "User ID";
             string username = "User Name";
@@ -707,7 +708,7 @@ namespace HealthGateway.CommonTests.AccessManagement.Authorization
             {
                 new Claim(ClaimTypes.Name, username),
                 new Claim(ClaimTypes.NameIdentifier, userId),
-                new Claim(GatewayClaims.HDID, hdid),
+                new Claim(GatewayClaims.Hdid, hdid),
                 new Claim(GatewayClaims.Scope, scopes),
             };
             ClaimsIdentity identity = new(claims, "TestAuth");
@@ -719,7 +720,7 @@ namespace HealthGateway.CommonTests.AccessManagement.Authorization
             };
             RouteValueDictionary routeValues = new()
             {
-                { "hdid", resourceHDID },
+                { "hdid", resourceHdid },
             };
             Mock<HttpRequest> httpRequestMock = new();
             httpRequestMock.Setup(s => s.Headers).Returns(headerDictionary);
@@ -736,7 +737,7 @@ namespace HealthGateway.CommonTests.AccessManagement.Authorization
             ILogger<FhirResourceAuthorizationHandler> logger = loggerFactory.CreateLogger<FhirResourceAuthorizationHandler>();
 
             FhirResourceAuthorizationHandler authHandler = new(logger, httpContextAccessorMock.Object);
-            FhirRequirement[] requirements = new[] { new FhirRequirement(FhirResource.Patient, FhirAccessType.Write) };
+            FhirRequirement[] requirements = { new(FhirResource.Patient, FhirAccessType.Write) };
 
             AuthorizationHandlerContext context = new(requirements, claimsPrincipal, null);
 
@@ -754,7 +755,7 @@ namespace HealthGateway.CommonTests.AccessManagement.Authorization
         {
             // Setup
             string hdid = "The User HDID";
-            string resourceHDID = "The Resource HDID";
+            string resourceHdid = "The Resource HDID";
             string token = "Fake Access Token";
             string userId = "User ID";
             string username = "User Name";
@@ -763,7 +764,7 @@ namespace HealthGateway.CommonTests.AccessManagement.Authorization
             {
                 new Claim(ClaimTypes.Name, username),
                 new Claim(ClaimTypes.NameIdentifier, userId),
-                new Claim(GatewayClaims.HDID, hdid),
+                new Claim(GatewayClaims.Hdid, hdid),
             };
             ClaimsIdentity identity = new(claims, "TestAuth");
             ClaimsPrincipal claimsPrincipal = new(identity);
@@ -774,7 +775,7 @@ namespace HealthGateway.CommonTests.AccessManagement.Authorization
             };
             RouteValueDictionary routeValues = new()
             {
-                { "hdid", resourceHDID },
+                { "hdid", resourceHdid },
             };
             Mock<HttpRequest> httpRequestMock = new();
             httpRequestMock.Setup(s => s.Headers).Returns(headerDictionary);
@@ -791,7 +792,7 @@ namespace HealthGateway.CommonTests.AccessManagement.Authorization
             ILogger<FhirResourceAuthorizationHandler> logger = loggerFactory.CreateLogger<FhirResourceAuthorizationHandler>();
 
             FhirResourceAuthorizationHandler authHandler = new(logger, httpContextAccessorMock.Object);
-            FhirRequirement[] requirements = new[] { new FhirRequirement(FhirResource.Patient, FhirAccessType.Write) };
+            FhirRequirement[] requirements = { new(FhirResource.Patient, FhirAccessType.Write) };
 
             AuthorizationHandlerContext context = new(requirements, claimsPrincipal, null);
 

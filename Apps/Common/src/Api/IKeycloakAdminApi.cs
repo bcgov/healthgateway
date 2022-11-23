@@ -33,18 +33,18 @@ namespace HealthGateway.Common.Api
         /// <param name="token">The bearer token to authorize the call.</param>
         /// <returns>A resulting UserRepresentation object.</returns>
         [Get("/users?briefRepresentation=true&username={username}&exact=true")]
-        Task<IApiResponse<UserRepresentation>> GetUser(string username, [Authorize] string token);
+        Task<UserRepresentation> GetUser(string username, [Authorize] string token);
 
         /// <summary>
         /// Returns users for the role passed in.
         /// </summary>
         /// <param name="role">The requested users role.</param>
-        /// <param name="token">The bearer token to authorize the call.</param>
         /// <param name="first">The first record to return.</param>
         /// <param name="max">The maximum results to return.</param>
-        /// <returns>An Enumerable of UserRepresentation objects.</returns>
+        /// <param name="token">The bearer token to authorize the call.</param>
+        /// <returns>A List of UserRepresentation objects.</returns>
         [Get("/roles/{role}/users?first={first}&max={max}")]
-        Task<IApiResponse<IEnumerable<UserRepresentation>>> GetUsers(string role, [Authorize] string token, int first = 0, int max = -1);
+        Task<List<UserRepresentation>> GetUsers(string role, int first, int max, [Authorize] string token);
 
         /// <summary>
         /// Delete a User account from the Identity and Access Management system.
@@ -53,6 +53,6 @@ namespace HealthGateway.Common.Api
         /// <param name="token">The bearer token to authorize the call.</param>
         /// <returns>Returns true when user deleted.</returns>
         [Delete("/users/{userId}")]
-        Task<IApiResponse> DeleteUser(Guid userId, [Authorize] string token);
+        Task DeleteUser(Guid userId, [Authorize] string token);
     }
 }

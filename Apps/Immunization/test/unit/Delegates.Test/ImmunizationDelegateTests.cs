@@ -220,15 +220,15 @@ namespace HealthGateway.ImmunizationTests.Delegates.Test
             mockApiResponse.Setup(s => s.Content).Returns(response);
             mockApiResponse.Setup(s => s.StatusCode).Returns(statusCode);
 
-            Mock<IImmunizationClient> mockImmunizationClient = new();
+            Mock<IImmunizationApi> mockImmunizationApi = new();
             if (!throwException)
             {
-                mockImmunizationClient.Setup(s => s.GetImmunization(It.IsAny<string>(), AccessToken))
+                mockImmunizationApi.Setup(s => s.GetImmunization(It.IsAny<string>(), AccessToken))
                     .ReturnsAsync(mockApiResponse.Object);
             }
             else
             {
-                mockImmunizationClient.Setup(
+                mockImmunizationApi.Setup(
                         s =>
                             s.GetImmunization(It.IsAny<string>(), AccessToken))
                     .ThrowsAsync(new HttpRequestException("Unit Test HTTP Request Exception"));
@@ -238,7 +238,7 @@ namespace HealthGateway.ImmunizationTests.Delegates.Test
                 new Mock<ILogger<RestImmunizationDelegate>>().Object,
                 GetIConfigurationRoot(),
                 mockAuthDelegate.Object,
-                mockImmunizationClient.Object);
+                mockImmunizationApi.Object);
 
             return mockImmunizationDelegate;
         }
@@ -252,15 +252,15 @@ namespace HealthGateway.ImmunizationTests.Delegates.Test
             mockApiResponse.Setup(s => s.Content).Returns(response);
             mockApiResponse.Setup(s => s.StatusCode).Returns(statusCode);
 
-            Mock<IImmunizationClient> mockImmunizationClient = new();
+            Mock<IImmunizationApi> mockImmunizationApi = new();
             if (!throwException)
             {
-                mockImmunizationClient.Setup(s => s.GetImmunizations(It.IsAny<Dictionary<string, string?>>(), AccessToken))
+                mockImmunizationApi.Setup(s => s.GetImmunizations(It.IsAny<Dictionary<string, string?>>(), AccessToken))
                     .ReturnsAsync(mockApiResponse.Object);
             }
             else
             {
-                mockImmunizationClient.Setup(
+                mockImmunizationApi.Setup(
                         s =>
                             s.GetImmunizations(It.IsAny<Dictionary<string, string?>>(), AccessToken))
                     .ThrowsAsync(new HttpRequestException("Unit Test HTTP Request Exception"));
@@ -270,7 +270,7 @@ namespace HealthGateway.ImmunizationTests.Delegates.Test
                 new Mock<ILogger<RestImmunizationDelegate>>().Object,
                 GetIConfigurationRoot(),
                 mockAuthDelegate.Object,
-                mockImmunizationClient.Object);
+                mockImmunizationApi.Object);
 
             return mockImmunizationDelegate;
         }

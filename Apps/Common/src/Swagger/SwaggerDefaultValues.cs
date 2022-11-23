@@ -36,9 +36,10 @@ namespace HealthGateway.Common.Swagger
         /// </summary>
         /// <param name="operation">The operation to apply the filter to.</param>
         /// <param name="context">The current operation filter context.</param>
+        [SuppressMessage("ReSharper", "ConditionalAccessQualifierIsNonNullableAccordingToAPIContract", Justification = "Swashbuckle swagger package does not have nullable implemented properly")]
         public void Apply(OpenApiOperation operation, OperationFilterContext context)
         {
-            if (operation != null && context != null && operation.Parameters != null)
+            if (operation.Parameters != null)
             {
                 foreach (OpenApiParameter parameter in operation.Parameters)
                 {

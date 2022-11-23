@@ -13,31 +13,29 @@
 //  See the License for the specific language governing permissions and
 //  limitations under the License.
 // -------------------------------------------------------------------------
-namespace HealthGateway.Common.Models.PHSA
+namespace HealthGateway.Common.Data.ViewModels
 {
     using System.Text.Json.Serialization;
 
     /// <summary>
-    /// The Immunization Record Card model.
+    /// Represents an api result.
     /// </summary>
-    public class RecordCard
+    /// <typeparam name="T">The payload type.</typeparam>
+    public class ApiResult<T>
+        where T : class?
     {
         /// <summary>
-        /// Gets or sets the wallet card encoded media.
+        /// Gets or sets a warning.
         /// </summary>
-        [JsonPropertyName("walletCard")]
-        public EncodedMedia WalletCard { get; set; } = new();
+        [JsonPropertyName("warning")]
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+        public ApiWarning? Warning { get; set; }
 
         /// <summary>
-        /// Gets or sets the paper record encoded media.
+        /// Gets or sets the result payload.
         /// </summary>
-        [JsonPropertyName("paperRecord")]
-        public EncodedMedia PaperRecord { get; set; } = new();
-
-        /// <summary>
-        /// Gets or sets the QR code encoded media.
-        /// </summary>
-        [JsonPropertyName("qrCode")]
-        public EncodedMedia QRCode { get; set; } = new();
+        [JsonPropertyName("resourcePayload")]
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+        public T? ResourcePayload { get; set; }
     }
 }

@@ -11,7 +11,7 @@
         "HealthGateway.WebClient": {
             "commandName": "Project",
             "launchBrowser": true,
-            "applicationUrl": "http://localhost:5002;https://localhost:5001;",
+            "applicationUrl": "http://localhost:5002",
             "environmentVariables": {
                 "DOTNET_USE_POLLING_FILE_WATCHER": "1",
                 "ASPNETCORE_ENVIRONMENT": "Development"

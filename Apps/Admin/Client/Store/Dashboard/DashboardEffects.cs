@@ -57,7 +57,7 @@ public class DashboardEffects
     [EffectMethod]
     public async Task HandleLoadAction(DashboardActions.LoadRegisteredUsersAction action, IDispatcher dispatcher)
     {
-        this.Logger.LogInformation("Loading registered users.");
+        this.Logger.LogInformation("Loading registered users!");
         try
         {
             IDictionary<DateTime, int> response = await this.DashboardApi.GetRegisteredUserCount(action.TimeOffset).ConfigureAwait(true);
@@ -66,8 +66,8 @@ public class DashboardEffects
         }
         catch (ApiException ex)
         {
-            RequestError error = StoreUtility.FormatRequestError(ex, null);
-            this.Logger.LogError("Error retrieving registered users, reason: {ErrorMessage}.", error.Message);
+            RequestError error = StoreUtility.FormatRequestError(ex);
+            this.Logger.LogError("Error retrieving registered users, reason: {ErrorMessage}", error.Message);
             dispatcher.Dispatch(new DashboardActions.RegisteredUsersFailAction(error));
         }
     }
@@ -81,7 +81,7 @@ public class DashboardEffects
     [EffectMethod]
     public async Task HandleLoadAction(DashboardActions.LoadLoggedInUsersAction action, IDispatcher dispatcher)
     {
-        this.Logger.LogInformation("Loading logged in users.");
+        this.Logger.LogInformation("Loading logged in users!");
 
         try
         {
@@ -91,8 +91,8 @@ public class DashboardEffects
         }
         catch (ApiException ex)
         {
-            RequestError error = StoreUtility.FormatRequestError(ex, null);
-            this.Logger.LogError("Error retrieving logged in users, reason: {ErrorMessage}.", error.Message);
+            RequestError error = StoreUtility.FormatRequestError(ex);
+            this.Logger.LogError("Error retrieving logged in users, reason: {ErrorMessage}", error.Message);
             dispatcher.Dispatch(new DashboardActions.LoggedInUsersFailAction(error));
         }
     }
@@ -106,7 +106,7 @@ public class DashboardEffects
     [EffectMethod]
     public async Task HandleLoadAction(DashboardActions.LoadDependentsAction action, IDispatcher dispatcher)
     {
-        this.Logger.LogInformation("Loading dependents.");
+        this.Logger.LogInformation("Loading dependents!");
 
         try
         {
@@ -116,8 +116,8 @@ public class DashboardEffects
         }
         catch (ApiException ex)
         {
-            RequestError error = StoreUtility.FormatRequestError(ex, null);
-            this.Logger.LogError("Error retrieving dependents, reason: {ErrorMessage}.", error.Message);
+            RequestError error = StoreUtility.FormatRequestError(ex);
+            this.Logger.LogError("Error retrieving dependents, reason: {ErrorMessage}", error.Message);
             dispatcher.Dispatch(new DashboardActions.DependentsFailAction(error));
         }
     }
@@ -131,7 +131,7 @@ public class DashboardEffects
     [EffectMethod]
     public async Task HandleLoadAction(DashboardActions.LoadRecurringUsersAction action, IDispatcher dispatcher)
     {
-        this.Logger.LogInformation("Loading recurring users.");
+        this.Logger.LogInformation("Loading recurring users!");
 
         try
         {
@@ -142,8 +142,8 @@ public class DashboardEffects
         }
         catch (ApiException ex)
         {
-            RequestError error = StoreUtility.FormatRequestError(ex, null);
-            this.Logger.LogError("Error retrieving recurring users, reason: {ErrorMessage}.", error.Message);
+            RequestError error = StoreUtility.FormatRequestError(ex);
+            this.Logger.LogError("Error retrieving recurring users, reason: {ErrorMessage}", error.Message);
             dispatcher.Dispatch(new DashboardActions.RecurringUsersFailAction(error));
         }
     }
@@ -157,7 +157,7 @@ public class DashboardEffects
     [EffectMethod]
     public async Task HandleLoadAction(DashboardActions.LoadRatingSummaryAction action, IDispatcher dispatcher)
     {
-        this.Logger.LogInformation("Loading rating summary.");
+        this.Logger.LogInformation("Loading rating summary!");
 
         try
         {
@@ -167,8 +167,8 @@ public class DashboardEffects
         }
         catch (ApiException ex)
         {
-            RequestError error = StoreUtility.FormatRequestError(ex, null);
-            this.Logger.LogError("Error retrieving rating summary, reason: {ErrorMessage}.", error.Message);
+            RequestError error = StoreUtility.FormatRequestError(ex);
+            this.Logger.LogError("Error retrieving rating summary, reason: {ErrorMessage}", error.Message);
             dispatcher.Dispatch(new DashboardActions.RatingSummaryFailAction(error));
         }
     }

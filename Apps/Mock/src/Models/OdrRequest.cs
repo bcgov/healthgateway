@@ -38,6 +38,6 @@ namespace HealthGateway.Mock.Models
         /// Gets or sets the user ip.
         /// </summary>
         [JsonPropertyName("requestingIP")]
-        public string RequestingIP { get; set; } = string.Empty;
+        public string RequestingIp { get; set; } = string.Empty;
     }
 }

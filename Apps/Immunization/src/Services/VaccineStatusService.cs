@@ -27,9 +27,9 @@ namespace HealthGateway.Immunization.Services
     using HealthGateway.Common.Data.ErrorHandling;
     using HealthGateway.Common.Data.Utils;
     using HealthGateway.Common.Data.ViewModels;
-    using HealthGateway.Common.Delegates.PHSA;
     using HealthGateway.Common.ErrorHandling;
     using HealthGateway.Common.Models.PHSA;
+    using HealthGateway.Immunization.Delegates;
     using HealthGateway.Immunization.MapUtils;
     using HealthGateway.Immunization.Models;
     using Microsoft.AspNetCore.Authentication;
@@ -45,9 +45,9 @@ namespace HealthGateway.Immunization.Services
         private const string PhsaConfigSectionKey = "PHSA";
         private const string AuthConfigSectionName = "ClientAuthentication";
         private readonly IAuthenticationDelegate authDelegate;
+        private readonly IMapper autoMapper;
         private readonly IHttpContextAccessor httpContextAccessor;
         private readonly ILogger<VaccineStatusService> logger;
-        private readonly IMapper autoMapper;
         private readonly PhsaConfig phsaConfig;
         private readonly ClientCredentialsTokenRequest tokenRequest;
         private readonly Uri tokenUri;
@@ -137,7 +137,7 @@ namespace HealthGateway.Immunization.Services
                     retVal.ResultError = new RequestResultError
                     {
                         ResultMessage = "Vaccine Proof document is not available.",
-                        ErrorCode = ErrorTranslator.ServiceError(ErrorType.InvalidState, ServiceType.PHSA),
+                        ErrorCode = ErrorTranslator.ServiceError(ErrorType.InvalidState, ServiceType.Phsa),
                     };
                 }
             }
@@ -180,7 +180,7 @@ namespace HealthGateway.Immunization.Services
                     retVal.ResultError = new RequestResultError
                     {
                         ResultMessage = "Vaccine Proof document is not available.",
-                        ErrorCode = ErrorTranslator.ServiceError(ErrorType.InvalidState, ServiceType.PHSA),
+                        ErrorCode = ErrorTranslator.ServiceError(ErrorType.InvalidState, ServiceType.Phsa),
                     };
                 }
             }
@@ -289,8 +289,10 @@ namespace HealthGateway.Immunization.Services
                 ResourcePayload = new() { State = VaccineState.NotFound },
             };
 
-            bool isPublicEndpoint = string.IsNullOrEmpty(query.HdId);
-            RequestResult<PhsaResult<VaccineStatusResult>> result = await this.vaccineStatusDelegate.GetVaccineStatus(query, accessToken, isPublicEndpoint).ConfigureAwait(true);
+            RequestResult<PhsaResult<VaccineStatusResult>> result = string.IsNullOrEmpty(query.HdId)
+                ? await this.vaccineStatusDelegate.GetVaccineStatusPublic(query, accessToken).ConfigureAwait(true)
+                : await this.vaccineStatusDelegate.GetVaccineStatus(query.HdId, query.IncludeFederalVaccineProof, accessToken).ConfigureAwait(true);
+
             VaccineStatusResult? payload = result.ResourcePayload?.Result;
             PhsaLoadState? loadState = result.ResourcePayload?.LoadState;
 
@@ -302,7 +304,7 @@ namespace HealthGateway.Immunization.Services
                 retVal.ResourcePayload = VaccineStatusMapUtils.ToUiModel(this.autoMapper, payload, phn);
                 retVal.ResourcePayload.State = retVal.ResourcePayload.State switch
                 {
-                    var state when state == VaccineState.Threshold || state == VaccineState.Blocked => VaccineState.NotFound,
+                    VaccineState.Threshold or VaccineState.Blocked => VaccineState.NotFound,
                     _ => retVal.ResourcePayload.State,
                 };
 

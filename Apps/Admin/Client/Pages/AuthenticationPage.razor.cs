@@ -17,6 +17,8 @@
 namespace HealthGateway.Admin.Client.Pages;
 
 using Microsoft.AspNetCore.Components;
+using Microsoft.AspNetCore.Components.WebAssembly.Authentication;
+using Microsoft.Extensions.Options;
 
 /// <summary>
 /// Backing logic for the authentication page.
@@ -32,8 +34,12 @@ public partial class AuthenticationPage : ComponentBase
     [Inject]
     private NavigationManager NavigationManager { get; set; } = default!;
 
+    [Inject]
+    private IOptionsSnapshot<RemoteAuthenticationOptions<ApiAuthorizationProviderOptions>> OptionsSnapshot { get; set; } = default!;
+
     private void RedirectToLoginPage()
     {
-        this.NavigationManager.NavigateTo("authentication/login", replace: true);
+        string loginPath = this.OptionsSnapshot.Get(Options.DefaultName).AuthenticationPaths.LogInPath;
+        this.NavigationManager.NavigateToLogin(loginPath);
     }
 }

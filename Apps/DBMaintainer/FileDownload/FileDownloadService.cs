@@ -13,14 +13,14 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //-------------------------------------------------------------------------
-namespace HealthGateway.Common.FileDownload
+namespace HealthGateway.DBMaintainer.FileDownload
 {
     using System;
+    using System.Diagnostics.CodeAnalysis;
     using System.IO;
     using System.Net.Http;
     using System.Security.Cryptography;
     using System.Threading.Tasks;
-    using HealthGateway.Common.Services;
     using HealthGateway.Database.Models;
     using Microsoft.Extensions.Logging;
 
@@ -29,7 +29,7 @@ namespace HealthGateway.Common.FileDownload
     /// </summary>
     public class FileDownloadService : IFileDownloadService
     {
-        private readonly IHttpClientService httpClientService;
+        private readonly IHttpClientFactory httpClientFactory;
         private readonly ILogger<FileDownloadService> logger;
 
         /// <summary>
@@ -37,14 +37,16 @@ namespace HealthGateway.Common.FileDownload
         /// FileDownloadService constructor.
         /// </summary>
         /// <param name="logger">ILogger instance.</param>
-        /// <param name="httpClientService">The HTTP Client service.</param>
-        public FileDownloadService(ILogger<FileDownloadService> logger, IHttpClientService httpClientService)
+        /// <param name="httpClientFactory">The HTTP Client factory.</param>
+        public FileDownloadService(ILogger<FileDownloadService> logger, IHttpClientFactory httpClientFactory)
         {
             this.logger = logger;
-            this.httpClientService = httpClientService;
+            this.httpClientFactory = httpClientFactory;
         }
 
         /// <inheritdoc/>
+        [SuppressMessage("Design", "CA1031:Do not catch general exception types", Justification = "Generalize exception block")]
+        [SuppressMessage("ReSharper", "UseAwaitUsing", Justification = "awaiting using causes ConfigureAwait warning")]
         public async Task<FileDownload> GetFileFromUrl(Uri fileUrl, string targetFolder, bool isRelativePath)
         {
             FileDownload fd = new();
@@ -64,29 +66,19 @@ namespace HealthGateway.Common.FileDownload
             string filePath = Path.Combine(fd.LocalFilePath, fd.Name);
             try
             {
-                using (HttpClient client = this.httpClientService.CreateDefaultHttpClient())
+                using (HttpClient client = this.httpClientFactory.CreateClient())
                 {
-                    using (Stream inStream = await client.GetStreamAsync(fileUrl).ConfigureAwait(true))
-                    {
-                        using (Stream outStream = File.Open(filePath, FileMode.OpenOrCreate))
-                        {
-                            await inStream.CopyToAsync(outStream).ConfigureAwait(true);
-                        }
-                    }
+                    using Stream inStream = await client.GetStreamAsync(fileUrl).ConfigureAwait(true);
+                    using Stream outStream = File.Open(filePath, FileMode.OpenOrCreate);
+                    await inStream.CopyToAsync(outStream).ConfigureAwait(true);
                 }
 
-                using (Stream hashStream = File.OpenRead(filePath))
-                {
-                    using (SHA256 mySHA256 = SHA256.Create())
-                    {
-                        byte[] hashValue = mySHA256.ComputeHash(hashStream);
-                        fd.Hash = Convert.ToBase64String(hashValue);
-                    }
-                }
+                using Stream hashStream = File.OpenRead(filePath);
+                using SHA256 mySha256 = SHA256.Create();
+                byte[] hashValue = await mySha256.ComputeHashAsync(hashStream).ConfigureAwait(true);
+                fd.Hash = Convert.ToBase64String(hashValue);
             }
-#pragma warning disable CA1031
             catch (Exception exception)
-#pragma warning restore CA1031
             {
                 this.logger.LogCritical("{Exception}", exception.ToString());
                 File.Delete(filePath);

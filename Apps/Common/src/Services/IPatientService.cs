@@ -30,7 +30,7 @@ namespace HealthGateway.Common.Services
         /// </summary>
         /// <param name="hdid">The patient hdid.</param>
         /// <returns>The patient phn.</returns>
-        Task<RequestResult<string>> GetPatientPHN(string hdid);
+        Task<RequestResult<string>> GetPatientPhn(string hdid);
 
         /// <summary>
         /// Gets the patient record.
@@ -39,6 +39,6 @@ namespace HealthGateway.Common.Services
         /// <param name="identifierType">The type of identifier being passed in.</param>
         /// <param name="disableIdValidation">Disables the validation on HDID/PHN when true.</param>
         /// <returns>The patient model.</returns>
-        Task<RequestResult<PatientModel>> GetPatient(string identifier, PatientIdentifierType identifierType = PatientIdentifierType.HDID, bool disableIdValidation = false);
+        Task<RequestResult<PatientModel>> GetPatient(string identifier, PatientIdentifierType identifierType = PatientIdentifierType.Hdid, bool disableIdValidation = false);
     }
 }

@@ -36,19 +36,19 @@ namespace HealthGateway.Common.Delegates
         public AesCryptoDelegate(
             IConfiguration configuration)
         {
-            this.AESConfig = new AesCryptoDelegateConfig();
-            configuration.Bind(ConfigKey, this.AESConfig);
+            this.AesConfig = new AesCryptoDelegateConfig();
+            configuration.Bind(ConfigKey, this.AesConfig);
         }
 
         /// <summary>
         /// Gets or sets the instance configuration.
         /// </summary>
-        public AesCryptoDelegateConfig AESConfig { get; set; }
+        public AesCryptoDelegateConfig AesConfig { get; set; }
 
         /// <inheritdoc/>
         public string Encrypt(string key, string plainText)
         {
-            return this.Encrypt(key, this.AESConfig.Iv, plainText);
+            return this.Encrypt(key, this.AesConfig.Iv, plainText);
         }
 
         /// <summary>
@@ -62,7 +62,7 @@ namespace HealthGateway.Common.Delegates
         public string Encrypt(string key, string? iv, string plainText)
         {
             using Aes aes = Aes.Create();
-            aes.KeySize = this.AESConfig.KeySize;
+            aes.KeySize = this.AesConfig.KeySize;
             aes.Key = Convert.FromBase64String(key);
             aes.IV = iv != null ? Convert.FromBase64String(iv) : new byte[16];
             ICryptoTransform encryptor = aes.CreateEncryptor(aes.Key, aes.IV);
@@ -78,7 +78,7 @@ namespace HealthGateway.Common.Delegates
         /// <inheritdoc/>
         public string Decrypt(string key, string encryptedText)
         {
-            return this.Decrypt(key, this.AESConfig.Iv, encryptedText);
+            return this.Decrypt(key, this.AesConfig.Iv, encryptedText);
         }
 
         /// <summary>
@@ -90,10 +90,10 @@ namespace HealthGateway.Common.Delegates
         /// <returns>The decrypted text.</returns>
         public string Decrypt(string key, string? iv, string encryptedText)
         {
-            string? plaintext = null;
+            string? plaintext;
             byte[] encryptedBytes = Convert.FromBase64String(encryptedText);
             using Aes aes = Aes.Create();
-            aes.KeySize = this.AESConfig.KeySize;
+            aes.KeySize = this.AesConfig.KeySize;
             aes.Key = Convert.FromBase64String(key);
             aes.IV = iv != null ? Convert.FromBase64String(iv) : new byte[16];
             ICryptoTransform decryptor = aes.CreateDecryptor(aes.Key, aes.IV);
@@ -108,7 +108,7 @@ namespace HealthGateway.Common.Delegates
         public string GenerateKey()
         {
             using Aes aes = Aes.Create();
-            aes.KeySize = this.AESConfig.KeySize;
+            aes.KeySize = this.AesConfig.KeySize;
             aes.GenerateKey();
             return Convert.ToBase64String(aes.Key);
         }

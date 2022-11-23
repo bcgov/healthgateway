@@ -18,7 +18,6 @@ namespace HealthGateway.ClinicalDocumentTests.Services
     using System;
     using System.Collections.Generic;
     using System.Linq;
-    using System.Net;
     using System.Net.Http;
     using System.Threading.Tasks;
     using AutoMapper;
@@ -33,7 +32,6 @@ namespace HealthGateway.ClinicalDocumentTests.Services
     using HealthGateway.Common.Services;
     using Microsoft.Extensions.Logging;
     using Moq;
-    using Refit;
     using Xunit;
 
     /// <summary>
@@ -41,8 +39,8 @@ namespace HealthGateway.ClinicalDocumentTests.Services
     /// </summary>
     public class ClinicalDocumentServiceTests
     {
-        private const string ClinicalDocumentRecordErrorMessage = "Error with HTTP Request for Clinical Documents";
-        private const string ClinicalDocumentFileErrorMessage = "Error with HTTP Request for Clinical Document file";
+        private const string ClinicalDocumentRecordErrorMessage = "Error while retrieving Clinical Documents";
+        private const string ClinicalDocumentFileErrorMessage = "Error while retrieving Clinical Document file";
 
         /// <summary>
         ///  Get clinical document records - happy path.
@@ -54,7 +52,7 @@ namespace HealthGateway.ClinicalDocumentTests.Services
             Guid id = Guid.NewGuid();
             PhsaHealthDataResponse expectedPhsaHealthDataResponse = GetPhsaHealthDataResponse(id);
 
-            IClinicalDocumentService clinicalDocumentService = GetClinicalDocumentService(expectedPhsaHealthDataResponse, null, false);
+            IClinicalDocumentService clinicalDocumentService = GetClinicalDocumentService(expectedPhsaHealthDataResponse, false);
 
             // Act
             RequestResult<IEnumerable<ClinicalDocumentRecord>> actualResult =
@@ -67,32 +65,6 @@ namespace HealthGateway.ClinicalDocumentTests.Services
         }
 
         /// <summary>
-        ///  Get clinical document records returns api exception.
-        /// </summary>
-        [Fact]
-        public void ShouldGetClinicalDocumentRecordsReturnsApiException()
-        {
-            // Arrange
-            Guid id = Guid.NewGuid();
-            PhsaHealthDataResponse expectedPhsaHealthDataResponse = GetPhsaHealthDataResponse(id);
-
-            HttpResponseMessage responseMessage = new(HttpStatusCode.NotFound);
-            RefitSettings refitSettings = new();
-            ApiException apiException = ApiException.Create(It.IsAny<HttpRequestMessage>(), It.IsAny<HttpMethod>(), responseMessage, refitSettings).Result;
-            responseMessage.Dispose();
-
-            IClinicalDocumentService clinicalDocumentService = GetClinicalDocumentService(expectedPhsaHealthDataResponse, apiException, false);
-
-            // Act
-            RequestResult<IEnumerable<ClinicalDocumentRecord>> actualResult =
-                Task.Run(async () => await clinicalDocumentService.GetRecordsAsync(It.IsAny<string>()).ConfigureAwait(true)).Result;
-
-            // Assert
-            Assert.Equal(ResultType.Error, actualResult.ResultStatus);
-            Assert.Null(actualResult.ResourcePayload);
-        }
-
-        /// <summary>
         ///  Get clinical document records throws exception.
         /// </summary>
         [Fact]
@@ -102,7 +74,7 @@ namespace HealthGateway.ClinicalDocumentTests.Services
             Guid id = Guid.NewGuid();
             PhsaHealthDataResponse expectedPhsaHealthDataResponse = GetPhsaHealthDataResponse(id);
 
-            IClinicalDocumentService clinicalDocumentService = GetClinicalDocumentService(expectedPhsaHealthDataResponse, null, true);
+            IClinicalDocumentService clinicalDocumentService = GetClinicalDocumentService(expectedPhsaHealthDataResponse, true);
 
             // Act
             RequestResult<IEnumerable<ClinicalDocumentRecord>> actualResult =
@@ -123,7 +95,7 @@ namespace HealthGateway.ClinicalDocumentTests.Services
             Guid id = Guid.NewGuid();
             PhsaHealthDataResponse expectedPhsaHealthDataResponse = GetPhsaHealthDataResponse(id);
 
-            IClinicalDocumentService clinicalDocumentService = GetClinicalDocumentService(expectedPhsaHealthDataResponse, null, false);
+            IClinicalDocumentService clinicalDocumentService = GetClinicalDocumentService(expectedPhsaHealthDataResponse, false);
 
             // Act
             RequestResult<EncodedMedia> actualResult =
@@ -132,32 +104,6 @@ namespace HealthGateway.ClinicalDocumentTests.Services
             // Assert
             Assert.Equal(ResultType.Success, actualResult.ResultStatus);
             Assert.NotNull(actualResult.ResourcePayload);
-        }
-
-        /// <summary>
-        ///  Get clinical document file returns api exception.
-        /// </summary>
-        [Fact]
-        public void ShouldGetClinicalDocumentFileReturnsApiException()
-        {
-            // Arrange
-            Guid id = Guid.NewGuid();
-            PhsaHealthDataResponse expectedPhsaHealthDataResponse = GetPhsaHealthDataResponse(id);
-
-            HttpResponseMessage responseMessage = new(HttpStatusCode.NotFound);
-            RefitSettings refitSettings = new();
-            ApiException apiException = ApiException.Create(It.IsAny<HttpRequestMessage>(), It.IsAny<HttpMethod>(), responseMessage, refitSettings).Result;
-            responseMessage.Dispose();
-
-            IClinicalDocumentService clinicalDocumentService = GetClinicalDocumentService(expectedPhsaHealthDataResponse, apiException, false);
-
-            // Act
-            RequestResult<EncodedMedia> actualResult =
-                Task.Run(async () => await clinicalDocumentService.GetFileAsync(It.IsAny<string>(), It.IsAny<string>()).ConfigureAwait(true)).Result;
-
-            // Assert
-            Assert.Equal(ResultType.Error, actualResult.ResultStatus);
-            Assert.Null(actualResult.ResourcePayload);
         }
 
         /// <summary>
@@ -170,7 +116,7 @@ namespace HealthGateway.ClinicalDocumentTests.Services
             Guid id = Guid.NewGuid();
             PhsaHealthDataResponse expectedPhsaHealthDataResponse = GetPhsaHealthDataResponse(id);
 
-            IClinicalDocumentService clinicalDocumentService = GetClinicalDocumentService(expectedPhsaHealthDataResponse, null, true);
+            IClinicalDocumentService clinicalDocumentService = GetClinicalDocumentService(expectedPhsaHealthDataResponse, true);
 
             // Act
             RequestResult<EncodedMedia> actualResult =
@@ -201,32 +147,18 @@ namespace HealthGateway.ClinicalDocumentTests.Services
             };
         }
 
-        private static IClinicalDocumentService GetClinicalDocumentService(PhsaHealthDataResponse content, ApiException? error, bool throwException)
+        private static IClinicalDocumentService GetClinicalDocumentService(PhsaHealthDataResponse content, bool throwException)
         {
-            HttpResponseMessage responseMessage = new(error == null ? HttpStatusCode.OK : HttpStatusCode.NotFound);
-
-            IApiResponse<PhsaHealthDataResponse> recordsApiResponse = new ApiResponse<PhsaHealthDataResponse>(
-                responseMessage,
-                content,
-                It.IsAny<RefitSettings>(),
-                error);
-
-            IApiResponse<EncodedMedia> fileApiResponse = new ApiResponse<EncodedMedia>(
-                responseMessage,
-                new EncodedMedia(),
-                It.IsAny<RefitSettings>(),
-                error);
-
             Mock<IClinicalDocumentsApi> clinicalDocumentApiMock = new();
             if (!throwException)
             {
-                clinicalDocumentApiMock.Setup(c => c.GetClinicalDocumentRecords(It.IsAny<string>())).ReturnsAsync(recordsApiResponse);
-                clinicalDocumentApiMock.Setup(c => c.GetClinicalDocumentFile(It.IsAny<string>(), It.IsAny<string>())).ReturnsAsync(fileApiResponse);
+                clinicalDocumentApiMock.Setup(c => c.GetClinicalDocumentRecordsAsync(It.IsAny<string>())).ReturnsAsync(content);
+                clinicalDocumentApiMock.Setup(c => c.GetClinicalDocumentFileAsync(It.IsAny<string>(), It.IsAny<string>())).ReturnsAsync(new EncodedMedia());
             }
             else
             {
-                clinicalDocumentApiMock.Setup(c => c.GetClinicalDocumentRecords(It.IsAny<string>())).ThrowsAsync(new HttpRequestException("Unit Test HTTP Request Exception"));
-                clinicalDocumentApiMock.Setup(c => c.GetClinicalDocumentFile(It.IsAny<string>(), It.IsAny<string>())).ThrowsAsync(new HttpRequestException("Unit Test HTTP Request Exception"));
+                clinicalDocumentApiMock.Setup(c => c.GetClinicalDocumentRecordsAsync(It.IsAny<string>())).ThrowsAsync(new HttpRequestException("Unit Test HTTP Request Exception"));
+                clinicalDocumentApiMock.Setup(c => c.GetClinicalDocumentFileAsync(It.IsAny<string>(), It.IsAny<string>())).ThrowsAsync(new HttpRequestException("Unit Test HTTP Request Exception"));
             }
 
             PatientIdentity patientIdentity = new()
@@ -244,10 +176,6 @@ namespace HealthGateway.ClinicalDocumentTests.Services
             };
             Mock<IPersonalAccountsService> personalAccountServiceMock = new();
             personalAccountServiceMock.Setup(p => p.GetPatientAccountAsync(It.IsAny<string>())).ReturnsAsync(requestResult);
-
-            recordsApiResponse.Dispose();
-            fileApiResponse.Dispose();
-            responseMessage.Dispose();
 
             return new ClinicalDocumentService(
                 new Mock<ILogger<ClinicalDocumentService>>().Object,

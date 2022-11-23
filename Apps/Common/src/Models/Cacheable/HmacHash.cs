@@ -25,7 +25,7 @@ namespace HealthGateway.Common.Models.Cacheable
         /// <summary>
         /// Gets or sets the pseudo random function that was used to generate this hash.
         /// </summary>
-        public HashFunction PseudoRandomFunction { get; set; } = HashFunction.HMACSHA512;
+        public HashFunction PseudoRandomFunction { get; set; } = HashFunction.HmacSha512;
 
         /// <summary>
         /// Gets or sets the iterations used to generate this hash.
@@ -37,7 +37,7 @@ namespace HealthGateway.Common.Models.Cacheable
         /// </summary>
         public string? Salt { get; set; }
 
-        /// <inheritdoc />
+        /// <inheritdoc/>
         public string? Hash { get; set; }
     }
 }

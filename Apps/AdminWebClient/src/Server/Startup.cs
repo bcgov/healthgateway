@@ -22,10 +22,9 @@ namespace HealthGateway.Admin
     using HealthGateway.Admin.Delegates;
     using HealthGateway.Admin.Services;
     using HealthGateway.Common.AccessManagement.Authentication;
+    using HealthGateway.Common.AccessManagement.Authorization.Admin;
     using HealthGateway.Common.AspNetConfiguration;
-    using HealthGateway.Common.Authorization.Admin;
     using HealthGateway.Common.Delegates;
-    using HealthGateway.Common.Delegates.PHSA;
     using HealthGateway.Common.MapProfiles;
     using HealthGateway.Common.Models.PHSA;
     using HealthGateway.Common.Services;
@@ -115,7 +114,7 @@ namespace HealthGateway.Admin
             // Add API Clients
             PhsaConfig phsaConfig = new();
             this.startupConfig.Configuration.Bind(PhsaConfigSectionKey, phsaConfig);
-            services.AddRefitClient<IImmunizationAdminClient>()
+            services.AddRefitClient<IImmunizationAdminApi>()
                 .ConfigureHttpClient(c => c.BaseAddress = phsaConfig.BaseUrl);
 
             services.AddAutoMapper(typeof(Startup), typeof(UserProfileProfile), typeof(MessagingVerificationProfile));

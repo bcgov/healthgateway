@@ -13,24 +13,25 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //-------------------------------------------------------------------------
-namespace HealthGateway.Common.FileDownload
-{
-    using System;
-    using System.Threading.Tasks;
-    using HealthGateway.Database.Models;
+namespace HealthGateway.Immunization.Api;
 
+using System.Threading.Tasks;
+using HealthGateway.Common.Models.PHSA;
+using Refit;
+
+/// <summary>
+/// Refit interface to interact with the public immunizations API at PHSA.
+/// </summary>
+public interface IImmunizationPublicApi
+{
     /// <summary>
-    /// Interface that defines a file downloader.
+    /// Retrieves a PhsaResult containing the vaccine status of a given patient.
     /// </summary>
-    public interface IFileDownloadService
-    {
-        /// <summary>
-        /// Service to download a file specified by the supplied URL.
-        /// </summary>
-        /// <param name="fileUrl">The url of the file to be downloaded.</param>
-        /// <param name="targetFolder">Target folder once the download is suscessfull.</param>
-        /// <param name="isRelativePath">True if the target folder is a lrelative path.</param>
-        /// <returns>The DownloadedFile.</returns>
-        Task<FileDownload> GetFileFromUrl(Uri fileUrl, string targetFolder, bool isRelativePath);
-    }
+    /// <param name="query">The model containing details of the request.</param>
+    /// <param name="token">The bearer token to authorize the call.</param>
+    /// <returns>
+    /// A PhsaResult containing the vaccine status of a given patient.
+    /// </returns>
+    [Post("/api/v1/Public/Immunizations/VaccineStatusIndicator")]
+    Task<PhsaResult<VaccineStatusResult>> GetVaccineStatus(VaccineStatusQuery query, [Authorize] string token);
 }

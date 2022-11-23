@@ -18,10 +18,7 @@ namespace HealthGateway.MedicationTests.Delegates
     using System;
     using System.Collections.Generic;
     using System.Globalization;
-    using System.Net;
     using System.Net.Http;
-    using System.Text.Json;
-    using System.Threading;
     using System.Threading.Tasks;
     using DeepEqual.Syntax;
     using HealthGateway.Common.CacheProviders;
@@ -30,17 +27,15 @@ namespace HealthGateway.MedicationTests.Delegates
     using HealthGateway.Common.Data.ErrorHandling;
     using HealthGateway.Common.Data.ViewModels;
     using HealthGateway.Common.Delegates;
-    using HealthGateway.Common.Models;
     using HealthGateway.Common.Models.Cacheable;
     using HealthGateway.Common.Models.ODR;
-    using HealthGateway.Common.Services;
+    using HealthGateway.Medication.Api;
     using HealthGateway.Medication.Constants;
     using HealthGateway.Medication.Delegates;
     using HealthGateway.Medication.Models.ODR;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.Logging;
     using Moq;
-    using Moq.Protected;
     using Xunit;
 
     /// <summary>
@@ -48,21 +43,18 @@ namespace HealthGateway.MedicationTests.Delegates
     /// </summary>
     public class MedicationDelegateTests
     {
-        private readonly Uri baseURI;
         private readonly IConfiguration configuration;
         private readonly string hdid = "EXTRIOYFPNX35TWEBUAJ3DNFDFXSYTBC6J4M76GYE3HC5ER2NKWQ";
         private readonly string ip = "10.0.0.1";
         private readonly ILoggerFactory loggerFactory;
         private readonly OdrConfig odrConfig = new();
         private readonly string odrConfigSectionKey = "ODR";
-        private readonly Uri patientProfileEndpoint;
         private readonly string phn = "9735361219";
-        private readonly Uri protectiveWordEndpoint;
         private readonly OdrHistoryQuery query = new()
         {
             StartDate = DateTime.Parse("1990/01/01", CultureInfo.CurrentCulture),
             EndDate = DateTime.Now,
-            PHN = "9735361219",
+            Phn = "9735361219",
         };
 
         /// <summary>
@@ -72,10 +64,7 @@ namespace HealthGateway.MedicationTests.Delegates
         {
             this.configuration = GetIConfigurationRoot();
             this.configuration.Bind(this.odrConfigSectionKey, this.odrConfig);
-            this.baseURI = new Uri(this.odrConfig.BaseEndpoint);
             this.loggerFactory = LoggerFactory.Create(builder => builder.AddConsole());
-            this.patientProfileEndpoint = new Uri(this.baseURI, this.odrConfig.PatientProfileEndpoint);
-            this.protectiveWordEndpoint = new Uri(this.baseURI, this.odrConfig.ProtectiveWordEndpoint);
         }
 
         /// <summary>
@@ -87,8 +76,8 @@ namespace HealthGateway.MedicationTests.Delegates
             MedicationHistory medicationHistory = new()
             {
                 Id = Guid.Parse("ee37267e-cb2c-48e1-a3c9-16c36ce7466b"),
-                RequestorHDID = this.hdid,
-                RequestorIP = this.ip,
+                RequestorHdid = this.hdid,
+                RequestorIp = this.ip,
                 Query = this.query,
                 Response = new MedicationHistoryResponse
                 {
@@ -120,7 +109,7 @@ namespace HealthGateway.MedicationTests.Delegates
                             },
                             GenericName = "Generic Name",
                             Id = 0,
-                            Practioner = new Name
+                            Practitioner = new Name
                             {
                                 GivenName = "Given",
                                 MiddleInitial = "I",
@@ -134,25 +123,16 @@ namespace HealthGateway.MedicationTests.Delegates
                     },
                 },
             };
-            string medicationHistoryJson = JsonSerializer.Serialize(medicationHistory);
 
-            using HttpResponseMessage patientResponseMessage = new()
-            {
-                StatusCode = HttpStatusCode.OK,
-                Content = new StringContent(medicationHistoryJson),
-            };
-            Mock<HttpMessageHandler> handlerMock = GetHttpMessageHandler(patientResponseMessage, this.patientProfileEndpoint);
-
-            using HttpResponseMessage protectiveWordResponseMessage = new()
-            {
-                StatusCode = HttpStatusCode.OK,
-                Content = new StringContent(this.GetProtectiveWordJson()),
-            };
-            GetHttpMessageHandler(protectiveWordResponseMessage, this.protectiveWordEndpoint, handlerMock);
+            Mock<IOdrApi> mockOdrApi = new();
+            mockOdrApi.Setup(s => s.GetMedicationHistoryAsync(It.IsAny<MedicationHistory>()))
+                .ReturnsAsync(medicationHistory);
+            mockOdrApi.Setup(s => s.GetProtectiveWordAsync(It.IsAny<ProtectiveWord>()))
+                .ReturnsAsync(this.GetProtectiveWord());
 
             IMedStatementDelegate medStatementDelegate = new RestMedStatementDelegate(
                 this.loggerFactory.CreateLogger<RestMedStatementDelegate>(),
-                GetHttpClientService(handlerMock.Object),
+                mockOdrApi.Object,
                 this.configuration,
                 new Mock<ICacheProvider>().Object,
                 GetHashDelegate());
@@ -180,8 +160,8 @@ namespace HealthGateway.MedicationTests.Delegates
             MedicationHistory medicationHistory = new()
             {
                 Id = Guid.Parse("ee37267e-cb2c-48e1-a3c9-16c36ce7466b"),
-                RequestorHDID = this.hdid,
-                RequestorIP = this.ip,
+                RequestorHdid = this.hdid,
+                RequestorIp = this.ip,
                 Query = this.query,
                 Response = new MedicationHistoryResponse
                 {
@@ -197,26 +177,19 @@ namespace HealthGateway.MedicationTests.Delegates
                     },
                 },
             };
-            using HttpResponseMessage medHttpResponseMessage = new()
-            {
-                StatusCode = HttpStatusCode.OK,
-                Content = new StringContent(JsonSerializer.Serialize(medicationHistory)),
-            };
-            using HttpResponseMessage protectedHttpResponseMessage = new()
-            {
-                StatusCode = HttpStatusCode.OK,
-                Content = new StringContent(this.GetProtectiveWordJson()),
-            };
 
-            Mock<HttpMessageHandler> handlerMock = GetHttpMessageHandler(medHttpResponseMessage, this.patientProfileEndpoint);
-            GetHttpMessageHandler(protectedHttpResponseMessage, this.protectiveWordEndpoint, handlerMock);
+            Mock<IOdrApi> mockOdrApi = new();
+            mockOdrApi.Setup(s => s.GetMedicationHistoryAsync(It.IsAny<MedicationHistory>()))
+                .ReturnsAsync(medicationHistory);
+            mockOdrApi.Setup(s => s.GetProtectiveWordAsync(It.IsAny<ProtectiveWord>()))
+                .ReturnsAsync(this.GetProtectiveWord());
 
             IHashDelegate mockHashDelegate = GetHashDelegate();
             Mock<ICacheProvider> mockCacheProvider = new();
             mockCacheProvider.Setup(s => s.GetItem<IHash>(It.IsAny<string>())).Returns(mockHashDelegate.Hash(string.Empty));
             IMedStatementDelegate medStatementDelegate = new RestMedStatementDelegate(
                 this.loggerFactory.CreateLogger<RestMedStatementDelegate>(),
-                GetHttpClientService(handlerMock.Object),
+                mockOdrApi.Object,
                 this.configuration,
                 mockCacheProvider.Object,
                 mockHashDelegate);
@@ -241,27 +214,23 @@ namespace HealthGateway.MedicationTests.Delegates
         [Fact]
         public void InvalidProtectiveWord()
         {
-            string protectiveWordJson = this.GetProtectiveWordJson("ProtectiveWord");
+            ProtectiveWord protectiveWord = this.GetProtectiveWord("ProtectiveWord");
 
-            using HttpResponseMessage protectedHttpResponseMessage = new()
-            {
-                StatusCode = HttpStatusCode.OK,
-                Content = new StringContent(protectiveWordJson),
-            };
-            Mock<HttpMessageHandler> handlerMock = GetHttpMessageHandler(protectedHttpResponseMessage, this.protectiveWordEndpoint);
+            Mock<IOdrApi> mockOdrApi = new();
+            mockOdrApi.Setup(s => s.GetProtectiveWordAsync(It.IsAny<ProtectiveWord>()))
+                .ReturnsAsync(protectiveWord);
+
             Mock<ICacheProvider> mockCacheProvider = new();
             Mock<IHashDelegate> mockHashDelegate = new();
             IHash hash = new HmacHash
             {
-                Hash = $"{protectiveWordJson}-HASH",
+                Hash = "THIS HASH DOESN'T COMPUTE",
             };
             mockHashDelegate.Setup(s => s.Hash(It.IsAny<string>())).Returns(hash);
             mockHashDelegate.Setup(s => s.Compare(It.IsAny<string>(), It.IsAny<IHash>())).Returns(false);
-            Mock<IHttpClientService> mockHttpClientService = new();
-            mockHttpClientService.Setup(s => s.CreateDefaultHttpClient()).Returns(() => new HttpClient(handlerMock.Object));
             IMedStatementDelegate medStatementDelegate = new RestMedStatementDelegate(
                 this.loggerFactory.CreateLogger<RestMedStatementDelegate>(),
-                mockHttpClientService.Object,
+                mockOdrApi.Object,
                 this.configuration,
                 mockCacheProvider.Object,
                 mockHashDelegate.Object);
@@ -277,8 +246,8 @@ namespace HealthGateway.MedicationTests.Delegates
                 .Result;
 
             Assert.Equal(ResultType.ActionRequired, response.ResultStatus);
-            Assert.Equal(ActionType.Protected, response?.ResultError?.ActionCode);
-            Assert.Equal(ErrorMessages.ProtectiveWordErrorMessage, response?.ResultError?.ResultMessage);
+            Assert.Equal(ActionType.Protected, response.ResultError?.ActionCode);
+            Assert.Equal(ErrorMessages.ProtectiveWordErrorMessage, response.ResultError?.ResultMessage);
         }
 
         /// <summary>
@@ -287,19 +256,6 @@ namespace HealthGateway.MedicationTests.Delegates
         [Fact]
         public void ValidateGetMedicationStatementHttpError()
         {
-            using HttpResponseMessage patientResponseMessage = new()
-            {
-                StatusCode = HttpStatusCode.BadRequest,
-                Content = new StringContent("Mock HTTP Error"),
-            };
-            using HttpResponseMessage protectiveWordResponseMessage = new()
-            {
-                StatusCode = HttpStatusCode.OK,
-                Content = new StringContent(this.GetProtectiveWordJson()),
-            };
-            Mock<HttpMessageHandler> handlerMock = GetHttpMessageHandler(patientResponseMessage, this.patientProfileEndpoint);
-            GetHttpMessageHandler(protectiveWordResponseMessage, this.protectiveWordEndpoint, handlerMock);
-
             Mock<ICacheProvider> mockCacheProvider = new();
             Mock<IHashDelegate> mockHashDelegate = new();
             IHash hash = new HmacHash
@@ -308,11 +264,14 @@ namespace HealthGateway.MedicationTests.Delegates
             };
             mockHashDelegate.Setup(s => s.Hash(It.IsAny<string>())).Returns(hash);
             mockHashDelegate.Setup(s => s.Compare(It.IsAny<string>(), It.IsAny<IHash>())).Returns(true);
-            Mock<IHttpClientService> mockHttpClientService = new();
-            mockHttpClientService.Setup(s => s.CreateDefaultHttpClient()).Returns(() => new HttpClient(handlerMock.Object));
+
+            Mock<IOdrApi> mockOdrApi = new();
+            mockOdrApi.Setup(s => s.GetProtectiveWordAsync(It.IsAny<ProtectiveWord>()))
+                .ThrowsAsync(new HttpRequestException("Bad things happen in Unit Tests"));
+
             IMedStatementDelegate medStatementDelegate = new RestMedStatementDelegate(
                 this.loggerFactory.CreateLogger<RestMedStatementDelegate>(),
-                mockHttpClientService.Object,
+                mockOdrApi.Object,
                 this.configuration,
                 mockCacheProvider.Object,
                 mockHashDelegate.Object);
@@ -336,23 +295,6 @@ namespace HealthGateway.MedicationTests.Delegates
         [Fact]
         public void ValidateGetMedicationStatementHttpException()
         {
-            using HttpResponseMessage protectiveWordResponseMessage = new()
-            {
-                StatusCode = HttpStatusCode.OK,
-                Content = new StringContent(this.GetProtectiveWordJson()),
-            };
-            Mock<HttpMessageHandler> handlerMock = new();
-            handlerMock
-                .Protected()
-                .Setup<Task<HttpResponseMessage>>(
-                    "SendAsync",
-                    ItExpr.Is<HttpRequestMessage>(c => c.RequestUri == this.patientProfileEndpoint),
-                    ItExpr.IsAny<CancellationToken>())
-                .Throws<HttpRequestException>()
-                .Verifiable();
-
-            GetHttpMessageHandler(protectiveWordResponseMessage, this.protectiveWordEndpoint, handlerMock);
-
             Mock<ICacheProvider> mockCacheProvider = new();
             Mock<IHashDelegate> mockHashDelegate = new();
             IHash hash = new HmacHash
@@ -361,11 +303,15 @@ namespace HealthGateway.MedicationTests.Delegates
             };
             mockHashDelegate.Setup(s => s.Hash(It.IsAny<string>())).Returns(hash);
             mockHashDelegate.Setup(s => s.Compare(It.IsAny<string>(), It.IsAny<IHash>())).Returns(true);
-            Mock<IHttpClientService> mockHttpClientService = new();
-            mockHttpClientService.Setup(s => s.CreateDefaultHttpClient()).Returns(() => new HttpClient(handlerMock.Object));
+
+            ProtectiveWord protectiveWord = this.GetProtectiveWord("ProtectiveWord");
+            Mock<IOdrApi> mockOdrApi = new();
+            mockOdrApi.Setup(s => s.GetMedicationHistoryAsync(It.IsAny<MedicationHistory>()))
+                .ThrowsAsync(new HttpRequestException("Fake Exception"));
+            mockOdrApi.Setup(s => s.GetProtectiveWordAsync(It.IsAny<ProtectiveWord>())).ReturnsAsync(protectiveWord);
             IMedStatementDelegate medStatementDelegate = new RestMedStatementDelegate(
                 this.loggerFactory.CreateLogger<RestMedStatementDelegate>(),
-                mockHttpClientService.Object,
+                mockOdrApi.Object,
                 this.configuration,
                 mockCacheProvider.Object,
                 mockHashDelegate.Object);
@@ -384,126 +330,6 @@ namespace HealthGateway.MedicationTests.Delegates
         }
 
         /// <summary>
-        /// GetMedicationStatements - Keyword Http Error.
-        /// </summary>
-        [Fact]
-        public void ValidateGetProtectiveWordHttpError()
-        {
-            using HttpResponseMessage protectiveWordResponseMessage = new()
-            {
-                StatusCode = HttpStatusCode.BadRequest,
-                Content = new StringContent("Mock Bad Request"),
-            };
-            Mock<HttpMessageHandler> handlerMock = GetHttpMessageHandler(protectiveWordResponseMessage, this.protectiveWordEndpoint);
-            Mock<ICacheProvider> mockCacheProvider = new();
-            Mock<IHashDelegate> mockHashDelegate = new();
-            IHash hash = new HmacHash
-            {
-                Hash = string.Empty,
-            };
-            mockHashDelegate.Setup(s => s.Hash(It.IsAny<string>())).Returns(hash);
-            mockHashDelegate.Setup(s => s.Compare(It.IsAny<string>(), It.IsAny<IHash>())).Returns(true);
-            IMedStatementDelegate medStatementDelegate = new RestMedStatementDelegate(
-                this.loggerFactory.CreateLogger<RestMedStatementDelegate>(),
-                GetHttpClientService(handlerMock.Object),
-                this.configuration,
-                mockCacheProvider.Object,
-                mockHashDelegate.Object);
-
-            RequestResult<MedicationHistoryResponse> response = Task.Run(
-                    async () =>
-                        await medStatementDelegate.GetMedicationStatementsAsync(
-                                this.query,
-                                string.Empty,
-                                string.Empty,
-                                string.Empty)
-                            .ConfigureAwait(true))
-                .Result;
-
-            Assert.Equal(ResultType.Error, response.ResultStatus);
-        }
-
-        /// <summary>
-        /// GetMedicationStatements - Keyword JSON Error.
-        /// </summary>
-        [Fact]
-        public void ValidateGetProtectiveWordJsonParseError()
-        {
-            using HttpResponseMessage protectiveWordResponseMessage = new()
-            {
-                StatusCode = HttpStatusCode.OK,
-                Content = new StringContent("{}"),
-            };
-
-            Mock<HttpMessageHandler> handlerMock = GetHttpMessageHandler(protectiveWordResponseMessage, this.protectiveWordEndpoint);
-
-            Mock<ICacheProvider> mockCacheProvider = new();
-            Mock<IHttpClientService> mockHttpClientService = new();
-            mockHttpClientService.Setup(s => s.CreateDefaultHttpClient()).Returns(() => new HttpClient(handlerMock.Object));
-            IMedStatementDelegate medStatementDelegate = new RestMedStatementDelegate(
-                this.loggerFactory.CreateLogger<RestMedStatementDelegate>(),
-                mockHttpClientService.Object,
-                this.configuration,
-                mockCacheProvider.Object,
-                GetHashDelegate());
-
-            RequestResult<MedicationHistoryResponse> response = Task.Run(
-                    async () =>
-                        await medStatementDelegate.GetMedicationStatementsAsync(
-                                this.query,
-                                string.Empty,
-                                string.Empty,
-                                string.Empty)
-                            .ConfigureAwait(true))
-                .Result;
-
-            Assert.Equal(ResultType.Error, response.ResultStatus);
-        }
-
-        /// <summary>
-        /// GetMedicationStatements - Keyword Parse Exception.
-        /// </summary>
-        [Fact]
-        public void ValidateGetProtectiveWordParseException()
-        {
-            using HttpResponseMessage protectiveWordResponseMessage = new()
-            {
-                StatusCode = HttpStatusCode.OK,
-                Content = new StringContent("Bad Data"),
-            };
-            Mock<HttpMessageHandler> handlerMock = GetHttpMessageHandler(protectiveWordResponseMessage, this.protectiveWordEndpoint);
-
-            Mock<ICacheProvider> mockCacheProvider = new();
-            Mock<IHashDelegate> mockHashDelegate = new();
-            IHash hash = new HmacHash
-            {
-                Hash = string.Empty,
-            };
-            mockHashDelegate.Setup(s => s.Hash(It.IsAny<string>())).Returns(hash);
-            mockHashDelegate.Setup(s => s.Compare(It.IsAny<string>(), It.IsAny<IHash>())).Returns(true);
-            Mock<IHttpClientService> mockHttpClientService = new();
-            mockHttpClientService.Setup(s => s.CreateDefaultHttpClient()).Returns(() => new HttpClient(handlerMock.Object));
-            IMedStatementDelegate medStatementDelegate = new RestMedStatementDelegate(
-                this.loggerFactory.CreateLogger<RestMedStatementDelegate>(),
-                mockHttpClientService.Object,
-                this.configuration,
-                mockCacheProvider.Object,
-                mockHashDelegate.Object);
-
-            RequestResult<MedicationHistoryResponse> response = Task.Run(
-                    async () =>
-                        await medStatementDelegate.GetMedicationStatementsAsync(
-                                this.query,
-                                string.Empty,
-                                string.Empty,
-                                string.Empty)
-                            .ConfigureAwait(true))
-                .Result;
-
-            Assert.Equal(ResultType.Error, response.ResultStatus);
-        }
-
-        /// <summary>
         /// SetProtectiveWord - Not Implemented Exception.
         /// </summary>
         [Fact]
@@ -511,17 +337,16 @@ namespace HealthGateway.MedicationTests.Delegates
         {
             Mock<ICacheProvider> mockCacheProvider = new();
             Mock<IHashDelegate> mockHashDelegate = new();
-            Mock<IHttpClientService> mockHttpClientService = new();
             IMedStatementDelegate medStatementDelegate = new RestMedStatementDelegate(
                 this.loggerFactory.CreateLogger<RestMedStatementDelegate>(),
-                mockHttpClientService.Object,
+                new Mock<IOdrApi>().Object,
                 this.configuration,
                 mockCacheProvider.Object,
                 mockHashDelegate.Object);
 
             Assert.ThrowsAsync<NotImplementedException>(
                 async () => await
-                    medStatementDelegate.SetProtectiveWord(
+                    medStatementDelegate.SetProtectiveWordAsync(
                             string.Empty,
                             string.Empty,
                             string.Empty,
@@ -538,37 +363,21 @@ namespace HealthGateway.MedicationTests.Delegates
         {
             Mock<ICacheProvider> mockCacheProvider = new();
             Mock<IHashDelegate> mockHashDelegate = new();
-            Mock<IHttpClientService> mockHttpClientService = new();
             IMedStatementDelegate medStatementDelegate = new RestMedStatementDelegate(
                 this.loggerFactory.CreateLogger<RestMedStatementDelegate>(),
-                mockHttpClientService.Object,
+                new Mock<IOdrApi>().Object,
                 this.configuration,
                 mockCacheProvider.Object,
                 mockHashDelegate.Object);
 
             Assert.ThrowsAsync<NotImplementedException>(
                 async () => await
-                    medStatementDelegate.DeleteProtectiveWord(
+                    medStatementDelegate.DeleteProtectiveWordAsync(
                             string.Empty,
                             string.Empty,
                             string.Empty,
                             string.Empty)
                         .ConfigureAwait(true));
-        }
-
-        private static Mock<HttpMessageHandler> GetHttpMessageHandler(HttpResponseMessage message, Uri endpoint, Mock<HttpMessageHandler>? mock = null)
-        {
-            Mock<HttpMessageHandler> handlerMock = mock ?? new Mock<HttpMessageHandler>();
-            handlerMock
-                .Protected()
-                .Setup<Task<HttpResponseMessage>>(
-                    "SendAsync",
-                    ItExpr.Is<HttpRequestMessage>(c => c.RequestUri == endpoint),
-                    ItExpr.IsAny<CancellationToken>())
-                .ReturnsAsync(message)
-                .Verifiable();
-
-            return handlerMock;
         }
 
         private static IConfigurationRoot GetIConfigurationRoot()
@@ -578,13 +387,6 @@ namespace HealthGateway.MedicationTests.Delegates
                 .AddJsonFile("appsettings.Development.json", true)
                 .AddJsonFile("appsettings.local.json", true)
                 .Build();
-        }
-
-        private static IHttpClientService GetHttpClientService(HttpMessageHandler messageHandler)
-        {
-            Mock<IHttpClientService> mockHttpClientService = new();
-            mockHttpClientService.Setup(s => s.CreateDefaultHttpClient()).Returns(() => new HttpClient(messageHandler));
-            return mockHttpClientService.Object;
         }
 
         private static IHashDelegate GetHashDelegate(string hashString = "")
@@ -599,7 +401,7 @@ namespace HealthGateway.MedicationTests.Delegates
             return mockHashDelegate.Object;
         }
 
-        private string GetProtectiveWordJson(string value = "")
+        private ProtectiveWord GetProtectiveWord(string value = "")
         {
             ProtectiveWord protectiveWord = new()
             {
@@ -613,7 +415,7 @@ namespace HealthGateway.MedicationTests.Delegates
                     Value = value,
                 },
             };
-            return JsonSerializer.Serialize(protectiveWord);
+            return protectiveWord;
         }
     }
 }

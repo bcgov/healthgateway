@@ -17,6 +17,7 @@ namespace HealthGateway.JobScheduler.Jobs
 {
     using System;
     using System.Collections.Generic;
+    using System.Net.Http;
     using Hangfire;
     using HealthGateway.Common.AccessManagement.Authentication;
     using HealthGateway.Common.AccessManagement.Authentication.Models;
@@ -87,7 +88,7 @@ namespace HealthGateway.JobScheduler.Jobs
             this.emailTemplate = configuration.GetValue<string>($"{JobKey}:{EmailTemplateKey}") ??
                 throw new ArgumentNullException(nameof(configuration), $"{JobKey}:{EmailTemplateKey} is null");
 
-            IConfigurationSection? configSection = configuration.GetSection(AuthConfigSectionName);
+            IConfigurationSection configSection = configuration.GetSection(AuthConfigSectionName);
             this.tokenUri = configSection.GetValue<Uri>(@"TokenUri") ??
                 throw new ArgumentNullException(nameof(configuration), $"{AuthConfigSectionName} TokenUri is null");
 
@@ -118,14 +119,16 @@ namespace HealthGateway.JobScheduler.Jobs
 
                     JwtModel jwtModel = this.authDelegate.AuthenticateAsSystem(this.tokenUri, this.tokenRequest);
 
-                    IApiResponse response = this.keycloakAdminApi.DeleteUser(profile.IdentityManagementId!.Value, jwtModel.AccessToken).GetAwaiter().GetResult();
-                    if (!response.IsSuccessStatusCode)
+                    try
+                    {
+                        this.keycloakAdminApi.DeleteUser(profile.IdentityManagementId!.Value, jwtModel.AccessToken).GetAwaiter().GetResult();
+                    }
+                    catch (Exception e) when (e is ApiException or HttpRequestException)
                     {
                         this.logger.LogError(
-                            "Error deleting {Id} from Keycloak with HTTP status code {StatusCode} {Error}",
+                            "Error deleting {Id} from Keycloak with exception: {Exception}",
                             profile.IdentityManagementId,
-                            response.StatusCode,
-                            response.Error?.ToString());
+                            e.ToString());
                     }
                 }
 

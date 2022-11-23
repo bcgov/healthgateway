@@ -13,12 +13,14 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //-------------------------------------------------------------------------
-namespace HealthGateway.HGAdmin.Server
+namespace HealthGateway.Patient
 {
     using System.Diagnostics.CodeAnalysis;
     using System.Threading.Tasks;
     using HealthGateway.Common.AspNetConfiguration;
     using HealthGateway.Common.AspNetConfiguration.Modules;
+    using HealthGateway.Patient.Delegates;
+    using HealthGateway.Patient.Services;
     using Microsoft.AspNetCore.Builder;
     using Microsoft.AspNetCore.Hosting;
     using Microsoft.Extensions.Configuration;
@@ -45,6 +47,7 @@ namespace HealthGateway.HGAdmin.Server
             ILogger logger = ProgramConfiguration.GetInitialLogger(configuration);
             IWebHostEnvironment environment = builder.Environment;
 
+            Patient.ConfigurePatientExceptionHandling(services, environment);
             HttpWeb.ConfigureForwardHeaders(services, logger, configuration);
             Db.ConfigureDatabaseServices(services, logger, configuration);
             HttpWeb.ConfigureHttpServices(services, logger);
@@ -53,13 +56,19 @@ namespace HealthGateway.HGAdmin.Server
             Auth.ConfigureAuthorizationServices(services, logger, configuration);
             SwaggerDoc.ConfigureSwaggerServices(services, configuration);
             Patient.ConfigurePatientAccess(services, logger, configuration);
+
+            // POC V2 Patient Access
+            services.AddTransient<IClientRegistriesDelegate, ClientRegistriesDelegate>();
+            services.AddTransient<IPatientService, PatientService>();
+
             Utility.ConfigureTracing(services, logger, configuration);
 
             WebApplication app = builder.Build();
+            Patient.ConfigurePatientExceptionHandling(app, environment);
 
             HttpWeb.UseForwardHeaders(app, logger, configuration);
             SwaggerDoc.UseSwagger(app, logger);
-            HttpWeb.UseHttp(app, logger, configuration, environment);
+            HttpWeb.UseHttp(app, logger, configuration, environment, false, false);
             Auth.UseAuth(app, logger);
             HttpWeb.UseRest(app, logger);
 

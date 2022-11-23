@@ -33,7 +33,7 @@ public interface ISupportApi
     /// <param name="queryString">queryString.</param>
     /// <returns>The list of SupportUser objects.</returns>
     [Get("/Users?queryType={queryType}&queryString={queryString}")]
-    Task<ApiResponse<RequestResult<IEnumerable<SupportUser>>>> GetSupportUsers(UserQueryType queryType, string queryString);
+    Task<RequestResult<IEnumerable<SupportUser>>> GetSupportUsersAsync(UserQueryType queryType, string queryString);
 
     /// <summary>
     /// Gets the list of messaging verification models from the server.
@@ -41,5 +41,5 @@ public interface ISupportApi
     /// <param name="hdid">The hdid associated with the messaging verification.</param>
     /// <returns>The list of MessagingVerificationModel objects.</returns>
     [Get("/Verifications?hdid={hdid}")]
-    Task<ApiResponse<RequestResult<IEnumerable<MessagingVerificationModel>>>> GetMessagingVerifications(string hdid);
+    Task<RequestResult<IEnumerable<MessagingVerificationModel>>> GetMessagingVerificationsAsync(string hdid);
 }

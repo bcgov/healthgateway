@@ -16,13 +16,14 @@
 namespace HealthGateway.LaboratoryTests.Factories
 {
     using System;
-    using HealthGateway.Common.Services;
+    using HealthGateway.Laboratory.Api;
     using HealthGateway.Laboratory.Delegates;
     using HealthGateway.Laboratory.Factories;
     using HealthGateway.Laboratory.Services;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Logging;
+    using Refit;
     using Xunit;
 
     /// <summary>
@@ -72,10 +73,8 @@ namespace HealthGateway.LaboratoryTests.Factories
             services.AddLogging(logging => logging.AddConsole());
             services.AddSingleton<RestLaboratoryDelegate>();
 
-            services.AddHttpClient<IHttpClientService, HttpClientService>();
-            services.AddTransient<IHttpClientService, HttpClientService>();
-
-            services.AddHttpContextAccessor();
+            services.AddRefitClient<ILaboratoryApi>()
+                .ConfigureHttpClient(c => c.BaseAddress = new Uri("http://localhost:5002/"));
 
             IConfigurationRoot config = GetIConfigurationRoot();
             services.AddSingleton<IConfiguration>(config);

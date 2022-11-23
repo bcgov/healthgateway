@@ -13,12 +13,13 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //-------------------------------------------------------------------------
-namespace HealthGateway.DrugMaintainer.Apps
+namespace HealthGateway.DBMaintainer.Apps
 {
     using System.Collections.Generic;
-    using HealthGateway.Common.FileDownload;
     using HealthGateway.Database.Context;
     using HealthGateway.Database.Models;
+    using HealthGateway.DBMaintainer.FileDownload;
+    using HealthGateway.DBMaintainer.Parsers;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.Logging;
 
@@ -29,18 +30,18 @@ namespace HealthGateway.DrugMaintainer.Apps
     /// https://www.canada.ca/en/health-canada/services/drugs-health-products/drug-products/drug-product-database/what-data-extract-drug-product-database.html
     /// for reference.
     /// </summary>
-    public class FedDrugDBApp : BaseDrugApp<IDrugProductParser>
+    public class FedDrugDbApp : BaseDrugApp<IDrugProductParser>
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="FedDrugDBApp"/> class.
+        /// Initializes a new instance of the <see cref="FedDrugDbApp"/> class.
         /// </summary>
         /// <param name="logger">The logger to use.</param>
         /// <param name="parser">The parser to use.</param>
         /// <param name="downloadService">The Download Service Utility.</param>
         /// <param name="configuration">The Configuration.</param>
-        /// <param name="drugDBContext">The database context.</param>
-        public FedDrugDBApp(ILogger<FedDrugDBApp> logger, IDrugProductParser parser, IFileDownloadService downloadService, IConfiguration configuration, GatewayDbContext drugDBContext)
-            : base(logger, parser, downloadService, configuration, drugDBContext)
+        /// <param name="drugDbContext">The database context.</param>
+        public FedDrugDbApp(ILogger<FedDrugDbApp> logger, IDrugProductParser parser, IFileDownloadService downloadService, IConfiguration configuration, GatewayDbContext drugDbContext)
+            : base(logger, parser, downloadService, configuration, drugDbContext)
         {
         }
 
@@ -60,7 +61,7 @@ namespace HealthGateway.DrugMaintainer.Apps
             this.DrugDbContext.Route.AddRange(this.Parser.ParseRouteFile(sourceFolder, drugProducts));
             this.DrugDbContext.Schedule.AddRange(this.Parser.ParseScheduleFile(sourceFolder, drugProducts));
             this.DrugDbContext.VeterinarySpecies.AddRange(this.Parser.ParseVeterinarySpeciesFile(sourceFolder, drugProducts));
-            this.AddFileToDB(downloadedFile);
+            this.AddFileToDb(downloadedFile);
             this.Logger.LogInformation("Removing old Drug File from DB");
             this.RemoveOldFiles(downloadedFile);
             this.Logger.LogInformation("Saving Entities to the database");

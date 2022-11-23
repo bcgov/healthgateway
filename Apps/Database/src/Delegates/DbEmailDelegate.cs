@@ -48,12 +48,12 @@ namespace HealthGateway.Database.Delegates
         }
 
         /// <inheritdoc/>
-        public Email GetEmail(Guid emailId)
+        public Email? GetEmail(Guid emailId)
         {
             this.logger.LogTrace("Getting email from DB... {EmailId}", emailId);
             Email? retVal = this.dbContext.Find<Email>(emailId);
             this.logger.LogDebug("Finished getting email {EmailId} from DB.", emailId);
-            return retVal!;
+            return retVal;
         }
 
         /// <inheritdoc/>

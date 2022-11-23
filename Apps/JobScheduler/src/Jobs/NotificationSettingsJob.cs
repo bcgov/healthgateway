@@ -94,14 +94,14 @@ namespace HealthGateway.JobScheduler.Jobs
                     }
 
                     RequestResult<NotificationSettingsResponse> retVal =
-                        Task.Run(async () => await this.notificationSettingsDelegate.SetNotificationSettings(notificationSettings, accessToken).ConfigureAwait(true)).Result;
+                        Task.Run(async () => await this.notificationSettingsDelegate.SetNotificationSettingsAsync(notificationSettings, accessToken).ConfigureAwait(true)).Result;
                     if (retVal.ResultStatus == ResultType.ActionRequired)
                     {
                         EventLog eventLog = new()
                         {
                             EventSource = this.notificationSettingsDelegate.GetType().Name,
                             EventName = "SMS Rejected",
-                            EventDescription = notificationSettings.SMSNumber ?? string.Empty,
+                            EventDescription = notificationSettings.SmsNumber ?? string.Empty,
                         };
                         this.eventLogDelegate.WriteEventLog(eventLog);
                     }

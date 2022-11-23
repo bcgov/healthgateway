@@ -19,7 +19,7 @@ namespace HealthGateway.JobScheduler.Utils
     using System.Linq.Expressions;
     using System.Runtime.InteropServices;
     using Hangfire;
-    using HealthGateway.DrugMaintainer.Apps;
+    using HealthGateway.DBMaintainer.Apps;
     using HealthGateway.JobScheduler.Models;
     using Microsoft.Extensions.Configuration;
 
@@ -83,12 +83,12 @@ namespace HealthGateway.JobScheduler.Utils
 
         private static T GetConfigurationValue<T>(IConfiguration cfg, string key)
         {
-            return cfg.GetValue<T>(key);
+            return cfg.GetValue<T>(key)!;
         }
 
         private static JobConfiguration GetJobConfiguration(IConfiguration cfg, string key)
         {
-            return cfg.GetRequiredSection(key).Get<JobConfiguration>();
+            return cfg.GetRequiredSection(key).Get<JobConfiguration>()!;
         }
     }
 }

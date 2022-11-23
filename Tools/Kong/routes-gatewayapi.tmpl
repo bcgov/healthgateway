@@ -33,3 +33,45 @@
         tags:
           - OAS3_import
           - ns.$KONG_NAMESPACE
+      - name: gatewayapi-$KONG_NAMESPACE-phsa
+        methods:
+          - GET
+        hosts:
+          - $KONG_NAMESPACE.api.gov.bc.ca
+        headers:
+          X-Api-User-Id:
+            - phsa
+        paths:
+          # starting in Kong v3.0.x, regex paths will need to be prefixed with ~
+          - /api/gatewayapiservice/UserProfile/\w+/Dependent
+        strip_path: false
+        plugins:
+          - name: jwt-keycloak
+            tags: [ns.$KONG_NAMESPACE]
+            enabled: true
+            config:
+              client_roles: null
+              allowed_iss:
+                - $KEYCLOAK_URI
+              run_on_preflight: true
+              iss_key_grace_period: 10
+              maximum_expiration: 0
+              claims_to_verify:
+                - exp
+              consumer_match_claim_custom_id: false
+              cookie_names: []
+              scope:
+                - phsa
+              uri_param_names:
+                - jwt
+              roles: null
+              consumer_match: true
+              well_known_template: $KEYCLOAK_URI/.well-known/openid-configuration
+              consumer_match_ignore_not_found: true
+              anonymous: null
+              algorithm: RS256
+              realm_roles: null
+              consumer_match_claim: azp
+        tags:
+          - OAS3_import
+          - ns.$KONG_NAMESPACE

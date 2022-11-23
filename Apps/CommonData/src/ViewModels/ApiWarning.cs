@@ -13,32 +13,25 @@
 //  See the License for the specific language governing permissions and
 //  limitations under the License.
 // -------------------------------------------------------------------------
-namespace HealthGateway.Common.Models.PHSA
+namespace HealthGateway.Common.Data.ViewModels
 {
-    using System;
     using System.Text.Json.Serialization;
 
     /// <summary>
-    /// The Record Card Query model.
+    /// Represents an api warning.
     /// </summary>
-    public class RecordCardQuery
+    public class ApiWarning
     {
         /// <summary>
-        /// Gets or sets the Personal Health Number.
+        /// Gets or sets a code.
         /// </summary>
-        [JsonPropertyName("phn")]
-        public string PersonalHealthNumber { get; set; } = string.Empty;
+        [JsonPropertyName("code")]
+        public string? Code { get; set; }
 
         /// <summary>
-        /// Gets or sets the persons date of birth.
+        /// Gets or sets a warning.
         /// </summary>
-        [JsonPropertyName("dateOfBirth")]
-        public DateTime DateOfBirth { get; set; }
-
-        /// <summary>
-        /// Gets or sets the immunization target disease.
-        /// </summary>
-        [JsonPropertyName("immunizationDisease")]
-        public string ImmunizationDisease { get; set; } = string.Empty;
+        [JsonPropertyName("message")]
+        public string? Message { get; set; }
     }
 }

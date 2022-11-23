@@ -24,7 +24,6 @@ namespace HealthGateway.Admin.Server
     using HealthGateway.Common.AspNetConfiguration;
     using HealthGateway.Common.AspNetConfiguration.Modules;
     using HealthGateway.Common.Delegates;
-    using HealthGateway.Common.Delegates.PHSA;
     using HealthGateway.Common.MapProfiles;
     using HealthGateway.Common.Models.PHSA;
     using HealthGateway.Common.Services;
@@ -144,7 +143,6 @@ namespace HealthGateway.Admin.Server
             services.AddTransient<ICommentDelegate, DbCommentDelegate>();
             services.AddTransient<IAdminTagDelegate, DbAdminTagDelegate>();
             services.AddTransient<IFeedbackTagDelegate, DbFeedbackTagDelegate>();
-            services.AddTransient<IVaccineStatusDelegate, RestVaccineStatusDelegate>();
             services.AddTransient<IVaccineProofDelegate, VaccineProofDelegate>();
             services.AddTransient<IAdminUserProfileDelegate, DbAdminUserProfileDelegate>();
             services.AddTransient<IAuthenticationDelegate, AuthenticationDelegate>();

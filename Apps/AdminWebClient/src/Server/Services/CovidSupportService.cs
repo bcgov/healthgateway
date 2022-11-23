@@ -31,7 +31,6 @@ namespace HealthGateway.Admin.Services
     using HealthGateway.Common.Data.Utils;
     using HealthGateway.Common.Data.ViewModels;
     using HealthGateway.Common.Delegates;
-    using HealthGateway.Common.Delegates.PHSA;
     using HealthGateway.Common.ErrorHandling;
     using HealthGateway.Common.Models;
     using HealthGateway.Common.Models.PHSA;
@@ -52,7 +51,7 @@ namespace HealthGateway.Admin.Services
         private readonly IAuthenticationDelegate authenticationDelegate;
         private readonly BcMailPlusConfig bcmpConfig;
         private readonly IHttpContextAccessor httpContextAccessor;
-        private readonly IImmunizationAdminClient immunizationAdminClient;
+        private readonly IImmunizationAdminApi immunizationAdminApi;
         private readonly IImmunizationAdminDelegate immunizationDelegate;
         private readonly ILogger<CovidSupportService> logger;
         private readonly IPatientService patientService;
@@ -70,7 +69,7 @@ namespace HealthGateway.Admin.Services
         /// <param name="httpContextAccessor">The Http Context accessor.</param>
         /// <param name="configuration">The configuration to use.</param>
         /// <param name="vaccineProofDelegate">The injected delegate to get the vaccine proof.</param>
-        /// <param name="immunizationAdminClient">The api client to use for immunization.</param>
+        /// <param name="immunizationAdminApi">The api client to use for immunization.</param>
         /// <param name="authenticationDelegate">The auth delegate to fetch tokens.</param>
         public CovidSupportService(
             ILogger<CovidSupportService> logger,
@@ -80,7 +79,7 @@ namespace HealthGateway.Admin.Services
             IHttpContextAccessor httpContextAccessor,
             IConfiguration configuration,
             IVaccineProofDelegate vaccineProofDelegate,
-            IImmunizationAdminClient immunizationAdminClient,
+            IImmunizationAdminApi immunizationAdminApi,
             IAuthenticationDelegate authenticationDelegate)
         {
             this.logger = logger;
@@ -89,7 +88,7 @@ namespace HealthGateway.Admin.Services
             this.vaccineStatusDelegate = vaccineStatusDelegate;
             this.httpContextAccessor = httpContextAccessor;
             this.vaccineProofDelegate = vaccineProofDelegate;
-            this.immunizationAdminClient = immunizationAdminClient;
+            this.immunizationAdminApi = immunizationAdminApi;
             this.authenticationDelegate = authenticationDelegate;
 
             this.bcmpConfig = new();
@@ -106,7 +105,7 @@ namespace HealthGateway.Admin.Services
             this.logger.LogTrace("For PHN: {Phn}", phn);
             this.logger.LogDebug("For Refresh: {Refresh}", refresh);
 
-            RequestResult<PatientModel> patientResult = await this.patientService.GetPatient(phn, PatientIdentifierType.PHN, true).ConfigureAwait(true);
+            RequestResult<PatientModel> patientResult = await this.patientService.GetPatient(phn, PatientIdentifierType.Phn, true).ConfigureAwait(true);
 
             if (patientResult.ResultStatus == ResultType.Success)
             {
@@ -165,7 +164,7 @@ namespace HealthGateway.Admin.Services
             this.logger.LogDebug("Mailing document");
             this.logger.LogTrace("For PHN: {Phn}", request.PersonalHealthNumber);
 
-            RequestResult<PatientModel> patientResult = await this.patientService.GetPatient(request.PersonalHealthNumber, PatientIdentifierType.PHN, true).ConfigureAwait(true);
+            RequestResult<PatientModel> patientResult = await this.patientService.GetPatient(request.PersonalHealthNumber, PatientIdentifierType.Phn, true).ConfigureAwait(true);
 
             if (patientResult.ResultStatus != ResultType.Success)
             {
@@ -197,14 +196,8 @@ namespace HealthGateway.Admin.Services
             }
 
             DateTime birthdate = patientResult.ResourcePayload!.Birthdate;
-
-            VaccineStatusQuery statusQuery = new()
-            {
-                PersonalHealthNumber = request.PersonalHealthNumber,
-                DateOfBirth = birthdate,
-            };
             RequestResult<PhsaResult<VaccineStatusResult>> vaccineStatusResult =
-                await this.vaccineStatusDelegate.GetVaccineStatusWithRetries(statusQuery, bearerToken, false).ConfigureAwait(true);
+                await this.vaccineStatusDelegate.GetVaccineStatusWithRetries(request.PersonalHealthNumber, birthdate, bearerToken).ConfigureAwait(true);
 
             PrimitiveRequestResult<bool> retVal = new();
 
@@ -222,7 +215,7 @@ namespace HealthGateway.Admin.Services
                         ResultError = new RequestResultError
                         {
                             ResultMessage = "Vaccine status not found",
-                            ErrorCode = ErrorTranslator.ServiceError(ErrorType.InvalidState, ServiceType.PHSA),
+                            ErrorCode = ErrorTranslator.ServiceError(ErrorType.InvalidState, ServiceType.Phsa),
                         },
                     };
                 }
@@ -241,7 +234,7 @@ namespace HealthGateway.Admin.Services
                     VaccineProofRequest vaccineProofRequest = new()
                     {
                         Status = requestState,
-                        SmartHealthCardQr = vaccineStatusResult.ResourcePayload.Result.QRCode.Data!,
+                        SmartHealthCardQr = vaccineStatusResult.ResourcePayload.Result.QrCode.Data!,
                     };
 
                     RequestResult<VaccineProofResponse> vaccineProofResponse =
@@ -284,7 +277,7 @@ namespace HealthGateway.Admin.Services
             this.logger.LogDebug("Retrieving vaccine record");
             this.logger.LogTrace("For PHN: {Phn}", phn);
 
-            RequestResult<PatientModel> patientResult = await this.patientService.GetPatient(phn, PatientIdentifierType.PHN, true).ConfigureAwait(true);
+            RequestResult<PatientModel> patientResult = await this.patientService.GetPatient(phn, PatientIdentifierType.Phn, true).ConfigureAwait(true);
 
             if (patientResult.ResultStatus != ResultType.Success)
             {
@@ -335,7 +328,7 @@ namespace HealthGateway.Admin.Services
             try
             {
                 IApiResponse<CovidAssessmentResponse> response =
-                    await this.immunizationAdminClient.SubmitCovidAssessment(request, accessToken).ConfigureAwait(true);
+                    await this.immunizationAdminApi.SubmitCovidAssessment(request, accessToken).ConfigureAwait(true);
                 this.ProcessResponse(requestResult, response);
             }
             catch (HttpRequestException e)
@@ -344,7 +337,7 @@ namespace HealthGateway.Admin.Services
                 requestResult.ResultError = new RequestResultError
                 {
                     ResultMessage = "Error with HTTP Request",
-                    ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.PHSA),
+                    ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.Phsa),
                 };
             }
 
@@ -372,7 +365,7 @@ namespace HealthGateway.Admin.Services
                 try
                 {
                     IApiResponse<CovidAssessmentDetailsResponse> response =
-                        await this.immunizationAdminClient.GetCovidAssessmentDetails(
+                        await this.immunizationAdminApi.GetCovidAssessmentDetails(
                                 new CovidAssessmentDetailsRequest
                                     { Phn = phn },
                                 accessToken)
@@ -385,7 +378,7 @@ namespace HealthGateway.Admin.Services
                     requestResult.ResultError = new RequestResultError
                     {
                         ResultMessage = "Error with HTTP Request",
-                        ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.PHSA),
+                        ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.Phsa),
                     };
                 }
             }
@@ -416,7 +409,7 @@ namespace HealthGateway.Admin.Services
                         requestResult.ResultError = new RequestResultError
                         {
                             ResultMessage = "No Details found",
-                            ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.PHSA),
+                            ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.Phsa),
                         };
                         break;
 
@@ -425,7 +418,7 @@ namespace HealthGateway.Admin.Services
                         requestResult.ResultError = new RequestResultError
                         {
                             ResultMessage = "Request was not authorized",
-                            ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.PHSA),
+                            ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.Phsa),
                         };
                         break;
 
@@ -434,14 +427,14 @@ namespace HealthGateway.Admin.Services
                         requestResult.ResultError = new RequestResultError
                         {
                             ResultMessage = $"Missing Required Data Element, HTTP Error {response.StatusCode}",
-                            ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.PHSA),
+                            ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.Phsa),
                         };
                         break;
                     default:
                         requestResult.ResultError = new RequestResultError
                         {
                             ResultMessage = $"An unexpected error occurred, HTTP Error {response.StatusCode}",
-                            ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.PHSA),
+                            ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.Phsa),
                         };
                         break;
                 }
@@ -453,7 +446,7 @@ namespace HealthGateway.Admin.Services
                 requestResult.ResultError = new RequestResultError
                 {
                     ResultMessage = "An unexpected error occurred while processing external call",
-                    ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.PHSA),
+                    ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.Phsa),
                 };
             }
         }
@@ -462,13 +455,8 @@ namespace HealthGateway.Admin.Services
         {
             this.logger.LogDebug("Retrieving vaccine card document");
             this.logger.LogTrace("For PHN: {Phn}", phn);
-            VaccineStatusQuery statusQuery = new()
-            {
-                PersonalHealthNumber = phn,
-                DateOfBirth = birthdate,
-            };
             RequestResult<PhsaResult<VaccineStatusResult>> statusResult =
-                await this.vaccineStatusDelegate.GetVaccineStatusWithRetries(statusQuery, bearerToken, false).ConfigureAwait(true);
+                await this.vaccineStatusDelegate.GetVaccineStatusWithRetries(phn, birthdate, bearerToken).ConfigureAwait(true);
 
             if (statusResult.ResultStatus != ResultType.Success)
             {
@@ -523,7 +511,7 @@ namespace HealthGateway.Admin.Services
                 VaccineProofRequest request = new()
                 {
                     Status = requestState,
-                    SmartHealthCardQr = vaccineStatusResult.QRCode.Data!,
+                    SmartHealthCardQr = vaccineStatusResult.QrCode.Data!,
                 };
 
                 RequestResult<VaccineProofResponse> proofGenerate = await this.vaccineProofDelegate.GenerateAsync(this.vaccineCardConfig.PrintTemplate, request).ConfigureAwait(true);
@@ -553,7 +541,7 @@ namespace HealthGateway.Admin.Services
                     else
                     {
                         retVal.ResultError = assetResult.ResultError ?? new RequestResultError
-                            { ResultMessage = "Unable to obtain Vaccine Proof PDF", ErrorCode = ErrorTranslator.ServiceError(ErrorType.InvalidState, ServiceType.BCMP) };
+                            { ResultMessage = "Unable to obtain Vaccine Proof PDF", ErrorCode = ErrorTranslator.ServiceError(ErrorType.InvalidState, ServiceType.Bcmp) };
                     }
                 }
                 else
@@ -564,7 +552,7 @@ namespace HealthGateway.Admin.Services
             else
             {
                 retVal.ResultError = new RequestResultError
-                    { ResultMessage = "Vaccine status is unknown", ErrorCode = ErrorTranslator.ServiceError(ErrorType.InvalidState, ServiceType.BCMP) };
+                    { ResultMessage = "Vaccine status is unknown", ErrorCode = ErrorTranslator.ServiceError(ErrorType.InvalidState, ServiceType.Bcmp) };
             }
 
             return retVal;

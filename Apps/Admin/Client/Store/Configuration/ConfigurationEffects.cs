@@ -64,7 +64,7 @@ namespace HealthGateway.Admin.Client.Store.Configuration
             }
             catch (ApiException ex)
             {
-                RequestError error = StoreUtility.FormatRequestError(ex, null);
+                RequestError error = StoreUtility.FormatRequestError(ex);
                 this.Logger.LogError("Error loading external configuration, reason: {ErrorMessage}", error.Message);
                 dispatcher.Dispatch(new ConfigurationActions.LoadFailAction(error));
             }

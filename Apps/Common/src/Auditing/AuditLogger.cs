@@ -69,7 +69,7 @@ namespace HealthGateway.Common.Auditing
             RouteData routeData = context.GetRouteData();
 
             // Some routes might not have the version
-            auditEvent.TransactionVersion = routeData?.Values["version"] != null ? routeData.Values["version"]?.ToString() : string.Empty;
+            auditEvent.TransactionVersion = routeData.Values["version"] != null ? routeData.Values["version"]?.ToString() : string.Empty;
         }
 
         /// <summary>
@@ -92,7 +92,7 @@ namespace HealthGateway.Common.Auditing
             }
 
             // Client/Request errors codes other than unauthorized and forbidden (4xx)
-            if (statusCode >= 400 && statusCode < 500)
+            if (statusCode < 500)
             {
                 return AuditTransactionResult.Failure;
             }

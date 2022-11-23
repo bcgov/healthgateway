@@ -31,6 +31,6 @@ namespace HealthGateway.Common.Api
         /// <param name="content">Encoded content used to swap for a PHSA access token.</param>
         /// <returns>The newly swapped access token.</returns>
         [Post("/connect/token")]
-        Task<IApiResponse<TokenSwapResponse>> SwapToken([Body(BodySerializationMethod.UrlEncoded)] FormUrlEncodedContent content);
+        Task<TokenSwapResponse> SwapToken([Body(BodySerializationMethod.UrlEncoded)] FormUrlEncodedContent content);
     }
 }

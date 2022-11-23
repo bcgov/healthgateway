@@ -99,12 +99,12 @@ namespace HealthGateway.Encounter.Services
                     {
                         StartDate = patient.Birthdate,
                         EndDate = DateTime.Now,
-                        PHN = patient.PersonalHealthNumber,
+                        Phn = patient.PersonalHealthNumber,
                         PageSize = 20000,
                     };
                     IPAddress address = this.httpContextAccessor.HttpContext!.Connection.RemoteIpAddress!;
                     string ipv4Address = address.MapToIPv4().ToString();
-                    RequestResult<MspVisitHistoryResponse> response = await this.mspVisitDelegate.GetMSPVisitHistoryAsync(mspHistoryQuery, hdid, ipv4Address).ConfigureAwait(true);
+                    RequestResult<MspVisitHistoryResponse> response = await this.mspVisitDelegate.GetMspVisitHistoryAsync(mspHistoryQuery, hdid, ipv4Address).ConfigureAwait(true);
                     result.ResultStatus = response.ResultStatus;
                     result.ResultError = response.ResultError;
                     if (response.ResultStatus == ResultType.Success)
@@ -146,7 +146,7 @@ namespace HealthGateway.Encounter.Services
                     TotalResultCount = 0,
                 };
 
-                RequestResult<PhsaResult<IEnumerable<HospitalVisit>>> hospitalVisitResult = await this.hospitalVisitDelegate.GetHospitalVisits(hdid).ConfigureAwait(true);
+                RequestResult<PhsaResult<IEnumerable<HospitalVisit>>> hospitalVisitResult = await this.hospitalVisitDelegate.GetHospitalVisitsAsync(hdid).ConfigureAwait(true);
 
                 if (hospitalVisitResult.ResultStatus == ResultType.Success && hospitalVisitResult.ResourcePayload != null)
                 {
