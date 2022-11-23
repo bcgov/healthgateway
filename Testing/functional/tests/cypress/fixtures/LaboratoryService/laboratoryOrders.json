@@ -21,8 +21,7 @@
                         "obxId": "341L56330T278085ALT",
                         "outOfRange": false,
                         "loinc": null,
-                        "testStatus": "Active",
-                        "filteredTestStatus": "Pending",
+                        "testStatus": "Pending",
                         "result": "Pending"
                     },
                     {
@@ -30,8 +29,7 @@
                         "obxId": "341L56330T278085AST",
                         "outOfRange": false,
                         "loinc": null,
-                        "testStatus": "Active",
-                        "filteredTestStatus": "Pending",
+                        "testStatus": "Pending",
                         "result": "Pending"
                     },
                     {
@@ -40,7 +38,6 @@
                         "outOfRange": false,
                         "loinc": "XCA01592-5",
                         "testStatus": "Cancelled",
-                        "filteredTestStatus": "Cancelled",
                         "result": "Cancelled"
                     },
                     {
@@ -49,7 +46,6 @@
                         "outOfRange": true,
                         "loinc": null,
                         "testStatus": "Completed",
-                        "filteredTestStatus": "Completed",
                         "result": "Out of Range"
                     },
                     {
@@ -58,7 +54,6 @@
                         "outOfRange": false,
                         "loinc": "14749-6",
                         "testStatus": "Completed",
-                        "filteredTestStatus": "Completed",
                         "result": "In Range"
                     },
                     {
@@ -67,7 +62,6 @@
                         "outOfRange": false,
                         "loinc": "22664-7",
                         "testStatus": "Cancelled",
-                        "filteredTestStatus": "Cancelled",
                         "result": "Cancelled"
                     }
                 ]
@@ -88,8 +82,7 @@
                         "obxId": "341L52341T275612ALT",
                         "outOfRange": false,
                         "loinc": null,
-                        "testStatus": "Active",
-                        "filteredTestStatus": "Pending",
+                        "testStatus": "Pending",
                         "result": "Pending"
                     },
                     {
@@ -98,7 +91,6 @@
                         "outOfRange": true,
                         "loinc": "1751-7",
                         "testStatus": "Completed",
-                        "filteredTestStatus": "Completed",
                         "result": "Out of Range"
                     },
                     {
@@ -107,7 +99,6 @@
                         "outOfRange": false,
                         "loinc": "6768-6",
                         "testStatus": "Completed",
-                        "filteredTestStatus": "Completed",
                         "result": "In Range"
                     },
                     {
@@ -116,7 +107,6 @@
                         "outOfRange": true,
                         "loinc": "1798-8",
                         "testStatus": "Completed",
-                        "filteredTestStatus": "Completed",
                         "result": "Out of Range"
                     },
                     {
@@ -125,7 +115,6 @@
                         "outOfRange": false,
                         "loinc": "14979-9",
                         "testStatus": "Completed",
-                        "filteredTestStatus": "Completed",
                         "result": "In Range"
                     },
                     {
@@ -133,8 +122,7 @@
                         "obxId": "341L52341T275612AST",
                         "outOfRange": true,
                         "loinc": null,
-                        "testStatus": "Active",
-                        "filteredTestStatus": "Pending",
+                        "testStatus": "Pending",
                         "result": "Pending"
                     },
                     {
@@ -143,7 +131,6 @@
                         "outOfRange": true,
                         "loinc": "XBC1197-2",
                         "testStatus": "Completed",
-                        "filteredTestStatus": "Completed",
                         "result": "Out of Range"
                     },
                     {
@@ -152,7 +139,6 @@
                         "outOfRange": true,
                         "loinc": "1995-0",
                         "testStatus": "Completed",
-                        "filteredTestStatus": "Completed",
                         "result": "Out of Range"
                     },
                     {
@@ -161,7 +147,6 @@
                         "outOfRange": false,
                         "loinc": "XCA01592-5",
                         "testStatus": "Cancelled",
-                        "filteredTestStatus": "Cancelled",
                         "result": "Cancelled"
                     },
                     {
@@ -170,7 +155,6 @@
                         "outOfRange": false,
                         "loinc": "2157-6",
                         "testStatus": "Completed",
-                        "filteredTestStatus": "Completed",
                         "result": "In Range"
                     },
                     {
@@ -179,7 +163,6 @@
                         "outOfRange": true,
                         "loinc": null,
                         "testStatus": "Completed",
-                        "filteredTestStatus": "Completed",
                         "result": "Out of Range"
                     },
                     {
@@ -188,7 +171,6 @@
                         "outOfRange": true,
                         "loinc": "17858-2",
                         "testStatus": "Completed",
-                        "filteredTestStatus": "Completed",
                         "result": "Out of Range"
                     },
                     {
@@ -197,7 +179,6 @@
                         "outOfRange": true,
                         "loinc": "6301-6",
                         "testStatus": "Completed",
-                        "filteredTestStatus": "Completed",
                         "result": "Out of Range"
                     },
                     {
@@ -206,7 +187,6 @@
                         "outOfRange": true,
                         "loinc": "2524-7",
                         "testStatus": "Completed",
-                        "filteredTestStatus": "Completed",
                         "result": "Out of Range"
                     },
                     {
@@ -215,7 +195,6 @@
                         "outOfRange": true,
                         "loinc": "2532-0",
                         "testStatus": "Completed",
-                        "filteredTestStatus": "Completed",
                         "result": "Out of Range"
                     },
                     {
@@ -224,7 +203,6 @@
                         "outOfRange": false,
                         "loinc": "2601-3",
                         "testStatus": "Completed",
-                        "filteredTestStatus": "Completed",
                         "result": "In Range"
                     },
                     {
@@ -233,7 +211,6 @@
                         "outOfRange": false,
                         "loinc": "XXX-2600",
                         "testStatus": "Completed",
-                        "filteredTestStatus": "Completed",
                         "result": "In Range"
                     },
                     {
@@ -242,7 +219,6 @@
                         "outOfRange": false,
                         "loinc": "14879-1",
                         "testStatus": "Completed",
-                        "filteredTestStatus": "Completed",
                         "result": "In Range"
                     },
                     {
@@ -251,7 +227,6 @@
                         "outOfRange": false,
                         "loinc": "2885-2",
                         "testStatus": "Completed",
-                        "filteredTestStatus": "Completed",
                         "result": "In Range"
                     },
                     {
@@ -260,7 +235,6 @@
                         "outOfRange": true,
                         "loinc": "3040-3",
                         "testStatus": "Completed",
-                        "filteredTestStatus": "Completed",
                         "result": "Out of Range"
                     }
                 ]
@@ -283,7 +257,6 @@
                         "outOfRange": false,
                         "loinc": "58410-2",
                         "testStatus": "Cancelled",
-                        "filteredTestStatus": "Cancelled",
                         "result": "Cancelled"
                     },
                     {
@@ -292,7 +265,6 @@
                         "outOfRange": false,
                         "loinc": null,
                         "testStatus": "Cancelled",
-                        "filteredTestStatus": "Cancelled",
                         "result": "Cancelled"
                     }
                 ]
@@ -315,7 +287,6 @@
                         "outOfRange": true,
                         "loinc": "XXX-2133",
                         "testStatus": "Completed",
-                        "filteredTestStatus": "Completed",
                         "result": "Out of Range"
                     }
                 ]
@@ -338,7 +309,6 @@
                         "outOfRange": true,
                         "loinc": "XXX-2133",
                         "testStatus": "Completed",
-                        "filteredTestStatus": "Completed",
                         "result": "Out of Range"
                     }
                 ]
@@ -360,7 +330,6 @@
                         "outOfRange": false,
                         "loinc": null,
                         "testStatus": "Completed",
-                        "filteredTestStatus": "Completed",
                         "result": "In Range"
                     }
                 ]
@@ -383,7 +352,6 @@
                         "outOfRange": false,
                         "loinc": null,
                         "testStatus": "Completed",
-                        "filteredTestStatus": "Completed",
                         "result": "In Range"
                     },
                     {
@@ -392,7 +360,6 @@
                         "outOfRange": true,
                         "loinc": "1751-7",
                         "testStatus": "Completed",
-                        "filteredTestStatus": "Completed",
                         "result": "Out of Range"
                     },
                     {
@@ -401,7 +368,6 @@
                         "outOfRange": false,
                         "loinc": "6768-6",
                         "testStatus": "Completed",
-                        "filteredTestStatus": "Completed",
                         "result": "In Range"
                     },
                     {
@@ -410,7 +376,6 @@
                         "outOfRange": true,
                         "loinc": "1798-8",
                         "testStatus": "Completed",
-                        "filteredTestStatus": "Completed",
                         "result": "Out of Range"
                     },
                     {
@@ -419,7 +384,6 @@
                         "outOfRange": false,
                         "loinc": "14979-9",
                         "testStatus": "Completed",
-                        "filteredTestStatus": "Completed",
                         "result": "In Range"
                     },
                     {
@@ -427,8 +391,7 @@
                         "obxId": "341L52336T275611AST",
                         "outOfRange": true,
                         "loinc": null,
-                        "testStatus": "Active",
-                        "filteredTestStatus": "Pending",
+                        "testStatus": "Pending",
                         "result": "Pending"
                     },
                     {
@@ -437,7 +400,6 @@
                         "outOfRange": true,
                         "loinc": "XBC1197-2",
                         "testStatus": "Completed",
-                        "filteredTestStatus": "Completed",
                         "result": "Out of Range"
                     },
                     {
@@ -446,7 +408,6 @@
                         "outOfRange": true,
                         "loinc": "1995-0",
                         "testStatus": "Completed",
-                        "filteredTestStatus": "Completed",
                         "result": "Out of Range"
                     },
                     {
@@ -455,7 +416,6 @@
                         "outOfRange": false,
                         "loinc": "XCA01592-5",
                         "testStatus": "Cancelled",
-                        "filteredTestStatus": "Cancelled",
                         "result": "Cancelled"
                     },
                     {
@@ -464,7 +424,6 @@
                         "outOfRange": false,
                         "loinc": "2157-6",
                         "testStatus": "Completed",
-                        "filteredTestStatus": "Completed",
                         "result": "In Range"
                     },
                     {
@@ -473,7 +432,6 @@
                         "outOfRange": true,
                         "loinc": "17858-2",
                         "testStatus": "Completed",
-                        "filteredTestStatus": "Completed",
                         "result": "Out of Range"
                     },
                     {
@@ -482,7 +440,6 @@
                         "outOfRange": true,
                         "loinc": "6301-6",
                         "testStatus": "Completed",
-                        "filteredTestStatus": "Completed",
                         "result": "Out of Range"
                     },
                     {
@@ -491,7 +448,6 @@
                         "outOfRange": false,
                         "loinc": "2524-7",
                         "testStatus": "Completed",
-                        "filteredTestStatus": "Completed",
                         "result": "In Range"
                     },
                     {
@@ -500,7 +456,6 @@
                         "outOfRange": false,
                         "loinc": "2532-0",
                         "testStatus": "Completed",
-                        "filteredTestStatus": "Completed",
                         "result": "In Range"
                     },
                     {
@@ -509,7 +464,6 @@
                         "outOfRange": false,
                         "loinc": "2601-3",
                         "testStatus": "Completed",
-                        "filteredTestStatus": "Completed",
                         "result": "In Range"
                     },
                     {
@@ -518,7 +472,6 @@
                         "outOfRange": false,
                         "loinc": "XXX-2600",
                         "testStatus": "Completed",
-                        "filteredTestStatus": "Completed",
                         "result": "In Range"
                     },
                     {
@@ -527,7 +480,6 @@
                         "outOfRange": false,
                         "loinc": "14879-1",
                         "testStatus": "Completed",
-                        "filteredTestStatus": "Completed",
                         "result": "In Range"
                     }
                 ]
@@ -550,7 +502,6 @@
                         "outOfRange": true,
                         "loinc": null,
                         "testStatus": "Completed",
-                        "filteredTestStatus": "Completed",
                         "result": "Out of Range"
                     }
                 ]
@@ -573,7 +524,6 @@
                         "outOfRange": true,
                         "loinc": "XXX-2133",
                         "testStatus": "Completed",
-                        "filteredTestStatus": "Completed",
                         "result": "Out of Range"
                     }
                 ]

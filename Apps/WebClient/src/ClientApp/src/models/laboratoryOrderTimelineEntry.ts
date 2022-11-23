@@ -111,7 +111,7 @@ export class LaboratoryTestViewModel {
     constructor(model: LaboratoryTest) {
         this.testName = model.batteryType;
         this.result = model.result;
-        this.status = model.filteredTestStatus;
+        this.status = model.testStatus;
         this.statusInfo = LaboratoryTestViewModel.getStatusText(this.status);
     }
 
