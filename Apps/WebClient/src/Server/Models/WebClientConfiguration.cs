@@ -18,6 +18,7 @@ namespace HealthGateway.WebClient.Server.Models
     using System;
     using System.Collections.Generic;
     using System.Diagnostics.CodeAnalysis;
+    using System.Text.Json.Serialization;
 
     /// <summary>
     /// Configuration data to be used by the Health Gateway Webclient.
@@ -43,6 +44,7 @@ namespace HealthGateway.WebClient.Server.Models
         /// Gets or sets the ExternalURLs used by the Webclient.
         /// </summary>
         [SuppressMessage("Usage", "CA2227:Collection properties should be read only", Justification = "Team decision")]
+        [JsonPropertyName("externalURLs")]
         public Dictionary<string, Uri> ExternalUrLs { get; set; } = new();
 
         /// <summary>
@@ -80,6 +82,7 @@ namespace HealthGateway.WebClient.Server.Models
         /// Gets or sets the client IP address.
         /// This value is populated at runtime with the client invoking the web service.
         /// </summary>
+        [JsonPropertyName("clientIP")]
         public string? ClientIp { get; set; }
     }
 }
