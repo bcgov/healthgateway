@@ -76,7 +76,7 @@ export default class LaboratoryReportComponent extends Vue {
                 date: timelineDateTime,
                 test: y.batteryType || "",
                 result: y.result,
-                status: y.filteredTestStatus,
+                status: y.testStatus,
             }));
         });
     }

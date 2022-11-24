@@ -48,6 +48,30 @@ resource "keycloak_generic_role_mapper" "hg_mobile_uma" {
   role_id   = data.keycloak_role.Uma_authorization.id
 }
 
+resource "keycloak_openid_user_attribute_protocol_mapper" "hg_mobile_hdid" {
+  realm_id            = data.keycloak_realm.hg_realm.id
+  client_id           = keycloak_openid_client.hg_mobile_client.id
+  name                = "hdid"
+  user_attribute      = "hdid"
+  claim_name          = "hdid"
+  claim_value_type    = "String"
+  add_to_id_token     = true
+  add_to_access_token = true
+  add_to_userinfo     = true
+}
+
+resource "keycloak_openid_user_attribute_protocol_mapper" "hg_mobile_auth_method" {
+  realm_id            = data.keycloak_realm.hg_realm.id
+  client_id           = keycloak_openid_client.hg_mobile_client.id
+  name                = "AuthMethod"
+  user_attribute      = "idp"
+  claim_name          = "idp"
+  claim_value_type    = "String"
+  add_to_id_token     = true
+  add_to_access_token = true
+  add_to_userinfo     = true
+}
+
 resource "keycloak_openid_audience_protocol_mapper" "hg_mobile_audience" {
   realm_id                 = data.keycloak_realm.hg_realm.id
   client_id                = keycloak_openid_client.hg_mobile_client.id
