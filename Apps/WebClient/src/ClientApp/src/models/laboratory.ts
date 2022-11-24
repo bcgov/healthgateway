@@ -71,7 +71,6 @@ export interface LaboratoryTest {
     outOfRange: boolean;
     loinc: string;
     testStatus: string;
-    filteredTestStatus: string;
     result: string;
 }
 

@@ -35,7 +35,7 @@
         "isomorphic-fetch": "^3.0.0",
         "mini-css-extract-plugin": "^2.7.0",
         "popper.js": "^1.16.1",
-        "prettier": "^2.7.1",
+        "prettier": "^2.8.0",
         "sass": "^1.56.1",
         "sass-loader": "^12.6.0",
         "typescript": "^4.9.3",
