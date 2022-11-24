@@ -35,7 +35,7 @@ namespace HealthGateway.Laboratory.MapProfiles
                 .AfterMap(
                     (src, dest) =>
                     {
-                        dest.FilteredTestStatus = src.PlisTestStatus switch
+                        dest.TestStatus = src.PlisTestStatus switch
                         {
                             "Active" => "Pending",
                             _ => src.PlisTestStatus,
