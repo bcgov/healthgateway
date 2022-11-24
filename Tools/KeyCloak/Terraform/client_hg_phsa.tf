@@ -20,7 +20,8 @@ resource "keycloak_openid_client_default_scopes" "hgphsa_client_default_scopes" 
   default_scopes = [
     "web-origins",
     keycloak_openid_client_scope.audience_scope.name,
-    keycloak_openid_client_scope.system_patient_read_scope.name
+    keycloak_openid_client_scope.system_patient_read_scope.name,
+    keycloak_openid_client_scope.phsa_scope.name
   ]
 }
 resource "keycloak_openid_client_optional_scopes" "hgphsa_client_optional_scopes" {

@@ -68,6 +68,13 @@ resource "keycloak_openid_client_scope" "system_notification_write_scope" {
   include_in_token_scope = true
 }
 
+resource "keycloak_openid_client_scope" "phsa_scope" {
+  realm_id               = data.keycloak_realm.hg_realm.id
+  name                   = "phsa"
+  description            = "Used by kong to remove API limits for PHSA"
+  include_in_token_scope = true
+}
+
 resource "keycloak_openid_client_scope" "audience_scope" {
   realm_id               = data.keycloak_realm.hg_realm.id
   name                   = "audience"
