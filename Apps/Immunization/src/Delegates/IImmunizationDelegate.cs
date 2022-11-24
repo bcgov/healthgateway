@@ -29,7 +29,7 @@ namespace HealthGateway.Immunization.Delegates
         /// </summary>
         /// <param name="immunizationId">The id of the immunization to retrieve.</param>
         /// <returns>The immunization that matches the given id.</returns>
-        Task<RequestResult<PhsaResult<ImmunizationViewResponse>>> GetImmunization(string immunizationId);
+        Task<RequestResult<PhsaResult<ImmunizationViewResponse>>> GetImmunizationAsync(string immunizationId);
 
         /// <summary>
         /// Returns a PHSA Result including the load state and a List of Immunizations for the authenticated user.
@@ -37,6 +37,6 @@ namespace HealthGateway.Immunization.Delegates
         /// </summary>
         /// <param name="hdid">The hdid patient id.</param>
         /// <returns>The PhsaResult including the load state and the list of Immunizations available for the user hdid.</returns>
-        Task<RequestResult<PhsaResult<ImmunizationResponse>>> GetImmunizations(string hdid);
+        Task<RequestResult<PhsaResult<ImmunizationResponse>>> GetImmunizationsAsync(string hdid);
     }
 }

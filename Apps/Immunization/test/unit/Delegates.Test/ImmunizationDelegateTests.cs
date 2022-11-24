@@ -40,53 +40,7 @@ namespace HealthGateway.ImmunizationTests.Delegates.Test
     public class ImmunizationDelegateTests
     {
         private const string AccessToken = "access_token";
-        private const string HttpExceptionMessage = "Error with HTTP Request";
-        private const string UnauthorizedResultMessage = "Unable to connect to Immunizations Endpoint, HTTP Error Unauthorized";
-        private const string ForbiddenResultMessage = "DID Claim is missing or can not resolve PHN, HTTP Error Forbidden";
-        private const string MethodNotAllowedResultMessage = "Unable to connect to Immunizations Endpoint, HTTP Error MethodNotAllowed";
-        private const string RequestTimeoutResultMessage = "Unable to connect to Immunizations Endpoint, HTTP Error RequestTimeout";
-
-        /// <summary>
-        /// Tests a various http status codes on Immunization View Response.
-        /// </summary>
-        /// <param name="httpStatusCode">The http status code to return from the mock.</param>
-        /// <param name="resultStatus">The result code to return from the mock.</param>
-        /// <param name="resultMessage">The result message from the mock.</param>
-        [Theory]
-        [InlineData(HttpStatusCode.OK, ResultType.Success, null)]
-        [InlineData(HttpStatusCode.NoContent, ResultType.Success, null)]
-        [InlineData(HttpStatusCode.Unauthorized, ResultType.Error, UnauthorizedResultMessage)]
-        [InlineData(HttpStatusCode.Forbidden, ResultType.Error, ForbiddenResultMessage)]
-        [InlineData(HttpStatusCode.MethodNotAllowed, ResultType.Error, MethodNotAllowedResultMessage)]
-        [InlineData(HttpStatusCode.RequestTimeout, ResultType.Error, RequestTimeoutResultMessage)]
-        public void GetImmunizationResponse(HttpStatusCode httpStatusCode, ResultType resultStatus, string resultMessage)
-        {
-            PhsaResult<ImmunizationViewResponse> expectedResult = new();
-            RequestResult<PhsaResult<ImmunizationViewResponse>> actualResult = GetImmunizationDelegate(expectedResult, httpStatusCode, false).GetImmunization(It.IsAny<string>()).Result;
-            Assert.True(actualResult.ResultStatus == resultStatus);
-            Assert.Equal(actualResult.ResultError?.ResultMessage, resultMessage);
-        }
-
-        /// <summary>
-        /// Tests a various http status codes on Immunization Response.
-        /// </summary>
-        /// <param name="httpStatusCode">The http status code to return from the mock.</param>
-        /// <param name="resultStatus">The result code to return from the mock.</param>
-        /// <param name="resultMessage">The result message from the mock.</param>
-        [Theory]
-        [InlineData(HttpStatusCode.OK, ResultType.Success, null)]
-        [InlineData(HttpStatusCode.NoContent, ResultType.Success, null)]
-        [InlineData(HttpStatusCode.Unauthorized, ResultType.Error, UnauthorizedResultMessage)]
-        [InlineData(HttpStatusCode.Forbidden, ResultType.Error, ForbiddenResultMessage)]
-        [InlineData(HttpStatusCode.MethodNotAllowed, ResultType.Error, MethodNotAllowedResultMessage)]
-        [InlineData(HttpStatusCode.RequestTimeout, ResultType.Error, RequestTimeoutResultMessage)]
-        public void GetImmunizationsResponse(HttpStatusCode httpStatusCode, ResultType resultStatus, string resultMessage)
-        {
-            PhsaResult<ImmunizationResponse> expectedResult = new();
-            RequestResult<PhsaResult<ImmunizationResponse>> actualResult = GetImmunizationDelegate(expectedResult, httpStatusCode, false).GetImmunizations(It.IsAny<string>()).Result;
-            Assert.True(actualResult.ResultStatus == resultStatus);
-            Assert.Equal(actualResult.ResultError?.ResultMessage, resultMessage);
-        }
+        private const string HttpExceptionMessage = "Error with Get Immunization Request";
 
         /// <summary>
         /// GetImmunizations - Happy Path.
@@ -107,7 +61,7 @@ namespace HealthGateway.ImmunizationTests.Delegates.Test
                 Result = expectedViewResponse,
             };
 
-            RequestResult<PhsaResult<ImmunizationViewResponse>> actualResult = GetImmunizationDelegate(phsaResponse, HttpStatusCode.OK, false).GetImmunization(It.IsAny<string>()).Result;
+            RequestResult<PhsaResult<ImmunizationViewResponse>> actualResult = GetImmunizationDelegate(phsaResponse, HttpStatusCode.OK, false).GetImmunizationAsync(It.IsAny<string>()).Result;
 
             Assert.Equal(ResultType.Success, actualResult.ResultStatus);
             Assert.NotNull(actualResult.ResourcePayload);
@@ -136,7 +90,7 @@ namespace HealthGateway.ImmunizationTests.Delegates.Test
                     new List<ImmunizationRecommendationResponse>()),
             };
 
-            RequestResult<PhsaResult<ImmunizationResponse>> actualResult = GetImmunizationDelegate(phsaResponse, HttpStatusCode.OK, false).GetImmunizations(It.IsAny<string>()).Result;
+            RequestResult<PhsaResult<ImmunizationResponse>> actualResult = GetImmunizationDelegate(phsaResponse, HttpStatusCode.OK, false).GetImmunizationsAsync(It.IsAny<string>()).Result;
 
             Assert.Equal(ResultType.Success, actualResult.ResultStatus);
             Assert.NotNull(actualResult.ResourcePayload);
@@ -162,7 +116,7 @@ namespace HealthGateway.ImmunizationTests.Delegates.Test
                 Result = expectedViewResponse,
             };
 
-            RequestResult<PhsaResult<ImmunizationViewResponse>> actualResult = GetImmunizationDelegate(phsaResponse, HttpStatusCode.OK, true).GetImmunization(It.IsAny<string>()).Result;
+            RequestResult<PhsaResult<ImmunizationViewResponse>> actualResult = GetImmunizationDelegate(phsaResponse, HttpStatusCode.OK, true).GetImmunizationAsync(It.IsAny<string>()).Result;
 
             Assert.Equal(ResultType.Error, actualResult.ResultStatus);
             Assert.Equal(HttpExceptionMessage, actualResult.ResultError?.ResultMessage);
@@ -190,7 +144,7 @@ namespace HealthGateway.ImmunizationTests.Delegates.Test
                     new List<ImmunizationRecommendationResponse>()),
             };
 
-            RequestResult<PhsaResult<ImmunizationResponse>> actualResult = GetImmunizationDelegate(phsaResponse, HttpStatusCode.OK, true).GetImmunizations(It.IsAny<string>()).Result;
+            RequestResult<PhsaResult<ImmunizationResponse>> actualResult = GetImmunizationDelegate(phsaResponse, HttpStatusCode.OK, true).GetImmunizationsAsync(It.IsAny<string>()).Result;
 
             Assert.Equal(ResultType.Error, actualResult.ResultStatus);
             Assert.Equal(HttpExceptionMessage, actualResult.ResultError?.ResultMessage);
@@ -223,14 +177,14 @@ namespace HealthGateway.ImmunizationTests.Delegates.Test
             Mock<IImmunizationApi> mockImmunizationApi = new();
             if (!throwException)
             {
-                mockImmunizationApi.Setup(s => s.GetImmunization(It.IsAny<string>(), AccessToken))
-                    .ReturnsAsync(mockApiResponse.Object);
+                mockImmunizationApi.Setup(s => s.GetImmunizationAsync(It.IsAny<string>(), AccessToken))
+                    .ReturnsAsync(response);
             }
             else
             {
                 mockImmunizationApi.Setup(
                         s =>
-                            s.GetImmunization(It.IsAny<string>(), AccessToken))
+                            s.GetImmunizationAsync(It.IsAny<string>(), AccessToken))
                     .ThrowsAsync(new HttpRequestException("Unit Test HTTP Request Exception"));
             }
 
@@ -255,14 +209,14 @@ namespace HealthGateway.ImmunizationTests.Delegates.Test
             Mock<IImmunizationApi> mockImmunizationApi = new();
             if (!throwException)
             {
-                mockImmunizationApi.Setup(s => s.GetImmunizations(It.IsAny<Dictionary<string, string?>>(), AccessToken))
-                    .ReturnsAsync(mockApiResponse.Object);
+                mockImmunizationApi.Setup(s => s.GetImmunizationsAsync(It.IsAny<Dictionary<string, string?>>(), AccessToken))
+                    .ReturnsAsync(response);
             }
             else
             {
                 mockImmunizationApi.Setup(
                         s =>
-                            s.GetImmunizations(It.IsAny<Dictionary<string, string?>>(), AccessToken))
+                            s.GetImmunizationsAsync(It.IsAny<Dictionary<string, string?>>(), AccessToken))
                     .ThrowsAsync(new HttpRequestException("Unit Test HTTP Request Exception"));
             }
 
