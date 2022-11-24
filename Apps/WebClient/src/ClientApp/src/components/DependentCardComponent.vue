@@ -17,10 +17,12 @@ import MessageModalComponent from "@/components/modal/MessageModalComponent.vue"
 import { ActionType } from "@/constants/actionType";
 import { ErrorSourceType, ErrorType } from "@/constants/errorType";
 import { ResultType } from "@/constants/resulttype";
+import ClinicalDocument from "@/models/clinicalDocument";
 import type { WebClientConfiguration } from "@/models/configData";
 import CovidVaccineRecord from "@/models/covidVaccineRecord";
 import { DateWrapper, StringISODate } from "@/models/dateWrapper";
 import type { Dependent } from "@/models/dependent";
+import EncodedMedia from "@/models/encodedMedia";
 import { ResultError } from "@/models/errors";
 import {
     ImmunizationAgent,
@@ -38,6 +40,7 @@ import VaccinationRecord from "@/models/vaccinationRecord";
 import container from "@/plugins/container";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import {
+    IClinicalDocumentService,
     IDependentService,
     IImmunizationService,
     ILaboratoryService,
@@ -157,9 +160,11 @@ export default class DependentCardComponent extends Vue {
 
     private isLoading = false;
     private logger!: ILogger;
+    private clinicalDocumentService!: IClinicalDocumentService;
     private immunizationService!: IImmunizationService;
     private laboratoryService!: ILaboratoryService;
     private dependentService!: IDependentService;
+    private clinicalDocuments: ClinicalDocument[] = [];
     private testRows: Covid19LaboratoryTestRow[] = [];
     private immunizations: ImmunizationEvent[] = [];
     private recommendations: Recommendation[] = [];
@@ -172,6 +177,7 @@ export default class DependentCardComponent extends Vue {
     private dependentTab = 0;
 
     private selectedTestRow!: Covid19LaboratoryTestRow;
+    private selectedClinicalDocumentRow!: ClinicalDocument;
 
     private get headerData(): ReportHeader {
         return {
@@ -255,6 +261,10 @@ export default class DependentCardComponent extends Vue {
         );
     }
 
+    private get isClinicalDocumentTabShown(): boolean {
+        return this.webClientConfig.modules["DependentClinicalDocumentTab"];
+    }
+
     private get isImmunizationTabShown(): boolean {
         return this.webClientConfig.modules["DependentImmunizationTab"];
     }
@@ -293,6 +303,9 @@ export default class DependentCardComponent extends Vue {
         );
         this.dependentService = container.get<IDependentService>(
             SERVICE_IDENTIFIER.DependentService
+        );
+        this.clinicalDocumentService = container.get<IClinicalDocumentService>(
+            SERVICE_IDENTIFIER.ClinicalDocumentService
         );
     }
 
@@ -394,15 +407,55 @@ export default class DependentCardComponent extends Vue {
             });
     }
 
+    private downloadClinicalDocument(): void {
+        this.isReportDownloading = true;
+
+        this.clinicalDocumentService
+            .getFile(
+                this.selectedClinicalDocumentRow.fileId,
+                this.dependent.ownerId
+            )
+            .then((result: RequestResult<EncodedMedia>) => {
+                const dateString = new DateWrapper(
+                    this.selectedClinicalDocumentRow.serviceDate
+                ).format("yyyy_MM_dd-HH_mm");
+
+                fetch(
+                    `data:${result.resourcePayload.mediaType};${result.resourcePayload.encoding},${result.resourcePayload.data}`
+                )
+                    .then((response) => response.blob())
+                    .then((blob) =>
+                        saveAs(blob, `Clinical_Document_${dateString}.pdf`)
+                    );
+            })
+            .catch((err: ResultError) => {
+                this.logger.error(err.resultMessage);
+                if (err.statusCode === 429) {
+                    this.setTooManyRequestsError({ key: "page" });
+                } else {
+                    this.addError({
+                        errorType: ErrorType.Download,
+                        source: ErrorSourceType.ClinicalDocument,
+                        traceId: err.traceId,
+                    });
+                }
+            })
+            .finally(() => {
+                this.isReportDownloading = false;
+            });
+    }
+
     private downloadDocument(): void {
         if (this.isReport) {
             this.logger.debug(
-                `Download document from dependent tab: ${this.dependentTab} and report format: ${this.reportFormatType}`
+                `Download document from dependent tab: ${this.dependentTab}`
             );
             if (this.dependentTab === 1) {
                 this.downloadCovid19Report();
             } else if (this.dependentTab === 2) {
                 this.downloadImmunizationReport();
+            } else if (this.dependentTab == 3) {
+                this.downloadClinicalDocument();
             }
         } else {
             this.downloadVaccinePdf();
@@ -423,16 +476,53 @@ export default class DependentCardComponent extends Vue {
         return new DateWrapper(date).format();
     }
 
+    private fetchClinicalDocuments(): void {
+        const hdid = this.dependent.ownerId;
+        this.logger.debug(`Fetching Clinical Documents for Hdid: ${hdid}`);
+
+        this.isLoading = true;
+        this.clinicalDocumentService
+            .getRecords(hdid)
+            .then((result) => {
+                if (result.resultStatus == ResultType.Success) {
+                    const payload = result.resourcePayload;
+                    this.setClinicalDocuments(payload);
+                } else {
+                    this.logger.error(
+                        `Error returned from the Clinical Documents call:
+                            ${JSON.stringify(result.resultError)}`
+                    );
+                    this.addError({
+                        errorType: ErrorType.Retrieve,
+                        source: ErrorSourceType.ClinicalDocument,
+                        traceId: result.resultError?.traceId,
+                    });
+                }
+            })
+            .catch((err: ResultError) => {
+                this.logger.error(err.resultMessage);
+                if (err.statusCode === 429) {
+                    this.setTooManyRequestsWarning({ key: "page" });
+                } else {
+                    this.addError({
+                        errorType: ErrorType.Retrieve,
+                        source: ErrorSourceType.ClinicalDocument,
+                        traceId: err.traceId,
+                    });
+                }
+            })
+            .finally(() => {
+                this.isLoading = false;
+            });
+    }
+
     private fetchCovid19LaboratoryTests(): void {
         this.logger.debug(
-            `Fetching COVID 19 Laboratory Tests - data loaded: ${this.isDataLoaded}`
+            `Fetching COVID 19 Laboratory Tests for Hdid: ${this.dependent.ownerId}`
         );
         if (this.isDataLoaded) {
             return;
         }
-        this.logger.debug(
-            `Fetching COVID 19 Laboratory Tests for Hdid: ${this.dependent.ownerId}`
-        );
         this.isLoading = true;
         this.laboratoryService
             .getCovid19LaboratoryOrders(this.dependent.ownerId)
@@ -449,7 +539,6 @@ export default class DependentCardComponent extends Vue {
                         );
                     this.sortEntries();
                     this.isDataLoaded = true;
-                    this.isLoading = false;
                 } else if (
                     result.resultError?.actionCode === ActionType.Refresh &&
                     !payload.loaded &&
@@ -472,7 +561,6 @@ export default class DependentCardComponent extends Vue {
                         source: ErrorSourceType.Covid19Laboratory,
                         traceId: result.resultError?.traceId,
                     });
-                    this.isLoading = false;
                 }
             })
             .catch((err: ResultError) => {
@@ -486,6 +574,8 @@ export default class DependentCardComponent extends Vue {
                         traceId: err.traceId,
                     });
                 }
+            })
+            .finally(() => {
                 this.isLoading = false;
             });
     }
@@ -493,15 +583,9 @@ export default class DependentCardComponent extends Vue {
     private fetchPatientImmunizations(): void {
         const hdid = this.dependent.ownerId;
         this.logger.debug(`Fetching Patient Immunizations for Hdid: ${hdid}`);
-        this.logger.debug(`Logged in user Hdid: ${this.user.hdid}`);
-        this.logger.debug(
-            `Fetching Patient Immunizations - immunization data loaded: ${this.isImmunizationDataLoaded}`
-        );
-
         if (this.isImmunizationDataLoaded) {
             return;
         }
-
         this.isLoading = true;
         this.immunizationService
             .getPatientImmunizations(hdid)
@@ -518,7 +602,6 @@ export default class DependentCardComponent extends Vue {
                         this.setImmunizations(payload.immunizations);
                         this.setRecommendations(payload.recommendations);
                         this.isImmunizationDataLoaded = true;
-                        this.isLoading = false;
                         this.logger.debug(
                             `Patient Immunizations:
                                 ${JSON.stringify(this.immunizations)}`
@@ -538,7 +621,6 @@ export default class DependentCardComponent extends Vue {
                         source: ErrorSourceType.Immunization,
                         traceId: result.resultError?.traceId,
                     });
-                    this.isLoading = false;
                 }
             })
             .catch((err: ResultError) => {
@@ -552,6 +634,8 @@ export default class DependentCardComponent extends Vue {
                         traceId: err.traceId,
                     });
                 }
+            })
+            .finally(() => {
                 this.isLoading = false;
             });
     }
@@ -620,6 +704,25 @@ export default class DependentCardComponent extends Vue {
 
     private getVaccinationRecord(): VaccinationRecord | undefined {
         return this.vaccineRecords.get(this.dependent.ownerId);
+    }
+
+    private setClinicalDocuments(clinicalDocuments: ClinicalDocument[]): void {
+        this.clinicalDocuments = clinicalDocuments;
+
+        this.clinicalDocuments.sort((a, b) => {
+            const firstDate = new DateWrapper(a.serviceDate);
+            const secondDate = new DateWrapper(b.serviceDate);
+
+            if (firstDate.isBefore(secondDate)) {
+                return 1;
+            }
+
+            if (firstDate.isAfter(secondDate)) {
+                return -1;
+            }
+
+            return 0;
+        });
     }
 
     private setImmunizations(immunizations: ImmunizationEvent[]): void {
@@ -711,6 +814,14 @@ export default class DependentCardComponent extends Vue {
     ): void {
         this.isReport = true;
         this.reportFormatType = reportFormatType;
+        this.reportDownloadModal.showModal();
+    }
+
+    private showClinicalDocumentDownloadConfirmationModal(
+        row: ClinicalDocument
+    ): void {
+        this.isReport = true;
+        this.selectedClinicalDocumentRow = row;
         this.reportDownloadModal.showModal();
     }
 
@@ -1340,6 +1451,116 @@ export default class DependentCardComponent extends Vue {
                         </b-card>
                     </div>
                 </b-tab>
+                <b-tab
+                    v-if="isClinicalDocumentTabShown"
+                    :disabled="isExpired"
+                    no-body
+                    :data-testid="`clinical-documents-tab-${dependent.ownerId}`"
+                    @click="fetchClinicalDocuments"
+                >
+                    <template #title>
+                        <div data-testid="clinical-docuemnts-tab-title">
+                            Clinical Docs
+                        </div>
+                    </template>
+                    <div class="p-3">
+                        <b-spinner v-if="isLoading" class="mt-3" />
+                        <div
+                            v-if="!isLoading && clinicalDocuments.length === 0"
+                            data-testid="clinical-documents-no-records"
+                        >
+                            No records found.
+                        </div>
+                    </div>
+                    <b-table-simple
+                        v-if="!isLoading && clinicalDocuments.length > 0"
+                        small
+                        striped
+                        borderless
+                        :items="clinicalDocuments"
+                        class="w-100 mb-0"
+                        aria-describedby="Clinical Docs Results"
+                    >
+                        <b-thead>
+                            <b-tr>
+                                <b-th class="align-middle">Date</b-th>
+                                <b-th class="align-middle">Title</b-th>
+                                <b-th
+                                    class="d-none d-md-table-cell align-middle"
+                                >
+                                    Document Type
+                                </b-th>
+                                <b-th
+                                    class="d-none d-md-table-cell align-middle"
+                                >
+                                    Discipline
+                                </b-th>
+                                <b-th
+                                    class="d-none d-md-table-cell align-middle"
+                                >
+                                    Facility Name
+                                </b-th>
+                                <b-th class="align-middle">Report</b-th>
+                            </b-tr>
+                        </b-thead>
+                        <b-tbody>
+                            <b-tr
+                                v-for="(row, index) in clinicalDocuments"
+                                :key="index"
+                            >
+                                <b-td
+                                    :data-testid="`clinical-document-service-date-${dependent.ownerId}-${index}`"
+                                    class="align-middle"
+                                >
+                                    {{ formatDate(row.serviceDate) }}
+                                </b-td>
+                                <b-td
+                                    :data-testid="`clinical-document-name-${dependent.ownerId}-${index}`"
+                                    class="align-middle"
+                                >
+                                    {{ row.name }}
+                                </b-td>
+                                <b-td
+                                    :data-testid="`clinical-document-type-${dependent.ownerId}-${index}`"
+                                    class="d-none d-md-table-cell align-middle"
+                                >
+                                    {{ row.type }}
+                                </b-td>
+                                <b-td
+                                    :data-testid="`clinical-document-discipline-${dependent.ownerId}-${index}`"
+                                    class="d-none d-md-table-cell align-middle"
+                                >
+                                    {{ row.discipline }}
+                                </b-td>
+                                <b-td
+                                    :data-testid="`clinical-document-facility-name-${dependent.ownerId}-${index}`"
+                                    class="d-none d-md-table-cell align-middle"
+                                >
+                                    {{ row.facilityName }}
+                                </b-td>
+                                <b-td class="align-middle">
+                                    <hg-button
+                                        :data-testid="`clinical-document-report-download-button-${dependent.ownerId}-${index}`"
+                                        variant="link"
+                                        class="p-0"
+                                        @click="
+                                            showClinicalDocumentDownloadConfirmationModal(
+                                                row
+                                            )
+                                        "
+                                    >
+                                        <hg-icon
+                                            icon="download"
+                                            size="medium"
+                                            square
+                                            aria-hidden="true"
+                                        />
+                                    </hg-button>
+                                </b-td>
+                            </b-tr>
+                        </b-tbody>
+                    </b-table-simple>
+                </b-tab>
                 <template #tabs-start>
                     <div class="w-100">
                         <b-row>
@@ -1378,7 +1599,7 @@ export default class DependentCardComponent extends Vue {
                                             data-testid="deleteDependentMenuBtn"
                                             class="menuItem"
                                             @click="
-                                                showDeleteConfirmationModal()
+                                                showClinicalDocumentDownloadConfirmationModal()
                                             "
                                         >
                                             Delete
