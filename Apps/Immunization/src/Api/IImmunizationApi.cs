@@ -32,7 +32,7 @@ public interface IImmunizationApi
     /// <param name="token">The bearer token to authorize the call.</param>
     /// <returns>A PhsaResult containing the immunization that matches the given ID.</returns>
     [Get("/api/v1/Immunizations/{ImmunizationId}")]
-    Task<IApiResponse<PhsaResult<ImmunizationViewResponse>>> GetImmunization(string immunizationId, [Authorize] string token);
+    Task<PhsaResult<ImmunizationViewResponse>> GetImmunizationAsync(string immunizationId, [Authorize] string token);
 
     /// <summary>
     /// Retrieves a PhsaResult containing the immunizations and recommendations of a given patient.
@@ -43,7 +43,7 @@ public interface IImmunizationApi
     /// A PhsaResult containing the immunizations and recommendations of a given patient.
     /// </returns>
     [Get("/api/v1/Immunizations")]
-    Task<IApiResponse<PhsaResult<ImmunizationResponse>>> GetImmunizations(Dictionary<string, string?> query, [Authorize] string token);
+    Task<PhsaResult<ImmunizationResponse>> GetImmunizationsAsync(Dictionary<string, string?> query, [Authorize] string token);
 
     /// <summary>
     /// Retrieves a PhsaResult containing the vaccine status of a given patient.
@@ -55,5 +55,5 @@ public interface IImmunizationApi
     /// A PhsaResult containing the vaccine status of a given patient.
     /// </returns>
     [Post("/api/v1/Immunizations/VaccineStatusIndicator?subjectHdid={subjectHdid}&federalPvc={federalPvc}")]
-    Task<PhsaResult<VaccineStatusResult>> GetVaccineStatus(string subjectHdid, bool federalPvc, [Authorize] string token);
+    Task<PhsaResult<VaccineStatusResult>> GetVaccineStatusAsync(string subjectHdid, bool federalPvc, [Authorize] string token);
 }

@@ -65,7 +65,7 @@ namespace HealthGateway.Immunization.Delegates
             try
             {
                 PhsaResult<VaccineStatusResult> phsaResult =
-                    await this.immunizationApi.GetVaccineStatus(hdid, includeFederalPvc, accessToken).ConfigureAwait(true);
+                    await this.immunizationApi.GetVaccineStatusAsync(hdid, includeFederalPvc, accessToken).ConfigureAwait(true);
 
                 if (phsaResult.Result != null)
                 {

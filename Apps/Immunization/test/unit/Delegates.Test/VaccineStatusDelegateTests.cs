@@ -162,7 +162,7 @@ namespace HealthGateway.ImmunizationTests.Delegates.Test
             };
 
             Mock<IImmunizationApi> mockImmunizationApi = new();
-            mockImmunizationApi.Setup(a => a.GetVaccineStatus(this.hdId, It.IsAny<bool>(), this.accessToken)).ReturnsAsync(expectedPayload);
+            mockImmunizationApi.Setup(a => a.GetVaccineStatusAsync(this.hdId, It.IsAny<bool>(), this.accessToken)).ReturnsAsync(expectedPayload);
             Mock<IImmunizationPublicApi> mockImmunizationPublicApi = new(MockBehavior.Strict);
 
             using ILoggerFactory loggerFactory = LoggerFactory.Create(builder => builder.AddConsole());
@@ -189,7 +189,7 @@ namespace HealthGateway.ImmunizationTests.Delegates.Test
             RequestResultError expectedError = GetRequestResultError();
 
             Mock<IImmunizationApi> mockImmunizationApi = new();
-            mockImmunizationApi.Setup(a => a.GetVaccineStatus(this.hdId, It.IsAny<bool>(), this.accessToken)).ReturnsAsync(expectedPayload);
+            mockImmunizationApi.Setup(a => a.GetVaccineStatusAsync(this.hdId, It.IsAny<bool>(), this.accessToken)).ReturnsAsync(expectedPayload);
             Mock<IImmunizationPublicApi> mockImmunizationPublicApi = new(MockBehavior.Strict);
 
             using ILoggerFactory loggerFactory = LoggerFactory.Create(builder => builder.AddConsole());
@@ -215,7 +215,7 @@ namespace HealthGateway.ImmunizationTests.Delegates.Test
             RequestResultError expectedError = GetRequestResultError();
 
             Mock<IImmunizationApi> mockImmunizationApi = new();
-            mockImmunizationApi.Setup(a => a.GetVaccineStatus(this.hdId, It.IsAny<bool>(), this.accessToken))
+            mockImmunizationApi.Setup(a => a.GetVaccineStatusAsync(this.hdId, It.IsAny<bool>(), this.accessToken))
                 .ThrowsAsync(new HttpRequestException(null, null, HttpStatusCode.BadRequest));
             Mock<IImmunizationPublicApi> mockImmunizationPublicApi = new(MockBehavior.Strict);
 
