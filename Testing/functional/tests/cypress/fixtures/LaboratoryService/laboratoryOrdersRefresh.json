@@ -21,8 +21,7 @@
                         "obxId": "341L56330T278085ALT",
                         "outOfRange": false,
                         "loinc": null,
-                        "testStatus": "Active",
-                        "filteredTestStatus": "Pending",
+                        "testStatus": "Pending",
                         "result": "Pending"
                     },
                     {
@@ -30,8 +29,7 @@
                         "obxId": "341L56330T278085AST",
                         "outOfRange": false,
                         "loinc": null,
-                        "testStatus": "Active",
-                        "filteredTestStatus": "Pending",
+                        "testStatus": "Pending",
                         "result": "Pending"
                     },
                     {
@@ -40,7 +38,6 @@
                         "outOfRange": false,
                         "loinc": "XCA01592-5",
                         "testStatus": "Cancelled",
-                        "filteredTestStatus": "Cancelled",
                         "result": "Cancelled"
                     },
                     {
@@ -49,7 +46,6 @@
                         "outOfRange": true,
                         "loinc": null,
                         "testStatus": "Completed",
-                        "filteredTestStatus": "Completed",
                         "result": "Out of Range"
                     },
                     {
@@ -58,7 +54,6 @@
                         "outOfRange": false,
                         "loinc": "14749-6",
                         "testStatus": "Completed",
-                        "filteredTestStatus": "Completed",
                         "result": "In Range"
                     },
                     {
@@ -67,7 +62,6 @@
                         "outOfRange": false,
                         "loinc": "22664-7",
                         "testStatus": "Cancelled",
-                        "filteredTestStatus": "Cancelled",
                         "result": "Cancelled"
                     }
                 ]

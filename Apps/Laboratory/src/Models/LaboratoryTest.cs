@@ -53,12 +53,6 @@ public class LaboratoryTest
     public string TestStatus { get; set; } = string.Empty;
 
     /// <summary>
-    /// Gets or sets a value for the filtered test status.
-    /// </summary>
-    [JsonPropertyName("filteredTestStatus")]
-    public string FilteredTestStatus { get; set; } = string.Empty;
-
-    /// <summary>
     /// Gets or sets a value for the result.
     /// </summary>
     [JsonPropertyName("result")]
