@@ -35,8 +35,9 @@ namespace HealthGateway.Common.AccessManagement.Authentication
         /// </summary>
         /// <param name="tokenUri">Uri to request the the token from.</param>
         /// <param name="tokenRequest">Token request configuration.</param>
+        /// <param name="cacheEnabled">if true caches the result.</param>
         /// <returns>An instance fo the <see cref="JwtModel"/> class.</returns>
-        JwtModel AuthenticateAsSystem(Uri tokenUri, ClientCredentialsTokenRequest tokenRequest);
+        JwtModel AuthenticateAsSystem(Uri tokenUri, ClientCredentialsTokenRequest tokenRequest, bool cacheEnabled = true);
 
         /// <summary>
         /// Authenticates a resource owner user with direct grant from a defined configuration section.

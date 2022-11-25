@@ -130,6 +130,15 @@ variable "client_hg" {
   description = "HealthGateway client configuration"
 }
 
+variable "client_hg_public" {
+  type = object({
+    id              = optional(string, "hg-public")
+    valid_redirects = list(string)
+    web_origins     = list(string)
+  })
+  description = "HealthGateway Public Authentication for PHSA"
+}
+
 locals {
   development = var.environment.name == "Development"
 }

@@ -54,6 +54,20 @@ resource "keycloak_openid_client_scope" "system_patient_read_scope" {
   include_in_token_scope = true
 }
 
+resource "keycloak_openid_client_scope" "system_laboratory_read_scope" {
+  realm_id               = data.keycloak_realm.hg_realm.id
+  name                   = "system/Laboratory.read"
+  description            = "Abilty to read any patient's lab data as a system"
+  include_in_token_scope = true
+}
+
+resource "keycloak_openid_client_scope" "system_immunization_read_scope" {
+  realm_id               = data.keycloak_realm.hg_realm.id
+  name                   = "system/Immunization.read"
+  description            = "Abilty to read any patient's Immunization data as a system"
+  include_in_token_scope = true
+}
+
 resource "keycloak_openid_client_scope" "system_notification_read_scope" {
   realm_id               = data.keycloak_realm.hg_realm.id
   name                   = "system/Notification.read"

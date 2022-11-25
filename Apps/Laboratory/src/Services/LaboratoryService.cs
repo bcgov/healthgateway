@@ -22,6 +22,7 @@ namespace HealthGateway.Laboratory.Services
     using System.Threading.Tasks;
     using AutoMapper;
     using HealthGateway.Common.AccessManagement.Authentication;
+    using HealthGateway.Common.AccessManagement.Authentication.Models;
     using HealthGateway.Common.Constants;
     using HealthGateway.Common.Constants.PHSA;
     using HealthGateway.Common.Data.Constants;
@@ -45,6 +46,7 @@ namespace HealthGateway.Laboratory.Services
         /// </summary>
         public const string LabConfigSectionKey = "Laboratory";
 
+        private const string AuthConfigSectionName = "PublicAuthentication";
         private const string IsNullOrEmptyTokenErrorMessage = "The auth token is null or empty - unable to cache or proceed";
 
         private readonly IAuthenticationDelegate authenticationDelegate;
@@ -52,6 +54,8 @@ namespace HealthGateway.Laboratory.Services
         private readonly ILogger<LaboratoryService> logger;
         private readonly IMapper autoMapper;
         private readonly LaboratoryConfig labConfig;
+        private readonly ClientCredentialsTokenRequest tokenRequest;
+        private readonly Uri tokenUri;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="LaboratoryService"/> class.
@@ -72,6 +76,12 @@ namespace HealthGateway.Laboratory.Services
             this.laboratoryDelegate = laboratoryDelegateFactory.CreateInstance();
             this.authenticationDelegate = authenticationDelegate;
             this.autoMapper = autoMapper;
+
+            IConfigurationSection configSection = configuration.GetSection(AuthConfigSectionName);
+            this.tokenUri = configSection.GetValue<Uri>(@"TokenUri") ??
+                            throw new ArgumentNullException(nameof(configuration), $"{AuthConfigSectionName} does not contain a valid TokenUri");
+            this.tokenRequest = new ClientCredentialsTokenRequest();
+            configSection.Bind(this.tokenRequest); // Client ID, Client Secret, Audience, Scope
 
             this.labConfig = new();
             configuration.Bind(LabConfigSectionKey, this.labConfig);
@@ -242,7 +252,7 @@ namespace HealthGateway.Laboratory.Services
                 return retVal;
             }
 
-            string? accessToken = this.authenticationDelegate.AccessTokenAsUser();
+            string? accessToken = this.authenticationDelegate.AuthenticateAsSystem(this.tokenUri, this.tokenRequest).AccessToken;
             if (string.IsNullOrEmpty(accessToken))
             {
                 this.logger.LogCritical(IsNullOrEmptyTokenErrorMessage);
