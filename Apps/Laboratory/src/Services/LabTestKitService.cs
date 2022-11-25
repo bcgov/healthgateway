@@ -27,6 +27,7 @@ namespace HealthGateway.Laboratory.Services
     using HealthGateway.Common.ErrorHandling;
     using HealthGateway.Laboratory.Api;
     using HealthGateway.Laboratory.Models.PHSA;
+    using Microsoft.AspNetCore.Http;
     using Microsoft.Extensions.Logging;
 
     /// <inheritdoc/>
@@ -35,6 +36,7 @@ namespace HealthGateway.Laboratory.Services
         private readonly IAuthenticationDelegate authenticationDelegate;
         private readonly ILabTestKitApi labTestKitApi;
         private readonly ILogger<LabTestKitService> logger;
+        private readonly IHttpContextAccessor? httpContextAccessor;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="LabTestKitService"/> class.
@@ -42,14 +44,17 @@ namespace HealthGateway.Laboratory.Services
         /// <param name="logger">The injected logger.</param>
         /// <param name="authenticationDelegate">The auth delegate to fetch tokens.</param>
         /// <param name="labTestKitApi">The client to use for lab tests.</param>
+        /// <param name="httpContextAccessor">The injected http context accessor.</param>
         public LabTestKitService(
             ILogger<LabTestKitService> logger,
             IAuthenticationDelegate authenticationDelegate,
-            ILabTestKitApi labTestKitApi)
+            ILabTestKitApi labTestKitApi,
+            IHttpContextAccessor? httpContextAccessor)
         {
             this.logger = logger;
             this.authenticationDelegate = authenticationDelegate;
             this.labTestKitApi = labTestKitApi;
+            this.httpContextAccessor = httpContextAccessor;
         }
 
         /// <inheritdoc/>
@@ -81,8 +86,9 @@ namespace HealthGateway.Laboratory.Services
                 {
                     try
                     {
+                        string ipAddress = this.httpContextAccessor?.HttpContext?.Connection.RemoteIpAddress?.MapToIPv4().ToString() ?? "0.0.0.0";
                         HttpResponseMessage response =
-                            await this.labTestKitApi.RegisterLabTest(testKit, accessToken).ConfigureAwait(true);
+                            await this.labTestKitApi.RegisterLabTest(testKit, accessToken, ipAddress).ConfigureAwait(true);
                         ProcessResponse(requestResult, response);
                     }
                     catch (HttpRequestException e)
