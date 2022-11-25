@@ -127,6 +127,15 @@ namespace HealthGateway.Common.AspNetConfiguration
         }
 
         /// <summary>
+        /// Configures the services required to use problem details.
+        /// </summary>
+        /// <param name="services">The service collection provider.</param>
+        public void ConfigureProblemDetails(IServiceCollection services)
+        {
+            ExceptionHandling.ConfigureProblemDetails(services, this.environment);
+        }
+
+        /// <summary>
         /// Configures Forward proxies.
         /// </summary>
         /// <param name="services">The service collection to add forward proxies into.</param>
@@ -202,9 +211,13 @@ namespace HealthGateway.Common.AspNetConfiguration
         /// Configures the app to use http.
         /// </summary>
         /// <param name="app">The application builder provider.</param>
-        public void UseHttp(IApplicationBuilder app)
+        /// <param name="useExceptionPage">
+        /// If true, app will use development exception page. Should be false when using problem
+        /// details middleware.
+        /// </param>
+        public void UseHttp(IApplicationBuilder app, bool useExceptionPage = true)
         {
-            HttpWeb.UseHttp(app, this.Logger, this.Configuration, this.environment);
+            HttpWeb.UseHttp(app, this.Logger, this.Configuration, this.environment, false, useExceptionPage);
         }
 
         /// <summary>
