@@ -220,7 +220,7 @@ describe("Dependents - Immuniazation Tab - Enabled", () => {
             fixture: "ImmunizationService/dependentImmunization.json",
         });
 
-        cy.log("Validating Immunization Tab - configuration enabled");
+        cy.log("Validating Immunization Tab - Verify sort and download");
 
         cy.get(`[data-testid=immunization-tab-title-${dependentHdid}]`)
             .parent()
@@ -315,7 +315,7 @@ describe("Dependents - Immuniazation Tab - Enabled", () => {
             fixture: "ImmunizationService/dependentImmunization.json",
         });
 
-        cy.log("Validating Immunization Tab - configuration enabled");
+        cy.log("Validating Immunization Tab - Verify sort and download");
 
         cy.get(`[data-testid=immunization-tab-title-${dependentHdid}]`)
             .parent()
@@ -328,7 +328,6 @@ describe("Dependents - Immuniazation Tab - Enabled", () => {
         ).click({ force: true });
 
         // Verify forecast table has been sorted by due date descending
-
         cy.get(`[data-testid=forecast-due-date-${dependentHdid}-0]`).then(
             ($dateItem) => {
                 // Column date in the 1st row in the table
@@ -453,6 +452,38 @@ describe("Dependents - Clinical Document Tab - Enabled", () => {
             AuthMethod.KeyCloak,
             "/dependents"
         );
+    });
+
+    it("Clinical Document Tab - Verify result and sort", () => {
+        cy.intercept("GET", "**/ClinicalDocument/*", {
+            fixture: "ClinicalDocumentService/clinicalDocument.json",
+        });
+
+        cy.log("Validating Clinical Document Tab - Verify result and sort");
+
+        cy.get(`[data-testid=clinical-docuemnt-tab-title-${dependentHdid}]`)
+            .parent()
+            .click();
+
+        // Expecting 2 rows to return but we also need to consider the table headers.
+        cy.get(`[data-testid=clinical-document-table-${dependentHdid}]`)
+            .find("tr")
+            .should(($tr) => expect($tr.length == 3));
+
+        // Verify forecast table has been sorted by due date descending
+        cy.get(
+            `[data-testid=clinical-document-service-date-${dependentHdid}-0]`
+        ).then(($dateItem) => {
+            // Column date in the 1st row in the table
+            const firstDate = getDate($dateItem.text());
+            cy.get(
+                `[data-testid=clinical-document-service-date-${dependentHdid}-1]`
+            ).then(($dateItem) => {
+                // Column date in the 2nd row in the table
+                const secondDate = getDate($dateItem.text());
+                expect(firstDate).to.be.gte(secondDate);
+            });
+        });
     });
 
     it("Clinical Document Tab - No Data Found", () => {

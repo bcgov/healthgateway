@@ -164,8 +164,10 @@ describe("dependents", () => {
         cy.get("[data-testid=cancelRegistrationBtn]").click();
     });
 
-    it("Validate Immunization - History - Tab", () => {
-        cy.log("Validating Immunization Tab");
+    it("Validate Immunization History - Verify result and download", () => {
+        cy.log(
+            "Validating Immunization History Tab - Verify result and download"
+        );
 
         cy.get(`[data-testid=immunization-tab-title-${validDependentHdid}]`)
             .parent()
@@ -178,7 +180,7 @@ describe("dependents", () => {
         ).within(() => {
             cy.contains("a", "History").click();
         });
-        // Expecting more than 1 row to return because need to consider the table headers.
+        // Expecting more than 1 row to return because we also need to consider the table headers.
         cy.get(`[data-testid=immunization-history-table-${validDependentHdid}]`)
             .find("tr")
             .should(($tr) => expect($tr.length > 1));
@@ -241,8 +243,10 @@ describe("dependents", () => {
         });
     });
 
-    it("Validate Immunization - Forecast - Tab", () => {
-        cy.log("Validating Immunization Tab - configuration enabled");
+    it("Validate Immunization Forecast - Verify result and download", () => {
+        cy.log(
+            "Validating Immunization Forecast Tab - Verify result and download"
+        );
 
         cy.get(`[data-testid=immunization-tab-title-${validDependentHdid}]`)
             .parent()
@@ -256,7 +260,7 @@ describe("dependents", () => {
             cy.contains("a", "Forecast").click();
         });
 
-        // Expecting more than 1 row to return because need to consider the table headers.
+        // Expecting more than 1 row to return because we also need to consider the table headers.
         cy.get(
             `[data-testid=immunization-forecast-table-${validDependentHdid}]`
         )
@@ -321,8 +325,8 @@ describe("dependents", () => {
         });
     });
 
-    it("Validate Clinical Document - Tab", () => {
-        cy.log("Validating Clinical Document Tab - configuration enabled");
+    it("Validate Clinical Document - Verify result and download", () => {
+        cy.log("Validating Clinical Document Tab - Verify result and download");
 
         cy.get(
             `[data-testid=clinical-docuemnt-tab-title-${validDependentHdid}]`
@@ -330,7 +334,7 @@ describe("dependents", () => {
             .parent()
             .click();
 
-        // Expecting more than 1 row to return because need to consider the table headers.
+        // Expecting more than 1 row to return because also need to consider the table headers.
         cy.get(`[data-testid=clinical-document-table-${validDependentHdid}]`)
             .find("tr")
             .should(($tr) => expect($tr.length > 1));
