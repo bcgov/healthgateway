@@ -204,6 +204,8 @@ describe("Dependents - Immuniazation Tab - Enabled", () => {
             "Dependent",
             "Immunization",
             "DependentImmunizationTab",
+            "DependentClinicalDocumentTab",
+            "ClinicalDocument",
         ]);
         cy.login(
             Cypress.env("keycloak.username"),
@@ -403,7 +405,7 @@ describe("Dependents - Immuniazation Tab - Enabled", () => {
         });
     });
 
-    it("Immunization tab - No Data Found", () => {
+    it("Immunization Tab - No Data Found", () => {
         cy.intercept("GET", "**/Immunization?hdid=*", {
             fixture: "ImmunizationService/immunizationNoRecords.json",
         });
@@ -433,7 +435,44 @@ describe("Dependents - Immuniazation Tab - Enabled", () => {
     });
 });
 
-describe("Dependents - Immuniazation Tab - Disabled", () => {
+describe("Dependents - Clinical Document Tab - Enabled", () => {
+    const dependentHdid = "645645767756756767";
+    beforeEach(() => {
+        cy.intercept("GET", "**/UserProfile/*/Dependent", {
+            fixture: "UserProfileService/dependent.json",
+        });
+
+        cy.enableModules([
+            "Dependent",
+            "DependentClinicalDocumentTab",
+            "ClinicalDocument",
+        ]);
+        cy.login(
+            Cypress.env("keycloak.username"),
+            Cypress.env("keycloak.password"),
+            AuthMethod.KeyCloak,
+            "/dependents"
+        );
+    });
+
+    it("Clinical Document Tab - No Data Found", () => {
+        cy.intercept("GET", "**/ClinicalDocument/*", {
+            fixture: "ClinicalDocumentService/clinicalDocumentNoRecords.json",
+        });
+
+        cy.log("Validating Clinical Document Tab - No Data Found");
+
+        cy.get(`[data-testid=clinical-docuemnt-tab-title-${dependentHdid}]`)
+            .parent()
+            .click();
+
+        cy.get(
+            `[data-testid=clinical-document-no-records-${dependentHdid}]`
+        ).should("be.visible");
+    });
+});
+
+describe("Dependents Tabs Disabled", () => {
     const dependentHdid = "645645767756756767";
     beforeEach(() => {
         cy.enableModules(["Dependent"]);
@@ -445,9 +484,13 @@ describe("Dependents - Immuniazation Tab - Disabled", () => {
         );
     });
 
-    it("Immunization Tab - Configuration Disabled", () => {
+    it("Immunization and Clinical Documents Tabs - Configuration Disabled", () => {
         cy.log("Validating Immunization Tab - configuration disabled");
-        cy.get("[data-testid=immunization-tab-" + dependentHdid + "]").should(
+        cy.get(`[data-testid=immunization-tab-${dependentHdid}]`).should(
+            "not.exist"
+        );
+        cy.log("Validating Clinical Documents Tab - configuration disabled");
+        cy.get(`[data-testid=clinical-document-tab-${dependentHdid}]`).should(
             "not.exist"
         );
     });

@@ -416,16 +416,15 @@ export default class DependentCardComponent extends Vue {
                 this.dependent.ownerId
             )
             .then((result: RequestResult<EncodedMedia>) => {
-                const dateString = new DateWrapper(
-                    this.selectedClinicalDocumentRow.serviceDate
-                ).format("yyyy_MM_dd-HH_mm");
-
                 fetch(
                     `data:${result.resourcePayload.mediaType};${result.resourcePayload.encoding},${result.resourcePayload.data}`
                 )
                     .then((response) => response.blob())
                     .then((blob) =>
-                        saveAs(blob, `Clinical_Document_${dateString}.pdf`)
+                        saveAs(
+                            blob,
+                            `Clinical_Document_${this.dependent.dependentInformation.firstname}_${this.dependent.dependentInformation.lastname}.pdf`
+                        )
                     );
             })
             .catch((err: ResultError) => {
@@ -1010,6 +1009,7 @@ export default class DependentCardComponent extends Vue {
                         :items="testRows"
                         class="w-100 mb-0"
                         aria-describedby="COVID-19 Test Results"
+                        :data-testid="`covid19-table-${dependent.ownerId}`"
                     >
                         <b-thead>
                             <b-tr>
@@ -1455,11 +1455,13 @@ export default class DependentCardComponent extends Vue {
                     v-if="isClinicalDocumentTabShown"
                     :disabled="isExpired"
                     no-body
-                    :data-testid="`clinical-documents-tab-${dependent.ownerId}`"
+                    :data-testid="`clinical-document-tab-${dependent.ownerId}`"
                     @click="fetchClinicalDocuments"
                 >
                     <template #title>
-                        <div data-testid="clinical-docuemnts-tab-title">
+                        <div
+                            :data-testid="`clinical-docuemnt-tab-title-${dependent.ownerId}`"
+                        >
                             Clinical Docs
                         </div>
                     </template>
@@ -1467,7 +1469,7 @@ export default class DependentCardComponent extends Vue {
                         <b-spinner v-if="isLoading" class="mt-3" />
                         <div
                             v-if="!isLoading && clinicalDocuments.length === 0"
-                            data-testid="clinical-documents-no-records"
+                            :data-testid="`clinical-document-no-records-${dependent.ownerId}`"
                         >
                             No records found.
                         </div>
@@ -1480,6 +1482,7 @@ export default class DependentCardComponent extends Vue {
                         :items="clinicalDocuments"
                         class="w-100 mb-0"
                         aria-describedby="Clinical Docs Results"
+                        :data-testid="`clinical-document-table-${dependent.ownerId}`"
                     >
                         <b-thead>
                             <b-tr>
@@ -1599,7 +1602,7 @@ export default class DependentCardComponent extends Vue {
                                             data-testid="deleteDependentMenuBtn"
                                             class="menuItem"
                                             @click="
-                                                showClinicalDocumentDownloadConfirmationModal()
+                                                showDeleteConfirmationModal()
                                             "
                                         >
                                             Delete
