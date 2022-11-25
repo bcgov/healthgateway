@@ -21,13 +21,17 @@ namespace HealthGateway.GatewayApi
     using HealthGateway.Common.AccessManagement.Authentication;
     using HealthGateway.Common.Api;
     using HealthGateway.Common.AspNetConfiguration;
+    using HealthGateway.Common.AspNetConfiguration.Modules;
     using HealthGateway.Common.Data.Utils;
     using HealthGateway.Common.Delegates;
     using HealthGateway.Common.MapProfiles;
     using HealthGateway.Common.Models.CDogs;
+    using HealthGateway.Common.Models.PHSA;
     using HealthGateway.Common.Services;
     using HealthGateway.Common.Utils;
+    using HealthGateway.Common.Utils.Phsa;
     using HealthGateway.Database.Delegates;
+    using HealthGateway.GatewayApi.Api;
     using HealthGateway.GatewayApi.Services;
     using Microsoft.AspNetCore.Builder;
     using Microsoft.AspNetCore.Hosting;
@@ -70,6 +74,7 @@ namespace HealthGateway.GatewayApi
             this.startupConfig.ConfigureSwaggerServices(services);
             this.startupConfig.ConfigureHangfireQueue(services);
             this.startupConfig.ConfigurePatientAccess(services);
+            this.startupConfig.ConfigurePhsaV2Access(services);
             this.startupConfig.ConfigureTracing(services);
             this.startupConfig.ConfigureAccessControl(services);
 
@@ -87,6 +92,8 @@ namespace HealthGateway.GatewayApi
             services.AddTransient<IDependentService, DependentService>();
             services.AddTransient<IUserPreferenceDelegate, DbUserPreferenceDelegate>();
             services.AddTransient<IReportService, ReportService>();
+            services.AddTransient<IPersonalAccountsService, PersonalAccountsService>();
+            services.AddTransient<IWebAlertService, WebAlertService>();
 
             // Add delegates
             services.AddTransient<IUserProfileDelegate, DbProfileDelegate>();
@@ -117,6 +124,17 @@ namespace HealthGateway.GatewayApi
             }
 
             services.AddRefitClient<ICDogsApi>().ConfigureHttpClient(c => c.BaseAddress = new Uri(cdogsEndpoint));
+
+            PhsaConfigV2 phsaConfig = new();
+            this.startupConfig.Configuration.Bind(PhsaConfigV2.ConfigurationSectionKey, phsaConfig);
+
+            services.AddRefitClient<IPersonalAccountsApi>()
+                .ConfigureHttpClient(c => c.BaseAddress = phsaConfig.BaseUrl)
+                .AddHttpMessageHandler<AuthHeaderHandler>();
+
+            services.AddRefitClient<IWebAlertApi>()
+                .ConfigureHttpClient(c => c.BaseAddress = phsaConfig.BaseUrl)
+                .AddHttpMessageHandler<AuthHeaderHandler>();
 
             services.Configure<ApiBehaviorOptions>(options => options.SuppressModelStateInvalidFilter = true);
 

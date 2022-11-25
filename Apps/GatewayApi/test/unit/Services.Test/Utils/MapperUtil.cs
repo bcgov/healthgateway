@@ -35,13 +35,14 @@ namespace HealthGateway.GatewayApiTests.Services.Test.Utils
             MapperConfiguration config = new(
                 cfg =>
                 {
-                    cfg.AddProfile(new DependentInformationProfile());
-                    cfg.AddProfile(new DependentProfile());
-                    cfg.AddProfile(new TermsOfServiceProfile());
-                    cfg.AddProfile(new UserCommentProfile());
-                    cfg.AddProfile(new UserNoteProfile());
-                    cfg.AddProfile(new UserPreferenceProfile());
-                    cfg.AddProfile(new UserProfileProfile());
+                    cfg.AddProfile<DependentInformationProfile>();
+                    cfg.AddProfile<DependentProfile>();
+                    cfg.AddProfile<TermsOfServiceProfile>();
+                    cfg.AddProfile<UserCommentProfile>();
+                    cfg.AddProfile<UserNoteProfile>();
+                    cfg.AddProfile<UserPreferenceProfile>();
+                    cfg.AddProfile<UserProfileProfile>();
+                    cfg.AddProfile<WebAlertProfile>();
                 });
 
             return config.CreateMapper();
