@@ -47,7 +47,6 @@ import {
     ILogger,
     IReportService,
 } from "@/services/interfaces";
-import EventTracker from "@/utility/eventTracker";
 import SnowPlow from "@/utility/snowPlow";
 
 import LoadingComponent from "./LoadingComponent.vue";
@@ -372,7 +371,11 @@ export default class DependentCardComponent extends Vue {
     private downloadImmunizationReport(): void {
         this.isReportDownloading = true;
 
-        this.trackDownload();
+        const action = "download_report";
+        const reportName = "Dependent Immunization";
+        const formatTypeName = ReportFormatType[this.reportFormatType];
+        const eventName = `${reportName} (${formatTypeName})`;
+        this.trackClickLink(action, eventName);
 
         this.generateReport(
             TemplateType.DependentImmunization,
@@ -409,6 +412,7 @@ export default class DependentCardComponent extends Vue {
 
     private downloadClinicalDocument(): void {
         this.isReportDownloading = true;
+        this.trackClickLink("download_report", "Dependent Clinical Doc");
 
         this.clinicalDocumentService
             .getFile(
@@ -835,15 +839,6 @@ export default class DependentCardComponent extends Vue {
                 text: `${linkType}`,
             });
         }
-    }
-
-    private trackDownload(): void {
-        const reportName = "Dependent Immunization";
-        const formatTypeName = ReportFormatType[this.reportFormatType];
-        const eventName = `${reportName} (${formatTypeName})`;
-        this.logger.debug(`Track download for: ${eventName}`);
-
-        EventTracker.downloadReport(eventName);
     }
 
     @Watch("vaccineRecordStatusChanges")
