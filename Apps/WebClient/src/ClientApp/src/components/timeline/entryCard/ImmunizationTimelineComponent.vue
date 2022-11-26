@@ -72,15 +72,6 @@ export default class ImmunizationTimelineComponent extends Vue {
                     </div>
                 </div>
             </div>
-            <p class="my-4" data-testid="timeline-immunization-disclaimer">
-                You can add or update immunizations by visiting
-                <a
-                    href="https://www.immunizationrecord.gov.bc.ca"
-                    target="_blank"
-                    rel="noopener"
-                    >immunizationrecord.gov.bc.ca</a
-                >.
-            </p>
             <div v-if="entry.immunization.forecast" class="mt-4">
                 <strong>Forecast</strong>
                 <div class="my-2" data-testid="forecastDisplayName">
