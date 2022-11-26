@@ -15,11 +15,13 @@
 //-------------------------------------------------------------------------
 namespace HealthGateway.Laboratory.Services
 {
+    using System;
     using System.Globalization;
     using System.Net;
     using System.Net.Http;
     using System.Threading.Tasks;
     using HealthGateway.Common.AccessManagement.Authentication;
+    using HealthGateway.Common.AccessManagement.Authentication.Models;
     using HealthGateway.Common.Data.Constants;
     using HealthGateway.Common.Data.ErrorHandling;
     using HealthGateway.Common.Data.Utils;
@@ -33,10 +35,14 @@ namespace HealthGateway.Laboratory.Services
     /// <inheritdoc/>
     public class LabTestKitService : ILabTestKitService
     {
+        private const string AuthConfigSectionName = "PublicAuthentication";
+
         private readonly IAuthenticationDelegate authenticationDelegate;
         private readonly ILabTestKitApi labTestKitApi;
         private readonly ILogger<LabTestKitService> logger;
         private readonly IHttpContextAccessor? httpContextAccessor;
+        private readonly ClientCredentialsTokenRequest tokenRequest;
+        private readonly Uri tokenUri;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="LabTestKitService"/> class.
@@ -55,6 +61,7 @@ namespace HealthGateway.Laboratory.Services
             this.authenticationDelegate = authenticationDelegate;
             this.labTestKitApi = labTestKitApi;
             this.httpContextAccessor = httpContextAccessor;
+            (this.tokenUri, this.tokenRequest) = this.authenticationDelegate.GetClientCredentialsAuth(AuthConfigSectionName);
         }
 
         /// <inheritdoc/>
@@ -81,7 +88,7 @@ namespace HealthGateway.Laboratory.Services
             if (validated)
             {
                 // Use a system token
-                string? accessToken = this.authenticationDelegate.AccessTokenAsUser();
+                string? accessToken = this.authenticationDelegate.AuthenticateAsSystem(this.tokenUri, this.tokenRequest).AccessToken;
                 if (accessToken != null)
                 {
                     try

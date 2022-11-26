@@ -75,6 +75,13 @@ namespace HealthGateway.Common.AccessManagement.Authentication
         (JwtModel JwtModel, bool Cached) AuthenticateUser(Uri tokenUri, ClientCredentialsTokenRequest tokenRequest, bool cacheEnabled);
 
         /// <summary>
+        /// Retrieves the Token Uri and Client Credentials Token request from configuration.
+        /// </summary>
+        /// <param name="section">The section name to use.</param>
+        /// <returns>The tokenUri and ClientCredentialTokenRequest.</returns>
+        (Uri TokenUri, ClientCredentialsTokenRequest TokenRequest) GetClientCredentialsAuth(string section);
+
+        /// <summary>
         /// Fetches the access token for the authenticated user from the http context.
         /// </summary>
         /// <returns>The access token for the user.</returns>

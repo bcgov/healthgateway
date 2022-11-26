@@ -170,6 +170,17 @@ namespace HealthGateway.Common.AccessManagement.Authentication
         }
 
         /// <inheritdoc/>
+        public (Uri TokenUri, ClientCredentialsTokenRequest TokenRequest) GetClientCredentialsAuth(string section)
+        {
+            IConfigurationSection configSection = this.configuration.GetSection(section);
+            Uri tokenUri = configSection.GetValue<Uri>(@"TokenUri") ??
+                            throw new ArgumentNullException(nameof(section), $"{section} does not contain a valid TokenUri");
+            ClientCredentialsTokenRequest tokenRequest = new ClientCredentialsTokenRequest();
+            configSection.Bind(tokenRequest); // Client ID, Client Secret, Audience, Scope
+            return (tokenUri, tokenRequest);
+        }
+
+        /// <inheritdoc/>
         public string? FetchAuthenticatedUserToken()
         {
             HttpContext? httpContext = this.httpContextAccessor?.HttpContext;
