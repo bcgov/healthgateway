@@ -11,6 +11,33 @@ function verifyActiveFilters(filterLabels) {
     });
 }
 
+describe("Disabled Filters", () => {
+    beforeEach(() => {
+        cy.enableModules("Medication");
+        cy.login(
+            Cypress.env("keycloak.username"),
+            Cypress.env("keycloak.password"),
+            AuthMethod.KeyCloak
+        );
+        cy.checkTimelineHasLoaded();
+    });
+
+    it("Validate disabled filters", () => {
+        cy.get("[data-testid=filterContainer]").should("not.exist");
+        cy.get("[data-testid=filterDropdown]").click();
+        cy.get("[data-testid=MedicationCount]").should("be.visible");
+        cy.get("[data-testid=ImmunizationCount]").should("not.exist");
+        cy.get("[data-testid=EncounterCount]").should("not.exist");
+        cy.get("[data-testid=NoteCount]").should("not.exist");
+        cy.get("[data-testid=LaboratoryCount]").should("not.exist");
+        cy.get("[data-testid=AllLaboratoryCount]").should("not.exist");
+        cy.get("[data-testid=MedicationRequestCount]").should("not.exist");
+        cy.get("[data-testid=ClinicalDocumentCount]").should("not.exist");
+        cy.get("[data-testid=HospitalVisitCount]").should("not.exist");
+        cy.get("[data-testid=btnFilterCancel]").click();
+    });
+});
+
 describe("Filters", () => {
     beforeEach(() => {
         cy.login(
@@ -353,53 +380,5 @@ describe("Filters", () => {
         );
         cy.get("[data-testid=btnFilterCancel]").click();
         cy.get("[data-testid=filterContainer]").should("not.exist");
-    });
-
-    it("Validate disabled filters", () => {
-        cy.enableModules("Medication");
-        cy.login(
-            Cypress.env("keycloak.username"),
-            Cypress.env("keycloak.password"),
-            AuthMethod.KeyCloak
-        );
-        cy.get("[data-testid=filterContainer]").should("not.exist");
-        cy.get("[data-testid=filterDropdown]").click();
-        cy.get("[data-testid=MedicationCount]").should("be.visible");
-        cy.get("[data-testid=ImmunizationCount]").should("not.exist");
-        cy.get("[data-testid=EncounterCount]").should("not.exist");
-        cy.get("[data-testid=NoteCount]").should("not.exist");
-        cy.get("[data-testid=LaboratoryCount]").should("not.exist");
-        cy.get("[data-testid=AllLaboratoryCount]").should("not.exist");
-        cy.get("[data-testid=MedicationRequestCount]").should("not.exist");
-        cy.get("[data-testid=ClinicalDocumentCount]").should("not.exist");
-        cy.get("[data-testid=HospitalVisitCount]").should("not.exist");
-        cy.get("[data-testid=btnFilterCancel]").click();
-    });
-});
-
-describe("Disabled Filters", () => {
-    beforeEach(() => {
-        cy.enableModules("Medication");
-        cy.login(
-            Cypress.env("keycloak.username"),
-            Cypress.env("keycloak.password"),
-            AuthMethod.KeyCloak
-        );
-        cy.checkTimelineHasLoaded();
-    });
-
-    it("Validate disabled filters", () => {
-        cy.get("[data-testid=filterContainer]").should("not.exist");
-        cy.get("[data-testid=filterDropdown]").click();
-        cy.get("[data-testid=MedicationCount]").should("be.visible");
-        cy.get("[data-testid=ImmunizationCount]").should("not.exist");
-        cy.get("[data-testid=EncounterCount]").should("not.exist");
-        cy.get("[data-testid=NoteCount]").should("not.exist");
-        cy.get("[data-testid=LaboratoryCount]").should("not.exist");
-        cy.get("[data-testid=AllLaboratoryCount]").should("not.exist");
-        cy.get("[data-testid=MedicationRequestCount]").should("not.exist");
-        cy.get("[data-testid=ClinicalDocumentCount]").should("not.exist");
-        cy.get("[data-testid=HospitalVisitCount]").should("not.exist");
-        cy.get("[data-testid=btnFilterCancel]").click();
     });
 });
