@@ -64,7 +64,7 @@ resource "keycloak_openid_user_attribute_protocol_mapper" "hgadminblazor_auth_me
 
 resource "keycloak_openid_audience_protocol_mapper" "hgadminblazor_audience" {
   realm_id                 = data.keycloak_realm.hg_realm.id
-  client_id                = keycloak_openid_client.hgadminblazor_client.id 
+  client_id                = keycloak_openid_client.hgadminblazor_client.id
   name                     = "hg-admin-audience"
   included_client_audience = keycloak_openid_client.hgadmin_client.client_id #Grant HG Admin Audience not Blazor
   add_to_id_token          = true

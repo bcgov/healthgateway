@@ -47,6 +47,27 @@ resource "keycloak_openid_client_scope" "patient_read_scope" {
   include_in_token_scope = true
 }
 
+resource "keycloak_openid_client_scope" "system_patient_read_scope" {
+  realm_id               = data.keycloak_realm.hg_realm.id
+  name                   = "system/Patient.read"
+  description            = "Abilty to read any patient's as a system"
+  include_in_token_scope = true
+}
+
+resource "keycloak_openid_client_scope" "system_laboratory_read_scope" {
+  realm_id               = data.keycloak_realm.hg_realm.id
+  name                   = "system/Laboratory.read"
+  description            = "Abilty to read any patient's lab data as a system"
+  include_in_token_scope = true
+}
+
+resource "keycloak_openid_client_scope" "system_immunization_read_scope" {
+  realm_id               = data.keycloak_realm.hg_realm.id
+  name                   = "system/Immunization.read"
+  description            = "Abilty to read any patient's Immunization data as a system"
+  include_in_token_scope = true
+}
+
 resource "keycloak_openid_client_scope" "system_notification_read_scope" {
   realm_id               = data.keycloak_realm.hg_realm.id
   name                   = "system/Notification.read"
@@ -58,6 +79,13 @@ resource "keycloak_openid_client_scope" "system_notification_write_scope" {
   realm_id               = data.keycloak_realm.hg_realm.id
   name                   = "system/Notification.write"
   description            = "Ability to write any patient's Notification settings"
+  include_in_token_scope = true
+}
+
+resource "keycloak_openid_client_scope" "phsa_scope" {
+  realm_id               = data.keycloak_realm.hg_realm.id
+  name                   = "phsa"
+  description            = "Used by kong to remove API limits for PHSA"
   include_in_token_scope = true
 }
 

@@ -68,17 +68,29 @@ namespace HealthGateway.Common.AccessManagement.Authentication
         }
 
         /// <inheritdoc/>
-        public JwtModel AuthenticateAsSystem(Uri tokenUri, ClientCredentialsTokenRequest tokenRequest)
+        public JwtModel AuthenticateAsSystem(Uri tokenUri, ClientCredentialsTokenRequest tokenRequest, bool cacheEnabled = true)
         {
-            this.logger.LogDebug("Authenticating Service... {ClientId}", tokenRequest.ClientId);
-            JwtModel? jwtModel = this.ClientCredentialsGrant(tokenUri, tokenRequest);
-            this.logger.LogDebug("Finished authenticating Service. {ClientId}", tokenRequest.ClientId);
-            if (jwtModel == null)
+            JwtModel? jwtModel;
+            string cacheKey = $"{tokenUri}:{tokenRequest.Audience}:{tokenRequest.ClientId}";
+            if (cacheEnabled)
             {
-                this.logger.LogCritical("Unable to authenticate to as {Username} to {TokenUri}", tokenRequest.Username, tokenUri);
-                throw new InvalidOperationException("Auth failure - JwtModel cannot be null");
+                jwtModel = this.cacheProvider.GetItem<JwtModel>(cacheKey);
+                if (jwtModel is null)
+                {
+                    jwtModel = this.GetSystemToken(tokenUri, tokenRequest);
+                    if (jwtModel.ExpiresIn is not null)
+                    {
+                        int expiry = jwtModel.ExpiresIn.Value - 10;
+                        this.cacheProvider.AddItem(cacheKey, jwtModel, TimeSpan.FromSeconds(expiry));
+                    }
+                }
+            }
+            else
+            {
+                jwtModel = this.GetSystemToken(tokenUri, tokenRequest);
             }
 
+            this.logger.LogDebug("Authenticating Service... {ClientId}", tokenRequest.ClientId);
             return jwtModel;
         }
 
@@ -186,6 +198,13 @@ namespace HealthGateway.Common.AccessManagement.Authentication
             ClientCredentialsTokenRequest configTokenRequest = new();
             configSection.Bind(configTokenRequest); // Client ID, Client Secret, Audience, Username, Password
             return (configUri, configTokenRequest);
+        }
+
+        private JwtModel GetSystemToken(Uri tokenUri, ClientCredentialsTokenRequest tokenRequest)
+        {
+            JwtModel? jwtModel = this.ClientCredentialsGrant(tokenUri, tokenRequest);
+            this.logger.LogDebug("Finished authenticating Service. {ClientId}", tokenRequest.ClientId);
+            return jwtModel ?? throw new InvalidOperationException("Auth failure - JwtModel cannot be null");
         }
 
         private JwtModel? ClientCredentialsGrant(Uri tokenUri, ClientCredentialsTokenRequest tokenRequest)

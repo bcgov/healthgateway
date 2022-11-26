@@ -26,7 +26,7 @@ namespace HealthGateway.Common.AccessManagement.Authentication.Models
         string? AccessToken { get; set; }
 
         /// <summary>
-        /// Gets or sets the token expiration in minutes.
+        /// Gets or sets the token expiration in seconds.
         /// </summary>
         int? ExpiresIn { get; set; }
 

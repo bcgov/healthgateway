@@ -29,10 +29,14 @@ namespace HealthGateway.Laboratory.Api
         /// Registers a lab test kit for a public user.
         /// </summary>
         /// <param name="testKit">The lab test kit to register.</param>
-        /// <param name="token">The bearer token to authorize the call.</param>
+        /// <param name="token">The bearer token to authorize the call.</param>\
+        /// <param name="clientIp">The IP of the client accessing the public service.</param>
         /// <returns>The lab test kit sent.</returns>
         [Post("/api/v1/Public/LabTestKits/Registration")]
-        Task<HttpResponseMessage> RegisterLabTest([Body] PublicLabTestKit testKit, [Authorize] string token);
+        Task<HttpResponseMessage> RegisterLabTest(
+            [Body] PublicLabTestKit testKit,
+            [Authorize] string token,
+            [Header("X-Forwarded-For")] string clientIp);
 
         /// <summary>
         /// Registers a lab test kit for an authenticated user.
@@ -42,6 +46,9 @@ namespace HealthGateway.Laboratory.Api
         /// <param name="token">The bearer token to authorize the call.</param>
         /// <returns>The lab test kit sent.</returns>
         [Post("/api/v1/LabTestKits/Registration?subjectHdid={HdId}")]
-        Task<HttpResponseMessage> RegisterLabTest(string hdid, [Body] LabTestKit testKit, [Authorize] string token);
+        Task<HttpResponseMessage> RegisterLabTest(
+            string hdid,
+            [Body] LabTestKit testKit,
+            [Authorize] string token);
     }
 }

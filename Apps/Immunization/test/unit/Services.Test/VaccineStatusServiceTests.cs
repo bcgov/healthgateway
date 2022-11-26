@@ -16,9 +16,7 @@
 namespace HealthGateway.ImmunizationTests.Services.Test
 {
     using System;
-    using System.Collections.Generic;
     using System.Globalization;
-    using System.Security.Claims;
     using System.Threading.Tasks;
     using AutoMapper;
     using DeepEqual.Syntax;
@@ -33,9 +31,6 @@ namespace HealthGateway.ImmunizationTests.Services.Test
     using HealthGateway.Immunization.Models;
     using HealthGateway.Immunization.Services;
     using HealthGateway.ImmunizationTests.Utils;
-    using Microsoft.AspNetCore.Authentication;
-    using Microsoft.AspNetCore.Authentication.JwtBearer;
-    using Microsoft.AspNetCore.Http;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.Logging;
     using Moq;
@@ -52,7 +47,6 @@ namespace HealthGateway.ImmunizationTests.Services.Test
         private readonly DateTime dov = new(2021, 07, 04);
         private readonly string accessToken = "XXDDXX";
         private readonly string hdid = "EXTRIOYFPNX35TWEBUAJ3DNFDFXSYTBC6J4M76GYE3HC5ER2NKWQ";
-        private readonly string userId = "1001";
         private readonly IConfiguration configuration = GetIConfigurationRoot();
 
         /// <summary>
@@ -110,30 +104,31 @@ namespace HealthGateway.ImmunizationTests.Services.Test
 
             Mock<IVaccineStatusDelegate> mockDelegate = new();
             mockDelegate.Setup(s => s.GetVaccineStatus(It.IsAny<string>(), It.IsAny<bool>(), this.accessToken)).Returns(Task.FromResult(delegateResult));
-            mockDelegate.Setup(s => s.GetVaccineStatusPublic(It.IsAny<VaccineStatusQuery>(), this.accessToken)).Returns(Task.FromResult(delegateResult));
+            mockDelegate.Setup(s => s.GetVaccineStatusPublic(It.IsAny<VaccineStatusQuery>(), this.accessToken, It.IsAny<string>())).Returns(Task.FromResult(delegateResult));
 
             Mock<IAuthenticationDelegate> mockAuthDelegate = new();
-            mockAuthDelegate.Setup(s => s.AuthenticateAsUser(It.IsAny<Uri>(), It.IsAny<ClientCredentialsTokenRequest>(), It.IsAny<bool>())).Returns(jwtModel);
+            mockAuthDelegate.Setup(s => s.AuthenticateAsSystem(It.IsAny<Uri>(), It.IsAny<ClientCredentialsTokenRequest>(), It.IsAny<bool>())).Returns(jwtModel);
+            mockAuthDelegate.Setup(s => s.FetchAuthenticatedUserToken()).Returns(this.accessToken);
 
             IVaccineStatusService service = new VaccineStatusService(
                 this.configuration,
                 new Mock<ILogger<VaccineStatusService>>().Object,
                 mockAuthDelegate.Object,
                 mockDelegate.Object,
-                this.GetHttpContextAccessor().Object,
+                null,
                 this.autoMapper);
 
             if (isPublicEndpoint)
             {
                 string dobString = this.dob.ToString("yyyy-MM-dd", CultureInfo.CurrentCulture);
                 string dovString = this.dov.ToString("yyyy-MM-dd", CultureInfo.CurrentCulture);
-                RequestResult<VaccineStatus> actualResultPublic = Task.Run(async () => await service.GetPublicVaccineStatus(this.phn, dobString, dovString).ConfigureAwait(true)).Result;
+                RequestResult<VaccineStatus> actualResultPublic = service.GetPublicVaccineStatus(this.phn, dobString, dovString).GetAwaiter().GetResult();
 
                 expectedResult.ShouldDeepEqual(actualResultPublic);
             }
             else
             {
-                RequestResult<VaccineStatus> actualResultAuthenticated = Task.Run(async () => await service.GetAuthenticatedVaccineStatus(this.hdid).ConfigureAwait(true)).Result;
+                RequestResult<VaccineStatus> actualResultAuthenticated = service.GetAuthenticatedVaccineStatus(this.hdid).GetAwaiter().GetResult();
 
                 expectedResult.ShouldDeepEqual(actualResultAuthenticated);
             }
@@ -191,17 +186,17 @@ namespace HealthGateway.ImmunizationTests.Services.Test
 
             Mock<IVaccineStatusDelegate> mockDelegate = new();
             mockDelegate.Setup(s => s.GetVaccineStatus(It.IsAny<string>(), It.IsAny<bool>(), this.accessToken)).Returns(Task.FromResult(delegateResult));
-            mockDelegate.Setup(s => s.GetVaccineStatusPublic(It.IsAny<VaccineStatusQuery>(), this.accessToken)).Returns(Task.FromResult(delegateResult));
+            mockDelegate.Setup(s => s.GetVaccineStatusPublic(It.IsAny<VaccineStatusQuery>(), this.accessToken, It.IsAny<string>())).Returns(Task.FromResult(delegateResult));
 
             Mock<IAuthenticationDelegate> mockAuthDelegate = new();
-            mockAuthDelegate.Setup(s => s.AuthenticateAsUser(It.IsAny<Uri>(), It.IsAny<ClientCredentialsTokenRequest>(), It.IsAny<bool>())).Returns(jwtModel);
-
+            mockAuthDelegate.Setup(s => s.AuthenticateAsSystem(It.IsAny<Uri>(), It.IsAny<ClientCredentialsTokenRequest>(), It.IsAny<bool>())).Returns(jwtModel);
+            mockAuthDelegate.Setup(s => s.FetchAuthenticatedUserToken()).Returns(this.accessToken);
             IVaccineStatusService service = new VaccineStatusService(
                 this.configuration,
                 new Mock<ILogger<VaccineStatusService>>().Object,
                 mockAuthDelegate.Object,
                 mockDelegate.Object,
-                this.GetHttpContextAccessor().Object,
+                null,
                 this.autoMapper);
 
             if (isPublicEndpoint)
@@ -209,14 +204,14 @@ namespace HealthGateway.ImmunizationTests.Services.Test
                 string dobString = this.dob.ToString("yyyy-MM-dd", CultureInfo.CurrentCulture);
                 string dovString = this.dov.ToString("yyyy-MM-dd", CultureInfo.CurrentCulture);
 
-                RequestResult<VaccineStatus> actualResultPublic = Task.Run(async () => await service.GetPublicVaccineStatus(this.phn, dobString, dovString).ConfigureAwait(true)).Result;
+                RequestResult<VaccineStatus> actualResultPublic = service.GetPublicVaccineStatus(this.phn, dobString, dovString).GetAwaiter().GetResult();
 
                 Assert.Equal(ResultType.ActionRequired, actualResultPublic.ResultStatus);
                 Assert.Equal(expectedResult.ResultError.ActionCode, actualResultPublic.ResultError?.ActionCode);
             }
             else
             {
-                RequestResult<VaccineStatus> actualResultAuthenticated = Task.Run(async () => await service.GetAuthenticatedVaccineStatus(this.hdid).ConfigureAwait(true)).Result;
+                RequestResult<VaccineStatus> actualResultAuthenticated = service.GetAuthenticatedVaccineStatus(this.hdid).GetAwaiter().GetResult();
 
                 Assert.Equal(ResultType.ActionRequired, actualResultAuthenticated.ResultStatus);
                 Assert.Equal(expectedResult.ResultError.ActionCode, actualResultAuthenticated.ResultError?.ActionCode);
@@ -278,17 +273,18 @@ namespace HealthGateway.ImmunizationTests.Services.Test
 
             Mock<IVaccineStatusDelegate> mockDelegate = new();
             mockDelegate.Setup(s => s.GetVaccineStatus(It.IsAny<string>(), It.IsAny<bool>(), this.accessToken)).Returns(Task.FromResult(delegateResult));
-            mockDelegate.Setup(s => s.GetVaccineStatusPublic(It.IsAny<VaccineStatusQuery>(), this.accessToken)).Returns(Task.FromResult(delegateResult));
+            mockDelegate.Setup(s => s.GetVaccineStatusPublic(It.IsAny<VaccineStatusQuery>(), this.accessToken, It.IsAny<string>())).Returns(Task.FromResult(delegateResult));
 
             Mock<IAuthenticationDelegate> mockAuthDelegate = new();
-            mockAuthDelegate.Setup(s => s.AuthenticateAsUser(It.IsAny<Uri>(), It.IsAny<ClientCredentialsTokenRequest>(), It.IsAny<bool>())).Returns(jwtModel);
+            mockAuthDelegate.Setup(s => s.AuthenticateAsSystem(It.IsAny<Uri>(), It.IsAny<ClientCredentialsTokenRequest>(), It.IsAny<bool>())).Returns(jwtModel);
+            mockAuthDelegate.Setup(s => s.FetchAuthenticatedUserToken()).Returns(this.accessToken);
 
             IVaccineStatusService service = new VaccineStatusService(
                 this.configuration,
                 new Mock<ILogger<VaccineStatusService>>().Object,
                 mockAuthDelegate.Object,
                 mockDelegate.Object,
-                this.GetHttpContextAccessor().Object,
+                null,
                 this.autoMapper);
 
             if (isPublicEndpoint)
@@ -296,7 +292,7 @@ namespace HealthGateway.ImmunizationTests.Services.Test
                 string dobString = this.dob.ToString("yyyy-MM-dd", CultureInfo.CurrentCulture);
                 string dovString = this.dov.ToString("yyyy-MM-dd", CultureInfo.CurrentCulture);
 
-                RequestResult<VaccineStatus> actualResultPublic = Task.Run(async () => await service.GetPublicVaccineStatus(this.phn, dobString, dovString).ConfigureAwait(true)).Result;
+                RequestResult<VaccineStatus> actualResultPublic = service.GetPublicVaccineStatus(this.phn, dobString, dovString).GetAwaiter().GetResult();
 
                 Assert.Equal(ResultType.ActionRequired, actualResultPublic.ResultStatus);
                 Assert.Equal(expectedResult.ResultError.ActionCode, actualResultPublic.ResultError?.ActionCode);
@@ -304,8 +300,7 @@ namespace HealthGateway.ImmunizationTests.Services.Test
             }
             else
             {
-                RequestResult<VaccineStatus> actualResultAuthenticated = Task.Run(async () => await service.GetAuthenticatedVaccineStatus(this.hdid).ConfigureAwait(true)).Result;
-
+                RequestResult<VaccineStatus> actualResultAuthenticated = service.GetAuthenticatedVaccineStatus(this.hdid).GetAwaiter().GetResult();
                 Assert.Equal(ResultType.ActionRequired, actualResultAuthenticated.ResultStatus);
                 Assert.Equal(expectedResult.ResultError.ActionCode, actualResultAuthenticated.ResultError?.ActionCode);
                 Assert.Equal(expectedResult.ResourcePayload.RetryIn, actualResultAuthenticated.ResourcePayload?.RetryIn);
@@ -367,17 +362,18 @@ namespace HealthGateway.ImmunizationTests.Services.Test
 
             Mock<IVaccineStatusDelegate> mockDelegate = new();
             mockDelegate.Setup(s => s.GetVaccineStatus(It.IsAny<string>(), It.IsAny<bool>(), this.accessToken)).Returns(Task.FromResult(delegateResult));
-            mockDelegate.Setup(s => s.GetVaccineStatusPublic(It.IsAny<VaccineStatusQuery>(), this.accessToken)).Returns(Task.FromResult(delegateResult));
+            mockDelegate.Setup(s => s.GetVaccineStatusPublic(It.IsAny<VaccineStatusQuery>(), this.accessToken, It.IsAny<string>())).Returns(Task.FromResult(delegateResult));
 
             Mock<IAuthenticationDelegate> mockAuthDelegate = new();
-            mockAuthDelegate.Setup(s => s.AuthenticateAsUser(It.IsAny<Uri>(), It.IsAny<ClientCredentialsTokenRequest>(), It.IsAny<bool>())).Returns(jwtModel);
+            mockAuthDelegate.Setup(s => s.AuthenticateAsSystem(It.IsAny<Uri>(), It.IsAny<ClientCredentialsTokenRequest>(), It.IsAny<bool>())).Returns(jwtModel);
+            mockAuthDelegate.Setup(s => s.FetchAuthenticatedUserToken()).Returns(this.accessToken);
 
             IVaccineStatusService service = new VaccineStatusService(
                 this.configuration,
                 new Mock<ILogger<VaccineStatusService>>().Object,
                 mockAuthDelegate.Object,
                 mockDelegate.Object,
-                this.GetHttpContextAccessor().Object,
+                null,
                 this.autoMapper);
 
             if (isPublicEndpoint)
@@ -385,14 +381,14 @@ namespace HealthGateway.ImmunizationTests.Services.Test
                 string dobString = this.dob.ToString("yyyy-MM-dd", CultureInfo.CurrentCulture);
                 string dovString = this.dov.ToString("yyyy-MM-dd", CultureInfo.CurrentCulture);
 
-                RequestResult<VaccineStatus> actualResultPublic = Task.Run(async () => await service.GetPublicVaccineStatus(this.phn, dobString, dovString).ConfigureAwait(true)).Result;
+                RequestResult<VaccineStatus> actualResultPublic = service.GetPublicVaccineStatus(this.phn, dobString, dovString).GetAwaiter().GetResult();
 
                 Assert.Equal(ResultType.ActionRequired, actualResultPublic.ResultStatus);
                 Assert.Equal(expectedResult.ResultError.ActionCode, actualResultPublic.ResultError?.ActionCode);
             }
             else
             {
-                RequestResult<VaccineStatus> actualResultAuthenticated = Task.Run(async () => await service.GetAuthenticatedVaccineStatus(this.hdid).ConfigureAwait(true)).Result;
+                RequestResult<VaccineStatus> actualResultAuthenticated = service.GetAuthenticatedVaccineStatus(this.hdid).GetAwaiter().GetResult();
 
                 Assert.Equal(ResultType.ActionRequired, actualResultAuthenticated.ResultStatus);
                 Assert.Equal(expectedResult.ResultError.ActionCode, actualResultAuthenticated.ResultError?.ActionCode);
@@ -459,17 +455,18 @@ namespace HealthGateway.ImmunizationTests.Services.Test
 
             Mock<IVaccineStatusDelegate> mockDelegate = new();
             mockDelegate.Setup(s => s.GetVaccineStatus(It.IsAny<string>(), It.IsAny<bool>(), this.accessToken)).Returns(Task.FromResult(delegateResult));
-            mockDelegate.Setup(s => s.GetVaccineStatusPublic(It.IsAny<VaccineStatusQuery>(), this.accessToken)).Returns(Task.FromResult(delegateResult));
+            mockDelegate.Setup(s => s.GetVaccineStatusPublic(It.IsAny<VaccineStatusQuery>(), this.accessToken, It.IsAny<string>())).Returns(Task.FromResult(delegateResult));
 
             Mock<IAuthenticationDelegate> mockAuthDelegate = new();
-            mockAuthDelegate.Setup(s => s.AuthenticateAsUser(It.IsAny<Uri>(), It.IsAny<ClientCredentialsTokenRequest>(), It.IsAny<bool>())).Returns(jwtModel);
+            mockAuthDelegate.Setup(s => s.AuthenticateAsSystem(It.IsAny<Uri>(), It.IsAny<ClientCredentialsTokenRequest>(), It.IsAny<bool>())).Returns(jwtModel);
+            mockAuthDelegate.Setup(s => s.FetchAuthenticatedUserToken()).Returns(this.accessToken);
 
             IVaccineStatusService service = new VaccineStatusService(
                 this.configuration,
                 new Mock<ILogger<VaccineStatusService>>().Object,
                 mockAuthDelegate.Object,
                 mockDelegate.Object,
-                this.GetHttpContextAccessor().Object,
+                null,
                 this.autoMapper);
 
             if (isPublicEndpoint)
@@ -477,7 +474,7 @@ namespace HealthGateway.ImmunizationTests.Services.Test
                 string dobString = this.dob.ToString("yyyy-MM-dd", CultureInfo.CurrentCulture);
                 string dovString = this.dov.ToString("yyyy-MM-dd", CultureInfo.CurrentCulture);
 
-                RequestResult<VaccineProofDocument> actualResultPublic = Task.Run(async () => await service.GetPublicVaccineProof(this.phn, dobString, dovString).ConfigureAwait(true)).Result;
+                RequestResult<VaccineProofDocument> actualResultPublic = service.GetPublicVaccineProof(this.phn, dobString, dovString).GetAwaiter().GetResult();
 
                 Assert.Equal(expectedResult.ResourcePayload.FederalVaccineProof.Data, actualResultPublic.ResourcePayload?.Document.Data);
                 Assert.NotNull(actualResultPublic.ResourcePayload?.Document.Data);
@@ -485,7 +482,7 @@ namespace HealthGateway.ImmunizationTests.Services.Test
             }
             else
             {
-                RequestResult<VaccineProofDocument> actualResultAuthenticated = Task.Run(async () => await service.GetAuthenticatedVaccineProof(this.hdid).ConfigureAwait(true)).Result;
+                RequestResult<VaccineProofDocument> actualResultAuthenticated = service.GetAuthenticatedVaccineProof(this.hdid).GetAwaiter().GetResult();
 
                 Assert.Equal(expectedResult.ResourcePayload.FederalVaccineProof.Data, actualResultAuthenticated.ResourcePayload?.Document.Data);
                 Assert.NotNull(actualResultAuthenticated.ResourcePayload?.Document.Data);
@@ -504,13 +501,13 @@ namespace HealthGateway.ImmunizationTests.Services.Test
                 new Mock<ILogger<VaccineStatusService>>().Object,
                 new Mock<IAuthenticationDelegate>().Object,
                 new Mock<IVaccineStatusDelegate>().Object,
-                this.GetHttpContextAccessor().Object,
+                null,
                 this.autoMapper);
 
             string dobString = this.dob.ToString("yyyy-MM-dd", CultureInfo.CurrentCulture);
             string dovString = this.dov.ToString("yyyy-MM-dd", CultureInfo.CurrentCulture);
 
-            RequestResult<VaccineStatus> actualResult = Task.Run(async () => await service.GetPublicVaccineStatus("123", dobString, dovString).ConfigureAwait(true)).Result;
+            RequestResult<VaccineStatus> actualResult = service.GetPublicVaccineStatus("123", dobString, dovString).GetAwaiter().GetResult();
 
             Assert.Equal(ResultType.Error, actualResult.ResultStatus);
         }
@@ -526,12 +523,12 @@ namespace HealthGateway.ImmunizationTests.Services.Test
                 new Mock<ILogger<VaccineStatusService>>().Object,
                 new Mock<IAuthenticationDelegate>().Object,
                 new Mock<IVaccineStatusDelegate>().Object,
-                this.GetHttpContextAccessor().Object,
+                null,
                 this.autoMapper);
 
             string dovString = this.dov.ToString("yyyy-MM-dd", CultureInfo.CurrentCulture);
 
-            RequestResult<VaccineStatus> actualResult = Task.Run(async () => await service.GetPublicVaccineStatus(this.phn, "yyyyMMddx", dovString).ConfigureAwait(true)).Result;
+            RequestResult<VaccineStatus> actualResult = service.GetPublicVaccineStatus(this.phn, "yyyyMMddx", dovString).GetAwaiter().GetResult();
 
             Assert.Equal(ResultType.Error, actualResult.ResultStatus);
         }
@@ -547,12 +544,12 @@ namespace HealthGateway.ImmunizationTests.Services.Test
                 new Mock<ILogger<VaccineStatusService>>().Object,
                 new Mock<IAuthenticationDelegate>().Object,
                 new Mock<IVaccineStatusDelegate>().Object,
-                this.GetHttpContextAccessor().Object,
+                null,
                 this.autoMapper);
 
             string dobString = this.dob.ToString("yyyy-MM-dd", CultureInfo.CurrentCulture);
 
-            RequestResult<VaccineStatus> actualResult = Task.Run(async () => await service.GetPublicVaccineStatus(this.phn, dobString, "yyyyMMddx").ConfigureAwait(true)).Result;
+            RequestResult<VaccineStatus> actualResult = service.GetPublicVaccineStatus(this.phn, dobString, "yyyyMMddx").GetAwaiter().GetResult();
 
             Assert.Equal(ResultType.Error, actualResult.ResultStatus);
         }
@@ -564,51 +561,6 @@ namespace HealthGateway.ImmunizationTests.Services.Test
                 .AddJsonFile("appsettings.Development.json", true)
                 .AddJsonFile("appsettings.local.json", true)
                 .Build();
-        }
-
-        private Mock<IHttpContextAccessor> GetHttpContextAccessor()
-        {
-            ClaimsPrincipal claimsPrincipal = this.GetClaimsPrincipal();
-            IHeaderDictionary headerDictionary = new HeaderDictionary
-            {
-                { "Authorization", this.accessToken },
-            };
-            Mock<HttpRequest> httpRequestMock = new();
-            httpRequestMock.Setup(s => s.Headers).Returns(headerDictionary);
-            Mock<HttpContext> httpContextMock = new();
-            httpContextMock.Setup(s => s.User).Returns(claimsPrincipal);
-            httpContextMock.Setup(s => s.Request).Returns(httpRequestMock.Object);
-
-            Mock<IHttpContextAccessor> httpContextAccessorMock = new();
-            httpContextAccessorMock.Setup(s => s.HttpContext).Returns(httpContextMock.Object);
-
-            Mock<IAuthenticationService> authenticationMock = new();
-            httpContextAccessorMock
-                .Setup(x => x.HttpContext!.RequestServices.GetService(typeof(IAuthenticationService)))
-                .Returns(authenticationMock.Object);
-            AuthenticateResult authResult = AuthenticateResult.Success(new AuthenticationTicket(claimsPrincipal, JwtBearerDefaults.AuthenticationScheme));
-            authResult.Properties.StoreTokens(
-                new[]
-                {
-                    new AuthenticationToken { Name = "access_token", Value = this.accessToken },
-                });
-            authenticationMock
-                .Setup(x => x.AuthenticateAsync(httpContextAccessorMock.Object.HttpContext, It.IsAny<string>()))
-                .ReturnsAsync(authResult);
-
-            return httpContextAccessorMock;
-        }
-
-        private ClaimsPrincipal GetClaimsPrincipal()
-        {
-            List<Claim> claims = new()
-            {
-                new Claim(ClaimTypes.Name, "username"),
-                new Claim(ClaimTypes.NameIdentifier, this.userId),
-                new Claim("hdid", this.hdid),
-            };
-            ClaimsIdentity identity = new(claims, "TestAuth");
-            return new ClaimsPrincipal(identity);
         }
     }
 }
