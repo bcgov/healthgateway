@@ -408,6 +408,58 @@ describe("dependents", () => {
         cy.get("[data-testid=genericMessageSubmitBtn]").click();
         cy.get("[data-testid=genericMessageModal]").should("not.exist");
 
+        /*
+        cy.log("Adding same dependent as another user");
+
+        cy.login(
+            Cypress.env("keycloak.protected.username"),
+            Cypress.env("keycloak.password"),
+            AuthMethod.KeyCloak,
+            "/dependents"
+        );
+        cy.get("[data-testid=addNewDependentBtn]").click();
+
+        cy.get("[data-testid=newDependentModalText]").should(
+            "exist",
+            "be.visible"
+        );
+
+        cy.get("[data-testid=firstNameInput]")
+            .clear()
+            .type(validDependent.firstName);
+        cy.get("[data-testid=lastNameInput]")
+            .clear()
+            .type(validDependent.lastName);
+        cy.get("[data-testid=dateOfBirthInput] input")
+            .clear()
+            .type(validDependent.doB);
+        cy.get("[data-testid=phnInput]").clear().type(validDependent.phn);
+        cy.get("[data-testid=termsCheckbox]").check({ force: true });
+
+        cy.get("[data-testid=registerDependentBtn]").click();
+
+        // Validate the modal is done
+        cy.get("[data-testid=newDependentModal]").should("not.exist");
+
+        cy.log("Removing dependent from other user");
+        cy.get("@newDependentCard").within(() => {
+            cy.get("[data-testid=dependentMenuBtn]").click();
+            cy.get("[data-testid=deleteDependentMenuBtn]").click();
+        });
+        // Now click the "Yes, I'm sure" to confirm deletion
+        cy.get("[data-testid=confirmDeleteBtn]").click();
+
+        cy.log("Removing dependent from original user");
+
+        cy.enableModules(["CovidLabResults", "Laboratory", "Dependent"]);
+        cy.login(
+            Cypress.env("keycloak.username"),
+            Cypress.env("keycloak.password"),
+            AuthMethod.KeyCloak,
+            "/dependents"
+        );
+*/
+
         cy.log("Removing dependent from user");
 
         cy.get("@newDependentCard").within(() => {
