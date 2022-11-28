@@ -41,7 +41,8 @@ namespace HealthGateway.Immunization.Delegates
         /// </summary>
         /// <param name="query">The vaccine status query.</param>
         /// <param name="accessToken">The bearer token to authorize the call.</param>
+        /// <param name="clientIp">The IP of the client calling the service.</param>
         /// <returns>The vaccine status result for the given patient.</returns>
-        Task<RequestResult<PhsaResult<VaccineStatusResult>>> GetVaccineStatusPublic(VaccineStatusQuery query, string accessToken);
+        Task<RequestResult<PhsaResult<VaccineStatusResult>>> GetVaccineStatusPublic(VaccineStatusQuery query, string accessToken, string clientIp);
     }
 }

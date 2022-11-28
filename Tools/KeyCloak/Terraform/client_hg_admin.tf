@@ -12,6 +12,7 @@ resource "keycloak_openid_client" "hgadmin_client" {
   valid_redirect_uris          = var.client_hg_admin.valid_redirects
   web_origins                  = var.client_hg_admin.web_origins
   full_scope_allowed           = false
+  access_token_lifespan        = var.client_hg_admin.token_lifespan
 }
 
 resource "keycloak_openid_client_default_scopes" "hgadmin_client_default_scopes" {
