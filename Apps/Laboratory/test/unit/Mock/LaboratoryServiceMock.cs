@@ -15,10 +15,12 @@
 //-------------------------------------------------------------------------
 namespace HealthGateway.LaboratoryTests.Mock
 {
+    using System;
     using System.Collections.Generic;
     using System.Linq;
     using AutoMapper;
     using HealthGateway.Common.AccessManagement.Authentication;
+    using HealthGateway.Common.AccessManagement.Authentication.Models;
     using HealthGateway.Common.Data.ViewModels;
     using HealthGateway.Common.Models.PHSA;
     using HealthGateway.Laboratory.Factories;
@@ -138,8 +140,17 @@ namespace HealthGateway.LaboratoryTests.Mock
 
         private static IAuthenticationDelegate GetMockAuthDelegate(string token)
         {
+            JwtModel jwt = new JwtModel()
+            {
+                AccessToken = token,
+            };
             Mock<IAuthenticationDelegate> mockAuthDelegate = new();
-            mockAuthDelegate.Setup(s => s.AccessTokenAsUser(IAuthenticationDelegate.DefaultAuthConfigSectionName)).Returns(token);
+            mockAuthDelegate.Setup(
+                    s => s.AuthenticateAsSystem(
+                        It.IsAny<Uri>(),
+                        It.IsAny<ClientCredentialsTokenRequest>(),
+                        It.IsAny<bool>()))
+                .Returns(jwt);
             mockAuthDelegate.Setup(s => s.FetchAuthenticatedUserToken()).Returns(token);
             return mockAuthDelegate.Object;
         }

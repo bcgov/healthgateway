@@ -30,6 +30,7 @@ namespace HealthGateway.Laboratory.Delegates
     using HealthGateway.Laboratory.Api;
     using HealthGateway.Laboratory.Models;
     using HealthGateway.Laboratory.Models.PHSA;
+    using Microsoft.AspNetCore.Http;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.Logging;
     using Refit;
@@ -42,8 +43,8 @@ namespace HealthGateway.Laboratory.Delegates
         private const string LabConfigSectionKey = "Laboratory";
         private readonly ILaboratoryApi laboratoryApi;
         private readonly LaboratoryConfig labConfig;
-
         private readonly ILogger logger;
+        private readonly IHttpContextAccessor httpContextAccessor;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="RestLaboratoryDelegate"/> class.
@@ -51,15 +52,18 @@ namespace HealthGateway.Laboratory.Delegates
         /// <param name="logger">Injected Logger Provider.</param>
         /// <param name="laboratoryApi">The client to use for laboratory api calls.</param>
         /// <param name="configuration">The injected configuration provider.</param>
+        /// <param name="httpContextAccessor">The injected http context accessor.</param>
         public RestLaboratoryDelegate(
             ILogger<RestLaboratoryDelegate> logger,
             ILaboratoryApi laboratoryApi,
-            IConfiguration configuration)
+            IConfiguration configuration,
+            IHttpContextAccessor httpContextAccessor)
         {
             this.logger = logger;
             this.laboratoryApi = laboratoryApi;
             this.labConfig = new LaboratoryConfig();
             configuration.Bind(LabConfigSectionKey, this.labConfig);
+            this.httpContextAccessor = httpContextAccessor;
         }
 
         private static ActivitySource Source { get; } = new(nameof(RestLaboratoryDelegate));
@@ -240,8 +244,9 @@ namespace HealthGateway.Laboratory.Delegates
 
             try
             {
+                string ipAddress = this.httpContextAccessor.HttpContext?.Connection.RemoteIpAddress?.MapToIPv4().ToString() ?? "0.0.0.0";
                 PhsaResult<IEnumerable<CovidTestResult>> response =
-                    await this.laboratoryApi.GetPublicCovidLabSummaryAsync(query, accessToken).ConfigureAwait(true);
+                    await this.laboratoryApi.GetPublicCovidLabSummaryAsync(query, accessToken, ipAddress).ConfigureAwait(true);
                 retVal.ResultStatus = ResultType.Success;
                 retVal.ResourcePayload = response;
                 retVal.TotalResultCount = retVal.ResourcePayload.Result!.Count();
