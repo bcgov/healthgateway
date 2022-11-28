@@ -91,6 +91,7 @@ variable "client_hg_admin" {
     id              = optional(string, "hg-admin")
     valid_redirects = list(string)
     web_origins     = list(string)
+    token_lifespan  = number
   })
   description = "HealthGateway Admin client configuration"
 }
@@ -109,6 +110,7 @@ variable "client_hg_mobile" {
     id              = optional(string, "hg-mobile")
     valid_redirects = list(string)
     web_origins     = list(string)
+    token_lifespan  = number
   })
   description = "HealthGateway mobile client configuration"
 }
