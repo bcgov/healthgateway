@@ -37,7 +37,7 @@ namespace HealthGateway.JobScheduler.Jobs
         private const int ConcurrencyTimeout = 5 * 60; // 5 minutes
         private const string JobConfigKey = "NotificationSettings";
         private const string JobEnabledKey = "Enabled";
-        private const string AuthConfigSectionName = "ClientAuthentication";
+        private const string AuthConfigSectionName = "SystemAuthentication";
         private readonly IAuthenticationDelegate authDelegate;
         private readonly IEventLogDelegate eventLogDelegate;
         private readonly bool jobEnabled;
@@ -66,13 +66,7 @@ namespace HealthGateway.JobScheduler.Jobs
             this.authDelegate = authDelegate;
             this.eventLogDelegate = eventLogDelegate;
             this.jobEnabled = configuration.GetSection(JobConfigKey).GetValue(JobEnabledKey, true);
-
-            IConfigurationSection configSection = configuration.GetSection(AuthConfigSectionName);
-            this.tokenUri = configSection.GetValue<Uri>(@"TokenUri") ??
-                            throw new ArgumentNullException(nameof(configuration), $"{AuthConfigSectionName} TokenUri is null");
-
-            this.tokenRequest = new ClientCredentialsTokenRequest();
-            configSection.Bind(this.tokenRequest); // Client ID, Client Secret, Audience, Username, Password
+            (this.tokenUri, this.tokenRequest) = this.authDelegate.GetClientCredentialsAuth(AuthConfigSectionName);
         }
 
         /// <inheritdoc/>
@@ -85,7 +79,7 @@ namespace HealthGateway.JobScheduler.Jobs
                 NotificationSettingsRequest? notificationSettings = JsonSerializer.Deserialize<NotificationSettingsRequest>(notificationSettingsJson);
                 if (notificationSettings != null)
                 {
-                    string? accessToken = this.authDelegate.AuthenticateAsUser(this.tokenUri, this.tokenRequest).AccessToken;
+                    string? accessToken = this.authDelegate.AuthenticateAsSystem(this.tokenUri, this.tokenRequest).AccessToken;
 
                     if (string.IsNullOrEmpty(accessToken))
                     {
@@ -93,8 +87,7 @@ namespace HealthGateway.JobScheduler.Jobs
                         throw new FormatException($"Authenticated as User System access token is null or empty, Error:\n{accessToken}");
                     }
 
-                    RequestResult<NotificationSettingsResponse> retVal =
-                        Task.Run(async () => await this.notificationSettingsDelegate.SetNotificationSettingsAsync(notificationSettings, accessToken).ConfigureAwait(true)).Result;
+                    RequestResult<NotificationSettingsResponse> retVal = this.notificationSettingsDelegate.SetNotificationSettingsAsync(notificationSettings, accessToken).GetAwaiter().GetResult();
                     if (retVal.ResultStatus == ResultType.ActionRequired)
                     {
                         EventLog eventLog = new()
