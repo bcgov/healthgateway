@@ -23,6 +23,7 @@ namespace HealthGateway.LaboratoryTests.Services
     using AutoMapper;
     using DeepEqual.Syntax;
     using HealthGateway.Common.AccessManagement.Authentication;
+    using HealthGateway.Common.AccessManagement.Authentication.Models;
     using HealthGateway.Common.Constants.PHSA;
     using HealthGateway.Common.Data.Constants;
     using HealthGateway.Common.Data.ErrorHandling;
@@ -468,7 +469,12 @@ namespace HealthGateway.LaboratoryTests.Services
         public void ShouldGetCovidTestsWithInvalidPhn()
         {
             Mock<IAuthenticationDelegate> mockAuthDelegate = new();
-            mockAuthDelegate.Setup(s => s.AccessTokenAsUser(IAuthenticationDelegate.DefaultAuthConfigSectionName)).Returns(Token);
+            JwtModel jwt = new()
+            {
+                AccessToken = Token,
+            };
+
+            mockAuthDelegate.Setup(s => s.AuthenticateAsSystem(It.IsAny<Uri>(), It.IsAny<ClientCredentialsTokenRequest>(), It.IsAny<bool>())).Returns(jwt);
 
             ILaboratoryService service = new LaboratoryService(
                 this.configuration,
@@ -497,7 +503,12 @@ namespace HealthGateway.LaboratoryTests.Services
         public void ShouldGetCovidTestsWithInvalidDateOfBirth(string dateFormat)
         {
             Mock<IAuthenticationDelegate> mockAuthDelegate = new();
-            mockAuthDelegate.Setup(s => s.AccessTokenAsUser(IAuthenticationDelegate.DefaultAuthConfigSectionName)).Returns(Token);
+            JwtModel jwt = new()
+            {
+                AccessToken = Token,
+            };
+
+            mockAuthDelegate.Setup(s => s.AuthenticateAsSystem(It.IsAny<Uri>(), It.IsAny<ClientCredentialsTokenRequest>(), It.IsAny<bool>())).Returns(jwt);
 
             ILaboratoryService service = new LaboratoryService(
                 this.configuration,
@@ -526,7 +537,12 @@ namespace HealthGateway.LaboratoryTests.Services
         public void ShouldGetCovidTestsWithInvalidCollectionDate(string dateFormat)
         {
             Mock<IAuthenticationDelegate> mockAuthDelegate = new();
-            mockAuthDelegate.Setup(s => s.AccessTokenAsUser(IAuthenticationDelegate.DefaultAuthConfigSectionName)).Returns(Token);
+            JwtModel jwt = new()
+            {
+                AccessToken = Token,
+            };
+
+            mockAuthDelegate.Setup(s => s.AuthenticateAsSystem(It.IsAny<Uri>(), It.IsAny<ClientCredentialsTokenRequest>(), It.IsAny<bool>())).Returns(jwt);
             ILaboratoryService service = new LaboratoryService(
                 this.configuration,
                 new Mock<ILogger<LaboratoryService>>().Object,

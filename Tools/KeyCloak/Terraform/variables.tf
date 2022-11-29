@@ -137,6 +137,7 @@ variable "client_hg_phsa_public" {
     id              = optional(string, "hg-phsa-public")
     valid_redirects = list(string)
     web_origins     = list(string)
+    token_lifespan  = number
   })
   description = "HealthGateway Public Authentication for PHSA"
 }
@@ -146,6 +147,7 @@ variable "client_hg_phsa_system" {
     id              = optional(string, "hg-phsa-system")
     valid_redirects = list(string)
     web_origins     = list(string)
+    token_lifespan  = number
   })
   description = "HealthGateway System Authentication for PHSA"
 }
@@ -155,6 +157,7 @@ variable "client_hg_keycloak" {
     id              = optional(string, "hg-keycloak")
     valid_redirects = list(string)
     web_origins     = list(string)
+    token_lifespan  = number
   })
   description = "HealthGateway Keycloak Administration Client"
 }
