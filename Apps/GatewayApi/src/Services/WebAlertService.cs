@@ -19,18 +19,14 @@ namespace HealthGateway.GatewayApi.Services
     using System.Collections.Generic;
     using System.Diagnostics;
     using System.Linq;
-    using System.Net;
-    using System.Net.Http;
     using System.Threading.Tasks;
     using AutoMapper;
-    using HealthGateway.Common.Constants;
     using HealthGateway.Common.Models.PHSA;
     using HealthGateway.Common.Services;
     using HealthGateway.GatewayApi.Api;
     using HealthGateway.GatewayApi.Models;
     using HealthGateway.GatewayApi.Models.Phsa;
     using Microsoft.Extensions.Logging;
-    using Refit;
 
     /// <summary>
     /// The Patient data service.
@@ -64,22 +60,14 @@ namespace HealthGateway.GatewayApi.Services
         {
             using Activity? activity = Source.StartActivity();
             this.logger.LogDebug("Retrieving web alerts from PHSA.");
-            try
-            {
-                PersonalAccount personalAccount = await this.personalAccountsService.GetPatientAccountAsync(hdid).ConfigureAwait(true);
-                string pid = personalAccount.PatientIdentity.Pid.ToString();
+            PersonalAccount personalAccount = await this.personalAccountsService.GetPatientAccountAsync(hdid).ConfigureAwait(true);
+            string pid = personalAccount.PatientIdentity.Pid.ToString();
 
-                IList<PhsaWebAlert> phsaWebAlerts = await this.webAlertApi.GetWebAlertsAsync(pid).ConfigureAwait(true);
-                IList<WebAlert> webAlerts = this.autoMapper.Map<IEnumerable<PhsaWebAlert>, IList<WebAlert>>(
-                    phsaWebAlerts.Where(a => a.ExpirationDateTimeUtc > DateTime.UtcNow && a.ScheduledDateTimeUtc < DateTime.UtcNow));
-                this.logger.LogDebug("Finished retrieving web alerts from PHSA.");
-                return webAlerts;
-            }
-            catch (Exception e) when (e is ApiException or HttpRequestException)
-            {
-                this.logger.LogError(e, "Error retrieving web alerts from PHSA.");
-                throw new Common.Data.ErrorHandling.ApiException(ErrorMessages.RecordsNotAvailable, HttpStatusCode.BadGateway, nameof(WebAlertService));
-            }
+            IList<PhsaWebAlert> phsaWebAlerts = await this.webAlertApi.GetWebAlertsAsync(pid).ConfigureAwait(true);
+            IList<WebAlert> webAlerts = this.autoMapper.Map<IEnumerable<PhsaWebAlert>, IList<WebAlert>>(
+                phsaWebAlerts.Where(a => a.ExpirationDateTimeUtc > DateTime.UtcNow && a.ScheduledDateTimeUtc < DateTime.UtcNow));
+            this.logger.LogDebug("Finished retrieving web alerts from PHSA.");
+            return webAlerts;
         }
 
         /// <inheritdoc/>
@@ -87,19 +75,11 @@ namespace HealthGateway.GatewayApi.Services
         {
             using Activity? activity = Source.StartActivity();
             this.logger.LogDebug("Sending request to dismiss web alerts to PHSA.");
-            try
-            {
-                PersonalAccount personalAccount = await this.personalAccountsService.GetPatientAccountAsync(hdid).ConfigureAwait(true);
-                string pid = personalAccount.PatientIdentity.Pid.ToString();
+            PersonalAccount personalAccount = await this.personalAccountsService.GetPatientAccountAsync(hdid).ConfigureAwait(true);
+            string pid = personalAccount.PatientIdentity.Pid.ToString();
 
-                await this.webAlertApi.DeleteWebAlertsAsync(pid).ConfigureAwait(true);
-                this.logger.LogDebug("Finished sending request to dismiss web alerts to PHSA.");
-            }
-            catch (Exception e) when (e is ApiException or HttpRequestException)
-            {
-                this.logger.LogError(e, "Error sending request to dismiss web alerts to PHSA.");
-                throw new Common.Data.ErrorHandling.ApiException(ErrorMessages.CannotPerformAction, HttpStatusCode.BadGateway, nameof(WebAlertService));
-            }
+            await this.webAlertApi.DeleteWebAlertsAsync(pid).ConfigureAwait(true);
+            this.logger.LogDebug("Finished sending request to dismiss web alerts to PHSA.");
         }
 
         /// <inheritdoc/>
@@ -107,19 +87,11 @@ namespace HealthGateway.GatewayApi.Services
         {
             using Activity? activity = Source.StartActivity();
             this.logger.LogDebug("Sending request to dismiss web alert to PHSA.");
-            try
-            {
-                PersonalAccount personalAccount = await this.personalAccountsService.GetPatientAccountAsync(hdid).ConfigureAwait(true);
-                string pid = personalAccount.PatientIdentity.Pid.ToString();
+            PersonalAccount personalAccount = await this.personalAccountsService.GetPatientAccountAsync(hdid).ConfigureAwait(true);
+            string pid = personalAccount.PatientIdentity.Pid.ToString();
 
-                await this.webAlertApi.DeleteWebAlertAsync(pid, webAlertId).ConfigureAwait(true);
-                this.logger.LogDebug("Finished sending request to dismiss web alert to PHSA.");
-            }
-            catch (Exception e) when (e is ApiException or HttpRequestException)
-            {
-                this.logger.LogError(e, "Error sending request to dismiss web alert to PHSA.");
-                throw new Common.Data.ErrorHandling.ApiException(ErrorMessages.CannotPerformAction, HttpStatusCode.BadGateway, nameof(WebAlertService));
-            }
+            await this.webAlertApi.DeleteWebAlertAsync(pid, webAlertId).ConfigureAwait(true);
+            this.logger.LogDebug("Finished sending request to dismiss web alert to PHSA.");
         }
     }
 }
