@@ -42,7 +42,7 @@ namespace HealthGateway.JobScheduler.Jobs
         private const string EmailTemplateKey = "EmailTemplate";
         private const int ConcurrencyTimeout = 5 * 60; // 5 Minutes
 
-        private const string AuthConfigSectionName = "ClientAuthentication";
+        private const string AuthConfigSectionName = "KeycloakAdmin";
 
         private readonly IAuthenticationDelegate authDelegate;
 
@@ -87,13 +87,7 @@ namespace HealthGateway.JobScheduler.Jobs
             this.hoursBeforeDeletion = configuration.GetValue<int>($"{JobKey}:{HoursDeletionKey}") * -1;
             this.emailTemplate = configuration.GetValue<string>($"{JobKey}:{EmailTemplateKey}") ??
                 throw new ArgumentNullException(nameof(configuration), $"{JobKey}:{EmailTemplateKey} is null");
-
-            IConfigurationSection configSection = configuration.GetSection(AuthConfigSectionName);
-            this.tokenUri = configSection.GetValue<Uri>(@"TokenUri") ??
-                throw new ArgumentNullException(nameof(configuration), $"{AuthConfigSectionName} TokenUri is null");
-
-            this.tokenRequest = new ClientCredentialsTokenRequest();
-            configSection.Bind(this.tokenRequest);
+            (this.tokenUri, this.tokenRequest) = this.authDelegate.GetClientCredentialsAuth(AuthConfigSectionName);
         }
 
         /// <summary>

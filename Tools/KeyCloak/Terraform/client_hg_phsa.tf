@@ -2,7 +2,7 @@ resource "keycloak_openid_client" "hgphsa_client" {
   realm_id                     = data.keycloak_realm.hg_realm.id
   client_id                    = var.client_hg_phsa.id
   name                         = "Health Gateway PHSA - ${var.environment.name}"
-  description                  = "Health Gateway PHSA integration"
+  description                  = "Health Gateway PHSA inbound integration"
   enabled                      = true
   access_type                  = "CONFIDENTIAL"
   login_theme                  = "bcgov"
