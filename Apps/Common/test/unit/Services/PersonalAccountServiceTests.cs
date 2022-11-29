@@ -19,6 +19,7 @@ namespace HealthGateway.CommonTests.Services
     using System.Collections.Generic;
     using System.Linq;
     using System.Net.Http;
+    using System.Threading.Tasks;
     using HealthGateway.Common.Api;
     using HealthGateway.Common.CacheProviders;
     using HealthGateway.Common.Data.Constants;
@@ -40,8 +41,9 @@ namespace HealthGateway.CommonTests.Services
         /// <summary>
         /// Get Personal Account.
         /// </summary>
+        /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
         [Fact]
-        public void ShouldGetPatientAccount()
+        public async Task ShouldGetPatientAccount()
         {
             // Arrange
             Guid id = Guid.NewGuid();
@@ -50,7 +52,7 @@ namespace HealthGateway.CommonTests.Services
             IPersonalAccountsService personalAccountsServiceService = GetPersonalAccountsService(expectedPersonalAccount, false, false);
 
             // Act
-            RequestResult<PersonalAccount?> actualResult = personalAccountsServiceService.GetPatientAccount(It.IsAny<string>());
+            RequestResult<PersonalAccount> actualResult = await personalAccountsServiceService.GetPatientAccountResultAsync(It.IsAny<string>()).ConfigureAwait(true);
 
             // Assert
             Assert.Equal(ResultType.Success, actualResult.ResultStatus);
@@ -61,8 +63,9 @@ namespace HealthGateway.CommonTests.Services
         /// <summary>
         /// Get Personal Account - from cache.
         /// </summary>
+        /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
         [Fact]
-        public void ShouldGetPatientAccountUseCache()
+        public async Task ShouldGetPatientAccountUseCache()
         {
             // Arrange
             Guid id = Guid.NewGuid();
@@ -71,7 +74,7 @@ namespace HealthGateway.CommonTests.Services
             IPersonalAccountsService personalAccountsServiceService = GetPersonalAccountsService(expectedPersonalAccount, true, false);
 
             // Act
-            RequestResult<PersonalAccount?> actualResult = personalAccountsServiceService.GetPatientAccount(It.IsAny<string>());
+            RequestResult<PersonalAccount> actualResult = await personalAccountsServiceService.GetPatientAccountResultAsync(It.IsAny<string>()).ConfigureAwait(true);
 
             // Assert
             Assert.Equal(ResultType.Success, actualResult.ResultStatus);
@@ -82,8 +85,9 @@ namespace HealthGateway.CommonTests.Services
         /// <summary>
         /// Get Personal Account throws HttpRequestException.
         /// </summary>
+        /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
         [Fact]
-        public void ShouldGetPatientAccountThrowsException()
+        public async Task ShouldGetPatientAccountThrowsException()
         {
             // Arrange
             Guid id = Guid.NewGuid();
@@ -92,7 +96,7 @@ namespace HealthGateway.CommonTests.Services
             IPersonalAccountsService personalAccountsServiceService = GetPersonalAccountsService(expectedPersonalAccount, false, true);
 
             // Act
-            RequestResult<PersonalAccount?> actualResult = personalAccountsServiceService.GetPatientAccount(It.IsAny<string>());
+            RequestResult<PersonalAccount> actualResult = await personalAccountsServiceService.GetPatientAccountResultAsync(It.IsAny<string>()).ConfigureAwait(true);
 
             // Assert
             Assert.Equal(ResultType.Error, actualResult.ResultStatus);
@@ -121,6 +125,7 @@ namespace HealthGateway.CommonTests.Services
                 Id = id,
                 CreationTimeStampUtc = DateTime.Today,
                 ModifyTimeStampUtc = DateTime.Today,
+                PatientIdentity = new(),
             };
         }
 
