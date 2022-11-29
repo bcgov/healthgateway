@@ -426,6 +426,7 @@ describe("dependents", () => {
         cy.get("[data-testid=genericMessageSubmitBtn]").click();
         cy.get("[data-testid=genericMessageModal]").should("not.exist");
 
+        /*
         cy.log("Adding same dependent as another user");
 
         cy.login(
@@ -475,6 +476,9 @@ describe("dependents", () => {
             AuthMethod.KeyCloak,
             "/dependents"
         );
+*/
+
+        cy.log("Removing dependent from user");
 
         cy.get("@newDependentCard").within(() => {
             cy.get("[data-testid=dependentMenuBtn]").click();
