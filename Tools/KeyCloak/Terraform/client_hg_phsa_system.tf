@@ -6,12 +6,13 @@ resource "keycloak_openid_client" "hgphsasystem_client" {
   enabled                      = true
   access_type                  = "CONFIDENTIAL"
   login_theme                  = "bcgov"
-  standard_flow_enabled        = true
-  direct_access_grants_enabled = true
+  standard_flow_enabled        = false
+  direct_access_grants_enabled = false
   service_accounts_enabled     = true
   valid_redirect_uris          = var.client_hg_phsa_system.valid_redirects
   web_origins                  = var.client_hg_phsa_system.web_origins
   full_scope_allowed           = false
+  access_token_lifespan        = var.client_hg_phsa_system.token_lifespan
 }
 
 resource "keycloak_openid_client_default_scopes" "hgphsasystem_client_default_scopes" {
