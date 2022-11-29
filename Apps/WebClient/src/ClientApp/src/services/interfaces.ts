@@ -24,6 +24,7 @@ import {
 } from "@/models/laboratory";
 import MedicationRequest from "@/models/MedicationRequest";
 import MedicationStatementHistory from "@/models/medicationStatementHistory";
+import Notification from "@/models/notification";
 import PatientData from "@/models/patientData";
 import RegisterTestKitRequest from "@/models/registerTestKitRequest";
 import Report from "@/models/report";
@@ -194,6 +195,13 @@ export interface IUserCommentService {
     ): Promise<UserComment | undefined>;
     updateComment(hdid: string, comment: UserComment): Promise<UserComment>;
     deleteComment(hdid: string, comment: UserComment): Promise<void>;
+}
+
+export interface INotificationService {
+    initialize(config: ExternalConfiguration, http: IHttpDelegate): void;
+    getNotifications(hdid: string): Promise<ApiResult<Notification[]>>;
+    deleteNotification(hdid: string, notification: Notification): Promise<void>;
+    deleteNotifications(hdid: string): Promise<void>;
 }
 
 export interface ICommunicationService {
