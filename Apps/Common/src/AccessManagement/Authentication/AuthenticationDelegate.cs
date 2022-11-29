@@ -95,29 +95,6 @@ namespace HealthGateway.Common.AccessManagement.Authentication
         }
 
         /// <inheritdoc/>
-        public string? AccessTokenAsUser(string sectionName = IAuthenticationDelegate.DefaultAuthConfigSectionName)
-        {
-            (Uri tUri, ClientCredentialsTokenRequest tRequest) = this.GetConfiguration(sectionName);
-            return this.AccessTokenAsUser(tUri, tRequest);
-        }
-
-        /// <inheritdoc/>
-        public string? AccessTokenAsUser(Uri tokenUri, ClientCredentialsTokenRequest tokenRequest, bool cacheEnabled = true)
-        {
-            string? accessToken = null;
-            try
-            {
-                accessToken = this.AuthenticateAsUser(tokenUri, tokenRequest, cacheEnabled).AccessToken;
-            }
-            catch (InvalidOperationException e)
-            {
-                this.logger.LogDebug("Internal issue - returning null access token {Exception}", e.ToString());
-            }
-
-            return accessToken;
-        }
-
-        /// <inheritdoc/>
         public JwtModel AuthenticateAsUser(Uri tokenUri, ClientCredentialsTokenRequest tokenRequest, bool cacheEnabled = false)
         {
             (JwtModel jwtModel, _) = this.AuthenticateUser(tokenUri, tokenRequest, cacheEnabled);
