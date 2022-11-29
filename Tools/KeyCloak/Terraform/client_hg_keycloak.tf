@@ -8,9 +8,10 @@ resource "keycloak_openid_client" "hgkeycloak_client" {
   standard_flow_enabled        = false
   direct_access_grants_enabled = false
   service_accounts_enabled     = true
-   valid_redirect_uris          = var.client_hg_keycloak.valid_redirects
-   web_origins                  = var.client_hg_keycloak.web_origins
+  valid_redirect_uris          = var.client_hg_keycloak.valid_redirects
+  web_origins                  = var.client_hg_keycloak.web_origins
   full_scope_allowed           = true
+  access_token_lifespan        = var.client_hg_keycloak.token_lifespan
 }
 
 resource "keycloak_openid_client_default_scopes" "hgkeycloak_client_default_scopes" {
