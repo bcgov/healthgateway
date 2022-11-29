@@ -5,7 +5,7 @@ resource "keycloak_openid_client" "hgadminblazor_client" {
   description                  = "Health Gateway Blazor Admin web application"
   enabled                      = true
   access_type                  = "PUBLIC"
-  login_theme                  = "bcgov"
+  login_theme                  = local.development ? "bcgov" : "bcgov-idp-login-no-brand"
   standard_flow_enabled        = true
   direct_access_grants_enabled = true
   valid_redirect_uris          = var.client_hg_admin_blazor.valid_redirects

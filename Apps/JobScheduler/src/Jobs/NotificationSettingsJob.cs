@@ -17,7 +17,6 @@ namespace HealthGateway.JobScheduler.Jobs
 {
     using System;
     using System.Text.Json;
-    using System.Threading.Tasks;
     using Hangfire;
     using HealthGateway.Common.AccessManagement.Authentication;
     using HealthGateway.Common.AccessManagement.Authentication.Models;

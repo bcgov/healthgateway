@@ -25,6 +25,7 @@ namespace HealthGateway.AdminWebClientTests.Services.Test
     using HealthGateway.Admin.Models.CovidSupport;
     using HealthGateway.Admin.Services;
     using HealthGateway.Common.AccessManagement.Authentication;
+    using HealthGateway.Common.AccessManagement.Authentication.Models;
     using HealthGateway.Common.Data.Constants;
     using HealthGateway.Common.Data.ErrorHandling;
     using HealthGateway.Common.Data.ViewModels;
@@ -156,7 +157,12 @@ namespace HealthGateway.AdminWebClientTests.Services.Test
         private static ICovidSupportService GetCovidSupportService(HttpClient httpClient)
         {
             Mock<IAuthenticationDelegate> mockAuthDelegate = new();
-            mockAuthDelegate.Setup(s => s.AccessTokenAsUser(IAuthenticationDelegate.DefaultAuthConfigSectionName)).Returns(AccessToken);
+            JwtModel jwt = new()
+            {
+                AccessToken = AccessToken,
+            };
+
+            mockAuthDelegate.Setup(s => s.AuthenticateAsSystem(It.IsAny<Uri>(), It.IsAny<ClientCredentialsTokenRequest>(), It.IsAny<bool>())).Returns(jwt);
             IImmunizationAdminApi immunizationAdminApi = RestService.For<IImmunizationAdminApi>(httpClient);
             ICovidSupportService mockCovidSupportService = new CovidSupportService(
                 new Mock<ILogger<CovidSupportService>>().Object,
@@ -175,7 +181,12 @@ namespace HealthGateway.AdminWebClientTests.Services.Test
         private static ICovidSupportService GetCovidSupportService(CovidAssessmentResponse response, HttpStatusCode statusCode, bool throwException)
         {
             Mock<IAuthenticationDelegate> mockAuthDelegate = new();
-            mockAuthDelegate.Setup(s => s.AccessTokenAsUser(IAuthenticationDelegate.DefaultAuthConfigSectionName)).Returns(AccessToken);
+            JwtModel jwt = new()
+            {
+                AccessToken = AccessToken,
+            };
+
+            mockAuthDelegate.Setup(s => s.AuthenticateAsSystem(It.IsAny<Uri>(), It.IsAny<ClientCredentialsTokenRequest>(), It.IsAny<bool>())).Returns(jwt);
 
             Mock<IApiResponse<CovidAssessmentResponse>> mockApiResponse = new();
             mockApiResponse.Setup(s => s.Content).Returns(response);
@@ -214,7 +225,12 @@ namespace HealthGateway.AdminWebClientTests.Services.Test
         private static ICovidSupportService GetCovidSupportService(CovidAssessmentDetailsResponse response, HttpStatusCode statusCode, bool throwException)
         {
             Mock<IAuthenticationDelegate> mockAuthDelegate = new();
-            mockAuthDelegate.Setup(s => s.AccessTokenAsUser(IAuthenticationDelegate.DefaultAuthConfigSectionName)).Returns(AccessToken);
+            JwtModel jwt = new()
+            {
+                AccessToken = AccessToken,
+            };
+
+            mockAuthDelegate.Setup(s => s.AuthenticateAsSystem(It.IsAny<Uri>(), It.IsAny<ClientCredentialsTokenRequest>(), It.IsAny<bool>())).Returns(jwt);
 
             Mock<IApiResponse<CovidAssessmentDetailsResponse>> mockApiResponse = new();
             mockApiResponse.Setup(s => s.Content).Returns(response);
