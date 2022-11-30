@@ -199,11 +199,8 @@ export interface IUserCommentService {
 
 export interface INotificationService {
     initialize(config: ExternalConfiguration, http: IHttpDelegate): void;
-    getNotifications(hdid: string): Promise<ApiResult<Notification[]>>;
-    dismissNotification(
-        hdid: string,
-        notification: Notification
-    ): Promise<void>;
+    getNotifications(hdid: string): Promise<Notification[]>;
+    dismissNotification(hdid: string, notificationId: string): Promise<void>;
     dismissNotifications(hdid: string): Promise<void>;
 }
 

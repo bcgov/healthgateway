@@ -1,7 +1,6 @@
 import { injectable } from "inversify";
 
 import { ServiceCode } from "@/constants/serviceCodes";
-import ApiResult from "@/models/apiResult";
 import { ExternalConfiguration } from "@/models/configData";
 import { HttpError } from "@/models/errors";
 import Notification from "@/models/notification";
@@ -17,7 +16,6 @@ export class RestNotificationService implements INotificationService {
     private logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
     private readonly NOTIFICATION_BASE_URI: string = "Notification";
     private http!: IHttpDelegate;
-    private isEnabled = false;
     private baseUri = "";
 
     public initialize(
@@ -25,17 +23,16 @@ export class RestNotificationService implements INotificationService {
         http: IHttpDelegate
     ): void {
         this.http = http;
-        this.isEnabled = config.webClient.modules["Notification"];
         this.baseUri = config.serviceEndpoints["GatewayApi"];
     }
 
-    getNotifications(hdid: string): Promise<ApiResult<Notification[]>> {
+    getNotifications(hdid: string): Promise<Notification[]> {
         return new Promise((resolve, reject) => {
             this.http
-                .getWithCors<ApiResult<Notification[]>>(
+                .getWithCors<Notification[]>(
                     `${this.baseUri}${this.NOTIFICATION_BASE_URI}/${hdid}`
                 )
-                .then((apiResult) => resolve(apiResult))
+                .then((result) => resolve(result))
                 .catch((err: HttpError) => {
                     this.logger.error(
                         `Error in RestNotificationService.getNotifications()`
@@ -49,15 +46,12 @@ export class RestNotificationService implements INotificationService {
                 });
         });
     }
-    dismissNotification(
-        hdid: string,
-        notification: Notification
-    ): Promise<void> {
+    dismissNotification(hdid: string, notificationId: string): Promise<void> {
         return new Promise((resolve, reject) =>
             this.http
-                .delete<ApiResult<void>>(
+                .delete<void>(
                     `${this.baseUri}${this.NOTIFICATION_BASE_URI}${hdid}/notificationId`,
-                    notification.id
+                    notificationId
                 )
                 .then((result) => {
                     this.logger.debug(`dismissNotification ${result}`);
@@ -79,7 +73,7 @@ export class RestNotificationService implements INotificationService {
     dismissNotifications(hdid: string): Promise<void> {
         return new Promise((resolve, reject) =>
             this.http
-                .delete<ApiResult<void>>(
+                .delete<void>(
                     `${this.baseUri}${this.NOTIFICATION_BASE_URI}${hdid}`,
                     hdid
                 )

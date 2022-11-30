@@ -10,7 +10,6 @@ const state: NotificationState = {
     notifications: [],
     error: undefined,
     status: LoadStatus.NONE,
-    lastOperation: null,
 };
 
 export const notification: NotificationModule = {

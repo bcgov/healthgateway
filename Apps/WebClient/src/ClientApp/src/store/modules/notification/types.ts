@@ -7,10 +7,9 @@ import {
 } from "vuex";
 
 import { ErrorType } from "@/constants/errorType";
-import ApiResult from "@/models/apiResult";
 import { ResultError } from "@/models/errors";
 import Notification from "@/models/notification";
-import { LoadStatus, Operation } from "@/models/storeOperations";
+import { LoadStatus } from "@/models/storeOperations";
 import { RootState } from "@/store/types";
 
 export interface NotificationState {
@@ -18,7 +17,6 @@ export interface NotificationState {
     statusMessage: string;
     error?: ResultError;
     status: LoadStatus;
-    lastOperation: Operation | null;
 }
 
 export interface NotificationGetters
@@ -32,10 +30,10 @@ export interface NotificationActions
     retrieve(
         context: StoreContext,
         params: { hdid: string }
-    ): Promise<ApiResult<Notification[]>>;
+    ): Promise<Notification[]>;
     dismissNotification(
         context: StoreContext,
-        params: { hdid: string; notification: Notification }
+        params: { hdid: string; notificationId: string }
     ): Promise<void>;
     dismissNotifications(
         context: StoreContext,
@@ -48,10 +46,7 @@ export interface NotificationActions
 }
 
 export interface NotificationMutations extends MutationTree<NotificationState> {
-    dismissNotification(
-        state: NotificationState,
-        notification: Notification
-    ): void;
+    dismissNotification(state: NotificationState, notificationId: string): void;
     dismissNotifications(state: NotificationState): void;
     notificationError(state: NotificationState, error: ResultError): void;
 }
