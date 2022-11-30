@@ -5,12 +5,13 @@ resource "keycloak_openid_client" "hg_mobile_client" {
   description                  = "Health Gateway Mobile applications"
   enabled                      = true
   access_type                  = "PUBLIC"
-  login_theme                  = "bcgov"
+  login_theme                  = "bcgov-no-brand"
   standard_flow_enabled        = true
   direct_access_grants_enabled = false
   valid_redirect_uris          = var.client_hg_mobile.valid_redirects
   web_origins                  = var.client_hg_mobile.web_origins
   full_scope_allowed           = false
+  access_token_lifespan        = var.client_hg_mobile.token_lifespan
 }
 
 resource "keycloak_openid_client_default_scopes" "hg_mobile_client_default_scopes" {

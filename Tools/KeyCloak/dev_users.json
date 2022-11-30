@@ -174,8 +174,38 @@
                     "temporary": false
                 }
             ]
+        },
+        {
+            "username": "blazoradmin",
+            "enabled": true,
+            "credentials": [
+                {
+                    "type": "password",
+                    "value": "{PASSWORD}",
+                    "temporary": false
+                }
+            ]
+        },
+        {
+            "username": "blazorreviewer",
+            "enabled": true,
+            "credentials": [
+                {
+                    "type": "password",
+                    "value": "{PASSWORD}",
+                    "temporary": false
+                }
+            ]
+        },
+        {
+            "username": "hgateway@idir",
+            "enabled": true
         }
 
     ],
-    "roleMappings": { }
+    "roleMappings": { 
+        "blazoradmin": ["AdminUser"],
+        "blazorreviewer": ["AdminReviewer"],
+        "hgateway@idir": ["AdminUser"]
+    }
 }

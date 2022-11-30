@@ -17,7 +17,7 @@ describe("Authentication", () => {
             .click();
 
         cy.log(`Authenticating as IDIR user ${username}`);
-        cy.get("#zocial-idir")
+        cy.get("#social-idir")
             .should("be.visible")
             .should("not.be.disabled")
             .click();
