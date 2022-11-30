@@ -200,8 +200,11 @@ export interface IUserCommentService {
 export interface INotificationService {
     initialize(config: ExternalConfiguration, http: IHttpDelegate): void;
     getNotifications(hdid: string): Promise<ApiResult<Notification[]>>;
-    deleteNotification(hdid: string, notification: Notification): Promise<void>;
-    deleteNotifications(hdid: string): Promise<void>;
+    dismissNotification(
+        hdid: string,
+        notification: Notification
+    ): Promise<void>;
+    dismissNotifications(hdid: string): Promise<void>;
 }
 
 export interface ICommunicationService {

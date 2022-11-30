@@ -50,7 +50,7 @@ export const actions: NotificationActions = {
             }
         });
     },
-    deleteNotification(
+    dismissNotification(
         context,
         params: { hdid: string; notification: Notification }
     ): Promise<void> {
@@ -60,9 +60,9 @@ export const actions: NotificationActions = {
 
         return new Promise((resolve, reject) =>
             notificationService
-                .deleteNotification(params.hdid, params.notification)
+                .dismissNotification(params.hdid, params.notification)
                 .then(() => {
-                    context.commit("deleteNotification", params.notification);
+                    context.commit("dismissNotification", params.notification);
                     resolve();
                 })
                 .catch((error: ResultError) => {
@@ -74,16 +74,16 @@ export const actions: NotificationActions = {
                 })
         );
     },
-    deleteNotifications(context, params: { hdid: string }): Promise<void> {
+    dismissNotifications(context, params: { hdid: string }): Promise<void> {
         const notificationService = container.get<INotificationService>(
             SERVICE_IDENTIFIER.NotificationService
         );
 
         return new Promise((resolve, reject) =>
             notificationService
-                .deleteNotifications(params.hdid)
+                .dismissNotifications(params.hdid)
                 .then(() => {
-                    context.commit("deleteNotifications", params.hdid);
+                    context.commit("dismissNotifications", params.hdid);
                     resolve();
                 })
                 .catch((error: ResultError) => {

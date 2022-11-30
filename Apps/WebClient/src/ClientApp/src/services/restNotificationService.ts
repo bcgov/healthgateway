@@ -49,7 +49,7 @@ export class RestNotificationService implements INotificationService {
                 });
         });
     }
-    deleteNotification(
+    dismissNotification(
         hdid: string,
         notification: Notification
     ): Promise<void> {
@@ -59,17 +59,13 @@ export class RestNotificationService implements INotificationService {
                     `${this.baseUri}${this.NOTIFICATION_BASE_URI}${hdid}/notificationId`,
                     notification.id
                 )
-                .then((apiResult) => {
-                    this.logger.verbose(
-                        `deleteNotification result: ${JSON.stringify(
-                            apiResult
-                        )}`
-                    );
+                .then((result) => {
+                    this.logger.debug(`dismissNotification ${result}`);
                     resolve();
                 })
                 .catch((err: HttpError) => {
                     this.logger.error(
-                        `Error in RestNotificationService.deleteNotification()`
+                        `Error in RestNotificationService.dismissNotification()`
                     );
                     return reject(
                         ErrorTranslator.internalNetworkError(
@@ -80,24 +76,20 @@ export class RestNotificationService implements INotificationService {
                 })
         );
     }
-    deleteNotifications(hdid: string): Promise<void> {
+    dismissNotifications(hdid: string): Promise<void> {
         return new Promise((resolve, reject) =>
             this.http
                 .delete<ApiResult<void>>(
                     `${this.baseUri}${this.NOTIFICATION_BASE_URI}${hdid}`,
                     hdid
                 )
-                .then((apiResult) => {
-                    this.logger.verbose(
-                        `deleteNotifications result: ${JSON.stringify(
-                            apiResult
-                        )}`
-                    );
+                .then((result) => {
+                    this.logger.debug(`dismissNotifications ${result}`);
                     resolve();
                 })
                 .catch((err: HttpError) => {
                     this.logger.error(
-                        `Error in RestNotificationService.deleteNotifications()`
+                        `Error in RestNotificationService.dismissNotifications()`
                     );
                     return reject(
                         ErrorTranslator.internalNetworkError(

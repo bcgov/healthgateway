@@ -33,11 +33,11 @@ export interface NotificationActions
         context: StoreContext,
         params: { hdid: string }
     ): Promise<ApiResult<Notification[]>>;
-    deleteNotification(
+    dismissNotification(
         context: StoreContext,
         params: { hdid: string; notification: Notification }
     ): Promise<void>;
-    deleteNotifications(
+    dismissNotifications(
         context: StoreContext,
         params: { hdid: string }
     ): Promise<void>;
@@ -48,11 +48,11 @@ export interface NotificationActions
 }
 
 export interface NotificationMutations extends MutationTree<NotificationState> {
-    deleteNotification(
+    dismissNotification(
         state: NotificationState,
         notification: Notification
     ): void;
-    deleteNotifications(state: NotificationState): void;
+    dismissNotifications(state: NotificationState): void;
     notificationError(state: NotificationState, error: ResultError): void;
 }
 

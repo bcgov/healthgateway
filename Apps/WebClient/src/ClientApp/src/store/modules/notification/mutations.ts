@@ -5,7 +5,7 @@ import { LoadStatus } from "@/models/storeOperations";
 import { NotificationMutations, NotificationState } from "./types";
 
 export const mutations: NotificationMutations = {
-    deleteNotification(state: NotificationState, notification: Notification) {
+    dismissNotification(state: NotificationState, notification: Notification) {
         const notificationIndex = state.notifications.findIndex(
             (x) => x.id === notification.id
         );
@@ -13,7 +13,7 @@ export const mutations: NotificationMutations = {
             state.notifications.splice(notificationIndex, 1);
         }
     },
-    deleteNotifications(state: NotificationState) {
+    dismissNotifications(state: NotificationState) {
         state.notifications;
     },
     notificationError(state: NotificationState, error: ResultError) {
