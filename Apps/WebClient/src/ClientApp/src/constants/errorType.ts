@@ -36,4 +36,5 @@ export enum ErrorSourceType {
     QuickLinks = "quick links",
     DependentImmunizationReport = "Dependent Immunization Report",
     ExportRecords = "Export Records",
+    Notification = "notification",
 }
