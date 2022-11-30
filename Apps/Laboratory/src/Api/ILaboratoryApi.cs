@@ -71,8 +71,12 @@ namespace HealthGateway.Laboratory.Api
         /// </summary>
         /// <param name="query">Query parameters used to query the public covid test results.</param>
         /// <param name="token">The bearer token to authorize the call.</param>
+        /// <param name="clientIp">The ip of the client to send.</param>
         /// <returns>The public covid test results identified by the query parameters.</returns>
         [Post("/api/v1/Public/LabOrders/Covid19LabSummary")]
-        Task<PhsaResult<IEnumerable<CovidTestResult>>> GetPublicCovidLabSummaryAsync([Body] Dictionary<string, string?> query, [Authorize] string token);
+        Task<PhsaResult<IEnumerable<CovidTestResult>>> GetPublicCovidLabSummaryAsync(
+            [Body] Dictionary<string, string?> query,
+            [Authorize] string token,
+            [Header("X-Forwarded-For")] string clientIp);
     }
 }

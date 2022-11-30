@@ -91,6 +91,7 @@ variable "client_hg_admin" {
     id              = optional(string, "hg-admin")
     valid_redirects = list(string)
     web_origins     = list(string)
+    token_lifespan  = number
   })
   description = "HealthGateway Admin client configuration"
 }
@@ -109,6 +110,7 @@ variable "client_hg_mobile" {
     id              = optional(string, "hg-mobile")
     valid_redirects = list(string)
     web_origins     = list(string)
+    token_lifespan  = number
   })
   description = "HealthGateway mobile client configuration"
 }
@@ -128,6 +130,33 @@ variable "client_hg" {
     web_origins     = list(string)
   })
   description = "HealthGateway client configuration"
+}
+
+variable "client_hg_phsa_public" {
+  type = object({
+    id              = optional(string, "hg-phsa-public")
+    valid_redirects = list(string)
+    web_origins     = list(string)
+  })
+  description = "HealthGateway Public Authentication for PHSA"
+}
+
+variable "client_hg_phsa_system" {
+  type = object({
+    id              = optional(string, "hg-phsa-system")
+    valid_redirects = list(string)
+    web_origins     = list(string)
+  })
+  description = "HealthGateway System Authentication for PHSA"
+}
+
+variable "client_hg_keycloak" {
+  type = object({
+    id              = optional(string, "hg-keycloak")
+    valid_redirects = list(string)
+    web_origins     = list(string)
+  })
+  description = "HealthGateway Keycloak Administration Client"
 }
 
 locals {

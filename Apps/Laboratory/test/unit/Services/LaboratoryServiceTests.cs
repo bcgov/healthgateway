@@ -354,9 +354,7 @@ namespace HealthGateway.LaboratoryTests.Services
             string dateOfBirthString = this.dateOfBirth.ToString("yyyy-MM-dd", CultureInfo.CurrentCulture);
             string collectionDateString = this.collectionDate.ToString("yyyy-MM-dd", CultureInfo.CurrentCulture);
 
-            RequestResult<PublicCovidTestResponse> actualResult = Task.Run(async () => await service.GetPublicCovidTestsAsync(this.phn, dateOfBirthString, collectionDateString).ConfigureAwait(true))
-                .Result;
-
+            RequestResult<PublicCovidTestResponse> actualResult = service.GetPublicCovidTestsAsync(this.phn, dateOfBirthString, collectionDateString).GetAwaiter().GetResult();
             expectedResult.ShouldDeepEqual(actualResult);
         }
 
@@ -389,8 +387,7 @@ namespace HealthGateway.LaboratoryTests.Services
             string dateOfBirthString = this.dateOfBirth.ToString("yyyy-MM-dd", CultureInfo.CurrentCulture);
             string collectionDateString = this.collectionDate.ToString("yyyy-MM-dd", CultureInfo.CurrentCulture);
 
-            RequestResult<PublicCovidTestResponse> actualResult = Task.Run(async () => await service.GetPublicCovidTestsAsync(this.phn, dateOfBirthString, collectionDateString).ConfigureAwait(true))
-                .Result;
+            RequestResult<PublicCovidTestResponse> actualResult = service.GetPublicCovidTestsAsync(this.phn, dateOfBirthString, collectionDateString).GetAwaiter().GetResult();
 
             Assert.Equal(ResultType.ActionRequired, actualResult.ResultStatus);
             Assert.Equal(ActionType.DataMismatch, actualResult.ResultError?.ActionCode);
@@ -426,8 +423,7 @@ namespace HealthGateway.LaboratoryTests.Services
             string dateOfBirthString = this.dateOfBirth.ToString("yyyy-MM-dd", CultureInfo.CurrentCulture);
             string collectionDateString = this.collectionDate.ToString("yyyy-MM-dd", CultureInfo.CurrentCulture);
 
-            RequestResult<PublicCovidTestResponse> actualResult = Task.Run(async () => await service.GetPublicCovidTestsAsync(this.phn, dateOfBirthString, collectionDateString).ConfigureAwait(true))
-                .Result;
+            RequestResult<PublicCovidTestResponse> actualResult = service.GetPublicCovidTestsAsync(this.phn, dateOfBirthString, collectionDateString).GetAwaiter().GetResult();
 
             Assert.Equal(ResultType.ActionRequired, actualResult.ResultStatus);
             Assert.Equal(ActionType.Invalid, actualResult.ResultError?.ActionCode);
@@ -458,8 +454,7 @@ namespace HealthGateway.LaboratoryTests.Services
             string dateOfBirthString = this.dateOfBirth.ToString("yyyy-MM-dd", CultureInfo.CurrentCulture);
             string collectionDateString = this.collectionDate.ToString("yyyy-MM-dd", CultureInfo.CurrentCulture);
 
-            RequestResult<PublicCovidTestResponse> actualResult = Task.Run(async () => await service.GetPublicCovidTestsAsync(this.phn, dateOfBirthString, collectionDateString).ConfigureAwait(true))
-                .Result;
+            RequestResult<PublicCovidTestResponse> actualResult = service.GetPublicCovidTestsAsync(this.phn, dateOfBirthString, collectionDateString).GetAwaiter().GetResult();
 
             Assert.Equal(ResultType.ActionRequired, actualResult.ResultStatus);
             Assert.Equal(ActionType.Refresh, actualResult.ResultError?.ActionCode);
@@ -486,8 +481,7 @@ namespace HealthGateway.LaboratoryTests.Services
             string dateOfBirthString = this.dateOfBirth.ToString("yyyy-MM-dd", CultureInfo.CurrentCulture);
             string collectionDateString = this.collectionDate.ToString("yyyy-MM-dd", CultureInfo.CurrentCulture);
 
-            RequestResult<PublicCovidTestResponse> actualResult = Task.Run(async () => await service.GetPublicCovidTestsAsync(invalidPhn, dateOfBirthString, collectionDateString).ConfigureAwait(true))
-                .Result;
+            RequestResult<PublicCovidTestResponse> actualResult = service.GetPublicCovidTestsAsync(invalidPhn, dateOfBirthString, collectionDateString).GetAwaiter().GetResult();
 
             Assert.Equal(ResultType.Error, actualResult.ResultStatus);
         }
@@ -516,7 +510,7 @@ namespace HealthGateway.LaboratoryTests.Services
             string collectionDateString = this.collectionDate.ToString("yyyy-MM-dd", CultureInfo.CurrentCulture);
 
             RequestResult<PublicCovidTestResponse> actualResult =
-                Task.Run(async () => await service.GetPublicCovidTestsAsync(this.phn, invalidDateOfBirthString, collectionDateString).ConfigureAwait(true)).Result;
+                service.GetPublicCovidTestsAsync(this.phn, invalidDateOfBirthString, collectionDateString).GetAwaiter().GetResult();
 
             Assert.Equal(ResultType.Error, actualResult.ResultStatus);
         }
@@ -544,7 +538,7 @@ namespace HealthGateway.LaboratoryTests.Services
             string invalidCollectionDateString = this.collectionDate.ToString(dateFormat, CultureInfo.CurrentCulture);
 
             RequestResult<PublicCovidTestResponse> actualResult =
-                Task.Run(async () => await service.GetPublicCovidTestsAsync(this.phn, dateOfBirthString, invalidCollectionDateString).ConfigureAwait(true)).Result;
+                service.GetPublicCovidTestsAsync(this.phn, dateOfBirthString, invalidCollectionDateString).GetAwaiter().GetResult();
 
             Assert.Equal(ResultType.Error, actualResult.ResultStatus);
         }

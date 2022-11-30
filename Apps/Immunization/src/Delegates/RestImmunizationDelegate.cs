@@ -15,10 +15,9 @@
 //-------------------------------------------------------------------------
 namespace HealthGateway.Immunization.Delegates
 {
+    using System;
     using System.Collections.Generic;
     using System.Diagnostics;
-    using System.Globalization;
-    using System.Net;
     using System.Net.Http;
     using System.Threading.Tasks;
     using HealthGateway.Common.AccessManagement.Authentication;
@@ -68,7 +67,7 @@ namespace HealthGateway.Immunization.Delegates
         private static ActivitySource Source { get; } = new(nameof(RestImmunizationDelegate));
 
         /// <inheritdoc/>
-        public async Task<RequestResult<PhsaResult<ImmunizationViewResponse>>> GetImmunization(string immunizationId)
+        public async Task<RequestResult<PhsaResult<ImmunizationViewResponse>>> GetImmunizationAsync(string immunizationId)
         {
             using Activity? activity = Source.StartActivity();
             this.logger.LogDebug("Getting immunization {ImmunizationId}", immunizationId);
@@ -78,16 +77,18 @@ namespace HealthGateway.Immunization.Delegates
 
             try
             {
-                IApiResponse<PhsaResult<ImmunizationViewResponse>> response =
-                    await this.immunizationApi.GetImmunization(immunizationId, accessToken).ConfigureAwait(true);
-                this.ProcessResponse(requestResult, response);
+                PhsaResult<ImmunizationViewResponse> response =
+                    await this.immunizationApi.GetImmunizationAsync(immunizationId, accessToken).ConfigureAwait(true);
+                requestResult.ResultStatus = ResultType.Success;
+                requestResult.ResourcePayload!.Result = response.Result;
+                requestResult.TotalResultCount = 1;
             }
-            catch (HttpRequestException e)
+            catch (Exception e) when (e is ApiException or HttpRequestException)
             {
-                this.logger.LogCritical("HTTP Request Exception {Error}", e.ToString());
+                this.logger.LogCritical("Get Immunization unexpected Exception {Error}", e.ToString());
                 requestResult.ResultError = new()
                 {
-                    ResultMessage = "Error with HTTP Request",
+                    ResultMessage = "Error with Get Immunization Request",
                     ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.Phsa),
                 };
             }
@@ -96,7 +97,7 @@ namespace HealthGateway.Immunization.Delegates
         }
 
         /// <inheritdoc/>
-        public async Task<RequestResult<PhsaResult<ImmunizationResponse>>> GetImmunizations(string hdid)
+        public async Task<RequestResult<PhsaResult<ImmunizationResponse>>> GetImmunizationsAsync(string hdid)
         {
             using Activity? activity = Source.StartActivity();
             this.logger.LogDebug("Getting immunizations for hdid: {Hdid}", hdid);
@@ -111,16 +112,18 @@ namespace HealthGateway.Immunization.Delegates
 
             try
             {
-                IApiResponse<PhsaResult<ImmunizationResponse>> response =
-                    await this.immunizationApi.GetImmunizations(query, accessToken).ConfigureAwait(true);
-                this.ProcessResponse(requestResult, response);
+                PhsaResult<ImmunizationResponse> response =
+                    await this.immunizationApi.GetImmunizationsAsync(query, accessToken).ConfigureAwait(true);
+                requestResult.ResultStatus = ResultType.Success;
+                requestResult.ResourcePayload!.Result = response.Result;
+                requestResult.TotalResultCount = 1;
             }
-            catch (HttpRequestException e)
+            catch (Exception e) when (e is ApiException or HttpRequestException)
             {
-                this.logger.LogCritical("HTTP Request Exception {Error}", e.ToString());
+                this.logger.LogCritical("Get Immunizations unexpected Exception {Error}", e.ToString());
                 requestResult.ResultError = new()
                 {
-                    ResultMessage = "Error with HTTP Request",
+                    ResultMessage = "Error with Get Immunization Request",
                     ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.Phsa),
                 };
             }
@@ -139,57 +142,6 @@ namespace HealthGateway.Immunization.Delegates
                 ResourcePayload = new PhsaResult<T>(),
             };
             return result;
-        }
-
-        private void ProcessResponse<T>(RequestResult<PhsaResult<T>> requestResult, IApiResponse<PhsaResult<T>> response)
-            where T : class
-        {
-            if (response.Error is null)
-            {
-                switch (response.StatusCode)
-                {
-                    case HttpStatusCode.OK:
-                        requestResult.ResultStatus = ResultType.Success;
-                        requestResult.ResourcePayload!.Result = response.Content!.Result;
-                        requestResult.TotalResultCount = 1;
-                        break;
-                    case HttpStatusCode.NoContent:
-                        requestResult.ResultStatus = ResultType.Success;
-                        requestResult.ResourcePayload = new PhsaResult<T>();
-                        requestResult.TotalResultCount = 0;
-                        requestResult.PageSize = int.Parse(this.phsaConfig.FetchSize, CultureInfo.InvariantCulture);
-                        break;
-                    case HttpStatusCode.Forbidden:
-                        requestResult.ResultError = new()
-                        {
-                            ResultMessage =
-                                $"DID Claim is missing or can not resolve PHN, HTTP Error {response.StatusCode}",
-                            ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.Phsa),
-                        };
-                        break;
-                    default:
-                        requestResult.ResultError = new()
-                        {
-                            ResultMessage =
-                                $"Unable to connect to Immunizations Endpoint, HTTP Error {response.StatusCode}",
-                            ErrorCode = ErrorTranslator.ServiceError(
-                                ErrorType.CommunicationExternal,
-                                ServiceType.Phsa),
-                        };
-                        this.logger.LogError("Unexpected status code returned: {StatusCode}", response.StatusCode.ToString());
-                        break;
-                }
-            }
-            else
-            {
-                this.logger.LogError("Exception: {Error}", response.Error.ToString());
-                this.logger.LogError("Http Payload: {Content}", response.Error.Content);
-                requestResult.ResultError = new()
-                {
-                    ResultMessage = "An unexpected error occurred while processing external call",
-                    ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.Phsa),
-                };
-            }
         }
     }
 }

@@ -17,6 +17,7 @@ namespace HealthGateway.Common.Data.ErrorHandling
 {
     using System;
     using System.Net;
+    using System.Runtime.CompilerServices;
     using System.Runtime.Serialization;
 
     /// <summary>
@@ -30,7 +31,7 @@ namespace HealthGateway.Common.Data.ErrorHandling
         /// </summary>
         /// <param name="detail">The detail associated with the exception.</param>
         /// <param name="instance">The instance associated with the exception.</param>
-        /// <param name="statusCode">The http status code associated with the exception.</param>
+        /// <param name="statusCode">The HTTP status code associated with the exception.</param>
         public ApiException(string detail, string instance, HttpStatusCode statusCode)
         {
             this.ProblemType = "api-exception";
@@ -39,6 +40,18 @@ namespace HealthGateway.Common.Data.ErrorHandling
             this.AdditionalInfo = "Please try again at a later time.";
             this.Instance = instance;
             this.StatusCode = (int)statusCode;
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ApiException"/> class.
+        /// </summary>
+        /// <param name="detail">The detail associated with the exception.</param>
+        /// <param name="statusCode">The HTTP status code associated with the exception.</param>
+        /// <param name="typeName">The name of the type where the exception was generated.</param>
+        /// <param name="memberName">The type of the method or property where the exception was generated.</param>
+        public ApiException(string detail, HttpStatusCode statusCode, string typeName, [CallerMemberName] string memberName = "")
+            : this(detail, $"{typeName}.{memberName}", statusCode)
+        {
         }
 
         /// <summary>

@@ -85,7 +85,7 @@ resource "keycloak_openid_audience_protocol_mapper" "hgk6_audience" {
   count                    = local.development ? 1 : 0
   realm_id                 = data.keycloak_realm.hg_realm.id
   client_id                = keycloak_openid_client.hgk6_client[0].id
-  name                     = "hg-audience"
+  name                     = "health-gateway-audience"
   included_client_audience = keycloak_openid_client.hg_client.client_id
   add_to_id_token          = true
   add_to_access_token      = true

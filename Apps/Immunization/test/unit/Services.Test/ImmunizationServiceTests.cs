@@ -93,7 +93,7 @@ namespace HealthGateway.ImmunizationTests.Services.Test
                 TotalResultCount = delegateResult.TotalResultCount,
             };
 
-            mockDelegate.Setup(s => s.GetImmunizations(It.IsAny<string>())).ReturnsAsync(delegateResult);
+            mockDelegate.Setup(s => s.GetImmunizationsAsync(It.IsAny<string>())).ReturnsAsync(delegateResult);
             IImmunizationService service = new ImmunizationService(mockDelegate.Object, this.autoMapper);
 
             Task<RequestResult<ImmunizationResult>> actualResult = service.GetImmunizations(It.IsAny<string>());
@@ -137,7 +137,7 @@ namespace HealthGateway.ImmunizationTests.Services.Test
                 TotalResultCount = delegateResult.TotalResultCount,
             };
 
-            mockDelegate.Setup(s => s.GetImmunization(It.IsAny<string>())).Returns(Task.FromResult(delegateResult));
+            mockDelegate.Setup(s => s.GetImmunizationAsync(It.IsAny<string>())).Returns(Task.FromResult(delegateResult));
             IImmunizationService service = new ImmunizationService(mockDelegate.Object, this.autoMapper);
 
             Task<RequestResult<ImmunizationEvent>> actualResult = service.GetImmunization("immz_id");
@@ -167,7 +167,7 @@ namespace HealthGateway.ImmunizationTests.Services.Test
                 TotalResultCount = delegateResult.TotalResultCount,
             };
 
-            mockDelegate.Setup(s => s.GetImmunizations(It.IsAny<string>())).Returns(Task.FromResult(delegateResult));
+            mockDelegate.Setup(s => s.GetImmunizationsAsync(It.IsAny<string>())).Returns(Task.FromResult(delegateResult));
             IImmunizationService service = new ImmunizationService(mockDelegate.Object, this.autoMapper);
 
             Task<RequestResult<ImmunizationResult>> actualResult = service.GetImmunizations(It.IsAny<string>());
@@ -213,7 +213,7 @@ namespace HealthGateway.ImmunizationTests.Services.Test
                 ResultError = delegateResult.ResultError,
             };
 
-            mockDelegate.Setup(s => s.GetImmunizations(It.IsAny<string>())).Returns(Task.FromResult(delegateResult));
+            mockDelegate.Setup(s => s.GetImmunizationsAsync(It.IsAny<string>())).Returns(Task.FromResult(delegateResult));
             IImmunizationService service = new ImmunizationService(mockDelegate.Object, this.autoMapper);
 
             Task<RequestResult<ImmunizationResult>> actualResult = service.GetImmunizations(It.IsAny<string>());

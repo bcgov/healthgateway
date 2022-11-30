@@ -29,9 +29,13 @@ public interface IImmunizationPublicApi
     /// </summary>
     /// <param name="query">The model containing details of the request.</param>
     /// <param name="token">The bearer token to authorize the call.</param>
+    /// <param name="clientIp">The ip of the client calling the service.</param>
     /// <returns>
     /// A PhsaResult containing the vaccine status of a given patient.
     /// </returns>
     [Post("/api/v1/Public/Immunizations/VaccineStatusIndicator")]
-    Task<PhsaResult<VaccineStatusResult>> GetVaccineStatus(VaccineStatusQuery query, [Authorize] string token);
+    Task<PhsaResult<VaccineStatusResult>> GetVaccineStatus(
+        VaccineStatusQuery query,
+        [Authorize] string token,
+        [Header("X-Forwarded-For")] string clientIp);
 }

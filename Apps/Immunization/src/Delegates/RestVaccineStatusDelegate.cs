@@ -65,7 +65,7 @@ namespace HealthGateway.Immunization.Delegates
             try
             {
                 PhsaResult<VaccineStatusResult> phsaResult =
-                    await this.immunizationApi.GetVaccineStatus(hdid, includeFederalPvc, accessToken).ConfigureAwait(true);
+                    await this.immunizationApi.GetVaccineStatusAsync(hdid, includeFederalPvc, accessToken).ConfigureAwait(true);
 
                 if (phsaResult.Result != null)
                 {
@@ -93,7 +93,7 @@ namespace HealthGateway.Immunization.Delegates
         }
 
         /// <inheritdoc/>
-        public async Task<RequestResult<PhsaResult<VaccineStatusResult>>> GetVaccineStatusPublic(VaccineStatusQuery query, string accessToken)
+        public async Task<RequestResult<PhsaResult<VaccineStatusResult>>> GetVaccineStatusPublic(VaccineStatusQuery query, string accessToken, string clientIp)
         {
             using Activity? activity = Source.StartActivity();
             this.logger.LogDebug(
@@ -110,7 +110,7 @@ namespace HealthGateway.Immunization.Delegates
 
             try
             {
-                PhsaResult<VaccineStatusResult> phsaResult = await this.immunizationPublicApi.GetVaccineStatus(query, accessToken).ConfigureAwait(true);
+                PhsaResult<VaccineStatusResult> phsaResult = await this.immunizationPublicApi.GetVaccineStatus(query, accessToken, clientIp).ConfigureAwait(true);
 
                 if (phsaResult.Result != null)
                 {

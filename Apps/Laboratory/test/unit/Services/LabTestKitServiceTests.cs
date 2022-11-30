@@ -15,9 +15,11 @@
 // -------------------------------------------------------------------------
 namespace HealthGateway.LaboratoryTests.Services
 {
+    using System;
     using System.Net;
     using System.Net.Http;
     using HealthGateway.Common.AccessManagement.Authentication;
+    using HealthGateway.Common.AccessManagement.Authentication.Models;
     using HealthGateway.Common.Data.Constants;
     using HealthGateway.Common.Data.ErrorHandling;
     using HealthGateway.Common.Data.ViewModels;
@@ -221,18 +223,23 @@ namespace HealthGateway.LaboratoryTests.Services
         {
             HttpRequestException httpRequestException = new("Error with HTTP Request");
             Mock<ILabTestKitApi> mockLabTestKitApi = new();
-            mockLabTestKitApi.Setup(s => s.RegisterLabTest(It.IsAny<PublicLabTestKit>(), It.IsAny<string>()))
+            mockLabTestKitApi.Setup(s => s.RegisterLabTest(It.IsAny<PublicLabTestKit>(), It.IsAny<string>(), It.IsAny<string>()))
                 .ThrowsAsync(httpRequestException);
             mockLabTestKitApi.Setup(s => s.RegisterLabTest(It.IsAny<string>(), It.IsAny<LabTestKit>(), It.IsAny<string>()))
                 .ThrowsAsync(httpRequestException);
 
+            JwtModel jwt = new()
+            {
+                AccessToken = this.accessToken,
+            };
             Mock<IAuthenticationDelegate> mockAuthDelegate = new();
-            mockAuthDelegate.Setup(s => s.AccessTokenAsUser(IAuthenticationDelegate.DefaultAuthConfigSectionName)).Returns(this.accessToken);
+            mockAuthDelegate.Setup(s => s.AuthenticateAsSystem(It.IsAny<Uri>(), It.IsAny<ClientCredentialsTokenRequest>(), It.IsAny<bool>())).Returns(jwt);
 
             LabTestKitService labTestKitService = new(
                 new Mock<ILogger<LabTestKitService>>().Object,
                 mockAuthDelegate.Object,
-                mockLabTestKitApi.Object);
+                mockLabTestKitApi.Object,
+                null);
 
             return labTestKitService;
         }
@@ -240,21 +247,24 @@ namespace HealthGateway.LaboratoryTests.Services
         private LabTestKitService GetLabTestKitService(HttpResponseMessage responseMessage, bool nullToken = false)
         {
             Mock<ILabTestKitApi> mockLabTestKitApi = new();
-            mockLabTestKitApi.Setup(s => s.RegisterLabTest(It.IsAny<PublicLabTestKit>(), It.IsAny<string>()))
+            mockLabTestKitApi.Setup(s => s.RegisterLabTest(It.IsAny<PublicLabTestKit>(), It.IsAny<string>(), It.IsAny<string>()))
                 .ReturnsAsync(responseMessage);
             mockLabTestKitApi.Setup(s => s.RegisterLabTest(It.IsAny<string>(), It.IsAny<LabTestKit>(), It.IsAny<string>()))
                 .ReturnsAsync(responseMessage);
 
-            Mock<IAuthenticationDelegate> mockAuthDelegate = new();
-            if (!nullToken)
+            JwtModel jwt = new()
             {
-                mockAuthDelegate.Setup(s => s.AccessTokenAsUser(IAuthenticationDelegate.DefaultAuthConfigSectionName)).Returns(this.accessToken);
-            }
+                AccessToken = !nullToken ? this.accessToken : null,
+            };
+            Mock<IAuthenticationDelegate> mockAuthDelegate = new();
+            mockAuthDelegate.Setup(s => s.AuthenticateAsSystem(It.IsAny<Uri>(), It.IsAny<ClientCredentialsTokenRequest>(), It.IsAny<bool>()))
+                .Returns(jwt);
 
             LabTestKitService labTestKitService = new(
                 new Mock<ILogger<LabTestKitService>>().Object,
                 mockAuthDelegate.Object,
-                mockLabTestKitApi.Object);
+                mockLabTestKitApi.Object,
+                null);
 
             return labTestKitService;
         }

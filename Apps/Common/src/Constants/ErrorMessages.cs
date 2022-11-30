@@ -36,6 +36,11 @@ namespace HealthGateway.Common.Constants
         public const string RecordsNotAvailable = "The records you requested are not currently available.";
 
         /// <summary>
+        /// Error message to return when the action cannot currently be performed.
+        /// </summary>
+        public const string CannotPerformAction = "The action cannot currently be performed.";
+
+        /// <summary>
         /// Error message to return when a Pharmanet record is protected.
         /// </summary>
         public const string ProtectiveWordErrorMessage = "Record protected by keyword";

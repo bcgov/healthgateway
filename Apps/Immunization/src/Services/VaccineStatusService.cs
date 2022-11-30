@@ -32,7 +32,6 @@ namespace HealthGateway.Immunization.Services
     using HealthGateway.Immunization.Delegates;
     using HealthGateway.Immunization.MapUtils;
     using HealthGateway.Immunization.Models;
-    using Microsoft.AspNetCore.Authentication;
     using Microsoft.AspNetCore.Http;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.Logging;
@@ -43,10 +42,10 @@ namespace HealthGateway.Immunization.Services
     public class VaccineStatusService : IVaccineStatusService
     {
         private const string PhsaConfigSectionKey = "PHSA";
-        private const string AuthConfigSectionName = "ClientAuthentication";
+        private const string AuthConfigSectionName = "PublicAuthentication";
         private readonly IAuthenticationDelegate authDelegate;
         private readonly IMapper autoMapper;
-        private readonly IHttpContextAccessor httpContextAccessor;
+        private readonly IHttpContextAccessor? httpContextAccessor;
         private readonly ILogger<VaccineStatusService> logger;
         private readonly PhsaConfig phsaConfig;
         private readonly ClientCredentialsTokenRequest tokenRequest;
@@ -68,18 +67,14 @@ namespace HealthGateway.Immunization.Services
             ILogger<VaccineStatusService> logger,
             IAuthenticationDelegate authDelegate,
             IVaccineStatusDelegate vaccineStatusDelegate,
-            IHttpContextAccessor httpContextAccessor,
+            IHttpContextAccessor? httpContextAccessor,
             IMapper autoMapper)
         {
             this.authDelegate = authDelegate;
             this.vaccineStatusDelegate = vaccineStatusDelegate;
             this.autoMapper = autoMapper;
 
-            IConfigurationSection configSection = configuration.GetSection(AuthConfigSectionName);
-            this.tokenUri = configSection.GetValue<Uri>(@"TokenUri") ??
-                            throw new ArgumentNullException(nameof(configuration), $"{AuthConfigSectionName} does not contain a valid TokenUri");
-            this.tokenRequest = new ClientCredentialsTokenRequest();
-            configSection.Bind(this.tokenRequest); // Client ID, Client Secret, Audience, Username, Password
+            (this.tokenUri, this.tokenRequest) = this.authDelegate.GetClientCredentialsAuth(AuthConfigSectionName);
 
             this.phsaConfig = new();
             configuration.Bind(PhsaConfigSectionKey, this.phsaConfig);
@@ -248,7 +243,7 @@ namespace HealthGateway.Immunization.Services
 
             try
             {
-                string? accessToken = this.authDelegate.AuthenticateAsUser(this.tokenUri, this.tokenRequest, true).AccessToken;
+                string? accessToken = this.authDelegate.AuthenticateAsSystem(this.tokenUri, this.tokenRequest).AccessToken;
                 retVal = await this.GetVaccineStatusFromDelegate(query, accessToken, phn).ConfigureAwait(true);
             }
             catch (InvalidOperationException e)
@@ -268,7 +263,7 @@ namespace HealthGateway.Immunization.Services
         private async Task<RequestResult<VaccineStatus>> GetAuthenticatedVaccineStatusWithOptionalProof(string hdid, bool includeVaccineProof)
         {
             // Gets the current user access token and pass it along to PHSA
-            string? bearerToken = await this.httpContextAccessor.HttpContext!.GetTokenAsync("access_token").ConfigureAwait(true);
+            string? bearerToken = this.authDelegate.FetchAuthenticatedUserToken();
 
             VaccineStatusQuery query = new()
             {
@@ -289,8 +284,9 @@ namespace HealthGateway.Immunization.Services
                 ResourcePayload = new() { State = VaccineState.NotFound },
             };
 
+            string ipAddress = this.httpContextAccessor?.HttpContext?.Connection.RemoteIpAddress?.MapToIPv4().ToString() ?? "0.0.0.0";
             RequestResult<PhsaResult<VaccineStatusResult>> result = string.IsNullOrEmpty(query.HdId)
-                ? await this.vaccineStatusDelegate.GetVaccineStatusPublic(query, accessToken).ConfigureAwait(true)
+                ? await this.vaccineStatusDelegate.GetVaccineStatusPublic(query, accessToken, ipAddress).ConfigureAwait(true)
                 : await this.vaccineStatusDelegate.GetVaccineStatus(query.HdId, query.IncludeFederalVaccineProof, accessToken).ConfigureAwait(true);
 
             VaccineStatusResult? payload = result.ResourcePayload?.Result;
