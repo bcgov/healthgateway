@@ -25,17 +25,17 @@ namespace HealthGateway.Common.Services
     public interface IPersonalAccountsService
     {
         /// <summary>
-        /// Gets the Personal Account information from PHSA using the supplied HDID.
+        /// Gets personal account information from PHSA using the supplied HDID.
         /// </summary>
-        /// <param name="hdid">The Hdid to lookup.</param>
-        /// <returns>The PHSA PersonalAccount wrapped in a RequestResult.</returns>
-        Task<RequestResult<PersonalAccount?>> GetPatientAccountAsync(string hdid);
+        /// <param name="hdid">The HDID to look up.</param>
+        /// <returns>The personal account model.</returns>
+        Task<PersonalAccount> GetPatientAccountAsync(string hdid);
 
         /// <summary>
-        /// Gets the Personal Account information from PHSA using the supplied HDID.
+        /// Gets personal account information from PHSA using the supplied HDID.
         /// </summary>
-        /// <param name="hdid">The Hdid to lookup.</param>
-        /// <returns>The PHSA PersonalAccount wrapped in a RequestResult.</returns>
-        RequestResult<PersonalAccount?> GetPatientAccount(string hdid);
+        /// <param name="hdid">The HDID to look up.</param>
+        /// <returns>The personal account model wrapped in a RequestResult.</returns>
+        Task<RequestResult<PersonalAccount>> GetPatientAccountResultAsync(string hdid);
     }
 }

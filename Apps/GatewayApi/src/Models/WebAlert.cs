@@ -1,4 +1,4 @@
-// -------------------------------------------------------------------------
+﻿// -------------------------------------------------------------------------
 //  Copyright © 2019 Province of British Columbia
 //
 //  Licensed under the Apache License, Version 2.0 (the "License");
@@ -13,15 +13,16 @@
 //  See the License for the specific language governing permissions and
 //  limitations under the License.
 // -------------------------------------------------------------------------
-namespace HealthGateway.Common.Models.PHSA
+namespace HealthGateway.GatewayApi.Models
 {
     using System;
     using System.Text.Json.Serialization;
+    using HealthGateway.Common.Data.Models;
 
     /// <summary>
-    /// Model representing a PHSA Personal Account.
+    /// Model representing a Health Gateway web alert.
     /// </summary>
-    public class PersonalAccount
+    public class WebAlert
     {
         /// <summary>
         /// Gets or sets the id.
@@ -30,33 +31,33 @@ namespace HealthGateway.Common.Models.PHSA
         public Guid Id { get; set; }
 
         /// <summary>
-        /// Gets or sets a value indicating whether this account is active.
+        /// Gets or sets the category name.
         /// </summary>
-        [JsonPropertyName("active")]
-        public bool Active { get; set; }
+        [JsonPropertyName("categoryName")]
+        public string? CategoryName { get; set; }
 
         /// <summary>
-        /// Gets or sets the display name.
+        /// Gets or sets the display text.
         /// </summary>
-        [JsonPropertyName("displayName")]
-        public string? DisplayName { get; set; }
+        [JsonPropertyName("displayText")]
+        public string? DisplayText { get; set; }
 
         /// <summary>
-        /// Gets or sets the created datetime in UTC.
+        /// Gets or sets the action URL.
         /// </summary>
-        [JsonPropertyName("creationTimeStampUtc")]
-        public DateTime CreationTimeStampUtc { get; set; }
+        [JsonPropertyName("actionUrl")]
+        public Uri? ActionUrl { get; set; }
 
         /// <summary>
-        /// Gets or sets the modified datetime in UTC.
+        /// Gets or sets the action type.
         /// </summary>
-        [JsonPropertyName("modifyTimeStampUtc")]
-        public DateTime ModifyTimeStampUtc { get; set; }
+        [JsonPropertyName("actionType")]
+        public BroadcastActionType ActionType { get; set; }
 
         /// <summary>
-        /// Gets or sets the Patient Identity.
+        /// Gets or sets the scheduled datetime in UTC.
         /// </summary>
-        [JsonPropertyName("patientIdentity")]
-        public PatientIdentity PatientIdentity { get; set; } = null!;
+        [JsonPropertyName("scheduledDateTimeUtc")]
+        public DateTime ScheduledDateTimeUtc { get; set; }
     }
 }
