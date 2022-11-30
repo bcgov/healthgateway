@@ -5,7 +5,7 @@ resource "keycloak_openid_client" "hg_client" {
   description                  = "Health Gateway web application"
   enabled                      = true
   access_type                  = "PUBLIC"
-  login_theme                  = "bcgov"
+  login_theme                  = local.development ? "bcgov-no-brand" : "bcgov-idp-login-no-brand"
   standard_flow_enabled        = true
   direct_access_grants_enabled = true
   valid_redirect_uris          = var.client_hg.valid_redirects
