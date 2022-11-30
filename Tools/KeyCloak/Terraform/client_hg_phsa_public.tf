@@ -5,7 +5,7 @@ resource "keycloak_openid_client" "hgphsapublic_client" {
   description                  = "Health Gateway PHSA Public User Outbound integration"
   enabled                      = true
   access_type                  = "CONFIDENTIAL"
-  login_theme                  = "bcgov"
+  login_theme                  = "bcgov-no-brand"
   standard_flow_enabled        = false
   direct_access_grants_enabled = false
   service_accounts_enabled     = true

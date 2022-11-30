@@ -196,11 +196,16 @@
                     "temporary": false
                 }
             ]
+        },
+        {
+            "username": "hgateway@idir",
+            "enabled": true
         }
 
     ],
     "roleMappings": { 
         "blazoradmin": ["AdminUser"],
-        "blazorreviewer": ["AdminReviewer"]
+        "blazorreviewer": ["AdminReviewer"],
+        "hgateway@idir": ["AdminUser"]
     }
 }
