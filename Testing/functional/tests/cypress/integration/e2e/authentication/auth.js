@@ -83,10 +83,12 @@ describe("Authentication", () => {
     });
 
     it("KeyCloak Login", () => {
+        Cypress.session.clearAllSavedSessions();
         cy.login(
             Cypress.env("keycloak.username"),
             Cypress.env("keycloak.password"),
-            AuthMethod.KeyCloak
+            AuthMethod.KeyCloak,
+            "/home"
         );
         cy.get("[data-testid=headerDropdownBtn]").click();
         cy.get("[data-testid=logoutBtn]")

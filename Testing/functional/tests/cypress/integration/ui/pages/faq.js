@@ -11,6 +11,7 @@ describe("FAQ Page", () => {
     });
 
     it("Expand question", () => {
+        cy.visit("/faq");
         cy.get("[data-testid=answerTxt]").should("not.be.visible");
 
         cy.get("[data-testid=questionBtn]")

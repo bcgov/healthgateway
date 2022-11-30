@@ -2,13 +2,13 @@ const { AuthMethod } = require("../../../support/constants");
 
 describe("Validate Star Rating", () => {
     beforeEach(() => {
-        cy.enableModules(["Medication", "Note"]);
+        Cypress.session.clearAllSavedSessions();
         cy.login(
             Cypress.env("keycloak.username"),
             Cypress.env("keycloak.password"),
-            AuthMethod.KeyCloak
+            AuthMethod.KeyCloak,
+            "/home"
         );
-        cy.checkTimelineHasLoaded();
     });
 
     it("Clicking the 5 star button should log out", () => {

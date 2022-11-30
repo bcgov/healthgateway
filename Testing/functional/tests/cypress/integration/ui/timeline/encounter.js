@@ -1,7 +1,7 @@
 const { AuthMethod } = require("../../../support/constants");
 
 describe("MSP Visits Rolloff", () => {
-    before(() => {
+    beforeEach(() => {
         cy.intercept("GET", "**/Encounter/*", (req) => {
             req.reply({
                 fixture: "EncounterService/encountersrolloff.json",

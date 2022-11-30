@@ -111,6 +111,7 @@ Cypress.Commands.add(
                         });
                 });
             });
+            cy.log(`Visit path: ${path}`);
             cy.visit(path, { timeout: 60000 });
         } else if (authMethod == AuthMethod.BCSC) {
             cy.log(
