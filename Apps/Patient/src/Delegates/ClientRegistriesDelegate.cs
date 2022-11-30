@@ -21,7 +21,6 @@ namespace HealthGateway.Patient.Delegates
     using System.Globalization;
     using System.Linq;
     using System.Net;
-    using System.ServiceModel;
     using System.Threading.Tasks;
     using HealthGateway.Common.Constants;
     using HealthGateway.Common.Data.ErrorHandling;
@@ -59,30 +58,16 @@ namespace HealthGateway.Patient.Delegates
         {
             this.logger.LogDebug("Getting patient for type: {Type} and value: {Identifier} started", type, identifier);
             ApiResult<PatientModel> apiResult = new();
-            using (Source.StartActivity())
-            {
-                // Create request object
-                HCIM_IN_GetDemographicsRequest request = CreateRequest(type, identifier);
-                try
-                {
-                    // Perform the request
-                    HCIM_IN_GetDemographicsResponse1 reply = await this.clientRegistriesClient.HCIM_IN_GetDemographicsAsync(request).ConfigureAwait(true);
-                    this.ParseResponse(apiResult, reply, disableIdValidation);
-                    return apiResult;
-                }
-                catch (CommunicationException e)
-                {
-                    this.logger.LogError("{Exception}", e.ToString());
-                    throw new ApiException(
-                        $"Communication Exception with client registry when trying to retrieve patient information from {type}",
-                        "ClientRegistriesDelegate.GetDemographicsAsync",
-                        HttpStatusCode.BadGateway);
-                }
-                finally
-                {
-                    this.logger.LogDebug("Getting patient finished.");
-                }
-            }
+            using Activity? activity = Source.StartActivity();
+
+            // Create request object
+            HCIM_IN_GetDemographicsRequest request = CreateRequest(type, identifier);
+
+            // Perform the request
+            HCIM_IN_GetDemographicsResponse1 reply = await this.clientRegistriesClient.HCIM_IN_GetDemographicsAsync(request).ConfigureAwait(true);
+            this.ParseResponse(apiResult, reply, disableIdValidation);
+            this.logger.LogDebug("Getting patient finished.");
+            return apiResult;
         }
 
         private static HCIM_IN_GetDemographicsRequest CreateRequest(OidType oidType, string identifierValue)
