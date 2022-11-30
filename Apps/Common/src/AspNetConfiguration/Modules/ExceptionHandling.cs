@@ -16,11 +16,13 @@
 namespace HealthGateway.Common.AspNetConfiguration.Modules
 {
     using System.Diagnostics.CodeAnalysis;
+    using System.ServiceModel;
     using HealthGateway.Common.Data.ErrorHandling;
     using HealthGateway.Common.ErrorHandling;
     using Hellang.Middleware.ProblemDetails;
     using Microsoft.AspNetCore.Builder;
     using Microsoft.AspNetCore.Hosting;
+    using Microsoft.AspNetCore.Http;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Hosting;
 
@@ -52,6 +54,8 @@ namespace HealthGateway.Common.AspNetConfiguration.Modules
                             Instance = exception.Instance,
                             AdditionalInfo = exception.AdditionalInfo,
                         });
+
+                    setup.MapToStatusCode<CommunicationException>(StatusCodes.Status502BadGateway);
                 });
         }
 

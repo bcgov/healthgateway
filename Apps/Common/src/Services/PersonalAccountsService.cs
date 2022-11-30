@@ -17,12 +17,10 @@ namespace HealthGateway.Common.Services
 {
     using System;
     using System.Diagnostics;
-    using System.Net;
     using System.Net.Http;
     using System.Threading.Tasks;
     using HealthGateway.Common.Api;
     using HealthGateway.Common.CacheProviders;
-    using HealthGateway.Common.Constants;
     using HealthGateway.Common.Data.Constants;
     using HealthGateway.Common.Data.ViewModels;
     using HealthGateway.Common.ErrorHandling;
@@ -78,17 +76,9 @@ namespace HealthGateway.Common.Services
                 return account;
             }
 
-            try
-            {
-                account = await this.personalAccountsApi.AccountLookupByHdidAsync(hdid).ConfigureAwait(true);
-                this.PutCache(hdid, account);
-                return account;
-            }
-            catch (Exception e) when (e is ApiException or HttpRequestException)
-            {
-                this.logger.LogError(e, "Error retrieving patient account from PHSA.");
-                throw new Data.ErrorHandling.ApiException(ErrorMessages.RecordsNotAvailable, HttpStatusCode.BadGateway, nameof(PersonalAccountsService));
-            }
+            account = await this.personalAccountsApi.AccountLookupByHdidAsync(hdid).ConfigureAwait(true);
+            this.PutCache(hdid, account);
+            return account;
         }
 
         /// <inheritdoc/>
@@ -106,7 +96,7 @@ namespace HealthGateway.Common.Services
                 requestResult.ResultStatus = ResultType.Success;
                 requestResult.TotalResultCount = 1;
             }
-            catch (Exception e) when (e is Data.ErrorHandling.ApiException)
+            catch (Exception e) when (e is ApiException or HttpRequestException)
             {
                 this.logger.LogCritical("Request Exception {Error}", e.ToString());
                 requestResult.ResultError = new()
