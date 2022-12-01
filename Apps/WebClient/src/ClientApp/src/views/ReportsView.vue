@@ -204,7 +204,7 @@ export default class ReportsView extends Vue {
         if (this.config.modules["Laboratory"]) {
             this.reportTypeOptions.push({
                 value: covid19Report,
-                text: "COVID-19 Test Results",
+                text: "COVID‑19 Test Results",
             });
         }
         if (this.config.modules["Immunization"]) {
@@ -341,7 +341,7 @@ export default class ReportsView extends Vue {
                 reportName = "Health Visits";
                 break;
             case covid19Report:
-                reportName = "COVID-19 Test";
+                reportName = "COVID‑19 Test";
                 break;
             case immunizationReport:
                 reportName = "Immunization";

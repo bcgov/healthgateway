@@ -123,7 +123,7 @@ export default class Covid19View extends Vue {
 
     private breadcrumbItems: BreadcrumbItem[] = [
         {
-            text: "COVID-19",
+            text: "COVID‑19",
             to: "/covid19",
             active: true,
             dataTestId: "breadcrumb-covid-19",
@@ -469,7 +469,7 @@ export default class Covid19View extends Vue {
                             </b-col>
                             <b-col cols="auto">
                                 <h3 class="text-center m-0">
-                                    COVID-19 Vaccination Record
+                                    COVID‑19 Vaccination Record
                                 </h3>
                             </b-col>
                         </b-row>

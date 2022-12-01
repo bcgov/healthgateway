@@ -480,7 +480,7 @@ export default class PcrTestView extends Vue {
             <b-row class="pt-3">
                 <b-col>
                     <strong>
-                        Register your COVID-19 test kit using one of the
+                        Register your COVID‑19 test kit using one of the
                         following methods:
                     </strong>
                 </b-col>
@@ -917,7 +917,7 @@ export default class PcrTestView extends Vue {
                                     <b-col>
                                         <label for="pcrMobileNumber">
                                             Mobile Number (to receive a
-                                            notification once your COVID-19 test
+                                            notification once your COVID‑19 test
                                             result is available)
                                         </label>
                                         <b-form-input
@@ -1018,7 +1018,7 @@ export default class PcrTestView extends Vue {
                                     boundary="viewport"
                                 >
                                     Your information is being collected to
-                                    provide you with your COVID-19 test result
+                                    provide you with your COVID‑19 test result
                                     under s. 26(c) of the
                                     <em
                                         >Freedom of Information and Protection

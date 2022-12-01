@@ -5,6 +5,10 @@ describe("Authentication", () => {
         cy.enableModules("");
     });
 
+    afterEach(() => {
+        Cypress.session.clearAllSavedSessions();
+    });
+
     it("BCSC UI Login", () => {
         if (Cypress.config().baseUrl != localDevUri) {
             cy.login(
@@ -44,9 +48,9 @@ describe("Authentication", () => {
         cy.login(
             Cypress.env("keycloak.username"),
             Cypress.env("keycloak.password"),
-            AuthMethod.KeyCloak
+            AuthMethod.KeyCloak,
+            "/home"
         );
-        cy.checkTimelineHasLoaded();
         cy.get("[data-testid=headerDropdownBtn]").click();
         cy.get("[data-testid=logoutBtn]").click();
         cy.get("[data-testid=ratingModalSkipBtn]").click();
@@ -86,7 +90,8 @@ describe("Authentication", () => {
         cy.login(
             Cypress.env("keycloak.username"),
             Cypress.env("keycloak.password"),
-            AuthMethod.KeyCloak
+            AuthMethod.KeyCloak,
+            "/home"
         );
         cy.get("[data-testid=headerDropdownBtn]").click();
         cy.get("[data-testid=logoutBtn]")

@@ -266,7 +266,7 @@ export default class PublicCovidTestView extends Vue {
                         data-testid="public-covid-test-result-form-title"
                         class="vaccine-card-form-title text-center pb-3 mb-4"
                     >
-                        Your COVID-19 Test Result
+                        Your COVID‑19 Test Result
                     </h2>
                     <div
                         v-if="publicCovidTests.length"
@@ -460,10 +460,10 @@ export default class PublicCovidTestView extends Vue {
                         data-testid="public-covid-test-form-title"
                         class="vaccine-card-form-title text-center pb-3 mb-4"
                     >
-                        Get Your COVID-19 Test Result
+                        Get Your COVID‑19 Test Result
                     </h2>
                     <p class="mb-4">
-                        To get your COVID-19 test result, please provide:
+                        To get your COVID‑19 test result, please provide:
                     </p>
                     <b-form-group
                         label="Personal Health Number"
@@ -532,7 +532,7 @@ export default class PublicCovidTestView extends Vue {
                         </b-form-invalid-feedback>
                     </b-form-group>
                     <b-form-group
-                        label="Date of COVID-19 Test"
+                        label="Date of COVID‑19 Test"
                         label-for="dateOfCollection"
                         :state="isValid($v.dateOfCollection)"
                     >
@@ -543,7 +543,7 @@ export default class PublicCovidTestView extends Vue {
                             :allow-future="false"
                             :min-year="2020"
                             data-testid="dateOfCollectionInput"
-                            aria-label="Date of COVID-19 Test"
+                            aria-label="Date of COVID‑19 Test"
                             @blur="$v.dateOfBirth.$touch()"
                         />
                         <b-form-invalid-feedback
@@ -614,7 +614,7 @@ export default class PublicCovidTestView extends Vue {
                         boundary="viewport"
                     >
                         Your information is being collected to provide you with
-                        your COVID-19 test result under s. 26(c) of the
+                        your COVID‑19 test result under s. 26(c) of the
                         <em
                             >Freedom of Information and Protection of Privacy
                             Act</em
