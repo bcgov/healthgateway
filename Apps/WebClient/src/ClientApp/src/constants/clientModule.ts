@@ -8,6 +8,7 @@ export enum ClientModule {
     CovidLabResults = "CovidLabResults",
     Dependent = "Dependent",
     DependentImmunizationTab = "DependentImmunizationTab",
+    DependentClinicalDocumentTab = "DependentClinicalDocumentTab",
     Note = "Note",
     VaccinationStatus = "VaccinationStatus",
     VaccinationStatusPdf = "VaccinationStatusPdf",
