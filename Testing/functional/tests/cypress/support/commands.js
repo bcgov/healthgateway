@@ -35,7 +35,7 @@ Cypress.Commands.add(
     "login",
     (username, password, authMethod = AuthMethod.BCSC, path = "/timeline") => {
         if (authMethod == AuthMethod.KeyCloak) {
-            cy.session([username, password], () => {
+            cy.session([username, authMethod], () => {
                 cy.readConfig().then((config) => {
                     cy.logout();
                     let stateId = generateRandomString(32); //"d0b27ba424b64b358b65d40cfdbc040b"
