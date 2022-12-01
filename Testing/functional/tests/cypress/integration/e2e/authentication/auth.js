@@ -3,6 +3,9 @@ const { AuthMethod, localDevUri } = require("../../../support/constants");
 describe("Authentication", () => {
     beforeEach(() => {
         cy.enableModules("");
+    });
+
+    afterEach(() => {
         Cypress.session.clearAllSavedSessions();
     });
 

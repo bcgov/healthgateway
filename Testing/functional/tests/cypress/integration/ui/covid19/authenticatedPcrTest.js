@@ -31,7 +31,6 @@ const feedbackTestKitCodeValidSelector =
 
 describe("Authenticated Pcr Test Registration", () => {
     beforeEach(() => {
-        Cypress.session.clearAllSavedSessions();
         cy.enableModules("PcrTest");
         cy.login(
             Cypress.env("keycloak.username"),
@@ -43,6 +42,10 @@ describe("Authenticated Pcr Test Registration", () => {
         cy.intercept("POST", `**/Laboratory/${HDID}/LabTestKit`, {
             fixture: "LaboratoryService/authenticatedPcrTest.json",
         });
+    });
+
+    afterEach(() => {
+        Cypress.session.clearAllSavedSessions();
     });
 
     it("Successful Test Kit", () => {

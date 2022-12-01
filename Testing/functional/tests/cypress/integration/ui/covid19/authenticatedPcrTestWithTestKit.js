@@ -23,7 +23,6 @@ const feedbackTestTakenIsRequiredSelector =
 
 describe("Authenticated Pcr Test Registration", () => {
     beforeEach(() => {
-        Cypress.session.clearAllSavedSessions();
         cy.enableModules("PcrTest");
         cy.login(
             Cypress.env("keycloak.username"),
@@ -35,6 +34,10 @@ describe("Authenticated Pcr Test Registration", () => {
         cy.intercept("POST", `**/Laboratory/${HDID}/LabTestKit`, {
             fixture: "LaboratoryService/authenticatedPcrTestWithTestKit.json",
         });
+    });
+
+    afterEach(() => {
+        Cypress.session.clearAllSavedSessions();
     });
 
     it("Successful Test Kit", () => {
@@ -67,7 +70,6 @@ describe("Authenticated Pcr Test Registration", () => {
 
 describe("Authenticated Pcr Test Registration with Test Kit ID (Error)", () => {
     beforeEach(() => {
-        Cypress.session.clearAllSavedSessions();
         cy.enableModules("PcrTest");
         cy.login(
             Cypress.env("keycloak.username"),
@@ -80,6 +82,10 @@ describe("Authenticated Pcr Test Registration with Test Kit ID (Error)", () => {
             fixture:
                 "LaboratoryService/authenticatedPcrTestErrorWithTestKit.json",
         });
+    });
+
+    afterEach(() => {
+        Cypress.session.clearAllSavedSessions();
     });
 
     it("Error Test Kit", () => {
@@ -98,7 +104,6 @@ describe("Authenticated Pcr Test Registration with Test Kit ID (Error)", () => {
 
 describe("Previously Registered Test Kit", () => {
     beforeEach(() => {
-        Cypress.session.clearAllSavedSessions();
         cy.enableModules("PcrTest");
         cy.login(
             Cypress.env("keycloak.username"),
@@ -111,6 +116,10 @@ describe("Previously Registered Test Kit", () => {
             fixture:
                 "LaboratoryService/authenticatedPcrTestDuplicateWithTestKit.json",
         });
+    });
+
+    afterEach(() => {
+        Cypress.session.clearAllSavedSessions();
     });
 
     it("Already Processed Test Kit", () => {
