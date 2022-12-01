@@ -87,8 +87,7 @@ describe("Authentication", () => {
         cy.login(
             Cypress.env("keycloak.username"),
             Cypress.env("keycloak.password"),
-            AuthMethod.KeyCloak,
-            "/home"
+            AuthMethod.KeyCloak
         );
         cy.get("[data-testid=headerDropdownBtn]").click();
         cy.get("[data-testid=logoutBtn]")
@@ -100,8 +99,7 @@ describe("Authentication", () => {
         cy.login(
             Cypress.env("keycloak.deceased.username"),
             Cypress.env("keycloak.password"),
-            AuthMethod.KeyCloak,
-            "/home"
+            AuthMethod.KeyCloak
         );
         cy.url().should("include", "/patientRetrievalError");
     });
