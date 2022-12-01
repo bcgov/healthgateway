@@ -1003,8 +1003,12 @@ export default class DependentCardComponent extends Vue {
                         borderless
                         :items="testRows"
                         class="w-100 mb-0"
+<<<<<<< HEAD
                         aria-describedby="COVID-19 Test Results"
                         :data-testid="`covid19-table-${dependent.ownerId}`"
+=======
+                        aria-describedby="COVID‑19 Test Results"
+>>>>>>> 13647
                     >
                         <b-thead>
                             <b-tr>
