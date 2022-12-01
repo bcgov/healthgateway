@@ -416,7 +416,7 @@ export default class CovidCardView extends Vue {
                     type: FeedbackType.Success,
                     title: "Success",
                     message:
-                        "COVID-19 treatment assessment submitted successfully.",
+                        "COVID‑19 treatment assessment submitted successfully.",
                 });
             })
             .catch(() => {
@@ -424,7 +424,7 @@ export default class CovidCardView extends Vue {
                     type: FeedbackType.Warning,
                     title: "Warning",
                     message:
-                        "COVID-19 treatment assessment submitted successfully, but updated assessment history could not be retrieved.",
+                        "COVID‑19 treatment assessment submitted successfully, but updated assessment history could not be retrieved.",
                 });
             })
             .finally(() => {
@@ -436,7 +436,7 @@ export default class CovidCardView extends Vue {
         this.showBannerFeedback({
             type: FeedbackType.Error,
             title: "Error",
-            message: "Unable to submit COVID-19 treatment assessment.",
+            message: "Unable to submit COVID‑19 treatment assessment.",
         });
         this.isLoading = false;
     }
@@ -569,7 +569,7 @@ export default class CovidCardView extends Vue {
                     </v-row>
                     <v-row align="center" dense>
                         <v-col cols="auto">
-                            <h2>COVID-19 Immunizations</h2>
+                            <h2>COVID‑19 Immunizations</h2>
                         </v-col>
                         <v-col class="text-right">
                             <v-btn
@@ -688,7 +688,7 @@ export default class CovidCardView extends Vue {
                                 class="mx-2 success"
                                 @click="startCovidTreatmentAssessment"
                             >
-                                <span>Start COVID-19 Treatment Assessment</span>
+                                <span>Start COVID‑19 Treatment Assessment</span>
                                 <v-icon class="ml-2" size="sm">
                                     fas fa-clipboard-list
                                 </v-icon>
