@@ -6,8 +6,7 @@ describe("Validate Star Rating", () => {
         cy.login(
             Cypress.env("keycloak.username"),
             Cypress.env("keycloak.password"),
-            AuthMethod.KeyCloak,
-            "/home"
+            AuthMethod.KeyCloak
         );
     });
 
