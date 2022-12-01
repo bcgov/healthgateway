@@ -1,10 +1,10 @@
 describe("FAQ Page", () => {
     beforeEach(() => {
         cy.logout();
+        cy.visit("/faq");
     });
 
     it("Page exists", () => {
-        cy.visit("/faq");
         cy.contains("h1", "Frequently Asked Questions");
 
         cy.get("[data-testid=questionBtn]").its("length").should("be.gte", 1);
