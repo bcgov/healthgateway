@@ -12,7 +12,10 @@ const state: NotificationState = {
     status: LoadStatus.NONE,
 };
 
+const namespaced = true;
+
 export const notification: NotificationModule = {
+    namespaced,
     state,
     getters,
     actions,

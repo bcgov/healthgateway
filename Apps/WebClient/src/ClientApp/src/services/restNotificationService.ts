@@ -6,16 +6,19 @@ import { HttpError } from "@/models/errors";
 import Notification from "@/models/notification";
 import container from "@/plugins/container";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
-import { IHttpDelegate, ILogger } from "@/services/interfaces";
+import {
+    IHttpDelegate,
+    ILogger,
+    INotificationService,
+} from "@/services/interfaces";
 import ErrorTranslator from "@/utility/errorTranslator";
-
-import { INotificationService } from "./interfaces";
 
 @injectable()
 export class RestNotificationService implements INotificationService {
     private logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
     private readonly NOTIFICATION_BASE_URI: string = "Notification";
     private http!: IHttpDelegate;
+    private isEnabled = false;
     private baseUri = "";
 
     public initialize(
@@ -23,11 +26,17 @@ export class RestNotificationService implements INotificationService {
         http: IHttpDelegate
     ): void {
         this.http = http;
+        this.isEnabled = config.webClient.modules["NotificationCentre"];
         this.baseUri = config.serviceEndpoints["GatewayApi"];
     }
 
     getNotifications(hdid: string): Promise<Notification[]> {
         return new Promise((resolve, reject) => {
+            if (!this.isEnabled) {
+                resolve([]);
+                return;
+            }
+
             this.http
                 .getWithCors<Notification[]>(
                     `${this.baseUri}${this.NOTIFICATION_BASE_URI}/${hdid}`
@@ -47,16 +56,18 @@ export class RestNotificationService implements INotificationService {
         });
     }
     dismissNotification(hdid: string, notificationId: string): Promise<void> {
-        return new Promise((resolve, reject) =>
+        return new Promise((resolve, reject) => {
+            if (!this.isEnabled) {
+                resolve();
+                return;
+            }
+
             this.http
                 .delete<void>(
-                    `${this.baseUri}${this.NOTIFICATION_BASE_URI}${hdid}/notificationId`,
+                    `${this.baseUri}${this.NOTIFICATION_BASE_URI}/${hdid}/${notificationId}`,
                     notificationId
                 )
-                .then((result) => {
-                    this.logger.debug(`dismissNotification ${result}`);
-                    resolve();
-                })
+                .then(() => resolve())
                 .catch((err: HttpError) => {
                     this.logger.error(
                         `Error in RestNotificationService.dismissNotification()`
@@ -67,20 +78,22 @@ export class RestNotificationService implements INotificationService {
                             ServiceCode.HealthGatewayUser
                         )
                     );
-                })
-        );
+                });
+        });
     }
     dismissNotifications(hdid: string): Promise<void> {
-        return new Promise((resolve, reject) =>
+        return new Promise((resolve, reject) => {
+            if (!this.isEnabled) {
+                resolve();
+                return;
+            }
+
             this.http
                 .delete<void>(
-                    `${this.baseUri}${this.NOTIFICATION_BASE_URI}${hdid}`,
+                    `${this.baseUri}${this.NOTIFICATION_BASE_URI}/${hdid}`,
                     hdid
                 )
-                .then((result) => {
-                    this.logger.debug(`dismissNotifications ${result}`);
-                    resolve();
-                })
+                .then(() => resolve())
                 .catch((err: HttpError) => {
                     this.logger.error(
                         `Error in RestNotificationService.dismissNotifications()`
@@ -91,7 +104,7 @@ export class RestNotificationService implements INotificationService {
                             ServiceCode.HealthGatewayUser
                         )
                     );
-                })
-        );
+                });
+        });
     }
 }

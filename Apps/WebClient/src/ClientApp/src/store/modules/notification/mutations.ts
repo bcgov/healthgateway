@@ -18,7 +18,7 @@ export const mutations: NotificationMutations = {
             (n) => n.id != notificationId
         );
     },
-    dismissNotifications(state: NotificationState) {
+    dismissAllNotifications(state: NotificationState) {
         state.notifications = [];
     },
     notificationError(state: NotificationState, error: ResultError) {

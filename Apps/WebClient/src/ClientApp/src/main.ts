@@ -61,6 +61,7 @@ import {
     ILaboratoryService,
     ILogger,
     IMedicationService,
+    INotificationService,
     IPatientService,
     IPcrTestService,
     IReportService,
@@ -146,6 +147,9 @@ configService
         const userNoteService = container.get<IUserNoteService>(
             SERVICE_IDENTIFIER.UserNoteService
         );
+        const notificationService = container.get<INotificationService>(
+            SERVICE_IDENTIFIER.NotificationService
+        );
         const communicationService = container.get<ICommunicationService>(
             SERVICE_IDENTIFIER.CommunicationService
         );
@@ -186,6 +190,7 @@ configService
         userProfileService.initialize(config, httpDelegate);
         userFeedbackService.initialize(config, httpDelegate);
         userNoteService.initialize(config, httpDelegate);
+        notificationService.initialize(config, httpDelegate);
         communicationService.initialize(config, httpDelegate);
         userCommentService.initialize(config, httpDelegate);
         userRatingService.initialize(config, httpDelegate);
