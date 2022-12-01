@@ -31,6 +31,7 @@ const processedBanner = "[data-testid=alreadyProcessedBanner]";
 
 describe("Authenticated PCR Test Kit Registration", () => {
     beforeEach(() => {
+        Cypress.session.clearAllSavedSessions();
         cy.enableModules("PcrTest");
         cy.login(
             Cypress.env("keycloak.username"),

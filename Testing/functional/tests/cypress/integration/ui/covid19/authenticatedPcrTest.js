@@ -31,6 +31,7 @@ const feedbackTestKitCodeValidSelector =
 
 describe("Authenticated Pcr Test Registration", () => {
     beforeEach(() => {
+        Cypress.session.clearAllSavedSessions();
         cy.enableModules("PcrTest");
         cy.login(
             Cypress.env("keycloak.username"),
@@ -95,6 +96,7 @@ describe("Authenticated Pcr Test Registration", () => {
 
 describe("Authenticated Pcr Test Registration with Error", () => {
     beforeEach(() => {
+        Cypress.session.clearAllSavedSessions();
         cy.enableModules("PcrTest");
         cy.login(
             Cypress.env("keycloak.username"),
@@ -131,6 +133,7 @@ describe("Authenticated Pcr Test Registration with Error", () => {
 
 describe("Authenticated Pcr Test Registration Previously Processed", () => {
     beforeEach(() => {
+        Cypress.session.clearAllSavedSessions();
         cy.enableModules("PcrTest");
         cy.login(
             Cypress.env("keycloak.username"),

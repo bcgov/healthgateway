@@ -3,6 +3,7 @@ const { AuthMethod, localDevUri } = require("../../../support/constants");
 describe("Authentication", () => {
     beforeEach(() => {
         cy.enableModules("");
+        Cypress.session.clearAllSavedSessions();
     });
 
     it("BCSC UI Login", () => {
@@ -83,7 +84,6 @@ describe("Authentication", () => {
     });
 
     it("KeyCloak Login", () => {
-        Cypress.session.clearAllSavedSessions();
         cy.login(
             Cypress.env("keycloak.username"),
             Cypress.env("keycloak.password"),
