@@ -461,7 +461,7 @@ describe("Dependents - Clinical Document Tab - Enabled", () => {
 
         cy.log("Validating Clinical Document Tab - Verify result and sort");
 
-        cy.get(`[data-testid=clinical-docuemnt-tab-title-${dependentHdid}]`)
+        cy.get(`[data-testid=clinical-document-tab-title-${dependentHdid}]`)
             .parent()
             .click();
 
@@ -493,7 +493,7 @@ describe("Dependents - Clinical Document Tab - Enabled", () => {
 
         cy.log("Validating Clinical Document Tab - No Data Found");
 
-        cy.get(`[data-testid=clinical-docuemnt-tab-title-${dependentHdid}]`)
+        cy.get(`[data-testid=clinical-document-tab-title-${dependentHdid}]`)
             .parent()
             .click();
 

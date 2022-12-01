@@ -310,7 +310,7 @@ describe("dependents", () => {
             `[data-testid=download-immunization-forecast-report-btn-${validDependentHdid}]`
         ).click({ force: true });
 
-        // Click CSV
+        // Click XLSX
         cy.get(
             `[data-testid=download-immunization-forecast-report-xlsx-btn-${validDependentHdid}]`
         ).click({ force: true });
@@ -329,7 +329,7 @@ describe("dependents", () => {
         cy.log("Validating Clinical Document Tab - Verify result and download");
 
         cy.get(
-            `[data-testid=clinical-docuemnt-tab-title-${validDependentHdid}]`
+            `[data-testid=clinical-document-tab-title-${validDependentHdid}]`
         )
             .parent()
             .click();

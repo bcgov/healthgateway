@@ -1003,12 +1003,8 @@ export default class DependentCardComponent extends Vue {
                         borderless
                         :items="testRows"
                         class="w-100 mb-0"
-<<<<<<< HEAD
                         aria-describedby="COVID-19 Test Results"
                         :data-testid="`covid19-table-${dependent.ownerId}`"
-=======
-                        aria-describedby="COVID‑19 Test Results"
->>>>>>> 13647
                     >
                         <b-thead>
                             <b-tr>
@@ -1460,7 +1456,7 @@ export default class DependentCardComponent extends Vue {
                 >
                     <template #title>
                         <div
-                            :data-testid="`clinical-docuemnt-tab-title-${dependent.ownerId}`"
+                            :data-testid="`clinical-document-tab-title-${dependent.ownerId}`"
                         >
                             Clinical Docs
                         </div>
@@ -1513,7 +1509,7 @@ export default class DependentCardComponent extends Vue {
                             >
                                 <b-td
                                     :data-testid="`clinical-document-service-date-${dependent.ownerId}-${index}`"
-                                    class="align-middle"
+                                    class="align-middle text-nowrap"
                                 >
                                     {{ formatDate(row.serviceDate) }}
                                 </b-td>
