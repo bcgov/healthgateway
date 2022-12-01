@@ -335,8 +335,8 @@ export default class CovidTreatmentAssessmentComponent extends Vue {
                             </ValidationProvider>
                         </Card>
                         <Card
-                            title="2. Have you recently tested positive for COVID-19 in the last 7 days?*"
-                            additional-info="This citizen has tested positive for COVID-19 within the last 7 days."
+                            title="2. Have you recently tested positive for COVID‑19 in the last 7 days?*"
+                            additional-info="This citizen has tested positive for COVID‑19 within the last 7 days."
                             :display-additional-info="
                                 details.hasKnownPositiveC19Past7Days
                             "
@@ -357,7 +357,7 @@ export default class CovidTreatmentAssessmentComponent extends Vue {
                             </ValidationProvider>
                         </Card>
                         <Card
-                            title="3. Do you have any severe symptoms of COVID-19?*"
+                            title="3. Do you have any severe symptoms of COVID‑19?*"
                         >
                             <ValidationProvider
                                 v-slot="{ errors }"
@@ -374,7 +374,7 @@ export default class CovidTreatmentAssessmentComponent extends Vue {
                             </ValidationProvider>
                         </Card>
                         <Card
-                            title="4. COVID-19 symptoms can range from mild to moderate. Mild and moderate symptoms are symptoms that can be managed at home. Do you have any symptoms of COVID-19?*"
+                            title="4. COVID‑19 symptoms can range from mild to moderate. Mild and moderate symptoms are symptoms that can be managed at home. Do you have any symptoms of COVID‑19?*"
                         >
                             <ValidationProvider
                                 v-slot="{ errors }"
@@ -449,7 +449,7 @@ export default class CovidTreatmentAssessmentComponent extends Vue {
                                 v-if="symptomOnsetTooLongAgo"
                                 class="option-message-color"
                             >
-                                Citizen would likely not benefit from COVID-19
+                                Citizen would likely not benefit from COVID‑19
                                 treatment.
                             </div>
                         </Card>
@@ -516,7 +516,7 @@ export default class CovidTreatmentAssessmentComponent extends Vue {
                         </Card>
                         <Card
                             title="10. Do you agree to the information being added to your CareConnect electronic 
-                            health record as part of the process to obtain COVID-19 treatment?*"
+                            health record as part of the process to obtain COVID‑19 treatment?*"
                         >
                             <ValidationProvider
                                 v-slot="{ errors }"

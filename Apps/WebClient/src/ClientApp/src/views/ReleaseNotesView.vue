@@ -528,11 +528,11 @@ export default class ReleaseNotesView extends Vue {
         <release-note
             date="March 10, 2021"
             version="v1.3.10"
-            title="COVID-19 Immunization Card, Date Formats"
+            title="COVID‑19 Immunization Card, Date Formats"
         >
             <ul>
                 <li>
-                    We added date of birth to the COVID-19 Immunization Card, to
+                    We added date of birth to the COVID‑19 Immunization Card, to
                     support identity validation.
                 </li>
                 <li>
@@ -584,7 +584,7 @@ export default class ReleaseNotesView extends Vue {
         <release-note
             date="February 17, 2021"
             version="v1.3.7"
-            title="Email Verification, COVID-19 Immunization Card, Error Messaging"
+            title="Email Verification, COVID‑19 Immunization Card, Error Messaging"
         >
             <ul>
                 <li>
@@ -592,8 +592,8 @@ export default class ReleaseNotesView extends Vue {
                     registration flow and minimize errors when verifying.
                 </li>
                 <li>
-                    We added a COVID-19 Immunization Card to provide a summary
-                    card of COVID-19 vaccine doses, similar to the one provided
+                    We added a COVID‑19 Immunization Card to provide a summary
+                    card of COVID‑19 vaccine doses, similar to the one provided
                     at clinics.
                 </li>
                 <li>
@@ -653,8 +653,8 @@ export default class ReleaseNotesView extends Vue {
                 <li>
                     We updated our immunization records to include recommended
                     future immunizations based on our BC immunization schedule
-                    and COVID-19 immunization program. If you've received the
-                    first dose of your COVID-19 immunization, you will see a
+                    and COVID‑19 immunization program. If you've received the
+                    first dose of your COVID‑19 immunization, you will see a
                     recommended date for your next dose in both the health care
                     timeline and export records pages.
                 </li>
@@ -723,7 +723,7 @@ export default class ReleaseNotesView extends Vue {
             <ul>
                 <li>
                     We launched the feature which will allow Health Gateway
-                    users to view their immunization records, including COVID-19
+                    users to view their immunization records, including COVID‑19
                     immunizations.
                 </li>
             </ul>
@@ -731,12 +731,12 @@ export default class ReleaseNotesView extends Vue {
         <release-note
             date="December 9, 2020"
             version="v1.3.1.3"
-            title="Fix for Dependent Name Validation, COVID-19 Test Result Export"
+            title="Fix for Dependent Name Validation, COVID‑19 Test Result Export"
         >
             <ul>
                 <li>
                     We fixed a bug on dependent name validation and implemented
-                    the COVID-19 Test Result record export.
+                    the COVID‑19 Test Result record export.
                 </li>
             </ul>
         </release-note>
@@ -755,12 +755,12 @@ export default class ReleaseNotesView extends Vue {
         <release-note
             date="December 7, 2020"
             version="v1.3.1.1"
-            title="Launched Parent Access to Children's COVID-19 Results"
+            title="Launched Parent Access to Children's COVID‑19 Results"
         >
             <ul>
                 <li>
                     We launched the feature enabling parent access to their
-                    children's COVID-19 results. This will allow parents to view
+                    children's COVID‑19 results. This will allow parents to view
                     results for their children under the age of 12.
                 </li>
             </ul>
@@ -793,7 +793,7 @@ export default class ReleaseNotesView extends Vue {
                 <li>
                     We enabled non-photo BC Services card access for those over
                     19. This will support temporary residents and students of BC
-                    who need access to their COVID-19 test results through the
+                    who need access to their COVID‑19 test results through the
                     Health Gateway.
                 </li>
             </ul>
@@ -801,12 +801,12 @@ export default class ReleaseNotesView extends Vue {
         <release-note
             date="November 12, 2020"
             version="v1.2.10"
-            title="Parent Access to Children's COVID-19 Results, OpenShift Upgrade"
+            title="Parent Access to Children's COVID‑19 Results, OpenShift Upgrade"
         >
             <ul>
                 <li>
                     We continued development to support parent access to their
-                    children's COVID-19 results. This update will also enable
+                    children's COVID‑19 results. This update will also enable
                     parents to receive text notifications when the results are
                     ready. Further work to complete this feature will require
                     2-4 weeks.
@@ -836,7 +836,7 @@ export default class ReleaseNotesView extends Vue {
                 </li>
                 <li>
                     We started working on a feature which will allow parents to
-                    access their children's COVID-19 results.
+                    access their children's COVID‑19 results.
                 </li>
             </ul>
         </release-note>
@@ -937,7 +937,7 @@ export default class ReleaseNotesView extends Vue {
         >
             <ul>
                 <li>
-                    This was a minor fix to the COVID-19 Lab Result timeline
+                    This was a minor fix to the COVID‑19 Lab Result timeline
                     entry, to show a more descriptive title, rather than the
                     type of test administered.
                 </li>
@@ -950,14 +950,14 @@ export default class ReleaseNotesView extends Vue {
         <release-note
             date="August 26, 2020"
             version="v1.2.5"
-            title="COVID-19 Test Results, Calendar Enhancements, Application Star Rating, Health Insights"
+            title="COVID‑19 Test Results, Calendar Enhancements, Application Star Rating, Health Insights"
         >
             <ul>
                 <li>
-                    To support the COVID-19 response, the Health Gateway will
-                    now provide access to COVID-19 test results for BC
+                    To support the COVID‑19 response, the Health Gateway will
+                    now provide access to COVID‑19 test results for BC
                     residents. This feature includes a notification via
-                    SMS/Email that the COVID-19 result is available.
+                    SMS/Email that the COVID‑19 result is available.
                 </li>
                 <li>
                     We enhanced the date picker for the calendar to be easier to

@@ -23,14 +23,14 @@ export default class HealthlinkSidebarComponent extends Vue {
     };
     private cardPool: Healthcard[] = [
         {
-            title: "COVID-19",
-            description: "View more information about COVID-19.",
+            title: "COVID‑19",
+            description: "View more information about COVID‑19.",
             imageSrc: CovidImage,
             urlLink:
                 "http://www.bccdc.ca/health-info/diseases-conditions/covid-19",
         },
         {
-            title: "8-1-1",
+            title: "8‑1‑1",
             description:
                 "Speak to a pharmacist from 5pm to 9am Pacific Time everyday of the year.",
             imageSrc: PhoneImage,
@@ -40,7 +40,7 @@ export default class HealthlinkSidebarComponent extends Vue {
         {
             title: "Healthlink",
             description:
-                "HealthLink BC provides reliable non-emergency health information and advice in British Columbia.",
+                "HealthLink BC provides reliable non‑emergency health information and advice in British Columbia.",
             imageSrc: HealthlinkImage,
             urlLink: "https://www.healthlinkbc.ca",
         },

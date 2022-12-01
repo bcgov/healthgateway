@@ -858,7 +858,7 @@ export default class DependentCardComponent extends Vue {
                     @click="fetchCovid19LaboratoryTests"
                 >
                     <template #title>
-                        <div data-testid="covid19TabTitle">COVID-19</div>
+                        <div data-testid="covid19TabTitle">COVID‑19</div>
                     </template>
                     <div class="p-3">
                         <div class="d-flex justify-content-center">
@@ -898,7 +898,7 @@ export default class DependentCardComponent extends Vue {
                         borderless
                         :items="testRows"
                         class="w-100 mb-0"
-                        aria-describedby="COVID-19 Test Results"
+                        aria-describedby="COVID‑19 Test Results"
                     >
                         <b-thead>
                             <b-tr>
@@ -921,7 +921,7 @@ export default class DependentCardComponent extends Vue {
                             <b-tr v-for="(row, index) in testRows" :key="index">
                                 <b-td
                                     data-testid="dependentCovidTestDate"
-                                    class="align-middle"
+                                    class="align-middle text-nowrap"
                                 >
                                     {{ formatDate(row.test.collectedDateTime) }}
                                 </b-td>
@@ -1165,7 +1165,7 @@ export default class DependentCardComponent extends Vue {
                                                 >
                                                     <b-td
                                                         :data-testid="`history-immunization-date-${dependent.ownerId}-${index}`"
-                                                        class="align-middle"
+                                                        class="align-middle text-nowrap"
                                                     >
                                                         {{ row.date }}
                                                     </b-td>
@@ -1323,7 +1323,7 @@ export default class DependentCardComponent extends Vue {
                                                 </b-td>
                                                 <b-td
                                                     :data-testid="`forecast-due-date-${dependent.ownerId}-${index}`"
-                                                    class="align-middle"
+                                                    class="align-middle text-nowrap"
                                                 >
                                                     {{ row.due_date }}
                                                 </b-td>
