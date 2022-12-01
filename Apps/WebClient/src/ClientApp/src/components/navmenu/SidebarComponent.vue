@@ -247,7 +247,7 @@ export default class SidebarComponent extends Vue {
                         :class="{ selected: isCovid19 }"
                     >
                         <b-row class="align-items-center" no-gutters>
-                            <b-col title="COVID-19" cols="auto" class="pr-md-4">
+                            <b-col title="COVID‑19" cols="auto" class="pr-md-4">
                                 <hg-icon
                                     icon="check-circle"
                                     size="large"
@@ -259,7 +259,7 @@ export default class SidebarComponent extends Vue {
                                 data-testid="covid19Label"
                                 class="button-text pl-3"
                             >
-                                <span>COVID-19</span>
+                                <span>COVID‑19</span>
                             </b-col>
                         </b-row>
                     </hg-button>

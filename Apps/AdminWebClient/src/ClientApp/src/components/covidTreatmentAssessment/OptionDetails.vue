@@ -75,10 +75,10 @@ export default class OptionDetails extends Vue {
             />
         </v-radio-group>
         <div v-if="showMessageWithNoBenefit" class="option-message-color">
-            Citizen would likely not benefit from COVID-19 treatment.
+            Citizen would likely not benefit from COVID‑19 treatment.
         </div>
         <div v-if="showMessageWithBenefit" class="option-message-color">
-            Citizen may benefit from COVID-19 treatment.
+            Citizen may benefit from COVID‑19 treatment.
         </div>
     </div>
 </template>

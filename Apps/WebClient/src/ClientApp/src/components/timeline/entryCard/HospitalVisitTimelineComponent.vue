@@ -126,7 +126,10 @@ export default class HospitalVisitTimelineComponent extends Vue {
                 </div>
                 <div data-testid="hospital-visit-date">
                     <strong>Visit Date: </strong>
-                    <span data-testid="laboratory-collection-date-value">
+                    <span
+                        data-testid="laboratory-collection-date-value"
+                        class="text-nowrap"
+                    >
                         {{ formatDate(entry.admitDateTime) }}
                     </span>
                     <hg-button
@@ -156,7 +159,10 @@ export default class HospitalVisitTimelineComponent extends Vue {
                 </div>
                 <div data-testid="hospital-visit-discharge-date">
                     <strong>Discharge Date: </strong>
-                    <span v-if="entry.endDateTime !== undefined">
+                    <span
+                        v-if="entry.endDateTime !== undefined"
+                        class="text-nowrap"
+                    >
                         {{ formatDate(entry.endDateTime) }}
                     </span>
                 </div>
