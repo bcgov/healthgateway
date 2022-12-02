@@ -106,7 +106,7 @@ describe("Reports", () => {
     });
 
     it("Validate COVID-19 Report", () => {
-        cy.get("[data-testid=reportType]").select("COVID-19 Test Results");
+        cy.get("[data-testid=reportType]").select("COVID‑19 Test Results");
 
         cy.get("[data-testid=reportSample]").should("be.visible");
         cy.get("[data-testid=covid19DateItem]", { timeout: 60000 })
