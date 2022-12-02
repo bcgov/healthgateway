@@ -186,9 +186,9 @@ namespace HealthGateway.Admin.Delegates
                 {
                     using Activity? activity = Source.StartActivity();
 
-                    IApiResponse<PhsaResult<VaccineDetailsResponse>> response = await this.immunizationAdminApi.GetVaccineDetails(request, bearerToken).ConfigureAwait(true);
+                    PhsaResult<VaccineDetailsResponse> response = await this.immunizationAdminApi.GetVaccineDetails(request, bearerToken).ConfigureAwait(true);
                     retVal.ResultStatus = ResultType.Success;
-                    retVal.ResourcePayload!.Result = response.Content!.Result;
+                    retVal.ResourcePayload!.Result = response.Result;
                     retVal.TotalResultCount = 1;
                     retVal.PageSize = int.Parse(this.phsaConfig.FetchSize, CultureInfo.InvariantCulture);
                 }
