@@ -221,6 +221,9 @@ configService
 
                 if (user.hdid && isValidIdentityProvider) {
                     await store.dispatch("user/retrieveEssentialData");
+                    store
+                        .dispatch("notification/retrieve")
+                        .catch((error) => logger.warn(error.message));
                 }
             }
 
