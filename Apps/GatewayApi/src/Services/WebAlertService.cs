@@ -65,7 +65,8 @@ namespace HealthGateway.GatewayApi.Services
 
             IList<PhsaWebAlert> phsaWebAlerts = await this.webAlertApi.GetWebAlertsAsync(pid).ConfigureAwait(true);
             IList<WebAlert> webAlerts = this.autoMapper.Map<IEnumerable<PhsaWebAlert>, IList<WebAlert>>(
-                phsaWebAlerts.Where(a => a.ExpirationDateTimeUtc > DateTime.UtcNow && a.ScheduledDateTimeUtc < DateTime.UtcNow));
+                phsaWebAlerts.Where(a => a.ExpirationDateTimeUtc > DateTime.UtcNow && a.ScheduledDateTimeUtc < DateTime.UtcNow)
+                    .OrderByDescending(a => a.ScheduledDateTimeUtc));
             this.logger.LogDebug("Finished retrieving web alerts from PHSA.");
             return webAlerts;
         }
