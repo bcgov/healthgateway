@@ -12,6 +12,7 @@ import { Component, Ref, Watch } from "vue-property-decorator";
 import { Action, Getter } from "vuex-class";
 
 import RatingComponent from "@/components/modal/RatingComponent.vue";
+import type { WebClientConfiguration } from "@/models/configData";
 import User, { OidcUserInfo } from "@/models/user";
 import container from "@/plugins/container";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
@@ -40,6 +41,9 @@ export default class HeaderComponent extends Vue {
     @Getter("isOffline", { namespace: "config" })
     isOffline!: boolean;
 
+    @Getter("webClient", { namespace: "config" })
+    config!: WebClientConfiguration;
+
     @Getter("oidcIsAuthenticated", { namespace: "auth" })
     oidcIsAuthenticated!: boolean;
 
@@ -55,6 +59,12 @@ export default class HeaderComponent extends Vue {
     @Getter("isSidebarAvailable", { namespace: "navbar" })
     isSidebarAvailable!: boolean;
 
+    @Getter("notifications", { namespace: "notification" })
+    notifications!: Notification[];
+
+    @Getter("newNotifications", { namespace: "notification" })
+    newNotifications!: Notification[];
+
     @Getter("user", { namespace: "user" })
     user!: User;
 
@@ -64,9 +74,13 @@ export default class HeaderComponent extends Vue {
     @Getter("patientRetrievalFailed", { namespace: "user" })
     patientRetrievalFailed!: boolean;
 
+    @Getter("userIsLoggedInAndActive", { namespace: "user" })
+    userIsLoggedInAndActive!: boolean;
+
     @Ref("ratingComponent")
     readonly ratingComponent!: RatingComponent;
 
+    readonly sidebarId = "notification-centre-sidebar";
     private logger!: ILogger;
 
     private lastScrollTop = 0;
@@ -122,6 +136,14 @@ export default class HeaderComponent extends Vue {
         return this.isSidebarAvailable && !this.isPcrTest && this.isMobileWidth;
     }
 
+    private get isNotificationCentreAvailable(): boolean {
+        return (
+            this.config.modules["NotificationCentre"] &&
+            this.userIsLoggedInAndActive &&
+            !this.isPcrTest
+        );
+    }
+
     private get isLoggedInMenuShown(): boolean {
         return this.oidcIsAuthenticated && !this.isPcrTest;
     }
@@ -140,6 +162,11 @@ export default class HeaderComponent extends Vue {
             this.isValidIdentityProvider &&
             !this.patientRetrievalFailed
         );
+    }
+
+    private get notificationBadgeContent(): string | boolean {
+        const count = this.newNotifications.length;
+        return count === 0 ? false : count.toString();
     }
 
     private onScroll(): void {
@@ -239,6 +266,18 @@ export default class HeaderComponent extends Vue {
 
             <!-- Navbar links -->
             <b-navbar-nav class="nav-pills ml-auto">
+                <b-avatar
+                    v-if="isNotificationCentreAvailable"
+                    v-b-toggle="sidebarId"
+                    button
+                    variant="transparent"
+                    :badge="notificationBadgeContent"
+                    badge-variant="danger"
+                    badge-top
+                    icon="bell"
+                    class="text-white my-3 mx-2 rounded-0"
+                    data-testid="notification-centre-button"
+                />
                 <b-nav-item-dropdown
                     v-if="isLoggedInMenuShown"
                     id="menuBtnLogout"

@@ -21,6 +21,7 @@ import {
     BFormTag,
     BFormTags,
     BPopover,
+    BSidebar,
 } from "bootstrap-vue";
 import IdleVue from "idle-vue";
 import Vue from "vue";
@@ -78,14 +79,15 @@ Vue.component("BBadge", BBadge);
 Vue.component("BBreadcrumb", BBreadcrumb);
 Vue.component("BBreadcrumbItem", BBreadcrumbItem);
 Vue.component("BCard", BCard);
-Vue.component("BPopover", BPopover);
 Vue.component("BDropdown", BDropdown);
 Vue.component("BDropdownDivider", BDropdownDivider);
 Vue.component("BDropdownItem", BDropdownItem);
 Vue.component("BDropdownItemButton", BDropdownItemButton);
 Vue.component("BDropdownText", BDropdownText);
-Vue.component("BFormTags", BFormTags);
 Vue.component("BFormTag", BFormTag);
+Vue.component("BFormTags", BFormTags);
+Vue.component("BPopover", BPopover);
+Vue.component("BSidebar", BSidebar);
 
 Vue.component("HgButton", HgButtonComponent);
 Vue.component("HgCardButton", HgCardButtonComponent);
