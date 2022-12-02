@@ -43,6 +43,14 @@ export interface UserGetters extends GetterTree<UserState, RootState> {
     patientData(state: UserState): PatientData;
     patientRetrievalFailed(state: UserState): boolean;
     isLoading(state: UserState): boolean;
+    userIsLoggedInAndActive(
+        _state: UserState,
+        // eslint-disable-next-line
+        getters: any,
+        _rootState: RootState,
+        // eslint-disable-next-line
+        rootGetters: any
+    ): boolean;
 }
 
 type StoreContext = ActionContext<UserState, RootState>;

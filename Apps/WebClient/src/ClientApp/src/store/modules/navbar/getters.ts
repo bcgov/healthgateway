@@ -47,22 +47,6 @@ export const getters: NavbarGetters = {
         // eslint-disable-next-line
         rootGetters: any
     ): boolean => {
-        const isOffline = rootGetters["config/isOffline"];
-        const isAuthenticated: boolean =
-            rootGetters["auth/oidcIsAuthenticated"];
-        const isValid: boolean = rootGetters["auth/isValidIdentityProvider"];
-        const isRegistered: boolean = rootGetters["user/userIsRegistered"];
-        const isActive: boolean = rootGetters["user/userIsActive"];
-        const patientRetrievalFailed: boolean =
-            rootGetters["user/patientRetrievalFailed"];
-
-        return (
-            !isOffline &&
-            isAuthenticated &&
-            isValid &&
-            isRegistered &&
-            isActive &&
-            !patientRetrievalFailed
-        );
+        return rootGetters["user/userIsLoggedInAndActive"];
     },
 };
