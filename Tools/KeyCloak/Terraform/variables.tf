@@ -68,7 +68,7 @@ variable "keycloak_idp_phsa" {
   type = object({
     base_url      = string
     auth_path     = optional(string, "/oauth2/v2.0/authorize")
-    token_path    = optional(string, " /oauth2/v2.0/token")
+    token_path    = optional(string, "/oauth2/v2.0/token")
     client_id     = string
     client_secret = string
     jwks_path     = optional(string, "/discovery/v2.0/keys")
