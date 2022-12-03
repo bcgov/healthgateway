@@ -39,10 +39,11 @@ namespace HealthGateway.Common.AspNetConfiguration.Modules
         /// <param name="services">The service collection provider.</param>
         /// <param name="logger">The logger to use.</param>
         /// <param name="configuration">The configuration to use for values.</param>
-        public static void ConfigurePhsaV2Access(IServiceCollection services, ILogger logger, IConfiguration configuration)
+        /// <param name="configurationSectionKey">The configuration section to use when binding values.</param>
+        public static void ConfigurePhsaV2Access(IServiceCollection services, ILogger logger, IConfiguration configuration, string? configurationSectionKey = PhsaConfigV2.ConfigurationSectionKey)
         {
             PhsaConfigV2 phsaConfig = new();
-            configuration.Bind(PhsaConfigV2.ConfigurationSectionKey, phsaConfig);
+            configuration.Bind(configurationSectionKey, phsaConfig);
 
             if (phsaConfig.TokenCacheEnabled)
             {
@@ -52,7 +53,9 @@ namespace HealthGateway.Common.AspNetConfiguration.Modules
             services.AddRefitClient<ITokenSwapApi>()
                 .ConfigureHttpClient(c => c.BaseAddress = phsaConfig.TokenBaseUrl);
 
-            services.AddTransient<ITokenSwapDelegate, RestTokenSwapDelegate>();
+            services.AddTransient<ITokenSwapDelegate>(
+                sp =>
+                    ActivatorUtilities.CreateInstance<RestTokenSwapDelegate>(sp, configurationSectionKey));
             services.AddTransient<IAuthenticationDelegate, AuthenticationDelegate>();
             services.AddTransient<IAccessTokenService, AccessTokenService>();
             services.AddTransient<AuthHeaderHandler>();
