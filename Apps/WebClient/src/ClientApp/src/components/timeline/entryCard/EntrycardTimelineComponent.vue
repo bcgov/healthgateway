@@ -141,9 +141,9 @@ export default class EntrycardTimelineComponent extends Vue {
                                 <strong>{{ displayTitle }}</strong>
                             </span>
                         </b-col>
-                        <b-col cols="4" class="text-right">
+                        <b-col class="text-right text-nowrap">
                             <span
-                                class="text-muted text-nowrap"
+                                class="text-muted entry-card-date"
                                 data-testid="entryCardDate"
                                 >{{ dateString }}</span
                             >
@@ -284,5 +284,9 @@ div[class*=" row"] {
 .detailsButton {
     padding: 0px;
     color: $primary;
+}
+
+.entry-card-date {
+    font-size: 0.875rem;
 }
 </style>
