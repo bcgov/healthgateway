@@ -143,7 +143,7 @@ export default class EntrycardTimelineComponent extends Vue {
                         </b-col>
                         <b-col cols="auto" class="text-right text-nowrap">
                             <span
-                                class="text-muted entry-card-date"
+                                class="text-muted small"
                                 data-testid="entryCardDate"
                                 >{{ dateString }}</span
                             >
@@ -284,9 +284,5 @@ div[class*=" row"] {
 .detailsButton {
     padding: 0px;
     color: $primary;
-}
-
-.entry-card-date {
-    font-size: 0.875rem;
 }
 </style>
