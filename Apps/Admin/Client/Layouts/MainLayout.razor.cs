@@ -13,6 +13,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //-------------------------------------------------------------------------
+#pragma warning disable CS0618
 namespace HealthGateway.Admin.Client.Layouts
 {
     using System;
@@ -64,6 +65,11 @@ namespace HealthGateway.Admin.Client.Layouts
 
         [Inject]
         private NavigationManager NavigationManager { get; set; } = default!;
+
+        [Inject]
+#pragma warning disable CS0618
+        private SignOutSessionStateManager SignOutManager { get; set; } = default!;
+#pragma warning restore CS0618
 
         [Inject]
         private IState<ConfigurationState> ConfigurationState { get; set; } = default!;
@@ -172,7 +178,7 @@ namespace HealthGateway.Admin.Client.Layouts
             if (!activityDetected)
             {
                 // sign out
-                this.LogOut();
+                await this.LogOutAsync().ConfigureAwait(true);
                 return;
             }
 
@@ -211,9 +217,10 @@ namespace HealthGateway.Admin.Client.Layouts
             this.DrawerOpen = !this.DrawerOpen;
         }
 
-        private void LogOut()
+        private async Task LogOutAsync()
         {
-            this.NavigationManager.NavigateToLogout("authentication/logout");
+            await this.SignOutManager.SetSignOutState().ConfigureAwait(true);
+            this.NavigationManager.NavigateTo("authentication/logout", replace: true);
         }
     }
 }
