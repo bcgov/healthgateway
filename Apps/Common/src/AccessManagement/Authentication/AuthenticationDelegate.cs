@@ -18,9 +18,9 @@ namespace HealthGateway.Common.AccessManagement.Authentication
     using System;
     using System.Collections.Generic;
     using System.Net.Http;
+    using System.Net.Http.Json;
     using System.Security.Claims;
     using System.Text.Json;
-    using System.Threading.Tasks;
     using HealthGateway.Common.AccessManagement.Authentication.Models;
     using HealthGateway.Common.CacheProviders;
     using Microsoft.AspNetCore.Authentication;
@@ -161,7 +161,7 @@ namespace HealthGateway.Common.AccessManagement.Authentication
         public string? FetchAuthenticatedUserToken()
         {
             HttpContext? httpContext = this.httpContextAccessor?.HttpContext;
-            return httpContext.GetTokenAsync("access_token").Result;
+            return httpContext.GetTokenAsync("access_token").GetAwaiter().GetResult();
         }
 
         /// <inheritdoc/>
@@ -178,16 +178,6 @@ namespace HealthGateway.Common.AccessManagement.Authentication
             return user?.FindFirst(ClaimTypes.NameIdentifier)!.Value;
         }
 
-        private (Uri TokenUri, ClientCredentialsTokenRequest TokenRequest) GetConfiguration(string sectionName)
-        {
-            IConfigurationSection configSection = this.configuration.GetSection(sectionName);
-            Uri configUri = configSection.GetValue<Uri>(@"TokenUri") ??
-                            throw new ArgumentNullException(nameof(sectionName), $"{sectionName} does not contain a valid TokenUri");
-            ClientCredentialsTokenRequest configTokenRequest = new();
-            configSection.Bind(configTokenRequest); // Client ID, Client Secret, Audience, Username, Password
-            return (configUri, configTokenRequest);
-        }
-
         private JwtModel GetSystemToken(Uri tokenUri, ClientCredentialsTokenRequest tokenRequest)
         {
             JwtModel? jwtModel = this.ClientCredentialsGrant(tokenUri, tokenRequest);
@@ -197,77 +187,49 @@ namespace HealthGateway.Common.AccessManagement.Authentication
 
         private JwtModel? ClientCredentialsGrant(Uri tokenUri, ClientCredentialsTokenRequest tokenRequest)
         {
-            JwtModel? authModel = null;
-            try
+            IEnumerable<KeyValuePair<string?, string?>> oauthParams = new[]
             {
-                using HttpClient client = this.httpClientFactory.CreateClient();
-
-                IEnumerable<KeyValuePair<string?, string?>> oauthParams = new[]
-                {
-                    new KeyValuePair<string?, string?>(@"client_id", tokenRequest.ClientId),
-                    new KeyValuePair<string?, string?>(@"client_secret", tokenRequest.ClientSecret),
-                    new KeyValuePair<string?, string?>(@"audience", tokenRequest.Audience),
-                    new KeyValuePair<string?, string?>(@"grant_type", @"client_credentials"),
-                };
-                using FormUrlEncodedContent content = new(oauthParams);
-                content.Headers.Clear();
-                content.Headers.Add(@"Content-Type", @"application/x-www-form-urlencoded");
-
-                using HttpResponseMessage response = client.PostAsync(tokenUri, content).Result;
-
-                string jwtTokenResponse = response.Content.ReadAsStringAsync().Result;
-                this.logger.LogTrace("JWT Token response: {JwtTokenResponse}", jwtTokenResponse);
-                response.EnsureSuccessStatusCode();
-                authModel = JsonSerializer.Deserialize<JwtModel>(jwtTokenResponse)!;
-            }
-            catch (HttpRequestException e)
-            {
-                this.logger.LogError("Error Message {Message}", e.Message);
-            }
-            catch (InvalidOperationException e)
-            {
-                this.logger.LogError("Error Message {Message}", e.Message);
-            }
-
-            return authModel;
+                new KeyValuePair<string?, string?>(@"client_id", tokenRequest.ClientId),
+                new KeyValuePair<string?, string?>(@"client_secret", tokenRequest.ClientSecret),
+                new KeyValuePair<string?, string?>(@"audience", tokenRequest.Audience),
+                new KeyValuePair<string?, string?>(@"grant_type", @"client_credentials"),
+            };
+            using FormUrlEncodedContent content = new(oauthParams);
+            return this.Authenticate(tokenUri, content);
         }
 
         private JwtModel? ResourceOwnerPasswordGrant(Uri tokenUri, ClientCredentialsTokenRequest tokenRequest)
         {
+            IEnumerable<KeyValuePair<string?, string?>> oauthParams = new[]
+            {
+                new KeyValuePair<string?, string?>(@"client_id", tokenRequest.ClientId),
+                new KeyValuePair<string?, string?>(@"client_secret", tokenRequest.ClientSecret),
+                new KeyValuePair<string?, string?>(@"grant_type", @"password"),
+                new KeyValuePair<string?, string?>(@"audience", tokenRequest.Audience),
+                new KeyValuePair<string?, string?>(@"scope", tokenRequest.Scope),
+                new KeyValuePair<string?, string?>(@"username", tokenRequest.Username),
+                new KeyValuePair<string?, string?>(@"password", tokenRequest.Password),
+            };
+
+            using FormUrlEncodedContent content = new(oauthParams);
+            return this.Authenticate(tokenUri, content);
+        }
+
+        private JwtModel? Authenticate(Uri tokenUri, FormUrlEncodedContent content)
+        {
             JwtModel? authModel = null;
             try
             {
-                using HttpClient client = this.httpClientFactory.CreateClient();
-
-                IEnumerable<KeyValuePair<string?, string?>> oauthParams = new[]
+                using (HttpClient client = this.httpClientFactory.CreateClient())
                 {
-                    new KeyValuePair<string?, string?>(@"client_id", tokenRequest.ClientId),
-                    new KeyValuePair<string?, string?>(@"client_secret", tokenRequest.ClientSecret),
-                    new KeyValuePair<string?, string?>(@"grant_type", @"password"),
-                    new KeyValuePair<string?, string?>(@"audience", tokenRequest.Audience),
-                    new KeyValuePair<string?, string?>(@"scope", tokenRequest.Scope),
-                    new KeyValuePair<string?, string?>(@"username", tokenRequest.Username),
-                    new KeyValuePair<string?, string?>(@"password", tokenRequest.Password),
-                };
-
-                using FormUrlEncodedContent content = new(oauthParams);
-                content.Headers.Clear();
-                content.Headers.Add(@"Content-Type", @"application/x-www-form-urlencoded");
-
-                using (Task<HttpResponseMessage> task = client.PostAsync(tokenUri, content))
-                {
-                    HttpResponseMessage response = task.Result;
-                    string jwtTokenResponse = response.Content.ReadAsStringAsync().Result;
-                    this.logger.LogTrace("JWT Token response: {JwtTokenResponse}", jwtTokenResponse);
+                    content.Headers.Clear();
+                    content.Headers.Add(@"Content-Type", @"application/x-www-form-urlencoded");
+                    HttpResponseMessage response = client.PostAsync(tokenUri, content).GetAwaiter().GetResult();
                     response.EnsureSuccessStatusCode();
-                    authModel = JsonSerializer.Deserialize<JwtModel>(jwtTokenResponse);
+                    authModel = response.Content.ReadFromJsonAsync<JwtModel>().GetAwaiter().GetResult();
                 }
             }
-            catch (HttpRequestException e)
-            {
-                this.logger.LogError("Error Message {Message}", e.Message);
-            }
-            catch (InvalidOperationException e)
+            catch (Exception e) when (e is HttpRequestException or InvalidOperationException or JsonException)
             {
                 this.logger.LogError("Error Message {Message}", e.Message);
             }
