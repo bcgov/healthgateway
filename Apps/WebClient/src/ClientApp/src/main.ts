@@ -21,6 +21,7 @@ import {
     BFormTag,
     BFormTags,
     BPopover,
+    BSidebar,
 } from "bootstrap-vue";
 import IdleVue from "idle-vue";
 import Vue from "vue";
@@ -61,6 +62,7 @@ import {
     ILaboratoryService,
     ILogger,
     IMedicationService,
+    INotificationService,
     IPatientService,
     IPcrTestService,
     IReportService,
@@ -77,14 +79,15 @@ Vue.component("BBadge", BBadge);
 Vue.component("BBreadcrumb", BBreadcrumb);
 Vue.component("BBreadcrumbItem", BBreadcrumbItem);
 Vue.component("BCard", BCard);
-Vue.component("BPopover", BPopover);
 Vue.component("BDropdown", BDropdown);
 Vue.component("BDropdownDivider", BDropdownDivider);
 Vue.component("BDropdownItem", BDropdownItem);
 Vue.component("BDropdownItemButton", BDropdownItemButton);
 Vue.component("BDropdownText", BDropdownText);
-Vue.component("BFormTags", BFormTags);
 Vue.component("BFormTag", BFormTag);
+Vue.component("BFormTags", BFormTags);
+Vue.component("BPopover", BPopover);
+Vue.component("BSidebar", BSidebar);
 
 Vue.component("HgButton", HgButtonComponent);
 Vue.component("HgCardButton", HgCardButtonComponent);
@@ -146,6 +149,9 @@ configService
         const userNoteService = container.get<IUserNoteService>(
             SERVICE_IDENTIFIER.UserNoteService
         );
+        const notificationService = container.get<INotificationService>(
+            SERVICE_IDENTIFIER.NotificationService
+        );
         const communicationService = container.get<ICommunicationService>(
             SERVICE_IDENTIFIER.CommunicationService
         );
@@ -186,6 +192,7 @@ configService
         userProfileService.initialize(config, httpDelegate);
         userFeedbackService.initialize(config, httpDelegate);
         userNoteService.initialize(config, httpDelegate);
+        notificationService.initialize(config, httpDelegate);
         communicationService.initialize(config, httpDelegate);
         userCommentService.initialize(config, httpDelegate);
         userRatingService.initialize(config, httpDelegate);
@@ -216,6 +223,9 @@ configService
 
                 if (user.hdid && isValidIdentityProvider) {
                     await store.dispatch("user/retrieveEssentialData");
+                    store
+                        .dispatch("notification/retrieve")
+                        .catch((error) => logger.warn(error.message));
                 }
             }
 

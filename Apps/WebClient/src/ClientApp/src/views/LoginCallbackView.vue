@@ -25,6 +25,9 @@ export default class LoginCallbackView extends Vue {
     @Action("retrieveProfile", { namespace: "user" })
     retrieveProfile!: () => Promise<void>;
 
+    @Action("retrieve", { namespace: "notification" })
+    retrieveNotifications!: () => Promise<Notification[]>;
+
     @Getter("user", { namespace: "user" })
     user!: User;
 
@@ -49,6 +52,9 @@ export default class LoginCallbackView extends Vue {
             // If the identity provider is invalid, the router will redirect to the appropriate error page.
             if (this.isValidIdentityProvider) {
                 await this.retrieveEssentialData();
+                this.retrieveNotifications().catch((error) =>
+                    this.logger.warn(error.message)
+                );
             }
 
             this.$router

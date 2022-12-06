@@ -22,23 +22,25 @@ export interface NotificationState {
 export interface NotificationGetters
     extends GetterTree<NotificationState, RootState> {
     notifications(state: NotificationState): Notification[];
+    newNotifications(
+        _state: NotificationState,
+        // eslint-disable-next-line
+        _getters: any,
+        _rootState: RootState,
+        // eslint-disable-next-line
+        rootGetters: any
+    ): Notification[];
 }
 
 type StoreContext = ActionContext<NotificationState, RootState>;
 export interface NotificationActions
     extends ActionTree<NotificationState, RootState> {
-    retrieve(
-        context: StoreContext,
-        params: { hdid: string }
-    ): Promise<Notification[]>;
+    retrieve(context: StoreContext): Promise<Notification[]>;
     dismissNotification(
         context: StoreContext,
-        params: { hdid: string; notificationId: string }
+        params: { notificationId: string }
     ): Promise<void>;
-    dismissNotifications(
-        context: StoreContext,
-        params: { hdid: string }
-    ): Promise<void>;
+    dismissAllNotifications(context: StoreContext): Promise<void>;
     handleError(
         context: StoreContext,
         params: { error: ResultError; errorType: ErrorType }
@@ -46,8 +48,13 @@ export interface NotificationActions
 }
 
 export interface NotificationMutations extends MutationTree<NotificationState> {
+    setRequested(state: NotificationState): void;
+    setNotifications(
+        state: NotificationState,
+        notifications: Notification[]
+    ): void;
     dismissNotification(state: NotificationState, notificationId: string): void;
-    dismissNotifications(state: NotificationState): void;
+    dismissAllNotifications(state: NotificationState): void;
     notificationError(state: NotificationState, error: ResultError): void;
 }
 

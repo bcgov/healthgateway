@@ -2,6 +2,7 @@ import { ErrorSourceType, ErrorType } from "@/constants/errorType";
 import { ResultError } from "@/models/errors";
 import Notification from "@/models/notification";
 import { LoadStatus } from "@/models/storeOperations";
+import User from "@/models/user";
 import container from "@/plugins/container";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import { ILogger, INotificationService } from "@/services/interfaces";
@@ -9,11 +10,13 @@ import { ILogger, INotificationService } from "@/services/interfaces";
 import { NotificationActions } from "./types";
 
 export const actions: NotificationActions = {
-    retrieve(context, params: { hdid: string }): Promise<Notification[]> {
+    retrieve(context): Promise<Notification[]> {
         const logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
         const notificationService = container.get<INotificationService>(
             SERVICE_IDENTIFIER.NotificationService
         );
+
+        const user: User = context.rootGetters["user/user"];
 
         return new Promise((resolve, reject) => {
             const notifications: Notification[] = context.getters.notifications;
@@ -24,7 +27,7 @@ export const actions: NotificationActions = {
                 logger.debug(`Retrieving Notifications`);
                 context.commit("setRequested");
                 notificationService
-                    .getNotifications(params.hdid)
+                    .getNotifications(user.hdid)
                     .then((result) => {
                         if (result) {
                             context.commit("setNotifications", result);
@@ -43,15 +46,17 @@ export const actions: NotificationActions = {
     },
     dismissNotification(
         context,
-        params: { hdid: string; notificationId: string }
+        params: { notificationId: string }
     ): Promise<void> {
         const notificationService = container.get<INotificationService>(
             SERVICE_IDENTIFIER.NotificationService
         );
 
+        const user: User = context.rootGetters["user/user"];
+
         return new Promise((resolve, reject) =>
             notificationService
-                .dismissNotification(params.hdid, params.notificationId)
+                .dismissNotification(user.hdid, params.notificationId)
                 .then(() => {
                     context.commit(
                         "dismissNotification",
@@ -68,16 +73,18 @@ export const actions: NotificationActions = {
                 })
         );
     },
-    dismissNotifications(context, params: { hdid: string }): Promise<void> {
+    dismissAllNotifications(context): Promise<void> {
         const notificationService = container.get<INotificationService>(
             SERVICE_IDENTIFIER.NotificationService
         );
 
+        const user: User = context.rootGetters["user/user"];
+
         return new Promise((resolve, reject) =>
             notificationService
-                .dismissNotifications(params.hdid)
+                .dismissNotifications(user.hdid)
                 .then(() => {
-                    context.commit("dismissNotifications", params.hdid);
+                    context.commit("dismissAllNotifications");
                     resolve();
                 })
                 .catch((error: ResultError) => {

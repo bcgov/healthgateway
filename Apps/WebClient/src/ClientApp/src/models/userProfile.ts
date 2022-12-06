@@ -1,5 +1,5 @@
 import { Dictionary } from "@/models/baseTypes";
-import { StringISODate } from "@/models/dateWrapper";
+import { StringISODateTime } from "@/models/dateWrapper";
 import type { UserPreference } from "@/models/userPreference";
 
 export default interface UserProfile {
@@ -27,11 +27,14 @@ export default interface UserProfile {
     // Flag to know if the terms of service have been updated since last login
     hasTermsOfServiceUpdated?: boolean;
 
-    // List of datetime of the user's last login
-    lastLoginDateTimes?: StringISODate[];
+    // the user's last login time
+    lastLoginDateTime?: StringISODateTime;
+
+    // collection of the user's last login times
+    lastLoginDateTimes?: StringISODateTime[];
 
     // Date when the user profile will be deleted
-    closedDateTime?: StringISODate;
+    closedDateTime?: StringISODateTime;
 
     // The User Preference
     preferences: Dictionary<UserPreference>;
