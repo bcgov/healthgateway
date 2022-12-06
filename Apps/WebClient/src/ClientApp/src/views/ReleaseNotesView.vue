@@ -32,6 +32,15 @@ export default class ReleaseNotesView extends Vue {
         <BreadcrumbComponent :items="breadcrumbItems" />
         <page-title title="Health Gateway Release Notes" />
         <release-note
+            date="December 7, 2022"
+            version="v2022.12.7"
+            title="Enhancements and bug fixes"
+        >
+            <ul>
+                <li>We implemented minor enhancements and bug fixes.</li>
+            </ul>
+        </release-note>
+        <release-note
             date="November 1, 2022"
             version="v2022.6.10"
             title="Profile Icon"
