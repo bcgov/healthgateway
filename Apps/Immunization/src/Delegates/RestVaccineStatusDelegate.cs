@@ -76,7 +76,7 @@ namespace HealthGateway.Immunization.Delegates
             }
             catch (Exception e) when (e is ApiException or HttpRequestException)
             {
-                this.logger.LogError("Unexpected exception in GetVaccineStatus {Exception}", e);
+                this.logger.LogError("Unexpected exception in GetVaccineStatusAsync {Exception}", e);
             }
 
             if (retVal.ResourcePayload == null)
@@ -110,7 +110,7 @@ namespace HealthGateway.Immunization.Delegates
 
             try
             {
-                PhsaResult<VaccineStatusResult> phsaResult = await this.immunizationPublicApi.GetVaccineStatus(query, accessToken, clientIp).ConfigureAwait(true);
+                PhsaResult<VaccineStatusResult> phsaResult = await this.immunizationPublicApi.GetVaccineStatusAsync(query, accessToken, clientIp).ConfigureAwait(true);
 
                 if (phsaResult.Result != null)
                 {

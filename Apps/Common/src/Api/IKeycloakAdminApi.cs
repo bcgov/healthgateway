@@ -33,7 +33,7 @@ namespace HealthGateway.Common.Api
         /// <param name="token">The bearer token to authorize the call.</param>
         /// <returns>A resulting UserRepresentation object.</returns>
         [Get("/users?briefRepresentation=true&username={username}&exact=true")]
-        Task<UserRepresentation> GetUser(string username, [Authorize] string token);
+        Task<UserRepresentation> GetUserAsync(string username, [Authorize] string token);
 
         /// <summary>
         /// Returns users for the role passed in.
@@ -44,7 +44,7 @@ namespace HealthGateway.Common.Api
         /// <param name="token">The bearer token to authorize the call.</param>
         /// <returns>A List of UserRepresentation objects.</returns>
         [Get("/roles/{role}/users?first={first}&max={max}")]
-        Task<List<UserRepresentation>> GetUsers(string role, int first, int max, [Authorize] string token);
+        Task<List<UserRepresentation>> GetUsersAsync(string role, int first, int max, [Authorize] string token);
 
         /// <summary>
         /// Delete a User account from the Identity and Access Management system.
@@ -53,6 +53,6 @@ namespace HealthGateway.Common.Api
         /// <param name="token">The bearer token to authorize the call.</param>
         /// <returns>Returns true when user deleted.</returns>
         [Delete("/users/{userId}")]
-        Task DeleteUser(Guid userId, [Authorize] string token);
+        Task DeleteUserAsync(Guid userId, [Authorize] string token);
     }
 }

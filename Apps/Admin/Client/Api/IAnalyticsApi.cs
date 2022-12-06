@@ -13,7 +13,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //-------------------------------------------------------------------------
-namespace HealthGateway.Admin.Client.Services;
+namespace HealthGateway.Admin.Client.Api;
 
 using System;
 using System.Net.Http;
@@ -31,8 +31,8 @@ public interface IAnalyticsApi
     /// <param name="startDate">The optional start date for the data.</param>
     /// <param name="endDate">The optional end date for the data.</param>
     /// <returns>HttpResponseMessage.</returns>
-    [Get("/GetUserProfiles")]
-    Task<HttpResponseMessage> GetUserProfiles(DateTime? startDate = null, DateTime? endDate = null);
+    [Get("/GetUserProfilesAsync")]
+    Task<HttpResponseMessage> GetUserProfilesAsync(DateTime? startDate = null, DateTime? endDate = null);
 
     /// <summary>
     /// Retrieves a list of Comments inclusively between UTC dates if provided.
@@ -40,8 +40,8 @@ public interface IAnalyticsApi
     /// <param name="startDate">The optional start date for the data.</param>
     /// <param name="endDate">The optional end date for the data.</param>
     /// <returns>HttpResponseMessage.</returns>
-    [Get("/GetComments")]
-    Task<HttpResponseMessage> GetComments(DateTime? startDate = null, DateTime? endDate = null);
+    [Get("/GetCommentsAsync")]
+    Task<HttpResponseMessage> GetCommentsAsync(DateTime? startDate = null, DateTime? endDate = null);
 
     /// <summary>
     /// Retrieves a list of Notes inclusively between UTC dates if provided.
@@ -49,8 +49,8 @@ public interface IAnalyticsApi
     /// <param name="startDate">The optional start date for the data.</param>
     /// <param name="endDate">The optional end date for the data.</param>
     /// <returns>HttpResponseMessage.</returns>
-    [Get("/GetNotes")]
-    Task<HttpResponseMessage> GetNotes(DateTime? startDate = null, DateTime? endDate = null);
+    [Get("/GetNotesAsync")]
+    Task<HttpResponseMessage> GetNotesAsync(DateTime? startDate = null, DateTime? endDate = null);
 
     /// <summary>
     /// Retrieves a list of Ratings inclusively between UTC dates if provided.
@@ -58,8 +58,8 @@ public interface IAnalyticsApi
     /// <param name="startDate">The optional start date for the data.</param>
     /// <param name="endDate">The optional end date for the data.</param>
     /// <returns>HttpResponseMessage.</returns>
-    [Get("/GetRatings")]
-    Task<HttpResponseMessage> GetRatings(DateTime? startDate = null, DateTime? endDate = null);
+    [Get("/GetRatingsAsync")]
+    Task<HttpResponseMessage> GetRatingsAsync(DateTime? startDate = null, DateTime? endDate = null);
 
     /// <summary>
     /// Retrieves a list of inactive users created exclusive of the days inactive.
@@ -67,15 +67,15 @@ public interface IAnalyticsApi
     /// <param name="inactiveDays">The days inactive to filter the users last login.</param>
     /// <param name="timeOffset">The offset from the client browser to UTC.</param>
     /// <returns>HttpResponseMessage.</returns>
-    [Get("/GetInactiveUsers?inactiveDays={inactiveDays}&timeOffset={timeOffset}")]
-    Task<HttpResponseMessage> GetInactiveUsers(int inactiveDays, int timeOffset);
+    [Get("/GetInactiveUsersAsync?inactiveDays={inactiveDays}&timeOffset={timeOffset}")]
+    Task<HttpResponseMessage> GetInactiveUsersAsync(int inactiveDays, int timeOffset);
 
     /// <summary>
     /// Retrieves a list of User Feedback.
     /// </summary>
     /// <returns>HttpResponseMessage.</returns>
-    [Get("/GetUserFeedback")]
-    Task<HttpResponseMessage> GetUserFeedback();
+    [Get("/GetUserFeedbackAsync")]
+    Task<HttpResponseMessage> GetUserFeedbackAsync();
 
     /// <summary>
     /// Retrieves a list of year of birth counts for time period.
@@ -84,6 +84,6 @@ public interface IAnalyticsApi
     /// <param name="endPeriod">The period end to count year of birth.</param>
     /// <param name="timeOffset">The offset from the client browser to UTC.</param>
     /// <returns>HttpResponseMessage.</returns>
-    [Get("/GetYearOfBirthCounts?startPeriod={startPeriod}&endPeriod={endPeriod}&timeOffset={timeOffset}")]
-    Task<HttpResponseMessage> GetYearOfBirthCounts(string startPeriod, string endPeriod, int timeOffset);
+    [Get("/GetYearOfBirthCountsAsync?startPeriod={startPeriod}&endPeriod={endPeriod}&timeOffset={timeOffset}")]
+    Task<HttpResponseMessage> GetYearOfBirthCountsAsync(string startPeriod, string endPeriod, int timeOffset);
 }

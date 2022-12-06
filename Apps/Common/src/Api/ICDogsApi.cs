@@ -31,6 +31,6 @@ namespace HealthGateway.Common.Api
         /// <param name="request">Model containing an inline template and set of substitution variables.</param>
         /// <returns>HttpResponseMessage containing the raw binary-encoded PDF that was generated.</returns>
         [Post("/api/v2/template/render")]
-        Task<HttpResponseMessage> GenerateDocument([Body] CDogsRequestModel request);
+        Task<HttpResponseMessage> GenerateDocumentAsync([Body] CDogsRequestModel request);
     }
 }

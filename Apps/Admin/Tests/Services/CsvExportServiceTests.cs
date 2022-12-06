@@ -14,7 +14,7 @@
 //  limitations under the License.
 // -------------------------------------------------------------------------
 
-namespace HealthGateway.Admin.Client.Services
+namespace HealthGateway.Admin.Client.Api
 {
     using System;
     using System.Collections.Generic;

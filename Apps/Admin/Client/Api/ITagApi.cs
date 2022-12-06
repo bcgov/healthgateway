@@ -13,9 +13,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //-------------------------------------------------------------------------
-namespace HealthGateway.Admin.Client.Services;
+namespace HealthGateway.Admin.Client.Api;
 
-using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using HealthGateway.Admin.Common.Models;
@@ -23,31 +22,30 @@ using HealthGateway.Common.Data.ViewModels;
 using Refit;
 
 /// <summary>
-/// API for interacting with user feedback.
+/// API for interacting with tags.
 /// </summary>
-public interface IUserFeedbackApi
+public interface ITagApi
 {
     /// <summary>
-    /// Gets all user feedback.
+    /// Adds a tag.
+    /// </summary>
+    /// <param name="tagName">The tag name.</param>
+    /// <returns>The wrapped model.</returns>
+    [Post("/")]
+    Task<RequestResult<AdminTagView>> AddAsync([Body(BodySerializationMethod.Serialized)] string tagName);
+
+    /// <summary>
+    /// Gets all tags.
     /// </summary>
     /// <returns>The wrapped collection of models.</returns>
     [Get("/")]
-    Task<RequestResult<IEnumerable<UserFeedbackView>>> GetAllAsync();
+    Task<RequestResult<IEnumerable<AdminTagView>>> GetAllAsync();
 
     /// <summary>
-    /// Updates a user feedback.
+    /// Deletes a tag.
     /// </summary>
-    /// <param name="userFeedbackView">The model to update.</param>
+    /// <param name="tag">The model to delete.</param>
     /// <returns>The wrapped model.</returns>
-    [Patch("/")]
-    Task<RequestResult<UserFeedbackView>> UpdateAsync([Body] UserFeedbackView userFeedbackView);
-
-    /// <summary>
-    /// Associate existing admin tags to the feedback with matching id.
-    /// </summary>
-    /// <returns>The feedback model wrapped in a request result.</returns>
-    /// <param name="tagIds">The collection of tag IDs.</param>
-    /// <param name="feedbackId">The feedback ID.</param>
-    [Put("/{feedbackId}/Tag")]
-    Task<RequestResult<UserFeedbackView>> AssociateTagsAsync([Body] IEnumerable<Guid> tagIds, Guid feedbackId);
+    [Delete("/")]
+    Task<RequestResult<AdminTagView>> DeleteAsync([Body] AdminTagView tag);
 }

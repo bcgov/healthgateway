@@ -21,7 +21,7 @@ using System.Collections.Generic;
 using System.Net.Http;
 using System.Threading.Tasks;
 using Fluxor;
-using HealthGateway.Admin.Client.Services;
+using HealthGateway.Admin.Client.Api;
 using HealthGateway.Admin.Client.Utils;
 using HealthGateway.Admin.Common.Models;
 using HealthGateway.Common.Data.Constants;
