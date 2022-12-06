@@ -29,7 +29,7 @@ namespace HealthGateway.GatewayApi.Services
     using Microsoft.Extensions.Logging;
 
     /// <summary>
-    /// The Patient data service.
+    /// Service to interact with the the PHSA web alert API.
     /// </summary>
     public class WebAlertService : IWebAlertService
     {
