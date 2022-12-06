@@ -32,9 +32,8 @@ Cypress.Commands.add("logout", () => {
 });
 
 Cypress.Commands.add("login", (username, password, path) => {
-    cy.log("Logging in using Keycloak.");
-
     cy.session([username], () => {
+        cy.log("Logging in using Keycloak.");
         cy.readConfig().then((config) => {
             logout(config);
 
