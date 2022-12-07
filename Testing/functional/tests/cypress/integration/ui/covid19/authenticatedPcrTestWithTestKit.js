@@ -36,6 +36,10 @@ describe("Authenticated Pcr Test Registration", () => {
         });
     });
 
+    afterEach(() => {
+        Cypress.session.clearAllSavedSessions();
+    });
+
     it("Successful Test Kit", () => {
         // Authenticated PcrTest Registration Form
         cy.log("Validate Authenticated PcrTest Registration Form");
@@ -80,6 +84,10 @@ describe("Authenticated Pcr Test Registration with Test Kit ID (Error)", () => {
         });
     });
 
+    afterEach(() => {
+        Cypress.session.clearAllSavedSessions();
+    });
+
     it("Error Test Kit", () => {
         // get the data in the fixture.
         cy.fixture(
@@ -108,6 +116,10 @@ describe("Previously Registered Test Kit", () => {
             fixture:
                 "LaboratoryService/authenticatedPcrTestDuplicateWithTestKit.json",
         });
+    });
+
+    afterEach(() => {
+        Cypress.session.clearAllSavedSessions();
     });
 
     it("Already Processed Test Kit", () => {

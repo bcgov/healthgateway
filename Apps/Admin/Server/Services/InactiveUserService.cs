@@ -41,7 +41,7 @@ using Refit;
 /// <inheritdoc/>
 public class InactiveUserService : IInactiveUserService
 {
-    private const string AuthConfigSectionName = "KeycloakAdmin:Authentication";
+    private const string AuthConfigSectionName = "KeycloakAdmin";
     private readonly IAdminUserProfileDelegate adminUserProfileDelegate;
     private readonly IAuthenticationDelegate authDelegate;
     private readonly IMapper autoMapper;
@@ -71,14 +71,9 @@ public class InactiveUserService : IInactiveUserService
         this.adminUserProfileDelegate = adminUserProfileDelegate;
         this.keycloakAdminApi = keycloakAdminApi;
         this.logger = logger;
+        _ = configuration;
         this.autoMapper = autoMapper;
-
-        IConfigurationSection configSection = configuration.GetSection(AuthConfigSectionName);
-        this.tokenUri = configSection.GetValue<Uri>(@"TokenUri") ??
-                        throw new ArgumentNullException(nameof(configuration), $"Configuration missing {AuthConfigSectionName} TokenUri");
-
-        this.tokenRequest = new ClientCredentialsTokenRequest();
-        configSection.Bind(this.tokenRequest);
+        (this.tokenUri, this.tokenRequest) = this.authDelegate.GetClientCredentialsAuth(AuthConfigSectionName);
     }
 
     /// <inheritdoc/>
@@ -111,7 +106,7 @@ public class InactiveUserService : IInactiveUserService
             List<AdminUserProfile> activeUserProfiles = activeProfileResult.Payload.ToList();
 
             // Get admin and support users from keycloak
-            JwtModel jwtModel = this.authDelegate.AuthenticateAsUser(this.tokenUri, this.tokenRequest);
+            JwtModel jwtModel = this.authDelegate.AuthenticateAsSystem(this.tokenUri, this.tokenRequest);
             try
             {
                 const int firstRecord = 0;

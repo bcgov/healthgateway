@@ -35,6 +35,7 @@ namespace HealthGateway.Common.Services
         /// The generic cache domain to store access token against.
         /// </summary>
         private const string TokenSwapCacheDomain = "TokenSwap";
+        private const int EarlyExpiry = 45;
 
         private readonly IAuthenticationDelegate authenticationDelegate;
         private readonly ICacheProvider cacheProvider;
@@ -83,7 +84,7 @@ namespace HealthGateway.Common.Services
 
                 if (accessToken != null)
                 {
-                    requestResult = await this.SwapToken(userId, accessToken).ConfigureAwait(true);
+                    requestResult = await this.SwapToken(cacheKey, accessToken).ConfigureAwait(true);
                 }
                 else
                 {
@@ -117,7 +118,7 @@ namespace HealthGateway.Common.Services
             if (this.phsaConfigV2.TokenCacheEnabled)
             {
                 this.logger.LogDebug("Attempting to cache access token for cache key: {Key}", cacheKey);
-                TimeSpan? expires = tokenSwapResponse.ExpiresIn > 0 ? TimeSpan.FromSeconds(tokenSwapResponse.ExpiresIn) : null;
+                TimeSpan? expires = tokenSwapResponse.ExpiresIn > 0 ? TimeSpan.FromSeconds(tokenSwapResponse.ExpiresIn - EarlyExpiry) : null;
                 this.cacheProvider.AddItem(cacheKey, tokenSwapResponse, expires);
             }
             else

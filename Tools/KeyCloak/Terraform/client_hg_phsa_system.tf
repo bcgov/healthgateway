@@ -5,13 +5,14 @@ resource "keycloak_openid_client" "hgphsasystem_client" {
   description                  = "Health Gateway PHSA System User Outbound integration"
   enabled                      = true
   access_type                  = "CONFIDENTIAL"
-  login_theme                  = "bcgov"
-  standard_flow_enabled        = true
-  direct_access_grants_enabled = true
+  login_theme                  = "bcgov-no-brand"
+  standard_flow_enabled        = false
+  direct_access_grants_enabled = false
   service_accounts_enabled     = true
   valid_redirect_uris          = var.client_hg_phsa_system.valid_redirects
   web_origins                  = var.client_hg_phsa_system.web_origins
   full_scope_allowed           = false
+  access_token_lifespan        = var.client_hg_phsa_system.token_lifespan
 }
 
 resource "keycloak_openid_client_default_scopes" "hgphsasystem_client_default_scopes" {

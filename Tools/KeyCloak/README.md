@@ -9,16 +9,20 @@ You need to have the appropriate secrets files for your environment.
 
 The following steps need to be run by a realm administrator in the Keycloak realm prior to using Terraform:
 
-Authenticate with the Keycloak
-Navigate to Clients
-Click Create
-Click Import
+- Authenticate with the Keycloak
+- Navigate to Clients
+- Click Create
+- Click Import
     Select terraform.json file
-Click Save
-Select Service Account Roles tab
+- Click Save
+- Select Service Account Roles tab
     Add realm-admin role
-Select Credentials tab
+- Select Credentials tab
     Copy secret value
+
+Two realm settings should also be updated:
+Realm Settings/General/Display name should be set to Health Gateway
+Realm Settings/Login/Duplicate emails should be set to ON
 
 ## Terraform configuration
 

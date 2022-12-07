@@ -570,7 +570,7 @@ export default class HomeView extends Vue {
                     </template>
                     <div>
                         View and manage all your available health records,
-                        including dispensed medications, health visits, COVID-19
+                        including dispensed medications, health visits, COVID‑19
                         test results, immunizations and more.
                     </div>
                 </hg-card-button>

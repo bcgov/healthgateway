@@ -38,7 +38,7 @@ export default class ContactUsView extends Vue {
                     <p>
                         If you have questions about the BC Vaccine Card, please
                         contact
-                        <a href="tel:18338382323">1-833-838-2323</a>. Service is
+                        <a href="tel:18338382323">1‑833‑838‑2323</a>. Service is
                         available every day: 7 am to 7 pm or 9 am to 5 pm on
                         holidays.
                     </p>
@@ -67,7 +67,7 @@ export default class ContactUsView extends Vue {
                     >
                 </h5>
                 <p>
-                    By dialing 8-1-1 toll-free in British Columbia, you can
+                    By dialing 8‑1‑1 toll‑free in British Columbia, you can
                     speak with a person who can help you connect with a health
                     professional.
                 </p>
@@ -77,12 +77,12 @@ export default class ContactUsView extends Vue {
                         href="http://www.bccdc.ca/health-info/diseases-conditions/covid-19/testing/testing-information"
                         target="_blank"
                     >
-                        COVID-19 Testing Information
+                        COVID‑19 Testing Information
                     </a>
                 </h5>
                 <p>
-                    Non-medical information about COVID-19 is available
-                    7:30am-8pm, 7 days a week at 1-888-COVID19 (1-888-268-4319).
+                    Non-medical information about COVID‑19 is available
+                    7:30am‑8pm, 7 days a week at 1‑888‑COVID19 (1‑888‑268‑4319).
                 </p>
             </b-col>
             <b-col class="my-3 col-3 col-lg-3 no-print">

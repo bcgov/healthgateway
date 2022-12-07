@@ -47,15 +47,17 @@ namespace HealthGateway.Common.Delegates.PHSA
         /// <param name="logger">The logger to use.</param>
         /// <param name="tokenSwapApi">The refit api responsible for swapping tokens with PHSA.</param>
         /// <param name="configuration">The configuration to use.</param>
+        /// <param name="configurationSectionKey">The configuration section to use when binding values.</param>
         public RestTokenSwapDelegate(
             ILogger<RestTokenSwapDelegate> logger,
             ITokenSwapApi tokenSwapApi,
-            IConfiguration configuration)
+            IConfiguration configuration,
+            string? configurationSectionKey = PhsaConfigV2.ConfigurationSectionKey)
         {
             this.logger = logger;
             this.tokenSwapApi = tokenSwapApi;
             this.phsaConfigV2 = new PhsaConfigV2();
-            configuration.Bind(PhsaConfigV2.ConfigurationSectionKey, this.phsaConfigV2); // Initializes ClientId, ClientSecret, GrantType and Scope.
+            configuration.Bind(configurationSectionKey, this.phsaConfigV2); // Initializes ClientId, ClientSecret, GrantType and Scope.
         }
 
         private static ActivitySource Source { get; } = new(nameof(RestTokenSwapDelegate));

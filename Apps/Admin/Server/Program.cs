@@ -68,7 +68,7 @@ namespace HealthGateway.Admin.Server
 
             // Add Refit clients
             PhsaConfigV2 phsaConfig = new();
-            configuration.Bind(PhsaConfigV2.ConfigurationSectionKey, phsaConfig);
+            configuration.Bind(PhsaConfigV2.AdminConfigurationSectionKey, phsaConfig);
 
             services.AddRefitClient<ISystemBroadcastApi>()
                 .ConfigureHttpClient(c => c.BaseAddress = phsaConfig.BaseUrl)
@@ -116,7 +116,7 @@ namespace HealthGateway.Admin.Server
             SwaggerDoc.ConfigureSwaggerServices(services, configuration);
             JobScheduler.ConfigureHangfireQueue(services, configuration);
             Patient.ConfigurePatientAccess(services, logger, configuration);
-            PhsaV2.ConfigurePhsaV2Access(services, logger, configuration);
+            PhsaV2.ConfigurePhsaV2Access(services, logger, configuration, PhsaConfigV2.AdminConfigurationSectionKey);
         }
 
         private static void AddServices(IServiceCollection services)

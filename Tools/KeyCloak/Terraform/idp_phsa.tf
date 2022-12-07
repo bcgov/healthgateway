@@ -5,6 +5,7 @@ resource "keycloak_oidc_identity_provider" "phsa" {
   enabled               = true
   store_token           = false
   trust_email           = true
+  first_broker_login_flow_alias = keycloak_authentication_flow.first_login.alias
   hide_on_login_page    = false
   sync_mode             = "FORCE"
   authorization_url     = "${var.keycloak_idp_phsa.base_url}${var.keycloak_idp_phsa.auth_path}"
