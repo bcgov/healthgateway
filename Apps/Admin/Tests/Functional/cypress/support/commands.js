@@ -9,6 +9,8 @@
 // ***********************************************
 require("cy-verify-downloads").addCustomCommand();
 
+const openIdConnectClientId = "hg-admin-blazor";
+
 function generateRandomString(length) {
     var text = "";
     var possible =
@@ -46,9 +48,8 @@ Cypress.Commands.add("login", (username, password, path) => {
                 code_verifier: codeVerifier,
                 redirect_uri: config.openIdConnect.callbacks.Logon,
                 authority: config.openIdConnect.authority,
-                client_id: config.openIdConnect.clientId,
+                client_id: openIdConnectClientId,
                 response_mode: "query",
-                scope: config.openIdConnect.scope,
                 extraTokenParams: {},
             };
 
@@ -65,11 +66,10 @@ Cypress.Commands.add("login", (username, password, path) => {
                 url: `${config.openIdConnect.authority}/protocol/openid-connect/auth`,
                 followRedirect: false,
                 qs: {
-                    scope: config.openIdConnect.scope,
                     response_type: config.openIdConnect.responseType,
                     approval_prompt: "auto",
                     redirect_uri: config.openIdConnect.callbacks.Logon,
-                    client_id: config.openIdConnect.clientId,
+                    client_id: openIdConnectClientId,
                     response_mode: "query",
                     state: stateStore.id,
                 },
