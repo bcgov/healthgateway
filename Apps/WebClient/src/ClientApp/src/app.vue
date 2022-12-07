@@ -113,20 +113,29 @@ export default class App extends Vue {
     @Getter("isMobile")
     isMobile!: boolean;
 
+    @Getter("isOffline", { namespace: "config" })
+    isOffline!: boolean;
+
     @Getter("webClient", { namespace: "config" })
     config!: WebClientConfiguration;
 
     @Getter("oidcIsAuthenticated", { namespace: "auth" })
-    oidcIsAuthenticated?: boolean;
+    oidcIsAuthenticated!: boolean;
 
     @Getter("isValidIdentityProvider", { namespace: "auth" })
-    isValidIdentityProvider?: boolean;
+    isValidIdentityProvider!: boolean;
 
     @Getter("hasTermsOfServiceUpdated", { namespace: "user" })
     hasTermsOfServiceUpdated!: boolean;
 
-    @Getter("userIsLoggedInAndActive", { namespace: "user" })
-    userIsLoggedInAndActive!: boolean;
+    @Getter("userIsRegistered", { namespace: "user" })
+    userIsRegistered!: boolean;
+
+    @Getter("userIsActive", { namespace: "user" })
+    userIsActive!: boolean;
+
+    @Getter("patientRetrievalFailed", { namespace: "user" })
+    patientRetrievalFailed!: boolean;
 
     private readonly host: string =
         window.location.hostname.toLocaleUpperCase();
@@ -247,7 +256,12 @@ export default class App extends Vue {
     private get isNotificationCentreEnabled(): boolean {
         return (
             this.config.modules["NotificationCentre"] &&
-            this.userIsLoggedInAndActive
+            !this.isOffline &&
+            this.oidcIsAuthenticated &&
+            this.isValidIdentityProvider &&
+            this.userIsRegistered &&
+            this.userIsActive &&
+            !this.patientRetrievalFailed
         );
     }
 
