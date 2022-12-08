@@ -95,7 +95,7 @@ namespace HealthGateway.Laboratory.Services
                     {
                         string ipAddress = this.httpContextAccessor?.HttpContext?.Connection.RemoteIpAddress?.MapToIPv4().ToString() ?? "0.0.0.0";
                         HttpResponseMessage response =
-                            await this.labTestKitApi.RegisterLabTest(testKit, accessToken, ipAddress).ConfigureAwait(true);
+                            await this.labTestKitApi.RegisterLabTestAsync(testKit, accessToken, ipAddress).ConfigureAwait(true);
                         ProcessResponse(requestResult, response);
                     }
                     catch (HttpRequestException e)
@@ -135,7 +135,7 @@ namespace HealthGateway.Laboratory.Services
             try
             {
                 HttpResponseMessage response =
-                    await this.labTestKitApi.RegisterLabTest(hdid, testKit, accessToken).ConfigureAwait(true);
+                    await this.labTestKitApi.RegisterLabTestAsync(hdid, testKit, accessToken).ConfigureAwait(true);
                 ProcessResponse(requestResult, response);
             }
             catch (HttpRequestException e)

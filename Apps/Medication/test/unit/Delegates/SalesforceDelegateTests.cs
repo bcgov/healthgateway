@@ -88,7 +88,7 @@ namespace HealthGateway.MedicationTests.Delegates
             ResponseWrapper? result = JsonSerializer.Deserialize<ResponseWrapper>(jsonStr);
             Mock<ISpecialAuthorityApi> mockSpecialAuthorityApi = new();
             mockSpecialAuthorityApi
-                .Setup(s => s.GetSpecialAuthorityRequests(It.IsAny<string>(), It.IsAny<string>()))
+                .Setup(s => s.GetSpecialAuthorityRequestsAsync(It.IsAny<string>(), It.IsAny<string>()))
                 .ReturnsAsync(result!);
 
             // Setup class to be tested
@@ -216,7 +216,7 @@ namespace HealthGateway.MedicationTests.Delegates
             // Setup response
             Mock<ISpecialAuthorityApi> mockSpecialAuthorityApi = new();
             mockSpecialAuthorityApi
-                .Setup(s => s.GetSpecialAuthorityRequests(It.IsAny<string>(), It.IsAny<string>()))
+                .Setup(s => s.GetSpecialAuthorityRequestsAsync(It.IsAny<string>(), It.IsAny<string>()))
                 .ThrowsAsync(new HttpRequestException("A Test Exception"));
 
             // Setup class to be tested

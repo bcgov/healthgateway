@@ -18,7 +18,7 @@ namespace HealthGateway.Admin.Client.Store.Analytics;
 using System.Net.Http;
 using System.Threading.Tasks;
 using Fluxor;
-using HealthGateway.Admin.Client.Services;
+using HealthGateway.Admin.Client.Api;
 using Microsoft.AspNetCore.Components;
 using Microsoft.Extensions.Logging;
 
@@ -55,7 +55,7 @@ public class AnalyticsEffects
     {
         this.Logger.LogInformation("Loading user profile report.");
 
-        HttpResponseMessage response = await this.AnalyticsApi.GetUserProfiles(action.StartDate, action.EndDate).ConfigureAwait(true);
+        HttpResponseMessage response = await this.AnalyticsApi.GetUserProfilesAsync(action.StartDate, action.EndDate).ConfigureAwait(true);
         this.Logger.LogInformation("User profiles report exported successfully!");
         if (response.IsSuccessStatusCode)
         {
@@ -83,7 +83,7 @@ public class AnalyticsEffects
     {
         this.Logger.LogInformation("Loading comments report.");
 
-        HttpResponseMessage response = await this.AnalyticsApi.GetComments(action.StartDate, action.EndDate).ConfigureAwait(true);
+        HttpResponseMessage response = await this.AnalyticsApi.GetCommentsAsync(action.StartDate, action.EndDate).ConfigureAwait(true);
         this.Logger.LogInformation("Comments report exported successfully!");
         if (response.IsSuccessStatusCode)
         {
@@ -111,7 +111,7 @@ public class AnalyticsEffects
     {
         this.Logger.LogInformation("Loading notes report.");
 
-        HttpResponseMessage response = await this.AnalyticsApi.GetNotes(action.StartDate, action.EndDate).ConfigureAwait(true);
+        HttpResponseMessage response = await this.AnalyticsApi.GetNotesAsync(action.StartDate, action.EndDate).ConfigureAwait(true);
         this.Logger.LogInformation("Notes report exported successfully!");
         if (response.IsSuccessStatusCode)
         {
@@ -139,7 +139,7 @@ public class AnalyticsEffects
     {
         this.Logger.LogInformation("Loading ratings report.");
 
-        HttpResponseMessage response = await this.AnalyticsApi.GetRatings(action.StartDate, action.EndDate).ConfigureAwait(true);
+        HttpResponseMessage response = await this.AnalyticsApi.GetRatingsAsync(action.StartDate, action.EndDate).ConfigureAwait(true);
         this.Logger.LogInformation("Ratings report exported successfully!");
         if (response.IsSuccessStatusCode)
         {
@@ -167,7 +167,7 @@ public class AnalyticsEffects
     {
         this.Logger.LogInformation("Loading inactive users report.");
 
-        HttpResponseMessage response = await this.AnalyticsApi.GetInactiveUsers(action.InactiveDays, action.TimeOffset).ConfigureAwait(true);
+        HttpResponseMessage response = await this.AnalyticsApi.GetInactiveUsersAsync(action.InactiveDays, action.TimeOffset).ConfigureAwait(true);
         this.Logger.LogInformation("Inactive users report exported successfully!");
         if (response.IsSuccessStatusCode)
         {
@@ -195,7 +195,7 @@ public class AnalyticsEffects
     {
         this.Logger.LogInformation("Loading user feedback report");
 
-        HttpResponseMessage response = await this.AnalyticsApi.GetUserFeedback().ConfigureAwait(true);
+        HttpResponseMessage response = await this.AnalyticsApi.GetUserFeedbackAsync().ConfigureAwait(true);
         this.Logger.LogInformation("User Feedback report exported successfully!");
         if (response.IsSuccessStatusCode)
         {
@@ -223,7 +223,7 @@ public class AnalyticsEffects
     {
         this.Logger.LogInformation("Loading year of birth counts report.");
 
-        HttpResponseMessage response = await this.AnalyticsApi.GetYearOfBirthCounts(action.StartPeriod, action.EndPeriod, action.TimeOffset).ConfigureAwait(true);
+        HttpResponseMessage response = await this.AnalyticsApi.GetYearOfBirthCountsAsync(action.StartPeriod, action.EndPeriod, action.TimeOffset).ConfigureAwait(true);
         this.Logger.LogInformation("Year of birth counts report exported successfully!");
         if (response.IsSuccessStatusCode)
         {

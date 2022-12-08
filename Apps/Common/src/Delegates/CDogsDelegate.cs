@@ -62,7 +62,7 @@ namespace HealthGateway.Common.Delegates
 
                 try
                 {
-                    HttpResponseMessage response = await this.cdogsApi.GenerateDocument(request).ConfigureAwait(true);
+                    HttpResponseMessage response = await this.cdogsApi.GenerateDocumentAsync(request).ConfigureAwait(true);
                     byte[] payload = await response.Content.ReadAsByteArrayAsync().ConfigureAwait(true);
                     this.logger.LogTrace("CDogs Response status code: {ResponseStatusCode}", response.StatusCode);
 

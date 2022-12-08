@@ -69,7 +69,7 @@ namespace HealthGateway.CommonTests.Delegates
 
             Mock<ILogger<CDogsDelegate>> mockLogger = new();
             Mock<ICDogsApi> mockCdogsApi = new();
-            mockCdogsApi.Setup(s => s.GenerateDocument(It.IsAny<CDogsRequestModel>())).ReturnsAsync(httpResponseMessage);
+            mockCdogsApi.Setup(s => s.GenerateDocumentAsync(It.IsAny<CDogsRequestModel>())).ReturnsAsync(httpResponseMessage);
 
             ICDogsDelegate cdogsDelegate = new CDogsDelegate(mockLogger.Object, mockCdogsApi.Object);
 
@@ -105,7 +105,7 @@ namespace HealthGateway.CommonTests.Delegates
 
             Mock<ILogger<CDogsDelegate>> mockLogger = new();
             Mock<ICDogsApi> mockCdogsApi = new();
-            mockCdogsApi.Setup(s => s.GenerateDocument(It.IsAny<CDogsRequestModel>())).ReturnsAsync(httpResponseMessage);
+            mockCdogsApi.Setup(s => s.GenerateDocumentAsync(It.IsAny<CDogsRequestModel>())).ReturnsAsync(httpResponseMessage);
 
             ICDogsDelegate cdogsDelegate = new CDogsDelegate(mockLogger.Object, mockCdogsApi.Object);
 
@@ -133,7 +133,7 @@ namespace HealthGateway.CommonTests.Delegates
 
             Mock<ILogger<CDogsDelegate>> mockLogger = new();
             Mock<ICDogsApi> mockCdogsApi = new();
-            mockCdogsApi.Setup(s => s.GenerateDocument(It.IsAny<CDogsRequestModel>())).ThrowsAsync(new InvalidOperationException());
+            mockCdogsApi.Setup(s => s.GenerateDocumentAsync(It.IsAny<CDogsRequestModel>())).ThrowsAsync(new InvalidOperationException());
             ICDogsDelegate cdogsDelegate = new CDogsDelegate(mockLogger.Object, mockCdogsApi.Object);
 
             CDogsRequestModel request = GetRequestModel();

@@ -96,7 +96,7 @@ namespace HealthGateway.Medication.Delegates
 
                 try
                 {
-                    ResponseWrapper replyWrapper = await this.specialAuthorityApi.GetSpecialAuthorityRequests(phn, accessToken).ConfigureAwait(true);
+                    ResponseWrapper replyWrapper = await this.specialAuthorityApi.GetSpecialAuthorityRequestsAsync(phn, accessToken).ConfigureAwait(true);
                     retVal.ResourcePayload = this.autoMapper.Map<IEnumerable<SpecialAuthorityRequest>, IList<MedicationRequest>>(replyWrapper.Items);
                     retVal.TotalResultCount = retVal.ResourcePayload?.Count;
                     retVal.PageSize = retVal.ResourcePayload?.Count;
