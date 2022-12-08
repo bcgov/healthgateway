@@ -33,7 +33,7 @@ namespace HealthGateway.Laboratory.Api
         /// <param name="clientIp">The IP of the client accessing the public service.</param>
         /// <returns>The lab test kit sent.</returns>
         [Post("/api/v1/Public/LabTestKits/Registration")]
-        Task<HttpResponseMessage> RegisterLabTest(
+        Task<HttpResponseMessage> RegisterLabTestAsync(
             [Body] PublicLabTestKit testKit,
             [Authorize] string token,
             [Header("X-Forwarded-For")] string clientIp);
@@ -46,7 +46,7 @@ namespace HealthGateway.Laboratory.Api
         /// <param name="token">The bearer token to authorize the call.</param>
         /// <returns>The lab test kit sent.</returns>
         [Post("/api/v1/LabTestKits/Registration?subjectHdid={HdId}")]
-        Task<HttpResponseMessage> RegisterLabTest(
+        Task<HttpResponseMessage> RegisterLabTestAsync(
             string hdid,
             [Body] LabTestKit testKit,
             [Authorize] string token);

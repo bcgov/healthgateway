@@ -223,9 +223,9 @@ namespace HealthGateway.LaboratoryTests.Services
         {
             HttpRequestException httpRequestException = new("Error with HTTP Request");
             Mock<ILabTestKitApi> mockLabTestKitApi = new();
-            mockLabTestKitApi.Setup(s => s.RegisterLabTest(It.IsAny<PublicLabTestKit>(), It.IsAny<string>(), It.IsAny<string>()))
+            mockLabTestKitApi.Setup(s => s.RegisterLabTestAsync(It.IsAny<PublicLabTestKit>(), It.IsAny<string>(), It.IsAny<string>()))
                 .ThrowsAsync(httpRequestException);
-            mockLabTestKitApi.Setup(s => s.RegisterLabTest(It.IsAny<string>(), It.IsAny<LabTestKit>(), It.IsAny<string>()))
+            mockLabTestKitApi.Setup(s => s.RegisterLabTestAsync(It.IsAny<string>(), It.IsAny<LabTestKit>(), It.IsAny<string>()))
                 .ThrowsAsync(httpRequestException);
 
             JwtModel jwt = new()
@@ -247,9 +247,9 @@ namespace HealthGateway.LaboratoryTests.Services
         private LabTestKitService GetLabTestKitService(HttpResponseMessage responseMessage, bool nullToken = false)
         {
             Mock<ILabTestKitApi> mockLabTestKitApi = new();
-            mockLabTestKitApi.Setup(s => s.RegisterLabTest(It.IsAny<PublicLabTestKit>(), It.IsAny<string>(), It.IsAny<string>()))
+            mockLabTestKitApi.Setup(s => s.RegisterLabTestAsync(It.IsAny<PublicLabTestKit>(), It.IsAny<string>(), It.IsAny<string>()))
                 .ReturnsAsync(responseMessage);
-            mockLabTestKitApi.Setup(s => s.RegisterLabTest(It.IsAny<string>(), It.IsAny<LabTestKit>(), It.IsAny<string>()))
+            mockLabTestKitApi.Setup(s => s.RegisterLabTestAsync(It.IsAny<string>(), It.IsAny<LabTestKit>(), It.IsAny<string>()))
                 .ReturnsAsync(responseMessage);
 
             JwtModel jwt = new()

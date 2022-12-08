@@ -13,7 +13,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //-------------------------------------------------------------------------
-namespace HealthGateway.Admin.Client.Services
+namespace HealthGateway.Admin.Client.Api
 {
     using System.Collections.Generic;
     using System.Threading.Tasks;
@@ -32,14 +32,14 @@ namespace HealthGateway.Admin.Client.Services
         /// <param name="broadcast">The model to add.</param>
         /// <returns>The Broadcast model.</returns>
         [Post("/")]
-        Task<RequestResult<Broadcast>> Add([Body] Broadcast broadcast);
+        Task<RequestResult<Broadcast>> AddAsync([Body] Broadcast broadcast);
 
         /// <summary>
         /// Gets all broadcasts.
         /// </summary>
         /// <returns>The collection of models.</returns>
         [Get("/")]
-        Task<RequestResult<IEnumerable<Broadcast>>> GetAll();
+        Task<RequestResult<IEnumerable<Broadcast>>> GetAllAsync();
 
         /// <summary>
         /// Updates a broadcast.
@@ -47,7 +47,7 @@ namespace HealthGateway.Admin.Client.Services
         /// <param name="broadcast">The model to update.</param>
         /// <returns>The wrapped model.</returns>
         [Put("/")]
-        Task<RequestResult<Broadcast>> Update([Body] Broadcast broadcast);
+        Task<RequestResult<Broadcast>> UpdateAsync([Body] Broadcast broadcast);
 
         /// <summary>
         /// Deletes a broadcast.
@@ -55,6 +55,6 @@ namespace HealthGateway.Admin.Client.Services
         /// <param name="broadcast">The model to delete.</param>
         /// <returns>The wrapped model.</returns>
         [Delete("/")]
-        Task<RequestResult<Broadcast>> Delete([Body] Broadcast broadcast);
+        Task<RequestResult<Broadcast>> DeleteAsync([Body] Broadcast broadcast);
     }
 }

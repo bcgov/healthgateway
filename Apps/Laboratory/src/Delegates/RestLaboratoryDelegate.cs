@@ -82,16 +82,10 @@ namespace HealthGateway.Laboratory.Delegates
                     PageSize = int.Parse(this.labConfig.FetchSize, CultureInfo.InvariantCulture),
                 };
 
-                Dictionary<string, string?> query = new()
-                {
-                    ["limit"] = this.labConfig.FetchSize,
-                    ["subjectHdid"] = hdid,
-                };
-
                 try
                 {
                     PhsaResult<List<PhsaCovid19Order>> response =
-                        await this.laboratoryApi.GetCovid19OrdersAsync(query, bearerToken).ConfigureAwait(true);
+                        await this.laboratoryApi.GetCovid19OrdersAsync(hdid, this.labConfig.FetchSize, bearerToken).ConfigureAwait(true);
                     retVal.ResultStatus = ResultType.Success;
                     retVal.ResourcePayload = response;
                     retVal.TotalResultCount = retVal.ResourcePayload.Result!.Count;
@@ -135,20 +129,15 @@ namespace HealthGateway.Laboratory.Delegates
                     TotalResultCount = 0,
                 };
 
-                Dictionary<string, string?> query = new()
-                {
-                    ["subjectHdid"] = hdid,
-                };
-
                 try
                 {
                     if (isCovid19)
                     {
-                        retVal.ResourcePayload = await this.laboratoryApi.GetLaboratoryReportAsync(id, query, bearerToken).ConfigureAwait(true);
+                        retVal.ResourcePayload = await this.laboratoryApi.GetLaboratoryReportAsync(id, hdid, bearerToken).ConfigureAwait(true);
                     }
                     else
                     {
-                        retVal.ResourcePayload = await this.laboratoryApi.GetPlisLaboratoryReportAsync(id, query, bearerToken).ConfigureAwait(true);
+                        retVal.ResourcePayload = await this.laboratoryApi.GetPlisLaboratoryReportAsync(id, hdid, bearerToken).ConfigureAwait(true);
                     }
 
                     retVal.ResultStatus = ResultType.Success;
@@ -184,15 +173,10 @@ namespace HealthGateway.Laboratory.Delegates
                 PageSize = int.Parse(this.labConfig.FetchSize, CultureInfo.InvariantCulture),
             };
 
-            Dictionary<string, string?> query = new()
-            {
-                ["subjectHdid"] = hdid,
-            };
-
             try
             {
                 PhsaResult<PhsaLaboratorySummary> response =
-                    await this.laboratoryApi.GetPlisLaboratorySummaryAsync(query, bearerToken).ConfigureAwait(true);
+                    await this.laboratoryApi.GetPlisLaboratorySummaryAsync(hdid, bearerToken).ConfigureAwait(true);
                 retVal.ResultStatus = ResultType.Success;
                 retVal.ResourcePayload = response;
                 retVal.TotalResultCount = retVal.ResourcePayload.Result!.LabOrderCount;

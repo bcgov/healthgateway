@@ -58,7 +58,7 @@ namespace HealthGateway.ImmunizationTests.Delegates.Test
 
             Mock<IImmunizationApi> mockImmunizationApi = new(MockBehavior.Strict);
             Mock<IImmunizationPublicApi> mockImmunizationPublicApi = new();
-            mockImmunizationPublicApi.Setup(a => a.GetVaccineStatus(It.IsAny<VaccineStatusQuery>(), this.accessToken, It.IsAny<string>())).ReturnsAsync(expectedPayload);
+            mockImmunizationPublicApi.Setup(a => a.GetVaccineStatusAsync(It.IsAny<VaccineStatusQuery>(), this.accessToken, It.IsAny<string>())).ReturnsAsync(expectedPayload);
 
             using ILoggerFactory loggerFactory = LoggerFactory.Create(builder => builder.AddConsole());
             IVaccineStatusDelegate vaccineStatusDelegate = new RestVaccineStatusDelegate(
@@ -90,7 +90,7 @@ namespace HealthGateway.ImmunizationTests.Delegates.Test
 
             Mock<IImmunizationApi> mockImmunizationApi = new(MockBehavior.Strict);
             Mock<IImmunizationPublicApi> mockImmunizationPublicApi = new();
-            mockImmunizationPublicApi.Setup(a => a.GetVaccineStatus(It.IsAny<VaccineStatusQuery>(), this.accessToken, It.IsAny<string>()))
+            mockImmunizationPublicApi.Setup(a => a.GetVaccineStatusAsync(It.IsAny<VaccineStatusQuery>(), this.accessToken, It.IsAny<string>()))
                 .ThrowsAsync(new HttpRequestException(null, null, HttpStatusCode.BadRequest));
 
             using ILoggerFactory loggerFactory = LoggerFactory.Create(builder => builder.AddConsole());
@@ -124,7 +124,7 @@ namespace HealthGateway.ImmunizationTests.Delegates.Test
 
             Mock<IImmunizationApi> mockImmunizationApi = new(MockBehavior.Strict);
             Mock<IImmunizationPublicApi> mockImmunizationPublicApi = new();
-            mockImmunizationPublicApi.Setup(a => a.GetVaccineStatus(It.IsAny<VaccineStatusQuery>(), this.accessToken, It.IsAny<string>())).ReturnsAsync(expectedPayload);
+            mockImmunizationPublicApi.Setup(a => a.GetVaccineStatusAsync(It.IsAny<VaccineStatusQuery>(), this.accessToken, It.IsAny<string>())).ReturnsAsync(expectedPayload);
 
             using ILoggerFactory loggerFactory = LoggerFactory.Create(builder => builder.AddConsole());
             IVaccineStatusDelegate vaccineStatusDelegate = new RestVaccineStatusDelegate(
@@ -146,7 +146,7 @@ namespace HealthGateway.ImmunizationTests.Delegates.Test
         }
 
         /// <summary>
-        /// GetVaccineStatus - happy path.
+        /// GetVaccineStatusAsync - happy path.
         /// </summary>
         /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
         [Fact]
@@ -179,7 +179,7 @@ namespace HealthGateway.ImmunizationTests.Delegates.Test
         }
 
         /// <summary>
-        /// GetVaccineStatus - no result.
+        /// GetVaccineStatusAsync - no result.
         /// </summary>
         /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
         [Fact]
@@ -206,7 +206,7 @@ namespace HealthGateway.ImmunizationTests.Delegates.Test
         }
 
         /// <summary>
-        /// GetVaccineStatus - HTTP error.
+        /// GetVaccineStatusAsync - HTTP error.
         /// </summary>
         /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
         [Fact]

@@ -34,7 +34,7 @@ public interface IImmunizationPublicApi
     /// A PhsaResult containing the vaccine status of a given patient.
     /// </returns>
     [Post("/api/v1/Public/Immunizations/VaccineStatusIndicator")]
-    Task<PhsaResult<VaccineStatusResult>> GetVaccineStatus(
+    Task<PhsaResult<VaccineStatusResult>> GetVaccineStatusAsync(
         VaccineStatusQuery query,
         [Authorize] string token,
         [Header("X-Forwarded-For")] string clientIp);

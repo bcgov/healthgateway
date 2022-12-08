@@ -83,16 +83,11 @@ namespace HealthGateway.Encounter.Delegates
             };
 
             string? accessToken = this.authenticationDelegate.FetchAuthenticatedUserToken();
-            Dictionary<string, string?> query = new()
-            {
-                ["limit"] = this.phsaConfig.FetchSize,
-                ["subjectHdid"] = hdid,
-            };
 
             try
             {
                 PhsaResult<IEnumerable<HospitalVisit>> response =
-                    await this.hospitalVisitApi.GetHospitalVisitsAsync(query, accessToken).ConfigureAwait(true);
+                    await this.hospitalVisitApi.GetHospitalVisitsAsync(hdid, this.phsaConfig.FetchSize, accessToken).ConfigureAwait(true);
                 requestResult.ResultStatus = ResultType.Success;
                 requestResult.ResourcePayload!.Result = response.Result;
                 requestResult.TotalResultCount = requestResult.ResourcePayload.Result.Count();

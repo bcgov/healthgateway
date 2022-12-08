@@ -31,6 +31,6 @@ namespace HealthGateway.Medication.Api
         /// <param name="token">The access token to be used for the authorize header.</param>
         /// <returns>A wrapped response of SpecialAuthority requests.</returns>
         [Get("")]
-        Task<ResponseWrapper> GetSpecialAuthorityRequests([Header("phn")] string phn, [Authorize] string token);
+        Task<ResponseWrapper> GetSpecialAuthorityRequestsAsync([Header("phn")] string phn, [Authorize] string token);
     }
 }
