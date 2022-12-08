@@ -18,6 +18,13 @@ export const getters: UserGetters = {
         const { oidcUserInfo } = state;
         return oidcUserInfo;
     },
+    isValidIdentityProvider: (state: UserState): boolean => {
+        const { oidcUserInfo } = state;
+
+        return oidcUserInfo === undefined
+            ? false
+            : oidcUserInfo.idp === "BCSC" || oidcUserInfo.idp === undefined;
+    },
     userIsRegistered(state: UserState): boolean {
         const { user } = state;
         return user === undefined ? false : user.acceptedTermsOfService;

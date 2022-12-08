@@ -47,7 +47,7 @@ export default class HeaderComponent extends Vue {
     @Getter("oidcIsAuthenticated", { namespace: "auth" })
     oidcIsAuthenticated!: boolean;
 
-    @Getter("isValidIdentityProvider", { namespace: "auth" })
+    @Getter("isValidIdentityProvider", { namespace: "user" })
     isValidIdentityProvider!: boolean;
 
     @Getter("isHeaderShown", { namespace: "navbar" })

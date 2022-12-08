@@ -33,6 +33,7 @@ export interface UserState {
 export interface UserGetters extends GetterTree<UserState, RootState> {
     user(state: UserState): User;
     oidcUserInfo(state: UserState): OidcUserInfo | undefined;
+    isValidIdentityProvider(state: UserState): boolean;
     userIsRegistered(state: UserState): boolean;
     userIsActive(state: UserState): boolean;
     smsResendDateTime(state: UserState): DateWrapper | undefined;
