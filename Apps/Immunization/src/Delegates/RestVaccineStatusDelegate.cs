@@ -76,7 +76,7 @@ namespace HealthGateway.Immunization.Delegates
             }
             catch (Exception e) when (e is ApiException or HttpRequestException)
             {
-                this.logger.LogError("Unexpected exception in GetVaccineStatusAsync {Exception}", e);
+                this.logger.LogError("Unexpected exception in GetVaccineStatus {Exception}", e);
             }
 
             if (retVal.ResourcePayload == null)
