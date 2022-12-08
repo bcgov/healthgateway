@@ -47,6 +47,9 @@ export default class SidebarComponent extends Vue {
     @Getter("isMobile")
     isMobileWidth!: boolean;
 
+    @Getter("isOffline", { namespace: "config" })
+    isOffline!: boolean;
+
     @Getter("webClient", { namespace: "config" })
     config!: WebClientConfiguration;
 
@@ -62,14 +65,23 @@ export default class SidebarComponent extends Vue {
     @Getter("isSidebarAnimating", { namespace: "navbar" })
     isAnimating!: boolean;
 
-    @Getter("isSidebarAvailable", { namespace: "navbar" })
-    isSidebarAvailable!: boolean;
-
     @Getter("user", { namespace: "user" })
     user!: User;
 
+    @Getter("oidcIsAuthenticated", { namespace: "auth" })
+    oidcIsAuthenticated!: boolean;
+
+    @Getter("isValidIdentityProvider", { namespace: "user" })
+    isValidIdentityProvider!: boolean;
+
+    @Getter("userIsRegistered", { namespace: "user" })
+    userIsRegistered!: boolean;
+
     @Getter("userIsActive", { namespace: "user" })
-    isActiveProfile!: boolean;
+    userIsActive!: boolean;
+
+    @Getter("patientRetrievalFailed", { namespace: "user" })
+    patientRetrievalFailed!: boolean;
 
     private logger!: ILogger;
 
@@ -121,6 +133,17 @@ export default class SidebarComponent extends Vue {
             value: "false",
         };
         this.setUserPreference({ preference });
+    }
+
+    private get isSidebarAvailable(): boolean {
+        return (
+            !this.isOffline &&
+            this.oidcIsAuthenticated &&
+            this.isValidIdentityProvider &&
+            this.userIsRegistered &&
+            this.userIsActive &&
+            !this.patientRetrievalFailed
+        );
     }
 
     private get showExportTutorial(): boolean {
@@ -192,7 +215,7 @@ export default class SidebarComponent extends Vue {
                 <b-col>
                     <!-- Home button -->
                     <hg-button
-                        v-show="isActiveProfile"
+                        v-show="userIsActive"
                         id="menuBtnHome"
                         data-testid="menu-btn-home-link"
                         to="/home"
@@ -215,7 +238,7 @@ export default class SidebarComponent extends Vue {
                     </hg-button>
                     <!-- Timeline button -->
                     <hg-button
-                        v-show="isActiveProfile"
+                        v-show="userIsActive"
                         id="menuBtnTimeline"
                         data-testid="menu-btn-time-line-link"
                         to="/timeline"
@@ -238,7 +261,7 @@ export default class SidebarComponent extends Vue {
                     </hg-button>
                     <!-- COVID-19 button -->
                     <hg-button
-                        v-show="isVaccinationStatusEnabled && isActiveProfile"
+                        v-show="isVaccinationStatusEnabled && userIsActive"
                         id="menuBtnCovid19"
                         data-testid="menu-btn-covid19-link"
                         to="/covid19"
@@ -265,7 +288,7 @@ export default class SidebarComponent extends Vue {
                     </hg-button>
                     <!-- Dependents button -->
                     <hg-button
-                        v-show="isDependentEnabled && isActiveProfile"
+                        v-show="isDependentEnabled && userIsActive"
                         id="menuBtnDependents"
                         data-testid="menu-btn-dependents-link"
                         to="/dependents"
@@ -295,7 +318,7 @@ export default class SidebarComponent extends Vue {
                     </hg-button>
                     <!-- Reports button -->
                     <hg-button
-                        v-show="isActiveProfile"
+                        v-show="userIsActive"
                         id="menuBtnReports"
                         data-testid="menu-btn-reports-link"
                         to="/reports"

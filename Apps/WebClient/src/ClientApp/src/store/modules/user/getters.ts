@@ -4,7 +4,6 @@ import PatientData from "@/models/patientData";
 import { QuickLink } from "@/models/quickLink";
 import { LoadStatus } from "@/models/storeOperations";
 import User, { OidcUserInfo } from "@/models/user";
-import { RootState } from "@/store/types";
 import { QuickLinkUtil } from "@/utility/quickLinkUtil";
 
 import { UserGetters, UserState } from "./types";
@@ -43,10 +42,9 @@ export const getters: UserGetters = {
         const { user } = state;
         return user === undefined ? false : user.hasTermsOfServiceUpdated;
     },
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    quickLinks(_state: UserState, userGetters: any): QuickLink[] | undefined {
-        const preference =
-            userGetters.user.preferences[UserPreferenceType.QuickLinks];
+    quickLinks(state: UserState): QuickLink[] | undefined {
+        const { user } = state;
+        const preference = user.preferences[UserPreferenceType.QuickLinks];
         if (preference === undefined) {
             return undefined;
         }
@@ -60,31 +58,5 @@ export const getters: UserGetters = {
     },
     isLoading(state: UserState): boolean {
         return state.status === LoadStatus.REQUESTED;
-    },
-    userIsLoggedInAndActive: (
-        _state: UserState,
-        // eslint-disable-next-line
-        getters: any,
-        _rootState: RootState,
-        // eslint-disable-next-line
-        rootGetters: any
-    ): boolean => {
-        const isOffline = rootGetters["config/isOffline"];
-        const isAuthenticated: boolean =
-            rootGetters["auth/oidcIsAuthenticated"];
-        const isValid: boolean = rootGetters["auth/isValidIdentityProvider"];
-        const isRegistered: boolean = getters["userIsRegistered"];
-        const isActive: boolean = getters["userIsActive"];
-        const patientRetrievalFailed: boolean =
-            getters["patientRetrievalFailed"];
-
-        return (
-            !isOffline &&
-            isAuthenticated &&
-            isValid &&
-            isRegistered &&
-            isActive &&
-            !patientRetrievalFailed
-        );
     },
 };

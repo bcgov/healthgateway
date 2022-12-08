@@ -71,8 +71,17 @@ export default class LandingView extends Vue {
     @Getter("oidcIsAuthenticated", { namespace: "auth" })
     oidcIsAuthenticated!: boolean;
 
-    @Getter("isSidebarAvailable", { namespace: "navbar" })
-    isSidebarAvailable!: boolean;
+    @Getter("isValidIdentityProvider", { namespace: "user" })
+    isValidIdentityProvider!: boolean;
+
+    @Getter("userIsRegistered", { namespace: "user" })
+    userIsRegistered!: boolean;
+
+    @Getter("userIsActive", { namespace: "user" })
+    userIsActive!: boolean;
+
+    @Getter("patientRetrievalFailed", { namespace: "user" })
+    patientRetrievalFailed!: boolean;
 
     private get isVaccinationBannerEnabled(): boolean {
         return false;
@@ -80,6 +89,17 @@ export default class LandingView extends Vue {
 
     private get isPublicLaboratoryResultEnabled(): boolean {
         return this.config.modules["PublicLaboratoryResult"];
+    }
+
+    private get isSidebarAvailable(): boolean {
+        return (
+            !this.isOffline &&
+            this.oidcIsAuthenticated &&
+            this.isValidIdentityProvider &&
+            this.userIsRegistered &&
+            this.userIsActive &&
+            !this.patientRetrievalFailed
+        );
     }
 
     private logger!: ILogger;
