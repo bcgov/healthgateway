@@ -341,12 +341,12 @@ export default class LinearTimelineComponent extends Vue {
                 data-testid="linear-timeline-immunization-disclaimer-alert"
             >
                 <span>
-                    You can add or update immunizations by visiting
+                    If any of your immunizations are missing or incorrect,
                     <a
-                        href="https://www.immunizationrecord.gov.bc.ca"
+                        href="https://www.immunizationrecord.gov.bc.ca/"
                         target="_blank"
                         rel="noopener"
-                        >immunizationrecord.gov.bc.ca</a
+                        >fill in this online form</a
                     >.
                 </span>
             </b-alert>

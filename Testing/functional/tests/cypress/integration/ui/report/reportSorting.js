@@ -135,7 +135,7 @@ describe("Reports - Covid19", () => {
         cy.intercept("GET", `**/Laboratory/Covid19Orders?hdid=${HDID}`, {
             fixture: "Report/covid19UnSorted.json",
         });
-        cy.get("[data-testid=reportType]").select("COVID-19 Test Results");
+        cy.get("[data-testid=reportType]").select("COVID‑19 Test Results");
 
         cy.get("[data-testid=reportSample]").should("be.visible");
 

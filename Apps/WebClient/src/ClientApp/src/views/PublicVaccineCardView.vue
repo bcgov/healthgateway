@@ -598,7 +598,7 @@ export default class PublicVaccineCardView extends Vue {
                         boundary="viewport"
                     >
                         Your information is being collected to provide you with
-                        your COVID-19 vaccination status under s. 26(c) of the
+                        your COVID‑19 vaccination status under s. 26(c) of the
                         <em
                             >Freedom of Information and Protection of Privacy
                             Act</em
@@ -656,7 +656,7 @@ export default class PublicVaccineCardView extends Vue {
                 </p>
                 <div class="my-3">
                     <hg-button variant="secondary" href="tel:+18338382323">
-                        Call: 1-833-838-2323 (Toll-Free)
+                        Call: 1‑833‑838‑2323 (Toll‑Free)
                     </hg-button>
                 </div>
                 <div class="my-3">

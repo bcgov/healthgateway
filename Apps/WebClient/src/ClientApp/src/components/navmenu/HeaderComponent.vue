@@ -379,11 +379,16 @@ nav {
     .background-secondary {
         background-color: $hg-brand-secondary;
     }
+
+    .dropdown-item-text {
+        font-size: 0.875rem;
+    }
 }
 </style>
 
 <style lang="scss">
 .drop-menu-position {
     position: absolute !important;
+    min-width: 270px;
 }
 </style>

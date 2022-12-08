@@ -20,6 +20,7 @@ namespace HealthGateway.LaboratoryTests.Factories
     using HealthGateway.Laboratory.Delegates;
     using HealthGateway.Laboratory.Factories;
     using HealthGateway.Laboratory.Services;
+    using Microsoft.AspNetCore.Http;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Logging;
@@ -79,6 +80,7 @@ namespace HealthGateway.LaboratoryTests.Factories
             IConfigurationRoot config = GetIConfigurationRoot();
             services.AddSingleton<IConfiguration>(config);
 
+            services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
             return services.BuildServiceProvider();
         }
     }

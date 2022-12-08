@@ -39,7 +39,7 @@ namespace HealthGateway.Admin.Services
     using Microsoft.AspNetCore.Http;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.Logging;
-    using Refit;
+    using ApiException = Refit.ApiException;
 
     /// <summary>
     /// Service that provides COVID-19 Support functionality.
@@ -327,11 +327,13 @@ namespace HealthGateway.Admin.Services
             string? accessToken = this.authenticationDelegate.FetchAuthenticatedUserToken();
             try
             {
-                IApiResponse<CovidAssessmentResponse> response =
+                CovidAssessmentResponse response =
                     await this.immunizationAdminApi.SubmitCovidAssessment(request, accessToken).ConfigureAwait(true);
-                this.ProcessResponse(requestResult, response);
+                requestResult.ResultStatus = ResultType.Success;
+                requestResult.ResourcePayload = response;
+                requestResult.TotalResultCount = 1;
             }
-            catch (HttpRequestException e)
+            catch (Exception e) when (e is ApiException or HttpRequestException)
             {
                 this.logger.LogCritical("HTTP Request Exception {Exception}", e.ToString());
                 requestResult.ResultError = new RequestResultError
@@ -364,22 +366,36 @@ namespace HealthGateway.Admin.Services
                 string? accessToken = this.authenticationDelegate.FetchAuthenticatedUserToken();
                 try
                 {
-                    IApiResponse<CovidAssessmentDetailsResponse> response =
+                    CovidAssessmentDetailsResponse response =
                         await this.immunizationAdminApi.GetCovidAssessmentDetails(
                                 new CovidAssessmentDetailsRequest
                                     { Phn = phn },
                                 accessToken)
                             .ConfigureAwait(true);
-                    this.ProcessResponse(requestResult, response);
+                    requestResult.ResultStatus = ResultType.Success;
+                    requestResult.ResourcePayload = response;
+                    requestResult.TotalResultCount = 1;
                 }
-                catch (HttpRequestException e)
+                catch (Exception e) when (e is ApiException or HttpRequestException)
                 {
                     this.logger.LogCritical("HTTP Request Exception {Exception}", e.ToString());
-                    requestResult.ResultError = new RequestResultError
+
+                    if (e is ApiException { StatusCode: HttpStatusCode.NoContent })
                     {
-                        ResultMessage = "Error with HTTP Request",
-                        ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.Phsa),
-                    };
+                        requestResult.ResultError = new RequestResultError
+                        {
+                            ResultMessage = "No Details found",
+                            ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.Phsa),
+                        };
+                    }
+                    else
+                    {
+                        requestResult.ResultError = new RequestResultError
+                        {
+                            ResultMessage = "Error with HTTP Request",
+                            ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.Phsa),
+                        };
+                    }
                 }
             }
             else
@@ -389,66 +405,6 @@ namespace HealthGateway.Admin.Services
             }
 
             return requestResult;
-        }
-
-        private void ProcessResponse<T>(RequestResult<T> requestResult, IApiResponse<T> response)
-            where T : class
-        {
-            if (response.Error is null)
-            {
-                switch (response.StatusCode)
-                {
-                    case HttpStatusCode.OK:
-                        requestResult.ResultStatus = ResultType.Success;
-                        requestResult.ResourcePayload = response.Content;
-                        requestResult.TotalResultCount = 1;
-                        break;
-
-                    // Only GetCovidAssessmentDetailsAsync can return HttpStatusCode.NoContent
-                    case HttpStatusCode.NoContent:
-                        requestResult.ResultError = new RequestResultError
-                        {
-                            ResultMessage = "No Details found",
-                            ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.Phsa),
-                        };
-                        break;
-
-                    // SubmitCovidAssessmentAsync and GetCovidAssessmentDetailsAsync can return HttpStatusCode.Unauthorized
-                    case HttpStatusCode.Unauthorized:
-                        requestResult.ResultError = new RequestResultError
-                        {
-                            ResultMessage = "Request was not authorized",
-                            ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.Phsa),
-                        };
-                        break;
-
-                    // SubmitCovidAssessmentAsync and GetCovidAssessmentDetailsAsync can return HttpStatusCode.Forbidden
-                    case HttpStatusCode.Forbidden:
-                        requestResult.ResultError = new RequestResultError
-                        {
-                            ResultMessage = $"Missing Required Data Element, HTTP Error {response.StatusCode}",
-                            ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.Phsa),
-                        };
-                        break;
-                    default:
-                        requestResult.ResultError = new RequestResultError
-                        {
-                            ResultMessage = $"An unexpected error occurred, HTTP Error {response.StatusCode}",
-                            ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.Phsa),
-                        };
-                        break;
-                }
-            }
-            else
-            {
-                this.logger.LogError("Exception: {ErrorStatusCode}", response.Error.StatusCode.ToString());
-                this.logger.LogError("Http Payload: {Content}", response.Error.Content);
-                requestResult.ResultError = new RequestResultError
-                {
-                    ResultMessage = "An unexpected error occurred while processing external call",
-                    ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.Phsa),
-                };
-            }
         }
 
         private async Task<RequestResult<ReportModel>> RetrieveVaccineCardAsync(string phn, DateTime birthdate, string bearerToken)

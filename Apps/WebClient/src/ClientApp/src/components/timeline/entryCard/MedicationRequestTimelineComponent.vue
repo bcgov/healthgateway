@@ -58,11 +58,15 @@ export default class MedicationRequestTimelineComponent extends Vue {
                     <div class="detailSection">
                         <div>
                             <strong>Effective Date:</strong>
-                            {{ formatDate(entry.effectiveDate) }}
+                            <span class="text-nowrap">
+                                {{ formatDate(entry.effectiveDate) }}
+                            </span>
                         </div>
                         <div>
                             <strong>Expiry Date:</strong>
-                            {{ formatDate(entry.expiryDate) }}
+                            <span class="text-nowrap">
+                                {{ formatDate(entry.expiryDate) }}
+                            </span>
                         </div>
                         <div>
                             <strong>Reference Number:</strong>

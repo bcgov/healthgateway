@@ -33,7 +33,7 @@ public interface IImmunizationAdminApi
     /// <param name="token">The bearer token to authorize the call.</param>
     /// <returns>The response to the submitted covid anti viral therapeutic assessment form.</returns>
     [Post("/api/v1/Support/Immunizations/AntiViralScreenerSubmission")]
-    Task<IApiResponse<CovidAssessmentResponse>> SubmitCovidAssessment([Body] CovidAssessmentRequest request, [Authorize] string token);
+    Task<CovidAssessmentResponse> SubmitCovidAssessment([Body] CovidAssessmentRequest request, [Authorize] string token);
 
     /// <summary>
     /// Get details to help support the covid anti viral therapeutic assessment form for a phn.
@@ -42,7 +42,7 @@ public interface IImmunizationAdminApi
     /// <param name="token">The bearer token to authorize the call.</param>
     /// <returns>The details to help support covid anti viral therapeutic assessment.</returns>
     [Post("/api/v1/Support/Immunizations/AntiViralSupportDetails")]
-    Task<IApiResponse<CovidAssessmentDetailsResponse>> GetCovidAssessmentDetails([Body] CovidAssessmentDetailsRequest request, [Authorize] string token);
+    Task<CovidAssessmentDetailsResponse> GetCovidAssessmentDetails([Body] CovidAssessmentDetailsRequest request, [Authorize] string token);
 
     /// <summary>
     /// Gets the vaccine validation details for the provided patient information.
@@ -51,7 +51,7 @@ public interface IImmunizationAdminApi
     /// <param name="token">The bearer token to authorize the call.</param>
     /// <returns>The vaccine validation details for the patient request.</returns>
     [Post("/api/v1/Support/Immunizations/VaccineValidationDetails")]
-    Task<IApiResponse<PhsaResult<VaccineDetailsResponse>>> GetVaccineDetails([Body] CovidImmunizationsRequest request, [Authorize] string token);
+    Task<PhsaResult<VaccineDetailsResponse>> GetVaccineDetails([Body] CovidImmunizationsRequest request, [Authorize] string token);
 
     /// <summary>
     /// Retrieves a PhsaResult containing the vaccine status of a given patient.

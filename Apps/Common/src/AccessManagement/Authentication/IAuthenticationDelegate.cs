@@ -26,34 +26,13 @@ namespace HealthGateway.Common.AccessManagement.Authentication
     public interface IAuthenticationDelegate
     {
         /// <summary>
-        /// The default configuration section to retrieve auth information from.
-        /// </summary>
-        public const string DefaultAuthConfigSectionName = "ClientAuthentication";
-
-        /// <summary>
         /// Authenticates as a 'system admin account' concept, using OAuth 2.0 Client Credentials Grant.
         /// </summary>
         /// <param name="tokenUri">Uri to request the the token from.</param>
         /// <param name="tokenRequest">Token request configuration.</param>
-        /// <returns>An instance fo the <see cref="JwtModel"/> class.</returns>
-        JwtModel AuthenticateAsSystem(Uri tokenUri, ClientCredentialsTokenRequest tokenRequest);
-
-        /// <summary>
-        /// Authenticates a resource owner user with direct grant from a defined configuration section.
-        /// </summary>
-        /// <param name="sectionName">The configuration section used to lookup values.</param>
-        /// <returns>The access token for the user information provided in configuration.</returns>
-        string? AccessTokenAsUser(string sectionName = DefaultAuthConfigSectionName);
-
-        /// <summary>
-        /// Authenticates a resource owner user with direct grant, no user intervention.
-        /// Proxies to AuthenticateAsUser.
-        /// </summary>
-        /// <param name="tokenUri">Uri to request the the token from.</param>
-        /// <param name="tokenRequest">Token request configuration.</param>
         /// <param name="cacheEnabled">if true caches the result.</param>
-        /// <returns>The access token for the user tokenRequest.</returns>
-        string? AccessTokenAsUser(Uri tokenUri, ClientCredentialsTokenRequest tokenRequest, bool cacheEnabled = true);
+        /// <returns>An instance fo the <see cref="JwtModel"/> class.</returns>
+        JwtModel AuthenticateAsSystem(Uri tokenUri, ClientCredentialsTokenRequest tokenRequest, bool cacheEnabled = true);
 
         /// <summary>
         /// Authenticates a resource owner user with direct grant, no user intervention.
@@ -72,6 +51,13 @@ namespace HealthGateway.Common.AccessManagement.Authentication
         /// <param name="cacheEnabled">if true caches the result.</param>
         /// <returns>An instance fo the <see cref="JwtModel"/> class and a bool representing if the objecft was cached or not.</returns>
         (JwtModel JwtModel, bool Cached) AuthenticateUser(Uri tokenUri, ClientCredentialsTokenRequest tokenRequest, bool cacheEnabled);
+
+        /// <summary>
+        /// Retrieves the Token Uri and Client Credentials Token request from configuration.
+        /// </summary>
+        /// <param name="section">The section name to use.</param>
+        /// <returns>The tokenUri and ClientCredentialTokenRequest.</returns>
+        (Uri TokenUri, ClientCredentialsTokenRequest TokenRequest) GetClientCredentialsAuth(string section);
 
         /// <summary>
         /// Fetches the access token for the authenticated user from the http context.

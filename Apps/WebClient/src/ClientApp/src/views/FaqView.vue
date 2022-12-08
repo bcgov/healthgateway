@@ -246,7 +246,7 @@ export default class FaqView extends Vue {
                 </b-card-body>
             </b-collapse>
         </b-card>
-        <h3 class="pt-3">COVID-19 information</h3>
+        <h3 class="pt-3">COVID‑19 information</h3>
         <b-card no-body class="mb-1 border-0">
             <b-card-header
                 header-tag="header"
@@ -259,7 +259,7 @@ export default class FaqView extends Vue {
                     block
                     variant="info"
                     class="text-left"
-                    >When can I get my COVID-19 booster dose?
+                    >When can I get my COVID‑19 booster dose?
                 </b-button>
             </b-card-header>
             <b-collapse id="accordion-faqAnswer5" role="tabpanel">
@@ -294,7 +294,7 @@ export default class FaqView extends Vue {
                     block
                     variant="info"
                     class="text-left"
-                    >I got the COVID-19 vaccine outside of BC. How do I add it
+                    >I got the COVID‑19 vaccine outside of BC. How do I add it
                     to Health Gateway?</b-button
                 >
             </b-card-header>
@@ -340,7 +340,7 @@ export default class FaqView extends Vue {
                     block
                     variant="info"
                     class="text-left"
-                    >My COVID-19 vaccination record has an error. What should I
+                    >My COVID‑19 vaccination record has an error. What should I
                     do?
                 </b-button>
             </b-card-header>
@@ -512,8 +512,8 @@ export default class FaqView extends Vue {
                                 </li>
                                 <li>
                                     <div>
-                                        Call 1-800-663-7100 (toll-free) or
-                                        604-683-7151 (from the Lower Mainland)
+                                        Call 1‑800‑663‑7100 (toll‑free) or
+                                        604‑683‑7151 (from the Lower Mainland)
                                     </div>
                                 </li>
                             </ul>
@@ -606,7 +606,7 @@ export default class FaqView extends Vue {
                         <div data-testid="answerTxt">
                             <p>
                                 Currently, only parents or guardians can access
-                                COVID-19 test results for their children that
+                                COVID‑19 test results for their children that
                                 are 11 years old and younger. We’re working to
                                 provide more family and caregiver access in the
                                 future.

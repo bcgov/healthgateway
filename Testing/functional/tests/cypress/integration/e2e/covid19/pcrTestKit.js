@@ -40,6 +40,10 @@ describe("Authenticated PCR Test Kit Registration", () => {
         );
     });
 
+    afterEach(() => {
+        Cypress.session.clearAllSavedSessions();
+    });
+
     it("Success with Test Kit CID", () => {
         cy.visit(`/pcrtest/${successfulTestKitCid}`);
 

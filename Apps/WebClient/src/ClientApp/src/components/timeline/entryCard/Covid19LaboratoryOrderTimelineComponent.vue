@@ -212,11 +212,15 @@ export default class Covid19LaboratoryOrderTimelineComponent extends Vue {
                 </div>
                 <div class="my-2">
                     <strong>Collection Date:</strong>
-                    {{ formatDate(test.collectedDateTime) }}
+                    <span class="text-nowrap">
+                        {{ formatDate(test.collectedDateTime) }}
+                    </span>
                 </div>
                 <div class="my-2">
                     <strong>Result Date:</strong>
-                    {{ formatDate(test.resultDateTime) }}
+                    <span class="text-nowrap">
+                        {{ formatDate(test.resultDateTime) }}
+                    </span>
                 </div>
                 <div
                     v-if="test.resultDescription.length > 0"

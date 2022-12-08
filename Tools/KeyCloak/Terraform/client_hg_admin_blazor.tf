@@ -5,7 +5,7 @@ resource "keycloak_openid_client" "hgadminblazor_client" {
   description                  = "Health Gateway Blazor Admin web application"
   enabled                      = true
   access_type                  = "PUBLIC"
-  login_theme                  = "bcgov"
+  login_theme                  = local.development ? "bcgov-no-brand" : "bcgov-idp-login-no-brand"
   standard_flow_enabled        = true
   direct_access_grants_enabled = true
   valid_redirect_uris          = var.client_hg_admin_blazor.valid_redirects
@@ -64,7 +64,7 @@ resource "keycloak_openid_user_attribute_protocol_mapper" "hgadminblazor_auth_me
 
 resource "keycloak_openid_audience_protocol_mapper" "hgadminblazor_audience" {
   realm_id                 = data.keycloak_realm.hg_realm.id
-  client_id                = keycloak_openid_client.hgadminblazor_client.id 
+  client_id                = keycloak_openid_client.hgadminblazor_client.id
   name                     = "hg-admin-audience"
   included_client_audience = keycloak_openid_client.hgadmin_client.client_id #Grant HG Admin Audience not Blazor
   add_to_id_token          = true

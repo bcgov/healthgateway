@@ -229,7 +229,7 @@ export default class FilterComponent extends Vue {
                 id="filterBtn"
                 data-testid="filterDropdown"
                 :class="{ selected: hasFilterSelected }"
-                class="d-none d-lg-block"
+                class="d-none d-md-block"
                 variant="secondary"
                 tabindex="0"
                 @click="toggleMenu"
@@ -251,7 +251,7 @@ export default class FilterComponent extends Vue {
             </hg-button>
             <hg-button
                 data-testid="mobileFilterDropdown"
-                class="d-inline d-lg-none"
+                class="d-inline d-md-none"
                 :class="{ selected: hasFilterSelected }"
                 variant="secondary"
                 @click.stop="toggleMobileView"

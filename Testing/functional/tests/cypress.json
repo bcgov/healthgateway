@@ -9,6 +9,7 @@
     },
     "viewportWidth": 1920,
     "viewportHeight": 1080,
+    "experimentalSessionAndOrigin": true,
     "reporter": "mocha-junit-reporter",
     "reporterOptions": {
         "mochaFile": "reports/junit/test-results.[hash].xml",

@@ -92,18 +92,44 @@ export default class HospitalVisitTimelineComponent extends Vue {
                         data-testid="hospital-visit-location-info-popover"
                     >
                         <span>
-                            The provider's location will be displayed for
-                            virtual health visits.
+                            Virtual visits show your provider's location.
                         </span>
                     </b-popover>
                 </div>
                 <div data-testid="hospital-visit-provider">
                     <strong>Provider: </strong>
                     <span>{{ entry.provider }}</span>
+                    <hg-button
+                        v-if="entry.facility"
+                        :id="`hospital-visit-provider-${index}-${datekey}`"
+                        aria-label="Info"
+                        href="#"
+                        variant="link"
+                        data-testid="hospital-visit-provider-info-button"
+                        class="shadow-none align-baseline p-0 ml-1"
+                    >
+                        <hg-icon icon="info-circle" size="small" />
+                    </hg-button>
+                    <b-popover
+                        v-if="entry.facility"
+                        :target="`hospital-visit-provider-${index}-${datekey}`"
+                        triggers="hover focus"
+                        placement="topright"
+                        boundary="viewport"
+                        data-testid="hospital-visit-provider-info-popover"
+                    >
+                        <span>
+                            Inpatient visits only show the first attending
+                            physician.
+                        </span>
+                    </b-popover>
                 </div>
                 <div data-testid="hospital-visit-date">
                     <strong>Visit Date: </strong>
-                    <span data-testid="laboratory-collection-date-value">
+                    <span
+                        data-testid="laboratory-collection-date-value"
+                        class="text-nowrap"
+                    >
                         {{ formatDate(entry.admitDateTime) }}
                     </span>
                     <hg-button
@@ -126,14 +152,17 @@ export default class HospitalVisitTimelineComponent extends Vue {
                         data-testid="hospital-visit-date-info-popover"
                     >
                         <span>
-                            Outpatient visits may only display the first date in
-                            a series of visits.
+                            Outpatient visits may only show the first in a
+                            series of dates.
                         </span>
                     </b-popover>
                 </div>
                 <div data-testid="hospital-visit-discharge-date">
                     <strong>Discharge Date: </strong>
-                    <span v-if="entry.endDateTime !== undefined">
+                    <span
+                        v-if="entry.endDateTime !== undefined"
+                        class="text-nowrap"
+                    >
                         {{ formatDate(entry.endDateTime) }}
                     </span>
                 </div>

@@ -333,17 +333,6 @@ describe("Mobile - Hospital Visits", () => {
 describe("Mobile - Laboratory Orders", () => {
     it("Unsuccessful Response: Too Many Requests", () => {
         cy.intercept("GET", "**/Laboratory/LaboratoryOrders*", {
-            fixture: "LaboratoryService/laboratoryOrders.json",
-        });
-        cy.enableModules("AllLaboratory");
-        cy.viewport("iphone-6");
-        cy.login(
-            Cypress.env("keycloak.username"),
-            Cypress.env("keycloak.password"),
-            AuthMethod.KeyCloak
-        );
-
-        cy.intercept("GET", "**/Laboratory/LaboratoryOrders*", {
             statusCode: 429,
         });
         cy.enableModules("AllLaboratory");

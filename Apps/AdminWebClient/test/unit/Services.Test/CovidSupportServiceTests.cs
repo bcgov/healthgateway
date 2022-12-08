@@ -18,13 +18,13 @@ namespace HealthGateway.AdminWebClientTests.Services.Test
     using System;
     using System.Collections.Generic;
     using System.Linq;
-    using System.Net;
     using System.Net.Http;
     using HealthGateway.Admin.Api;
     using HealthGateway.Admin.Delegates;
     using HealthGateway.Admin.Models.CovidSupport;
     using HealthGateway.Admin.Services;
     using HealthGateway.Common.AccessManagement.Authentication;
+    using HealthGateway.Common.AccessManagement.Authentication.Models;
     using HealthGateway.Common.Data.Constants;
     using HealthGateway.Common.Data.ErrorHandling;
     using HealthGateway.Common.Data.ViewModels;
@@ -47,33 +47,13 @@ namespace HealthGateway.AdminWebClientTests.Services.Test
         private const string Phn = "9735353315";
 
         /// <summary>
-        /// Tests a various http status codes on Covid Assessment Details.
-        /// </summary>
-        /// <param name="httpStatusCode">The http status code to return from the mock.</param>
-        /// <param name="resultStatus">The result code to return from the mock.</param>
-        [Theory]
-        [InlineData(HttpStatusCode.OK, ResultType.Success)]
-        [InlineData(HttpStatusCode.NoContent, ResultType.Error)]
-        [InlineData(HttpStatusCode.Unauthorized, ResultType.Error)]
-        [InlineData(HttpStatusCode.Forbidden, ResultType.Error)]
-        [InlineData(HttpStatusCode.MethodNotAllowed, ResultType.Error)]
-        public void GetCovidAssessmentDetails(HttpStatusCode httpStatusCode, ResultType resultStatus)
-        {
-            CovidAssessmentDetailsResponse expectedResult = new();
-            RequestResult<CovidAssessmentDetailsResponse> actualResult = GetCovidSupportService(expectedResult, httpStatusCode, false).GetCovidAssessmentDetailsAsync(Phn).Result;
-            Assert.True(actualResult.ResultStatus == resultStatus);
-        }
-
-        /// <summary>
         /// Validates the processing when a bad PHN is used.
         /// </summary>
         [Fact]
         public void GetCovidAssessmentDetailsBadPhn()
         {
             CovidAssessmentDetailsResponse expectedResult = new();
-            HttpStatusCode httpStatusCode = HttpStatusCode.Accepted;
-
-            RequestResult<CovidAssessmentDetailsResponse> actualResult = GetCovidSupportService(expectedResult, httpStatusCode, false).GetCovidAssessmentDetailsAsync("BADPHN").Result;
+            RequestResult<CovidAssessmentDetailsResponse> actualResult = GetCovidSupportService(expectedResult, false).GetCovidAssessmentDetailsAsync("BADPHN").Result;
             Assert.True(actualResult is { ResultStatus: ResultType.ActionRequired, ResultError: { } } && actualResult.ResultError.ActionCodeValue == ActionType.Validation.Value);
         }
 
@@ -84,8 +64,7 @@ namespace HealthGateway.AdminWebClientTests.Services.Test
         public void GetCovidAssessmentDetailsException()
         {
             CovidAssessmentDetailsResponse expectedResult = new();
-            HttpStatusCode httpStatusCode = HttpStatusCode.Accepted;
-            RequestResult<CovidAssessmentDetailsResponse> actualResult = GetCovidSupportService(expectedResult, httpStatusCode, true).GetCovidAssessmentDetailsAsync(Phn).Result;
+            RequestResult<CovidAssessmentDetailsResponse> actualResult = GetCovidSupportService(expectedResult, true).GetCovidAssessmentDetailsAsync(Phn).Result;
             Assert.True(actualResult.ResultStatus == ResultType.Error);
         }
 
@@ -100,8 +79,7 @@ namespace HealthGateway.AdminWebClientTests.Services.Test
             {
                 Phn = Phn,
             };
-            HttpStatusCode httpStatusCode = HttpStatusCode.OK;
-            RequestResult<CovidAssessmentResponse> actualResult = GetCovidSupportService(expectedResult, httpStatusCode, false).SubmitCovidAssessmentAsync(request).Result;
+            RequestResult<CovidAssessmentResponse> actualResult = GetCovidSupportService(expectedResult, false).SubmitCovidAssessmentAsync(request).Result;
             Assert.True(actualResult.ResultStatus == ResultType.Success);
         }
 
@@ -116,8 +94,7 @@ namespace HealthGateway.AdminWebClientTests.Services.Test
             {
                 Phn = Phn,
             };
-            HttpStatusCode httpStatusCode = HttpStatusCode.Accepted;
-            RequestResult<CovidAssessmentResponse> actualResult = GetCovidSupportService(expectedResult, httpStatusCode, true).SubmitCovidAssessmentAsync(request).Result;
+            RequestResult<CovidAssessmentResponse> actualResult = GetCovidSupportService(expectedResult, true).SubmitCovidAssessmentAsync(request).Result;
             Assert.True(actualResult.ResultStatus == ResultType.Error);
         }
 
@@ -156,7 +133,12 @@ namespace HealthGateway.AdminWebClientTests.Services.Test
         private static ICovidSupportService GetCovidSupportService(HttpClient httpClient)
         {
             Mock<IAuthenticationDelegate> mockAuthDelegate = new();
-            mockAuthDelegate.Setup(s => s.AccessTokenAsUser(IAuthenticationDelegate.DefaultAuthConfigSectionName)).Returns(AccessToken);
+            JwtModel jwt = new()
+            {
+                AccessToken = AccessToken,
+            };
+
+            mockAuthDelegate.Setup(s => s.AuthenticateAsSystem(It.IsAny<Uri>(), It.IsAny<ClientCredentialsTokenRequest>(), It.IsAny<bool>())).Returns(jwt);
             IImmunizationAdminApi immunizationAdminApi = RestService.For<IImmunizationAdminApi>(httpClient);
             ICovidSupportService mockCovidSupportService = new CovidSupportService(
                 new Mock<ILogger<CovidSupportService>>().Object,
@@ -172,14 +154,15 @@ namespace HealthGateway.AdminWebClientTests.Services.Test
             return mockCovidSupportService;
         }
 
-        private static ICovidSupportService GetCovidSupportService(CovidAssessmentResponse response, HttpStatusCode statusCode, bool throwException)
+        private static ICovidSupportService GetCovidSupportService(CovidAssessmentResponse response, bool throwException)
         {
             Mock<IAuthenticationDelegate> mockAuthDelegate = new();
-            mockAuthDelegate.Setup(s => s.AccessTokenAsUser(IAuthenticationDelegate.DefaultAuthConfigSectionName)).Returns(AccessToken);
+            JwtModel jwt = new()
+            {
+                AccessToken = AccessToken,
+            };
 
-            Mock<IApiResponse<CovidAssessmentResponse>> mockApiResponse = new();
-            mockApiResponse.Setup(s => s.Content).Returns(response);
-            mockApiResponse.Setup(s => s.StatusCode).Returns(statusCode);
+            mockAuthDelegate.Setup(s => s.AuthenticateAsSystem(It.IsAny<Uri>(), It.IsAny<ClientCredentialsTokenRequest>(), It.IsAny<bool>())).Returns(jwt);
 
             Mock<IImmunizationAdminApi> mockAdminDelegate = new();
             if (!throwException)
@@ -187,7 +170,7 @@ namespace HealthGateway.AdminWebClientTests.Services.Test
                 mockAdminDelegate.Setup(
                         s =>
                             s.SubmitCovidAssessment(It.IsAny<CovidAssessmentRequest>(), It.IsAny<string>()))
-                    .ReturnsAsync(mockApiResponse.Object);
+                    .ReturnsAsync(response);
             }
             else
             {
@@ -211,14 +194,15 @@ namespace HealthGateway.AdminWebClientTests.Services.Test
             return mockCovidSupportService;
         }
 
-        private static ICovidSupportService GetCovidSupportService(CovidAssessmentDetailsResponse response, HttpStatusCode statusCode, bool throwException)
+        private static ICovidSupportService GetCovidSupportService(CovidAssessmentDetailsResponse response, bool throwException)
         {
             Mock<IAuthenticationDelegate> mockAuthDelegate = new();
-            mockAuthDelegate.Setup(s => s.AccessTokenAsUser(IAuthenticationDelegate.DefaultAuthConfigSectionName)).Returns(AccessToken);
+            JwtModel jwt = new()
+            {
+                AccessToken = AccessToken,
+            };
 
-            Mock<IApiResponse<CovidAssessmentDetailsResponse>> mockApiResponse = new();
-            mockApiResponse.Setup(s => s.Content).Returns(response);
-            mockApiResponse.Setup(s => s.StatusCode).Returns(statusCode);
+            mockAuthDelegate.Setup(s => s.AuthenticateAsSystem(It.IsAny<Uri>(), It.IsAny<ClientCredentialsTokenRequest>(), It.IsAny<bool>())).Returns(jwt);
 
             Mock<IImmunizationAdminApi> mockAdminDelegate = new();
             if (!throwException)
@@ -226,7 +210,7 @@ namespace HealthGateway.AdminWebClientTests.Services.Test
                 mockAdminDelegate.Setup(
                         s =>
                             s.GetCovidAssessmentDetails(It.IsAny<CovidAssessmentDetailsRequest>(), It.IsAny<string>()))
-                    .ReturnsAsync(mockApiResponse.Object);
+                    .ReturnsAsync(response);
             }
             else
             {

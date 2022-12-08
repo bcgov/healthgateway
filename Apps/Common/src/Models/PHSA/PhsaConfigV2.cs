@@ -28,6 +28,11 @@ namespace HealthGateway.Common.Models.PHSA
         public const string ConfigurationSectionKey = "PhsaV2";
 
         /// <summary>
+        /// The section key to use when binding this object.
+        /// </summary>
+        public const string AdminConfigurationSectionKey = "PhsaV2Admin";
+
+        /// <summary>
         /// Gets or sets the phsa base endpoint for tokens.
         /// </summary>
         public Uri TokenBaseUrl { get; set; } = null!;

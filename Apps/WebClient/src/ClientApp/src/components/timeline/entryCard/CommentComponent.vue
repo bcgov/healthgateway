@@ -114,7 +114,7 @@ export default class CommentComponent extends Vue {
                         <span data-testid="commentText">{{
                             comment.text
                         }}</span>
-                        <p class="m-0 timestamp">
+                        <p class="m-0 timestamp text-nowrap">
                             {{ formatDate(comment.createdDateTime) }}
                         </p>
                     </b-col>

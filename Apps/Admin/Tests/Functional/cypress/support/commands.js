@@ -9,6 +9,8 @@
 // ***********************************************
 require("cy-verify-downloads").addCustomCommand();
 
+const openIdConnectClientId = "hg-admin-blazor";
+
 function generateRandomString(length) {
     var text = "";
     var possible =
@@ -32,48 +34,46 @@ Cypress.Commands.add("logout", () => {
 });
 
 Cypress.Commands.add("login", (username, password, path) => {
-    cy.log("Logging in using Keycloak.");
-    cy.readConfig().then((config) => {
-        logout(config);
+    cy.session([username], () => {
+        cy.log("Logging in using Keycloak.");
+        cy.readConfig().then((config) => {
+            logout(config);
 
-        const stateId = generateRandomString(32); //"d0b27ba424b64b358b65d40cfdbc040b"
-        const codeVerifier = generateRandomString(96);
-        const stateStore = {
-            id: stateId,
-            created: new Date().getTime(),
-            request_type: "si:r",
-            code_verifier: codeVerifier,
-            redirect_uri: config.openIdConnect.callbacks.Logon,
-            authority: config.openIdConnect.authority,
-            client_id: config.openIdConnect.clientId,
-            response_mode: "query",
-            scope: config.openIdConnect.scope,
-            extraTokenParams: {},
-        };
-
-        cy.log("Creating OIDC StateStore in local storage.");
-        cy.log(`State ID:  ${stateId}`);
-        cy.log(`Generated Code Verifier: ${codeVerifier}`);
-        window.sessionStorage.setItem(
-            `oidc.${stateStore.id}`,
-            JSON.stringify(stateStore)
-        );
-
-        cy.log(`Requesting Keycloak Authentication form.`);
-        cy.request({
-            url: `${config.openIdConnect.authority}/protocol/openid-connect/auth`,
-            followRedirect: false,
-            qs: {
-                scope: config.openIdConnect.scope,
-                response_type: config.openIdConnect.responseType,
-                approval_prompt: "auto",
+            const stateId = generateRandomString(32); //"d0b27ba424b64b358b65d40cfdbc040b"
+            const codeVerifier = generateRandomString(96);
+            const stateStore = {
+                id: stateId,
+                created: new Date().getTime(),
+                request_type: "si:r",
+                code_verifier: codeVerifier,
                 redirect_uri: config.openIdConnect.callbacks.Logon,
-                client_id: config.openIdConnect.clientId,
+                authority: config.openIdConnect.authority,
+                client_id: openIdConnectClientId,
                 response_mode: "query",
-                state: stateStore.id,
-            },
-        })
-            .then((response) => {
+                extraTokenParams: {},
+            };
+
+            cy.log("Creating OIDC StateStore in local storage.");
+            cy.log(`State ID:  ${stateId}`);
+            cy.log(`Generated Code Verifier: ${codeVerifier}`);
+            window.sessionStorage.setItem(
+                `oidc.${stateStore.id}`,
+                JSON.stringify(stateStore)
+            );
+
+            cy.log(`Requesting Keycloak Authentication form.`);
+            cy.request({
+                url: `${config.openIdConnect.authority}/protocol/openid-connect/auth`,
+                followRedirect: false,
+                qs: {
+                    response_type: config.openIdConnect.responseType,
+                    approval_prompt: "auto",
+                    redirect_uri: config.openIdConnect.callbacks.Logon,
+                    client_id: openIdConnectClientId,
+                    response_mode: "query",
+                    state: stateStore.id,
+                },
+            }).then((response) => {
                 cy.log("Posting credentials.");
                 const html = document.createElement("html");
                 html.innerHTML = response.body;
@@ -90,14 +90,12 @@ Cypress.Commands.add("login", (username, password, path) => {
                     form: true,
                     body,
                 });
-            })
-            .then(() => {
-                cy.visit(path, { timeout: 60000 });
-
-                // wait for log in to complete
-                cy.get("[data-testid=user-account-icon]").should("exist");
             });
+        });
     });
+    cy.visit(path, { timeout: 60000 });
+    // wait for log in to complete
+    cy.get("[data-testid=user-account-icon]").should("exist");
 });
 
 Cypress.Commands.add("readConfig", () => {
