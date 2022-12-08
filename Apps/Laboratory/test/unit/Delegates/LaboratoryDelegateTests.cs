@@ -86,7 +86,7 @@ namespace HealthGateway.LaboratoryTests.Delegates
 
             Mock<ILogger<RestLaboratoryDelegate>> mockLogger = new();
             Mock<ILaboratoryApi> mockLaboratoryApi = new();
-            mockLaboratoryApi.Setup(s => s.GetCovid19OrdersAsync(It.IsAny<Dictionary<string, string?>>(), It.IsAny<string>())).ReturnsAsync(response);
+            mockLaboratoryApi.Setup(s => s.GetCovid19OrdersAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>())).ReturnsAsync(response);
 
             ILaboratoryDelegate labDelegate = new RestLaboratoryDelegate(
                 mockLogger.Object,
@@ -115,7 +115,7 @@ namespace HealthGateway.LaboratoryTests.Delegates
             Mock<ILogger<RestLaboratoryDelegate>> mockLogger = new();
             ApiException mockException = MockRefitException.CreateApiException(HttpStatusCode.NoContent, HttpMethod.Get);
             Mock<ILaboratoryApi> mockLaboratoryApi = new();
-            mockLaboratoryApi.Setup(s => s.GetCovid19OrdersAsync(It.IsAny<Dictionary<string, string?>>(), It.IsAny<string>())).ThrowsAsync(mockException);
+            mockLaboratoryApi.Setup(s => s.GetCovid19OrdersAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>())).ThrowsAsync(mockException);
 
             ILaboratoryDelegate labDelegate = new RestLaboratoryDelegate(
                 mockLogger.Object,
@@ -145,7 +145,7 @@ namespace HealthGateway.LaboratoryTests.Delegates
             Mock<ILogger<RestLaboratoryDelegate>> mockLogger = new();
             ApiException mockException = MockRefitException.CreateApiException(HttpStatusCode.Unauthorized, HttpMethod.Get);
             Mock<ILaboratoryApi> mockLaboratoryApi = new();
-            mockLaboratoryApi.Setup(s => s.GetCovid19OrdersAsync(It.IsAny<Dictionary<string, string?>>(), It.IsAny<string>())).ThrowsAsync(mockException);
+            mockLaboratoryApi.Setup(s => s.GetCovid19OrdersAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>())).ThrowsAsync(mockException);
 
             ILaboratoryDelegate labDelegate = new RestLaboratoryDelegate(
                 mockLogger.Object,
@@ -174,7 +174,7 @@ namespace HealthGateway.LaboratoryTests.Delegates
             Mock<ILogger<RestLaboratoryDelegate>> mockLogger = new();
             HttpRequestException mockException = MockRefitException.CreateHttpRequestException("Internal Server Error", HttpStatusCode.InternalServerError);
             Mock<ILaboratoryApi> mockLaboratoryApi = new();
-            mockLaboratoryApi.Setup(s => s.GetCovid19OrdersAsync(It.IsAny<Dictionary<string, string?>>(), It.IsAny<string>())).ThrowsAsync(mockException);
+            mockLaboratoryApi.Setup(s => s.GetCovid19OrdersAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>())).ThrowsAsync(mockException);
 
             ILaboratoryDelegate labDelegate = new RestLaboratoryDelegate(
                 mockLogger.Object,
@@ -207,7 +207,7 @@ namespace HealthGateway.LaboratoryTests.Delegates
             };
 
             Mock<ILaboratoryApi> mockLaboratoryApi = new();
-            mockLaboratoryApi.Setup(s => s.GetLaboratoryReportAsync(It.IsAny<string>(), It.IsAny<Dictionary<string, string?>>(), It.IsAny<string>())).ReturnsAsync(response);
+            mockLaboratoryApi.Setup(s => s.GetLaboratoryReportAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>())).ReturnsAsync(response);
             Mock<ILogger<RestLaboratoryDelegate>> mockLogger = new();
             ILaboratoryDelegate labDelegate = new RestLaboratoryDelegate(
                 mockLogger.Object,
@@ -235,7 +235,7 @@ namespace HealthGateway.LaboratoryTests.Delegates
             // Arrange
             ApiException mockException = MockRefitException.CreateApiException(HttpStatusCode.NoContent, HttpMethod.Get);
             Mock<ILaboratoryApi> mockLaboratoryApi = new();
-            mockLaboratoryApi.Setup(s => s.GetLaboratoryReportAsync(It.IsAny<string>(), It.IsAny<Dictionary<string, string?>>(), It.IsAny<string>())).ThrowsAsync(mockException);
+            mockLaboratoryApi.Setup(s => s.GetLaboratoryReportAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>())).ThrowsAsync(mockException);
             Mock<ILogger<RestLaboratoryDelegate>> mockLogger = new();
             ILaboratoryDelegate labDelegate = new RestLaboratoryDelegate(
                 mockLogger.Object,
@@ -263,7 +263,7 @@ namespace HealthGateway.LaboratoryTests.Delegates
             // Arrange
             ApiException mockException = MockRefitException.CreateApiException(HttpStatusCode.Unauthorized, HttpMethod.Get);
             Mock<ILaboratoryApi> mockLaboratoryApi = new();
-            mockLaboratoryApi.Setup(s => s.GetLaboratoryReportAsync(It.IsAny<string>(), It.IsAny<Dictionary<string, string?>>(), It.IsAny<string>())).ThrowsAsync(mockException);
+            mockLaboratoryApi.Setup(s => s.GetLaboratoryReportAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>())).ThrowsAsync(mockException);
 
             Mock<ILogger<RestLaboratoryDelegate>> mockLogger = new();
             ILaboratoryDelegate labDelegate = new RestLaboratoryDelegate(
@@ -292,7 +292,7 @@ namespace HealthGateway.LaboratoryTests.Delegates
             // Arrange
             HttpRequestException mockException = MockRefitException.CreateHttpRequestException("Internal Server Error", HttpStatusCode.InternalServerError);
             Mock<ILaboratoryApi> mockLaboratoryApi = new();
-            mockLaboratoryApi.Setup(s => s.GetLaboratoryReportAsync(It.IsAny<string>(), It.IsAny<Dictionary<string, string?>>(), It.IsAny<string>())).ThrowsAsync(mockException);
+            mockLaboratoryApi.Setup(s => s.GetLaboratoryReportAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>())).ThrowsAsync(mockException);
 
             Mock<ILogger<RestLaboratoryDelegate>> mockLogger = new();
             ILaboratoryDelegate labDelegate = new RestLaboratoryDelegate(
@@ -326,7 +326,7 @@ namespace HealthGateway.LaboratoryTests.Delegates
             };
 
             Mock<ILaboratoryApi> mockLaboratoryApi = new();
-            mockLaboratoryApi.Setup(s => s.GetPlisLaboratoryReportAsync(It.IsAny<string>(), It.IsAny<Dictionary<string, string?>>(), It.IsAny<string>())).ReturnsAsync(response);
+            mockLaboratoryApi.Setup(s => s.GetPlisLaboratoryReportAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>())).ReturnsAsync(response);
 
             Mock<ILogger<RestLaboratoryDelegate>> mockLogger = new();
             ILaboratoryDelegate labDelegate = new RestLaboratoryDelegate(
@@ -355,7 +355,7 @@ namespace HealthGateway.LaboratoryTests.Delegates
             // Arrange
             ApiException mockException = MockRefitException.CreateApiException(HttpStatusCode.NoContent, HttpMethod.Get);
             Mock<ILaboratoryApi> mockLaboratoryApi = new();
-            mockLaboratoryApi.Setup(s => s.GetPlisLaboratoryReportAsync(It.IsAny<string>(), It.IsAny<Dictionary<string, string?>>(), It.IsAny<string>())).ThrowsAsync(mockException);
+            mockLaboratoryApi.Setup(s => s.GetPlisLaboratoryReportAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>())).ThrowsAsync(mockException);
 
             Mock<ILogger<RestLaboratoryDelegate>> mockLogger = new();
             ILaboratoryDelegate labDelegate = new RestLaboratoryDelegate(
@@ -384,7 +384,7 @@ namespace HealthGateway.LaboratoryTests.Delegates
             // Arrange
             ApiException mockException = MockRefitException.CreateApiException(HttpStatusCode.Unauthorized, HttpMethod.Get);
             Mock<ILaboratoryApi> mockLaboratoryApi = new();
-            mockLaboratoryApi.Setup(s => s.GetPlisLaboratoryReportAsync(It.IsAny<string>(), It.IsAny<Dictionary<string, string?>>(), It.IsAny<string>())).ThrowsAsync(mockException);
+            mockLaboratoryApi.Setup(s => s.GetPlisLaboratoryReportAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>())).ThrowsAsync(mockException);
 
             Mock<ILogger<RestLaboratoryDelegate>> mockLogger = new();
             ILaboratoryDelegate labDelegate = new RestLaboratoryDelegate(
@@ -413,7 +413,7 @@ namespace HealthGateway.LaboratoryTests.Delegates
             // Arrange
             HttpRequestException mockException = MockRefitException.CreateHttpRequestException("Internal Server Error", HttpStatusCode.InternalServerError);
             Mock<ILaboratoryApi> mockLaboratoryApi = new();
-            mockLaboratoryApi.Setup(s => s.GetPlisLaboratoryReportAsync(It.IsAny<string>(), It.IsAny<Dictionary<string, string?>>(), It.IsAny<string>())).ThrowsAsync(mockException);
+            mockLaboratoryApi.Setup(s => s.GetPlisLaboratoryReportAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>())).ThrowsAsync(mockException);
 
             Mock<ILogger<RestLaboratoryDelegate>> mockLogger = new();
             ILaboratoryDelegate labDelegate = new RestLaboratoryDelegate(
@@ -573,7 +573,7 @@ namespace HealthGateway.LaboratoryTests.Delegates
 
             Mock<ILogger<RestLaboratoryDelegate>> mockLogger = new();
             Mock<ILaboratoryApi> mockLaboratoryApi = new();
-            mockLaboratoryApi.Setup(s => s.GetPlisLaboratorySummaryAsync(It.IsAny<Dictionary<string, string?>>(), It.IsAny<string>())).ReturnsAsync(response);
+            mockLaboratoryApi.Setup(s => s.GetPlisLaboratorySummaryAsync(It.IsAny<string>(), It.IsAny<string>())).ReturnsAsync(response);
 
             ILaboratoryDelegate labDelegate = new RestLaboratoryDelegate(
                 mockLogger.Object,
@@ -600,7 +600,7 @@ namespace HealthGateway.LaboratoryTests.Delegates
             Mock<ILogger<RestLaboratoryDelegate>> mockLogger = new();
             ApiException mockException = MockRefitException.CreateApiException(HttpStatusCode.NoContent, HttpMethod.Get);
             Mock<ILaboratoryApi> mockLaboratoryApi = new();
-            mockLaboratoryApi.Setup(s => s.GetPlisLaboratorySummaryAsync(It.IsAny<Dictionary<string, string?>>(), It.IsAny<string>())).ThrowsAsync(mockException);
+            mockLaboratoryApi.Setup(s => s.GetPlisLaboratorySummaryAsync(It.IsAny<string>(), It.IsAny<string>())).ThrowsAsync(mockException);
 
             ILaboratoryDelegate labDelegate = new RestLaboratoryDelegate(
                 mockLogger.Object,
@@ -630,7 +630,7 @@ namespace HealthGateway.LaboratoryTests.Delegates
             Mock<ILogger<RestLaboratoryDelegate>> mockLogger = new();
             ApiException mockException = MockRefitException.CreateApiException(HttpStatusCode.Unauthorized, HttpMethod.Get);
             Mock<ILaboratoryApi> mockLaboratoryApi = new();
-            mockLaboratoryApi.Setup(s => s.GetPlisLaboratorySummaryAsync(It.IsAny<Dictionary<string, string?>>(), It.IsAny<string>())).ThrowsAsync(mockException);
+            mockLaboratoryApi.Setup(s => s.GetPlisLaboratorySummaryAsync(It.IsAny<string>(), It.IsAny<string>())).ThrowsAsync(mockException);
 
             ILaboratoryDelegate labDelegate = new RestLaboratoryDelegate(
                 mockLogger.Object,
@@ -659,7 +659,7 @@ namespace HealthGateway.LaboratoryTests.Delegates
             Mock<ILogger<RestLaboratoryDelegate>> mockLogger = new();
             HttpRequestException mockException = MockRefitException.CreateHttpRequestException("Internal Server Error", HttpStatusCode.InternalServerError);
             Mock<ILaboratoryApi> mockLaboratoryApi = new();
-            mockLaboratoryApi.Setup(s => s.GetPlisLaboratorySummaryAsync(It.IsAny<Dictionary<string, string?>>(), It.IsAny<string>())).ThrowsAsync(mockException);
+            mockLaboratoryApi.Setup(s => s.GetPlisLaboratorySummaryAsync(It.IsAny<string>(), It.IsAny<string>())).ThrowsAsync(mockException);
 
             ILaboratoryDelegate labDelegate = new RestLaboratoryDelegate(
                 mockLogger.Object,

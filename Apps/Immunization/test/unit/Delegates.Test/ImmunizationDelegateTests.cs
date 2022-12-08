@@ -209,14 +209,14 @@ namespace HealthGateway.ImmunizationTests.Delegates.Test
             Mock<IImmunizationApi> mockImmunizationApi = new();
             if (!throwException)
             {
-                mockImmunizationApi.Setup(s => s.GetImmunizationsAsync(It.IsAny<Dictionary<string, string?>>(), AccessToken))
+                mockImmunizationApi.Setup(s => s.GetImmunizationsAsync(It.IsAny<string>(), It.IsAny<string>(), AccessToken))
                     .ReturnsAsync(response);
             }
             else
             {
                 mockImmunizationApi.Setup(
                         s =>
-                            s.GetImmunizationsAsync(It.IsAny<Dictionary<string, string?>>(), AccessToken))
+                            s.GetImmunizationsAsync(It.IsAny<string>(), It.IsAny<string>(), AccessToken))
                     .ThrowsAsync(new HttpRequestException("Unit Test HTTP Request Exception"));
             }
 

@@ -16,7 +16,6 @@
 namespace HealthGateway.Immunization.Delegates
 {
     using System;
-    using System.Collections.Generic;
     using System.Diagnostics;
     using System.Net.Http;
     using System.Threading.Tasks;
@@ -104,16 +103,11 @@ namespace HealthGateway.Immunization.Delegates
 
             RequestResult<PhsaResult<ImmunizationResponse>> requestResult = InitializeResult<ImmunizationResponse>();
             string? accessToken = this.authenticationDelegate.FetchAuthenticatedUserToken();
-            Dictionary<string, string?> query = new()
-            {
-                ["limit"] = this.phsaConfig.FetchSize,
-                ["subjectHdid"] = hdid,
-            };
 
             try
             {
                 PhsaResult<ImmunizationResponse> response =
-                    await this.immunizationApi.GetImmunizationsAsync(query, accessToken).ConfigureAwait(true);
+                    await this.immunizationApi.GetImmunizationsAsync(hdid, this.phsaConfig.FetchSize, accessToken).ConfigureAwait(true);
                 requestResult.ResultStatus = ResultType.Success;
                 requestResult.ResourcePayload!.Result = response.Result;
                 requestResult.TotalResultCount = 1;
