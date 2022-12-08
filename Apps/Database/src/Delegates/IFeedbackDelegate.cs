@@ -66,7 +66,8 @@ namespace HealthGateway.Database.Delegates
         /// <summary>
         /// Fetches the UserFeedback with FeedbackTag associations from the database.
         /// </summary>
+        /// <param name="includeUserProfile">Indicates whether user profile should be included in the returned user feedback.</param>
         /// <returns>A DB result which encapsulates the return objects and status.</returns>
-        DbResult<IList<UserFeedback>> GetAllUserFeedbackEntries();
+        DbResult<IList<UserFeedback>> GetAllUserFeedbackEntries(bool includeUserProfile = false);
     }
 }

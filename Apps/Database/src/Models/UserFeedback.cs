@@ -72,6 +72,11 @@ namespace HealthGateway.Database.Models
         public string? UserProfileId { get; set; }
 
         /// <summary>
+        /// Gets or sets the UserProfile associated to this comment.
+        /// </summary>
+        public virtual UserProfile? UserProfile { get; set; }
+
+        /// <summary>
         /// Gets the related list of tags.
         /// </summary>
         public ICollection<UserFeedbackTag> Tags { get; } = new List<UserFeedbackTag>();
