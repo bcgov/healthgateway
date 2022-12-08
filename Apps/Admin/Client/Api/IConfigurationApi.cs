@@ -13,7 +13,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //-------------------------------------------------------------------------
-namespace HealthGateway.Admin.Client.Services;
+namespace HealthGateway.Admin.Client.Api;
 
 using System.Threading.Tasks;
 using HealthGateway.Admin.Common.Models;
@@ -29,5 +29,5 @@ public interface IConfigurationApi
     /// </summary>
     /// <returns>The ExternalConfiguration object.</returns>
     [Get("/")]
-    Task<ExternalConfiguration> GetConfiguration();
+    Task<ExternalConfiguration> GetConfigurationAsync();
 }

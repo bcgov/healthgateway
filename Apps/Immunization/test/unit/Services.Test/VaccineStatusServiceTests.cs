@@ -491,7 +491,7 @@ namespace HealthGateway.ImmunizationTests.Services.Test
         }
 
         /// <summary>
-        /// GetVaccineStatus - Invalid PHN.
+        /// GetVaccineStatusAsync - Invalid PHN.
         /// </summary>
         [Fact]
         public void ShouldErrorOnPHN()
@@ -513,7 +513,7 @@ namespace HealthGateway.ImmunizationTests.Services.Test
         }
 
         /// <summary>
-        /// GetVaccineStatus - Invalid DOB.
+        /// GetVaccineStatusAsync - Invalid DOB.
         /// </summary>
         [Fact]
         public void ShouldErrorOnDOB()
@@ -534,7 +534,7 @@ namespace HealthGateway.ImmunizationTests.Services.Test
         }
 
         /// <summary>
-        /// GetVaccineStatus - Invalid DOV.
+        /// GetVaccineStatusAsync - Invalid DOV.
         /// </summary>
         [Fact]
         public void ShouldErrorOnDOV()

@@ -268,7 +268,7 @@ namespace HealthGateway.ImmunizationTests.Services.Test
             string hdid = "mock hdid";
 
             var mockVaccineDelegate = new Mock<IVaccineStatusDelegate>();
-            mockVaccineDelegate.Setup(s => s.GetVaccineStatus(It.IsAny<VaccineStatusQuery>(), It.IsAny<string>(), false)).Returns(Task.FromResult(vaccineStatusResult));
+            mockVaccineDelegate.Setup(s => s.GetVaccineStatusAsync(It.IsAny<VaccineStatusQuery>(), It.IsAny<string>(), false)).Returns(Task.FromResult(vaccineStatusResult));
             var mockHttpContextAccessor = CreateValidHttpContext("token", "userid", "hdid");
 
             RequestResult<ReportModel> assetResult = new()
@@ -332,7 +332,7 @@ namespace HealthGateway.ImmunizationTests.Services.Test
             string hdid = "mock hdid";
 
             var mockVaccineDelegate = new Mock<IVaccineStatusDelegate>();
-            mockVaccineDelegate.Setup(s => s.GetVaccineStatus(It.IsAny<VaccineStatusQuery>(), It.IsAny<string>(), false)).Returns(Task.FromResult(vaccineStatusResult));
+            mockVaccineDelegate.Setup(s => s.GetVaccineStatusAsync(It.IsAny<VaccineStatusQuery>(), It.IsAny<string>(), false)).Returns(Task.FromResult(vaccineStatusResult));
 
             var mockHttpContextAccessor = CreateValidHttpContext("token", "userid", "hdid");
 
@@ -364,7 +364,7 @@ namespace HealthGateway.ImmunizationTests.Services.Test
             string hdid = "mock hdid";
 
             var mockVaccineDelegate = new Mock<IVaccineStatusDelegate>();
-            mockVaccineDelegate.Setup(s => s.GetVaccineStatus(It.IsAny<VaccineStatusQuery>(), It.IsAny<string>(), false)).Returns(Task.FromResult(vaccineStatusResult));
+            mockVaccineDelegate.Setup(s => s.GetVaccineStatusAsync(It.IsAny<VaccineStatusQuery>(), It.IsAny<string>(), false)).Returns(Task.FromResult(vaccineStatusResult));
 
             var mockHttpContextAccessor = CreateValidHttpContext("token", "userid", "hdid");
 
@@ -406,7 +406,7 @@ namespace HealthGateway.ImmunizationTests.Services.Test
             string hdid = "mock hdid";
 
             var mockVaccineDelegate = new Mock<IVaccineStatusDelegate>();
-            mockVaccineDelegate.Setup(s => s.GetVaccineStatus(It.IsAny<VaccineStatusQuery>(), It.IsAny<string>(), false)).Returns(Task.FromResult(vaccineStatusResult));
+            mockVaccineDelegate.Setup(s => s.GetVaccineStatusAsync(It.IsAny<VaccineStatusQuery>(), It.IsAny<string>(), false)).Returns(Task.FromResult(vaccineStatusResult));
             var mockHttpContextAccessor = CreateValidHttpContext("token", "userid", "hdid");
 
             IImmunizationService service = new ImmunizationService(
@@ -444,7 +444,7 @@ namespace HealthGateway.ImmunizationTests.Services.Test
             string hdid = "mock hdid";
 
             var mockVaccineDelegate = new Mock<IVaccineStatusDelegate>();
-            mockVaccineDelegate.Setup(s => s.GetVaccineStatus(It.IsAny<VaccineStatusQuery>(), It.IsAny<string>(), false)).Returns(Task.FromResult(vaccineStatusResult));
+            mockVaccineDelegate.Setup(s => s.GetVaccineStatusAsync(It.IsAny<VaccineStatusQuery>(), It.IsAny<string>(), false)).Returns(Task.FromResult(vaccineStatusResult));
             var mockHttpContextAccessor = CreateValidHttpContext("token", "userid", "hdid");
 
             IImmunizationService service = new ImmunizationService(
@@ -495,7 +495,7 @@ namespace HealthGateway.ImmunizationTests.Services.Test
             string hdid = "mock hdid";
 
             var mockVaccineDelegate = new Mock<IVaccineStatusDelegate>();
-            mockVaccineDelegate.Setup(s => s.GetVaccineStatus(It.IsAny<VaccineStatusQuery>(), It.IsAny<string>(), false)).Returns(Task.FromResult(vaccineStatusResult));
+            mockVaccineDelegate.Setup(s => s.GetVaccineStatusAsync(It.IsAny<VaccineStatusQuery>(), It.IsAny<string>(), false)).Returns(Task.FromResult(vaccineStatusResult));
             var mockHttpContextAccessor = CreateValidHttpContext("token", "userid", "hdid");
 
             RequestResult<ReportModel> assetResult = new()
@@ -564,7 +564,7 @@ namespace HealthGateway.ImmunizationTests.Services.Test
             string hdid = "mock hdid";
 
             var mockVaccineDelegate = new Mock<IVaccineStatusDelegate>();
-            mockVaccineDelegate.Setup(s => s.GetVaccineStatus(It.IsAny<VaccineStatusQuery>(), It.IsAny<string>(), false)).Returns(Task.FromResult(vaccineStatusResult));
+            mockVaccineDelegate.Setup(s => s.GetVaccineStatusAsync(It.IsAny<VaccineStatusQuery>(), It.IsAny<string>(), false)).Returns(Task.FromResult(vaccineStatusResult));
 
             var mockHttpContextAccessor = CreateValidHttpContext("token", "userid", "hdid");
 

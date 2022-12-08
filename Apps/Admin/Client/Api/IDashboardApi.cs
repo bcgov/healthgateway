@@ -14,7 +14,7 @@
 // limitations under the License.
 //-------------------------------------------------------------------------
 
-namespace HealthGateway.Admin.Client.Services;
+namespace HealthGateway.Admin.Client.Api;
 
 using System;
 using System.Collections.Generic;
@@ -32,7 +32,7 @@ public interface IDashboardApi
     /// <param name="timeOffset">The offset from the client browser to UTC.</param>
     /// <returns>The count of registered users.</returns>
     [Get("/RegisteredCount")]
-    Task<IDictionary<DateTime, int>> GetRegisteredUserCount(int timeOffset);
+    Task<IDictionary<DateTime, int>> GetRegisteredUserCountAsync(int timeOffset);
 
     /// <summary>
     /// Retrieves the count of logged in user in the last day.
@@ -40,7 +40,7 @@ public interface IDashboardApi
     /// <param name="timeOffset">The offset from the client browser to UTC.</param>
     /// <returns>The count of logged in users in the current day.</returns>
     [Get("/LoggedInCount")]
-    Task<IDictionary<DateTime, int>> GetLoggedinUsersCount(int timeOffset);
+    Task<IDictionary<DateTime, int>> GetLoggedinUsersCountAsync(int timeOffset);
 
     /// <summary>
     /// Retrieves the count of dependents.
@@ -48,7 +48,7 @@ public interface IDashboardApi
     /// <param name="timeOffset">The offset from the client browser to UTC.</param>
     /// <returns>The count of logged in users in the current day.</returns>
     [Get("/DependentCount")]
-    Task<IDictionary<DateTime, int>> GetDependentCount(int timeOffset);
+    Task<IDictionary<DateTime, int>> GetDependentCountAsync(int timeOffset);
 
     /// <summary>
     /// Retrieves the count recurring users.
@@ -59,7 +59,7 @@ public interface IDashboardApi
     /// <param name="timeOffset">The offset from the client browser to UTC.</param>
     /// <returns>The count of recurrent users.</returns>
     [Get("/RecurringUsers")]
-    Task<int> GetRecurringUsersCount(int days, string startPeriod, string endPeriod, int timeOffset);
+    Task<int> GetRecurringUsersCountAsync(int days, string startPeriod, string endPeriod, int timeOffset);
 
     /// <summary>
     /// Retrieves the ratings summary.
@@ -69,5 +69,5 @@ public interface IDashboardApi
     /// <param name="timeOffset">The offset from the client browser to UTC.</param>
     /// <returns>A dictionary pairing the ratings with the counts.</returns>
     [Get("/Ratings/Summary?startPeriod={startPeriod}&endPeriod={endPeriod}&timeOffset={timeOffset}")]
-    Task<IDictionary<string, int>> GetRatingsSummary(string startPeriod, string endPeriod, int timeOffset);
+    Task<IDictionary<string, int>> GetRatingsSummaryAsync(string startPeriod, string endPeriod, int timeOffset);
 }

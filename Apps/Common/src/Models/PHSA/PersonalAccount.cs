@@ -57,6 +57,6 @@ namespace HealthGateway.Common.Models.PHSA
         /// Gets or sets the Patient Identity.
         /// </summary>
         [JsonPropertyName("patientIdentity")]
-        public PatientIdentity? PatientIdentity { get; set; }
+        public PatientIdentity PatientIdentity { get; set; } = null!;
     }
 }

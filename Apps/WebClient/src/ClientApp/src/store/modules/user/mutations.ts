@@ -83,6 +83,11 @@ export const mutations: UserMutation = {
         );
         Vue.set(
             state.user,
+            "lastLoginDateTime",
+            userProfile ? userProfile.lastLoginDateTime : undefined
+        );
+        Vue.set(
+            state.user,
             "closedDateTime",
             userProfile ? userProfile.closedDateTime : undefined
         );

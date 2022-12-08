@@ -21,7 +21,7 @@ using System.Collections.Generic;
 using System.Net.Http;
 using System.Threading.Tasks;
 using Fluxor;
-using HealthGateway.Admin.Client.Services;
+using HealthGateway.Admin.Client.Api;
 using HealthGateway.Admin.Client.Utils;
 using HealthGateway.Common.Data.Constants;
 using HealthGateway.Common.Data.Models;
@@ -64,7 +64,7 @@ public class BroadcastsEffects
         this.Logger.LogInformation("Adding broadcast");
         try
         {
-            RequestResult<Broadcast> response = await this.Api.Add(action.Broadcast).ConfigureAwait(true);
+            RequestResult<Broadcast> response = await this.Api.AddAsync(action.Broadcast).ConfigureAwait(true);
             if (response is { ResourcePayload: { }, ResultStatus: ResultType.Success })
             {
                 this.Logger.LogInformation("Broadcast added successfully!");
@@ -95,7 +95,7 @@ public class BroadcastsEffects
         this.Logger.LogInformation("Loading broadcasts");
         try
         {
-            RequestResult<IEnumerable<Broadcast>> response = await this.Api.GetAll().ConfigureAwait(true);
+            RequestResult<IEnumerable<Broadcast>> response = await this.Api.GetAllAsync().ConfigureAwait(true);
             if (response is { ResourcePayload: { }, ResultStatus: ResultType.Success })
             {
                 this.Logger.LogInformation("Broadcasts loaded successfully!");
@@ -127,7 +127,7 @@ public class BroadcastsEffects
         this.Logger.LogInformation("Updating broadcast");
         try
         {
-            RequestResult<Broadcast> response = await this.Api.Update(action.Broadcast).ConfigureAwait(true);
+            RequestResult<Broadcast> response = await this.Api.UpdateAsync(action.Broadcast).ConfigureAwait(true);
             if (response is { ResourcePayload: { }, ResultStatus: ResultType.Success })
             {
                 this.Logger.LogInformation("Broadcast updated successfully!");
@@ -159,7 +159,7 @@ public class BroadcastsEffects
         this.Logger.LogInformation("Deleting broadcast");
         try
         {
-            RequestResult<Broadcast> response = await this.Api.Delete(action.Broadcast).ConfigureAwait(true);
+            RequestResult<Broadcast> response = await this.Api.DeleteAsync(action.Broadcast).ConfigureAwait(true);
             if (response is { ResourcePayload: { }, ResultStatus: ResultType.Success })
             {
                 this.Logger.LogInformation("Broadcast deleted successfully!");

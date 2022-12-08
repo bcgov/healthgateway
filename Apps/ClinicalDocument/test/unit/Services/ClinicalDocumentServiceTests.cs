@@ -169,13 +169,13 @@ namespace HealthGateway.ClinicalDocumentTests.Services
             {
                 PatientIdentity = patientIdentity,
             };
-            RequestResult<PersonalAccount?> requestResult = new()
+            RequestResult<PersonalAccount> requestResult = new()
             {
                 ResourcePayload = personalAccount,
                 ResultStatus = ResultType.Success,
             };
             Mock<IPersonalAccountsService> personalAccountServiceMock = new();
-            personalAccountServiceMock.Setup(p => p.GetPatientAccountAsync(It.IsAny<string>())).ReturnsAsync(requestResult);
+            personalAccountServiceMock.Setup(p => p.GetPatientAccountResultAsync(It.IsAny<string>())).ReturnsAsync(requestResult);
 
             return new ClinicalDocumentService(
                 new Mock<ILogger<ClinicalDocumentService>>().Object,

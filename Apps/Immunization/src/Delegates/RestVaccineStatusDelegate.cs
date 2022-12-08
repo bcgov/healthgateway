@@ -110,7 +110,7 @@ namespace HealthGateway.Immunization.Delegates
 
             try
             {
-                PhsaResult<VaccineStatusResult> phsaResult = await this.immunizationPublicApi.GetVaccineStatus(query, accessToken, clientIp).ConfigureAwait(true);
+                PhsaResult<VaccineStatusResult> phsaResult = await this.immunizationPublicApi.GetVaccineStatusAsync(query, accessToken, clientIp).ConfigureAwait(true);
 
                 if (phsaResult.Result != null)
                 {

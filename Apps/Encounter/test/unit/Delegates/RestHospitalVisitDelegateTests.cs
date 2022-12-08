@@ -72,7 +72,7 @@ namespace HealthGateway.EncounterTests.Delegates
             Mock<IAuthenticationDelegate> mockAuthDelegate = new();
             mockAuthDelegate.Setup(s => s.FetchAuthenticatedUserToken()).Returns(AccessToken);
             Mock<IHospitalVisitApi> mockHospitalVisitApi = new();
-            mockHospitalVisitApi.Setup(s => s.GetHospitalVisitsAsync(It.IsAny<Dictionary<string, string?>>(), AccessToken)).ReturnsAsync(phsaResponse);
+            mockHospitalVisitApi.Setup(s => s.GetHospitalVisitsAsync(It.IsAny<string>(), It.IsAny<string>(), AccessToken)).ReturnsAsync(phsaResponse);
             IHospitalVisitDelegate hospitalVisitDelegate = new RestHospitalVisitDelegate(
                 mockAuthDelegate.Object,
                 mockHospitalVisitApi.Object,
@@ -102,7 +102,7 @@ namespace HealthGateway.EncounterTests.Delegates
             Mock<IAuthenticationDelegate> mockAuthDelegate = new();
             mockAuthDelegate.Setup(s => s.FetchAuthenticatedUserToken()).Returns(AccessToken);
             Mock<IHospitalVisitApi> mockHospitalVisitApi = new();
-            mockHospitalVisitApi.Setup(s => s.GetHospitalVisitsAsync(It.IsAny<Dictionary<string, string?>>(), AccessToken)).ThrowsAsync(mockException);
+            mockHospitalVisitApi.Setup(s => s.GetHospitalVisitsAsync(It.IsAny<string>(), It.IsAny<string>(), AccessToken)).ThrowsAsync(mockException);
             IHospitalVisitDelegate hospitalVisitDelegate = new RestHospitalVisitDelegate(
                 mockAuthDelegate.Object,
                 mockHospitalVisitApi.Object,
@@ -131,7 +131,7 @@ namespace HealthGateway.EncounterTests.Delegates
             Mock<IAuthenticationDelegate> mockAuthDelegate = new();
             mockAuthDelegate.Setup(s => s.FetchAuthenticatedUserToken()).Returns(AccessToken);
             Mock<IHospitalVisitApi> mockHospitalVisitApi = new();
-            mockHospitalVisitApi.Setup(s => s.GetHospitalVisitsAsync(It.IsAny<Dictionary<string, string?>>(), AccessToken)).ThrowsAsync(mockException);
+            mockHospitalVisitApi.Setup(s => s.GetHospitalVisitsAsync(It.IsAny<string>(), It.IsAny<string>(), AccessToken)).ThrowsAsync(mockException);
             IHospitalVisitDelegate hospitalVisitDelegate = new RestHospitalVisitDelegate(
                 mockAuthDelegate.Object,
                 mockHospitalVisitApi.Object,

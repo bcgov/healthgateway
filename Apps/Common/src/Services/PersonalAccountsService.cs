@@ -68,47 +68,45 @@ namespace HealthGateway.Common.Services
         private static ActivitySource Source { get; } = new(nameof(PersonalAccountsService));
 
         /// <inheritdoc/>
-        public async Task<RequestResult<PersonalAccount?>> GetPatientAccountAsync(string hdid)
+        public async Task<PersonalAccount> GetPatientAccountAsync(string hdid)
         {
-            RequestResult<PersonalAccount?> requestResult = new()
+            PersonalAccount? account = this.GetFromCache(hdid);
+            if (account is not null)
+            {
+                return account;
+            }
+
+            account = await this.personalAccountsApi.AccountLookupByHdidAsync(hdid).ConfigureAwait(true);
+            this.PutCache(hdid, account);
+            return account;
+        }
+
+        /// <inheritdoc/>
+        public async Task<RequestResult<PersonalAccount>> GetPatientAccountResultAsync(string hdid)
+        {
+            RequestResult<PersonalAccount> requestResult = new()
             {
                 ResultStatus = ResultType.Error,
                 PageSize = 0,
             };
-            PersonalAccount? account = this.GetFromCache(hdid);
-            if (account is null)
-            {
-                try
-                {
-                    PersonalAccount response = await this.personalAccountsApi.AccountLookupByHdidAsync(hdid).ConfigureAwait(true);
-                    account = response;
-                    this.PutCache(hdid, account);
-                }
-                catch (Exception e) when (e is ApiException or HttpRequestException)
-                {
-                    this.logger.LogCritical("Request Exception {Error}", e.ToString());
-                    requestResult.ResultError = new()
-                    {
-                        ResultMessage = "Error with request for Personal Accounts",
-                        ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.Phsa),
-                    };
-                }
-            }
 
-            if (account != null)
+            try
             {
+                requestResult.ResourcePayload = await this.GetPatientAccountAsync(hdid).ConfigureAwait(true);
                 requestResult.ResultStatus = ResultType.Success;
-                requestResult.ResourcePayload = account;
                 requestResult.TotalResultCount = 1;
+            }
+            catch (Exception e) when (e is ApiException or HttpRequestException)
+            {
+                this.logger.LogCritical("Request Exception {Error}", e.ToString());
+                requestResult.ResultError = new()
+                {
+                    ResultMessage = "Error with request for Personal Accounts",
+                    ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.Phsa),
+                };
             }
 
             return requestResult;
-        }
-
-        /// <inheritdoc/>
-        public RequestResult<PersonalAccount?> GetPatientAccount(string hdid)
-        {
-            return this.GetPatientAccountAsync(hdid).Result;
         }
 
         /// <summary>

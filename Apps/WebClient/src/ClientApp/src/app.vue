@@ -42,10 +42,12 @@ import IdleComponent from "@/components/modal/IdleComponent.vue";
 import FooterComponent from "@/components/navmenu/FooterComponent.vue";
 import HeaderComponent from "@/components/navmenu/HeaderComponent.vue";
 import SidebarComponent from "@/components/navmenu/SidebarComponent.vue";
+import NotificationCentreComponent from "@/components/NotificationCentreComponent.vue";
 import ResourceCentreComponent from "@/components/ResourceCentreComponent.vue";
 import { AppErrorType } from "@/constants/errorType";
 import Process, { EnvironmentType } from "@/constants/process";
 import ScreenWidth from "@/constants/screenWidth";
+import type { WebClientConfiguration } from "@/models/configData";
 import container from "@/plugins/container";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import { ILogger } from "@/services/interfaces";
@@ -92,6 +94,7 @@ const options: any = {
         IdleComponent,
         CommunicationComponent,
         ResourceCentreComponent,
+        NotificationCentreComponent,
         AppErrorView,
     },
 };
@@ -110,14 +113,29 @@ export default class App extends Vue {
     @Getter("isMobile")
     isMobile!: boolean;
 
+    @Getter("isOffline", { namespace: "config" })
+    isOffline!: boolean;
+
+    @Getter("webClient", { namespace: "config" })
+    config!: WebClientConfiguration;
+
     @Getter("oidcIsAuthenticated", { namespace: "auth" })
-    oidcIsAuthenticated?: boolean;
+    oidcIsAuthenticated!: boolean;
 
     @Getter("isValidIdentityProvider", { namespace: "auth" })
-    isValidIdentityProvider?: boolean;
+    isValidIdentityProvider!: boolean;
 
     @Getter("hasTermsOfServiceUpdated", { namespace: "user" })
     hasTermsOfServiceUpdated!: boolean;
+
+    @Getter("userIsRegistered", { namespace: "user" })
+    userIsRegistered!: boolean;
+
+    @Getter("userIsActive", { namespace: "user" })
+    userIsActive!: boolean;
+
+    @Getter("patientRetrievalFailed", { namespace: "user" })
+    patientRetrievalFailed!: boolean;
 
     private readonly host: string =
         window.location.hostname.toLocaleUpperCase();
@@ -235,6 +253,18 @@ export default class App extends Vue {
         );
     }
 
+    private get isNotificationCentreEnabled(): boolean {
+        return (
+            this.config.modules["NotificationCentre"] &&
+            !this.isOffline &&
+            this.oidcIsAuthenticated &&
+            this.isValidIdentityProvider &&
+            this.userIsRegistered &&
+            this.userIsActive &&
+            !this.patientRetrievalFailed
+        );
+    }
+
     private get isCommunicationVisible(): boolean {
         return (
             !this.currentPathMatches(
@@ -278,6 +308,16 @@ export default class App extends Vue {
             />
             <main class="col fill-height d-flex flex-column">
                 <CommunicationComponent v-if="isCommunicationVisible" />
+                <b-sidebar
+                    v-if="isNotificationCentreEnabled"
+                    id="notification-centre-sidebar"
+                    no-header
+                    right
+                    shadow
+                    backdrop
+                >
+                    <NotificationCentreComponent />
+                </b-sidebar>
 
                 <router-view v-if="pageHasCustomLayout" />
                 <div v-else class="m-3 m-md-4">

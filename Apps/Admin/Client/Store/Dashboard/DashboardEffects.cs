@@ -20,7 +20,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Fluxor;
-using HealthGateway.Admin.Client.Services;
+using HealthGateway.Admin.Client.Api;
 using HealthGateway.Admin.Client.Utils;
 using Microsoft.AspNetCore.Components;
 using Microsoft.Extensions.Logging;
@@ -60,7 +60,7 @@ public class DashboardEffects
         this.Logger.LogInformation("Loading registered users!");
         try
         {
-            IDictionary<DateTime, int> response = await this.DashboardApi.GetRegisteredUserCount(action.TimeOffset).ConfigureAwait(true);
+            IDictionary<DateTime, int> response = await this.DashboardApi.GetRegisteredUserCountAsync(action.TimeOffset).ConfigureAwait(true);
             this.Logger.LogInformation("Registered users retrieved successfully!");
             dispatcher.Dispatch(new DashboardActions.RegisteredUsersSuccessAction(response));
         }
@@ -85,7 +85,7 @@ public class DashboardEffects
 
         try
         {
-            IDictionary<DateTime, int> response = await this.DashboardApi.GetLoggedinUsersCount(action.TimeOffset).ConfigureAwait(true);
+            IDictionary<DateTime, int> response = await this.DashboardApi.GetLoggedinUsersCountAsync(action.TimeOffset).ConfigureAwait(true);
             this.Logger.LogInformation("Logged in users retrieved successfully!");
             dispatcher.Dispatch(new DashboardActions.LoggedInUsersSuccessAction(response));
         }
@@ -110,7 +110,7 @@ public class DashboardEffects
 
         try
         {
-            IDictionary<DateTime, int> response = await this.DashboardApi.GetDependentCount(action.TimeOffset).ConfigureAwait(true);
+            IDictionary<DateTime, int> response = await this.DashboardApi.GetDependentCountAsync(action.TimeOffset).ConfigureAwait(true);
             this.Logger.LogInformation("Dependents retrieved successfully!");
             dispatcher.Dispatch(new DashboardActions.DependentsSuccessAction(response));
         }
@@ -135,7 +135,7 @@ public class DashboardEffects
 
         try
         {
-            int response = await this.DashboardApi.GetRecurringUsersCount(action.Days, action.StartPeriod, action.EndPeriod, action.TimeOffset).ConfigureAwait(true);
+            int response = await this.DashboardApi.GetRecurringUsersCountAsync(action.Days, action.StartPeriod, action.EndPeriod, action.TimeOffset).ConfigureAwait(true);
             this.Logger.LogInformation("Recurring users retrieved successfully!");
             RecurringUser recurringUser = new() { TotalRecurringUsers = response };
             dispatcher.Dispatch(new DashboardActions.RecurringUsersSuccessAction(recurringUser));
@@ -161,7 +161,7 @@ public class DashboardEffects
 
         try
         {
-            IDictionary<string, int> response = await this.DashboardApi.GetRatingsSummary(action.StartPeriod, action.EndPeriod, action.TimeOffset).ConfigureAwait(true);
+            IDictionary<string, int> response = await this.DashboardApi.GetRatingsSummaryAsync(action.StartPeriod, action.EndPeriod, action.TimeOffset).ConfigureAwait(true);
             this.Logger.LogInformation("Rating summary retrieved successfully!");
             dispatcher.Dispatch(new DashboardActions.RatingSummarySuccessAction(response));
         }

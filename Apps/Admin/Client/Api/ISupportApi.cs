@@ -13,39 +13,33 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //-------------------------------------------------------------------------
-namespace HealthGateway.Admin.Client.Services;
+namespace HealthGateway.Admin.Client.Api;
 
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using HealthGateway.Admin.Common.Models;
+using HealthGateway.Common.Data.Constants;
 using HealthGateway.Common.Data.ViewModels;
 using Refit;
 
 /// <summary>
-/// API for interacting with tags.
+/// APIs to fetch support related data from the server.
 /// </summary>
-public interface ITagApi
+public interface ISupportApi
 {
     /// <summary>
-    /// Adds a tag.
+    /// Gets the list of users from the server.
     /// </summary>
-    /// <param name="tagName">The tag name.</param>
-    /// <returns>The wrapped model.</returns>
-    [Post("/")]
-    Task<RequestResult<AdminTagView>> AddAsync([Body(BodySerializationMethod.Serialized)] string tagName);
+    /// <param name="queryType">queryType.</param>
+    /// <param name="queryString">queryString.</param>
+    /// <returns>The list of SupportUser objects.</returns>
+    [Get("/Users?queryType={queryType}&queryString={queryString}")]
+    Task<RequestResult<IEnumerable<SupportUser>>> GetSupportUsersAsync(UserQueryType queryType, string queryString);
 
     /// <summary>
-    /// Gets all tags.
+    /// Gets the list of messaging verification models from the server.
     /// </summary>
-    /// <returns>The wrapped collection of models.</returns>
-    [Get("/")]
-    Task<RequestResult<IEnumerable<AdminTagView>>> GetAllAsync();
-
-    /// <summary>
-    /// Deletes a tag.
-    /// </summary>
-    /// <param name="tag">The model to delete.</param>
-    /// <returns>The wrapped model.</returns>
-    [Delete("/")]
-    Task<RequestResult<AdminTagView>> DeleteAsync([Body] AdminTagView tag);
+    /// <param name="hdid">The hdid associated with the messaging verification.</param>
+    /// <returns>The list of MessagingVerificationModel objects.</returns>
+    [Get("/Verifications?hdid={hdid}")]
+    Task<RequestResult<IEnumerable<MessagingVerificationModel>>> GetMessagingVerificationsAsync(string hdid);
 }

@@ -17,7 +17,7 @@ namespace HealthGateway.Admin.Client.Store.Configuration
 {
     using System.Threading.Tasks;
     using Fluxor;
-    using HealthGateway.Admin.Client.Services;
+    using HealthGateway.Admin.Client.Api;
     using HealthGateway.Admin.Client.Utils;
     using HealthGateway.Admin.Common.Models;
     using Microsoft.AspNetCore.Components;
@@ -58,7 +58,7 @@ namespace HealthGateway.Admin.Client.Store.Configuration
 
             try
             {
-                ExternalConfiguration response = await this.ConfigApi.GetConfiguration().ConfigureAwait(true);
+                ExternalConfiguration response = await this.ConfigApi.GetConfigurationAsync().ConfigureAwait(true);
                 this.Logger.LogInformation("External configuration loaded successfully!");
                 dispatcher.Dispatch(new ConfigurationActions.LoadSuccessAction(response));
             }

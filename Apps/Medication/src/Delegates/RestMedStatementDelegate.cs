@@ -34,6 +34,7 @@ namespace HealthGateway.Medication.Delegates
     using HealthGateway.Medication.Models.ODR;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.Logging;
+    using ApiException = Refit.ApiException;
 
     /// <summary>
     /// ODR Implementation for Rest Medication Statements.
