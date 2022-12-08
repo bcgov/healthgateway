@@ -1227,28 +1227,6 @@ namespace HealthGateway.PatientTests.Delegates
         }
 
         /// <summary>
-        /// Client registry get demographics throws ApiException given CommunicationException.
-        /// </summary>
-        /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
-        [Fact]
-        public async Task GetDemographicsThrowsApiPatientExceptionGivenCommunicationException()
-        {
-            // Setup
-            string expectedDetail = $"Communication Exception with client registry when trying to retrieve patient information from {OidType.Phn}";
-            IClientRegistriesDelegate clientRegistryDelegate = GetClientRegistriesDelegate(false, false, false, true);
-
-            // Act
-            async Task Actual()
-            {
-                await clientRegistryDelegate.GetDemographicsAsync(OidType.Phn, Phn).ConfigureAwait(true);
-            }
-
-            // Verify
-            ApiException exception = await Assert.ThrowsAsync<ApiException>(Actual).ConfigureAwait(true);
-            Assert.Equal(expectedDetail, exception.Detail);
-        }
-
-        /// <summary>
         /// Client registry get demographics throws api patient exception given client registry records not found.
         /// </summary>
         /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
