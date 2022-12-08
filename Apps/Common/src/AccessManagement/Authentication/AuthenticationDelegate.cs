@@ -151,8 +151,8 @@ namespace HealthGateway.Common.AccessManagement.Authentication
         {
             IConfigurationSection configSection = this.configuration.GetSection(section);
             Uri tokenUri = configSection.GetValue<Uri>(@"TokenUri") ??
-                            throw new ArgumentNullException(nameof(section), $"{section} does not contain a valid TokenUri");
-            ClientCredentialsTokenRequest tokenRequest = new ClientCredentialsTokenRequest();
+                           throw new ArgumentNullException(nameof(section), $"{section} does not contain a valid TokenUri");
+            ClientCredentialsTokenRequest tokenRequest = new();
             configSection.Bind(tokenRequest); // Client ID, Client Secret, Audience, Scope
             return (tokenUri, tokenRequest);
         }
@@ -176,6 +176,13 @@ namespace HealthGateway.Common.AccessManagement.Authentication
         {
             ClaimsPrincipal? user = this.httpContextAccessor?.HttpContext?.User;
             return user?.FindFirst(ClaimTypes.NameIdentifier)!.Value;
+        }
+
+        /// <inheritdoc/>
+        public string? FetchAuthenticatedUserClientType()
+        {
+            ClaimsPrincipal? user = this.httpContextAccessor?.HttpContext?.User;
+            return user?.FindFirst("azp")?.Value;
         }
 
         private JwtModel GetSystemToken(Uri tokenUri, ClientCredentialsTokenRequest tokenRequest)

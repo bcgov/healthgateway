@@ -72,6 +72,12 @@ namespace HealthGateway.Common.AccessManagement.Authentication
         string? FetchAuthenticatedUserHdid();
 
         /// <summary>
+        /// Fetches the client type for the authenticated user from the http context.
+        /// </summary>
+        /// <returns>The users client type.</returns>
+        string? FetchAuthenticatedUserClientType();
+
+        /// <summary>
         /// Fetches the id for the authenticated user from the http context.
         /// </summary>
         /// <returns>The user's id.</returns>

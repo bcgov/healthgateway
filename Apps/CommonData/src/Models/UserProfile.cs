@@ -89,6 +89,11 @@ namespace HealthGateway.Common.Data.Models
         public string? YearOfBirth { get; set; }
 
         /// <summary>
+        /// Gets or sets the user's last login client.
+        /// </summary>
+        public string? LastLoginClient { get; set; }
+
+        /// <summary>
         /// Gets or sets the messaging verifications for this user.
         /// </summary>
         [SuppressMessage("Usage", "CA2227:Collection properties should be read only", Justification = "Team decision")]

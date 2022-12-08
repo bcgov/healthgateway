@@ -88,6 +88,11 @@ namespace HealthGateway.Database.Models
         public string? YearOfBirth { get; set; }
 
         /// <summary>
+        /// Gets or sets the user's last login client.
+        /// </summary>
+        public string? LastLoginClient { get; set; }
+
+        /// <summary>
         /// Gets or sets the id.
         /// </summary>
         [Column("UserProfileHistoryId")]
