@@ -111,3 +111,11 @@ resource "keycloak_openid_user_realm_role_protocol_mapper" "hgadmin_realmroles2"
   add_to_access_token = true
   add_to_userinfo     = true
 }
+
+resource "keycloak_openid_hardcoded_claim_protocol_mapper" "hgadmin_emailOverride" {
+  realm_id    = data.keycloak_realm.hg_realm.id
+  client_id   = keycloak_openid_client.hgadmin_client.id
+  name        = "emailOverride"
+  claim_name  = "email"
+  claim_value = "no_email@hg.gov.bc.ca"
+}
