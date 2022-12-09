@@ -24,8 +24,7 @@ describe("Laboratory Orders - Download Report", () => {
             .contains("2021-Jul-04")
             .click({ force: true });
 
-        cy.get("[data-testid=entryDetailsModal]")
-            .children()
+        cy.get("#entry-details-modal")
             .should("be.visible")
             .within(() => {
                 cy.get("[data-testid=laboratory-report-download-btn]")

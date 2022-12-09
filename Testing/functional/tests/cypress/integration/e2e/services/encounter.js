@@ -78,7 +78,6 @@ describe("Encounter Service", () => {
                 }).should((response) => {
                     expect(response.status).to.eq(200);
                     expect(response.body).to.not.be.null;
-                    cy.log(`response.body: ${JSON.stringify(response.body)}`);
                     let distinctEncounters = new Set();
                     let error = "";
                     response.body.resourcePayload.forEach((enc) => {
@@ -89,7 +88,7 @@ describe("Encounter Service", () => {
                             distinctEncounters.add(combinedKey);
                         }
                     });
-                    cy.expect(error).to.equal("");
+                    expect(error).to.equal("");
                 });
             });
         });

@@ -26,8 +26,7 @@ describe("Laboratory Orders - Report", () => {
         cy.log("Verifying Laboratory Report PDF download");
         cy.get("[data-testid=timelineCard]").last().scrollIntoView().click();
 
-        cy.get("[data-testid=entryDetailsModal]")
-            .children()
+        cy.get("#entry-details-modal")
             .should("be.visible")
             .within(() => {
                 cy.get("[data-testid=laboratory-report-download-btn]")

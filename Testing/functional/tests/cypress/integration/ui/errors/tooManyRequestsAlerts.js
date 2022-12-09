@@ -362,6 +362,7 @@ describe("Mobile - Laboratory Orders Report Download", () => {
         );
         cy.checkTimelineHasLoaded();
     });
+
     it("Unsuccessful Response: Too Many Requests", () => {
         cy.intercept("GET", "**/Laboratory/*/Report*", {
             statusCode: 429,
@@ -372,8 +373,7 @@ describe("Mobile - Laboratory Orders Report Download", () => {
         );
         cy.get("[data-testid=timelineCard]").last().scrollIntoView().click();
 
-        cy.get("[data-testid=entryDetailsModal]")
-            .children()
+        cy.get("#entry-details-modal")
             .should("be.visible")
             .within(() => {
                 cy.get("[data-testid=laboratory-report-download-btn]")
@@ -401,8 +401,7 @@ describe("Mobile - Laboratory Orders Report Download", () => {
         );
         cy.get("[data-testid=timelineCard]").last().scrollIntoView().click();
 
-        cy.get("[data-testid=entryDetailsModal]")
-            .children()
+        cy.get("#entry-details-modal")
             .should("be.visible")
             .within(() => {
                 cy.get("[data-testid=laboratory-report-download-btn]")
@@ -448,8 +447,7 @@ describe("Mobile - Covid19 Orders Report Download", () => {
         );
         cy.get("[data-testid=timelineCard]").last().scrollIntoView().click();
 
-        cy.get("[data-testid=entryDetailsModal]")
-            .children()
+        cy.get("#entry-details-modal")
             .should("be.visible")
             .within(() => {
                 cy.get("[data-testid=covid-result-download-btn]")
@@ -477,8 +475,7 @@ describe("Mobile - Covid19 Orders Report Download", () => {
         );
         cy.get("[data-testid=timelineCard]").last().scrollIntoView().click();
 
-        cy.get("[data-testid=entryDetailsModal]")
-            .children()
+        cy.get("#entry-details-modal")
             .should("be.visible")
             .within(() => {
                 cy.get("[data-testid=covid-result-download-btn]")

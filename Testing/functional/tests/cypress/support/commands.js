@@ -289,14 +289,6 @@ Cypress.Commands.add("restoreAuthCookies", () => {
     Cypress.Cookies.preserveOnce(...names);
 });
 
-Cypress.Commands.overwrite(
-    "select",
-    (originalFn, subject, valueOrTextOrIndex, options) => {
-        cy.wrap(subject).should("be.visible", "be.enabled");
-        cy.wrap(originalFn(subject, valueOrTextOrIndex, options));
-    }
-);
-
 Cypress.Commands.add(
     "shouldContainValue",
     { prevSubject: "element" },
