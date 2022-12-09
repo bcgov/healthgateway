@@ -112,7 +112,7 @@ namespace HealthGateway.Admin.Server.Services
         /// <inheritdoc/>
         public Stream GetUserFeedback()
         {
-            DbResult<IList<UserFeedback>> feedback = this.feedbackDelegate.GetAllUserFeedbackEntries();
+            DbResult<IList<UserFeedback>> feedback = this.feedbackDelegate.GetAllUserFeedbackEntries(true);
             return GetStream<UserFeedback, UserFeedbackCsvMap>(feedback.Payload);
         }
 

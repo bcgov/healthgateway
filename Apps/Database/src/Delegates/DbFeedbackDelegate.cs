@@ -154,22 +154,32 @@ namespace HealthGateway.Database.Delegates
         }
 
         /// <inheritdoc/>
-        public DbResult<IList<UserFeedback>> GetAllUserFeedbackEntries()
+        public DbResult<IList<UserFeedback>> GetAllUserFeedbackEntries(bool includeUserProfile = false)
         {
-            this.logger.LogTrace("Getting all user feedback entries");
-            IList<UserFeedback> feedback = this.dbContext.UserFeedback
-                .Include(f => f.Tags)
-                .ThenInclude(t => t.AdminTag)
-                .OrderByDescending(f => f.CreatedDateTime)
-                .ToList();
-
-            DbResult<IList<UserFeedback>> result = new()
+            this.logger.LogTrace("Getting all user feedback entries - includeUserProfile: {IncludeUserProfile}", includeUserProfile);
+            if (includeUserProfile)
             {
-                Payload = feedback,
+                return new()
+                {
+                    Payload = this.dbContext.UserFeedback
+                        .Include(f => f.UserProfile)
+                        .Include(f => f.Tags)
+                        .ThenInclude(t => t.AdminTag)
+                        .OrderByDescending(f => f.CreatedDateTime)
+                        .ToList(),
+                    Status = DbStatusCode.Read,
+                };
+            }
+
+            return new()
+            {
+                Payload = this.dbContext.UserFeedback
+                    .Include(f => f.Tags)
+                    .ThenInclude(t => t.AdminTag)
+                    .OrderByDescending(f => f.CreatedDateTime)
+                    .ToList(),
                 Status = DbStatusCode.Read,
             };
-            this.logger.LogDebug("Finished getting user feedback from DB...");
-            return result;
         }
     }
 }
