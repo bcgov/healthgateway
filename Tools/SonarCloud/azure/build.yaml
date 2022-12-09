@@ -34,11 +34,10 @@ jobs:
       #   enabled: true
 
       - script: |
+          export CollectCoverage=true
+          export CoverletOutputFormat=cobertura
           dotnet tool install --global dotnet-sonarscanner --version $(SONARSCANNER_VERSION)
-          dotnet test \
-            /p:CollectCoverage=true \
-            /p:CoverletOutputFormat=opencover \
-            --logger:"xunit;LogFileName=results.xml"
+          dotnet test --logger:"xunit;LogFileName=results.xml"
         displayName: "Run dotnet Tests"
         continueOnError: true
         workingDirectory: $(Build.SourcesDirectory)/Apps/
