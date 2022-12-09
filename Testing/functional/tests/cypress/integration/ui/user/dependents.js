@@ -44,10 +44,12 @@ describe("COVID-19", () => {
         cy.get("[data-testid=dependentCovidTestDate]")
             .last()
             .contains(/\d{4}-[A-Z]{1}[a-z]{2}-\d{2}/);
-        expect(cy.get("[data-testid=dependentCovidTestStatus]").last()).not.to
-            .be.empty;
-        expect(cy.get("[data-testid=dependentCovidTestLabResult]").last()).not
-            .to.be.empty;
+        cy.get("[data-testid=dependentCovidTestStatus]")
+            .last()
+            .should("not.be.empty");
+        cy.get("[data-testid=dependentCovidTestLabResult]")
+            .last()
+            .should("not.be.empty");
         cy.get("[data-testid=dependentCovidReportDownloadBtn]").last().click();
         cy.get("[data-testid=genericMessageModal]").should("be.visible");
         cy.get("[data-testid=genericMessageText]").should(
@@ -468,7 +470,7 @@ describe("Dependents - Clinical Document Tab - Enabled", () => {
         // Expecting 2 rows to return but we also need to consider the table headers.
         cy.get(`[data-testid=clinical-document-table-${dependentHdid}]`)
             .find("tr")
-            .should(($tr) => expect($tr.length == 3));
+            .should("have.length", 3);
 
         // Verify forecast table has been sorted by due date descending
         cy.get(

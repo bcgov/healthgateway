@@ -35,8 +35,7 @@ describe("Laboratory Orders", () => {
         );
         cy.get("[data-testid=timelineCard]").last().scrollIntoView().click();
 
-        cy.get("[data-testid=entryDetailsModal]")
-            .children()
+        cy.get("#entry-details-modal")
             .should("be.visible")
             .within(() => {
                 cy.get("[data-testid=backBtn]").should("be.visible");
@@ -188,8 +187,7 @@ describe("Laboratory Orders", () => {
 
         // Validate collection date time when not null in json
         cy.get("[data-testid=timelineCard]").eq(6).scrollIntoView().click();
-        cy.get("[data-testid=entryDetailsModal]")
-            .children()
+        cy.get("#entry-details-modal")
             .should("be.visible")
             .within(() => {
                 cy.get("[data-testid=laboratory-collection-date-value]").should(
@@ -200,8 +198,7 @@ describe("Laboratory Orders", () => {
 
         // Validate collection date time when attribute is not passed in json
         cy.get("[data-testid=timelineCard]").eq(7).click();
-        cy.get("[data-testid=entryDetailsModal]")
-            .children()
+        cy.get("#entry-details-modal")
             .should("be.visible")
             .within(() => {
                 cy.get("[data-testid=entryDetailsCard]").within(() => {
@@ -214,8 +211,7 @@ describe("Laboratory Orders", () => {
 
         // Validate collection date time when attribute value is null in json
         cy.get("[data-testid=timelineCard]").eq(8).click();
-        cy.get("[data-testid=entryDetailsModal]")
-            .children()
+        cy.get("#entry-details-modal")
             .should("be.visible")
             .within(() => {
                 cy.get("[data-testid=entryDetailsCard]").within(() => {

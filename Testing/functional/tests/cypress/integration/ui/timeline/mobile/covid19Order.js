@@ -48,8 +48,7 @@ describe("COVID-19 Orders", () => {
                 cy.get("[data-testid=entryCardDetailsTitle]").click();
             });
 
-        cy.get("[data-testid=entryDetailsModal]")
-            .children()
+        cy.get("#entry-details-modal")
             .should("be.visible")
             .within(() => {
                 cy.get("[data-testid=laboratoryTestStatus-0]").should(
@@ -85,8 +84,7 @@ describe("COVID-19 Orders", () => {
                 cy.get("[data-testid=entryCardDetailsTitle]").click();
             });
 
-        cy.get("[data-testid=entryDetailsModal]")
-            .children()
+        cy.get("#entry-details-modal")
             .should("be.visible")
             .within(() => {
                 cy.get(
@@ -120,8 +118,7 @@ describe("COVID-19 Orders", () => {
             });
 
         const correctedStatus = "Test Status: Corrected";
-        cy.get("[data-testid=entryDetailsModal]")
-            .children()
+        cy.get("#entry-details-modal")
             .should("be.visible")
             .within(() => {
                 cy.get("[data-testid=laboratoryTestStatus-0]").should(
@@ -161,8 +158,7 @@ describe("COVID-19 Orders", () => {
             });
 
         const amendedStatus = "Test Status: Amended";
-        cy.get("[data-testid=entryDetailsModal]")
-            .children()
+        cy.get("#entry-details-modal")
             .should("be.visible")
             .within(() => {
                 cy.get("[data-testid=laboratoryTestStatus-0]").should(
@@ -203,8 +199,7 @@ describe("COVID-19 Orders", () => {
             .parents("[data-testid=timelineCard]")
             .click();
 
-        cy.get("[data-testid=entryDetailsModal]")
-            .children()
+        cy.get("#entry-details-modal")
             .should("be.visible")
             .within(() => {
                 cy.get("[data-testid=covid-result-download-btn]")
