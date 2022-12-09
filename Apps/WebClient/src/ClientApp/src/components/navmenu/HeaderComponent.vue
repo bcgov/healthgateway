@@ -13,6 +13,8 @@ import { Action, Getter } from "vuex-class";
 
 import RatingComponent from "@/components/modal/RatingComponent.vue";
 import type { WebClientConfiguration } from "@/models/configData";
+import { DateWrapper } from "@/models/dateWrapper";
+import Notification from "@/models/notification";
 import User, { OidcUserInfo } from "@/models/user";
 import container from "@/plugins/container";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
@@ -47,7 +49,7 @@ export default class HeaderComponent extends Vue {
     @Getter("oidcIsAuthenticated", { namespace: "auth" })
     oidcIsAuthenticated!: boolean;
 
-    @Getter("isValidIdentityProvider", { namespace: "auth" })
+    @Getter("isValidIdentityProvider", { namespace: "user" })
     isValidIdentityProvider!: boolean;
 
     @Getter("isHeaderShown", { namespace: "navbar" })
@@ -56,14 +58,8 @@ export default class HeaderComponent extends Vue {
     @Getter("isSidebarOpen", { namespace: "navbar" })
     isSidebarOpen!: boolean;
 
-    @Getter("isSidebarAvailable", { namespace: "navbar" })
-    isSidebarAvailable!: boolean;
-
     @Getter("notifications", { namespace: "notification" })
     notifications!: Notification[];
-
-    @Getter("newNotifications", { namespace: "notification" })
-    newNotifications!: Notification[];
 
     @Getter("user", { namespace: "user" })
     user!: User;
@@ -71,11 +67,14 @@ export default class HeaderComponent extends Vue {
     @Getter("oidcUserInfo", { namespace: "user" })
     oidcUserInfo!: OidcUserInfo | undefined;
 
+    @Getter("userIsRegistered", { namespace: "user" })
+    userIsRegistered!: boolean;
+
+    @Getter("userIsActive", { namespace: "user" })
+    userIsActive!: boolean;
+
     @Getter("patientRetrievalFailed", { namespace: "user" })
     patientRetrievalFailed!: boolean;
-
-    @Getter("userIsLoggedInAndActive", { namespace: "user" })
-    userIsLoggedInAndActive!: boolean;
 
     @Ref("ratingComponent")
     readonly ratingComponent!: RatingComponent;
@@ -133,14 +132,28 @@ export default class HeaderComponent extends Vue {
     }
 
     private get isSidebarButtonShown(): boolean {
-        return this.isSidebarAvailable && !this.isPcrTest && this.isMobileWidth;
+        return (
+            !this.isOffline &&
+            this.oidcIsAuthenticated &&
+            this.isValidIdentityProvider &&
+            this.userIsRegistered &&
+            this.userIsActive &&
+            !this.patientRetrievalFailed &&
+            !this.isPcrTest &&
+            this.isMobileWidth
+        );
     }
 
     private get isNotificationCentreAvailable(): boolean {
         return (
             this.config.modules["NotificationCentre"] &&
-            this.userIsLoggedInAndActive &&
-            !this.isPcrTest
+            !this.isOffline &&
+            !this.isPcrTest &&
+            this.oidcIsAuthenticated &&
+            this.isValidIdentityProvider &&
+            this.userIsRegistered &&
+            this.userIsActive &&
+            !this.patientRetrievalFailed
         );
     }
 
@@ -162,6 +175,20 @@ export default class HeaderComponent extends Vue {
             this.isValidIdentityProvider &&
             !this.patientRetrievalFailed
         );
+    }
+
+    public get newNotifications(): Notification[] {
+        if (this.user.lastLoginDateTime) {
+            const lastLoginDateTime = new DateWrapper(
+                this.user.lastLoginDateTime
+            );
+            return this.notifications.filter((n) =>
+                new DateWrapper(n.scheduledDateTimeUtc).isAfter(
+                    lastLoginDateTime
+                )
+            );
+        }
+        return this.notifications;
     }
 
     private get notificationBadgeContent(): string | boolean {

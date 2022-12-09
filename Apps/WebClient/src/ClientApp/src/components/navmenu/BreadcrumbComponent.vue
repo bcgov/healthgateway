@@ -13,7 +13,7 @@ export default class BreadcrumbComponent extends Vue {
     @Getter("oidcIsAuthenticated", { namespace: "auth" })
     isAuthenticated!: boolean;
 
-    @Getter("isValidIdentityProvider", { namespace: "auth" })
+    @Getter("isValidIdentityProvider", { namespace: "user" })
     isValidIdentityProvider!: boolean;
 
     private logger!: ILogger;

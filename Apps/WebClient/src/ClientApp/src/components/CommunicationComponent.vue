@@ -21,7 +21,7 @@ export default class CommunicationComponent extends Vue {
     @Getter("userIsRegistered", { namespace: "user" })
     userIsRegistered!: boolean;
 
-    @Getter("isValidIdentityProvider", { namespace: "auth" })
+    @Getter("isValidIdentityProvider", { namespace: "user" })
     isValidIdentityProvider!: boolean;
 
     @Getter("isOffline", { namespace: "config" })

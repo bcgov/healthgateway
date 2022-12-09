@@ -31,7 +31,7 @@ export default class LoginCallbackView extends Vue {
     @Getter("user", { namespace: "user" })
     user!: User;
 
-    @Getter("isValidIdentityProvider", { namespace: "auth" })
+    @Getter("isValidIdentityProvider", { namespace: "user" })
     isValidIdentityProvider!: boolean;
 
     private logger!: ILogger;
