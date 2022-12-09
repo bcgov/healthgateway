@@ -7,6 +7,7 @@ import { Action, Getter } from "vuex-class";
 
 import { DateWrapper, StringISODateTime } from "@/models/dateWrapper";
 import Notification, { NotificationActionType } from "@/models/notification";
+import User from "@/models/user";
 
 library.add(faAngleDoubleRight, faXmark);
 
@@ -21,11 +22,25 @@ export default class NotificationCentreComponent extends Vue {
     @Getter("notifications", { namespace: "notification" })
     notifications!: Notification[];
 
-    @Getter("newNotifications", { namespace: "notification" })
-    newNotifications!: Notification[];
+    @Getter("user", { namespace: "user" })
+    user!: User;
 
     readonly sidebarId = "notification-centre-sidebar";
     readonly internalLink = NotificationActionType.InternalLink;
+
+    public get newNotifications(): Notification[] {
+        if (this.user.lastLoginDateTime) {
+            const lastLoginDateTime = new DateWrapper(
+                this.user.lastLoginDateTime
+            );
+            return this.notifications.filter((n) =>
+                new DateWrapper(n.scheduledDateTimeUtc).isAfter(
+                    lastLoginDateTime
+                )
+            );
+        }
+        return this.notifications;
+    }
 
     formatDate(date: StringISODateTime): string {
         return new DateWrapper(date, {

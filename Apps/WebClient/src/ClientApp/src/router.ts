@@ -108,7 +108,7 @@ function calculateUserState(): UserState {
     const isOffline = store.getters["config/isOffline"];
     const isAuthenticated: boolean = store.getters["auth/oidcIsAuthenticated"];
     const isValidIdentityProvider: boolean =
-        store.getters["auth/isValidIdentityProvider"];
+        store.getters["user/isValidIdentityProvider"];
     const patientRetrievalFailed: boolean =
         store.getters["user/patientRetrievalFailed"];
     const isRegistered: boolean = store.getters["user/userIsRegistered"];

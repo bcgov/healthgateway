@@ -218,7 +218,7 @@ configService
                 }
 
                 const isValidIdentityProvider: boolean =
-                    store.getters["auth/isValidIdentityProvider"];
+                    store.getters["user/isValidIdentityProvider"];
                 const user: User = store.getters["user/user"];
 
                 if (user.hdid && isValidIdentityProvider) {

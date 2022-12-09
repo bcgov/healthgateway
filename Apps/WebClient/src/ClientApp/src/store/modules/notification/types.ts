@@ -22,14 +22,6 @@ export interface NotificationState {
 export interface NotificationGetters
     extends GetterTree<NotificationState, RootState> {
     notifications(state: NotificationState): Notification[];
-    newNotifications(
-        _state: NotificationState,
-        // eslint-disable-next-line
-        _getters: any,
-        _rootState: RootState,
-        // eslint-disable-next-line
-        rootGetters: any
-    ): Notification[];
 }
 
 type StoreContext = ActionContext<NotificationState, RootState>;
