@@ -72,7 +72,7 @@ namespace HealthGateway.Database.Models
         public string? UserProfileId { get; set; }
 
         /// <summary>
-        /// Gets or sets the UserProfile associated to this comment.
+        /// Gets or sets the UserProfile associated to this user feedback.
         /// </summary>
         public virtual UserProfile? UserProfile { get; set; }
 
