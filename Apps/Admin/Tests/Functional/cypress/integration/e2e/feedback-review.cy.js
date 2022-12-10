@@ -47,11 +47,9 @@ describe("Feedback Review", () => {
         cy.log("Adding tags.");
         cy.get("[data-testid=add-tag-input]").clear().type(suggestionTag);
         cy.get("[data-testid=add-tag-button]").click();
-        cy.get("[data-testid=tags-updating-indicator").should("be.visible");
         cy.get("[data-testid=tag-collection-item]").contains(suggestionTag);
         cy.get("[data-testid=add-tag-input]").clear().type(questionTag);
         cy.get("[data-testid=add-tag-button]").click();
-        cy.get("[data-testid=tags-updating-indicator").should("be.visible");
         cy.get("[data-testid=tag-collection-item]").contains(questionTag);
 
         cy.log("Assigning tags.");
@@ -112,12 +110,10 @@ describe("Feedback Review", () => {
             .contains(suggestionTag)
             .children("button")
             .click();
-        cy.get("[data-testid=tags-updating-indicator").should("be.visible");
         cy.get("[data-testid=tag-collection-item]")
             .contains(questionTag)
             .children("button")
             .click();
-        cy.get("[data-testid=tags-updating-indicator").should("be.visible");
         cy.get("[data-testid=tag-collection-item]").should("not.exist");
     });
 
