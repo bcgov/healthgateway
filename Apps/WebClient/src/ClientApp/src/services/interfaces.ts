@@ -31,6 +31,7 @@ import Report from "@/models/report";
 import ReportRequest from "@/models/reportRequest";
 import RequestResult from "@/models/requestResult";
 import { TermsOfService } from "@/models/termsOfService";
+import { Ticket } from "@/models/ticket";
 import { OidcTokenDetails, OidcUserInfo } from "@/models/user";
 import type { UserComment } from "@/models/userComment";
 import UserFeedback from "@/models/userFeedback";
@@ -40,6 +41,8 @@ import UserProfile, { CreateUserRequest } from "@/models/userProfile";
 import UserRating from "@/models/userRating";
 import VaccinationStatus from "@/models/vaccinationStatus";
 import { RootState } from "@/store/types";
+
+import { CheckInRequest } from "./../models/checkInRequest";
 
 export interface IAuthenticationService {
     initialize(config: OpenIdConnectConfiguration): Promise<void>;
@@ -276,4 +279,10 @@ export interface ILogger {
 
 export interface IStoreProvider {
     getStore(): Store<RootState>;
+}
+
+export interface ITicketService {
+    createTicket(room: string): Ticket;
+    removeTicket(checkInRequest: CheckInRequest): void;
+    updateTicket(checkInRequest: CheckInRequest): Ticket;
 }
