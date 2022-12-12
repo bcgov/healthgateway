@@ -18,6 +18,7 @@ namespace HealthGateway.Database.Models
     using System;
     using System.ComponentModel.DataAnnotations;
     using System.ComponentModel.DataAnnotations.Schema;
+    using HealthGateway.Common.Data.Constants;
     using HealthGateway.Common.Data.Models;
 
     /// <summary>
@@ -90,7 +91,8 @@ namespace HealthGateway.Database.Models
         /// <summary>
         /// Gets or sets the user's last login client.
         /// </summary>
-        public string? LastLoginClient { get; set; }
+        [MaxLength(10)]
+        public UserLoginClientType? LastLoginClientCode { get; set; }
 
         /// <summary>
         /// Gets or sets the id.

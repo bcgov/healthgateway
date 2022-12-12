@@ -23,6 +23,7 @@ namespace HealthGateway.Common.AccessManagement.Authentication
     using System.Text.Json;
     using HealthGateway.Common.AccessManagement.Authentication.Models;
     using HealthGateway.Common.CacheProviders;
+    using HealthGateway.Common.Data.Constants;
     using Microsoft.AspNetCore.Authentication;
     using Microsoft.AspNetCore.Http;
     using Microsoft.Extensions.Configuration;
@@ -179,10 +180,18 @@ namespace HealthGateway.Common.AccessManagement.Authentication
         }
 
         /// <inheritdoc/>
-        public string? FetchAuthenticatedUserClientType()
+        public UserLoginClientType? FetchAuthenticatedUserClientType()
         {
             ClaimsPrincipal? user = this.httpContextAccessor?.HttpContext?.User;
-            return user?.FindFirst("azp")?.Value;
+            string? azp = user?.FindFirst("azp")?.Value;
+            UserLoginClientType? userLoginClientType = azp switch
+            {
+                "hg" => UserLoginClientType.Web,
+                "hg-mobile" => UserLoginClientType.Mobile,
+                _ => null,
+            };
+
+            return userLoginClientType;
         }
 
         private JwtModel GetSystemToken(Uri tokenUri, ClientCredentialsTokenRequest tokenRequest)
