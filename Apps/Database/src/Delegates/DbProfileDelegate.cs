@@ -82,6 +82,7 @@ namespace HealthGateway.Database.Delegates
                 result.Payload.UpdatedBy = profile.UpdatedBy;
                 result.Payload.Version = profile.Version;
                 result.Payload.YearOfBirth = profile.YearOfBirth;
+                result.Payload.LastLoginClientCode = profile.LastLoginClientCode;
                 result.Status = DbStatusCode.Deferred;
 
                 if (commit)

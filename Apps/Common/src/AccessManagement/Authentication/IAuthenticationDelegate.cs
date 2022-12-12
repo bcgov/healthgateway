@@ -17,6 +17,7 @@ namespace HealthGateway.Common.AccessManagement.Authentication
 {
     using System;
     using HealthGateway.Common.AccessManagement.Authentication.Models;
+    using HealthGateway.Common.Data.Constants;
 
     /// <summary>
     /// The authorization service interface.
@@ -70,6 +71,12 @@ namespace HealthGateway.Common.AccessManagement.Authentication
         /// </summary>
         /// <returns>The users HDID.</returns>
         string? FetchAuthenticatedUserHdid();
+
+        /// <summary>
+        /// Fetches the client type for the authenticated user from the http context.
+        /// </summary>
+        /// <returns>The users client type.</returns>
+        UserLoginClientType? FetchAuthenticatedUserClientType();
 
         /// <summary>
         /// Fetches the id for the authenticated user from the http context.

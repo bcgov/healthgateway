@@ -347,6 +347,29 @@ namespace HealthGateway.Database.Context
                 .HasIndex(p => p.Username)
                 .IsUnique();
 
+            // Create Foreign keys for User Profile
+            modelBuilder.Entity<UserProfile>()
+                .HasOne<UserLoginClientTypeCode>()
+                .WithMany()
+                .HasPrincipalKey(k => k.UserLoginClientCode)
+                .HasForeignKey(k => k.LastLoginClientCode)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            // Create Foreign keys for User Profile History
+            modelBuilder.Entity<UserProfileHistory>()
+                .HasOne<UserLoginClientTypeCode>()
+                .WithMany()
+                .HasPrincipalKey(k => k.UserLoginClientCode)
+                .HasForeignKey(k => k.LastLoginClientCode)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<UserLoginClientTypeCode>()
+                .Property(e => e.UserLoginClientCode)
+                .HasConversion(
+                    new ValueConverter<UserLoginClientType, string>(
+                        v => EnumUtility.ToEnumString<UserLoginClientType>(v, false),
+                        v => EnumUtility.ToEnum<UserLoginClientType>(v, false)));
+
             modelBuilder.HasDbFunction(DateTruncMethod).HasName("date_trunc");
 
             // Initial seed data
@@ -358,6 +381,7 @@ namespace HealthGateway.Database.Context
             this.SeedCommunication(modelBuilder);
             this.SeedResourceDelegateReason(modelBuilder);
             this.SeedCommentEntryTypeCode(modelBuilder);
+            this.SeedUserLoginClientTypeCode(modelBuilder);
         }
 
         /// <summary>
@@ -998,6 +1022,34 @@ namespace HealthGateway.Database.Context
                         CreatedDateTime = this.DefaultSeedDate.ToUniversalTime(),
                         UpdatedBy = UserId.DefaultUser,
                         UpdatedDateTime = this.DefaultSeedDate.ToUniversalTime(),
+                    });
+        }
+
+        /// <summary>
+        /// Seeds the UserLoginClientType codes.
+        /// </summary>
+        /// <param name="modelBuilder">The passed in model builder.</param>
+        private void SeedUserLoginClientTypeCode(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<UserLoginClientTypeCode>()
+                .HasData(
+                    new UserLoginClientTypeCode
+                    {
+                        UserLoginClientCode = UserLoginClientType.Web,
+                        Description = "Code for a login from the hg web app",
+                        CreatedBy = UserId.DefaultUser,
+                        CreatedDateTime = this.DefaultSeedDate,
+                        UpdatedBy = UserId.DefaultUser,
+                        UpdatedDateTime = this.DefaultSeedDate,
+                    },
+                    new UserLoginClientTypeCode
+                    {
+                        UserLoginClientCode = UserLoginClientType.Mobile,
+                        Description = "Code for a login from the hg mobile app",
+                        CreatedBy = UserId.DefaultUser,
+                        CreatedDateTime = this.DefaultSeedDate,
+                        UpdatedBy = UserId.DefaultUser,
+                        UpdatedDateTime = this.DefaultSeedDate,
                     });
         }
     }

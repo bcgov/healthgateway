@@ -18,6 +18,7 @@ namespace HealthGateway.Database.Models
     using System;
     using System.ComponentModel.DataAnnotations;
     using System.ComponentModel.DataAnnotations.Schema;
+    using HealthGateway.Common.Data.Constants;
     using HealthGateway.Common.Data.Models;
 
     /// <summary>
@@ -86,6 +87,12 @@ namespace HealthGateway.Database.Models
         /// </summary>
         [MaxLength(4)]
         public string? YearOfBirth { get; set; }
+
+        /// <summary>
+        /// Gets or sets the user's last login client.
+        /// </summary>
+        [MaxLength(10)]
+        public UserLoginClientType? LastLoginClientCode { get; set; }
 
         /// <summary>
         /// Gets or sets the id.

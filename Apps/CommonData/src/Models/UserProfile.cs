@@ -20,6 +20,7 @@ namespace HealthGateway.Common.Data.Models
     using System.ComponentModel.DataAnnotations;
     using System.ComponentModel.DataAnnotations.Schema;
     using System.Diagnostics.CodeAnalysis;
+    using HealthGateway.Common.Data.Constants;
 
     /// <summary>
     /// The user profile model.
@@ -87,6 +88,12 @@ namespace HealthGateway.Common.Data.Models
         /// </summary>
         [MaxLength(4)]
         public string? YearOfBirth { get; set; }
+
+        /// <summary>
+        /// Gets or sets the user's last login client.
+        /// </summary>
+        [MaxLength(10)]
+        public UserLoginClientType? LastLoginClientCode { get; set; }
 
         /// <summary>
         /// Gets or sets the messaging verifications for this user.

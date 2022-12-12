@@ -23,6 +23,7 @@ namespace HealthGateway.Common.AccessManagement.Authentication
     using System.Text.Json;
     using HealthGateway.Common.AccessManagement.Authentication.Models;
     using HealthGateway.Common.CacheProviders;
+    using HealthGateway.Common.Data.Constants;
     using Microsoft.AspNetCore.Authentication;
     using Microsoft.AspNetCore.Http;
     using Microsoft.Extensions.Configuration;
@@ -151,8 +152,8 @@ namespace HealthGateway.Common.AccessManagement.Authentication
         {
             IConfigurationSection configSection = this.configuration.GetSection(section);
             Uri tokenUri = configSection.GetValue<Uri>(@"TokenUri") ??
-                            throw new ArgumentNullException(nameof(section), $"{section} does not contain a valid TokenUri");
-            ClientCredentialsTokenRequest tokenRequest = new ClientCredentialsTokenRequest();
+                           throw new ArgumentNullException(nameof(section), $"{section} does not contain a valid TokenUri");
+            ClientCredentialsTokenRequest tokenRequest = new();
             configSection.Bind(tokenRequest); // Client ID, Client Secret, Audience, Scope
             return (tokenUri, tokenRequest);
         }
@@ -176,6 +177,21 @@ namespace HealthGateway.Common.AccessManagement.Authentication
         {
             ClaimsPrincipal? user = this.httpContextAccessor?.HttpContext?.User;
             return user?.FindFirst(ClaimTypes.NameIdentifier)!.Value;
+        }
+
+        /// <inheritdoc/>
+        public UserLoginClientType? FetchAuthenticatedUserClientType()
+        {
+            ClaimsPrincipal? user = this.httpContextAccessor?.HttpContext?.User;
+            string? azp = user?.FindFirst("azp")?.Value;
+            UserLoginClientType? userLoginClientType = azp switch
+            {
+                "hg" => UserLoginClientType.Web,
+                "hg-mobile" => UserLoginClientType.Mobile,
+                _ => null,
+            };
+
+            return userLoginClientType;
         }
 
         private JwtModel GetSystemToken(Uri tokenUri, ClientCredentialsTokenRequest tokenRequest)
