@@ -12,7 +12,7 @@ pool:
 variables:
   - group: Secrets
   - name: SONARSCANNER_VERSION
-    value: 5.3.2
+    value: 5.9.1
 jobs:
   - job: AnalyzeProjects
     timeoutInMinutes: 120
