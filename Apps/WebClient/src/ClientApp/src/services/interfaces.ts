@@ -284,8 +284,5 @@ export interface ITicketService {
     createTicket(room: string): Promise<Ticket>;
     removeTicket(checkInRequest: CheckInRequest): Promise<void>;
     updateTicket(checkInRequest: CheckInRequest): Promise<Ticket>;
-    initialize(
-        config: ExternalConfiguration,
-        http: IHttpDelegate
-    ): Promise<void>;
+    initialize(config: ExternalConfiguration, http: IHttpDelegate): void;
 }
