@@ -282,7 +282,7 @@ export interface IStoreProvider {
 }
 
 export interface ITicketService {
-    createTicket(room: string): Ticket;
-    removeTicket(checkInRequest: CheckInRequest): void;
-    updateTicket(checkInRequest: CheckInRequest): Ticket;
+    createTicket(room: string): Promise<Ticket>;
+    removeTicket(checkInRequest: CheckInRequest): Promise<void>;
+    updateTicket(checkInRequest: CheckInRequest): Promise<Ticket>;
 }
