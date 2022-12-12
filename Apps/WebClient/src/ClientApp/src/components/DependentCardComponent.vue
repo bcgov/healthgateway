@@ -172,7 +172,9 @@ export default class DependentCardComponent extends Vue {
     public isReportDownloading = false;
     private isImmunizationDataLoaded = false;
     private reportFormatType = ReportFormatType.PDF;
-    private ReportFormatType: unknown = ReportFormatType;
+    public csvFormatType = ReportFormatType.CSV;
+    public pdfFormatType = ReportFormatType.PDF;
+    public xlsxFormatType = ReportFormatType.XLSX;
     public dependentTab = 0;
 
     private selectedTestRow!: Covid19LaboratoryTestRow;
@@ -1199,7 +1201,7 @@ export default class DependentCardComponent extends Vue {
                                                         :data-testid="`download-immunization-history-report-pdf-btn-${dependent.ownerId}`"
                                                         @click="
                                                             showImmunizationDownloadConfirmationModal(
-                                                                ReportFormatType.PDF
+                                                                pdfFormatType
                                                             )
                                                         "
                                                         >PDF</b-dropdown-item
@@ -1208,7 +1210,7 @@ export default class DependentCardComponent extends Vue {
                                                         :data-testid="`download-immunization-history-report-csv-btn-${dependent.ownerId}`"
                                                         @click="
                                                             showImmunizationDownloadConfirmationModal(
-                                                                ReportFormatType.CSV
+                                                                csvFormatType
                                                             )
                                                         "
                                                         >CSV</b-dropdown-item
@@ -1217,7 +1219,7 @@ export default class DependentCardComponent extends Vue {
                                                         :data-testid="`download-immunization-history-report-xlsx-btn-${dependent.ownerId}`"
                                                         @click="
                                                             showImmunizationDownloadConfirmationModal(
-                                                                ReportFormatType.XLSX
+                                                                xlsxFormatType
                                                             )
                                                         "
                                                         >XLSX</b-dropdown-item
@@ -1357,7 +1359,7 @@ export default class DependentCardComponent extends Vue {
                                                         :data-testid="`download-immunization-forecast-report-pdf-btn-${dependent.ownerId}`"
                                                         @click="
                                                             showImmunizationDownloadConfirmationModal(
-                                                                ReportFormatType.PDF
+                                                                pdfFormatType
                                                             )
                                                         "
                                                         >PDF</b-dropdown-item
@@ -1366,7 +1368,7 @@ export default class DependentCardComponent extends Vue {
                                                         :data-testid="`download-immunization-forecast-report-csv-btn-${dependent.ownerId}`"
                                                         @click="
                                                             showImmunizationDownloadConfirmationModal(
-                                                                ReportFormatType.CSV
+                                                                csvFormatType
                                                             )
                                                         "
                                                         >CSV</b-dropdown-item
@@ -1375,7 +1377,7 @@ export default class DependentCardComponent extends Vue {
                                                         :data-testid="`download-immunization-forecast-report-xlsx-btn-${dependent.ownerId}`"
                                                         @click="
                                                             showImmunizationDownloadConfirmationModal(
-                                                                ReportFormatType.XLSX
+                                                                xlsxFormatType
                                                             )
                                                         "
                                                         >XLSX</b-dropdown-item
