@@ -157,23 +157,23 @@ export default class DependentCardComponent extends Vue {
         this.dependent.dependentInformation.lastname +
         " from your list of dependents?";
 
-    private isLoading = false;
+    public isLoading = false;
     private logger!: ILogger;
     private clinicalDocumentService!: IClinicalDocumentService;
     private immunizationService!: IImmunizationService;
     private laboratoryService!: ILaboratoryService;
     private dependentService!: IDependentService;
-    private clinicalDocuments: ClinicalDocument[] = [];
-    private testRows: Covid19LaboratoryTestRow[] = [];
+    public clinicalDocuments: ClinicalDocument[] = [];
+    public testRows: Covid19LaboratoryTestRow[] = [];
     private immunizations: ImmunizationEvent[] = [];
     private recommendations: Recommendation[] = [];
     private isDataLoaded = false;
     private isReport = false;
-    private isReportDownloading = false;
+    public isReportDownloading = false;
     private isImmunizationDataLoaded = false;
     private reportFormatType = ReportFormatType.PDF;
     private ReportFormatType: unknown = ReportFormatType;
-    private dependentTab = 0;
+    public dependentTab = 0;
 
     private selectedTestRow!: Covid19LaboratoryTestRow;
     private selectedClinicalDocumentRow!: ClinicalDocument;
@@ -195,7 +195,7 @@ export default class DependentCardComponent extends Vue {
         };
     }
 
-    private get isVaccineRecordDownloading(): boolean {
+    public get isVaccineRecordDownloading(): boolean {
         if (
             this.vaccineRecordActiveHdid === this.dependent.ownerId &&
             this.vaccineRecordStatusChanges > 0
@@ -209,7 +209,7 @@ export default class DependentCardComponent extends Vue {
         return false;
     }
 
-    private get vaccineRecordStatusMessage(): string {
+    public get vaccineRecordStatusMessage(): string {
         if (
             this.vaccineRecordActiveHdid === this.dependent.ownerId &&
             this.vaccineRecordStatusChanges > 0
@@ -223,7 +223,7 @@ export default class DependentCardComponent extends Vue {
         return "";
     }
 
-    private get vaccineRecordResultMessage(): string {
+    public get vaccineRecordResultMessage(): string {
         if (
             this.vaccineRecordActiveHdid === this.dependent.ownerId &&
             this.vaccineRecordStatusChanges > 0
@@ -237,7 +237,7 @@ export default class DependentCardComponent extends Vue {
         return "";
     }
 
-    private get isDownloadImmunizationReportButtonDisabled(): boolean {
+    public get isDownloadImmunizationReportButtonDisabled(): boolean {
         this.logger.debug(
             `isReportDownloading: ${this.isReportDownloading} immunizationItems:  ${this.immunizationItems.length} and recommendationItems: ${this.recommendationItems.length}`
         );
@@ -249,7 +249,7 @@ export default class DependentCardComponent extends Vue {
         );
     }
 
-    private get isExpired(): boolean {
+    public get isExpired(): boolean {
         let birthDate = new DateWrapper(
             this.dependent.dependentInformation.dateOfBirth
         );
@@ -260,15 +260,15 @@ export default class DependentCardComponent extends Vue {
         );
     }
 
-    private get isClinicalDocumentTabShown(): boolean {
+    public get isClinicalDocumentTabShown(): boolean {
         return this.webClientConfig.modules["DependentClinicalDocumentTab"];
     }
 
-    private get isImmunizationTabShown(): boolean {
+    public get isImmunizationTabShown(): boolean {
         return this.webClientConfig.modules["DependentImmunizationTab"];
     }
 
-    private get immunizationItems(): ImmunizationRow[] {
+    public get immunizationItems(): ImmunizationRow[] {
         return this.immunizations.map<ImmunizationRow>((x) => ({
             date: DateWrapper.format(x.dateOfImmunization),
             immunization: x.immunization.name,
@@ -281,7 +281,7 @@ export default class DependentCardComponent extends Vue {
         }));
     }
 
-    private get recommendationItems(): RecommendationRow[] {
+    public get recommendationItems(): RecommendationRow[] {
         return this.recommendations.map<RecommendationRow>((x) => ({
             immunization: x.recommendedVaccinations,
             due_date:
@@ -308,7 +308,7 @@ export default class DependentCardComponent extends Vue {
         );
     }
 
-    private deleteDependent(): void {
+    public deleteDependent(): void {
         this.isLoading = true;
         this.dependentService
             .removeDependent(this.user.hdid, this.dependent)
@@ -448,7 +448,7 @@ export default class DependentCardComponent extends Vue {
             });
     }
 
-    private downloadDocument(): void {
+    public downloadDocument(): void {
         if (this.isReport) {
             this.logger.debug(
                 `Download document from dependent tab: ${this.dependentTab}`
@@ -475,11 +475,11 @@ export default class DependentCardComponent extends Vue {
         });
     }
 
-    private formatDate(date: StringISODate): string {
+    public formatDate(date: StringISODate): string {
         return new DateWrapper(date).format();
     }
 
-    private fetchClinicalDocuments(): void {
+    public fetchClinicalDocuments(): void {
         const hdid = this.dependent.ownerId;
         this.logger.debug(`Fetching Clinical Documents for Hdid: ${hdid}`);
 
@@ -519,7 +519,7 @@ export default class DependentCardComponent extends Vue {
             });
     }
 
-    private fetchCovid19LaboratoryTests(): void {
+    public fetchCovid19LaboratoryTests(): void {
         this.logger.debug(
             `Fetching COVID 19 Laboratory Tests for Hdid: ${this.dependent.ownerId}`
         );
@@ -583,7 +583,7 @@ export default class DependentCardComponent extends Vue {
             });
     }
 
-    private fetchPatientImmunizations(): void {
+    public fetchPatientImmunizations(): void {
         const hdid = this.dependent.ownerId;
         this.logger.debug(`Fetching Patient Immunizations for Hdid: ${hdid}`);
         if (this.isImmunizationDataLoaded) {
@@ -687,7 +687,7 @@ export default class DependentCardComponent extends Vue {
         }
     }
 
-    private getOutcomeClasses(outcome: string): string[] {
+    public getOutcomeClasses(outcome: string): string[] {
         switch (outcome?.toUpperCase()) {
             case "NEGATIVE":
                 return ["text-success"];
@@ -799,12 +799,12 @@ export default class DependentCardComponent extends Vue {
         });
     }
 
-    private showVaccineProofDownloadConfirmaationModal(): void {
+    public showVaccineProofDownloadConfirmaationModal(): void {
         this.isReport = false;
         this.reportDownloadModal.showModal();
     }
 
-    private showCovid19DownloadConfirmationModal(
+    public showCovid19DownloadConfirmationModal(
         row: Covid19LaboratoryTestRow
     ): void {
         this.isReport = true;
@@ -812,7 +812,7 @@ export default class DependentCardComponent extends Vue {
         this.reportDownloadModal.showModal();
     }
 
-    private showImmunizationDownloadConfirmationModal(
+    public showImmunizationDownloadConfirmationModal(
         reportFormatType: ReportFormatType
     ): void {
         this.isReport = true;
@@ -820,7 +820,7 @@ export default class DependentCardComponent extends Vue {
         this.reportDownloadModal.showModal();
     }
 
-    private showClinicalDocumentDownloadConfirmationModal(
+    public showClinicalDocumentDownloadConfirmationModal(
         row: ClinicalDocument
     ): void {
         this.isReport = true;
@@ -828,7 +828,7 @@ export default class DependentCardComponent extends Vue {
         this.reportDownloadModal.showModal();
     }
 
-    private showDeleteConfirmationModal(): void {
+    public showDeleteConfirmationModal(): void {
         this.deleteModal.showModal();
     }
 
