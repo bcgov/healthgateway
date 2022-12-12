@@ -3,6 +3,7 @@ import { Store } from "vuex";
 import AddDependentRequest from "@/models/addDependentRequest";
 import ApiResult from "@/models/apiResult";
 import { Dictionary } from "@/models/baseTypes";
+import { CheckInRequest } from "@/models/checkInRequest";
 import ClinicalDocument from "@/models/clinicalDocument";
 import Communication, { CommunicationType } from "@/models/communication";
 import {
@@ -41,8 +42,6 @@ import UserProfile, { CreateUserRequest } from "@/models/userProfile";
 import UserRating from "@/models/userRating";
 import VaccinationStatus from "@/models/vaccinationStatus";
 import { RootState } from "@/store/types";
-
-import { CheckInRequest } from "./../models/checkInRequest";
 
 export interface IAuthenticationService {
     initialize(config: OpenIdConnectConfiguration): Promise<void>;
@@ -285,4 +284,8 @@ export interface ITicketService {
     createTicket(room: string): Promise<Ticket>;
     removeTicket(checkInRequest: CheckInRequest): Promise<void>;
     updateTicket(checkInRequest: CheckInRequest): Promise<Ticket>;
+    initialize(
+        config: ExternalConfiguration,
+        http: IHttpDelegate
+    ): Promise<void>;
 }
