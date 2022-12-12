@@ -13,7 +13,7 @@
     <ItemGroup>
         <PackageReference Include="Blazored.LocalStorage" Version="4.3.0" />
         <PackageReference Include="Blazored.TextEditor" Version="1.0.8" />
-        <PackageReference Include="Fluxor" Version="5.6.0" />
+        <PackageReference Include="Fluxor" Version="5.7.0" />
         <PackageReference Include="Fluxor.Blazor.Web" Version="5.6.0" />
         <PackageReference Include="Fluxor.Blazor.Web.ReduxDevTools" Version="5.6.0" />
         <PackageReference Include="Microsoft.AspNetCore.Components.Authorization" Version="7.0.0" />
