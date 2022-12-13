@@ -3,6 +3,7 @@ import { Store } from "vuex";
 import AddDependentRequest from "@/models/addDependentRequest";
 import ApiResult from "@/models/apiResult";
 import { Dictionary } from "@/models/baseTypes";
+import { CheckInRequest } from "@/models/checkInRequest";
 import ClinicalDocument from "@/models/clinicalDocument";
 import Communication, { CommunicationType } from "@/models/communication";
 import {
@@ -31,6 +32,7 @@ import Report from "@/models/report";
 import ReportRequest from "@/models/reportRequest";
 import RequestResult from "@/models/requestResult";
 import { TermsOfService } from "@/models/termsOfService";
+import { Ticket } from "@/models/ticket";
 import { OidcTokenDetails, OidcUserInfo } from "@/models/user";
 import type { UserComment } from "@/models/userComment";
 import UserFeedback from "@/models/userFeedback";
@@ -276,4 +278,11 @@ export interface ILogger {
 
 export interface IStoreProvider {
     getStore(): Store<RootState>;
+}
+
+export interface ITicketService {
+    createTicket(room: string): Promise<Ticket>;
+    removeTicket(checkInRequest: CheckInRequest): Promise<void>;
+    updateTicket(checkInRequest: CheckInRequest): Promise<Ticket>;
+    initialize(config: ExternalConfiguration, http: IHttpDelegate): void;
 }
