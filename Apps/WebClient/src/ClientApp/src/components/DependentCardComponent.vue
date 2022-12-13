@@ -1744,7 +1744,10 @@ export default class DependentCardComponent extends Vue {
                             Clinical Docs
                         </div>
                     </template>
-                    <div class="p-3">
+                    <div
+                        v-if="isLoading || clinicalDocuments.length === 0"
+                        class="p-3"
+                    >
                         <b-spinner v-if="isLoading" class="mt-3" />
                         <div
                             v-if="!isLoading && clinicalDocuments.length === 0"
