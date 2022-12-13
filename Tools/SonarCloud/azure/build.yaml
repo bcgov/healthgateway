@@ -49,7 +49,7 @@ jobs:
 
       - script: |
           dotnet build --no-incremental
-          dotnet dotcover test --dcReportType=HTML
+          dotnet dotcover test --dcReportType=HTML --dcAttributeFilters=System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverageAttribute;
         displayName: "Build and Test"
         continueOnError: true
         workingDirectory: $(Build.SourcesDirectory)/Apps/
