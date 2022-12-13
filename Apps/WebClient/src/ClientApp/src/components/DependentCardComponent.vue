@@ -169,10 +169,12 @@ export default class DependentCardComponent extends Vue {
     public testRows: Covid19LaboratoryTestRow[] = [];
     private immunizations: ImmunizationEvent[] = [];
     private recommendations: Recommendation[] = [];
-    private isDataLoaded = false;
+    private isCovid19DataLoaded = false;
+    private isImmunizationDataLoaded = false;
+    private isLaboratoryOrdersDataLoaded = false;
+    private isClinicalDocumentsDataLoaded = false;
     private isReport = false;
     public isReportDownloading = false;
-    private isImmunizationDataLoaded = false;
     private reportFormatType = ReportFormatType.PDF;
     public csvFormatType = ReportFormatType.CSV;
     public pdfFormatType = ReportFormatType.PDF;
@@ -570,7 +572,9 @@ export default class DependentCardComponent extends Vue {
     public fetchClinicalDocuments(): void {
         const hdid = this.dependent.ownerId;
         this.logger.debug(`Fetching Clinical Documents for Hdid: ${hdid}`);
-
+        if (this.isClinicalDocumentsDataLoaded) {
+            return;
+        }
         this.isLoading = true;
         this.clinicalDocumentService
             .getRecords(hdid)
@@ -578,6 +582,7 @@ export default class DependentCardComponent extends Vue {
                 if (result.resultStatus == ResultType.Success) {
                     const payload = result.resourcePayload;
                     this.setClinicalDocuments(payload);
+                    this.isClinicalDocumentsDataLoaded = true;
                 } else {
                     this.logger.error(
                         `Error returned from the Clinical Documents call:
@@ -611,7 +616,7 @@ export default class DependentCardComponent extends Vue {
         this.logger.debug(
             `Fetching COVID 19 Laboratory Tests for Hdid: ${this.dependent.ownerId}`
         );
-        if (this.isDataLoaded) {
+        if (this.isCovid19DataLoaded) {
             return;
         }
         this.isLoading = true;
@@ -629,7 +634,7 @@ export default class DependentCardComponent extends Vue {
                             }))
                         );
                     this.sortEntries();
-                    this.isDataLoaded = true;
+                    this.isCovid19DataLoaded = true;
                 } else if (
                     result.resultError?.actionCode === ActionType.Refresh &&
                     !payload.loaded &&
@@ -675,6 +680,9 @@ export default class DependentCardComponent extends Vue {
         this.logger.debug(
             `Fetching Lab Results for Hdid: ${this.dependent.ownerId}`
         );
+        if (this.isLaboratoryOrdersDataLoaded) {
+            return;
+        }
         this.isLoading = true;
         this.laboratoryService
             .getLaboratoryOrders(this.dependent.ownerId)
@@ -682,6 +690,7 @@ export default class DependentCardComponent extends Vue {
                 const payload = result.resourcePayload;
                 if (result.resultStatus == ResultType.Success) {
                     this.setLaboratoryOrders(payload.orders);
+                    this.isLaboratoryOrdersDataLoaded = true;
                     this.isLoading = false;
                 } else if (
                     result.resultError?.actionCode === ActionType.Refresh &&
