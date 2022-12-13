@@ -352,7 +352,7 @@ describe("dependents", () => {
         });
     });
 
-    it("Validate Adding, Viewing, and Removing Dependents", () => {
+    it.only("Validate Adding, Viewing, and Removing Dependents", () => {
         cy.log("Adding dependent");
 
         cy.get("[data-testid=addNewDependentBtn]").click();

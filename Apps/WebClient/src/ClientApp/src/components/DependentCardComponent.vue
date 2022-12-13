@@ -15,6 +15,7 @@ import Covid19LaboratoryTestDescriptionComponent from "@/components/laboratory/C
 import DeleteModalComponent from "@/components/modal/DeleteModalComponent.vue";
 import MessageModalComponent from "@/components/modal/MessageModalComponent.vue";
 import { ActionType } from "@/constants/actionType";
+import { ClientModule } from "@/constants/clientModule";
 import { ErrorSourceType, ErrorType } from "@/constants/errorType";
 import { ResultType } from "@/constants/resulttype";
 import ClinicalDocument from "@/models/clinicalDocument";
@@ -29,7 +30,7 @@ import {
     ImmunizationEvent,
     Recommendation,
 } from "@/models/immunizationModel";
-import { Covid19LaboratoryTest } from "@/models/laboratory";
+import { Covid19LaboratoryTest, LaboratoryOrder } from "@/models/laboratory";
 import Report from "@/models/report";
 import ReportHeader from "@/models/reportHeader";
 import { ReportFormatType, TemplateType } from "@/models/reportRequest";
@@ -163,6 +164,7 @@ export default class DependentCardComponent extends Vue {
     private immunizationService!: IImmunizationService;
     private laboratoryService!: ILaboratoryService;
     private dependentService!: IDependentService;
+    public laboratoryOrders: LaboratoryOrder[] = [];
     public clinicalDocuments: ClinicalDocument[] = [];
     public testRows: Covid19LaboratoryTestRow[] = [];
     private immunizations: ImmunizationEvent[] = [];
@@ -178,6 +180,7 @@ export default class DependentCardComponent extends Vue {
     public dependentTab = 0;
 
     private selectedTestRow!: Covid19LaboratoryTestRow;
+    private selectedLaboratoryOrderRow!: LaboratoryOrder;
     private selectedClinicalDocumentRow!: ClinicalDocument;
 
     private get headerData(): ReportHeader {
@@ -259,6 +262,13 @@ export default class DependentCardComponent extends Vue {
         return (
             now.diff(birthDate, "year").years >
             this.webClientConfig.maxDependentAge
+        );
+    }
+
+    public get isLaboratoryOrderTabShown(): boolean {
+        return this.modulesAreEnabled(
+            ClientModule.DependentLaboratoryOrderTab,
+            ClientModule.AllLaboratory
         );
     }
 
@@ -370,6 +380,50 @@ export default class DependentCardComponent extends Vue {
             });
     }
 
+    private downloadLaboratoryOrderReport(): void {
+        this.isReportDownloading = true;
+        this.trackClickLink("download_report", "Dependent Lab PDF");
+
+        this.laboratoryService
+            .getReportDocument(
+                this.selectedLaboratoryOrderRow.reportId,
+                this.dependent.ownerId,
+                false
+            )
+            .then((result) => {
+                const report = result.resourcePayload;
+                const dateString = new DateWrapper(
+                    this.selectedLaboratoryOrderRow.timelineDateTime,
+                    { hasTime: true }
+                ).format("yyyy_MM_dd-HH_mm");
+                fetch(
+                    `data:${report.mediaType};${report.encoding},${report.data}`
+                )
+                    .then((response) => response.blob())
+                    .then((blob) =>
+                        saveAs(
+                            blob,
+                            `Laboratory_Report_${this.dependent.dependentInformation.firstname}${this.dependent.dependentInformation.lastname}_${dateString}.pdf`
+                        )
+                    );
+            })
+            .catch((err: ResultError) => {
+                this.logger.error(err.resultMessage);
+                if (err.statusCode === 429) {
+                    this.setTooManyRequestsError({ key: "page" });
+                } else {
+                    this.addError({
+                        errorType: ErrorType.Download,
+                        source: ErrorSourceType.LaboratoryReport,
+                        traceId: err.traceId,
+                    });
+                }
+            })
+            .finally(() => {
+                this.isReportDownloading = false;
+            });
+    }
+
     private downloadImmunizationReport(): void {
         this.isReportDownloading = true;
 
@@ -459,7 +513,12 @@ export default class DependentCardComponent extends Vue {
                 this.downloadCovid19Report();
             } else if (this.dependentTab === 2) {
                 this.downloadImmunizationReport();
-            } else if (this.dependentTab == 3) {
+            } else if (
+                this.dependentTab === 3 &&
+                this.isLaboratoryOrderTabShown
+            ) {
+                this.downloadLaboratoryOrderReport();
+            } else if (this.dependentTab === 3 || this.dependentTab === 4) {
                 this.downloadClinicalDocument();
             }
         } else {
@@ -581,6 +640,56 @@ export default class DependentCardComponent extends Vue {
                 }
             })
             .finally(() => {
+                this.isLoading = false;
+            });
+    }
+
+    public fetchLaboratoryOrders(): void {
+        this.logger.debug(
+            `Fetching Lab Results for Hdid: ${this.dependent.ownerId}`
+        );
+        this.isLoading = true;
+        this.laboratoryService
+            .getLaboratoryOrders(this.dependent.ownerId)
+            .then((result) => {
+                const payload = result.resourcePayload;
+                if (result.resultStatus == ResultType.Success) {
+                    this.setLaboratoryOrders(payload.orders);
+                    this.isLoading = false;
+                } else if (
+                    result.resultError?.actionCode === ActionType.Refresh &&
+                    !payload.loaded &&
+                    payload.retryin > 0
+                ) {
+                    this.logger.info("Re-querying for Laboratory Orders");
+                    setTimeout(
+                        () => this.fetchLaboratoryOrders(),
+                        payload.retryin
+                    );
+                } else {
+                    this.logger.error(
+                        "Error returned from the Laboratory Orders call: " +
+                            JSON.stringify(result.resultError)
+                    );
+                    this.addError({
+                        errorType: ErrorType.Retrieve,
+                        source: ErrorSourceType.Laboratory,
+                        traceId: result.resultError?.traceId,
+                    });
+                    this.isLoading = false;
+                }
+            })
+            .catch((err: ResultError) => {
+                this.logger.error(err.resultMessage);
+                if (err.statusCode === 429) {
+                    this.setTooManyRequestsWarning({ key: "page" });
+                } else {
+                    this.addError({
+                        errorType: ErrorType.Retrieve,
+                        source: ErrorSourceType.Laboratory,
+                        traceId: err.traceId,
+                    });
+                }
                 this.isLoading = false;
             });
     }
@@ -711,6 +820,29 @@ export default class DependentCardComponent extends Vue {
         return this.vaccineRecords.get(this.dependent.ownerId);
     }
 
+    private setLaboratoryOrders(orders: LaboratoryOrder[]): void {
+        this.laboratoryOrders = orders;
+
+        this.laboratoryOrders.sort((a, b) => {
+            const firstDate = new DateWrapper(a.timelineDateTime, {
+                hasTime: true,
+            });
+            const secondDate = new DateWrapper(b.timelineDateTime, {
+                hasTime: true,
+            });
+
+            if (firstDate.isBefore(secondDate)) {
+                return 1;
+            }
+
+            if (firstDate.isAfter(secondDate)) {
+                return -1;
+            }
+
+            return 0;
+        });
+    }
+
     private setClinicalDocuments(clinicalDocuments: ClinicalDocument[]): void {
         this.clinicalDocuments = clinicalDocuments;
 
@@ -830,8 +962,20 @@ export default class DependentCardComponent extends Vue {
         this.reportDownloadModal.showModal();
     }
 
+    public showLaboratoryOrderDownloadConfirmationModal(
+        row: LaboratoryOrder
+    ): void {
+        this.isReport = true;
+        this.selectedLaboratoryOrderRow = row;
+        this.reportDownloadModal.showModal();
+    }
+
     public showDeleteConfirmationModal(): void {
         this.deleteModal.showModal();
+    }
+
+    private modulesAreEnabled(...modules: ClientModule[]) {
+        return modules.every((m) => this.webClientConfig.modules[m]);
     }
 
     private trackClickLink(action: string, linkType: string | undefined): void {
@@ -1448,6 +1592,115 @@ export default class DependentCardComponent extends Vue {
                             </b-tabs>
                         </b-card>
                     </div>
+                </b-tab>
+                <b-tab
+                    v-if="isLaboratoryOrderTabShown"
+                    :disabled="isExpired"
+                    no-body
+                    :data-testid="`lab-results-tab-${dependent.ownerId}`"
+                    @click="fetchLaboratoryOrders"
+                >
+                    <template #title>
+                        <div
+                            :id="`lab-results-tab-title-${dependent.ownerId}`"
+                            :data-testid="`lab-results-tab-title-${dependent.ownerId}`"
+                        >
+                            Lab Results
+                        </div>
+                    </template>
+                    <div
+                        v-if="isLoading || laboratoryOrders.length === 0"
+                        class="p-3"
+                    >
+                        <b-spinner v-if="isLoading" class="mt-3" />
+                        <div
+                            v-if="!isLoading && laboratoryOrders.length === 0"
+                            :data-testid="`lab-results-no-records-${dependent.ownerId}`"
+                        >
+                            No records found.
+                        </div>
+                    </div>
+                    <b-table-simple
+                        v-if="!isLoading && laboratoryOrders.length > 0"
+                        small
+                        striped
+                        borderless
+                        :items="laboratoryOrders"
+                        class="w-100 mb-0"
+                        :aria-labelledby="`lab-results-tab-title-${dependent.ownerId}`"
+                        :data-testid="`lab-results-table-${dependent.ownerId}`"
+                    >
+                        <b-thead>
+                            <b-tr>
+                                <b-th class="align-middle">Date</b-th>
+                                <b-th class="align-middle">Title</b-th>
+                                <b-th
+                                    class="d-none d-lg-table-cell align-middle"
+                                >
+                                    Lab
+                                </b-th>
+                                <b-th
+                                    class="d-none d-md-table-cell align-middle"
+                                >
+                                    Status
+                                </b-th>
+                                <b-th class="align-middle"
+                                    >Detailed Report</b-th
+                                >
+                            </b-tr>
+                        </b-thead>
+                        <b-tbody>
+                            <b-tr
+                                v-for="(row, index) in laboratoryOrders"
+                                :key="index"
+                            >
+                                <b-td
+                                    :data-testid="`lab-results-date-${dependent.ownerId}-${index}`"
+                                    class="align-middle text-nowrap"
+                                >
+                                    {{ formatDate(row.timelineDateTime) }}
+                                </b-td>
+                                <b-td
+                                    :data-testid="`lab-results-title-${dependent.ownerId}-${index}`"
+                                    class="align-middle"
+                                >
+                                    {{ row.commonName }}
+                                </b-td>
+                                <b-td
+                                    :data-testid="`lab-results-lab-${dependent.ownerId}-${index}`"
+                                    class="d-none d-lg-table-cell align-middle"
+                                >
+                                    {{ row.reportingSource }}
+                                </b-td>
+                                <b-td
+                                    :data-testid="`lab-results-status-${dependent.ownerId}-${index}`"
+                                    class="d-none d-md-table-cell align-middle"
+                                >
+                                    {{ row.orderStatus }}
+                                </b-td>
+                                <b-td class="align-middle">
+                                    <hg-button
+                                        v-if="row.reportAvailable"
+                                        :data-testid="`lab-results-report-download-button-${dependent.ownerId}-${index}`"
+                                        variant="link"
+                                        class="p-0"
+                                        @click="
+                                            showLaboratoryOrderDownloadConfirmationModal(
+                                                row
+                                            )
+                                        "
+                                    >
+                                        <hg-icon
+                                            icon="download"
+                                            size="medium"
+                                            square
+                                            aria-hidden="true"
+                                        />
+                                    </hg-button>
+                                </b-td>
+                            </b-tr>
+                        </b-tbody>
+                    </b-table-simple>
                 </b-tab>
                 <b-tab
                     v-if="isClinicalDocumentTabShown"
