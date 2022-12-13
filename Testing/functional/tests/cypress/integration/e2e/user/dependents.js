@@ -27,8 +27,10 @@ describe("dependents", () => {
             "Laboratory",
             "Dependent",
             "DependentImmunizationTab",
-            "DependentClinicalDocumentTab",
             "ClinicalDocument",
+            "DependentClinicalDocumentTab",
+            "AllLaboratory",
+            "DependentLaboratoryOrderTab",
         ]);
         cy.login(
             Cypress.env("keycloak.username"),
@@ -322,6 +324,32 @@ describe("dependents", () => {
         cy.verifyDownload("HealthGatewayDependentImmunizationReport.xlsx", {
             timeout: 60000,
             interval: 5000,
+        });
+    });
+
+    it("Validate Lab Results - Verify result and download", () => {
+        cy.log("Validating Lab Results Tab - Verify result and download");
+
+        cy.get(`[data-testid=lab-results-tab-title-${validDependentHdid}]`)
+            .parent()
+            .click();
+
+        // Expecting more than 1 row to return because also need to consider the table headers.
+        cy.get(`[data-testid=lab-results-table-${validDependentHdid}]`)
+            .find("tr")
+            .should("have.length.greaterThan", 1);
+
+        cy.get(
+            `[data-testid=lab-results-report-download-button-${validDependentHdid}-0]`
+        ).click();
+
+        cy.get("[data-testid=genericMessageModal]").should("be.visible");
+        cy.get("[data-testid=genericMessageSubmitBtn]").click();
+
+        cy.verifyDownload("Laboratory_Report_JENNIFER_TESTFOUR", {
+            timeout: 60000,
+            interval: 5000,
+            contains: true,
         });
     });
 
