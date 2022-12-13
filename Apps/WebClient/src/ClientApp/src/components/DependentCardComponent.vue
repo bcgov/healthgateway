@@ -177,7 +177,7 @@ export default class DependentCardComponent extends Vue {
     public csvFormatType = ReportFormatType.CSV;
     public pdfFormatType = ReportFormatType.PDF;
     public xlsxFormatType = ReportFormatType.XLSX;
-    public dependentTab = 0;
+    public selectedTabIndex = 0;
 
     private selectedTestRow!: Covid19LaboratoryTestRow;
     private selectedLaboratoryOrderRow!: LaboratoryOrder;
@@ -248,7 +248,7 @@ export default class DependentCardComponent extends Vue {
         );
         return (
             this.isReportDownloading ||
-            this.dependentTab !== 2 ||
+            this.selectedTabIndex !== this.tabIndicesMap[2] ||
             (this.immunizationItems.length == 0 &&
                 this.recommendationItems.length == 0)
         );
@@ -265,6 +265,17 @@ export default class DependentCardComponent extends Vue {
         );
     }
 
+    public get isCovid19TabShown(): boolean {
+        return this.modulesAreEnabled(ClientModule.Laboratory);
+    }
+
+    public get isImmunizationTabShown(): boolean {
+        return this.modulesAreEnabled(
+            ClientModule.DependentImmunizationTab,
+            ClientModule.Immunization
+        );
+    }
+
     public get isLaboratoryOrderTabShown(): boolean {
         return this.modulesAreEnabled(
             ClientModule.DependentLaboratoryOrderTab,
@@ -273,11 +284,27 @@ export default class DependentCardComponent extends Vue {
     }
 
     public get isClinicalDocumentTabShown(): boolean {
-        return this.webClientConfig.modules["DependentClinicalDocumentTab"];
+        return this.modulesAreEnabled(
+            ClientModule.DependentClinicalDocumentTab,
+            ClientModule.ClinicalDocument
+        );
     }
 
-    public get isImmunizationTabShown(): boolean {
-        return this.webClientConfig.modules["DependentImmunizationTab"];
+    public get tabIndicesMap(): (number | undefined)[] {
+        const tabIndices: (number | undefined)[] = [0];
+        const optionalTabs = [
+            this.isCovid19TabShown,
+            this.isImmunizationTabShown,
+            this.isLaboratoryOrderTabShown,
+            this.isClinicalDocumentTabShown,
+        ];
+
+        let index = 0;
+        optionalTabs.forEach((shown) =>
+            tabIndices.push(shown ? ++index : undefined)
+        );
+
+        return tabIndices;
     }
 
     public get immunizationItems(): ImmunizationRow[] {
@@ -507,18 +534,18 @@ export default class DependentCardComponent extends Vue {
     public downloadDocument(): void {
         if (this.isReport) {
             this.logger.debug(
-                `Download document from dependent tab: ${this.dependentTab}`
+                `Download document from dependent tab: ${this.selectedTabIndex}`
             );
-            if (this.dependentTab === 1) {
+
+            const tabIndicesMap = this.tabIndicesMap;
+
+            if (this.selectedTabIndex === tabIndicesMap[1]) {
                 this.downloadCovid19Report();
-            } else if (this.dependentTab === 2) {
+            } else if (this.selectedTabIndex === tabIndicesMap[2]) {
                 this.downloadImmunizationReport();
-            } else if (
-                this.dependentTab === 3 &&
-                this.isLaboratoryOrderTabShown
-            ) {
+            } else if (this.selectedTabIndex === tabIndicesMap[3]) {
                 this.downloadLaboratoryOrderReport();
-            } else if (this.dependentTab === 3 || this.dependentTab === 4) {
+            } else if (this.selectedTabIndex === tabIndicesMap[4]) {
                 this.downloadClinicalDocument();
             }
         } else {
@@ -1033,7 +1060,7 @@ export default class DependentCardComponent extends Vue {
             no-body
             :data-testid="`dependent-card-${dependent.dependentInformation.PHN}`"
         >
-            <b-tabs v-model="dependentTab" card>
+            <b-tabs v-model="selectedTabIndex" card>
                 <b-tab no-body active data-testid="dependentTab">
                     <template #title>
                         <div>Profile</div>
@@ -1103,6 +1130,7 @@ export default class DependentCardComponent extends Vue {
                     </div>
                 </b-tab>
                 <b-tab
+                    v-if="isCovid19TabShown"
                     :disabled="isExpired"
                     data-testid="covid19Tab"
                     no-body
