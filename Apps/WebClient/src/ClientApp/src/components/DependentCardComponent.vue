@@ -403,7 +403,7 @@ export default class DependentCardComponent extends Vue {
                     .then((blob) =>
                         saveAs(
                             blob,
-                            `Laboratory_Report_${this.dependent.dependentInformation.firstname}${this.dependent.dependentInformation.lastname}_${dateString}.pdf`
+                            `Laboratory_Report_${this.dependent.dependentInformation.firstname}_${this.dependent.dependentInformation.lastname}_${dateString}.pdf`
                         )
                     );
             })
