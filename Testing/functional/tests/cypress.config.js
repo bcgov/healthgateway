@@ -1,5 +1,5 @@
 const { defineConfig } = require("cypress");
-const { isFileExist } = require("cy-verify-downloads");
+const { verifyDownloadTasks } = require("cy-verify-downloads");
 
 module.exports = defineConfig({
     defaultCommandTimeout: 30000,
@@ -40,7 +40,7 @@ module.exports = defineConfig({
     trashAssetsBeforeRuns: true,
     e2e: {
         setupNodeEvents(on, _config) {
-            on("task", { isFileExist });
+            on("task", verifyDownloadTasks);
         },
         baseUrl: "https://dev.healthgateway.gov.bc.ca",
         specPattern: "cypress/integration/**/*.{js,jsx,ts,tsx}",

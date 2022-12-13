@@ -13,3 +13,5 @@
 // https://on.cypress.io/configuration
 // ***********************************************************
 import "./commands";
+
+require("cy-verify-downloads").addCustomCommand();
