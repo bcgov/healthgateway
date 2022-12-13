@@ -43,7 +43,7 @@ describe("WebClient Comment Service", () => {
         });
     });
 
-    it.only("Verify Get Comment Authorized", () => {
+    it("Verify Get Comment Authorized", () => {
         cy.get("@tokens").then((tokens) => {
             cy.log("Tokens", tokens);
             cy.get("@config").then((config) => {
