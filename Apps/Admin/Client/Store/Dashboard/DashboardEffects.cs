@@ -131,19 +131,18 @@ public class DashboardEffects
     [EffectMethod]
     public async Task HandleLoadAction(DashboardActions.LoadRecurringUsersAction action, IDispatcher dispatcher)
     {
-        this.Logger.LogInformation("Loading recurring users!");
+        this.Logger.LogInformation("Loading recurring user counts!");
 
         try
         {
-            int response = await this.DashboardApi.GetRecurringUsersCountAsync(action.Days, action.StartPeriod, action.EndPeriod, action.TimeOffset).ConfigureAwait(true);
-            this.Logger.LogInformation("Recurring users retrieved successfully!");
-            RecurringUser recurringUser = new() { TotalRecurringUsers = response };
-            dispatcher.Dispatch(new DashboardActions.RecurringUsersSuccessAction(recurringUser));
+            IDictionary<string, int> response = await this.DashboardApi.GetRecurringUserCountsAsync(action.Days, action.StartPeriod, action.EndPeriod, action.TimeOffset).ConfigureAwait(true);
+            this.Logger.LogInformation("Recurring user counts retrieved successfully!");
+            dispatcher.Dispatch(new DashboardActions.RecurringUsersSuccessAction(response));
         }
         catch (ApiException ex)
         {
             RequestError error = StoreUtility.FormatRequestError(ex);
-            this.Logger.LogError("Error retrieving recurring users, reason: {ErrorMessage}", error.Message);
+            this.Logger.LogError("Error retrieving recurring user counts, reason: {ErrorMessage}", error.Message);
             dispatcher.Dispatch(new DashboardActions.RecurringUsersFailAction(error));
         }
     }

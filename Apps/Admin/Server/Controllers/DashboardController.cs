@@ -96,13 +96,13 @@ namespace HealthGateway.Admin.Server.Controllers
         }
 
         /// <summary>
-        /// Retrieves the count recurring users.
+        /// Retrieves recurring user counts.
         /// </summary>
         /// <param name="days">The number of unique days for evaluating a user.</param>
         /// <param name="startPeriod">The period start over which to evaluate the user.</param>
         /// <param name="endPeriod">The period end over which to evaluate the user.</param>
         /// <param name="timeOffset">The current timezone offset from the client browser to UTC.</param>
-        /// <returns>The count of recurrent users.</returns>
+        /// <returns>The recurrent user counts.</returns>
         /// <response code="200">Returns the list of user feedbacks.</response>
         /// <response code="401">The client must authenticate itself to get the requested response.</response>
         /// <response code="403">
@@ -110,10 +110,10 @@ namespace HealthGateway.Admin.Server.Controllers
         /// is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.
         /// </response>
         [HttpGet]
-        [Route("RecurringUsers")]
-        public IActionResult GetRecurringUsersCount(int days, string startPeriod, string endPeriod, int timeOffset)
+        [Route("RecurringUserCounts")]
+        public IActionResult GetRecurringUserCounts(int days, string startPeriod, string endPeriod, int timeOffset)
         {
-            return new JsonResult(this.dashboardService.GetRecurrentUserCount(days, startPeriod, endPeriod, timeOffset));
+            return new JsonResult(this.dashboardService.GetRecurrentUserCounts(days, startPeriod, endPeriod, timeOffset));
         }
 
         /// <summary>

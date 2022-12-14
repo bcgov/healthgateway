@@ -70,7 +70,7 @@ namespace HealthGateway.Admin.Server.Services
         }
 
         /// <inheritdoc/>
-        public int GetRecurrentUserCount(int dayCount, string startPeriod, string endPeriod, int timeOffset)
+        public IDictionary<string, int> GetRecurrentUserCounts(int dayCount, string startPeriod, string endPeriod, int timeOffset)
         {
             int offset = GetOffset(timeOffset);
             TimeSpan ts = new(0, offset, 0);
@@ -91,7 +91,17 @@ namespace HealthGateway.Admin.Server.Services
                 timeOffset.ToString(CultureInfo.InvariantCulture),
                 offset.ToString(CultureInfo.InvariantCulture));
 
-            return this.userProfileDelegate.GetRecurrentUserCount(dayCount, startDate, endDate);
+            IDictionary<string, int> lastLoginCounts = this.userProfileDelegate.GetLastLoginClientCounts(startDate, endDate);
+            int recurrentUserCount = this.userProfileDelegate.GetRecurrentUserCount(dayCount, startDate, endDate);
+
+            IDictionary<string, int> recurrentUserCounts = new Dictionary<string, int>
+            {
+                { "Mobile", lastLoginCounts.TryGetValue("Mobile", out int mobileCount) ? mobileCount : 0 },
+                { "Web", lastLoginCounts.TryGetValue("Web", out int webCount) ? webCount : 0 },
+                { "RecurrentUserCount", recurrentUserCount },
+            };
+
+            return recurrentUserCounts;
         }
 
         /// <inheritdoc/>

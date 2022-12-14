@@ -47,7 +47,7 @@ public partial class DashboardPage : FluxorComponent
 
     private IDictionary<DateTime, int> DependentsResult => this.DashboardState.Value.Dependents.Result ?? ImmutableDictionary<DateTime, int>.Empty;
 
-    private int TotalRecurringUsers => this.DashboardState.Value.RecurringUsers.Result?.TotalRecurringUsers ?? 0;
+    private IDictionary<string, int> RecurringUserCountsResult => this.DashboardState.Value.RecurringUserCounts.Result ?? ImmutableDictionary<string, int>.Empty;
 
     private bool RegisteredUsersLoading => this.DashboardState.Value.RegisteredUsers.IsLoading;
 
@@ -55,7 +55,7 @@ public partial class DashboardPage : FluxorComponent
 
     private bool DependentsLoading => this.DashboardState.Value.Dependents.IsLoading;
 
-    private bool RecurringUsersLoading => this.DashboardState.Value.RecurringUsers.IsLoading;
+    private bool RecurringUsersLoading => this.DashboardState.Value.RecurringUserCounts.IsLoading;
 
     private bool RatingSummaryLoading => this.DashboardState.Value.RatingSummary.IsLoading;
 
@@ -81,9 +81,9 @@ public partial class DashboardPage : FluxorComponent
 
     private string DependentsErrorMessage => this.DashboardState.Value.Dependents.Error?.Message ?? string.Empty;
 
-    private bool RecurringUsersHasError => this.DashboardState.Value.RecurringUsers.Error != null && this.DashboardState.Value.RecurringUsers.Error.Message.Length > 0;
+    private bool RecurringUsersHasError => this.DashboardState.Value.RecurringUserCounts.Error != null && this.DashboardState.Value.RecurringUserCounts.Error.Message.Length > 0;
 
-    private string RecurringUsersErrorMessage => this.DashboardState.Value.RecurringUsers.Error?.Message ?? string.Empty;
+    private string RecurringUsersErrorMessage => this.DashboardState.Value.RecurringUserCounts.Error?.Message ?? string.Empty;
 
     private bool RatingSummaryHasError => this.DashboardState.Value.RatingSummary.Error != null && this.DashboardState.Value.RatingSummary.Error.Message.Length > 0;
 

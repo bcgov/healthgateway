@@ -194,7 +194,7 @@ public static class DashboardReducers
     {
         return state with
         {
-            RecurringUsers = state.RecurringUsers with { IsLoading = true },
+            RecurringUserCounts = state.RecurringUserCounts with { IsLoading = true },
         };
     }
 
@@ -209,7 +209,7 @@ public static class DashboardReducers
     {
         return state with
         {
-            RecurringUsers = state.RecurringUsers with
+            RecurringUserCounts = state.RecurringUserCounts with
             {
                 Result = action.Data,
                 IsLoading = false,
@@ -229,7 +229,7 @@ public static class DashboardReducers
     {
         return state with
         {
-            RecurringUsers = state.RecurringUsers with
+            RecurringUserCounts = state.RecurringUserCounts with
             {
                 Result = null,
                 IsLoading = false,
@@ -305,7 +305,7 @@ public static class DashboardReducers
             RegisteredUsers = new(),
             LoggedInUsers = new(),
             Dependents = new(),
-            RecurringUsers = new(),
+            RecurringUserCounts = new(),
             RatingSummary = new(),
         };
     }
