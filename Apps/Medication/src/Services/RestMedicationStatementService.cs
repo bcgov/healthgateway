@@ -96,7 +96,7 @@ namespace HealthGateway.Medication.Services
                 {
                     // Retrieve the phn
                     RequestResult<PatientModel> patientResult = await this.patientService.GetPatient(hdid).ConfigureAwait(true);
-                    if (patientResult.ResultStatus == ResultType.Success && patientResult.ResourcePayload != null)
+                    if (patientResult is { ResultStatus: ResultType.Success, ResourcePayload: { } })
                     {
                         PatientModel patient = patientResult.ResourcePayload;
                         OdrHistoryQuery historyQuery = new()
@@ -116,7 +116,7 @@ namespace HealthGateway.Medication.Services
                         {
                             result.PageSize = historyQuery.PageSize;
                             result.PageIndex = historyQuery.PageNumber;
-                            if (response.ResourcePayload != null && response.ResourcePayload.Results != null)
+                            if (response.ResourcePayload is { Results: { } })
                             {
                                 result.TotalResultCount = response.ResourcePayload.TotalRecords;
                                 result.ResourcePayload = this.autoMapper.Map<IEnumerable<MedicationResult>, IList<MedicationStatementHistory>>(response.ResourcePayload.Results);
@@ -151,7 +151,7 @@ namespace HealthGateway.Medication.Services
             string? errMsg = null;
             if (!string.IsNullOrEmpty(protectiveWord))
             {
-                if (protectiveWord.Length >= MinLengthProtectiveWord && protectiveWord.Length <= MaxLengthProtectiveWord)
+                if (protectiveWord.Length is >= MinLengthProtectiveWord and <= MaxLengthProtectiveWord)
                 {
                     Regex regex = new(@"^[0-9A-Za-z_]+$");
                     if (!regex.IsMatch(protectiveWord))
@@ -163,15 +163,7 @@ namespace HealthGateway.Medication.Services
                 else
                 {
                     valid = false;
-                    if (protectiveWord.Length > MaxLengthProtectiveWord)
-                    {
-                        errMsg = ErrorMessages.ProtectiveWordTooLong;
-                    }
-                    else
-                    {
-                        // Protective word is too short
-                        errMsg = ErrorMessages.ProtectiveWordTooShort;
-                    }
+                    errMsg = protectiveWord.Length > MaxLengthProtectiveWord ? ErrorMessages.ProtectiveWordTooLong : ErrorMessages.ProtectiveWordTooShort;
                 }
             }
 
@@ -211,19 +203,24 @@ namespace HealthGateway.Medication.Services
                 foreach (MedicationSummary mdSummary in medSummaries)
                 {
                     string din = mdSummary.Din.PadLeft(8, '0');
-                    if (drugProductsDict.ContainsKey(din))
+                    drugProductsDict.TryGetValue(din, out DrugProduct? drug);
+                    if (drug is not null)
                     {
-                        mdSummary.BrandName = drugProductsDict[din].BrandName;
-                        mdSummary.Form = drugProductsDict[din].Form?.PharmaceuticalForm ?? string.Empty;
-                        mdSummary.Strength = drugProductsDict[din].ActiveIngredient?.Strength ?? string.Empty;
-                        mdSummary.StrengthUnit = drugProductsDict[din].ActiveIngredient?.StrengthUnit ?? string.Empty;
-                        mdSummary.Manufacturer = drugProductsDict[din].Company?.CompanyName ?? string.Empty;
+                        mdSummary.BrandName = drug.BrandName;
+                        mdSummary.Form = drug.Form?.PharmaceuticalForm ?? string.Empty;
+                        mdSummary.Strength = drug.ActiveIngredient?.Strength ?? string.Empty;
+                        mdSummary.StrengthUnit = drug.ActiveIngredient?.StrengthUnit ?? string.Empty;
+                        mdSummary.Manufacturer = drug.Company?.CompanyName ?? string.Empty;
                     }
-                    else if (provincialDict.ContainsKey(din))
+                    else
                     {
-                        mdSummary.IsPin = true;
-                        mdSummary.BrandName = provincialDict[din].BrandName;
-                        mdSummary.Form = provincialDict[din].DosageForm ?? string.Empty;
+                        provincialDict.TryGetValue(din, out PharmaCareDrug? provincialDrug);
+                        if (provincialDrug is not null)
+                        {
+                            mdSummary.IsPin = true;
+                            mdSummary.BrandName = provincialDrug.BrandName;
+                            mdSummary.Form = provincialDrug.DosageForm ?? string.Empty;
+                        }
                     }
                 }
 
