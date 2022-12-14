@@ -63,10 +63,12 @@ namespace HealthGateway.Medication.Controllers
             string paddedDin = drugIdentifier.PadLeft(8, '0');
             IDictionary<string, MedicationInformation> medications = this.medicationService.GetMedications(new List<string> { paddedDin });
 
+            medications.TryGetValue(paddedDin, out MedicationInformation? medication);
             RequestResult<MedicationInformation> result = new()
             {
                 ResultStatus = ResultType.Success,
-                ResourcePayload = medications.ContainsKey(paddedDin) ? medications[paddedDin] : null,
+
+                ResourcePayload = medication,
                 TotalResultCount = medications.Count,
                 PageIndex = 0,
                 PageSize = medications.Count,

@@ -74,7 +74,8 @@ namespace HealthGateway.Medication.Services
                     PharmaCareDrug = pharmaCareDrug,
                 };
 
-                if (result.ContainsKey(pharmaCareDrug.DinPin))
+                result.TryGetValue(pharmaCareDrug.DinPin, out MedicationInformation? medication);
+                if (medication is not null)
                 {
                     result[pharmaCareDrug.DinPin].ProvincialData = provincialData;
                 }
