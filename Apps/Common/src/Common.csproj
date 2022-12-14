@@ -16,7 +16,7 @@
         <PackageReference Include="Microsoft.AspNetCore.Mvc.Versioning.ApiExplorer" Version="5.0.0"/>
         <PackageReference Include="Microsoft.AspNetCore.Razor.Design" Version="2.2.0" PrivateAssets="All"/>
         <PackageReference Include="Microsoft.AspNetCore.SpaServices" Version="3.1.31"/>
-        <PackageReference Include="Microsoft.AspNetCore.SpaServices.Extensions" Version="7.0.0"/>
+        <PackageReference Include="Microsoft.AspNetCore.SpaServices.Extensions" Version="7.0.1"/>
         <PackageReference Include="Microsoft.OpenApi" Version="1.4.5"/>
         <PackageReference Include="Npgsql.OpenTelemetry" Version="7.0.0"/>
         <PackageReference Include="Refit" Version="6.3.2"/>
