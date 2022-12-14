@@ -55,7 +55,7 @@ describe("Dashboard", () => {
             body: {
                 Mobile: 1,
                 Web: 4,
-                RecurrentUserCount: 2,
+                RecurringUserCount: 2,
             },
         });
 
@@ -99,7 +99,7 @@ describe("Dashboard", () => {
             body: {
                 Mobile: 0,
                 Web: 0,
-                RecurrentUserCount: 0,
+                RecurringUserCount: 0,
             },
         });
         cy.log("Updating unique days input value.");
@@ -111,7 +111,7 @@ describe("Dashboard", () => {
             body: {
                 Mobile: 0,
                 Web: 0,
-                RecurrentUserCount: 3,
+                RecurringUserCount: 3,
             },
         });
         cy.log("Updating unique days input value.");
@@ -153,7 +153,7 @@ describe("Dashboard", () => {
             body: {
                 Mobile: 0,
                 Web: 0,
-                RecurrentUserCount: 10,
+                RecurringUserCount: 10,
             },
         });
 
