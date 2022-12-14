@@ -23,6 +23,7 @@ using System.Linq;
 using Fluxor;
 using Fluxor.Blazor.Web.Components;
 using HealthGateway.Admin.Client.Store.Dashboard;
+using HealthGateway.Common.Data.Constants;
 using Microsoft.AspNetCore.Components;
 using MudBlazor;
 
@@ -47,7 +48,13 @@ public partial class DashboardPage : FluxorComponent
 
     private IDictionary<DateTime, int> DependentsResult => this.DashboardState.Value.Dependents.Result ?? ImmutableDictionary<DateTime, int>.Empty;
 
-    private IDictionary<string, int> RecurringUserCountsResult => this.DashboardState.Value.RecurringUserCounts.Result ?? ImmutableDictionary<string, int>.Empty;
+    private IDictionary<string, int> UserCountsResult => this.DashboardState.Value.UserCounts.Result ?? ImmutableDictionary<string, int>.Empty;
+
+    private int RecurringUserCount => this.UserCountsResult.TryGetValue("RecurringUserCount", out int recurringUserCount) ? recurringUserCount : 0;
+
+    private int MobileUserCount => this.UserCountsResult.TryGetValue(UserLoginClientType.Mobile.ToString(), out int mobileCount) ? mobileCount : 0;
+
+    private int WebUserCount => this.UserCountsResult.TryGetValue(UserLoginClientType.Web.ToString(), out int webCount) ? webCount : 0;
 
     private bool RegisteredUsersLoading => this.DashboardState.Value.RegisteredUsers.IsLoading;
 
@@ -55,7 +62,7 @@ public partial class DashboardPage : FluxorComponent
 
     private bool DependentsLoading => this.DashboardState.Value.Dependents.IsLoading;
 
-    private bool RecurringUsersLoading => this.DashboardState.Value.RecurringUserCounts.IsLoading;
+    private bool RecurringUsersLoading => this.DashboardState.Value.UserCounts.IsLoading;
 
     private bool RatingSummaryLoading => this.DashboardState.Value.RatingSummary.IsLoading;
 
@@ -81,9 +88,9 @@ public partial class DashboardPage : FluxorComponent
 
     private string DependentsErrorMessage => this.DashboardState.Value.Dependents.Error?.Message ?? string.Empty;
 
-    private bool RecurringUsersHasError => this.DashboardState.Value.RecurringUserCounts.Error != null && this.DashboardState.Value.RecurringUserCounts.Error.Message.Length > 0;
+    private bool RecurringUsersHasError => this.DashboardState.Value.UserCounts.Error != null && this.DashboardState.Value.UserCounts.Error.Message.Length > 0;
 
-    private string RecurringUsersErrorMessage => this.DashboardState.Value.RecurringUserCounts.Error?.Message ?? string.Empty;
+    private string RecurringUsersErrorMessage => this.DashboardState.Value.UserCounts.Error?.Message ?? string.Empty;
 
     private bool RatingSummaryHasError => this.DashboardState.Value.RatingSummary.Error != null && this.DashboardState.Value.RatingSummary.Error.Message.Length > 0;
 

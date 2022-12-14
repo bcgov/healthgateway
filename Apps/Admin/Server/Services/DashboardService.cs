@@ -18,6 +18,7 @@ namespace HealthGateway.Admin.Server.Services
     using System;
     using System.Collections.Generic;
     using System.Globalization;
+    using HealthGateway.Common.Data.Constants;
     using HealthGateway.Database.Delegates;
     using Microsoft.Extensions.Logging;
 
@@ -92,16 +93,16 @@ namespace HealthGateway.Admin.Server.Services
                 offset.ToString(CultureInfo.InvariantCulture));
 
             IDictionary<string, int> lastLoginCounts = this.userProfileDelegate.GetLastLoginClientCounts(startDate, endDate);
-            int recurrentUserCount = this.userProfileDelegate.GetRecurrentUserCount(dayCount, startDate, endDate);
+            int recurringUserCount = this.userProfileDelegate.GetRecurrentUserCount(dayCount, startDate, endDate);
 
-            IDictionary<string, int> recurrentUserCounts = new Dictionary<string, int>
+            IDictionary<string, int> recurringUserCounts = new Dictionary<string, int>
             {
-                { "Mobile", lastLoginCounts.TryGetValue("Mobile", out int mobileCount) ? mobileCount : 0 },
-                { "Web", lastLoginCounts.TryGetValue("Web", out int webCount) ? webCount : 0 },
-                { "RecurrentUserCount", recurrentUserCount },
+                { UserLoginClientType.Mobile.ToString(), lastLoginCounts.TryGetValue(UserLoginClientType.Mobile.ToString(), out int mobileCount) ? mobileCount : 0 },
+                { UserLoginClientType.Web.ToString(), lastLoginCounts.TryGetValue(UserLoginClientType.Web.ToString(), out int webCount) ? webCount : 0 },
+                { "RecurringUserCount", recurringUserCount },
             };
 
-            return recurrentUserCounts;
+            return recurringUserCounts;
         }
 
         /// <inheritdoc/>
