@@ -46,7 +46,6 @@ namespace HealthGateway.Encounter.MapProfiles
                 .AfterMap(
                     (src, dest) =>
                     {
-                        using MD5 md5CryptoService = MD5.Create();
                         StringBuilder sourceId = new();
                         sourceId.Append(CultureInfo.InvariantCulture, $"{src.ServiceDate:yyyyMMdd}");
                         sourceId.Append(CultureInfo.InvariantCulture, $"{src.SpecialtyDesc}");
@@ -60,7 +59,8 @@ namespace HealthGateway.Encounter.MapProfiles
                         sourceId.Append(CultureInfo.InvariantCulture, $"{src.LocationAddress.AddrLine3}");
                         sourceId.Append(CultureInfo.InvariantCulture, $"{src.LocationAddress.AddrLine4}");
 
-                        dest.Id = new Guid(md5CryptoService.ComputeHash(Encoding.Default.GetBytes(sourceId.ToString()))).ToString();
+                        byte[] hashBytes = MD5.HashData(Encoding.Default.GetBytes(sourceId.ToString()));
+                        dest.Id = new Guid(hashBytes).ToString();
                     });
         }
     }
