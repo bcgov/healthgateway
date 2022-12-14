@@ -92,7 +92,7 @@ describe("Tutorial", () => {
         cy.get("[data-testid=filter-tutorial-popover]").should("be.visible");
     });
 
-    it.only("Validate Comment Popover", () => {
+    it("Validate Comment Popover", () => {
         cy.enableModules(["Comment", "Medication"]);
         cy.intercept("GET", "**/UserProfile/*", (req) => {
             req.reply((res) => {

@@ -18,29 +18,17 @@ jobs:
     timeoutInMinutes: 120
     steps:
       - task: UseDotNet@2
-        displayName: 'Use .NET Core sdk'
+        displayName: 'Install .NET SDK'
         condition: eq(variables['EnableAzure'], True)
         inputs:
           packageType: sdk
           version: 7.x
           installationPath: $(Agent.ToolsDirectory)/dotnet
 
-      # - script: |
-      #     npm --prefix WebClient/src/ClientApp install --only=dev
-      #     npm --prefix WebClient/src/ClientApp test
-      #   displayName: "Run npm Tests"
-      #   continueOnError: true
-      #   workingDirectory: $(Build.SourcesDirectory)/Apps/
-      #   enabled: true
-
       - script: |
-          export CollectCoverage=true
-          export CoverletOutputFormat=opencover
+          dotnet tool install --global JetBrains.dotCover.GlobalTool
           dotnet tool install --global dotnet-sonarscanner --version $(SONARSCANNER_VERSION)
-          dotnet test --logger:"xunit;LogFileName=results.xml"
-        displayName: "Run dotnet Tests"
-        continueOnError: true
-        workingDirectory: $(Build.SourcesDirectory)/Apps/
+        displayName: "Install SonarScanner and dotCover"
         enabled: true
 
       - script: |
@@ -60,8 +48,9 @@ jobs:
         enabled: "true"
 
       - script: |
-          dotnet build    
-        displayName: "Build Solution"
+          dotnet build --no-incremental
+          dotnet dotcover test --dcReportType=HTML --dcAttributeFilters=System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverageAttribute;
+        displayName: "Build and Test"
         continueOnError: true
         workingDirectory: $(Build.SourcesDirectory)/Apps/
         enabled: "true"

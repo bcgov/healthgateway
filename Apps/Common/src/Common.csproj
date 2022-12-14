@@ -1,87 +1,68 @@
 <Project Sdk="Microsoft.NET.Sdk">
-  <PropertyGroup>
-    <RootNamespace>HealthGateway.Common</RootNamespace>
-    <DocumentationFile>bin\$(Configuration)\$(TargetFramework)\$(MSBuildThisFileName).xml</DocumentationFile>
-  </PropertyGroup>
-  <ItemGroup>
-    <Compile Remove="Authorization\**" />
-    <EmbeddedResource Remove="Authorization\**" />
-    <None Remove="Authorization\**" />
-    <None Remove="ServiceReference\dotnet-svcutil.params.json" />
-    <None Remove="Models\PHSA\Recommendation\" />
-    <None Remove="AspNetConfiguration\Modules\" />
-  </ItemGroup>
-  <ItemGroup>
-    <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="12.0.0" />
-    <PackageReference Include="Hangfire.AspNetCore" Version="1.7.32" />
-    <PackageReference Include="Hangfire.PostgreSql" Version="1.9.9" />
-    <PackageReference Include="Hellang.Middleware.ProblemDetails" Version="6.5.1" />
-    <PackageReference Include="Macross.Json.Extensions" Version="3.0.0" />
-    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="7.0.0" />
-    <PackageReference Include="Microsoft.AspNetCore.Authentication.OpenIdConnect" Version="7.0.0" />
-    <PackageReference Include="Microsoft.AspNetCore.HttpOverrides" Version="2.2.0" />
-    <PackageReference Include="Microsoft.AspNetCore.Mvc.Versioning.ApiExplorer" Version="5.0.0" />
-    <PackageReference Include="Microsoft.AspNetCore.Razor.Design" Version="2.2.0" PrivateAssets="All" />
-    <PackageReference Include="Microsoft.AspNetCore.SpaServices" Version="3.1.31" />
-    <PackageReference Include="Microsoft.AspNetCore.SpaServices.Extensions" Version="7.0.0" />
-    <PackageReference Include="Microsoft.OpenApi" Version="1.4.5" />
-    <PackageReference Include="Npgsql.OpenTelemetry" Version="7.0.0" />
-    <PackageReference Include="Refit" Version="6.3.2" />
-    <PackageReference Include="Refit.HttpClientFactory" Version="6.3.2" />
-    <PackageReference Include="StackExchange.Redis" Version="2.6.80" />
-    <PackageReference Include="Swashbuckle.AspNetCore" Version="6.4.0" />
-    <PackageReference Include="Microsoft.AspNetCore.Diagnostics.HealthChecks" Version="2.2.0" />
-    <PackageReference Include="Microsoft.Extensions.Diagnostics.HealthChecks.EntityFrameworkCore" Version="7.0.0" />
-    <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="7.0.0" />
-    <PackageReference Include="OpenTelemetry.Exporter.Zipkin" Version="1.3.1" />
-    <PackageReference Include="OpenTelemetry.Exporter.Console" Version="1.3.1" />
-    <PackageReference Include="OpenTelemetry.Instrumentation.AspNetCore" Version="1.0.0-rc8" />
-    <PackageReference Include="OpenTelemetry.Extensions.Hosting" Version="1.0.0-rc8" />
-    <PackageReference Include="OpenTelemetry.Instrumentation.Http" Version="1.0.0-rc8" />
-    <PackageReference Include="OpenTelemetry.Api" Version="1.3.1" />
-    <PackageReference Include="System.Diagnostics.DiagnosticSource" Version="7.0.0" />
-    <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="6.25.1" />
-  </ItemGroup>
+    <PropertyGroup>
+        <RootNamespace>HealthGateway.Common</RootNamespace>
+        <DocumentationFile>bin\$(Configuration)\$(TargetFramework)\$(MSBuildThisFileName).xml</DocumentationFile>
+    </PropertyGroup>
 
-  <ItemGroup>
-    <PackageReference Include="System.ServiceModel.Duplex" Version="4.10.0" />
-    <PackageReference Include="System.ServiceModel.Http" Version="4.10.0" />
-    <PackageReference Include="System.ServiceModel.NetTcp" Version="4.10.0" />
-    <PackageReference Include="System.ServiceModel.Security" Version="4.10.0" />
-  </ItemGroup>
+    <ItemGroup>
+        <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="12.0.0"/>
+        <PackageReference Include="Hangfire.AspNetCore" Version="1.7.32"/>
+        <PackageReference Include="Hangfire.PostgreSql" Version="1.9.9"/>
+        <PackageReference Include="Hellang.Middleware.ProblemDetails" Version="6.5.1"/>
+        <PackageReference Include="Macross.Json.Extensions" Version="3.0.0"/>
+        <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="7.0.0"/>
+        <PackageReference Include="Microsoft.AspNetCore.Authentication.OpenIdConnect" Version="7.0.0"/>
+        <PackageReference Include="Microsoft.AspNetCore.HttpOverrides" Version="2.2.0"/>
+        <PackageReference Include="Microsoft.AspNetCore.Mvc.Versioning.ApiExplorer" Version="5.0.0"/>
+        <PackageReference Include="Microsoft.AspNetCore.Razor.Design" Version="2.2.0" PrivateAssets="All"/>
+        <PackageReference Include="Microsoft.AspNetCore.SpaServices" Version="3.1.31"/>
+        <PackageReference Include="Microsoft.AspNetCore.SpaServices.Extensions" Version="7.0.0"/>
+        <PackageReference Include="Microsoft.OpenApi" Version="1.4.5"/>
+        <PackageReference Include="Npgsql.OpenTelemetry" Version="7.0.0"/>
+        <PackageReference Include="Refit" Version="6.3.2"/>
+        <PackageReference Include="Refit.HttpClientFactory" Version="6.3.2"/>
+        <PackageReference Include="StackExchange.Redis" Version="2.6.80"/>
+        <PackageReference Include="Swashbuckle.AspNetCore" Version="6.4.0"/>
+        <PackageReference Include="Microsoft.AspNetCore.Diagnostics.HealthChecks" Version="2.2.0"/>
+        <PackageReference Include="Microsoft.Extensions.Diagnostics.HealthChecks.EntityFrameworkCore" Version="7.0.0"/>
+        <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="7.0.0"/>
+        <PackageReference Include="OpenTelemetry.Exporter.Zipkin" Version="1.3.1"/>
+        <PackageReference Include="OpenTelemetry.Exporter.Console" Version="1.3.1"/>
+        <PackageReference Include="OpenTelemetry.Instrumentation.AspNetCore" Version="1.0.0-rc8"/>
+        <PackageReference Include="OpenTelemetry.Extensions.Hosting" Version="1.0.0-rc8"/>
+        <PackageReference Include="OpenTelemetry.Instrumentation.Http" Version="1.0.0-rc8"/>
+        <PackageReference Include="OpenTelemetry.Api" Version="1.3.1"/>
+        <PackageReference Include="System.Diagnostics.DiagnosticSource" Version="7.0.0"/>
+        <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="6.25.1"/>
+        <PackageReference Include="System.ServiceModel.Duplex" Version="4.10.0"/>
+        <PackageReference Include="System.ServiceModel.Http" Version="4.10.0"/>
+        <PackageReference Include="System.ServiceModel.NetTcp" Version="4.10.0"/>
+        <PackageReference Include="System.ServiceModel.Security" Version="4.10.0"/>
+    </ItemGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\..\Database\src\Database.csproj" />
-    <ProjectReference Include="..\..\CommonData\src\Common.Data.csproj" />
-  </ItemGroup>
+    <ItemGroup>
+        <ProjectReference Include="..\..\Database\src\Database.csproj"/>
+        <ProjectReference Include="..\..\CommonData\src\Common.Data.csproj"/>
+    </ItemGroup>
 
-  <ItemGroup>
-    <AdditionalFiles Include="..\..\stylecop.json" />
-  </ItemGroup>
+    <ItemGroup>
+        <AdditionalFiles Include="..\..\stylecop.json"/>
+    </ItemGroup>
 
-  <ItemGroup>
-    <SonarQubeSetting Include="sonar.stylecop.projectFilePath">
-      <Value>$(MSBuildProjectFullPath)</Value>
-    </SonarQubeSetting>
-  </ItemGroup>
+    <ItemGroup>
+        <None Remove="ServiceReference\dotnet-svcutil.params.json"/>
+    </ItemGroup>
 
-  <ItemGroup>
-    <Content Remove="wwwroot\dist\vendor-manifest.json" />
-  </ItemGroup>
+    <ItemGroup>
+        <SonarQubeSetting Include="sonar.stylecop.projectFilePath">
+            <Value>$(MSBuildProjectFullPath)</Value>
+        </SonarQubeSetting>
+    </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="AspNetConfiguration\" />
-    <Folder Include="Auditing\" />
-    <Folder Include="Filters\" />
-    <Folder Include="resources\" />
-    <Folder Include="ServiceReference\" />
-    <Folder Include="Models\PHSA\Recommendation\" />
-    <Folder Include="AspNetConfiguration\Modules\" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="ServiceReference\dotnet-svcutil.params.json" Condition="'$(ExcludeConfigFilesFromBuildOutput)'=='true'">
-      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
-      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
-    </Content>
-  </ItemGroup>
+    <ItemGroup>
+        <Content Include="ServiceReference\dotnet-svcutil.params.json" Condition="'$(ExcludeConfigFilesFromBuildOutput)'=='true'">
+            <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+            <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+        </Content>
+    </ItemGroup>
 </Project>
