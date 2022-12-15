@@ -307,7 +307,7 @@ namespace HealthGateway.Database.Delegates
                 .Concat(
                     this.dbContext.UserProfileHistory.Select(x => new { x.HdId, x.LastLoginClientCode, x.LastLoginDateTime }))
                 .Where(x => x.LastLoginClientCode != null && x.LastLoginDateTime >= startDate && x.LastLoginDateTime <= endDate)
-                .Select(x => new { x.HdId, x.LastLoginClientCode, lastLoginDate = GatewayDbContext.DateTrunc("days", x.LastLoginDateTime) })
+                .Select(x => new { x.HdId, x.LastLoginClientCode })
                 .Distinct()
                 .GroupBy(x => x.LastLoginClientCode)
                 .Select(x => new { lastLoginClientCode = x.Key, count = x.Count() })
