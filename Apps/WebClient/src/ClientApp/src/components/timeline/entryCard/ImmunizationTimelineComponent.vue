@@ -74,16 +74,16 @@ export default class ImmunizationTimelineComponent extends Vue {
             </div>
             <div v-if="entry.immunization.forecast" class="mt-4">
                 <strong>Forecast</strong>
-                <div class="my-2" data-testid="forecastDisplayName">
+                <div class="my-2 text-muted" data-testid="forecastDisplayName">
                     <strong>Immunization: </strong>
                     {{ entry.immunization.forecast.displayName }}
                 </div>
-                <div class="my-2" data-testid="forecastDueDate">
+                <div class="my-2 text-muted" data-testid="forecastDueDate">
                     <strong>Due Date: </strong>
                     {{ entry.immunization.forecast.dueDate }}
                 </div>
                 <div class="my-2" data-testid="forecastStatus">
-                    <strong>Status: </strong>
+                    <span class="text-muted">Status: </span>
                     {{ entry.immunization.forecast.status }}
                 </div>
             </div>
