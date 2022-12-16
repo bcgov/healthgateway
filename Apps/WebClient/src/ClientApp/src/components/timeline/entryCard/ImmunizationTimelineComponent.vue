@@ -84,7 +84,7 @@ export default class ImmunizationTimelineComponent extends Vue {
                 </div>
                 <div class="my-2" data-testid="forecastStatus">
                     <span class="text-muted">Status: </span>
-                    {{ entry.immunization.forecast.status }}
+                    <strong>{{ entry.immunization.forecast.status }}</strong>
                 </div>
             </div>
         </div>
