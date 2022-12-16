@@ -9,6 +9,7 @@ import "@/assets/scss/hg-styles.scss";
 import "@/plugins/registerComponentHooks";
 
 import {
+    BAlert,
     BBadge,
     BBreadcrumb,
     BBreadcrumbItem,
@@ -76,6 +77,7 @@ import {
     IVaccinationStatusService,
 } from "@/services/interfaces";
 
+Vue.component("BAlert", BAlert);
 Vue.component("BBadge", BBadge);
 Vue.component("BBreadcrumb", BBreadcrumb);
 Vue.component("BBreadcrumbItem", BBreadcrumbItem);

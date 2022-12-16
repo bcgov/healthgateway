@@ -131,6 +131,13 @@ export default class HeaderComponent extends Vue {
         return this.$route.path.toLowerCase().startsWith("/pcrtest");
     }
 
+    private get isQueuePage(): boolean {
+        return (
+            this.$route.path.toLowerCase() === "/queue" ||
+            this.$route.path.toLowerCase() === "/busy"
+        );
+    }
+
     private get isSidebarButtonShown(): boolean {
         return (
             !this.isOffline &&
@@ -139,6 +146,7 @@ export default class HeaderComponent extends Vue {
             this.userIsRegistered &&
             this.userIsActive &&
             !this.patientRetrievalFailed &&
+            !this.isQueuePage &&
             !this.isPcrTest &&
             this.isMobileWidth
         );
@@ -148,6 +156,7 @@ export default class HeaderComponent extends Vue {
         return (
             this.config.modules["NotificationCentre"] &&
             !this.isOffline &&
+            !this.isQueuePage &&
             !this.isPcrTest &&
             this.oidcIsAuthenticated &&
             this.isValidIdentityProvider &&
@@ -158,7 +167,7 @@ export default class HeaderComponent extends Vue {
     }
 
     private get isLoggedInMenuShown(): boolean {
-        return this.oidcIsAuthenticated && !this.isPcrTest;
+        return this.oidcIsAuthenticated && !this.isPcrTest && !this.isQueuePage;
     }
 
     private get isLogOutButtonShown(): boolean {
@@ -166,7 +175,12 @@ export default class HeaderComponent extends Vue {
     }
 
     private get isLogInButtonShown(): boolean {
-        return !this.oidcIsAuthenticated && !this.isOffline && !this.isPcrTest;
+        return (
+            !this.oidcIsAuthenticated &&
+            !this.isOffline &&
+            !this.isPcrTest &&
+            !this.isQueuePage
+        );
     }
 
     private get isProfileLinkAvailable(): boolean {

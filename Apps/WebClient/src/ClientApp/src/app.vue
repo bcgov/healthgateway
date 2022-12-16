@@ -155,6 +155,8 @@ export default class App extends Vue {
     private dependentsPath = "/dependents";
     private reportsPath = "/reports";
     private timelinePath = "/timeline";
+    private queuePath = "/queue";
+    private queueFullPath = "/busy";
     private landingPath = "/";
 
     constructor() {
@@ -214,7 +216,9 @@ export default class App extends Vue {
         return this.currentPathMatches(
             this.vaccineCardPath,
             this.covidTestPath,
-            this.landingPath
+            this.landingPath,
+            this.queuePath,
+            this.queueFullPath
         );
     }
 
