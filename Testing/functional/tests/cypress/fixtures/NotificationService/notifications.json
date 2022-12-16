@@ -1,0 +1,18 @@
+[
+    {
+        "id": "f57bcb39-64ca-0a17-5477-92ea7f084fbf",
+        "categoryName": "category1",
+        "displayText": "Health Gateway info.",
+        "actionUrl": "http://test1.com",
+        "actionType": "InternalLink",
+        "scheduledDateTimeUtc": "2021-08-01T00:00:00"
+    },
+    {
+        "id": "72c2d6c0-b370-24e6-0b5c-04e42b6511c8",
+        "categoryName": "category2",
+        "displayText": "Health Gateway info.",
+        "actionUrl": "http://test2.com",
+        "actionType": "None",
+        "scheduledDateTimeUtc": "2021-08-01T00:00:00"
+    }
+]
