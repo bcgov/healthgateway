@@ -88,6 +88,12 @@ const FAQView = () =>
     import(/* webpackChunkName: "faq" */ "@/views/FaqView.vue");
 const PcrTestView = () =>
     import(/* webpackChunkName: "pcrTest" */ "@/views/PcrTestView.vue");
+const QueueView = () =>
+    import(/* webpackChunkName: "queue" */ "@/views/waitlist/QueueView.vue");
+const QueueFullView = () =>
+    import(
+        /* webpackChunkName: "queueFull" */ "@/views/waitlist/QueueFullView.vue"
+    );
 
 export enum UserState {
     offline = "offline",
@@ -163,6 +169,8 @@ const REGISTRATION_PATH = "/registration";
 const ROOT_PATH = "/";
 const TIMELINE_PATH = "/timeline";
 const UNAUTHORIZED_PATH = "/unauthorized";
+const QUEUE_PATH = "/queue";
+const QUEUE_FULL_PATH = "/busy";
 
 const routes = [
     {
@@ -176,6 +184,20 @@ const routes = [
                 UserState.registered,
                 UserState.offline,
             ],
+        },
+    },
+    {
+        path: QUEUE_PATH,
+        component: QueueView,
+        meta: {
+            stateless: true,
+        },
+    },
+    {
+        path: QUEUE_FULL_PATH,
+        component: QueueFullView,
+        meta: {
+            stateless: true,
         },
     },
     {

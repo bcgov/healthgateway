@@ -135,6 +135,13 @@ export default class SidebarComponent extends Vue {
         this.setUserPreference({ preference });
     }
 
+    private get isQueuePage(): boolean {
+        return (
+            this.$route.path.toLowerCase() === "/queue" ||
+            this.$route.path.toLowerCase() === "/busy"
+        );
+    }
+
     private get isSidebarAvailable(): boolean {
         return (
             !this.isOffline &&
@@ -142,7 +149,8 @@ export default class SidebarComponent extends Vue {
             this.isValidIdentityProvider &&
             this.userIsRegistered &&
             this.userIsActive &&
-            !this.patientRetrievalFailed
+            !this.patientRetrievalFailed &&
+            !this.isQueuePage
         );
     }
 
