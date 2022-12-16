@@ -25,6 +25,7 @@ import {
     IPcrTestService,
     IReportService,
     IStoreProvider,
+    ITicketService,
     IUserCommentService,
     IUserFeedbackService,
     IUserNoteService,
@@ -56,6 +57,7 @@ import StoreProvider from "@/store/StoreProvider";
 import container from "./container";
 import { GatewayStoreOptions } from "@/store/types";
 import { StoreOptions } from "@/store/options";
+import { RestTicketService } from "@/services/restTicketService";
 
 container
     .bind<IConfigService>(SERVICE_IDENTIFIER.ConfigService)
@@ -150,4 +152,8 @@ container
 container
     .bind<IPcrTestService>(SERVICE_IDENTIFIER.PcrTestService)
     .to(RestPcrTestService)
+    .inSingletonScope();
+container
+    .bind<ITicketService>(SERVICE_IDENTIFIER.TicketService)
+    .to(RestTicketService)
     .inSingletonScope();

@@ -19,7 +19,16 @@ export default class HttpDelegate implements IHttpDelegate {
     public setAuthorizationHeader(accessToken: string): void {
         this.logger.debug(`ACCESS TOKEN SET`);
         Axios.defaults.headers.common = {
+            ...Axios.defaults.headers.common,
             Authorization: `Bearer ${accessToken}`,
+        };
+    }
+
+    public setTicketAuthorizationHeader(accessToken: string): void {
+        this.logger.debug(`Set Ticket authorization header: ${accessToken}`);
+        Axios.defaults.headers.common = {
+            ...Axios.defaults.headers.common,
+            "hg-ticket": `Bearer ${accessToken}`,
         };
     }
 
