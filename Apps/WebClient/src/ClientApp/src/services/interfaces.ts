@@ -281,8 +281,8 @@ export interface IStoreProvider {
 }
 
 export interface ITicketService {
+    initialize(config: ExternalConfiguration, http: IHttpDelegate): void;
     createTicket(room: string): Promise<Ticket | undefined>;
     removeTicket(checkInRequest: CheckInRequest): Promise<void>;
     updateTicket(checkInRequest: CheckInRequest): Promise<Ticket>;
-    initialize(config: ExternalConfiguration, http: IHttpDelegate): void;
 }

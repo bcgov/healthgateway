@@ -67,6 +67,7 @@ import {
     IPcrTestService,
     IReportService,
     IStoreProvider,
+    ITicketService,
     IUserCommentService,
     IUserFeedbackService,
     IUserNoteService,
@@ -174,6 +175,9 @@ configService
         const pcrTestKitService = container.get<IPcrTestService>(
             SERVICE_IDENTIFIER.PcrTestService
         );
+        const ticketService = container.get<ITicketService>(
+            SERVICE_IDENTIFIER.TicketService
+        );
 
         store.dispatch("config/initialize", config);
 
@@ -200,6 +204,7 @@ configService
         pcrTestKitService.initialize(config, httpDelegate);
         reportService.initialize(config, httpDelegate);
         vaccinationStatusService.initialize(config, httpDelegate);
+        ticketService.initialize(config, httpDelegate);
 
         authInitializePromise.then(async () => {
             Vue.use(IdleVue, {
