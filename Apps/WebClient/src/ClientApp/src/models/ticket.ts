@@ -9,5 +9,5 @@ export interface Ticket {
     tokenExpires: number;
     queuePosition: number;
     status: TicketStatus;
-    token: string;
+    token?: string;
 }
