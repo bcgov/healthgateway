@@ -98,10 +98,22 @@ else
 {
     <MudSkeleton Width="20%" />
     <MudGrid>
-        <MudItem xs="6" lg="6">
+        <MudItem xs="12" lg="4">
             <MudPaper Class="my-2 pa-4" Outlined="true">
                 <MudSkeleton />
                 <MudSkeleton data-testid="skeleton-user-count" />
+            </MudPaper>
+        </MudItem>
+        <MudItem xs="12" lg="4">
+            <MudPaper Class="my-2 pa-4" Outlined="true">
+                <MudSkeleton />
+                <MudSkeleton data-testid="skeleton-mobile-count" />
+            </MudPaper>
+        </MudItem>
+        <MudItem xs="12" lg="4">
+            <MudPaper Class="my-2 pa-4" Outlined="true">
+                <MudSkeleton />
+                <MudSkeleton data-testid="skeleton-web-count" />
             </MudPaper>
         </MudItem>
     </MudGrid>
@@ -109,16 +121,36 @@ else
 else
 {
     <MudText Class="my-3" Typo="Typo.subtitle1">
-        <strong>Recurring Users</strong>
+        <strong>User Counts</strong>
     </MudText>
     <MudGrid>
-        <MudItem xs="6" lg="6">
+        <MudItem xs="12" lg="4">
             <MudPaper Class="my-2 pa-4" Outlined="true">
                 <MudText Align="Align.Center" Typo="Typo.subtitle1">
-                    <strong>User Count</strong>
+                    <strong>Recurring Users</strong>
                 </MudText>
                 <MudText Align="Align.Center" Typo="Typo.subtitle1" data-testid="total-unique-users">
-                    <strong>@TotalRecurringUsers</strong>
+                    <strong>@RecurringUserCount</strong>
+                </MudText>
+            </MudPaper>
+        </MudItem>
+        <MudItem xs="12" lg="4">
+            <MudPaper Class="my-2 pa-4" Outlined="true">
+                <MudText Align="Align.Center" Typo="Typo.subtitle1">
+                    <strong>Mobile Logins</strong>
+                </MudText>
+                <MudText Align="Align.Center" Typo="Typo.subtitle1" data-testid="total-mobile-users">
+                    <strong>@MobileUserCount</strong>
+                </MudText>
+            </MudPaper>
+        </MudItem>
+        <MudItem xs="12" lg="4">
+            <MudPaper Class="my-2 pa-4" Outlined="true">
+                <MudText Align="Align.Center" Typo="Typo.subtitle1">
+                    <strong>Web Logins</strong>
+                </MudText>
+                <MudText Align="Align.Center" Typo="Typo.subtitle1" data-testid="total-web-users">
+                    <strong>@WebUserCount</strong>
                 </MudText>
             </MudPaper>
         </MudItem>

@@ -51,15 +51,15 @@ public interface IDashboardApi
     Task<IDictionary<DateTime, int>> GetDependentCountAsync(int timeOffset);
 
     /// <summary>
-    /// Retrieves the count recurring users.
+    /// Retrieves the recurring user counts.
     /// </summary>
     /// <param name="days">The number of unique days for evaluating a user.</param>
     /// <param name="startPeriod">The period start over which to evaluate the user.</param>
     /// <param name="endPeriod">The period end over which to evaluate the user.</param>
     /// <param name="timeOffset">The offset from the client browser to UTC.</param>
-    /// <returns>The count of recurrent users.</returns>
-    [Get("/RecurringUsers")]
-    Task<int> GetRecurringUsersCountAsync(int days, string startPeriod, string endPeriod, int timeOffset);
+    /// <returns>The recurrent user counts.</returns>
+    [Get("/RecurringUserCounts")]
+    Task<IDictionary<string, int>> GetRecurringUserCountsAsync(int days, string startPeriod, string endPeriod, int timeOffset);
 
     /// <summary>
     /// Retrieves the ratings summary.

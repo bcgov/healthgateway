@@ -74,7 +74,7 @@ export default class NotificationCentreComponent extends Vue {
 </script>
 
 <template>
-    <div class="p-3">
+    <div class="flex-grow-1 d-flex flex-column p-3">
         <b-row no-gutters class="align-items-center">
             <b-col cols="auto">
                 <hg-button
@@ -100,6 +100,26 @@ export default class NotificationCentreComponent extends Vue {
                 </hg-button>
             </b-col>
         </b-row>
+        <div
+            v-if="notifications.length === 0"
+            class="flex-grow-1 d-flex align-items-center"
+        >
+            <div class="text-center flex-grow-1">
+                <b-row>
+                    <b-col>
+                        <img
+                            class="img-fluid my-3"
+                            src="@/assets/images/home/empty-state-notifications.svg"
+                            width="167"
+                            alt="No Notifications"
+                        />
+                    </b-col>
+                </b-row>
+                <b-row>
+                    <b-col> No Notifications </b-col>
+                </b-row>
+            </div>
+        </div>
         <div
             v-for="notification in notifications"
             :key="notification.id"

@@ -45,7 +45,7 @@ public record DashboardState
     /// <summary>
     /// Gets the recurring users.
     /// </summary>
-    public BaseRequestState<RecurringUser> RecurringUsers { get; init; } = new();
+    public BaseRequestState<IDictionary<string, int>> UserCounts { get; init; } = new();
 
     /// <summary>
     /// Gets the rating summary.

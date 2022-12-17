@@ -218,15 +218,15 @@ public static class DashboardActions
     }
 
     /// <summary>
-    /// The action representing a successful recurring users action.
+    /// The action representing a successful recurring user counts action.
     /// </summary>
-    public class RecurringUsersSuccessAction : BaseSuccessAction<RecurringUser>
+    public class RecurringUsersSuccessAction : BaseSuccessAction<IDictionary<string, int>>
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="RecurringUsersSuccessAction"/> class.
         /// </summary>
         /// <param name="data">user data.</param>
-        public RecurringUsersSuccessAction(RecurringUser data)
+        public RecurringUsersSuccessAction(IDictionary<string, int> data)
             : base(data)
         {
         }
