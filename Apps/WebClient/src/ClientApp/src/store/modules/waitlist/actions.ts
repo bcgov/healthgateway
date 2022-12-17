@@ -63,9 +63,7 @@ export const actions: WaitlistActions = {
                 );
                 context
                     .dispatch("checkIn")
-                    .catch((error) =>
-                        logger.error(`Error calling checkIn action: ${error}`)
-                    );
+                    .catch(() => logger.error(`Error calling checkIn action.`));
             }, timeout);
 
             resolve();
@@ -85,7 +83,7 @@ export const actions: WaitlistActions = {
                 reject();
             } else {
                 ticketService
-                    .updateTicket({
+                    .checkIn({
                         id: ticket.id,
                         room: ticket.room,
                         nonce: ticket.nonce,
