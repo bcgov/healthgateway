@@ -311,6 +311,7 @@ export default class App extends Vue {
                 <b-sidebar
                     v-if="isNotificationCentreEnabled"
                     id="notification-centre-sidebar"
+                    body-class="d-flex"
                     no-header
                     right
                     shadow

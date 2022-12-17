@@ -74,7 +74,7 @@ export default class NotificationCentreComponent extends Vue {
 </script>
 
 <template>
-    <div class="p-3">
+    <div class="flex-grow-1 d-flex flex-column p-3">
         <b-row no-gutters class="align-items-center">
             <b-col cols="auto">
                 <hg-button
@@ -102,7 +102,7 @@ export default class NotificationCentreComponent extends Vue {
         </b-row>
         <div
             v-if="notifications.length === 0"
-            class="d-flex align-items-center noNotification"
+            class="flex-grow-1 d-flex align-items-center"
         >
             <div class="text-center flex-grow-1">
                 <b-row>
@@ -168,8 +168,4 @@ export default class NotificationCentreComponent extends Vue {
 
 <style lang="scss" scoped>
 @import "@/assets/scss/_variables.scss";
-
-.noNotification {
-    min-height: 75vh;
-}
 </style>
