@@ -101,6 +101,26 @@ export default class NotificationCentreComponent extends Vue {
             </b-col>
         </b-row>
         <div
+            v-if="notifications.length === 0"
+            class="d-flex align-items-center noNotification"
+        >
+            <div class="text-center flex-grow-1">
+                <b-row>
+                    <b-col>
+                        <img
+                            class="img-fluid my-3"
+                            src="@/assets/images/home/empty-state-notifications.svg"
+                            width="167"
+                            alt="No Notifications"
+                        />
+                    </b-col>
+                </b-row>
+                <b-row>
+                    <b-col> No Notifications </b-col>
+                </b-row>
+            </div>
+        </div>
+        <div
             v-for="notification in notifications"
             :key="notification.id"
             class="mt-3"
@@ -148,4 +168,8 @@ export default class NotificationCentreComponent extends Vue {
 
 <style lang="scss" scoped>
 @import "@/assets/scss/_variables.scss";
+
+.noNotification {
+    min-height: 75vh;
+}
 </style>
