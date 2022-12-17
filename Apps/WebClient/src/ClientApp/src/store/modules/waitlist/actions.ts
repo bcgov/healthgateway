@@ -15,7 +15,7 @@ export const actions: WaitlistActions = {
 
         return new Promise((resolve, reject) => {
             logger.debug("Retrieving waitlist ticket");
-            context.commit("setRequested");
+            context.commit("setTicketRequested");
             ticketService
                 .createTicket("healthgateway")
                 .then((result) => {
