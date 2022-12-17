@@ -224,6 +224,7 @@ export interface IDependentService {
 export interface IHttpDelegate {
     unsetAuthorizationHeader(): void;
     setAuthorizationHeader(accessToken: string): void;
+    setTicketAuthorizationHeader(accessToken: string): void;
     getWithCors<T>(url: string, headers?: Dictionary<string>): Promise<T>;
     get<T>(url: string, headers?: Dictionary<string>): Promise<T>;
     post<T>(

@@ -40,7 +40,12 @@ export class RestTicketService implements ITicketService {
                     `${this.baseUri}${this.TICKET_BASE_URI}?room=${room}`,
                     null
                 )
-                .then((ticket) => resolve(ticket))
+                .then((ticket) => {
+                    this.logger.debug(
+                        `Ticket created: ${JSON.stringify(ticket)}`
+                    );
+                    resolve(ticket);
+                })
                 .catch((err: HttpError) => {
                     this.logger.error(
                         `Error in RestTicketService.createTicket() - ${err.statusCode}`
@@ -62,7 +67,10 @@ export class RestTicketService implements ITicketService {
                     `${this.baseUri}${this.TICKET_BASE_URI}`,
                     checkInRequest
                 )
-                .then((ticket) => resolve(ticket))
+                .then(() => {
+                    this.logger.debug(`Ticket removed.`);
+                    resolve();
+                })
                 .catch((err: HttpError) => {
                     this.logger.error(
                         `Error in RestTicketService.removeTicket() - ${err.statusCode}`
@@ -84,7 +92,12 @@ export class RestTicketService implements ITicketService {
                     `${this.baseUri}${this.TICKET_BASE_URI}/check-in`,
                     checkInRequest
                 )
-                .then((ticket) => resolve(ticket))
+                .then((ticket) => {
+                    this.logger.debug(
+                        `Ticket updated: ${JSON.stringify(ticket)}`
+                    );
+                    resolve(ticket);
+                })
                 .catch((err: HttpError) => {
                     this.logger.error(
                         `Error in RestTicketService.checkInRequest() - ${err.statusCode}`

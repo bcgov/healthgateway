@@ -28,6 +28,10 @@ export interface WaitlistActions extends ActionTree<WaitlistState, RootState> {
     getTicket(context: StoreContext): Promise<Ticket>;
     checkIn(context: StoreContext): Promise<void>;
     releaseTicket(context: StoreContext): Promise<void>;
+    handleTicket(
+        context: StoreContext,
+        params: { ticket: Ticket }
+    ): Promise<void>;
 }
 
 export interface WaitlistMutations extends MutationTree<WaitlistState> {
