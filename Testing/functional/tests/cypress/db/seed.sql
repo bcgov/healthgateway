@@ -28,7 +28,8 @@ INSERT INTO gateway."UserProfile"(
 	"LastLoginDateTime", 
 	"EncryptionKey", 
 	"SMSNumber",
-	"YearOfBirth")
+	"YearOfBirth",
+	"LastLoginClientCode")
 VALUES (
 	'P6FFO433A5WPMVTGM7T4ZVWBKCSVNAYGTWTU3J2LWMGUMERKI72A',	
 	'System', 
@@ -42,7 +43,8 @@ VALUES (
 	current_timestamp, 
 	'CwqU7+gCkL3jMWWcUpq80Oh42QejXOwI+Ov0tmsVWBI=',
 	null,
-	'1967'
+	'1967',
+	'Mobile'
 );
 
 /* Protected User - Keycloak User (protected) */
@@ -59,7 +61,8 @@ INSERT INTO gateway."UserProfile"(
 	"LastLoginDateTime", 
 	"EncryptionKey", 
 	"SMSNumber",
-	"YearOfBirth")
+	"YearOfBirth",
+	"LastLoginClientCode")
 VALUES (
 	'RD33Y2LJEUZCY2TCMOIECUTKS3E62MEQ62CSUL6Q553IHHBI3AWQ',	
 	'System', 
@@ -73,7 +76,8 @@ VALUES (
 	current_timestamp, 
 	'iHa5atSWqppGzWsR1Z8nbL9OHJamPHLMwYqdKmsf4jU=',
 	null,
-	'1995'
+	'1995',
+	'Web'
 );
 
 /* Invaliddoses - Keycloak User (hthgtwy20) */
@@ -90,7 +94,8 @@ INSERT INTO gateway."UserProfile"(
 	"LastLoginDateTime", 
 	"EncryptionKey", 
 	"SMSNumber",
-	"YearOfBirth")
+	"YearOfBirth",
+	"LastLoginClientCode")
 VALUES (
 	'DEV4FPEGCXG2NB5K2USBL52S66SC3GOUHWRP3GTXR2BTY5HEC4YA',	
 	'System', 
@@ -104,7 +109,8 @@ VALUES (
 	current_timestamp, 
 	'CwqU7+gCkL3jMWWcUpq80Oh42QejXOwI+Ov0tmsVWBI=',
 	null,
-	null
+	null,
+	'Web'
 );
 
 /* Labratory Queued - Keycloak User (hthgtwy09) */
@@ -121,7 +127,8 @@ INSERT INTO gateway."UserProfile"(
 	"LastLoginDateTime", 
 	"EncryptionKey", 
 	"SMSNumber",
-	"YearOfBirth")
+	"YearOfBirth",
+	"LastLoginClientCode")
 VALUES (
 	'3ZQCSNNC6KVP2GYLA4O3EFZXGUAPWBQHU6ZEB7FXNZJ2WYCLPH3A',	
 	'System', 
@@ -135,7 +142,8 @@ VALUES (
 	current_timestamp, 
 	'CwqU7+gCkL3jMWWcUpq80Oh42QejXOwI+Ov0tmsVWBI=',
 	null,
-	'1967'
+	'1967',
+	null
 );
 
 /* Notfound - Keycloak User - Keycloak User (hthgtwy03) */
@@ -152,7 +160,8 @@ INSERT INTO gateway."UserProfile"(
 	"LastLoginDateTime", 
 	"EncryptionKey", 
 	"SMSNumber",
-	"YearOfBirth")
+	"YearOfBirth",
+	"LastLoginClientCode")
 VALUES (
 	'R43YCT4ZY37EIJLW2O5LV2I77BZA3K3M25EUJGWAVGVJ7JKBDKCQ',
 	'System', 
@@ -166,7 +175,8 @@ VALUES (
 	current_timestamp, 
 	'KtBm7JYegayKpx5fjwM2RUGZf79JOnNC21NhUrIAzmg=',
 	null,
-	'1988'
+	'1988',
+	'Mobile'
 );
 
 /* User without the latest accepted terms of service - Keycloak User - Keycloak User (hthgtwy04) */
@@ -183,7 +193,8 @@ INSERT INTO gateway."UserProfile"(
 	"LastLoginDateTime", 
 	"EncryptionKey", 
 	"SMSNumber",
-	"YearOfBirth")
+	"YearOfBirth",
+	"LastLoginClientCode")
 VALUES (
 	'K6HL4VX67CZ2PGSZ2ZOIR4C3PGMFFBW5CIOXM74D6EQ7RYYL7P4A',	
 	'System', 
@@ -197,7 +208,8 @@ VALUES (
 	current_timestamp,  
 	'CwqU7+gCkL3jMWWcUpq80Oh42QejXOwI+Ov0tmsVWBI=',
 	null,
-	'2001'
+	'2001',
+	'Web'
 );
 
 /* User (hthgtwy04) - last logged in 1 day ago */
@@ -218,7 +230,8 @@ INSERT INTO gateway."UserProfileHistory"(
 	"EncryptionKey", 
 	"SMSNumber",
     "TermsOfServiceId",
-	"YearOfBirth")
+	"YearOfBirth",
+	"LastLoginClientCode")
 VALUES (
 	uuid_generate_v4(),	
 	'System', 
@@ -236,7 +249,8 @@ VALUES (
 	'CwqU7+gCkL3jMWWcUpq80Oh42QejXOwI+Ov0tmsVWBI=',
 	null,
     'eafeee76-8a64-49ee-81ba-ddfe2c01deb8',
-	'2001'
+	'2001',
+	'Web'
 );
 
 /* User (hthgtwy04) - last logged in 2 days ago */
@@ -257,7 +271,8 @@ INSERT INTO gateway."UserProfileHistory"(
 	"EncryptionKey", 
 	"SMSNumber",
     "TermsOfServiceId",
-	"YearOfBirth")
+	"YearOfBirth",
+	"LastLoginClientCode")
 VALUES (
 	uuid_generate_v4(),		
 	'System', 
@@ -275,7 +290,8 @@ VALUES (
 	'CwqU7+gCkL3jMWWcUpq80Oh42QejXOwI+Ov0tmsVWBI=',
 	null,
     'eafeee76-8a64-49ee-81ba-ddfe2c01deb8',
-	'2001'
+	'2001',
+	'Web'
 );
 
 /* User (hthgtwy04) - last logged in 3 days ago */
@@ -296,7 +312,8 @@ INSERT INTO gateway."UserProfileHistory"(
 	"EncryptionKey", 
 	"SMSNumber",
     "TermsOfServiceId",
-	"YearOfBirth")
+	"YearOfBirth",
+	"LastLoginClientCode")
 VALUES (
 	uuid_generate_v4(),	
 	'System', 
@@ -314,7 +331,8 @@ VALUES (
 	'CwqU7+gCkL3jMWWcUpq80Oh42QejXOwI+Ov0tmsVWBI=',
 	null,
     'eafeee76-8a64-49ee-81ba-ddfe2c01deb8',
-	'2001'
+	'2001',
+	'Mobile'
 );
 
 /* User keycloak (hthgtwy11) - last logged in 1 day ago  */
@@ -335,7 +353,8 @@ INSERT INTO gateway."UserProfileHistory"(
 	"EncryptionKey", 
 	"SMSNumber",
     "TermsOfServiceId",
-	"YearOfBirth")
+	"YearOfBirth",
+	"LastLoginClientCode")
 VALUES (
 	uuid_generate_v4(),	
 	'System', 
@@ -353,7 +372,8 @@ VALUES (
 	'CwqU7+gCkL3jMWWcUpq80Oh42QejXOwI+Ov0tmsVWBI=',
 	null,
     'eafeee76-8a64-49ee-81ba-ddfe2c01deb8',
-	'1967'
+	'1967',
+	'Web'
 );
 
 /* User keycloak (hthgtwy11) - last logged in 2 days ago  */
@@ -374,7 +394,8 @@ INSERT INTO gateway."UserProfileHistory"(
 	"EncryptionKey", 
 	"SMSNumber",
     "TermsOfServiceId",
-	"YearOfBirth")
+	"YearOfBirth",
+	"LastLoginClientCode")
 VALUES (
 	uuid_generate_v4(),		
 	'System', 
@@ -392,7 +413,8 @@ VALUES (
 	'CwqU7+gCkL3jMWWcUpq80Oh42QejXOwI+Ov0tmsVWBI=',
 	null,
     'eafeee76-8a64-49ee-81ba-ddfe2c01deb8',
-	'1967'
+	'1967',
+	'Web'
 );
 
 /* Notfound - Keycloak User - Last logged in 2 days ago */
@@ -413,7 +435,8 @@ INSERT INTO gateway."UserProfileHistory"(
 	"EncryptionKey", 
 	"SMSNumber",
     "TermsOfServiceId",
-	"YearOfBirth")
+	"YearOfBirth",
+	"LastLoginClientCode")
 VALUES (
 	uuid_generate_v4(),	
 	'System', 
@@ -431,7 +454,8 @@ VALUES (
 	'CwqU7+gCkL3jMWWcUpq80Oh42QejXOwI+Ov0tmsVWBI=',
 	null,
     'eafeee76-8a64-49ee-81ba-ddfe2c01deb8',
-	'1988'
+	'1988',
+	'Mobile'
 );
 
 /* Invaliddoses - Keycloak User - Last logged in 120 days ago */
@@ -452,7 +476,8 @@ INSERT INTO gateway."UserProfileHistory"(
 	"EncryptionKey", 
 	"SMSNumber",
     "TermsOfServiceId",
-	"YearOfBirth")
+	"YearOfBirth",
+	"LastLoginClientCode")
 VALUES (
 	uuid_generate_v4(),	
 	'System', 
@@ -470,7 +495,8 @@ VALUES (
 	'CwqU7+gCkL3jMWWcUpq80Oh42QejXOwI+Ov0tmsVWBI=',
 	null,
     'eafeee76-8a64-49ee-81ba-ddfe2c01deb8',
-	null
+	null,
+	'Web'
 );
 
 INSERT INTO gateway."Rating"(
