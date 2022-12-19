@@ -109,4 +109,14 @@ public static class DateFormatter
     {
         return dateTime.ToString("f", CanadianCulture);
     }
+
+    /// <summary>
+    /// Tries to parse a string to a DateTime using the format supplied.
+    /// </summary>
+    /// <param name="dateTime">string to parse.</param>
+    /// <param name="format">format to parse into.</param>
+    /// <param name="parsedDateTime">the parsed DateTime is successful.</param>
+    /// <returns>false if failed to parse, true is succeeded.</returns>
+    public static bool TryParse(string dateTime, string format, out DateTime parsedDateTime) =>
+        DateTime.TryParseExact(dateTime, format, CanadianCulture, DateTimeStyles.None, out parsedDateTime);
 }

@@ -16,7 +16,7 @@
 namespace HealthGateway.Immunization.Services
 {
     using System;
-    using System.Globalization;
+    using System.Linq;
     using System.Threading.Tasks;
     using AutoMapper;
     using HealthGateway.Common.AccessManagement.Authentication;
@@ -29,6 +29,7 @@ namespace HealthGateway.Immunization.Services
     using HealthGateway.Common.Data.ViewModels;
     using HealthGateway.Common.ErrorHandling;
     using HealthGateway.Common.Models.PHSA;
+    using HealthGateway.Common.Validations;
     using HealthGateway.Immunization.Delegates;
     using HealthGateway.Immunization.MapUtils;
     using HealthGateway.Immunization.Models;
@@ -185,52 +186,14 @@ namespace HealthGateway.Immunization.Services
 
         private async Task<RequestResult<VaccineStatus>> GetPublicVaccineStatusWithOptionalProof(string phn, string dateOfBirth, string dateOfVaccine, bool includeVaccineProof)
         {
-            RequestResult<VaccineStatus> retVal = new()
+            if (!DateFormatter.TryParse(dateOfBirth, "yyyy-MM-dd", out var dob))
             {
-                ResultStatus = ResultType.Error,
-            };
-
-            DateTime dob;
-            try
-            {
-                dob = DateTime.ParseExact(dateOfBirth, "yyyy-MM-dd", CultureInfo.InvariantCulture);
-            }
-            catch (Exception e) when (e is FormatException || e is ArgumentNullException)
-            {
-                retVal.ResultStatus = ResultType.Error;
-                retVal.ResultError = new RequestResultError
-                {
-                    ResultMessage = "Error parsing date of birth",
-                    ErrorCode = ErrorTranslator.InternalError(ErrorType.InvalidState),
-                };
-                return retVal;
+                return RequestResultFactory.Error<VaccineStatus>(ErrorType.InvalidState, "Error parsing date of birth");
             }
 
-            DateTime dov;
-            try
+            if (!DateFormatter.TryParse(dateOfVaccine, "yyyy-MM-dd", out var dov))
             {
-                dov = DateTime.ParseExact(dateOfVaccine, "yyyy-MM-dd", CultureInfo.InvariantCulture);
-            }
-            catch (Exception e) when (e is FormatException || e is ArgumentNullException)
-            {
-                retVal.ResultStatus = ResultType.Error;
-                retVal.ResultError = new RequestResultError
-                {
-                    ResultMessage = "Error parsing date of vaccine",
-                    ErrorCode = ErrorTranslator.InternalError(ErrorType.InvalidState),
-                };
-                return retVal;
-            }
-
-            if (!PhnValidator.IsValid(phn))
-            {
-                retVal.ResultStatus = ResultType.Error;
-                retVal.ResultError = new RequestResultError
-                {
-                    ResultMessage = "Error parsing phn",
-                    ErrorCode = ErrorTranslator.InternalError(ErrorType.InvalidState),
-                };
-                return retVal;
+                return RequestResultFactory.Error<VaccineStatus>(ErrorType.InvalidState, "Error parsing date of vaccine");
             }
 
             VaccineStatusQuery query = new()
@@ -241,21 +204,14 @@ namespace HealthGateway.Immunization.Services
                 IncludeFederalVaccineProof = includeVaccineProof,
             };
 
-            try
+            var validationResults = new VaccineStatusQueryValidator().Validate(query);
+            if (!validationResults.IsValid)
             {
-                string? accessToken = this.authDelegate.AuthenticateAsSystem(this.tokenUri, this.tokenRequest).AccessToken;
-                retVal = await this.GetVaccineStatusFromDelegate(query, accessToken, phn).ConfigureAwait(true);
+                return RequestResultFactory.Error<VaccineStatus>(ErrorType.InvalidState, validationResults.Errors.Select(e => e.ErrorMessage).ToArray());
             }
-            catch (InvalidOperationException e)
-            {
-                this.logger.LogCritical("Error during authentication {Exception}", e.ToString());
-                retVal.ResultError = new()
-                {
-                    ResultMessage = "Error authenticating with KeyCloak",
-                    ErrorCode = ErrorTranslator.InternalError(ErrorType.InvalidState),
-                };
-                return retVal;
-            }
+
+            string? accessToken = this.authDelegate.AuthenticateAsSystem(this.tokenUri, this.tokenRequest).AccessToken;
+            var retVal = await this.GetVaccineStatusFromDelegate(query, accessToken, phn).ConfigureAwait(true);
 
             return retVal;
         }
