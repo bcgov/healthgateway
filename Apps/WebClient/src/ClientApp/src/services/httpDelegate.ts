@@ -1,5 +1,4 @@
 import Axios, { AxiosError, AxiosRequestConfig, AxiosResponse } from "axios";
-import { fromJSON } from "http-problem-details-parser";
 import { injectable } from "inversify";
 
 import { Dictionary } from "@/models/baseTypes";
@@ -134,23 +133,14 @@ export default class HttpDelegate implements IHttpDelegate {
         requestType: string
     ): HttpError {
         const errorMessage = `${requestType} ${error.toString()}`;
-        this.logger.error(errorMessage);
-
         const httpError: HttpError = { message: errorMessage };
-        if (Axios.isAxiosError(error) && error.response?.status) {
-            httpError.statusCode = error.response.status;
 
-            const problemDetails = fromJSON(
-                JSON.stringify(error.response.data)
-            );
-            this.logger.error(
-                `Axios Problem Details: ${JSON.stringify(problemDetails)}`
-            );
+        if (Axios.isAxiosError(error) && error.response) {
+            httpError.statusCode = error.response.status;
+            const problemDetails = error.response.data;
             httpError.message = problemDetails.detail ?? httpError.message;
-            this.logger.error(
-                `Axios Problem Details Error Message: ${httpError.message}`
-            );
         }
+        this.logger.error(`Http error message: ${httpError.message}`);
 
         return httpError;
     }
