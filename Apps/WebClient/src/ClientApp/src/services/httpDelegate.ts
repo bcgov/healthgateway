@@ -133,15 +133,16 @@ export default class HttpDelegate implements IHttpDelegate {
         requestType: string
     ): HttpError {
         const errorMessage = `${requestType} ${error.toString()}`;
-        const httpError: HttpError = { message: errorMessage };
+        const httpError: HttpError = {
+            message: errorMessage,
+        };
 
         if (Axios.isAxiosError(error) && error.response) {
             httpError.statusCode = error.response.status;
-            const problemDetails = error.response.data;
-            httpError.message = problemDetails.detail ?? httpError.message;
+            httpError.message = error.response.data?.detail ?? errorMessage;
         }
-        this.logger.error(`Http error message: ${httpError.message}`);
 
+        this.logger.error(httpError.message);
         return httpError;
     }
 }
