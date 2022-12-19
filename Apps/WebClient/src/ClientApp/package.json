@@ -60,6 +60,7 @@
         "core-js": "^3.26.1",
         "file-saver": "^2.0.5",
         "html2canvas": "^1.4.1",
+        "http-problem-details-parser": "^0.0.2",
         "https-browserify": "^1.0.0",
         "idle-vue": "^2.0.5",
         "image-webpack-loader": "^8.1.0",
