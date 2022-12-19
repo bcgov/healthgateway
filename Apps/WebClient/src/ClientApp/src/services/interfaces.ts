@@ -224,6 +224,7 @@ export interface IDependentService {
 export interface IHttpDelegate {
     unsetAuthorizationHeader(): void;
     setAuthorizationHeader(accessToken: string): void;
+    setTicketAuthorizationHeader(accessToken: string): void;
     getWithCors<T>(url: string, headers?: Dictionary<string>): Promise<T>;
     get<T>(url: string, headers?: Dictionary<string>): Promise<T>;
     post<T>(
@@ -283,6 +284,6 @@ export interface IStoreProvider {
 export interface ITicketService {
     initialize(config: ExternalConfiguration, http: IHttpDelegate): void;
     createTicket(room: string): Promise<Ticket | undefined>;
+    checkIn(checkInRequest: CheckInRequest): Promise<Ticket>;
     removeTicket(checkInRequest: CheckInRequest): Promise<void>;
-    updateTicket(checkInRequest: CheckInRequest): Promise<Ticket>;
 }

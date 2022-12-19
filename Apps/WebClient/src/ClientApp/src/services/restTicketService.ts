@@ -40,10 +40,42 @@ export class RestTicketService implements ITicketService {
                     `${this.baseUri}${this.TICKET_BASE_URI}?room=${room}`,
                     null
                 )
-                .then((ticket) => resolve(ticket))
+                .then((ticket) => {
+                    this.logger.debug(
+                        `Ticket created: ${JSON.stringify(ticket)}`
+                    );
+                    resolve(ticket);
+                })
                 .catch((err: HttpError) => {
                     this.logger.error(
                         `Error in RestTicketService.createTicket() - ${err.statusCode}`
+                    );
+                    reject(
+                        ErrorTranslator.internalNetworkError(
+                            err,
+                            ServiceCode.Ticket
+                        )
+                    );
+                });
+        });
+    }
+    public checkIn(checkInRequest: CheckInRequest): Promise<Ticket> {
+        this.logger.debug(`checkIn: ${JSON.stringify(checkInRequest)}`);
+        return new Promise((resolve, reject) => {
+            this.http
+                .put<Ticket>(
+                    `${this.baseUri}${this.TICKET_BASE_URI}/check-in`,
+                    checkInRequest
+                )
+                .then((ticket) => {
+                    this.logger.debug(
+                        `Ticket updated: ${JSON.stringify(ticket)}`
+                    );
+                    resolve(ticket);
+                })
+                .catch((err: HttpError) => {
+                    this.logger.error(
+                        `Error in RestTicketService.checkInRequest() - ${err.statusCode}`
                     );
                     reject(
                         ErrorTranslator.internalNetworkError(
@@ -62,32 +94,13 @@ export class RestTicketService implements ITicketService {
                     `${this.baseUri}${this.TICKET_BASE_URI}`,
                     checkInRequest
                 )
-                .then((ticket) => resolve(ticket))
+                .then(() => {
+                    this.logger.debug(`Ticket removed.`);
+                    resolve();
+                })
                 .catch((err: HttpError) => {
                     this.logger.error(
                         `Error in RestTicketService.removeTicket() - ${err.statusCode}`
-                    );
-                    reject(
-                        ErrorTranslator.internalNetworkError(
-                            err,
-                            ServiceCode.Ticket
-                        )
-                    );
-                });
-        });
-    }
-    public updateTicket(checkInRequest: CheckInRequest): Promise<Ticket> {
-        this.logger.debug(`updateTicket: ${JSON.stringify(checkInRequest)}`);
-        return new Promise((resolve, reject) => {
-            this.http
-                .put<Ticket>(
-                    `${this.baseUri}${this.TICKET_BASE_URI}/check-in`,
-                    checkInRequest
-                )
-                .then((ticket) => resolve(ticket))
-                .catch((err: HttpError) => {
-                    this.logger.error(
-                        `Error in RestTicketService.checkInRequest() - ${err.statusCode}`
                     );
                     reject(
                         ErrorTranslator.internalNetworkError(
