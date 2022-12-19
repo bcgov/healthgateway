@@ -140,18 +140,16 @@ export default class HttpDelegate implements IHttpDelegate {
         if (Axios.isAxiosError(error) && error.response?.status) {
             httpError.statusCode = error.response.status;
 
-            if (error.response.data) {
-                const problemDetails = fromJSON(
-                    JSON.stringify(error.response.data)
-                );
-                this.logger.error(
-                    `Axios Problem Details: ${JSON.stringify(problemDetails)}`
-                );
-                httpError.message = problemDetails.detail ?? httpError.message;
-                this.logger.error(
-                    `Axios Problem Details Error Message: ${httpError.message}`
-                );
-            }
+            const problemDetails = fromJSON(
+                JSON.stringify(error.response.data)
+            );
+            this.logger.error(
+                `Axios Problem Details: ${JSON.stringify(problemDetails)}`
+            );
+            httpError.message = problemDetails.detail ?? httpError.message;
+            this.logger.error(
+                `Axios Problem Details Error Message: ${httpError.message}`
+            );
         }
 
         return httpError;
