@@ -45,11 +45,11 @@ export const actions: WaitlistActions = {
         );
         const ticket = params.ticket;
         const now = new Date().getTime();
-        const timeout = ticket.checkInAfter * 1000 - now;
+        const checkInAfter = ticket.checkInAfter * 1000;
+        const timeout = checkInAfter - now;
         return new Promise((resolve) => {
-            logger.debug(`Handle ticket: ${JSON.stringify(ticket)}`);
             logger.debug(
-                `Handle ticket: timeout (milliseconds): ${timeout} - check in after (milliseconds): ${ticket.checkInAfter} - now (milliseconds): ${now}`
+                `Handle ticket: timeout (milliseconds): ${timeout} - check in after (milliseconds): ${checkInAfter} - now (milliseconds): ${now}`
             );
             if (
                 ticket.status === TicketStatus.Processed &&
@@ -58,9 +58,6 @@ export const actions: WaitlistActions = {
                 httpDelegate.setTicketAuthorizationHeader(ticket.token);
             }
             setTimeout(() => {
-                logger.debug(
-                    `Set Timeout called - current time (milliseconds): ${new Date().getTime()}`
-                );
                 context
                     .dispatch("checkIn")
                     .catch(() => logger.error(`Error calling checkIn action.`));
