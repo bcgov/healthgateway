@@ -1654,7 +1654,8 @@ export default class DependentCardComponent extends Vue {
                             v-if="!isLoading && laboratoryOrders.length === 0"
                             :data-testid="`lab-results-no-records-${dependent.ownerId}`"
                         >
-                            No records found.
+                            No records found. If you just added your dependent,
+                            it can take up to 24 hours to get their records.
                         </div>
                     </div>
                     <b-table-simple
