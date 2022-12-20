@@ -14,7 +14,7 @@
 //  limitations under the License.
 // -------------------------------------------------------------------------
 
-namespace HealthGateway.Common.Data.Validation
+namespace HealthGateway.Common.Data.Validations
 {
     using System;
     using System.Globalization;
@@ -33,7 +33,7 @@ namespace HealthGateway.Common.Data.Validation
         /// </summary>
         public PhnValidator()
         {
-            this.RuleFor(v => v).NotEmpty().Must(v => IsValid(v));
+            this.RuleFor(v => v).NotEmpty().Must(v => IsValid(v)).WithMessage("PHN is not valid");
         }
 
         private static bool IsValid(string phn)

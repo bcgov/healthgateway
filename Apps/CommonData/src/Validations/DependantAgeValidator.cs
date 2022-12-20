@@ -14,23 +14,29 @@
 //  limitations under the License.
 // -------------------------------------------------------------------------
 
-namespace HealthGateway.Common.Validations
+namespace HealthGateway.Common.Data.Validations
 {
+    using System;
     using FluentValidation;
-    using HealthGateway.Common.Data.Validations;
-    using HealthGateway.Common.Models.PHSA;
 
     /// <summary>
-    /// Validation rules for <see cref="VaccineStatusQuery"/>.
+    /// Validates a dependent's age against a maximum value using date of birth.
     /// </summary>
-    public class VaccineStatusQueryValidator : AbstractValidator<VaccineStatusQuery>
+    public class DependantAgeValidator : AbstractValidator<DateTime>
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="VaccineStatusQueryValidator"/> class.
+        /// Initializes a new instance of the <see cref="DependantAgeValidator"/> class.
         /// </summary>
-        public VaccineStatusQueryValidator()
+        /// <param name="now">DateTime reflecting the relative date to check the age against.</param>
+        /// <param name="maxDependentAge">The maximum age of the dependent.</param>
+        public DependantAgeValidator(DateTime? now = null, int maxDependentAge = 12)
         {
-            this.RuleFor(v => v.PersonalHealthNumber).NotEmpty().SetValidator(new PhnValidator());
+            if (now == null)
+            {
+                now = DateTime.UtcNow;
+            }
+
+            this.RuleFor(v => v).Must(v => v.Date.AddYears(maxDependentAge) > now.Value.Date).WithMessage($"Dependent age exceeds the maximum limit of {maxDependentAge}");
         }
     }
 }
