@@ -46,7 +46,7 @@ export const actions: WaitlistActions = {
         const ticket = params.ticket;
         const now = new Date().getTime();
         const checkInAfter = ticket.checkInAfter * 1000;
-        const timeout = checkInAfter - now;
+        const timeout = Math.max(0, checkInAfter - now);
         return new Promise((resolve) => {
             logger.debug(
                 `Handle ticket: timeout (milliseconds): ${timeout} - check in after (milliseconds): ${checkInAfter} - now (milliseconds): ${now}`
