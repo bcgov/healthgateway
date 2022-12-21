@@ -45,7 +45,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
     public class DependentServiceTests
     {
         private readonly string mismatchedError = "The information you entered does not match our records. Please try again.";
-        private readonly DateTime mockDateOfBirth = DateTime.Now.Date.AddYears(-12).AddDays(1);
+        private readonly DateTime mockDateOfBirth = DateTime.UtcNow.Date.AddYears(-12).AddDays(1);
         private readonly string mockFirstName = "MockFirstName";
         private readonly string mockGender = "Male";
         private readonly string mockHdId = "MockHdId";
