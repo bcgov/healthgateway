@@ -27,6 +27,7 @@ namespace HealthGateway.Immunization.Services
     using HealthGateway.Common.Data.Utils;
     using HealthGateway.Common.Data.ViewModels;
     using HealthGateway.Common.ErrorHandling;
+    using HealthGateway.Common.Factories;
     using HealthGateway.Common.Models.PHSA;
     using HealthGateway.Common.Validations;
     using HealthGateway.Immunization.Delegates;

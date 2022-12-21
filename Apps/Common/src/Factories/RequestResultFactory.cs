@@ -14,12 +14,13 @@
 //  limitations under the License.
 // -------------------------------------------------------------------------
 
-namespace HealthGateway.Common.ErrorHandling
+namespace HealthGateway.Common.Factories
 {
     using System.Collections.Generic;
     using System.Linq;
     using HealthGateway.Common.Data.ErrorHandling;
     using HealthGateway.Common.Data.ViewModels;
+    using HealthGateway.Common.ErrorHandling;
 
     /// <summary>
     /// Factory for  <see cref="RequestResult{T}"/> instances.

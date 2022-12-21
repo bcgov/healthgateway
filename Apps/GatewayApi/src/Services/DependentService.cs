@@ -27,6 +27,7 @@ namespace HealthGateway.GatewayApi.Services
     using HealthGateway.Common.Data.Models;
     using HealthGateway.Common.Data.ViewModels;
     using HealthGateway.Common.ErrorHandling;
+    using HealthGateway.Common.Factories;
     using HealthGateway.Common.Models;
     using HealthGateway.Common.Services;
     using HealthGateway.Database.Constants;
