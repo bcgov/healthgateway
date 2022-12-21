@@ -34,6 +34,7 @@ namespace HealthGateway.GatewayApi.Services
     using HealthGateway.Database.Models;
     using HealthGateway.Database.Wrapper;
     using HealthGateway.GatewayApi.Models;
+    using HealthGateway.GatewayApi.Validations;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.Logging;
 
@@ -81,71 +82,39 @@ namespace HealthGateway.GatewayApi.Services
         /// <inheritdoc/>
         public RequestResult<DependentModel> AddDependent(string delegateHdId, AddDependentRequest addDependentRequest)
         {
-            this.logger.LogTrace("Delegate hdid: {DelegateHdid}", delegateHdId);
+            var validationResults = new AddDependentRequestValidator(this.maxDependentAge).Validate(addDependentRequest);
 
-            DateTime minimumBirthDate = DateTime.UtcNow.AddYears(this.maxDependentAge * -1);
-            if (addDependentRequest.DateOfBirth < minimumBirthDate)
+            if (!validationResults.IsValid)
             {
-                return new RequestResult<DependentModel>
-                {
-                    ResultStatus = ResultType.Error,
-                    ResultError = new RequestResultError
+                return RequestResultFactory.Error<DependentModel>(ErrorType.InvalidState, validationResults.Errors);
+            }
+
+            var patientResult = Task.Run(async () => await this.patientService.GetPatient(addDependentRequest.Phn, PatientIdentifierType.Phn).ConfigureAwait(true)).Result;
+            switch (patientResult.ResultStatus)
+            {
+                case ResultType.Error:
+                    return RequestResultFactory.ServiceError<DependentModel>(ErrorType.CommunicationExternal, ServiceType.Patient, "Communication Exception when trying to retrieve the Dependent");
+
+                case ResultType.ActionRequired:
+                    return RequestResultFactory.ActionRequired<DependentModel>(ActionType.DataMismatch, ErrorMessages.DataMismatch);
+
+                default:
+                    if (!IsMatch(addDependentRequest, patientResult.ResourcePayload))
                     {
-                        ResultMessage = "Dependent age exceeds the maximum limit",
-                        ErrorCode = ErrorTranslator.ServiceError(ErrorType.InvalidState, ServiceType.Patient),
-                    },
-                };
-            }
+                        return RequestResultFactory.ActionRequired<DependentModel>(ActionType.DataMismatch, ErrorMessages.DataMismatch);
+                    }
 
-            this.logger.LogTrace("Getting dependent details...");
-            RequestResult<PatientModel> patientResult = Task.Run(async () => await this.patientService.GetPatient(addDependentRequest.Phn, PatientIdentifierType.Phn).ConfigureAwait(true)).Result;
-            if (patientResult.ResultStatus == ResultType.Error)
-            {
-                return new RequestResult<DependentModel>
-                {
-                    ResultStatus = ResultType.Error,
-                    ResultError = new RequestResultError
+                    // Verify dependent has HDID
+                    else if (string.IsNullOrEmpty(patientResult.ResourcePayload.HdId))
                     {
-                        ResultMessage = "Communication Exception when trying to retrieve the Dependent",
-                        ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.Patient),
-                    },
-                };
-            }
+                        return RequestResultFactory.ActionRequired<DependentModel>(ActionType.NoHdId, ErrorMessages.InvalidServicesCard);
+                    }
 
-            if (patientResult.ResultStatus == ResultType.ActionRequired)
-            {
-                return new RequestResult<DependentModel>
-                {
-                    ResultStatus = ResultType.ActionRequired,
-                    ResultError = ErrorTranslator.ActionRequired(ErrorMessages.DataMismatch, ActionType.DataMismatch),
-                };
-            }
-
-            this.logger.LogDebug("Finished getting dependent details... {DependentPhn}", addDependentRequest.Phn);
-
-            // Verify dependent's details entered by user
-            if (patientResult.ResourcePayload == null || !this.ValidateDependent(addDependentRequest, patientResult.ResourcePayload))
-            {
-                this.logger.LogDebug("Dependent information does not match request: {DependentPhn}", addDependentRequest.Phn);
-                return new RequestResult<DependentModel>
-                {
-                    ResultStatus = ResultType.ActionRequired,
-                    ResultError = ErrorTranslator.ActionRequired(ErrorMessages.DataMismatch, ActionType.DataMismatch),
-                };
-            }
-
-            // Verify dependent has HDID
-            if (string.IsNullOrEmpty(patientResult.ResourcePayload.HdId))
-            {
-                return new RequestResult<DependentModel>
-                {
-                    ResultStatus = ResultType.ActionRequired,
-                    ResultError = ErrorTranslator.ActionRequired(ErrorMessages.InvalidServicesCard, ActionType.NoHdId),
-                };
+                    break;
             }
 
             // Insert Dependent to database
-            ResourceDelegate dependent = new()
+            var dependent = new ResourceDelegate()
             {
                 ResourceOwnerHdid = patientResult.ResourcePayload.HdId,
                 ProfileHdid = delegateHdId,
@@ -153,31 +122,16 @@ namespace HealthGateway.GatewayApi.Services
                 ReasonObjectType = null,
                 ReasonObject = null,
             };
-            DbResult<ResourceDelegate> dbDependent = this.resourceDelegateDelegate.Insert(dependent, true);
+            var dbDependent = this.resourceDelegateDelegate.Insert(dependent, true);
 
-            if (dbDependent.Status == DbStatusCode.Created)
+            if (dbDependent.Status != DbStatusCode.Created)
             {
-                this.logger.LogTrace("Finished adding dependent");
-                this.UpdateNotificationSettings(dependent.ResourceOwnerHdid, delegateHdId);
-
-                return new RequestResult<DependentModel>
-                {
-                    ResourcePayload = this.FromModels(dbDependent.Payload, patientResult.ResourcePayload),
-                    ResultStatus = ResultType.Success,
-                };
+                return RequestResultFactory.ServiceError<DependentModel>(ErrorType.CommunicationInternal, ServiceType.Database, dbDependent.Message);
             }
 
-            this.logger.LogError("Error adding dependent");
-            return new RequestResult<DependentModel>
-            {
-                ResourcePayload = new DependentModel(),
-                ResultStatus = ResultType.Error,
-                ResultError = new RequestResultError
-                {
-                    ResultMessage = dbDependent.Message,
-                    ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationInternal, ServiceType.Database),
-                },
-            };
+            this.UpdateNotificationSettings(dependent.ResourceOwnerHdid, delegateHdId);
+
+            return RequestResultFactory.Success<DependentModel>(this.FromModels(dbDependent.Payload, patientResult.ResourcePayload));
         }
 
         /// <inheritdoc/>
@@ -261,17 +215,20 @@ namespace HealthGateway.GatewayApi.Services
             return result;
         }
 
-        private bool ValidateDependent(AddDependentRequest dependent, PatientModel patientModel)
+        private static bool IsMatch(AddDependentRequest dependent, PatientModel patientModel)
         {
+            if (dependent == null || patientModel == null)
+            {
+                return false;
+            }
+
             if (!patientModel.LastName.Equals(dependent.LastName, StringComparison.OrdinalIgnoreCase))
             {
-                this.logger.LogInformation("Validate Dependent: LastName mismatch.");
                 return false;
             }
 
             if (!patientModel.FirstName.Equals(dependent.FirstName, StringComparison.OrdinalIgnoreCase))
             {
-                this.logger.LogInformation("Validate Dependent: FirstName mismatch.");
                 return false;
             }
 
@@ -279,7 +236,6 @@ namespace HealthGateway.GatewayApi.Services
                 patientModel.Birthdate.Month != dependent.DateOfBirth.Month ||
                 patientModel.Birthdate.Day != dependent.DateOfBirth.Day)
             {
-                this.logger.LogInformation("Validate Dependent: DateOfBirth mismatch.");
                 return false;
             }
 

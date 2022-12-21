@@ -17,6 +17,7 @@ namespace HealthGateway.Common.Data.ViewModels
 {
     using System.Diagnostics;
     using System.Diagnostics.CodeAnalysis;
+    using System.Text.Json;
     using System.Text.Json.Serialization;
     using HealthGateway.Common.Data.ErrorHandling;
 
@@ -67,5 +68,11 @@ namespace HealthGateway.Common.Data.ViewModels
         /// </summary>
         [JsonPropertyName("actionCode")]
         public string? ActionCodeValue => this.ActionCode?.Value;
+
+        /// <inheritdoc />
+        public override string ToString()
+        {
+            return JsonSerializer.Serialize(this);
+        }
     }
 }

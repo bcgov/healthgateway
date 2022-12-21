@@ -18,6 +18,7 @@ namespace HealthGateway.Common.ErrorHandling
 {
     using System.Collections.Generic;
     using System.Linq;
+    using HealthGateway.Common.Data.ErrorHandling;
     using HealthGateway.Common.Data.ViewModels;
 
     /// <summary>
@@ -64,5 +65,51 @@ namespace HealthGateway.Common.ErrorHandling
         public static RequestResult<T> Error<T>(ErrorType errorType, IEnumerable<FluentValidation.Results.ValidationFailure> validationResults)
             where T : class? =>
                 Error<T>(errorType, validationResults.Select(vr => vr.ErrorMessage));
+
+        /// <summary>
+        /// Factory method for service error <see cref="RequestResult{T}"/> instances.
+        /// </summary>
+        /// <param name="errorType">The error type.</param>
+        /// <param name="serviceType">The service where the error is coming from.</param>
+        /// <param name="errorMessage">The error message.</param>
+        /// <typeparam name="T">The payload type.</typeparam>
+        /// <returns>New <see cref="RequestResult{T}"/> instance with service error.</returns>
+        public static RequestResult<T> ServiceError<T>(ErrorType errorType, ServiceType serviceType, string errorMessage)
+            where T : class? => new RequestResult<T>
+            {
+                ResultStatus = Data.Constants.ResultType.Error,
+                ResultError = new RequestResultError
+                {
+                    ResultMessage = errorMessage,
+                    ErrorCode = ErrorTranslator.ServiceError(errorType, serviceType),
+                },
+            };
+
+        /// <summary>
+        /// Factory method for action required <see cref="RequestResult{T}"/> instances.
+        /// </summary>
+        /// <param name="actionType">The action type.</param>
+        /// <param name="errorMessage">The error message.</param>
+        /// <typeparam name="T">The payload type.</typeparam>
+        /// <returns>New  <see cref="RequestResult{T}"/> instance with error.</returns>
+        public static RequestResult<T> ActionRequired<T>(ActionType actionType, string errorMessage)
+            where T : class? => new RequestResult<T>
+            {
+                ResultStatus = Data.Constants.ResultType.ActionRequired,
+                ResultError = ErrorTranslator.ActionRequired(errorMessage, actionType),
+            };
+
+        /// <summary>
+        /// Factory method for successful <see cref="RequestResult{T}"/> instances.
+        /// </summary>
+        /// <typeparam name="T">The payload type.</typeparam>
+        /// <param name="payload">the payload to return.</param>
+        /// <returns>New <see cref="RequestResult{T}"/> instance with success and payload.</returns>
+        public static RequestResult<T> Success<T>(T payload)
+            where T : class? => new RequestResult<T>
+            {
+                ResultStatus = Data.Constants.ResultType.Success,
+                ResourcePayload = payload,
+            };
     }
 }

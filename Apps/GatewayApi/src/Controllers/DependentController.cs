@@ -92,8 +92,15 @@ namespace HealthGateway.GatewayApi.Controllers
         public RequestResult<DependentModel> AddDependent([FromBody] AddDependentRequest addDependentRequest)
         {
             ClaimsPrincipal? user = this.httpContextAccessor.HttpContext?.User;
-            string? delegateHdId = user?.FindFirst("hdid")?.Value;
-            return this.dependentService.AddDependent(delegateHdId ?? string.Empty, addDependentRequest);
+            var delegateHdId = user?.FindFirst("hdid")?.Value ?? string.Empty;
+            var result = this.dependentService.AddDependent(delegateHdId, addDependentRequest);
+
+            if (result.ResultStatus == Common.Data.Constants.ResultType.Error)
+            {
+                this.logger.LogError("Error adding a dependent: {Error}", result.ResultError);
+            }
+
+            return result;
         }
 
         /// <summary>

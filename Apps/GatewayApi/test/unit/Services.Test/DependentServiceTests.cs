@@ -45,13 +45,13 @@ namespace HealthGateway.GatewayApiTests.Services.Test
     public class DependentServiceTests
     {
         private readonly string mismatchedError = "The information you entered does not match our records. Please try again.";
-        private readonly DateTime mockDateOfBirth = DateTime.Now.AddYears(-12).AddDays(1);
+        private readonly DateTime mockDateOfBirth = DateTime.Now.Date.AddYears(-12).AddDays(1);
         private readonly string mockFirstName = "MockFirstName";
         private readonly string mockGender = "Male";
         private readonly string mockHdId = "MockHdId";
         private readonly string mockLastName = "MockLastName";
         private readonly string mockParentHdid = "MockFirstName";
-        private readonly string mockPhn = "MockPHN";
+        private readonly string mockPhn = "9735353315";
         private readonly string noHdidError = "Please ensure you are using a current BC Services Card.";
 
         /// <summary>
@@ -250,7 +250,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
             mockUserProfileDelegate.Setup(s => s.GetUserProfile(this.mockParentHdid))
                 .Returns(
                     new DbResult<UserProfile>
-                        { Payload = new UserProfile() });
+                    { Payload = new UserProfile() });
             Mock<INotificationSettingsService> mockNotificationSettingsService = new();
             mockNotificationSettingsService.Setup(s => s.QueueNotificationSettings(It.IsAny<NotificationSettingsRequest>()));
             IDependentService service = new DependentService(
@@ -413,7 +413,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
             mockUserProfileDelegate.Setup(s => s.GetUserProfile(this.mockParentHdid))
                 .Returns(
                     new DbResult<UserProfile>
-                        { Payload = new UserProfile() });
+                    { Payload = new UserProfile() });
             Mock<INotificationSettingsService> mockNotificationSettingsService = new();
             mockNotificationSettingsService.Setup(s => s.QueueNotificationSettings(It.IsAny<NotificationSettingsRequest>()));
             return new DependentService(
