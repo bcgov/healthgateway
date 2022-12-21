@@ -16,7 +16,6 @@
 namespace HealthGateway.Immunization.Services
 {
     using System;
-    using System.Linq;
     using System.Threading.Tasks;
     using AutoMapper;
     using HealthGateway.Common.AccessManagement.Authentication;
@@ -28,6 +27,7 @@ namespace HealthGateway.Immunization.Services
     using HealthGateway.Common.Data.Utils;
     using HealthGateway.Common.Data.ViewModels;
     using HealthGateway.Common.ErrorHandling;
+    using HealthGateway.Common.Factories;
     using HealthGateway.Common.Models.PHSA;
     using HealthGateway.Common.Validations;
     using HealthGateway.Immunization.Delegates;
@@ -207,7 +207,7 @@ namespace HealthGateway.Immunization.Services
             var validationResults = new VaccineStatusQueryValidator().Validate(query);
             if (!validationResults.IsValid)
             {
-                return RequestResultFactory.Error<VaccineStatus>(ErrorType.InvalidState, validationResults.Errors.Select(e => e.ErrorMessage).ToArray());
+                return RequestResultFactory.Error<VaccineStatus>(ErrorType.InvalidState, validationResults.Errors);
             }
 
             string? accessToken = this.authDelegate.AuthenticateAsSystem(this.tokenUri, this.tokenRequest).AccessToken;

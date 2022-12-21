@@ -25,6 +25,6 @@ namespace HealthGateway.Common.Data.Utils
         /// </summary>
         /// <param name="phn">The Personal Health Number to validate.</param>
         /// <returns>True if valid.</returns>
-        public static bool IsValid(string? phn) => new Validation.PhnValidator().Validate(phn).IsValid;
+        public static bool IsValid(string? phn) => new Validations.PhnValidator().Validate(phn).IsValid;
     }
 }

@@ -1,4 +1,4 @@
-﻿// -------------------------------------------------------------------------
+// -------------------------------------------------------------------------
 //  Copyright © 2019 Province of British Columbia
 //
 //  Licensed under the Apache License, Version 2.0 (the "License");
@@ -30,7 +30,6 @@ namespace HealthGateway.Common.Data.Tests.Utils
         public void ShouldNotBeNullOrEmpty()
         {
             Assert.False(PhnValidator.IsValid(string.Empty));
-            Assert.False(PhnValidator.IsValid(null));
         }
 
         /// <summary>
