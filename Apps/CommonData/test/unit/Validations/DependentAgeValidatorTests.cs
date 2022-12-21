@@ -40,7 +40,6 @@ namespace HealthGateway.Common.Data.Tests.Validations
         [InlineData("1976-12-20", 30, false)]
         [InlineData("1976-12-22", 47, true)]
         public void Validate(DateTime dob, int maxDependentAge, bool shouldBeValid)
-
         {
             var validator = new DependantAgeValidator(RelativeNow, maxDependentAge);
 

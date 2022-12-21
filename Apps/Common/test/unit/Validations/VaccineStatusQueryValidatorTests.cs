@@ -22,7 +22,7 @@ namespace HealthGateway.CommonTests.Validations
     using Xunit;
 
     /// <summary>
-    /// VaccineStatusQueryValidatorTests unit tests
+    /// VaccineStatusQueryValidatorTests unit tests.
     /// </summary>
     public class VaccineStatusQueryValidatorTests
     {
