@@ -495,11 +495,21 @@ export const beforeEachGuard: NavigationGuard = async (
     const waitlistIsEnabled = enabledModules.includes(ClientModule.Ticket);
     const waitlistTicketIsProcessed: boolean =
         store.getters["waitlist/ticketIsProcessed"];
+    let metaRquiresProcessedWaitlistTicket =
+        meta.requiresProcessedWaitlistTicket;
+
+    if (from.fullPath === QUEUE_FULL_PATH || from.fullPath === QUEUE_PATH) {
+        metaRquiresProcessedWaitlistTicket = true;
+    }
+
+    logger.debug(
+        `Before guard - waitlist enabled: ${waitlistIsEnabled}, waitlist ticket processed: ${waitlistTicketIsProcessed} and meta requires processed waitlist ticket: ${metaRquiresProcessedWaitlistTicket}`
+    );
 
     if (
         waitlistIsEnabled &&
         !waitlistTicketIsProcessed &&
-        meta.requiresProcessedWaitlistTicket
+        metaRquiresProcessedWaitlistTicket
     ) {
         try {
             const ticket: Ticket = await store.dispatch("waitlist/getTicket");

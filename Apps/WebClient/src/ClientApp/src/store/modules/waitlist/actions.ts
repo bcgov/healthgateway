@@ -49,7 +49,7 @@ export const actions: WaitlistActions = {
         const timeout = Math.max(0, checkInAfter - now);
         return new Promise((resolve) => {
             logger.debug(
-                `Handle ticket: timeout (milliseconds): ${timeout} - check in after (milliseconds): ${checkInAfter} - now (milliseconds): ${now}`
+                `Handle ticket: timeout (ms): ${timeout} - check in after (ms): ${checkInAfter} - now (ms): ${now}`
             );
             if (
                 ticket.status === TicketStatus.Processed &&
