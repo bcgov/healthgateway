@@ -248,9 +248,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
 
             Mock<IUserProfileDelegate> mockUserProfileDelegate = new();
             mockUserProfileDelegate.Setup(s => s.GetUserProfile(this.mockParentHdid))
-                .Returns(
-                    new DbResult<UserProfile>
-                    { Payload = new UserProfile() });
+                .Returns(new DbResult<UserProfile> { Payload = new UserProfile() });
             Mock<INotificationSettingsService> mockNotificationSettingsService = new();
             mockNotificationSettingsService.Setup(s => s.QueueNotificationSettings(It.IsAny<NotificationSettingsRequest>()));
             IDependentService service = new DependentService(
@@ -411,9 +409,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
 
             Mock<IUserProfileDelegate> mockUserProfileDelegate = new();
             mockUserProfileDelegate.Setup(s => s.GetUserProfile(this.mockParentHdid))
-                .Returns(
-                    new DbResult<UserProfile>
-                    { Payload = new UserProfile() });
+                .Returns(new DbResult<UserProfile> { Payload = new UserProfile() });
             Mock<INotificationSettingsService> mockNotificationSettingsService = new();
             mockNotificationSettingsService.Setup(s => s.QueueNotificationSettings(It.IsAny<NotificationSettingsRequest>()));
             return new DependentService(
