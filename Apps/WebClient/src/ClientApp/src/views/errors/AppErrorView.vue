@@ -1,15 +1,11 @@
 <script lang="ts">
-import { BAlert } from "bootstrap-vue";
 import Vue from "vue";
 import { Component } from "vue-property-decorator";
 import { Getter } from "vuex-class";
 
 import { AppErrorType } from "@/constants/errorType";
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-const options: any = { components: { BAlert } };
-
-@Component(options)
+@Component
 export default class AppErrorView extends Vue {
     @Getter("appError")
     appError?: AppErrorType;

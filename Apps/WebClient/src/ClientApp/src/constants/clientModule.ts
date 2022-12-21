@@ -19,4 +19,5 @@ export enum ClientModule {
     AllLaboratory = "AllLaboratory",
     PcrTest = "PcrTest",
     ClinicalDocument = "ClinicalDocument",
+    Ticket = "Ticket",
 }

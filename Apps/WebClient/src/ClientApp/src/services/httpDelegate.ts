@@ -19,7 +19,16 @@ export default class HttpDelegate implements IHttpDelegate {
     public setAuthorizationHeader(accessToken: string): void {
         this.logger.debug(`ACCESS TOKEN SET`);
         Axios.defaults.headers.common = {
+            ...Axios.defaults.headers.common,
             Authorization: `Bearer ${accessToken}`,
+        };
+    }
+
+    public setTicketAuthorizationHeader(accessToken: string): void {
+        this.logger.debug(`Set Ticket authorization header: ${accessToken}`);
+        Axios.defaults.headers.common = {
+            ...Axios.defaults.headers.common,
+            "hg-ticket": `Bearer ${accessToken}`,
         };
     }
 
@@ -123,14 +132,17 @@ export default class HttpDelegate implements IHttpDelegate {
         error: Error | AxiosError,
         requestType: string
     ): HttpError {
-        const errorMessage = `${requestType} error: ${error.toString()}`;
-        this.logger.error(errorMessage);
+        const errorMessage = `${requestType} ${error.toString()}`;
+        const httpError: HttpError = {
+            message: errorMessage,
+        };
 
-        const httpError: HttpError = { message: errorMessage };
-        if (Axios.isAxiosError(error) && error.response?.status) {
+        if (Axios.isAxiosError(error) && error.response) {
             httpError.statusCode = error.response.status;
+            httpError.message = error.response.data?.detail ?? errorMessage;
         }
 
+        this.logger.error(httpError.message);
         return httpError;
     }
 }

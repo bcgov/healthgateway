@@ -9,6 +9,7 @@ import "@/assets/scss/hg-styles.scss";
 import "@/plugins/registerComponentHooks";
 
 import {
+    BAlert,
     BBadge,
     BBreadcrumb,
     BBreadcrumbItem,
@@ -67,6 +68,7 @@ import {
     IPcrTestService,
     IReportService,
     IStoreProvider,
+    ITicketService,
     IUserCommentService,
     IUserFeedbackService,
     IUserNoteService,
@@ -75,6 +77,7 @@ import {
     IVaccinationStatusService,
 } from "@/services/interfaces";
 
+Vue.component("BAlert", BAlert);
 Vue.component("BBadge", BBadge);
 Vue.component("BBreadcrumb", BBreadcrumb);
 Vue.component("BBreadcrumbItem", BBreadcrumbItem);
@@ -174,6 +177,9 @@ configService
         const pcrTestKitService = container.get<IPcrTestService>(
             SERVICE_IDENTIFIER.PcrTestService
         );
+        const ticketService = container.get<ITicketService>(
+            SERVICE_IDENTIFIER.TicketService
+        );
 
         store.dispatch("config/initialize", config);
 
@@ -200,6 +206,7 @@ configService
         pcrTestKitService.initialize(config, httpDelegate);
         reportService.initialize(config, httpDelegate);
         vaccinationStatusService.initialize(config, httpDelegate);
+        ticketService.initialize(config, httpDelegate);
 
         authInitializePromise.then(async () => {
             Vue.use(IdleVue, {
