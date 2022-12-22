@@ -21,10 +21,12 @@ namespace HealthGateway.Common.Services
     using HealthGateway.Common.CacheProviders;
     using HealthGateway.Common.Constants;
     using HealthGateway.Common.Data.Constants;
-    using HealthGateway.Common.Data.Utils;
+    using HealthGateway.Common.Data.ErrorHandling;
+    using HealthGateway.Common.Data.Validations;
     using HealthGateway.Common.Data.ViewModels;
     using HealthGateway.Common.Delegates;
     using HealthGateway.Common.ErrorHandling;
+    using HealthGateway.Common.Factories;
     using HealthGateway.Common.Models;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.Logging;
@@ -39,6 +41,7 @@ namespace HealthGateway.Common.Services
         /// The generic cache domain to store patients against.
         /// </summary>
         private const string PatientCacheDomain = "Patient";
+
         private readonly ICacheProvider cacheProvider;
         private readonly int cacheTtl;
 
@@ -46,6 +49,7 @@ namespace HealthGateway.Common.Services
         /// The injected logger delegate.
         /// </summary>
         private readonly ILogger<PatientService> logger;
+
         private readonly IClientRegistriesDelegate patientDelegate;
 
         /// <summary>
@@ -94,57 +98,27 @@ namespace HealthGateway.Common.Services
         public async Task<RequestResult<PatientModel>> GetPatient(string identifier, PatientIdentifierType identifierType = PatientIdentifierType.Hdid, bool disableIdValidation = false)
         {
             using Activity? activity = Source.StartActivity();
-            RequestResult<PatientModel> requestResult = new();
             PatientModel? patient = this.GetFromCache(identifier, identifierType);
-            if (patient == null)
-            {
-                switch (identifierType)
-                {
-                    case PatientIdentifierType.Hdid:
-                        this.logger.LogDebug("Performing Patient lookup by HDID");
-                        requestResult = await this.patientDelegate.GetDemographicsByHdidAsync(identifier, disableIdValidation).ConfigureAwait(true);
-                        break;
-                    case PatientIdentifierType.Phn:
-                        this.logger.LogDebug("Performing Patient lookup by PHN");
-                        if (PhnValidator.IsValid(identifier))
-                        {
-                            requestResult = await this.patientDelegate.GetDemographicsByPhnAsync(identifier, disableIdValidation).ConfigureAwait(true);
-                        }
-                        else
-                        {
-                            requestResult.ResultStatus = ResultType.ActionRequired;
-                            requestResult.ResultError = new()
-                            {
-                                ResultMessage = $"Internal Error: PatientIdentifier is invalid '{identifier}'",
-                                ErrorCode = ErrorTranslator.InternalError(ErrorType.InvalidState),
-                            };
-                            this.logger.LogDebug("The PHN provided is invalid: {Identifier}", identifier);
-                        }
-
-                        break;
-                    default:
-                        this.logger.LogDebug("Failed Patient lookup unknown PatientIdentifierType");
-                        requestResult.ResultStatus = ResultType.Error;
-                        requestResult.ResultError = new()
-                        {
-                            ResultMessage = $"Internal Error: PatientIdentifierType is unknown '{identifierType.ToString()}'",
-                            ErrorCode = ErrorTranslator.InternalError(ErrorType.InvalidState),
-                        };
-                        break;
-                }
-
-                // Only cache if validation is enabled (as some clients could get invalid data) and when successful.
-                if (!disableIdValidation && requestResult.ResultStatus == ResultType.Success && requestResult.ResourcePayload != null)
-                {
-                    this.CachePatient(requestResult.ResourcePayload);
-                }
-            }
-            else
+            if (patient != null)
             {
                 this.logger.LogDebug("Patient fetched from Cache");
-                requestResult.ResourcePayload = patient;
-                requestResult.ResultStatus = ResultType.Success;
+                activity?.Stop();
+                return RequestResultFactory.Success(patient);
             }
+
+            if (identifierType == PatientIdentifierType.Phn && !new PhnValidator().Validate(identifier).IsValid)
+            {
+                return RequestResultFactory.ActionRequired<PatientModel>(ActionType.Validation, $"Internal Error: PatientIdentifier is invalid '{identifier}'");
+            }
+
+            var requestResult = identifierType switch
+            {
+                PatientIdentifierType.Hdid => await this.patientDelegate.GetDemographicsByHdidAsync(identifier, disableIdValidation).ConfigureAwait(true),
+                PatientIdentifierType.Phn => await this.patientDelegate.GetDemographicsByPhnAsync(identifier, disableIdValidation).ConfigureAwait(true),
+                _ => throw new NotImplementedException(),
+            };
+
+            this.CachePatient(requestResult.ResourcePayload);
 
             activity?.Stop();
             return requestResult;
@@ -168,6 +142,7 @@ namespace HealthGateway.Common.Services
                         this.logger.LogDebug("Querying Patient Cache by HDID");
                         retPatient = this.cacheProvider.GetItem<PatientModel>($"{PatientCacheDomain}:HDID:{identifier}");
                         break;
+
                     case PatientIdentifierType.Phn:
                         this.logger.LogDebug("Querying Patient Cache by PHN");
                         retPatient = this.cacheProvider.GetItem<PatientModel>($"{PatientCacheDomain}:PHN:{identifier}");
