@@ -498,6 +498,7 @@ describe("Mobile - Covid19 Orders Report Download", () => {
 
 describe("User Profile", () => {
     beforeEach(() => {
+        cy.enableModules([]);
         cy.intercept("GET", `**/UserProfile/${HDID}`, {
             fixture: "UserProfileService/userProfile.json",
         });

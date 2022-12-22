@@ -4,20 +4,24 @@ const homePath = "/home";
 
 describe("Registration Page", () => {
     it("Minimum age error", () => {
+        cy.enableModules([]);
         cy.login(
             Cypress.env("keycloak.hlthgw401.username"),
             Cypress.env("keycloak.password"),
-            AuthMethod.KeyCloak
+            AuthMethod.KeyCloak,
+            homePath
         );
         cy.location("pathname").should("eq", registrationPath);
         cy.get("[data-testid=minimumAgeErrorText]").should("be.visible");
     });
 
     it("No sidebar or footer", () => {
+        cy.enableModules([]);
         cy.login(
             Cypress.env("keycloak.unregistered.username"),
             Cypress.env("keycloak.password"),
-            AuthMethod.KeyCloak
+            AuthMethod.KeyCloak,
+            homePath
         );
         cy.location("pathname").should("eq", registrationPath);
         cy.get("[data-testid=sidebar]").should("not.exist");
@@ -25,10 +29,12 @@ describe("Registration Page", () => {
     });
 
     it("Registering leads to home page", () => {
+        cy.enableModules(["VaccinationStatus"]);
         cy.login(
             Cypress.env("keycloak.unregistered.username"),
             Cypress.env("keycloak.password"),
-            AuthMethod.KeyCloak
+            AuthMethod.KeyCloak,
+            homePath
         );
         cy.location("pathname").should("eq", registrationPath);
         cy.get("[data-testid=emailCheckbox]")
@@ -54,10 +60,12 @@ describe("Registration Page", () => {
     });
 
     it("Validate Closed Profile Registration", () => {
+        cy.enableModules([]);
         cy.login(
             Cypress.env("keycloak.accountclosure.username"),
             Cypress.env("keycloak.password"),
-            AuthMethod.KeyCloak
+            AuthMethod.KeyCloak,
+            homePath
         );
         cy.url().should("include", "/patientRetrievalError");
     });

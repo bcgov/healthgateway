@@ -40,6 +40,17 @@ describe("Disabled Filters", () => {
 
 describe("Filters", () => {
     beforeEach(() => {
+        cy.enableModules([
+            "AllLaboratory",
+            "ClinicalDocument",
+            "Encounter",
+            "Immunization",
+            "Laboratory",
+            "Medication",
+            "MedicationRequest",
+            "Note",
+            "HospitalVisit",
+        ]);
         cy.login(
             Cypress.env("keycloak.username"),
             Cypress.env("keycloak.password"),
