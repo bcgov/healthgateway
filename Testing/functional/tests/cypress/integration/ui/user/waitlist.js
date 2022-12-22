@@ -27,9 +27,9 @@ function getTicket(status, queuePosition = 0) {
     return ticket;
 }
 
-describe("Waitlist", () => {
+describe("Waitlist Ticket Module Enabled", () => {
     beforeEach(() => {
-        cy.enableModules(["Ticket", "Patient"]);
+        cy.enableModules(["Ticket"]);
     });
 
     it("Verify create ticket is not called on unprotected page", () => {
@@ -126,5 +126,22 @@ describe("Waitlist", () => {
         cy.log("Verify refresh browser and busy page remains shown");
         cy.reload({ forceReload: true });
         cy.url().should("include", "/busy");
+    });
+});
+
+describe("Waitlist Ticket Module Disabled", () => {
+    it("Verify ticket module has been disabled and home page is displayed", () => {
+        cy.enableModules([]);
+        cy.intercept("POST", "**/Ticket?room=healthgateway", {
+            statusCode: serviceUnavailable,
+        });
+        cy.login(
+            Cypress.env("keycloak.username"),
+            Cypress.env("keycloak.password"),
+            AuthMethod.KeyCloak,
+            "/home"
+        );
+        cy.url().should("not.include", "/busy");
+        cy.url().should("include", "/home");
     });
 });
