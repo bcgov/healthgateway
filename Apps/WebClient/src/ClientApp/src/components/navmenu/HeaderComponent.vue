@@ -131,6 +131,13 @@ export default class HeaderComponent extends Vue {
         return this.$route.path.toLowerCase().startsWith("/pcrtest");
     }
 
+    private get isQueuePage(): boolean {
+        return (
+            this.$route.path.toLowerCase() === "/queue" ||
+            this.$route.path.toLowerCase() === "/busy"
+        );
+    }
+
     private get isSidebarButtonShown(): boolean {
         return (
             !this.isOffline &&
@@ -139,6 +146,7 @@ export default class HeaderComponent extends Vue {
             this.userIsRegistered &&
             this.userIsActive &&
             !this.patientRetrievalFailed &&
+            !this.isQueuePage &&
             !this.isPcrTest &&
             this.isMobileWidth
         );
@@ -148,6 +156,7 @@ export default class HeaderComponent extends Vue {
         return (
             this.config.modules["NotificationCentre"] &&
             !this.isOffline &&
+            !this.isQueuePage &&
             !this.isPcrTest &&
             this.oidcIsAuthenticated &&
             this.isValidIdentityProvider &&
@@ -158,7 +167,7 @@ export default class HeaderComponent extends Vue {
     }
 
     private get isLoggedInMenuShown(): boolean {
-        return this.oidcIsAuthenticated && !this.isPcrTest;
+        return this.oidcIsAuthenticated && !this.isPcrTest && !this.isQueuePage;
     }
 
     private get isLogOutButtonShown(): boolean {
@@ -166,7 +175,12 @@ export default class HeaderComponent extends Vue {
     }
 
     private get isLogInButtonShown(): boolean {
-        return !this.oidcIsAuthenticated && !this.isOffline && !this.isPcrTest;
+        return (
+            !this.oidcIsAuthenticated &&
+            !this.isOffline &&
+            !this.isPcrTest &&
+            !this.isQueuePage
+        );
     }
 
     private get isProfileLinkAvailable(): boolean {
@@ -265,29 +279,14 @@ export default class HeaderComponent extends Vue {
             </hg-button>
 
             <!-- Brand -->
-            <b-navbar-brand class="my-2 mr-0 ml-2 d-flex">
+            <b-navbar-brand class="mr-0 ml-3 d-flex">
                 <router-link to="/">
                     <img
-                        class="img-fluid d-none d-md-block"
-                        src="@/assets/images/gov/bcid-logo-rev-en.svg"
-                        width="181"
-                        height="44"
+                        class="img-fluid"
+                        src="@/assets/images/gov/hg-logo-rev.svg"
+                        width="143"
                         alt="Go to healthgateway home page"
                     />
-
-                    <img
-                        class="img-fluid d-md-none"
-                        src="@/assets/images/gov/bcid-symbol-rev.svg"
-                        width="30"
-                        height="44"
-                        alt="Go to healthgateway home page"
-                    />
-                </router-link>
-                <router-link
-                    to="/"
-                    class="nav-link py-0 px-0 px-lg-5 mx-2 align-self-center"
-                >
-                    Health Gateway
                 </router-link>
             </b-navbar-brand>
 

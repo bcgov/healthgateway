@@ -18,6 +18,7 @@ import { NotificationModule } from "./modules/notification/types";
 import { TimelineModule } from "./modules/timeline/types";
 import { UserModule } from "./modules/user/types";
 import { VaccinationStatusModule } from "./modules/vaccinationStatus/types";
+import { WaitlistModule } from "./modules/waitlist/types";
 
 export interface RootState {
     appError?: AppErrorType;
@@ -61,5 +62,6 @@ export interface GatewayStoreOptions extends StoreOptions<RootState> {
         errorBanner: ErrorBannerModule;
         timeline: TimelineModule;
         vaccinationStatus: VaccinationStatusModule;
+        waitlist: WaitlistModule;
     };
 }
