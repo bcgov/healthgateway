@@ -30,20 +30,29 @@ namespace HealthGateway.Common.Factories
         /// <summary>
         /// Factory method for error <see cref="RequestResult{T}"/> instances.
         /// </summary>
+        /// <param name="resultError">The error.</param>
+        /// <typeparam name="T">The payload type.</typeparam>
+        /// <returns>New  <see cref="RequestResult{T}"/> instance with error.</returns>
+        public static RequestResult<T> Error<T>(RequestResultError resultError)
+            => new RequestResult<T>
+            {
+                ResultStatus = Data.Constants.ResultType.Error,
+                ResultError = resultError,
+            };
+
+        /// <summary>
+        /// Factory method for error <see cref="RequestResult{T}"/> instances.
+        /// </summary>
         /// <param name="errorType">The error type.</param>
         /// <param name="errorMessage">The error message.</param>
         /// <typeparam name="T">The payload type.</typeparam>
         /// <returns>New  <see cref="RequestResult{T}"/> instance with error.</returns>
         public static RequestResult<T> Error<T>(ErrorType errorType, string errorMessage)
-            where T : class? => new RequestResult<T>
+            => Error<T>(new RequestResultError
             {
-                ResultStatus = Data.Constants.ResultType.Error,
-                ResultError = new RequestResultError
-                {
-                    ResultMessage = errorMessage,
-                    ErrorCode = ErrorTranslator.InternalError(errorType),
-                },
-            };
+                ResultMessage = errorMessage,
+                ErrorCode = ErrorTranslator.InternalError(errorType),
+            });
 
         /// <summary>
         /// Factory method for error <see cref="RequestResult{T}"/> instances.
@@ -53,8 +62,7 @@ namespace HealthGateway.Common.Factories
         /// <typeparam name="T">The payload type.</typeparam>
         /// <returns>New  <see cref="RequestResult{T}"/> instance with error.</returns>
         public static RequestResult<T> Error<T>(ErrorType errorType, IEnumerable<string> errorMessages)
-            where T : class? =>
-                Error<T>(errorType, string.Join(";", errorMessages));
+            => Error<T>(errorType, string.Join(";", errorMessages));
 
         /// <summary>
         /// Factory method for error <see cref="RequestResult{T}"/> instances.
@@ -64,8 +72,7 @@ namespace HealthGateway.Common.Factories
         /// <typeparam name="T">The payload type.</typeparam>
         /// <returns>New  <see cref="RequestResult{T}"/> instance with error.</returns>
         public static RequestResult<T> Error<T>(ErrorType errorType, IEnumerable<FluentValidation.Results.ValidationFailure> validationResults)
-            where T : class? =>
-                Error<T>(errorType, validationResults.Select(vr => vr.ErrorMessage));
+            => Error<T>(errorType, validationResults.Select(vr => vr.ErrorMessage));
 
         /// <summary>
         /// Factory method for service error <see cref="RequestResult{T}"/> instances.
@@ -76,7 +83,7 @@ namespace HealthGateway.Common.Factories
         /// <typeparam name="T">The payload type.</typeparam>
         /// <returns>New <see cref="RequestResult{T}"/> instance with service error.</returns>
         public static RequestResult<T> ServiceError<T>(ErrorType errorType, ServiceType serviceType, string errorMessage)
-            where T : class? => new RequestResult<T>
+            => new RequestResult<T>
             {
                 ResultStatus = Data.Constants.ResultType.Error,
                 ResultError = new RequestResultError
@@ -94,7 +101,7 @@ namespace HealthGateway.Common.Factories
         /// <typeparam name="T">The payload type.</typeparam>
         /// <returns>New  <see cref="RequestResult{T}"/> instance with error.</returns>
         public static RequestResult<T> ActionRequired<T>(ActionType actionType, string errorMessage)
-            where T : class? => new RequestResult<T>
+            => new RequestResult<T>
             {
                 ResultStatus = Data.Constants.ResultType.ActionRequired,
                 ResultError = ErrorTranslator.ActionRequired(errorMessage, actionType),
@@ -105,12 +112,18 @@ namespace HealthGateway.Common.Factories
         /// </summary>
         /// <typeparam name="T">The payload type.</typeparam>
         /// <param name="payload">the payload to return.</param>
+        /// <param name="totalResultCount">the total result count, defaults to 0.</param>
+        /// <param name="pageIndex">the page index.</param>
+        /// <param name="pageSize">the page size.</param>
         /// <returns>New <see cref="RequestResult{T}"/> instance with success and payload.</returns>
-        public static RequestResult<T> Success<T>(T payload)
-            where T : class? => new RequestResult<T>
+        public static RequestResult<T> Success<T>(T payload, int totalResultCount = 0, int pageIndex = 0, int pageSize = 0)
+            => new RequestResult<T>
             {
                 ResultStatus = Data.Constants.ResultType.Success,
                 ResourcePayload = payload,
+                TotalResultCount = totalResultCount,
+                PageIndex = pageIndex,
+                PageSize = pageSize,
             };
     }
 }

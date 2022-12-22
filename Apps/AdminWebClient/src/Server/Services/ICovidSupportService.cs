@@ -38,7 +38,7 @@ namespace HealthGateway.Admin.Services
         /// </summary>
         /// <param name="request">The request information to retrieve patient information.</param>
         /// <returns>A RequestResult with True if the request was sucessfull.</returns>
-        Task<PrimitiveRequestResult<bool>> MailVaccineCardAsync(MailDocumentRequest request);
+        Task<RequestResult<bool>> MailVaccineCardAsync(MailDocumentRequest request);
 
         /// <summary>
         /// Gets a document that represents a patient's vaccine card and vaccine history.
