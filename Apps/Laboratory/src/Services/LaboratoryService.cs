@@ -27,7 +27,7 @@ namespace HealthGateway.Laboratory.Services
     using HealthGateway.Common.Constants.PHSA;
     using HealthGateway.Common.Data.Constants;
     using HealthGateway.Common.Data.ErrorHandling;
-    using HealthGateway.Common.Data.Utils;
+    using HealthGateway.Common.Data.Validations;
     using HealthGateway.Common.Data.ViewModels;
     using HealthGateway.Common.ErrorHandling;
     using HealthGateway.Common.Models.PHSA;
@@ -275,11 +275,13 @@ namespace HealthGateway.Laboratory.Services
                             Records = this.autoMapper.Map<List<CovidTestResult>, IEnumerable<PublicCovidTestRecord>>(payload),
                         };
                         break;
+
                     case LabIndicatorType.DataMismatch:
                     case LabIndicatorType.NotFound:
                         retVal.ResultStatus = ResultType.ActionRequired;
                         retVal.ResultError = ErrorTranslator.ActionRequired(ErrorMessages.DataMismatch, ActionType.DataMismatch);
                         break;
+
                     case LabIndicatorType.Threshold:
                     case LabIndicatorType.Blocked:
                         retVal.ResultStatus = ResultType.ActionRequired;

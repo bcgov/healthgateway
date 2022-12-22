@@ -33,10 +33,17 @@ namespace HealthGateway.Common.Data.Validations
         /// </summary>
         public PhnValidator()
         {
-            this.RuleFor(v => v).NotEmpty().Must(v => IsValid(v)).WithMessage("PHN is not valid");
+            this.RuleFor(v => v).NotEmpty().Must(v => IsValidInternal(v)).WithMessage("PHN is not valid");
         }
 
-        private static bool IsValid(string phn)
+        /// <summary>
+        /// Validates the supplied value is a proper Personal Health Number.
+        /// </summary>
+        /// <param name="phn">The Personal Health Number to validate.</param>
+        /// <returns>True if valid.</returns>
+        public static bool IsValid(string? phn) => new PhnValidator().Validate(phn).IsValid;
+
+        private static bool IsValidInternal(string phn)
         {
             bool retVal = false;
             if (!string.IsNullOrEmpty(phn) && phn.Length == 10 && phn.All(c => char.IsDigit(c)) && phn[0] == '9')
