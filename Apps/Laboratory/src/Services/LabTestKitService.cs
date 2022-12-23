@@ -68,7 +68,6 @@ namespace HealthGateway.Laboratory.Services
         /// <inheritdoc/>
         public async Task<RequestResult<PublicLabTestKit>> RegisterLabTestKitAsync(PublicLabTestKit testKit)
         {
-            RequestResult<PublicLabTestKit> requestResult = InitializeResult(testKit);
             testKit.ShortCodeFirst = testKit.ShortCodeFirst?.ToUpper(CultureInfo.InvariantCulture);
             testKit.ShortCodeSecond = testKit.ShortCodeSecond?.ToUpper(CultureInfo.InvariantCulture);
 
@@ -89,43 +88,33 @@ namespace HealthGateway.Laboratory.Services
             {
                 string ipAddress = this.httpContextAccessor?.HttpContext?.Connection.RemoteIpAddress?.MapToIPv4().ToString() ?? "0.0.0.0";
                 HttpResponseMessage response = await this.labTestKitApi.RegisterLabTestAsync(testKit, accessToken, ipAddress).ConfigureAwait(true);
-                ProcessResponse(requestResult, response);
+                return ProcessResponse(testKit, response.StatusCode);
             }
             catch (HttpRequestException e)
             {
                 this.logger.LogCritical("HTTP Request Exception {Exception}", e.ToString());
                 return RequestResultFactory.ServiceError<PublicLabTestKit>(ErrorType.CommunicationExternal, ServiceType.Phsa, "Error with HTTP Request");
             }
-
-            return requestResult;
         }
 
         /// <inheritdoc/>
         public async Task<RequestResult<LabTestKit>> RegisterLabTestKitAsync(string hdid, LabTestKit testKit)
         {
-            RequestResult<LabTestKit> requestResult = InitializeResult(testKit);
             string? accessToken = this.authenticationDelegate.FetchAuthenticatedUserToken();
+
             try
             {
-                HttpResponseMessage response =
-                    await this.labTestKitApi.RegisterLabTestAsync(hdid, testKit, accessToken).ConfigureAwait(true);
-                ProcessResponse(requestResult, response);
+                HttpResponseMessage response = await this.labTestKitApi.RegisterLabTestAsync(hdid, testKit, accessToken).ConfigureAwait(true);
+                return ProcessResponse(testKit, response.StatusCode);
             }
             catch (HttpRequestException e)
             {
                 this.logger.LogCritical("HTTP Request Exception {Exception}", e.ToString());
-                requestResult.ResultError = new()
-                {
-                    ResultMessage = "Error with HTTP Request",
-                    ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.Phsa),
-                };
+                return RequestResultFactory.ServiceError<LabTestKit>(ErrorType.CommunicationExternal, ServiceType.Phsa, "Error with HTTP Request");
             }
-
-            return requestResult;
         }
 
         private static RequestResult<T> InitializeResult<T>(T payload)
-            where T : class
         {
             RequestResult<T> result = new()
             {
@@ -137,10 +126,10 @@ namespace HealthGateway.Laboratory.Services
             return result;
         }
 
-        private static void ProcessResponse<T>(RequestResult<T> requestResult, HttpResponseMessage response)
-            where T : class
+        private static RequestResult<T> ProcessResponse<T>(T payload, HttpStatusCode responseStatusCode)
         {
-            switch (response.StatusCode)
+            var requestResult = InitializeResult(payload);
+            switch (responseStatusCode)
             {
                 case HttpStatusCode.OK:
                     requestResult.ResultStatus = ResultType.Success;
@@ -167,7 +156,7 @@ namespace HealthGateway.Laboratory.Services
                 case HttpStatusCode.Forbidden:
                     requestResult.ResultError = new()
                     {
-                        ResultMessage = $"DID Claim is missing or can not resolve PHN, HTTP Error {response.StatusCode}",
+                        ResultMessage = $"DID Claim is missing or can not resolve PHN, HTTP Error {responseStatusCode}",
                         ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.Phsa),
                     };
                     break;
@@ -175,11 +164,12 @@ namespace HealthGateway.Laboratory.Services
                 default:
                     requestResult.ResultError = new()
                     {
-                        ResultMessage = $"An unexpected error occurred, HTTP Error {response.StatusCode}",
+                        ResultMessage = $"An unexpected error occurred, HTTP Error {responseStatusCode}",
                         ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.Phsa),
                     };
                     break;
             }
+            return requestResult;
         }
     }
 }

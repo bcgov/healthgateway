@@ -50,7 +50,7 @@ namespace HealthGateway.LaboratoryTests.Services
                 StatusCode = HttpStatusCode.OK,
             };
             RequestResult<LabTestKit> actualResult = await this.GetLabTestKitService(httpResponse).RegisterLabTestKitAsync("hdid", new LabTestKit()).ConfigureAwait(false);
-            Assert.True(actualResult.ResultStatus == ResultType.Success);
+            Assert.Equal(ResultType.Success, actualResult.ResultStatus);
         }
 
         /// <summary>
