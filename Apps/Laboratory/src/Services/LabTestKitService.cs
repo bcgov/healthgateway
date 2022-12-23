@@ -24,11 +24,12 @@ namespace HealthGateway.Laboratory.Services
     using HealthGateway.Common.AccessManagement.Authentication.Models;
     using HealthGateway.Common.Data.Constants;
     using HealthGateway.Common.Data.ErrorHandling;
-    using HealthGateway.Common.Data.Validations;
     using HealthGateway.Common.Data.ViewModels;
     using HealthGateway.Common.ErrorHandling;
+    using HealthGateway.Common.Factories;
     using HealthGateway.Laboratory.Api;
     using HealthGateway.Laboratory.Models.PHSA;
+    using HealthGateway.Laboratory.Validations;
     using Microsoft.AspNetCore.Http;
     using Microsoft.Extensions.Logging;
 
@@ -70,58 +71,30 @@ namespace HealthGateway.Laboratory.Services
             RequestResult<PublicLabTestKit> requestResult = InitializeResult(testKit);
             testKit.ShortCodeFirst = testKit.ShortCodeFirst?.ToUpper(CultureInfo.InvariantCulture);
             testKit.ShortCodeSecond = testKit.ShortCodeSecond?.ToUpper(CultureInfo.InvariantCulture);
-            bool validated;
-            if (!string.IsNullOrEmpty(testKit.Phn))
+
+            if (!new PublicLabTestKitValidator().Validate(testKit).IsValid)
             {
-                validated = PhnValidator.IsValid(testKit.Phn) &&
-                            string.IsNullOrEmpty(testKit.StreetAddress) &&
-                            string.IsNullOrEmpty(testKit.City) &&
-                            string.IsNullOrEmpty(testKit.PostalOrZip);
-            }
-            else
-            {
-                validated = !string.IsNullOrEmpty(testKit.StreetAddress) &&
-                            !string.IsNullOrEmpty(testKit.City) &&
-                            !string.IsNullOrEmpty(testKit.PostalOrZip);
+                return RequestResultFactory.ActionRequired<PublicLabTestKit>(ActionType.Validation, "Form data did not pass validation");
             }
 
-            if (validated)
+            // Use a system token
+            string? accessToken = this.authenticationDelegate.AuthenticateAsSystem(this.tokenUri, this.tokenRequest).AccessToken;
+            if (accessToken == null)
             {
-                // Use a system token
-                string? accessToken = this.authenticationDelegate.AuthenticateAsSystem(this.tokenUri, this.tokenRequest).AccessToken;
-                if (accessToken != null)
-                {
-                    try
-                    {
-                        string ipAddress = this.httpContextAccessor?.HttpContext?.Connection.RemoteIpAddress?.MapToIPv4().ToString() ?? "0.0.0.0";
-                        HttpResponseMessage response =
-                            await this.labTestKitApi.RegisterLabTestAsync(testKit, accessToken, ipAddress).ConfigureAwait(true);
-                        ProcessResponse(requestResult, response);
-                    }
-                    catch (HttpRequestException e)
-                    {
-                        this.logger.LogCritical("HTTP Request Exception {Exception}", e.ToString());
-                        requestResult.ResultError = new()
-                        {
-                            ResultMessage = "Error with HTTP Request",
-                            ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.Phsa),
-                        };
-                    }
-                }
-                else
-                {
-                    requestResult.ResultError = new()
-                    {
-                        ResultMessage = "Unable to acquire authentication token",
-                        ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.Keycloak),
-                    };
-                    this.logger.LogError("Unable to acquire authentication token");
-                }
+                this.logger.LogError("Unable to acquire authentication token");
+                return RequestResultFactory.ServiceError<PublicLabTestKit>(ErrorType.CommunicationExternal, ServiceType.Keycloak, "Unable to acquire authentication token");
             }
-            else
+
+            try
             {
-                requestResult.ResultError = ErrorTranslator.ActionRequired("Form data did not pass validation", ActionType.Validation);
-                requestResult.ResultStatus = ResultType.ActionRequired;
+                string ipAddress = this.httpContextAccessor?.HttpContext?.Connection.RemoteIpAddress?.MapToIPv4().ToString() ?? "0.0.0.0";
+                HttpResponseMessage response = await this.labTestKitApi.RegisterLabTestAsync(testKit, accessToken, ipAddress).ConfigureAwait(true);
+                ProcessResponse(requestResult, response);
+            }
+            catch (HttpRequestException e)
+            {
+                this.logger.LogCritical("HTTP Request Exception {Exception}", e.ToString());
+                return RequestResultFactory.ServiceError<PublicLabTestKit>(ErrorType.CommunicationExternal, ServiceType.Phsa, "Error with HTTP Request");
             }
 
             return requestResult;

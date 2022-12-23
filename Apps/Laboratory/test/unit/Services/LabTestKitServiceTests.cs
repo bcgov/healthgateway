@@ -110,10 +110,9 @@ namespace HealthGateway.LaboratoryTests.Services
                 StatusCode = HttpStatusCode.Conflict,
             };
             RequestResult<PublicLabTestKit> actualResult = this.GetLabTestKitService(httpResponse).RegisterLabTestKitAsync(CreatePublicLabTestKit("9735353315")).Result;
-            Assert.True(
-                actualResult.ResultStatus == ResultType.ActionRequired &&
-                actualResult.ResultError != null &&
-                actualResult.ResultError.ActionCodeValue == ActionType.Processed.Value);
+            Assert.Equal(ResultType.ActionRequired, actualResult.ResultStatus);
+            Assert.NotNull(actualResult.ResultError);
+            Assert.Equal(ActionType.Processed.Value, actualResult.ResultError.ActionCodeValue);
         }
 
         /// <summary>
@@ -127,10 +126,9 @@ namespace HealthGateway.LaboratoryTests.Services
                 StatusCode = HttpStatusCode.UnprocessableEntity,
             };
             RequestResult<PublicLabTestKit> actualResult = this.GetLabTestKitService(httpResponse).RegisterLabTestKitAsync(CreatePublicLabTestKit("9735353315")).Result;
-            Assert.True(
-                actualResult.ResultStatus == ResultType.ActionRequired &&
-                actualResult.ResultError != null &&
-                actualResult.ResultError.ActionCodeValue == ActionType.Validation.Value);
+            Assert.Equal(ResultType.ActionRequired, actualResult.ResultStatus);
+            Assert.NotNull(actualResult.ResultError);
+            Assert.Equal(ActionType.Validation.Value, actualResult.ResultError.ActionCodeValue);
         }
 
         /// <summary>
@@ -144,10 +142,9 @@ namespace HealthGateway.LaboratoryTests.Services
                 StatusCode = HttpStatusCode.OK,
             };
             RequestResult<PublicLabTestKit> actualResult = this.GetLabTestKitService(httpResponse).RegisterLabTestKitAsync(CreatePublicLabTestKit("BADPHN")).Result;
-            Assert.True(
-                actualResult.ResultStatus == ResultType.ActionRequired &&
-                actualResult.ResultError != null &&
-                actualResult.ResultError.ActionCodeValue == ActionType.Validation.Value);
+            Assert.Equal(ResultType.ActionRequired, actualResult.ResultStatus);
+            Assert.NotNull(actualResult.ResultError);
+            Assert.Equal(ActionType.Validation.Value, actualResult.ResultError.ActionCodeValue);
         }
 
         /// <summary>
@@ -161,10 +158,9 @@ namespace HealthGateway.LaboratoryTests.Services
                 StatusCode = HttpStatusCode.OK,
             };
             RequestResult<PublicLabTestKit> actualResult = this.GetLabTestKitService(httpResponse).RegisterLabTestKitAsync(CreatePublicLabTestKit(null)).Result;
-            Assert.True(
-                actualResult.ResultStatus == ResultType.ActionRequired &&
-                actualResult.ResultError != null &&
-                actualResult.ResultError.ActionCodeValue == ActionType.Validation.Value);
+            Assert.Equal(ResultType.ActionRequired, actualResult.ResultStatus);
+            Assert.NotNull(actualResult.ResultError);
+            Assert.Equal(ActionType.Validation.Value, actualResult.ResultError.ActionCodeValue);
         }
 
         /// <summary>
