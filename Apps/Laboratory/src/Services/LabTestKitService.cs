@@ -169,6 +169,7 @@ namespace HealthGateway.Laboratory.Services
                     };
                     break;
             }
+
             return requestResult;
         }
     }
