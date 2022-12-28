@@ -16,8 +16,8 @@
 namespace HealthGateway.Medication.Services
 {
     using System.Collections.Generic;
+    using System.Linq;
     using HealthGateway.Database.Delegates;
-    using HealthGateway.Database.Models;
     using HealthGateway.Medication.Models;
     using Microsoft.Extensions.Logging;
 
@@ -45,52 +45,47 @@ namespace HealthGateway.Medication.Services
         /// <inheritdoc/>
         public IDictionary<string, MedicationInformation> GetMedications(IList<string> medicationDinList)
         {
-            this.logger.LogTrace("Getting list of medications...");
-            IDictionary<string, MedicationInformation> result = new Dictionary<string, MedicationInformation>();
+            var drugProducts = this.drugLookupDelegate.GetDrugProductsByDin(medicationDinList);
 
-            // Retrieve drug information from the Federal soruce
-            IList<DrugProduct> drugProducts = this.drugLookupDelegate.GetDrugProductsByDin(medicationDinList);
-            foreach (DrugProduct drugProduct in drugProducts)
+            var drugs = drugProducts.ToDictionary(m => m.DrugIdentificationNumber, m => new MedicationInformation
             {
-                FederalDrugSource federalData = new()
+                Din = m.DrugIdentificationNumber,
+                FederalData = new FederalDrugSource
                 {
-                    UpdateDateTime = drugProduct.UpdatedDateTime,
-                    DrugProduct = drugProduct,
-                };
-                result[drugProduct.DrugIdentificationNumber] = new MedicationInformation
-                {
-                    Din = drugProduct.DrugIdentificationNumber,
-                    FederalData = federalData,
-                };
-            }
+                    DrugProduct = m,
+                    UpdateDateTime = m.UpdatedDateTime,
+                },
+            });
 
-            // Retrieve drug information from the Provincial source and append it to the result if previously added.
-            IList<PharmaCareDrug> pharmaCareDrugs = this.drugLookupDelegate.GetPharmaCareDrugsByDin(medicationDinList);
-            foreach (PharmaCareDrug pharmaCareDrug in pharmaCareDrugs)
+            var pharmaCareDrugs = this.drugLookupDelegate.GetPharmaCareDrugsByDin(medicationDinList);
+
+            foreach (var pharmaDrug in pharmaCareDrugs)
             {
-                ProvincialDrugSource provincialData = new()
+                if (!drugs.TryGetValue(pharmaDrug.DinPin, out var drug))
                 {
-                    UpdateDateTime = pharmaCareDrug.UpdatedDateTime,
-                    PharmaCareDrug = pharmaCareDrug,
-                };
-
-                result.TryGetValue(pharmaCareDrug.DinPin, out MedicationInformation? medication);
-                if (medication is not null)
-                {
-                    result[pharmaCareDrug.DinPin].ProvincialData = provincialData;
+                    // add pharma drug
+                    drugs.Add(pharmaDrug.DinPin, new MedicationInformation
+                    {
+                        Din = pharmaDrug.DinPin,
+                        ProvincialData = new ProvincialDrugSource
+                        {
+                            PharmaCareDrug = pharmaDrug,
+                            UpdateDateTime = pharmaDrug.UpdatedDateTime,
+                        },
+                    });
                 }
                 else
                 {
-                    result[pharmaCareDrug.DinPin] = new MedicationInformation
+                    // attach to existing drug
+                    drug.ProvincialData = new ProvincialDrugSource
                     {
-                        Din = pharmaCareDrug.DinPin,
-                        ProvincialData = provincialData,
+                        PharmaCareDrug = pharmaDrug,
+                        UpdateDateTime = pharmaDrug.UpdatedDateTime,
                     };
                 }
             }
 
-            this.logger.LogDebug("Finished getting list of medications.");
-            return result;
+            return drugs;
         }
     }
 }
