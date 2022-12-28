@@ -94,6 +94,16 @@ namespace HealthGateway.Common.Factories
             };
 
         /// <summary>
+        /// Factory method for error <see cref="RequestResult{T}"/> instances.
+        /// </summary>
+        /// <param name="actionType">The action type.</param>
+        /// <param name="validationResults">Fluent validation errors.</param>
+        /// <typeparam name="T">The payload type.</typeparam>
+        /// <returns>New  <see cref="RequestResult{T}"/> instance with error.</returns>
+        public static RequestResult<T> ActionRequired<T>(ActionType actionType, IEnumerable<FluentValidation.Results.ValidationFailure> validationResults)
+            => ActionRequired<T>(actionType, string.Join(";", validationResults.Select(vr => vr.ErrorMessage)));
+
+        /// <summary>
         /// Factory method for action required <see cref="RequestResult{T}"/> instances.
         /// </summary>
         /// <param name="actionType">The action type.</param>
@@ -116,7 +126,7 @@ namespace HealthGateway.Common.Factories
         /// <param name="pageIndex">the page index.</param>
         /// <param name="pageSize">the page size.</param>
         /// <returns>New <see cref="RequestResult{T}"/> instance with success and payload.</returns>
-        public static RequestResult<T> Success<T>(T payload, int totalResultCount = 0, int pageIndex = 0, int pageSize = 0)
+        public static RequestResult<T> Success<T>(T payload, int? totalResultCount = null, int? pageIndex = null, int? pageSize = null)
             => new RequestResult<T>
             {
                 ResultStatus = Data.Constants.ResultType.Success,
