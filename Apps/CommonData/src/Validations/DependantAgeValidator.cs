@@ -31,12 +31,15 @@ namespace HealthGateway.Common.Data.Validations
         /// <param name="maxDependentAge">The maximum age of the dependent.</param>
         public DependantAgeValidator(DateTime? now = null, int maxDependentAge = 12)
         {
-            if (now == null)
-            {
-                now = DateTime.UtcNow;
-            }
-
-            this.RuleFor(v => v).Must(v => v.Date.AddYears(maxDependentAge) > now.Value.Date).WithMessage($"Dependent age exceeds the maximum limit of {maxDependentAge}");
+            this.RuleFor(v => v).SetValidator(new AgeRangeValidator(youngerThan: maxDependentAge, referenceDate: now)).WithMessage($"Dependent age exceeds the maximum limit of {maxDependentAge}");
         }
+
+        /// <summary>
+        /// Validates a date of birth against a maximum age.
+        /// </summary>
+        /// <param name="dateOfBirth">date of birth to validate.</param>
+        /// <param name="maxDependentAge">optional maximum age, defaults to 12.</param>
+        /// <returns>true if valid, false id not.</returns>
+        public static bool IsValid(DateTime dateOfBirth, int maxDependentAge = 12) => new DependantAgeValidator(maxDependentAge: maxDependentAge).Validate(dateOfBirth).IsValid;
     }
 }

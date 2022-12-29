@@ -178,7 +178,7 @@ namespace HealthGateway.GatewayApiTests.Controllers.Test
                 new Mock<IUserSmsService>().Object,
                 new Mock<IAuthenticationDelegate>().Object);
 
-            PrimitiveRequestResult<bool> actualResult = await controller.Validate(this.hdid).ConfigureAwait(true);
+            var actualResult = await controller.Validate(this.hdid).ConfigureAwait(true);
 
             Assert.Equal(expected, actualResult);
         }
@@ -579,7 +579,7 @@ namespace HealthGateway.GatewayApiTests.Controllers.Test
             userProfileServiceMock.Setup(s => s.GetUserPreferences(this.hdid))
                 .Returns(
                     new RequestResult<Dictionary<string, UserPreferenceModel>>
-                        { ResourcePayload = userPreferencePayloadMock });
+                    { ResourcePayload = userPreferencePayloadMock });
 
             Mock<IUserEmailService> emailServiceMock = new();
             Mock<IUserSmsService> smsServiceMock = new();

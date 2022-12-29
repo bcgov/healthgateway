@@ -34,8 +34,19 @@ namespace HealthGateway.Common.Factories
         /// <typeparam name="T">The payload type.</typeparam>
         /// <returns>New  <see cref="RequestResult{T}"/> instance with error.</returns>
         public static RequestResult<T> Error<T>(RequestResultError resultError)
+            => Error<T>(default, resultError);
+
+        /// <summary>
+        /// Factory method for error <see cref="RequestResult{T}"/> instances.
+        /// </summary>
+        /// <param name="payload">the payload.</param>
+        /// <param name="resultError">The error.</param>
+        /// <typeparam name="T">The payload type.</typeparam>
+        /// <returns>New  <see cref="RequestResult{T}"/> instance with error.</returns>
+        public static RequestResult<T> Error<T>(T? payload, RequestResultError resultError)
             => new RequestResult<T>
             {
+                ResourcePayload = payload,
                 ResultStatus = Data.Constants.ResultType.Error,
                 ResultError = resultError,
             };

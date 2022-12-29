@@ -17,7 +17,6 @@ namespace HealthGateway.GatewayApi.Services
 {
     using System;
     using System.Collections.Generic;
-    using System.Diagnostics.CodeAnalysis;
     using System.Globalization;
     using System.Linq;
     using System.Threading.Tasks;
@@ -26,9 +25,11 @@ namespace HealthGateway.GatewayApi.Services
     using HealthGateway.Common.Constants;
     using HealthGateway.Common.Data.Constants;
     using HealthGateway.Common.Data.Models;
+    using HealthGateway.Common.Data.Validations;
     using HealthGateway.Common.Data.ViewModels;
     using HealthGateway.Common.Delegates;
     using HealthGateway.Common.ErrorHandling;
+    using HealthGateway.Common.Factories;
     using HealthGateway.Common.Models;
     using HealthGateway.Common.Services;
     using HealthGateway.Database.Constants;
@@ -208,41 +209,21 @@ namespace HealthGateway.GatewayApi.Services
             if (this.registrationStatus == RegistrationStatus.Closed)
             {
                 this.logger.LogWarning("Registration is closed... {Hdid}", createProfileRequest.Profile.HdId);
-                return new RequestResult<UserProfileModel>
-                {
-                    ResultStatus = ResultType.Error,
-                    ResultError = new RequestResultError
-                    {
-                        ResultMessage = "Registration is closed",
-                        ErrorCode = ErrorTranslator.InternalError(ErrorType.InvalidState),
-                    },
-                };
+                return RequestResultFactory.Error<UserProfileModel>(ErrorType.InvalidState, "Registration is closed");
             }
 
             // Validate registration age
             string hdid = createProfileRequest.Profile.HdId;
-            PrimitiveRequestResult<bool> isMinimumAgeResult = await this.ValidateMinimumAge(hdid).ConfigureAwait(true);
+            var isMinimumAgeResult = await this.ValidateMinimumAge(hdid).ConfigureAwait(true);
             if (isMinimumAgeResult.ResultStatus != ResultType.Success)
             {
-                return new RequestResult<UserProfileModel>
-                {
-                    ResultStatus = isMinimumAgeResult.ResultStatus,
-                    ResultError = isMinimumAgeResult.ResultError,
-                };
+                return RequestResultFactory.Error<UserProfileModel>(isMinimumAgeResult.ResultError);
             }
 
             if (!isMinimumAgeResult.ResourcePayload)
             {
                 this.logger.LogWarning("Patient under minimum age... {Hdid}", createProfileRequest.Profile.HdId);
-                return new RequestResult<UserProfileModel>
-                {
-                    ResultStatus = ResultType.Error,
-                    ResultError = new RequestResultError
-                    {
-                        ResultMessage = "Patient under minimum age",
-                        ErrorCode = ErrorTranslator.InternalError(ErrorType.InvalidState),
-                    },
-                };
+                return RequestResultFactory.Error<UserProfileModel>(ErrorType.InvalidState, "Patient under minimum age");
             }
 
             RequestResult<PatientModel> patientResult = await this.patientService.GetPatient(hdid).ConfigureAwait(true);
@@ -265,177 +246,121 @@ namespace HealthGateway.GatewayApi.Services
             };
             DbResult<UserProfile> insertResult = this.userProfileDelegate.InsertUserProfile(newProfile);
 
-            if (insertResult.Status == DbStatusCode.Created)
+            if (insertResult.Status != DbStatusCode.Created)
             {
-                UserProfile dbModel = insertResult.Payload;
-                string? requestedSmsNumber = createProfileRequest.Profile.SmsNumber;
-                string? requestedEmail = createProfileRequest.Profile.Email;
-
-                RequestResult<TermsOfServiceModel> termsOfServiceResult = this.GetActiveTermsOfService();
-                UserProfileModel userProfileModel = UserProfileMapUtils.CreateFromDbModel(dbModel, termsOfServiceResult.ResourcePayload?.Id, this.autoMapper);
-
-                NotificationSettingsRequest notificationRequest = new(dbModel, requestedEmail, requestedSmsNumber);
-
-                // Add email verification
-                if (!string.IsNullOrWhiteSpace(requestedEmail))
-                {
-                    bool isEmailVerified = requestedEmail.Equals(jwtEmailAddress, StringComparison.OrdinalIgnoreCase);
-                    this.userEmailService.CreateUserEmail(hdid, requestedEmail, isEmailVerified);
-                    userProfileModel.Email = requestedEmail;
-                    userProfileModel.IsEmailVerified = isEmailVerified;
-                }
-
-                // Add SMS verification
-                if (!string.IsNullOrWhiteSpace(requestedSmsNumber))
-                {
-                    MessagingVerification smsVerification = this.userSmsService.CreateUserSms(hdid, requestedSmsNumber);
-                    notificationRequest.SmsVerificationCode = smsVerification.SmsValidationCode;
-                    userProfileModel.SmsNumber = requestedSmsNumber;
-                }
-
-                this.notificationSettingsService.QueueNotificationSettings(notificationRequest);
-
-                this.logger.LogDebug("Finished creating user profile... {Hdid}", insertResult.Payload.HdId);
-                return new RequestResult<UserProfileModel>
-                {
-                    ResourcePayload = userProfileModel,
-                    ResultStatus = ResultType.Success,
-                };
+                this.logger.LogError("Error creating user profile... {Hdid}", insertResult.Payload.HdId);
+                return RequestResultFactory.ServiceError<UserProfileModel>(ErrorType.CommunicationInternal, ServiceType.Database, insertResult.Message);
             }
 
-            this.logger.LogError("Error creating user profile... {Hdid}", insertResult.Payload.HdId);
-            return new RequestResult<UserProfileModel>
+            UserProfile dbModel = insertResult.Payload;
+            string? requestedSmsNumber = createProfileRequest.Profile.SmsNumber;
+            string? requestedEmail = createProfileRequest.Profile.Email;
+
+            RequestResult<TermsOfServiceModel> termsOfServiceResult = this.GetActiveTermsOfService();
+            UserProfileModel userProfileModel = UserProfileMapUtils.CreateFromDbModel(dbModel, termsOfServiceResult.ResourcePayload?.Id, this.autoMapper);
+
+            NotificationSettingsRequest notificationRequest = new(dbModel, requestedEmail, requestedSmsNumber);
+
+            // Add email verification
+            if (!string.IsNullOrWhiteSpace(requestedEmail))
             {
-                ResultStatus = ResultType.Error,
-                ResultError = new RequestResultError
-                {
-                    ResultMessage = insertResult.Message,
-                    ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationInternal, ServiceType.Database),
-                },
-            };
+                bool isEmailVerified = requestedEmail.Equals(jwtEmailAddress, StringComparison.OrdinalIgnoreCase);
+                this.userEmailService.CreateUserEmail(hdid, requestedEmail, isEmailVerified);
+                userProfileModel.Email = requestedEmail;
+                userProfileModel.IsEmailVerified = isEmailVerified;
+            }
+
+            // Add SMS verification
+            if (!string.IsNullOrWhiteSpace(requestedSmsNumber))
+            {
+                MessagingVerification smsVerification = this.userSmsService.CreateUserSms(hdid, requestedSmsNumber);
+                notificationRequest.SmsVerificationCode = smsVerification.SmsValidationCode;
+                userProfileModel.SmsNumber = requestedSmsNumber;
+            }
+
+            this.notificationSettingsService.QueueNotificationSettings(notificationRequest);
+
+            this.logger.LogDebug("Finished creating user profile... {Hdid}", insertResult.Payload.HdId);
+
+            return RequestResultFactory.Success(userProfileModel);
         }
 
         /// <inheritdoc/>
-        [SuppressMessage("Design", "CA1054:Uri parameters should not be strings", Justification = "Team decision")]
         public RequestResult<UserProfileModel> CloseUserProfile(string hdid, Guid userId)
         {
             this.logger.LogTrace("Closing user profile... {Hdid}", hdid);
 
             DbResult<UserProfile> retrieveResult = this.userProfileDelegate.GetUserProfile(hdid);
 
-            if (retrieveResult.Status == DbStatusCode.Read)
+            if (retrieveResult.Status != DbStatusCode.Read)
             {
-                RequestResult<TermsOfServiceModel> termsOfServiceResult = this.GetActiveTermsOfService();
-
-                UserProfile profile = retrieveResult.Payload;
-                if (profile.ClosedDateTime != null)
-                {
-                    this.logger.LogTrace("Finished. Profile already Closed");
-                    return new RequestResult<UserProfileModel>
-                    {
-                        ResourcePayload =
-                            UserProfileMapUtils.CreateFromDbModel(profile, termsOfServiceResult.ResourcePayload?.Id, this.autoMapper),
-                        ResultStatus = ResultType.Success,
-                    };
-                }
-
-                profile.ClosedDateTime = DateTime.UtcNow;
-                profile.IdentityManagementId = userId;
-                DbResult<UserProfile> updateResult = this.userProfileDelegate.Update(profile);
-                if (!string.IsNullOrWhiteSpace(profile.Email))
-                {
-                    this.QueueEmail(profile.Email, EmailTemplateName.AccountClosedTemplate);
-                }
-
-                this.logger.LogDebug("Finished closing user profile... {Hdid}", updateResult.Payload.HdId);
-                return new RequestResult<UserProfileModel>
-                {
-                    ResourcePayload = UserProfileMapUtils.CreateFromDbModel(updateResult.Payload, termsOfServiceResult.ResourcePayload?.Id, this.autoMapper),
-                    ResultStatus = ResultType.Success,
-                };
+                return RequestResultFactory.ServiceError<UserProfileModel>(ErrorType.CommunicationInternal, ServiceType.Database, retrieveResult.Message);
             }
 
-            return new RequestResult<UserProfileModel>
+            RequestResult<TermsOfServiceModel> termsOfServiceResult = this.GetActiveTermsOfService();
+
+            UserProfile profile = retrieveResult.Payload;
+            if (profile.ClosedDateTime != null)
             {
-                ResultStatus = ResultType.Error,
-                ResultError = new RequestResultError
-                {
-                    ResultMessage = retrieveResult.Message,
-                    ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationInternal, ServiceType.Database),
-                },
-            };
+                this.logger.LogTrace("Finished. Profile already Closed");
+                return RequestResultFactory.Success(UserProfileMapUtils.CreateFromDbModel(profile, termsOfServiceResult.ResourcePayload?.Id, this.autoMapper));
+            }
+
+            profile.ClosedDateTime = DateTime.UtcNow;
+            profile.IdentityManagementId = userId;
+            DbResult<UserProfile> updateResult = this.userProfileDelegate.Update(profile);
+            if (!string.IsNullOrWhiteSpace(profile.Email))
+            {
+                this.QueueEmail(profile.Email, EmailTemplateName.AccountClosedTemplate);
+            }
+
+            var payload = UserProfileMapUtils.CreateFromDbModel(updateResult.Payload, termsOfServiceResult.ResourcePayload?.Id, this.autoMapper);
+            return RequestResultFactory.Success(payload);
         }
 
         /// <inheritdoc/>
-        [SuppressMessage("Design", "CA1054:Uri parameters should not be strings", Justification = "Team decision")]
         public RequestResult<UserProfileModel> RecoverUserProfile(string hdid)
         {
             this.logger.LogTrace("Recovering user profile... {Hdid}", hdid);
 
             DbResult<UserProfile> retrieveResult = this.userProfileDelegate.GetUserProfile(hdid);
 
-            if (retrieveResult.Status == DbStatusCode.Read)
+            if (retrieveResult.Status != DbStatusCode.Read)
             {
-                RequestResult<TermsOfServiceModel> termsOfServiceResult = this.GetActiveTermsOfService();
-                UserProfile profile = retrieveResult.Payload;
-                if (profile.ClosedDateTime == null)
-                {
-                    this.logger.LogTrace("Finished. Profile already is active, recover not needed.");
-                    return new RequestResult<UserProfileModel>
-                    {
-                        ResourcePayload =
-                            UserProfileMapUtils.CreateFromDbModel(profile, termsOfServiceResult.ResourcePayload?.Id, this.autoMapper),
-                        ResultStatus = ResultType.Success,
-                    };
-                }
-
-                // Remove values set for deletion
-                profile.ClosedDateTime = null;
-                profile.IdentityManagementId = null;
-                DbResult<UserProfile> updateResult = this.userProfileDelegate.Update(profile);
-                if (!string.IsNullOrWhiteSpace(profile.Email))
-                {
-                    this.QueueEmail(profile.Email, EmailTemplateName.AccountRecoveredTemplate);
-                }
-
-                this.logger.LogDebug("Finished recovering user profile... {Hdid}", hdid);
-                return new RequestResult<UserProfileModel>
-                {
-                    ResourcePayload = UserProfileMapUtils.CreateFromDbModel(updateResult.Payload, termsOfServiceResult.ResourcePayload?.Id, this.autoMapper),
-                    ResultStatus = ResultType.Success,
-                };
+                return RequestResultFactory.ServiceError<UserProfileModel>(ErrorType.CommunicationInternal, ServiceType.Database, retrieveResult.Message);
             }
 
-            return new RequestResult<UserProfileModel>
+            RequestResult<TermsOfServiceModel> termsOfServiceResult = this.GetActiveTermsOfService();
+            UserProfile profile = retrieveResult.Payload;
+            if (profile.ClosedDateTime == null)
             {
-                ResultStatus = ResultType.Error,
-                ResultError = new RequestResultError
-                {
-                    ResultMessage = retrieveResult.Message,
-                    ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationInternal, ServiceType.Database),
-                },
-            };
+                this.logger.LogTrace("Finished. Profile already is active, recover not needed.");
+                return RequestResultFactory.Success(UserProfileMapUtils.CreateFromDbModel(profile, termsOfServiceResult.ResourcePayload?.Id, this.autoMapper));
+            }
+
+            // Remove values set for deletion
+            profile.ClosedDateTime = null;
+            profile.IdentityManagementId = null;
+            DbResult<UserProfile> updateResult = this.userProfileDelegate.Update(profile);
+            if (!string.IsNullOrWhiteSpace(profile.Email))
+            {
+                this.QueueEmail(profile.Email, EmailTemplateName.AccountRecoveredTemplate);
+            }
+
+            return RequestResultFactory.Success(UserProfileMapUtils.CreateFromDbModel(updateResult.Payload, termsOfServiceResult.ResourcePayload?.Id, this.autoMapper));
         }
 
         /// <inheritdoc/>
         public RequestResult<TermsOfServiceModel> GetActiveTermsOfService()
         {
-            this.logger.LogDebug("Getting active terms of service...");
-            DbResult<LegalAgreement> retVal =
-                this.legalAgreementDelegate.GetActiveByAgreementType(LegalAgreementType.TermsOfService);
+            DbResult<LegalAgreement> retVal = this.legalAgreementDelegate.GetActiveByAgreementType(LegalAgreementType.TermsOfService);
 
-            return new RequestResult<TermsOfServiceModel>
+            if (retVal.Status == DbStatusCode.Error)
             {
-                ResultStatus = retVal.Status != DbStatusCode.Error ? ResultType.Success : ResultType.Error,
-                ResourcePayload = this.autoMapper.Map<TermsOfServiceModel>(retVal.Payload),
-                ResultError = retVal.Status != DbStatusCode.Error
-                    ? null
-                    : new RequestResultError
-                    {
-                        ResultMessage = retVal.Message,
-                        ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationInternal, ServiceType.Database),
-                    },
-            };
+                return RequestResultFactory.ServiceError<TermsOfServiceModel>(ErrorType.CommunicationInternal, ServiceType.Database, retVal.Message);
+            }
+
+            return RequestResultFactory.Success(this.autoMapper.Map<TermsOfServiceModel>(retVal.Payload));
         }
 
         /// <inheritdoc/>
@@ -446,21 +371,13 @@ namespace HealthGateway.GatewayApi.Services
             UserPreference userPreference = this.autoMapper.Map<UserPreference>(userPreferenceModel);
 
             DbResult<UserPreference> dbResult = this.userPreferenceDelegate.UpdateUserPreference(userPreference);
-            this.logger.LogDebug("Finished updating user preference... {Preference} for {Hdid}", userPreferenceModel.Preference, userPreferenceModel.HdId);
 
-            RequestResult<UserPreferenceModel> requestResult = new()
+            if (dbResult.Status != DbStatusCode.Updated)
             {
-                ResourcePayload = this.autoMapper.Map<UserPreferenceModel>(dbResult.Payload),
-                ResultStatus = dbResult.Status == DbStatusCode.Updated ? ResultType.Success : ResultType.Error,
-                ResultError = dbResult.Status == DbStatusCode.Updated
-                    ? null
-                    : new RequestResultError
-                    {
-                        ResultMessage = dbResult.Message,
-                        ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationInternal, ServiceType.Database),
-                    },
-            };
-            return requestResult;
+                return RequestResultFactory.ServiceError<UserPreferenceModel>(ErrorType.CommunicationInternal, ServiceType.Database, dbResult.Message);
+            }
+
+            return RequestResultFactory.Success(this.autoMapper.Map<UserPreferenceModel>(dbResult.Payload));
         }
 
         /// <inheritdoc/>
@@ -469,21 +386,13 @@ namespace HealthGateway.GatewayApi.Services
             this.logger.LogTrace("Creating user preference... {Preference} for {Hdid}", userPreferenceModel.Preference, userPreferenceModel.HdId);
             UserPreference userPreference = this.autoMapper.Map<UserPreference>(userPreferenceModel);
             DbResult<UserPreference> dbResult = this.userPreferenceDelegate.CreateUserPreference(userPreference);
-            this.logger.LogDebug("Finished creating user preference... {Preference} for {Hdid}", userPreferenceModel.Preference, userPreferenceModel.HdId);
 
-            RequestResult<UserPreferenceModel> requestResult = new()
+            if (dbResult.Status != DbStatusCode.Created)
             {
-                ResourcePayload = this.autoMapper.Map<UserPreferenceModel>(dbResult.Payload),
-                ResultStatus = dbResult.Status == DbStatusCode.Created ? ResultType.Success : ResultType.Error,
-                ResultError = dbResult.Status == DbStatusCode.Created
-                    ? null
-                    : new RequestResultError
-                    {
-                        ResultMessage = dbResult.Message,
-                        ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationInternal, ServiceType.Database),
-                    },
-            };
-            return requestResult;
+                return RequestResultFactory.ServiceError<UserPreferenceModel>(ErrorType.CommunicationInternal, ServiceType.Database, dbResult.Message);
+            }
+
+            return RequestResultFactory.Success(this.autoMapper.Map<UserPreferenceModel>(dbResult.Payload));
         }
 
         /// <inheritdoc/>
@@ -491,97 +400,56 @@ namespace HealthGateway.GatewayApi.Services
         {
             this.logger.LogTrace("Getting user preference... {Hdid}", hdid);
             DbResult<IEnumerable<UserPreference>> dbResult = this.userPreferenceDelegate.GetUserPreferences(hdid);
-            RequestResult<Dictionary<string, UserPreferenceModel>> requestResult =
-                new()
-                {
-                    ResourcePayload = this.autoMapper.Map<IEnumerable<UserPreferenceModel>>(dbResult.Payload)
-                        .ToDictionary(x => x.Preference, x => x),
-                    ResultStatus = dbResult.Status == DbStatusCode.Read ? ResultType.Success : ResultType.Error,
-                    ResultError = dbResult.Status == DbStatusCode.Read
-                        ? null
-                        : new RequestResultError
-                        {
-                            ResultMessage = dbResult.Message,
-                            ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationInternal, ServiceType.Database),
-                        },
-                };
 
-            this.logger.LogTrace("Finished getting user preference...{Hdid}", hdid);
-            return requestResult;
+            if (dbResult.Status != DbStatusCode.Read)
+            {
+                return RequestResultFactory.ServiceError<Dictionary<string, UserPreferenceModel>>(ErrorType.CommunicationInternal, ServiceType.Database, dbResult.Message);
+            }
+
+            return RequestResultFactory.Success(this.autoMapper.Map<IEnumerable<UserPreferenceModel>>(dbResult.Payload).ToDictionary(x => x.Preference, x => x));
         }
 
         /// <inheritdoc/>
-        public async Task<PrimitiveRequestResult<bool>> ValidateMinimumAge(string hdid)
+        public async Task<RequestResult<bool>> ValidateMinimumAge(string hdid)
         {
             if (this.minPatientAge == 0)
             {
-                return new PrimitiveRequestResult<bool>
-                {
-                    ResourcePayload = true,
-                    ResultStatus = ResultType.Success,
-                };
+                return RequestResultFactory.Success(true);
             }
 
             RequestResult<PatientModel> patientResult = await this.patientService.GetPatient(hdid).ConfigureAwait(true);
 
-            if (patientResult.ResultStatus != ResultType.Success)
+            if (patientResult.ResultStatus != ResultType.Success || patientResult.ResourcePayload == null)
             {
                 this.logger.LogWarning("Error retrieving patient age... {Hdid}", hdid);
-                return new PrimitiveRequestResult<bool>
-                {
-                    ResultStatus = patientResult.ResultStatus,
-                    ResultError = patientResult.ResultError,
-                    ResourcePayload = false,
-                };
+                return RequestResultFactory.Error(false, patientResult.ResultError);
             }
 
-            DateTime birthDate = patientResult.ResourcePayload?.Birthdate ?? default(DateTime);
-            return new PrimitiveRequestResult<bool>
-            {
-                ResultStatus = patientResult.ResultStatus,
-                ResourcePayload = birthDate.AddYears(this.minPatientAge) < DateTime.Now,
-            };
+            var isValid = AgeRangeValidator.IsValid(patientResult.ResourcePayload.Birthdate, olderThan: this.minPatientAge);
+
+            return RequestResultFactory.Success(isValid);
         }
 
         /// <inheritdoc/>
         public RequestResult<UserProfileModel> UpdateAcceptedTerms(string hdid, Guid termsOfServiceId)
         {
-            RequestResult<UserProfileModel> requestResult = new()
-            {
-                ResultStatus = ResultType.Error,
-            };
-
             DbResult<UserProfile> profileResult = this.userProfileDelegate.GetUserProfile(hdid);
-            if (profileResult.Status == DbStatusCode.Read)
-            {
-                profileResult.Payload.TermsOfServiceId = termsOfServiceId;
-                profileResult = this.userProfileDelegate.Update(profileResult.Payload);
-                if (profileResult.Status == DbStatusCode.Updated)
-                {
-                    RequestResult<TermsOfServiceModel> termsOfServiceResult = this.GetActiveTermsOfService();
 
-                    requestResult.ResultStatus = ResultType.Success;
-                    requestResult.ResourcePayload = UserProfileMapUtils.CreateFromDbModel(profileResult.Payload, termsOfServiceResult.ResourcePayload?.Id, this.autoMapper);
-                }
-                else
-                {
-                    requestResult.ResultError = new()
-                    {
-                        ResultMessage = "Unable to update the terms of service: DB Error",
-                        ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationInternal, ServiceType.Database),
-                    };
-                }
-            }
-            else
+            if (profileResult.Status != DbStatusCode.Read)
             {
-                requestResult.ResultError = new()
-                {
-                    ResultMessage = "Unable to retrieve user profile",
-                    ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationInternal, ServiceType.Database),
-                };
+                return RequestResultFactory.ServiceError<UserProfileModel>(ErrorType.CommunicationInternal, ServiceType.Database, "Unable to retrieve user profile");
             }
 
-            return requestResult;
+            profileResult.Payload.TermsOfServiceId = termsOfServiceId;
+            profileResult = this.userProfileDelegate.Update(profileResult.Payload);
+            if (profileResult.Status != DbStatusCode.Updated)
+            {
+                return RequestResultFactory.ServiceError<UserProfileModel>(ErrorType.CommunicationInternal, ServiceType.Database, "Unable to update the terms of service: DB Error");
+            }
+
+            RequestResult<TermsOfServiceModel> termsOfServiceResult = this.GetActiveTermsOfService();
+
+            return RequestResultFactory.Success(UserProfileMapUtils.CreateFromDbModel(profileResult.Payload, termsOfServiceResult.ResourcePayload?.Id, this.autoMapper));
         }
 
         private void QueueEmail(string toEmail, string templateName)

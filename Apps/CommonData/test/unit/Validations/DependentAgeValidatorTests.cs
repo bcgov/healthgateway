@@ -25,7 +25,7 @@ namespace HealthGateway.Common.Data.Tests.Validations
     /// </summary>
     public class DependentAgeValidatorTests
     {
-        private static readonly DateTime RelativeNow = new DateTime(2022, 12, 21);
+        private static readonly DateTime RelativeNow = new DateTime(2022, 12, 21, 0, 0, 0, DateTimeKind.Utc);
 
         /// <summary>
         /// Tests for DependantAgeValidator.
@@ -37,14 +37,17 @@ namespace HealthGateway.Common.Data.Tests.Validations
         [InlineData("2010-12-20", 12, false)]
         [InlineData("2010-12-21", 12, false)]
         [InlineData("2010-12-22", 12, true)]
-        [InlineData("1976-12-20", 30, false)]
-        [InlineData("1976-12-22", 47, true)]
+
+        // leap year
+        [InlineData("1976-12-20", 46, false)]
+        [InlineData("1976-12-21", 46, false)]
+        [InlineData("1976-12-22", 46, true)]
         public void Validate(DateTime dob, int maxDependentAge, bool shouldBeValid)
         {
             var validator = new DependantAgeValidator(RelativeNow, maxDependentAge);
 
             var validationResult = validator.Validate(dob);
-            Assert.True(validationResult.IsValid == shouldBeValid);
+            Assert.Equal(shouldBeValid, validationResult.IsValid);
         }
     }
 }
