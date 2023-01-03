@@ -110,7 +110,7 @@ namespace HealthGateway.Medication.Services
                 string ipv4Address = this.httpContextAccessor.HttpContext?.Connection.RemoteIpAddress?.MapToIPv4().ToString() ?? "Unknown";
                 RequestResult<MedicationHistoryResponse> response =
                     await this.medicationStatementDelegate.GetMedicationStatementsAsync(historyQuery, protectiveWord, hdid, ipv4Address).ConfigureAwait(true);
-                
+
                 if (response.ResultStatus != ResultType.Success || response.ResourcePayload == null)
                 {
                     return RequestResultFactory.Error<IList<MedicationStatementHistory>>(patientResult.ResultError);
