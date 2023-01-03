@@ -17,6 +17,7 @@ namespace HealthGateway.Laboratory.Services
 {
     using System;
     using System.Collections.Generic;
+    using System.Globalization;
     using System.Linq;
     using System.Threading.Tasks;
     using AutoMapper;
@@ -26,11 +27,9 @@ namespace HealthGateway.Laboratory.Services
     using HealthGateway.Common.Constants.PHSA;
     using HealthGateway.Common.Data.Constants;
     using HealthGateway.Common.Data.ErrorHandling;
-    using HealthGateway.Common.Data.Utils;
     using HealthGateway.Common.Data.Validations;
     using HealthGateway.Common.Data.ViewModels;
     using HealthGateway.Common.ErrorHandling;
-    using HealthGateway.Common.Factories;
     using HealthGateway.Common.Models.PHSA;
     using HealthGateway.Laboratory.Delegates;
     using HealthGateway.Laboratory.Factories;
@@ -48,6 +47,7 @@ namespace HealthGateway.Laboratory.Services
         public const string LabConfigSectionKey = "Laboratory";
 
         private const string AuthConfigSectionName = "PublicAuthentication";
+        private const string IsNullOrEmptyTokenErrorMessage = "The auth token is null or empty - unable to cache or proceed";
 
         private readonly IAuthenticationDelegate authenticationDelegate;
         private readonly ILaboratoryDelegate laboratoryDelegate;
@@ -86,161 +86,222 @@ namespace HealthGateway.Laboratory.Services
         /// <inheritdoc/>
         public async Task<RequestResult<Covid19OrderResult>> GetCovid19Orders(string hdid, int pageIndex = 0)
         {
+            RequestResult<Covid19OrderResult> retVal = new()
+            {
+                ResourcePayload = new(),
+                ResultStatus = ResultType.Error,
+                ResultError = UnauthorizedResultError(),
+            };
+
             string? accessToken = this.authenticationDelegate.FetchAuthenticatedUserToken();
-            if (accessToken == null)
+
+            if (accessToken != null)
             {
-                return RequestResultFactory.Error<Covid19OrderResult>(UnauthorizedResultError());
-            }
+                RequestResult<PhsaResult<List<PhsaCovid19Order>>> delegateResult =
+                    await this.laboratoryDelegate.GetCovid19Orders(accessToken, hdid, pageIndex).ConfigureAwait(true);
 
-            RequestResult<PhsaResult<List<PhsaCovid19Order>>> delegateResult = await this.laboratoryDelegate.GetCovid19Orders(accessToken, hdid, pageIndex).ConfigureAwait(true);
+                retVal.ResultStatus = delegateResult.ResultStatus;
+                retVal.ResultError = delegateResult.ResultError;
+                retVal.PageIndex = delegateResult.PageIndex;
+                retVal.PageSize = delegateResult.PageSize;
+                retVal.TotalResultCount = delegateResult.TotalResultCount;
 
-            PhsaLoadState? loadState = delegateResult.ResourcePayload?.LoadState;
-            if (loadState != null && loadState.RefreshInProgress)
-            {
-                return RequestResultFactory.ActionRequired(
-                    new Covid19OrderResult
-                    {
-                        RetryIn = Math.Max(loadState.BackOffMilliseconds, this.labConfig.BackOffMilliseconds),
-                        Loaded = !loadState.RefreshInProgress,
-                    },
-                    ActionType.Refresh,
-                    "Refresh in progress");
-            }
-
-            if (delegateResult.ResultStatus != ResultType.Success)
-            {
-                return RequestResultFactory.Error<Covid19OrderResult>(delegateResult.ResultError);
-            }
-
-            return RequestResultFactory.Success(
-                new Covid19OrderResult
+                if (delegateResult.ResultStatus == ResultType.Success)
                 {
-                    Covid19Orders = this.autoMapper.Map<IEnumerable<PhsaCovid19Order>, IEnumerable<Covid19Order>>(delegateResult.ResourcePayload?.Result),
-                },
-                delegateResult.TotalResultCount,
-                delegateResult.PageIndex,
-                delegateResult.PageSize);
+                    retVal.ResourcePayload.Covid19Orders =
+                        this.autoMapper.Map<IEnumerable<PhsaCovid19Order>, IEnumerable<Covid19Order>>(delegateResult.ResourcePayload?.Result);
+                }
+
+                PhsaLoadState? loadState = delegateResult.ResourcePayload?.LoadState;
+                if (loadState != null)
+                {
+                    retVal.ResourcePayload.Loaded = !loadState.RefreshInProgress;
+                    if (loadState.RefreshInProgress)
+                    {
+                        retVal.ResultStatus = ResultType.ActionRequired;
+                        retVal.ResultError = ErrorTranslator.ActionRequired("Refresh in progress", ActionType.Refresh);
+                        retVal.ResourcePayload.RetryIn = Math.Max(
+                            loadState.BackOffMilliseconds,
+                            this.labConfig.BackOffMilliseconds);
+                    }
+                }
+            }
+
+            return retVal;
         }
 
         /// <inheritdoc/>
         public async Task<RequestResult<LaboratoryOrderResult>> GetLaboratoryOrders(string hdid)
         {
+            RequestResult<LaboratoryOrderResult> retVal = new()
+            {
+                ResourcePayload = new(),
+                ResultStatus = ResultType.Error,
+                ResultError = UnauthorizedResultError(),
+            };
+
             string? accessToken = this.authenticationDelegate.FetchAuthenticatedUserToken();
-            if (accessToken == null)
+
+            if (accessToken != null)
             {
-                return RequestResultFactory.Error<LaboratoryOrderResult>(UnauthorizedResultError());
-            }
+                RequestResult<PhsaResult<PhsaLaboratorySummary>> delegateResult =
+                    await this.laboratoryDelegate.GetLaboratorySummary(hdid, accessToken).ConfigureAwait(true);
 
-            RequestResult<PhsaResult<PhsaLaboratorySummary>> delegateResult = await this.laboratoryDelegate.GetLaboratorySummary(hdid, accessToken).ConfigureAwait(true);
+                retVal.ResultStatus = delegateResult.ResultStatus;
+                retVal.ResultError = delegateResult.ResultError;
+                retVal.PageIndex = delegateResult.PageIndex;
+                retVal.PageSize = delegateResult.PageSize;
+                retVal.TotalResultCount = delegateResult.TotalResultCount;
 
-            PhsaLoadState? loadState = delegateResult.ResourcePayload?.LoadState;
-            if (loadState != null && loadState.RefreshInProgress)
-            {
-                return RequestResultFactory.ActionRequired(
-                    new LaboratoryOrderResult
-                    {
-                        RetryIn = Math.Max(loadState.BackOffMilliseconds, this.labConfig.BackOffMilliseconds),
-                        Loaded = !loadState.RefreshInProgress,
-                    },
-                    ActionType.Refresh,
-                    "Refresh in progress");
-            }
-
-            if (delegateResult.ResultStatus != ResultType.Success)
-            {
-                return RequestResultFactory.Error<LaboratoryOrderResult>(delegateResult.ResultError);
-            }
-
-            return RequestResultFactory.Success(
-                new LaboratoryOrderResult
+                PhsaLaboratorySummary? payload = delegateResult.ResourcePayload?.Result;
+                if (delegateResult.ResultStatus == ResultType.Success && payload != null)
                 {
-                    LaboratoryOrders = this.autoMapper.Map<IEnumerable<PhsaLaboratoryOrder>, IEnumerable<LaboratoryOrder>>(delegateResult.ResourcePayload?.Result?.LabOrders),
-                },
-                delegateResult.TotalResultCount,
-                delegateResult.PageIndex,
-                delegateResult.PageSize);
+                    retVal.ResourcePayload.LaboratoryOrders =
+                        this.autoMapper.Map<IEnumerable<PhsaLaboratoryOrder>, IEnumerable<LaboratoryOrder>>(payload.LabOrders);
+                }
+
+                PhsaLoadState? loadState = delegateResult.ResourcePayload?.LoadState;
+                if (loadState != null)
+                {
+                    retVal.ResourcePayload.Queued = loadState.Queued;
+                    retVal.ResourcePayload.Loaded = !loadState.RefreshInProgress;
+                    if (loadState.RefreshInProgress)
+                    {
+                        retVal.ResultStatus = ResultType.ActionRequired;
+                        retVal.ResultError = ErrorTranslator.ActionRequired("Refresh in progress", ActionType.Refresh);
+                        retVal.ResourcePayload.RetryIn = Math.Max(
+                            loadState.BackOffMilliseconds,
+                            this.labConfig.BackOffMilliseconds);
+                    }
+                }
+            }
+
+            return retVal;
         }
 
         /// <inheritdoc/>
         public async Task<RequestResult<LaboratoryReport>> GetLabReport(string id, string hdid, bool isCovid19)
         {
+            RequestResult<LaboratoryReport> retVal = new();
+
             string? accessToken = this.authenticationDelegate.FetchAuthenticatedUserToken();
-            if (accessToken == null)
+
+            if (accessToken != null)
             {
-                return RequestResultFactory.Error<LaboratoryReport>(UnauthorizedResultError());
+                return await this.laboratoryDelegate.GetLabReport(id, hdid, accessToken, isCovid19)
+                    .ConfigureAwait(true);
             }
 
-            return await this.laboratoryDelegate.GetLabReport(id, hdid, accessToken, isCovid19).ConfigureAwait(true);
+            retVal.ResultError = UnauthorizedResultError();
+            return retVal;
         }
 
         /// <inheritdoc/>
         public async Task<RequestResult<PublicCovidTestResponse>> GetPublicCovidTestsAsync(string phn, string dateOfBirthString, string collectionDateString)
         {
-            if (!DateFormatter.TryParse(dateOfBirthString, "yyyy-MM-dd", out DateTime dateOfBirth))
+            RequestResult<PublicCovidTestResponse> retVal = new()
             {
-                return RequestResultFactory.Error<PublicCovidTestResponse>(ErrorType.InvalidState, "Error parsing date of birth");
+                ResultStatus = ResultType.Error,
+                ResourcePayload = new PublicCovidTestResponse(),
+            };
+
+            DateOnly dateOfBirth;
+            try
+            {
+                dateOfBirth = DateOnly.ParseExact(dateOfBirthString, "yyyy-MM-dd", CultureInfo.InvariantCulture);
+            }
+            catch (Exception e) when (e is FormatException || e is ArgumentNullException)
+            {
+                retVal.ResultStatus = ResultType.Error;
+                retVal.ResultError = new RequestResultError
+                {
+                    ResultMessage = "Error parsing date of birth",
+                    ErrorCode = ErrorTranslator.InternalError(ErrorType.InvalidState),
+                };
+                return retVal;
             }
 
-            if (!DateFormatter.TryParse(collectionDateString, "yyyy-MM-dd", out DateTime collectionDate))
+            DateOnly collectionDate;
+            try
             {
-                return RequestResultFactory.Error<PublicCovidTestResponse>(ErrorType.InvalidState, "Error parsing collection date");
+                collectionDate = DateOnly.ParseExact(collectionDateString, "yyyy-MM-dd", CultureInfo.InvariantCulture);
+            }
+            catch (Exception e) when (e is FormatException || e is ArgumentNullException)
+            {
+                retVal.ResultStatus = ResultType.Error;
+                retVal.ResultError = new RequestResultError
+                {
+                    ResultMessage = "Error parsing collection date",
+                    ErrorCode = ErrorTranslator.InternalError(ErrorType.InvalidState),
+                };
+                return retVal;
             }
 
             if (!PhnValidator.IsValid(phn))
             {
-                return RequestResultFactory.Error<PublicCovidTestResponse>(ErrorType.InvalidState, "Error parsing phn");
+                retVal.ResultStatus = ResultType.Error;
+                retVal.ResultError = new RequestResultError
+                {
+                    ResultMessage = "Error parsing phn",
+                    ErrorCode = ErrorTranslator.InternalError(ErrorType.InvalidState),
+                };
+                return retVal;
             }
 
             string? accessToken = this.authenticationDelegate.AuthenticateAsSystem(this.tokenUri, this.tokenRequest).AccessToken;
-            if (accessToken == null)
+            if (string.IsNullOrEmpty(accessToken))
             {
-                return RequestResultFactory.Error<PublicCovidTestResponse>(UnauthorizedResultError());
+                this.logger.LogCritical(IsNullOrEmptyTokenErrorMessage);
+                retVal.ResultError = UnauthorizedResultError();
+                return retVal;
             }
 
-            RequestResult<PhsaResult<IEnumerable<CovidTestResult>>> result =
-                await this.laboratoryDelegate.GetPublicTestResults(accessToken, phn, DateOnly.FromDateTime(dateOfBirth), DateOnly.FromDateTime(collectionDate)).ConfigureAwait(true);
-
+            RequestResult<PhsaResult<IEnumerable<CovidTestResult>>> result = await this.laboratoryDelegate.GetPublicTestResults(accessToken, phn, dateOfBirth, collectionDate).ConfigureAwait(true);
+            List<CovidTestResult> payload = result.ResourcePayload?.Result?.ToList() ?? new List<CovidTestResult>();
             PhsaLoadState? loadState = result.ResourcePayload?.LoadState;
-            if (loadState != null && loadState.RefreshInProgress)
+
+            retVal.ResultStatus = result.ResultStatus;
+            retVal.ResultError = result.ResultError;
+
+            if (payload.Any())
             {
-                return RequestResultFactory.ActionRequired(
-                    new PublicCovidTestResponse
-                    {
-                        RetryIn = Math.Max(loadState.BackOffMilliseconds, this.labConfig.BackOffMilliseconds),
-                        Loaded = !loadState.RefreshInProgress,
-                    },
-                    ActionType.Refresh,
-                    "Refresh in progress");
+                LabIndicatorType labIndicatorType = Enum.Parse<LabIndicatorType>(payload.Select(x => x.StatusIndicator).First());
+
+                switch (labIndicatorType)
+                {
+                    case LabIndicatorType.Found:
+                        retVal.ResourcePayload = new PublicCovidTestResponse
+                        {
+                            Records = this.autoMapper.Map<List<CovidTestResult>, IEnumerable<PublicCovidTestRecord>>(payload),
+                        };
+                        break;
+
+                    case LabIndicatorType.DataMismatch:
+                    case LabIndicatorType.NotFound:
+                        retVal.ResultStatus = ResultType.ActionRequired;
+                        retVal.ResultError = ErrorTranslator.ActionRequired(ErrorMessages.DataMismatch, ActionType.DataMismatch);
+                        break;
+
+                    case LabIndicatorType.Threshold:
+                    case LabIndicatorType.Blocked:
+                        retVal.ResultStatus = ResultType.ActionRequired;
+                        retVal.ResultError = ErrorTranslator.ActionRequired(ErrorMessages.RecordsNotAvailable, ActionType.Invalid);
+                        break;
+                }
             }
 
-            LabIndicatorType labIndicatorType = Enum.Parse<LabIndicatorType>(result.ResourcePayload?.Result.FirstOrDefault()?.StatusIndicator);
-
-            IEnumerable<PublicCovidTestRecord>? records = this.autoMapper.Map<IEnumerable<PublicCovidTestRecord>>(result.ResourcePayload?.Result ?? Array.Empty<CovidTestResult>());
-            RequestResult<PublicCovidTestResponse> retVal = labIndicatorType switch
+            if (loadState != null)
             {
-                LabIndicatorType.Found => RequestResultFactory.Success(CreatePublicCovidTestRecordPayload(records, true), result.TotalResultCount, result.PageIndex, result.PageSize),
-                LabIndicatorType.DataMismatch or LabIndicatorType.NotFound => RequestResultFactory.ActionRequired(
-                    CreatePublicCovidTestRecordPayload(),
-                    ActionType.DataMismatch,
-                    ErrorMessages.DataMismatch),
-                LabIndicatorType.Threshold or LabIndicatorType.Blocked => RequestResultFactory.ActionRequired(
-                    CreatePublicCovidTestRecordPayload(),
-                    ActionType.Invalid,
-                    ErrorMessages.RecordsNotAvailable),
-                _ => RequestResultFactory.Error<PublicCovidTestResponse>(result.ResultError),
-            };
+                retVal.ResourcePayload.Loaded = !loadState.RefreshInProgress;
+                if (loadState.RefreshInProgress)
+                {
+                    retVal.ResultStatus = ResultType.ActionRequired;
+                    retVal.ResultError = ErrorTranslator.ActionRequired("Refresh in progress", ActionType.Refresh);
+                    retVal.ResourcePayload.RetryIn = Math.Max(loadState.BackOffMilliseconds, this.labConfig.BackOffMilliseconds);
+                }
+            }
 
             return retVal;
-        }
-
-        private static PublicCovidTestResponse CreatePublicCovidTestRecordPayload(IEnumerable<PublicCovidTestRecord>? records = null, bool loaded = false, int retryIn = 0)
-        {
-            return new()
-            {
-                Records = records ?? Array.Empty<PublicCovidTestRecord>(),
-                Loaded = loaded,
-                RetryIn = retryIn,
-            };
         }
 
         private static RequestResultError UnauthorizedResultError()
