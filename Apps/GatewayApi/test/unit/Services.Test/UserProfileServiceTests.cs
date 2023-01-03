@@ -287,8 +287,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
 
             // Act
             RequestResult<UserProfileModel> actualResult = await service.CreateUserProfile(
-                    new CreateUserRequest
-                    { Profile = userProfile },
+                    new CreateUserRequest { Profile = userProfile },
                     DateTime.Today,
                     It.IsAny<string>())
                 .ConfigureAwait(true);
@@ -343,8 +342,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
 
             // Act
             RequestResult<UserProfileModel> actualResult = await service.CreateUserProfile(
-                    new CreateUserRequest
-                    { Profile = userProfile },
+                    new CreateUserRequest { Profile = userProfile },
                     DateTime.Today,
                     It.IsAny<string>())
                 .ConfigureAwait(true);

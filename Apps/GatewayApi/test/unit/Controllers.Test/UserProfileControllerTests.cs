@@ -577,9 +577,7 @@ namespace HealthGateway.GatewayApiTests.Controllers.Test
             userProfileServiceMock.Setup(s => s.GetUserProfile(this.hdid, It.IsAny<DateTime>())).Returns(Task.FromResult(expected));
             userProfileServiceMock.Setup(s => s.GetActiveTermsOfService()).Returns(new RequestResult<TermsOfServiceModel>());
             userProfileServiceMock.Setup(s => s.GetUserPreferences(this.hdid))
-                .Returns(
-                    new RequestResult<Dictionary<string, UserPreferenceModel>>
-                    { ResourcePayload = userPreferencePayloadMock });
+                .Returns(new RequestResult<Dictionary<string, UserPreferenceModel>> { ResourcePayload = userPreferencePayloadMock });
 
             Mock<IUserEmailService> emailServiceMock = new();
             Mock<IUserSmsService> smsServiceMock = new();
