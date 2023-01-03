@@ -17,6 +17,7 @@
 namespace HealthGateway.Common.Data.Tests.Validations
 {
     using System;
+    using FluentValidation.Results;
     using HealthGateway.Common.Data.Validations;
     using Xunit;
 
@@ -25,7 +26,7 @@ namespace HealthGateway.Common.Data.Tests.Validations
     /// </summary>
     public class AgeRangeValidatorTests
     {
-        private static readonly DateTime ReferenceDate = new DateTime(2022, 12, 21, 0, 0, 0, DateTimeKind.Utc);
+        private static readonly DateTime ReferenceDate = new(2022, 12, 21, 0, 0, 0, DateTimeKind.Utc);
 
         /// <summary>
         /// Tests for AgeRangeValidatorTests.
@@ -39,9 +40,9 @@ namespace HealthGateway.Common.Data.Tests.Validations
         [InlineData("2010-12-22", 12, true)]
         public void ValidateYoungerThan(DateTime dob, int youngerThan, bool shouldBeValid)
         {
-            var validator = new AgeRangeValidator(youngerThan: youngerThan, referenceDate: ReferenceDate);
+            AgeRangeValidator validator = new AgeRangeValidator(youngerThan: youngerThan, referenceDate: ReferenceDate);
 
-            var validationResult = validator.Validate(dob);
+            ValidationResult? validationResult = validator.Validate(dob);
             Assert.Equal(shouldBeValid, validationResult.IsValid);
         }
 
@@ -57,9 +58,9 @@ namespace HealthGateway.Common.Data.Tests.Validations
         [InlineData("2010-12-22", 12, false)]
         public void ValidateOlderThan(DateTime dob, int olderThan, bool shouldBeValid)
         {
-            var validator = new AgeRangeValidator(olderThan: olderThan, referenceDate: ReferenceDate);
+            AgeRangeValidator validator = new AgeRangeValidator(olderThan, referenceDate: ReferenceDate);
 
-            var validationResult = validator.Validate(dob);
+            ValidationResult? validationResult = validator.Validate(dob);
             Assert.Equal(shouldBeValid, validationResult.IsValid);
         }
 
@@ -81,9 +82,9 @@ namespace HealthGateway.Common.Data.Tests.Validations
         [InlineData("2010-12-22", 12, 14, false)]
         public void ValidateOlderThanAndYoungerThan(DateTime dob, int olderThan, int youngerThan, bool shouldBeValid)
         {
-            var validator = new AgeRangeValidator(olderThan: olderThan, youngerThan: youngerThan, referenceDate: ReferenceDate);
+            AgeRangeValidator validator = new AgeRangeValidator(olderThan, youngerThan, ReferenceDate);
 
-            var validationResult = validator.Validate(dob);
+            ValidationResult? validationResult = validator.Validate(dob);
             Assert.Equal(shouldBeValid, validationResult.IsValid);
         }
     }

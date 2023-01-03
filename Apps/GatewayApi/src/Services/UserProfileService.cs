@@ -214,7 +214,7 @@ namespace HealthGateway.GatewayApi.Services
 
             // Validate registration age
             string hdid = createProfileRequest.Profile.HdId;
-            var isMinimumAgeResult = await this.ValidateMinimumAge(hdid).ConfigureAwait(true);
+            RequestResult<bool> isMinimumAgeResult = await this.ValidateMinimumAge(hdid).ConfigureAwait(true);
             if (isMinimumAgeResult.ResultStatus != ResultType.Success)
             {
                 return RequestResultFactory.Error<UserProfileModel>(isMinimumAgeResult.ResultError);
@@ -314,7 +314,7 @@ namespace HealthGateway.GatewayApi.Services
                 this.QueueEmail(profile.Email, EmailTemplateName.AccountClosedTemplate);
             }
 
-            var payload = UserProfileMapUtils.CreateFromDbModel(updateResult.Payload, termsOfServiceResult.ResourcePayload?.Id, this.autoMapper);
+            UserProfileModel payload = UserProfileMapUtils.CreateFromDbModel(updateResult.Payload, termsOfServiceResult.ResourcePayload?.Id, this.autoMapper);
             return RequestResultFactory.Success(payload);
         }
 
@@ -425,7 +425,7 @@ namespace HealthGateway.GatewayApi.Services
                 return RequestResultFactory.Error(false, patientResult.ResultError);
             }
 
-            var isValid = AgeRangeValidator.IsValid(patientResult.ResourcePayload.Birthdate, olderThan: this.minPatientAge);
+            bool isValid = AgeRangeValidator.IsValid(patientResult.ResourcePayload.Birthdate, this.minPatientAge);
 
             return RequestResultFactory.Success(isValid);
         }

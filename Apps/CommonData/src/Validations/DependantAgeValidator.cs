@@ -40,6 +40,9 @@ namespace HealthGateway.Common.Data.Validations
         /// <param name="dateOfBirth">date of birth to validate.</param>
         /// <param name="maxDependentAge">optional maximum age, defaults to 12.</param>
         /// <returns>true if valid, false id not.</returns>
-        public static bool IsValid(DateTime dateOfBirth, int maxDependentAge = 12) => new DependantAgeValidator(maxDependentAge: maxDependentAge).Validate(dateOfBirth).IsValid;
+        public static bool IsValid(DateTime dateOfBirth, int maxDependentAge = 12)
+        {
+            return new DependantAgeValidator(maxDependentAge: maxDependentAge).Validate(dateOfBirth).IsValid;
+        }
     }
 }

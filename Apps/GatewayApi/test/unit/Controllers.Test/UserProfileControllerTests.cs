@@ -178,7 +178,7 @@ namespace HealthGateway.GatewayApiTests.Controllers.Test
                 new Mock<IUserSmsService>().Object,
                 new Mock<IAuthenticationDelegate>().Object);
 
-            var actualResult = await controller.Validate(this.hdid).ConfigureAwait(true);
+            RequestResult<bool> actualResult = await controller.Validate(this.hdid).ConfigureAwait(true);
 
             Assert.Equal(expected, actualResult);
         }

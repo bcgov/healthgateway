@@ -375,7 +375,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
             PrimitiveRequestResult<bool> expected = new() { ResultStatus = ResultType.Success, ResourcePayload = false };
 
             // Act
-            var actualResult = await service.ValidateMinimumAge(this.hdid).ConfigureAwait(true);
+            RequestResult<bool> actualResult = await service.ValidateMinimumAge(this.hdid).ConfigureAwait(true);
 
             // Assert
             Assert.Equal(ResultType.Success, actualResult.ResultStatus);

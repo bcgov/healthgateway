@@ -32,16 +32,14 @@ namespace HealthGateway.Common.Data.Validations
         /// <param name="referenceDate">A reference point for age calculation, defaults to UtcNow.</param>
         public AgeRangeValidator(int? olderThan = null, int? youngerThan = null, DateTime? referenceDate = null)
         {
-            if (referenceDate == null)
-            {
-                referenceDate = DateTime.UtcNow;
-            }
+            referenceDate ??= DateTime.UtcNow;
 
             this
                 .Transform(v => v, v => CalculateAge(referenceDate.Value.Date, v.Date))
-                .GreaterThanOrEqualTo(olderThan ?? 0).When(_ => olderThan.HasValue, ApplyConditionTo.CurrentValidator)
-                .LessThan(youngerThan ?? 0).When(_ => youngerThan.HasValue, ApplyConditionTo.CurrentValidator)
-                ;
+                .GreaterThanOrEqualTo(olderThan ?? 0)
+                .When(_ => olderThan.HasValue, ApplyConditionTo.CurrentValidator)
+                .LessThan(youngerThan ?? 0)
+                .When(_ => youngerThan.HasValue, ApplyConditionTo.CurrentValidator);
         }
 
         /// <summary>
@@ -51,7 +49,10 @@ namespace HealthGateway.Common.Data.Validations
         /// <param name="olderThan">optional older than age.</param>
         /// <param name="youngerThan">optional younger than age.</param>
         /// <returns>true if valid, false if not.</returns>
-        public static bool IsValid(DateTime dateOfBirth, int? olderThan = null, int? youngerThan = null) => new AgeRangeValidator(olderThan, youngerThan).Validate(dateOfBirth).IsValid;
+        public static bool IsValid(DateTime dateOfBirth, int? olderThan = null, int? youngerThan = null)
+        {
+            return new AgeRangeValidator(olderThan, youngerThan).Validate(dateOfBirth).IsValid;
+        }
 
         private static int CalculateAge(DateTime reference, DateTime dateOfBirth)
         {
@@ -66,8 +67,8 @@ namespace HealthGateway.Common.Data.Validations
             }
 
             // convert to yyyyMMdd integers
-            var referenceDateValue = (((reference.Year * 100) + reference.Month) * 100) + reference.Day;
-            var dobDateValue = (((dateOfBirth.Year * 100) + dateOfBirth.Month) * 100) + dateOfBirth.Day;
+            int referenceDateValue = (((reference.Year * 100) + reference.Month) * 100) + reference.Day;
+            int dobDateValue = (((dateOfBirth.Year * 100) + dateOfBirth.Month) * 100) + dateOfBirth.Day;
 
             // calculate age and trim non year values
             return (referenceDateValue - dobDateValue) / 10000;

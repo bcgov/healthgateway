@@ -17,6 +17,7 @@
 namespace HealthGateway.Common.Data.Tests.Validations
 {
     using System;
+    using FluentValidation.Results;
     using HealthGateway.Common.Data.Validations;
     using Xunit;
 
@@ -25,7 +26,7 @@ namespace HealthGateway.Common.Data.Tests.Validations
     /// </summary>
     public class DependentAgeValidatorTests
     {
-        private static readonly DateTime RelativeNow = new DateTime(2022, 12, 21, 0, 0, 0, DateTimeKind.Utc);
+        private static readonly DateTime RelativeNow = new(2022, 12, 21, 0, 0, 0, DateTimeKind.Utc);
 
         /// <summary>
         /// Tests for DependantAgeValidator.
@@ -44,9 +45,9 @@ namespace HealthGateway.Common.Data.Tests.Validations
         [InlineData("1976-12-22", 46, true)]
         public void Validate(DateTime dob, int maxDependentAge, bool shouldBeValid)
         {
-            var validator = new DependantAgeValidator(RelativeNow, maxDependentAge);
+            DependantAgeValidator validator = new DependantAgeValidator(RelativeNow, maxDependentAge);
 
-            var validationResult = validator.Validate(dob);
+            ValidationResult? validationResult = validator.Validate(dob);
             Assert.Equal(shouldBeValid, validationResult.IsValid);
         }
     }
