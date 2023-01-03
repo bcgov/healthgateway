@@ -18,8 +18,8 @@ namespace HealthGateway.Medication.Services
     using System.Collections.Generic;
     using System.Linq;
     using HealthGateway.Database.Delegates;
+    using HealthGateway.Database.Models;
     using HealthGateway.Medication.Models;
-    using Microsoft.Extensions.Logging;
 
     /// <summary>
     /// The Medication data service.
@@ -27,52 +27,52 @@ namespace HealthGateway.Medication.Services
     public class RestMedicationService : IMedicationService
     {
         private readonly IDrugLookupDelegate drugLookupDelegate;
-        private readonly ILogger logger;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="RestMedicationService"/> class.
         /// </summary>
-        /// <param name="logger">Injected Logger Provider.</param>
         /// <param name="drugLookupDelegate">The injected drug lookup delegate.</param>
         public RestMedicationService(
-            ILogger<RestMedicationService> logger,
             IDrugLookupDelegate drugLookupDelegate)
         {
-            this.logger = logger;
             this.drugLookupDelegate = drugLookupDelegate;
         }
 
         /// <inheritdoc/>
         public IDictionary<string, MedicationInformation> GetMedications(IList<string> medicationDinList)
         {
-            var drugProducts = this.drugLookupDelegate.GetDrugProductsByDin(medicationDinList);
+            IList<DrugProduct> drugProducts = this.drugLookupDelegate.GetDrugProductsByDin(medicationDinList);
 
-            var drugs = drugProducts.ToDictionary(m => m.DrugIdentificationNumber, m => new MedicationInformation
-            {
-                Din = m.DrugIdentificationNumber,
-                FederalData = new FederalDrugSource
+            Dictionary<string, MedicationInformation> drugs = drugProducts.ToDictionary(
+                m => m.DrugIdentificationNumber,
+                m => new MedicationInformation
                 {
-                    DrugProduct = m,
-                    UpdateDateTime = m.UpdatedDateTime,
-                },
-            });
+                    Din = m.DrugIdentificationNumber,
+                    FederalData = new FederalDrugSource
+                    {
+                        DrugProduct = m,
+                        UpdateDateTime = m.UpdatedDateTime,
+                    },
+                });
 
-            var pharmaCareDrugs = this.drugLookupDelegate.GetPharmaCareDrugsByDin(medicationDinList);
+            IList<PharmaCareDrug> pharmaCareDrugs = this.drugLookupDelegate.GetPharmaCareDrugsByDin(medicationDinList);
 
-            foreach (var pharmaDrug in pharmaCareDrugs)
+            foreach (PharmaCareDrug pharmaDrug in pharmaCareDrugs)
             {
-                if (!drugs.TryGetValue(pharmaDrug.DinPin, out var drug))
+                if (!drugs.TryGetValue(pharmaDrug.DinPin, out MedicationInformation? drug))
                 {
                     // add pharma drug
-                    drugs.Add(pharmaDrug.DinPin, new MedicationInformation
-                    {
-                        Din = pharmaDrug.DinPin,
-                        ProvincialData = new ProvincialDrugSource
+                    drugs.Add(
+                        pharmaDrug.DinPin,
+                        new MedicationInformation
                         {
-                            PharmaCareDrug = pharmaDrug,
-                            UpdateDateTime = pharmaDrug.UpdatedDateTime,
-                        },
-                    });
+                            Din = pharmaDrug.DinPin,
+                            ProvincialData = new ProvincialDrugSource
+                            {
+                                PharmaCareDrug = pharmaDrug,
+                                UpdateDateTime = pharmaDrug.UpdatedDateTime,
+                            },
+                        });
                 }
                 else
                 {
