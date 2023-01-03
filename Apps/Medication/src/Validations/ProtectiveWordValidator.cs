@@ -32,13 +32,18 @@ namespace HealthGateway.Medication.Validations
         /// </summary>
         public ProtectiveWordValidator()
         {
-            this.When(v => !string.IsNullOrEmpty(v), () =>
-            {
-                this.RuleFor(v => v)
-                    .MinimumLength(MinLengthProtectiveWord).WithMessage(ErrorMessages.ProtectiveWordTooShort)
-                    .MaximumLength(MaxLengthProtectiveWord).WithMessage(ErrorMessages.ProtectiveWordTooLong)
-                    .Matches(@"^[0-9A-Za-z_]+$").WithMessage(ErrorMessages.ProtectiveWordInvalidChars);
-            });
+            this.When(
+                v => !string.IsNullOrEmpty(v),
+                () =>
+                {
+                    this.RuleFor(v => v)
+                        .MinimumLength(MinLengthProtectiveWord)
+                        .WithMessage(ErrorMessages.ProtectiveWordTooShort)
+                        .MaximumLength(MaxLengthProtectiveWord)
+                        .WithMessage(ErrorMessages.ProtectiveWordTooLong)
+                        .Matches(@"^[0-9A-Za-z_]+$")
+                        .WithMessage(ErrorMessages.ProtectiveWordInvalidChars);
+                });
         }
 
         /// <inheritdoc/>

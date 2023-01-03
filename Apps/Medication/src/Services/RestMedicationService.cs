@@ -32,8 +32,7 @@ namespace HealthGateway.Medication.Services
         /// Initializes a new instance of the <see cref="RestMedicationService"/> class.
         /// </summary>
         /// <param name="drugLookupDelegate">The injected drug lookup delegate.</param>
-        public RestMedicationService(
-            IDrugLookupDelegate drugLookupDelegate)
+        public RestMedicationService(IDrugLookupDelegate drugLookupDelegate)
         {
             this.drugLookupDelegate = drugLookupDelegate;
         }

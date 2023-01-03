@@ -22,6 +22,7 @@ namespace HealthGateway.Medication.Services
     using System.Linq;
     using System.Threading.Tasks;
     using AutoMapper;
+    using FluentValidation.Results;
     using HealthGateway.Common.Data.Constants;
     using HealthGateway.Common.Data.ErrorHandling;
     using HealthGateway.Common.Data.ViewModels;
@@ -84,7 +85,7 @@ namespace HealthGateway.Medication.Services
             {
                 protectiveWord = protectiveWord?.ToUpper(CultureInfo.InvariantCulture);
 
-                var protectiveWordValidation = new ProtectiveWordValidator().Validate(protectiveWord);
+                ValidationResult? protectiveWordValidation = new ProtectiveWordValidator().Validate(protectiveWord);
                 if (!protectiveWordValidation.IsValid)
                 {
                     this.logger.LogInformation("Invalid protective word. {Hdid}", hdid);
@@ -107,13 +108,15 @@ namespace HealthGateway.Medication.Services
                     PageSize = 20000,
                 };
                 string ipv4Address = this.httpContextAccessor.HttpContext?.Connection.RemoteIpAddress?.MapToIPv4().ToString() ?? "Unknown";
-                RequestResult<MedicationHistoryResponse> response = await this.medicationStatementDelegate.GetMedicationStatementsAsync(historyQuery, protectiveWord, hdid, ipv4Address).ConfigureAwait(true);
+                RequestResult<MedicationHistoryResponse> response =
+                    await this.medicationStatementDelegate.GetMedicationStatementsAsync(historyQuery, protectiveWord, hdid, ipv4Address).ConfigureAwait(true);
+                
                 if (response.ResultStatus != ResultType.Success || response.ResourcePayload == null)
                 {
                     return RequestResultFactory.Error<IList<MedicationStatementHistory>>(patientResult.ResultError);
                 }
 
-                var payload = this.autoMapper.Map<IList<MedicationStatementHistory>>(response.ResourcePayload.Results);
+                IList<MedicationStatementHistory>? payload = this.autoMapper.Map<IList<MedicationStatementHistory>>(response.ResourcePayload.Results);
                 this.PopulateMedicationSummary(payload.Select(r => r.MedicationSummary).ToArray());
 
                 return RequestResultFactory.Success(payload, response.TotalResultCount, response.PageIndex, response.PageSize);
