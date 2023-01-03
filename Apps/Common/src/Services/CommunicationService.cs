@@ -142,7 +142,8 @@ namespace HealthGateway.Common.Services
                 else
                 {
                     // Check the new comm to see if it is effective earlier and not expired
-                    if (DateTime.UtcNow < communication.ExpiryDateTime && communication.EffectiveDateTime < cachedComm.EffectiveDateTime && communication.CommunicationStatusCode is CommunicationStatus.New)
+                    if (DateTime.UtcNow < communication.ExpiryDateTime && communication.EffectiveDateTime < cachedComm.EffectiveDateTime &&
+                        communication.CommunicationStatusCode is CommunicationStatus.New)
                     {
                         this.logger.LogInformation("{Action} ChangeEvent for Communication {Id} replacing {CachedId}", changeEvent.Action, communication.Id, cachedComm.Id);
                         this.AddCommunicationToCache(communication, communication.CommunicationTypeCode);
@@ -169,13 +170,16 @@ namespace HealthGateway.Common.Services
         /// </summary>
         /// <param name="communicationType">The CommunicationType to retrieve the key for.</param>
         /// <returns>The key for the cache associated with the given CommunicationType.</returns>
-        internal static string GetCacheKey(CommunicationType communicationType) => communicationType switch
+        internal static string GetCacheKey(CommunicationType communicationType)
         {
-            CommunicationType.Banner => BannerCacheKey,
-            CommunicationType.InApp => InAppCacheKey,
-            CommunicationType.Mobile => MobileCacheKey,
-            _ => throw new NotImplementedException($"CommunicationType {communicationType} is not supported"),
-        };
+            return communicationType switch
+            {
+                CommunicationType.Banner => BannerCacheKey,
+                CommunicationType.InApp => InAppCacheKey,
+                CommunicationType.Mobile => MobileCacheKey,
+                _ => throw new NotImplementedException($"CommunicationType {communicationType} is not supported"),
+            };
+        }
 
         private void RemoveCommunicationFromCache(CommunicationType communicationType)
         {
