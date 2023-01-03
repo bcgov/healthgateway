@@ -369,7 +369,7 @@ namespace HealthGateway.LaboratoryTests.Services
         /// GetPublicTestResults - should return an error code for a data mismatch when the status indicator is DataMismatch or
         /// NotFound.
         /// </summary>
-        /// <param name="statusIndicator">Status indicator returned from delegate.</param>'
+        /// <param name="statusIndicator">Status indicator returned from delegate.</param>
         /// <returns>awaitable task.</returns>
         [Theory]
         [InlineData(nameof(LabIndicatorType.DataMismatch))]

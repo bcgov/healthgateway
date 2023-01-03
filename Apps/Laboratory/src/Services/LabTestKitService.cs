@@ -128,7 +128,7 @@ namespace HealthGateway.Laboratory.Services
 
         private static RequestResult<T> ProcessResponse<T>(T payload, HttpStatusCode responseStatusCode)
         {
-            var requestResult = InitializeResult(payload);
+            RequestResult<T> requestResult = InitializeResult(payload);
             switch (responseStatusCode)
             {
                 case HttpStatusCode.OK:
