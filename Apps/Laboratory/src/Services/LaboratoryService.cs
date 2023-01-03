@@ -24,6 +24,7 @@ namespace HealthGateway.Laboratory.Services
     using HealthGateway.Common.AccessManagement.Authentication.Models;
     using HealthGateway.Common.Constants;
     using HealthGateway.Common.Constants.PHSA;
+    using HealthGateway.Common.Data.Constants;
     using HealthGateway.Common.Data.ErrorHandling;
     using HealthGateway.Common.Data.Utils;
     using HealthGateway.Common.Data.Validations;
@@ -106,7 +107,7 @@ namespace HealthGateway.Laboratory.Services
                     "Refresh in progress");
             }
 
-            if (delegateResult.ResultStatus != Common.Data.Constants.ResultType.Success)
+            if (delegateResult.ResultStatus != ResultType.Success)
             {
                 return RequestResultFactory.Error<Covid19OrderResult>(delegateResult.ResultError);
             }
@@ -145,7 +146,7 @@ namespace HealthGateway.Laboratory.Services
                     "Refresh in progress");
             }
 
-            if (delegateResult.ResultStatus != Common.Data.Constants.ResultType.Success)
+            if (delegateResult.ResultStatus != ResultType.Success)
             {
                 return RequestResultFactory.Error<LaboratoryOrderResult>(delegateResult.ResultError);
             }
@@ -175,12 +176,12 @@ namespace HealthGateway.Laboratory.Services
         /// <inheritdoc/>
         public async Task<RequestResult<PublicCovidTestResponse>> GetPublicCovidTestsAsync(string phn, string dateOfBirthString, string collectionDateString)
         {
-            if (!DateFormatter.TryParse(dateOfBirthString, "yyyy-MM-dd", out var dateOfBirth))
+            if (!DateFormatter.TryParse(dateOfBirthString, "yyyy-MM-dd", out DateTime dateOfBirth))
             {
                 return RequestResultFactory.Error<PublicCovidTestResponse>(ErrorType.InvalidState, "Error parsing date of birth");
             }
 
-            if (!DateFormatter.TryParse(collectionDateString, "yyyy-MM-dd", out var collectionDate))
+            if (!DateFormatter.TryParse(collectionDateString, "yyyy-MM-dd", out DateTime collectionDate))
             {
                 return RequestResultFactory.Error<PublicCovidTestResponse>(ErrorType.InvalidState, "Error parsing collection date");
             }
@@ -196,7 +197,8 @@ namespace HealthGateway.Laboratory.Services
                 return RequestResultFactory.Error<PublicCovidTestResponse>(UnauthorizedResultError());
             }
 
-            RequestResult<PhsaResult<IEnumerable<CovidTestResult>>> result = await this.laboratoryDelegate.GetPublicTestResults(accessToken, phn, DateOnly.FromDateTime(dateOfBirth), DateOnly.FromDateTime(collectionDate)).ConfigureAwait(true);
+            RequestResult<PhsaResult<IEnumerable<CovidTestResult>>> result =
+                await this.laboratoryDelegate.GetPublicTestResults(accessToken, phn, DateOnly.FromDateTime(dateOfBirth), DateOnly.FromDateTime(collectionDate)).ConfigureAwait(true);
 
             PhsaLoadState? loadState = result.ResourcePayload?.LoadState;
             if (loadState != null && loadState.RefreshInProgress)
@@ -211,32 +213,43 @@ namespace HealthGateway.Laboratory.Services
                     "Refresh in progress");
             }
 
-            var labIndicatorType = Enum.Parse<LabIndicatorType>(result.ResourcePayload?.Result.FirstOrDefault()?.StatusIndicator);
+            LabIndicatorType labIndicatorType = Enum.Parse<LabIndicatorType>(result.ResourcePayload?.Result.FirstOrDefault()?.StatusIndicator);
 
-            var records = this.autoMapper.Map<IEnumerable<PublicCovidTestRecord>>(result.ResourcePayload?.Result ?? Array.Empty<CovidTestResult>());
-            var retVal = labIndicatorType switch
+            IEnumerable<PublicCovidTestRecord>? records = this.autoMapper.Map<IEnumerable<PublicCovidTestRecord>>(result.ResourcePayload?.Result ?? Array.Empty<CovidTestResult>());
+            RequestResult<PublicCovidTestResponse> retVal = labIndicatorType switch
             {
                 LabIndicatorType.Found => RequestResultFactory.Success(CreatePublicCovidTestRecordPayload(records, true), result.TotalResultCount, result.PageIndex, result.PageSize),
-                LabIndicatorType.DataMismatch or LabIndicatorType.NotFound => RequestResultFactory.ActionRequired(CreatePublicCovidTestRecordPayload(), ActionType.DataMismatch, ErrorMessages.DataMismatch),
-                LabIndicatorType.Threshold or LabIndicatorType.Blocked => RequestResultFactory.ActionRequired(CreatePublicCovidTestRecordPayload(), ActionType.Invalid, ErrorMessages.RecordsNotAvailable),
+                LabIndicatorType.DataMismatch or LabIndicatorType.NotFound => RequestResultFactory.ActionRequired(
+                    CreatePublicCovidTestRecordPayload(),
+                    ActionType.DataMismatch,
+                    ErrorMessages.DataMismatch),
+                LabIndicatorType.Threshold or LabIndicatorType.Blocked => RequestResultFactory.ActionRequired(
+                    CreatePublicCovidTestRecordPayload(),
+                    ActionType.Invalid,
+                    ErrorMessages.RecordsNotAvailable),
                 _ => RequestResultFactory.Error<PublicCovidTestResponse>(result.ResultError),
             };
 
             return retVal;
         }
 
-        private static PublicCovidTestResponse CreatePublicCovidTestRecordPayload(IEnumerable<PublicCovidTestRecord>? records = null, bool loaded = false, int retryIn = 0) =>
-            new PublicCovidTestResponse
+        private static PublicCovidTestResponse CreatePublicCovidTestRecordPayload(IEnumerable<PublicCovidTestRecord>? records = null, bool loaded = false, int retryIn = 0)
+        {
+            return new()
             {
                 Records = records ?? Array.Empty<PublicCovidTestRecord>(),
                 Loaded = loaded,
                 RetryIn = retryIn,
             };
+        }
 
-        private static RequestResultError UnauthorizedResultError() => new()
+        private static RequestResultError UnauthorizedResultError()
         {
-            ResultMessage = "Error authenticating with KeyCloak",
-            ErrorCode = ErrorTranslator.InternalError(ErrorType.InvalidState),
-        };
+            return new()
+            {
+                ResultMessage = "Error authenticating with KeyCloak",
+                ErrorCode = ErrorTranslator.InternalError(ErrorType.InvalidState),
+            };
+        }
     }
 }
