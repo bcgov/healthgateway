@@ -29,7 +29,7 @@ namespace HealthGateway.Common.Data.Tests.Validations
         private static readonly DateTime RelativeNow = new(2022, 12, 21, 0, 0, 0, DateTimeKind.Utc);
 
         /// <summary>
-        /// Tests for DependantAgeValidator.
+        /// Tests for DependentAgeValidator.
         /// </summary>
         /// <param name="dob">Date of birth to test.</param>
         /// <param name="maxDependentAge">Maximum age of dependent.</param>
@@ -45,7 +45,7 @@ namespace HealthGateway.Common.Data.Tests.Validations
         [InlineData("1976-12-22", 46, true)]
         public void Validate(DateTime dob, int maxDependentAge, bool shouldBeValid)
         {
-            DependantAgeValidator validator = new DependantAgeValidator(RelativeNow, maxDependentAge);
+            DependentAgeValidator validator = new DependentAgeValidator(RelativeNow, maxDependentAge);
 
             ValidationResult? validationResult = validator.Validate(dob);
             Assert.Equal(shouldBeValid, validationResult.IsValid);
