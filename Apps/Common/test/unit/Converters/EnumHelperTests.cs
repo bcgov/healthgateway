@@ -20,7 +20,7 @@ namespace HealthGateway.CommonTests.Converters
     using Xunit;
 
     /// <summary>
-    /// test class for Enumhelper
+    /// test class for Enumhelper.
     /// </summary>
     public class EnumHelperTests
     {
@@ -30,17 +30,17 @@ namespace HealthGateway.CommonTests.Converters
         public enum Test
         {
             /// <summary>
-            /// default
+            /// default.
             /// </summary>
             Default,
 
             /// <summary>
-            /// one
+            /// one.
             /// </summary>
             One,
 
             /// <summary>
-            /// two
+            /// two.
             /// </summary>
             Two,
         }
