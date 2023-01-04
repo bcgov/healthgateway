@@ -24,6 +24,7 @@ namespace HealthGateway.Laboratory.Services
     using HealthGateway.Common.AccessManagement.Authentication.Models;
     using HealthGateway.Common.Constants;
     using HealthGateway.Common.Constants.PHSA;
+    using HealthGateway.Common.Converters;
     using HealthGateway.Common.Data.Constants;
     using HealthGateway.Common.Data.ErrorHandling;
     using HealthGateway.Common.Data.Utils;
@@ -48,6 +49,7 @@ namespace HealthGateway.Laboratory.Services
         public const string LabConfigSectionKey = "Laboratory";
 
         private const string AuthConfigSectionName = "PublicAuthentication";
+        private const string IsNullOrEmptyTokenErrorMessage = "The auth token is null or empty - unable to cache or proceed";
 
         private readonly IAuthenticationDelegate authenticationDelegate;
         private readonly ILaboratoryDelegate laboratoryDelegate;
@@ -89,6 +91,7 @@ namespace HealthGateway.Laboratory.Services
             string? accessToken = this.authenticationDelegate.FetchAuthenticatedUserToken();
             if (accessToken == null)
             {
+                this.logger.LogCritical(IsNullOrEmptyTokenErrorMessage);
                 return RequestResultFactory.Error<Covid19OrderResult>(UnauthorizedResultError());
             }
 
@@ -126,8 +129,9 @@ namespace HealthGateway.Laboratory.Services
         public async Task<RequestResult<LaboratoryOrderResult>> GetLaboratoryOrders(string hdid)
         {
             string? accessToken = this.authenticationDelegate.FetchAuthenticatedUserToken();
-            if (accessToken == null)
+            if (string.IsNullOrEmpty(accessToken))
             {
+                this.logger.LogCritical(IsNullOrEmptyTokenErrorMessage);
                 return RequestResultFactory.Error<LaboratoryOrderResult>(UnauthorizedResultError());
             }
 
@@ -141,6 +145,7 @@ namespace HealthGateway.Laboratory.Services
                     {
                         RetryIn = Math.Max(loadState.BackOffMilliseconds, this.labConfig.BackOffMilliseconds),
                         Loaded = !loadState.RefreshInProgress,
+                        Queued = loadState.Queued,
                     },
                     ActionType.Refresh,
                     "Refresh in progress");
@@ -155,6 +160,8 @@ namespace HealthGateway.Laboratory.Services
                 new LaboratoryOrderResult
                 {
                     LaboratoryOrders = this.autoMapper.Map<IEnumerable<PhsaLaboratoryOrder>, IEnumerable<LaboratoryOrder>>(delegateResult.ResourcePayload?.Result?.LabOrders),
+                    Loaded = !(loadState?.RefreshInProgress ?? false),
+                    Queued = loadState?.Queued ?? false,
                 },
                 delegateResult.TotalResultCount,
                 delegateResult.PageIndex,
@@ -165,8 +172,9 @@ namespace HealthGateway.Laboratory.Services
         public async Task<RequestResult<LaboratoryReport>> GetLabReport(string id, string hdid, bool isCovid19)
         {
             string? accessToken = this.authenticationDelegate.FetchAuthenticatedUserToken();
-            if (accessToken == null)
+            if (string.IsNullOrEmpty(accessToken))
             {
+                this.logger.LogCritical(IsNullOrEmptyTokenErrorMessage);
                 return RequestResultFactory.Error<LaboratoryReport>(UnauthorizedResultError());
             }
 
@@ -192,8 +200,9 @@ namespace HealthGateway.Laboratory.Services
             }
 
             string? accessToken = this.authenticationDelegate.AuthenticateAsSystem(this.tokenUri, this.tokenRequest).AccessToken;
-            if (accessToken == null)
+            if (string.IsNullOrEmpty(accessToken))
             {
+                this.logger.LogCritical(IsNullOrEmptyTokenErrorMessage);
                 return RequestResultFactory.Error<PublicCovidTestResponse>(UnauthorizedResultError());
             }
 
@@ -213,8 +222,7 @@ namespace HealthGateway.Laboratory.Services
                     "Refresh in progress");
             }
 
-            LabIndicatorType labIndicatorType = Enum.Parse<LabIndicatorType>(result.ResourcePayload?.Result.FirstOrDefault()?.StatusIndicator);
-
+            LabIndicatorType labIndicatorType = EnumHelper.ParseEnum<LabIndicatorType>(result.ResourcePayload?.Result.FirstOrDefault()?.StatusIndicator);
             IEnumerable<PublicCovidTestRecord>? records = this.autoMapper.Map<IEnumerable<PublicCovidTestRecord>>(result.ResourcePayload?.Result ?? Array.Empty<CovidTestResult>());
             RequestResult<PublicCovidTestResponse> retVal = labIndicatorType switch
             {
