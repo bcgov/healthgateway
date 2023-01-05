@@ -413,7 +413,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
             IMapper autoMapper = MapperUtil.InitializeAutoMapper();
             List<UserComment> userCommentList = commentList.Select(c => CommentMapUtils.CreateFromDbModel(c, cryptoDelegateMock.Object, encryptionKey, autoMapper)).ToList();
 
-            DbResult<IEnumerable<Comment>> commentsDbResult = new()
+            DbResult<IList<Comment>> commentsDbResult = new()
             {
                 Payload = commentList,
                 Status = dbResultStatus,
