@@ -113,17 +113,17 @@ namespace HealthGateway.Medication.Services
 
                 if (response.ResultStatus != ResultType.Success || response.ResourcePayload == null)
                 {
-                    return RequestResultFactory.Error<IList<MedicationStatementHistory>>(patientResult.ResultError);
+                    return RequestResultFactory.Error<IList<MedicationStatementHistory>>(response.ResultError);
                 }
 
                 IList<MedicationStatementHistory>? payload = this.autoMapper.Map<IList<MedicationStatementHistory>>(response.ResourcePayload.Results);
-                this.PopulateMedicationSummary(payload.Select(r => r.MedicationSummary).ToArray());
+                this.PopulateMedicationSummary(payload.Select(r => r.MedicationSummary).ToList());
 
                 return RequestResultFactory.Success(payload, response.TotalResultCount, response.PageIndex, response.PageSize);
             }
         }
 
-        private void PopulateMedicationSummary(MedicationSummary[] medSummaries)
+        private void PopulateMedicationSummary(List<MedicationSummary> medSummaries)
         {
             using (Source.StartActivity())
             {
@@ -152,7 +152,7 @@ namespace HealthGateway.Medication.Services
                 }
 
                 this.logger.LogDebug("Finished getting drugs from DB");
-                this.logger.LogTrace("Populating medication summary... {Count} records", medSummaries.Length);
+                this.logger.LogTrace("Populating medication summary... {Count} records", medSummaries.Count);
                 foreach (MedicationSummary mdSummary in medSummaries)
                 {
                     string din = mdSummary.Din.PadLeft(8, '0');
@@ -177,7 +177,7 @@ namespace HealthGateway.Medication.Services
                     }
                 }
 
-                this.logger.LogDebug("Finished populating medication summary. {Count} records", medSummaries.Length);
+                this.logger.LogDebug("Finished populating medication summary. {Count} records", medSummaries.Count);
             }
         }
     }
