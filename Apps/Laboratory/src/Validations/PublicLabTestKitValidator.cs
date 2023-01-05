@@ -13,26 +13,27 @@
 //  See the License for the specific language governing permissions and
 //  limitations under the License.
 // -------------------------------------------------------------------------
-namespace HealthGateway.Encounter.MapProfiles
+
+namespace HealthGateway.Laboratory.Validations
 {
-    using System.Linq;
-    using AutoMapper;
-    using HealthGateway.Encounter.Models;
-    using HealthGateway.Encounter.Models.PHSA;
+    using FluentValidation;
+    using HealthGateway.Common.Data.Validations;
+    using HealthGateway.Laboratory.Models.PHSA;
 
     /// <summary>
-    /// An AutoMapper profile class which defines mapping between PHSA and UI Models.
+    /// Validates <see cref="PublicLabTestKit"/>.
     /// </summary>
-    public class HospitalVisitModelProfile : Profile
+    public class PublicLabTestKitValidator : AbstractValidator<PublicLabTestKit>
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="HospitalVisitModelProfile"/> class.
+        /// Initializes a new instance of the <see cref="PublicLabTestKitValidator"/> class.
         /// </summary>
-        public HospitalVisitModelProfile()
+        public PublicLabTestKitValidator()
         {
-            this.CreateMap<HospitalVisit, HospitalVisitModel>()
-                .ForMember(dest => dest.Provider, opt => opt.MapFrom(src => src.Clinicians.Select(c => c.DisplayName).FirstOrDefault()))
-                .ReverseMap();
+            this.RuleFor(v => v.Phn).SetValidator(new PhnValidator()).When(v => !string.IsNullOrEmpty(v.Phn));
+            this.RuleFor(v => v.StreetAddress).NotEmpty().When(v => string.IsNullOrEmpty(v.Phn));
+            this.RuleFor(v => v.PostalOrZip).NotEmpty().When(v => string.IsNullOrEmpty(v.Phn));
+            this.RuleFor(v => v.City).NotEmpty().When(v => string.IsNullOrEmpty(v.Phn));
         }
     }
 }

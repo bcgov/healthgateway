@@ -16,10 +16,10 @@
 namespace HealthGateway.Medication.Services
 {
     using System.Collections.Generic;
+    using System.Linq;
     using HealthGateway.Database.Delegates;
     using HealthGateway.Database.Models;
     using HealthGateway.Medication.Models;
-    using Microsoft.Extensions.Logging;
 
     /// <summary>
     /// The Medication data service.
@@ -27,70 +27,64 @@ namespace HealthGateway.Medication.Services
     public class RestMedicationService : IMedicationService
     {
         private readonly IDrugLookupDelegate drugLookupDelegate;
-        private readonly ILogger logger;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="RestMedicationService"/> class.
         /// </summary>
-        /// <param name="logger">Injected Logger Provider.</param>
         /// <param name="drugLookupDelegate">The injected drug lookup delegate.</param>
-        public RestMedicationService(
-            ILogger<RestMedicationService> logger,
-            IDrugLookupDelegate drugLookupDelegate)
+        public RestMedicationService(IDrugLookupDelegate drugLookupDelegate)
         {
-            this.logger = logger;
             this.drugLookupDelegate = drugLookupDelegate;
         }
 
         /// <inheritdoc/>
         public IDictionary<string, MedicationInformation> GetMedications(IList<string> medicationDinList)
         {
-            this.logger.LogTrace("Getting list of medications...");
-            IDictionary<string, MedicationInformation> result = new Dictionary<string, MedicationInformation>();
-
-            // Retrieve drug information from the Federal soruce
             IList<DrugProduct> drugProducts = this.drugLookupDelegate.GetDrugProductsByDin(medicationDinList);
-            foreach (DrugProduct drugProduct in drugProducts)
-            {
-                FederalDrugSource federalData = new()
-                {
-                    UpdateDateTime = drugProduct.UpdatedDateTime,
-                    DrugProduct = drugProduct,
-                };
-                result[drugProduct.DrugIdentificationNumber] = new MedicationInformation
-                {
-                    Din = drugProduct.DrugIdentificationNumber,
-                    FederalData = federalData,
-                };
-            }
 
-            // Retrieve drug information from the Provincial source and append it to the result if previously added.
+            Dictionary<string, MedicationInformation> drugs = drugProducts.ToDictionary(
+                m => m.DrugIdentificationNumber,
+                m => new MedicationInformation
+                {
+                    Din = m.DrugIdentificationNumber,
+                    FederalData = new FederalDrugSource
+                    {
+                        DrugProduct = m,
+                        UpdateDateTime = m.UpdatedDateTime,
+                    },
+                });
+
             IList<PharmaCareDrug> pharmaCareDrugs = this.drugLookupDelegate.GetPharmaCareDrugsByDin(medicationDinList);
-            foreach (PharmaCareDrug pharmaCareDrug in pharmaCareDrugs)
-            {
-                ProvincialDrugSource provincialData = new()
-                {
-                    UpdateDateTime = pharmaCareDrug.UpdatedDateTime,
-                    PharmaCareDrug = pharmaCareDrug,
-                };
 
-                result.TryGetValue(pharmaCareDrug.DinPin, out MedicationInformation? medication);
-                if (medication is not null)
+            foreach (PharmaCareDrug pharmaDrug in pharmaCareDrugs)
+            {
+                if (!drugs.TryGetValue(pharmaDrug.DinPin, out MedicationInformation? drug))
                 {
-                    result[pharmaCareDrug.DinPin].ProvincialData = provincialData;
+                    // add pharma drug
+                    drugs.Add(
+                        pharmaDrug.DinPin,
+                        new MedicationInformation
+                        {
+                            Din = pharmaDrug.DinPin,
+                            ProvincialData = new ProvincialDrugSource
+                            {
+                                PharmaCareDrug = pharmaDrug,
+                                UpdateDateTime = pharmaDrug.UpdatedDateTime,
+                            },
+                        });
                 }
                 else
                 {
-                    result[pharmaCareDrug.DinPin] = new MedicationInformation
+                    // attach to existing drug
+                    drug.ProvincialData = new ProvincialDrugSource
                     {
-                        Din = pharmaCareDrug.DinPin,
-                        ProvincialData = provincialData,
+                        PharmaCareDrug = pharmaDrug,
+                        UpdateDateTime = pharmaDrug.UpdatedDateTime,
                     };
                 }
             }
 
-            this.logger.LogDebug("Finished getting list of medications.");
-            return result;
+            return drugs;
         }
     }
 }

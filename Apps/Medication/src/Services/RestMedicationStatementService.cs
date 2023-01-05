@@ -20,15 +20,13 @@ namespace HealthGateway.Medication.Services
     using System.Diagnostics;
     using System.Globalization;
     using System.Linq;
-    using System.Net;
-    using System.Text.RegularExpressions;
     using System.Threading.Tasks;
     using AutoMapper;
-    using HealthGateway.Common.Constants;
+    using FluentValidation.Results;
     using HealthGateway.Common.Data.Constants;
     using HealthGateway.Common.Data.ErrorHandling;
     using HealthGateway.Common.Data.ViewModels;
-    using HealthGateway.Common.ErrorHandling;
+    using HealthGateway.Common.Factories;
     using HealthGateway.Common.Models;
     using HealthGateway.Common.Models.ODR;
     using HealthGateway.Common.Services;
@@ -37,6 +35,7 @@ namespace HealthGateway.Medication.Services
     using HealthGateway.Medication.Delegates;
     using HealthGateway.Medication.Models;
     using HealthGateway.Medication.Models.ODR;
+    using HealthGateway.Medication.Validations;
     using Microsoft.AspNetCore.Http;
     using Microsoft.Extensions.Logging;
 
@@ -45,8 +44,6 @@ namespace HealthGateway.Medication.Services
     /// </summary>
     public class RestMedicationStatementService : IMedicationStatementService
     {
-        private const int MaxLengthProtectiveWord = 8;
-        private const int MinLengthProtectiveWord = 6;
         private readonly IMapper autoMapper;
         private readonly IDrugLookupDelegate drugLookupDelegate;
         private readonly IHttpContextAccessor httpContextAccessor;
@@ -86,88 +83,44 @@ namespace HealthGateway.Medication.Services
         {
             using (Source.StartActivity())
             {
-                this.logger.LogDebug("Getting history of medication statements");
-                this.logger.LogTrace("User hdid: {Hdid}", hdid);
-
                 protectiveWord = protectiveWord?.ToUpper(CultureInfo.InvariantCulture);
-                RequestResult<IList<MedicationStatementHistory>> result = new();
-                (bool okProtectiveWord, string? protectiveWordValidationMessage) = ValidateProtectiveWord(protectiveWord);
-                if (okProtectiveWord)
-                {
-                    // Retrieve the phn
-                    RequestResult<PatientModel> patientResult = await this.patientService.GetPatient(hdid).ConfigureAwait(true);
-                    if (patientResult is { ResultStatus: ResultType.Success, ResourcePayload: { } })
-                    {
-                        PatientModel patient = patientResult.ResourcePayload;
-                        OdrHistoryQuery historyQuery = new()
-                        {
-                            StartDate = patient.Birthdate,
-                            EndDate = DateTime.Now,
-                            Phn = patient.PersonalHealthNumber,
-                            PageSize = 20000,
-                        };
-                        IPAddress? address = this.httpContextAccessor.HttpContext?.Connection.RemoteIpAddress;
-                        string ipv4Address = address?.MapToIPv4().ToString() ?? "Unknown";
-                        RequestResult<MedicationHistoryResponse> response =
-                            await this.medicationStatementDelegate.GetMedicationStatementsAsync(historyQuery, protectiveWord, hdid, ipv4Address).ConfigureAwait(true);
-                        result.ResultStatus = response.ResultStatus;
-                        result.ResultError = response.ResultError;
-                        if (response.ResultStatus == ResultType.Success)
-                        {
-                            result.PageSize = historyQuery.PageSize;
-                            result.PageIndex = historyQuery.PageNumber;
-                            if (response.ResourcePayload is { Results: { } })
-                            {
-                                result.TotalResultCount = response.ResourcePayload.TotalRecords;
-                                result.ResourcePayload = this.autoMapper.Map<IEnumerable<MedicationResult>, IList<MedicationStatementHistory>>(response.ResourcePayload.Results);
-                                this.PopulateMedicationSummary(result.ResourcePayload.Select(r => r.MedicationSummary).ToList());
-                            }
-                            else
-                            {
-                                result.ResourcePayload = new List<MedicationStatementHistory>();
-                            }
-                        }
-                    }
-                    else
-                    {
-                        result.ResultError = patientResult.ResultError;
-                    }
-                }
-                else
+
+                ValidationResult? protectiveWordValidation = new ProtectiveWordValidator().Validate(protectiveWord);
+                if (!protectiveWordValidation.IsValid)
                 {
                     this.logger.LogInformation("Invalid protective word. {Hdid}", hdid);
-                    result.ResultStatus = ResultType.ActionRequired;
-                    result.ResultError = ErrorTranslator.ActionRequired(protectiveWordValidationMessage, ActionType.Protected);
+                    return RequestResultFactory.ActionRequired<IList<MedicationStatementHistory>>(ActionType.Protected, protectiveWordValidation.Errors);
                 }
 
-                this.logger.LogDebug("Finished getting history of medication statements");
-                return result;
-            }
-        }
-
-        private static (bool Valid, string? ValidationMessage) ValidateProtectiveWord(string? protectiveWord)
-        {
-            bool valid = true;
-            string? errMsg = null;
-            if (!string.IsNullOrEmpty(protectiveWord))
-            {
-                if (protectiveWord.Length is >= MinLengthProtectiveWord and <= MaxLengthProtectiveWord)
+                // Retrieve the phn
+                RequestResult<PatientModel> patientResult = await this.patientService.GetPatient(hdid).ConfigureAwait(true);
+                if (patientResult.ResultStatus != ResultType.Success || patientResult.ResourcePayload == null)
                 {
-                    Regex regex = new(@"^[0-9A-Za-z_]+$");
-                    if (!regex.IsMatch(protectiveWord))
-                    {
-                        valid = false;
-                        errMsg = ErrorMessages.ProtectiveWordInvalidChars;
-                    }
+                    return RequestResultFactory.Error<IList<MedicationStatementHistory>>(patientResult.ResultError);
                 }
-                else
-                {
-                    valid = false;
-                    errMsg = protectiveWord.Length > MaxLengthProtectiveWord ? ErrorMessages.ProtectiveWordTooLong : ErrorMessages.ProtectiveWordTooShort;
-                }
-            }
 
-            return (valid, errMsg);
+                PatientModel patient = patientResult.ResourcePayload;
+                OdrHistoryQuery historyQuery = new()
+                {
+                    StartDate = patient.Birthdate,
+                    EndDate = DateTime.Now,
+                    Phn = patient.PersonalHealthNumber,
+                    PageSize = 20000,
+                };
+                string ipv4Address = this.httpContextAccessor.HttpContext?.Connection.RemoteIpAddress?.MapToIPv4().ToString() ?? "Unknown";
+                RequestResult<MedicationHistoryResponse> response =
+                    await this.medicationStatementDelegate.GetMedicationStatementsAsync(historyQuery, protectiveWord, hdid, ipv4Address).ConfigureAwait(true);
+
+                if (response.ResultStatus != ResultType.Success || response.ResourcePayload == null)
+                {
+                    return RequestResultFactory.Error<IList<MedicationStatementHistory>>(response.ResultError);
+                }
+
+                IList<MedicationStatementHistory>? payload = this.autoMapper.Map<IList<MedicationStatementHistory>>(response.ResourcePayload.Results);
+                this.PopulateMedicationSummary(payload.Select(r => r.MedicationSummary).ToList());
+
+                return RequestResultFactory.Success(payload, response.TotalResultCount, response.PageIndex, response.PageSize);
+            }
         }
 
         private void PopulateMedicationSummary(List<MedicationSummary> medSummaries)
