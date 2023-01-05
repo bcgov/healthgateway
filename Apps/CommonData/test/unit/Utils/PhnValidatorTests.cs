@@ -1,4 +1,4 @@
-﻿// -------------------------------------------------------------------------
+// -------------------------------------------------------------------------
 //  Copyright © 2019 Province of British Columbia
 //
 //  Licensed under the Apache License, Version 2.0 (the "License");
@@ -15,7 +15,7 @@
 // -------------------------------------------------------------------------
 namespace HealthGateway.Common.Data.Tests.Utils
 {
-    using HealthGateway.Common.Data.Utils;
+    using HealthGateway.Common.Data.Validations;
     using Xunit;
 
     /// <summary>
@@ -23,14 +23,15 @@ namespace HealthGateway.Common.Data.Tests.Utils
     /// </summary>
     public class PhnValidatorTests
     {
+        private readonly PhnValidator phnValidator = new PhnValidator();
+
         /// <summary>
         /// Null value is invalid.
         /// </summary>
         [Fact]
         public void ShouldNotBeNullOrEmpty()
         {
-            Assert.False(PhnValidator.IsValid(string.Empty));
-            Assert.False(PhnValidator.IsValid(null));
+            Assert.False(this.phnValidator.Validate(string.Empty).IsValid);
         }
 
         /// <summary>
@@ -39,7 +40,7 @@ namespace HealthGateway.Common.Data.Tests.Utils
         [Fact]
         public void ShouldBe10Digits()
         {
-            Assert.False(PhnValidator.IsValid("0123456789"));
+            Assert.False(this.phnValidator.Validate("0123456789").IsValid);
         }
 
         /// <summary>
@@ -48,7 +49,7 @@ namespace HealthGateway.Common.Data.Tests.Utils
         [Fact]
         public void ShouldBeNumeric()
         {
-            Assert.False(PhnValidator.IsValid("A123456780"));
+            Assert.False(this.phnValidator.Validate("A123456780").IsValid);
         }
 
         /// <summary>
@@ -57,7 +58,7 @@ namespace HealthGateway.Common.Data.Tests.Utils
         [Fact]
         public void ShouldStartWithANine()
         {
-            Assert.False(PhnValidator.IsValid("8123456789"));
+            Assert.False(this.phnValidator.Validate("8123456789").IsValid);
         }
 
         /// <summary>
@@ -66,7 +67,7 @@ namespace HealthGateway.Common.Data.Tests.Utils
         [Fact]
         public void ShouldNotValidate()
         {
-            Assert.False(PhnValidator.IsValid("9123456781"));
+            Assert.False(this.phnValidator.Validate("9123456781").IsValid);
         }
 
         /// <summary>
@@ -75,7 +76,7 @@ namespace HealthGateway.Common.Data.Tests.Utils
         [Fact]
         public void ShouldNotValidateFormat()
         {
-            Assert.False(PhnValidator.IsValid("9735 361 219"));
+            Assert.False(this.phnValidator.Validate("9735 361 219").IsValid);
         }
 
         /// <summary>
@@ -84,7 +85,7 @@ namespace HealthGateway.Common.Data.Tests.Utils
         [Fact]
         public void ShouldNotValidateAlpha()
         {
-            Assert.False(PhnValidator.IsValid("973536121A"));
+            Assert.False(this.phnValidator.Validate("973536121A").IsValid);
         }
 
         /// <summary>
@@ -93,8 +94,8 @@ namespace HealthGateway.Common.Data.Tests.Utils
         [Fact]
         public void ShouldValidate()
         {
-            Assert.True(PhnValidator.IsValid("9735353315"));
-            Assert.True(PhnValidator.IsValid("9735361219"));
+            Assert.True(this.phnValidator.Validate("9735353315").IsValid);
+            Assert.True(this.phnValidator.Validate("9735361219").IsValid);
         }
     }
 }

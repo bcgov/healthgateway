@@ -20,6 +20,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
     using System.Linq;
     using System.Threading.Tasks;
     using AutoMapper;
+    using HealthGateway.Common.AccessManagement.Authentication;
     using HealthGateway.Common.Data.Constants;
     using HealthGateway.Common.Data.Models;
     using HealthGateway.Common.Data.ViewModels;
@@ -236,7 +237,8 @@ namespace HealthGateway.GatewayApiTests.Services.Test
                 new Mock<ICryptoDelegate>().Object,
                 new Mock<IHttpContextAccessor>().Object,
                 GetIConfigurationRoot(null),
-                MapperUtil.InitializeAutoMapper());
+                MapperUtil.InitializeAutoMapper(),
+                new Mock<IAuthenticationDelegate>().Object);
             RequestResult<UserProfileModel> actualResult = service.UpdateAcceptedTerms(this.hdid, Guid.Empty);
 
             Assert.True(actualResult.ResultStatus == resultStatus);

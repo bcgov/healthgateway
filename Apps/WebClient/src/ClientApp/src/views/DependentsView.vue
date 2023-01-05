@@ -211,7 +211,7 @@ export default class DependentsView extends Vue {
         </h5>
         <DependentCardComponent
             v-for="dependent in dependents"
-            :key="dependent.hdid"
+            :key="dependent.ownerId"
             :dependent="dependent"
             class="mt-2"
             @needs-update="needsUpdate"

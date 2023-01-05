@@ -82,6 +82,7 @@ namespace HealthGateway.Database.Delegates
                 result.Payload.UpdatedBy = profile.UpdatedBy;
                 result.Payload.Version = profile.Version;
                 result.Payload.YearOfBirth = profile.YearOfBirth;
+                result.Payload.LastLoginClientCode = profile.LastLoginClientCode;
                 result.Status = DbStatusCode.Deferred;
 
                 if (commit)
@@ -296,6 +297,23 @@ namespace HealthGateway.Database.Delegates
                 .Count(x => x.count >= dayCount);
 
             return recurrentCount;
+        }
+
+        /// <inheritdoc/>
+        public IDictionary<string, int> GetLastLoginClientCounts(DateTime startDate, DateTime endDate)
+        {
+            Dictionary<string, int> loginClientCounts = this.dbContext.UserProfile
+                .Select(x => new { x.HdId, x.LastLoginClientCode, x.LastLoginDateTime })
+                .Concat(
+                    this.dbContext.UserProfileHistory.Select(x => new { x.HdId, x.LastLoginClientCode, x.LastLoginDateTime }))
+                .Where(x => x.LastLoginClientCode != null && x.LastLoginDateTime >= startDate && x.LastLoginDateTime <= endDate)
+                .Select(x => new { x.HdId, x.LastLoginClientCode })
+                .Distinct()
+                .GroupBy(x => x.LastLoginClientCode)
+                .Select(x => new { lastLoginClientCode = x.Key, count = x.Count() })
+                .ToDictionary(x => x.lastLoginClientCode.ToString()!, x => x.count);
+
+            return loginClientCounts;
         }
 
         /// <inheritdoc/>

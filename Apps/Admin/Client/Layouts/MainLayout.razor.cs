@@ -115,7 +115,7 @@ namespace HealthGateway.Admin.Client.Layouts
                 return;
             }
 
-            IDialogReference dialog = this.Dialog.Show<InactivityDialog>();
+            IDialogReference dialog = await this.Dialog.ShowAsync<InactivityDialog>().ConfigureAwait(true);
             this.IsInactivityModalShown = true;
 
             DialogResult result = await dialog.Result.ConfigureAwait(true);

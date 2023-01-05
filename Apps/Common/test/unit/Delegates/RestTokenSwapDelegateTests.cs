@@ -106,12 +106,12 @@ namespace HealthGateway.CommonTests.Delegates
             Mock<ITokenSwapApi> mockTokenSwapApi = new();
             if (!throwException)
             {
-                mockTokenSwapApi.Setup(s => s.SwapToken(It.IsAny<FormUrlEncodedContent>()))
+                mockTokenSwapApi.Setup(s => s.SwapTokenAsync(It.IsAny<FormUrlEncodedContent>()))
                     .ReturnsAsync(response);
             }
             else
             {
-                mockTokenSwapApi.Setup(s => s.SwapToken(It.IsAny<FormUrlEncodedContent>()))
+                mockTokenSwapApi.Setup(s => s.SwapTokenAsync(It.IsAny<FormUrlEncodedContent>()))
                     .ThrowsAsync(new HttpRequestException("Unit Test HTTP Request Exception"));
             }
 

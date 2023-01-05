@@ -15,9 +15,11 @@ import { laboratory } from "./modules/laboratory/laboratory";
 import { medication } from "./modules/medication/medication";
 import { navbar } from "./modules/navbar/navbar";
 import { note } from "./modules/note/note";
+import { notification } from "./modules/notification/notification";
 import { timeline } from "./modules/timeline/timeline";
 import { user } from "./modules/user/user";
 import { vaccinationStatus } from "./modules/vaccinationStatus/vaccinationStatus";
+import { waitlist } from "./modules/waitlist/waitlist";
 import { GatewayStoreOptions, RootState } from "./types";
 
 @injectable()
@@ -65,10 +67,12 @@ export class StoreOptions implements GatewayStoreOptions {
         encounter,
         clinicalDocument,
         note,
+        notification,
         navbar,
         idle,
         errorBanner,
         timeline,
         vaccinationStatus,
+        waitlist,
     };
 }

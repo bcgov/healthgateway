@@ -20,8 +20,7 @@ describe("COVID-19 Orders", () => {
             .parents("[data-testid=timelineCard]")
             .click();
 
-        cy.get("[data-testid=entryDetailsModal]")
-            .children()
+        cy.get("#entry-details-modal")
             .should("be.visible")
             .within(() => {
                 cy.get("[data-testid=covid-result-download-btn]")

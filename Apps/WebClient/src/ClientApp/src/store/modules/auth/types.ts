@@ -18,12 +18,6 @@ export interface AuthState {
 export interface AuthGetters extends GetterTree<AuthState, RootState> {
     oidcIsAuthenticated(state: AuthState): boolean;
     oidcError(state: AuthState): unknown;
-    isValidIdentityProvider(
-        _state: AuthState,
-        _getters: any,
-        _rootState: RootState,
-        rootGetters: any
-    ): boolean;
 }
 
 type StoreContext = ActionContext<AuthState, RootState>;

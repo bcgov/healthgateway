@@ -25,6 +25,5 @@ module.exports = defineConfig({
         setupNodeEvents(on, config) {
             on("task", { isFileExist, findFiles });
         },
-        experimentalSessionAndOrigin: true,
     },
 });

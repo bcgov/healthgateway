@@ -26,8 +26,7 @@ describe("Clinical Document", () => {
         cy.log("Verifying Clinical Document PDF download");
         cy.get("[data-testid=timelineCard]").last().scrollIntoView().click();
 
-        cy.get("[data-testid=entryDetailsModal]")
-            .children()
+        cy.get("#entry-details-modal")
             .should("be.visible")
             .within(() => {
                 cy.get("[data-testid=clinical-document-download-button]")

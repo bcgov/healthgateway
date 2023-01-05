@@ -22,7 +22,7 @@ namespace HealthGateway.Patient.Services
     using HealthGateway.Common.CacheProviders;
     using HealthGateway.Common.Constants;
     using HealthGateway.Common.Data.ErrorHandling;
-    using HealthGateway.Common.Data.Utils;
+    using HealthGateway.Common.Data.Validations;
     using HealthGateway.Common.Data.ViewModels;
     using HealthGateway.Common.Models;
     using HealthGateway.Patient.Delegates;
@@ -38,6 +38,7 @@ namespace HealthGateway.Patient.Services
         /// The generic cache domain to store patients against.
         /// </summary>
         private const string PatientCacheDomain = "Patient";
+
         private readonly ICacheProvider cacheProvider;
         private readonly int cacheTtl;
 
@@ -45,6 +46,7 @@ namespace HealthGateway.Patient.Services
         /// The injected logger delegate.
         /// </summary>
         private readonly ILogger<PatientService> logger;
+
         private readonly IClientRegistriesDelegate clientRegistriesDelegate;
 
         /// <summary>
@@ -122,6 +124,7 @@ namespace HealthGateway.Patient.Services
                         this.logger.LogDebug("Querying Patient Cache by HDID");
                         retPatient = this.cacheProvider.GetItem<PatientModel>($"{PatientCacheDomain}:HDID:{identifier}");
                         break;
+
                     case PatientIdentifierType.Phn:
                         this.logger.LogDebug("Querying Patient Cache by PHN");
                         retPatient = this.cacheProvider.GetItem<PatientModel>($"{PatientCacheDomain}:PHN:{identifier}");

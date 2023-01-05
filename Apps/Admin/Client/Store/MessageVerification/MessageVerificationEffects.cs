@@ -21,7 +21,7 @@ namespace HealthGateway.Admin.Client.Store.MessageVerification
     using System.Net.Http;
     using System.Threading.Tasks;
     using Fluxor;
-    using HealthGateway.Admin.Client.Services;
+    using HealthGateway.Admin.Client.Api;
     using HealthGateway.Admin.Client.Utils;
     using HealthGateway.Common.Data.Constants;
     using HealthGateway.Common.Data.ViewModels;

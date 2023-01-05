@@ -17,6 +17,13 @@ export const getters: UserGetters = {
         const { oidcUserInfo } = state;
         return oidcUserInfo;
     },
+    isValidIdentityProvider: (state: UserState): boolean => {
+        const { oidcUserInfo } = state;
+
+        return oidcUserInfo === undefined
+            ? false
+            : oidcUserInfo.idp === "BCSC" || oidcUserInfo.idp === undefined;
+    },
     userIsRegistered(state: UserState): boolean {
         const { user } = state;
         return user === undefined ? false : user.acceptedTermsOfService;
@@ -35,10 +42,9 @@ export const getters: UserGetters = {
         const { user } = state;
         return user === undefined ? false : user.hasTermsOfServiceUpdated;
     },
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    quickLinks(_state: UserState, userGetters: any): QuickLink[] | undefined {
-        const preference =
-            userGetters.user.preferences[UserPreferenceType.QuickLinks];
+    quickLinks(state: UserState): QuickLink[] | undefined {
+        const { user } = state;
+        const preference = user.preferences[UserPreferenceType.QuickLinks];
         if (preference === undefined) {
             return undefined;
         }

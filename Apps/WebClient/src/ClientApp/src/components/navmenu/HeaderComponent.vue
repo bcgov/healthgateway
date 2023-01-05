@@ -12,6 +12,9 @@ import { Component, Ref, Watch } from "vue-property-decorator";
 import { Action, Getter } from "vuex-class";
 
 import RatingComponent from "@/components/modal/RatingComponent.vue";
+import type { WebClientConfiguration } from "@/models/configData";
+import { DateWrapper } from "@/models/dateWrapper";
+import Notification from "@/models/notification";
 import User, { OidcUserInfo } from "@/models/user";
 import container from "@/plugins/container";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
@@ -40,10 +43,13 @@ export default class HeaderComponent extends Vue {
     @Getter("isOffline", { namespace: "config" })
     isOffline!: boolean;
 
+    @Getter("webClient", { namespace: "config" })
+    config!: WebClientConfiguration;
+
     @Getter("oidcIsAuthenticated", { namespace: "auth" })
     oidcIsAuthenticated!: boolean;
 
-    @Getter("isValidIdentityProvider", { namespace: "auth" })
+    @Getter("isValidIdentityProvider", { namespace: "user" })
     isValidIdentityProvider!: boolean;
 
     @Getter("isHeaderShown", { namespace: "navbar" })
@@ -52,8 +58,8 @@ export default class HeaderComponent extends Vue {
     @Getter("isSidebarOpen", { namespace: "navbar" })
     isSidebarOpen!: boolean;
 
-    @Getter("isSidebarAvailable", { namespace: "navbar" })
-    isSidebarAvailable!: boolean;
+    @Getter("notifications", { namespace: "notification" })
+    notifications!: Notification[];
 
     @Getter("user", { namespace: "user" })
     user!: User;
@@ -61,12 +67,19 @@ export default class HeaderComponent extends Vue {
     @Getter("oidcUserInfo", { namespace: "user" })
     oidcUserInfo!: OidcUserInfo | undefined;
 
+    @Getter("userIsRegistered", { namespace: "user" })
+    userIsRegistered!: boolean;
+
+    @Getter("userIsActive", { namespace: "user" })
+    userIsActive!: boolean;
+
     @Getter("patientRetrievalFailed", { namespace: "user" })
     patientRetrievalFailed!: boolean;
 
     @Ref("ratingComponent")
     readonly ratingComponent!: RatingComponent;
 
+    readonly sidebarId = "notification-centre-sidebar";
     private logger!: ILogger;
 
     private lastScrollTop = 0;
@@ -118,12 +131,43 @@ export default class HeaderComponent extends Vue {
         return this.$route.path.toLowerCase().startsWith("/pcrtest");
     }
 
+    private get isQueuePage(): boolean {
+        return (
+            this.$route.path.toLowerCase() === "/queue" ||
+            this.$route.path.toLowerCase() === "/busy"
+        );
+    }
+
     private get isSidebarButtonShown(): boolean {
-        return this.isSidebarAvailable && !this.isPcrTest && this.isMobileWidth;
+        return (
+            !this.isOffline &&
+            this.oidcIsAuthenticated &&
+            this.isValidIdentityProvider &&
+            this.userIsRegistered &&
+            this.userIsActive &&
+            !this.patientRetrievalFailed &&
+            !this.isQueuePage &&
+            !this.isPcrTest &&
+            this.isMobileWidth
+        );
+    }
+
+    private get isNotificationCentreAvailable(): boolean {
+        return (
+            this.config.modules["NotificationCentre"] &&
+            !this.isOffline &&
+            !this.isQueuePage &&
+            !this.isPcrTest &&
+            this.oidcIsAuthenticated &&
+            this.isValidIdentityProvider &&
+            this.userIsRegistered &&
+            this.userIsActive &&
+            !this.patientRetrievalFailed
+        );
     }
 
     private get isLoggedInMenuShown(): boolean {
-        return this.oidcIsAuthenticated && !this.isPcrTest;
+        return this.oidcIsAuthenticated && !this.isPcrTest && !this.isQueuePage;
     }
 
     private get isLogOutButtonShown(): boolean {
@@ -131,7 +175,12 @@ export default class HeaderComponent extends Vue {
     }
 
     private get isLogInButtonShown(): boolean {
-        return !this.oidcIsAuthenticated && !this.isOffline && !this.isPcrTest;
+        return (
+            !this.oidcIsAuthenticated &&
+            !this.isOffline &&
+            !this.isPcrTest &&
+            !this.isQueuePage
+        );
     }
 
     private get isProfileLinkAvailable(): boolean {
@@ -140,6 +189,25 @@ export default class HeaderComponent extends Vue {
             this.isValidIdentityProvider &&
             !this.patientRetrievalFailed
         );
+    }
+
+    public get newNotifications(): Notification[] {
+        if (this.user.lastLoginDateTime) {
+            const lastLoginDateTime = new DateWrapper(
+                this.user.lastLoginDateTime
+            );
+            return this.notifications.filter((n) =>
+                new DateWrapper(n.scheduledDateTimeUtc).isAfter(
+                    lastLoginDateTime
+                )
+            );
+        }
+        return this.notifications;
+    }
+
+    private get notificationBadgeContent(): string | boolean {
+        const count = this.newNotifications.length;
+        return count === 0 ? false : count.toString();
     }
 
     private onScroll(): void {
@@ -211,34 +279,31 @@ export default class HeaderComponent extends Vue {
             </hg-button>
 
             <!-- Brand -->
-            <b-navbar-brand class="my-2 mr-0 ml-2 d-flex">
+            <b-navbar-brand class="mr-0 ml-3 d-flex">
                 <router-link to="/">
                     <img
-                        class="img-fluid d-none d-md-block"
-                        src="@/assets/images/gov/bcid-logo-rev-en.svg"
-                        width="181"
-                        height="44"
+                        class="img-fluid"
+                        src="@/assets/images/gov/hg-logo-rev.svg"
+                        width="143"
                         alt="Go to healthgateway home page"
                     />
-
-                    <img
-                        class="img-fluid d-md-none"
-                        src="@/assets/images/gov/bcid-symbol-rev.svg"
-                        width="30"
-                        height="44"
-                        alt="Go to healthgateway home page"
-                    />
-                </router-link>
-                <router-link
-                    to="/"
-                    class="nav-link py-0 px-0 px-lg-5 mx-2 align-self-center"
-                >
-                    Health Gateway
                 </router-link>
             </b-navbar-brand>
 
             <!-- Navbar links -->
             <b-navbar-nav class="nav-pills ml-auto">
+                <b-avatar
+                    v-if="isNotificationCentreAvailable"
+                    v-b-toggle="sidebarId"
+                    button
+                    variant="transparent"
+                    :badge="notificationBadgeContent"
+                    badge-variant="danger"
+                    badge-top
+                    icon="bell"
+                    class="text-white my-3 mx-2 rounded-0"
+                    data-testid="notification-centre-button"
+                />
                 <b-nav-item-dropdown
                     v-if="isLoggedInMenuShown"
                     id="menuBtnLogout"

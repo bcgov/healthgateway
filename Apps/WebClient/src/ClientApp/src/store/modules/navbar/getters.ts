@@ -6,63 +6,19 @@ export const getters: NavbarGetters = {
     isHeaderShown(state: NavbarState): boolean {
         return state.isHeaderShown;
     },
-    isFooterShown: (
-        _state: NavbarState,
-        // eslint-disable-next-line
-        _getters: any,
-        _rootState: RootState,
-        // eslint-disable-next-line
-        rootGetters: any
-    ): boolean => {
-        const isOffline = rootGetters["config/isOffline"];
-        const isAuthenticated: boolean =
-            rootGetters["auth/oidcIsAuthenticated"];
-        const isValid: boolean = rootGetters["auth/isValidIdentityProvider"];
-        const isRegistered: boolean = rootGetters["user/userIsRegistered"];
-        return !isOffline && (!isAuthenticated || !isValid || isRegistered);
-    },
     isSidebarOpen(
-        _state: NavbarState,
+        state: NavbarState,
         // eslint-disable-next-line
         _getters: any,
-        _rootState: RootState,
-        // eslint-disable-next-line
-        rootGetters: any
+        rootState: RootState
     ): boolean {
         // initial sidebar state depends on viewport width
-        if (_state.isSidebarOpen === null) {
-            const isMobile = rootGetters["isMobile"];
-            return isMobile ? false : true;
+        if (state.isSidebarOpen === null) {
+            return rootState.isMobile ? false : true;
         }
-        return _state.isSidebarOpen;
+        return state.isSidebarOpen;
     },
     isSidebarAnimating(state: NavbarState): boolean {
         return state.isSidebarAnimating;
-    },
-    isSidebarAvailable: (
-        _state: NavbarState,
-        // eslint-disable-next-line
-        _getters: any,
-        _rootState: RootState,
-        // eslint-disable-next-line
-        rootGetters: any
-    ): boolean => {
-        const isOffline = rootGetters["config/isOffline"];
-        const isAuthenticated: boolean =
-            rootGetters["auth/oidcIsAuthenticated"];
-        const isValid: boolean = rootGetters["auth/isValidIdentityProvider"];
-        const isRegistered: boolean = rootGetters["user/userIsRegistered"];
-        const isActive: boolean = rootGetters["user/userIsActive"];
-        const patientRetrievalFailed: boolean =
-            rootGetters["user/patientRetrievalFailed"];
-
-        return (
-            !isOffline &&
-            isAuthenticated &&
-            isValid &&
-            isRegistered &&
-            isActive &&
-            !patientRetrievalFailed
-        );
     },
 };

@@ -24,7 +24,7 @@ namespace HealthGateway.Laboratory.Services
     using HealthGateway.Common.AccessManagement.Authentication.Models;
     using HealthGateway.Common.Data.Constants;
     using HealthGateway.Common.Data.ErrorHandling;
-    using HealthGateway.Common.Data.Utils;
+    using HealthGateway.Common.Data.Validations;
     using HealthGateway.Common.Data.ViewModels;
     using HealthGateway.Common.ErrorHandling;
     using HealthGateway.Laboratory.Api;
@@ -95,7 +95,7 @@ namespace HealthGateway.Laboratory.Services
                     {
                         string ipAddress = this.httpContextAccessor?.HttpContext?.Connection.RemoteIpAddress?.MapToIPv4().ToString() ?? "0.0.0.0";
                         HttpResponseMessage response =
-                            await this.labTestKitApi.RegisterLabTest(testKit, accessToken, ipAddress).ConfigureAwait(true);
+                            await this.labTestKitApi.RegisterLabTestAsync(testKit, accessToken, ipAddress).ConfigureAwait(true);
                         ProcessResponse(requestResult, response);
                     }
                     catch (HttpRequestException e)
@@ -135,7 +135,7 @@ namespace HealthGateway.Laboratory.Services
             try
             {
                 HttpResponseMessage response =
-                    await this.labTestKitApi.RegisterLabTest(hdid, testKit, accessToken).ConfigureAwait(true);
+                    await this.labTestKitApi.RegisterLabTestAsync(hdid, testKit, accessToken).ConfigureAwait(true);
                 ProcessResponse(requestResult, response);
             }
             catch (HttpRequestException e)
@@ -172,14 +172,17 @@ namespace HealthGateway.Laboratory.Services
                 case HttpStatusCode.OK:
                     requestResult.ResultStatus = ResultType.Success;
                     break;
+
                 case HttpStatusCode.Conflict:
                     requestResult.ResultError = ErrorTranslator.ActionRequired("This test kit has already been registered", ActionType.Processed);
                     requestResult.ResultStatus = ResultType.ActionRequired;
                     break;
+
                 case HttpStatusCode.UnprocessableEntity:
                     requestResult.ResultError = ErrorTranslator.ActionRequired("The data provided was invalid", ActionType.Validation);
                     requestResult.ResultStatus = ResultType.ActionRequired;
                     break;
+
                 case HttpStatusCode.Unauthorized:
                     requestResult.ResultError = new()
                     {
@@ -187,6 +190,7 @@ namespace HealthGateway.Laboratory.Services
                         ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.Phsa),
                     };
                     break;
+
                 case HttpStatusCode.Forbidden:
                     requestResult.ResultError = new()
                     {
@@ -194,6 +198,7 @@ namespace HealthGateway.Laboratory.Services
                         ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.Phsa),
                     };
                     break;
+
                 default:
                     requestResult.ResultError = new()
                     {

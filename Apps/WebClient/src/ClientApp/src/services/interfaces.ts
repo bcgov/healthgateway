@@ -3,6 +3,7 @@ import { Store } from "vuex";
 import AddDependentRequest from "@/models/addDependentRequest";
 import ApiResult from "@/models/apiResult";
 import { Dictionary } from "@/models/baseTypes";
+import { CheckInRequest } from "@/models/checkInRequest";
 import ClinicalDocument from "@/models/clinicalDocument";
 import Communication, { CommunicationType } from "@/models/communication";
 import {
@@ -24,12 +25,14 @@ import {
 } from "@/models/laboratory";
 import MedicationRequest from "@/models/MedicationRequest";
 import MedicationStatementHistory from "@/models/medicationStatementHistory";
+import Notification from "@/models/notification";
 import PatientData from "@/models/patientData";
 import RegisterTestKitRequest from "@/models/registerTestKitRequest";
 import Report from "@/models/report";
 import ReportRequest from "@/models/reportRequest";
 import RequestResult from "@/models/requestResult";
 import { TermsOfService } from "@/models/termsOfService";
+import { Ticket } from "@/models/ticket";
 import { OidcTokenDetails, OidcUserInfo } from "@/models/user";
 import type { UserComment } from "@/models/userComment";
 import UserFeedback from "@/models/userFeedback";
@@ -196,6 +199,13 @@ export interface IUserCommentService {
     deleteComment(hdid: string, comment: UserComment): Promise<void>;
 }
 
+export interface INotificationService {
+    initialize(config: ExternalConfiguration, http: IHttpDelegate): void;
+    getNotifications(hdid: string): Promise<Notification[]>;
+    dismissNotification(hdid: string, notificationId: string): Promise<void>;
+    dismissNotifications(hdid: string): Promise<void>;
+}
+
 export interface ICommunicationService {
     initialize(config: ExternalConfiguration, http: IHttpDelegate): void;
     getActive(type: CommunicationType): Promise<RequestResult<Communication>>;
@@ -214,6 +224,7 @@ export interface IDependentService {
 export interface IHttpDelegate {
     unsetAuthorizationHeader(): void;
     setAuthorizationHeader(accessToken: string): void;
+    setTicketAuthorizationHeader(accessToken: string): void;
     getWithCors<T>(url: string, headers?: Dictionary<string>): Promise<T>;
     get<T>(url: string, headers?: Dictionary<string>): Promise<T>;
     post<T>(
@@ -268,4 +279,11 @@ export interface ILogger {
 
 export interface IStoreProvider {
     getStore(): Store<RootState>;
+}
+
+export interface ITicketService {
+    initialize(config: ExternalConfiguration, http: IHttpDelegate): void;
+    createTicket(room: string): Promise<Ticket | undefined>;
+    checkIn(checkInRequest: CheckInRequest): Promise<Ticket>;
+    removeTicket(checkInRequest: CheckInRequest): Promise<void>;
 }

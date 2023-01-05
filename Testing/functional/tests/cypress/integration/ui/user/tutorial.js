@@ -19,6 +19,7 @@ describe("Tutorial", () => {
     });
 
     it("Validate Export Records Popover", () => {
+        cy.enableModules([]);
         cy.intercept("GET", "**/UserProfile/*", (req) => {
             req.reply((res) => {
                 res.body.resourcePayload.preferences.tutorialMenuExport.value =
@@ -35,6 +36,7 @@ describe("Tutorial", () => {
     });
 
     it("Validate Add Dependent Popover", () => {
+        cy.enableModules(["Dependent"]);
         cy.intercept("GET", "**/UserProfile/*", (req) => {
             req.reply((res) => {
                 res.body.resourcePayload.preferences.tutorialAddDependent = {
@@ -92,7 +94,7 @@ describe("Tutorial", () => {
         cy.get("[data-testid=filter-tutorial-popover]").should("be.visible");
     });
 
-    it.only("Validate Comment Popover", () => {
+    it("Validate Comment Popover", () => {
         cy.enableModules(["Comment", "Medication"]);
         cy.intercept("GET", "**/UserProfile/*", (req) => {
             req.reply((res) => {

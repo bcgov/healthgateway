@@ -33,13 +33,13 @@ export interface UserState {
 export interface UserGetters extends GetterTree<UserState, RootState> {
     user(state: UserState): User;
     oidcUserInfo(state: UserState): OidcUserInfo | undefined;
+    isValidIdentityProvider(state: UserState): boolean;
     userIsRegistered(state: UserState): boolean;
     userIsActive(state: UserState): boolean;
     smsResendDateTime(state: UserState): DateWrapper | undefined;
     seenTutorialComment(state: UserState): boolean;
     hasTermsOfServiceUpdated(state: UserState): boolean;
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    quickLinks(state: UserState, getters: any): QuickLink[] | undefined;
+    quickLinks(state: UserState): QuickLink[] | undefined;
     patientData(state: UserState): PatientData;
     patientRetrievalFailed(state: UserState): boolean;
     isLoading(state: UserState): boolean;

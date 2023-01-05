@@ -2,10 +2,12 @@ const { AuthMethod } = require("../../../support/constants");
 
 describe("Validate Star Rating", () => {
     beforeEach(() => {
+        cy.enableModules([]);
         cy.login(
             Cypress.env("keycloak.username"),
             Cypress.env("keycloak.password"),
-            AuthMethod.KeyCloak
+            AuthMethod.KeyCloak,
+            "/home"
         );
     });
 

@@ -1,5 +1,5 @@
 import { Dictionary } from "@/models/baseTypes";
-import { StringISODate } from "@/models/dateWrapper";
+import { StringISODateTime } from "@/models/dateWrapper";
 import type { UserPreference } from "@/models/userPreference";
 
 export default class User {
@@ -10,7 +10,8 @@ export default class User {
     public hasSMS = false;
     public verifiedSMS = false;
     public hasTermsOfServiceUpdated = false;
-    public closedDateTime?: StringISODate;
+    public lastLoginDateTime?: StringISODateTime;
+    public closedDateTime?: StringISODateTime;
     public preferences: Dictionary<UserPreference> = {};
 }
 

@@ -78,7 +78,7 @@ namespace HealthGateway.Common.Delegates.PHSA
                 using FormUrlEncodedContent content = new(formData);
                 content.Headers.Clear();
                 content.Headers.Add(@"Content-Type", @"application/x-www-form-urlencoded");
-                TokenSwapResponse response = await this.tokenSwapApi.SwapToken(content).ConfigureAwait(true);
+                TokenSwapResponse response = await this.tokenSwapApi.SwapTokenAsync(content).ConfigureAwait(true);
                 requestResult.ResultStatus = ResultType.Success;
                 requestResult.ResourcePayload = response;
                 requestResult.TotalResultCount = 1;

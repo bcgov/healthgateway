@@ -115,7 +115,7 @@ namespace HealthGateway.JobScheduler.Jobs
 
                     try
                     {
-                        this.keycloakAdminApi.DeleteUser(profile.IdentityManagementId!.Value, jwtModel.AccessToken).GetAwaiter().GetResult();
+                        this.keycloakAdminApi.DeleteUserAsync(profile.IdentityManagementId!.Value, jwtModel.AccessToken).GetAwaiter().GetResult();
                     }
                     catch (Exception e) when (e is ApiException or HttpRequestException)
                     {

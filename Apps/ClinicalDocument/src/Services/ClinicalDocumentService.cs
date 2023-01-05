@@ -73,10 +73,10 @@ namespace HealthGateway.ClinicalDocument.Services
             this.logger.LogDebug("Getting clinical documents for hdid: {Hdid}", hdid);
             try
             {
-                RequestResult<PersonalAccount?> patientAccountResponse = await this.personalAccountsService.GetPatientAccountAsync(hdid).ConfigureAwait(true);
+                RequestResult<PersonalAccount> patientAccountResponse = await this.personalAccountsService.GetPatientAccountResultAsync(hdid).ConfigureAwait(true);
                 if (patientAccountResponse.ResultStatus == ResultType.Success)
                 {
-                    string? pid = patientAccountResponse.ResourcePayload?.PatientIdentity?.Pid.ToString();
+                    string? pid = patientAccountResponse.ResourcePayload?.PatientIdentity.Pid.ToString();
                     this.logger.LogDebug("PID Fetched: {Pid}", pid);
                     PhsaHealthDataResponse apiResponse =
                         await this.clinicalDocumentsApi.GetClinicalDocumentRecordsAsync(pid).ConfigureAwait(true);
@@ -118,10 +118,10 @@ namespace HealthGateway.ClinicalDocument.Services
             this.logger.LogDebug("Getting clinical document file for hdid: {Hdid}", hdid);
             try
             {
-                RequestResult<PersonalAccount?> response = await this.personalAccountsService.GetPatientAccountAsync(hdid).ConfigureAwait(true);
+                RequestResult<PersonalAccount> response = await this.personalAccountsService.GetPatientAccountResultAsync(hdid).ConfigureAwait(true);
                 if (response.ResultStatus == ResultType.Success)
                 {
-                    string? pid = response.ResourcePayload?.PatientIdentity?.Pid.ToString();
+                    string? pid = response.ResourcePayload?.PatientIdentity.Pid.ToString();
                     this.logger.LogDebug("PID Fetched: {Pid}", pid);
                     EncodedMedia apiResponse =
                         await this.clinicalDocumentsApi.GetClinicalDocumentFileAsync(pid, fileId).ConfigureAwait(true);

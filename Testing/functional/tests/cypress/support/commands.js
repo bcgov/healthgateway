@@ -100,14 +100,12 @@ Cypress.Commands.add(
                             const callbackURL = `${callBackQS}`;
                             cy.log(`Visiting Callback ${callBackQS}`, response);
                             cy.visit(callbackURL, { timeout: 60000 });
-                            // Wait for cookies are set before store them in cypress.
-                            cy.get("[data-testid=headerDropdownBtn]").should(
-                                "exist"
-                            );
                             // store auth cookies
-                            cy.getCookies().then((cookies) => {
-                                globalStorage.authCookies = cookies;
-                            });
+                            cy.getCookies({ timeout: 60000 }).then(
+                                (cookies) => {
+                                    globalStorage.authCookies = cookies;
+                                }
+                            );
                         });
                 });
             });
@@ -288,14 +286,6 @@ Cypress.Commands.add("restoreAuthCookies", () => {
 
     Cypress.Cookies.preserveOnce(...names);
 });
-
-Cypress.Commands.overwrite(
-    "select",
-    (originalFn, subject, valueOrTextOrIndex, options) => {
-        cy.wrap(subject).should("be.visible", "be.enabled");
-        cy.wrap(originalFn(subject, valueOrTextOrIndex, options));
-    }
-);
 
 Cypress.Commands.add(
     "shouldContainValue",

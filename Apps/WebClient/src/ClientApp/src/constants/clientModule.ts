@@ -9,6 +9,7 @@ export enum ClientModule {
     Dependent = "Dependent",
     DependentImmunizationTab = "DependentImmunizationTab",
     DependentClinicalDocumentTab = "DependentClinicalDocumentTab",
+    DependentLaboratoryOrderTab = "DependentLaboratoryOrderTab",
     Note = "Note",
     VaccinationStatus = "VaccinationStatus",
     VaccinationStatusPdf = "VaccinationStatusPdf",
@@ -18,4 +19,5 @@ export enum ClientModule {
     AllLaboratory = "AllLaboratory",
     PcrTest = "PcrTest",
     ClinicalDocument = "ClinicalDocument",
+    Ticket = "Ticket",
 }

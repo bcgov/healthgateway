@@ -57,7 +57,6 @@ describe("WebClient UserProfile Service", () => {
                         accept: "application/json",
                     },
                 }).should((response) => {
-                    cy.log("Response", response);
                     expect(response.status).to.eq(200);
                     expect(response.body).to.not.be.null;
                     expect(response.body.resourcePayload.hdId).to.equal(HDID);

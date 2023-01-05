@@ -5,8 +5,26 @@ import { Getter } from "vuex-class";
 
 @Component
 export default class FooterComponent extends Vue {
-    @Getter("isFooterShown", { namespace: "navbar" })
-    isFooterShown!: boolean;
+    @Getter("isOffline", { namespace: "config" })
+    isOffline!: boolean;
+
+    @Getter("oidcIsAuthenticated", { namespace: "auth" })
+    oidcIsAuthenticated!: boolean;
+
+    @Getter("isValidIdentityProvider", { namespace: "user" })
+    isValidIdentityProvider!: boolean;
+
+    @Getter("userIsRegistered", { namespace: "user" })
+    userIsRegistered!: boolean;
+
+    private get isFooterShown(): boolean {
+        return (
+            !this.isOffline &&
+            (!this.oidcIsAuthenticated ||
+                !this.isValidIdentityProvider ||
+                this.userIsRegistered)
+        );
+    }
 }
 </script>
 

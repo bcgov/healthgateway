@@ -22,6 +22,7 @@ namespace HealthGateway.GatewayApi.Services
     using System.Linq;
     using System.Threading.Tasks;
     using AutoMapper;
+    using HealthGateway.Common.AccessManagement.Authentication;
     using HealthGateway.Common.Constants;
     using HealthGateway.Common.Data.Constants;
     using HealthGateway.Common.Data.Models;
@@ -64,6 +65,7 @@ namespace HealthGateway.GatewayApi.Services
         private readonly IUserProfileDelegate userProfileDelegate;
         private readonly int userProfileHistoryRecordLimit;
         private readonly IUserSmsService userSmsService;
+        private readonly IAuthenticationDelegate authenticationDelegate;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="UserProfileService"/> class.
@@ -82,6 +84,7 @@ namespace HealthGateway.GatewayApi.Services
         /// <param name="httpContextAccessor">The injected http context accessor provider.</param>
         /// <param name="configuration">The injected configuration provider.</param>
         /// <param name="autoMapper">The inject automapper provider.</param>
+        /// <param name="authenticationDelegate">The injected authentication delegate.</param>
         public UserProfileService(
             ILogger<UserProfileService> logger,
             IPatientService patientService,
@@ -96,7 +99,8 @@ namespace HealthGateway.GatewayApi.Services
             ICryptoDelegate cryptoDelegate,
             IHttpContextAccessor httpContextAccessor,
             IConfiguration configuration,
-            IMapper autoMapper)
+            IMapper autoMapper,
+            IAuthenticationDelegate authenticationDelegate)
         {
             this.logger = logger;
             this.patientService = patientService;
@@ -116,6 +120,7 @@ namespace HealthGateway.GatewayApi.Services
                 .GetValue<string>(RegistrationStatusKey) ?? RegistrationStatus.Open;
             this.minPatientAge = configuration.GetSection(WebClientConfigSection).GetValue(MinPatientAgeKey, 12);
             this.autoMapper = autoMapper;
+            this.authenticationDelegate = authenticationDelegate;
         }
 
         /// <inheritdoc/>
@@ -139,6 +144,7 @@ namespace HealthGateway.GatewayApi.Services
             {
                 this.logger.LogTrace("Updating user last login and year of birth... {Hdid}", hdid);
                 retVal.Payload.LastLoginDateTime = jwtAuthTime;
+                retVal.Payload.LastLoginClientCode = this.authenticationDelegate.FetchAuthenticatedUserClientType();
 
                 // Update user year of birth.
                 RequestResult<PatientModel> patientResult = await this.patientService.GetPatient(hdid).ConfigureAwait(true);
@@ -255,6 +261,7 @@ namespace HealthGateway.GatewayApi.Services
                 LastLoginDateTime = jwtAuthTime,
                 EncryptionKey = this.cryptoDelegate.GenerateKey(),
                 YearOfBirth = birthDate?.Year.ToString(CultureInfo.InvariantCulture),
+                LastLoginClientCode = this.authenticationDelegate.FetchAuthenticatedUserClientType(),
             };
             DbResult<UserProfile> insertResult = this.userProfileDelegate.InsertUserProfile(newProfile);
 

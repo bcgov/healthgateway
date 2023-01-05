@@ -15,6 +15,7 @@
 //-------------------------------------------------------------------------
 namespace HealthGateway.CommonTests.Services
 {
+    using System;
     using System.Collections.Generic;
     using System.Linq;
     using System.Threading.Tasks;
@@ -177,8 +178,9 @@ namespace HealthGateway.CommonTests.Services
         /// <summary>
         /// GetPatient - Invalid Id.
         /// </summary>
+        /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
         [Fact]
-        public void ShouldBeEmptyIfInvalidIdentifierType()
+        public async Task ShouldThrowIfInvalidIdentifierType()
         {
             string phn = "abc123";
 
@@ -207,11 +209,7 @@ namespace HealthGateway.CommonTests.Services
                 patientDelegateMock.Object,
                 new Mock<ICacheProvider>().Object);
 
-            // Act
-            RequestResult<PatientModel> actual = Task.Run(async () => await service.GetPatient("abc123", (PatientIdentifierType)23).ConfigureAwait(true)).Result;
-
-            // Verify
-            Assert.Equal(ResultType.Error, actual.ResultStatus);
+            await Assert.ThrowsAsync<NotImplementedException>(() => service.GetPatient("abc123", (PatientIdentifierType)23)).ConfigureAwait(true);
         }
 
         private static RequestResult<string> GetPatientPhn(Dictionary<string, string?> configDictionary, bool returnNullPatientResult)

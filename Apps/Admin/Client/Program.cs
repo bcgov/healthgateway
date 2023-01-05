@@ -22,8 +22,8 @@ namespace HealthGateway.Admin.Client
     using System.Threading.Tasks;
     using Blazored.LocalStorage;
     using Fluxor;
+    using HealthGateway.Admin.Client.Api;
     using HealthGateway.Admin.Client.Authorization;
-    using HealthGateway.Admin.Client.Services;
     using Microsoft.AspNetCore.Components;
     using Microsoft.AspNetCore.Components.Web;
     using Microsoft.AspNetCore.Components.WebAssembly.Authentication;

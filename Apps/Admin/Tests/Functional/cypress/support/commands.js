@@ -34,7 +34,7 @@ Cypress.Commands.add("logout", () => {
 });
 
 Cypress.Commands.add("login", (username, password, path) => {
-    cy.session([username], () => {
+    cy.session(username, () => {
         cy.log("Logging in using Keycloak.");
         cy.readConfig().then((config) => {
             logout(config);
@@ -93,6 +93,7 @@ Cypress.Commands.add("login", (username, password, path) => {
             });
         });
     });
+    cy.log(`Visiting ${path}`);
     cy.visit(path, { timeout: 60000 });
     // wait for log in to complete
     cy.get("[data-testid=user-account-icon]").should("exist");

@@ -79,7 +79,6 @@ describe("Immunization Service", () => {
                 }).should((response) => {
                     expect(response.status).to.eq(200);
                     expect(response.body).to.not.be.null;
-                    cy.log(`response.body: ${JSON.stringify(response.body)}`);
                     expect(response.body.resourcePayload).to.not.be.null;
                 });
             });

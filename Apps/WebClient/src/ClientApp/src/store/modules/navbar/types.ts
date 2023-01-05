@@ -16,31 +16,13 @@ export interface NavbarState {
 
 export interface NavbarGetters extends GetterTree<NavbarState, RootState> {
     isHeaderShown(state: NavbarState): boolean;
-    isFooterShown(
-        _state: NavbarState,
-        // eslint-disable-next-line
-        _getters: any,
-        _rootState: RootState,
-        // eslint-disable-next-line
-        rootGetters: any
-    ): boolean;
     isSidebarOpen(
         _state: NavbarState,
         // eslint-disable-next-line
         _getters: any,
-        _rootState: RootState,
-        // eslint-disable-next-line
-        rootGetters: any
+        rootState: RootState
     ): boolean;
     isSidebarAnimating(state: NavbarState): boolean;
-    isSidebarAvailable(
-        _state: NavbarState,
-        // eslint-disable-next-line
-        _getters: any,
-        _rootState: RootState,
-        // eslint-disable-next-line
-        rootGetters: any
-    ): boolean;
 }
 
 type StoreContext = ActionContext<NavbarState, RootState>;

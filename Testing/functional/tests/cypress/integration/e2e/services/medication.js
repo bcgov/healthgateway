@@ -39,7 +39,6 @@ describe("Medication Service", () => {
             }).should((response) => {
                 expect(response.status).to.eq(200);
                 expect(response.body).to.not.be.null;
-                cy.log(`response.body: ${response.body}`);
                 expect(response.body.totalResultCount).to.equal(18);
                 expect(response.body.resourcePayload).to.not.be.null;
                 const drug66999990 = response.body.resourcePayload["66999990"];
@@ -66,7 +65,6 @@ describe("Medication Service", () => {
             }).should((response) => {
                 expect(response.status).to.eq(200);
                 expect(response.body).to.not.be.null;
-                cy.log(`response.body: ${response.body}`);
                 verifyFedDrug(response.body.resourcePayload);
             });
         });
@@ -87,7 +85,6 @@ describe("Medication Service", () => {
             }).should((response) => {
                 expect(response.status).to.eq(200);
                 expect(response.body).to.not.be.null;
-                cy.log(`response.body: ${response.body}`);
                 verifyProvincialDrug(response.body.resourcePayload);
             });
         });
@@ -154,7 +151,6 @@ describe("Medication Service", () => {
                 }).should((response) => {
                     expect(response.status).to.eq(200);
                     expect(response.body).to.not.be.null;
-                    cy.log(`response.body: ${response.body}`);
                     expect(
                         response.body.resourcePayload.length
                     ).to.be.greaterThan(250);
@@ -226,7 +222,6 @@ describe("Medication Service", () => {
                         accept: "application/json",
                     },
                 }).should((response) => {
-                    cy.log(`response.body: ${response.body}`);
                     expect(response.status).to.eq(200);
                     expect(response.body).to.not.be.null;
                     expect(

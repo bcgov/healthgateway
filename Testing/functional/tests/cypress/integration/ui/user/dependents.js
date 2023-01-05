@@ -44,10 +44,12 @@ describe("COVID-19", () => {
         cy.get("[data-testid=dependentCovidTestDate]")
             .last()
             .contains(/\d{4}-[A-Z]{1}[a-z]{2}-\d{2}/);
-        expect(cy.get("[data-testid=dependentCovidTestStatus]").last()).not.to
-            .be.empty;
-        expect(cy.get("[data-testid=dependentCovidTestLabResult]").last()).not
-            .to.be.empty;
+        cy.get("[data-testid=dependentCovidTestStatus]")
+            .last()
+            .should("not.be.empty");
+        cy.get("[data-testid=dependentCovidTestLabResult]")
+            .last()
+            .should("not.be.empty");
         cy.get("[data-testid=dependentCovidReportDownloadBtn]").last().click();
         cy.get("[data-testid=genericMessageModal]").should("be.visible");
         cy.get("[data-testid=genericMessageText]").should(
@@ -193,7 +195,7 @@ describe("COVID-19 - Vaccine Proof download", () => {
     });
 });
 
-describe("Dependents - Immuniazation Tab - Enabled", () => {
+describe("Dependents - Immunization Tab - Enabled", () => {
     const dependentHdid = "645645767756756767";
     beforeEach(() => {
         cy.intercept("GET", "**/UserProfile/*/Dependent", {
@@ -204,8 +206,6 @@ describe("Dependents - Immuniazation Tab - Enabled", () => {
             "Dependent",
             "Immunization",
             "DependentImmunizationTab",
-            "DependentClinicalDocumentTab",
-            "ClinicalDocument",
         ]);
         cy.login(
             Cypress.env("keycloak.username"),
@@ -434,6 +434,75 @@ describe("Dependents - Immuniazation Tab - Enabled", () => {
     });
 });
 
+describe("Dependents - Lab Results Tab - Enabled", () => {
+    const dependentHdid = "645645767756756767";
+    beforeEach(() => {
+        cy.intercept("GET", "**/UserProfile/*/Dependent", {
+            fixture: "UserProfileService/dependent.json",
+        });
+
+        cy.enableModules([
+            "Dependent",
+            "AllLaboratory",
+            "DependentLaboratoryOrderTab",
+        ]);
+        cy.login(
+            Cypress.env("keycloak.username"),
+            Cypress.env("keycloak.password"),
+            AuthMethod.KeyCloak,
+            "/dependents"
+        );
+    });
+
+    it("Lab Results Tab - Verify result and sort", () => {
+        cy.intercept("GET", "**/Laboratory/LaboratoryOrders*", {
+            fixture: "LaboratoryService/laboratoryOrders.json",
+        });
+
+        cy.log("Validating Lab Results Tab - Verify result and sort");
+
+        cy.get(`[data-testid=lab-results-tab-title-${dependentHdid}]`)
+            .parent()
+            .click();
+
+        // Expecting 9 rows to return but we also need to consider the table headers.
+        cy.get(`[data-testid=lab-results-table-${dependentHdid}]`)
+            .find("tr")
+            .should("have.length", 10);
+
+        // Verify table has been sorted by date descending
+        cy.get(`[data-testid=lab-results-date-${dependentHdid}-0]`).then(
+            ($dateItem) => {
+                // Column date in the 1st row in the table
+                const firstDate = getDate($dateItem.text());
+                cy.get(
+                    `[data-testid=lab-results-date-${dependentHdid}-1]`
+                ).then(($dateItem) => {
+                    // Column date in the 2nd row in the table
+                    const secondDate = getDate($dateItem.text());
+                    expect(firstDate).to.be.gte(secondDate);
+                });
+            }
+        );
+    });
+
+    it("Lab Results Tab - No Data Found", () => {
+        cy.intercept("GET", "**/Laboratory/LaboratoryOrders*", {
+            fixture: "LaboratoryService/laboratoryOrdersNoRecords.json",
+        });
+
+        cy.log("Validating Lab Results Tab - No Data Found");
+
+        cy.get(`[data-testid=lab-results-tab-title-${dependentHdid}]`)
+            .parent()
+            .click();
+
+        cy.get(`[data-testid=lab-results-no-records-${dependentHdid}]`).should(
+            "be.visible"
+        );
+    });
+});
+
 describe("Dependents - Clinical Document Tab - Enabled", () => {
     const dependentHdid = "645645767756756767";
     beforeEach(() => {
@@ -443,8 +512,8 @@ describe("Dependents - Clinical Document Tab - Enabled", () => {
 
         cy.enableModules([
             "Dependent",
-            "DependentClinicalDocumentTab",
             "ClinicalDocument",
+            "DependentClinicalDocumentTab",
         ]);
         cy.login(
             Cypress.env("keycloak.username"),
@@ -468,7 +537,7 @@ describe("Dependents - Clinical Document Tab - Enabled", () => {
         // Expecting 2 rows to return but we also need to consider the table headers.
         cy.get(`[data-testid=clinical-document-table-${dependentHdid}]`)
             .find("tr")
-            .should(($tr) => expect($tr.length == 3));
+            .should("have.length", 3);
 
         // Verify forecast table has been sorted by due date descending
         cy.get(

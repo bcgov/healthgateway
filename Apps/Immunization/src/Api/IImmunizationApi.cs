@@ -15,7 +15,6 @@
 //-------------------------------------------------------------------------
 namespace HealthGateway.Immunization.Api;
 
-using System.Collections.Generic;
 using System.Threading.Tasks;
 using HealthGateway.Common.Models.PHSA;
 using Refit;
@@ -37,13 +36,14 @@ public interface IImmunizationApi
     /// <summary>
     /// Retrieves a PhsaResult containing the immunizations and recommendations of a given patient.
     /// </summary>
-    /// <param name="query">Query parameters.</param>
+    /// <param name="subjectHdid">The Hdid to query immunizations and recommendations.</param>
+    /// <param name="limit">The Limit to query immunizations and recommendations.</param>
     /// <param name="token">The bearer token to authorize the call.</param>
     /// <returns>
     /// A PhsaResult containing the immunizations and recommendations of a given patient.
     /// </returns>
-    [Get("/api/v1/Immunizations")]
-    Task<PhsaResult<ImmunizationResponse>> GetImmunizationsAsync(Dictionary<string, string?> query, [Authorize] string token);
+    [Get("/api/v1/Immunizations?subjectHdid={subjectHdid}&limit={limit}")]
+    Task<PhsaResult<ImmunizationResponse>> GetImmunizationsAsync(string subjectHdid, string limit, [Authorize] string token);
 
     /// <summary>
     /// Retrieves a PhsaResult containing the vaccine status of a given patient.

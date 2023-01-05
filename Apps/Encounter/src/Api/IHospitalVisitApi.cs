@@ -29,13 +29,14 @@ namespace HealthGateway.Encounter.Api
         /// <summary>
         /// Returns a list of hospital visits.
         /// </summary>
-        /// <param name="query">Query parameters used to query hospital visits.</param>
+        /// <param name="subjectHdid">The Hdid to query hospital visits.</param>
+        /// <param name="limit">The Limit to query hospital visits.</param>
         /// <param name="token">The bearer token to authorize the call.</param>
         /// <returns>
         /// The PHSA Result including the load state and the list of hospital visits for the user identified by
         /// the subject id in the query.
         /// </returns>
-        [Get("/api/v1/HospitalVisits")]
-        Task<PhsaResult<IEnumerable<HospitalVisit>>> GetHospitalVisitsAsync(Dictionary<string, string?> query, [Authorize] string token);
+        [Get("/api/v1/HospitalVisits?subjectHdid={subjectHdid}&limit={limit}")]
+        Task<PhsaResult<IEnumerable<HospitalVisit>>> GetHospitalVisitsAsync(string subjectHdid, string limit, [Authorize] string token);
     }
 }

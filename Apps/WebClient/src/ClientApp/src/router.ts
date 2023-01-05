@@ -6,8 +6,10 @@ import VueRouter, {
 import { Position, PositionResult } from "vue-router/types/router";
 
 import { ClientModule } from "@/constants/clientModule";
+import { TicketStatus } from "@/constants/ticketStatus";
 import { Dictionary } from "@/models/baseTypes";
 import { WebClientConfiguration } from "@/models/configData";
+import { Ticket } from "@/models/ticket";
 import container from "@/plugins/container";
 import { SnowplowWindow } from "@/plugins/extensions";
 import { SERVICE_IDENTIFIER, STORE_IDENTIFIER } from "@/plugins/inversify";
@@ -88,6 +90,12 @@ const FAQView = () =>
     import(/* webpackChunkName: "faq" */ "@/views/FaqView.vue");
 const PcrTestView = () =>
     import(/* webpackChunkName: "pcrTest" */ "@/views/PcrTestView.vue");
+const QueueView = () =>
+    import(/* webpackChunkName: "queue" */ "@/views/waitlist/QueueView.vue");
+const QueueFullView = () =>
+    import(
+        /* webpackChunkName: "queueFull" */ "@/views/waitlist/QueueFullView.vue"
+    );
 
 export enum UserState {
     offline = "offline",
@@ -108,7 +116,7 @@ function calculateUserState(): UserState {
     const isOffline = store.getters["config/isOffline"];
     const isAuthenticated: boolean = store.getters["auth/oidcIsAuthenticated"];
     const isValidIdentityProvider: boolean =
-        store.getters["auth/isValidIdentityProvider"];
+        store.getters["user/isValidIdentityProvider"];
     const patientRetrievalFailed: boolean =
         store.getters["user/patientRetrievalFailed"];
     const isRegistered: boolean = store.getters["user/userIsRegistered"];
@@ -135,7 +143,7 @@ function calculateUserState(): UserState {
     }
 }
 
-function getAvailableModules(): string[] {
+function getEnabledModules(): string[] {
     const storeWrapper = container.get<IStoreProvider>(
         STORE_IDENTIFIER.StoreProvider
     );
@@ -163,6 +171,8 @@ const REGISTRATION_PATH = "/registration";
 const ROOT_PATH = "/";
 const TIMELINE_PATH = "/timeline";
 const UNAUTHORIZED_PATH = "/unauthorized";
+const QUEUE_PATH = "/queue";
+const QUEUE_FULL_PATH = "/busy";
 
 const routes = [
     {
@@ -176,6 +186,21 @@ const routes = [
                 UserState.registered,
                 UserState.offline,
             ],
+            requiresProcessedWaitlistTicket: false,
+        },
+    },
+    {
+        path: QUEUE_PATH,
+        component: QueueView,
+        meta: {
+            stateless: true,
+        },
+    },
+    {
+        path: QUEUE_FULL_PATH,
+        component: QueueFullView,
+        meta: {
+            stateless: true,
         },
     },
     {
@@ -187,6 +212,7 @@ const routes = [
         }),
         meta: {
             validStates: [UserState.notRegistered],
+            requiresProcessedWaitlistTicket: true,
         },
     },
     {
@@ -194,13 +220,17 @@ const routes = [
         component: AcceptTermsOfServiceView,
         meta: {
             validStates: [UserState.acceptTermsOfService],
+            requiresProcessedWaitlistTicket: true,
         },
     },
     {
         path: "/validateEmail/:inviteKey",
         component: ValidateEmailView,
         props: true,
-        meta: { validStates: [UserState.registered] },
+        meta: {
+            validStates: [UserState.registered],
+            requiresProcessedWaitlistTicket: true,
+        },
     },
     {
         path: PROFILE_PATH,
@@ -211,6 +241,7 @@ const routes = [
                 UserState.pendingDeletion,
                 UserState.acceptTermsOfService,
             ],
+            requiresProcessedWaitlistTicket: true,
         },
     },
     {
@@ -218,12 +249,16 @@ const routes = [
         component: HomeView,
         meta: {
             validStates: [UserState.registered],
+            requiresProcessedWaitlistTicket: true,
         },
     },
     {
         path: TIMELINE_PATH,
         component: TimelineView,
-        meta: { validStates: [UserState.registered] },
+        meta: {
+            validStates: [UserState.registered],
+            requiresProcessedWaitlistTicket: true,
+        },
     },
     {
         path: "/covid19",
@@ -231,12 +266,16 @@ const routes = [
         meta: {
             validStates: [UserState.registered],
             requiredModules: [ClientModule.VaccinationStatus],
+            requiresProcessedWaitlistTicket: true,
         },
     },
     {
         path: "/reports",
         component: ReportsView,
-        meta: { validStates: [UserState.registered] },
+        meta: {
+            validStates: [UserState.registered],
+            requiresProcessedWaitlistTicket: true,
+        },
     },
     {
         path: "/dependents",
@@ -244,6 +283,7 @@ const routes = [
         meta: {
             validStates: [UserState.registered],
             requiredModules: [ClientModule.Dependent],
+            requiresProcessedWaitlistTicket: true,
         },
     },
     {
@@ -258,6 +298,7 @@ const routes = [
                 UserState.pendingDeletion,
             ],
             requiredModules: [ClientModule.PublicLaboratoryResult],
+            requiresProcessedWaitlistTicket: true,
         },
     },
     {
@@ -272,6 +313,7 @@ const routes = [
                 UserState.pendingDeletion,
             ],
             requiredModules: [ClientModule.PcrTest],
+            requiresProcessedWaitlistTicket: true,
         },
     },
     {
@@ -286,6 +328,7 @@ const routes = [
                 UserState.pendingDeletion,
             ],
             requiredModules: [ClientModule.PcrTest],
+            requiresProcessedWaitlistTicket: true,
         },
     },
     {
@@ -300,6 +343,7 @@ const routes = [
                 UserState.pendingDeletion,
             ],
             requiredModules: [ClientModule.VaccinationStatus],
+            requiresProcessedWaitlistTicket: true,
         },
     },
     {
@@ -313,6 +357,7 @@ const routes = [
                 UserState.registered,
                 UserState.pendingDeletion,
             ],
+            requiresProcessedWaitlistTicket: false,
         },
     },
     {
@@ -326,6 +371,7 @@ const routes = [
                 UserState.registered,
                 UserState.pendingDeletion,
             ],
+            requiresProcessedWaitlistTicket: false,
         },
     },
     {
@@ -339,6 +385,7 @@ const routes = [
                 UserState.registered,
                 UserState.pendingDeletion,
             ],
+            requiresProcessedWaitlistTicket: false,
         },
     },
     {
@@ -352,6 +399,7 @@ const routes = [
                 UserState.registered,
                 UserState.pendingDeletion,
             ],
+            requiresProcessedWaitlistTicket: false,
         },
     },
     {
@@ -360,7 +408,10 @@ const routes = [
         props: (route: Route) => ({
             isRetry: route.query.isRetry === "true",
         }),
-        meta: { validStates: [UserState.unauthenticated] },
+        meta: {
+            validStates: [UserState.unauthenticated],
+            requiresProcessedWaitlistTicket: false,
+        },
     },
     {
         path: "/loginCallback",
@@ -383,12 +434,18 @@ const routes = [
     {
         path: IDIR_LOGGED_IN_PATH,
         component: IdirLoggedInView,
-        meta: { validStates: [UserState.invalidIdentityProvider] },
+        meta: {
+            validStates: [UserState.invalidIdentityProvider],
+            requiresProcessedWaitlistTicket: true,
+        },
     },
     {
         path: PATIENT_RETRIEVAL_ERROR_PATH,
         component: PatientRetrievalErrorView,
-        meta: { validStates: [UserState.noPatientData] },
+        meta: {
+            validStates: [UserState.noPatientData],
+            requiresProcessedWaitlistTicket: true,
+        },
     },
     {
         path: UNAUTHORIZED_PATH,
@@ -433,6 +490,39 @@ export const beforeEachGuard: NavigationGuard = async (
         return;
     }
 
+    const enabledModules = getEnabledModules();
+
+    const waitlistIsEnabled = enabledModules.includes(ClientModule.Ticket);
+    const waitlistTicketIsProcessed: boolean =
+        store.getters["waitlist/ticketIsProcessed"];
+    let metaRquiresProcessedWaitlistTicket =
+        meta.requiresProcessedWaitlistTicket;
+
+    if (from.fullPath === QUEUE_FULL_PATH || from.fullPath === QUEUE_PATH) {
+        metaRquiresProcessedWaitlistTicket = true;
+    }
+
+    logger.debug(
+        `Before guard - waitlist enabled: ${waitlistIsEnabled}, waitlist ticket processed: ${waitlistTicketIsProcessed} and meta requires processed waitlist ticket: ${metaRquiresProcessedWaitlistTicket}`
+    );
+
+    if (
+        waitlistIsEnabled &&
+        !waitlistTicketIsProcessed &&
+        metaRquiresProcessedWaitlistTicket
+    ) {
+        try {
+            const ticket: Ticket = await store.dispatch("waitlist/getTicket");
+            if (ticket.status !== TicketStatus.Processed) {
+                next({ path: QUEUE_PATH, query: { redirect: to.path } });
+                return;
+            }
+        } catch {
+            next({ path: QUEUE_FULL_PATH });
+            return;
+        }
+    }
+
     await store.dispatch("auth/checkStatus");
 
     // Make sure that the route accepts the current state
@@ -440,11 +530,10 @@ export const beforeEachGuard: NavigationGuard = async (
     logger.debug(`current state: ${currentUserState}`);
 
     const isValidState = meta.validStates.includes(currentUserState);
-    const availableModules = getAvailableModules();
     const hasRequiredModules =
         meta.requiredModules === undefined ||
         meta.requiredModules.every((val: string) =>
-            availableModules.includes(val)
+            enabledModules.includes(val)
         );
 
     if (isValidState && hasRequiredModules) {

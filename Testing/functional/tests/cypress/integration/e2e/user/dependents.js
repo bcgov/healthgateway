@@ -27,8 +27,10 @@ describe("dependents", () => {
             "Laboratory",
             "Dependent",
             "DependentImmunizationTab",
-            "DependentClinicalDocumentTab",
             "ClinicalDocument",
+            "DependentClinicalDocumentTab",
+            "AllLaboratory",
+            "DependentLaboratoryOrderTab",
         ]);
         cy.login(
             Cypress.env("keycloak.username"),
@@ -183,7 +185,7 @@ describe("dependents", () => {
         // Expecting more than 1 row to return because we also need to consider the table headers.
         cy.get(`[data-testid=immunization-history-table-${validDependentHdid}]`)
             .find("tr")
-            .should(($tr) => expect($tr.length > 1));
+            .should("have.length.greaterThan", 1);
 
         // Click download dropdown under History tab
         cy.get(
@@ -265,7 +267,7 @@ describe("dependents", () => {
             `[data-testid=immunization-forecast-table-${validDependentHdid}]`
         )
             .find("tr")
-            .should(($tr) => expect($tr.length > 1));
+            .should("have.length.greaterThan", 1);
 
         // Click download dropdown under Forecasts tab
         cy.get(
@@ -325,6 +327,32 @@ describe("dependents", () => {
         });
     });
 
+    it("Validate Lab Results - Verify result and download", () => {
+        cy.log("Validating Lab Results Tab - Verify result and download");
+
+        cy.get(`[data-testid=lab-results-tab-title-${validDependentHdid}]`)
+            .parent()
+            .click();
+
+        // Expecting more than 1 row to return because also need to consider the table headers.
+        cy.get(`[data-testid=lab-results-table-${validDependentHdid}]`)
+            .find("tr")
+            .should("have.length.greaterThan", 1);
+
+        cy.get(
+            `[data-testid=lab-results-report-download-button-${validDependentHdid}-0]`
+        ).click();
+
+        cy.get("[data-testid=genericMessageModal]").should("be.visible");
+        cy.get("[data-testid=genericMessageSubmitBtn]").click();
+
+        cy.verifyDownload("Laboratory_Report_JENNIFER_TESTFOUR", {
+            timeout: 60000,
+            interval: 5000,
+            contains: true,
+        });
+    });
+
     it("Validate Clinical Document - Verify result and download", () => {
         cy.log("Validating Clinical Document Tab - Verify result and download");
 
@@ -337,7 +365,7 @@ describe("dependents", () => {
         // Expecting more than 1 row to return because also need to consider the table headers.
         cy.get(`[data-testid=clinical-document-table-${validDependentHdid}]`)
             .find("tr")
-            .should(($tr) => expect($tr.length > 1));
+            .should("have.length.greaterThan", 1);
 
         cy.get(
             `[data-testid=clinical-document-report-download-button-${validDependentHdid}-0]`

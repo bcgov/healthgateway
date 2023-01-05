@@ -128,6 +128,14 @@ namespace HealthGateway.Database.Delegates
         int GetRecurrentUserCount(int dayCount, DateTime startDate, DateTime endDate);
 
         /// <summary>
+        /// Returns the list of login client counts over a date range.
+        /// </summary>
+        /// <param name="startDate">The start date of last login of users.</param>
+        /// <param name="endDate">The end date of last login of users.</param>
+        /// <returns>The counts of login clients for date range.</returns>
+        IDictionary<string, int> GetLastLoginClientCounts(DateTime startDate, DateTime endDate);
+
+        /// <summary>
         /// Returns the list of UserProfileHistory for a particular hdid and x number of records to return.
         /// </summary>
         /// <param name="hdid">The unique profile key to find.</param>

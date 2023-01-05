@@ -20,10 +20,12 @@ import {
     ILaboratoryService,
     ILogger,
     IMedicationService,
+    INotificationService,
     IPatientService,
     IPcrTestService,
     IReportService,
     IStoreProvider,
+    ITicketService,
     IUserCommentService,
     IUserFeedbackService,
     IUserNoteService,
@@ -40,6 +42,7 @@ import { RestEncounterService } from "@/services/restEncounterService";
 import { RestImmunizationService } from "@/services/restImmunizationService";
 import { RestLaboratoryService } from "@/services/restLaboratoryService";
 import { RestMedicationService } from "@/services/restMedicationService";
+import { RestNotificationService } from "@/services/restNotificationService";
 import { RestPatientService } from "@/services/restPatientService";
 import { RestUserCommentService } from "@/services/restUserCommentService";
 import { RestUserFeedbackService } from "@/services/restUserFeedback";
@@ -54,6 +57,7 @@ import StoreProvider from "@/store/StoreProvider";
 import container from "./container";
 import { GatewayStoreOptions } from "@/store/types";
 import { StoreOptions } from "@/store/options";
+import { RestTicketService } from "@/services/restTicketService";
 
 container
     .bind<IConfigService>(SERVICE_IDENTIFIER.ConfigService)
@@ -116,6 +120,10 @@ container
     .to(RestUserCommentService)
     .inSingletonScope();
 container
+    .bind<INotificationService>(SERVICE_IDENTIFIER.NotificationService)
+    .to(RestNotificationService)
+    .inSingletonScope();
+container
     .bind<IUserRatingService>(SERVICE_IDENTIFIER.UserRatingService)
     .to(RestUserRatingService)
     .inSingletonScope();
@@ -144,4 +152,8 @@ container
 container
     .bind<IPcrTestService>(SERVICE_IDENTIFIER.PcrTestService)
     .to(RestPcrTestService)
+    .inSingletonScope();
+container
+    .bind<ITicketService>(SERVICE_IDENTIFIER.TicketService)
+    .to(RestTicketService)
     .inSingletonScope();

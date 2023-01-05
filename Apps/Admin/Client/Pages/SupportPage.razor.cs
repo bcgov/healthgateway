@@ -26,6 +26,7 @@ namespace HealthGateway.Admin.Client.Pages
     using HealthGateway.Admin.Client.Store.SupportUser;
     using HealthGateway.Common.Data.Constants;
     using HealthGateway.Common.Data.Utils;
+    using HealthGateway.Common.Data.Validations;
     using HealthGateway.Common.Data.ViewModels;
     using Microsoft.AspNetCore.Components;
     using Microsoft.AspNetCore.WebUtilities;
@@ -37,6 +38,8 @@ namespace HealthGateway.Admin.Client.Pages
     /// </summary>
     public partial class SupportPage : FluxorComponent
     {
+        private static readonly HealthGateway.Common.Data.Validations.PhnValidator PhnValidator = new HealthGateway.Common.Data.Validations.PhnValidator();
+
         private static List<UserQueryType> QueryTypes => new() { UserQueryType.Phn, UserQueryType.Email, UserQueryType.Sms, UserQueryType.Hdid };
 
         [Inject]
@@ -97,7 +100,7 @@ namespace HealthGateway.Admin.Client.Pages
                 return "Search parameter is required";
             }
 
-            if (this.SelectedQueryType == UserQueryType.Phn && !PhnValidator.IsValid(StringManipulator.StripWhitespace(parameter)))
+            if (this.SelectedQueryType == UserQueryType.Phn && !PhnValidator.Validate(StringManipulator.StripWhitespace(parameter)).IsValid)
             {
                 return "Invalid PHN";
             }
