@@ -13,26 +13,24 @@
 //  See the License for the specific language governing permissions and
 //  limitations under the License.
 // -------------------------------------------------------------------------
-namespace HealthGateway.Encounter.MapProfiles
+
+namespace HealthGateway.GatewayApi.Validations
 {
-    using System.Linq;
-    using AutoMapper;
-    using HealthGateway.Encounter.Models;
-    using HealthGateway.Encounter.Models.PHSA;
+    using FluentValidation;
+    using HealthGateway.GatewayApi.Models;
 
     /// <summary>
-    /// An AutoMapper profile class which defines mapping between PHSA and UI Models.
+    /// Validates <see cref="UserComment"/> instances.
     /// </summary>
-    public class HospitalVisitModelProfile : Profile
+    public class UserCommentValidator : AbstractValidator<UserComment>
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="HospitalVisitModelProfile"/> class.
+        /// Initializes a new instance of the <see cref="UserCommentValidator"/> class.
         /// </summary>
-        public HospitalVisitModelProfile()
+        public UserCommentValidator()
         {
-            this.CreateMap<HospitalVisit, HospitalVisitModel>()
-                .ForMember(dest => dest.Provider, opt => opt.MapFrom(src => src.Clinicians.Select(c => c.DisplayName).FirstOrDefault()))
-                .ReverseMap();
+            this.RuleFor(v => v.UserProfileId).NotEmpty();
+            this.RuleFor(v => v.Text).MaximumLength(1000);
         }
     }
 }

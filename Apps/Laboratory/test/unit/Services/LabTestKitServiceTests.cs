@@ -18,6 +18,7 @@ namespace HealthGateway.LaboratoryTests.Services
     using System;
     using System.Net;
     using System.Net.Http;
+    using System.Threading.Tasks;
     using HealthGateway.Common.AccessManagement.Authentication;
     using HealthGateway.Common.AccessManagement.Authentication.Models;
     using HealthGateway.Common.Data.Constants;
@@ -40,172 +41,180 @@ namespace HealthGateway.LaboratoryTests.Services
         /// <summary>
         /// Tests a valid auth test kit registration.
         /// </summary>
+        /// <returns>awaitable task.</returns>
         [Fact]
-        public void RegisterLabTestOk()
+        public async Task RegisterLabTestOk()
         {
             using HttpResponseMessage httpResponse = new()
             {
                 StatusCode = HttpStatusCode.OK,
             };
-            RequestResult<LabTestKit> actualResult = this.GetLabTestKitService(httpResponse).RegisterLabTestKitAsync("hdid", new LabTestKit()).Result;
-            Assert.True(actualResult.ResultStatus == ResultType.Success);
+            RequestResult<LabTestKit> actualResult = await this.GetLabTestKitService(httpResponse).RegisterLabTestKitAsync("hdid", new LabTestKit()).ConfigureAwait(false);
+            Assert.Equal(ResultType.Success, actualResult.ResultStatus);
         }
 
         /// <summary>
         /// Tests a valid public test kit registration which results in an HTTP exception.
         /// </summary>
+        /// <returns>awaitable task.</returns>
         [Fact]
-        public void RegisterPublicLabTestOk()
+        public async Task RegisterPublicLabTestOk()
         {
             using HttpResponseMessage httpResponse = new()
             {
                 StatusCode = HttpStatusCode.OK,
             };
-            RequestResult<PublicLabTestKit> actualResult = this.GetLabTestKitService(httpResponse).RegisterLabTestKitAsync(CreatePublicLabTestKit("9735353315")).Result;
+            RequestResult<PublicLabTestKit> actualResult = await this.GetLabTestKitService(httpResponse).RegisterLabTestKitAsync(CreatePublicLabTestKit("9735353315")).ConfigureAwait(false);
             Assert.True(actualResult.ResultStatus == ResultType.Success);
         }
 
         /// <summary>
         /// Tests a valid public test kit registration.
         /// </summary>
+        /// <returns>awaitable task.</returns>
         [Fact]
-        public void RegisterPublicLabTestHttpException()
+        public async Task RegisterPublicLabTestHttpException()
         {
-            RequestResult<PublicLabTestKit> actualResult = this.GetLabTestKitServiceException().RegisterLabTestKitAsync(CreatePublicLabTestKit("9735353315")).Result;
+            RequestResult<PublicLabTestKit> actualResult = await this.GetLabTestKitServiceException().RegisterLabTestKitAsync(CreatePublicLabTestKit("9735353315")).ConfigureAwait(false);
             Assert.True(actualResult.ResultStatus == ResultType.Error);
         }
 
         /// <summary>
         /// Tests an authenticated test kit registration which results in an HTTP exception.
         /// </summary>
+        /// <returns>awaitable task.</returns>
         [Fact]
-        public void RegisterLabTestHttpException()
+        public async Task RegisterLabTestHttpException()
         {
-            RequestResult<LabTestKit> actualResult = this.GetLabTestKitServiceException().RegisterLabTestKitAsync("hdid", new LabTestKit()).Result;
+            RequestResult<LabTestKit> actualResult = await this.GetLabTestKitServiceException().RegisterLabTestKitAsync("hdid", new LabTestKit()).ConfigureAwait(false);
             Assert.True(actualResult.ResultStatus == ResultType.Error);
         }
 
         /// <summary>
         /// Tests when Keycloak auth fails.
         /// </summary>
+        /// <returns>awaitable task.</returns>
         [Fact]
-        public void RegisterPublicLabTestKeycloakFail()
+        public async Task RegisterPublicLabTestKeycloakFail()
         {
             using HttpResponseMessage httpResponse = new()
             {
                 StatusCode = HttpStatusCode.OK,
             };
-            RequestResult<PublicLabTestKit> actualResult = this.GetLabTestKitService(httpResponse, true).RegisterLabTestKitAsync(CreatePublicLabTestKit("9735353315")).Result;
+            RequestResult<PublicLabTestKit> actualResult = await this.GetLabTestKitService(httpResponse, true).RegisterLabTestKitAsync(CreatePublicLabTestKit("9735353315")).ConfigureAwait(false);
             Assert.True(actualResult.ResultStatus == ResultType.Error);
         }
 
         /// <summary>
         /// Tests when a lab kit is already registered.
         /// </summary>
+        /// <returns>awaitable task.</returns>
         [Fact]
-        public void RegisterPublicLabTestConflict()
+        public async Task RegisterPublicLabTestConflict()
         {
             using HttpResponseMessage httpResponse = new()
             {
                 StatusCode = HttpStatusCode.Conflict,
             };
-            RequestResult<PublicLabTestKit> actualResult = this.GetLabTestKitService(httpResponse).RegisterLabTestKitAsync(CreatePublicLabTestKit("9735353315")).Result;
-            Assert.True(
-                actualResult.ResultStatus == ResultType.ActionRequired &&
-                actualResult.ResultError != null &&
-                actualResult.ResultError.ActionCodeValue == ActionType.Processed.Value);
+            RequestResult<PublicLabTestKit> actualResult = await this.GetLabTestKitService(httpResponse).RegisterLabTestKitAsync(CreatePublicLabTestKit("9735353315")).ConfigureAwait(false);
+            Assert.Equal(ResultType.ActionRequired, actualResult.ResultStatus);
+            Assert.NotNull(actualResult.ResultError);
+            Assert.Equal(ActionType.Processed.Value, actualResult.ResultError.ActionCodeValue);
         }
 
         /// <summary>
         /// Tests when bad data is sent.
         /// </summary>
+        /// <returns>awaitable task.</returns>
         [Fact]
-        public void RegisterPublicLabTestUnprocessable()
+        public async Task RegisterPublicLabTestUnprocessable()
         {
             using HttpResponseMessage httpResponse = new()
             {
                 StatusCode = HttpStatusCode.UnprocessableEntity,
             };
-            RequestResult<PublicLabTestKit> actualResult = this.GetLabTestKitService(httpResponse).RegisterLabTestKitAsync(CreatePublicLabTestKit("9735353315")).Result;
-            Assert.True(
-                actualResult.ResultStatus == ResultType.ActionRequired &&
-                actualResult.ResultError != null &&
-                actualResult.ResultError.ActionCodeValue == ActionType.Validation.Value);
+            RequestResult<PublicLabTestKit> actualResult = await this.GetLabTestKitService(httpResponse).RegisterLabTestKitAsync(CreatePublicLabTestKit("9735353315")).ConfigureAwait(false);
+            Assert.Equal(ResultType.ActionRequired, actualResult.ResultStatus);
+            Assert.NotNull(actualResult.ResultError);
+            Assert.Equal(ActionType.Validation.Value, actualResult.ResultError.ActionCodeValue);
         }
 
         /// <summary>
         /// Tests when bad data is sent.
         /// </summary>
+        /// <returns>awaitable task.</returns>
         [Fact]
-        public void RegisterPublicLabTestBadPhn()
+        public async Task RegisterPublicLabTestBadPhn()
         {
             using HttpResponseMessage httpResponse = new()
             {
                 StatusCode = HttpStatusCode.OK,
             };
-            RequestResult<PublicLabTestKit> actualResult = this.GetLabTestKitService(httpResponse).RegisterLabTestKitAsync(CreatePublicLabTestKit("BADPHN")).Result;
-            Assert.True(
-                actualResult.ResultStatus == ResultType.ActionRequired &&
-                actualResult.ResultError != null &&
-                actualResult.ResultError.ActionCodeValue == ActionType.Validation.Value);
+            RequestResult<PublicLabTestKit> actualResult = await this.GetLabTestKitService(httpResponse).RegisterLabTestKitAsync(CreatePublicLabTestKit("BADPHN")).ConfigureAwait(false);
+            Assert.Equal(ResultType.ActionRequired, actualResult.ResultStatus);
+            Assert.NotNull(actualResult.ResultError);
+            Assert.Equal(ActionType.Validation.Value, actualResult.ResultError.ActionCodeValue);
         }
 
         /// <summary>
         /// Tests when bad data is sent.
         /// </summary>
+        /// <returns>awaitable task.</returns>
         [Fact]
-        public void RegisterPublicLabTestAddrReqd()
+        public async Task RegisterPublicLabTestAddrReqd()
         {
             using HttpResponseMessage httpResponse = new()
             {
                 StatusCode = HttpStatusCode.OK,
             };
-            RequestResult<PublicLabTestKit> actualResult = this.GetLabTestKitService(httpResponse).RegisterLabTestKitAsync(CreatePublicLabTestKit(null)).Result;
-            Assert.True(
-                actualResult.ResultStatus == ResultType.ActionRequired &&
-                actualResult.ResultError != null &&
-                actualResult.ResultError.ActionCodeValue == ActionType.Validation.Value);
+            RequestResult<PublicLabTestKit> actualResult = await this.GetLabTestKitService(httpResponse).RegisterLabTestKitAsync(CreatePublicLabTestKit(null)).ConfigureAwait(false);
+            Assert.Equal(ResultType.ActionRequired, actualResult.ResultStatus);
+            Assert.NotNull(actualResult.ResultError);
+            Assert.Equal(ActionType.Validation.Value, actualResult.ResultError.ActionCodeValue);
         }
 
         /// <summary>
         /// Tests for authorization failure.
         /// </summary>
+        /// <returns>awaitable task.</returns>
         [Fact]
-        public void RegisterPublicLabTestUnauthorized()
+        public async Task RegisterPublicLabTestUnauthorized()
         {
             using HttpResponseMessage httpResponse = new()
             {
                 StatusCode = HttpStatusCode.Unauthorized,
             };
-            RequestResult<PublicLabTestKit> actualResult = this.GetLabTestKitService(httpResponse).RegisterLabTestKitAsync(CreatePublicLabTestKit("9735353315")).Result;
+            RequestResult<PublicLabTestKit> actualResult = await this.GetLabTestKitService(httpResponse).RegisterLabTestKitAsync(CreatePublicLabTestKit("9735353315")).ConfigureAwait(false);
             Assert.True(actualResult.ResultStatus == ResultType.Error);
         }
 
         /// <summary>
         /// Tests for a forbidden error.
         /// </summary>
+        /// <returns>awaitable task.</returns>
         [Fact]
-        public void RegisterPublicLabTestForbidden()
+        public async Task RegisterPublicLabTestForbidden()
         {
             using HttpResponseMessage httpResponse = new()
             {
                 StatusCode = HttpStatusCode.Forbidden,
             };
-            RequestResult<PublicLabTestKit> actualResult = this.GetLabTestKitService(httpResponse).RegisterLabTestKitAsync(CreatePublicLabTestKit("9735353315")).Result;
+            RequestResult<PublicLabTestKit> actualResult = await this.GetLabTestKitService(httpResponse).RegisterLabTestKitAsync(CreatePublicLabTestKit("9735353315")).ConfigureAwait(false);
             Assert.True(actualResult.ResultStatus == ResultType.Error);
         }
 
         /// <summary>
         /// Tests for any other status code returned.
         /// </summary>
+        /// <returns>awaitable task.</returns>
         [Fact]
-        public void RegisterPublicLabTestDefault()
+        public async Task RegisterPublicLabTestDefault()
         {
             using HttpResponseMessage httpResponse = new()
             {
                 StatusCode = HttpStatusCode.BadGateway,
             };
-            RequestResult<PublicLabTestKit> actualResult = this.GetLabTestKitService(httpResponse).RegisterLabTestKitAsync(CreatePublicLabTestKit("9735353315")).Result;
+            RequestResult<PublicLabTestKit> actualResult = await this.GetLabTestKitService(httpResponse).RegisterLabTestKitAsync(CreatePublicLabTestKit("9735353315")).ConfigureAwait(false);
             Assert.True(actualResult.ResultStatus == ResultType.Error);
         }
 

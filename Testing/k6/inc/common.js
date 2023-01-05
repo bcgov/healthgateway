@@ -49,9 +49,9 @@ export let OpenIdConnect = {
     AuthorityEndpoint: "",
     TokenEndpoint: "",
     AuthorizationEndpoint: "",
-    Audience: "healthgateway",
+    Audience: "hg",
     ClientId: "k6",
-    Scope: "openid patient/Laboratory.read patient/MedicationStatement.read patient/Immunization.read patient/Encounter.read patient/Patient.read",
+    Scope: "openid patient/Laboratory.read patient/MedicationDispense.read patient/Immunization.read patient/Encounter.read patient/Patient.read",
 };
 
 // Gateway Service Endpoints
@@ -264,7 +264,9 @@ export function getOpenIdConfigurations() {
         if (response.status == 200) {
             var responseJson = JSON.parse(response.body);
             OpenIdConnect.TokenEndpoint = responseJson["token_endpoint"];
+            console.log(OpenIdConnect.TokenEndpoint);
             OpenIdConnect.AuthorizationEndpoint = responseJson["authorization_endpoint"];
+            console.log(OpenIdConnect.AuthorizationEndpoint);
         }
         else {
             console.warn("Failed to get OpenId Configuration ");
@@ -306,12 +308,10 @@ export function authenticateUser(user) {
         AuthSuccess.add(1);
     } else {
         console.log(
-            "Authentication Error for user= " +
-            user.username +
-            ". ResponseCode[" +
+            "Authentication Error " +
             res.status +
-            "] " +
-            res.error
+            res.body +
+            " User: [" + user.username + "," + user.password + "]"
         );
         AuthSuccess.add(0);
         user.token = null;

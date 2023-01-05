@@ -119,7 +119,7 @@ namespace HealthGateway.Common.Factories
         }
 
         /// <summary>
-        /// Factory method for action required <see cref="RequestResult{T}"/> instances.
+        /// Factory method for action required <see cref="RequestResult{T}"/> instances with payload.
         /// </summary>
         /// <param name="actionType">The action type.</param>
         /// <param name="errorMessage">The error message.</param>
@@ -127,8 +127,22 @@ namespace HealthGateway.Common.Factories
         /// <returns>New <see cref="RequestResult{T}"/> instance with error.</returns>
         public static RequestResult<T> ActionRequired<T>(ActionType actionType, string errorMessage)
         {
+            return ActionRequired<T>(default, actionType, errorMessage);
+        }
+
+        /// <summary>
+        /// Factory method for action required <see cref="RequestResult{T}"/> instances.
+        /// </summary>
+        /// <param name="payload">The payload.</param>
+        /// <param name="actionType">The action type.</param>
+        /// <param name="errorMessage">The error message.</param>
+        /// <typeparam name="T">The payload type.</typeparam>
+        /// <returns>New <see cref="RequestResult{T}"/> instance with error.</returns>
+        public static RequestResult<T> ActionRequired<T>(T? payload, ActionType actionType, string errorMessage)
+        {
             return new()
             {
+                ResourcePayload = payload,
                 ResultStatus = ResultType.ActionRequired,
                 ResultError = ErrorTranslator.ActionRequired(errorMessage, actionType),
             };

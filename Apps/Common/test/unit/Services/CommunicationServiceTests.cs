@@ -91,6 +91,7 @@ namespace HealthGateway.CommonTests.Services
                     Assert.NotSame(commResult, actualResult);
                     Assert.Equal(ResultType.Success, actualResult.ResultStatus);
                     break;
+
                 default:
                     Assert.Same(commResult, actualResult);
                     break;
@@ -205,10 +206,12 @@ namespace HealthGateway.CommonTests.Services
                     communication.EffectiveDateTime = DateTime.Now.AddDays(-10);
                     communication.ExpiryDateTime = DateTime.Now.AddDays(-5);
                     break;
+
                 case Scenario.Future:
                     communication.EffectiveDateTime = DateTime.Now.AddDays(1);
                     communication.ExpiryDateTime = DateTime.Now.AddDays(5);
                     break;
+
                 default:
                     communication.EffectiveDateTime = DateTime.Now;
                     communication.ExpiryDateTime = DateTime.Now.AddDays(1);
@@ -267,13 +270,16 @@ namespace HealthGateway.CommonTests.Services
                     }
 
                     break;
+
                 case Scenario.Expired:
                     Assert.Equal(ResultType.Success, cacheResult?.ResultStatus);
                     Assert.Equal(0, cacheResult?.TotalResultCount);
                     break;
+
                 case Scenario.Deleted:
                     Assert.Null(cacheResult);
                     break;
+
                 case Scenario.Future:
                     Assert.Same(communication, cacheResult?.ResourcePayload);
                     break;
@@ -292,7 +298,7 @@ namespace HealthGateway.CommonTests.Services
                 new Mock<ILogger<CommunicationService>>().Object,
                 new Mock<ICommunicationDelegate>().Object,
                 new Mock<ICacheProvider>().Object);
-            Assert.Throws<ArgumentOutOfRangeException>(() => service.GetActiveCommunication(CommunicationType.Email));
+            Assert.Throws<NotImplementedException>(() => service.GetActiveCommunication(CommunicationType.Email));
         }
 
         private static IMemoryCache CreateCache(RequestResult<Communication?>? cacheEntry = null, string? cacheKey = null, MemoryCacheEntryOptions? options = null)
