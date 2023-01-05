@@ -40,7 +40,7 @@ namespace HealthGateway.Common.Data.Tests.Validations
         [InlineData("2010-12-22", 12, true)]
         public void ValidateYoungerThan(DateTime dob, int youngerThan, bool shouldBeValid)
         {
-            AgeRangeValidator validator = new AgeRangeValidator(youngerThan: youngerThan, referenceDate: ReferenceDate);
+            AgeRangeValidator validator = new(youngerThan: youngerThan, referenceDate: ReferenceDate);
 
             ValidationResult? validationResult = validator.Validate(dob);
             Assert.Equal(shouldBeValid, validationResult.IsValid);
@@ -58,7 +58,7 @@ namespace HealthGateway.Common.Data.Tests.Validations
         [InlineData("2010-12-22", 12, false)]
         public void ValidateOlderThan(DateTime dob, int olderThan, bool shouldBeValid)
         {
-            AgeRangeValidator validator = new AgeRangeValidator(olderThan, referenceDate: ReferenceDate);
+            AgeRangeValidator validator = new(olderThan, referenceDate: ReferenceDate);
 
             ValidationResult? validationResult = validator.Validate(dob);
             Assert.Equal(shouldBeValid, validationResult.IsValid);
@@ -82,7 +82,7 @@ namespace HealthGateway.Common.Data.Tests.Validations
         [InlineData("2010-12-22", 12, 14, false)]
         public void ValidateOlderThanAndYoungerThan(DateTime dob, int olderThan, int youngerThan, bool shouldBeValid)
         {
-            AgeRangeValidator validator = new AgeRangeValidator(olderThan, youngerThan, ReferenceDate);
+            AgeRangeValidator validator = new(olderThan, youngerThan, ReferenceDate);
 
             ValidationResult? validationResult = validator.Validate(dob);
             Assert.Equal(shouldBeValid, validationResult.IsValid);

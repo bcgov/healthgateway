@@ -50,6 +50,7 @@ namespace HealthGateway.GatewayApi.Services
         private const string UserProfileHistoryRecordLimitKey = "UserProfileHistoryRecordLimit";
         private const string RegistrationStatusKey = "RegistrationStatus";
         private const string MinPatientAgeKey = "MinPatientAge";
+        private readonly IAuthenticationDelegate authenticationDelegate;
         private readonly IMapper autoMapper;
         private readonly ICryptoDelegate cryptoDelegate;
         private readonly IEmailQueueService emailQueueService;
@@ -66,7 +67,6 @@ namespace HealthGateway.GatewayApi.Services
         private readonly IUserProfileDelegate userProfileDelegate;
         private readonly int userProfileHistoryRecordLimit;
         private readonly IUserSmsService userSmsService;
-        private readonly IAuthenticationDelegate authenticationDelegate;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="UserProfileService"/> class.

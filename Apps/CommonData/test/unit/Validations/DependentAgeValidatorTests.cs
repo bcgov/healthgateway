@@ -45,7 +45,7 @@ namespace HealthGateway.Common.Data.Tests.Validations
         [InlineData("1976-12-22", 46, true)]
         public void Validate(DateTime dob, int maxDependentAge, bool shouldBeValid)
         {
-            DependentAgeValidator validator = new DependentAgeValidator(RelativeNow, maxDependentAge);
+            DependentAgeValidator validator = new(RelativeNow, maxDependentAge);
 
             ValidationResult? validationResult = validator.Validate(dob);
             Assert.Equal(shouldBeValid, validationResult.IsValid);
