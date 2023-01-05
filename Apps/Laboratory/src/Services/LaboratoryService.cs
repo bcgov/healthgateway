@@ -119,6 +119,7 @@ namespace HealthGateway.Laboratory.Services
                 new Covid19OrderResult
                 {
                     Covid19Orders = this.autoMapper.Map<IEnumerable<PhsaCovid19Order>, IEnumerable<Covid19Order>>(delegateResult.ResourcePayload?.Result),
+                    Loaded = true,
                 },
                 delegateResult.TotalResultCount,
                 delegateResult.PageIndex,
