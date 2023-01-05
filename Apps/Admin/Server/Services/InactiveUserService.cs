@@ -21,12 +21,12 @@ using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
 using AutoMapper;
+using HealthGateway.Admin.Common.Constants;
 using HealthGateway.Admin.Server.Models;
 using HealthGateway.Common.AccessManagement.Administration.Models;
 using HealthGateway.Common.AccessManagement.Authentication;
 using HealthGateway.Common.AccessManagement.Authentication.Models;
 using HealthGateway.Common.Api;
-using HealthGateway.Common.Constants;
 using HealthGateway.Common.Data.Constants;
 using HealthGateway.Common.Data.ViewModels;
 using HealthGateway.Common.ErrorHandling;
@@ -129,7 +129,7 @@ public class InactiveUserService : IInactiveUserService
             }
             catch (Exception e) when (e is ApiException or HttpRequestException)
             {
-                this.logger.LogError("Error communicating with Keycloak, exception: {Exception}",  e.ToString());
+                this.logger.LogError("Error communicating with Keycloak, exception: {Exception}", e.ToString());
                 requestResult.ResultStatus = ResultType.Error;
                 requestResult.ResultError = new RequestResultError
                 {
