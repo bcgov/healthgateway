@@ -143,7 +143,7 @@ namespace HealthGateway.GatewayApi.Controllers
         [HttpGet]
         [Route("{hdid}/Validate")]
         [Authorize(Policy = UserProfilePolicy.Read)]
-        public async Task<PrimitiveRequestResult<bool>> Validate(string hdid)
+        public async Task<RequestResult<bool>> Validate(string hdid)
         {
             return await this.userProfileService.ValidateMinimumAge(hdid).ConfigureAwait(true);
         }
