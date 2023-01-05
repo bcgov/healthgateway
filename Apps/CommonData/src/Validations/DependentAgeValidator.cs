@@ -22,21 +22,27 @@ namespace HealthGateway.Common.Data.Validations
     /// <summary>
     /// Validates a dependent's age against a maximum value using date of birth.
     /// </summary>
-    public class DependantAgeValidator : AbstractValidator<DateTime>
+    public class DependentAgeValidator : AbstractValidator<DateTime>
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="DependantAgeValidator"/> class.
+        /// Initializes a new instance of the <see cref="DependentAgeValidator"/> class.
         /// </summary>
         /// <param name="now">DateTime reflecting the relative date to check the age against.</param>
         /// <param name="maxDependentAge">The maximum age of the dependent.</param>
-        public DependantAgeValidator(DateTime? now = null, int maxDependentAge = 12)
+        public DependentAgeValidator(DateTime? now = null, int maxDependentAge = 12)
         {
-            if (now == null)
-            {
-                now = DateTime.UtcNow;
-            }
+            this.RuleFor(v => v).SetValidator(new AgeRangeValidator(youngerThan: maxDependentAge, referenceDate: now)).WithMessage($"Dependent age exceeds the maximum limit of {maxDependentAge}");
+        }
 
-            this.RuleFor(v => v).Must(v => v.Date.AddYears(maxDependentAge) > now.Value.Date).WithMessage($"Dependent age exceeds the maximum limit of {maxDependentAge}");
+        /// <summary>
+        /// Validates a date of birth against a maximum age.
+        /// </summary>
+        /// <param name="dateOfBirth">date of birth to validate.</param>
+        /// <param name="maxDependentAge">optional maximum age, defaults to 12.</param>
+        /// <returns>true if valid, false id not.</returns>
+        public static bool IsValid(DateTime dateOfBirth, int maxDependentAge = 12)
+        {
+            return new DependentAgeValidator(maxDependentAge: maxDependentAge).Validate(dateOfBirth).IsValid;
         }
     }
 }

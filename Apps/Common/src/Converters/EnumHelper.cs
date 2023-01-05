@@ -14,25 +14,27 @@
 //  limitations under the License.
 // -------------------------------------------------------------------------
 
-namespace HealthGateway.GatewayApi.Validations
+namespace HealthGateway.Common.Converters
 {
-    using FluentValidation;
-    using HealthGateway.Common.Data.Validations;
-    using HealthGateway.GatewayApi.Models;
+    using System;
 
     /// <summary>
-    /// Validates <see cref="AddDependentRequestValidator"/> instances.
+    /// Helper class for dealing with enums.
     /// </summary>
-    public class AddDependentRequestValidator : AbstractValidator<AddDependentRequest>
+    public static class EnumHelper
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="AddDependentRequestValidator"/> class.
+        /// Enum parsing with null value support.
         /// </summary>
-        /// <param name="maxDependantAge">optionally set the maximum age of a dependent, defaults to 12.</param>
-        public AddDependentRequestValidator(int maxDependantAge = 12)
+        /// <param name="value">the value to parse.</param>
+        /// <typeparam name="T">the enum type.</typeparam>
+        /// <returns>parsed enum or default is value is null.</returns>
+        public static T ParseEnum<T>(string? value)
+            where T : struct, Enum
         {
-            this.RuleFor(v => v.Phn).SetValidator(new PhnValidator());
-            this.RuleFor(v => v.DateOfBirth).SetValidator(new DependentAgeValidator(maxDependentAge: maxDependantAge));
+            return string.IsNullOrWhiteSpace(value)
+                ? default
+                : Enum.Parse<T>(value, true);
         }
     }
 }

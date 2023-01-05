@@ -37,8 +37,21 @@ namespace HealthGateway.Common.Factories
         /// <returns>New <see cref="RequestResult{T}"/> instance with error.</returns>
         public static RequestResult<T> Error<T>(RequestResultError resultError)
         {
+            return Error<T>(default, resultError);
+        }
+
+        /// <summary>
+        /// Factory method for error <see cref="RequestResult{T}"/> instances.
+        /// </summary>
+        /// <param name="payload">the payload.</param>
+        /// <param name="resultError">The error.</param>
+        /// <typeparam name="T">The payload type.</typeparam>
+        /// <returns>New <see cref="RequestResult{T}"/> instance with error.</returns>
+        public static RequestResult<T> Error<T>(T? payload, RequestResultError resultError)
+        {
             return new()
             {
+                ResourcePayload = payload,
                 ResultStatus = ResultType.Error,
                 ResultError = resultError,
             };
@@ -104,6 +117,18 @@ namespace HealthGateway.Common.Factories
                     ErrorCode = ErrorTranslator.ServiceError(errorType, serviceType),
                 },
             };
+        }
+
+        /// <summary>
+        /// Factory method for error <see cref="RequestResult{T}"/> instances.
+        /// </summary>
+        /// <param name="actionType">The action type.</param>
+        /// <param name="validationResults">Fluent validation errors.</param>
+        /// <typeparam name="T">The payload type.</typeparam>
+        /// <returns>New <see cref="RequestResult{T}"/> instance with error.</returns>
+        public static RequestResult<T> ActionRequired<T>(ActionType actionType, IEnumerable<ValidationFailure> validationResults)
+        {
+            return ActionRequired<T>(actionType, string.Join(";", validationResults.Select(vr => vr.ErrorMessage)));
         }
 
         /// <summary>
