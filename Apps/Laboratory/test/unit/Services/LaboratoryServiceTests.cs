@@ -102,6 +102,7 @@ namespace HealthGateway.LaboratoryTests.Services
             if (expectedResultType == ResultType.Success)
             {
                 Assert.Equal(ResultType.Success, actualResult.ResultStatus);
+                Assert.True(actualResult.ResourcePayload?.Loaded);
                 int count = 0;
                 foreach (Covid19Order model in actualResult.ResourcePayload!.Covid19Orders)
                 {
