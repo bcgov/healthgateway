@@ -10,19 +10,19 @@ export default interface ReportRequest {
 }
 
 export enum TemplateType {
-    Encounter,
-    DependentImmunization,
-    Immunization,
-    Medication,
-    COVID,
-    MedicationRequest,
-    Notes,
-    Laboratory,
-    HospitalVisit,
+    Encounter = "Encounter",
+    DependentImmunization = "DependentImmunization",
+    Immunization = "Immunization",
+    Medication = "Medication",
+    COVID = "COVID",
+    MedicationRequest = "MedicationRequest",
+    Notes = "Notes",
+    Laboratory = "Laboratory",
+    HospitalVisit = "HospitalVisit",
 }
 
 export enum ReportFormatType {
-    PDF,
-    CSV,
-    XLSX,
+    PDF = "PDF",
+    CSV = "CSV",
+    XLSX = "XLSX",
 }
