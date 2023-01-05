@@ -156,7 +156,7 @@ namespace HealthGateway.Common.Factories
         /// <param name="pageIndex">the page index.</param>
         /// <param name="pageSize">the page size.</param>
         /// <returns>New <see cref="RequestResult{T}"/> instance with success and payload.</returns>
-        public static RequestResult<T> Success<T>(T payload, int totalResultCount = 0, int pageIndex = 0, int pageSize = 0)
+        public static RequestResult<T> Success<T>(T payload, int? totalResultCount = 0, int? pageIndex = 0, int? pageSize = 0)
         {
             return new()
             {
