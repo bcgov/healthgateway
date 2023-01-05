@@ -21,6 +21,7 @@ namespace HealthGateway.GatewayApi.Services
     using System.Text;
     using System.Threading.Tasks;
     using AutoMapper;
+    using FluentValidation.Results;
     using HealthGateway.Common.Constants;
     using HealthGateway.Common.Data.Constants;
     using HealthGateway.Common.Data.ErrorHandling;
@@ -83,14 +84,14 @@ namespace HealthGateway.GatewayApi.Services
         /// <inheritdoc/>
         public RequestResult<DependentModel> AddDependent(string delegateHdId, AddDependentRequest addDependentRequest)
         {
-            var validationResults = new AddDependentRequestValidator(this.maxDependentAge).Validate(addDependentRequest);
+            ValidationResult? validationResults = new AddDependentRequestValidator(this.maxDependentAge).Validate(addDependentRequest);
 
             if (!validationResults.IsValid)
             {
                 return RequestResultFactory.Error<DependentModel>(ErrorType.InvalidState, validationResults.Errors);
             }
 
-            var patientResult = Task.Run(async () => await this.patientService.GetPatient(addDependentRequest.Phn, PatientIdentifierType.Phn).ConfigureAwait(true)).Result;
+            RequestResult<PatientModel> patientResult = Task.Run(async () => await this.patientService.GetPatient(addDependentRequest.Phn, PatientIdentifierType.Phn).ConfigureAwait(true)).Result;
             switch (patientResult.ResultStatus)
             {
                 case ResultType.Error:
@@ -106,7 +107,7 @@ namespace HealthGateway.GatewayApi.Services
                     }
 
                     // Verify dependent has HDID
-                    else if (string.IsNullOrEmpty(patientResult.ResourcePayload.HdId))
+                    if (string.IsNullOrEmpty(patientResult.ResourcePayload?.HdId))
                     {
                         return RequestResultFactory.ActionRequired<DependentModel>(ActionType.NoHdId, ErrorMessages.InvalidServicesCard);
                     }
@@ -115,7 +116,7 @@ namespace HealthGateway.GatewayApi.Services
             }
 
             // Insert Dependent to database
-            var dependent = new ResourceDelegate()
+            ResourceDelegate dependent = new()
             {
                 ResourceOwnerHdid = patientResult.ResourcePayload.HdId,
                 ProfileHdid = delegateHdId,
@@ -123,7 +124,7 @@ namespace HealthGateway.GatewayApi.Services
                 ReasonObjectType = null,
                 ReasonObject = null,
             };
-            var dbDependent = this.resourceDelegateDelegate.Insert(dependent, true);
+            DbResult<ResourceDelegate> dbDependent = this.resourceDelegateDelegate.Insert(dependent, true);
 
             if (dbDependent.Status != DbStatusCode.Created)
             {
@@ -132,7 +133,7 @@ namespace HealthGateway.GatewayApi.Services
 
             this.UpdateNotificationSettings(dependent.ResourceOwnerHdid, delegateHdId);
 
-            return RequestResultFactory.Success<DependentModel>(this.FromModels(dbDependent.Payload, patientResult.ResourcePayload));
+            return RequestResultFactory.Success(this.FromModels(dbDependent.Payload, patientResult.ResourcePayload));
         }
 
         /// <inheritdoc/>
@@ -216,7 +217,7 @@ namespace HealthGateway.GatewayApi.Services
             return result;
         }
 
-        private static bool IsMatch(AddDependentRequest dependent, PatientModel patientModel)
+        private static bool IsMatch(AddDependentRequest? dependent, PatientModel? patientModel)
         {
             if (dependent == null || patientModel == null)
             {
