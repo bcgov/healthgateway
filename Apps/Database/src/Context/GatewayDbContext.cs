@@ -347,6 +347,14 @@ namespace HealthGateway.Database.Context
                 .HasIndex(p => p.Username)
                 .IsUnique();
 
+            // Create Foreign key for UserFeedback
+            modelBuilder.Entity<UserFeedback>()
+                .HasOne<UserProfile>(f => f.UserProfile)
+                .WithMany()
+                .HasPrincipalKey(k => k.HdId)
+                .HasForeignKey(k => k.UserProfileId)
+                .OnDelete(DeleteBehavior.SetNull);
+
             // Create Foreign keys for User Profile
             modelBuilder.Entity<UserProfile>()
                 .HasOne<UserLoginClientTypeCode>()
