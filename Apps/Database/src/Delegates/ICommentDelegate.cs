@@ -30,7 +30,7 @@ namespace HealthGateway.Database.Delegates
         /// <param name="hdId">The users health identifier id.</param>
         /// <param name="parentEntryId">The parent entry id.</param>
         /// <returns>An IEnumerable of Comments wrapped in a DBResult.</returns>
-        DbResult<IEnumerable<Comment>> GetByParentEntry(string hdId, string parentEntryId);
+        DbResult<IList<Comment>> GetByParentEntry(string hdId, string parentEntryId);
 
         /// <summary>
         /// Add the given note.

@@ -26,6 +26,11 @@ namespace HealthGateway.Database.Constants
         public const string None = "NA";
 
         /// <summary>
+        /// The code representing Medication Request.
+        /// </summary>
+        public const string MedicationRequest = "SAR";
+
+        /// <summary>
         /// The code representing Medication.
         /// </summary>
         public const string Medication = "Med";
@@ -51,13 +56,13 @@ namespace HealthGateway.Database.Constants
         public const string Encounter = "Enc";
 
         /// <summary>
-        /// The code representing Clinical Documents.
+        /// The code representing Clinical Document.
         /// </summary>
-        public const string ClinicalDocuments = "CDO";
+        public const string ClinicalDocument = "CDO";
 
         /// <summary>
-        /// The code representing Hospital Visits.
+        /// The code representing Hospital Visit.
         /// </summary>
-        public const string HospitalVisits = "Hos";
+        public const string HospitalVisit = "Hos";
     }
 }
