@@ -37,8 +37,21 @@ namespace HealthGateway.Common.Factories
         /// <returns>New <see cref="RequestResult{T}"/> instance with error.</returns>
         public static RequestResult<T> Error<T>(RequestResultError resultError)
         {
+            return Error<T>(default, resultError);
+        }
+
+        /// <summary>
+        /// Factory method for error <see cref="RequestResult{T}"/> instances.
+        /// </summary>
+        /// <param name="payload">the payload.</param>
+        /// <param name="resultError">The error.</param>
+        /// <typeparam name="T">The payload type.</typeparam>
+        /// <returns>New <see cref="RequestResult{T}"/> instance with error.</returns>
+        public static RequestResult<T> Error<T>(T? payload, RequestResultError resultError)
+        {
             return new()
             {
+                ResourcePayload = payload,
                 ResultStatus = ResultType.Error,
                 ResultError = resultError,
             };
@@ -107,7 +120,7 @@ namespace HealthGateway.Common.Factories
         }
 
         /// <summary>
-        /// Factory method for action required <see cref="RequestResult{T}"/> instances with payload.
+        /// Factory method for action required <see cref="RequestResult{T}"/> instances.
         /// </summary>
         /// <param name="actionType">The action type.</param>
         /// <param name="errorMessage">The error message.</param>
@@ -115,22 +128,8 @@ namespace HealthGateway.Common.Factories
         /// <returns>New <see cref="RequestResult{T}"/> instance with error.</returns>
         public static RequestResult<T> ActionRequired<T>(ActionType actionType, string errorMessage)
         {
-            return ActionRequired<T>(default, actionType, errorMessage);
-        }
-
-        /// <summary>
-        /// Factory method for action required <see cref="RequestResult{T}"/> instances.
-        /// </summary>
-        /// <param name="payload">The payload.</param>
-        /// <param name="actionType">The action type.</param>
-        /// <param name="errorMessage">The error message.</param>
-        /// <typeparam name="T">The payload type.</typeparam>
-        /// <returns>New <see cref="RequestResult{T}"/> instance with error.</returns>
-        public static RequestResult<T> ActionRequired<T>(T? payload, ActionType actionType, string errorMessage)
-        {
             return new()
             {
-                ResourcePayload = payload,
                 ResultStatus = ResultType.ActionRequired,
                 ResultError = ErrorTranslator.ActionRequired(errorMessage, actionType),
             };
@@ -145,7 +144,7 @@ namespace HealthGateway.Common.Factories
         /// <param name="pageIndex">the page index.</param>
         /// <param name="pageSize">the page size.</param>
         /// <returns>New <see cref="RequestResult{T}"/> instance with success and payload.</returns>
-        public static RequestResult<T> Success<T>(T payload, int? totalResultCount = null, int? pageIndex = null, int? pageSize = null)
+        public static RequestResult<T> Success<T>(T payload, int totalResultCount = 0, int pageIndex = 0, int pageSize = 0)
         {
             return new()
             {
