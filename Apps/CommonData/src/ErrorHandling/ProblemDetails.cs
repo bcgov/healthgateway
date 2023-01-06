@@ -15,11 +15,13 @@
 // -------------------------------------------------------------------------
 namespace HealthGateway.Common.Data.ErrorHandling
 {
+    using System.Diagnostics.CodeAnalysis;
     using System.Net;
 
     /// <summary>
     /// Represents the Problem Details which will be sent out to the client.
     /// </summary>
+    [SuppressMessage("StyleCop.CSharp.OrderingRules", "SA1206:DeclarationKeywordsMustFollowOrder", Justification = "Reviewed.")]
     public class ProblemDetails
     {
         /// <summary>
