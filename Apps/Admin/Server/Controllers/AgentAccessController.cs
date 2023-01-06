@@ -51,10 +51,10 @@ namespace HealthGateway.Admin.Server.Controllers
         /// <returns>The created agent.</returns>
         /// <param name="agent">The agent model.</param>
         /// <response code="200">Returns the created agent.</response>
-        /// <response code="401">The client must authenticate itself to get the requested response.</response>
+        /// <response code="401">The client must authenticate itself to perform the operation.</response>
         /// <response code="403">
-        /// The client does not have access rights to the content; that is, it is unauthorized, so the server
-        /// is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.
+        /// The client does not have access rights to perform the operation; that is, it is unauthorized.
+        /// Unlike 401, the client's identity is known to the server.
         /// </response>
         /// <response code="502">Unable to get response from Keycloak.</response>
         [HttpPost]
@@ -74,7 +74,7 @@ namespace HealthGateway.Admin.Server.Controllers
         /// <param name="query">The query string to match agents against.</param>
         /// <returns>The collection of matching agents.</returns>
         /// <response code="200">Returns the collection of matching agents.</response>
-        /// <response code="401">The client must authenticate itself to get the requested response.</response>
+        /// <response code="401">The client must authenticate itself to get the requested resource.</response>
         /// <response code="403">
         /// The client does not have access rights to the content; that is, it is unauthorized, so the server
         /// is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.
@@ -97,10 +97,10 @@ namespace HealthGateway.Admin.Server.Controllers
         /// <param name="agent">The agent model.</param>
         /// <returns>The updated agent.</returns>
         /// <response code="200">Returns the updated agent.</response>
-        /// <response code="401">The client must authenticate itself to get the requested response.</response>
+        /// <response code="401">The client must authenticate itself to perform the operation.</response>
         /// <response code="403">
-        /// The client does not have access rights to the content; that is, it is unauthorized, so the server
-        /// is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.
+        /// The client does not have access rights to perform the operation; that is, it is unauthorized.
+        /// Unlike 401, the client's identity is known to the server.
         /// </response>
         /// <response code="502">Unable to get response from Keycloak.</response>
         [HttpPut]
@@ -120,10 +120,10 @@ namespace HealthGateway.Admin.Server.Controllers
         /// <param name="id">The unique identifier of the agent whose access should be terminated.</param>
         /// <returns>An empty result.</returns>
         /// <response code="200">The agent no longer has access to the admin website.</response>
-        /// <response code="401">The client must authenticate itself to get the requested response.</response>
+        /// <response code="401">The client must authenticate itself to perform the operation.</response>
         /// <response code="403">
-        /// The client does not have access rights to the content; that is, it is unauthorized, so the server
-        /// is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.
+        /// The client does not have access rights to perform the operation; that is, it is unauthorized.
+        /// Unlike 401, the client's identity is known to the server.
         /// </response>
         /// <response code="502">Unable to get response from Keycloak.</response>
         [HttpDelete]
