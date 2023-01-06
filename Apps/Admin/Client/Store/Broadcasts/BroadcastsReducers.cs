@@ -42,7 +42,6 @@ public static class BroadcastsReducers
             {
                 IsLoading = true,
             },
-            IsLoading = true,
         };
     }
 
@@ -63,9 +62,7 @@ public static class BroadcastsReducers
                 Result = action.Data,
                 Error = null,
             },
-            IsLoading = false,
-            Data = action.Data.ResourcePayload.Select(b => new ExtendedBroadcast(b)).ToImmutableDictionary(tag => tag.Id),
-            Error = null,
+            Data = action.Data.ResourcePayload.Select(b => new ExtendedBroadcast(b)).ToImmutableDictionary(b => b.Id),
         };
     }
 
@@ -85,8 +82,6 @@ public static class BroadcastsReducers
                 IsLoading = false,
                 Error = action.Error,
             },
-            IsLoading = false,
-            Error = action.Error,
         };
     }
 
@@ -104,7 +99,6 @@ public static class BroadcastsReducers
             {
                 IsLoading = true,
             },
-            IsLoading = true,
         };
     }
 
@@ -133,9 +127,7 @@ public static class BroadcastsReducers
                 Result = action.Data,
                 Error = null,
             },
-            IsLoading = false,
             Data = data,
-            Error = null,
         };
     }
 
@@ -155,8 +147,6 @@ public static class BroadcastsReducers
                 IsLoading = false,
                 Error = action.Error,
             },
-            IsLoading = false,
-            Error = action.Error,
         };
     }
 
@@ -174,7 +164,6 @@ public static class BroadcastsReducers
             {
                 IsLoading = true,
             },
-            IsLoading = true,
         };
     }
 
@@ -203,9 +192,7 @@ public static class BroadcastsReducers
                 Result = action.Data,
                 Error = null,
             },
-            IsLoading = false,
             Data = data,
-            Error = null,
         };
     }
 
@@ -225,8 +212,6 @@ public static class BroadcastsReducers
                 IsLoading = false,
                 Error = action.Error,
             },
-            IsLoading = false,
-            Error = action.Error,
         };
     }
 
@@ -244,7 +229,6 @@ public static class BroadcastsReducers
             {
                 IsLoading = true,
             },
-            IsLoading = true,
         };
     }
 
@@ -273,9 +257,7 @@ public static class BroadcastsReducers
                 Result = action.Data,
                 Error = null,
             },
-            IsLoading = false,
             Data = data,
-            Error = null,
         };
     }
 
@@ -295,8 +277,6 @@ public static class BroadcastsReducers
                 IsLoading = false,
                 Error = action.Error,
             },
-            IsLoading = false,
-            Error = action.Error,
         };
     }
 
@@ -315,8 +295,6 @@ public static class BroadcastsReducers
             Update = new(),
             Delete = new(),
             Data = null,
-            Error = null,
-            IsLoading = false,
         };
     }
 

@@ -40,7 +40,6 @@ public static class CommunicationsReducers
             {
                 IsLoading = true,
             },
-            IsLoading = true,
         };
     }
 
@@ -61,9 +60,7 @@ public static class CommunicationsReducers
                 Result = action.Data,
                 Error = null,
             },
-            IsLoading = false,
             Data = action.Data.ResourcePayload?.Select(c => new ExtendedCommunication(c)).ToList(),
-            Error = null,
         };
     }
 
@@ -83,8 +80,6 @@ public static class CommunicationsReducers
                 IsLoading = false,
                 Error = action.Error,
             },
-            IsLoading = false,
-            Error = action.Error,
         };
     }
 
@@ -102,7 +97,6 @@ public static class CommunicationsReducers
             {
                 IsLoading = true,
             },
-            IsLoading = true,
         };
     }
 
@@ -134,9 +128,7 @@ public static class CommunicationsReducers
                 Result = action.Data,
                 Error = null,
             },
-            IsLoading = false,
             Data = data,
-            Error = null,
         };
     }
 
@@ -156,8 +148,6 @@ public static class CommunicationsReducers
                 IsLoading = false,
                 Error = action.Error,
             },
-            IsLoading = false,
-            Error = action.Error,
         };
     }
 
@@ -175,7 +165,6 @@ public static class CommunicationsReducers
             {
                 IsLoading = true,
             },
-            IsLoading = true,
         };
     }
 
@@ -212,9 +201,7 @@ public static class CommunicationsReducers
                 Result = action.Data,
                 Error = null,
             },
-            IsLoading = false,
             Data = data,
-            Error = null,
         };
     }
 
@@ -234,8 +221,6 @@ public static class CommunicationsReducers
                 IsLoading = false,
                 Error = action.Error,
             },
-            IsLoading = false,
-            Error = action.Error,
         };
     }
 
@@ -253,7 +238,6 @@ public static class CommunicationsReducers
             {
                 IsLoading = true,
             },
-            IsLoading = true,
         };
     }
 
@@ -282,9 +266,7 @@ public static class CommunicationsReducers
                 Result = action.Data,
                 Error = null,
             },
-            IsLoading = false,
             Data = data,
-            Error = null,
         };
     }
 
@@ -304,8 +286,6 @@ public static class CommunicationsReducers
                 IsLoading = false,
                 Error = action.Error,
             },
-            IsLoading = false,
-            Error = action.Error,
         };
     }
 
@@ -324,8 +304,6 @@ public static class CommunicationsReducers
             Update = new(),
             Delete = new(),
             Data = null,
-            Error = null,
-            IsLoading = false,
         };
     }
 

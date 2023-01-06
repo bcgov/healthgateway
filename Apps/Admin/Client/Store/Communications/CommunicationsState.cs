@@ -24,7 +24,7 @@ using HealthGateway.Common.Data.ViewModels;
 
 /// <summary>
 /// The state for the feature.
-/// State should be decorated with [FeatureState] for automatic discovery when services. AddFluxor is called.
+/// State should be decorated with [FeatureState] for automatic discovery when services.AddFluxor is called.
 /// </summary>
 [FeatureState]
 public record CommunicationsState
@@ -55,14 +55,9 @@ public record CommunicationsState
     public IList<ExtendedCommunication>? Data { get; init; }
 
     /// <summary>
-    /// Gets the request error if available.
-    /// </summary>
-    public RequestError? Error { get; init; }
-
-    /// <summary>
     /// Gets a value indicating whether a request is loading.
     /// </summary>
-    public bool IsLoading { get; init; }
+    public bool IsLoading => this.Add.IsLoading || this.Load.IsLoading || this.Update.IsLoading || this.Delete.IsLoading;
 
     /// <summary>
     /// Gets a value indicating whether the data has been loaded.

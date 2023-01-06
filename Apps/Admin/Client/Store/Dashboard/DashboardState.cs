@@ -22,7 +22,7 @@ using Fluxor;
 
 /// <summary>
 /// The state for the feature.
-/// State should be decorated with [FeatureState] for automatic discovery when services. AddFluxor is called.
+/// State should be decorated with [FeatureState] for automatic discovery when services.AddFluxor is called.
 /// </summary>
 [FeatureState]
 public record DashboardState
