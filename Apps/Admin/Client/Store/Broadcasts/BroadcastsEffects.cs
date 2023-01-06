@@ -111,7 +111,7 @@ public class BroadcastsEffects
         {
             RequestError error = StoreUtility.FormatRequestError(e);
             this.Logger.LogError("Error loading broadcasts, reason: {Exception}", e.ToString());
-            dispatcher.Dispatch(new BroadcastsActions.AddFailAction(error));
+            dispatcher.Dispatch(new BroadcastsActions.LoadFailAction(error));
         }
     }
 
@@ -143,7 +143,7 @@ public class BroadcastsEffects
         {
             RequestError error = StoreUtility.FormatRequestError(e);
             this.Logger.LogError("Error updating broadcasts, reason: {Exception}", e.ToString());
-            dispatcher.Dispatch(new BroadcastsActions.AddFailAction(error));
+            dispatcher.Dispatch(new BroadcastsActions.UpdateFailAction(error));
         }
     }
 
@@ -175,7 +175,7 @@ public class BroadcastsEffects
         {
             RequestError error = StoreUtility.FormatRequestError(e);
             this.Logger.LogError("Error deleting broadcast, reason: {Exception}", e.ToString());
-            dispatcher.Dispatch(new BroadcastsActions.AddFailAction(error));
+            dispatcher.Dispatch(new BroadcastsActions.DeleteFailAction(error));
         }
     }
 }

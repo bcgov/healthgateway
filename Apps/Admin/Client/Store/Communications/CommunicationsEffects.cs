@@ -179,7 +179,7 @@ public class CommunicationsEffects
             {
                 RequestError error = StoreUtility.FormatRequestError(response.ResultError);
                 this.Logger.LogError("Error deleting communication, reason: {ErrorMessage}", error.Message);
-                dispatcher.Dispatch(new CommunicationsActions.UpdateFailAction(error));
+                dispatcher.Dispatch(new CommunicationsActions.DeleteFailAction(error));
             }
         }
         catch (Exception e) when (e is ApiException or HttpRequestException)
