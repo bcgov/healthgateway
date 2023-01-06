@@ -15,9 +15,12 @@
 // -------------------------------------------------------------------------
 namespace HealthGateway.Common.Data.Constants
 {
+    using System.Text.Json.Serialization;
+
     /// <summary>
     /// Represents the status of a communication.
     /// </summary>
+    [JsonConverter(typeof(JsonStringEnumConverter))]
     public enum CommunicationStatus
     {
         /// <summary>

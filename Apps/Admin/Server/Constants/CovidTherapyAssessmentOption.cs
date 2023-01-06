@@ -27,24 +27,20 @@ public enum CovidTherapyAssessmentOption
     /// <summary>
     /// Indicates that Unspecified was selected.
     /// </summary>
-    [EnumMember(Value = "Unspecified")]
     Unspecified,
 
     /// <summary>
     /// Indicates that Yes was selected.
     /// </summary>
-    [EnumMember(Value = "Yes")]
     Yes,
 
     /// <summary>
     /// Indicates that No was selected.
     /// </summary>
-    [EnumMember(Value = "No")]
     No,
 
     /// <summary>
     /// Indicates that Not Sure was selected.
     /// </summary>
-    [EnumMember(Value = "NotSure")]
     NotSure,
 }
