@@ -15,24 +15,26 @@
 //-------------------------------------------------------------------------
 namespace HealthGateway.Admin.Client.Authorization
 {
+    using HealthGateway.Admin.Common.Constants;
+
     /// <summary>
-    /// Represents the valid Authorization roles for the application.
+    /// Represents the valid authorization roles for the application.
     /// </summary>
     public static class Roles
     {
         /// <summary>
         /// Represents an overall Admin User (super).
         /// </summary>
-        public const string Admin = "AdminUser";
+        public const string Admin = nameof(IdentityAccessRole.AdminUser);
 
         /// <summary>
         /// Represents a Reviewer Admin.
         /// </summary>
-        public const string Reviewer = "AdminReviewer";
+        public const string Reviewer = nameof(IdentityAccessRole.AdminReviewer);
 
         /// <summary>
         /// Represents a Support worker.
         /// </summary>
-        public const string Support = "SupportUser";
+        public const string Support = nameof(IdentityAccessRole.SupportUser);
     }
 }
