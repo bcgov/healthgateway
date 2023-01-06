@@ -64,7 +64,6 @@ namespace HealthGateway.GatewayApi
         /// <param name="services">The injected services provider.</param>
         public void ConfigureServices(IServiceCollection services)
         {
-            this.startupConfig.ConfigureProblemDetails(services);
             this.startupConfig.ConfigureForwardHeaders(services);
             this.startupConfig.ConfigureDatabaseServices(services);
             this.startupConfig.ConfigureHttpServices(services);
@@ -141,6 +140,9 @@ namespace HealthGateway.GatewayApi
             services.AddControllers().AddJsonOptions(options => options.JsonSerializerOptions.Converters.Add(new DateOnlyJsonConverter()));
 
             services.AddAutoMapper(typeof(Startup), typeof(UserProfileProfile));
+
+            ExceptionHandling.AddProblemDetails(services);
+            ExceptionHandling.AddExceptionFilter(services);
         }
 
         /// <summary>
@@ -150,7 +152,7 @@ namespace HealthGateway.GatewayApi
         /// <param name="env">The hosting environment.</param>
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
-            ExceptionHandling.UseProblemDetails(app);
+            ExceptionHandling.ConfigureProblemDetails(app, env);
             this.startupConfig.UseForwardHeaders(app);
             this.startupConfig.UseSwagger(app);
             this.startupConfig.UseHttp(app, false);

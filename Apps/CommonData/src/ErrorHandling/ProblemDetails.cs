@@ -13,25 +13,38 @@
 //  See the License for the specific language governing permissions and
 //  limitations under the License.
 // -------------------------------------------------------------------------
-namespace HealthGateway.Common.ErrorHandling
+namespace HealthGateway.Common.Data.ErrorHandling
 {
-    using System.Text.Json;
-    using Microsoft.AspNetCore.Mvc;
+    using System.Net;
 
     /// <summary>
-    /// Represents an api problem details model.
+    /// Represents the Problem Details which will be sent out to the client.
     /// </summary>
-    public class ApiProblemDetails : ProblemDetails
+    public class ProblemDetails
     {
         /// <summary>
-        /// Gets or sets additional info.
+        /// Gets or sets problem type.
         /// </summary>
-        public string? AdditionalInfo { get; set; }
+        public required string ProblemType { get; set; }
 
-        /// <inheritdoc/>
-        public override string ToString()
-        {
-            return JsonSerializer.Serialize(this);
-        }
+        /// <summary>
+        /// Gets or sets detail.
+        /// </summary>
+        public required string Detail { get; set; }
+
+        /// <summary>
+        /// Gets or sets title.
+        /// </summary>
+        public required string Title { get; set; }
+
+        /// <summary>
+        /// Gets or sets instance.
+        /// </summary>
+        public required string Instance { get; set; }
+
+        /// <summary>
+        /// Gets or sets status code.
+        /// </summary>
+        public required HttpStatusCode StatusCode { get; set; }
     }
 }

@@ -16,13 +16,9 @@
 namespace HealthGateway.Common.AspNetConfiguration.Modules
 {
     using System.Diagnostics.CodeAnalysis;
-    using System.ServiceModel;
-    using HealthGateway.Common.Data.ErrorHandling;
-    using HealthGateway.Common.ErrorHandling;
-    using Hellang.Middleware.ProblemDetails;
+    using HealthGateway.Common.Filters;
     using Microsoft.AspNetCore.Builder;
     using Microsoft.AspNetCore.Hosting;
-    using Microsoft.AspNetCore.Http;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Hosting;
 
@@ -36,36 +32,34 @@ namespace HealthGateway.Common.AspNetConfiguration.Modules
         /// Adds and configures the services required to use problem details.
         /// </summary>
         /// <param name="services">The service collection to add forward proxies into.</param>
-        /// <param name="environment">The environment the services are associated with.</param>
-        public static void ConfigureProblemDetails(IServiceCollection services, IWebHostEnvironment environment)
+        public static void AddProblemDetails(IServiceCollection services)
         {
-            services.AddProblemDetails(
-                setup =>
-                {
-                    setup.IncludeExceptionDetails = (_, _) => environment.IsDevelopment();
-
-                    setup.Map<ApiException>(
-                        exception => new ApiProblemDetails
-                        {
-                            Title = exception.Title,
-                            Detail = exception.Detail,
-                            Status = exception.StatusCode,
-                            Type = exception.ProblemType,
-                            Instance = exception.Instance,
-                            AdditionalInfo = exception.AdditionalInfo,
-                        });
-
-                    setup.MapToStatusCode<CommunicationException>(StatusCodes.Status502BadGateway);
-                });
+            services.AddProblemDetails();
         }
 
         /// <summary>
         /// Configures the app to use problem details middleware.
         /// </summary>
-        /// <param name="app">The application builder where modules are specified to be used.</param>
-        public static void UseProblemDetails(IApplicationBuilder app)
+        /// <param name="app">The application builder to use.</param>
+        /// <param name="environment">The environment to use.</param>
+        public static void ConfigureProblemDetails(IApplicationBuilder app, IWebHostEnvironment environment)
         {
-            app.UseProblemDetails();
+            app.UseExceptionHandler();
+            app.UseStatusCodePages();
+
+            if (environment.IsDevelopment())
+            {
+                app.UseDeveloperExceptionPage();
+            }
+        }
+
+        /// <summary>
+        /// Configures thw app to use the exception filter.
+        /// </summary>
+        /// <param name="services">The service collection provider.</param>
+        public static void AddExceptionFilter(IServiceCollection services)
+        {
+            services.AddControllers(options => { options.Filters.Add<HttpResponseExceptionFilter>(); });
         }
     }
 }

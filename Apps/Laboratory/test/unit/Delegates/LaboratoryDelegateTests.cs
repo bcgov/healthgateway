@@ -133,11 +133,11 @@ namespace HealthGateway.LaboratoryTests.Delegates
         }
 
         /// <summary>
-        /// GetCOvid19Orders handles ApiException.
+        /// GetCOvid19Orders handles ProblemDetailsException.
         /// </summary>
         /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
         [Fact]
-        public async Task GetCovid19OrdersHandleApiException()
+        public async Task GetCovid19OrdersHandlesProblemDetailsException()
         {
             string expectedMessage = $"Status: {HttpStatusCode.Unauthorized}. Error while retrieving Covid19 Orders";
 
@@ -252,11 +252,11 @@ namespace HealthGateway.LaboratoryTests.Delegates
         }
 
         /// <summary>
-        /// Get Covid19 Laboratory Report handles ApiException.
+        /// Get Covid19 Laboratory Report handles ProblemDetailsException.
         /// </summary>
         /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
         [Fact]
-        public async Task GetCovid19LabReportHandlesApiException()
+        public async Task GetCovid19LabReportHandlesProblemDetailsException()
         {
             string expectedMessage = $"Status: {HttpStatusCode.Unauthorized}. Error retrieving Laboratory Report";
 
@@ -373,11 +373,11 @@ namespace HealthGateway.LaboratoryTests.Delegates
         }
 
         /// <summary>
-        /// Get Plis Laboratory Report handles ApiException.
+        /// Get Plis Laboratory Report handles ProblemDetailsException.
         /// </summary>
         /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
         [Fact]
-        public async Task GetPlisLabReportHandlesApiException()
+        public async Task GetPlisLabReportHandlesProblemDetailsException()
         {
             string expectedMessage = $"Status: {HttpStatusCode.Unauthorized}. Error retrieving Laboratory Report";
 
@@ -492,11 +492,11 @@ namespace HealthGateway.LaboratoryTests.Delegates
         }
 
         /// <summary>
-        /// GetPublicTestResults handles ApiException.
+        /// GetPublicTestResults handles ProblemDetailsException.
         /// </summary>
         /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
         [Fact]
-        public async Task GetPublicTestResultsHandlesApiException()
+        public async Task GetPublicTestResultsHandlesProblemDetailsException()
         {
             string expectedMessage = $"Status: {HttpStatusCode.Unauthorized}. Error while retrieving Covid19 Test Results";
 
@@ -618,11 +618,11 @@ namespace HealthGateway.LaboratoryTests.Delegates
         }
 
         /// <summary>
-        /// GetLaboratorySummary handles ApiException.
+        /// GetLaboratorySummary handles ProblemDetailsException.
         /// </summary>
         /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
         [Fact]
-        public async Task GetLaboratorySummaryHandleApiException()
+        public async Task GetLaboratorySummaryHandles()
         {
             string expectedMessage = $"Status: {HttpStatusCode.Unauthorized}. Error while retrieving Laboratory Summary";
 
