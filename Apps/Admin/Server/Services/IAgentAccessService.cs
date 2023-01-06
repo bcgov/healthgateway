@@ -51,7 +51,7 @@ namespace HealthGateway.Admin.Server.Services
         /// Removes an agent's access to the admin website.
         /// </summary>
         /// <param name="agentId">The unique identifier of the agent whose access should be terminated.</param>
-        /// <returns>True if the agent's access was successfully removed.</returns>
-        Task<bool> RemoveAgentAccessAsync(Guid agentId);
+        /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+        Task RemoveAgentAccessAsync(Guid agentId);
     }
 }
