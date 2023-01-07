@@ -118,21 +118,21 @@ namespace HealthGateway.Common.AspNetConfiguration
         }
 
         /// <summary>
-        /// Configures the services required to use problem details.
-        /// </summary>
-        /// <param name="services">The service collection provider.</param>
-        public void ConfigureProblemDetails(IServiceCollection services)
-        {
-            ExceptionHandling.ConfigureProblemDetails(services, this.environment);
-        }
-
-        /// <summary>
         /// Configures the swagger services.
         /// </summary>
         /// <param name="services">The service collection provider.</param>
         public void ConfigureSwaggerServices(IServiceCollection services)
         {
             SwaggerDoc.ConfigureSwaggerServices(services, this.Configuration);
+        }
+
+        /// <summary>
+        /// Configures the services required to use problem details.
+        /// </summary>
+        /// <param name="services">The service collection provider.</param>
+        public void ConfigureProblemDetails(IServiceCollection services)
+        {
+            ExceptionHandling.ConfigureProblemDetails(services, this.environment);
         }
 
         /// <summary>
