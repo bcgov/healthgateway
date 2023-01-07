@@ -58,14 +58,13 @@ namespace HealthGateway.Admin.Server.Controllers
         /// </response>
         /// <response code="502">Unable to get response from Keycloak.</response>
         [HttpPost]
-        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(AdminAgent))]
+        [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status502BadGateway)]
-        public async Task<IActionResult> ProvisionAgentAccess(AdminAgent agent)
+        public async Task<AdminAgent> ProvisionAgentAccess(AdminAgent agent)
         {
-            AdminAgent result = await this.agentAccessService.ProvisionAgentAccessAsync(agent).ConfigureAwait(true);
-            return this.Ok(result);
+            return await this.agentAccessService.ProvisionAgentAccessAsync(agent).ConfigureAwait(true);
         }
 
         /// <summary>
@@ -81,14 +80,13 @@ namespace HealthGateway.Admin.Server.Controllers
         /// </response>
         /// <response code="502">Unable to get response from Keycloak.</response>
         [HttpGet]
-        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(IEnumerable<AdminAgent>))]
+        [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status502BadGateway)]
-        public async Task<IActionResult> GetAgents(string query)
+        public async Task<IEnumerable<AdminAgent>> GetAgents(string query)
         {
-            IEnumerable<AdminAgent> result = await this.agentAccessService.GetAgentsAsync(query).ConfigureAwait(true);
-            return this.Ok(result);
+            return await this.agentAccessService.GetAgentsAsync(query).ConfigureAwait(true);
         }
 
         /// <summary>
@@ -104,14 +102,13 @@ namespace HealthGateway.Admin.Server.Controllers
         /// </response>
         /// <response code="502">Unable to get response from Keycloak.</response>
         [HttpPut]
-        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(AdminAgent))]
+        [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status502BadGateway)]
-        public async Task<IActionResult> UpdateAgentAccess(AdminAgent agent)
+        public async Task<AdminAgent> UpdateAgentAccess(AdminAgent agent)
         {
-            AdminAgent result = await this.agentAccessService.UpdateAgentAccessAsync(agent).ConfigureAwait(true);
-            return this.Ok(result);
+            return await this.agentAccessService.UpdateAgentAccessAsync(agent).ConfigureAwait(true);
         }
 
         /// <summary>
