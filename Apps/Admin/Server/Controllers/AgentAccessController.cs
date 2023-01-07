@@ -32,7 +32,7 @@ namespace HealthGateway.Admin.Server.Controllers
     [Route("v{version:apiVersion}/api/[controller]")]
     [Produces("application/json")]
     [Authorize(Roles = "AdminUser")]
-    public class AgentAccessController
+    public class AgentAccessController : ControllerBase
     {
         private readonly IAgentAccessService agentAccessService;
 
@@ -51,17 +51,17 @@ namespace HealthGateway.Admin.Server.Controllers
         /// <returns>The created agent.</returns>
         /// <param name="agent">The agent model.</param>
         /// <response code="200">Returns the created agent.</response>
-        /// <response code="401">The client must authenticate itself to get the requested response.</response>
+        /// <response code="401">The client must authenticate itself to perform the operation.</response>
         /// <response code="403">
-        /// The client does not have access rights to the content; that is, it is unauthorized, so the server
-        /// is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.
+        /// The client does not have access rights to perform the operation; that is, it is unauthorized.
+        /// Unlike 401, the client's identity is known to the server.
         /// </response>
         /// <response code="502">Unable to get response from Keycloak.</response>
         [HttpPost]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
-        [ProducesResponseType(StatusCodes.Status502BadGateway)]
+        [ProducesResponseType(StatusCodes.Status502BadGateway, Type = typeof(ProblemDetails))]
         public async Task<AdminAgent> ProvisionAgentAccess(AdminAgent agent)
         {
             return await this.agentAccessService.ProvisionAgentAccessAsync(agent).ConfigureAwait(true);
@@ -73,7 +73,7 @@ namespace HealthGateway.Admin.Server.Controllers
         /// <param name="query">The query string to match agents against.</param>
         /// <returns>The collection of matching agents.</returns>
         /// <response code="200">Returns the collection of matching agents.</response>
-        /// <response code="401">The client must authenticate itself to get the requested response.</response>
+        /// <response code="401">The client must authenticate itself to get the requested resource.</response>
         /// <response code="403">
         /// The client does not have access rights to the content; that is, it is unauthorized, so the server
         /// is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.
@@ -83,7 +83,7 @@ namespace HealthGateway.Admin.Server.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
-        [ProducesResponseType(StatusCodes.Status502BadGateway)]
+        [ProducesResponseType(StatusCodes.Status502BadGateway, Type = typeof(ProblemDetails))]
         public async Task<IEnumerable<AdminAgent>> GetAgents(string query)
         {
             return await this.agentAccessService.GetAgentsAsync(query).ConfigureAwait(true);
@@ -95,17 +95,17 @@ namespace HealthGateway.Admin.Server.Controllers
         /// <param name="agent">The agent model.</param>
         /// <returns>The updated agent.</returns>
         /// <response code="200">Returns the updated agent.</response>
-        /// <response code="401">The client must authenticate itself to get the requested response.</response>
+        /// <response code="401">The client must authenticate itself to perform the operation.</response>
         /// <response code="403">
-        /// The client does not have access rights to the content; that is, it is unauthorized, so the server
-        /// is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.
+        /// The client does not have access rights to perform the operation; that is, it is unauthorized.
+        /// Unlike 401, the client's identity is known to the server.
         /// </response>
         /// <response code="502">Unable to get response from Keycloak.</response>
         [HttpPut]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
-        [ProducesResponseType(StatusCodes.Status502BadGateway)]
+        [ProducesResponseType(StatusCodes.Status502BadGateway, Type = typeof(ProblemDetails))]
         public async Task<AdminAgent> UpdateAgentAccess(AdminAgent agent)
         {
             return await this.agentAccessService.UpdateAgentAccessAsync(agent).ConfigureAwait(true);
@@ -115,22 +115,23 @@ namespace HealthGateway.Admin.Server.Controllers
         /// Removes an agent's access to the admin website.
         /// </summary>
         /// <param name="id">The unique identifier of the agent whose access should be terminated.</param>
-        /// <returns>True if the agent's access was successfully removed.</returns>
-        /// <response code="200">Returns a boolean indicating if the agent's access was successfully removed.</response>
-        /// <response code="401">The client must authenticate itself to get the requested response.</response>
+        /// <returns>An empty result.</returns>
+        /// <response code="200">The agent no longer has access to the admin website.</response>
+        /// <response code="401">The client must authenticate itself to perform the operation.</response>
         /// <response code="403">
-        /// The client does not have access rights to the content; that is, it is unauthorized, so the server
-        /// is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.
+        /// The client does not have access rights to perform the operation; that is, it is unauthorized.
+        /// Unlike 401, the client's identity is known to the server.
         /// </response>
         /// <response code="502">Unable to get response from Keycloak.</response>
         [HttpDelete]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
-        [ProducesResponseType(StatusCodes.Status502BadGateway)]
-        public async Task<bool> RemoveAgentAccess(Guid id)
+        [ProducesResponseType(StatusCodes.Status502BadGateway, Type = typeof(ProblemDetails))]
+        public async Task<IActionResult> RemoveAgentAccess(Guid id)
         {
-            return await this.agentAccessService.RemoveAgentAccessAsync(id).ConfigureAwait(true);
+            await this.agentAccessService.RemoveAgentAccessAsync(id).ConfigureAwait(true);
+            return this.Ok();
         }
     }
 }
