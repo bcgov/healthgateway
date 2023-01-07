@@ -62,11 +62,10 @@ namespace HealthGateway.Patient
 
             Utility.ConfigureTracing(services, logger, configuration);
 
-            ExceptionHandling.AddProblemDetails(services);
-            ExceptionHandling.AddExceptionFilter(services);
+            ExceptionHandling.ConfigureProblemDetails(services, environment);
 
             WebApplication app = builder.Build();
-            ExceptionHandling.ConfigureProblemDetails(app, environment);
+            ExceptionHandling.UseProblemDetails(app);
             HttpWeb.UseForwardHeaders(app, logger, configuration);
             SwaggerDoc.UseSwagger(app, logger);
             HttpWeb.UseHttp(app, logger, configuration, environment, false, false);

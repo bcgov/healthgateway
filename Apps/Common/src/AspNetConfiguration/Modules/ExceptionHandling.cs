@@ -16,11 +16,15 @@
 namespace HealthGateway.Common.AspNetConfiguration.Modules
 {
     using System.Diagnostics.CodeAnalysis;
-    using HealthGateway.Common.Filters;
+    using System.ServiceModel;
+    using Hellang.Middleware.ProblemDetails;
     using Microsoft.AspNetCore.Builder;
     using Microsoft.AspNetCore.Hosting;
+    using Microsoft.AspNetCore.Http;
+    using Microsoft.AspNetCore.Mvc;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Hosting;
+    using ProblemDetailsException = HealthGateway.Common.Data.ErrorHandling.ProblemDetailsException;
 
     /// <summary>
     /// Provides ASP.Net Services for exception handling.
@@ -32,34 +36,35 @@ namespace HealthGateway.Common.AspNetConfiguration.Modules
         /// Adds and configures the services required to use problem details.
         /// </summary>
         /// <param name="services">The service collection to add forward proxies into.</param>
-        public static void AddProblemDetails(IServiceCollection services)
+        /// <param name="environment">The environment the services are associated with.</param>
+        public static void ConfigureProblemDetails(IServiceCollection services, IWebHostEnvironment environment)
         {
-            services.AddProblemDetails();
+            services.AddProblemDetails(
+                setup =>
+                {
+                    setup.IncludeExceptionDetails = (_, _) => environment.IsDevelopment();
+
+                    setup.Map<ProblemDetailsException>(
+                        exception => new ProblemDetails
+                        {
+                            Title = exception.ProblemDetails!.Title,
+                            Detail = exception.ProblemDetails!.Detail,
+                            Status = exception.ProblemDetails!.StatusCode as int?,
+                            Type = exception.ProblemDetails!.ProblemType,
+                            Instance = exception.ProblemDetails!.Instance,
+                        });
+
+                    setup.MapToStatusCode<CommunicationException>(StatusCodes.Status502BadGateway);
+                });
         }
 
         /// <summary>
         /// Configures the app to use problem details middleware.
         /// </summary>
         /// <param name="app">The application builder to use.</param>
-        /// <param name="environment">The environment to use.</param>
-        public static void ConfigureProblemDetails(IApplicationBuilder app, IWebHostEnvironment environment)
+        public static void UseProblemDetails(IApplicationBuilder app)
         {
-            app.UseExceptionHandler();
-            app.UseStatusCodePages();
-
-            if (environment.IsDevelopment())
-            {
-                app.UseDeveloperExceptionPage();
-            }
-        }
-
-        /// <summary>
-        /// Configures thw app to use the exception filter.
-        /// </summary>
-        /// <param name="services">The service collection provider.</param>
-        public static void AddExceptionFilter(IServiceCollection services)
-        {
-            services.AddControllers(options => { options.Filters.Add<HttpResponseExceptionFilter>(); });
+            app.UseProblemDetails();
         }
     }
 }

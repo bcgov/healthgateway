@@ -35,7 +35,7 @@ namespace HealthGateway.Common.Data.ErrorHandling
         {
             return new ProblemDetails
             {
-                ProblemType = "Waiting Queue Exception",
+                ProblemType = "Health Gateway Exception",
                 Title = "Error during processing",
                 Detail = detail,
                 StatusCode = statusCode,
