@@ -49,7 +49,7 @@ namespace HealthGateway.Common.AspNetConfiguration.Modules
                         {
                             Title = exception.ProblemDetails!.Title,
                             Detail = exception.ProblemDetails!.Detail,
-                            Status = exception.ProblemDetails!.StatusCode as int?,
+                            Status = (int)exception.ProblemDetails!.StatusCode,
                             Type = exception.ProblemDetails!.ProblemType,
                             Instance = exception.ProblemDetails!.Instance,
                         });
