@@ -16,6 +16,7 @@
 namespace HealthGateway.Common.AspNetConfiguration.Modules
 {
     using System.Diagnostics.CodeAnalysis;
+    using System.Net;
     using System.ServiceModel;
     using Hellang.Middleware.ProblemDetails;
     using Microsoft.AspNetCore.Builder;
@@ -47,11 +48,11 @@ namespace HealthGateway.Common.AspNetConfiguration.Modules
                     setup.Map<ProblemDetailsException>(
                         exception => new ProblemDetails
                         {
-                            Title = exception.ProblemDetails!.Title,
-                            Detail = exception.ProblemDetails!.Detail,
-                            Status = (int)exception.ProblemDetails!.StatusCode,
-                            Type = exception.ProblemDetails!.ProblemType,
-                            Instance = exception.ProblemDetails!.Instance,
+                            Title = exception.ProblemDetails?.Title,
+                            Detail = exception.ProblemDetails?.Detail,
+                            Status = (int)(exception.ProblemDetails?.StatusCode ?? HttpStatusCode.InternalServerError),
+                            Type = exception.ProblemDetails?.ProblemType,
+                            Instance = exception.ProblemDetails?.Instance,
                         });
 
                     setup.MapToStatusCode<CommunicationException>(StatusCodes.Status502BadGateway);
