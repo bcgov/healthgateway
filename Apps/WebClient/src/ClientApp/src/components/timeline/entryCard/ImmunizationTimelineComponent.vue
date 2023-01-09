@@ -82,10 +82,6 @@ export default class ImmunizationTimelineComponent extends Vue {
                     <strong>Due Date: </strong>
                     {{ entry.immunization.forecast.dueDate }}
                 </div>
-                <div class="my-2" data-testid="forecastStatus">
-                    <span class="text-muted">Status: </span>
-                    <strong>{{ entry.immunization.forecast.status }}</strong>
-                </div>
             </div>
         </div>
     </EntryCard>

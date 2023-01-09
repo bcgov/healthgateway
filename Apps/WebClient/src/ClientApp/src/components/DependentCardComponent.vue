@@ -72,7 +72,6 @@ interface ImmunizationRow {
 interface RecommendationRow {
     immunization: string;
     due_date: string;
-    status: string;
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -329,7 +328,6 @@ export default class DependentCardComponent extends Vue {
                 x.agentDueDate === undefined || x.agentDueDate === null
                     ? ""
                     : DateWrapper.format(x.agentDueDate),
-            status: x.status || "",
         }));
     }
 
@@ -933,22 +931,22 @@ export default class DependentCardComponent extends Vue {
             }
 
             if (firstDateEmpty) {
-                return 1;
+                return -1;
             }
 
             if (secondDateEmpty) {
-                return -1;
+                return 1;
             }
 
             const firstDate = new DateWrapper(a.agentDueDate);
             const secondDate = new DateWrapper(b.agentDueDate);
 
             if (firstDate.isBefore(secondDate)) {
-                return 1;
+                return -1;
             }
 
             if (firstDate.isAfter(secondDate)) {
-                return -1;
+                return 1;
             }
 
             return 0;
@@ -1592,9 +1590,6 @@ export default class DependentCardComponent extends Vue {
                                                 <b-th class="align-middle">
                                                     Due Date
                                                 </b-th>
-                                                <b-th class="align-middle">
-                                                    Status
-                                                </b-th>
                                             </b-tr>
                                         </b-thead>
                                         <b-tbody>
@@ -1615,12 +1610,6 @@ export default class DependentCardComponent extends Vue {
                                                     class="align-middle text-nowrap"
                                                 >
                                                     {{ row.due_date }}
-                                                </b-td>
-                                                <b-td
-                                                    :data-testid="`forecast-status-${dependent.ownerId}-${index}`"
-                                                    class="align-middle"
-                                                >
-                                                    {{ row.status }}
                                                 </b-td>
                                             </b-tr>
                                         </b-tbody>
