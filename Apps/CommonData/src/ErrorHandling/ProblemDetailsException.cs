@@ -16,12 +16,12 @@
 namespace HealthGateway.Common.Data.ErrorHandling
 {
     using System;
-    using System.Runtime.Serialization;
 
     /// <summary>
-    /// Represents a custom api patient exception.
+    /// Represents a custom problem details exception.
     /// </summary>
-    [Serializable]
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1032:Implement standard exception constructors", Justification = "Team decision")]
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("Major Code Smell", "S3925:\"ISerializable\" should be implemented correctly", Justification = "Team decision")]
     public class ProblemDetailsException : Exception
     {
         /// <summary>
@@ -32,44 +32,6 @@ namespace HealthGateway.Common.Data.ErrorHandling
             : base(problemDetails.Detail)
         {
             this.ProblemDetails = problemDetails;
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="ProblemDetailsException"/> class.
-        /// </summary>
-        /// <param name="message">The message associated with the exception.</param>
-        /// <param name="innerException">The inner exception associated with the exception.</param>
-        public ProblemDetailsException(string message, Exception innerException)
-            : base(message, innerException)
-        {
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="ProblemDetailsException"/> class.
-        /// </summary>
-        /// <param name="message">The message associated with exception.</param>
-        public ProblemDetailsException(string message)
-            : base(message)
-        {
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="ProblemDetailsException"/> class.
-        /// </summary>
-        public ProblemDetailsException()
-        {
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="ProblemDetailsException"/> class.
-        /// </summary>
-        /// <param name="serializationInfo">The serialization info associated with the exception.</param>
-        /// <param name="streamingContext">The streaming context associated with the exception.</param>
-        protected ProblemDetailsException(SerializationInfo serializationInfo, StreamingContext streamingContext)
-            : base(
-                serializationInfo,
-                streamingContext)
-        {
         }
 
         /// <summary>
