@@ -201,14 +201,14 @@ namespace HealthGateway.Patient.Delegates
             {
                 // BCHCIM.GD.2.0018 Not found
                 this.logger.LogWarning("Client Registry did not find any records. Returned message code: {ResponseCode}", responseCode);
-                throw new ApiException(ErrorMessages.ClientRegistryRecordsNotFound, "ClientRegistriesDelegate.CheckResponseCode", HttpStatusCode.NotFound);
+                throw new ProblemDetailsException(ExceptionUtility.CreateProblemDetails(ErrorMessages.ClientRegistryRecordsNotFound, HttpStatusCode.NotFound, nameof(ClientRegistriesDelegate)));
             }
 
             if (responseCode.Contains("BCHCIM.GD.2.0006", StringComparison.InvariantCulture))
             {
                 // Returned BCHCIM.GD.2.0006 Invalid PHN
                 this.logger.LogWarning("Personal Health Number is invalid. Returned message code: {ResponseCode}", responseCode);
-                throw new ApiException(ErrorMessages.PhnInvalid, "ClientRegistriesDelegate.CheckResponseCode", HttpStatusCode.NotFound);
+                throw new ProblemDetailsException(ExceptionUtility.CreateProblemDetails(ErrorMessages.PhnInvalid, HttpStatusCode.NotFound, nameof(ClientRegistriesDelegate)));
             }
 
             if (responseCode.Contains("BCHCIM.GD.0.0019", StringComparison.InvariantCulture) ||
@@ -223,7 +223,7 @@ namespace HealthGateway.Patient.Delegates
             if (!responseCode.Contains("BCHCIM.GD.0.0013", StringComparison.InvariantCulture))
             {
                 this.logger.LogWarning("Client Registry did not return a person. Returned message code: {ResponseCode}", responseCode);
-                throw new ApiException(ErrorMessages.ClientRegistryDoesNotReturnPerson, "ClientRegistriesDelegate.CheckResponseCode", HttpStatusCode.NotFound);
+                throw new ProblemDetailsException(ExceptionUtility.CreateProblemDetails(ErrorMessages.ClientRegistryDoesNotReturnPerson, HttpStatusCode.NotFound, nameof(ClientRegistriesDelegate)));
             }
         }
 
@@ -243,7 +243,8 @@ namespace HealthGateway.Patient.Delegates
                 if (deceasedInd)
                 {
                     this.logger.LogWarning("Client Registry returned a person with the deceased indicator set to true. No PHN was populated. {ActionType}", ActionType.Deceased.Value);
-                    throw new ApiException(ErrorMessages.ClientRegistryReturnedDeceasedPerson, "ClientRegistriesDelegate.ParseResponse", HttpStatusCode.NotFound);
+                    throw new ProblemDetailsException(
+                        ExceptionUtility.CreateProblemDetails(ErrorMessages.ClientRegistryReturnedDeceasedPerson, HttpStatusCode.NotFound, nameof(ClientRegistriesDelegate)));
                 }
 
                 // Initialize model
@@ -264,7 +265,7 @@ namespace HealthGateway.Patient.Delegates
                 if (!this.PopulateNames(retrievedPerson, patient))
                 {
                     this.logger.LogWarning("Client Registry is unable to determine patient name due to missing legal name. Action Type: {ActionType}", ActionType.InvalidName.Value);
-                    throw new ApiException(ErrorMessages.InvalidServicesCard, "ClientRegistriesDelegate.ParseResponse", HttpStatusCode.NotFound);
+                    throw new ProblemDetailsException(ExceptionUtility.CreateProblemDetails(ErrorMessages.InvalidServicesCard, HttpStatusCode.NotFound, nameof(ClientRegistriesDelegate)));
                 }
 
                 // Populate the PHN and HDID
@@ -272,7 +273,7 @@ namespace HealthGateway.Patient.Delegates
                 if (!this.PopulateIdentifiers(retrievedPerson, patient) && !disableIdValidation)
                 {
                     this.logger.LogWarning("Client Registry was unable to retrieve identifiers. Action Type: {ActionType}", ActionType.NoHdId.Value);
-                    throw new ApiException(ErrorMessages.InvalidServicesCard, "ClientRegistriesDelegate.ParseResponse", HttpStatusCode.NotFound);
+                    throw new ProblemDetailsException(ExceptionUtility.CreateProblemDetails(ErrorMessages.InvalidServicesCard, HttpStatusCode.NotFound, nameof(ClientRegistriesDelegate)));
                 }
 
                 // Populate addresses

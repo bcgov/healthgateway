@@ -16,15 +16,16 @@
 namespace HealthGateway.Common.AspNetConfiguration.Modules
 {
     using System.Diagnostics.CodeAnalysis;
+    using System.Net;
     using System.ServiceModel;
-    using HealthGateway.Common.Data.ErrorHandling;
-    using HealthGateway.Common.ErrorHandling;
     using Hellang.Middleware.ProblemDetails;
     using Microsoft.AspNetCore.Builder;
     using Microsoft.AspNetCore.Hosting;
     using Microsoft.AspNetCore.Http;
+    using Microsoft.AspNetCore.Mvc;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Hosting;
+    using ProblemDetailsException = HealthGateway.Common.Data.ErrorHandling.ProblemDetailsException;
 
     /// <summary>
     /// Provides ASP.Net Services for exception handling.
@@ -44,15 +45,14 @@ namespace HealthGateway.Common.AspNetConfiguration.Modules
                 {
                     setup.IncludeExceptionDetails = (_, _) => environment.IsDevelopment();
 
-                    setup.Map<ApiException>(
-                        exception => new ApiProblemDetails
+                    setup.Map<ProblemDetailsException>(
+                        exception => new ProblemDetails
                         {
-                            Title = exception.Title,
-                            Detail = exception.Detail,
-                            Status = exception.StatusCode,
-                            Type = exception.ProblemType,
-                            Instance = exception.Instance,
-                            AdditionalInfo = exception.AdditionalInfo,
+                            Title = exception.ProblemDetails?.Title,
+                            Detail = exception.ProblemDetails?.Detail,
+                            Status = (int)(exception.ProblemDetails?.StatusCode ?? HttpStatusCode.InternalServerError),
+                            Type = exception.ProblemDetails?.ProblemType,
+                            Instance = exception.ProblemDetails?.Instance,
                         });
 
                     setup.MapToStatusCode<CommunicationException>(StatusCodes.Status502BadGateway);
@@ -62,7 +62,7 @@ namespace HealthGateway.Common.AspNetConfiguration.Modules
         /// <summary>
         /// Configures the app to use problem details middleware.
         /// </summary>
-        /// <param name="app">The application builder where modules are specified to be used.</param>
+        /// <param name="app">The application builder to use.</param>
         public static void UseProblemDetails(IApplicationBuilder app)
         {
             app.UseProblemDetails();
