@@ -57,7 +57,7 @@ namespace HealthGateway.Common.Data.Utils
         /// Returns bool indicating if a string is all positive numeric.
         /// </summary>
         /// <param name="target">The string to check.</param>
-        /// <returns>The bool indicating if string is all numeric.</returns>
+        /// <returns>The bool indicating if string is all positive numeric.</returns>
         public static bool IsPositiveNumeric(string target)
         {
             return Regex.IsMatch(target, @"^\d+$");
