@@ -111,6 +111,11 @@ namespace HealthGateway.Medication.Services
                 RequestResult<MedicationHistoryResponse> response =
                     await this.medicationStatementDelegate.GetMedicationStatementsAsync(historyQuery, protectiveWord, hdid, ipv4Address).ConfigureAwait(true);
 
+                if (response.ResultStatus == ResultType.ActionRequired)
+                {
+                    return RequestResultFactory.ActionRequired<IList<MedicationStatementHistory>>(ActionType.Protected, response.ResultError?.ResultMessage);
+                }
+
                 if (response.ResultStatus != ResultType.Success || response.ResourcePayload == null)
                 {
                     return RequestResultFactory.Error<IList<MedicationStatementHistory>>(response.ResultError);
