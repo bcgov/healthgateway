@@ -116,6 +116,63 @@ namespace HealthGateway.MedicationTests.Services
         }
 
         /// <summary>
+        /// GetMedicationStatementsHistory - no protective word.
+        /// </summary>
+        /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
+        [Fact]
+        public async Task ShouldReturnProtectedActionNeededResponse()
+        {
+            Mock<IHttpContextAccessor> httpContextAccessorMock = this.GetHttpContextAccessorMock();
+            Mock<IPatientService> patientServiceMock = new();
+            patientServiceMock.Setup(s => s.GetPatient(this.hdid, PatientIdentifierType.Hdid, false))
+                .Returns(
+                    Task.FromResult(
+                        new RequestResult<PatientModel>
+                        {
+                            ResourcePayload = new PatientModel
+                            {
+                                Birthdate = DateTime.Parse("2000/01/31", CultureInfo.CurrentCulture),
+                                FirstName = "Patient",
+                                LastName = "Zero",
+                                HdId = this.hdid,
+                                PersonalHealthNumber = this.phn,
+                            },
+                            ResultStatus = ResultType.Success,
+                        }));
+
+            Mock<IDrugLookupDelegate> drugLookupDelegateMock = new();
+            drugLookupDelegateMock
+                .Setup(p => p.GetDrugProductsByDin(It.IsAny<List<string>>()))
+                .Returns(new List<DrugProduct>());
+
+            Mock<IMedStatementDelegate> medStatementDelegateMock = new();
+            medStatementDelegateMock
+                .Setup(p => p.GetMedicationStatementsAsync(It.IsAny<OdrHistoryQuery>(), It.IsAny<string>(), this.hdid, this.ipAddress))
+                .ReturnsAsync(
+                    new RequestResult<MedicationHistoryResponse>
+                    {
+                        ResultStatus = ResultType.ActionRequired,
+                        ResultError = new RequestResultError
+                        {
+                            ActionCode = ActionType.Protected,
+                        },
+                    });
+
+            IMedicationStatementService service = new RestMedicationStatementService(
+                new Mock<ILogger<RestMedicationStatementService>>().Object,
+                httpContextAccessorMock.Object,
+                patientServiceMock.Object,
+                drugLookupDelegateMock.Object,
+                medStatementDelegateMock.Object,
+                MapperUtil.InitializeAutoMapper());
+
+            RequestResult<IList<MedicationStatementHistory>> actual = await service.GetMedicationStatementsHistory(this.hdid, null).ConfigureAwait(true);
+            Assert.Equal(ResultType.ActionRequired, actual.ResultStatus);
+            Assert.Equal(ActionType.Protected, actual.ResultError?.ActionCode);
+            Assert.Equal(string.Empty, actual.ResultError?.ResultMessage);
+        }
+
+        /// <summary>
         /// GetMedicationStatementsHistory - Valid Keyword.
         /// </summary>
         /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
