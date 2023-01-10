@@ -13,11 +13,11 @@
 //  See the License for the specific language governing permissions and
 //  limitations under the License.
 // -------------------------------------------------------------------------
-namespace HealthGateway.DatabaseTests.Utils
+namespace HealthGateway.Common.Data.Tests.Utils
 {
     using System;
-    using HealthGateway.Database.Constants;
-    using HealthGateway.Database.Utils;
+    using HealthGateway.Common.Data.Constants;
+    using HealthGateway.Common.Data.Utils;
     using Xunit;
 
     /// <summary>
@@ -31,11 +31,11 @@ namespace HealthGateway.DatabaseTests.Utils
         [Fact]
         public void ValidateToString()
         {
-            string expected = "Success";
+            const string expected = "TermsOfService";
 
-            string actual = EnumUtility.ToEnumString<AuditTransactionResult>(AuditTransactionResult.Success);
+            string actual = EnumUtility.ToEnumString<LegalAgreementType>(LegalAgreementType.TermsOfService);
 
-            Assert.True(actual == expected);
+            Assert.Equal(expected, actual);
         }
 
         /// <summary>
@@ -44,11 +44,11 @@ namespace HealthGateway.DatabaseTests.Utils
         [Fact]
         public void ValidateToStringAnnotation()
         {
-            string expected = "Ok";
+            const string expected = "ToS";
 
-            string actual = EnumUtility.ToEnumString<AuditTransactionResult>(AuditTransactionResult.Success, true);
+            string actual = EnumUtility.ToEnumString<LegalAgreementType>(LegalAgreementType.TermsOfService, true);
 
-            Assert.True(actual == expected);
+            Assert.Equal(expected, actual);
         }
 
         /// <summary>
@@ -57,11 +57,11 @@ namespace HealthGateway.DatabaseTests.Utils
         [Fact]
         public void ValidateToEnum()
         {
-            AuditTransactionResult expected = AuditTransactionResult.Success;
+            const LegalAgreementType expected = LegalAgreementType.TermsOfService;
 
-            AuditTransactionResult actual = EnumUtility.ToEnum<AuditTransactionResult>("Success");
+            LegalAgreementType actual = EnumUtility.ToEnum<LegalAgreementType>("TermsOfService");
 
-            Assert.True(actual == expected);
+            Assert.Equal(expected, actual);
         }
 
         /// <summary>
@@ -70,11 +70,11 @@ namespace HealthGateway.DatabaseTests.Utils
         [Fact]
         public void ValidateToEnumAnnotation()
         {
-            AuditTransactionResult expected = AuditTransactionResult.Success;
+            const LegalAgreementType expected = LegalAgreementType.TermsOfService;
 
-            AuditTransactionResult actual = EnumUtility.ToEnum<AuditTransactionResult>("Ok", true);
+            LegalAgreementType actual = EnumUtility.ToEnum<LegalAgreementType>("ToS", true);
 
-            Assert.True(actual == expected);
+            Assert.Equal(expected, actual);
         }
 
         /// <summary>
@@ -83,11 +83,11 @@ namespace HealthGateway.DatabaseTests.Utils
         [Fact]
         public void ValidateToEnumAnnotationDefault()
         {
-            AuditTransactionResult expected = AuditTransactionResult.Success;
+            const LegalAgreementType expected = LegalAgreementType.TermsOfService;
 
-            AuditTransactionResult actual = EnumUtility.ToEnum<AuditTransactionResult>("Success", true);
+            LegalAgreementType actual = EnumUtility.ToEnum<LegalAgreementType>("TermsOfService", true);
 
-            Assert.True(actual == expected);
+            Assert.Equal(expected, actual);
         }
 
         /// <summary>
@@ -96,7 +96,7 @@ namespace HealthGateway.DatabaseTests.Utils
         [Fact]
         public void ValidateExceptionToEnum()
         {
-            Assert.Throws<ArgumentException>(() => EnumUtility.ToEnum<AuditTransactionResult>("NOTAVALUE"));
+            Assert.Throws<ArgumentException>(() => EnumUtility.ToEnum<LegalAgreementType>("NOTAVALUE"));
         }
     }
 }
