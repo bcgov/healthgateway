@@ -28,7 +28,6 @@ namespace HealthGateway.Admin.Common.Constants
         /// <summary>
         /// Unknown identity provider.
         /// </summary>
-        [EnumMember(Value = "")]
         Unknown,
 
         /// <summary>

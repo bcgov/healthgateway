@@ -15,7 +15,6 @@
 // -------------------------------------------------------------------------
 namespace HealthGateway.Admin.Common.Constants
 {
-    using System.Runtime.Serialization;
     using System.Text.Json.Serialization;
 
     /// <summary>
@@ -28,7 +27,6 @@ namespace HealthGateway.Admin.Common.Constants
         /// <summary>
         /// Unknown role.
         /// </summary>
-        [EnumMember(Value = "")]
         Unknown,
 
         /// <summary>
