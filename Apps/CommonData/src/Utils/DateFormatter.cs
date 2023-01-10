@@ -24,11 +24,6 @@ using System.Globalization;
 public static class DateFormatter
 {
     /// <summary>
-    /// CultureInfo corresponding to the "en-CA" culture.
-    /// </summary>
-    public static readonly CultureInfo CanadianCulture = CultureInfo.CreateSpecificCulture("en-CA");
-
-    /// <summary>
     /// Converts the supplied date to a string formatted as YYYY-MM-DD (2022-01-01).
     /// </summary>
     /// <param name="date">The date to format.</param>
@@ -117,6 +112,6 @@ public static class DateFormatter
     /// <returns>false if failed to parse, true is succeeded.</returns>
     public static bool TryParse(string dateTime, string format, out DateTime parsedDateTime)
     {
-        return DateTime.TryParseExact(dateTime, format, CanadianCulture, DateTimeStyles.None, out parsedDateTime);
+        return DateTime.TryParseExact(dateTime, format, CultureInfo.InvariantCulture, DateTimeStyles.None, out parsedDateTime);
     }
 }
