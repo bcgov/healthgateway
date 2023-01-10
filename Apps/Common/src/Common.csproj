@@ -38,6 +38,7 @@
         <PackageReference Include="System.ServiceModel.Http" Version="4.10.0" />
         <PackageReference Include="System.ServiceModel.NetTcp" Version="4.10.0" />
         <PackageReference Include="System.ServiceModel.Security" Version="4.10.0" />
+        <PackageReference Include="Microsoft.Extensions.Caching.StackExchangeRedis" Version="7.0.2" />
     </ItemGroup>
 
     <ItemGroup>
@@ -66,9 +67,4 @@
         </Content>
     </ItemGroup>
 
-    <ItemGroup>
-        <AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleTo">
-            <_Parameter1>CommonTests</_Parameter1>
-        </AssemblyAttribute>
-    </ItemGroup>
 </Project>
