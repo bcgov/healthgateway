@@ -84,7 +84,7 @@ namespace HealthGateway.Patient.Services
                 if (identifierType == PatientIdentifierType.Phn && !PhnValidator.IsValid(identifier))
                 {
                     this.logger.LogDebug("The PHN provided is invalid");
-                    throw new ApiException(ErrorMessages.PhnInvalid, "PatientService.GetPatient", HttpStatusCode.NotFound);
+                    throw new ProblemDetailsException(ExceptionUtility.CreateProblemDetails(ErrorMessages.PhnInvalid, HttpStatusCode.NotFound, nameof(PatientService)));
                 }
 
                 apiResult = await this.clientRegistriesDelegate.GetDemographicsAsync(type, identifier, disableIdValidation).ConfigureAwait(true);

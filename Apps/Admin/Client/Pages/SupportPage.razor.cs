@@ -38,7 +38,7 @@ namespace HealthGateway.Admin.Client.Pages
     /// </summary>
     public partial class SupportPage : FluxorComponent
     {
-        private static readonly HealthGateway.Common.Data.Validations.PhnValidator PhnValidator = new HealthGateway.Common.Data.Validations.PhnValidator();
+        private static readonly PhnValidator PhnValidator = new();
 
         private static List<UserQueryType> QueryTypes => new() { UserQueryType.Phn, UserQueryType.Email, UserQueryType.Sms, UserQueryType.Hdid };
 
@@ -110,7 +110,7 @@ namespace HealthGateway.Admin.Client.Pages
                 return "Email/SMS must be minimum 5 characters";
             }
 
-            if (this.SelectedQueryType == UserQueryType.Sms && !StringManipulator.IsNumeric(parameter))
+            if (this.SelectedQueryType == UserQueryType.Sms && !StringManipulator.IsPositiveNumeric(parameter))
             {
                 return "SMS must contain digits only";
             }

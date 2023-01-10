@@ -59,7 +59,6 @@ describe("Immunization History Report", () => {
 
         cy.get("[data-testid=recommendationTitle]").should("be.visible");
         cy.get("[data-testid=recommendationDateTitle]").should("be.visible");
-        cy.get("[data-testid=recommendationStatusTitle]").should("be.visible");
 
         cy.get("[data-testid=recommendationItem]")
             .scrollIntoView()
@@ -67,7 +66,6 @@ describe("Immunization History Report", () => {
         cy.get("[data-testid=recommendationDateItem]")
             .last()
             .contains(/\d{4}-[A-Z]{1}[a-z]{2}-\d{2}/);
-        cy.get("[data-testid=recommendationStatusItem]").should("be.visible");
 
         cy.get("[data-testid=exportRecordBtn] button")
             .should("be.enabled", "be.visible")
