@@ -109,7 +109,7 @@ namespace HealthGateway.Immunization.Delegates
                 PhsaResult<ImmunizationResponse> response =
                     await this.immunizationApi.GetImmunizationsAsync(hdid, this.phsaConfig.FetchSize, accessToken).ConfigureAwait(true);
                 requestResult.ResultStatus = ResultType.Success;
-                requestResult.ResourcePayload!.Result = response.Result;
+                requestResult.ResourcePayload = response;
                 requestResult.TotalResultCount = 1;
             }
             catch (Exception e) when (e is ApiException or HttpRequestException)

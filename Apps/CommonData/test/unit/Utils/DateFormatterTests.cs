@@ -67,7 +67,7 @@ namespace HealthGateway.Common.Data.Tests.Utils
         {
             // Arrange
             DateOnly dateOnly = DateOnly.FromDateTime(DefaultDateTime);
-            string expected = "Saturday, December 31, 2022";
+            string expected = "December 31, 2022";
 
             // Act
             string actual = DateFormatter.ToLongDate(dateOnly);
@@ -83,7 +83,7 @@ namespace HealthGateway.Common.Data.Tests.Utils
         public void ShouldBeLongDateGivenDateTime()
         {
             // Arrange
-            string expected = "Saturday, December 31, 2022";
+            string expected = "December 31, 2022";
 
             // Act
             string actual = DateFormatter.ToLongDate(DefaultDateTime);
@@ -148,7 +148,7 @@ namespace HealthGateway.Common.Data.Tests.Utils
         public void ShouldBeLongDateAndTimeGivenDateTime()
         {
             // Arrange
-            string expected = "Saturday, December 31, 2022 5:00 PM";
+            string expected = "December 31, 2022 5:00 PM";
 
             // Act
             string actual = DateFormatter.ToLongDateAndTime(DefaultDateTime);
