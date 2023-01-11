@@ -176,5 +176,21 @@ namespace HealthGateway.Common.Data.Tests.Utils
             Assert.Equal(expectedDateTime, actualDateTime);
             Assert.Equal(expected, actual);
         }
+
+        /// <summary>
+        /// Should convert to PST.
+        /// </summary>
+        [Fact]
+        public void ShouldConvertToPstGivenDateTime()
+        {
+            // Arrange
+            DateTime expected = new(2022, 12, 31, 09, 00, 00);
+
+            // Act
+            DateTime actual = DateFormatter.ConvertDateTimeToPst(DefaultDateTime);
+
+            // Assert
+            Assert.Equal(expected, actual);
+        }
     }
 }

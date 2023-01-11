@@ -23,6 +23,8 @@ using System.Globalization;
 /// </summary>
 public static class DateFormatter
 {
+    private static readonly TimeZoneInfo PstZone = TimeZoneInfo.FindSystemTimeZoneById("Pacific Standard Time");
+
     /// <summary>
     /// Converts the supplied date to a string formatted as YYYY-MM-DD (2022-01-01).
     /// </summary>
@@ -113,5 +115,15 @@ public static class DateFormatter
     public static bool TryParse(string dateTime, string format, out DateTime parsedDateTime)
     {
         return DateTime.TryParseExact(dateTime, format, CultureInfo.InvariantCulture, DateTimeStyles.None, out parsedDateTime);
+    }
+
+    /// <summary>
+    /// Converts date time in UTC to date time in PST.
+    /// </summary>
+    /// <param name="dateTime">Date time in UTC to convert.</param>
+    /// <returns>Datetime object in PST.</returns>
+    public static DateTime ConvertDateTimeToPst(DateTime dateTime)
+    {
+        return TimeZoneInfo.ConvertTimeFromUtc(dateTime, PstZone);
     }
 }
