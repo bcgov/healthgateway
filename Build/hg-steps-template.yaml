@@ -70,6 +70,15 @@ steps:
 
   - script: |
       set -e
+      dotnet tool install --global dotnet-ef
+      pushd $(Build.SourcesDirectory)/Apps/DBMaintainer
+      dotnet ef migrations script --idempotent --project "../Database/src" --output $(Build.ArtifactStagingDirectory)/$(Build.BuildNumber).sql
+      popd
+    displayName: "Creating DB Scripts $(App.Name)"
+    condition: and(succeeded(), and(eq(variables['DBScripts'], true))
+
+  - script: |
+      set -e
       if [ "$(EnableAzure)" = True ] ; then
           echo Running in Azure, Installing dotnet-reportgenerator
           dotnet tool install -g dotnet-reportgenerator-globaltool
@@ -149,3 +158,9 @@ steps:
       oc tag $(Image.Name):latest $(Image.Name):$(Build.BuildNumber)
     displayName: "Building Image for $(App.Name) and pushing to OpenShift Image Stream"
     condition: and(succeeded(), and(eq(variables['CreateImage'], true),eq(variables['EnableOpenShift'], true)))
+
+  - task: PublishPipelineArtifact@0
+    displayName: "Publishing Artifacts for $(App.Name)"
+    inputs:
+      targetPath: "$(Build.ArtifactStagingDirectory)"
+    condition: and(succeeded(), and(eq(variables['DBScripts'], true))
