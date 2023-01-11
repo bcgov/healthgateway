@@ -95,7 +95,7 @@ public class AgentAccessEffects
         {
             RequestError error = StoreUtility.FormatRequestError(e);
             this.Logger.LogError("Error updating agent access, reason: {Exception}", e.ToString());
-            dispatcher.Dispatch(new AgentAccessActions.AddFailAction(error));
+            dispatcher.Dispatch(new AgentAccessActions.UpdateFailAction(error));
         }
     }
 

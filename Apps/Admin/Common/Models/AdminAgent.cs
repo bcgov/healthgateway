@@ -17,7 +17,6 @@ namespace HealthGateway.Admin.Common.Models
 {
     using System;
     using System.Collections.Generic;
-    using System.Linq;
     using HealthGateway.Admin.Common.Constants;
 
     /// <summary>
@@ -26,9 +25,9 @@ namespace HealthGateway.Admin.Common.Models
     public class AdminAgent
     {
         /// <summary>
-        /// Gets or sets the agent's unique account identifier.
+        /// Gets the agent's unique account identifier.
         /// </summary>
-        public Guid Id { get; set; }
+        public Guid Id { get; init; }
 
         /// <summary>
         /// Gets or sets the agent's username.
@@ -41,8 +40,8 @@ namespace HealthGateway.Admin.Common.Models
         public KeycloakIdentityProvider IdentityProvider { get; set; } = KeycloakIdentityProvider.Unknown;
 
         /// <summary>
-        /// Gets or sets the roles assigned to the agent.
+        /// Gets the roles assigned to the agent.
         /// </summary>
-        public IEnumerable<IdentityAccessRole> Roles { get; set; } = Enumerable.Empty<IdentityAccessRole>();
+        public ISet<IdentityAccessRole> Roles { get; init; } = new HashSet<IdentityAccessRole>();
     }
 }

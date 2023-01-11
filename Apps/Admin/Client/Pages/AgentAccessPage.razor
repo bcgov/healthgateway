@@ -22,7 +22,7 @@
                          T="string"
                          Label="Query"
                          Required="@true"
-                         RequiredError="Search parameter is required"
+                         Validation="@ValidateQueryParameter"
                          @bind-Value="Query"
                          data-testid="query-input" />
         </MudItem>
