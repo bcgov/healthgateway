@@ -24,7 +24,6 @@ using Fluxor;
 using Fluxor.Blazor.Web.Components;
 using HealthGateway.Admin.Client.Components;
 using HealthGateway.Admin.Client.Store.AgentAccess;
-using HealthGateway.Admin.Client.Store.Broadcasts;
 using HealthGateway.Admin.Client.Utils;
 using HealthGateway.Admin.Common.Models;
 using HealthGateway.Common.Data.Utils;
@@ -36,6 +35,21 @@ using MudBlazor;
 /// </summary>
 public partial class AgentAccessPage : FluxorComponent
 {
+    private static Func<string, string?> ValidateQueryParameter => parameter =>
+    {
+        if (string.IsNullOrWhiteSpace(parameter))
+        {
+            return "Search parameter is required";
+        }
+
+        if (StringManipulator.StripWhitespace(parameter)?.Length < 3)
+        {
+            return "Query must contain at least 3 characters";
+        }
+
+        return null;
+    };
+
     [Inject]
     private IDispatcher Dispatcher { get; set; } = default!;
 
@@ -87,7 +101,7 @@ public partial class AgentAccessPage : FluxorComponent
 
     private void ResetState()
     {
-        this.Dispatcher.Dispatch(new BroadcastsActions.ResetStateAction());
+        this.Dispatcher.Dispatch(new AgentAccessActions.ResetStateAction());
     }
 
     private async Task SearchAsync()
@@ -141,8 +155,7 @@ public partial class AgentAccessPage : FluxorComponent
         DialogParameters parameters = new() { ["Agent"] = agent };
         DialogOptions options = new() { DisableBackdropClick = true };
 
-        // to do: swap BroadcastDialog for the new AgentAccessDialog
-        IDialogReference dialog = await this.Dialog.ShowAsync<BroadcastDialog>(title, parameters, options).ConfigureAwait(true);
+        IDialogReference dialog = await this.Dialog.ShowAsync<AgentAccessDialog>(title, parameters, options).ConfigureAwait(true);
 
         await dialog.Result.ConfigureAwait(true);
         this.IsModalShown = false;
