@@ -75,7 +75,7 @@ steps:
       dotnet ef migrations script --idempotent --project "../Database/src" --output $(Build.ArtifactStagingDirectory)/$(Build.BuildNumber).sql
       popd
     displayName: "Creating DB Scripts $(App.Name)"
-    condition: and(succeeded(), and(eq(variables['DBScripts'], true))
+    condition: and(succeeded(), and(eq(variables['DBScripts'], true)))
 
   - script: |
       set -e
@@ -163,4 +163,4 @@ steps:
     displayName: "Publishing Artifacts for $(App.Name)"
     inputs:
       targetPath: "$(Build.ArtifactStagingDirectory)"
-    condition: and(succeeded(), and(eq(variables['DBScripts'], true))
+    condition: and(succeeded(), and(eq(variables['DBScripts'], true)))
