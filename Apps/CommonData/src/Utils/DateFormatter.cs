@@ -121,10 +121,10 @@ public static class DateFormatter
     }
 
     /// <summary>
-    /// Gets local localTimezone.
+    /// Gets local timezone.
     /// </summary>
     /// <param name="configuration">The configuration to use.</param>
-    /// <returns>TimeZoneInfo object representing local localTimezone.</returns>
+    /// <returns>TimeZoneInfo object representing local timezone.</returns>
     public static TimeZoneInfo GetLocalTimeZone(IConfiguration configuration)
     {
         return TimeZoneInfo.FindSystemTimeZoneById(
