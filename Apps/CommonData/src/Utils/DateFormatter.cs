@@ -17,13 +17,15 @@ namespace HealthGateway.Common.Data.Utils;
 
 using System;
 using System.Globalization;
+using System.Runtime.InteropServices;
 
 /// <summary>
 /// Formats dates and times for display.
 /// </summary>
 public static class DateFormatter
 {
-    private static readonly TimeZoneInfo PstZone = TimeZoneInfo.FindSystemTimeZoneById("Pacific Standard Time");
+    private const string UnixTimezone = "America/Vancouver";
+    private const string WindowsTimezone = "Pacific Standard Time";
 
     /// <summary>
     /// Converts the supplied date to a string formatted as YYYY-MM-DD (2022-01-01).
@@ -124,6 +126,18 @@ public static class DateFormatter
     /// <returns>Datetime object in PST.</returns>
     public static DateTime ConvertDateTimeToPst(DateTime dateTime)
     {
-        return TimeZoneInfo.ConvertTimeFromUtc(dateTime, PstZone);
+        return TimeZoneInfo.ConvertTimeFromUtc(dateTime, GetLocalTimeZone());
+    }
+
+    /// <summary>
+    /// Gets local timezone.
+    /// </summary>
+    /// <returns>TimeZoneInfo object representing local timezone.</returns>
+    public static TimeZoneInfo GetLocalTimeZone()
+    {
+        return TimeZoneInfo.FindSystemTimeZoneById(
+            RuntimeInformation.IsOSPlatform(OSPlatform.Windows)
+                ? WindowsTimezone
+                : UnixTimezone);
     }
 }
