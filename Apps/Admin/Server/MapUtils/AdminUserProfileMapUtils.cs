@@ -19,7 +19,6 @@ namespace HealthGateway.Admin.Server.MapUtils
     using System;
     using AutoMapper;
     using HealthGateway.Admin.Server.Models;
-    using HealthGateway.Common.Data.Utils;
     using HealthGateway.Database.Models;
     using Microsoft.Extensions.Configuration;
 
@@ -43,7 +42,7 @@ namespace HealthGateway.Admin.Server.MapUtils
                 opts =>
                     opts.AfterMap(
                         (_, dest) => dest.LastLoginDateTime = dest.LastLoginDateTime != null
-                            ? DateFormatter.ConvertDateTimeToTimezone((DateTime)dest.LastLoginDateTime, timezone)
+                            ? TimeZoneInfo.ConvertTimeFromUtc((DateTime)dest.LastLoginDateTime, timezone)
                             : dest.LastLoginDateTime));
             return adminUserProfileView;
         }

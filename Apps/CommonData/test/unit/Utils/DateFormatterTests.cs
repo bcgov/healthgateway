@@ -176,22 +176,5 @@ namespace HealthGateway.Common.Data.Tests.Utils
             Assert.Equal(expectedDateTime, actualDateTime);
             Assert.Equal(expected, actual);
         }
-
-        /// <summary>
-        /// Should convert to local timezone.
-        /// </summary>
-        [Fact]
-        public void ShouldConvertToPstGivenDateTime()
-        {
-            // Arrange
-            DateTime expected = new(2022, 12, 31, 09, 00, 00);
-            TimeZoneInfo timezone = TimeZoneInfo.FindSystemTimeZoneById("Pacific Standard Time");
-
-            // Act
-            DateTime actual = DateFormatter.ConvertDateTimeToTimezone(DefaultDateTime, timezone);
-
-            // Assert
-            Assert.Equal(expected, actual);
-        }
     }
 }
