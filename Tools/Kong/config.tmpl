@@ -25,6 +25,19 @@
           - $BASE_PATH
         strip_path: false
         plugins:
+          - name: jwt-keycloak_1010
+            tags: [ns.$KONG_NAMESPACE]
+            enabled: true
+            config:
+                allowed_iss:
+                    - $KEYCLOAK_URI
+                allowed_aud: hg-tickets
+                claims_to_verify:
+                    - exp
+                access_token_header: hg-ticket
+                realm: waitingqueue
+                run_on_preflight: true
+                disable_access_token_header: true
           - name: jwt-keycloak
             tags: [ns.$KONG_NAMESPACE]
             enabled: true
