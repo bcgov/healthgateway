@@ -1,5 +1,5 @@
 @using HealthGateway.Admin.Client.Store.Communications
-@using HealthGateway.Common.Data.Utils
+@using System.Globalization
 @using HealthGateway.Common.Data.Constants
 @inherits Fluxor.Blazor.Web.Components.FluxorComponent
 
@@ -16,7 +16,8 @@
                                    Label="Effective Date"
                                    Required="@true"
                                    PickerVariant="@PickerVariant.Dialog"
-                                   Culture="@DateFormatter.CanadianCulture"
+                                   Culture="@CultureInfo.InvariantCulture"
+                                   DateFormat="yyyy-MM-dd"
                                    AutoClose="@true"
                                    DisableToolbar="@true"
                                    Variant="@Variant.Filled"
@@ -65,7 +66,8 @@
                                    Label="Expiry Date"
                                    Required="@true"
                                    PickerVariant="@PickerVariant.Dialog"
-                                   Culture="@DateFormatter.CanadianCulture"
+                                   Culture="@CultureInfo.InvariantCulture"
+                                   DateFormat="yyyy-MM-dd"
                                    AutoClose="@true"
                                    DisableToolbar="@true"
                                    Variant="@Variant.Filled"

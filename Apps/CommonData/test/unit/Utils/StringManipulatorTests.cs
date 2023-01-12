@@ -84,5 +84,56 @@ namespace HealthGateway.Common.Data.Tests.Utils
         {
             Assert.True(StringManipulator.StripWhitespace(null) is null);
         }
+
+        /// <summary>
+        /// Should be positive numeric given target 5.
+        /// </summary>
+        [Fact]
+        public void ShouldBePositiveNumericGivenTarget5()
+        {
+            // Arrange
+            string target = "5";
+            bool expected = true;
+
+            // Act
+            bool actual = StringManipulator.IsPositiveNumeric(target);
+
+            // Assert
+            Assert.Equal(expected, actual);
+        }
+
+        /// <summary>
+        /// Should be not positive numeric given target negative 5.
+        /// </summary>
+        [Fact]
+        public void ShouldNotBePositiveNumericGivenTargetNegative5()
+        {
+            // Arrange
+            string target = "-5";
+            bool expected = false;
+
+            // Act
+            bool actual = StringManipulator.IsPositiveNumeric(target);
+
+            // Assert
+            Assert.Equal(expected, actual);
+        }
+
+        /// <summary>
+        /// Should not be positive numeric given target string.
+        /// </summary>
+        [Fact]
+        public void ShouldNotBePositiveNumericGivenTargetString()
+        {
+            // Arrange
+            string target = "STRING";
+            bool expected = false;
+
+            // Act
+            bool actual = StringManipulator.IsPositiveNumeric(target);
+
+            // Assert
+            Assert.Equal(expected, actual);
+        }
     }
 }

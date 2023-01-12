@@ -18,6 +18,7 @@ namespace HealthGateway.Immunization.Services
     using System;
     using System.Threading.Tasks;
     using AutoMapper;
+    using FluentValidation.Results;
     using HealthGateway.Common.AccessManagement.Authentication;
     using HealthGateway.Common.AccessManagement.Authentication.Models;
     using HealthGateway.Common.Constants;
@@ -124,11 +125,13 @@ namespace HealthGateway.Immunization.Services
             {
                 if (payload.State == VaccineState.NotFound)
                 {
+                    this.logger.LogDebug("Vaccine Proof document is not available (not found)");
                     retVal.ResultStatus = ResultType.ActionRequired;
                     retVal.ResultError = ErrorTranslator.ActionRequired("Vaccine Proof document is not available.", ActionType.Invalid);
                 }
                 else if (payload.Loaded && string.IsNullOrEmpty(payload.FederalVaccineProof?.Data))
                 {
+                    this.logger.LogDebug("Vaccine Proof document is not available (empty payload)");
                     retVal.ResultStatus = ResultType.Error;
                     retVal.ResultError = new RequestResultError
                     {
@@ -167,11 +170,13 @@ namespace HealthGateway.Immunization.Services
             {
                 if (payload.State == VaccineState.NotFound)
                 {
+                    this.logger.LogDebug("Vaccine Proof document is not available (not found)");
                     retVal.ResultStatus = ResultType.ActionRequired;
                     retVal.ResultError = ErrorTranslator.ActionRequired("Vaccine Proof document is not available.", ActionType.Invalid);
                 }
                 else if (payload.Loaded && string.IsNullOrEmpty(payload.FederalVaccineProof?.Data))
                 {
+                    this.logger.LogDebug("Vaccine Proof document is not available (empty payload)");
                     retVal.ResultStatus = ResultType.Error;
                     retVal.ResultError = new RequestResultError
                     {
@@ -204,7 +209,7 @@ namespace HealthGateway.Immunization.Services
                 IncludeFederalVaccineProof = includeVaccineProof,
             };
 
-            var validationResults = new VaccineStatusQueryValidator().Validate(query);
+            ValidationResult validationResults = await new VaccineStatusQueryValidator().ValidateAsync(query).ConfigureAwait(true);
             if (!validationResults.IsValid)
             {
                 return RequestResultFactory.Error<VaccineStatus>(ErrorType.InvalidState, validationResults.Errors);
@@ -272,6 +277,7 @@ namespace HealthGateway.Immunization.Services
                 retVal.ResourcePayload.Loaded = !loadState.RefreshInProgress;
                 if (loadState.RefreshInProgress)
                 {
+                    this.logger.LogDebug("Vaccine status refresh in progress");
                     retVal.ResultStatus = ResultType.ActionRequired;
                     retVal.ResultError = ErrorTranslator.ActionRequired("Vaccine status refresh in progress", ActionType.Refresh);
                     retVal.ResourcePayload.RetryIn = Math.Max(loadState.BackOffMilliseconds, this.phsaConfig.BackOffMilliseconds);

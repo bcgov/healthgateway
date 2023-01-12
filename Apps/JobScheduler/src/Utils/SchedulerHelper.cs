@@ -17,8 +17,8 @@ namespace HealthGateway.JobScheduler.Utils
 {
     using System;
     using System.Linq.Expressions;
-    using System.Runtime.InteropServices;
     using Hangfire;
+    using HealthGateway.Common.Data.Utils;
     using HealthGateway.DBMaintainer.Apps;
     using HealthGateway.JobScheduler.Models;
     using Microsoft.Extensions.Configuration;
@@ -28,9 +28,6 @@ namespace HealthGateway.JobScheduler.Utils
     /// </summary>
     public static class SchedulerHelper
     {
-        private const string UnixTzKey = "TimeZone:UnixTimeZoneId";
-        private const string WindowsTzKey = "TimeZone:WindowsTimeZoneId";
-
         /// <summary>
         /// Schedules a Drug Load job, looking up the cron schedule and the jobid from configuration.
         /// </summary>
@@ -41,7 +38,7 @@ namespace HealthGateway.JobScheduler.Utils
             where T : IDrugApp
         {
             JobConfiguration jc = GetJobConfiguration(cfg, key);
-            ScheduleJob<T>(jc, GetLocalTimeZone(cfg), j => j.Process(key));
+            ScheduleJob<T>(jc, DateFormatter.GetLocalTimeZone(cfg), j => j.Process(key));
         }
 
         /// <summary>
@@ -54,7 +51,7 @@ namespace HealthGateway.JobScheduler.Utils
         public static void ScheduleJob<T>(IConfiguration cfg, string key, Expression<Action<T>> methodCall)
         {
             JobConfiguration jc = GetJobConfiguration(cfg, key);
-            ScheduleJob(jc, GetLocalTimeZone(cfg), methodCall);
+            ScheduleJob(jc, DateFormatter.GetLocalTimeZone(cfg), methodCall);
         }
 
         /// <summary>
@@ -71,19 +68,6 @@ namespace HealthGateway.JobScheduler.Utils
             {
                 BackgroundJob.Schedule(methodCall, TimeSpan.FromSeconds(cfg.Delay));
             }
-        }
-
-        private static TimeZoneInfo GetLocalTimeZone(IConfiguration cfg)
-        {
-            return TimeZoneInfo.FindSystemTimeZoneById(
-                RuntimeInformation.IsOSPlatform(OSPlatform.Windows)
-                    ? GetConfigurationValue<string>(cfg, WindowsTzKey)
-                    : GetConfigurationValue<string>(cfg, UnixTzKey));
-        }
-
-        private static T GetConfigurationValue<T>(IConfiguration cfg, string key)
-        {
-            return cfg.GetValue<T>(key)!;
         }
 
         private static JobConfiguration GetJobConfiguration(IConfiguration cfg, string key)

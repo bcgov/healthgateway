@@ -121,8 +121,8 @@ namespace HealthGateway.PatientTests.Services
             }
 
             // Verify
-            ApiException exception = await Assert.ThrowsAsync<ApiException>(Actual).ConfigureAwait(true);
-            Assert.Equal(ErrorMessages.PhnInvalid, exception.Detail);
+            ProblemDetailsException exception = await Assert.ThrowsAsync<ProblemDetailsException>(Actual).ConfigureAwait(true);
+            Assert.Equal(ErrorMessages.PhnInvalid, exception.ProblemDetails!.Detail);
         }
 
         private static IPatientService GetPatientService(string expectedPhn, string expectedIdentifier, bool returnValidCache = false)

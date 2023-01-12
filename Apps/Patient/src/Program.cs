@@ -47,7 +47,6 @@ namespace HealthGateway.Patient
             ILogger logger = ProgramConfiguration.GetInitialLogger(configuration);
             IWebHostEnvironment environment = builder.Environment;
 
-            ExceptionHandling.ConfigureProblemDetails(services, environment);
             HttpWeb.ConfigureForwardHeaders(services, logger, configuration);
             Db.ConfigureDatabaseServices(services, logger, configuration);
             HttpWeb.ConfigureHttpServices(services, logger);
@@ -62,6 +61,8 @@ namespace HealthGateway.Patient
             services.AddTransient<IPatientService, PatientService>();
 
             Utility.ConfigureTracing(services, logger, configuration);
+
+            ExceptionHandling.ConfigureProblemDetails(services, environment);
 
             WebApplication app = builder.Build();
             ExceptionHandling.UseProblemDetails(app);
