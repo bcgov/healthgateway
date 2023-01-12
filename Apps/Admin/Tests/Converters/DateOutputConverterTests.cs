@@ -13,7 +13,7 @@
 //  See the License for the specific language governing permissions and
 //  limitations under the License.
 // -------------------------------------------------------------------------
-namespace HealthGateway.Admin.Client.Converters
+namespace HealthGateway.Admin.Tests.Converters
 {
     using System;
     using HealthGateway.Admin.Server.Converters;

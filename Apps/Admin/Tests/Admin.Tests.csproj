@@ -1,6 +1,6 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <RootNamespace>HealthGateway.Admin.Client</RootNamespace>
+    <RootNamespace>HealthGateway.Admin.Tests</RootNamespace>
     <IsPackable>false</IsPackable>
     <GenerateDocumentationFile>True</GenerateDocumentationFile>
     <DocumentationFile>bin\$(Configuration)\$(TargetFramework)\$(MSBuildThisFileName).xml</DocumentationFile>
