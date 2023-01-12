@@ -17,6 +17,7 @@ namespace HealthGateway.Admin.Server.Mappers
 {
     using System.Globalization;
     using CsvHelper.Configuration;
+    using HealthGateway.Admin.Server.Converters;
     using HealthGateway.Admin.Server.Models;
 
     /// <summary>
@@ -32,6 +33,7 @@ namespace HealthGateway.Admin.Server.Mappers
             this.AutoMap(CultureInfo.InvariantCulture);
             this.Map(m => m.AdminUserProfileId).Ignore();
             this.Map(m => m.UserId).Ignore();
+            this.Map(m => m.LastLoginDateTime).TypeConverter(new DateOutputConverter());
         }
     }
 }
