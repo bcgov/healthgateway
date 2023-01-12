@@ -33,7 +33,7 @@ namespace HealthGateway.Admin.Server.Mappers
             this.AutoMap(CultureInfo.InvariantCulture);
             this.Map(m => m.AdminUserProfileId).Ignore();
             this.Map(m => m.UserId).Ignore();
-            this.Map(m => m.LastLoginDateTime).TypeConverter(new UtcPstDateOutputConverter());
+            this.Map(m => m.LastLoginDateTime).TypeConverter(new DateOutputConverter());
         }
     }
 }

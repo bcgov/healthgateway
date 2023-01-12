@@ -38,7 +38,7 @@ namespace HealthGateway.JobScheduler.Utils
             where T : IDrugApp
         {
             JobConfiguration jc = GetJobConfiguration(cfg, key);
-            ScheduleJob<T>(jc, DateFormatter.GetLocalTimeZone(), j => j.Process(key));
+            ScheduleJob<T>(jc, DateFormatter.GetLocalTimeZone(cfg), j => j.Process(key));
         }
 
         /// <summary>
@@ -51,7 +51,7 @@ namespace HealthGateway.JobScheduler.Utils
         public static void ScheduleJob<T>(IConfiguration cfg, string key, Expression<Action<T>> methodCall)
         {
             JobConfiguration jc = GetJobConfiguration(cfg, key);
-            ScheduleJob(jc, DateFormatter.GetLocalTimeZone(), methodCall);
+            ScheduleJob(jc, DateFormatter.GetLocalTimeZone(cfg), methodCall);
         }
 
         /// <summary>

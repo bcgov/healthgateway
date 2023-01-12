@@ -18,14 +18,15 @@ namespace HealthGateway.Common.Data.Utils;
 using System;
 using System.Globalization;
 using System.Runtime.InteropServices;
+using Microsoft.Extensions.Configuration;
 
 /// <summary>
 /// Formats dates and times for display.
 /// </summary>
 public static class DateFormatter
 {
-    private const string UnixTimezone = "America/Vancouver";
-    private const string WindowsTimezone = "Pacific Standard Time";
+    private const string UnixTzKey = "TimeZone:UnixTimeZoneId";
+    private const string WindowsTzKey = "TimeZone:WindowsTimeZoneId";
 
     /// <summary>
     /// Converts the supplied date to a string formatted as YYYY-MM-DD (2022-01-01).
@@ -120,24 +121,31 @@ public static class DateFormatter
     }
 
     /// <summary>
-    /// Converts date time in UTC to date time in PST.
+    /// Converts date time in UTC to date time in local timezone.
     /// </summary>
+    /// <param name="configuration">The configuration to use.</param>
     /// <param name="dateTime">Date time in UTC to convert.</param>
-    /// <returns>Datetime object in PST.</returns>
-    public static DateTime ConvertDateTimeToPst(DateTime dateTime)
+    /// <returns>Datetime object in local timezone.</returns>
+    public static DateTime ConvertDateTimeToLocal(IConfiguration configuration, DateTime dateTime)
     {
-        return TimeZoneInfo.ConvertTimeFromUtc(dateTime, GetLocalTimeZone());
+        return TimeZoneInfo.ConvertTimeFromUtc(dateTime, GetLocalTimeZone(configuration));
     }
 
     /// <summary>
     /// Gets local timezone.
     /// </summary>
+    /// <param name="configuration">The configuration to use.</param>
     /// <returns>TimeZoneInfo object representing local timezone.</returns>
-    public static TimeZoneInfo GetLocalTimeZone()
+    public static TimeZoneInfo GetLocalTimeZone(IConfiguration configuration)
     {
         return TimeZoneInfo.FindSystemTimeZoneById(
             RuntimeInformation.IsOSPlatform(OSPlatform.Windows)
-                ? WindowsTimezone
-                : UnixTimezone);
+                ? GetConfigurationValue<string>(configuration, WindowsTzKey)
+                : GetConfigurationValue<string>(configuration, UnixTzKey));
+    }
+
+    private static T GetConfigurationValue<T>(IConfiguration cfg, string key)
+    {
+        return cfg.GetValue<T>(key)!;
     }
 }

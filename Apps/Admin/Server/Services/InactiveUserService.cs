@@ -21,6 +21,7 @@ using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
 using AutoMapper;
+using HealthGateway.Admin.Server.MapUtils;
 using HealthGateway.Admin.Server.Models;
 using HealthGateway.Common.AccessManagement.Administration.Models;
 using HealthGateway.Common.AccessManagement.Authentication;
@@ -49,6 +50,7 @@ public class InactiveUserService : IInactiveUserService
     private readonly ILogger logger;
     private readonly ClientCredentialsTokenRequest tokenRequest;
     private readonly Uri tokenUri;
+    private readonly IConfiguration configuration;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="InactiveUserService"/> class.
@@ -71,7 +73,7 @@ public class InactiveUserService : IInactiveUserService
         this.adminUserProfileDelegate = adminUserProfileDelegate;
         this.keycloakAdminApi = keycloakAdminApi;
         this.logger = logger;
-        _ = configuration;
+        this.configuration = configuration;
         this.autoMapper = autoMapper;
         (this.tokenUri, this.tokenRequest) = this.authDelegate.GetClientCredentialsAuth(AuthConfigSectionName);
     }
@@ -100,7 +102,10 @@ public class InactiveUserService : IInactiveUserService
         // Compare inactive users in DB to users in Keycloak
         if (inactiveProfileResult.Status == DbStatusCode.Read && activeProfileResult.Status == DbStatusCode.Read)
         {
-            inactiveUsers.AddRange(this.autoMapper.Map<IEnumerable<AdminUserProfile>, IList<AdminUserProfileView>>(inactiveProfileResult.Payload));
+            inactiveUsers.AddRange(
+                inactiveProfileResult.Payload.Select(
+                        x => AdminUserProfileMapUtils.ToUiModel(x, this.configuration, true, this.autoMapper))
+                    .ToList());
             this.logger.LogDebug("Inactive db admin user profile count: {Count} since {InactiveDays} day(s)...", inactiveUsers.Count, inactiveDays);
 
             List<AdminUserProfile> activeUserProfiles = activeProfileResult.Payload.ToList();
@@ -129,7 +134,7 @@ public class InactiveUserService : IInactiveUserService
             }
             catch (Exception e) when (e is ApiException or HttpRequestException)
             {
-                this.logger.LogError("Error communicating with Keycloak, exception: {Exception}",  e.ToString());
+                this.logger.LogError("Error communicating with Keycloak, exception: {Exception}", e.ToString());
                 requestResult.ResultStatus = ResultType.Error;
                 requestResult.ResultError = new RequestResultError
                 {

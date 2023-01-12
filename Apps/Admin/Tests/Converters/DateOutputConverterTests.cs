@@ -20,9 +20,9 @@ namespace HealthGateway.Admin.Client.Converters
     using Xunit;
 
     /// <summary>
-    /// Test class for the utc pst date output converter class.
+    /// Test class for the date output converter class.
     /// </summary>
-    public class UtcPstDateOutputConverterTests
+    public class DateOutputConverterTests
     {
         /// <summary>
         /// Should convert to date time given value in string.
@@ -31,9 +31,9 @@ namespace HealthGateway.Admin.Client.Converters
         public void ShouldConvertFromString()
         {
             // Arrange
-            UtcPstDateOutputConverter converter = new();
+            DateOutputConverter converter = new();
             string dateTime = "12/31/2022 17:00:00";
-            DateTime expected = new(2022, 12, 31, 09, 00, 00);
+            DateTime expected = new(2022, 12, 31, 17, 00, 00);
 
             // Act
             object? actual = converter.ConvertFromString(dateTime, null, null);
@@ -43,13 +43,13 @@ namespace HealthGateway.Admin.Client.Converters
         }
 
         /// <summary>
-        /// Should return null given null value in string.
+        /// Should not convert to date time and instead return null given null value.
         /// </summary>
         [Fact]
         public void ShouldConvertFromStringReturnsNullGivenNullValue()
         {
             // Arrange
-            UtcPstDateOutputConverter converter = new();
+            DateOutputConverter converter = new();
             string? dateTime = null;
             DateTime? expected = null;
 
@@ -67,30 +67,30 @@ namespace HealthGateway.Admin.Client.Converters
         public void ShouldConvertToString()
         {
             // Arrange
-            UtcPstDateOutputConverter converter = new();
+            DateOutputConverter converter = new();
             DateTime dateTime = new(2022, 12, 31, 17, 00, 00);
-            string expected = "2022-12-31 9:00 AM";
+            string expected = "2022-12-31 5:00 PM";
 
             // Act
-            object actual = converter.ConvertToString(dateTime, null, null);
+            object? actual = converter.ConvertToString(dateTime, null, null);
 
             // Assert
             Assert.Equal(expected, actual);
         }
 
         /// <summary>
-        /// Should return empty string given null value in date time.
+        /// Should not convert to string date and instead return empty string given null value.
         /// </summary>
         [Fact]
         public void ShouldConvertToStringReturnsEmptyStringGivenNullValue()
         {
             // Arrange
-            UtcPstDateOutputConverter converter = new();
+            DateOutputConverter converter = new();
             DateTime? dateTime = null;
             string expected = string.Empty;
 
             // Act
-            object actual = converter.ConvertToString(dateTime, null, null);
+            object? actual = converter.ConvertToString(dateTime, null, null);
 
             // Assert
             Assert.Equal(expected, actual);

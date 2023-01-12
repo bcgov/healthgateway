@@ -23,9 +23,9 @@ namespace HealthGateway.Admin.Server.Converters
     using HealthGateway.Common.Data.Utils;
 
     /// <summary>
-    /// Converts UTC date to PST.
+    /// String Date Time Converter.
     /// </summary>
-    public class UtcPstDateOutputConverter : ITypeConverter
+    public class DateOutputConverter : ITypeConverter
     {
         /// <inheritdoc/>
         public object? ConvertFromString(
@@ -33,7 +33,7 @@ namespace HealthGateway.Admin.Server.Converters
             IReaderRow? row,
             MemberMapData? memberMapData)
         {
-            return text != null ? DateFormatter.ConvertDateTimeToPst(ParseDate(text)) : null;
+            return text != null ? ParseDate(text) : null;
         }
 
         /// <inheritdoc/>
@@ -42,12 +42,7 @@ namespace HealthGateway.Admin.Server.Converters
             IWriterRow? row,
             MemberMapData? memberMapData)
         {
-            return value != null ? ConvertToPst((DateTime)value) : string.Empty;
-        }
-
-        private static string ConvertToPst(DateTime dateTime)
-        {
-            return DateFormatter.ToShortDateAndTime(DateFormatter.ConvertDateTimeToPst(dateTime));
+            return value != null ? DateFormatter.ToShortDateAndTime((DateTime)value) : string.Empty;
         }
 
         private static DateTime ParseDate(string text)
