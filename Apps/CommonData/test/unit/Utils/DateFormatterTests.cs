@@ -188,7 +188,7 @@ namespace HealthGateway.Common.Data.Tests.Utils
             TimeZoneInfo timezone = TimeZoneInfo.FindSystemTimeZoneById("Pacific Standard Time");
 
             // Act
-            DateTime actual = DateFormatter.ConvertDateTimeToLocal(DefaultDateTime, timezone);
+            DateTime actual = DateFormatter.ConvertDateTimeToTimezone(DefaultDateTime, timezone);
 
             // Assert
             Assert.Equal(expected, actual);

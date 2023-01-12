@@ -43,7 +43,7 @@ namespace HealthGateway.Admin.Server.MapUtils
                 opts =>
                     opts.AfterMap(
                         (_, dest) => dest.LastLoginDateTime = dest.LastLoginDateTime != null
-                            ? DateFormatter.ConvertDateTimeToLocal((DateTime)dest.LastLoginDateTime, timezone)
+                            ? DateFormatter.ConvertDateTimeToTimezone((DateTime)dest.LastLoginDateTime, timezone)
                             : dest.LastLoginDateTime));
             return adminUserProfileView;
         }

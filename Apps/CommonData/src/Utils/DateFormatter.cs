@@ -121,21 +121,21 @@ public static class DateFormatter
     }
 
     /// <summary>
-    /// Converts date time in UTC to date time in local timezone.
+    /// Converts date time in UTC to date time in specified timezone.
     /// </summary>
     /// <param name="dateTime">Date time in UTC to convert.</param>
-    /// <param name="timezone">The timezone to use.</param>
-    /// <returns>Datetime object in local timezone.</returns>
-    public static DateTime ConvertDateTimeToLocal(DateTime dateTime, TimeZoneInfo timezone)
+    /// <param name="timezone">The timezone to convert to.</param>
+    /// <returns>Datetime object in timezone specified.</returns>
+    public static DateTime ConvertDateTimeToTimezone(DateTime dateTime, TimeZoneInfo timezone)
     {
         return TimeZoneInfo.ConvertTimeFromUtc(dateTime, timezone);
     }
 
     /// <summary>
-    /// Gets local timezone.
+    /// Gets local localTimezone.
     /// </summary>
     /// <param name="configuration">The configuration to use.</param>
-    /// <returns>TimeZoneInfo object representing local timezone.</returns>
+    /// <returns>TimeZoneInfo object representing local localTimezone.</returns>
     public static TimeZoneInfo GetLocalTimeZone(IConfiguration configuration)
     {
         return TimeZoneInfo.FindSystemTimeZoneById(
