@@ -16,10 +16,7 @@
 namespace HealthGateway.Common.Data.Tests.Utils
 {
     using System;
-    using System.Collections.Generic;
-    using System.Linq;
     using HealthGateway.Common.Data.Utils;
-    using Microsoft.Extensions.Configuration;
     using Xunit;
 
     /// <summary>
@@ -188,25 +185,13 @@ namespace HealthGateway.Common.Data.Tests.Utils
         {
             // Arrange
             DateTime expected = new(2022, 12, 31, 09, 00, 00);
+            TimeZoneInfo timezone = TimeZoneInfo.FindSystemTimeZoneById("Pacific Standard Time");
 
             // Act
-            DateTime actual = DateFormatter.ConvertDateTimeToLocal(GetConfiguration(), DefaultDateTime);
+            DateTime actual = DateFormatter.ConvertDateTimeToLocal(DefaultDateTime, timezone);
 
             // Assert
             Assert.Equal(expected, actual);
-        }
-
-        private static IConfigurationRoot GetConfiguration()
-        {
-            Dictionary<string, string?> configuration = new()
-            {
-                { "TimeZone:UnixTimeZoneId", "America/Vancouver" },
-                { "TimeZone:WindowsTimeZoneId", "Pacific Standard Time" },
-            };
-
-            return new ConfigurationBuilder()
-                .AddInMemoryCollection(configuration.ToList())
-                .Build();
         }
     }
 }

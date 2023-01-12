@@ -33,17 +33,17 @@ namespace HealthGateway.Admin.Server.MapUtils
         /// </summary>
         /// <param name="adminUserProfile">The DB model to convert.</param>
         /// <param name="configuration">The configuration to use.</param>
-        /// <param name="useLocalTimezone">The boolean indicating if local timezone should be used.</param>
         /// <param name="mapper">The AutoMapper IMapper.</param>
+        /// <param name="timezone">The timezone to use.</param>
         /// <returns>The created UI model.</returns>
-        public static AdminUserProfileView ToUiModel(AdminUserProfile adminUserProfile, IConfiguration configuration, bool useLocalTimezone, IMapper mapper)
+        public static AdminUserProfileView ToUiModel(AdminUserProfile adminUserProfile, IConfiguration configuration, IMapper mapper, TimeZoneInfo timezone)
         {
             AdminUserProfileView adminUserProfileView = mapper.Map<AdminUserProfile, AdminUserProfileView>(
                 adminUserProfile,
                 opts =>
                     opts.AfterMap(
-                        (_, dest) => dest.LastLoginDateTime = useLocalTimezone && dest.LastLoginDateTime != null
-                            ? DateFormatter.ConvertDateTimeToLocal(configuration, (DateTime)dest.LastLoginDateTime)
+                        (_, dest) => dest.LastLoginDateTime = dest.LastLoginDateTime != null
+                            ? DateFormatter.ConvertDateTimeToLocal((DateTime)dest.LastLoginDateTime, timezone)
                             : dest.LastLoginDateTime));
             return adminUserProfileView;
         }

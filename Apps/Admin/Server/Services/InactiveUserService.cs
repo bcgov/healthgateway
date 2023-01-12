@@ -29,6 +29,7 @@ using HealthGateway.Common.AccessManagement.Authentication.Models;
 using HealthGateway.Common.Api;
 using HealthGateway.Common.Constants;
 using HealthGateway.Common.Data.Constants;
+using HealthGateway.Common.Data.Utils;
 using HealthGateway.Common.Data.ViewModels;
 using HealthGateway.Common.ErrorHandling;
 using HealthGateway.Database.Constants;
@@ -102,11 +103,13 @@ public class InactiveUserService : IInactiveUserService
         // Compare inactive users in DB to users in Keycloak
         if (inactiveProfileResult.Status == DbStatusCode.Read && activeProfileResult.Status == DbStatusCode.Read)
         {
+            TimeZoneInfo localTimezone = DateFormatter.GetLocalTimeZone(this.configuration);
+
             inactiveUsers.AddRange(
                 inactiveProfileResult.Payload.Select(
-                        x => AdminUserProfileMapUtils.ToUiModel(x, this.configuration, true, this.autoMapper))
+                        x => AdminUserProfileMapUtils.ToUiModel(x, this.configuration, this.autoMapper, localTimezone))
                     .ToList());
-            this.logger.LogDebug("Inactive db admin user profile count: {Count} since {InactiveDays} day(s)...", inactiveUsers.Count, inactiveDays);
+            this.logger.LogDebug("Timezone: {Timezone} - Inactive db admin user profile count: {Count} since {InactiveDays} day(s)...", localTimezone, inactiveUsers.Count, inactiveDays);
 
             List<AdminUserProfile> activeUserProfiles = activeProfileResult.Payload.ToList();
 
