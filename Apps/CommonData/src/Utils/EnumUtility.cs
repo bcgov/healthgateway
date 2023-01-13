@@ -74,8 +74,8 @@ namespace HealthGateway.Common.Data.Utils
                     FieldInfo? field = enumType.GetField(name);
                     if (field != null)
                     {
-                        EnumMemberAttribute attr = ((EnumMemberAttribute[])field.GetCustomAttributes(typeof(EnumMemberAttribute), true)).Single();
-                        if (attr.Value == enumString)
+                        EnumMemberAttribute? attr = ((EnumMemberAttribute[])field.GetCustomAttributes(typeof(EnumMemberAttribute), true)).SingleOrDefault();
+                        if (attr?.Value == enumString)
                         {
                             return (T)Enum.Parse(enumType, name);
                         }
