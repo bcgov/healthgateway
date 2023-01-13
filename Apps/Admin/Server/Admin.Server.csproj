@@ -22,7 +22,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Client\Admin.Client.csproj" />
     <ProjectReference Include="..\Common\Admin.Common.csproj" />
     <ProjectReference Include="..\..\Common\src\Common.csproj">
       <GlobalPropertiesToRemove></GlobalPropertiesToRemove>

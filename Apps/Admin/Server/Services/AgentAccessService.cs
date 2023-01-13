@@ -21,7 +21,6 @@ namespace HealthGateway.Admin.Server.Services
     using System.Linq;
     using System.Net;
     using System.Threading.Tasks;
-    using HealthGateway.Admin.Client.Utils;
     using HealthGateway.Admin.Common.Constants;
     using HealthGateway.Admin.Common.Models;
     using HealthGateway.Admin.Server.Utils;
@@ -121,7 +120,7 @@ namespace HealthGateway.Admin.Server.Services
                 List<RoleRepresentation> userRoles = await this.keycloakAdminApi.GetUserRolesAsync(user.UserId.ToString(), jwtModel.AccessToken).ConfigureAwait(true);
                 string userName = user.Username.Split('@').First();
                 string identityProviderName = user.Username.Split('@').Last();
-                KeycloakIdentityProvider identityProvider = AgentUtility.MapKeycloakIdentityProvider(identityProviderName);
+                KeycloakIdentityProvider identityProvider = EnumUtility.ToEnumOrDefault<KeycloakIdentityProvider>(identityProviderName);
 
                 if (identityProvider != KeycloakIdentityProvider.Unknown)
                 {

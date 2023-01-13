@@ -36,20 +36,5 @@ namespace HealthGateway.Admin.Client.Utils
                 _ => identityProvider.ToString(),
             };
         }
-
-        /// <summary>
-        /// Returns the agent's identity provider.
-        /// </summary>
-        /// <param name="identityProviderName">The agent's identity provider name from KeyCloak.</param>
-        /// <returns>The agent's identity provider.</returns>
-        public static KeycloakIdentityProvider MapKeycloakIdentityProvider(string identityProviderName)
-        {
-            return identityProviderName switch
-            {
-                "idir" => KeycloakIdentityProvider.Idir,
-                "phsaazure" => KeycloakIdentityProvider.PhsaAzure,
-                _ => KeycloakIdentityProvider.Unknown,
-            };
-        }
     }
 }
