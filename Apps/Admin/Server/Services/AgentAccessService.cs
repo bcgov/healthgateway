@@ -120,7 +120,7 @@ namespace HealthGateway.Admin.Server.Services
                 List<RoleRepresentation> userRoles = await this.keycloakAdminApi.GetUserRolesAsync(user.UserId.ToString(), jwtModel.AccessToken).ConfigureAwait(true);
                 string userName = user.Username.Split('@').First();
                 string identityProviderName = user.Username.Split('@').Last();
-                KeycloakIdentityProvider identityProvider = EnumUtility.ToEnumOrDefault<KeycloakIdentityProvider>(identityProviderName);
+                KeycloakIdentityProvider identityProvider = EnumUtility.ToEnumOrDefault<KeycloakIdentityProvider>(identityProviderName, true);
 
                 if (identityProvider != KeycloakIdentityProvider.Unknown)
                 {
