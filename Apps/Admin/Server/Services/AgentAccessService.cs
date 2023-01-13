@@ -188,25 +188,15 @@ namespace HealthGateway.Admin.Server.Services
 
             List<RoleRepresentation> realmRoles = await this.keycloakAdminApi.GetRealmRolesAsync(jwtModel.AccessToken).ConfigureAwait(true);
 
-            List<RoleRepresentation> roleRepresentations = new();
-
-            foreach (IdentityAccessRole userRole in userRoles)
-            {
-                RoleRepresentation? roleRepresentation = userRole switch
-                {
-                    IdentityAccessRole.AdminUser => realmRoles.FirstOrDefault(n => n.Name == IdentityAccessRole.AdminUser.ToString()),
-                    IdentityAccessRole.AdminReviewer => realmRoles.FirstOrDefault(n => n.Name == IdentityAccessRole.AdminReviewer.ToString()),
-                    IdentityAccessRole.SupportUser => realmRoles.FirstOrDefault(n => n.Name == IdentityAccessRole.SupportUser.ToString()),
-                    _ => null,
-                };
-
-                if (roleRepresentation != null)
-                {
-                    roleRepresentations.Add(roleRepresentation);
-                }
-            }
-
-            return roleRepresentations;
+            return userRoles.Select(
+                    userRole => userRole switch
+                    {
+                        IdentityAccessRole.AdminUser => realmRoles.FirstOrDefault(n => n.Name == IdentityAccessRole.AdminUser.ToString()),
+                        IdentityAccessRole.AdminReviewer => realmRoles.FirstOrDefault(n => n.Name == IdentityAccessRole.AdminReviewer.ToString()),
+                        IdentityAccessRole.SupportUser => realmRoles.FirstOrDefault(n => n.Name == IdentityAccessRole.SupportUser.ToString()),
+                        _ => null,
+                    })
+                .Where(roleRepresentation => roleRepresentation != null)!;
         }
     }
 }
