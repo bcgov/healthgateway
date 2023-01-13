@@ -16,6 +16,7 @@
 namespace HealthGateway.Common.CacheProviders
 {
     using System;
+    using System.Threading.Tasks;
 
     /// <summary>
     /// Provides a mechanism to store string or JSON data in a Cache.
@@ -28,8 +29,7 @@ namespace HealthGateway.Common.CacheProviders
         /// <param name="key">The key to lookup.</param>
         /// <typeparam name="T">The return class type.</typeparam>
         /// <returns>The cache item serialized as T.</returns>
-        T? GetItem<T>(string key)
-            where T : class;
+        T? GetItem<T>(string key);
 
         /// <summary>
         /// Adds an item to the cache.
@@ -38,13 +38,57 @@ namespace HealthGateway.Common.CacheProviders
         /// <param name="value">The cache value.</param>
         /// <param name="expiry">The expiry timespan of the cache item.</param>
         /// <typeparam name="T">The class type to cache.</typeparam>
-        void AddItem<T>(string key, T value, TimeSpan? expiry = null)
-            where T : class;
+        void AddItem<T>(string key, T value, TimeSpan? expiry = null);
 
         /// <summary>
         /// Removes an item from the cache.
         /// </summary>
         /// <param name="key">The key to remove.</param>
         void RemoveItem(string key);
+
+        /// <summary>
+        /// Gets or sets a value in the cache.
+        /// </summary>
+        /// <param name="key">The cache key.</param>
+        /// <param name="valueGetter">A function to generate the value to cache if cache miss.</param>
+        /// <param name="expiry">The expiry timespan of the cache item.</param>
+        /// <typeparam name="T">The class type to cache.</typeparam>
+        /// <returns>The cache item serialized as T.</returns>
+        T? GetOrSet<T>(string key, Func<T> valueGetter, TimeSpan? expiry = null);
+
+        /// <summary>
+        /// Retrieves an item from the cache if available.
+        /// </summary>
+        /// <param name="key">The key to lookup.</param>
+        /// <typeparam name="T">The return class type.</typeparam>
+        /// <returns>The cache item serialized as T.</returns>
+        Task<T?> GetItemAsync<T>(string key);
+
+        /// <summary>
+        /// Adds an item to the cache.
+        /// </summary>
+        /// <param name="key">The cache key.</param>
+        /// <param name="value">The cache value.</param>
+        /// <param name="expiry">The expiry timespan of the cache item.</param>
+        /// <typeparam name="T">The class type to cache.</typeparam>
+        /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+        Task AddItemAsync<T>(string key, T value, TimeSpan? expiry = null);
+
+        /// <summary>
+        /// Removes an item from the cache.
+        /// </summary>
+        /// <param name="key">The key to remove.</param>
+        /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+        Task RemoveItemAsync(string key);
+
+        /// <summary>
+        /// Gets or sets a value in the cache.
+        /// </summary>
+        /// <param name="key">The cache key.</param>
+        /// <param name="valueGetter">A function to generate the value to cache if cache miss.</param>
+        /// <param name="expiry">The expiry timespan of the cache item.</param>
+        /// <typeparam name="T">The class type to cache.</typeparam>
+        /// <returns>The cache item serialized as T.</returns>
+        Task<T?> GetOrSetAsync<T>(string key, Func<Task<T>> valueGetter, TimeSpan? expiry = null);
     }
 }
