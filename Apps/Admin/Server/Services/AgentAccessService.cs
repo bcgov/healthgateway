@@ -69,7 +69,7 @@ namespace HealthGateway.Admin.Server.Services
         }
 
         /// <inheritdoc/>
-        [SuppressMessage("Globalization", "CA1308:Normalize strings to uppercase", Justification = "KeyCloak requires lower case username")]
+        [SuppressMessage("Globalization", "CA1308:Normalize strings to uppercase", Justification = "Not making security decisions based on the result of the normalization")]
         public async Task<AdminAgent> ProvisionAgentAccessAsync(AdminAgent agent)
         {
             JwtModel jwtModel = this.authDelegate.AuthenticateAsSystem(this.tokenUri, this.tokenRequest);
