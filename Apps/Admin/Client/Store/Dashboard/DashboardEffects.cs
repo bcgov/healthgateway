@@ -26,16 +26,9 @@ using Microsoft.AspNetCore.Components;
 using Microsoft.Extensions.Logging;
 using Refit;
 
-/// <summary>
-/// The effects for the feature.
-/// </summary>
+#pragma warning disable CS1591, SA1600
 public class DashboardEffects
 {
-    /// <summary>
-    /// Initializes a new instance of the <see cref="DashboardEffects"/> class.
-    /// </summary>
-    /// <param name="logger">The injected logger.</param>
-    /// <param name="dashboardApi">the injected api to query the dashboard service. </param>
     public DashboardEffects(ILogger<DashboardEffects> logger, IDashboardApi dashboardApi)
     {
         this.Logger = logger;
@@ -48,12 +41,6 @@ public class DashboardEffects
     [Inject]
     private IDashboardApi DashboardApi { get; set; }
 
-    /// <summary>
-    /// Handler that calls the dashboard service and dispatch the actions.
-    /// </summary>
-    /// <param name="action">Load the initial action.</param>
-    /// <param name="dispatcher">Dispatch the actions.</param>
-    /// <returns>A <see cref="Task"/> representing the result of the asynchronous operation.</returns>
     [EffectMethod]
     public async Task HandleLoadAction(DashboardActions.LoadRegisteredUsersAction action, IDispatcher dispatcher)
     {

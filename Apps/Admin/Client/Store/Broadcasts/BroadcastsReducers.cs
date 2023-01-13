@@ -23,16 +23,9 @@ using Fluxor;
 using HealthGateway.Admin.Client.Models;
 using HealthGateway.Common.Data.Models;
 
-/// <summary>
-/// The set of reducers for the feature.
-/// </summary>
+#pragma warning disable CS1591, SA1600
 public static class BroadcastsReducers
 {
-    /// <summary>
-    /// The reducer for loading broadcasts.
-    /// </summary>
-    /// <param name="state">The broadcasts state.</param>
-    /// <returns>The new state.</returns>
     [ReducerMethod(typeof(BroadcastsActions.LoadAction))]
     public static BroadcastsState ReduceLoadAction(BroadcastsState state)
     {
@@ -46,12 +39,6 @@ public static class BroadcastsReducers
         };
     }
 
-    /// <summary>
-    /// The reducer for the load success action.
-    /// </summary>
-    /// <param name="state">The broadcasts state.</param>
-    /// <param name="action">The load success action.</param>
-    /// <returns>The new state.</returns>
     [ReducerMethod]
     public static BroadcastsState ReduceLoadSuccessAction(BroadcastsState state, BroadcastsActions.LoadSuccessAction action)
     {
@@ -69,12 +56,6 @@ public static class BroadcastsReducers
         };
     }
 
-    /// <summary>
-    /// The reducer for the load fail action.
-    /// </summary>
-    /// <param name="state">The broadcasts state.</param>
-    /// <param name="action">The load fail action.</param>
-    /// <returns>The new state.</returns>
     [ReducerMethod]
     public static BroadcastsState ReduceLoadFailAction(BroadcastsState state, BroadcastsActions.LoadFailAction action)
     {
@@ -90,11 +71,6 @@ public static class BroadcastsReducers
         };
     }
 
-    /// <summary>
-    /// The reducer for adding broadcasts.
-    /// </summary>
-    /// <param name="state">The broadcasts state.</param>
-    /// <returns>The new state.</returns>
     [ReducerMethod(typeof(BroadcastsActions.AddAction))]
     public static BroadcastsState ReduceAddAction(BroadcastsState state)
     {
@@ -108,12 +84,6 @@ public static class BroadcastsReducers
         };
     }
 
-    /// <summary>
-    /// The reducer for the add success action.
-    /// </summary>
-    /// <param name="state">The broadcasts state.</param>
-    /// <param name="action">The add success action.</param>
-    /// <returns>The new state.</returns>
     [ReducerMethod]
     public static BroadcastsState ReduceAddSuccessAction(BroadcastsState state, BroadcastsActions.AddSuccessAction action)
     {
@@ -139,12 +109,6 @@ public static class BroadcastsReducers
         };
     }
 
-    /// <summary>
-    /// The reducer for the add fail action.
-    /// </summary>
-    /// <param name="state">The broadcasts state.</param>
-    /// <param name="action">The add fail action.</param>
-    /// <returns>The new state.</returns>
     [ReducerMethod]
     public static BroadcastsState ReduceAddFailAction(BroadcastsState state, BroadcastsActions.AddFailAction action)
     {
@@ -160,11 +124,6 @@ public static class BroadcastsReducers
         };
     }
 
-    /// <summary>
-    /// The reducer for updating broadcasts.
-    /// </summary>
-    /// <param name="state">The broadcasts state.</param>
-    /// <returns>The new state.</returns>
     [ReducerMethod(typeof(BroadcastsActions.UpdateAction))]
     public static BroadcastsState ReduceUpdateAction(BroadcastsState state)
     {
@@ -178,12 +137,6 @@ public static class BroadcastsReducers
         };
     }
 
-    /// <summary>
-    /// The reducer for the update success action.
-    /// </summary>
-    /// <param name="state">The broadcasts state.</param>
-    /// <param name="action">The update success action.</param>
-    /// <returns>The new state.</returns>
     [ReducerMethod]
     public static BroadcastsState ReduceUpdateSuccessAction(BroadcastsState state, BroadcastsActions.UpdateSuccessAction action)
     {
@@ -209,12 +162,6 @@ public static class BroadcastsReducers
         };
     }
 
-    /// <summary>
-    /// The reducer for the update fail action.
-    /// </summary>
-    /// <param name="state">The broadcasts state.</param>
-    /// <param name="action">The update fail action.</param>
-    /// <returns>The new state.</returns>
     [ReducerMethod]
     public static BroadcastsState ReduceUpdateFailAction(BroadcastsState state, BroadcastsActions.UpdateFailAction action)
     {
@@ -230,11 +177,6 @@ public static class BroadcastsReducers
         };
     }
 
-    /// <summary>
-    /// The reducer for deleting broadcasts.
-    /// </summary>
-    /// <param name="state">The broadcasts state.</param>
-    /// <returns>The new state.</returns>
     [ReducerMethod(typeof(BroadcastsActions.DeleteAction))]
     public static BroadcastsState ReduceDeleteAction(BroadcastsState state)
     {
