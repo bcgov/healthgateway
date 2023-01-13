@@ -29,7 +29,7 @@ namespace HealthGateway.Common.Data.Tests.Utils
         /// ToEnumString - Happy Path.
         /// </summary>
         [Fact]
-        public void ValidateToString()
+        public void ValidateToEnumString()
         {
             const string expected = "TermsOfService";
 
@@ -42,7 +42,7 @@ namespace HealthGateway.Common.Data.Tests.Utils
         /// ToEnumString - Happy Path (Annotation).
         /// </summary>
         [Fact]
-        public void ValidateToStringAnnotation()
+        public void ValidateAnnotationToEnumString()
         {
             const string expected = "ToS";
 
@@ -68,7 +68,7 @@ namespace HealthGateway.Common.Data.Tests.Utils
         /// ToEnum - Happy Path (Annotation).
         /// </summary>
         [Fact]
-        public void ValidateToEnumAnnotation()
+        public void ValidateAnnotationToEnum()
         {
             const LegalAgreementType expected = LegalAgreementType.TermsOfService;
 
@@ -78,10 +78,10 @@ namespace HealthGateway.Common.Data.Tests.Utils
         }
 
         /// <summary>
-        /// ToEnum - Happy Path (Default Annotation).
+        /// ToEnum - Happy Path (Annotation fallback to named value).
         /// </summary>
         [Fact]
-        public void ValidateToEnumAnnotationDefault()
+        public void ValidateToEnumFallback()
         {
             const LegalAgreementType expected = LegalAgreementType.TermsOfService;
 
@@ -91,12 +91,147 @@ namespace HealthGateway.Common.Data.Tests.Utils
         }
 
         /// <summary>
-        /// ToEnum - Not Found Error.
+        /// ToEnum - Exception when not found.
         /// </summary>
         [Fact]
-        public void ValidateExceptionToEnum()
+        public void ValidateToEnumException()
         {
             Assert.Throws<ArgumentException>(() => EnumUtility.ToEnum<LegalAgreementType>("NOTAVALUE"));
+        }
+
+        /// <summary>
+        /// ToEnum - Exception when casing doesn't match.
+        /// </summary>
+        [Fact]
+        public void ValidateToEnumCaseSensitiveException()
+        {
+            Assert.Throws<ArgumentException>(() => EnumUtility.ToEnum<LegalAgreementType>("termsofservice"));
+        }
+
+        /// <summary>
+        /// ToEnum - Exception when casing doesn't match (Annotation).
+        /// </summary>
+        [Fact]
+        public void ValidateAnnotationToEnumCaseSensitiveException()
+        {
+            Assert.Throws<ArgumentException>(() => EnumUtility.ToEnum<LegalAgreementType>("tos", true));
+        }
+
+        /// <summary>
+        /// ToEnumOrDefault - Happy Path.
+        /// </summary>
+        [Fact]
+        public void ValidateToEnumOrDefault()
+        {
+            const EmailStatus expected = EmailStatus.Processed;
+
+            EmailStatus actual = EnumUtility.ToEnumOrDefault<EmailStatus>("Processed");
+
+            Assert.Equal(expected, actual);
+        }
+
+        /// <summary>
+        /// ToEnumOrDefault - Happy Path (Not Found).
+        /// </summary>
+        [Fact]
+        public void ValidateToEnumOrDefaultNotFound()
+        {
+            const EmailStatus expected = EmailStatus.New;
+
+            EmailStatus actual = EnumUtility.ToEnumOrDefault<EmailStatus>("invalid");
+
+            Assert.Equal(expected, actual);
+        }
+
+        /// <summary>
+        /// ToEnumOrDefault - Happy Path (Specified Not Found).
+        /// </summary>
+        [Fact]
+        public void ValidateToEnumOrDefaultSpecifiedNotFound()
+        {
+            const EmailStatus expected = EmailStatus.Pending;
+
+            EmailStatus actual = EnumUtility.ToEnumOrDefault(string.Empty, defaultValue: EmailStatus.Pending);
+
+            Assert.Equal(expected, actual);
+        }
+
+        /// <summary>
+        /// ToEnumOrDefault - Happy Path (Annotation).
+        /// </summary>
+        [Fact]
+        public void ValidateAnnotationToEnumOrDefault()
+        {
+            const EmailFormat expected = EmailFormat.Html;
+
+            EmailFormat actual = EnumUtility.ToEnumOrDefault<EmailFormat>("HTML", true);
+
+            Assert.Equal(expected, actual);
+        }
+
+        /// <summary>
+        /// ToEnumOrDefault - Happy Path (Annotation, Not Found).
+        /// </summary>
+        [Fact]
+        public void ValidateAnnotationToEnumOrDefaultNotFound()
+        {
+            const EmailFormat expected = EmailFormat.Text;
+
+            EmailFormat actual = EnumUtility.ToEnumOrDefault<EmailFormat>(string.Empty, true);
+
+            Assert.Equal(expected, actual);
+        }
+
+        /// <summary>
+        /// ToEnumOrDefault - Happy Path (Annotation, Specified Not Found).
+        /// </summary>
+        [Fact]
+        public void ValidateAnnotationToEnumOrDefaultSpecifiedNotFound()
+        {
+            const EmailFormat expected = EmailFormat.Html;
+
+            EmailFormat actual = EnumUtility.ToEnumOrDefault(string.Empty, true, EmailFormat.Html);
+
+            Assert.Equal(expected, actual);
+        }
+
+        /// <summary>
+        /// ToEnumOrDefault - Happy Path (Annotation fallback to named value).
+        /// </summary>
+        [Fact]
+        public void ValidateToEnumOrDefaultFallback()
+        {
+            const EmailFormat expected = EmailFormat.Html;
+
+            EmailFormat actual = EnumUtility.ToEnumOrDefault<EmailFormat>("Html", true);
+
+            Assert.Equal(expected, actual);
+        }
+
+        /// <summary>
+        /// ToEnumOrDefault - Not found when casing doesn't match.
+        /// </summary>
+        [Fact]
+        public void ValidateToEnumOrDefaultCaseSensitiveNotFound()
+        {
+            const EmailStatus expected = EmailStatus.New;
+
+            EmailStatus actual = EnumUtility.ToEnumOrDefault<EmailStatus>("processed", true);
+
+            Assert.Equal(expected, actual);
+        }
+
+        /// <summary>
+        /// ToEnumOrDefault - Not found when casing doesn't match (Annotation).
+        /// </summary>
+        [Fact]
+        public void ValidateAnnotationToEnumOrDefaultCaseSensitiveNotFound()
+        {
+            const EmailFormat expected = EmailFormat.Text;
+
+            EmailFormat actual = EnumUtility.ToEnumOrDefault<EmailFormat>("html", true);
+
+            Assert.Equal(expected, actual);
         }
     }
 }
