@@ -72,7 +72,7 @@ namespace HealthGateway.Admin.Tests.Converters
             string expected = "2022-12-31 5:00 PM";
 
             // Act
-            object? actual = converter.ConvertToString(dateTime, null, null);
+            object actual = converter.ConvertToString(dateTime, null, null);
 
             // Assert
             Assert.Equal(expected, actual);
@@ -90,7 +90,7 @@ namespace HealthGateway.Admin.Tests.Converters
             string expected = string.Empty;
 
             // Act
-            object? actual = converter.ConvertToString(dateTime, null, null);
+            object actual = converter.ConvertToString(dateTime, null, null);
 
             // Assert
             Assert.Equal(expected, actual);
