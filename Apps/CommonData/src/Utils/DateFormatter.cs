@@ -17,12 +17,17 @@ namespace HealthGateway.Common.Data.Utils;
 
 using System;
 using System.Globalization;
+using System.Runtime.InteropServices;
+using Microsoft.Extensions.Configuration;
 
 /// <summary>
 /// Formats dates and times for display.
 /// </summary>
 public static class DateFormatter
 {
+    private const string UnixTzKey = "TimeZone:UnixTimeZoneId";
+    private const string WindowsTzKey = "TimeZone:WindowsTimeZoneId";
+
     /// <summary>
     /// Converts the supplied date to a string formatted as YYYY-MM-DD (2022-01-01).
     /// </summary>
@@ -113,5 +118,23 @@ public static class DateFormatter
     public static bool TryParse(string dateTime, string format, out DateTime parsedDateTime)
     {
         return DateTime.TryParseExact(dateTime, format, CultureInfo.InvariantCulture, DateTimeStyles.None, out parsedDateTime);
+    }
+
+    /// <summary>
+    /// Gets local timezone.
+    /// </summary>
+    /// <param name="configuration">The configuration to use.</param>
+    /// <returns>TimeZoneInfo object representing local timezone.</returns>
+    public static TimeZoneInfo GetLocalTimeZone(IConfiguration configuration)
+    {
+        return TimeZoneInfo.FindSystemTimeZoneById(
+            RuntimeInformation.IsOSPlatform(OSPlatform.Windows)
+                ? GetConfigurationValue<string>(configuration, WindowsTzKey)
+                : GetConfigurationValue<string>(configuration, UnixTzKey));
+    }
+
+    private static T GetConfigurationValue<T>(IConfiguration cfg, string key)
+    {
+        return cfg.GetValue<T>(key)!;
     }
 }

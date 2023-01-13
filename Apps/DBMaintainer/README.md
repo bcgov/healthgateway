@@ -5,6 +5,9 @@ The project also is used to perform EF migration tasks from the command line.
 
 ## Database utilities
 
+dotnet tool install --global dotnet-ef
+dotnet tool update --global dotnet-ef
+
 ### Create Migrations
 
 `dotnet ef migrations add InitialCreate --project "../Database/src"`
@@ -20,3 +23,7 @@ The project also is used to perform EF migration tasks from the command line.
 ### Remove latest migration
 
 `dotnet ef migrations remove --project "../Database/src"`
+
+### Generate Production scripts
+
+`dotnet ef migrations script --idempotent --project "../Database/src" --output db.sql`

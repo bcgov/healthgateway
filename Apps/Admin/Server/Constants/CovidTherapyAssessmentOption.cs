@@ -15,7 +15,6 @@
 // -------------------------------------------------------------------------
 namespace HealthGateway.Admin.Server.Constants;
 
-using System.Runtime.Serialization;
 using System.Text.Json.Serialization;
 
 /// <summary>

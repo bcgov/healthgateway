@@ -28,9 +28,11 @@ namespace HealthGateway.CommonTests.AccessManagement.Authentication
     using HealthGateway.Common.AccessManagement.Authentication;
     using HealthGateway.Common.AccessManagement.Authentication.Models;
     using HealthGateway.Common.CacheProviders;
+    using Microsoft.Extensions.Caching.Distributed;
     using Microsoft.Extensions.Caching.Memory;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.Logging;
+    using Microsoft.Extensions.Options;
     using Moq;
     using Moq.Protected;
     using Xunit;
@@ -40,6 +42,17 @@ namespace HealthGateway.CommonTests.AccessManagement.Authentication
     /// </summary>
     public class AuthenticationDelegateTests
     {
+        private readonly DistributedCacheProvider cacheProvider;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="AuthenticationDelegateTests"/> class.
+        /// </summary>
+        public AuthenticationDelegateTests()
+        {
+            MemoryDistributedCache cache = new(Options.Create(new MemoryDistributedCacheOptions()));
+            this.cacheProvider = new DistributedCacheProvider(cache);
+        }
+
         /// <summary>
         /// AuthenticateAsUser - Happy Path.
         /// </summary>
@@ -62,9 +75,6 @@ namespace HealthGateway.CommonTests.AccessManagement.Authentication
                 Username = "A_USERNAME",
                 Password = "SOME_PASSWORD",
             };
-
-            using IMemoryCache memoryCache = new MemoryCache(new MemoryCacheOptions());
-            ICacheProvider cacheProvider = new MemoryCacheProvider(memoryCache);
 
             string json = """
 {
@@ -97,7 +107,7 @@ namespace HealthGateway.CommonTests.AccessManagement.Authentication
                 .Verifiable();
             Mock<IHttpClientFactory> mockHttpClientFactory = new();
             mockHttpClientFactory.Setup(s => s.CreateClient(It.IsAny<string>())).Returns(() => new HttpClient(handlerMock.Object));
-            IAuthenticationDelegate authDelegate = new AuthenticationDelegate(logger, mockHttpClientFactory.Object, configuration, cacheProvider, null);
+            IAuthenticationDelegate authDelegate = new AuthenticationDelegate(logger, mockHttpClientFactory.Object, configuration, this.cacheProvider, null);
             JwtModel actualModel = authDelegate.AuthenticateAsUser(tokenUri, tokenRequest);
             expected.ShouldDeepEqual(actualModel);
 
@@ -133,9 +143,6 @@ namespace HealthGateway.CommonTests.AccessManagement.Authentication
                 Password = "SOME_PASSWORD",
             };
 
-            using IMemoryCache memoryCache = new MemoryCache(new MemoryCacheOptions());
-            ICacheProvider cacheProvider = new MemoryCacheProvider(memoryCache);
-
             string json = "Bad JSON";
             using ILoggerFactory loggerFactory = LoggerFactory.Create(builder => builder.AddConsole());
             ILogger<AuthenticationDelegate> logger = loggerFactory.CreateLogger<AuthenticationDelegate>();
@@ -155,7 +162,7 @@ namespace HealthGateway.CommonTests.AccessManagement.Authentication
                 .Verifiable();
             Mock<IHttpClientFactory> mockHttpClientFactory = new();
             mockHttpClientFactory.Setup(s => s.CreateClient(It.IsAny<string>())).Returns(() => new HttpClient(handlerMock.Object));
-            IAuthenticationDelegate authDelegate = new AuthenticationDelegate(logger, mockHttpClientFactory.Object, configuration, cacheProvider, null);
+            IAuthenticationDelegate authDelegate = new AuthenticationDelegate(logger, mockHttpClientFactory.Object, configuration, this.cacheProvider, null);
             Assert.Throws<InvalidOperationException>(() => authDelegate.AuthenticateAsUser(tokenUri, tokenRequest));
         }
 

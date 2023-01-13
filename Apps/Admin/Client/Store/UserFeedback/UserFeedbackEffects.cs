@@ -29,16 +29,9 @@ using Microsoft.AspNetCore.Components;
 using Microsoft.Extensions.Logging;
 using Refit;
 
-/// <summary>
-/// The effects for the feature.
-/// </summary>
+#pragma warning disable CS1591, SA1600
 public class UserFeedbackEffects
 {
-    /// <summary>
-    /// Initializes a new instance of the <see cref="UserFeedbackEffects"/> class.
-    /// </summary>
-    /// <param name="logger">The injected logger.</param>
-    /// <param name="api">The injected user feedback API.</param>
     public UserFeedbackEffects(ILogger<UserFeedbackEffects> logger, IUserFeedbackApi api)
     {
         this.Logger = logger;
@@ -51,11 +44,6 @@ public class UserFeedbackEffects
     [Inject]
     private IUserFeedbackApi Api { get; set; }
 
-    /// <summary>
-    /// Handler that calls the service and dispatches resulting actions.
-    /// </summary>
-    /// <param name="dispatcher">The injected dispatcher.</param>
-    /// <returns>A <see cref="Task"/> representing the result of the asynchronous operation.</returns>
     [EffectMethod(typeof(UserFeedbackActions.LoadAction))]
     public async Task HandleLoadAction(IDispatcher dispatcher)
     {
@@ -83,12 +71,6 @@ public class UserFeedbackEffects
         }
     }
 
-    /// <summary>
-    /// Handler that calls the service and dispatches resulting actions.
-    /// </summary>
-    /// <param name="action">The triggering action.</param>
-    /// <param name="dispatcher">The injected dispatcher.</param>
-    /// <returns>A <see cref="Task"/> representing the result of the asynchronous operation.</returns>
     [EffectMethod]
     public async Task HandleUpdateAction(UserFeedbackActions.UpdateAction action, IDispatcher dispatcher)
     {
@@ -116,12 +98,6 @@ public class UserFeedbackEffects
         }
     }
 
-    /// <summary>
-    /// Handler that calls the service and dispatches resulting actions.
-    /// </summary>
-    /// <param name="action">The triggering action.</param>
-    /// <param name="dispatcher">The injected dispatcher.</param>
-    /// <returns>A <see cref="Task"/> representing the result of the asynchronous operation.</returns>
     [EffectMethod]
     public async Task HandleAssociateTagsAction(UserFeedbackActions.AssociateTagsAction action, IDispatcher dispatcher)
     {
