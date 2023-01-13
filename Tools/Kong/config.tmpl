@@ -27,7 +27,7 @@
         plugins:
           - name: jwt-keycloak_1010
             tags: [ns.$KONG_NAMESPACE]
-            enabled: true
+            enabled: $ENABLE_WAITINGQUEUE_TOKEN_VALIDATION
             config:
                 allowed_iss:
                     - $KEYCLOAK_URI
