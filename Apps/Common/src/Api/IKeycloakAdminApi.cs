@@ -33,7 +33,7 @@ namespace HealthGateway.Common.Api
         /// <param name="token">The bearer token to authorize the call.</param>
         /// <returns>A resulting UserRepresentation object.</returns>
         [Get("/users?briefRepresentation=true&username={username}&exact=true")]
-        Task<UserRepresentation> GetUserAsync(string username, [Authorize] string token);
+        Task<List<UserRepresentation>> GetUserAsync(string username, [Authorize] string token);
 
         /// <summary>
         /// Returns users for the role passed in.
@@ -45,6 +45,63 @@ namespace HealthGateway.Common.Api
         /// <returns>A List of UserRepresentation objects.</returns>
         [Get("/roles/{role}/users?first={first}&max={max}")]
         Task<List<UserRepresentation>> GetUsersAsync(string role, int first, int max, [Authorize] string token);
+
+        /// <summary>
+        /// Look up User accounts by username, first or last name, or email.
+        /// </summary>
+        /// <param name="queryString">The text string to search by.</param>
+        /// <param name="first">The first record to return.</param>
+        /// <param name="max">The maximum results to return.</param>
+        /// <param name="token">The bearer token to authorize the call.</param>
+        /// <returns>A List of UserRepresentation objects.</returns>
+        [Get("/users?briefRepresentation=true&first={first}&max={max}&search={queryString}")]
+        Task<List<UserRepresentation>> GetUsersQueryAsync(string queryString, int first, int max, [Authorize] string token);
+
+        /// <summary>
+        /// Adds a user.
+        /// </summary>
+        /// <param name="userRepresentation">The UserRepresentation of new user.</param>
+        /// <param name="token">The bearer token to authorize the call.</param>
+        /// <returns>Returns true when user created.</returns>
+        [Post("/users")]
+        Task AddUserAsync([Body] UserRepresentation userRepresentation, [Authorize] string token);
+
+        /// <summary>
+        /// Get realm roles for user.
+        /// </summary>
+        /// <param name="id">The user's id.</param>
+        /// <param name="token">The bearer token to authorize the call.</param>
+        /// <returns>A List of RoleRepresentation objects.</returns>
+        [Get("/users/{id}/role-mappings/realm")]
+        Task<List<RoleRepresentation>> GetUserRolesAsync(string id, [Authorize] string token);
+
+        /// <summary>
+        /// Adds realm roles to user.
+        /// </summary>
+        /// <param name="id">The user's id.</param>
+        /// <param name="roles">List of RoleRepresentations to add to user.</param>
+        /// <param name="token">The bearer token to authorize the call.</param>
+        /// <returns>Returns true when roles added.</returns>
+        [Post("/users/{id}/role-mappings/realm")]
+        Task AddUserRolesAsync(string id, [Body] IEnumerable<RoleRepresentation> roles, [Authorize] string token);
+
+        /// <summary>
+        /// Adds realm roles to user.
+        /// </summary>
+        /// <param name="id">The user's id.</param>
+        /// <param name="roles">List of RoleRepresentations to delete from the user.</param>
+        /// <param name="token">The bearer token to authorize the call.</param>
+        /// <returns>Returns true when roles deleted.</returns>
+        [Delete("/users/{id}/role-mappings/realm")]
+        Task DeleteUserRolesAsync(string id, [Body] IEnumerable<RoleRepresentation> roles, [Authorize] string token);
+
+        /// <summary>
+        /// Get realm all roles.
+        /// </summary>
+        /// <param name="token">The bearer token to authorize the call.</param>
+        /// <returns>A RoleRepresentations of the roles.</returns>
+        [Get("/roles")]
+        Task<List<RoleRepresentation>> GetRealmRolesAsync([Authorize] string token);
 
         /// <summary>
         /// Delete a User account from the Identity and Access Management system.
