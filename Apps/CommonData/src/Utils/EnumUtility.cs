@@ -26,14 +26,14 @@ namespace HealthGateway.Common.Data.Utils
     public static class EnumUtility
     {
         /// <summary>
-        /// Returns a string representation of the Enum instance.
+        /// Returns a string representation of the enum instance.
         /// </summary>
         /// <typeparam name="T">The type of enum.</typeparam>
         /// <param name="instance">The instance of the enum.</param>
-        /// <param name="useAttribute">If true will attempt to resolve EnumMemberAttribute otherwise returns toString().</param>
-        /// <returns>The string representation of the Enum.</returns>
+        /// <param name="useAttribute">If true will attempt to resolve EnumMemberAttribute otherwise returns ToString().</param>
+        /// <returns>The string representation of the enum.</returns>
         public static string ToEnumString<T>(Enum instance, bool useAttribute = false)
-            where T : Enum
+            where T : struct, Enum
         {
             string enumString = instance.ToString();
             if (useAttribute)
@@ -54,25 +54,28 @@ namespace HealthGateway.Common.Data.Utils
         }
 
         /// <summary>
-        /// Converts a string to the typed Enum using the Attribute or downgrading to parsing directly.
+        /// Converts a string to the typed enum using the EnumMemberAttribute or parsing directly.
         /// </summary>
         /// <typeparam name="T">The type of enum.</typeparam>
-        /// <param name="enumStr">The enum string value or annotation value.</param>
+        /// <param name="enumString">The enum string value or annotation value.</param>
         /// <param name="useAttribute">If true will attempt to resolve EnumMemberAttribute otherwise converts directly.</param>
         /// <returns>The enum instance T.</returns>
-        public static T ToEnum<T>(string enumStr, bool useAttribute = false)
-            where T : Enum
+        /// <exception cref="ArgumentException"><paramref name="enumString"/> is either an empty string or only contains white space.</exception>
+        /// <exception cref="ArgumentException"><paramref name="enumString"/> is a name, but not one of the named constants defined for the enumeration.</exception>
+        /// <exception cref="OverflowException"><paramref name="enumString"/> is outside the range of the underlying type of <paramref name="enumString"/>.</exception>
+        public static T ToEnum<T>(string enumString, bool useAttribute = false)
+            where T : struct, Enum
         {
+            Type enumType = typeof(T);
             if (useAttribute)
             {
-                Type enumType = typeof(T);
                 foreach (string name in Enum.GetNames(enumType))
                 {
                     FieldInfo? field = enumType.GetField(name);
                     if (field != null)
                     {
                         EnumMemberAttribute attr = ((EnumMemberAttribute[])field.GetCustomAttributes(typeof(EnumMemberAttribute), true)).Single();
-                        if (attr.Value == enumStr)
+                        if (attr.Value == enumString)
                         {
                             return (T)Enum.Parse(enumType, name);
                         }
@@ -80,7 +83,29 @@ namespace HealthGateway.Common.Data.Utils
                 }
             }
 
-            return (T)Enum.Parse(typeof(T), enumStr);
+            return (T)Enum.Parse(enumType, enumString);
+        }
+
+        /// <summary>
+        /// Converts a string to the typed enum using the EnumMemberAttribute or parsing directly. If the string is not one of the named constants defined for the enumeration, the specified default value will be returned.
+        /// </summary>
+        /// <typeparam name="T">The type of enum.</typeparam>
+        /// <param name="enumString">The enum string value or annotation value.</param>
+        /// <param name="useAttribute">If true will attempt to resolve EnumMemberAttribute otherwise converts directly.</param>
+        /// <param name="defaultValue">The default value to assign when the provided string cannot be matched to an enum member.</param>
+        /// <returns>The enum instance T.</returns>
+        /// <exception cref="OverflowException"><paramref name="enumString"/> is outside the range of the underlying type of <typeparamref name="T"/>.</exception>
+        public static T ToEnumOrDefault<T>(string enumString, bool useAttribute = false, T defaultValue = default)
+            where T : struct, Enum
+        {
+            try
+            {
+                return ToEnum<T>(enumString, useAttribute);
+            }
+            catch (ArgumentException)
+            {
+                return defaultValue;
+            }
         }
     }
 }
