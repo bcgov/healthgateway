@@ -32,7 +32,7 @@ namespace HealthGateway.Common.Data.Utils
         /// <param name="instance">The instance of the enum.</param>
         /// <param name="useAttribute">If true will attempt to resolve EnumMemberAttribute otherwise returns ToString().</param>
         /// <returns>The string representation of the enum.</returns>
-        public static string ToEnumString<T>(Enum instance, bool useAttribute = false)
+        public static string ToEnumString<T>(T instance, bool useAttribute = false)
             where T : struct, Enum
         {
             string enumString = instance.ToString();
@@ -60,9 +60,15 @@ namespace HealthGateway.Common.Data.Utils
         /// <param name="enumString">The enum string value or annotation value.</param>
         /// <param name="useAttribute">If true will attempt to resolve EnumMemberAttribute otherwise converts directly.</param>
         /// <returns>The enum instance T.</returns>
-        /// <exception cref="ArgumentException"><paramref name="enumString"/> is either an empty string or only contains white space.</exception>
-        /// <exception cref="ArgumentException"><paramref name="enumString"/> is a name, but not one of the named constants defined for the enumeration.</exception>
-        /// <exception cref="OverflowException"><paramref name="enumString"/> is outside the range of the underlying type of <paramref name="enumString"/>.</exception>
+        /// <exception cref="ArgumentException">
+        /// <paramref name="enumString"/> is either an empty string or only contains white space.
+        /// </exception>
+        /// <exception cref="ArgumentException">
+        /// <paramref name="enumString"/> is a name, but not one of the named constants defined for the enumeration.
+        /// </exception>
+        /// <exception cref="OverflowException">
+        /// <paramref name="enumString"/> is outside the range of the underlying type of <paramref name="enumString"/>.
+        /// </exception>
         public static T ToEnum<T>(string enumString, bool useAttribute = false)
             where T : struct, Enum
         {
@@ -87,14 +93,17 @@ namespace HealthGateway.Common.Data.Utils
         }
 
         /// <summary>
-        /// Converts a string to the typed enum using the EnumMemberAttribute or parsing directly. If the string is not one of the named constants defined for the enumeration, the specified default value will be returned.
+        /// Converts a string to the typed enum using the EnumMemberAttribute or parsing directly. If the string is not one of the
+        /// named constants defined for the enumeration, the specified default value will be returned.
         /// </summary>
         /// <typeparam name="T">The type of enum.</typeparam>
         /// <param name="enumString">The enum string value or annotation value.</param>
         /// <param name="useAttribute">If true will attempt to resolve EnumMemberAttribute otherwise converts directly.</param>
         /// <param name="defaultValue">The default value to assign when the provided string cannot be matched to an enum member.</param>
         /// <returns>The enum instance T.</returns>
-        /// <exception cref="OverflowException"><paramref name="enumString"/> is outside the range of the underlying type of <typeparamref name="T"/>.</exception>
+        /// <exception cref="OverflowException">
+        /// <paramref name="enumString"/> is outside the range of the underlying type of <typeparamref name="T"/>.
+        /// </exception>
         public static T ToEnumOrDefault<T>(string enumString, bool useAttribute = false, T defaultValue = default)
             where T : struct, Enum
         {

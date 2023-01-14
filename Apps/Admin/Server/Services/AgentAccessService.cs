@@ -22,7 +22,6 @@ namespace HealthGateway.Admin.Server.Services
     using System.Threading.Tasks;
     using HealthGateway.Admin.Common.Constants;
     using HealthGateway.Admin.Common.Models;
-    using HealthGateway.Admin.Server.Utils;
     using HealthGateway.Common.AccessManagement.Administration.Models;
     using HealthGateway.Common.AccessManagement.Authentication;
     using HealthGateway.Common.AccessManagement.Authentication.Models;
@@ -71,12 +70,15 @@ namespace HealthGateway.Admin.Server.Services
         {
             JwtModel jwtModel = this.authDelegate.AuthenticateAsSystem(this.tokenUri, this.tokenRequest);
 
-            string userName = agent.Username + "@" + EnumUtility.ToEnumString<KeycloakIdentityProvider>(agent.IdentityProvider, true);
-            IEnumerable<RoleRepresentation> roles = await this.GetRoleRepresentationsAsync(agent.Roles).ConfigureAwait(true);
+            agent.Roles.Remove(IdentityAccessRole.Unknown);
+
+            List<RoleRepresentation> realmRoles = await this.keycloakAdminApi.GetRealmRolesAsync(jwtModel.AccessToken).ConfigureAwait(true);
+            IEnumerable<RoleRepresentation> roles = realmRoles
+                .Where(r => agent.Roles.Contains(GetIdentityAccessRole(r)));
 
             UserRepresentation user = new()
             {
-                Username = userName,
+                Username = agent.Username + "@" + EnumUtility.ToEnumString(agent.IdentityProvider, true),
                 Enabled = true,
             };
 
@@ -84,9 +86,9 @@ namespace HealthGateway.Admin.Server.Services
             {
                 await this.keycloakAdminApi.AddUserAsync(user, jwtModel.AccessToken).ConfigureAwait(true);
             }
-            catch (Exception e) when (e is ApiException)
+            catch (ApiException e)
             {
-                if (e.Message.Contains("409", StringComparison.InvariantCulture))
+                if (e.StatusCode == HttpStatusCode.Conflict)
                 {
                     this.logger.LogWarning(ErrorMessages.KeycloakUserAlreadyExists);
                     throw new ProblemDetailsException(ExceptionUtility.CreateProblemDetails(ErrorMessages.KeycloakUserAlreadyExists, HttpStatusCode.Conflict, nameof(AgentAccessService)));
@@ -96,7 +98,7 @@ namespace HealthGateway.Admin.Server.Services
                 throw;
             }
 
-            List<UserRepresentation> getUserResponse = await this.keycloakAdminApi.GetUserAsync(userName, jwtModel.AccessToken).ConfigureAwait(true);
+            List<UserRepresentation> getUserResponse = await this.keycloakAdminApi.GetUserAsync(user.Username, jwtModel.AccessToken).ConfigureAwait(true);
             UserRepresentation createdUser = getUserResponse.First();
             await this.keycloakAdminApi.AddUserRolesAsync(createdUser.UserId.ToString(), roles, jwtModel.AccessToken).ConfigureAwait(true);
 
@@ -134,14 +136,14 @@ namespace HealthGateway.Admin.Server.Services
 
                 if (identityProvider != KeycloakIdentityProvider.Unknown && splitString.Length == 2)
                 {
-                    AdminAgent agent = new()
-                    {
-                        Id = user.UserId ?? Guid.Empty,
-                        Username = userName,
-                        IdentityProvider = identityProvider,
-                        Roles = KeyCloakUtility.MapIdentityAccessRoles(userRoles),
-                    };
-                    adminAgents.Add(agent);
+                    adminAgents.Add(
+                        new()
+                        {
+                            Id = user.UserId ?? Guid.Empty,
+                            Username = userName,
+                            IdentityProvider = identityProvider,
+                            Roles = new HashSet<IdentityAccessRole>(userRoles.Select(GetIdentityAccessRole).Where(r => r != IdentityAccessRole.Unknown)),
+                        });
                 }
             }
 
@@ -153,32 +155,30 @@ namespace HealthGateway.Admin.Server.Services
         {
             JwtModel jwtModel = this.authDelegate.AuthenticateAsSystem(this.tokenUri, this.tokenRequest);
 
-            IEnumerable<RoleRepresentation> userRoles = await this.keycloakAdminApi.GetUserRolesAsync(agent.Id.ToString(), jwtModel.AccessToken).ConfigureAwait(true);
-            List<RoleRepresentation> currentUserRoles = KeyCloakUtility.PruneUserRoles(userRoles).ToList();
-            IEnumerable<RoleRepresentation> agentRoles = await this.GetRoleRepresentationsAsync(agent.Roles).ConfigureAwait(true);
-            List<RoleRepresentation> updatedUserRoles = agentRoles.ToList();
+            agent.Roles.Remove(IdentityAccessRole.Unknown);
 
-            List<RoleRepresentation> rolesToDelete = new();
-            List<RoleRepresentation> rolesToAdd = new();
+            List<RoleRepresentation> realmRoles = await this.keycloakAdminApi.GetRealmRolesAsync(jwtModel.AccessToken).ConfigureAwait(true);
+            List<RoleRepresentation> userRoles = await this.keycloakAdminApi.GetUserRolesAsync(agent.Id.ToString(), jwtModel.AccessToken).ConfigureAwait(true);
 
-            foreach (RoleRepresentation currentUserRole in currentUserRoles)
+            List<RoleRepresentation> rolesToDelete = userRoles
+                .Where(r => GetIdentityAccessRole(r) != IdentityAccessRole.Unknown)
+                .Where(r => !agent.Roles.Contains(GetIdentityAccessRole(r)))
+                .ToList();
+
+            List<RoleRepresentation> rolesToAdd = realmRoles
+                .Where(r => agent.Roles.Contains(GetIdentityAccessRole(r)))
+                .Where(r => userRoles.All(userRole => userRole.Id != r.Id))
+                .ToList();
+
+            if (rolesToDelete.Any())
             {
-                if (!updatedUserRoles.Exists(r => r.Id == currentUserRole.Id))
-                {
-                    rolesToDelete.Add(currentUserRole);
-                }
+                await this.keycloakAdminApi.DeleteUserRolesAsync(agent.Id.ToString(), rolesToDelete, jwtModel.AccessToken).ConfigureAwait(true);
             }
 
-            foreach (RoleRepresentation updatedUserRole in updatedUserRoles)
+            if (rolesToAdd.Any())
             {
-                if (!currentUserRoles.Exists(r => r.Id == updatedUserRole.Id))
-                {
-                    rolesToAdd.Add(updatedUserRole);
-                }
+                await this.keycloakAdminApi.AddUserRolesAsync(agent.Id.ToString(), rolesToAdd, jwtModel.AccessToken).ConfigureAwait(true);
             }
-
-            await this.keycloakAdminApi.DeleteUserRolesAsync(agent.Id.ToString(), rolesToDelete, jwtModel.AccessToken).ConfigureAwait(true);
-            await this.keycloakAdminApi.AddUserRolesAsync(agent.Id.ToString(), rolesToAdd, jwtModel.AccessToken).ConfigureAwait(true);
 
             return agent;
         }
@@ -191,21 +191,9 @@ namespace HealthGateway.Admin.Server.Services
             await this.keycloakAdminApi.DeleteUserAsync(agentId, jwtModel.AccessToken).ConfigureAwait(true);
         }
 
-        private async Task<IEnumerable<RoleRepresentation>> GetRoleRepresentationsAsync(IEnumerable<IdentityAccessRole> userRoles)
+        private static IdentityAccessRole GetIdentityAccessRole(RoleRepresentation r)
         {
-            JwtModel jwtModel = this.authDelegate.AuthenticateAsSystem(this.tokenUri, this.tokenRequest);
-
-            List<RoleRepresentation> realmRoles = await this.keycloakAdminApi.GetRealmRolesAsync(jwtModel.AccessToken).ConfigureAwait(true);
-
-            return userRoles.Select(
-                    userRole => userRole switch
-                    {
-                        IdentityAccessRole.AdminUser => realmRoles.FirstOrDefault(n => n.Name == IdentityAccessRole.AdminUser.ToString()),
-                        IdentityAccessRole.AdminReviewer => realmRoles.FirstOrDefault(n => n.Name == IdentityAccessRole.AdminReviewer.ToString()),
-                        IdentityAccessRole.SupportUser => realmRoles.FirstOrDefault(n => n.Name == IdentityAccessRole.SupportUser.ToString()),
-                        _ => null,
-                    })
-                .Where(roleRepresentation => roleRepresentation != null)!;
+            return EnumUtility.ToEnumOrDefault<IdentityAccessRole>(r.Name);
         }
     }
 }
