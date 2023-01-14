@@ -17,7 +17,6 @@ namespace HealthGateway.Admin.Server.Services
 {
     using System;
     using System.Collections.Generic;
-    using System.Diagnostics.CodeAnalysis;
     using System.Linq;
     using System.Net;
     using System.Threading.Tasks;
@@ -68,12 +67,10 @@ namespace HealthGateway.Admin.Server.Services
         }
 
         /// <inheritdoc/>
-        [SuppressMessage("Globalization", "CA1308:Normalize strings to uppercase", Justification = "Not making security decisions based on the result of the normalization")]
         public async Task<AdminAgent> ProvisionAgentAccessAsync(AdminAgent agent)
         {
             JwtModel jwtModel = this.authDelegate.AuthenticateAsSystem(this.tokenUri, this.tokenRequest);
 
-            agent.Username = agent.Username.ToLowerInvariant();
             string userName = agent.Username + "@" + EnumUtility.ToEnumString<KeycloakIdentityProvider>(agent.IdentityProvider, true);
             IEnumerable<RoleRepresentation> roles = await this.GetRoleRepresentationsAsync(agent.Roles).ConfigureAwait(true);
 
@@ -99,10 +96,22 @@ namespace HealthGateway.Admin.Server.Services
                 throw;
             }
 
-            List<UserRepresentation> createdUser = await this.keycloakAdminApi.GetUserAsync(userName, jwtModel.AccessToken).ConfigureAwait(true);
-            await this.keycloakAdminApi.AddUserRolesAsync(createdUser.First().UserId.ToString(), roles, jwtModel.AccessToken).ConfigureAwait(true);
+            List<UserRepresentation> getUserResponse = await this.keycloakAdminApi.GetUserAsync(userName, jwtModel.AccessToken).ConfigureAwait(true);
+            UserRepresentation createdUser = getUserResponse.First();
+            await this.keycloakAdminApi.AddUserRolesAsync(createdUser.UserId.ToString(), roles, jwtModel.AccessToken).ConfigureAwait(true);
 
-            return agent;
+            string[] splitString = createdUser.Username.Split('@');
+            string createdUserName = splitString.First();
+            string createdIdentityProviderName = splitString.Last();
+            AdminAgent newAgent = new()
+            {
+                Id = createdUser.UserId ?? Guid.Empty,
+                Username = createdUserName,
+                IdentityProvider = EnumUtility.ToEnumOrDefault<KeycloakIdentityProvider>(createdIdentityProviderName, true),
+                Roles = agent.Roles,
+            };
+
+            return newAgent;
         }
 
         /// <inheritdoc/>
@@ -118,11 +127,12 @@ namespace HealthGateway.Admin.Server.Services
             foreach (UserRepresentation user in users)
             {
                 List<RoleRepresentation> userRoles = await this.keycloakAdminApi.GetUserRolesAsync(user.UserId.ToString(), jwtModel.AccessToken).ConfigureAwait(true);
-                string userName = user.Username.Split('@').First();
-                string identityProviderName = user.Username.Split('@').Last();
+                string[] splitString = user.Username.Split('@');
+                string userName = splitString.First();
+                string identityProviderName = splitString.Last();
                 KeycloakIdentityProvider identityProvider = EnumUtility.ToEnumOrDefault<KeycloakIdentityProvider>(identityProviderName, true);
 
-                if (identityProvider != KeycloakIdentityProvider.Unknown)
+                if (identityProvider != KeycloakIdentityProvider.Unknown && splitString.Length == 2)
                 {
                     AdminAgent agent = new()
                     {
