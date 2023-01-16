@@ -17,6 +17,9 @@ namespace HealthGateway.CommonTests.Delegates
 {
     using System;
     using System.Globalization;
+    using System.Net;
+    using System.Security.Claims;
+    using System.Security.Principal;
     using System.Threading.Tasks;
     using DeepEqual.Syntax;
     using HealthGateway.Common.Constants;
@@ -24,6 +27,7 @@ namespace HealthGateway.CommonTests.Delegates
     using HealthGateway.Common.Data.ViewModels;
     using HealthGateway.Common.Delegates;
     using HealthGateway.Common.Models;
+    using Microsoft.AspNetCore.Http;
     using Microsoft.Extensions.Logging;
     using Moq;
     using ServiceReference;
@@ -34,6 +38,8 @@ namespace HealthGateway.CommonTests.Delegates
     /// </summary>
     public class ClientRegistriesDelegateTests
     {
+        private static Mock<IHttpContextAccessor> HttpContextAccessorMock => GetHttpContextAccessorMock("1001", "127.0.0.1");
+
         /// <summary>
         /// Lookup by PHN but no HDID found.
         /// </summary>
@@ -116,7 +122,8 @@ namespace HealthGateway.CommonTests.Delegates
             using ILoggerFactory loggerFactory = LoggerFactory.Create(builder => builder.AddConsole());
             IClientRegistriesDelegate patientDelegate = new ClientRegistriesDelegate(
                 loggerFactory.CreateLogger<ClientRegistriesDelegate>(),
-                clientMock.Object);
+                clientMock.Object,
+                HttpContextAccessorMock.Object);
 
             // Act
             RequestResult<PatientModel> actual = await patientDelegate.GetDemographicsByPhnAsync("9875023209").ConfigureAwait(true);
@@ -333,7 +340,8 @@ namespace HealthGateway.CommonTests.Delegates
             using ILoggerFactory loggerFactory = LoggerFactory.Create(builder => builder.AddConsole());
             IClientRegistriesDelegate patientDelegate = new ClientRegistriesDelegate(
                 loggerFactory.CreateLogger<ClientRegistriesDelegate>(),
-                clientMock.Object);
+                clientMock.Object,
+                HttpContextAccessorMock.Object);
 
             // Act
             RequestResult<PatientModel> actual = await patientDelegate.GetDemographicsByHdidAsync(expectedHdId).ConfigureAwait(true);
@@ -442,7 +450,8 @@ namespace HealthGateway.CommonTests.Delegates
             using ILoggerFactory loggerFactory = LoggerFactory.Create(builder => builder.AddConsole());
             IClientRegistriesDelegate patientDelegate = new ClientRegistriesDelegate(
                 loggerFactory.CreateLogger<ClientRegistriesDelegate>(),
-                clientMock.Object);
+                clientMock.Object,
+                HttpContextAccessorMock.Object);
 
             // Act
             RequestResult<PatientModel> actual = await patientDelegate.GetDemographicsByHdidAsync(hdid).ConfigureAwait(true);
@@ -562,7 +571,8 @@ namespace HealthGateway.CommonTests.Delegates
             using ILoggerFactory loggerFactory = LoggerFactory.Create(builder => builder.AddConsole());
             IClientRegistriesDelegate patientDelegate = new ClientRegistriesDelegate(
                 loggerFactory.CreateLogger<ClientRegistriesDelegate>(),
-                clientMock.Object);
+                clientMock.Object,
+                HttpContextAccessorMock.Object);
 
             // Act
             RequestResult<PatientModel> actual = await patientDelegate.GetDemographicsByHdidAsync(expectedHdId).ConfigureAwait(true);
@@ -711,7 +721,8 @@ namespace HealthGateway.CommonTests.Delegates
             using ILoggerFactory loggerFactory = LoggerFactory.Create(builder => builder.AddConsole());
             IClientRegistriesDelegate patientDelegate = new ClientRegistriesDelegate(
                 loggerFactory.CreateLogger<ClientRegistriesDelegate>(),
-                clientMock.Object);
+                clientMock.Object,
+                HttpContextAccessorMock.Object);
 
             // Act
             RequestResult<PatientModel> actual = await patientDelegate.GetDemographicsByHdidAsync(expectedHdId).ConfigureAwait(true);
@@ -819,7 +830,8 @@ namespace HealthGateway.CommonTests.Delegates
             using ILoggerFactory loggerFactory = LoggerFactory.Create(builder => builder.AddConsole());
             IClientRegistriesDelegate patientDelegate = new ClientRegistriesDelegate(
                 loggerFactory.CreateLogger<ClientRegistriesDelegate>(),
-                clientMock.Object);
+                clientMock.Object,
+                HttpContextAccessorMock.Object);
 
             // Act
             RequestResult<PatientModel> actual = await patientDelegate.GetDemographicsByPhnAsync(expectedPhn).ConfigureAwait(true);
@@ -922,7 +934,8 @@ namespace HealthGateway.CommonTests.Delegates
             using ILoggerFactory loggerFactory = LoggerFactory.Create(builder => builder.AddConsole());
             IClientRegistriesDelegate patientDelegate = new ClientRegistriesDelegate(
                 loggerFactory.CreateLogger<ClientRegistriesDelegate>(),
-                clientMock.Object);
+                clientMock.Object,
+                HttpContextAccessorMock.Object);
 
             // Act
             RequestResult<PatientModel> actual = await patientDelegate.GetDemographicsByPhnAsync(expectedPhn).ConfigureAwait(true);
@@ -1025,7 +1038,8 @@ namespace HealthGateway.CommonTests.Delegates
             using ILoggerFactory loggerFactory = LoggerFactory.Create(builder => builder.AddConsole());
             IClientRegistriesDelegate patientDelegate = new ClientRegistriesDelegate(
                 loggerFactory.CreateLogger<ClientRegistriesDelegate>(),
-                clientMock.Object);
+                clientMock.Object,
+                HttpContextAccessorMock.Object);
 
             // Act
             RequestResult<PatientModel> actual = await patientDelegate.GetDemographicsByPhnAsync(expectedPhn).ConfigureAwait(true);
@@ -1128,7 +1142,8 @@ namespace HealthGateway.CommonTests.Delegates
             using ILoggerFactory loggerFactory = LoggerFactory.Create(builder => builder.AddConsole());
             IClientRegistriesDelegate patientDelegate = new ClientRegistriesDelegate(
                 loggerFactory.CreateLogger<ClientRegistriesDelegate>(),
-                clientMock.Object);
+                clientMock.Object,
+                HttpContextAccessorMock.Object);
 
             // Act
             RequestResult<PatientModel> actual = await patientDelegate.GetDemographicsByPhnAsync(expectedPhn).ConfigureAwait(true);
@@ -1136,6 +1151,34 @@ namespace HealthGateway.CommonTests.Delegates
             // Verify
             Assert.Equal(ResultType.Success, actual.ResultStatus);
             Assert.Contains("BCHCIM.GD.0.0023", actual.ResourcePayload?.ResponseCode, StringComparison.InvariantCultureIgnoreCase);
+        }
+
+        private static Mock<IHttpContextAccessor> GetHttpContextAccessorMock(string userId, string ipAddress)
+        {
+            Mock<IIdentity> identityMock = new();
+            identityMock.Setup(s => s.Name).Returns(userId);
+
+            Mock<ClaimsPrincipal> claimsPrincipalMock = new();
+            claimsPrincipalMock.Setup(s => s.Identity).Returns(identityMock.Object);
+
+            Mock<ConnectionInfo> connectionInfoMock = new();
+            connectionInfoMock.Setup(s => s.RemoteIpAddress).Returns(IPAddress.Parse(ipAddress));
+
+            IHeaderDictionary headerDictionary = new HeaderDictionary
+            {
+                { "Authorization", "Bearer TestJWT" },
+            };
+            Mock<HttpRequest> httpRequestMock = new();
+            httpRequestMock.Setup(s => s.Headers).Returns(headerDictionary);
+
+            Mock<HttpContext> httpContextMock = new();
+            httpContextMock.Setup(s => s.Connection).Returns(connectionInfoMock.Object);
+            httpContextMock.Setup(s => s.User).Returns(claimsPrincipalMock.Object);
+            httpContextMock.Setup(s => s.Request).Returns(httpRequestMock.Object);
+
+            Mock<IHttpContextAccessor> httpContextAccessorMock = new();
+            httpContextAccessorMock.Setup(s => s.HttpContext).Returns(httpContextMock.Object);
+            return httpContextAccessorMock;
         }
     }
 }
