@@ -7,14 +7,16 @@
         <HgBannerFeedback
             Severity="@Severity.Error"
             IsEnabled="@HasAddError"
-            TResetAction="@BroadcastsActions.AddAction">
-            @ErrorMessage
+            TResetAction="@BroadcastsActions.AddAction"
+            DataTestId="add-error-alert">
+            @AddErrorMessage
         </HgBannerFeedback>
         <HgBannerFeedback
             Severity="@Severity.Error"
             IsEnabled="@HasUpdateError"
-            TResetAction="@BroadcastsActions.UpdateAction">
-            @ErrorMessage
+            TResetAction="@BroadcastsActions.UpdateAction"
+            DataTestId="update-error-alert">
+            @UpdateErrorMessage
         </HgBannerFeedback>
         <MudForm @ref="Form" data-testid="broadcast-dialog-modal-text">
             <MudGrid Spacing="0">

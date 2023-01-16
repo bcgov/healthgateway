@@ -71,7 +71,9 @@ public partial class AgentAccessDialog : FluxorComponent
 
     private bool HasUpdateError => this.AgentAccessState.Value.Update.Error is { Message.Length: > 0 };
 
-    private string? ErrorMessage => this.HasAddError ? this.AgentAccessState.Value.Add.Error?.Message : this.AgentAccessState.Value.Update.Error?.Message;
+    private string? AddErrorMessage => this.AgentAccessState.Value.Add.Error?.Message;
+
+    private string? UpdateErrorMessage => this.AgentAccessState.Value.Update.Error?.Message;
 
     private bool SaveButtonDisabled => this.IsEdit ? this.Agent.Roles.SetEquals(this.InitialRoles) : this.Agent.IdentityProvider == KeycloakIdentityProvider.Unknown;
 
