@@ -20,6 +20,7 @@ namespace HealthGateway.Admin.Client.Store.AgentAccess;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
+using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
 using Fluxor;
@@ -54,6 +55,12 @@ public class AgentAccessEffects
             AdminAgent response = await this.Api.ProvisionAgentAccessAsync(action.Agent).ConfigureAwait(true);
             this.Logger.LogInformation("Agent added successfully");
             dispatcher.Dispatch(new AgentAccessActions.AddSuccessAction(response));
+        }
+        catch (ApiException e) when (e.StatusCode == HttpStatusCode.Conflict)
+        {
+            RequestError error = new() { Message = "User already exists" };
+            this.Logger.LogInformation("Agent already exists");
+            dispatcher.Dispatch(new AgentAccessActions.AddFailAction(error));
         }
         catch (Exception e) when (e is ApiException or HttpRequestException)
         {

@@ -35,7 +35,7 @@ namespace HealthGateway.Admin.Client.Utils
             return FormatRequestError(null, resultError);
         }
 
-    /// <summary>
+        /// <summary>
         /// Formats errors returned from external requests.
         /// </summary>
         /// <param name="exception">An exception returned by Refit.</param>
