@@ -131,6 +131,7 @@ namespace HealthGateway.Admin.Server
             services.AddTransient<ICsvExportService, CsvExportService>();
             services.AddTransient<IInactiveUserService, InactiveUserService>();
             services.AddTransient<ISupportService, SupportService>();
+            services.AddTransient<IAgentAccessService, AgentAccessService>();
         }
 
         private static void AddDelegates(IServiceCollection services)

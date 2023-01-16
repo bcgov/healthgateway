@@ -28,14 +28,14 @@ using Microsoft.AspNetCore.Components;
 using MudBlazor;
 
 /// <summary>
-/// Backing logic for the BroadcastDialog component.
+/// Backing logic for the AgentAccessDialog component.
 /// If the Save button is pressed, the dialog's Result will have the Data property populated with a bool value of true.
 /// If the Cancel button is pressed, the dialog's Result will have the Cancelled property set to true.
 /// </summary>
 public partial class AgentAccessDialog : FluxorComponent
 {
     /// <summary>
-    /// Gets or sets the broadcast model corresponding to the broadcast that is being edited.
+    /// Gets or sets the agent model corresponding to the agent that is being edited.
     /// </summary>
     [Parameter]
     public AdminAgent Agent { get; set; } = default!;
