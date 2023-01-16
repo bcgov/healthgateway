@@ -21,13 +21,13 @@ using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
 using AutoMapper;
+using HealthGateway.Admin.Common.Constants;
 using HealthGateway.Admin.Server.MapUtils;
 using HealthGateway.Admin.Server.Models;
 using HealthGateway.Common.AccessManagement.Administration.Models;
 using HealthGateway.Common.AccessManagement.Authentication;
 using HealthGateway.Common.AccessManagement.Authentication.Models;
 using HealthGateway.Common.Api;
-using HealthGateway.Common.Constants;
 using HealthGateway.Common.Data.Constants;
 using HealthGateway.Common.Data.Utils;
 using HealthGateway.Common.Data.ViewModels;
@@ -121,12 +121,12 @@ public class InactiveUserService : IInactiveUserService
                 const int maxRecords = -1;
 
                 List<UserRepresentation> adminUsers =
-                    await this.keycloakAdminApi.GetUsersAsync(nameof(IdentityAccessRole.AdminUser), firstRecord, maxRecords, jwtModel.AccessToken).ConfigureAwait(true);
+                    await this.keycloakAdminApi.GetUsersByRoleAsync(nameof(IdentityAccessRole.AdminUser), firstRecord, maxRecords, jwtModel.AccessToken).ConfigureAwait(true);
                 this.PopulateUserDetails(inactiveUsers, adminUsers, IdentityAccessRole.AdminUser);
                 this.AddInactiveUser(inactiveUsers, activeUserProfiles, adminUsers, IdentityAccessRole.AdminUser);
 
                 List<UserRepresentation> supportUsers =
-                    await this.keycloakAdminApi.GetUsersAsync(nameof(IdentityAccessRole.SupportUser), firstRecord, maxRecords, jwtModel.AccessToken).ConfigureAwait(true);
+                    await this.keycloakAdminApi.GetUsersByRoleAsync(nameof(IdentityAccessRole.SupportUser), firstRecord, maxRecords, jwtModel.AccessToken).ConfigureAwait(true);
                 this.PopulateUserDetails(inactiveUsers, supportUsers, IdentityAccessRole.SupportUser);
                 this.AddInactiveUser(inactiveUsers, activeUserProfiles, supportUsers, IdentityAccessRole.SupportUser);
 

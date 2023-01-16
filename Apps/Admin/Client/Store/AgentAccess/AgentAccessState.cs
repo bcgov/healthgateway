@@ -14,52 +14,50 @@
 // limitations under the License.
 //-------------------------------------------------------------------------
 
-namespace HealthGateway.Admin.Client.Store.Broadcasts;
+namespace HealthGateway.Admin.Client.Store.AgentAccess;
 
 using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using Fluxor;
-using HealthGateway.Admin.Client.Models;
-using HealthGateway.Common.Data.Models;
-using HealthGateway.Common.Data.ViewModels;
+using HealthGateway.Admin.Common.Models;
 
 /// <summary>
 /// The state for the feature.
 /// State should be decorated with [FeatureState] for automatic discovery when services.AddFluxor is called.
 /// </summary>
 [FeatureState]
-public record BroadcastsState
+public record AgentAccessState
 {
     /// <summary>
     /// Gets the request state for adds.
     /// </summary>
-    public BaseRequestState<RequestResult<Broadcast>> Add { get; init; } = new();
+    public BaseRequestState<AdminAgent> Add { get; init; } = new();
 
     /// <summary>
-    /// Gets the request state for loads.
+    /// Gets the request state for searches.
     /// </summary>
-    public BaseRequestState<RequestResult<IEnumerable<Broadcast>>> Load { get; init; } = new();
+    public BaseRequestState<IEnumerable<AdminAgent>> Search { get; init; } = new();
 
     /// <summary>
     /// Gets the request state for updates.
     /// </summary>
-    public BaseRequestState<RequestResult<Broadcast>> Update { get; init; } = new();
+    public BaseRequestState<AdminAgent> Update { get; init; } = new();
 
     /// <summary>
     /// Gets the request state for deletions.
     /// </summary>
-    public BaseRequestState<RequestResult<Broadcast>> Delete { get; init; } = new();
+    public BaseRequestState Delete { get; init; } = new();
 
     /// <summary>
     /// Gets the collection of data.
     /// </summary>
-    public IImmutableDictionary<Guid, ExtendedBroadcast>? Data { get; init; }
+    public IImmutableDictionary<Guid, AdminAgent>? Data { get; init; }
 
     /// <summary>
     /// Gets a value indicating whether a request is loading.
     /// </summary>
-    public bool IsLoading => this.Add.IsLoading || this.Load.IsLoading || this.Update.IsLoading || this.Delete.IsLoading;
+    public bool IsLoading => this.Add.IsLoading || this.Search.IsLoading || this.Update.IsLoading || this.Delete.IsLoading;
 
     /// <summary>
     /// Gets a value indicating whether the data has been loaded.

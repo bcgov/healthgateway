@@ -81,8 +81,13 @@ namespace HealthGateway.Common.Constants
         public const string ClientRegistryDoesNotReturnPerson = "Client Registry did not return a person";
 
         /// <summary>
-        /// Error message to return when client registry returns a deceased peron.
+        /// Error message to return when client registry returns a deceased person.
         /// </summary>
         public const string ClientRegistryReturnedDeceasedPerson = "Client Registry returned a person with the deceased indicator set to true";
+
+        /// <summary>
+        /// Error message to return when Keycloak already has the user being added.
+        /// </summary>
+        public const string KeycloakUserAlreadyExists = "Keycloak user already exists";
     }
 }

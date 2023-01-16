@@ -24,9 +24,9 @@ namespace HealthGateway.Database.Context
     using System.Text;
     using HealthGateway.Common.Data.Constants;
     using HealthGateway.Common.Data.Models;
+    using HealthGateway.Common.Data.Utils;
     using HealthGateway.Database.Constants;
     using HealthGateway.Database.Models;
-    using HealthGateway.Database.Utils;
     using Microsoft.EntityFrameworkCore;
     using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 

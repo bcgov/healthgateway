@@ -28,8 +28,8 @@ namespace HealthGateway.Common.AccessManagement.Administration.Models
         /// <summary>
         /// Gets or sets the user created timestamp as milliseconds from the Unix Epoch.
         /// </summary>
-        [JsonPropertyName("createdTimeStamp")]
-        public long CreatedTimestamp { get; set; }
+        [JsonPropertyName("createdTimestamp")]
+        public long? CreatedTimestamp { get; set; }
 
         /// <summary>
         /// Gets or sets the user's email.
@@ -60,6 +60,12 @@ namespace HealthGateway.Common.AccessManagement.Administration.Models
         /// </summary>
         [JsonPropertyName("username")]
         public string Username { get; set; } = string.Empty;
+
+        /// <summary>
+        /// Gets or sets if the user is enabled.
+        /// </summary>
+        [JsonPropertyName("enabled")]
+        public bool? Enabled { get; set; }
 
         /// <summary>
         /// Gets or sets the user's unique account identifier.

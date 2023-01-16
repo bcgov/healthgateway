@@ -81,6 +81,7 @@ namespace HealthGateway.Admin.Server
             services.AddAutoMapper(typeof(Program), typeof(BroadcastProfile), typeof(UserProfileProfile), typeof(MessagingVerificationProfile));
 
             WebApplication app = builder.Build();
+            ExceptionHandling.UseProblemDetails(app);
             HttpWeb.UseForwardHeaders(app, logger, configuration);
             HttpWeb.UseHttp(app, logger, configuration, environment, true, false);
             HttpWeb.UseContentSecurityPolicy(app, configuration);
@@ -107,6 +108,7 @@ namespace HealthGateway.Admin.Server
 
         private static void AddModules(IServiceCollection services, IConfiguration configuration, ILogger logger, IWebHostEnvironment environment)
         {
+            ExceptionHandling.ConfigureProblemDetails(services, environment);
             HttpWeb.ConfigureForwardHeaders(services, logger, configuration);
             Db.ConfigureDatabaseServices(services, logger, configuration);
             HttpWeb.ConfigureHttpServices(services, logger);
@@ -129,6 +131,7 @@ namespace HealthGateway.Admin.Server
             services.AddTransient<ICsvExportService, CsvExportService>();
             services.AddTransient<IInactiveUserService, InactiveUserService>();
             services.AddTransient<ISupportService, SupportService>();
+            services.AddTransient<IAgentAccessService, AgentAccessService>();
         }
 
         private static void AddDelegates(IServiceCollection services)

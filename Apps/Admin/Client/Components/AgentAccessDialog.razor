@@ -1,0 +1,92 @@
+@using HealthGateway.Admin.Client.Store.Broadcasts
+@using HealthGateway.Admin.Common.Constants
+@inherits Fluxor.Blazor.Web.Components.FluxorComponent
+
+<MudDialog>
+    <DialogContent>
+        <HgBannerFeedback
+            Severity="@Severity.Error"
+            IsEnabled="@HasAddError"
+            TResetAction="@BroadcastsActions.AddAction"
+            DataTestId="add-error-alert">
+            @AddErrorMessage
+        </HgBannerFeedback>
+        <HgBannerFeedback
+            Severity="@Severity.Error"
+            IsEnabled="@HasUpdateError"
+            TResetAction="@BroadcastsActions.UpdateAction"
+            DataTestId="update-error-alert">
+            @UpdateErrorMessage
+        </HgBannerFeedback>
+        <MudForm @ref="Form" data-testid="broadcast-dialog-modal-text">
+            <MudGrid Spacing="0">
+                <MudItem xs="12">
+                    <HgTextField
+                        Label="Username"
+                        @bind-Value="@Agent.Username"
+                        T="@string"
+                        Required="@(!IsEdit)"
+                        RequiredError="Username is required"
+                        Disabled="@IsEdit"
+                        data-testid="username-input" />
+                </MudItem>
+                <MudItem xs="12">
+                    <HgSelect
+                        Label="Identity Provider"
+                        @bind-Value="@Agent.IdentityProvider"
+                        T="KeycloakIdentityProvider"
+                        Required="@(!IsEdit)"
+                        RequiredError="Identity provider is required"
+                        Disabled="@IsEdit"
+                        data-testid="identity-provider-select">
+                        <MudSelectItem T="KeycloakIdentityProvider" Value="@KeycloakIdentityProvider.Unknown" data-testid="identity-provider">
+                            None
+                        </MudSelectItem>
+                        @foreach (KeycloakIdentityProvider identityProvider in IdentityProviders)
+                        {
+                            <MudSelectItem T="KeycloakIdentityProvider" Value="@identityProvider" data-testid="identity-provider">
+                                @AgentUtility.FormatKeycloakIdentityProvider(identityProvider)
+                            </MudSelectItem>
+                        }
+                    </HgSelect>
+                </MudItem>
+                <MudItem xs="12">
+                    <MudSelect T="IdentityAccessRole"
+                               Label="Roles"
+                               MultiSelection="@true"
+                               SelectedValues="@Agent.Roles"
+                               SelectedValuesChanged="@(UpdateRoles)"
+                               Variant="@Variant.Filled"
+                               Dense="@true"
+                               Class="mt-3"
+                               data-testid="roles-select">
+                        @foreach (IdentityAccessRole role in AccessRoles)
+                        {
+                            <MudSelectItem Value="@role" data-testid="query-type">@role.ToString()</MudSelectItem>
+                        }
+                    </MudSelect>
+                </MudItem>
+            </MudGrid>
+        </MudForm>
+    </DialogContent>
+    <DialogActions>
+        <HgButton
+            Color="@Color.Primary"
+            Variant="@Variant.Text"
+            OnClick="@HandleClickCancel"
+            RightMargin="Breakpoint.Always"
+            BottomMargin="Breakpoint.Always"
+            data-testid="cancel-btn">
+            Cancel
+        </HgButton>
+        <HgButton
+            Color="@Color.Primary"
+            OnClick="@HandleClickSaveAsync"
+            Disabled="@SaveButtonDisabled"
+            RightMargin="Breakpoint.Always"
+            BottomMargin="Breakpoint.Always"
+            data-testid="save-btn">
+            Save
+        </HgButton>
+    </DialogActions>
+</MudDialog>

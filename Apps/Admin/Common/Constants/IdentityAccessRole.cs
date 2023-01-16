@@ -13,20 +13,34 @@
 //  See the License for the specific language governing permissions and
 //  limitations under the License.
 // -------------------------------------------------------------------------
-namespace HealthGateway.Common.Constants
+namespace HealthGateway.Admin.Common.Constants
 {
+    using System.Text.Json.Serialization;
+
     /// <summary>
     /// An enum representing identity access realm role names.
     /// </summary>
+    [JsonStringEnumMemberConverterOptions(deserializationFailureFallbackValue: Unknown)]
+    [JsonConverter(typeof(JsonStringEnumMemberConverter))]
     public enum IdentityAccessRole
     {
         /// <summary>
-        /// Represents AdminUser role.
+        /// Unknown role.
+        /// </summary>
+        Unknown,
+
+        /// <summary>
+        /// The role associated with general access to the admin website.
         /// </summary>
         AdminUser,
 
         /// <summary>
-        /// Represents SupportUser role.
+        /// The role associated with access to the feedback module on the admin website.
+        /// </summary>
+        AdminReviewer,
+
+        /// <summary>
+        /// The role associated with service desk access to the admin website.
         /// </summary>
         SupportUser,
     }
