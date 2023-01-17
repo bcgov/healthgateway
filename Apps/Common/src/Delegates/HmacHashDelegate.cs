@@ -91,6 +91,33 @@ namespace HealthGateway.Common.Delegates
         }
 
         /// <summary>
+        /// Validates that the supplied key will hash to the compareHash.
+        /// </summary>
+        /// <param name="key">The key to hash and compare.</param>
+        /// <param name="compareHash">The hash object to compare.</param>
+        /// <returns>true if the key generates the same hash.</returns>
+        public static bool Compare(string? key, HmacHash? compareHash)
+        {
+            bool result;
+            if (key != null && compareHash != null && compareHash.Hash != null && compareHash.Salt != null)
+            {
+                HmacHash keyHash = HmacHash(
+                    key,
+                    Convert.FromBase64String(compareHash.Salt),
+                    (KeyDerivationPrf)compareHash.PseudoRandomFunction,
+                    compareHash.Iterations);
+                result = compareHash.Hash == keyHash.Hash;
+            }
+            else
+            {
+                // If the key is null and the hash is null then they are the same
+                result = compareHash != null && compareHash.Hash == null && key == null;
+            }
+
+            return result;
+        }
+
+        /// <summary>
         /// Creates a secure random salt of the specified length in bytes.
         /// </summary>
         /// <param name="saltLength">The length of the salt in bytes, defaults to 16 bytes.</param>
@@ -127,27 +154,6 @@ namespace HealthGateway.Common.Delegates
                 GenerateSalt(this.HashConfig.SaltLength),
                 this.HashConfig.PseudoRandomFunction,
                 this.HashConfig.Iterations);
-        }
-
-        private static bool Compare(string? key, HmacHash? compareHash)
-        {
-            bool result;
-            if (key != null && compareHash != null && compareHash.Hash != null && compareHash.Salt != null)
-            {
-                HmacHash keyHash = HmacHash(
-                    key,
-                    Convert.FromBase64String(compareHash.Salt),
-                    (KeyDerivationPrf)compareHash.PseudoRandomFunction,
-                    compareHash.Iterations);
-                result = compareHash.Hash == keyHash.Hash;
-            }
-            else
-            {
-                // If the key is null and the hash is null then they are the same
-                result = compareHash != null && compareHash.Hash == null && key == null;
-            }
-
-            return result;
         }
     }
 }

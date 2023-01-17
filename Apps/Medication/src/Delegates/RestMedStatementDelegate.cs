@@ -142,29 +142,44 @@ namespace HealthGateway.Medication.Delegates
         [SuppressMessage("ReSharper", "ExplicitCallerInfoArgument", Justification = "Team decision")]
         public async Task<bool> ValidateProtectiveWordAsync(string phn, string? protectiveWord, string hdid, string ipAddress)
         {
-            using Activity? activity = Source.StartActivity();
-            bool cachingEnabled = this.odrConfig.CacheTtl > 0;
-
-            IHash? protectiveWordHash = null;
-            if (cachingEnabled)
+            using (Source.StartActivity())
             {
-                this.logger.LogDebug("Attempting to fetch Protective Word from Cache");
-                using Activity? startActivity = Source.StartActivity("GetCacheObject");
+                bool isValid;
+                IHash? cacheHash = null;
+                if (this.odrConfig.CacheTtl > 0)
+                {
+                    this.logger.LogDebug("Attempting to fetch Protective Word from Cache");
+                    using (Source.StartActivity("GetCacheObject"))
+                    {
+                        cacheHash = await this.cacheProvider.GetItemAsync<HmacHash>($"{ProtectiveWordCacheDomain}:{hdid}").ConfigureAwait(true);
+                    }
+                }
 
-                protectiveWordHash = await this.cacheProvider.GetOrSetAsync(
-                        $"{ProtectiveWordCacheDomain}:{hdid}",
-                        () => this.GetProtectiveWordHash(phn, hdid, ipAddress),
-                        TimeSpan.FromMinutes(this.odrConfig.CacheTtl))
-                    .ConfigureAwait(true);
-            }
-            else
-            {
-                protectiveWordHash = await this.GetProtectiveWordHash(phn, hdid, ipAddress).ConfigureAwait(true);
-            }
+                if (cacheHash == null)
+                {
+                    this.logger.LogDebug("Unable to find Protective Word in Cache, fetching from source");
 
-            this.logger.LogDebug("Validating Protective Word");
-            bool isValid = this.hashDelegate.Compare(protectiveWord, protectiveWordHash);
-            return isValid;
+                    // The hash isn't in the cache, get Protective word hash from source
+                    IHash hash = await this.GetProtectiveWord(phn, hdid, ipAddress).ConfigureAwait(true);
+                    if (this.odrConfig.CacheTtl > 0)
+                    {
+                        this.logger.LogDebug("Storing a copy of the Protective Word in the Cache");
+                        using (Source.StartActivity("CacheObject"))
+                        {
+                            this.cacheProvider.AddItem($"{ProtectiveWordCacheDomain}:{hdid}", hash, TimeSpan.FromMinutes(this.odrConfig.CacheTtl));
+                        }
+                    }
+
+                    isValid = this.hashDelegate.Compare(protectiveWord, hash);
+                }
+                else
+                {
+                    this.logger.LogDebug("Validating Cached Protective Word");
+                    isValid = this.hashDelegate.Compare(protectiveWord, cacheHash);
+                }
+
+                return isValid;
+            }
         }
 
         /// <summary>
@@ -174,26 +189,28 @@ namespace HealthGateway.Medication.Delegates
         /// <param name="hdid">The HDID of the user querying.</param>
         /// <param name="ipAddress">The IP of the user querying.</param>
         /// <returns>The hash of the protective word response or null if not set.</returns>
-        private async Task<HmacHash> GetProtectiveWordHash(string phn, string hdid, string ipAddress)
+        private async Task<IHash> GetProtectiveWord(string phn, string hdid, string ipAddress)
         {
-            using Activity? activity = Source.StartActivity();
-            this.logger.LogTrace("Getting Protective word for {Phn}", phn.Substring(0, 3));
-            ProtectiveWord request = new()
+            using (Source.StartActivity())
             {
-                Id = Guid.NewGuid(),
-                RequestorHdid = hdid,
-                RequestorIp = ipAddress,
-                QueryResponse = new ProtectiveWordQueryResponse
+                this.logger.LogTrace("Getting Protective word for {Phn}", phn.Substring(0, 3));
+                ProtectiveWord request = new()
                 {
-                    Phn = phn,
-                    Operator = ProtectiveWordOperator.Get,
-                },
-            };
+                    Id = Guid.NewGuid(),
+                    RequestorHdid = hdid,
+                    RequestorIp = ipAddress,
+                    QueryResponse = new ProtectiveWordQueryResponse
+                    {
+                        Phn = phn,
+                        Operator = ProtectiveWordOperator.Get,
+                    },
+                };
 
-            ProtectiveWord protectiveWord = await this.odrApi.GetProtectiveWordAsync(request).ConfigureAwait(true);
-            HmacHash retVal = (HmacHash)this.hashDelegate.Hash(protectiveWord.QueryResponse.Value);
-            this.logger.LogDebug("Finished getting Protective Word {Phn}", phn.Substring(0, 3));
-            return retVal;
+                ProtectiveWord protectiveWord = await this.odrApi.GetProtectiveWordAsync(request).ConfigureAwait(true);
+                IHash retVal = this.hashDelegate.Hash(protectiveWord.QueryResponse.Value);
+                this.logger.LogDebug("Finished getting Protective Word {Phn}", phn.Substring(0, 3));
+                return retVal;
+            }
         }
     }
 }
