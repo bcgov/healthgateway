@@ -10,7 +10,7 @@ describe("Provision", () => {
         );
     });
 
-    it.only("Create, search, update, delete user.", () => {
+    it("Provision user.", () => {
         cy.log("Create user.");
 
         cy.get("[data-testid=create-btn]").click({ force: true });
