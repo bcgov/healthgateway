@@ -18,7 +18,7 @@
             DataTestId="update-error-alert">
             @UpdateErrorMessage
         </HgBannerFeedback>
-        <MudForm @ref="Form" data-testid="broadcast-dialog-modal-text">
+        <MudForm @ref="Form" data-testid="provision-dialog-modal-text">
             <MudGrid Spacing="0">
                 <MudItem xs="12">
                     <HgTextField
@@ -62,7 +62,7 @@
                                data-testid="roles-select">
                         @foreach (IdentityAccessRole role in AccessRoles)
                         {
-                            <MudSelectItem Value="@role" data-testid="query-type">@role.ToString()</MudSelectItem>
+                            <MudSelectItem Value="@role" data-testid="role">@role.ToString()</MudSelectItem>
                         }
                     </MudSelect>
                 </MudItem>

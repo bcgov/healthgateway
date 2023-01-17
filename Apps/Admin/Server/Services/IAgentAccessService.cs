@@ -35,10 +35,10 @@ namespace HealthGateway.Admin.Server.Services
         /// <summary>
         /// Retrieves agents with access to the admin website that match the query.
         /// </summary>
-        /// <param name="queryString">The query string to match agents against.</param>
+        /// <param name="searchString">The query string to match agents against.</param>
         /// <param name="resultLimit">The maximum number of results to return.</param>
         /// <returns>The collection of matching agents.</returns>
-        Task<IEnumerable<AdminAgent>> GetAgentsAsync(string queryString, int? resultLimit = 25);
+        Task<IEnumerable<AdminAgent>> GetAgentsAsync(string searchString, int? resultLimit = 25);
 
         /// <summary>
         /// Updates agent access to the admin website.
