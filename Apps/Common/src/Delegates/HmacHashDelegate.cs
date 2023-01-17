@@ -96,7 +96,7 @@ namespace HealthGateway.Common.Delegates
         /// <param name="key">The key to hash and compare.</param>
         /// <param name="compareHash">The hash object to compare.</param>
         /// <returns>true if the key generates the same hash.</returns>
-        public static bool Compare(string? key, HmacHash? compareHash)
+        private static bool Compare(string? key, HmacHash? compareHash)
         {
             bool result;
             if (key != null && compareHash != null && compareHash.Hash != null && compareHash.Salt != null)

@@ -33,8 +33,11 @@ namespace HealthGateway.MedicationTests.Delegates
     using HealthGateway.Medication.Constants;
     using HealthGateway.Medication.Delegates;
     using HealthGateway.Medication.Models.ODR;
+    using Microsoft.Extensions.Caching.Distributed;
+    using Microsoft.Extensions.Caching.Memory;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.Logging;
+    using Microsoft.Extensions.Options;
     using Moq;
     using Xunit;
 
@@ -56,6 +59,7 @@ namespace HealthGateway.MedicationTests.Delegates
             EndDate = DateTime.Now,
             Phn = "9735361219",
         };
+        private readonly DistributedCacheProvider cacheProvider;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="MedicationDelegateTests"/> class.
@@ -65,6 +69,7 @@ namespace HealthGateway.MedicationTests.Delegates
             this.configuration = GetIConfigurationRoot();
             this.configuration.Bind(this.odrConfigSectionKey, this.odrConfig);
             this.loggerFactory = LoggerFactory.Create(builder => builder.AddConsole());
+            this.cacheProvider = new DistributedCacheProvider(new MemoryDistributedCache(Options.Create(new MemoryDistributedCacheOptions())));
         }
 
         /// <summary>
@@ -220,7 +225,6 @@ namespace HealthGateway.MedicationTests.Delegates
             mockOdrApi.Setup(s => s.GetProtectiveWordAsync(It.IsAny<ProtectiveWord>()))
                 .ReturnsAsync(protectiveWord);
 
-            Mock<ICacheProvider> mockCacheProvider = new();
             Mock<IHashDelegate> mockHashDelegate = new();
             IHash hash = new HmacHash
             {
@@ -232,7 +236,7 @@ namespace HealthGateway.MedicationTests.Delegates
                 this.loggerFactory.CreateLogger<RestMedStatementDelegate>(),
                 mockOdrApi.Object,
                 this.configuration,
-                mockCacheProvider.Object,
+                this.cacheProvider,
                 mockHashDelegate.Object);
 
             RequestResult<MedicationHistoryResponse> response = Task.Run(
@@ -256,7 +260,6 @@ namespace HealthGateway.MedicationTests.Delegates
         [Fact]
         public void ValidateGetMedicationStatementHttpError()
         {
-            Mock<ICacheProvider> mockCacheProvider = new();
             Mock<IHashDelegate> mockHashDelegate = new();
             IHash hash = new HmacHash
             {
@@ -273,7 +276,7 @@ namespace HealthGateway.MedicationTests.Delegates
                 this.loggerFactory.CreateLogger<RestMedStatementDelegate>(),
                 mockOdrApi.Object,
                 this.configuration,
-                mockCacheProvider.Object,
+                this.cacheProvider,
                 mockHashDelegate.Object);
 
             RequestResult<MedicationHistoryResponse> response = Task.Run(
@@ -295,7 +298,6 @@ namespace HealthGateway.MedicationTests.Delegates
         [Fact]
         public void ValidateGetMedicationStatementHttpException()
         {
-            Mock<ICacheProvider> mockCacheProvider = new();
             Mock<IHashDelegate> mockHashDelegate = new();
             IHash hash = new HmacHash
             {
@@ -313,7 +315,7 @@ namespace HealthGateway.MedicationTests.Delegates
                 this.loggerFactory.CreateLogger<RestMedStatementDelegate>(),
                 mockOdrApi.Object,
                 this.configuration,
-                mockCacheProvider.Object,
+                this.cacheProvider,
                 mockHashDelegate.Object);
 
             RequestResult<MedicationHistoryResponse> response = Task.Run(
