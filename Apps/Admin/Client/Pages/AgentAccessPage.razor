@@ -110,6 +110,17 @@
         </PagerContent>
     </MudTable>
 
+    @if (Agents.Count() == SearchResultLimit)
+    {
+        <MudAlert
+            Class="mt-4"
+            Variant="Variant.Text"
+            Severity="@Severity.Warning"
+            data-testid="result-limit-alert">
+            There may be more than @SearchResultLimit results. Consider refining your search.
+        </MudAlert>
+    }
+
     <MudMessageBox @ref="DeleteConfirmation" Title="Delete Agent">
         <MessageContent>
             <span data-testid="confirm-delete-message">
