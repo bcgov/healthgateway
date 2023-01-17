@@ -17,7 +17,6 @@ namespace HealthGateway.Common.AspNetConfiguration.Modules
 {
     using System.Diagnostics.CodeAnalysis;
     using HealthGateway.Common.CacheProviders;
-    using Microsoft.Extensions.Caching.Distributed;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.DependencyInjection.Extensions;
@@ -40,12 +39,7 @@ namespace HealthGateway.Common.AspNetConfiguration.Modules
         public static void ConfigureCaching(IServiceCollection services, ILogger logger, IConfiguration configuration, string? keyPrefix = null)
         {
             EnableRedis(services, logger, configuration);
-            services.TryAddSingleton<ICacheProvider>(
-                sp =>
-                {
-                    IDistributedCache cache = sp.GetRequiredService<IDistributedCache>();
-                    return new DistributedCacheProvider(cache, keyPrefix);
-                });
+            services.TryAddSingleton<ICacheProvider, RedisCacheProvider>();
         }
 
         /// <summary>
