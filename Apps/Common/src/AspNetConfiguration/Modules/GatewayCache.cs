@@ -16,10 +16,10 @@
 namespace HealthGateway.Common.AspNetConfiguration.Modules
 {
     using System.Diagnostics.CodeAnalysis;
-    using System.Linq;
     using HealthGateway.Common.CacheProviders;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
+    using Microsoft.Extensions.DependencyInjection.Extensions;
     using Microsoft.Extensions.Logging;
     using StackExchange.Redis;
 
@@ -35,18 +35,11 @@ namespace HealthGateway.Common.AspNetConfiguration.Modules
         /// <param name="services">The services collection provider.</param>
         /// <param name="logger">The logger to use.</param>
         /// <param name="configuration">The configuration to use.</param>
-        public static void ConfigureCaching(IServiceCollection services, ILogger logger, IConfiguration configuration)
+        /// <param name="keyPrefix">an optional prefix that is appended to all keys.</param>
+        public static void ConfigureCaching(IServiceCollection services, ILogger logger, IConfiguration configuration, string? keyPrefix = null)
         {
-            if (services.All(x => x.ServiceType != typeof(ICacheProvider)))
-            {
-                logger.LogInformation("Configure Caching...");
-                EnableRedis(services, logger, configuration);
-                services.AddSingleton<ICacheProvider, RedisCacheProvider>();
-            }
-            else
-            {
-                logger.LogInformation("Caching previously configured skipping...");
-            }
+            EnableRedis(services, logger, configuration);
+            services.TryAddSingleton<ICacheProvider, RedisCacheProvider>();
         }
 
         /// <summary>
@@ -57,19 +50,17 @@ namespace HealthGateway.Common.AspNetConfiguration.Modules
         /// <param name="configuration">The configuration to use.</param>
         public static void EnableRedis(IServiceCollection services, ILogger logger, IConfiguration configuration)
         {
-            if (services.All(x => x.ServiceType != typeof(IConnectionMultiplexer)))
+            string? connectionString = configuration.GetValue<string>("RedisConnection");
+            if (string.IsNullOrEmpty(connectionString))
             {
-                string? connectionString = configuration.GetValue<string>("RedisConnection");
-                if (string.IsNullOrEmpty(connectionString))
-                {
-                    logger.LogWarning("Cache Connection string is null/empty and caching likely broken");
-                }
-
-                services.AddSingleton<IConnectionMultiplexer>(_ => ConnectionMultiplexer.Connect(connectionString));
+                logger.LogWarning("Redis cache Connection string is null/empty and caching likely broken. Configuring in memory cache instead.");
+                services.AddDistributedMemoryCache();
             }
             else
             {
-                logger.LogInformation("Redis Multiplexer previously configured, skipping...");
+                logger.LogInformation("Configuring Redis cache");
+                services.AddStackExchangeRedisCache(options => { options.Configuration = connectionString; });
+                services.TryAddSingleton<IConnectionMultiplexer>(_ => ConnectionMultiplexer.Connect(connectionString));
             }
         }
     }

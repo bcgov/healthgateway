@@ -24,16 +24,9 @@ namespace HealthGateway.Admin.Client.Store.Configuration
     using Microsoft.Extensions.Logging;
     using Refit;
 
-    /// <summary>
-    /// The effects for the feature.
-    /// </summary>
+#pragma warning disable CS1591, SA1600
     public class ConfigurationEffects
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="ConfigurationEffects"/> class.
-        /// </summary>
-        /// <param name="logger">The injected logger.</param>
-        /// <param name="configApi">the injected api to query the configuration. </param>
         public ConfigurationEffects(ILogger<ConfigurationEffects> logger, IConfigurationApi configApi)
         {
             this.Logger = logger;
@@ -46,11 +39,6 @@ namespace HealthGateway.Admin.Client.Store.Configuration
         [Inject]
         private IConfigurationApi ConfigApi { get; set; }
 
-        /// <summary>
-        /// Handler that calls the service and dispatch the actions.
-        /// </summary>
-        /// <param name="dispatcher">Dispatch the actions.</param>
-        /// <returns>A <see cref="Task"/> representing the result of the asynchronous operation.</returns>
         [EffectMethod(typeof(ConfigurationActions.LoadAction))]
         public async Task HandleLoadAction(IDispatcher dispatcher)
         {

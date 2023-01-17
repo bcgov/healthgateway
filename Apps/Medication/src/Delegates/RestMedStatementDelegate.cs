@@ -34,7 +34,7 @@ namespace HealthGateway.Medication.Delegates
     using HealthGateway.Medication.Models.ODR;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.Logging;
-    using ApiException = Refit.ApiException;
+    using Refit;
 
     /// <summary>
     /// ODR Implementation for Rest Medication Statements.
@@ -151,7 +151,7 @@ namespace HealthGateway.Medication.Delegates
                     this.logger.LogDebug("Attempting to fetch Protective Word from Cache");
                     using (Source.StartActivity("GetCacheObject"))
                     {
-                        cacheHash = this.cacheProvider.GetItem<HmacHash>($"{ProtectiveWordCacheDomain}:{hdid}");
+                        cacheHash = await this.cacheProvider.GetItemAsync<HmacHash>($"{ProtectiveWordCacheDomain}:{hdid}").ConfigureAwait(true);
                     }
                 }
 

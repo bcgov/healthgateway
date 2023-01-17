@@ -203,6 +203,30 @@ public static class AgentAccessReducers
         };
     }
 
+    [ReducerMethod(typeof(AgentAccessActions.ClearAddErrorAction))]
+    public static AgentAccessState ReduceClearAddErrorAction(AgentAccessState state)
+    {
+        return state with
+        {
+            Add = state.Add with
+            {
+                Error = null,
+            },
+        };
+    }
+
+    [ReducerMethod(typeof(AgentAccessActions.ClearUpdateErrorAction))]
+    public static AgentAccessState ReduceClearUpdateErrorAction(AgentAccessState state)
+    {
+        return state with
+        {
+            Update = state.Update with
+            {
+                Error = null,
+            },
+        };
+    }
+
     [ReducerMethod(typeof(AgentAccessActions.ResetStateAction))]
     public static AgentAccessState ReduceResetStateAction(AgentAccessState state)
     {

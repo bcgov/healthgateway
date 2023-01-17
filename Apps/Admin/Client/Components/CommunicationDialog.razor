@@ -5,7 +5,16 @@
 
 <MudDialog>
     <DialogContent>
-        <HgBannerFeedback Severity="@Severity.Error" IsEnabled="@(HasAddError || HasUpdateError)" TResetAction="@CommunicationsActions.ResetStateAction">
+        <HgBannerFeedback
+            Severity="@Severity.Error"
+            IsEnabled="@HasAddError"
+            TResetAction="@CommunicationsActions.AddAction">
+            @ErrorMessage
+        </HgBannerFeedback>
+        <HgBannerFeedback
+            Severity="@Severity.Error"
+            IsEnabled="@HasUpdateError"
+            TResetAction="@CommunicationsActions.UpdateAction">
             @ErrorMessage
         </HgBannerFeedback>
         <MudForm @ref="Form" data-testid="communication-dialog-modal-text">

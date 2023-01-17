@@ -17,16 +17,9 @@ namespace HealthGateway.Admin.Client.Store.Analytics;
 
 using Fluxor;
 
-/// <summary>
-/// The set of reducers for the feature.
-/// </summary>
+#pragma warning disable CS1591, SA1600
 public static class AnalyticsReducers
 {
-    /// <summary>
-    /// The Reducer for the load user profiles action.
-    /// </summary>
-    /// <param name="state">The user profiles state.</param>
-    /// <returns>The new user profiles state.</returns>
     [ReducerMethod(typeof(AnalyticsActions.LoadUserProfilesAction))]
     public static AnalyticsState ReduceLoadUserProfilesAction(AnalyticsState state)
     {
@@ -36,11 +29,6 @@ public static class AnalyticsReducers
         };
     }
 
-    /// <summary>
-    /// The Reducer for the load comments action.
-    /// </summary>
-    /// <param name="state">The comments state.</param>
-    /// <returns>The new comments state.</returns>
     [ReducerMethod(typeof(AnalyticsActions.LoadCommentsAction))]
     public static AnalyticsState ReduceLoadCommentsAction(AnalyticsState state)
     {
@@ -50,11 +38,6 @@ public static class AnalyticsReducers
         };
     }
 
-    /// <summary>
-    /// The Reducer for the load notes action.
-    /// </summary>
-    /// <param name="state">The notes state.</param>
-    /// <returns>The new notes state.</returns>
     [ReducerMethod(typeof(AnalyticsActions.LoadNotesAction))]
     public static AnalyticsState ReduceLoadNotesAction(AnalyticsState state)
     {
@@ -64,11 +47,6 @@ public static class AnalyticsReducers
         };
     }
 
-    /// <summary>
-    /// The Reducer for the load ratings action.
-    /// </summary>
-    /// <param name="state">The ratings state.</param>
-    /// <returns>The new ratings state.</returns>
     [ReducerMethod(typeof(AnalyticsActions.LoadRatingsAction))]
     public static AnalyticsState ReduceLoadRatingsAction(AnalyticsState state)
     {
@@ -78,11 +56,6 @@ public static class AnalyticsReducers
         };
     }
 
-    /// <summary>
-    /// The Reducer for the load inactive users action.
-    /// </summary>
-    /// <param name="state">The inactive users state.</param>
-    /// <returns>The new inactive users state.</returns>
     [ReducerMethod(typeof(AnalyticsActions.LoadInactiveUsersAction))]
     public static AnalyticsState ReduceLoadInactiveUsersAction(AnalyticsState state)
     {
@@ -92,11 +65,6 @@ public static class AnalyticsReducers
         };
     }
 
-    /// <summary>
-    /// The Reducer for the load user feedback action.
-    /// </summary>
-    /// <param name="state">The user feedback state.</param>
-    /// <returns>The new user feedback state.</returns>
     [ReducerMethod(typeof(AnalyticsActions.LoadUserFeedbackAction))]
     public static AnalyticsState ReduceLoadUserFeedbackAction(AnalyticsState state)
     {
@@ -106,11 +74,6 @@ public static class AnalyticsReducers
         };
     }
 
-    /// <summary>
-    /// The Reducer for the load year of birth counts action.
-    /// </summary>
-    /// <param name="state">The year of birth counts state.</param>
-    /// <returns>The new year of birth counts state.</returns>
     [ReducerMethod(typeof(AnalyticsActions.LoadYearOfBirthCountsAction))]
     public static AnalyticsState ReduceYearOfBirthCountsAction(AnalyticsState state)
     {
@@ -120,12 +83,6 @@ public static class AnalyticsReducers
         };
     }
 
-    /// <summary>
-    /// The Reducer for the load success action.
-    /// </summary>
-    /// <param name="state">The analytics state.</param>
-    /// <param name="action">The load success action.</param>
-    /// <returns>The new analytics state.</returns>
     [ReducerMethod]
     public static AnalyticsState ReduceLoadSuccessAction(AnalyticsState state, AnalyticsActions.LoadSuccessAction action)
     {
@@ -137,12 +94,6 @@ public static class AnalyticsReducers
         };
     }
 
-    /// <summary>
-    /// The Reducer for the analytics load fail action.
-    /// </summary>
-    /// <param name="state">The analytics state.</param>
-    /// <param name="action">The load fail action.</param>
-    /// <returns>The new analytics state.</returns>
     [ReducerMethod]
     public static AnalyticsState ReduceLoadFailAction(AnalyticsState state, AnalyticsActions.LoadFailAction action)
     {
@@ -154,11 +105,6 @@ public static class AnalyticsReducers
         };
     }
 
-    /// <summary>
-    /// The Reducer for the reset inactive users state action.
-    /// </summary>
-    /// <param name="state">The inactive users state.</param>
-    /// <returns>The empty state.</returns>
     [ReducerMethod(typeof(AnalyticsActions.ResetStateAction))]
     public static AnalyticsState ReduceResetAction(AnalyticsState state)
     {

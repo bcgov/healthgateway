@@ -20,16 +20,9 @@ namespace HealthGateway.Admin.Client.Store.MessageVerification
     using Fluxor;
     using HealthGateway.Common.Data.ViewModels;
 
-    /// <summary>
-    /// The set of reducers for the feature.
-    /// </summary>
+#pragma warning disable CS1591, SA1600
     public static class MessageVerificationReducers
     {
-        /// <summary>
-        /// The Reducer for loading the message verification.
-        /// </summary>
-        /// <param name="state">The message verification state.</param>
-        /// <returns>The new state.</returns>
         [ReducerMethod(typeof(MessageVerificationActions.LoadAction))]
         public static MessageVerificationState ReduceLoadAction(MessageVerificationState state)
         {
@@ -39,12 +32,6 @@ namespace HealthGateway.Admin.Client.Store.MessageVerification
             };
         }
 
-        /// <summary>
-        /// The Reducer for the load success action.
-        /// </summary>
-        /// <param name="state">The message verification state.</param>
-        /// <param name="action">The load success action.</param>
-        /// <returns>The new state.</returns>
         [ReducerMethod]
         public static MessageVerificationState ReduceLoadSuccessAction(MessageVerificationState state, MessageVerificationActions.LoadSuccessAction action)
         {
@@ -65,12 +52,6 @@ namespace HealthGateway.Admin.Client.Store.MessageVerification
             };
         }
 
-        /// <summary>
-        /// The Reducer for the fail action.
-        /// </summary>
-        /// <param name="state">The message verification state.</param>
-        /// <param name="action">The load fail action.</param>
-        /// <returns>The new state.</returns>
         [ReducerMethod]
         public static MessageVerificationState ReduceLoadFailAction(MessageVerificationState state, MessageVerificationActions.LoadFailAction action)
         {
@@ -81,11 +62,6 @@ namespace HealthGateway.Admin.Client.Store.MessageVerification
             };
         }
 
-        /// <summary>
-        /// The Reducer for the reset state action.
-        /// </summary>
-        /// <param name="state">The message verification state.</param>
-        /// <returns>The empty state.</returns>
         [ReducerMethod(typeof(MessageVerificationActions.ResetStateAction))]
         public static MessageVerificationState ReduceResetStateAction(MessageVerificationState state)
         {

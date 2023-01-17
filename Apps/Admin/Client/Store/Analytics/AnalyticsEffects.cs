@@ -22,16 +22,9 @@ using HealthGateway.Admin.Client.Api;
 using Microsoft.AspNetCore.Components;
 using Microsoft.Extensions.Logging;
 
-/// <summary>
-/// The effects for the feature.
-/// </summary>
+#pragma warning disable CS1591, SA1600
 public class AnalyticsEffects
 {
-    /// <summary>
-    /// Initializes a new instance of the <see cref="AnalyticsEffects"/> class.
-    /// </summary>
-    /// <param name="logger">The injected logger.</param>
-    /// <param name="analyticsApi">the injected api to query the analytics service. </param>
     public AnalyticsEffects(ILogger<AnalyticsEffects> logger, IAnalyticsApi analyticsApi)
     {
         this.Logger = logger;
@@ -44,12 +37,6 @@ public class AnalyticsEffects
     [Inject]
     private IAnalyticsApi AnalyticsApi { get; set; }
 
-    /// <summary>
-    /// Handler that calls the user profiles service and dispatch the actions.
-    /// </summary>
-    /// <param name="action">Load the initial action.</param>
-    /// <param name="dispatcher">Dispatch the actions.</param>
-    /// <returns>A <see cref="Task"/> representing the result of the asynchronous operation.</returns>
     [EffectMethod]
     public async Task HandleLoadAction(AnalyticsActions.LoadUserProfilesAction action, IDispatcher dispatcher)
     {
@@ -72,12 +59,6 @@ public class AnalyticsEffects
         dispatcher.Dispatch(new AnalyticsActions.LoadFailAction(error));
     }
 
-    /// <summary>
-    /// Handler that calls the comments service and dispatch the actions.
-    /// </summary>
-    /// <param name="action">Load the initial action.</param>
-    /// <param name="dispatcher">Dispatch the actions.</param>
-    /// <returns>A <see cref="Task"/> representing the result of the asynchronous operation.</returns>
     [EffectMethod]
     public async Task HandleLoadAction(AnalyticsActions.LoadCommentsAction action, IDispatcher dispatcher)
     {
@@ -100,12 +81,6 @@ public class AnalyticsEffects
         dispatcher.Dispatch(new AnalyticsActions.LoadFailAction(error));
     }
 
-    /// <summary>
-    /// Handler that calls the notes service and dispatch the actions.
-    /// </summary>
-    /// <param name="action">Load the initial action.</param>
-    /// <param name="dispatcher">Dispatch the actions.</param>
-    /// <returns>A <see cref="Task"/> representing the result of the asynchronous operation.</returns>
     [EffectMethod]
     public async Task HandleLoadAction(AnalyticsActions.LoadNotesAction action, IDispatcher dispatcher)
     {
@@ -128,12 +103,6 @@ public class AnalyticsEffects
         dispatcher.Dispatch(new AnalyticsActions.LoadFailAction(error));
     }
 
-    /// <summary>
-    /// Handler that calls the ratings service and dispatch the actions.
-    /// </summary>
-    /// <param name="action">Load the initial action.</param>
-    /// <param name="dispatcher">Dispatch the actions.</param>
-    /// <returns>A <see cref="Task"/> representing the result of the asynchronous operation.</returns>
     [EffectMethod]
     public async Task HandleLoadAction(AnalyticsActions.LoadRatingsAction action, IDispatcher dispatcher)
     {
@@ -156,12 +125,6 @@ public class AnalyticsEffects
         dispatcher.Dispatch(new AnalyticsActions.LoadFailAction(error));
     }
 
-    /// <summary>
-    /// Handler that calls the inactive users service and dispatch the actions.
-    /// </summary>
-    /// <param name="action">Load the initial action.</param>
-    /// <param name="dispatcher">Dispatch the actions.</param>
-    /// <returns>A <see cref="Task"/> representing the result of the asynchronous operation.</returns>
     [EffectMethod]
     public async Task HandleLoadAction(AnalyticsActions.LoadInactiveUsersAction action, IDispatcher dispatcher)
     {
@@ -184,12 +147,6 @@ public class AnalyticsEffects
         dispatcher.Dispatch(new AnalyticsActions.LoadFailAction(error));
     }
 
-    /// <summary>
-    /// Handler that calls the user feedback service and dispatches the actions.
-    /// </summary>
-    /// <param name="action">Load the initial action.</param>
-    /// <param name="dispatcher">Dispatch the actions.</param>
-    /// <returns>A <see cref="Task"/> representing the result of the asynchronous operation.</returns>
     [EffectMethod]
     public async Task HandleLoadAction(AnalyticsActions.LoadUserFeedbackAction action, IDispatcher dispatcher)
     {
@@ -212,12 +169,6 @@ public class AnalyticsEffects
         dispatcher.Dispatch(new AnalyticsActions.LoadFailAction(error));
     }
 
-    /// <summary>
-    /// Handler that calls the year of birth counts service and dispatch the actions.
-    /// </summary>
-    /// <param name="action">Load the initial action.</param>
-    /// <param name="dispatcher">Dispatch the actions.</param>
-    /// <returns>A <see cref="Task"/> representing the result of the asynchronous operation.</returns>
     [EffectMethod]
     public async Task HandleLoadAction(AnalyticsActions.LoadYearOfBirthCountsAction action, IDispatcher dispatcher)
     {

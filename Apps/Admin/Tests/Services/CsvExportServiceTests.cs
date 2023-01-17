@@ -14,7 +14,7 @@
 //  limitations under the License.
 // -------------------------------------------------------------------------
 
-namespace HealthGateway.Admin.Client.Service
+namespace HealthGateway.Admin.Tests.Services
 {
     using System;
     using System.Collections.Generic;
@@ -23,9 +23,9 @@ namespace HealthGateway.Admin.Client.Service
     using System.Linq;
     using AutoMapper;
     using DeepEqual.Syntax;
-    using HealthGateway.Admin.Client.Utils;
     using HealthGateway.Admin.Server.Models;
     using HealthGateway.Admin.Server.Services;
+    using HealthGateway.Admin.Tests.Utils;
     using HealthGateway.Common.AccessManagement.Administration.Models;
     using HealthGateway.Common.AccessManagement.Authentication;
     using HealthGateway.Common.Api;

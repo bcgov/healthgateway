@@ -29,16 +29,9 @@ using Microsoft.AspNetCore.Components;
 using Microsoft.Extensions.Logging;
 using Refit;
 
-/// <summary>
-/// The effects for the feature.
-/// </summary>
+#pragma warning disable CS1591, SA1600
 public class TagEffects
 {
-    /// <summary>
-    /// Initializes a new instance of the <see cref="TagEffects"/> class.
-    /// </summary>
-    /// <param name="logger">The injected logger.</param>
-    /// <param name="api">The injected API.</param>
     public TagEffects(ILogger<TagEffects> logger, ITagApi api)
     {
         this.Logger = logger;
@@ -51,12 +44,6 @@ public class TagEffects
     [Inject]
     private ITagApi Api { get; set; }
 
-    /// <summary>
-    /// Handler that calls the service and dispatches resulting actions.
-    /// </summary>
-    /// <param name="action">The triggering action.</param>
-    /// <param name="dispatcher">The injected dispatcher.</param>
-    /// <returns>A <see cref="Task"/> representing the result of the asynchronous operation.</returns>
     [EffectMethod]
     public async Task HandleAddAction(TagActions.AddAction action, IDispatcher dispatcher)
     {
@@ -76,11 +63,6 @@ public class TagEffects
         }
     }
 
-    /// <summary>
-    /// Handler that calls the service and dispatches resulting actions.
-    /// </summary>
-    /// <param name="dispatcher">The injected dispatcher.</param>
-    /// <returns>A <see cref="Task"/> representing the result of the asynchronous operation.</returns>
     [EffectMethod(typeof(TagActions.LoadAction))]
     public async Task HandleLoadAction(IDispatcher dispatcher)
     {
@@ -100,12 +82,6 @@ public class TagEffects
         }
     }
 
-    /// <summary>
-    /// Handler that calls the service and dispatches resulting actions.
-    /// </summary>
-    /// <param name="action">The triggering action.</param>
-    /// <param name="dispatcher">The injected dispatcher.</param>
-    /// <returns>A <see cref="Task"/> representing the result of the asynchronous operation.</returns>
     [EffectMethod]
     public async Task HandleDeleteAction(TagActions.DeleteAction action, IDispatcher dispatcher)
     {
