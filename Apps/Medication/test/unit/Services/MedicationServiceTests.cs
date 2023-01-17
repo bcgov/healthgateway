@@ -85,9 +85,8 @@ namespace HealthGateway.MedicationTests.Services
             mockDelegate.Setup(s => s.GetPharmaCareDrugsByDin(It.IsAny<List<string>>())).Returns(provData);
 
             using ILoggerFactory loggerFactory = LoggerFactory.Create(builder => builder.AddConsole());
-            ILogger<RestMedicationService> logger = loggerFactory.CreateLogger<RestMedicationService>();
 
-            IMedicationService service = new RestMedicationService(logger, mockDelegate.Object);
+            IMedicationService service = new RestMedicationService(mockDelegate.Object);
             IDictionary<string, MedicationInformation> actual = service.GetMedications(new List<string>());
             actual.ShouldDeepEqual(expected);
         }
@@ -133,9 +132,8 @@ namespace HealthGateway.MedicationTests.Services
             mockDelegate.Setup(s => s.GetPharmaCareDrugsByDin(It.IsAny<List<string>>())).Returns(provData);
 
             using ILoggerFactory loggerFactory = LoggerFactory.Create(builder => builder.AddConsole());
-            ILogger<RestMedicationService> logger = loggerFactory.CreateLogger<RestMedicationService>();
 
-            IMedicationService service = new RestMedicationService(logger, mockDelegate.Object);
+            IMedicationService service = new RestMedicationService(mockDelegate.Object);
             IDictionary<string, MedicationInformation> actual = service.GetMedications(new List<string>());
             actual.ShouldDeepEqual(expected);
         }

@@ -52,9 +52,6 @@ describe("Immunization - With Refresh", () => {
                 cy.get("[data-testid=forecastDueDate]")
                     .first()
                     .should("be.visible");
-                cy.get("[data-testid=forecastStatus]")
-                    .first()
-                    .should("be.visible");
             });
     });
 });

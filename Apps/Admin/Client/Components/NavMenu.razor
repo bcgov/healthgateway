@@ -41,4 +41,7 @@
     <AuthorizeView Roles="@($"{Roles.Admin},{Roles.Reviewer}")">
         <MudNavLink Href="support" Icon="@Icons.Material.Filled.PersonSearch">Support</MudNavLink>
     </AuthorizeView>
+    <AuthorizeView Roles="@Roles.Admin">
+        <MudNavLink Href="provision" Icon="fas fa-user-shield">Provision</MudNavLink>
+    </AuthorizeView>
 </MudNavMenu>

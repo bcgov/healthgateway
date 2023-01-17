@@ -19,15 +19,8 @@ namespace HealthGateway.Admin.Client.Store;
 /// <summary>
 /// A state holding information relating to an HTTP request.
 /// </summary>
-/// <typeparam name="TModel">The type of the model returned by the request.</typeparam>
-public record BaseRequestState<TModel>
-    where TModel : class
+public record BaseRequestState
 {
-    /// <summary>
-    /// Gets the result.
-    /// </summary>
-    public TModel? Result { get; init; }
-
     /// <summary>
     /// Gets the request error if available.
     /// </summary>
@@ -37,9 +30,22 @@ public record BaseRequestState<TModel>
     /// Gets a value indicating whether the request is loading.
     /// </summary>
     public bool IsLoading { get; init; }
+}
+
+/// <summary>
+/// A state holding information relating to an HTTP request that returns a result.
+/// </summary>
+/// <typeparam name="TModel">The type of the model returned by the request.</typeparam>
+public record BaseRequestState<TModel> : BaseRequestState
+    where TModel : class
+{
+    /// <summary>
+    /// Gets the result.
+    /// </summary>
+    public TModel? Result { get; init; }
 
     /// <summary>
-    /// Gets a value indicating whether the request has been loaded.
+    /// Gets a value indicating whether the result has been loaded.
     /// </summary>
     public bool Loaded => this.Result != null;
 }

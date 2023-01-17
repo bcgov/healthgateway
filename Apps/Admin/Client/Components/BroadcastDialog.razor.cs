@@ -73,9 +73,9 @@ public partial class BroadcastDialog : FluxorComponent
 
     private bool IsNewBroadcast => this.Broadcast.Id == Guid.Empty;
 
-    private bool HasAddError => this.BroadcastsState.Value.Add.Error != null && this.BroadcastsState.Value.Add.Error.Message.Length > 0;
+    private bool HasAddError => this.BroadcastsState.Value.Add.Error is { Message.Length: > 0 };
 
-    private bool HasUpdateError => this.BroadcastsState.Value.Update.Error != null && this.BroadcastsState.Value.Update.Error.Message.Length > 0;
+    private bool HasUpdateError => this.BroadcastsState.Value.Update.Error is { Message.Length: > 0 };
 
     private string? ErrorMessage => this.HasAddError ? this.BroadcastsState.Value.Add.Error?.Message : this.BroadcastsState.Value.Update.Error?.Message;
 
@@ -149,6 +149,8 @@ public partial class BroadcastDialog : FluxorComponent
 
     private void HandleClickCancel()
     {
+        this.Dispatcher.Dispatch(new BroadcastsActions.ClearAddErrorAction());
+        this.Dispatcher.Dispatch(new BroadcastsActions.ClearUpdateErrorAction());
         this.MudDialog.Cancel();
     }
 

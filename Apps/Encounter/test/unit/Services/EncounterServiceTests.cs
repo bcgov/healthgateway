@@ -284,6 +284,8 @@ namespace HealthGateway.EncounterTests.Services
             Assert.NotNull(actualResult.ResourcePayload);
             Assert.Empty(actualResult.ResourcePayload!.HospitalVisits);
             Assert.True(actualResult.TotalResultCount == 0);
+            Assert.True(actualResult.ResourcePayload.Loaded);
+            Assert.False(actualResult.ResourcePayload.Queued);
         }
 
         /// <summary>

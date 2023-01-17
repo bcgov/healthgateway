@@ -81,6 +81,7 @@ namespace HealthGateway.Admin.Server
             services.AddAutoMapper(typeof(Program), typeof(BroadcastProfile), typeof(UserProfileProfile), typeof(MessagingVerificationProfile));
 
             WebApplication app = builder.Build();
+            ExceptionHandling.UseProblemDetails(app);
             HttpWeb.UseForwardHeaders(app, logger, configuration);
             HttpWeb.UseHttp(app, logger, configuration, environment, true, false);
             HttpWeb.UseContentSecurityPolicy(app, configuration);
@@ -91,10 +92,6 @@ namespace HealthGateway.Admin.Server
             if (app.Environment.IsDevelopment())
             {
                 app.UseWebAssemblyDebugging();
-            }
-            else
-            {
-                app.UseExceptionHandler("/Error");
             }
 
             app.UseBlazorFrameworkFiles();
@@ -117,6 +114,7 @@ namespace HealthGateway.Admin.Server
             JobScheduler.ConfigureHangfireQueue(services, configuration);
             Patient.ConfigurePatientAccess(services, logger, configuration);
             PhsaV2.ConfigurePhsaV2Access(services, logger, configuration, PhsaConfigV2.AdminConfigurationSectionKey);
+            ExceptionHandling.ConfigureProblemDetails(services, environment);
         }
 
         private static void AddServices(IServiceCollection services)
@@ -129,6 +127,7 @@ namespace HealthGateway.Admin.Server
             services.AddTransient<ICsvExportService, CsvExportService>();
             services.AddTransient<IInactiveUserService, InactiveUserService>();
             services.AddTransient<ISupportService, SupportService>();
+            services.AddTransient<IAgentAccessService, AgentAccessService>();
         }
 
         private static void AddDelegates(IServiceCollection services)

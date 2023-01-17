@@ -16,6 +16,7 @@
 namespace HealthGateway.Common.CacheProviders
 {
     using System;
+    using System.Threading.Tasks;
     using Microsoft.Extensions.Caching.Memory;
 
     /// <summary>
@@ -36,7 +37,6 @@ namespace HealthGateway.Common.CacheProviders
 
         /// <inheritdoc/>
         public T? GetItem<T>(string key)
-            where T : class
         {
             this.memoryCache.TryGetValue(key, out T? cacheItem);
             return cacheItem;
@@ -44,7 +44,6 @@ namespace HealthGateway.Common.CacheProviders
 
         /// <inheritdoc/>
         public void AddItem<T>(string key, T value, TimeSpan? expiry = null)
-            where T : class
         {
             MemoryCacheEntryOptions cacheEntryOptions = new()
             {
@@ -57,6 +56,53 @@ namespace HealthGateway.Common.CacheProviders
         public void RemoveItem(string key)
         {
             this.memoryCache.Remove(key);
+        }
+
+        /// <inheritdoc/>
+        public T? GetOrSet<T>(string key, Func<T> valueGetter, TimeSpan? expiry = null)
+        {
+            T? item = this.GetItem<T>(key);
+            if (item == null)
+            {
+                item = valueGetter();
+                this.AddItem(key, item, expiry);
+            }
+
+            return item;
+        }
+
+        /// <inheritdoc/>
+        public async Task<T?> GetItemAsync<T>(string key)
+        {
+            await Task.CompletedTask.ConfigureAwait(true);
+            return this.GetItem<T?>(key);
+        }
+
+        /// <inheritdoc/>
+        public async Task AddItemAsync<T>(string key, T value, TimeSpan? expiry = null)
+        {
+            await Task.CompletedTask.ConfigureAwait(true);
+            this.AddItem(key, value, expiry);
+        }
+
+        /// <inheritdoc/>
+        public async Task RemoveItemAsync(string key)
+        {
+            await Task.CompletedTask.ConfigureAwait(true);
+            this.RemoveItem(key);
+        }
+
+        /// <inheritdoc/>
+        public async Task<T?> GetOrSetAsync<T>(string key, Func<Task<T>> valueGetter, TimeSpan? expiry = null)
+        {
+            T? item = await this.GetItemAsync<T>(key).ConfigureAwait(true);
+            if (item == null)
+            {
+                item = await valueGetter().ConfigureAwait(true);
+                await this.AddItemAsync(key, item, expiry).ConfigureAwait(true);
+            }
+
+            return item;
         }
     }
 }

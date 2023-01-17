@@ -13,25 +13,27 @@
 //  See the License for the specific language governing permissions and
 //  limitations under the License.
 // -------------------------------------------------------------------------
-namespace HealthGateway.Common.ErrorHandling
+
+namespace HealthGateway.Laboratory.Validations
 {
-    using System.Text.Json;
-    using Microsoft.AspNetCore.Mvc;
+    using FluentValidation;
+    using HealthGateway.Common.Data.Validations;
+    using HealthGateway.Laboratory.Models.PHSA;
 
     /// <summary>
-    /// Represents an api problem details model.
+    /// Validates <see cref="PublicLabTestKit"/>.
     /// </summary>
-    public class ApiProblemDetails : ProblemDetails
+    public class PublicLabTestKitValidator : AbstractValidator<PublicLabTestKit>
     {
         /// <summary>
-        /// Gets or sets additional info.
+        /// Initializes a new instance of the <see cref="PublicLabTestKitValidator"/> class.
         /// </summary>
-        public string? AdditionalInfo { get; set; }
-
-        /// <inheritdoc/>
-        public override string ToString()
+        public PublicLabTestKitValidator()
         {
-            return JsonSerializer.Serialize(this);
+            this.RuleFor(v => v.Phn).SetValidator(new PhnValidator()).When(v => !string.IsNullOrEmpty(v.Phn));
+            this.RuleFor(v => v.StreetAddress).NotEmpty().When(v => string.IsNullOrEmpty(v.Phn));
+            this.RuleFor(v => v.PostalOrZip).NotEmpty().When(v => string.IsNullOrEmpty(v.Phn));
+            this.RuleFor(v => v.City).NotEmpty().When(v => string.IsNullOrEmpty(v.Phn));
         }
     }
 }

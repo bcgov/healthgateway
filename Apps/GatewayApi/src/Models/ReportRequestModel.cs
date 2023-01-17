@@ -22,7 +22,7 @@ namespace HealthGateway.GatewayApi.Models
     /// <summary>
     /// The report format type enum.
     /// </summary>
-    [JsonConverter(typeof(JsonStringEnumConverter))]
+    [JsonConverter(typeof(JsonStringEnumMemberConverter))]
     public enum ReportFormatType
     {
         /// <summary>
@@ -47,7 +47,7 @@ namespace HealthGateway.GatewayApi.Models
     /// <summary>
     /// The report template type enum.
     /// </summary>
-    [JsonConverter(typeof(JsonStringEnumConverter))]
+    [JsonConverter(typeof(JsonStringEnumMemberConverter))]
     public enum TemplateType
     {
         /// <summary>
@@ -73,6 +73,7 @@ namespace HealthGateway.GatewayApi.Models
         /// <summary>
         /// Indicates a Covid Test Results template type.
         /// </summary>
+        [EnumMember(Value = "COVID")]
         Covid,
 
         /// <summary>

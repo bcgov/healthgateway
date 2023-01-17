@@ -1,11 +1,20 @@
 @using HealthGateway.Admin.Client.Store.Communications
-@using HealthGateway.Common.Data.Utils
+@using System.Globalization
 @using HealthGateway.Common.Data.Constants
 @inherits Fluxor.Blazor.Web.Components.FluxorComponent
 
 <MudDialog>
     <DialogContent>
-        <HgBannerFeedback Severity="@Severity.Error" IsEnabled="@(HasAddError || HasUpdateError)" TResetAction="@CommunicationsActions.ResetStateAction">
+        <HgBannerFeedback
+            Severity="@Severity.Error"
+            IsEnabled="@HasAddError"
+            TResetAction="@CommunicationsActions.AddAction">
+            @ErrorMessage
+        </HgBannerFeedback>
+        <HgBannerFeedback
+            Severity="@Severity.Error"
+            IsEnabled="@HasUpdateError"
+            TResetAction="@CommunicationsActions.UpdateAction">
             @ErrorMessage
         </HgBannerFeedback>
         <MudForm @ref="Form" data-testid="communication-dialog-modal-text">
@@ -16,7 +25,8 @@
                                    Label="Effective Date"
                                    Required="@true"
                                    PickerVariant="@PickerVariant.Dialog"
-                                   Culture="@DateFormatter.CanadianCulture"
+                                   Culture="@CultureInfo.InvariantCulture"
+                                   DateFormat="yyyy-MM-dd"
                                    AutoClose="@true"
                                    DisableToolbar="@true"
                                    Variant="@Variant.Filled"
@@ -65,7 +75,8 @@
                                    Label="Expiry Date"
                                    Required="@true"
                                    PickerVariant="@PickerVariant.Dialog"
-                                   Culture="@DateFormatter.CanadianCulture"
+                                   Culture="@CultureInfo.InvariantCulture"
+                                   DateFormat="yyyy-MM-dd"
                                    AutoClose="@true"
                                    DisableToolbar="@true"
                                    Variant="@Variant.Filled"

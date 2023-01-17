@@ -46,7 +46,7 @@ namespace HealthGateway.PatientTests.Delegates
         /// </summary>
         /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
         [Fact]
-        public async Task GetDemographicsThrowsApiExceptionGivenNoHdid()
+        public async Task GetDemographicsThrowsProblemDetailsExceptionGivenNoHdid()
         {
             // Setup
             string expectedResponseCode = "BCHCIM.GD.0.0013";
@@ -132,8 +132,8 @@ namespace HealthGateway.PatientTests.Delegates
             }
 
             // Verify
-            ApiException exception = await Assert.ThrowsAsync<ApiException>(Actual).ConfigureAwait(true);
-            Assert.Equal(ErrorMessages.InvalidServicesCard, exception.Detail);
+            ProblemDetailsException exception = await Assert.ThrowsAsync<ProblemDetailsException>(Actual).ConfigureAwait(true);
+            Assert.Equal(ErrorMessages.InvalidServicesCard, exception.ProblemDetails!.Detail);
         }
 
         /// <summary>
@@ -365,7 +365,7 @@ namespace HealthGateway.PatientTests.Delegates
         /// </summary>
         /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
         [Fact]
-        public async Task GetDemographicsThrowsApiExceptionGivenInvalidIdentifier()
+        public async Task GetDemographicsThrowsProblemDetailsExceptionGivenInvalidIdentifier()
         {
             // Setup
             string hdid = "EXTRIOYFPNX35TWEBUAJ3DNFDFXSYTBC6J4M76GYE3HC5ER2NKWQ";
@@ -461,8 +461,8 @@ namespace HealthGateway.PatientTests.Delegates
             }
 
             // Verify
-            ApiException exception = await Assert.ThrowsAsync<ApiException>(Actual).ConfigureAwait(true);
-            Assert.Equal(ErrorMessages.InvalidServicesCard, exception.Detail);
+            ProblemDetailsException exception = await Assert.ThrowsAsync<ProblemDetailsException>(Actual).ConfigureAwait(true);
+            Assert.Equal(ErrorMessages.InvalidServicesCard, exception.ProblemDetails!.Detail);
         }
 
         /// <summary>
@@ -1150,7 +1150,7 @@ namespace HealthGateway.PatientTests.Delegates
         /// </summary>
         /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
         [Fact]
-        public async Task GetDemographicsThrowsApiExceptionGivenNoLegalName()
+        public async Task GetDemographicsThrowsProblemDetailsExceptionGivenNoLegalName()
         {
             // Setup
             IClientRegistriesDelegate clientRegistryDelegate = GetClientRegistriesDelegate(false, true);
@@ -1162,8 +1162,8 @@ namespace HealthGateway.PatientTests.Delegates
             }
 
             // Verify
-            ApiException exception = await Assert.ThrowsAsync<ApiException>(Actual).ConfigureAwait(true);
-            Assert.Equal(ErrorMessages.InvalidServicesCard, exception.Detail);
+            ProblemDetailsException exception = await Assert.ThrowsAsync<ProblemDetailsException>(Actual).ConfigureAwait(true);
+            Assert.Equal(ErrorMessages.InvalidServicesCard, exception.ProblemDetails!.Detail);
         }
 
         /// <summary>
@@ -1171,7 +1171,7 @@ namespace HealthGateway.PatientTests.Delegates
         /// </summary>
         /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
         [Fact]
-        public async Task GetDemographicsThrowsApiExceptionGivenNoIds()
+        public async Task GetDemographicsThrowsProblemDetailsExceptionGivenNoIds()
         {
             // Setup
             IClientRegistriesDelegate clientRegistryDelegate = GetClientRegistriesDelegate(false, false, true);
@@ -1183,8 +1183,8 @@ namespace HealthGateway.PatientTests.Delegates
             }
 
             // Verify
-            ApiException exception = await Assert.ThrowsAsync<ApiException>(Actual).ConfigureAwait(true);
-            Assert.Equal(ErrorMessages.InvalidServicesCard, exception.Detail);
+            ProblemDetailsException exception = await Assert.ThrowsAsync<ProblemDetailsException>(Actual).ConfigureAwait(true);
+            Assert.Equal(ErrorMessages.InvalidServicesCard, exception.ProblemDetails!.Detail);
         }
 
         /// <summary>
@@ -1192,7 +1192,7 @@ namespace HealthGateway.PatientTests.Delegates
         /// </summary>
         /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
         [Fact]
-        public async Task GetDemographicsThrowsApiExceptionGivenDeceasedIndicatorTrue()
+        public async Task GetDemographicsThrowsProblemDetailsExceptionGivenDeceasedIndicatorTrue()
         {
             // Setup
             IClientRegistriesDelegate clientRegistryDelegate = GetClientRegistriesDelegate(true);
@@ -1204,8 +1204,8 @@ namespace HealthGateway.PatientTests.Delegates
             }
 
             // Verify
-            ApiException exception = await Assert.ThrowsAsync<ApiException>(Actual).ConfigureAwait(true);
-            Assert.Equal(ErrorMessages.ClientRegistryReturnedDeceasedPerson, exception.Detail);
+            ProblemDetailsException exception = await Assert.ThrowsAsync<ProblemDetailsException>(Actual).ConfigureAwait(true);
+            Assert.Equal(ErrorMessages.ClientRegistryReturnedDeceasedPerson, exception.ProblemDetails!.Detail);
         }
 
         /// <summary>
@@ -1231,7 +1231,7 @@ namespace HealthGateway.PatientTests.Delegates
         /// </summary>
         /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
         [Fact]
-        public async Task GetDemographicsThrowsApiPatientExceptionGivenClientRegistryRecordsNotFound()
+        public async Task GetDemographicsThrowsProblemDetailsExceptionGivenClientRegistryRecordsNotFound()
         {
             // Setup
             string expectedResponseCode = "BCHCIM.GD.2.0018";
@@ -1244,8 +1244,8 @@ namespace HealthGateway.PatientTests.Delegates
             }
 
             // Verify
-            ApiException exception = await Assert.ThrowsAsync<ApiException>(Actual).ConfigureAwait(true);
-            Assert.Equal(ErrorMessages.ClientRegistryRecordsNotFound, exception.Detail);
+            ProblemDetailsException exception = await Assert.ThrowsAsync<ProblemDetailsException>(Actual).ConfigureAwait(true);
+            Assert.Equal(ErrorMessages.ClientRegistryRecordsNotFound, exception.ProblemDetails!.Detail);
         }
 
         /// <summary>
@@ -1253,7 +1253,7 @@ namespace HealthGateway.PatientTests.Delegates
         /// </summary>
         /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
         [Fact]
-        public async Task GetDemographicsThrowsApiPatientExceptionGivenClientRegistryDoesNotReturnPerson()
+        public async Task GetDemographicsThrowsProblemDetailsExceptionGivenClientRegistryDoesNotReturnPerson()
         {
             // Setup
             string expectedResponseCode = "BCHCIM.GD.0.0099";
@@ -1266,8 +1266,8 @@ namespace HealthGateway.PatientTests.Delegates
             }
 
             // Verify
-            ApiException exception = await Assert.ThrowsAsync<ApiException>(Actual).ConfigureAwait(true);
-            Assert.Equal(ErrorMessages.ClientRegistryDoesNotReturnPerson, exception.Detail);
+            ProblemDetailsException exception = await Assert.ThrowsAsync<ProblemDetailsException>(Actual).ConfigureAwait(true);
+            Assert.Equal(ErrorMessages.ClientRegistryDoesNotReturnPerson, exception.ProblemDetails!.Detail);
         }
 
         /// <summary>
@@ -1275,7 +1275,7 @@ namespace HealthGateway.PatientTests.Delegates
         /// </summary>
         /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
         [Fact]
-        public async Task GetDemographicsThrowsApiPatientExceptionGivenClientRegistryPhnInvalid()
+        public async Task GetDemographicsThrowsProblemDetailsExceptionGivenClientRegistryPhnInvalid()
         {
             // Setup
             string expectedResponseCode = "BCHCIM.GD.2.0006";
@@ -1288,8 +1288,8 @@ namespace HealthGateway.PatientTests.Delegates
             }
 
             // Verify
-            ApiException exception = await Assert.ThrowsAsync<ApiException>(Actual).ConfigureAwait(true);
-            Assert.Equal(ErrorMessages.PhnInvalid, exception.Detail);
+            ProblemDetailsException exception = await Assert.ThrowsAsync<ProblemDetailsException>(Actual).ConfigureAwait(true);
+            Assert.Equal(ErrorMessages.PhnInvalid, exception.ProblemDetails!.Detail);
         }
 
         private static IClientRegistriesDelegate GetClientRegistriesDelegate(

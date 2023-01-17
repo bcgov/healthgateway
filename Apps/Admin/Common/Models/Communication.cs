@@ -16,7 +16,6 @@
 namespace HealthGateway.Admin.Common.Models
 {
     using System;
-    using System.Text.Json.Serialization;
     using HealthGateway.Common.Data.Constants;
 
     /// <summary>
@@ -57,13 +56,11 @@ namespace HealthGateway.Admin.Common.Models
         /// <summary>
         /// Gets or sets the type of the Communication (Banner, In-App).
         /// </summary>
-        [JsonConverter(typeof(JsonStringEnumConverter))]
         public CommunicationType CommunicationTypeCode { get; set; } = CommunicationType.Banner;
 
         /// <summary>
         /// Gets or sets the state of the Communication (Draft, Pending, ...).
         /// </summary>
-        [JsonConverter(typeof(JsonStringEnumConverter))]
         public CommunicationStatus CommunicationStatusCode { get; set; } = CommunicationStatus.New;
 
         /// <summary>

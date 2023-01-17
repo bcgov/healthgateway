@@ -24,11 +24,12 @@ namespace HealthGateway.Laboratory.Services
     using HealthGateway.Common.AccessManagement.Authentication.Models;
     using HealthGateway.Common.Data.Constants;
     using HealthGateway.Common.Data.ErrorHandling;
-    using HealthGateway.Common.Data.Validations;
     using HealthGateway.Common.Data.ViewModels;
     using HealthGateway.Common.ErrorHandling;
+    using HealthGateway.Common.Factories;
     using HealthGateway.Laboratory.Api;
     using HealthGateway.Laboratory.Models.PHSA;
+    using HealthGateway.Laboratory.Validations;
     using Microsoft.AspNetCore.Http;
     using Microsoft.Extensions.Logging;
 
@@ -67,92 +68,53 @@ namespace HealthGateway.Laboratory.Services
         /// <inheritdoc/>
         public async Task<RequestResult<PublicLabTestKit>> RegisterLabTestKitAsync(PublicLabTestKit testKit)
         {
-            RequestResult<PublicLabTestKit> requestResult = InitializeResult(testKit);
             testKit.ShortCodeFirst = testKit.ShortCodeFirst?.ToUpper(CultureInfo.InvariantCulture);
             testKit.ShortCodeSecond = testKit.ShortCodeSecond?.ToUpper(CultureInfo.InvariantCulture);
-            bool validated;
-            if (!string.IsNullOrEmpty(testKit.Phn))
+
+            if (!new PublicLabTestKitValidator().Validate(testKit).IsValid)
             {
-                validated = PhnValidator.IsValid(testKit.Phn) &&
-                            string.IsNullOrEmpty(testKit.StreetAddress) &&
-                            string.IsNullOrEmpty(testKit.City) &&
-                            string.IsNullOrEmpty(testKit.PostalOrZip);
-            }
-            else
-            {
-                validated = !string.IsNullOrEmpty(testKit.StreetAddress) &&
-                            !string.IsNullOrEmpty(testKit.City) &&
-                            !string.IsNullOrEmpty(testKit.PostalOrZip);
+                return RequestResultFactory.ActionRequired<PublicLabTestKit>(ActionType.Validation, "Form data did not pass validation");
             }
 
-            if (validated)
+            // Use a system token
+            string? accessToken = this.authenticationDelegate.AuthenticateAsSystem(this.tokenUri, this.tokenRequest).AccessToken;
+            if (accessToken == null)
             {
-                // Use a system token
-                string? accessToken = this.authenticationDelegate.AuthenticateAsSystem(this.tokenUri, this.tokenRequest).AccessToken;
-                if (accessToken != null)
-                {
-                    try
-                    {
-                        string ipAddress = this.httpContextAccessor?.HttpContext?.Connection.RemoteIpAddress?.MapToIPv4().ToString() ?? "0.0.0.0";
-                        HttpResponseMessage response =
-                            await this.labTestKitApi.RegisterLabTestAsync(testKit, accessToken, ipAddress).ConfigureAwait(true);
-                        ProcessResponse(requestResult, response);
-                    }
-                    catch (HttpRequestException e)
-                    {
-                        this.logger.LogCritical("HTTP Request Exception {Exception}", e.ToString());
-                        requestResult.ResultError = new()
-                        {
-                            ResultMessage = "Error with HTTP Request",
-                            ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.Phsa),
-                        };
-                    }
-                }
-                else
-                {
-                    requestResult.ResultError = new()
-                    {
-                        ResultMessage = "Unable to acquire authentication token",
-                        ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.Keycloak),
-                    };
-                    this.logger.LogError("Unable to acquire authentication token");
-                }
-            }
-            else
-            {
-                requestResult.ResultError = ErrorTranslator.ActionRequired("Form data did not pass validation", ActionType.Validation);
-                requestResult.ResultStatus = ResultType.ActionRequired;
+                this.logger.LogError("Unable to acquire authentication token");
+                return RequestResultFactory.ServiceError<PublicLabTestKit>(ErrorType.CommunicationExternal, ServiceType.Keycloak, "Unable to acquire authentication token");
             }
 
-            return requestResult;
+            try
+            {
+                string ipAddress = this.httpContextAccessor?.HttpContext?.Connection.RemoteIpAddress?.MapToIPv4().ToString() ?? "0.0.0.0";
+                HttpResponseMessage response = await this.labTestKitApi.RegisterLabTestAsync(testKit, accessToken, ipAddress).ConfigureAwait(true);
+                return ProcessResponse(testKit, response.StatusCode);
+            }
+            catch (HttpRequestException e)
+            {
+                this.logger.LogCritical("HTTP Request Exception {Exception}", e.ToString());
+                return RequestResultFactory.ServiceError<PublicLabTestKit>(ErrorType.CommunicationExternal, ServiceType.Phsa, "Error with HTTP Request");
+            }
         }
 
         /// <inheritdoc/>
         public async Task<RequestResult<LabTestKit>> RegisterLabTestKitAsync(string hdid, LabTestKit testKit)
         {
-            RequestResult<LabTestKit> requestResult = InitializeResult(testKit);
             string? accessToken = this.authenticationDelegate.FetchAuthenticatedUserToken();
+
             try
             {
-                HttpResponseMessage response =
-                    await this.labTestKitApi.RegisterLabTestAsync(hdid, testKit, accessToken).ConfigureAwait(true);
-                ProcessResponse(requestResult, response);
+                HttpResponseMessage response = await this.labTestKitApi.RegisterLabTestAsync(hdid, testKit, accessToken).ConfigureAwait(true);
+                return ProcessResponse(testKit, response.StatusCode);
             }
             catch (HttpRequestException e)
             {
                 this.logger.LogCritical("HTTP Request Exception {Exception}", e.ToString());
-                requestResult.ResultError = new()
-                {
-                    ResultMessage = "Error with HTTP Request",
-                    ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.Phsa),
-                };
+                return RequestResultFactory.ServiceError<LabTestKit>(ErrorType.CommunicationExternal, ServiceType.Phsa, "Error with HTTP Request");
             }
-
-            return requestResult;
         }
 
         private static RequestResult<T> InitializeResult<T>(T payload)
-            where T : class
         {
             RequestResult<T> result = new()
             {
@@ -164,10 +126,10 @@ namespace HealthGateway.Laboratory.Services
             return result;
         }
 
-        private static void ProcessResponse<T>(RequestResult<T> requestResult, HttpResponseMessage response)
-            where T : class
+        private static RequestResult<T> ProcessResponse<T>(T payload, HttpStatusCode responseStatusCode)
         {
-            switch (response.StatusCode)
+            RequestResult<T> requestResult = InitializeResult(payload);
+            switch (responseStatusCode)
             {
                 case HttpStatusCode.OK:
                     requestResult.ResultStatus = ResultType.Success;
@@ -194,7 +156,7 @@ namespace HealthGateway.Laboratory.Services
                 case HttpStatusCode.Forbidden:
                     requestResult.ResultError = new()
                     {
-                        ResultMessage = $"DID Claim is missing or can not resolve PHN, HTTP Error {response.StatusCode}",
+                        ResultMessage = $"DID Claim is missing or can not resolve PHN, HTTP Error {responseStatusCode}",
                         ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.Phsa),
                     };
                     break;
@@ -202,11 +164,13 @@ namespace HealthGateway.Laboratory.Services
                 default:
                     requestResult.ResultError = new()
                     {
-                        ResultMessage = $"An unexpected error occurred, HTTP Error {response.StatusCode}",
+                        ResultMessage = $"An unexpected error occurred, HTTP Error {responseStatusCode}",
                         ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.Phsa),
                     };
                     break;
             }
+
+            return requestResult;
         }
     }
 }

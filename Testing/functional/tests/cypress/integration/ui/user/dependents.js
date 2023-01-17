@@ -327,7 +327,7 @@ describe("Dependents - Immunization Tab - Enabled", () => {
             `[data-testid=download-immunization-forecast-report-btn-${dependentHdid}]`
         ).click({ force: true });
 
-        // Verify forecast table has been sorted by due date descending
+        // Verify forecast table has been sorted by due date ascending
         cy.get(`[data-testid=forecast-due-date-${dependentHdid}-0]`).then(
             ($dateItem) => {
                 // Column date in the 1st row in the table
@@ -337,15 +337,15 @@ describe("Dependents - Immunization Tab - Enabled", () => {
                 ).then(($dateItem) => {
                     // Column date in the 2nd row in the table
                     const secondDate = getDate($dateItem.text());
-                    expect(firstDate).to.be.gte(secondDate);
+                    expect(firstDate).to.be.lte(secondDate);
                     // Column date in the last row in the table
                     cy.get(
                         `[data-testid=forecast-due-date-${dependentHdid}-4]`
                     ).then(($dateItem) => {
                         // Column date in the last row in the table
                         const lastDate = getDate($dateItem.text());
-                        expect(firstDate).to.be.gte(lastDate);
-                        expect(secondDate).to.be.gte(lastDate);
+                        expect(firstDate).to.be.lte(lastDate);
+                        expect(secondDate).to.be.lte(lastDate);
                     });
                 });
             }

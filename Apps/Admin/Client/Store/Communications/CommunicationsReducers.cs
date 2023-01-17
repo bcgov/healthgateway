@@ -21,16 +21,9 @@ using Fluxor;
 using HealthGateway.Admin.Client.Models;
 using HealthGateway.Admin.Common.Models;
 
-/// <summary>
-/// The set of reducers for the feature.
-/// </summary>
+#pragma warning disable CS1591, SA1600
 public static class CommunicationsReducers
 {
-    /// <summary>
-    /// The reducer for loading communications.
-    /// </summary>
-    /// <param name="state">The communications state.</param>
-    /// <returns>The new state.</returns>
     [ReducerMethod(typeof(CommunicationsActions.LoadAction))]
     public static CommunicationsState ReduceLoadAction(CommunicationsState state)
     {
@@ -40,16 +33,9 @@ public static class CommunicationsReducers
             {
                 IsLoading = true,
             },
-            IsLoading = true,
         };
     }
 
-    /// <summary>
-    /// The reducer for the load success action.
-    /// </summary>
-    /// <param name="state">The communications state.</param>
-    /// <param name="action">The load success action.</param>
-    /// <returns>The new state.</returns>
     [ReducerMethod]
     public static CommunicationsState ReduceLoadSuccessAction(CommunicationsState state, CommunicationsActions.LoadSuccessAction action)
     {
@@ -61,18 +47,10 @@ public static class CommunicationsReducers
                 Result = action.Data,
                 Error = null,
             },
-            IsLoading = false,
             Data = action.Data.ResourcePayload?.Select(c => new ExtendedCommunication(c)).ToList(),
-            Error = null,
         };
     }
 
-    /// <summary>
-    /// The reducer for the load fail action.
-    /// </summary>
-    /// <param name="state">The communications state.</param>
-    /// <param name="action">The load fail action.</param>
-    /// <returns>The new state.</returns>
     [ReducerMethod]
     public static CommunicationsState ReduceLoadFailAction(CommunicationsState state, CommunicationsActions.LoadFailAction action)
     {
@@ -83,16 +61,9 @@ public static class CommunicationsReducers
                 IsLoading = false,
                 Error = action.Error,
             },
-            IsLoading = false,
-            Error = action.Error,
         };
     }
 
-    /// <summary>
-    /// The reducer for adding communications.
-    /// </summary>
-    /// <param name="state">The communications state.</param>
-    /// <returns>The new state.</returns>
     [ReducerMethod(typeof(CommunicationsActions.AddAction))]
     public static CommunicationsState ReduceAddAction(CommunicationsState state)
     {
@@ -102,16 +73,9 @@ public static class CommunicationsReducers
             {
                 IsLoading = true,
             },
-            IsLoading = true,
         };
     }
 
-    /// <summary>
-    /// The reducer for the add success action.
-    /// </summary>
-    /// <param name="state">The communications state.</param>
-    /// <param name="action">The add success action.</param>
-    /// <returns>The new state.</returns>
     [ReducerMethod]
     public static CommunicationsState ReduceAddSuccessAction(CommunicationsState state, CommunicationsActions.AddSuccessAction action)
     {
@@ -134,9 +98,7 @@ public static class CommunicationsReducers
                 Result = action.Data,
                 Error = null,
             },
-            IsLoading = false,
             Data = data,
-            Error = null,
         };
     }
 
@@ -156,8 +118,6 @@ public static class CommunicationsReducers
                 IsLoading = false,
                 Error = action.Error,
             },
-            IsLoading = false,
-            Error = action.Error,
         };
     }
 
@@ -175,7 +135,6 @@ public static class CommunicationsReducers
             {
                 IsLoading = true,
             },
-            IsLoading = true,
         };
     }
 
@@ -212,9 +171,7 @@ public static class CommunicationsReducers
                 Result = action.Data,
                 Error = null,
             },
-            IsLoading = false,
             Data = data,
-            Error = null,
         };
     }
 
@@ -234,8 +191,6 @@ public static class CommunicationsReducers
                 IsLoading = false,
                 Error = action.Error,
             },
-            IsLoading = false,
-            Error = action.Error,
         };
     }
 
@@ -253,7 +208,6 @@ public static class CommunicationsReducers
             {
                 IsLoading = true,
             },
-            IsLoading = true,
         };
     }
 
@@ -282,9 +236,7 @@ public static class CommunicationsReducers
                 Result = action.Data,
                 Error = null,
             },
-            IsLoading = false,
             Data = data,
-            Error = null,
         };
     }
 
@@ -304,8 +256,30 @@ public static class CommunicationsReducers
                 IsLoading = false,
                 Error = action.Error,
             },
-            IsLoading = false,
-            Error = action.Error,
+        };
+    }
+
+    [ReducerMethod(typeof(CommunicationsActions.ClearAddErrorAction))]
+    public static CommunicationsState ReduceClearAddErrorAction(CommunicationsState state)
+    {
+        return state with
+        {
+            Add = state.Add with
+            {
+                Error = null,
+            },
+        };
+    }
+
+    [ReducerMethod(typeof(CommunicationsActions.ClearUpdateErrorAction))]
+    public static CommunicationsState ReduceClearUpdateErrorAction(CommunicationsState state)
+    {
+        return state with
+        {
+            Update = state.Update with
+            {
+                Error = null,
+            },
         };
     }
 
@@ -324,8 +298,6 @@ public static class CommunicationsReducers
             Update = new(),
             Delete = new(),
             Data = null,
-            Error = null,
-            IsLoading = false,
         };
     }
 

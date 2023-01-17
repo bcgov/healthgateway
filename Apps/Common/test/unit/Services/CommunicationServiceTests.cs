@@ -27,8 +27,10 @@ namespace HealthGateway.CommonTests.Services
     using HealthGateway.Database.Delegates;
     using HealthGateway.Database.Models;
     using HealthGateway.Database.Wrapper;
+    using Microsoft.Extensions.Caching.Distributed;
     using Microsoft.Extensions.Caching.Memory;
     using Microsoft.Extensions.Logging;
+    using Microsoft.Extensions.Options;
     using Moq;
     using Xunit;
 
@@ -40,6 +42,16 @@ namespace HealthGateway.CommonTests.Services
         private const string Update = "UPDATE";
         private const string Insert = "INSERT";
         private const string Delete = "DELETE";
+        private readonly DistributedCacheProvider cacheProvider;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="CommunicationServiceTests"/> class.
+        /// </summary>
+        public CommunicationServiceTests()
+        {
+            MemoryDistributedCache cache = new(Options.Create(new MemoryDistributedCacheOptions()));
+            this.cacheProvider = new DistributedCacheProvider(cache);
+        }
 
         /// <summary>
         /// Validates the Communication is pulled from the MemoryCache.
@@ -55,11 +67,6 @@ namespace HealthGateway.CommonTests.Services
         [InlineData(Scenario.Future, CommunicationType.Mobile)]
         public void ShouldGetActiveCommunicationFromCache(Scenario scenario, CommunicationType communicationType)
         {
-            MemoryCacheEntryOptions options = new()
-            {
-                AbsoluteExpiration = new DateTimeOffset(DateTime.Now.AddDays(1)),
-            };
-
             Communication communication = new()
             {
                 Id = Guid.NewGuid(),
@@ -74,14 +81,13 @@ namespace HealthGateway.CommonTests.Services
 
             RequestResult<Communication?> commResult = GetCommResult(communication, ResultType.Success);
             string cacheKey = CommunicationService.GetCacheKey(communicationType);
-            IMemoryCache memoryCache = CreateCache(commResult, cacheKey, options);
-            ICacheProvider cacheProvider = new MemoryCacheProvider(memoryCache);
+            this.CreateCache(commResult, cacheKey, TimeSpan.FromDays(1));
 
             Mock<ICommunicationDelegate> communicationDelegateMock = new();
             ICommunicationService service = new CommunicationService(
                 new Mock<ILogger<CommunicationService>>().Object,
                 communicationDelegateMock.Object,
-                cacheProvider);
+                this.cacheProvider);
 
             RequestResult<Communication?> actualResult = service.GetActiveCommunication(communicationType);
 
@@ -91,12 +97,11 @@ namespace HealthGateway.CommonTests.Services
                     Assert.NotSame(commResult, actualResult);
                     Assert.Equal(ResultType.Success, actualResult.ResultStatus);
                     break;
+
                 default:
-                    Assert.Same(commResult, actualResult);
+                    Assert.Equal(commResult.ResourcePayload!.Id, actualResult.ResourcePayload!.Id);
                     break;
             }
-
-            memoryCache.Dispose();
         }
 
         /// <summary>
@@ -134,16 +139,13 @@ namespace HealthGateway.CommonTests.Services
                 Payload = communication,
             };
 
-            IMemoryCache memoryCache = CreateCache();
-            ICacheProvider cacheProvider = new MemoryCacheProvider(memoryCache);
-
             Mock<ICommunicationDelegate> communicationDelegateMock = new();
             communicationDelegateMock.Setup(s => s.GetNext(It.IsAny<CommunicationType>())).Returns(dbResult);
 
             ICommunicationService service = new CommunicationService(
                 new Mock<ILogger<CommunicationService>>().Object,
                 communicationDelegateMock.Object,
-                cacheProvider);
+                this.cacheProvider);
 
             RequestResult<Communication?> actualResult = service.GetActiveCommunication(communicationType);
 
@@ -166,8 +168,6 @@ namespace HealthGateway.CommonTests.Services
                 Assert.Equal(ResultType.Error, actualResult.ResultStatus);
                 Assert.EndsWith("-CI-DB", actualResult.ResultError?.ErrorCode, StringComparison.InvariantCulture);
             }
-
-            memoryCache.Dispose();
         }
 
         /// <summary>
@@ -205,10 +205,12 @@ namespace HealthGateway.CommonTests.Services
                     communication.EffectiveDateTime = DateTime.Now.AddDays(-10);
                     communication.ExpiryDateTime = DateTime.Now.AddDays(-5);
                     break;
+
                 case Scenario.Future:
                     communication.EffectiveDateTime = DateTime.Now.AddDays(1);
                     communication.ExpiryDateTime = DateTime.Now.AddDays(5);
                     break;
+
                 default:
                     communication.EffectiveDateTime = DateTime.Now;
                     communication.ExpiryDateTime = DateTime.Now.AddDays(1);
@@ -222,7 +224,6 @@ namespace HealthGateway.CommonTests.Services
             };
 
             string cacheKey = CommunicationService.GetCacheKey(communicationType);
-            IMemoryCache memoryCache;
             if (cached)
             {
                 RequestResult<Communication?> cacheEntry = new()
@@ -237,49 +238,45 @@ namespace HealthGateway.CommonTests.Services
                     TotalResultCount = 1,
                 };
 
-                memoryCache = CreateCache(cacheEntry, cacheKey);
-            }
-            else
-            {
-                memoryCache = CreateCache();
+                this.CreateCache(cacheEntry, cacheKey);
             }
 
-            ICacheProvider cacheProvider = new MemoryCacheProvider(memoryCache);
             Mock<ICommunicationDelegate> communicationDelegateMock = new();
 
             ICommunicationService service = new CommunicationService(
                 new Mock<ILogger<CommunicationService>>().Object,
                 communicationDelegateMock.Object,
-                cacheProvider);
+                this.cacheProvider);
 
             service.ProcessChange(changeEvent);
-            RequestResult<Communication>? cacheResult = cacheProvider.GetItem<RequestResult<Communication>>(cacheKey);
+            RequestResult<Communication>? cacheResult = this.cacheProvider.GetItem<RequestResult<Communication>>(cacheKey);
             switch (scenario)
             {
                 case Scenario.Active:
                     if (!cached || (cached && !cacheMiss))
                     {
-                        Assert.Same(communication, cacheResult?.ResourcePayload);
+                        Assert.Equal(communication.Id, cacheResult!.ResourcePayload!.Id);
                     }
                     else
                     {
-                        Assert.NotEqual(communication.Id, cacheResult?.ResourcePayload?.Id);
+                        Assert.NotEqual(communication.Id, cacheResult!.ResourcePayload!.Id);
                     }
 
                     break;
+
                 case Scenario.Expired:
-                    Assert.Equal(ResultType.Success, cacheResult?.ResultStatus);
-                    Assert.Equal(0, cacheResult?.TotalResultCount);
+                    Assert.Equal(ResultType.Success, cacheResult!.ResultStatus);
+                    Assert.Equal(0, cacheResult.TotalResultCount);
                     break;
+
                 case Scenario.Deleted:
                     Assert.Null(cacheResult);
                     break;
+
                 case Scenario.Future:
-                    Assert.Same(communication, cacheResult?.ResourcePayload);
+                    Assert.Equal(communication.Id, cacheResult!.ResourcePayload!.Id);
                     break;
             }
-
-            memoryCache.Dispose();
         }
 
         /// <summary>
@@ -292,18 +289,7 @@ namespace HealthGateway.CommonTests.Services
                 new Mock<ILogger<CommunicationService>>().Object,
                 new Mock<ICommunicationDelegate>().Object,
                 new Mock<ICacheProvider>().Object);
-            Assert.Throws<ArgumentOutOfRangeException>(() => service.GetActiveCommunication(CommunicationType.Email));
-        }
-
-        private static IMemoryCache CreateCache(RequestResult<Communication?>? cacheEntry = null, string? cacheKey = null, MemoryCacheEntryOptions? options = null)
-        {
-            IMemoryCache memoryCache = new MemoryCache(new MemoryCacheOptions());
-            if (cacheEntry != null && cacheKey != null)
-            {
-                memoryCache.Set(cacheKey, cacheEntry, options ?? new MemoryCacheEntryOptions());
-            }
-
-            return memoryCache;
+            Assert.Throws<NotImplementedException>(() => service.GetActiveCommunication(CommunicationType.Email));
         }
 
         private static RequestResult<Communication?> GetCommResult(Communication? communication, ResultType resultStatus)
@@ -316,6 +302,14 @@ namespace HealthGateway.CommonTests.Services
             };
 
             return commResult;
+        }
+
+        private void CreateCache(RequestResult<Communication?>? cacheEntry = null, string? cacheKey = null, TimeSpan? expiry = null)
+        {
+            if (cacheEntry != null && cacheKey != null)
+            {
+                this.cacheProvider.AddItem(cacheKey, cacheEntry, expiry);
+            }
         }
     }
 }

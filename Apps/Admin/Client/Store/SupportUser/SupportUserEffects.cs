@@ -29,16 +29,9 @@ namespace HealthGateway.Admin.Client.Store.SupportUser
     using Microsoft.Extensions.Logging;
     using Refit;
 
-    /// <summary>
-    /// The effects for the feature.
-    /// </summary>
+#pragma warning disable CS1591, SA1600
     public class SupportUserEffects
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="SupportUserEffects"/> class.
-        /// </summary>
-        /// <param name="logger">The injected logger.</param>
-        /// <param name="supportApi">the injected api to query the support. </param>
         public SupportUserEffects(ILogger<SupportUserEffects> logger, ISupportApi supportApi)
         {
             this.Logger = logger;
@@ -51,12 +44,6 @@ namespace HealthGateway.Admin.Client.Store.SupportUser
         [Inject]
         private ISupportApi SupportApi { get; set; }
 
-        /// <summary>
-        /// Handler that calls the service and dispatch the actions.
-        /// </summary>
-        /// <param name="action">Load the initial action.</param>
-        /// <param name="dispatcher">Dispatch the actions.</param>
-        /// <returns>A <see cref="Task"/> representing the result of the asynchronous operation.</returns>
         [EffectMethod]
         public async Task HandleLoadAction(SupportUserActions.LoadAction action, IDispatcher dispatcher)
         {

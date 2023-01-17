@@ -21,16 +21,9 @@ using System.Collections.Immutable;
 using Fluxor;
 using HealthGateway.Admin.Common.Models;
 
-/// <summary>
-/// The set of reducers for the feature.
-/// </summary>
+#pragma warning disable CS1591, SA1600
 public static class TagReducers
 {
-    /// <summary>
-    /// The reducer for loading Tag.
-    /// </summary>
-    /// <param name="state">The Tag state.</param>
-    /// <returns>The new state.</returns>
     [ReducerMethod(typeof(TagActions.LoadAction))]
     public static TagState ReduceLoadAction(TagState state)
     {
@@ -43,12 +36,6 @@ public static class TagReducers
         };
     }
 
-    /// <summary>
-    /// The reducer for the load success action.
-    /// </summary>
-    /// <param name="state">The Tag state.</param>
-    /// <param name="action">The load success action.</param>
-    /// <returns>The new state.</returns>
     [ReducerMethod]
     public static TagState ReduceLoadSuccessAction(TagState state, TagActions.LoadSuccessAction action)
     {
@@ -64,12 +51,6 @@ public static class TagReducers
         };
     }
 
-    /// <summary>
-    /// The reducer for the load fail action.
-    /// </summary>
-    /// <param name="state">The Tag state.</param>
-    /// <param name="action">The load fail action.</param>
-    /// <returns>The new state.</returns>
     [ReducerMethod]
     public static TagState ReduceLoadFailAction(TagState state, TagActions.LoadFailAction action)
     {
@@ -83,11 +64,6 @@ public static class TagReducers
         };
     }
 
-    /// <summary>
-    /// The reducer for adding Tag.
-    /// </summary>
-    /// <param name="state">The Tag state.</param>
-    /// <returns>The new state.</returns>
     [ReducerMethod(typeof(TagActions.AddAction))]
     public static TagState ReduceAddAction(TagState state)
     {
@@ -100,12 +76,6 @@ public static class TagReducers
         };
     }
 
-    /// <summary>
-    /// The reducer for the add success action.
-    /// </summary>
-    /// <param name="state">The Tag state.</param>
-    /// <param name="action">The add success action.</param>
-    /// <returns>The new state.</returns>
     [ReducerMethod]
     public static TagState ReduceAddSuccessAction(TagState state, TagActions.AddSuccessAction action)
     {
@@ -129,12 +99,6 @@ public static class TagReducers
         };
     }
 
-    /// <summary>
-    /// The reducer for the add fail action.
-    /// </summary>
-    /// <param name="state">The Tag state.</param>
-    /// <param name="action">The add fail action.</param>
-    /// <returns>The new state.</returns>
     [ReducerMethod]
     public static TagState ReduceAddFailAction(TagState state, TagActions.AddFailAction action)
     {
@@ -148,11 +112,6 @@ public static class TagReducers
         };
     }
 
-    /// <summary>
-    /// The reducer for deleting Tag.
-    /// </summary>
-    /// <param name="state">The Tag state.</param>
-    /// <returns>The new state.</returns>
     [ReducerMethod(typeof(TagActions.DeleteAction))]
     public static TagState ReduceDeleteAction(TagState state)
     {
@@ -165,12 +124,6 @@ public static class TagReducers
         };
     }
 
-    /// <summary>
-    /// The reducer for the delete success action.
-    /// </summary>
-    /// <param name="state">The tag state.</param>
-    /// <param name="action">The delete success action.</param>
-    /// <returns>The new state.</returns>
     [ReducerMethod]
     public static TagState ReduceDeleteSuccessAction(TagState state, TagActions.DeleteSuccessAction action)
     {
@@ -194,12 +147,6 @@ public static class TagReducers
         };
     }
 
-    /// <summary>
-    /// The reducer for the delete fail action.
-    /// </summary>
-    /// <param name="state">The Tag state.</param>
-    /// <param name="action">The delete fail action.</param>
-    /// <returns>The new state.</returns>
     [ReducerMethod]
     public static TagState ReduceDeleteFailAction(TagState state, TagActions.DeleteFailAction action)
     {
@@ -213,11 +160,6 @@ public static class TagReducers
         };
     }
 
-    /// <summary>
-    /// The reducer for the reset state action.
-    /// </summary>
-    /// <param name="state">The Tag state.</param>
-    /// <returns>The default state.</returns>
     [ReducerMethod(typeof(TagActions.ResetStateAction))]
     public static TagState ReduceResetStateAction(TagState state)
     {

@@ -49,11 +49,17 @@ parameters:
     type: boolean
     default: false
 
+  - name: DBScripts
+    type: boolean
+    default: false
+
 #Build variables
 variables:
   - group: Secrets
   - name: App.Name
     value: ${{ parameters.Application }}
+  - name: DBScripts
+    value: ${{ parameters.DBScripts }}
   - name: WASMBuild
     value: ${{ parameters.WASMBuild }}
   - name: NPMInstall

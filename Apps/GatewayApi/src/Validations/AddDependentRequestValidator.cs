@@ -32,7 +32,7 @@ namespace HealthGateway.GatewayApi.Validations
         public AddDependentRequestValidator(int maxDependantAge = 12)
         {
             this.RuleFor(v => v.Phn).SetValidator(new PhnValidator());
-            this.RuleFor(v => v.DateOfBirth).SetValidator(new DependantAgeValidator(maxDependentAge: maxDependantAge));
+            this.RuleFor(v => v.DateOfBirth).SetValidator(new DependentAgeValidator(maxDependentAge: maxDependantAge));
         }
     }
 }

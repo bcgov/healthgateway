@@ -17,16 +17,9 @@ namespace HealthGateway.Admin.Client.Store.Configuration
 {
     using Fluxor;
 
-    /// <summary>
-    /// The set of reducers for the feature.
-    /// </summary>
+#pragma warning disable CS1591, SA1600
     public static class ConfigurationReducers
     {
-        /// <summary>
-        /// The Reducer for loading the configuration.
-        /// </summary>
-        /// <param name="state">The configuration state.</param>
-        /// <returns>The new state.</returns>
         [ReducerMethod(typeof(ConfigurationActions.LoadAction))]
         public static ConfigurationState ReduceLoadAction(ConfigurationState state)
         {
@@ -36,12 +29,6 @@ namespace HealthGateway.Admin.Client.Store.Configuration
             };
         }
 
-        /// <summary>
-        /// The Reducer for the load success action.
-        /// </summary>
-        /// <param name="state">The configuration state.</param>
-        /// <param name="action">The load success action.</param>
-        /// <returns>The new state.</returns>
         [ReducerMethod]
         public static ConfigurationState ReduceLoadSuccessAction(ConfigurationState state, ConfigurationActions.LoadSuccessAction action)
         {
@@ -53,12 +40,6 @@ namespace HealthGateway.Admin.Client.Store.Configuration
             };
         }
 
-        /// <summary>
-        /// The Reducer for the fail action.
-        /// </summary>
-        /// <param name="state">The configuration state.</param>
-        /// <param name="action">The load fail action.</param>
-        /// <returns>The new state.</returns>
         [ReducerMethod]
         public static ConfigurationState ReduceLoadFailAction(ConfigurationState state, ConfigurationActions.LoadFailAction action)
         {

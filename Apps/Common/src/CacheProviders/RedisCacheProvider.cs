@@ -17,6 +17,7 @@ namespace HealthGateway.Common.CacheProviders
 {
     using System;
     using System.Text.Json;
+    using System.Threading.Tasks;
     using Microsoft.Extensions.Logging;
     using StackExchange.Redis;
 
@@ -41,9 +42,8 @@ namespace HealthGateway.Common.CacheProviders
 
         /// <inheritdoc/>
         public T? GetItem<T>(string key)
-            where T : class
         {
-            T? cacheItem = null;
+            T? cacheItem = default;
             string? cacheJson = this.GetItem(key);
             if (cacheJson != null)
             {
@@ -55,15 +55,64 @@ namespace HealthGateway.Common.CacheProviders
 
         /// <inheritdoc/>
         public void AddItem<T>(string key, T value, TimeSpan? expiry = null)
-            where T : class
         {
-            this.Add(key, JsonSerializer.Serialize(value, value.GetType()), expiry);
+            this.Add(
+                key,
+                value == null ? JsonSerializer.Serialize(value, typeof(T)) : JsonSerializer.Serialize(value, value.GetType()),
+                expiry);
         }
 
         /// <inheritdoc/>
         public void RemoveItem(string key)
         {
             this.connectionMultiplexer.GetDatabase().KeyDelete(key, CommandFlags.FireAndForget);
+        }
+
+        /// <inheritdoc/>
+        public T? GetOrSet<T>(string key, Func<T> valueGetter, TimeSpan? expiry = null)
+        {
+            T? item = this.GetItem<T>(key);
+            if (item == null)
+            {
+                item = valueGetter();
+                this.AddItem(key, item, expiry);
+            }
+
+            return item;
+        }
+
+        /// <inheritdoc/>
+        public async Task<T?> GetItemAsync<T>(string key)
+        {
+            await Task.CompletedTask.ConfigureAwait(true);
+            return this.GetItem<T?>(key);
+        }
+
+        /// <inheritdoc/>
+        public async Task AddItemAsync<T>(string key, T value, TimeSpan? expiry = null)
+        {
+            await Task.CompletedTask.ConfigureAwait(true);
+            this.AddItem(key, value, expiry);
+        }
+
+        /// <inheritdoc/>
+        public async Task RemoveItemAsync(string key)
+        {
+            await Task.CompletedTask.ConfigureAwait(true);
+            this.RemoveItem(key);
+        }
+
+        /// <inheritdoc/>
+        public async Task<T?> GetOrSetAsync<T>(string key, Func<Task<T>> valueGetter, TimeSpan? expiry = null)
+        {
+            T? item = await this.GetItemAsync<T>(key).ConfigureAwait(true);
+            if (item == null)
+            {
+                item = await valueGetter().ConfigureAwait(true);
+                await this.AddItemAsync(key, item, expiry).ConfigureAwait(true);
+            }
+
+            return item;
         }
 
         private void Add(string key, string value, TimeSpan? expiry = null)

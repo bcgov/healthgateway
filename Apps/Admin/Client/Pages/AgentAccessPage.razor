@@ -1,0 +1,152 @@
+@page "/provision"
+@layout MainLayout
+@attribute [Authorize(Roles = $"{Roles.Admin}")]
+@using HealthGateway.Admin.Client.Store.AgentAccess
+@inherits Fluxor.Blazor.Web.Components.FluxorComponent
+
+<PageTitle>Health Gateway Admin Agent Provisioning</PageTitle>
+<HgPageHeading>Agent Provisioning</HgPageHeading>
+
+<HgBannerFeedback
+    Severity="@Severity.Error"
+    IsEnabled="@(HasSearchError || HasDeleteError)"
+    TResetAction="@AgentAccessActions.ResetStateAction"
+    Class="mb-4">
+    @ErrorMessage
+</HgBannerFeedback>
+
+<MudForm @ref="Form">
+    <MudGrid Spacing="0">
+        <MudItem xs="12">
+            <HgTextField LeftMargin="Breakpoint.Sm"
+                         T="string"
+                         Label="Query"
+                         Required="@true"
+                         Validation="@ValidateQueryParameter"
+                         @bind-Value="Query"
+                         data-testid="query-input" />
+        </MudItem>
+        <MudItem Class="d-flex justify-end" xs="12">
+            <HgButton
+                TopMargin="Breakpoint.Always"
+                EndIcon="@Icons.Material.Filled.Search"
+                @onclick="SearchAsync"
+                data-testid="search-btn">
+                Search
+            </HgButton>
+        </MudItem>
+        <MudItem Class="d-flex justify-end" xs="12">
+            <HgButton TopMargin="Breakpoint.Always"
+                      EndIcon="@Icons.Material.Filled.Add"
+                      @onclick="@AddAsync"
+                      data-testid="create-btn">
+                Create
+            </HgButton>
+        </MudItem>
+    </MudGrid>
+</MudForm>
+
+@if (Loaded || Loading)
+{
+    <MudTable Class="mt-3"
+              Items="@Rows"
+              Loading="@Loading"
+              AllowUnsorted="@false"
+              Breakpoint="@Breakpoint.Md"
+              HorizontalScrollbar="@true"
+              Striped="@true"
+              Dense="@true"
+              data-testid="agent-table">
+        <HeaderContent>
+            <MudTh>
+                <MudTableSortLabel SortBy="new Func<AdminAgentRow, object>(x => x.Username)"
+                                   InitialDirection="@SortDirection.Ascending">
+                    Username
+                </MudTableSortLabel>
+            </MudTh>
+            <MudTh>
+                <MudTableSortLabel SortBy="new Func<AdminAgentRow, object>(x => x.IdentityProvider)">
+                    Identity Provider
+                </MudTableSortLabel>
+            </MudTh>
+            <MudTh>
+                <MudTableSortLabel SortBy="new Func<AdminAgentRow, object>(x => x.Roles)">
+                    Roles
+                </MudTableSortLabel>
+            </MudTh>
+            <MudTh Style="text-align:right">
+                Actions
+            </MudTh>
+        </HeaderContent>
+        <RowTemplate>
+            <MudTd DataLabel="Username" data-testid=@($"agent-table-username-{context.Id}")>
+                @context.Username
+            </MudTd>
+            <MudTd DataLabel="Identity Provider" data-testid=@($"agent-table-identity-provider-{context.Id}")>
+                @context.IdentityProvider
+            </MudTd>
+            <MudTd DataLabel="Roles" data-testid=@($"agent-table-roles-{context.Id}")>
+                @context.Roles
+            </MudTd>
+            <MudTd DataLabel="Actions" data-testid=@($"agent-table-actions-{context.Id}") Style="text-align:right">
+                <div>
+                    <MudTooltip Text="Edit">
+                        <MudIconButton OnClick="@(async () => await EditAsync(context.Id))"
+                                       Icon="@Icons.Material.Filled.Edit"
+                                       Color="@Color.Primary"
+                                       data-testid="agent-table-edit-btn" />
+                    </MudTooltip>
+                    <MudTooltip Text="Delete">
+                        <MudIconButton OnClick="@(async () => await DeleteAsync(context.Id))"
+                                       Icon="@Icons.Material.Filled.Delete"
+                                       Color="@Color.Primary"
+                                       data-testid="agent-table-delete-btn" />
+                    </MudTooltip>
+                </div>
+            </MudTd>
+        </RowTemplate>
+        <PagerContent>
+            <MudTablePager />
+        </PagerContent>
+    </MudTable>
+
+    @if (Agents.Count() == SearchResultLimit)
+    {
+        <MudAlert
+            Class="mt-4"
+            Variant="Variant.Text"
+            Severity="@Severity.Warning"
+            data-testid="result-limit-alert">
+            There may be more than @SearchResultLimit results. Consider refining your search.
+        </MudAlert>
+    }
+
+    <MudMessageBox @ref="DeleteConfirmation" Title="Delete Agent">
+        <MessageContent>
+            <span data-testid="confirm-delete-message">
+                Are you sure you want to delete this?
+            </span>
+        </MessageContent>
+        <YesButton>
+            <HgButton
+                Variant="@Variant.Filled"
+                Color="@Color.Error"
+                StartIcon="@Icons.Material.Filled.DeleteForever"
+                RightMargin="Breakpoint.Always"
+                BottomMargin="Breakpoint.Always"
+                data-testid="confirm-delete-btn">
+                Delete
+            </HgButton>
+        </YesButton>
+        <CancelButton>
+            <HgButton
+                Variant="@Variant.Text"
+                Color="@Color.Default"
+                RightMargin="Breakpoint.Always"
+                BottomMargin="Breakpoint.Always"
+                data-testid="confirm-cancel-btn">
+                Cancel
+            </HgButton>
+        </CancelButton>
+    </MudMessageBox>
+}

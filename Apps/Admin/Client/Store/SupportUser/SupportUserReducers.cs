@@ -20,16 +20,9 @@ namespace HealthGateway.Admin.Client.Store.SupportUser
     using Fluxor;
     using HealthGateway.Admin.Client.Models;
 
-    /// <summary>
-    /// The set of reducers for the feature.
-    /// </summary>
+#pragma warning disable CS1591, SA1600
     public static class SupportUserReducers
     {
-        /// <summary>
-        /// The Reducer for loading the support user.
-        /// </summary>
-        /// <param name="state">The support user state.</param>
-        /// <returns>The new state.</returns>
         [ReducerMethod(typeof(SupportUserActions.LoadAction))]
         public static SupportUserState ReduceLoadAction(SupportUserState state)
         {
@@ -39,12 +32,6 @@ namespace HealthGateway.Admin.Client.Store.SupportUser
             };
         }
 
-        /// <summary>
-        /// The Reducer for the load success action.
-        /// </summary>
-        /// <param name="state">The support user state.</param>
-        /// <param name="action">The load success action.</param>
-        /// <returns>The new state.</returns>
         [ReducerMethod]
         public static SupportUserState ReduceLoadSuccessAction(SupportUserState state, SupportUserActions.LoadSuccessAction action)
         {
@@ -58,12 +45,6 @@ namespace HealthGateway.Admin.Client.Store.SupportUser
             };
         }
 
-        /// <summary>
-        /// The Reducer for the fail action.
-        /// </summary>
-        /// <param name="state">The message verification state.</param>
-        /// <param name="action">The load fail action.</param>
-        /// <returns>The new state.</returns>
         [ReducerMethod]
         public static SupportUserState ReduceLoadFailAction(SupportUserState state, SupportUserActions.LoadFailAction action)
         {
@@ -74,11 +55,6 @@ namespace HealthGateway.Admin.Client.Store.SupportUser
             };
         }
 
-        /// <summary>
-        /// The Reducer for the reset state action.
-        /// </summary>
-        /// <param name="state">The support user state.</param>
-        /// <returns>The empty state.</returns>
         [ReducerMethod(typeof(SupportUserActions.ResetStateAction))]
         public static SupportUserState ReduceResetStateAction(SupportUserState state)
         {
@@ -92,12 +68,6 @@ namespace HealthGateway.Admin.Client.Store.SupportUser
             };
         }
 
-        /// <summary>
-        /// The reducer for the toggle IsExpanded action.
-        /// </summary>
-        /// <param name="state">The user state.</param>
-        /// <param name="action">The toggle IsExpanded action.</param>
-        /// <returns>The default state.</returns>
         [ReducerMethod]
         public static SupportUserState ReduceToggleIsExpandedAction(SupportUserState state, SupportUserActions.ToggleIsExpandedAction action)
         {

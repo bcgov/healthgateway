@@ -14,29 +14,23 @@
 //  limitations under the License.
 // -------------------------------------------------------------------------
 
-namespace HealthGateway.Common.Data.Validations
+namespace HealthGateway.GatewayApi.Validations
 {
-    using System;
     using FluentValidation;
+    using HealthGateway.GatewayApi.Models;
 
     /// <summary>
-    /// Validates a dependent's age against a maximum value using date of birth.
+    /// Validates <see cref="UserComment"/> instances.
     /// </summary>
-    public class DependantAgeValidator : AbstractValidator<DateTime>
+    public class UserCommentValidator : AbstractValidator<UserComment>
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="DependantAgeValidator"/> class.
+        /// Initializes a new instance of the <see cref="UserCommentValidator"/> class.
         /// </summary>
-        /// <param name="now">DateTime reflecting the relative date to check the age against.</param>
-        /// <param name="maxDependentAge">The maximum age of the dependent.</param>
-        public DependantAgeValidator(DateTime? now = null, int maxDependentAge = 12)
+        public UserCommentValidator()
         {
-            if (now == null)
-            {
-                now = DateTime.UtcNow;
-            }
-
-            this.RuleFor(v => v).Must(v => v.Date.AddYears(maxDependentAge) > now.Value.Date).WithMessage($"Dependent age exceeds the maximum limit of {maxDependentAge}");
+            this.RuleFor(v => v.UserProfileId).NotEmpty();
+            this.RuleFor(v => v.Text).MaximumLength(1000);
         }
     }
 }

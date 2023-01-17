@@ -24,9 +24,9 @@ namespace HealthGateway.Database.Context
     using System.Text;
     using HealthGateway.Common.Data.Constants;
     using HealthGateway.Common.Data.Models;
+    using HealthGateway.Common.Data.Utils;
     using HealthGateway.Database.Constants;
     using HealthGateway.Database.Models;
-    using HealthGateway.Database.Utils;
     using Microsoft.EntityFrameworkCore;
     using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
@@ -979,6 +979,15 @@ namespace HealthGateway.Database.Context
                     },
                     new CommentEntryTypeCode
                     {
+                        CommentEntryCode = CommentEntryType.MedicationRequest,
+                        Description = "Comment for a Medication Request Entry",
+                        CreatedBy = UserId.DefaultUser,
+                        CreatedDateTime = this.DefaultSeedDate,
+                        UpdatedBy = UserId.DefaultUser,
+                        UpdatedDateTime = this.DefaultSeedDate,
+                    },
+                    new CommentEntryTypeCode
+                    {
                         CommentEntryCode = CommentEntryType.Medication,
                         Description = "Comment for a Medication Entry",
                         CreatedBy = UserId.DefaultUser,
@@ -1024,12 +1033,21 @@ namespace HealthGateway.Database.Context
                     },
                     new CommentEntryTypeCode
                     {
-                        CommentEntryCode = CommentEntryType.ClinicalDocuments,
-                        Description = "Comment for Clinical Documents Entry",
+                        CommentEntryCode = CommentEntryType.ClinicalDocument,
+                        Description = "Comment for a Clinical Document Entry",
                         CreatedBy = UserId.DefaultUser,
                         CreatedDateTime = this.DefaultSeedDate.ToUniversalTime(),
                         UpdatedBy = UserId.DefaultUser,
                         UpdatedDateTime = this.DefaultSeedDate.ToUniversalTime(),
+                    },
+                    new CommentEntryTypeCode
+                    {
+                        CommentEntryCode = CommentEntryType.HospitalVisit,
+                        Description = "Comment for a Hospital Visit Entry",
+                        CreatedBy = UserId.DefaultUser,
+                        CreatedDateTime = this.DefaultSeedDate,
+                        UpdatedBy = UserId.DefaultUser,
+                        UpdatedDateTime = this.DefaultSeedDate,
                     });
         }
 
