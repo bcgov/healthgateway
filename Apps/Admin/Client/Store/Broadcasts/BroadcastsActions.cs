@@ -221,6 +221,20 @@ public static class BroadcastsActions
     }
 
     /// <summary>
+    /// The action that clears any error encountered during an add.
+    /// </summary>
+    public class ClearAddErrorAction
+    {
+    }
+
+    /// <summary>
+    /// The action that clears any error encountered during an update.
+    /// </summary>
+    public class ClearUpdateErrorAction
+    {
+    }
+
+    /// <summary>
     /// The action that clears the state.
     /// </summary>
     public class ResetStateAction
