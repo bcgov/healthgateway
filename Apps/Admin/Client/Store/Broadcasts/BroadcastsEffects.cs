@@ -30,16 +30,9 @@ using Microsoft.AspNetCore.Components;
 using Microsoft.Extensions.Logging;
 using Refit;
 
-/// <summary>
-/// The effects for the feature.
-/// </summary>
+#pragma warning disable CS1591, SA1600
 public class BroadcastsEffects
 {
-    /// <summary>
-    /// Initializes a new instance of the <see cref="BroadcastsEffects"/> class.
-    /// </summary>
-    /// <param name="logger">The injected logger.</param>
-    /// <param name="api">The injected API.</param>
     public BroadcastsEffects(ILogger<BroadcastsEffects> logger, IBroadcastsApi api)
     {
         this.Logger = logger;
@@ -52,12 +45,6 @@ public class BroadcastsEffects
     [Inject]
     private IBroadcastsApi Api { get; set; }
 
-    /// <summary>
-    /// Handler that calls the service and dispatches resulting actions.
-    /// </summary>
-    /// <param name="action">The triggering action.</param>
-    /// <param name="dispatcher">The injected dispatcher.</param>
-    /// <returns>A <see cref="Task"/> representing the result of the asynchronous operation.</returns>
     [EffectMethod]
     public async Task HandleAddAction(BroadcastsActions.AddAction action, IDispatcher dispatcher)
     {
@@ -84,11 +71,6 @@ public class BroadcastsEffects
         }
     }
 
-    /// <summary>
-    /// Handler that calls the service and dispatches resulting actions.
-    /// </summary>
-    /// <param name="dispatcher">The injected dispatcher.</param>
-    /// <returns>A <see cref="Task"/> representing the result of the asynchronous operation.</returns>
     [EffectMethod(typeof(BroadcastsActions.LoadAction))]
     public async Task HandleLoadAction(IDispatcher dispatcher)
     {
@@ -115,12 +97,6 @@ public class BroadcastsEffects
         }
     }
 
-    /// <summary>
-    /// Handler that calls the service and dispatches resulting actions.
-    /// </summary>
-    /// <param name="action">The triggering action.</param>
-    /// <param name="dispatcher">The injected dispatcher.</param>
-    /// <returns>A <see cref="Task"/> representing the result of the asynchronous operation.</returns>
     [EffectMethod]
     public async Task HandleUpdateAction(BroadcastsActions.UpdateAction action, IDispatcher dispatcher)
     {
@@ -147,12 +123,6 @@ public class BroadcastsEffects
         }
     }
 
-    /// <summary>
-    /// Handler that calls the service and dispatches resulting actions.
-    /// </summary>
-    /// <param name="action">The triggering action.</param>
-    /// <param name="dispatcher">The injected dispatcher.</param>
-    /// <returns>A <see cref="Task"/> representing the result of the asynchronous operation.</returns>
     [EffectMethod]
     public async Task HandleDeleteAction(BroadcastsActions.DeleteAction action, IDispatcher dispatcher)
     {

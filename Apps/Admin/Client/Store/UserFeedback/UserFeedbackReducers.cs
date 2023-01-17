@@ -21,16 +21,9 @@ using System.Collections.Immutable;
 using Fluxor;
 using HealthGateway.Admin.Common.Models;
 
-/// <summary>
-/// The effects for the feature.
-/// </summary>
+#pragma warning disable CS1591, SA1600
 public static class UserFeedbackReducers
 {
-    /// <summary>
-    /// The reducer for loading user feedback.
-    /// </summary>
-    /// <param name="state">The user feedback state.</param>
-    /// <returns>The new state.</returns>
     [ReducerMethod(typeof(UserFeedbackActions.LoadAction))]
     public static UserFeedbackState ReduceLoadAction(UserFeedbackState state)
     {
@@ -43,12 +36,6 @@ public static class UserFeedbackReducers
         };
     }
 
-    /// <summary>
-    /// The reducer for the load success action.
-    /// </summary>
-    /// <param name="state">The user feedback state.</param>
-    /// <param name="action">The load success action.</param>
-    /// <returns>The new state.</returns>
     [ReducerMethod]
     public static UserFeedbackState ReduceLoadSuccessAction(UserFeedbackState state, UserFeedbackActions.LoadSuccessAction action)
     {
@@ -64,12 +51,6 @@ public static class UserFeedbackReducers
         };
     }
 
-    /// <summary>
-    /// The reducer for the load fail action.
-    /// </summary>
-    /// <param name="state">The user feedback state.</param>
-    /// <param name="action">The load fail action.</param>
-    /// <returns>The new state.</returns>
     [ReducerMethod]
     public static UserFeedbackState ReduceLoadFailAction(UserFeedbackState state, UserFeedbackActions.LoadFailAction action)
     {
@@ -83,11 +64,6 @@ public static class UserFeedbackReducers
         };
     }
 
-    /// <summary>
-    /// The reducer for updating user feedback.
-    /// </summary>
-    /// <param name="state">The user feedback state.</param>
-    /// <returns>The new state.</returns>
     [ReducerMethod(typeof(UserFeedbackActions.UpdateAction))]
     public static UserFeedbackState ReduceUpdateAction(UserFeedbackState state)
     {
@@ -100,12 +76,6 @@ public static class UserFeedbackReducers
         };
     }
 
-    /// <summary>
-    /// The reducer for the update success action.
-    /// </summary>
-    /// <param name="state">The user feedback state.</param>
-    /// <param name="action">The update success action.</param>
-    /// <returns>The new state.</returns>
     [ReducerMethod]
     public static UserFeedbackState ReduceUpdateSuccessAction(UserFeedbackState state, UserFeedbackActions.UpdateSuccessAction action)
     {
@@ -129,12 +99,6 @@ public static class UserFeedbackReducers
         };
     }
 
-    /// <summary>
-    /// The reducer for the update fail action.
-    /// </summary>
-    /// <param name="state">The user feedback state.</param>
-    /// <param name="action">The update fail action.</param>
-    /// <returns>The new state.</returns>
     [ReducerMethod]
     public static UserFeedbackState ReduceUpdateFailAction(UserFeedbackState state, UserFeedbackActions.UpdateFailAction action)
     {
@@ -148,11 +112,6 @@ public static class UserFeedbackReducers
         };
     }
 
-    /// <summary>
-    /// The reducer for initiating the association of tags to user feedback.
-    /// </summary>
-    /// <param name="state">The Tag state.</param>
-    /// <returns>The new state.</returns>
     [ReducerMethod(typeof(UserFeedbackActions.AssociateTagsAction))]
     public static UserFeedbackState ReduceAssociateTagsAction(UserFeedbackState state)
     {
@@ -165,12 +124,6 @@ public static class UserFeedbackReducers
         };
     }
 
-    /// <summary>
-    /// The reducer for the successful association of tags to user feedback.
-    /// </summary>
-    /// <param name="state">The user feedback state.</param>
-    /// <param name="action">The load success action.</param>
-    /// <returns>The new state.</returns>
     [ReducerMethod]
     public static UserFeedbackState ReduceAssociateTagsSuccessAction(UserFeedbackState state, UserFeedbackActions.AssociateTagsSuccessAction action)
     {
@@ -194,12 +147,6 @@ public static class UserFeedbackReducers
         };
     }
 
-    /// <summary>
-    /// The reducer for the failed association of tags to user feedback.
-    /// </summary>
-    /// <param name="state">The user feedback state.</param>
-    /// <param name="action">The add fail action.</param>
-    /// <returns>The new state.</returns>
     [ReducerMethod]
     public static UserFeedbackState ReduceAssociateTagsFailAction(UserFeedbackState state, UserFeedbackActions.AssociateTagsFailAction action)
     {
@@ -213,11 +160,6 @@ public static class UserFeedbackReducers
         };
     }
 
-    /// <summary>
-    /// The reducer for the reset state action.
-    /// </summary>
-    /// <param name="state">The user feedback state.</param>
-    /// <returns>The default state.</returns>
     [ReducerMethod(typeof(UserFeedbackActions.ResetStateAction))]
     public static UserFeedbackState ReduceResetStateAction(UserFeedbackState state)
     {

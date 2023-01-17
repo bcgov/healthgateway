@@ -17,16 +17,9 @@ namespace HealthGateway.Admin.Client.Store.Dashboard;
 
 using Fluxor;
 
-/// <summary>
-/// The set of reducers for the feature.
-/// </summary>
+#pragma warning disable CS1591, SA1600
 public static class DashboardReducers
 {
-    /// <summary>
-    /// The Reducer for the load registered users action.
-    /// </summary>
-    /// <param name="state">The users state.</param>
-    /// <returns>The new users  state.</returns>
     [ReducerMethod(typeof(DashboardActions.LoadRegisteredUsersAction))]
     public static DashboardState ReduceRegisteredUsersAction(DashboardState state)
     {
@@ -36,12 +29,6 @@ public static class DashboardReducers
         };
     }
 
-    /// <summary>
-    /// The Reducer for the load success action.
-    /// </summary>
-    /// <param name="state">The registered user state.</param>
-    /// <param name="action">The load success action.</param>
-    /// <returns>The new registered user state.</returns>
     [ReducerMethod]
     public static DashboardState ReduceLoadRegisteredUsersSuccessAction(DashboardState state, DashboardActions.RegisteredUsersSuccessAction action)
     {
@@ -56,12 +43,6 @@ public static class DashboardReducers
         };
     }
 
-    /// <summary>
-    /// The Reducer for the load fail action.
-    /// </summary>
-    /// <param name="state">The registered user state.</param>
-    /// <param name="action">The load fail action.</param>
-    /// <returns>The new registered user state.</returns>
     [ReducerMethod]
     public static DashboardState ReduceRegisteredUserFailAction(DashboardState state, DashboardActions.RegisteredUsersFailAction action)
     {
@@ -76,11 +57,6 @@ public static class DashboardReducers
         };
     }
 
-    /// <summary>
-    /// The Reducer for the load logged in users action.
-    /// </summary>
-    /// <param name="state">The users state.</param>
-    /// <returns>The new users  state.</returns>
     [ReducerMethod(typeof(DashboardActions.LoadLoggedInUsersAction))]
     public static DashboardState ReduceLoggedInUsersAction(DashboardState state)
     {
@@ -90,12 +66,6 @@ public static class DashboardReducers
         };
     }
 
-    /// <summary>
-    /// The Reducer for the load success action.
-    /// </summary>
-    /// <param name="state">The logged in user state.</param>
-    /// <param name="action">The load success action.</param>
-    /// <returns>The new logged in user state.</returns>
     [ReducerMethod]
     public static DashboardState ReduceLoggedInUsersSuccessAction(DashboardState state, DashboardActions.LoggedInUsersSuccessAction action)
     {
@@ -110,12 +80,6 @@ public static class DashboardReducers
         };
     }
 
-    /// <summary>
-    /// The Reducer for the load fail action.
-    /// </summary>
-    /// <param name="state">The logged in user state.</param>
-    /// <param name="action">The load success action.</param>
-    /// <returns>The new logged in user state.</returns>
     [ReducerMethod]
     public static DashboardState ReduceLoggedInUserFailAction(DashboardState state, DashboardActions.LoggedInUsersFailAction action)
     {
@@ -130,11 +94,6 @@ public static class DashboardReducers
         };
     }
 
-    /// <summary>
-    /// The Reducer for the load dependents action.
-    /// </summary>
-    /// <param name="state">The dependents state.</param>
-    /// <returns>The new dependents  state.</returns>
     [ReducerMethod(typeof(DashboardActions.LoadDependentsAction))]
     public static DashboardState ReduceDependentsAction(DashboardState state)
     {
@@ -144,12 +103,6 @@ public static class DashboardReducers
         };
     }
 
-    /// <summary>
-    /// The Reducer for the load success action.
-    /// </summary>
-    /// <param name="state">The logged in user state.</param>
-    /// <param name="action">The load success action.</param>
-    /// <returns>The new logged in user state.</returns>
     [ReducerMethod]
     public static DashboardState ReduceDependentsSuccessAction(DashboardState state, DashboardActions.DependentsSuccessAction action)
     {
@@ -164,12 +117,6 @@ public static class DashboardReducers
         };
     }
 
-    /// <summary>
-    /// The Reducer for the load fail action.
-    /// </summary>
-    /// <param name="state">The logged in dependents state.</param>
-    /// <param name="action">The load success action.</param>
-    /// <returns>The new dependents state.</returns>
     [ReducerMethod]
     public static DashboardState ReduceDependentsFailAction(DashboardState state, DashboardActions.DependentsFailAction action)
     {
@@ -184,11 +131,6 @@ public static class DashboardReducers
         };
     }
 
-    /// <summary>
-    /// The Reducer for the load recurring users action.
-    /// </summary>
-    /// <param name="state">The recurring users state.</param>
-    /// <returns>The new recurring users  state.</returns>
     [ReducerMethod(typeof(DashboardActions.LoadRecurringUsersAction))]
     public static DashboardState ReduceRecurringUsersAction(DashboardState state)
     {
@@ -198,12 +140,6 @@ public static class DashboardReducers
         };
     }
 
-    /// <summary>
-    /// The Reducer for the load success action.
-    /// </summary>
-    /// <param name="state">The recurring users state.</param>
-    /// <param name="action">The load success action.</param>
-    /// <returns>The new recurring users state.</returns>
     [ReducerMethod]
     public static DashboardState ReduceRecurringUsersSuccessAction(DashboardState state, DashboardActions.RecurringUsersSuccessAction action)
     {
@@ -218,12 +154,6 @@ public static class DashboardReducers
         };
     }
 
-    /// <summary>
-    /// The Reducer for the load fail action.
-    /// </summary>
-    /// <param name="state">The recurring users state.</param>
-    /// <param name="action">The load success action.</param>
-    /// <returns>The new recurring users state.</returns>
     [ReducerMethod]
     public static DashboardState ReduceRecurringUsersFailAction(DashboardState state, DashboardActions.RecurringUsersFailAction action)
     {
@@ -238,11 +168,6 @@ public static class DashboardReducers
         };
     }
 
-    /// <summary>
-    /// The Reducer for the load rating users action.
-    /// </summary>
-    /// <param name="state">The rating summary state.</param>
-    /// <returns>The new rating summary  state.</returns>
     [ReducerMethod(typeof(DashboardActions.LoadRatingSummaryAction))]
     public static DashboardState ReduceRatingSummaryAction(DashboardState state)
     {
@@ -252,12 +177,6 @@ public static class DashboardReducers
         };
     }
 
-    /// <summary>
-    /// The Reducer for the load success action.
-    /// </summary>
-    /// <param name="state">The rating summary state.</param>
-    /// <param name="action">The load success action.</param>
-    /// <returns>The new rating summary state.</returns>
     [ReducerMethod]
     public static DashboardState ReduceRatingSummarySuccessAction(DashboardState state, DashboardActions.RatingSummarySuccessAction action)
     {
@@ -272,12 +191,6 @@ public static class DashboardReducers
         };
     }
 
-    /// <summary>
-    /// The Reducer for the load fail action.
-    /// </summary>
-    /// <param name="state">The logged in rating summary state.</param>
-    /// <param name="action">The load success action.</param>
-    /// <returns>The new ratings summary state.</returns>
     [ReducerMethod]
     public static DashboardState ReduceRatingSummaryFailAction(DashboardState state, DashboardActions.RatingSummaryFailAction action)
     {
@@ -292,11 +205,6 @@ public static class DashboardReducers
         };
     }
 
-    /// <summary>
-    /// The reducer for the reset state action.
-    /// </summary>
-    /// <param name="state">The dashboard state.</param>
-    /// <returns>The default state.</returns>
     [ReducerMethod(typeof(DashboardActions.ResetStateAction))]
     public static DashboardState ReduceResetStateAction(DashboardState state)
     {

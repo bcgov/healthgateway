@@ -13,7 +13,7 @@
 //  See the License for the specific language governing permissions and
 //  limitations under the License.
 // -------------------------------------------------------------------------
-namespace HealthGateway.Admin.Client.Utils
+namespace HealthGateway.Admin.Tests.Utils
 {
     using AutoMapper;
     using HealthGateway.Admin.Server.MapProfiles;

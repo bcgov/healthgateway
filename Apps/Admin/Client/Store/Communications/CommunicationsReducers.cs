@@ -21,16 +21,9 @@ using Fluxor;
 using HealthGateway.Admin.Client.Models;
 using HealthGateway.Admin.Common.Models;
 
-/// <summary>
-/// The set of reducers for the feature.
-/// </summary>
+#pragma warning disable CS1591, SA1600
 public static class CommunicationsReducers
 {
-    /// <summary>
-    /// The reducer for loading communications.
-    /// </summary>
-    /// <param name="state">The communications state.</param>
-    /// <returns>The new state.</returns>
     [ReducerMethod(typeof(CommunicationsActions.LoadAction))]
     public static CommunicationsState ReduceLoadAction(CommunicationsState state)
     {
@@ -43,12 +36,6 @@ public static class CommunicationsReducers
         };
     }
 
-    /// <summary>
-    /// The reducer for the load success action.
-    /// </summary>
-    /// <param name="state">The communications state.</param>
-    /// <param name="action">The load success action.</param>
-    /// <returns>The new state.</returns>
     [ReducerMethod]
     public static CommunicationsState ReduceLoadSuccessAction(CommunicationsState state, CommunicationsActions.LoadSuccessAction action)
     {
@@ -64,12 +51,6 @@ public static class CommunicationsReducers
         };
     }
 
-    /// <summary>
-    /// The reducer for the load fail action.
-    /// </summary>
-    /// <param name="state">The communications state.</param>
-    /// <param name="action">The load fail action.</param>
-    /// <returns>The new state.</returns>
     [ReducerMethod]
     public static CommunicationsState ReduceLoadFailAction(CommunicationsState state, CommunicationsActions.LoadFailAction action)
     {
@@ -83,11 +64,6 @@ public static class CommunicationsReducers
         };
     }
 
-    /// <summary>
-    /// The reducer for adding communications.
-    /// </summary>
-    /// <param name="state">The communications state.</param>
-    /// <returns>The new state.</returns>
     [ReducerMethod(typeof(CommunicationsActions.AddAction))]
     public static CommunicationsState ReduceAddAction(CommunicationsState state)
     {
@@ -100,12 +76,6 @@ public static class CommunicationsReducers
         };
     }
 
-    /// <summary>
-    /// The reducer for the add success action.
-    /// </summary>
-    /// <param name="state">The communications state.</param>
-    /// <param name="action">The add success action.</param>
-    /// <returns>The new state.</returns>
     [ReducerMethod]
     public static CommunicationsState ReduceAddSuccessAction(CommunicationsState state, CommunicationsActions.AddSuccessAction action)
     {

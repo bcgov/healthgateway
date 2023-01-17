@@ -13,7 +13,7 @@
 //  See the License for the specific language governing permissions and
 //  limitations under the License.
 // -------------------------------------------------------------------------
-namespace HealthGateway.Admin.Client.Converters
+namespace HealthGateway.Admin.Tests.Converters
 {
     using System;
     using HealthGateway.Admin.Server.Converters;
@@ -72,7 +72,7 @@ namespace HealthGateway.Admin.Client.Converters
             string expected = "2022-12-31 5:00 PM";
 
             // Act
-            object? actual = converter.ConvertToString(dateTime, null, null);
+            object actual = converter.ConvertToString(dateTime, null, null);
 
             // Assert
             Assert.Equal(expected, actual);
@@ -90,7 +90,7 @@ namespace HealthGateway.Admin.Client.Converters
             string expected = string.Empty;
 
             // Act
-            object? actual = converter.ConvertToString(dateTime, null, null);
+            object actual = converter.ConvertToString(dateTime, null, null);
 
             // Assert
             Assert.Equal(expected, actual);
