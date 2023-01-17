@@ -153,8 +153,6 @@ namespace HealthGateway.Encounter.Services
                     result.ResultStatus = ResultType.Success;
                     result.TotalResultCount = hospitalVisitResult.TotalResultCount;
                     result.ResourcePayload.HospitalVisits = this.autoMapper.Map<IList<HospitalVisitModel>>(hospitalVisitResult.ResourcePayload.Result);
-                    result.ResourcePayload.Loaded = true;
-                    result.ResourcePayload.Queued = false;
                     result.PageIndex = hospitalVisitResult.PageIndex;
                     result.PageSize = hospitalVisitResult.PageSize;
                 }

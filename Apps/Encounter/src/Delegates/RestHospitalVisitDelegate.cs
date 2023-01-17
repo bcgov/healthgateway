@@ -89,7 +89,8 @@ namespace HealthGateway.Encounter.Delegates
                 PhsaResult<IEnumerable<HospitalVisit>> response =
                     await this.hospitalVisitApi.GetHospitalVisitsAsync(hdid, this.phsaConfig.FetchSize, accessToken).ConfigureAwait(true);
                 requestResult.ResultStatus = ResultType.Success;
-                requestResult.ResourcePayload!.Result = response.Result;
+                requestResult.ResourcePayload.Result = response.Result;
+                requestResult.ResourcePayload.LoadState = response.LoadState;
                 requestResult.TotalResultCount = requestResult.ResourcePayload.Result.Count();
             }
             catch (Exception e) when (e is ApiException or HttpRequestException)
