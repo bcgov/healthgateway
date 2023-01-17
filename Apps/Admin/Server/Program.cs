@@ -93,10 +93,6 @@ namespace HealthGateway.Admin.Server
             {
                 app.UseWebAssemblyDebugging();
             }
-            else
-            {
-                app.UseExceptionHandler("/Error");
-            }
 
             app.UseBlazorFrameworkFiles();
             app.MapRazorPages();
@@ -108,7 +104,6 @@ namespace HealthGateway.Admin.Server
 
         private static void AddModules(IServiceCollection services, IConfiguration configuration, ILogger logger, IWebHostEnvironment environment)
         {
-            ExceptionHandling.ConfigureProblemDetails(services, environment);
             HttpWeb.ConfigureForwardHeaders(services, logger, configuration);
             Db.ConfigureDatabaseServices(services, logger, configuration);
             HttpWeb.ConfigureHttpServices(services, logger);
@@ -119,6 +114,7 @@ namespace HealthGateway.Admin.Server
             JobScheduler.ConfigureHangfireQueue(services, configuration);
             Patient.ConfigurePatientAccess(services, logger, configuration);
             PhsaV2.ConfigurePhsaV2Access(services, logger, configuration, PhsaConfigV2.AdminConfigurationSectionKey);
+            ExceptionHandling.ConfigureProblemDetails(services, environment);
         }
 
         private static void AddServices(IServiceCollection services)
