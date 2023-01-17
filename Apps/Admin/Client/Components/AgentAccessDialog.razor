@@ -1,4 +1,4 @@
-@using HealthGateway.Admin.Client.Store.Broadcasts
+@using HealthGateway.Admin.Client.Store.AgentAccess
 @using HealthGateway.Admin.Common.Constants
 @inherits Fluxor.Blazor.Web.Components.FluxorComponent
 
@@ -7,14 +7,14 @@
         <HgBannerFeedback
             Severity="@Severity.Error"
             IsEnabled="@HasAddError"
-            TResetAction="@BroadcastsActions.AddAction"
+            TResetAction="@AgentAccessActions.AddAction"
             DataTestId="add-error-alert">
             @AddErrorMessage
         </HgBannerFeedback>
         <HgBannerFeedback
             Severity="@Severity.Error"
             IsEnabled="@HasUpdateError"
-            TResetAction="@BroadcastsActions.UpdateAction"
+            TResetAction="@AgentAccessActions.UpdateAction"
             DataTestId="update-error-alert">
             @UpdateErrorMessage
         </HgBannerFeedback>

@@ -92,6 +92,8 @@ public partial class AgentAccessDialog : FluxorComponent
 
     private void HandleClickCancel()
     {
+        this.Dispatcher.Dispatch(new AgentAccessActions.ClearAddErrorAction());
+        this.Dispatcher.Dispatch(new AgentAccessActions.ClearUpdateErrorAction());
         this.MudDialog.Cancel();
     }
 

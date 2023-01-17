@@ -19,6 +19,7 @@ namespace HealthGateway.CommonTests.CacheProviders
     using System.Threading;
     using System.Threading.Tasks;
     using HealthGateway.Common.CacheProviders;
+    using HealthGateway.Common.Models.Cacheable;
     using Microsoft.Extensions.Caching.Distributed;
     using Microsoft.Extensions.Caching.Memory;
     using Microsoft.Extensions.Options;
@@ -208,6 +209,26 @@ namespace HealthGateway.CommonTests.CacheProviders
             string? cacheItem = await this.cacheProvider.GetOrSetAsync(key, () => Task.FromResult(value)).ConfigureAwait(true);
 
             Assert.Equal(value, cacheItem);
+        }
+
+        /// <summary>
+        /// Validates complex object serialization.
+        /// </summary>
+        [Fact]
+        public void CanCacheComplexObject()
+        {
+            string key = $"key_{GenerateRandomString()}";
+            IHash expected = new HmacHash
+            {
+                Hash = "1234",
+                Salt = "5678",
+            };
+            this.cacheProvider.AddItem(key, expected, TimeSpan.FromSeconds(30));
+
+            IHash? actual = this.cacheProvider.GetItem<HmacHash>(key);
+            Assert.NotNull(actual);
+            Assert.Equal(expected.Hash, actual.Hash);
+            Assert.Equal(((HmacHash)expected).Salt, ((HmacHash)actual).Salt);
         }
 
         private static string GenerateRandomString()

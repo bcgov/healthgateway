@@ -203,6 +203,30 @@ public static class BroadcastsReducers
         };
     }
 
+    [ReducerMethod(typeof(BroadcastsActions.ClearAddErrorAction))]
+    public static BroadcastsState ReduceClearAddErrorAction(BroadcastsState state)
+    {
+        return state with
+        {
+            Add = state.Add with
+            {
+                Error = null,
+            },
+        };
+    }
+
+    [ReducerMethod(typeof(BroadcastsActions.ClearUpdateErrorAction))]
+    public static BroadcastsState ReduceClearUpdateErrorAction(BroadcastsState state)
+    {
+        return state with
+        {
+            Update = state.Update with
+            {
+                Error = null,
+            },
+        };
+    }
+
     /// <summary>
     /// The reducer for the delete fail action.
     /// </summary>

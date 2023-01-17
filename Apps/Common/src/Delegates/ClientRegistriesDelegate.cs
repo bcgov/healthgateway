@@ -28,6 +28,7 @@ namespace HealthGateway.Common.Delegates
     using HealthGateway.Common.Data.ViewModels;
     using HealthGateway.Common.ErrorHandling;
     using HealthGateway.Common.Models;
+    using Microsoft.AspNetCore.Http;
     using Microsoft.Extensions.Logging;
     using ServiceReference;
 
@@ -37,6 +38,7 @@ namespace HealthGateway.Common.Delegates
     public class ClientRegistriesDelegate : IClientRegistriesDelegate
     {
         private readonly QUPA_AR101102_PortType clientRegistriesClient;
+        private readonly IHttpContextAccessor httpContextAccessor;
         private readonly ILogger<ClientRegistriesDelegate> logger;
 
         /// <summary>
@@ -45,15 +47,20 @@ namespace HealthGateway.Common.Delegates
         /// </summary>
         /// <param name="logger">The injected logger provider.</param>
         /// <param name="clientRegistriesClient">The injected client registries soap client.</param>
+        /// <param name="httpContextAccessor">The HttpContext accessor.</param>
         public ClientRegistriesDelegate(
             ILogger<ClientRegistriesDelegate> logger,
-            QUPA_AR101102_PortType clientRegistriesClient)
+            QUPA_AR101102_PortType clientRegistriesClient,
+            IHttpContextAccessor httpContextAccessor)
         {
             this.logger = logger;
             this.clientRegistriesClient = clientRegistriesClient;
+            this.httpContextAccessor = httpContextAccessor;
         }
 
         private static ActivitySource Source { get; } = new(nameof(ClientRegistriesDelegate));
+
+        private string ClientIp => this.httpContextAccessor.HttpContext?.Connection.RemoteIpAddress?.MapToIPv4().ToString() ?? "Unknown";
 
         /// <inheritdoc/>
         public async Task<RequestResult<PatientModel>> GetDemographicsByHdidAsync(string hdid, bool disableIdValidation = false)
@@ -61,7 +68,7 @@ namespace HealthGateway.Common.Delegates
             using (Source.StartActivity())
             {
                 // Create request object
-                HCIM_IN_GetDemographicsRequest request = CreateRequest(OidType.Hdid, hdid);
+                HCIM_IN_GetDemographicsRequest request = CreateRequest(OidType.Hdid, hdid, this.ClientIp);
                 try
                 {
                     // Perform the request
@@ -90,7 +97,7 @@ namespace HealthGateway.Common.Delegates
             using (Source.StartActivity())
             {
                 // Create request object
-                HCIM_IN_GetDemographicsRequest request = CreateRequest(OidType.Phn, phn);
+                HCIM_IN_GetDemographicsRequest request = CreateRequest(OidType.Phn, phn, this.ClientIp);
                 try
                 {
                     // Perform the request
@@ -113,7 +120,7 @@ namespace HealthGateway.Common.Delegates
             }
         }
 
-        private static HCIM_IN_GetDemographicsRequest CreateRequest(OidType oidType, string identifierValue)
+        private static HCIM_IN_GetDemographicsRequest CreateRequest(OidType oidType, string identifierValue, string clientIp)
         {
             using (Source.StartActivity())
             {
@@ -128,7 +135,7 @@ namespace HealthGateway.Common.Delegates
 
                 request.receiver = new MCCI_MT000100Receiver { typeCode = "RCV" };
                 request.receiver.device = new MCCI_MT000100Device { determinerCode = "INSTANCE", classCode = "DEV" };
-                request.receiver.device.id = new II { root = "2.16.840.1.113883.3.51.1.1.4", extension = "192.168.0.1" };
+                request.receiver.device.id = new II { root = "2.16.840.1.113883.3.51.1.1.4", extension = clientIp };
                 request.receiver.device.asAgent = new MCCI_MT000100Agent { classCode = "AGNT" };
                 request.receiver.device.asAgent.representedOrganization = new MCCI_MT000100Organization { determinerCode = "INSTANCE", classCode = "ORG" };
                 request.receiver.device.asAgent.representedOrganization = new MCCI_MT000100Organization { determinerCode = "INSTANCE", classCode = "ORG" };
