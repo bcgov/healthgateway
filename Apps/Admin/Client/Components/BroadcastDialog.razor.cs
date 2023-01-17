@@ -149,6 +149,8 @@ public partial class BroadcastDialog : FluxorComponent
 
     private void HandleClickCancel()
     {
+        this.Dispatcher.Dispatch(new BroadcastsActions.ClearAddErrorAction());
+        this.Dispatcher.Dispatch(new BroadcastsActions.ClearUpdateErrorAction());
         this.MudDialog.Cancel();
     }
 
