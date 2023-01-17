@@ -73,9 +73,9 @@ steps:
       dotnet tool install --global dotnet-ef
       pushd $(Build.SourcesDirectory)/Apps/DBMaintainer
       echo Creating Migration SQL Scripts
-      dotnet ef migrations script --idempotent --project "../Database/src" --output $(Build.ArtifactStagingDirectory)/$(Build.BuildNumber).sql
+      dotnet ef migrations script --idempotent --project "../Database/src" --output $(Build.ArtifactStagingDirectory)/$(Build.BuildNumber).sql --verbose
       echo Creating Binary Migration Bundle
-      dotnet ef migrations bundle --project "../Database/src" --output $(Build.ArtifactStagingDirectory)/$(Build.BuildNumber).efbundle
+      dotnet ef migrations bundle --project "../Database/src" --output $(Build.ArtifactStagingDirectory)/$(Build.BuildNumber).efbundle --verbose
       popd
     displayName: "Creating DB Scripts $(App.Name)"
     condition: and(succeeded(), eq(variables['DBScripts'], true))
