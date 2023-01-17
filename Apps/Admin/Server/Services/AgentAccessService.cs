@@ -117,13 +117,13 @@ namespace HealthGateway.Admin.Server.Services
         }
 
         /// <inheritdoc/>
-        public async Task<IEnumerable<AdminAgent>> GetAgentsAsync(string queryString, int? resultLimit = 25)
+        public async Task<IEnumerable<AdminAgent>> GetAgentsAsync(string searchString, int? resultLimit = 25)
         {
             const int firstRecord = 0;
 
             JwtModel jwtModel = this.authDelegate.AuthenticateAsSystem(this.tokenUri, this.tokenRequest);
 
-            List<UserRepresentation> users = await this.keycloakAdminApi.GetUsersSearchAsync(queryString, firstRecord, resultLimit.GetValueOrDefault(), jwtModel.AccessToken).ConfigureAwait(true);
+            List<UserRepresentation> users = await this.keycloakAdminApi.GetUsersSearchAsync(searchString, firstRecord, resultLimit.GetValueOrDefault(), jwtModel.AccessToken).ConfigureAwait(true);
 
             List<AdminAgent> adminAgents = new();
             foreach (UserRepresentation user in users)
