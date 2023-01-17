@@ -115,7 +115,7 @@ namespace HealthGateway.Common.CacheProviders
 
         private static byte[] Serialize<T>(T? obj)
         {
-            return obj == null ? Array.Empty<byte>() : JsonSerializer.SerializeToUtf8Bytes(obj);
+            return obj == null ? Array.Empty<byte>() : JsonSerializer.SerializeToUtf8Bytes(obj, obj.GetType());
         }
 
         private string KeyGen(string key)
