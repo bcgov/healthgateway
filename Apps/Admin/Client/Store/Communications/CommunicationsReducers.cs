@@ -259,6 +259,30 @@ public static class CommunicationsReducers
         };
     }
 
+    [ReducerMethod(typeof(CommunicationsActions.ClearAddErrorAction))]
+    public static CommunicationsState ReduceClearAddErrorAction(CommunicationsState state)
+    {
+        return state with
+        {
+            Add = state.Add with
+            {
+                Error = null,
+            },
+        };
+    }
+
+    [ReducerMethod(typeof(CommunicationsActions.ClearUpdateErrorAction))]
+    public static CommunicationsState ReduceClearUpdateErrorAction(CommunicationsState state)
+    {
+        return state with
+        {
+            Update = state.Update with
+            {
+                Error = null,
+            },
+        };
+    }
+
     /// <summary>
     /// The reducer for the reset state action.
     /// </summary>

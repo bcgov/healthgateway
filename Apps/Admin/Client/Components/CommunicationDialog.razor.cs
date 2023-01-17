@@ -122,6 +122,8 @@ public partial class CommunicationDialog : FluxorComponent
 
     private void HandleClickCancel()
     {
+        this.Dispatcher.Dispatch(new CommunicationsActions.ClearAddErrorAction());
+        this.Dispatcher.Dispatch(new CommunicationsActions.ClearUpdateErrorAction());
         this.MudDialog.Cancel();
     }
 
