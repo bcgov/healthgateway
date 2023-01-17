@@ -35,6 +35,8 @@ using MudBlazor;
 /// </summary>
 public partial class AgentAccessPage : FluxorComponent
 {
+    private const int SearchResultLimit = 25;
+
     private static Func<string, string?> ValidateQueryParameter => parameter =>
     {
         if (string.IsNullOrWhiteSpace(parameter))
