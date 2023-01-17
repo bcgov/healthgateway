@@ -104,7 +104,6 @@ namespace HealthGateway.Admin.Server
 
         private static void AddModules(IServiceCollection services, IConfiguration configuration, ILogger logger, IWebHostEnvironment environment)
         {
-            ExceptionHandling.ConfigureProblemDetails(services, environment);
             HttpWeb.ConfigureForwardHeaders(services, logger, configuration);
             Db.ConfigureDatabaseServices(services, logger, configuration);
             HttpWeb.ConfigureHttpServices(services, logger);
