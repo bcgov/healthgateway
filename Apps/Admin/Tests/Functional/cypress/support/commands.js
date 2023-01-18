@@ -10,7 +10,7 @@
 require("cy-verify-downloads").addCustomCommand();
 
 const openIdConnectClientId = "hg-admin-blazor";
-const resizeObserverLoopErrRe = /^[^(ResizeObserver loop limit exceeded)]/;
+const resizeObserverLoopErr = "ResizeObserver loop limit exceeded";
 
 function generateRandomString(length) {
     var text = "";
@@ -32,7 +32,7 @@ function logout(config) {
 
 Cypress.on("uncaught:exception", (err) => {
     /* returning false here prevents Cypress from failing the test */
-    if (resizeObserverLoopErrRe.test(err.message)) {
+    if (err.message.includes(resizeObserverLoopErr)) {
         return false;
     }
 });
