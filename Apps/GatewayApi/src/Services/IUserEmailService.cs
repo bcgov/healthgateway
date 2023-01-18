@@ -29,7 +29,7 @@ namespace HealthGateway.GatewayApi.Services
         /// <param name="hdid">The requested user hdid.</param>
         /// <param name="inviteKey">The email invite key.</param>
         /// <returns>Returns a request result with appropriate result status..</returns>
-        PrimitiveRequestResult<bool> ValidateEmail(string hdid, Guid inviteKey);
+        RequestResult<bool> ValidateEmail(string hdid, Guid inviteKey);
 
         /// <summary>
         /// Creates the a non-validated email.

@@ -76,7 +76,7 @@ namespace HealthGateway.GatewayApi.Services
         }
 
         /// <inheritdoc/>
-        public PrimitiveRequestResult<bool> ValidateEmail(string hdid, Guid inviteKey)
+        public RequestResult<bool> ValidateEmail(string hdid, Guid inviteKey)
         {
             this.logger.LogTrace("Validating email... {InviteKey}", inviteKey);
             MessagingVerification? matchingVerification = this.messageVerificationDelegate.GetLastByInviteKey(inviteKey);
@@ -95,7 +95,7 @@ namespace HealthGateway.GatewayApi.Services
 
                 this.logger.LogDebug("Invalid email verification");
 
-                return new PrimitiveRequestResult<bool>
+                return new RequestResult<bool>
                 {
                     ResourcePayload = false,
                     ResultStatus = ResultType.Error,
@@ -113,7 +113,7 @@ namespace HealthGateway.GatewayApi.Services
                 this.logger.LogDebug("Email verification expired");
 
                 // Verification Expired
-                return new PrimitiveRequestResult<bool>
+                return new RequestResult<bool>
                 {
                     ResourcePayload = false,
                     ResultStatus = ResultType.ActionRequired,
@@ -126,7 +126,7 @@ namespace HealthGateway.GatewayApi.Services
                 this.logger.LogDebug("Email already validated");
 
                 // Verification already verified
-                return new PrimitiveRequestResult<bool>
+                return new RequestResult<bool>
                 {
                     ResourcePayload = true,
                     ResultStatus = ResultType.Error,
@@ -150,7 +150,7 @@ namespace HealthGateway.GatewayApi.Services
             this.logger.LogDebug("Email validated");
 
             // Verification already verified
-            return new PrimitiveRequestResult<bool>
+            return new RequestResult<bool>
             {
                 ResourcePayload = true,
                 ResultStatus = ResultType.Success,

@@ -372,7 +372,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
             };
 
             IUserProfileService service = new UserProfileServiceMock(this.hdid, patientModel, GetIConfigurationRoot(localConfig)).UserProfileServiceMockInstance();
-            PrimitiveRequestResult<bool> expected = new() { ResultStatus = ResultType.Success, ResourcePayload = false };
+            RequestResult<bool> expected = new() { ResultStatus = ResultType.Success, ResourcePayload = false };
 
             // Act
             RequestResult<bool> actualResult = await service.ValidateMinimumAge(this.hdid).ConfigureAwait(true);

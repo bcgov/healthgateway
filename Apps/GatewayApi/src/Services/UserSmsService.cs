@@ -63,11 +63,11 @@ namespace HealthGateway.GatewayApi.Services
         }
 
         /// <inheritdoc/>
-        public PrimitiveRequestResult<bool> ValidateSms(string hdid, string validationCode)
+        public RequestResult<bool> ValidateSms(string hdid, string validationCode)
         {
             this.logger.LogTrace("Validating sms... {ValidationCode}", validationCode);
 
-            PrimitiveRequestResult<bool> retVal = new() { ResourcePayload = false, ResultStatus = ResultType.Success };
+            RequestResult<bool> retVal = new() { ResourcePayload = false, ResultStatus = ResultType.Success };
             MessagingVerification? smsVerification = this.messageVerificationDelegate.GetLastForUser(hdid, MessagingVerificationType.Sms);
 
             if (smsVerification != null &&
