@@ -222,7 +222,7 @@ namespace HealthGateway.GatewayApi.Controllers
         [HttpGet]
         [Route("{hdid}/email/validate/{verificationKey}")]
         [Authorize(Policy = UserProfilePolicy.Write)]
-        public async Task<ActionResult<PrimitiveRequestResult<bool>>> ValidateEmail(string hdid, Guid verificationKey)
+        public async Task<ActionResult<RequestResult<bool>>> ValidateEmail(string hdid, Guid verificationKey)
         {
             HttpContext? httpContext = this.httpContextAccessor.HttpContext;
             if (httpContext != null)
@@ -250,12 +250,12 @@ namespace HealthGateway.GatewayApi.Controllers
         [HttpGet]
         [Route("{hdid}/sms/validate/{validationCode}")]
         [Authorize(Policy = UserProfilePolicy.Write)]
-        public async Task<ActionResult<PrimitiveRequestResult<bool>>> ValidateSms(string hdid, string validationCode)
+        public async Task<ActionResult<RequestResult<bool>>> ValidateSms(string hdid, string validationCode)
         {
             HttpContext? httpContext = this.httpContextAccessor.HttpContext;
             if (httpContext != null)
             {
-                PrimitiveRequestResult<bool> result = this.userSmsService.ValidateSms(hdid, validationCode);
+                RequestResult<bool> result = this.userSmsService.ValidateSms(hdid, validationCode);
                 if (!result.ResourcePayload)
                 {
                     await Task.Delay(5000).ConfigureAwait(true);

@@ -82,7 +82,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
                 GetIConfigurationRoot(),
                 new Mock<IHttpContextAccessor>().Object);
 
-            PrimitiveRequestResult<bool> actual = service.ValidateEmail(HdIdMock, inviteKey);
+            RequestResult<bool> actual = service.ValidateEmail(HdIdMock, inviteKey);
             Assert.True(actual.ResultStatus == ResultType.Success);
         }
 
@@ -125,7 +125,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
                 GetIConfigurationRoot(),
                 new Mock<IHttpContextAccessor>().Object);
 
-            PrimitiveRequestResult<bool> actual = service.ValidateEmail(HdIdMock, inviteKey);
+            RequestResult<bool> actual = service.ValidateEmail(HdIdMock, inviteKey);
             Assert.True(actual.ResultStatus == ResultType.ActionRequired);
         }
 
@@ -169,7 +169,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
                 GetIConfigurationRoot(),
                 new Mock<IHttpContextAccessor>().Object);
 
-            PrimitiveRequestResult<bool> actual = service.ValidateEmail(HdIdMock, inviteKey);
+            RequestResult<bool> actual = service.ValidateEmail(HdIdMock, inviteKey);
             Assert.True(actual.ResultStatus == ResultType.Error);
         }
 
@@ -199,7 +199,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
                 GetIConfigurationRoot(),
                 new Mock<IHttpContextAccessor>().Object);
 
-            PrimitiveRequestResult<bool> actual = service.ValidateEmail(HdIdMock, inviteKey);
+            RequestResult<bool> actual = service.ValidateEmail(HdIdMock, inviteKey);
             Assert.True(actual.ResultStatus == ResultType.Error);
         }
 
@@ -230,7 +230,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
                 GetIConfigurationRoot(),
                 new Mock<IHttpContextAccessor>().Object);
 
-            PrimitiveRequestResult<bool> actual = service.ValidateEmail(HdIdMock, inviteKey);
+            RequestResult<bool> actual = service.ValidateEmail(HdIdMock, inviteKey);
             Assert.True(actual.ResultStatus == ResultType.Error);
         }
 
