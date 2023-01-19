@@ -29,9 +29,9 @@
             </HgSelect>
         </MudItem>
         <MudItem xs="12" sm="9">
-            @if (PhnSelected)
+            @if (PhnOrDependentSelected)
             {
-                <HgTextField LeftMargin="Breakpoint.Sm" T="string" Label="@FormatQueryType(SelectedQueryType)" Required="@true" Validation="@ValidateQueryParameter" Mask="@(new PatternMask(Mask.PhnMaskTemplate))" @bind-Value="QueryParameter" data-testid="query-input" />
+                <HgTextField LeftMargin="Breakpoint.Sm" T="string" Label="@FormatQueryType(UserQueryType.Phn)" Required="@true" Validation="@ValidateQueryParameter" Mask="@(new PatternMask(Mask.PhnMaskTemplate))" @bind-Value="QueryParameter" data-testid="query-input" />
             }
             else
             {
@@ -50,58 +50,65 @@
 
 @if (SupportUsersLoaded || SupportUsersLoading)
 {
-    <MudTable Class="mt-3"
-              Items="SupportUserRows"
-              Loading="SupportUsersLoading"
-              AllowUnsorted="false"
-              Breakpoint="Breakpoint.Md"
-              HorizontalScrollbar="true"
-              Striped="true"
-              Dense="true"
-              data-testid="user-table">
-        <HeaderContent>
-            <MudTh>
-                <MudTableSortLabel SortBy="new Func<SupportUserRow, object>(x => x.Hdid)">
-                    HDID
-                </MudTableSortLabel>
-            </MudTh>
-            <MudTh>
-                <MudTableSortLabel SortBy="new Func<SupportUserRow, object>(x => x.PersonalHealthNumber)">
-                    PHN
-                </MudTableSortLabel>
-            </MudTh>
-            <MudTh>
-                <MudTableSortLabel SortBy="new Func<SupportUserRow, object>(x => x.LastLoginDateTime)"
-                                   InitialDirection="@SortDirection.Descending">
-                    Last Login
-                </MudTableSortLabel>
-            </MudTh>
-            <MudTh Style="text-align:right"></MudTh>
-        </HeaderContent>
-        <RowTemplate>
-            <MudTd DataLabel="HDID" data-testid=@($"user-table-hdid-{context.Hdid}")>@context.Hdid</MudTd>
-            <MudTd DataLabel="PHN" data-testid=@($"user-table-phn-{context.Hdid}")>@context.PersonalHealthNumber</MudTd>
-            <MudTd DataLabel="Last Login" data-testid=@($"user-table-last-login-{context.Hdid}")>@DateFormatter.ToShortDateAndTime(context.LastLoginDateTime)</MudTd>
-            <MudTd Style="text-align:right">
-                <div>
-                    <MudTooltip Text="@(context.IsExpanded ? "Collapse" : "Expand")">
-                        <MudIconButton OnClick="@(() => ToggleExpandRow(context.Hdid))"
-                                       Icon="@(context.IsExpanded ? Icons.Material.Filled.ExpandLess : Icons.Material.Filled.ExpandMore)"
-                                       Color="@Color.Primary"
-                                       data-testid=@($"messaging-verification-table-expand-btn-{context.Hdid}")>
-                        </MudIconButton>
-                    </MudTooltip>
-                </div>
-            </MudTd>
-        </RowTemplate>
-        <ChildRowContent>
-            @if (context.IsExpanded)
-            {
-                <MessageVerificationTable Data="@GetMessagingVerificationModels(context.Hdid)" IsLoading="@MessagingVerificationsLoading" />
-            }
-        </ChildRowContent>
-        <PagerContent>
-            <MudTablePager />
-        </PagerContent>
-    </MudTable>
+    <MudGrid>
+        <MudItem xs="12" lg="12">
+            <MudText Class="mt-3" Typo="Typo.subtitle1">
+                <strong>@SelectedQueryType Query Results</strong>
+            </MudText>
+            <MudTable Class="mt-3"
+                      Items="SupportUserRows"
+                      Loading="SupportUsersLoading"
+                      AllowUnsorted="false"
+                      Breakpoint="Breakpoint.Md"
+                      HorizontalScrollbar="true"
+                      Striped="true"
+                      Dense="true"
+                      data-testid="user-table">
+                <HeaderContent>
+                    <MudTh>
+                        <MudTableSortLabel SortBy="new Func<SupportUserRow, object>(x => x.Hdid)">
+                            HDID
+                        </MudTableSortLabel>
+                    </MudTh>
+                    <MudTh>
+                        <MudTableSortLabel SortBy="new Func<SupportUserRow, object>(x => x.PersonalHealthNumber)">
+                            PHN
+                        </MudTableSortLabel>
+                    </MudTh>
+                    <MudTh>
+                        <MudTableSortLabel SortBy="new Func<SupportUserRow, object>(x => x.LastLoginDateTime)"
+                                           InitialDirection="@SortDirection.Descending">
+                            Last Login
+                        </MudTableSortLabel>
+                    </MudTh>
+                    <MudTh Style="text-align:right"></MudTh>
+                </HeaderContent>
+                <RowTemplate>
+                    <MudTd DataLabel="HDID" data-testid=@($"user-table-hdid-{context.Hdid}")>@context.Hdid</MudTd>
+                    <MudTd DataLabel="PHN" data-testid=@($"user-table-phn-{context.Hdid}")>@context.PersonalHealthNumber</MudTd>
+                    <MudTd DataLabel="Last Login" data-testid=@($"user-table-last-login-{context.Hdid}")>@DateFormatter.ToShortDateAndTime(context.LastLoginDateTime)</MudTd>
+                    <MudTd Style="text-align:right">
+                        <div>
+                            <MudTooltip Text="@(context.IsExpanded ? "Collapse" : "Expand")">
+                                <MudIconButton OnClick="@(() => ToggleExpandRow(context.Hdid))"
+                                               Icon="@(context.IsExpanded ? Icons.Material.Filled.ExpandLess : Icons.Material.Filled.ExpandMore)"
+                                               Color="@Color.Primary"
+                                               data-testid=@($"messaging-verification-table-expand-btn-{context.Hdid}")>
+                                </MudIconButton>
+                            </MudTooltip>
+                        </div>
+                    </MudTd>
+                </RowTemplate>
+                <ChildRowContent>
+                    @if (context.IsExpanded)
+                    {
+                        <MessageVerificationTable Data="@GetMessagingVerificationModels(context.Hdid)" IsLoading="@MessagingVerificationsLoading" />
+                    }
+                </ChildRowContent>
+                <PagerContent>
+                    <MudTablePager />
+                </PagerContent>
+            </MudTable>
+        </MudItem>
+    </MudGrid>
 }

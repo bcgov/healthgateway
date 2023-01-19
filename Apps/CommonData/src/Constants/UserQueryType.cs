@@ -40,5 +40,10 @@ namespace HealthGateway.Common.Data.Constants
         /// Query by Health-Directed identifier.
         /// </summary>
         Hdid,
+
+        /// <summary>
+        /// Query by dependent Personal Health Number.
+        /// </summary>
+        Dependent,
     }
 }
