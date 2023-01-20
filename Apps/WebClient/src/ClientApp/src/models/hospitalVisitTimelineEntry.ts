@@ -13,7 +13,7 @@ export default class HospitalVisitTimelineEntry extends TimelineEntry {
     public provider: string;
     public healthAuthority?: string;
     public admitDateTime: DateWrapper;
-    public endDateTime: string;
+    public endDateTime?: DateWrapper;
 
     private getComments: (entyId: string) => UserComment[] | null;
 
@@ -38,8 +38,8 @@ export default class HospitalVisitTimelineEntry extends TimelineEntry {
             model.endDateTime !== null
                 ? new DateWrapper(model.endDateTime, {
                       hasTime: true,
-                  }).format("yyyy-MMM-dd, t")
-                : "not available";
+                  })
+                : undefined;
         this.provider = model.provider;
         this.getComments = getComments;
     }
