@@ -4,7 +4,7 @@ import { HospitalVisit } from "@/models/encounter";
 import TimelineEntry from "@/models/timelineEntry";
 import { UserComment } from "@/models/userComment";
 
-// The clinical document timeline entry model
+// The hospital visit timeline entry model
 export default class HospitalVisitTimelineEntry extends TimelineEntry {
     public healthService: string;
     public visitType: string;
@@ -13,7 +13,7 @@ export default class HospitalVisitTimelineEntry extends TimelineEntry {
     public provider: string;
     public healthAuthority?: string;
     public admitDateTime: DateWrapper;
-    public endDateTime: DateWrapper;
+    public endDateTime?: DateWrapper;
 
     private getComments: (entyId: string) => UserComment[] | null;
 
@@ -34,9 +34,12 @@ export default class HospitalVisitTimelineEntry extends TimelineEntry {
         this.admitDateTime = new DateWrapper(model.admitDateTime, {
             hasTime: true,
         });
-        this.endDateTime = new DateWrapper(model.endDateTime, {
-            hasTime: true,
-        });
+        this.endDateTime =
+            model.endDateTime !== null
+                ? new DateWrapper(model.endDateTime, {
+                      hasTime: true,
+                  })
+                : undefined;
         this.provider = model.provider;
         this.getComments = getComments;
     }
