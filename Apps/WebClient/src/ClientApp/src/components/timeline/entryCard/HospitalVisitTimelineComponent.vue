@@ -159,11 +159,8 @@ export default class HospitalVisitTimelineComponent extends Vue {
                 </div>
                 <div data-testid="hospital-visit-discharge-date">
                     <strong>Discharge Date: </strong>
-                    <span
-                        v-if="entry.endDateTime !== undefined"
-                        class="text-nowrap"
-                    >
-                        {{ formatDate(entry.endDateTime) }}
+                    <span class="text-nowrap">
+                        {{ entry.endDateTime }}
                     </span>
                 </div>
             </div>
