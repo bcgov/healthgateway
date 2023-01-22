@@ -25,9 +25,11 @@ namespace HealthGateway.Common.Services
     using HealthGateway.Common.Data.ErrorHandling;
     using HealthGateway.Common.Data.Models;
     using HealthGateway.Common.Data.ViewModels;
+    using HealthGateway.Common.Factories;
     using HealthGateway.Common.Models;
     using HealthGateway.Database.Constants;
     using HealthGateway.Database.Delegates;
+    using HealthGateway.Database.Models;
     using HealthGateway.Database.Wrapper;
     using Microsoft.IdentityModel.Tokens;
     using UserQueryType = HealthGateway.Common.Data.Constants.UserQueryType;
@@ -38,6 +40,7 @@ namespace HealthGateway.Common.Services
         private readonly IMapper autoMapper;
         private readonly IMessagingVerificationDelegate messagingVerificationDelegate;
         private readonly IPatientService patientService;
+        private readonly IResourceDelegateDelegate resourceDelegateDelegate;
         private readonly IUserProfileDelegate userProfileDelegate;
 
         /// <summary>
@@ -46,16 +49,19 @@ namespace HealthGateway.Common.Services
         /// <param name="userProfileDelegate">The user profile delegate to interact with the DB.</param>
         /// <param name="messagingVerificationDelegate">The Messaging verification delegate to interact with the DB.</param>
         /// <param name="patientService">The patient service to lookup HDIDs by PHN.</param>
+        /// <param name="resourceDelegateDelegate">The resource delegate used to lookup delegates and owners.</param>
         /// <param name="autoMapper">The injected automapper provider.</param>
         public SupportService(
             IUserProfileDelegate userProfileDelegate,
             IMessagingVerificationDelegate messagingVerificationDelegate,
             IPatientService patientService,
+            IResourceDelegateDelegate resourceDelegateDelegate,
             IMapper autoMapper)
         {
             this.userProfileDelegate = userProfileDelegate;
             this.messagingVerificationDelegate = messagingVerificationDelegate;
             this.patientService = patientService;
+            this.resourceDelegateDelegate = resourceDelegateDelegate;
             this.autoMapper = autoMapper;
         }
 
@@ -73,7 +79,7 @@ namespace HealthGateway.Common.Services
         }
 
         /// <inheritdoc/>
-        public RequestResult<IEnumerable<SupportUser>> GetUsers(UserQueryType queryType, string queryString)
+        public async Task<RequestResult<IEnumerable<SupportUser>>> GetUsers(UserQueryType queryType, string queryString)
         {
             RequestResult<IEnumerable<SupportUser>> result = new()
             {
@@ -94,6 +100,9 @@ namespace HealthGateway.Common.Services
                     break;
                 case UserQueryType.Hdid:
                     this.PopulateSupportUser(result, PatientIdentifierType.Hdid, queryString);
+                    break;
+                case UserQueryType.Dependent:
+                    result = await this.SearchDelegates(queryString).ConfigureAwait(true);
                     break;
             }
 
@@ -158,6 +167,19 @@ namespace HealthGateway.Common.Services
             DbResult<List<UserProfile>> dbResult = this.userProfileDelegate.GetUserProfiles(queryType, queryString);
             result.ResourcePayload = this.autoMapper.Map<IEnumerable<SupportUser>>(dbResult.Payload);
             result.ResultStatus = ResultType.Success;
+        }
+
+        private async Task<RequestResult<IEnumerable<SupportUser>>> SearchDelegates(string delegatePhn)
+        {
+            string delegateHdid = await this.patientService.GetPatientHdid(delegatePhn).ConfigureAwait(true);
+            IEnumerable<ResourceDelegate> results = (await this.resourceDelegateDelegate.Search(
+                    new ResourceDelegateQuery
+                    {
+                        ByDelegateHdid = delegateHdid,
+                    })
+                .ConfigureAwait(true)).Items;
+
+            return RequestResultFactory.Success(this.autoMapper.Map<IEnumerable<SupportUser>>(results));
         }
     }
 }

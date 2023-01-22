@@ -18,6 +18,7 @@ namespace HealthGateway.Database.Delegates
 {
     using System;
     using System.Collections.Generic;
+    using System.Threading.Tasks;
     using HealthGateway.Database.Models;
     using HealthGateway.Database.Wrapper;
 
@@ -67,5 +68,33 @@ namespace HealthGateway.Database.Delegates
         /// <param name="delegateId">The delegated resource hdid.</param>
         /// <returns>A DB result which encapsulates the return record and status.</returns>
         bool Exists(string ownerId, string delegateId);
+
+        /// <summary>
+        /// Search resource delegates by criteria specified in the query.
+        /// </summary>
+        /// <param name="query">the query criteria.</param>
+        /// <returns>A <see cref="Task{TResult}"/> representing the result of the asynchronous operation.</returns>
+        public Task<ResourceDelegateQueryResult> Search(ResourceDelegateQuery query);
+    }
+
+    public record ResourceDelegateQuery
+    {
+        /// <summary>
+        /// Gets or sets search by resource delegate owner's hdid.
+        /// </summary>
+        public string? ByOwnerHdid { get; set; }
+
+        /// <summary>
+        /// Gets or sets search by resource delegate hdid.
+        /// </summary>
+        public string? ByDelegateHdid { get; set; }
+    }
+
+    public record ResourceDelegateQueryResult
+    {
+        /// <summary>
+        /// gets or sets the found items.
+        /// </summary>
+        public IEnumerable<ResourceDelegate> Items { get; set; } = Array.Empty<ResourceDelegate>();
     }
 }
