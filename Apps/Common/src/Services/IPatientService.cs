@@ -33,6 +33,13 @@ namespace HealthGateway.Common.Services
         Task<RequestResult<string>> GetPatientPhn(string hdid);
 
         /// <summary>
+        /// Gets the patient hdid by phn.
+        /// </summary>
+        /// <param name="phn">The patient phn.</param>
+        /// <returns>The patient hdid.</returns>
+        Task<string> GetPatientHdid(string phn);
+
+        /// <summary>
         /// Gets the patient record.
         /// </summary>
         /// <param name="identifier">The patient identifier.</param>
