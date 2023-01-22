@@ -207,7 +207,7 @@ namespace HealthGateway.Admin.Client.Pages
 
             public string PersonalHealthNumber { get; }
 
-            public DateTime LastLoginDateTime { get; }
+            public DateTime? LastLoginDateTime { get; }
 
             public bool IsExpanded { get; }
         }
