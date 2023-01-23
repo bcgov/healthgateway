@@ -193,6 +193,70 @@ namespace HealthGateway.GatewayApi.Services
         }
 
         /// <inheritdoc/>
+        public RequestResult<IEnumerable<DependentModel>> GetDependents(GetDependentRequest dependentRequest)
+        {
+            // Page size max is 5000, if null default to 5000
+            int pageSize = dependentRequest.PageSize is <= 5000 ? dependentRequest.PageSize.Value : 5000;
+            int page = dependentRequest.PageNumber ?? 0;
+
+            // Get Dependents from database
+            int offset = page * pageSize;
+            DbResult<IEnumerable<ResourceDelegate>> dbResourceDelegates = this.resourceDelegateDelegate.Get(
+                dependentRequest.FromDate,
+                dependentRequest.ToDate,
+                offset,
+                pageSize);
+
+            // Get Dependents Details from Patient service
+            List<DependentModel> dependentModels = new();
+            RequestResult<IEnumerable<DependentModel>> result = new()
+            {
+                ResultStatus = ResultType.Success,
+            };
+            StringBuilder resultErrorMessage = new();
+            foreach (ResourceDelegate resourceDelegate in dbResourceDelegates.Payload)
+            {
+                this.logger.LogDebug("Getting dependent details for Dependent hdid: {DependentHdid}", resourceDelegate.ResourceOwnerHdid);
+                RequestResult<PatientModel> patientResult = Task.Run(async () => await this.patientService.GetPatient(resourceDelegate.ResourceOwnerHdid).ConfigureAwait(true)).Result;
+
+                if (patientResult.ResourcePayload != null)
+                {
+                    dependentModels.Add(this.FromModels(resourceDelegate, patientResult.ResourcePayload));
+                }
+                else
+                {
+                    if (result.ResultStatus != ResultType.Error)
+                    {
+                        result.ResultStatus = ResultType.Error;
+                        resultErrorMessage.Append(CultureInfo.InvariantCulture, $"Communication Exception when trying to retrieve Dependent(s) - HdId: {resourceDelegate.ResourceOwnerHdid};");
+                    }
+                    else
+                    {
+                        resultErrorMessage.Append(CultureInfo.InvariantCulture, $" HdId: {resourceDelegate.ResourceOwnerHdid};");
+                    }
+                }
+            }
+
+            result.ResourcePayload = dependentModels;
+            if (result.ResultStatus != ResultType.Error)
+            {
+                result.ResultStatus = ResultType.Success;
+                result.ResultError = null;
+                result.TotalResultCount = dependentModels.Count;
+            }
+            else
+            {
+                result.ResultError = new RequestResultError
+                {
+                    ResultMessage = resultErrorMessage.ToString(),
+                    ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.Patient),
+                };
+            }
+
+            return result;
+        }
+
+        /// <inheritdoc/>
         public RequestResult<DependentModel> Remove(DependentModel dependent)
         {
             DbResult<ResourceDelegate> dbDependent = this.resourceDelegateDelegate.Delete(this.autoMapper.Map<ResourceDelegate>(dependent), true);

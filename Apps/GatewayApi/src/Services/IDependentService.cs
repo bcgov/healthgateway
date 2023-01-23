@@ -34,6 +34,13 @@ namespace HealthGateway.GatewayApi.Services
         RequestResult<IEnumerable<DependentModel>> GetDependents(string hdId, int page = 0, int pageSize = 500);
 
         /// <summary>
+        /// Gets all the dependents for the given dates.
+        /// </summary>
+        /// <param name="dependentRequest">The get dependent request object.</param>
+        /// <returns>A List of dependents wrapped in a RequestResult.</returns>
+        RequestResult<IEnumerable<DependentModel>> GetDependents(GetDependentRequest dependentRequest);
+
+        /// <summary>
         /// Add a dependent to the given hdId of the delegate (parent or guardiant).
         /// </summary>
         /// <param name="delegateHdId">The HdId of the Delegate (parent or guardian).</param>

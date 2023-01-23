@@ -18,6 +18,7 @@ namespace HealthGateway.Database.Delegates
 {
     using System;
     using System.Collections.Generic;
+    using System.Diagnostics.CodeAnalysis;
     using HealthGateway.Database.Models;
     using HealthGateway.Database.Wrapper;
 
@@ -44,6 +45,17 @@ namespace HealthGateway.Database.Delegates
 #pragma warning disable CA1716 // Identifiers should not match keywords
         DbResult<IEnumerable<ResourceDelegate>> Get(string delegateId, int page, int pageSize);
 #pragma warning restore CA1716 // Identifiers should not match keywords
+
+        /// <summary>
+        /// Gets the list of Resource Delegate records for a specific delegate Id from the database.
+        /// </summary>
+        /// <param name="fromDate">The from date.</param>
+        /// <param name="toDate">The to date.</param>
+        /// <param name="page">The page to start at.</param>
+        /// <param name="pageSize">The amount of rows to fetch per call.</param>
+        /// <returns>A list of resourceDelegates wrapped in a DBResult.</returns>
+        [SuppressMessage("Naming", "CA1716:Identifiers should not match keywords", Justification = "Team decision")]
+        DbResult<IEnumerable<ResourceDelegate>> Get(DateTime fromDate, DateTime? toDate, int page, int pageSize);
 
         /// <summary>
         /// Gets the count of dependents from the database.
