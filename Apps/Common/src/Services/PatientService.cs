@@ -103,14 +103,10 @@ namespace HealthGateway.Common.Services
             if (patientResult.ResultStatus != ResultType.Success || patientResult.ResourcePayload == null)
             {
                 throw new ProblemDetailsException(
-                    new ProblemDetails
-                    {
-                        Detail = patientResult.ResultError?.ResultMessage ?? "Unspecified error",
-                        Instance = string.Empty,
-                        Title = "error",
-                        ProblemType = "Server",
-                        StatusCode = HttpStatusCode.InternalServerError,
-                    });
+                    ExceptionUtility.CreateProblemDetails(
+                        patientResult.ResultError?.ResultMessage ?? "Unspecified error",
+                        HttpStatusCode.InternalServerError,
+                        nameof(PatientService)));
             }
 
             return patientResult.ResourcePayload.HdId;
