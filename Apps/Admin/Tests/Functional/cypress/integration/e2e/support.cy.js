@@ -6,6 +6,7 @@ const hdid = "P6FFO433A5WPMVTGM7T4ZVWBKCSVNAYGTWTU3J2LWMGUMERKI72A";
 const hdidNotFound = "P123456789";
 const sms = "2501234567";
 const smsNotFound = "5551234567";
+const dependentPhn = "9874307175";
 
 function verifyUserTableResults(queryType) {
     // Expecting 1 row to return but you also need to consider the table headers. As a result, length should be 2.
@@ -138,5 +139,19 @@ describe("Support", () => {
         cy.get("[data-testid=user-table]").find("tr").should("have.length", 1);
 
         cy.log("Verify email returns no results test finished.");
+    });
+
+    it("Verify dependents query returns results.", () => {
+        cy.log("Verify dependents query returns results test started.");
+
+        cy.get("[data-testid=query-type-select]").click({ force: true });
+        cy.get("[data-testid=query-type]")
+            .contains("Dependent")
+            .click({ force: true });
+        cy.get("[data-testid=query-input]").clear().type(dependentPhn);
+        cy.get("[data-testid=search-btn]").click();
+        cy.get("[data-testid=user-table]").find("tr").should("have.length", 2);
+
+        cy.log("Verify dependents query returns results test finished.");
     });
 });
