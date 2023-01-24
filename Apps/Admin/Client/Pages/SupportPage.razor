@@ -76,7 +76,7 @@
                         </MudTableSortLabel>
                     </MudTh>
                     <MudTh>
-                        <MudTableSortLabel SortBy="new Func<SupportUserRow, object>(x => x.LastLoginDateTime)"
+                        <MudTableSortLabel SortBy="new Func<SupportUserRow, object>(x => x.LastLoginDateTime ?? DateTime.MinValue)"
                                            InitialDirection="@SortDirection.Descending">
                             Last Login
                         </MudTableSortLabel>
