@@ -42,7 +42,7 @@ namespace HealthGateway.Common.MapProfiles
                 .ReverseMap();
 
             this.CreateMap<ResourceDelegate, SupportUser>()
-                .ForMember(d => d.Hdid, opts => opts.MapFrom(s => s.ResourceOwnerHdid))
+                .ForMember(d => d.Hdid, opts => opts.MapFrom(s => s.ProfileHdid))
                 .ForMember(d => d.PersonalHealthNumber, opts => opts.Ignore())
                 .ForMember(d => d.LastLoginDateTime, opts => opts.Ignore());
         }
