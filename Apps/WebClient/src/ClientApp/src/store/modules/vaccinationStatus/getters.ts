@@ -54,7 +54,17 @@ export const getters: VaccinationStatusGetters = {
     authenticatedVaccineRecords(
         state: VaccinationStatusState
     ): Map<string, VaccinationRecord> {
-        return state.authenticatedVaccineRecord.vaccinationRecords;
+        if (
+            state.authenticatedVaccineRecord.vaccinationRecords instanceof
+            Map<string, VaccinationRecord>
+        ) {
+            return state.authenticatedVaccineRecord.vaccinationRecords;
+        }
+
+        return Object.assign(
+            new Map<string, VaccinationRecord>(),
+            state.authenticatedVaccineRecord.vaccinationRecords
+        );
     },
     authenticatedVaccineRecordStatusChanges(
         state: VaccinationStatusState

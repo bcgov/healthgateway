@@ -1,5 +1,6 @@
 import { injectable } from "inversify";
 import { ActionContext } from "vuex";
+import { VuexPersistence } from "vuex-persist";
 
 import { AppErrorType } from "@/constants/errorType";
 
@@ -21,6 +22,11 @@ import { user } from "./modules/user/user";
 import { vaccinationStatus } from "./modules/vaccinationStatus/vaccinationStatus";
 import { waitlist } from "./modules/waitlist/waitlist";
 import { GatewayStoreOptions, RootState } from "./types";
+
+const vuexSession = new VuexPersistence<RootState>({
+    storage: window.sessionStorage,
+    modules: ["waitlist"], //only save waitlist module
+});
 
 @injectable()
 export class StoreOptions implements GatewayStoreOptions {
@@ -75,4 +81,5 @@ export class StoreOptions implements GatewayStoreOptions {
         vaccinationStatus,
         waitlist,
     };
+    plugins = [vuexSession.plugin];
 }

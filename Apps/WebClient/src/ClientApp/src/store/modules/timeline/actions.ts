@@ -12,8 +12,8 @@ export const actions: TimelineActions = {
         context.commit("clearFilter");
     },
 
-    setLinearDate(context, currentPage: number) {
-        context.commit("setLinearDate", currentPage);
+    setLinearDate(context, linearDate: DateWrapper) {
+        context.commit("setLinearDate", linearDate);
     },
 
     setSelectedDate(context, selectedDate: DateWrapper | null) {

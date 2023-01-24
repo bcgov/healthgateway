@@ -19,12 +19,14 @@ export const mutations: TimelineMutations = {
     },
     setLinearDate(state: TimelineState, linearDate: DateWrapper) {
         const logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
-        logger.verbose(`TimelineState:setLinearDate`);
+        logger.verbose(
+            `TimelineState:setLinearDate: ${JSON.stringify(linearDate)}`
+        );
         state.linearDate = linearDate;
     },
     setSelectedDate(state: TimelineState, selectedDate: DateWrapper | null) {
         const logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
-        logger.verbose(`TimelineState:setSelectedDate`);
+        logger.verbose(`TimelineState:setSelectedDate: ${selectedDate}`);
         state.selectedDate = selectedDate;
     },
 };

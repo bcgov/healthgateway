@@ -204,6 +204,9 @@ export default class TimelineView extends Vue {
     @Getter("filter", { namespace: "timeline" })
     filter!: TimelineFilter;
 
+    @Getter("entryTypes", { namespace: "timeline" })
+    entryTypes!: Set<EntryType>;
+
     @Getter("user", { namespace: "user" }) user!: User;
 
     @Getter("isHeaderShown", { namespace: "navbar" }) isHeaderShown!: boolean;
@@ -397,7 +400,7 @@ export default class TimelineView extends Vue {
     }
 
     private get isFilterModuleSelected(): boolean {
-        const entryTypes = Array.from(this.filter.entryTypes);
+        const entryTypes = Array.from(this.entryTypes);
         this.logger.debug(
             `Number of imeline filter modules selected: ${entryTypes.length}`
         );
@@ -426,7 +429,7 @@ export default class TimelineView extends Vue {
             labels.push([FilterLabelType.Keyword, `"${this.filter.keyword}"`]);
         }
 
-        this.filter.entryTypes.forEach((entryType) => {
+        this.entryTypes.forEach((entryType) => {
             const label = entryTypeMap.get(entryType)?.name;
             if (label) {
                 labels.push([FilterLabelType.Type, label]);
@@ -473,7 +476,7 @@ export default class TimelineView extends Vue {
     }
 
     private isFilterApplied(entryType: EntryType): boolean {
-        const entryTypes = Array.from(this.filter.entryTypes);
+        const entryTypes = Array.from(this.entryTypes);
         const filterApplied = !!entryTypes.includes(entryType);
         this.logger.debug(
             `Timeline filter entry type: ${entryType} applied: ${filterApplied}`
@@ -509,7 +512,7 @@ export default class TimelineView extends Vue {
         let keyword = this.filter.keyword;
         let startDate = this.filter.startDate;
         let endDate = this.filter.endDate;
-        let entryTypes = [...this.filter.entryTypes];
+        let entryTypes = [...this.entryTypes];
 
         switch (label) {
             case FilterLabelType.Keyword:
