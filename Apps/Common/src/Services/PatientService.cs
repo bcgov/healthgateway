@@ -17,6 +17,7 @@ namespace HealthGateway.Common.Services
 {
     using System;
     using System.Diagnostics;
+    using System.Net;
     using System.Threading.Tasks;
     using HealthGateway.Common.CacheProviders;
     using HealthGateway.Common.Constants;
@@ -95,33 +96,86 @@ namespace HealthGateway.Common.Services
         }
 
         /// <inheritdoc/>
+        public async Task<string> GetPatientHdid(string phn)
+        {
+            using Activity? activity = Source.StartActivity();
+            RequestResult<PatientModel> patientResult = await this.GetPatient(phn, PatientIdentifierType.Phn).ConfigureAwait(true);
+            if (patientResult.ResultStatus != ResultType.Success || patientResult.ResourcePayload == null)
+            {
+                throw new ProblemDetailsException(
+                    ExceptionUtility.CreateProblemDetails(
+                        patientResult.ResultError?.ResultMessage ?? "Unspecified error",
+                        HttpStatusCode.InternalServerError,
+                        nameof(PatientService)));
+            }
+
+            return patientResult.ResourcePayload.HdId;
+        }
+
+        /// <inheritdoc/>
         public async Task<RequestResult<PatientModel>> GetPatient(string identifier, PatientIdentifierType identifierType = PatientIdentifierType.Hdid, bool disableIdValidation = false)
         {
             using Activity? activity = Source.StartActivity();
-            PatientModel? patient = this.GetFromCache(identifier, identifierType);
-            if (patient != null)
-            {
-                this.logger.LogDebug("Patient fetched from Cache");
-                activity?.Stop();
-                return RequestResultFactory.Success(patient);
-            }
 
-            if (identifierType == PatientIdentifierType.Phn && !new PhnValidator().Validate(identifier).IsValid)
-            {
-                return RequestResultFactory.ActionRequired<PatientModel>(ActionType.Validation, $"Internal Error: PatientIdentifier is invalid '{identifier}'");
-            }
-
-            var requestResult = identifierType switch
-            {
-                PatientIdentifierType.Hdid => await this.patientDelegate.GetDemographicsByHdidAsync(identifier, disableIdValidation).ConfigureAwait(true),
-                PatientIdentifierType.Phn => await this.patientDelegate.GetDemographicsByPhnAsync(identifier, disableIdValidation).ConfigureAwait(true),
-                _ => throw new NotImplementedException(),
-            };
-
-            this.CachePatient(requestResult.ResourcePayload);
+            RequestResult<PatientModel> patient = await this.GetPatientInternal(identifier, identifierType, disableIdValidation).ConfigureAwait(true);
 
             activity?.Stop();
-            return requestResult;
+            return patient;
+        }
+
+        private static string GetPatientPhnCacheKey(string phn)
+        {
+            return $"{PatientCacheDomain}:PHN:{phn}";
+        }
+
+        private static string GetPatientHdidCacheKey(string hdid)
+        {
+            return $"{PatientCacheDomain}:HDID:{hdid}";
+        }
+
+        private async Task<RequestResult<PatientModel>> GetPatientInternal(string identifier, PatientIdentifierType identifierType = PatientIdentifierType.Hdid, bool disableIdValidation = false)
+        {
+            PatientModel? patient = this.GetFromCache(identifier, identifierType);
+            if (patient == null)
+            {
+                RequestResult<PatientModel> patientResult = identifierType switch
+                {
+                    PatientIdentifierType.Hdid => await this.GetPatientByHdid(identifier, disableIdValidation).ConfigureAwait(true),
+                    PatientIdentifierType.Phn => await this.GetPatientByPhn(identifier, disableIdValidation).ConfigureAwait(true),
+                    _ => throw new NotImplementedException(),
+                };
+                if (patientResult.ResultStatus != ResultType.Success)
+                {
+                    this.logger.LogError("Failed to get patient information: {ErrorMessage}", patientResult.ResultError?.ResultMessage);
+                    return patientResult;
+                }
+
+                patient = patientResult.ResourcePayload!;
+            }
+
+            this.CachePatient(patient);
+
+            return RequestResultFactory.Success(patient);
+        }
+
+        private async Task<RequestResult<PatientModel>> GetPatientByPhn(string phn, bool disableIdValidation)
+        {
+            if (!PhnValidator.IsValid(phn))
+            {
+                return RequestResultFactory.ActionRequired<PatientModel>(ActionType.Validation, $"PHN' {phn}' is invalid");
+            }
+
+            return await this.patientDelegate.GetDemographicsByPhnAsync(phn, disableIdValidation).ConfigureAwait(true);
+        }
+
+        private async Task<RequestResult<PatientModel>> GetPatientByHdid(string hdid, bool disableIdValidation)
+        {
+            if (string.IsNullOrEmpty(hdid))
+            {
+                return RequestResultFactory.ActionRequired<PatientModel>(ActionType.Validation, $"HDID '{hdid}' is invalid");
+            }
+
+            return await this.patientDelegate.GetDemographicsByHdidAsync(hdid, disableIdValidation).ConfigureAwait(true);
         }
 
         /// <summary>
@@ -133,28 +187,27 @@ namespace HealthGateway.Common.Services
         private PatientModel? GetFromCache(string identifier, PatientIdentifierType identifierType)
         {
             using Activity? activity = Source.StartActivity();
-            PatientModel? retPatient = null;
-            if (this.cacheTtl > 0)
+            if (this.cacheTtl == 0)
             {
-                switch (identifierType)
-                {
-                    case PatientIdentifierType.Hdid:
-                        this.logger.LogDebug("Querying Patient Cache by HDID");
-                        retPatient = this.cacheProvider.GetItem<PatientModel>($"{PatientCacheDomain}:HDID:{identifier}");
-                        break;
-
-                    case PatientIdentifierType.Phn:
-                        this.logger.LogDebug("Querying Patient Cache by PHN");
-                        retPatient = this.cacheProvider.GetItem<PatientModel>($"{PatientCacheDomain}:PHN:{identifier}");
-                        break;
-                }
-
-                string message = $"Patient with identifier {identifier} was {(retPatient == null ? "not" : string.Empty)} found in cache";
-                this.logger.LogDebug("{Message}", message);
+                return null;
             }
 
+            PatientModel? patient = identifierType switch
+            {
+                PatientIdentifierType.Hdid => this.cacheProvider.GetItem<PatientModel>(GetPatientHdidCacheKey(identifier)),
+                PatientIdentifierType.Phn => this.cacheProvider.GetItem<PatientModel>(GetPatientPhnCacheKey(identifier)),
+                _ => throw new NotImplementedException(),
+            };
+
+            if (patient == null)
+            {
+                this.logger.LogDebug("Patient with identifier {Identifier} was NOT found in cache", identifier);
+                return null;
+            }
+
+            this.logger.LogDebug("Patient with identifier {Identifier} was found in cache", identifier);
             activity?.Stop();
-            return retPatient;
+            return patient;
         }
 
         /// <summary>
@@ -171,12 +224,12 @@ namespace HealthGateway.Common.Services
                 TimeSpan expiry = TimeSpan.FromMinutes(this.cacheTtl);
                 if (!patient.HdId.IsNullOrEmpty())
                 {
-                    this.cacheProvider.AddItem($"{PatientCacheDomain}:HDID:{patient.HdId}", patient, expiry);
+                    this.cacheProvider.AddItem(GetPatientHdidCacheKey(patient.HdId), patient, expiry);
                 }
 
                 if (!patient.PersonalHealthNumber.IsNullOrEmpty())
                 {
-                    this.cacheProvider.AddItem($"{PatientCacheDomain}:PHN:{patient.PersonalHealthNumber}", patient, expiry);
+                    this.cacheProvider.AddItem(GetPatientPhnCacheKey(patient.PersonalHealthNumber), patient, expiry);
                 }
             }
             else

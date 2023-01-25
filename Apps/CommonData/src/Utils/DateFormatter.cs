@@ -93,9 +93,11 @@ public static class DateFormatter
     /// </summary>
     /// <param name="dateTime">The dateTime to format.</param>
     /// <returns>The dateTime in HH:mm format.</returns>
-    public static string ToShortDateAndTime(DateTime dateTime)
+    public static string ToShortDateAndTime(DateTime? dateTime)
     {
-        return dateTime.ToString("yyyy-MM-dd h:mm tt", CultureInfo.InvariantCulture);
+        return dateTime == null
+            ? string.Empty
+            : dateTime.Value.ToString("yyyy-MM-dd h:mm tt", CultureInfo.InvariantCulture);
     }
 
     /// <summary>
