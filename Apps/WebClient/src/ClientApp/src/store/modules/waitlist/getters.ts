@@ -17,4 +17,7 @@ export const getters: WaitlistGetters = {
     ticketIsProcessed: function (state: WaitlistState): boolean {
         return state.ticket?.status === TicketStatus.Processed;
     },
+    ticketIsCreated: function (state: WaitlistState): boolean {
+        return state.ticket !== undefined;
+    },
 };

@@ -21,6 +21,7 @@ export interface WaitlistGetters extends GetterTree<WaitlistState, RootState> {
     tooBusy(state: WaitlistState): boolean;
     ticket(state: WaitlistState): Ticket | undefined;
     ticketIsProcessed(state: WaitlistState): boolean;
+    ticketIsCreated(state: WaitlistState): boolean;
 }
 
 type StoreContext = ActionContext<WaitlistState, RootState>;
