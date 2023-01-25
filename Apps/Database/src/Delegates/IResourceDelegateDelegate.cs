@@ -80,12 +80,12 @@ namespace HealthGateway.Database.Delegates
     public record ResourceDelegateQuery
     {
         /// <summary>
-        /// Gets or sets search by resource delegate owner's hdid.
+        /// Gets or sets search by owner's hdid.
         /// </summary>
         public string? ByOwnerHdid { get; set; }
 
         /// <summary>
-        /// Gets or sets search by resource delegate hdid.
+        /// Gets or sets search by delegate hdid.
         /// </summary>
         public string? ByDelegateHdid { get; set; }
     }

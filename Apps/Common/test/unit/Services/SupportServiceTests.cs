@@ -197,11 +197,11 @@ namespace HealthGateway.CommonTests.Services
         }
 
         /// <summary>
-        /// Tests SupportService can get a list of delegate owner by the delegate's PHN.
+        /// Tests SupportService can get a list of delegates by the dependent's PHN.
         /// </summary>
         /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
         [Fact]
-        public async Task ShouldGetResourceDelegateOwners()
+        public async Task ShouldGetResourceDelegates()
         {
             string[] expectedDelegateHdids = { "hdid1", "hdid2" };
             string dependentPhn = "dep_phn";
@@ -240,11 +240,11 @@ namespace HealthGateway.CommonTests.Services
 
             Assert.Equal(ResultType.Success, result.ResultStatus);
             Assert.NotNull(result.ResourcePayload);
-            SupportUser[] actualOwners = result.ResourcePayload.ToArray();
-            Assert.NotEmpty(actualOwners);
-            foreach (string expectedOwnerHdid in expectedDelegateHdids)
+            SupportUser[] actualDelegates = result.ResourcePayload.ToArray();
+            Assert.NotEmpty(actualDelegates);
+            foreach (string expectedDelegateHdid in expectedDelegateHdids)
             {
-                Assert.Contains(actualOwners, owner => owner.Hdid == expectedOwnerHdid);
+                Assert.Contains(actualDelegates, owner => owner.Hdid == expectedDelegateHdid);
             }
         }
 
