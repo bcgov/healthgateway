@@ -100,7 +100,7 @@ namespace HealthGateway.Admin.Client.Pages
                 return "Search parameter is required";
             }
 
-            if ((this.SelectedQueryType == UserQueryType.Phn || this.SelectedQueryType == UserQueryType.Dependent) && !PhnValidator.Validate(StringManipulator.StripWhitespace(parameter)).IsValid)
+            if (this.PhnOrDependentSelected && !PhnValidator.Validate(StringManipulator.StripWhitespace(parameter)).IsValid)
             {
                 return "Invalid PHN";
             }
