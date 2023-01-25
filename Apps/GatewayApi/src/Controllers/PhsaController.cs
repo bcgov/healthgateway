@@ -16,6 +16,7 @@
 
 namespace HealthGateway.GatewayApi.Controllers
 {
+    using System;
     using System.Collections.Generic;
     using HealthGateway.Common.AccessManagement.Authorization.Policy;
     using HealthGateway.Common.Data.ViewModels;
@@ -57,7 +58,7 @@ namespace HealthGateway.GatewayApi.Controllers
         /// </response>
         [HttpGet]
         [Authorize(Policy = UserProfilePolicy.Read)]
-        [Route("{hdid}")]
+        [Route("dependents/{hdid}")]
         public RequestResult<IEnumerable<DependentModel>> GetAll(string hdid)
         {
             return this.dependentService.GetDependents(hdid);
@@ -79,8 +80,8 @@ namespace HealthGateway.GatewayApi.Controllers
         /// </response>
         [HttpGet]
         [Authorize(Policy = UserProfilePolicy.Read)]
-        [Route("dependents/{fromDate}")]
-        public RequestResult<IEnumerable<GetDependentResponse>> GetAll(string fromDateUtc, [FromQuery] string toDateUtc, [FromQuery] int pageNumber, [FromQuery] int pageSize)
+        [Route("dependents")]
+        public RequestResult<IEnumerable<GetDependentResponse>> GetAll([FromQuery] DateTime fromDateUtc, [FromQuery] DateTime toDateUtc, [FromQuery] int pageNumber, [FromQuery] int pageSize)
         {
             return this.dependentService.GetDependents(fromDateUtc, toDateUtc, pageNumber, pageSize);
         }

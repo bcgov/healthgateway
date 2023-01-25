@@ -194,21 +194,16 @@ namespace HealthGateway.GatewayApi.Services
         }
 
         /// <inheritdoc/>
-        public RequestResult<IEnumerable<GetDependentResponse>> GetDependents(string fromDateUtc, string? toDateUtc, int page = 0, int pageSize = 5000)
+        public RequestResult<IEnumerable<GetDependentResponse>> GetDependents(DateTime fromDateUtc, DateTime? toDateUtc, int page = 0, int pageSize = 5000)
         {
             // Page size max is 5000
             pageSize = pageSize <= 5000 ? pageSize : 5000;
 
-            DateTime startDate = DateTime.Parse(fromDateUtc, CultureInfo.InvariantCulture);
-            startDate = DateTime.SpecifyKind(startDate, DateTimeKind.Utc);
-            DateTime endDate = DateTime.Parse(toDateUtc, CultureInfo.InvariantCulture);
-            endDate = DateTime.SpecifyKind(endDate, DateTimeKind.Utc);
-
             // Get Dependents from database
             int offset = page * pageSize;
             DbResult<IEnumerable<ResourceDelegate>> dbResourceDelegates = this.resourceDelegateDelegate.Get(
-                startDate,
-                endDate,
+                fromDateUtc,
+                toDateUtc,
                 offset,
                 pageSize);
 
