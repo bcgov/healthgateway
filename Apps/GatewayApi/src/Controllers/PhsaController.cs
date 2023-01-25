@@ -64,10 +64,13 @@ namespace HealthGateway.GatewayApi.Controllers
         }
 
         /// <summary>
-        /// Gets all dependents for the specified user.
+        /// Gets all dependents for the specified date range.
         /// </summary>
-        /// <returns>The list of dependent model wrapped in a request result.</returns>
-        /// <param name="dependentRequest">The get dependent request object.</param>
+        /// <returns>The list of dependents wrapped in a request result.</returns>
+        /// <param name="fromDateUtc">The from date in Utc. Required.</param>
+        /// <param name="toDateUtc">The to date in Utc.</param>
+        /// <param name="pageNumber">The page number.</param>
+        /// <param name="pageSize">The page size. Max 5000.</param>
         /// <response code="200">Returns the list of dependents.</response>
         /// <response code="401">the client must authenticate itself to get the requested response.</response>
         /// <response code="403">
@@ -76,10 +79,10 @@ namespace HealthGateway.GatewayApi.Controllers
         /// </response>
         [HttpGet]
         [Authorize(Policy = UserProfilePolicy.Read)]
-        [Route("dependentRequest")]
-        public RequestResult<IEnumerable<DependentModel>> GetAll([FromBody] GetDependentRequest dependentRequest)
+        [Route("dependents/{fromDate}")]
+        public RequestResult<IEnumerable<GetDependentResponse>> GetAll(string fromDateUtc, [FromQuery] string toDateUtc, [FromQuery] int pageNumber, [FromQuery] int pageSize)
         {
-            return this.dependentService.GetDependents(dependentRequest);
+            return this.dependentService.GetDependents(fromDateUtc, toDateUtc, pageNumber, pageSize);
         }
     }
 }

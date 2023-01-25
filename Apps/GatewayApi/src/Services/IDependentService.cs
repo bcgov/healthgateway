@@ -34,14 +34,17 @@ namespace HealthGateway.GatewayApi.Services
         RequestResult<IEnumerable<DependentModel>> GetDependents(string hdId, int page = 0, int pageSize = 500);
 
         /// <summary>
-        /// Gets all the dependents for the given dates.
+        /// Gets all the dependents for the given date range.
         /// </summary>
-        /// <param name="dependentRequest">The get dependent request object.</param>
+        /// <param name="fromDateUtc">The from date time in Utc.</param>
+        /// <param name="toDateUtc">The to date time in Utc.</param>
+        /// <param name="page">The page of data to fetch indexed from 0.</param>
+        /// <param name="pageSize">The amount of records per page.</param>
         /// <returns>A List of dependents wrapped in a RequestResult.</returns>
-        RequestResult<IEnumerable<DependentModel>> GetDependents(GetDependentRequest dependentRequest);
+        RequestResult<IEnumerable<GetDependentResponse>> GetDependents(string fromDateUtc, string? toDateUtc, int page = 0, int pageSize = 5000);
 
         /// <summary>
-        /// Add a dependent to the given hdId of the delegate (parent or guardiant).
+        /// Add a dependent to the given hdId of the delegate (parent or guardian).
         /// </summary>
         /// <param name="delegateHdId">The HdId of the Delegate (parent or guardian).</param>
         /// <param name="addDependentRequest">The request to create a User Delegate model.</param>

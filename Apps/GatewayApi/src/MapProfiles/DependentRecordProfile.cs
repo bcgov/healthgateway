@@ -14,33 +14,26 @@
 //  limitations under the License.
 // -------------------------------------------------------------------------
 
-namespace HealthGateway.GatewayApi.Models
+namespace HealthGateway.GatewayApi.MapProfiles
 {
-    using System;
+    using AutoMapper;
+    using HealthGateway.Database.Models;
+    using HealthGateway.GatewayApi.Models;
 
     /// <summary>
-    /// Object that defines the request for getting dependents.
+    /// An AutoMapper profile class which defines mapping between ResourceDelegate and DependentRecord.
     /// </summary>
-    public class GetDependentRequest
+    public class DependentRecordProfile : Profile
     {
         /// <summary>
-        /// Gets or sets from date. Required.
+        /// Initializes a new instance of the <see cref="DependentRecordProfile"/> class.
         /// </summary>
-        public DateTime FromDate { get; set; }
-
-        /// <summary>
-        /// Gets or sets to date.
-        /// </summary>
-        public DateTime? ToDate { get; set; }
-
-        /// <summary>
-        /// Gets or sets page size to return, max = 5000 rows.
-        /// </summary>
-        public int? PageSize { get; set; } = 5000;
-
-        /// <summary>
-        /// Gets or sets page number for paging.
-        /// </summary>
-        public int? PageNumber { get; set; } = 0;
+        public DependentRecordProfile()
+        {
+            this.CreateMap<ResourceDelegate, DependentRecord>()
+                .ForMember(dest => dest.OwnerId, opt => opt.MapFrom(src => src.ResourceOwnerHdid))
+                .ForMember(dest => dest.CreationDateTime, opt => opt.MapFrom(src => src.CreatedDateTime))
+                .ReverseMap();
+        }
     }
 }

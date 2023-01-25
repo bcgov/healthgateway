@@ -18,6 +18,7 @@ namespace HealthGateway.GatewayApi.Services
     using System;
     using System.Collections.Generic;
     using System.Globalization;
+    using System.Linq;
     using System.Text;
     using System.Threading.Tasks;
     using AutoMapper;
@@ -193,67 +194,40 @@ namespace HealthGateway.GatewayApi.Services
         }
 
         /// <inheritdoc/>
-        public RequestResult<IEnumerable<DependentModel>> GetDependents(GetDependentRequest dependentRequest)
+        public RequestResult<IEnumerable<GetDependentResponse>> GetDependents(string fromDateUtc, string? toDateUtc, int page = 0, int pageSize = 5000)
         {
-            // Page size max is 5000, if null default to 5000
-            int pageSize = dependentRequest.PageSize is <= 5000 ? dependentRequest.PageSize.Value : 5000;
-            int page = dependentRequest.PageNumber ?? 0;
+            // Page size max is 5000
+            pageSize = pageSize <= 5000 ? pageSize : 5000;
+
+            DateTime startDate = DateTime.Parse(fromDateUtc, CultureInfo.InvariantCulture);
+            startDate = DateTime.SpecifyKind(startDate, DateTimeKind.Utc);
+            DateTime endDate = DateTime.Parse(toDateUtc, CultureInfo.InvariantCulture);
+            endDate = DateTime.SpecifyKind(endDate, DateTimeKind.Utc);
 
             // Get Dependents from database
             int offset = page * pageSize;
             DbResult<IEnumerable<ResourceDelegate>> dbResourceDelegates = this.resourceDelegateDelegate.Get(
-                dependentRequest.FromDate,
-                dependentRequest.ToDate,
+                startDate,
+                endDate,
                 offset,
                 pageSize);
 
-            // Get Dependents Details from Patient service
-            List<DependentModel> dependentModels = new();
-            RequestResult<IEnumerable<DependentModel>> result = new()
+            if (dbResourceDelegates.Status != DbStatusCode.Read)
             {
-                ResultStatus = ResultType.Success,
-            };
-            StringBuilder resultErrorMessage = new();
-            foreach (ResourceDelegate resourceDelegate in dbResourceDelegates.Payload)
-            {
-                this.logger.LogDebug("Getting dependent details for Dependent hdid: {DependentHdid}", resourceDelegate.ResourceOwnerHdid);
-                RequestResult<PatientModel> patientResult = Task.Run(async () => await this.patientService.GetPatient(resourceDelegate.ResourceOwnerHdid).ConfigureAwait(true)).Result;
+                return RequestResultFactory.ServiceError<IEnumerable<GetDependentResponse>>(ErrorType.CommunicationInternal, ServiceType.Database, dbResourceDelegates.Message);
+            }
 
-                if (patientResult.ResourcePayload != null)
-                {
-                    dependentModels.Add(this.FromModels(resourceDelegate, patientResult.ResourcePayload));
-                }
-                else
-                {
-                    if (result.ResultStatus != ResultType.Error)
+            IDictionary<string, IEnumerable<ResourceDelegate>> resourceDelegatesByProfileId =
+                dbResourceDelegates.Payload.GroupBy(g => g.ProfileHdid).ToDictionary(g => g.Key, g => g.AsEnumerable());
+            IEnumerable<GetDependentResponse> dependentResponses = resourceDelegatesByProfileId.Select(
+                    keyValuePair => new GetDependentResponse
                     {
-                        result.ResultStatus = ResultType.Error;
-                        resultErrorMessage.Append(CultureInfo.InvariantCulture, $"Communication Exception when trying to retrieve Dependent(s) - HdId: {resourceDelegate.ResourceOwnerHdid};");
-                    }
-                    else
-                    {
-                        resultErrorMessage.Append(CultureInfo.InvariantCulture, $" HdId: {resourceDelegate.ResourceOwnerHdid};");
-                    }
-                }
-            }
+                        DelegateId = keyValuePair.Key,
+                        DependentRecords = this.autoMapper.Map<IEnumerable<DependentRecord>>(keyValuePair.Value),
+                    })
+                .ToList();
 
-            result.ResourcePayload = dependentModels;
-            if (result.ResultStatus != ResultType.Error)
-            {
-                result.ResultStatus = ResultType.Success;
-                result.ResultError = null;
-                result.TotalResultCount = dependentModels.Count;
-            }
-            else
-            {
-                result.ResultError = new RequestResultError
-                {
-                    ResultMessage = resultErrorMessage.ToString(),
-                    ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.Patient),
-                };
-            }
-
-            return result;
+            return RequestResultFactory.Success(dependentResponses, dependentResponses.Count(), page, pageSize);
         }
 
         /// <inheritdoc/>
