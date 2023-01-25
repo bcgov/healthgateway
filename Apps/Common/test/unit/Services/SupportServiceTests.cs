@@ -203,8 +203,8 @@ namespace HealthGateway.CommonTests.Services
         [Fact]
         public async Task ShouldGetResourceDelegateOwners()
         {
-            string[] expectedOwnerHdids = { "hdid1", "hdid2" };
-            string dependentPhn = "phn";
+            string[] expectedDelegateHdids = { "hdid1", "hdid2" };
+            string dependentPhn = "dep_phn";
             string dependentHdid = "dep_hdid";
 
             Mock<IPatientService> patientServiceMock = new();
@@ -214,16 +214,24 @@ namespace HealthGateway.CommonTests.Services
 
             Mock<IResourceDelegateDelegate> resourceDelegateDelegateMock = new();
             resourceDelegateDelegateMock
-                .Setup(d => d.Search(It.Is<ResourceDelegateQuery>(query => query.ByDelegateHdid == dependentHdid)))
+                .Setup(d => d.Search(It.IsAny<ResourceDelegateQuery>()))
                 .ReturnsAsync(
-                    new ResourceDelegateQueryResult
+                    (ResourceDelegateQuery query) =>
                     {
-                        Items = expectedOwnerHdids.Select(
-                            ownerHdid => new ResourceDelegate
-                            {
-                                ProfileHdid = dependentHdid,
-                                ResourceOwnerHdid = ownerHdid,
-                            }),
+                        // ensure a result is always returned from the database
+                        string[] items = query.ByOwnerHdid == dependentHdid
+                            ? expectedDelegateHdids
+                            : Array.Empty<string>();
+
+                        return new ResourceDelegateQueryResult
+                        {
+                            Items = items.Select(
+                                i => new ResourceDelegate
+                                {
+                                    ResourceOwnerHdid = dependentHdid,
+                                    ProfileHdid = i,
+                                }),
+                        };
                     });
 
             ISupportService supportService = CreateSupportService(patientServiceMock: patientServiceMock, resourceDelegateDelegateMock: resourceDelegateDelegateMock);
@@ -234,7 +242,7 @@ namespace HealthGateway.CommonTests.Services
             Assert.NotNull(result.ResourcePayload);
             SupportUser[] actualOwners = result.ResourcePayload.ToArray();
             Assert.NotEmpty(actualOwners);
-            foreach (string expectedOwnerHdid in expectedOwnerHdids)
+            foreach (string expectedOwnerHdid in expectedDelegateHdids)
             {
                 Assert.Contains(actualOwners, owner => owner.Hdid == expectedOwnerHdid);
             }

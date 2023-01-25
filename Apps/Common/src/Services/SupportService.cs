@@ -169,13 +169,13 @@ namespace HealthGateway.Common.Services
             result.ResultStatus = ResultType.Success;
         }
 
-        private async Task<RequestResult<IEnumerable<SupportUser>>> SearchDelegates(string forSubjectByPhn)
+        private async Task<RequestResult<IEnumerable<SupportUser>>> SearchDelegates(string forOwnerByPhn)
         {
-            string subjectHdid = await this.patientService.GetPatientHdid(forSubjectByPhn).ConfigureAwait(true);
+            string ownerHdid = await this.patientService.GetPatientHdid(forOwnerByPhn).ConfigureAwait(true);
             IEnumerable<ResourceDelegate> results = (await this.resourceDelegateDelegate.Search(
                     new ResourceDelegateQuery
                     {
-                        ByOwnerHdid = subjectHdid,
+                        ByOwnerHdid = ownerHdid,
                     })
                 .ConfigureAwait(true)).Items;
 
