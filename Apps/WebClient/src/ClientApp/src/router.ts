@@ -410,7 +410,7 @@ const routes = [
         }),
         meta: {
             validStates: [UserState.unauthenticated],
-            requiresProcessedWaitlistTicket: false,
+            requiresProcessedWaitlistTicket: true,
         },
     },
     {
