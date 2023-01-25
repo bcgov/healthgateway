@@ -9,7 +9,7 @@ import { TimelineModule, TimelineState } from "./types";
 const state: TimelineState = {
     filter: TimelineFilterBuilder.buildEmpty(),
     keyword: "",
-    linearDate: new DateWrapper(),
+    linearDate: new DateWrapper().toISO(),
     selectedDate: null,
 };
 
