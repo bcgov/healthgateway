@@ -2,7 +2,6 @@ import { Dictionary } from "@/models/baseTypes";
 import { LoadStatus } from "@/models/storeOperations";
 import { UserComment } from "@/models/userComment";
 
-import { isDictionary } from "./comment";
 import { CommentGetters, CommentState } from "./types";
 
 export const getters: CommentGetters = {
@@ -12,12 +11,8 @@ export const getters: CommentGetters = {
     getEntryComments:
         (state: CommentState) =>
         (entryId: string): UserComment[] | null => {
-            if (isDictionary(state.profileComments)) {
-                if (state.profileComments[entryId] !== undefined) {
-                    return state.profileComments[entryId];
-                } else {
-                    return null;
-                }
+            if (state.profileComments[entryId] !== undefined) {
+                return state.profileComments[entryId];
             } else {
                 return null;
             }

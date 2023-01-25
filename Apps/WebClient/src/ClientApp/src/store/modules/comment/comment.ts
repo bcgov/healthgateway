@@ -1,6 +1,4 @@
-import { Dictionary } from "@/models/baseTypes";
 import { LoadStatus } from "@/models/storeOperations";
-import { UserComment } from "@/models/userComment";
 
 import { actions } from "./actions";
 import { getters } from "./getters";
@@ -22,10 +20,4 @@ export const comment: CommentModule = {
     getters,
     actions,
     mutations,
-};
-
-export const isDictionary = (
-    dictionary: Dictionary<UserComment[]>
-): dictionary is Dictionary<UserComment[]> => {
-    return "comments" in dictionary;
 };
