@@ -236,7 +236,6 @@ export default class LinearTimelineComponent extends Vue {
     @Watch("currentPage")
     private onCurrentPage(): void {
         if (this.visibleTimelineEntries.length > 0) {
-            console.log("XXXXXXXXXXX Setting linear date.");
             // Update the store
             this.setLinearDate(this.visibleTimelineEntries[0].date);
         }
@@ -248,7 +247,6 @@ export default class LinearTimelineComponent extends Vue {
             this.selectedDate !== null &&
             this.setPageFromDate(this.selectedDate)
         ) {
-            console.log("@Watch selectdDate: " + this.selectedDate);
             // Wait for next render cycle until the pages have been calculated and displayed
             this.$nextTick().then(() =>
                 this.focusOnDate(this.selectedDate as DateWrapper)
@@ -265,7 +263,6 @@ export default class LinearTimelineComponent extends Vue {
     }
 
     private mounted(): void {
-        console.log("Mounted: " + JSON.stringify(this.linearDate));
         this.setPageFromDate(this.linearDate);
     }
 
@@ -287,11 +284,8 @@ export default class LinearTimelineComponent extends Vue {
 
     private setPageFromDate(eventDate: DateWrapper): boolean {
         let index = this.timelineEntries.findIndex((entry) => {
-            console.log("Entry: " + JSON.stringify(entry));
-            console.log("Event Date: " + JSON.stringify(eventDate));
             entry.date.isSame(eventDate);
         });
-        console.log("Pass date check");
 
         if (index >= 0) {
             this.currentPage = Math.floor(index / this.pageSize) + 1;

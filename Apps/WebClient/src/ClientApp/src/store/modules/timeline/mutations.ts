@@ -22,11 +22,15 @@ export const mutations: TimelineMutations = {
         logger.verbose(
             `TimelineState:setLinearDate: ${JSON.stringify(linearDate)}`
         );
-        state.linearDate = linearDate;
+        state.linearDate = linearDate.toISO();
     },
     setSelectedDate(state: TimelineState, selectedDate: DateWrapper | null) {
         const logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
         logger.verbose(`TimelineState:setSelectedDate: ${selectedDate}`);
-        state.selectedDate = selectedDate;
+        if (selectedDate === null) {
+            state.selectedDate = null;
+        } else {
+            state.selectedDate = selectedDate.toISO();
+        }
     },
 };

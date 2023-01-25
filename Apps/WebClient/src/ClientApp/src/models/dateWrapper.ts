@@ -273,17 +273,6 @@ export class DateWrapper {
         if (unit) {
             return this.internalDate.hasSame(other.internalDate, unit);
         } else {
-            console.log("Date Wrapper: " + this.internalDate);
-            console.log("Date Wrapper: " + this.internalDate.toMillis());
-            console.log("Date Wrapper Other: " + other);
-            console.log("Date Wrapper Other: " + JSON.stringify(other));
-            console.log(
-                "Date Wrapper Other Internal Date: " + other.internalDate
-            );
-            debugger;
-            console.log(
-                "Date Wrapper Other toMillis: " + other.internalDate.toMillis()
-            );
             return (
                 this.internalDate.toMillis() === other.internalDate.toMillis()
             );

@@ -7,15 +7,15 @@ import {
 } from "vuex";
 
 import { EntryType } from "@/constants/entryType";
-import { DateWrapper } from "@/models/dateWrapper";
+import { DateWrapper, StringISODate } from "@/models/dateWrapper";
 import TimelineFilter, { TimelineFilterBuilder } from "@/models/timelineFilter";
 import { RootState } from "@/store/types";
 
 export interface TimelineState {
     filter: TimelineFilter;
     keyword: string;
-    linearDate: DateWrapper;
-    selectedDate: DateWrapper | null;
+    linearDate: StringISODate;
+    selectedDate: StringISODate | null;
 }
 
 export interface TimelineGetters extends GetterTree<TimelineState, RootState> {

@@ -31,28 +31,15 @@ export const getters: TimelineGetters = {
     },
 
     linearDate(state: TimelineState): DateWrapper {
-        debugger;
-        if (state.linearDate instanceof DateWrapper) {
-            return state.linearDate;
-        }
-
-        return Object.assign(new DateWrapper(), state.linearDate);
+        return new DateWrapper(state.linearDate);
     },
 
     selectedDate(state: TimelineState): DateWrapper | null {
-        console.log(
-            "Timeline Getter Selected Date: " +
-                JSON.stringify(state.selectedDate)
-        );
-
-        if (
-            state.selectedDate === null ||
-            state.selectedDate instanceof DateWrapper
-        ) {
-            return state.selectedDate;
-        } else {
-            return Object.assign(new DateWrapper(), state.selectedDate);
+        if (state.selectedDate === null) {
+            return null;
         }
+
+        return new DateWrapper(state.linearDate);
     },
 
     entryTypes(state: TimelineState): Set<EntryType> {
