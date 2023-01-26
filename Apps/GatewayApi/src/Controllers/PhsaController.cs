@@ -81,9 +81,14 @@ namespace HealthGateway.GatewayApi.Controllers
         [HttpGet]
         [Authorize(Policy = UserProfilePolicy.Read)]
         [Route("dependents")]
-        public RequestResult<IEnumerable<GetDependentResponse>> GetAll([FromQuery] DateTime fromDateUtc, [FromQuery] DateTime toDateUtc, [FromQuery] int pageNumber, [FromQuery] int pageSize)
+        public RequestResult<IEnumerable<GetDependentResponse>> GetAll([FromQuery] DateTime fromDateUtc, [FromQuery] DateTime? toDateUtc, [FromQuery] int? pageNumber, [FromQuery] int? pageSize)
         {
-            return this.dependentService.GetDependents(fromDateUtc, toDateUtc, pageNumber, pageSize);
+            if (pageNumber != null && pageSize != null)
+            {
+                return this.dependentService.GetDependents(fromDateUtc, toDateUtc, pageNumber.Value, pageSize.Value);
+            }
+
+            return this.dependentService.GetDependents(fromDateUtc, toDateUtc);
         }
     }
 }

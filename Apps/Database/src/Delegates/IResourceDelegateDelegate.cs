@@ -47,7 +47,7 @@ namespace HealthGateway.Database.Delegates
 #pragma warning restore CA1716 // Identifiers should not match keywords
 
         /// <summary>
-        /// Gets the list of Resource Delegate records for a specific delegate Id from the database.
+        /// Gets the list of Resource Delegate records for a date range from the database.
         /// </summary>
         /// <param name="fromDate">The from date.</param>
         /// <param name="toDate">The to date.</param>

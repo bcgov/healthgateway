@@ -212,17 +212,18 @@ namespace HealthGateway.GatewayApi.Services
                 return RequestResultFactory.ServiceError<IEnumerable<GetDependentResponse>>(ErrorType.CommunicationInternal, ServiceType.Database, dbResourceDelegates.Message);
             }
 
-            IDictionary<string, IEnumerable<ResourceDelegate>> resourceDelegatesByProfileId =
-                dbResourceDelegates.Payload.GroupBy(g => g.ProfileHdid).ToDictionary(g => g.Key, g => g.AsEnumerable());
-            IEnumerable<GetDependentResponse> dependentResponses = resourceDelegatesByProfileId.Select(
-                    keyValuePair => new GetDependentResponse
-                    {
-                        DelegateId = keyValuePair.Key,
-                        DependentRecords = this.autoMapper.Map<IEnumerable<DependentRecord>>(keyValuePair.Value),
-                    })
-                .ToList();
+            IEnumerable<GetDependentResponse> resourceDelegatesByProfileId =
+                dbResourceDelegates.Payload
+                    .GroupBy(g => g.ProfileHdid)
+                    .Select(
+                        g => new GetDependentResponse
+                        {
+                            DelegateId = g.Key,
+                            DependentRecords = this.autoMapper.Map<IEnumerable<DependentRecord>>(g),
+                        })
+                    .ToList();
 
-            return RequestResultFactory.Success(dependentResponses, dependentResponses.Count(), page, pageSize);
+            return RequestResultFactory.Success(resourceDelegatesByProfileId, resourceDelegatesByProfileId.Count(), page, pageSize);
         }
 
         /// <inheritdoc/>
