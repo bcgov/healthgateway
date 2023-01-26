@@ -15,14 +15,10 @@
 //-------------------------------------------------------------------------
 namespace HealthGateway.Encounter
 {
-    using System;
     using System.Diagnostics.CodeAnalysis;
-    using System.Text.Json;
-    using System.Text.Json.Serialization;
     using HealthGateway.Common.AccessManagement.Authentication;
     using HealthGateway.Common.AspNetConfiguration;
-    using HealthGateway.Common.Data.Utils;
-    using HealthGateway.Common.Models.ODR;
+    using HealthGateway.Common.AspNetConfiguration.Modules;
     using HealthGateway.Common.Models.PHSA;
     using HealthGateway.Encounter.Api;
     using HealthGateway.Encounter.Delegates;
@@ -71,8 +67,6 @@ namespace HealthGateway.Encounter
             // Bind configuration
             PhsaConfig phsaConfig = new();
             this.startupConfig.Configuration.Bind(PhsaConfig.ConfigurationSectionKey, phsaConfig);
-            OdrConfig odrConfig = new();
-            this.startupConfig.Configuration.Bind(OdrConfig.OdrConfigSectionKey, odrConfig);
 
             // Add auto mapper
             services.AddAutoMapper(typeof(Startup));
@@ -88,18 +82,8 @@ namespace HealthGateway.Encounter
             // Add API Clients
             services.AddRefitClient<IHospitalVisitApi>()
                 .ConfigureHttpClient(c => c.BaseAddress = phsaConfig.BaseUrl);
-            services.AddRefitClient<IMspVisitApi>(
-                    new RefitSettings
-                    {
-                        // These are required for the ODR Proxy Protective Word
-                        ContentSerializer = new SystemTextJsonContentSerializer(
-                            new()
-                            {
-                                PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
-                                DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
-                            }),
-                    })
-                .ConfigureHttpClient(c => c.BaseAddress = GetOdrBaseUrl(odrConfig));
+
+            OdrConfiguration.AddOdrRefitClient<IMspVisitApi>(services, this.startupConfig.Configuration);
         }
 
         /// <summary>
@@ -113,18 +97,6 @@ namespace HealthGateway.Encounter
             this.startupConfig.UseHttp(app);
             this.startupConfig.UseAuth(app);
             this.startupConfig.UseRest(app);
-        }
-
-        private static Uri GetOdrBaseUrl(OdrConfig odrConfig)
-        {
-            // Odr Base Url
-            string odrEndpoint = odrConfig.DynamicServiceLookup
-                ? ConfigurationUtility.ConstructServiceEndpoint(
-                    odrConfig.BaseEndpoint,
-                    $"{odrConfig.ServiceName}{odrConfig.ServiceHostSuffix}",
-                    $"{odrConfig.ServiceName}{odrConfig.ServicePortSuffix}")
-                : odrConfig.BaseEndpoint;
-            return new(odrEndpoint);
         }
     }
 }
