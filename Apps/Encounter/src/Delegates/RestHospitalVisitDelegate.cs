@@ -18,14 +18,13 @@ namespace HealthGateway.Encounter.Delegates
     using System;
     using System.Collections.Generic;
     using System.Diagnostics;
-    using System.Globalization;
     using System.Linq;
     using System.Net.Http;
     using System.Threading.Tasks;
     using HealthGateway.Common.AccessManagement.Authentication;
-    using HealthGateway.Common.Data.Constants;
     using HealthGateway.Common.Data.ViewModels;
     using HealthGateway.Common.ErrorHandling;
+    using HealthGateway.Common.Factories;
     using HealthGateway.Common.Models.PHSA;
     using HealthGateway.Encounter.Api;
     using HealthGateway.Encounter.Models.PHSA;
@@ -71,41 +70,26 @@ namespace HealthGateway.Encounter.Delegates
             using Activity? activity = Source.StartActivity();
             this.logger.LogDebug("Getting hospital visits for hdid: {Hdid}", hdid);
 
-            RequestResult<PhsaResult<IEnumerable<HospitalVisit>>> requestResult = new()
-            {
-                ResultStatus = ResultType.Error,
-                PageSize = int.Parse(this.phsaConfig.FetchSize, CultureInfo.InvariantCulture),
-                ResourcePayload = new PhsaResult<IEnumerable<HospitalVisit>>
-                {
-                    Result = Enumerable.Empty<HospitalVisit>(),
-                },
-                TotalResultCount = 0,
-            };
-
             string? accessToken = this.authenticationDelegate.FetchAuthenticatedUserToken();
 
             try
             {
-                PhsaResult<IEnumerable<HospitalVisit>> response =
-                    await this.hospitalVisitApi.GetHospitalVisitsAsync(hdid, this.phsaConfig.FetchSize, accessToken).ConfigureAwait(true);
-                requestResult.ResultStatus = ResultType.Success;
-                requestResult.ResourcePayload.Result = response.Result;
-                requestResult.ResourcePayload.LoadState = response.LoadState;
-                requestResult.TotalResultCount = requestResult.ResourcePayload.Result.Count();
+                PhsaResult<IEnumerable<HospitalVisit>> response = await this.hospitalVisitApi.GetHospitalVisitsAsync(hdid, this.phsaConfig.FetchSize, accessToken).ConfigureAwait(true);
+
+                return RequestResultFactory.Success(
+                    new PhsaResult<IEnumerable<HospitalVisit>>
+                    {
+                        Result = response.Result,
+                        LoadState = response.LoadState,
+                    },
+                    response.Result?.Count(),
+                    pageSize: this.phsaConfig.FetchSize);
             }
             catch (Exception e) when (e is ApiException or HttpRequestException)
             {
                 this.logger.LogError("Error while retrieving Hospital Visits... {Error}", e);
-
-                requestResult.ResultError = new()
-                {
-                    ResultMessage = "Error while retrieving Hospital Visits",
-                    ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.Phsa),
-                };
+                return RequestResultFactory.ServiceError<PhsaResult<IEnumerable<HospitalVisit>>>(ErrorType.CommunicationExternal, ServiceType.Phsa, "Error while retrieving Hospital Visits");
             }
-
-            this.logger.LogDebug("Finished getting hospital visits for hdid: {Hdid}", hdid);
-            return requestResult;
         }
     }
 }

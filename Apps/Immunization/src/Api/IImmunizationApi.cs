@@ -43,7 +43,7 @@ public interface IImmunizationApi
     /// A PhsaResult containing the immunizations and recommendations of a given patient.
     /// </returns>
     [Get("/api/v1/Immunizations?subjectHdid={subjectHdid}&limit={limit}")]
-    Task<PhsaResult<ImmunizationResponse>> GetImmunizationsAsync(string subjectHdid, string limit, [Authorize] string token);
+    Task<PhsaResult<ImmunizationResponse>> GetImmunizationsAsync(string subjectHdid, int? limit, [Authorize] string token);
 
     /// <summary>
     /// Retrieves a PhsaResult containing the vaccine status of a given patient.
