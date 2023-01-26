@@ -18,6 +18,7 @@ namespace HealthGateway.GatewayApi.Services
     using System;
     using System.Collections.Generic;
     using System.Globalization;
+    using System.Linq;
     using System.Text;
     using System.Threading.Tasks;
     using AutoMapper;
@@ -190,6 +191,40 @@ namespace HealthGateway.GatewayApi.Services
             }
 
             return result;
+        }
+
+        /// <inheritdoc/>
+        public RequestResult<IEnumerable<GetDependentResponse>> GetDependents(DateTime fromDateUtc, DateTime? toDateUtc, int? pageNumber = 0, int? pageSize = 5000)
+        {
+            // Page size max is 5000, default page number is 0
+            int size = pageSize is <= 5000 ? pageSize.Value : 5000;
+            int page = pageNumber ?? 0;
+
+            // Get Dependents from database
+            int offset = page * size;
+            DbResult<IEnumerable<ResourceDelegate>> dbResourceDelegates = this.resourceDelegateDelegate.Get(
+                fromDateUtc,
+                toDateUtc,
+                offset,
+                size);
+
+            if (dbResourceDelegates.Status != DbStatusCode.Read)
+            {
+                return RequestResultFactory.ServiceError<IEnumerable<GetDependentResponse>>(ErrorType.CommunicationInternal, ServiceType.Database, dbResourceDelegates.Message);
+            }
+
+            IEnumerable<GetDependentResponse> getDependentResponses =
+                dbResourceDelegates.Payload
+                    .Select(
+                        g => new GetDependentResponse
+                        {
+                            DelegateId = g.ProfileHdid,
+                            OwnerId = g.ResourceOwnerHdid,
+                            CreationDateTime = g.CreatedDateTime,
+                        })
+                    .ToList();
+
+            return RequestResultFactory.Success(getDependentResponses, getDependentResponses.Count(), page, size);
         }
 
         /// <inheritdoc/>

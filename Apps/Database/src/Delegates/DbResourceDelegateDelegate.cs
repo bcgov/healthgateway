@@ -101,6 +101,12 @@ namespace HealthGateway.Database.Delegates
         }
 
         /// <inheritdoc/>
+        public DbResult<IEnumerable<ResourceDelegate>> Get(DateTime fromDate, DateTime? toDate, int page, int pageSize)
+        {
+            throw new NotImplementedException();
+        }
+
+        /// <inheritdoc/>
         public IDictionary<DateTime, int> GetDailyDependentCount(TimeSpan offset)
         {
             this.logger.LogTrace("Counting resource delegates from DB...");
