@@ -6,8 +6,10 @@ import VueRouter, {
 import { Position, PositionResult } from "vue-router/types/router";
 
 import { ClientModule } from "@/constants/clientModule";
+import { TicketStatus } from "@/constants/ticketStatus";
 import { Dictionary } from "@/models/baseTypes";
 import { WebClientConfiguration } from "@/models/configData";
+import { Ticket } from "@/models/ticket";
 import container from "@/plugins/container";
 import { SnowplowWindow } from "@/plugins/extensions";
 import { SERVICE_IDENTIFIER, STORE_IDENTIFIER } from "@/plugins/inversify";
@@ -505,7 +507,7 @@ export const beforeEachGuard: NavigationGuard = async (
     );
 
     if (waitlistIsEnabled && metaRequiresProcessedWaitlistTicket) {
-        checkTicketIsValid(to, next);
+        redirectWhenTicketIsInvalid(to, next);
     }
 
     await store.dispatch("auth/checkStatus");
@@ -537,19 +539,37 @@ export const beforeEachGuard: NavigationGuard = async (
     next({ path: defaultPath });
 };
 
-async function checkTicketIsValid(to: Route, next: NavigationGuardNext<Vue>) {
+async function redirectWhenTicketIsInvalid(
+    to: Route,
+    next: NavigationGuardNext<Vue>
+) {
     const logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
     const storeWrapper = container.get<IStoreProvider>(
         STORE_IDENTIFIER.StoreProvider
     );
     const store = storeWrapper.getStore();
+    let ticket = store.getters["waitlist/ticket"];
 
     try {
-        if (!store.getters["waitlist/ticketIsValid"]) {
-            logger.debug(`Router - get new ticket`);
-            await store.dispatch("waitlist/getTicket");
+        if (ticketIsValid(ticket)) {
+            logger.debug(`Router -check existing ticket`);
+            const timeoutId = store.getters["waitlist/checkInTimeoutId"];
+            clearTimeout(timeoutId);
 
-            if (!store.getters["waitlist/ticketIsValid"]) {
+            const now = new Date().getTime();
+            const checkInAfter = ticket.checkInAfter * 1000;
+            const timeout = Math.max(0, checkInAfter - now);
+            // TODO: determine how to deal with already-queued timeouts
+            setTimeout(() => {
+                store
+                    .dispatch("waitlist/checkIn")
+                    .catch(() => logger.error(`Error calling checkIn action.`));
+            }, timeout);
+        } else {
+            logger.debug(`Router - get new ticket`);
+            ticket = await store.dispatch("waitlist/getTicket");
+
+            if (!ticketIsValid(ticket)) {
                 // redirect to queued page if new ticket is not valid
                 next({ path: QUEUE_PATH, query: { redirect: to.path } });
                 return;
@@ -560,6 +580,15 @@ async function checkTicketIsValid(to: Route, next: NavigationGuardNext<Vue>) {
         next({ path: QUEUE_FULL_PATH, query: { redirect: to.path } });
         return;
     }
+}
+
+function ticketIsValid(ticket: Ticket | undefined): boolean {
+    if (ticket?.status !== TicketStatus.Processed) {
+        return false;
+    }
+
+    const now = new Date().getTime();
+    return now < ticket.tokenExpires * 1000;
 }
 
 function getDefaultPath(

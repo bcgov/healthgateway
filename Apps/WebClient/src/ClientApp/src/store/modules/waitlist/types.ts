@@ -14,13 +14,14 @@ export interface WaitlistState {
     ticket?: Ticket;
     tooBusy: boolean;
     status: LoadStatus;
+    checkInTimeoutId: number | undefined;
 }
 
 export interface WaitlistGetters extends GetterTree<WaitlistState, RootState> {
     isLoading(state: WaitlistState): boolean;
     tooBusy(state: WaitlistState): boolean;
     ticket(state: WaitlistState): Ticket | undefined;
-    ticketIsValid(state: WaitlistState): boolean;
+    ticketIsProcessed(state: WaitlistState): boolean;
 }
 
 type StoreContext = ActionContext<WaitlistState, RootState>;
@@ -40,6 +41,7 @@ export interface WaitlistMutations extends MutationTree<WaitlistState> {
     setError(state: WaitlistState): void;
     setTicket(state: WaitlistState, ticket: Ticket): void;
     clearTicket(state: WaitlistState): void;
+    setCheckInTimeoutId(state: WaitlistState, checkInTimeoutId: number): void;
 }
 
 export interface WaitlistModule extends Module<WaitlistState, RootState> {

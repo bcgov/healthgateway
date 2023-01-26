@@ -14,12 +14,7 @@ export const getters: WaitlistGetters = {
     ticket: function (state: WaitlistState): Ticket | undefined {
         return state.ticket;
     },
-    ticketIsValid: function (state: WaitlistState): boolean {
-        if (state.ticket?.status !== TicketStatus.Processed) {
-            return false;
-        }
-
-        const now = new Date().getTime();
-        return now < state.ticket.tokenExpires * 1000;
+    ticketIsProcessed: function (state: WaitlistState): boolean {
+        return state.ticket?.status === TicketStatus.Processed;
     },
 };

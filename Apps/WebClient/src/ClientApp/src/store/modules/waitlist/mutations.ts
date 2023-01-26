@@ -26,4 +26,10 @@ export const mutations: WaitlistMutations = {
         state.tooBusy = false;
         state.status = LoadStatus.NONE;
     },
+    setCheckInTimeoutId: function (
+        state: WaitlistState,
+        checkInTimeoutId: number
+    ): void {
+        state.checkInTimeoutId = checkInTimeoutId;
+    },
 };
