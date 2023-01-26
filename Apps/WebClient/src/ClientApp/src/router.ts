@@ -563,7 +563,7 @@ function shouldCheckTicket(
         (!isAuthenticated &&
             waitlistIsEnabled &&
             !waitlistTicketIsProcessed &&
-            metaRquiresProcessedWaitlistTicket) || // User logged in for the first time or page is queued
+            metaRquiresProcessedWaitlistTicket) || // User is unauthenticated and page is queued or busy
         (isAuthenticated && waitlistIsEnabled && !waitlistTicketIsCreated) || // User has logged in and swtiches tabs in browser
         (isAuthenticated &&
             waitlistIsEnabled &&
