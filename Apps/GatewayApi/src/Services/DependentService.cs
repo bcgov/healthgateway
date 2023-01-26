@@ -194,36 +194,37 @@ namespace HealthGateway.GatewayApi.Services
         }
 
         /// <inheritdoc/>
-        public RequestResult<IEnumerable<GetDependentResponse>> GetDependents(DateTime fromDateUtc, DateTime? toDateUtc, int page = 0, int pageSize = 5000)
+        public RequestResult<IEnumerable<GetDependentResponse>> GetDependents(DateTime fromDateUtc, DateTime? toDateUtc, int? pageNumber = 0, int? pageSize = 5000)
         {
-            // Page size max is 5000
-            pageSize = pageSize <= 5000 ? pageSize : 5000;
+            // Page size max is 5000, default page number is 0
+            int size = pageSize is <= 5000 ? pageSize.Value : 5000;
+            int page = pageNumber ?? 0;
 
             // Get Dependents from database
-            int offset = page * pageSize;
+            int offset = page * size;
             DbResult<IEnumerable<ResourceDelegate>> dbResourceDelegates = this.resourceDelegateDelegate.Get(
                 fromDateUtc,
                 toDateUtc,
                 offset,
-                pageSize);
+                size);
 
             if (dbResourceDelegates.Status != DbStatusCode.Read)
             {
                 return RequestResultFactory.ServiceError<IEnumerable<GetDependentResponse>>(ErrorType.CommunicationInternal, ServiceType.Database, dbResourceDelegates.Message);
             }
 
-            IEnumerable<GetDependentResponse> resourceDelegatesByProfileId =
+            IEnumerable<GetDependentResponse> getDependentResponses =
                 dbResourceDelegates.Payload
-                    .GroupBy(g => g.ProfileHdid)
                     .Select(
                         g => new GetDependentResponse
                         {
-                            DelegateId = g.Key,
-                            DependentRecords = this.autoMapper.Map<IEnumerable<DependentRecord>>(g),
+                            DelegateId = g.ProfileHdid,
+                            OwnerId = g.ResourceOwnerHdid,
+                            CreationDateTime = g.CreatedDateTime,
                         })
                     .ToList();
 
-            return RequestResultFactory.Success(resourceDelegatesByProfileId, resourceDelegatesByProfileId.Count(), page, pageSize);
+            return RequestResultFactory.Success(getDependentResponses, getDependentResponses.Count(), page, size);
         }
 
         /// <inheritdoc/>

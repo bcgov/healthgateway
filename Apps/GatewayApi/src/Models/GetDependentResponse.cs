@@ -16,7 +16,7 @@
 
 namespace HealthGateway.GatewayApi.Models
 {
-    using System.Collections.Generic;
+    using System;
 
     /// <summary>
     /// Represents a get dependent response.
@@ -29,8 +29,13 @@ namespace HealthGateway.GatewayApi.Models
         public string DelegateId { get; set; } = null!;
 
         /// <summary>
-        /// Gets or sets the dependent records.
+        /// Gets or sets the owner id.
         /// </summary>
-        public IEnumerable<DependentRecord>? DependentRecords { get; set; }
+        public string OwnerId { get; set; } = null!;
+
+        /// <summary>
+        /// Gets or sets the creation date time.
+        /// </summary>
+        public DateTime CreationDateTime { get; set; }
     }
 }

@@ -83,12 +83,7 @@ namespace HealthGateway.GatewayApi.Controllers
         [Route("dependents")]
         public RequestResult<IEnumerable<GetDependentResponse>> GetAll([FromQuery] DateTime fromDateUtc, [FromQuery] DateTime? toDateUtc, [FromQuery] int? pageNumber, [FromQuery] int? pageSize)
         {
-            if (pageNumber != null && pageSize != null)
-            {
-                return this.dependentService.GetDependents(fromDateUtc, toDateUtc, pageNumber.Value, pageSize.Value);
-            }
-
-            return this.dependentService.GetDependents(fromDateUtc, toDateUtc);
+            return this.dependentService.GetDependents(fromDateUtc, toDateUtc, pageNumber, pageSize);
         }
     }
 }

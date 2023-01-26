@@ -39,10 +39,10 @@ namespace HealthGateway.GatewayApi.Services
         /// </summary>
         /// <param name="fromDateUtc">The from date time in Utc.</param>
         /// <param name="toDateUtc">The to date time in Utc.</param>
-        /// <param name="page">The page of data to fetch indexed from 0.</param>
+        /// <param name="pageNumber">The page of data to fetch indexed from 0.</param>
         /// <param name="pageSize">The amount of records per page.</param>
         /// <returns>A List of dependents wrapped in a RequestResult.</returns>
-        RequestResult<IEnumerable<GetDependentResponse>> GetDependents(DateTime fromDateUtc, DateTime? toDateUtc, int page = 0, int pageSize = 5000);
+        RequestResult<IEnumerable<GetDependentResponse>> GetDependents(DateTime fromDateUtc, DateTime? toDateUtc, int? pageNumber = 0, int? pageSize = 5000);
 
         /// <summary>
         /// Add a dependent to the given hdId of the delegate (parent or guardian).
