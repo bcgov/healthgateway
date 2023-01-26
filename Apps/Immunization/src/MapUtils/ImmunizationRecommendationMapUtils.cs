@@ -75,10 +75,10 @@ namespace HealthGateway.Immunization.MapUtils
             {
                 RecommendedVaccinations = model.TargetDisease == null ? recommendedVaccinations : string.Empty,
                 RecommendationSetId = recommendationSetId,
-                DiseaseEligibleDate = diseaseEligible != null ? DateTime.Parse(diseaseEligible.Value, CultureInfo.CurrentCulture) : null,
-                DiseaseDueDate = diseaseDue != null ? DateTime.Parse(diseaseDue.Value, CultureInfo.CurrentCulture) : null,
-                AgentEligibleDate = agentEligible != null ? DateTime.Parse(agentEligible.Value, CultureInfo.CurrentCulture) : null,
-                AgentDueDate = agentDue != null ? DateTime.Parse(agentDue.Value, CultureInfo.CurrentCulture) : null,
+                DiseaseEligibleDate = diseaseEligible?.Value != null ? DateTime.Parse(diseaseEligible.Value, CultureInfo.CurrentCulture) : null,
+                DiseaseDueDate = diseaseDue?.Value != null ? DateTime.Parse(diseaseDue.Value, CultureInfo.CurrentCulture) : null,
+                AgentEligibleDate = agentEligible?.Value != null ? DateTime.Parse(agentEligible.Value, CultureInfo.CurrentCulture) : null,
+                AgentDueDate = agentDue?.Value != null ? DateTime.Parse(agentDue.Value, CultureInfo.CurrentCulture) : null,
                 Status = model.ForecastStatus.ForecastStatusText,
                 Immunization = autoMapper.Map<ImmunizationDefinition>(model.VaccineCode),
             };
