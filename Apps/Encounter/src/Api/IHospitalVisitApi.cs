@@ -37,6 +37,6 @@ namespace HealthGateway.Encounter.Api
         /// the subject id in the query.
         /// </returns>
         [Get("/api/v1/HospitalVisits?subjectHdid={subjectHdid}&limit={limit}")]
-        Task<PhsaResult<IEnumerable<HospitalVisit>>> GetHospitalVisitsAsync(string subjectHdid, string limit, [Authorize] string token);
+        Task<PhsaResult<IEnumerable<HospitalVisit>>> GetHospitalVisitsAsync(string subjectHdid, int? limit, [Authorize] string token);
     }
 }

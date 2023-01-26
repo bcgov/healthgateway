@@ -72,7 +72,7 @@ namespace HealthGateway.EncounterTests.Delegates
             Mock<IAuthenticationDelegate> mockAuthDelegate = new();
             mockAuthDelegate.Setup(s => s.FetchAuthenticatedUserToken()).Returns(AccessToken);
             Mock<IHospitalVisitApi> mockHospitalVisitApi = new();
-            mockHospitalVisitApi.Setup(s => s.GetHospitalVisitsAsync(It.IsAny<string>(), It.IsAny<string>(), AccessToken)).ReturnsAsync(phsaResponse);
+            mockHospitalVisitApi.Setup(s => s.GetHospitalVisitsAsync(It.IsAny<string>(), It.IsAny<int?>(), AccessToken)).ReturnsAsync(phsaResponse);
             IHospitalVisitDelegate hospitalVisitDelegate = new RestHospitalVisitDelegate(
                 mockAuthDelegate.Object,
                 mockHospitalVisitApi.Object,
@@ -102,7 +102,7 @@ namespace HealthGateway.EncounterTests.Delegates
             Mock<IAuthenticationDelegate> mockAuthDelegate = new();
             mockAuthDelegate.Setup(s => s.FetchAuthenticatedUserToken()).Returns(AccessToken);
             Mock<IHospitalVisitApi> mockHospitalVisitApi = new();
-            mockHospitalVisitApi.Setup(s => s.GetHospitalVisitsAsync(It.IsAny<string>(), It.IsAny<string>(), AccessToken)).ThrowsAsync(mockException);
+            mockHospitalVisitApi.Setup(s => s.GetHospitalVisitsAsync(It.IsAny<string>(), It.IsAny<int?>(), AccessToken)).ThrowsAsync(mockException);
             IHospitalVisitDelegate hospitalVisitDelegate = new RestHospitalVisitDelegate(
                 mockAuthDelegate.Object,
                 mockHospitalVisitApi.Object,
@@ -115,8 +115,8 @@ namespace HealthGateway.EncounterTests.Delegates
             // Assert
             Assert.Equal(ResultType.Error, actualResult.ResultStatus);
             Assert.Equal(ExpectedExceptionMessage, actualResult.ResultError?.ResultMessage);
-            Assert.Equal(0, actualResult.TotalResultCount);
-            Assert.Equal(int.Parse(ConfigFetchSize, CultureInfo.InvariantCulture), actualResult.PageSize);
+            Assert.Null(actualResult.TotalResultCount);
+            Assert.Null(actualResult.PageSize);
         }
 
         /// <summary>
@@ -131,7 +131,7 @@ namespace HealthGateway.EncounterTests.Delegates
             Mock<IAuthenticationDelegate> mockAuthDelegate = new();
             mockAuthDelegate.Setup(s => s.FetchAuthenticatedUserToken()).Returns(AccessToken);
             Mock<IHospitalVisitApi> mockHospitalVisitApi = new();
-            mockHospitalVisitApi.Setup(s => s.GetHospitalVisitsAsync(It.IsAny<string>(), It.IsAny<string>(), AccessToken)).ThrowsAsync(mockException);
+            mockHospitalVisitApi.Setup(s => s.GetHospitalVisitsAsync(It.IsAny<string>(), It.IsAny<int?>(), AccessToken)).ThrowsAsync(mockException);
             IHospitalVisitDelegate hospitalVisitDelegate = new RestHospitalVisitDelegate(
                 mockAuthDelegate.Object,
                 mockHospitalVisitApi.Object,
@@ -144,8 +144,8 @@ namespace HealthGateway.EncounterTests.Delegates
             // Assert
             Assert.Equal(ResultType.Error, actualResult.ResultStatus);
             Assert.Equal(ExpectedExceptionMessage, actualResult.ResultError?.ResultMessage);
-            Assert.Equal(0, actualResult.TotalResultCount);
-            Assert.Equal(int.Parse(ConfigFetchSize, CultureInfo.InvariantCulture), actualResult.PageSize);
+            Assert.Null(actualResult.TotalResultCount);
+            Assert.Null(actualResult.PageSize);
         }
 
         private static IConfigurationRoot GetIConfigurationRoot()
