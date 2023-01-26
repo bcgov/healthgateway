@@ -6,10 +6,8 @@ import VueRouter, {
 import { Position, PositionResult } from "vue-router/types/router";
 
 import { ClientModule } from "@/constants/clientModule";
-import { TicketStatus } from "@/constants/ticketStatus";
 import { Dictionary } from "@/models/baseTypes";
 import { WebClientConfiguration } from "@/models/configData";
-import { Ticket } from "@/models/ticket";
 import container from "@/plugins/container";
 import { SnowplowWindow } from "@/plugins/extensions";
 import { SERVICE_IDENTIFIER, STORE_IDENTIFIER } from "@/plugins/inversify";
@@ -493,34 +491,21 @@ export const beforeEachGuard: NavigationGuard = async (
     const enabledModules = getEnabledModules();
 
     const waitlistIsEnabled = enabledModules.includes(ClientModule.Ticket);
-    const waitlistTicketIsProcessed: boolean =
-        store.getters["waitlist/ticketIsProcessed"];
-    const waitlistTicketIsCreated: boolean =
-        store.getters["waitlist/ticketIsCreated"];
     const isAuthenticated: boolean = store.getters["auth/oidcIsAuthenticated"];
     const isFromBusy = from.fullPath.includes(QUEUE_FULL_PATH);
-    let metaRquiresProcessedWaitlistTicket =
+    let metaRequiresProcessedWaitlistTicket =
         meta.requiresProcessedWaitlistTicket;
 
     if (from.fullPath === QUEUE_FULL_PATH || from.fullPath === QUEUE_PATH) {
-        metaRquiresProcessedWaitlistTicket = true;
+        metaRequiresProcessedWaitlistTicket = true;
     }
 
     logger.debug(
-        `Before guard - user is authenticated: ${isAuthenticated}, waitlist enabled: ${waitlistIsEnabled}, waitlist ticket processed: ${waitlistTicketIsProcessed}, waitlist ticket created: ${waitlistTicketIsCreated}, meta requires processed waitlist ticket: ${metaRquiresProcessedWaitlistTicket} and is from busy: ${isFromBusy}`
+        `Before guard - user is authenticated: ${isAuthenticated}, waitlist enabled: ${waitlistIsEnabled}, meta requires processed waitlist ticket: ${metaRequiresProcessedWaitlistTicket} and is from busy: ${isFromBusy}`
     );
 
-    if (
-        shouldCheckTicket(
-            isAuthenticated,
-            waitlistIsEnabled,
-            waitlistTicketIsProcessed,
-            waitlistTicketIsCreated,
-            metaRquiresProcessedWaitlistTicket,
-            isFromBusy
-        )
-    ) {
-        checkTicket(to, next);
+    if (waitlistIsEnabled && metaRequiresProcessedWaitlistTicket) {
+        checkTicketIsValid(to, next);
     }
 
     await store.dispatch("auth/checkStatus");
@@ -552,66 +537,26 @@ export const beforeEachGuard: NavigationGuard = async (
     next({ path: defaultPath });
 };
 
-function shouldCheckTicket(
-    isAuthenticated: boolean,
-    waitlistIsEnabled: boolean,
-    waitlistTicketIsProcessed: boolean,
-    waitlistTicketIsCreated: boolean,
-    metaRquiresProcessedWaitlistTicket: boolean,
-    isFromBusy: boolean
-): boolean {
-    const logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
-
-    const should =
-        (!isAuthenticated &&
-            waitlistIsEnabled &&
-            !waitlistTicketIsProcessed &&
-            metaRquiresProcessedWaitlistTicket) || // User is not authenticated and is coming from either the busy or queued pages.
-        (isAuthenticated &&
-            waitlistIsEnabled &&
-            !waitlistTicketIsCreated &&
-            metaRquiresProcessedWaitlistTicket &&
-            !isFromBusy) || // User has logged in, opens a new tab in a browser and attempts to navigate to a page protected by the waitlist queue but is not from the busy page.
-        (isAuthenticated &&
-            waitlistIsEnabled &&
-            waitlistTicketIsProcessed &&
-            metaRquiresProcessedWaitlistTicket); // User has logged in but has navigated away from Health Gateway and back to a page protected by waitlist queue.
-
-    logger.debug(`Should check ticket: ${should}`);
-    return should;
-}
-
-async function checkTicket(to: Route, next: NavigationGuardNext<Vue>) {
+async function checkTicketIsValid(to: Route, next: NavigationGuardNext<Vue>) {
     const logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
     const storeWrapper = container.get<IStoreProvider>(
         STORE_IDENTIFIER.StoreProvider
     );
     const store = storeWrapper.getStore();
-    let ticket: Ticket = store.getters["waitlist/ticket"];
 
     try {
-        if (ticket === undefined) {
-            logger.debug(`Router - create ticket`);
-            ticket = await store.dispatch("waitlist/getTicket"); // Create new ticket
-        } else {
-            // Check existing ticket
-            const now = new Date().getTime();
-            const checkInAfter = ticket.checkInAfter * 1000;
-            const timeout = Math.max(0, checkInAfter - now);
-            logger.debug(
-                `Router - Ticket checkin: timeout (ms): ${timeout} - check in after (ms): ${checkInAfter} - now (ms): ${now}`
-            );
-            setTimeout(() => {
-                store
-                    .dispatch("waitlist/checkIn")
-                    .catch(() => logger.error(`Error calling checkIn action.`));
-            }, timeout);
-        }
-        if (ticket.status !== TicketStatus.Processed) {
-            next({ path: QUEUE_PATH, query: { redirect: to.path } });
-            return;
+        if (!store.getters["waitlist/ticketIsValid"]) {
+            logger.debug(`Router - get new ticket`);
+            await store.dispatch("waitlist/getTicket");
+
+            if (!store.getters["waitlist/ticketIsValid"]) {
+                // redirect to queued page if new ticket is not valid
+                next({ path: QUEUE_PATH, query: { redirect: to.path } });
+                return;
+            }
         }
     } catch {
+        // redirect to busy page if new ticket could not be retrieved
         next({ path: QUEUE_FULL_PATH, query: { redirect: to.path } });
         return;
     }

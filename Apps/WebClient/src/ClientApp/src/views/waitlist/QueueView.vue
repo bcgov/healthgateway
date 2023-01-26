@@ -15,11 +15,11 @@ export default class QueueView extends Vue {
     @Getter("ticket", { namespace: "waitlist" })
     ticket?: Ticket;
 
-    @Getter("ticketIsProcessed", { namespace: "waitlist" })
-    ticketIsProcessed!: boolean;
+    @Getter("ticketIsValid", { namespace: "waitlist" })
+    ticketIsValid!: boolean;
 
-    @Watch("ticketIsProcessed")
-    private onTicketIsProcessedChanged(value: boolean): void {
+    @Watch("ticketIsValid")
+    private onTicketIsValidChanged(value: boolean): void {
         if (value) {
             this.redirect();
         }
@@ -33,7 +33,7 @@ export default class QueueView extends Vue {
         if (
             !this.config.modules[ClientModule.Ticket] ||
             !this.ticket ||
-            this.ticketIsProcessed
+            this.ticketIsValid
         ) {
             this.redirect();
         }
