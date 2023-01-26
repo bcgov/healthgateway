@@ -19,6 +19,7 @@ namespace HealthGateway.Database.Delegates
     using System.Collections.Generic;
     using System.Diagnostics.CodeAnalysis;
     using System.Linq;
+    using System.Threading.Tasks;
     using HealthGateway.Database.Constants;
     using HealthGateway.Database.Context;
     using HealthGateway.Database.Models;
@@ -157,6 +158,27 @@ namespace HealthGateway.Database.Delegates
             }
 
             return false;
+        }
+
+        /// <inheritdoc/>
+        public async Task<ResourceDelegateQueryResult> Search(ResourceDelegateQuery query)
+        {
+            IQueryable<ResourceDelegate> dbQuery = this.dbContext.ResourceDelegate;
+            if (query.ByOwnerHdid != null)
+            {
+                dbQuery = dbQuery.Where(d => d.ResourceOwnerHdid == query.ByOwnerHdid);
+            }
+
+            if (query.ByDelegateHdid != null)
+            {
+                dbQuery = dbQuery.Where(rd => rd.ProfileHdid == query.ByDelegateHdid);
+            }
+
+            IEnumerable<ResourceDelegate> items = await dbQuery.ToArrayAsync().ConfigureAwait(true);
+            return new ResourceDelegateQueryResult
+            {
+                Items = items,
+            };
         }
     }
 }

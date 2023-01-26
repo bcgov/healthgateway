@@ -26,11 +26,18 @@ namespace HealthGateway.Common.Services
     public interface IPatientService
     {
         /// <summary>
-        /// Gets the patient phn.
+        /// Gets the patient PHN.
         /// </summary>
-        /// <param name="hdid">The patient hdid.</param>
-        /// <returns>The patient phn.</returns>
+        /// <param name="hdid">The patient HDID.</param>
+        /// <returns>The patient PHN.</returns>
         Task<RequestResult<string>> GetPatientPhn(string hdid);
+
+        /// <summary>
+        /// Gets the patient HDID by PHN.
+        /// </summary>
+        /// <param name="phn">The patient PHN.</param>
+        /// <returns>The patient HDID.</returns>
+        Task<string> GetPatientHdid(string phn);
 
         /// <summary>
         /// Gets the patient record.

@@ -16,6 +16,7 @@
 namespace HealthGateway.Common.Services
 {
     using System.Collections.Generic;
+    using System.Threading.Tasks;
     using HealthGateway.Common.Data.Constants;
     using HealthGateway.Common.Data.ViewModels;
 
@@ -37,6 +38,6 @@ namespace HealthGateway.Common.Services
         /// <param name="queryType">The type of query to perform.</param>
         /// <param name="queryString">The value to query on.</param>
         /// <returns>A list of users matching the query.</returns>
-        RequestResult<IEnumerable<SupportUser>> GetUsers(UserQueryType queryType, string queryString);
+        Task<RequestResult<IEnumerable<SupportUser>>> GetUsers(UserQueryType queryType, string queryString);
     }
 }

@@ -165,6 +165,7 @@ export default class HospitalVisitTimelineComponent extends Vue {
                     >
                         {{ formatDate(entry.endDateTime) }}
                     </span>
+                    <span v-else>not available</span>
                 </div>
             </div>
         </div>
