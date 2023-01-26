@@ -498,6 +498,7 @@ export const beforeEachGuard: NavigationGuard = async (
     const waitlistTicketIsCreated: boolean =
         store.getters["waitlist/ticketIsCreated"];
     const isAuthenticated: boolean = store.getters["auth/oidcIsAuthenticated"];
+    const isFromBusy = from.fullPath.includes(QUEUE_FULL_PATH);
     let metaRquiresProcessedWaitlistTicket =
         meta.requiresProcessedWaitlistTicket;
 
@@ -506,7 +507,7 @@ export const beforeEachGuard: NavigationGuard = async (
     }
 
     logger.debug(
-        `Before guard - user is authenticated: ${isAuthenticated}, waitlist enabled: ${waitlistIsEnabled}, waitlist ticket processed: ${waitlistTicketIsProcessed}, waitlist ticket created: ${waitlistTicketIsCreated} and meta requires processed waitlist ticket: ${metaRquiresProcessedWaitlistTicket}`
+        `Before guard - user is authenticated: ${isAuthenticated}, waitlist enabled: ${waitlistIsEnabled}, waitlist ticket processed: ${waitlistTicketIsProcessed}, waitlist ticket created: ${waitlistTicketIsCreated}, meta requires processed waitlist ticket: ${metaRquiresProcessedWaitlistTicket} and is from busy: ${isFromBusy}`
     );
 
     if (
@@ -515,7 +516,8 @@ export const beforeEachGuard: NavigationGuard = async (
             waitlistIsEnabled,
             waitlistTicketIsProcessed,
             waitlistTicketIsCreated,
-            metaRquiresProcessedWaitlistTicket
+            metaRquiresProcessedWaitlistTicket,
+            isFromBusy
         )
     ) {
         checkTicket(to, next);
@@ -555,7 +557,8 @@ function shouldCheckTicket(
     waitlistIsEnabled: boolean,
     waitlistTicketIsProcessed: boolean,
     waitlistTicketIsCreated: boolean,
-    metaRquiresProcessedWaitlistTicket: boolean
+    metaRquiresProcessedWaitlistTicket: boolean,
+    isFromBusy: boolean
 ): boolean {
     const logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
 
@@ -563,12 +566,16 @@ function shouldCheckTicket(
         (!isAuthenticated &&
             waitlistIsEnabled &&
             !waitlistTicketIsProcessed &&
-            metaRquiresProcessedWaitlistTicket) || // User is unauthenticated and page is queued or busy
-        (isAuthenticated && waitlistIsEnabled && !waitlistTicketIsCreated) || // User has logged in and swtiches tabs in browser
+            metaRquiresProcessedWaitlistTicket) || // User is not authenticated and is coming from either the busy or queued pages.
+        (isAuthenticated &&
+            waitlistIsEnabled &&
+            !waitlistTicketIsCreated &&
+            metaRquiresProcessedWaitlistTicket &&
+            !isFromBusy) || // User has logged in, opens a new tab in a browser and attempts to navigate to a page protected by the waitlist queue but is not from the busy page.
         (isAuthenticated &&
             waitlistIsEnabled &&
             waitlistTicketIsProcessed &&
-            metaRquiresProcessedWaitlistTicket); // User has logged in but has navigated away from Health Gateway and back
+            metaRquiresProcessedWaitlistTicket); // User has logged in but has navigated away from Health Gateway and back to a page protected by waitlist queue.
 
     logger.debug(`Should check ticket: ${should}`);
     return should;
