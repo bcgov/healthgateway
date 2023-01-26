@@ -18,8 +18,8 @@ namespace HealthGateway.Database.Delegates
 {
     using System;
     using System.Collections.Generic;
-    using System.Threading.Tasks;
     using System.Diagnostics.CodeAnalysis;
+    using System.Threading.Tasks;
     using HealthGateway.Database.Models;
     using HealthGateway.Database.Wrapper;
 

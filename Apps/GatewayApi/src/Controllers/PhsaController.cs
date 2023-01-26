@@ -19,7 +19,6 @@ namespace HealthGateway.GatewayApi.Controllers
     using System;
     using System.Collections.Generic;
     using HealthGateway.Common.AccessManagement.Authorization.Policy;
-    using HealthGateway.Common.Data.ViewModels;
     using HealthGateway.GatewayApi.Models;
     using HealthGateway.GatewayApi.Services;
     using Microsoft.AspNetCore.Authorization;
@@ -32,7 +31,7 @@ namespace HealthGateway.GatewayApi.Controllers
     [ApiVersion("1.0")]
     [Route("[controller]")]
     [ApiController]
-    public class PhsaController
+    public class PhsaController : ControllerBase
     {
         private readonly IDependentService dependentService;
 
@@ -59,9 +58,9 @@ namespace HealthGateway.GatewayApi.Controllers
         [HttpGet]
         [Authorize(Policy = UserProfilePolicy.Read)]
         [Route("dependents/{hdid}")]
-        public RequestResult<IEnumerable<DependentModel>> GetAll(string hdid)
+        public ActionResult<IEnumerable<DependentModel>> GetAll(string hdid)
         {
-            return this.dependentService.GetDependents(hdid);
+            return this.Ok(this.dependentService.GetDependents(hdid));
         }
 
         /// <summary>
@@ -70,7 +69,7 @@ namespace HealthGateway.GatewayApi.Controllers
         /// <returns>The list of dependents wrapped in a request result.</returns>
         /// <param name="fromDateUtc">The from date in Utc. Required.</param>
         /// <param name="toDateUtc">The to date in Utc.</param>
-        /// <param name="pageNumber">The page number.</param>
+        /// <param name="page">The page number. Defaults to 0.</param>
         /// <param name="pageSize">The page size. Max 5000.</param>
         /// <response code="200">Returns the list of dependents.</response>
         /// <response code="401">the client must authenticate itself to get the requested response.</response>
@@ -81,9 +80,13 @@ namespace HealthGateway.GatewayApi.Controllers
         [HttpGet]
         [Authorize(Policy = UserProfilePolicy.Read)]
         [Route("dependents")]
-        public RequestResult<IEnumerable<GetDependentResponse>> GetAll([FromQuery] DateTime fromDateUtc, [FromQuery] DateTime? toDateUtc, [FromQuery] int? pageNumber, [FromQuery] int? pageSize)
+        public ActionResult<IEnumerable<GetDependentResponse>> GetAll(
+            [FromQuery] DateTime fromDateUtc,
+            [FromQuery] DateTime? toDateUtc,
+            [FromQuery] int page = 0,
+            [FromQuery] int pageSize = 5000)
         {
-            return this.dependentService.GetDependents(fromDateUtc, toDateUtc, pageNumber, pageSize);
+            return this.Ok(this.dependentService.GetDependents(fromDateUtc, toDateUtc, page, pageSize));
         }
     }
 }

@@ -141,8 +141,7 @@ namespace HealthGateway.GatewayApi.Services
         public RequestResult<IEnumerable<DependentModel>> GetDependents(string hdId, int page = 0, int pageSize = 500)
         {
             // Get Dependents from database
-            int offset = page * pageSize;
-            DbResult<IEnumerable<ResourceDelegate>> dbResourceDelegates = this.resourceDelegateDelegate.Get(hdId, offset, pageSize);
+            DbResult<IEnumerable<ResourceDelegate>> dbResourceDelegates = this.resourceDelegateDelegate.Get(hdId, page, pageSize);
 
             // Get Dependents Details from Patient service
             List<DependentModel> dependentModels = new();
@@ -194,19 +193,13 @@ namespace HealthGateway.GatewayApi.Services
         }
 
         /// <inheritdoc/>
-        public RequestResult<IEnumerable<GetDependentResponse>> GetDependents(DateTime fromDateUtc, DateTime? toDateUtc, int? pageNumber = 0, int? pageSize = 5000)
+        public RequestResult<IEnumerable<GetDependentResponse>> GetDependents(DateTime fromDateUtc, DateTime? toDateUtc, int page, int pageSize)
         {
-            // Page size max is 5000, default page number is 0
-            int size = pageSize is <= 5000 ? pageSize.Value : 5000;
-            int page = pageNumber ?? 0;
-
-            // Get Dependents from database
-            int offset = page * size;
             DbResult<IEnumerable<ResourceDelegate>> dbResourceDelegates = this.resourceDelegateDelegate.Get(
                 fromDateUtc,
                 toDateUtc,
-                offset,
-                size);
+                page,
+                pageSize);
 
             if (dbResourceDelegates.Status != DbStatusCode.Read)
             {
@@ -224,7 +217,7 @@ namespace HealthGateway.GatewayApi.Services
                         })
                     .ToList();
 
-            return RequestResultFactory.Success(getDependentResponses, getDependentResponses.Count(), page, size);
+            return RequestResultFactory.Success(getDependentResponses, getDependentResponses.Count(), page, pageSize);
         }
 
         /// <inheritdoc/>
