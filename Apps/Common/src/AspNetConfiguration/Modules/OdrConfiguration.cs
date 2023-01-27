@@ -74,7 +74,7 @@ namespace HealthGateway.Common.AspNetConfiguration.Modules
                 ? "/pgw/patientGateway"
                 : "/odr";
 
-            return new(new(odrEndpoint), pathPrefix);
+            return new(odrEndpoint.TrimEnd('/') + pathPrefix);
         }
     }
 }
