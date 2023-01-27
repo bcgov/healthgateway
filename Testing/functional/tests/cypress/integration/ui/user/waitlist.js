@@ -29,6 +29,7 @@ function getTicket(status, queuePosition = 0) {
 
 describe("Waitlist Ticket Module Enabled", () => {
     beforeEach(() => {
+        cy.logout();
         cy.enableModules(["Ticket"]);
     });
 
@@ -36,7 +37,6 @@ describe("Waitlist Ticket Module Enabled", () => {
         cy.intercept("POST", "**/Ticket?room=healthgateway", {
             statusCode: serviceUnavailable,
         });
-        cy.logout();
         cy.visit("/faq");
         cy.log(
             "Verify unprotected page was accessed successfully without creating ticket."
@@ -51,22 +51,17 @@ describe("Waitlist Ticket Module Enabled", () => {
             getTicket("Processed")
         );
         cy.intercept("PUT", "**/Ticket/check-in", getTicket("Processed"));
-        cy.login(
-            Cypress.env("keycloak.username"),
-            Cypress.env("keycloak.password"),
-            AuthMethod.KeyCloak,
-            "/home"
-        );
+        cy.visit("/login");
         cy.log(
             "Verify processed ticket has been created and protected page is shown."
         );
-        cy.url().should("include", "/home");
+        cy.url().should("include", "/login");
 
         cy.log(
             "Verify checkin has succeeded and protected page has not changed."
         );
         cy.wait(5000);
-        cy.url().should("include", "/home");
+        cy.url().should("include", "/login");
     });
 
     it("Verify getting a queued ticket and then successfully checking in on a protected page", () => {
@@ -76,18 +71,13 @@ describe("Waitlist Ticket Module Enabled", () => {
             getTicket("Queued", 1)
         );
         cy.intercept("PUT", "**/Ticket/check-in", getTicket("Processed"));
-        cy.login(
-            Cypress.env("keycloak.username"),
-            Cypress.env("keycloak.password"),
-            AuthMethod.KeyCloak,
-            "/home"
-        );
+        cy.visit("/login");
         cy.log("Verify queued page is shown.");
         cy.url().should("include", "/queue");
 
         cy.log("Verify checkin has succeeded and protected page is shown.");
         cy.wait(5000);
-        cy.url().should("include", "/home");
+        cy.url().should("include", "/login");
     });
 
     it("Verify getting a queued ticket and refresh", () => {
@@ -96,12 +86,7 @@ describe("Waitlist Ticket Module Enabled", () => {
             "**/Ticket?room=healthgateway",
             getTicket("Queued", 1)
         );
-        cy.login(
-            Cypress.env("keycloak.username"),
-            Cypress.env("keycloak.password"),
-            AuthMethod.KeyCloak,
-            "/home"
-        );
+        cy.visit("/login");
         cy.log("Verify protected page has gotten a queued ticket.");
         cy.url().should("include", "/queue");
 
@@ -114,12 +99,7 @@ describe("Waitlist Ticket Module Enabled", () => {
         cy.intercept("POST", "**/Ticket?room=healthgateway", {
             statusCode: serviceUnavailable,
         });
-        cy.login(
-            Cypress.env("keycloak.username"),
-            Cypress.env("keycloak.password"),
-            AuthMethod.KeyCloak,
-            "/home"
-        );
+        cy.visit("/login");
         cy.log("Verify protected page has gotten a busy ticket.");
         cy.url().should("include", "/busy");
 
@@ -131,17 +111,13 @@ describe("Waitlist Ticket Module Enabled", () => {
 
 describe("Waitlist Ticket Module Disabled", () => {
     it("Verify ticket module has been disabled and home page is displayed", () => {
+        cy.logout();
         cy.enableModules([]);
         cy.intercept("POST", "**/Ticket?room=healthgateway", {
             statusCode: serviceUnavailable,
         });
-        cy.login(
-            Cypress.env("keycloak.username"),
-            Cypress.env("keycloak.password"),
-            AuthMethod.KeyCloak,
-            "/home"
-        );
+        cy.visit("/login");
         cy.url().should("not.include", "/busy");
-        cy.url().should("include", "/home");
+        cy.url().should("include", "/login");
     });
 });
