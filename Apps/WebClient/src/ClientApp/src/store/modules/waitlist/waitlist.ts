@@ -9,6 +9,7 @@ const state: WaitlistState = {
     status: LoadStatus.NONE,
     tooBusy: false,
     ticket: undefined,
+    checkInTimeoutId: undefined,
 };
 
 const namespaced = true;
