@@ -6,15 +6,16 @@ import {
     MutationTree,
 } from "vuex";
 
-import { DateWrapper } from "@/models/dateWrapper";
+import { EntryType } from "@/constants/entryType";
+import { DateWrapper, StringISODate } from "@/models/dateWrapper";
 import TimelineFilter, { TimelineFilterBuilder } from "@/models/timelineFilter";
 import { RootState } from "@/store/types";
 
 export interface TimelineState {
     filter: TimelineFilter;
     keyword: string;
-    linearDate: DateWrapper;
-    selectedDate: DateWrapper | null;
+    linearDate: StringISODate;
+    selectedDate: StringISODate | null;
 }
 
 export interface TimelineGetters extends GetterTree<TimelineState, RootState> {
@@ -23,6 +24,7 @@ export interface TimelineGetters extends GetterTree<TimelineState, RootState> {
     keyword(state: TimelineState): string;
     linearDate(state: TimelineState): DateWrapper;
     selectedDate(state: TimelineState): DateWrapper | null;
+    entryTypes(state: TimelineState): Set<EntryType>;
 }
 
 type StoreContext = ActionContext<TimelineState, RootState>;
@@ -32,7 +34,7 @@ export interface TimelineActions extends ActionTree<TimelineState, RootState> {
         filterBuilder: TimelineFilterBuilder
     ): void;
     clearFilter(context: StoreContext): void;
-    setLinearDate(context: StoreContext, currentPage: number): void;
+    setLinearDate(context: StoreContext, linearDate: DateWrapper): void;
     setSelectedDate(
         context: StoreContext,
         selectedDate: DateWrapper | null

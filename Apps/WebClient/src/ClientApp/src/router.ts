@@ -410,7 +410,7 @@ const routes = [
         }),
         meta: {
             validStates: [UserState.unauthenticated],
-            requiresProcessedWaitlistTicket: false,
+            requiresProcessedWaitlistTicket: true,
         },
     },
     {
@@ -493,34 +493,20 @@ export const beforeEachGuard: NavigationGuard = async (
     const enabledModules = getEnabledModules();
 
     const waitlistIsEnabled = enabledModules.includes(ClientModule.Ticket);
-    const waitlistTicketIsProcessed: boolean =
-        store.getters["waitlist/ticketIsProcessed"];
-    let metaRquiresProcessedWaitlistTicket =
+    const isAuthenticated: boolean = store.getters["auth/oidcIsAuthenticated"];
+    let metaRequiresProcessedWaitlistTicket =
         meta.requiresProcessedWaitlistTicket;
 
     if (from.fullPath === QUEUE_FULL_PATH || from.fullPath === QUEUE_PATH) {
-        metaRquiresProcessedWaitlistTicket = true;
+        metaRequiresProcessedWaitlistTicket = true;
     }
 
     logger.debug(
-        `Before guard - waitlist enabled: ${waitlistIsEnabled}, waitlist ticket processed: ${waitlistTicketIsProcessed} and meta requires processed waitlist ticket: ${metaRquiresProcessedWaitlistTicket}`
+        `Before guard - user is authenticated: ${isAuthenticated}, waitlist enabled: ${waitlistIsEnabled} and meta requires processed waitlist ticket: ${metaRequiresProcessedWaitlistTicket}`
     );
 
-    if (
-        waitlistIsEnabled &&
-        !waitlistTicketIsProcessed &&
-        metaRquiresProcessedWaitlistTicket
-    ) {
-        try {
-            const ticket: Ticket = await store.dispatch("waitlist/getTicket");
-            if (ticket.status !== TicketStatus.Processed) {
-                next({ path: QUEUE_PATH, query: { redirect: to.path } });
-                return;
-            }
-        } catch {
-            next({ path: QUEUE_FULL_PATH });
-            return;
-        }
+    if (waitlistIsEnabled && metaRequiresProcessedWaitlistTicket) {
+        redirectWhenTicketIsInvalid(to, next);
     }
 
     await store.dispatch("auth/checkStatus");
@@ -551,6 +537,77 @@ export const beforeEachGuard: NavigationGuard = async (
 
     next({ path: defaultPath });
 };
+
+async function redirectWhenTicketIsInvalid(
+    to: Route,
+    next: NavigationGuardNext<Vue>
+) {
+    const logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
+    const storeWrapper = container.get<IStoreProvider>(
+        STORE_IDENTIFIER.StoreProvider
+    );
+    const store = storeWrapper.getStore();
+    let ticket = store.getters["waitlist/ticket"];
+
+    try {
+        if (ticketIsValid(ticket)) {
+            logger.debug(`Router - check existing Processed ticket`);
+            const timeoutId = store.getters["waitlist/checkInTimeoutId"];
+            clearTimeout(timeoutId);
+
+            const now = new Date().getTime();
+            const checkInAfter = ticket.checkInAfter * 1000;
+            const timeout = Math.max(0, checkInAfter - now);
+
+            setTimeout(() => {
+                store
+                    .dispatch("waitlist/checkIn")
+                    .catch(() => logger.error(`Error calling checkIn action.`));
+            }, timeout);
+        } else if (ticket?.status === TicketStatus.Queued) {
+            logger.debug(`Router - check existing Queued ticket`);
+            const timeoutId = store.getters["waitlist/checkInTimeoutId"];
+            clearTimeout(timeoutId);
+
+            const now = new Date().getTime();
+            const checkInAfter = ticket.checkInAfter * 1000;
+            const timeout = Math.max(0, checkInAfter - now);
+
+            setTimeout(() => {
+                store.dispatch("waitlist/checkIn").catch(() => {
+                    logger.warn(
+                        `Error calling checkIn action. Get new ticker.`
+                    );
+                    store.dispatch("waitlist/getTicket");
+                });
+            }, timeout);
+            next({ path: QUEUE_PATH, query: { redirect: to.path } });
+            return;
+        } else {
+            logger.debug(`Router - get new ticket`);
+            ticket = await store.dispatch("waitlist/getTicket");
+
+            if (!ticketIsValid(ticket)) {
+                // redirect to queued page if new ticket is not valid
+                next({ path: QUEUE_PATH, query: { redirect: to.path } });
+                return;
+            }
+        }
+    } catch {
+        // redirect to busy page if new ticket could not be retrieved
+        next({ path: QUEUE_FULL_PATH, query: { redirect: to.path } });
+        return;
+    }
+}
+
+function ticketIsValid(ticket: Ticket | undefined): boolean {
+    if (ticket?.status !== TicketStatus.Processed) {
+        return false;
+    }
+
+    const now = new Date().getTime();
+    return now < ticket.tokenExpires * 1000;
+}
 
 function getDefaultPath(
     currentUserState: UserState,

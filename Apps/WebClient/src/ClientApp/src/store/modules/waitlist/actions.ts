@@ -57,11 +57,13 @@ export const actions: WaitlistActions = {
             ) {
                 httpDelegate.setTicketAuthorizationHeader(ticket.token);
             }
-            setTimeout(() => {
+            const checkInTimeoutId = setTimeout(() => {
                 context
                     .dispatch("checkIn")
                     .catch(() => logger.error(`Error calling checkIn action.`));
             }, timeout);
+
+            context.commit("setCheckInTimeoutId", checkInTimeoutId);
 
             resolve();
         });

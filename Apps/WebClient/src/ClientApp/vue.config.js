@@ -44,4 +44,5 @@ module.exports = {
          */
         config.plugins.delete("prefetch");
     },
+    transpileDependencies: ["vuex-persist"],
 };
