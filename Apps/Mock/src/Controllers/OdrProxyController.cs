@@ -17,19 +17,18 @@ namespace HealthGateway.Mock.Controllers
 {
     using System;
     using System.Collections.Generic;
+    using System.Diagnostics.CodeAnalysis;
     using HealthGateway.Common.Utils;
-    using HealthGateway.Mock.AccessManagement.Authorization;
     using HealthGateway.Mock.Models;
-    using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Mvc;
 
     /// <summary>
-    /// The mock controller for ODR.
+    /// The mock controller for ODR Proxy.
     /// </summary>
-    [Authorize(Policy = AuthorizationPolicies.OdrAccess)]
-    [Route("pgw/patientGateway")]
+    [Route("[controller]")]
     [ApiController]
-    public class OdrController : ControllerBase
+    [SuppressMessage("Performance", "CA1822:Mark members as static", Justification = "Mocked Controller methods.")]
+    public class OdrProxyController : ControllerBase
     {
         private const string ProtectiveWord = "KEYWORD";
 
