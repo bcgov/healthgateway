@@ -53,12 +53,14 @@ namespace HealthGateway.GatewayApiTests.Services.Test
         private readonly string mockParentHdid = "MockFirstName";
         private readonly string mockPhn = "9735353315";
         private readonly string noHdidError = "Please ensure you are using a current BC Services Card.";
+        private readonly DateTime fromDate = DateTime.UtcNow.AddDays(-1);
+        private readonly DateTime toDate = DateTime.UtcNow.AddDays(1);
 
         /// <summary>
-        /// GetDependents - Happy Path.
+        /// GetDependents by hdid - Happy Path.
         /// </summary>
         [Fact]
-        public void GetDependents()
+        public void GetDependentsByHdid()
         {
             IDependentService service = this.SetupMockForGetDependents();
 
@@ -71,6 +73,26 @@ namespace HealthGateway.GatewayApiTests.Services.Test
             foreach (DependentModel model in actualResult.ResourcePayload!)
             {
                 Assert.Equal(model.DependentInformation.Phn, this.mockPhn);
+            }
+        }
+
+        /// <summary>
+        /// GetDependents by date - Happy Path.
+        /// </summary>
+        [Fact]
+        public void GetDependentsByDate()
+        {
+            IDependentService service = this.SetupMockForGetDependents();
+
+            RequestResult<IEnumerable<GetDependentResponse>> actualResult = service.GetDependents(this.fromDate, this.toDate, 0, 5000);
+
+            Assert.Equal(ResultType.Success, actualResult.ResultStatus);
+            Assert.Equal(10, actualResult.TotalResultCount);
+
+            // Validate masked PHN
+            foreach (GetDependentResponse response in actualResult.ResourcePayload!)
+            {
+                Assert.Equal(response.DelegateId, this.mockParentHdid);
             }
         }
 
@@ -322,6 +344,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
 
             Mock<IResourceDelegateDelegate> mockDependentDelegate = new();
             mockDependentDelegate.Setup(s => s.Get(this.mockParentHdid, 0, 500)).Returns(readResult);
+            mockDependentDelegate.Setup(s => s.Get(this.fromDate, this.toDate, 0, 5000)).Returns(readResult);
 
             // (2) Setup PatientDelegate's mock
             Mock<IPatientService> mockPatientService = new();
