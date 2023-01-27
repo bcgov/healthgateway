@@ -103,7 +103,18 @@ namespace HealthGateway.Database.Delegates
         /// <inheritdoc/>
         public DbResult<IEnumerable<ResourceDelegate>> Get(DateTime fromDate, DateTime? toDate, int page, int pageSize)
         {
-            throw new NotImplementedException();
+            this.logger.LogTrace("Getting resource delegates from DB for date...{FromDate}", fromDate);
+            toDate ??= DateTime.MaxValue;
+
+            DbResult<IEnumerable<ResourceDelegate>> result = DbDelegateHelper.GetPagedDbResult(
+                this.dbContext.ResourceDelegate
+                    .Where(resourceDelegate => resourceDelegate.CreatedDateTime >= fromDate && resourceDelegate.CreatedDateTime <= toDate)
+                    .OrderBy(resourceDelegate => resourceDelegate.CreatedDateTime),
+                page,
+                pageSize);
+
+            this.logger.LogTrace("Finished getting resource delegates from DB for date {FromDate}", fromDate);
+            return result;
         }
 
         /// <inheritdoc/>
