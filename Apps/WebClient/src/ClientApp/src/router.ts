@@ -494,7 +494,6 @@ export const beforeEachGuard: NavigationGuard = async (
 
     const waitlistIsEnabled = enabledModules.includes(ClientModule.Ticket);
     const isAuthenticated: boolean = store.getters["auth/oidcIsAuthenticated"];
-    const isFromBusy = from.fullPath.includes(QUEUE_FULL_PATH);
     let metaRequiresProcessedWaitlistTicket =
         meta.requiresProcessedWaitlistTicket;
 
@@ -503,7 +502,7 @@ export const beforeEachGuard: NavigationGuard = async (
     }
 
     logger.debug(
-        `Before guard - user is authenticated: ${isAuthenticated}, waitlist enabled: ${waitlistIsEnabled}, meta requires processed waitlist ticket: ${metaRequiresProcessedWaitlistTicket} and is from busy: ${isFromBusy}`
+        `Before guard - user is authenticated: ${isAuthenticated}, waitlist enabled: ${waitlistIsEnabled} and meta requires processed waitlist ticket: ${metaRequiresProcessedWaitlistTicket}`
     );
 
     if (waitlistIsEnabled && metaRequiresProcessedWaitlistTicket) {
@@ -552,19 +551,38 @@ async function redirectWhenTicketIsInvalid(
 
     try {
         if (ticketIsValid(ticket)) {
-            logger.debug(`Router -check existing ticket`);
+            logger.debug(`Router - check existing Processed ticket`);
             const timeoutId = store.getters["waitlist/checkInTimeoutId"];
             clearTimeout(timeoutId);
 
             const now = new Date().getTime();
             const checkInAfter = ticket.checkInAfter * 1000;
             const timeout = Math.max(0, checkInAfter - now);
-            // TODO: determine how to deal with already-queued timeouts
+
             setTimeout(() => {
                 store
                     .dispatch("waitlist/checkIn")
                     .catch(() => logger.error(`Error calling checkIn action.`));
             }, timeout);
+        } else if (ticket?.status === TicketStatus.Queued) {
+            logger.debug(`Router - check existing Queued ticket`);
+            const timeoutId = store.getters["waitlist/checkInTimeoutId"];
+            clearTimeout(timeoutId);
+
+            const now = new Date().getTime();
+            const checkInAfter = ticket.checkInAfter * 1000;
+            const timeout = Math.max(0, checkInAfter - now);
+
+            setTimeout(() => {
+                store.dispatch("waitlist/checkIn").catch(() => {
+                    logger.warn(
+                        `Error calling checkIn action. Get new ticker.`
+                    );
+                    store.dispatch("waitlist/getTicket");
+                });
+            }, timeout);
+            next({ path: QUEUE_PATH, query: { redirect: to.path } });
+            return;
         } else {
             logger.debug(`Router - get new ticket`);
             ticket = await store.dispatch("waitlist/getTicket");
