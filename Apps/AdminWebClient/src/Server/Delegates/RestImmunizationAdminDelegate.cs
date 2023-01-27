@@ -19,7 +19,6 @@ namespace HealthGateway.Admin.Delegates
     using System.Collections.Generic;
     using System.Diagnostics;
     using System.Diagnostics.CodeAnalysis;
-    using System.Globalization;
     using System.Net.Http;
     using System.Threading.Tasks;
     using AutoMapper;
@@ -190,7 +189,7 @@ namespace HealthGateway.Admin.Delegates
                     retVal.ResultStatus = ResultType.Success;
                     retVal.ResourcePayload!.Result = response.Result;
                     retVal.TotalResultCount = 1;
-                    retVal.PageSize = int.Parse(this.phsaConfig.FetchSize, CultureInfo.InvariantCulture);
+                    retVal.PageSize = this.phsaConfig.FetchSize;
                 }
                 catch (Exception e) when (e is ApiException or HttpRequestException)
                 {

@@ -35,7 +35,7 @@ namespace HealthGateway.Common.Models.PHSA
         /// <summary>
         /// Gets or sets the total number of records to retrieve in one call.
         /// </summary>
-        public string FetchSize { get; set; } = string.Empty;
+        public int? FetchSize { get; set; }
 
         /// <summary>
         /// Gets or sets the default time to wait for a new request.
