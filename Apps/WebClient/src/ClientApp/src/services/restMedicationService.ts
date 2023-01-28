@@ -24,6 +24,7 @@ export class RestMedicationService implements IMedicationService {
         "MedicationStatement";
     private readonly MEDICATION_REQUEST_BASE_URI: string = "MedicationRequest";
     private baseUri = "";
+    private specialAuthorityBaseUri = "";
     private http!: IHttpDelegate;
     private isMedicationEnabled = false;
     private isMedicationRequestEnabled = false;
@@ -33,6 +34,8 @@ export class RestMedicationService implements IMedicationService {
         http: IHttpDelegate
     ): void {
         this.baseUri = config.serviceEndpoints["Medication"];
+        this.specialAuthorityBaseUri =
+            config.serviceEndpoints["SpecialAuthority"];
         this.http = http;
         this.isMedicationEnabled = config.webClient.modules["Medication"];
         this.isMedicationRequestEnabled =
@@ -94,7 +97,7 @@ export class RestMedicationService implements IMedicationService {
             }
             this.http
                 .get<RequestResult<MedicationRequest[]>>(
-                    `${this.baseUri}${this.MEDICATION_REQUEST_BASE_URI}/${hdid}`
+                    `${this.specialAuthorityBaseUri}${this.MEDICATION_REQUEST_BASE_URI}/${hdid}`
                 )
                 .then((requestResult) => resolve(requestResult))
                 .catch((err: HttpError) => {

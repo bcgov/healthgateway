@@ -21,6 +21,7 @@ export class RestEncounterService implements IEncounterService {
     private logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
     private readonly ENCOUNTER_BASE_URI: string = "Encounter";
     private baseUri = "";
+    private hospitalVisitBaseUri = "";
     private http!: IHttpDelegate;
     private isEncounterEnabled = false;
     private isHospitalVisitEnabled = false;
@@ -30,6 +31,7 @@ export class RestEncounterService implements IEncounterService {
         http: IHttpDelegate
     ): void {
         this.baseUri = config.serviceEndpoints["Encounter"];
+        this.hospitalVisitBaseUri = config.serviceEndpoints["HospitalVisit"];
         this.http = http;
         this.isEncounterEnabled = config.webClient.modules["Encounter"];
         this.isHospitalVisitEnabled = config.webClient.modules["HospitalVisit"];
@@ -89,7 +91,7 @@ export class RestEncounterService implements IEncounterService {
             }
             this.http
                 .getWithCors<RequestResult<HospitalVisitResult>>(
-                    `${this.baseUri}${this.ENCOUNTER_BASE_URI}/HospitalVisit/${hdid}`
+                    `${this.hospitalVisitBaseUri}${this.ENCOUNTER_BASE_URI}/HospitalVisit/${hdid}`
                 )
                 .then((requestResult) => resolve(requestResult))
                 .catch((err: HttpError) => {
