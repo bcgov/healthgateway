@@ -9,7 +9,11 @@ import RequestResult from "@/models/requestResult";
 import { LoadStatus } from "@/models/storeOperations";
 import container from "@/plugins/container";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
-import { IEncounterService, ILogger } from "@/services/interfaces";
+import {
+    IEncounterService,
+    IHospitalVisitService,
+    ILogger,
+} from "@/services/interfaces";
 import EventTracker from "@/utility/eventTracker";
 
 import { EncounterActions } from "./types";
@@ -77,8 +81,8 @@ export const actions: EncounterActions = {
         params: { hdid: string }
     ): Promise<RequestResult<HospitalVisitResult>> {
         const logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
-        const encounterService = container.get<IEncounterService>(
-            SERVICE_IDENTIFIER.EncounterService
+        const hospitalVisitService = container.get<IHospitalVisitService>(
+            SERVICE_IDENTIFIER.HospitalVisitService
         );
 
         return new Promise((resolve, reject) => {
@@ -102,7 +106,7 @@ export const actions: EncounterActions = {
             } else {
                 logger.debug(`Retrieving Hospital Visits`);
                 context.commit("setHospitalVisitsRequested");
-                encounterService
+                hospitalVisitService
                     .getHospitalVisits(params.hdid)
                     .then((result) => {
                         const payload = result.resourcePayload;

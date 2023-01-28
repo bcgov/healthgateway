@@ -15,6 +15,7 @@ import {
     IConfigService,
     IDependentService,
     IEncounterService,
+    IHospitalVisitService,
     IHttpDelegate,
     IImmunizationService,
     ILaboratoryService,
@@ -40,6 +41,7 @@ import { RestCommunicationService } from "@/services/restCommunicationService";
 import { RestConfigService } from "@/services/restConfigService";
 import { RestDependentService } from "@/services/restDependentService";
 import { RestEncounterService } from "@/services/restEncounterService";
+import { RestHospitalVisitService } from "@/services/restHospitalVisitService";
 import { RestImmunizationService } from "@/services/restImmunizationService";
 import { RestLaboratoryService } from "@/services/restLaboratoryService";
 import { RestMedicationService } from "@/services/restMedicationService";
@@ -92,6 +94,10 @@ container
 container
     .bind<IEncounterService>(SERVICE_IDENTIFIER.EncounterService)
     .to(RestEncounterService)
+    .inSingletonScope();
+container
+    .bind<IHospitalVisitService>(SERVICE_IDENTIFIER.HospitalVisitService)
+    .to(RestHospitalVisitService)
     .inSingletonScope();
 container
     .bind<ILaboratoryService>(SERVICE_IDENTIFIER.LaboratoryService)
