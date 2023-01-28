@@ -103,6 +103,10 @@ export interface ISpecialAuthorityService {
 export interface IEncounterService {
     initialize(config: ExternalConfiguration, http: IHttpDelegate): void;
     getPatientEncounters(hdid: string): Promise<RequestResult<Encounter[]>>;
+}
+
+export interface IHospitalVisitService {
+    initialize(config: ExternalConfiguration, http: IHttpDelegate): void;
     getHospitalVisits(
         hdid: string
     ): Promise<RequestResult<HospitalVisitResult>>;

@@ -8,6 +8,7 @@ export const enum ServiceCode {
     Laboratory = "LAB",
     Immunization = "IMZ",
     Encounter = "ENC",
+    HospitalVisit = "HOS",
     Patient = "PAT",
     PHSA = "PHSA",
     Report = "REP",

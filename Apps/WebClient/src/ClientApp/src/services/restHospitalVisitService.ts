@@ -3,22 +3,22 @@ import { injectable } from "inversify";
 import { ResultType } from "@/constants/resulttype";
 import { ServiceCode } from "@/constants/serviceCodes";
 import { ExternalConfiguration } from "@/models/configData";
-import { Encounter } from "@/models/encounter";
 import { HttpError } from "@/models/errors";
+import HospitalVisitResult from "@/models/hospitalVisitResult";
 import RequestResult from "@/models/requestResult";
 import container from "@/plugins/container";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import {
-    IEncounterService,
+    IHospitalVisitService,
     IHttpDelegate,
     ILogger,
 } from "@/services/interfaces";
 import ErrorTranslator from "@/utility/errorTranslator";
 
 @injectable()
-export class RestEncounterService implements IEncounterService {
+export class RestHospitalVisitService implements IHospitalVisitService {
     private logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
-    private readonly ENCOUNTER_BASE_URI: string = "Encounter";
+    private readonly HOSPITAL_VISIT_BASE_URI: string = "Encounter";
     private baseUri = "";
     private http!: IHttpDelegate;
     private isEnabled = false;
@@ -27,38 +27,43 @@ export class RestEncounterService implements IEncounterService {
         config: ExternalConfiguration,
         http: IHttpDelegate
     ): void {
-        this.baseUri = config.serviceEndpoints["Encounter"];
+        this.baseUri = config.serviceEndpoints["HospitalVisit"];
         this.http = http;
-        this.isEnabled = config.webClient.modules["Encounter"];
+        this.isEnabled = config.webClient.modules["HospitalVisit"];
     }
 
-    public getPatientEncounters(
+    public getHospitalVisits(
         hdid: string
-    ): Promise<RequestResult<Encounter[]>> {
+    ): Promise<RequestResult<HospitalVisitResult>> {
         return new Promise((resolve, reject) => {
             if (!this.isEnabled) {
                 resolve({
                     pageIndex: 0,
                     pageSize: 0,
-                    resourcePayload: [],
+                    resourcePayload: {
+                        loaded: true,
+                        queued: false,
+                        retryin: 0,
+                        hospitalVisits: [],
+                    },
                     resultStatus: ResultType.Success,
                     totalResultCount: 0,
                 });
                 return;
             }
             this.http
-                .getWithCors<RequestResult<Encounter[]>>(
-                    `${this.baseUri}${this.ENCOUNTER_BASE_URI}/${hdid}`
+                .getWithCors<RequestResult<HospitalVisitResult>>(
+                    `${this.baseUri}${this.HOSPITAL_VISIT_BASE_URI}/HospitalVisit/${hdid}`
                 )
                 .then((requestResult) => resolve(requestResult))
                 .catch((err: HttpError) => {
                     this.logger.error(
-                        `Error in RestEncounterService.getPatientEncounters()`
+                        `Error in RestHospitalVisitService.getHospitalVisits()`
                     );
                     reject(
                         ErrorTranslator.internalNetworkError(
                             err,
-                            ServiceCode.Encounter
+                            ServiceCode.HospitalVisit
                         )
                     );
                 });
