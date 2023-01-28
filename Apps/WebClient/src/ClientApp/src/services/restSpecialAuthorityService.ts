@@ -2,25 +2,23 @@ import { injectable } from "inversify";
 
 import { ResultType } from "@/constants/resulttype";
 import { ServiceCode } from "@/constants/serviceCodes";
-import { Dictionary } from "@/models/baseTypes";
 import { ExternalConfiguration } from "@/models/configData";
 import { HttpError } from "@/models/errors";
-import MedicationStatementHistory from "@/models/medicationStatementHistory";
+import MedicationRequest from "@/models/MedicationRequest";
 import RequestResult from "@/models/requestResult";
 import container from "@/plugins/container";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import {
     IHttpDelegate,
     ILogger,
-    IMedicationService,
+    ISpecialAuthorityService,
 } from "@/services/interfaces";
 import ErrorTranslator from "@/utility/errorTranslator";
 
 @injectable()
-export class RestMedicationService implements IMedicationService {
+export class RestSpecialAuthorityService implements ISpecialAuthorityService {
     private logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
-    private readonly MEDICATION_STATEMENT_BASE_URI: string =
-        "MedicationStatement";
+    private readonly SPECIAL_AUTHORITY_BASE_URI: string = "MedicationRequest";
     private baseUri = "";
     private http!: IHttpDelegate;
     private isEnabled = false;
@@ -29,19 +27,14 @@ export class RestMedicationService implements IMedicationService {
         config: ExternalConfiguration,
         http: IHttpDelegate
     ): void {
-        this.baseUri = config.serviceEndpoints["Medication"];
+        this.baseUri = config.serviceEndpoints["SpecialAuthority"];
         this.http = http;
-        this.isEnabled = config.webClient.modules["Medication"];
+        this.isEnabled = config.webClient.modules["MedicationRequest"];
     }
 
-    public getPatientMedicationStatementHistory(
-        hdid: string,
-        protectiveWord?: string
-    ): Promise<RequestResult<MedicationStatementHistory[]>> {
-        const headers: Dictionary<string> = {};
-        if (protectiveWord) {
-            headers["protectiveWord"] = protectiveWord;
-        }
+    public getPatientMedicationRequest(
+        hdid: string
+    ): Promise<RequestResult<MedicationRequest[]>> {
         return new Promise((resolve, reject) => {
             if (!this.isEnabled) {
                 resolve({
@@ -54,19 +47,18 @@ export class RestMedicationService implements IMedicationService {
                 return;
             }
             this.http
-                .get<RequestResult<MedicationStatementHistory[]>>(
-                    `${this.baseUri}${this.MEDICATION_STATEMENT_BASE_URI}/${hdid}`,
-                    headers
+                .get<RequestResult<MedicationRequest[]>>(
+                    `${this.baseUri}${this.SPECIAL_AUTHORITY_BASE_URI}/${hdid}`
                 )
                 .then((requestResult) => resolve(requestResult))
                 .catch((err: HttpError) => {
                     this.logger.error(
-                        `Error in RestMedicationService.getPatientMedicationStatementHistory()`
+                        `Error in RestSpecialAuthorityService.getPatientMedicationRequest()`
                     );
                     reject(
                         ErrorTranslator.internalNetworkError(
                             err,
-                            ServiceCode.Medication
+                            ServiceCode.SpecialAuthority
                         )
                     );
                 });

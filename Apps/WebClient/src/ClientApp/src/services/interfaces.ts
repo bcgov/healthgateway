@@ -91,6 +91,10 @@ export interface IMedicationService {
         hdid: string,
         protectiveWord?: string
     ): Promise<RequestResult<MedicationStatementHistory[]>>;
+}
+
+export interface ISpecialAuthorityService {
+    initialize(config: ExternalConfiguration, http: IHttpDelegate): void;
     getPatientMedicationRequest(
         hdid: string
     ): Promise<RequestResult<MedicationRequest[]>>;

@@ -5,6 +5,7 @@ export const SERVICE_IDENTIFIER = {
     ImmunizationService: Symbol.for("ImmunizationService"),
     PatientService: Symbol.for("PatientService"),
     MedicationService: Symbol.for("MedicationService"),
+    SpecialAuthorityService: Symbol.for("SpecialAuthorityService"),
     EncounterService: Symbol.for("EncounterService"),
     LaboratoryService: Symbol.for("LaboratoryService"),
     ClinicalDocumentService: Symbol.for("ClinicalDocumentService"),

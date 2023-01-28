@@ -4,6 +4,7 @@ export const enum ServiceCode {
     ODR = "ODR",
     HealthGatewayUser = "HGU",
     Medication = "MED",
+    SpecialAuthority = "SPA",
     Laboratory = "LAB",
     Immunization = "IMZ",
     Encounter = "ENC",
