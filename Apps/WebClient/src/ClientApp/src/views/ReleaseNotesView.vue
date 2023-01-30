@@ -39,7 +39,7 @@ export default class ReleaseNotesView extends Vue {
             <ul>
                 <li>
                     We added hospital visit information, which includes
-                    admiission and discharge dates, location and provider for
+                    admission and discharge dates, location and provider for
                     each visit.
                 </li>
             </ul>
