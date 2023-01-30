@@ -24,7 +24,7 @@ import { waitlist } from "./modules/waitlist/waitlist";
 import { GatewayStoreOptions, RootState } from "./types";
 
 const vuexSession = new VuexPersistence<RootState>({
-    storage: window.sessionStorage,
+    storage: window.localStorage,
     modules: ["waitlist"], //only save waitlist module
 });
 
