@@ -62,7 +62,7 @@ export default class HospitalVisitTimelineComponent extends Vue {
     <EntryCard
         :card-id="index + '-' + datekey"
         :entry-icon="entryIcon"
-        :title="entry.healthService"
+        :title="entry.facility"
         :subtitle="entry.visitType"
         :entry="entry"
         :is-mobile-details="isMobileDetails"
