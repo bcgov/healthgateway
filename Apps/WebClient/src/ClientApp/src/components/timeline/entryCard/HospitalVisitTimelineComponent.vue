@@ -98,31 +98,38 @@ export default class HospitalVisitTimelineComponent extends Vue {
                 </div>
                 <div data-testid="hospital-visit-provider">
                     <strong>Provider: </strong>
-                    <span>{{ entry.provider }}</span>
-                    <hg-button
-                        v-if="entry.facility"
-                        :id="`hospital-visit-provider-${index}-${datekey}`"
-                        aria-label="Info"
-                        href="#"
-                        variant="link"
-                        data-testid="hospital-visit-provider-info-button"
-                        class="shadow-none align-baseline p-0 ml-1"
+                    <span
+                        v-if="
+                            entry.provider && entry.provider.trim().length > 0
+                        "
                     >
-                        <hg-icon icon="info-circle" size="small" />
-                    </hg-button>
-                    <b-popover
-                        v-if="entry.facility"
-                        :target="`hospital-visit-provider-${index}-${datekey}`"
-                        triggers="hover focus"
-                        placement="topright"
-                        boundary="viewport"
-                        data-testid="hospital-visit-provider-info-popover"
-                    >
-                        <span>
-                            Inpatient visits only show the first attending
-                            physician.
-                        </span>
-                    </b-popover>
+                        <span>{{ entry.provider }}</span>
+                        <hg-button
+                            v-if="entry.facility"
+                            :id="`hospital-visit-provider-${index}-${datekey}`"
+                            aria-label="Info"
+                            href="#"
+                            variant="link"
+                            data-testid="hospital-visit-provider-info-button"
+                            class="shadow-none align-baseline p-0 ml-1"
+                        >
+                            <hg-icon icon="info-circle" size="small" />
+                        </hg-button>
+                        <b-popover
+                            v-if="entry.facility"
+                            :target="`hospital-visit-provider-${index}-${datekey}`"
+                            triggers="hover focus"
+                            placement="topright"
+                            boundary="viewport"
+                            data-testid="hospital-visit-provider-info-popover"
+                        >
+                            <span>
+                                Inpatient visits only show the first attending
+                                physician.
+                            </span>
+                        </b-popover>
+                    </span>
+                    <span v-else>not available</span>
                 </div>
                 <div data-testid="hospital-visit-service">
                     <strong>Service: </strong>
