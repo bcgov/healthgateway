@@ -50,7 +50,7 @@ export const actions: VaccinationStatusActions = {
                         logger.info("VaccinationStatus not loaded");
                         context.commit(
                             "setPublicStatusMessage",
-                            "Please wait a moment while we download your proof of vaccination."
+                            "Please wait a moment while we retrieve your proof of vaccination."
                         );
                         setTimeout(() => {
                             logger.info("Re-querying for vaccination status");
@@ -239,7 +239,7 @@ export const actions: VaccinationStatusActions = {
                             logger.info("VaccinationStatus not loaded");
                             context.commit(
                                 "setAuthenticatedStatusMessage",
-                                "Please wait a moment while we download your proof of vaccination."
+                                "Please wait a moment while we retrieve your proof of vaccination."
                             );
                             setTimeout(() => {
                                 logger.info(
