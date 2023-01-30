@@ -124,6 +124,18 @@ export default class HospitalVisitTimelineComponent extends Vue {
                         </span>
                     </b-popover>
                 </div>
+                <div data-testid="hospital-visit-service">
+                    <strong>Service: </strong>
+                    <span
+                        v-if="
+                            entry.healthService &&
+                            entry.healthService.trim().length > 0
+                        "
+                    >
+                        {{ entry.healthService }}
+                    </span>
+                    <span v-else>not available</span>
+                </div>
                 <div data-testid="hospital-visit-date">
                     <strong>Visit Date: </strong>
                     <span
