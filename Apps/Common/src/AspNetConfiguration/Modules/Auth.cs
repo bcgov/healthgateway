@@ -64,7 +64,8 @@ namespace HealthGateway.Common.AspNetConfiguration.Modules
             logger.LogDebug("ConfigureAuthorizationServices...");
 
             services.AddScoped<IAuthorizationHandler, UserAuthorizationHandler>();
-            services.AddScoped<IAuthorizationHandler, FhirResourceAuthorizationHandler>();
+            services.AddScoped<IAuthorizationHandler, PersonalAccessHandler>();
+            services.AddScoped<IAuthorizationHandler, SystemDelegatedAccessHandler>();
 
             services.AddAuthorization(
                 options =>
@@ -102,7 +103,7 @@ namespace HealthGateway.Common.AspNetConfiguration.Modules
                         {
                             policy.AuthenticationSchemes.Add(JwtBearerDefaults.AuthenticationScheme);
                             policy.RequireAuthenticatedUser();
-                            policy.Requirements.Add(new FhirRequirement(FhirResource.UserProfile, FhirAccessType.Read));
+                            policy.Requirements.Add(new PersonalFhirRequirement(FhirResource.UserProfile, FhirAccessType.Read));
                         });
                     options.AddPolicy(
                         UserProfilePolicy.Write,
@@ -110,7 +111,7 @@ namespace HealthGateway.Common.AspNetConfiguration.Modules
                         {
                             policy.AuthenticationSchemes.Add(JwtBearerDefaults.AuthenticationScheme);
                             policy.RequireAuthenticatedUser();
-                            policy.Requirements.Add(new FhirRequirement(FhirResource.UserProfile, FhirAccessType.Write));
+                            policy.Requirements.Add(new PersonalFhirRequirement(FhirResource.UserProfile, FhirAccessType.Write));
                         });
 
                     // Patient Policies
@@ -120,7 +121,7 @@ namespace HealthGateway.Common.AspNetConfiguration.Modules
                         {
                             policy.AuthenticationSchemes.Add(JwtBearerDefaults.AuthenticationScheme);
                             policy.RequireAuthenticatedUser();
-                            policy.Requirements.Add(new FhirRequirement(FhirResource.Patient, FhirAccessType.Read));
+                            policy.Requirements.Add(new PersonalFhirRequirement(FhirResource.Patient, FhirAccessType.Read));
                         });
                     options.AddPolicy(
                         PatientPolicy.Write,
@@ -128,7 +129,7 @@ namespace HealthGateway.Common.AspNetConfiguration.Modules
                         {
                             policy.AuthenticationSchemes.Add(JwtBearerDefaults.AuthenticationScheme);
                             policy.RequireAuthenticatedUser();
-                            policy.Requirements.Add(new FhirRequirement(FhirResource.Patient, FhirAccessType.Write));
+                            policy.Requirements.Add(new PersonalFhirRequirement(FhirResource.Patient, FhirAccessType.Write));
                         });
 
                     // Immunization Policies
@@ -139,10 +140,10 @@ namespace HealthGateway.Common.AspNetConfiguration.Modules
                             policy.AuthenticationSchemes.Add(JwtBearerDefaults.AuthenticationScheme);
                             policy.RequireAuthenticatedUser();
                             policy.Requirements.Add(
-                                new FhirRequirement(
+                                new PersonalFhirRequirement(
                                     FhirResource.Immunization,
                                     FhirAccessType.Read,
-                                    FhirResourceLookup.Parameter,
+                                    FhirSubjectLookupMethod.Parameter,
                                     supportsUserDelegation: true));
                         });
                     options.AddPolicy(
@@ -151,7 +152,7 @@ namespace HealthGateway.Common.AspNetConfiguration.Modules
                         {
                             policy.AuthenticationSchemes.Add(JwtBearerDefaults.AuthenticationScheme);
                             policy.RequireAuthenticatedUser();
-                            policy.Requirements.Add(new FhirRequirement(FhirResource.Immunization, FhirAccessType.Write));
+                            policy.Requirements.Add(new PersonalFhirRequirement(FhirResource.Immunization, FhirAccessType.Write));
                         });
 
                     // Laboratory/Observation Policies
@@ -162,10 +163,10 @@ namespace HealthGateway.Common.AspNetConfiguration.Modules
                             policy.AuthenticationSchemes.Add(JwtBearerDefaults.AuthenticationScheme);
                             policy.RequireAuthenticatedUser();
                             policy.Requirements.Add(
-                                new FhirRequirement(
+                                new PersonalFhirRequirement(
                                     FhirResource.Observation,
                                     FhirAccessType.Read,
-                                    FhirResourceLookup.Parameter,
+                                    FhirSubjectLookupMethod.Parameter,
                                     supportsUserDelegation: true));
                         });
                     options.AddPolicy(
@@ -174,7 +175,7 @@ namespace HealthGateway.Common.AspNetConfiguration.Modules
                         {
                             policy.AuthenticationSchemes.Add(JwtBearerDefaults.AuthenticationScheme);
                             policy.RequireAuthenticatedUser();
-                            policy.Requirements.Add(new FhirRequirement(FhirResource.Observation, FhirAccessType.Write));
+                            policy.Requirements.Add(new PersonalFhirRequirement(FhirResource.Observation, FhirAccessType.Write));
                         });
 
                     // MedicationStatement Policies
@@ -184,7 +185,7 @@ namespace HealthGateway.Common.AspNetConfiguration.Modules
                         {
                             policy.AuthenticationSchemes.Add(JwtBearerDefaults.AuthenticationScheme);
                             policy.RequireAuthenticatedUser();
-                            policy.Requirements.Add(new FhirRequirement(FhirResource.MedicationStatement, FhirAccessType.Read));
+                            policy.Requirements.Add(new PersonalFhirRequirement(FhirResource.MedicationStatement, FhirAccessType.Read));
                         });
                     options.AddPolicy(
                         MedicationPolicy.MedicationStatementWrite,
@@ -192,7 +193,7 @@ namespace HealthGateway.Common.AspNetConfiguration.Modules
                         {
                             policy.AuthenticationSchemes.Add(JwtBearerDefaults.AuthenticationScheme);
                             policy.RequireAuthenticatedUser();
-                            policy.Requirements.Add(new FhirRequirement(FhirResource.MedicationStatement, FhirAccessType.Write));
+                            policy.Requirements.Add(new PersonalFhirRequirement(FhirResource.MedicationStatement, FhirAccessType.Write));
                         });
 
                     // MedicationRequest Policies
@@ -202,7 +203,7 @@ namespace HealthGateway.Common.AspNetConfiguration.Modules
                         {
                             policy.AuthenticationSchemes.Add(JwtBearerDefaults.AuthenticationScheme);
                             policy.RequireAuthenticatedUser();
-                            policy.Requirements.Add(new FhirRequirement(FhirResource.MedicationRequest, FhirAccessType.Read));
+                            policy.Requirements.Add(new PersonalFhirRequirement(FhirResource.MedicationRequest, FhirAccessType.Read));
                         });
                     options.AddPolicy(
                         MedicationPolicy.MedicationRequestWrite,
@@ -210,7 +211,7 @@ namespace HealthGateway.Common.AspNetConfiguration.Modules
                         {
                             policy.AuthenticationSchemes.Add(JwtBearerDefaults.AuthenticationScheme);
                             policy.RequireAuthenticatedUser();
-                            policy.Requirements.Add(new FhirRequirement(FhirResource.MedicationRequest, FhirAccessType.Write));
+                            policy.Requirements.Add(new PersonalFhirRequirement(FhirResource.MedicationRequest, FhirAccessType.Write));
                         });
 
                     // Encounter Policies
@@ -220,7 +221,7 @@ namespace HealthGateway.Common.AspNetConfiguration.Modules
                         {
                             policy.AuthenticationSchemes.Add(JwtBearerDefaults.AuthenticationScheme);
                             policy.RequireAuthenticatedUser();
-                            policy.Requirements.Add(new FhirRequirement(FhirResource.Encounter, FhirAccessType.Read));
+                            policy.Requirements.Add(new PersonalFhirRequirement(FhirResource.Encounter, FhirAccessType.Read));
                         });
                     options.AddPolicy(
                         EncounterPolicy.Write,
@@ -228,7 +229,7 @@ namespace HealthGateway.Common.AspNetConfiguration.Modules
                         {
                             policy.AuthenticationSchemes.Add(JwtBearerDefaults.AuthenticationScheme);
                             policy.RequireAuthenticatedUser();
-                            policy.Requirements.Add(new FhirRequirement(FhirResource.Encounter, FhirAccessType.Write));
+                            policy.Requirements.Add(new PersonalFhirRequirement(FhirResource.Encounter, FhirAccessType.Write));
                         });
 
                     options.AddPolicy(
@@ -238,7 +239,7 @@ namespace HealthGateway.Common.AspNetConfiguration.Modules
                             policy.AuthenticationSchemes.Add(JwtBearerDefaults.AuthenticationScheme);
                             policy.RequireAuthenticatedUser();
                             policy.Requirements.Add(
-                                new FhirRequirement(
+                                new PersonalFhirRequirement(
                                     FhirResource.ClinicalDocuments,
                                     FhirAccessType.Read,
                                     supportsUserDelegation: true));
@@ -256,7 +257,7 @@ namespace HealthGateway.Common.AspNetConfiguration.Modules
         {
             logger.LogDebug("ConfigureDelegateAuthorizationServices...");
 
-            services.AddScoped<IAuthorizationHandler, FhirResourceDelegateAuthorizationHandler>();
+            services.AddScoped<IAuthorizationHandler, UserDelegatedAccessHandler>();
             ConfigureAuthorizationServices(services, logger, configuration);
             Patient.ConfigurePatientAccess(services, logger, configuration);
             services.AddTransient<IResourceDelegateDelegate, DbResourceDelegateDelegate>();
