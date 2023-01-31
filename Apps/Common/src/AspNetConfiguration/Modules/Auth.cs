@@ -96,6 +96,11 @@ namespace HealthGateway.Common.AspNetConfiguration.Modules
                             policy.Requirements.Add(new UserRequirement(true));
                         });
 
+                    // System-Delegated Policies
+                    options.AddPolicy(
+                        SystemDelegatedPatientPolicy.Read,
+                        policy => { policy.Requirements.Add(new GeneralFhirRequirement(FhirResource.Patient, FhirAccessType.Read)); });
+
                     // User Profile Policies
                     options.AddPolicy(
                         UserProfilePolicy.Read,
