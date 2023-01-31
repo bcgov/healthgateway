@@ -6,7 +6,7 @@
 
     <ItemGroup>
         <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="12.0.0" />
-        <PackageReference Include="Hangfire.AspNetCore" Version="1.7.32" />
+        <PackageReference Include="Hangfire.AspNetCore" Version="1.7.33" />
         <PackageReference Include="Hangfire.PostgreSql" Version="1.9.9" />
         <PackageReference Include="Hellang.Middleware.ProblemDetails" Version="6.5.1" />
         <PackageReference Include="Macross.Json.Extensions" Version="3.0.0" />
