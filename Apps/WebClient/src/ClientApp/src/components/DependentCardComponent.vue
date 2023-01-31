@@ -1167,7 +1167,11 @@ export default class DependentCardComponent extends Vue {
                             </hg-button>
                         </div>
                         <b-spinner v-if="isLoading" class="mt-3" />
-                        <h4 v-if="!isLoading" class="pt-3">
+                        <h4
+                            v-if="!isLoading"
+                            :id="`covid19-table-header-${dependent.ownerId}`"
+                            class="pt-3"
+                        >
                             COVID-19 Test Results
                         </h4>
                         <div
@@ -1184,7 +1188,7 @@ export default class DependentCardComponent extends Vue {
                         borderless
                         :items="testRows"
                         class="w-100 mb-0"
-                        aria-describedby="COVID-19 Test Results"
+                        :aria-labelledby="`covid19-table-header-${dependent.ownerId}`"
                         :data-testid="`covid19-table-${dependent.ownerId}`"
                     >
                         <b-thead>
@@ -1412,7 +1416,7 @@ export default class DependentCardComponent extends Vue {
                                             borderless
                                             :items="immunizationItems"
                                             class="w-100 mb-0"
-                                            aria-describedby="Immunization History"
+                                            aria-label="Immunization History"
                                             :data-testid="`immunization-history-table-${dependent.ownerId}`"
                                         >
                                             <b-thead>
@@ -1579,7 +1583,7 @@ export default class DependentCardComponent extends Vue {
                                         striped
                                         borderless
                                         class="w-100 mb-0"
-                                        aria-describedby="Immunization Forecast"
+                                        aria-label="Immunization Forecasts"
                                         :data-testid="`immunization-forecast-table-${dependent.ownerId}`"
                                     >
                                         <b-thead>
@@ -1738,6 +1742,7 @@ export default class DependentCardComponent extends Vue {
                 >
                     <template #title>
                         <div
+                            :id="`clinical-document-tab-title-${dependent.ownerId}`"
                             :data-testid="`clinical-document-tab-title-${dependent.ownerId}`"
                         >
                             Clinical Docs
@@ -1762,7 +1767,7 @@ export default class DependentCardComponent extends Vue {
                         borderless
                         :items="clinicalDocuments"
                         class="w-100 mb-0"
-                        aria-describedby="Clinical Docs Results"
+                        :aria-labelledby="`clinical-document-tab-title-${dependent.ownerId}`"
                         :data-testid="`clinical-document-table-${dependent.ownerId}`"
                     >
                         <b-thead>

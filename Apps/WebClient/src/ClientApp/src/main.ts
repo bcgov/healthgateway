@@ -58,6 +58,7 @@ import {
     IConfigService,
     IDependentService,
     IEncounterService,
+    IHospitalVisitService,
     IHttpDelegate,
     IImmunizationService,
     ILaboratoryService,
@@ -67,6 +68,7 @@ import {
     IPatientService,
     IPcrTestService,
     IReportService,
+    ISpecialAuthorityService,
     IStoreProvider,
     ITicketService,
     IUserCommentService,
@@ -134,11 +136,17 @@ configService
         const medicationService = container.get<IMedicationService>(
             SERVICE_IDENTIFIER.MedicationService
         );
+        const specialAuthorityService = container.get<ISpecialAuthorityService>(
+            SERVICE_IDENTIFIER.SpecialAuthorityService
+        );
         const laboratoryService = container.get<ILaboratoryService>(
             SERVICE_IDENTIFIER.LaboratoryService
         );
         const encounterService = container.get<IEncounterService>(
             SERVICE_IDENTIFIER.EncounterService
+        );
+        const hospitalVisitService = container.get<IHospitalVisitService>(
+            SERVICE_IDENTIFIER.HospitalVisitService
         );
         const clinicalDocumentService = container.get<IClinicalDocumentService>(
             SERVICE_IDENTIFIER.ClinicalDocumentService
@@ -192,8 +200,10 @@ configService
         immunizationService.initialize(config, httpDelegate);
         patientService.initialize(config, httpDelegate);
         medicationService.initialize(config, httpDelegate);
+        specialAuthorityService.initialize(config, httpDelegate);
         laboratoryService.initialize(config, httpDelegate);
         encounterService.initialize(config, httpDelegate);
+        hospitalVisitService.initialize(config, httpDelegate);
         clinicalDocumentService.initialize(config, httpDelegate);
         userProfileService.initialize(config, httpDelegate);
         userFeedbackService.initialize(config, httpDelegate);

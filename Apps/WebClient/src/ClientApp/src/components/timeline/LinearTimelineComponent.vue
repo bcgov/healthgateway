@@ -54,6 +54,9 @@ export default class LinearTimelineComponent extends Vue {
     @Getter("filter", { namespace: "timeline" })
     filter!: TimelineFilter;
 
+    @Getter("entryTypes", { namespace: "timeline" })
+    entryTypes!: Set<EntryType>;
+
     @Getter("hasActiveFilter", { namespace: "timeline" })
     hasActiveFilter!: boolean;
 
@@ -182,8 +185,8 @@ export default class LinearTimelineComponent extends Vue {
 
     private get isOnlyImmunizationSelected(): boolean {
         return (
-            this.filter.entryTypes.size === 1 &&
-            this.filter.entryTypes.has(EntryType.Immunization)
+            this.entryTypes.size === 1 &&
+            this.entryTypes.has(EntryType.Immunization)
         );
     }
 
@@ -280,9 +283,9 @@ export default class LinearTimelineComponent extends Vue {
     }
 
     private setPageFromDate(eventDate: DateWrapper): boolean {
-        let index = this.timelineEntries.findIndex((entry) =>
-            entry.date.isSame(eventDate)
-        );
+        let index = this.timelineEntries.findIndex((entry) => {
+            entry.date.isSame(eventDate);
+        });
 
         if (index >= 0) {
             this.currentPage = Math.floor(index / this.pageSize) + 1;
@@ -306,7 +309,7 @@ export default class LinearTimelineComponent extends Vue {
         entryType: EntryType,
         loading: boolean
     ): boolean {
-        const filterApplied = this.filter.entryTypes.has(entryType);
+        const filterApplied = this.entryTypes.has(entryType);
         const isLoading = filterApplied && loading;
         this.logger.debug(
             `Timeline filter entry type: ${entryType} applied: ${filterApplied} - filter loading: ${loading} and filter isLoading: ${isLoading}`

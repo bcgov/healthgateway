@@ -50,7 +50,7 @@ export const actions: VaccinationStatusActions = {
                         logger.info("VaccinationStatus not loaded");
                         context.commit(
                             "setPublicStatusMessage",
-                            "We're busy but will continue to try to fetch your record...."
+                            "Please wait a moment while we retrieve your proof of vaccination."
                         );
                         setTimeout(() => {
                             logger.info("Re-querying for vaccination status");
@@ -145,7 +145,7 @@ export const actions: VaccinationStatusActions = {
                         logger.info("Public Vaccination Proof not loaded");
                         context.commit(
                             "setPublicVaccineRecordStatusMessage",
-                            "We're busy but will continue to try to fetch your proof of vaccination...."
+                            "Please wait a moment while we download your proof of vaccination."
                         );
                         setTimeout(() => {
                             logger.info(
@@ -239,7 +239,7 @@ export const actions: VaccinationStatusActions = {
                             logger.info("VaccinationStatus not loaded");
                             context.commit(
                                 "setAuthenticatedStatusMessage",
-                                "We're busy but will continue to try to fetch your record...."
+                                "Please wait a moment while we retrieve your proof of vaccination."
                             );
                             setTimeout(() => {
                                 logger.info(
@@ -339,7 +339,7 @@ export const actions: VaccinationStatusActions = {
                             {
                                 hdid: params.hdid,
                                 statusMessage:
-                                    "We're busy but will continue to try to download the Vaccine Record....",
+                                    "Please wait a moment while we download your proof of vaccination.",
                             }
                         );
                         setTimeout(() => {

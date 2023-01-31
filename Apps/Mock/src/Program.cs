@@ -16,8 +16,14 @@
 namespace HealthGateway.Mock
 {
     using System.Diagnostics.CodeAnalysis;
-    using HealthGateway.Common.AspNetConfiguration;
+    using System.Security.Cryptography.X509Certificates;
+    using HealthGateway.Common.Models.ODR;
+    using Microsoft.AspNetCore.Hosting;
+    using Microsoft.AspNetCore.Server.Kestrel.Https;
+    using Microsoft.Extensions.Configuration;
+    using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Hosting;
+    using Microsoft.Extensions.Logging;
 
     /// <summary>
     /// The entry point for the project.
@@ -25,6 +31,8 @@ namespace HealthGateway.Mock
     [ExcludeFromCodeCoverage]
     public static class Program
     {
+        private const string EnvironmentPrefix = "HealthGateway_";
+
         /// <summary>
         /// The entry point for the class.
         /// </summary>
@@ -41,7 +49,55 @@ namespace HealthGateway.Mock
         /// <returns>Returns the configured webhost.</returns>
         public static IHostBuilder CreateHostBuilder(string[] args)
         {
-            return ProgramConfiguration.CreateHostBuilder<Startup>(args);
+            return CreateHostBuilder<Startup>(args);
+        }
+
+        private static IHostBuilder CreateHostBuilder<T>(string[] args)
+            where T : class
+        {
+            return Host.CreateDefaultBuilder(args)
+                .ConfigureLogging(
+                    logging =>
+                    {
+                        logging.ClearProviders();
+                        logging.AddSimpleConsole(
+                            options =>
+                            {
+                                options.TimestampFormat = "[yyyy/MM/dd HH:mm:ss]";
+                                options.IncludeScopes = true;
+                            });
+                        logging.AddOpenTelemetry();
+                    })
+                .ConfigureAppConfiguration(
+                    (_, config) =>
+                    {
+                        config.AddUserSecrets(typeof(Program).Assembly);
+                        config.AddJsonFile("appsettings.local.json", true, true); // Loads local settings last to keep override
+                        config.AddEnvironmentVariables(prefix: EnvironmentPrefix);
+                    })
+                .ConfigureWebHostDefaults(
+                    webBuilder =>
+                    {
+                        webBuilder.UseStartup<T>();
+                        webBuilder.ConfigureKestrel(
+                            options =>
+                            {
+                                IConfiguration configuration = options.ApplicationServices.GetService<IConfiguration>()!;
+                                options.ConfigureHttpsDefaults(
+                                    configureOptions =>
+                                    {
+                                        OdrConfig odrConfig = new();
+                                        configuration.Bind(OdrConfig.OdrConfigSectionKey, odrConfig);
+                                        OdrCertificateConfig? certConfig = odrConfig.ServerCertificate;
+
+                                        if (certConfig?.Enabled is true)
+                                        {
+                                            configureOptions.ServerCertificate = new X509Certificate2(certConfig.Path, certConfig.Password);
+                                            configureOptions.ClientCertificateMode = ClientCertificateMode.RequireCertificate;
+                                        }
+                                    });
+                            });
+                    });
         }
     }
 }

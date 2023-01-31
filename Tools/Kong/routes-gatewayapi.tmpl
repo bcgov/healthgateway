@@ -5,9 +5,54 @@
           - $KONG_NAMESPACE.api.gov.bc.ca
         paths:
           - /api/gatewayapiservice/Communication
+        strip_path: false
+        plugins:
+          - name: rate-limiting
+            tags: [ns.$KONG_NAMESPACE]
+            enabled: true
+            config:
+              fault_tolerant: true
+              hide_client_headers: false
+              limit_by: ip
+              minute: $IP_RATE_LIMIT
+            protocols:
+              - http
+              - https
+          - name: rate-limiting_902
+            tags: [ns.$KONG_NAMESPACE]
+            enabled: true
+            config:
+              fault_tolerant: true
+              hide_client_headers: false
+              limit_by: service
+              minute: $GLOBAL_RATE_LIMIT
+            protocols:
+              - http
+              - https
+        tags:
+          - OAS3_import
+          - ns.$KONG_NAMESPACE
+      - name: gatewayapi-$KONG_NAMESPACE-public-with-waitingqueue
+        methods:
+          - GET
+        hosts:
+          - $KONG_NAMESPACE.api.gov.bc.ca
+        paths:
           - /api/gatewayapiservice/UserProfile/termsofservice
         strip_path: false
         plugins:
+          - name: jwt-keycloak_1010
+            tags: [ns.$KONG_NAMESPACE]
+            enabled: $ENABLE_WAITINGQUEUE_TOKEN_VALIDATION
+            config:
+                allowed_iss:
+                    - $KEYCLOAK_URI
+                allowed_aud: hg-tickets
+                claims_to_verify:
+                    - exp
+                access_token_header: hg-ticket
+                realm: waitingqueue
+                disable_access_token_header: true
           - name: rate-limiting
             tags: [ns.$KONG_NAMESPACE]
             enabled: true
@@ -44,6 +89,7 @@
         paths:
           # starting in Kong v3.0.x, regex paths will need to be prefixed with ~
           - /api/gatewayapiservice/UserProfile/\w+/Dependent
+          - /api/gatewayapiservice/Phsa
         strip_path: false
         plugins:
           - name: jwt-keycloak

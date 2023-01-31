@@ -19,6 +19,7 @@ namespace HealthGateway.Database.Delegates
     using System.Collections.Generic;
     using System.Diagnostics.CodeAnalysis;
     using System.Linq;
+    using System.Threading.Tasks;
     using HealthGateway.Database.Constants;
     using HealthGateway.Database.Context;
     using HealthGateway.Database.Models;
@@ -100,6 +101,23 @@ namespace HealthGateway.Database.Delegates
         }
 
         /// <inheritdoc/>
+        public DbResult<IEnumerable<ResourceDelegate>> Get(DateTime fromDate, DateTime? toDate, int page, int pageSize)
+        {
+            this.logger.LogTrace("Getting resource delegates from DB for date...{FromDate}", fromDate);
+            toDate ??= DateTime.MaxValue;
+
+            DbResult<IEnumerable<ResourceDelegate>> result = DbDelegateHelper.GetPagedDbResult(
+                this.dbContext.ResourceDelegate
+                    .Where(resourceDelegate => resourceDelegate.CreatedDateTime >= fromDate && resourceDelegate.CreatedDateTime <= toDate)
+                    .OrderBy(resourceDelegate => resourceDelegate.CreatedDateTime),
+                page,
+                pageSize);
+
+            this.logger.LogTrace("Finished getting resource delegates from DB for date {FromDate}", fromDate);
+            return result;
+        }
+
+        /// <inheritdoc/>
         public IDictionary<DateTime, int> GetDailyDependentCount(TimeSpan offset)
         {
             this.logger.LogTrace("Counting resource delegates from DB...");
@@ -151,6 +169,27 @@ namespace HealthGateway.Database.Delegates
             }
 
             return false;
+        }
+
+        /// <inheritdoc/>
+        public async Task<ResourceDelegateQueryResult> Search(ResourceDelegateQuery query)
+        {
+            IQueryable<ResourceDelegate> dbQuery = this.dbContext.ResourceDelegate;
+            if (query.ByOwnerHdid != null)
+            {
+                dbQuery = dbQuery.Where(d => d.ResourceOwnerHdid == query.ByOwnerHdid);
+            }
+
+            if (query.ByDelegateHdid != null)
+            {
+                dbQuery = dbQuery.Where(rd => rd.ProfileHdid == query.ByDelegateHdid);
+            }
+
+            IEnumerable<ResourceDelegate> items = await dbQuery.ToArrayAsync().ConfigureAwait(true);
+            return new ResourceDelegateQueryResult
+            {
+                Items = items,
+            };
         }
     }
 }

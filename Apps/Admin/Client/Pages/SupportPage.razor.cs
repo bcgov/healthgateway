@@ -40,7 +40,7 @@ namespace HealthGateway.Admin.Client.Pages
     {
         private static readonly PhnValidator PhnValidator = new();
 
-        private static List<UserQueryType> QueryTypes => new() { UserQueryType.Phn, UserQueryType.Email, UserQueryType.Sms, UserQueryType.Hdid };
+        private static List<UserQueryType> QueryTypes => new() { UserQueryType.Phn, UserQueryType.Email, UserQueryType.Sms, UserQueryType.Hdid, UserQueryType.Dependent };
 
         [Inject]
         private IDispatcher Dispatcher { get; set; } = default!;
@@ -74,9 +74,9 @@ namespace HealthGateway.Admin.Client.Pages
 
         private bool MessagingVerificationsLoading => this.MessageVerificationState.Value.IsLoading;
 
-        private bool PhnSelected => this.SelectedQueryType == UserQueryType.Phn;
+        private bool PhnOrDependentSelected => this.SelectedQueryType is UserQueryType.Phn or UserQueryType.Dependent;
 
-        private bool HasMessagingVerificationsError => this.MessageVerificationState.Value.Error != null && this.MessageVerificationState.Value.Error.Message.Length > 0;
+        private bool HasMessagingVerificationsError => this.MessageVerificationState.Value.Error is { Message.Length: > 0 };
 
         private IEnumerable<MessagingVerificationModel> MessagingVerifications => this.MessageVerificationState.Value.Data ?? Enumerable.Empty<MessagingVerificationModel>();
 
@@ -84,9 +84,9 @@ namespace HealthGateway.Admin.Client.Pages
 
         private bool SupportUsersLoaded => this.SupportUserState.Value.Loaded;
 
-        private bool HasSupportUsersError => this.SupportUserState.Value.Error != null && this.SupportUserState.Value.Error.Message.Length > 0;
+        private bool HasSupportUsersError => this.SupportUserState.Value.Error is { Message.Length: > 0 };
 
-        private bool HasSupportUsersWarning => this.SupportUserState.Value.WarningMessage != null && this.SupportUserState.Value.WarningMessage.Length > 0;
+        private bool HasSupportUsersWarning => this.SupportUserState.Value.WarningMessage is { Length: > 0 };
 
         private IEnumerable<ExtendedSupportUser> SupportUsers =>
             this.SupportUserState.Value.Data ?? Enumerable.Empty<ExtendedSupportUser>();
@@ -100,7 +100,7 @@ namespace HealthGateway.Admin.Client.Pages
                 return "Search parameter is required";
             }
 
-            if (this.SelectedQueryType == UserQueryType.Phn && !PhnValidator.Validate(StringManipulator.StripWhitespace(parameter)).IsValid)
+            if (this.PhnOrDependentSelected && !PhnValidator.Validate(StringManipulator.StripWhitespace(parameter)).IsValid)
             {
                 return "Invalid PHN";
             }
@@ -207,7 +207,7 @@ namespace HealthGateway.Admin.Client.Pages
 
             public string PersonalHealthNumber { get; }
 
-            public DateTime LastLoginDateTime { get; }
+            public DateTime? LastLoginDateTime { get; }
 
             public bool IsExpanded { get; }
         }

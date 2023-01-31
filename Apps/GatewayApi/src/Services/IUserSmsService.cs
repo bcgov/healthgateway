@@ -29,7 +29,7 @@ namespace HealthGateway.GatewayApi.Services
         /// <param name="hdid">The requested user hdid.</param>
         /// <param name="validationCode">The SMS validation code.</param>
         /// <returns>Returns a request result containing true if the SMS verification was found and validated.</returns>
-        PrimitiveRequestResult<bool> ValidateSms(string hdid, string validationCode);
+        RequestResult<bool> ValidateSms(string hdid, string validationCode);
 
         /// <summary>
         /// Create the user SMS number.

@@ -18,6 +18,7 @@ namespace HealthGateway.GatewayApi.Services
     using System;
     using System.Collections.Generic;
     using System.Globalization;
+    using System.Linq;
     using System.Text;
     using System.Threading.Tasks;
     using AutoMapper;
@@ -140,8 +141,7 @@ namespace HealthGateway.GatewayApi.Services
         public RequestResult<IEnumerable<DependentModel>> GetDependents(string hdId, int page = 0, int pageSize = 500)
         {
             // Get Dependents from database
-            int offset = page * pageSize;
-            DbResult<IEnumerable<ResourceDelegate>> dbResourceDelegates = this.resourceDelegateDelegate.Get(hdId, offset, pageSize);
+            DbResult<IEnumerable<ResourceDelegate>> dbResourceDelegates = this.resourceDelegateDelegate.Get(hdId, page, pageSize);
 
             // Get Dependents Details from Patient service
             List<DependentModel> dependentModels = new();
@@ -190,6 +190,34 @@ namespace HealthGateway.GatewayApi.Services
             }
 
             return result;
+        }
+
+        /// <inheritdoc/>
+        public RequestResult<IEnumerable<GetDependentResponse>> GetDependents(DateTime fromDateUtc, DateTime? toDateUtc, int page, int pageSize)
+        {
+            DbResult<IEnumerable<ResourceDelegate>> dbResourceDelegates = this.resourceDelegateDelegate.Get(
+                fromDateUtc,
+                toDateUtc,
+                page,
+                pageSize);
+
+            if (dbResourceDelegates.Status != DbStatusCode.Read)
+            {
+                return RequestResultFactory.ServiceError<IEnumerable<GetDependentResponse>>(ErrorType.CommunicationInternal, ServiceType.Database, dbResourceDelegates.Message);
+            }
+
+            IEnumerable<GetDependentResponse> getDependentResponses =
+                dbResourceDelegates.Payload
+                    .Select(
+                        g => new GetDependentResponse
+                        {
+                            DelegateId = g.ProfileHdid,
+                            OwnerId = g.ResourceOwnerHdid,
+                            CreationDateTime = g.CreatedDateTime,
+                        })
+                    .ToList();
+
+            return RequestResultFactory.Success(getDependentResponses, getDependentResponses.Count(), page, pageSize);
         }
 
         /// <inheritdoc/>

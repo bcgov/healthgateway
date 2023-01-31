@@ -15,6 +15,7 @@
 // -------------------------------------------------------------------------
 namespace HealthGateway.Admin.Server.Controllers
 {
+    using System.Threading.Tasks;
     using HealthGateway.Common.Data.Constants;
     using HealthGateway.Common.Services;
     using Microsoft.AspNetCore.Authorization;
@@ -56,9 +57,9 @@ namespace HealthGateway.Admin.Server.Controllers
         /// </response>
         [HttpGet]
         [Route("Users")]
-        public IActionResult GetSupportUsers([FromQuery] UserQueryType queryType, [FromQuery] string queryString)
+        public async Task<IActionResult> GetSupportUsers([FromQuery] UserQueryType queryType, [FromQuery] string queryString)
         {
-            return new JsonResult(this.supportService.GetUsers(queryType, queryString));
+            return new JsonResult(await this.supportService.GetUsers(queryType, queryString).ConfigureAwait(true));
         }
 
         /// <summary>

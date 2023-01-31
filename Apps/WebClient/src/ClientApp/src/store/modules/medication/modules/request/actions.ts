@@ -7,7 +7,7 @@ import RequestResult from "@/models/requestResult";
 import { LoadStatus } from "@/models/storeOperations";
 import container from "@/plugins/container";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
-import { ILogger, IMedicationService } from "@/services/interfaces";
+import { ILogger, ISpecialAuthorityService } from "@/services/interfaces";
 import EventTracker from "@/utility/eventTracker";
 
 import { MedicationRequestActions } from "./types";
@@ -18,8 +18,8 @@ export const actions: MedicationRequestActions = {
         params: { hdid: string }
     ): Promise<RequestResult<MedicationRequest[]>> {
         const logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
-        const medicationService = container.get<IMedicationService>(
-            SERVICE_IDENTIFIER.MedicationService
+        const specialAuthorityService = container.get<ISpecialAuthorityService>(
+            SERVICE_IDENTIFIER.SpecialAuthorityService
         );
 
         return new Promise((resolve, reject) => {
@@ -40,7 +40,7 @@ export const actions: MedicationRequestActions = {
             } else {
                 logger.debug("Retrieving Medication Requests");
                 context.commit("setMedicationRequestRequested");
-                return medicationService
+                return specialAuthorityService
                     .getPatientMedicationRequest(params.hdid)
                     .then((result) => {
                         if (result.resultStatus === ResultType.Error) {

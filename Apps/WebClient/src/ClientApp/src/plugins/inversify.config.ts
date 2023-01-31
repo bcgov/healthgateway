@@ -15,6 +15,7 @@ import {
     IConfigService,
     IDependentService,
     IEncounterService,
+    IHospitalVisitService,
     IHttpDelegate,
     IImmunizationService,
     ILaboratoryService,
@@ -24,6 +25,7 @@ import {
     IPatientService,
     IPcrTestService,
     IReportService,
+    ISpecialAuthorityService,
     IStoreProvider,
     ITicketService,
     IUserCommentService,
@@ -39,11 +41,13 @@ import { RestCommunicationService } from "@/services/restCommunicationService";
 import { RestConfigService } from "@/services/restConfigService";
 import { RestDependentService } from "@/services/restDependentService";
 import { RestEncounterService } from "@/services/restEncounterService";
+import { RestHospitalVisitService } from "@/services/restHospitalVisitService";
 import { RestImmunizationService } from "@/services/restImmunizationService";
 import { RestLaboratoryService } from "@/services/restLaboratoryService";
 import { RestMedicationService } from "@/services/restMedicationService";
 import { RestNotificationService } from "@/services/restNotificationService";
 import { RestPatientService } from "@/services/restPatientService";
+import { RestSpecialAuthorityService } from "@/services/restSpecialAuthorityService";
 import { RestUserCommentService } from "@/services/restUserCommentService";
 import { RestUserFeedbackService } from "@/services/restUserFeedback";
 import { RestUserNoteService } from "@/services/restUserNoteService";
@@ -84,8 +88,16 @@ container
     .to(RestMedicationService)
     .inSingletonScope();
 container
+    .bind<ISpecialAuthorityService>(SERVICE_IDENTIFIER.SpecialAuthorityService)
+    .to(RestSpecialAuthorityService)
+    .inSingletonScope();
+container
     .bind<IEncounterService>(SERVICE_IDENTIFIER.EncounterService)
     .to(RestEncounterService)
+    .inSingletonScope();
+container
+    .bind<IHospitalVisitService>(SERVICE_IDENTIFIER.HospitalVisitService)
+    .to(RestHospitalVisitService)
     .inSingletonScope();
 container
     .bind<ILaboratoryService>(SERVICE_IDENTIFIER.LaboratoryService)

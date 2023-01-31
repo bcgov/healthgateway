@@ -16,13 +16,21 @@
 namespace HealthGateway.Mock
 {
     using System.Diagnostics.CodeAnalysis;
+    using System.Security.Claims;
+    using System.Security.Cryptography.X509Certificates;
     using System.ServiceModel.Dispatcher;
+    using System.Threading.Tasks;
     using CoreWCF;
     using CoreWCF.Configuration;
     using HealthGateway.Common.AspNetConfiguration;
+    using HealthGateway.Common.Models.ODR;
     using HealthGateway.Common.Services;
+    using HealthGateway.Mock.AccessManagement.Authentication;
+    using HealthGateway.Mock.AccessManagement.Authorization;
     using HealthGateway.Mock.ServiceReference;
     using HealthGateway.Mock.SOAP.Services;
+    using Microsoft.AspNetCore.Authentication;
+    using Microsoft.AspNetCore.Authentication.Certificate;
     using Microsoft.AspNetCore.Builder;
     using Microsoft.AspNetCore.Hosting;
     using Microsoft.AspNetCore.Server.Kestrel.Core;
@@ -55,6 +63,73 @@ namespace HealthGateway.Mock
         /// <param name="services">The injected services provider.</param>
         public void ConfigureServices(IServiceCollection services)
         {
+            OdrConfig odrConfig = new();
+            this.configuration.Bind(OdrConfig.OdrConfigSectionKey, odrConfig);
+
+            bool certificateAuthenticationEnabled = odrConfig.ServerCertificate?.Enabled is true;
+            bool basicAuthorizationAuthenticationEnabled = odrConfig.Authorization?.Enabled is true;
+
+            AuthenticationBuilder authenticationBuilder = services.AddAuthentication();
+
+            if (certificateAuthenticationEnabled)
+            {
+                authenticationBuilder.AddCertificate(
+                    AuthenticationSchemes.OdrCertificate,
+                    options =>
+                    {
+                        options.AllowedCertificateTypes = CertificateTypes.All;
+                        options.RevocationMode = X509RevocationMode.NoCheck;
+                        options.Events = new CertificateAuthenticationEvents
+                        {
+                            OnCertificateValidated = context =>
+                            {
+                                Claim[] claims =
+                                {
+                                    new(ClaimTypes.AuthenticationMethod, context.Scheme.Name, ClaimValueTypes.String, context.Options.ClaimsIssuer),
+                                };
+
+                                context.Principal = new ClaimsPrincipal(new ClaimsIdentity(claims, context.Scheme.Name));
+                                context.Success();
+
+                                return Task.CompletedTask;
+                            },
+                        };
+                    });
+            }
+
+            if (basicAuthorizationAuthenticationEnabled)
+            {
+                authenticationBuilder.AddScheme<AuthenticationSchemeOptions, OdrBasicAuthorizationHandler>(
+                    AuthenticationSchemes.OdrBasicAuthorization,
+                    null);
+            }
+
+            services.AddAuthorization(
+                options =>
+                {
+                    options.AddPolicy(
+                        AuthorizationPolicies.OdrAccess,
+                        policy =>
+                        {
+                            if (certificateAuthenticationEnabled)
+                            {
+                                policy.AuthenticationSchemes.Add(AuthenticationSchemes.OdrCertificate);
+                                policy.RequireClaim(ClaimTypes.AuthenticationMethod, AuthenticationSchemes.OdrCertificate);
+                            }
+
+                            if (basicAuthorizationAuthenticationEnabled)
+                            {
+                                policy.AuthenticationSchemes.Add(AuthenticationSchemes.OdrBasicAuthorization);
+                                policy.RequireClaim(ClaimTypes.AuthenticationMethod, AuthenticationSchemes.OdrBasicAuthorization);
+                            }
+
+                            if (basicAuthorizationAuthenticationEnabled || certificateAuthenticationEnabled)
+                            {
+                                policy.RequireAuthenticatedUser();
+                            }
+                        });
+                });
+
             this.startupConfig.ConfigureForwardHeaders(services);
             this.startupConfig.ConfigureDatabaseServices(services);
             this.startupConfig.ConfigureHttpServices(services);
@@ -81,6 +156,8 @@ namespace HealthGateway.Mock
             this.startupConfig.UseForwardHeaders(app);
             this.startupConfig.UseSwagger(app);
             this.startupConfig.UseHttp(app);
+            app.UseAuthentication();
+            app.UseAuthorization();
             this.startupConfig.UseRest(app);
 
             app.UseServiceModel(

@@ -35,6 +35,7 @@ describe("Hospital Visits", () => {
         cy.get("[data-testid=entryCardDetailsTitle").first().click();
         cy.get("[data-testid=hospital-visit-location").should("be.visible");
         cy.get("[data-testid=hospital-visit-provider").should("be.visible");
+        cy.get("[data-testid=hospital-visit-service").should("be.visible");
         cy.get("[data-testid=hospital-visit-date").should("be.visible");
         cy.get("[data-testid=hospital-visit-discharge-date").should(
             "be.visible"

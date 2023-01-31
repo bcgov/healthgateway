@@ -83,6 +83,9 @@ export default class FilterComponent extends Vue {
     @Getter("filter", { namespace: "timeline" })
     activeFilter!: TimelineFilter;
 
+    @Getter("entryTypes", { namespace: "timeline" })
+    activeEntryTypes!: Set<EntryType>;
+
     @Getter("user", { namespace: "user" })
     user!: User;
 
@@ -137,7 +140,7 @@ export default class FilterComponent extends Vue {
         this.keywordInputText = this.activeFilter.keyword;
         this.startDate = this.activeFilter.startDate;
         this.endDate = this.activeFilter.endDate;
-        this.selectedEntryTypes = Array.from(this.activeFilter.entryTypes);
+        this.selectedEntryTypes = Array.from(this.activeEntryTypes);
     }
 
     private toggleMenu(): void {

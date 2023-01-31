@@ -91,6 +91,10 @@ export interface IMedicationService {
         hdid: string,
         protectiveWord?: string
     ): Promise<RequestResult<MedicationStatementHistory[]>>;
+}
+
+export interface ISpecialAuthorityService {
+    initialize(config: ExternalConfiguration, http: IHttpDelegate): void;
     getPatientMedicationRequest(
         hdid: string
     ): Promise<RequestResult<MedicationRequest[]>>;
@@ -99,6 +103,10 @@ export interface IMedicationService {
 export interface IEncounterService {
     initialize(config: ExternalConfiguration, http: IHttpDelegate): void;
     getPatientEncounters(hdid: string): Promise<RequestResult<Encounter[]>>;
+}
+
+export interface IHospitalVisitService {
+    initialize(config: ExternalConfiguration, http: IHttpDelegate): void;
     getHospitalVisits(
         hdid: string
     ): Promise<RequestResult<HospitalVisitResult>>;

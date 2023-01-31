@@ -101,6 +101,9 @@ export const mutations: VaccinationStatusMutations = {
         state: VaccinationStatusState,
         params: { hdid: string }
     ) {
+        const vaccinationRecords: Map<string, VaccinationRecord> =
+            getVaccinationRecords(state);
+
         const vaccinationRecord: VaccinationRecord = {
             hdid: params.hdid,
             download: true,
@@ -110,10 +113,9 @@ export const mutations: VaccinationStatusMutations = {
             resultMessage: "",
         };
 
-        state.authenticatedVaccineRecord.vaccinationRecords.set(
-            params.hdid,
-            vaccinationRecord
-        );
+        vaccinationRecords.set(params.hdid, vaccinationRecord);
+        state.authenticatedVaccineRecord.vaccinationRecords =
+            vaccinationRecords;
         state.authenticatedVaccineRecord.activeHdid = params.hdid;
         state.authenticatedVaccineRecord.statusChanges++;
     },
@@ -121,16 +123,20 @@ export const mutations: VaccinationStatusMutations = {
         state: VaccinationStatusState,
         params: { hdid: string; vaccinationRecord: CovidVaccineRecord }
     ) {
+        const vaccinationRecords: Map<string, VaccinationRecord> =
+            getVaccinationRecords(state);
+
         const vaccinationRecord: VaccinationRecord | undefined =
-            state.authenticatedVaccineRecord.vaccinationRecords.get(
-                params.hdid
-            );
+            vaccinationRecords.get(params.hdid);
 
         if (vaccinationRecord !== undefined) {
             vaccinationRecord.record = params.vaccinationRecord;
             vaccinationRecord.status = LoadStatus.LOADED;
             vaccinationRecord.statusMessage = "";
             vaccinationRecord.error = undefined;
+
+            state.authenticatedVaccineRecord.vaccinationRecords =
+                vaccinationRecords;
         }
         state.authenticatedVaccineRecord.statusChanges++;
     },
@@ -138,14 +144,18 @@ export const mutations: VaccinationStatusMutations = {
         state: VaccinationStatusState,
         params: { hdid: string; error: ResultError }
     ) {
+        const vaccinationRecords: Map<string, VaccinationRecord> =
+            getVaccinationRecords(state);
+
         const vaccinationRecord: VaccinationRecord | undefined =
-            state.authenticatedVaccineRecord.vaccinationRecords.get(
-                params.hdid
-            );
+            vaccinationRecords.get(params.hdid);
 
         if (vaccinationRecord !== undefined) {
             vaccinationRecord.error = params.error;
             vaccinationRecord.status = LoadStatus.ERROR;
+
+            state.authenticatedVaccineRecord.vaccinationRecords =
+                vaccinationRecords;
         }
         state.authenticatedVaccineRecord.statusChanges++;
     },
@@ -153,12 +163,17 @@ export const mutations: VaccinationStatusMutations = {
         state: VaccinationStatusState,
         params: { hdid: string; statusMessage: string }
     ) {
+        const vaccinationRecords: Map<string, VaccinationRecord> =
+            getVaccinationRecords(state);
+
         const vaccinationRecord: VaccinationRecord | undefined =
-            state.authenticatedVaccineRecord.vaccinationRecords.get(
-                params.hdid
-            );
+            vaccinationRecords.get(params.hdid);
+
         if (vaccinationRecord !== undefined) {
             vaccinationRecord.statusMessage = params.statusMessage;
+
+            state.authenticatedVaccineRecord.vaccinationRecords =
+                vaccinationRecords;
         }
         state.authenticatedVaccineRecord.statusChanges++;
     },
@@ -166,13 +181,17 @@ export const mutations: VaccinationStatusMutations = {
         state: VaccinationStatusState,
         params: { hdid: string; resultMessage: string }
     ) {
+        const vaccinationRecords: Map<string, VaccinationRecord> =
+            getVaccinationRecords(state);
+
         const vaccinationRecord: VaccinationRecord | undefined =
-            state.authenticatedVaccineRecord.vaccinationRecords.get(
-                params.hdid
-            );
+            vaccinationRecords.get(params.hdid);
 
         if (vaccinationRecord !== undefined) {
             vaccinationRecord.resultMessage = params.resultMessage;
+
+            state.authenticatedVaccineRecord.vaccinationRecords =
+                vaccinationRecords;
         }
         state.authenticatedVaccineRecord.statusChanges++;
     },
@@ -180,14 +199,34 @@ export const mutations: VaccinationStatusMutations = {
         state: VaccinationStatusState,
         params: { hdid: string; download: boolean }
     ) {
+        const vaccinationRecords: Map<string, VaccinationRecord> =
+            getVaccinationRecords(state);
+
         const vaccinationRecord: VaccinationRecord | undefined =
-            state.authenticatedVaccineRecord.vaccinationRecords.get(
-                params.hdid
-            );
+            vaccinationRecords.get(params.hdid);
 
         if (vaccinationRecord !== undefined) {
             vaccinationRecord.download = params.download;
+
+            state.authenticatedVaccineRecord.vaccinationRecords =
+                vaccinationRecords;
         }
         state.authenticatedVaccineRecord.statusChanges++;
     },
 };
+
+function getVaccinationRecords(
+    state: VaccinationStatusState
+): Map<string, VaccinationRecord> {
+    if (
+        state.authenticatedVaccineRecord.vaccinationRecords instanceof
+        Map<string, VaccinationRecord>
+    ) {
+        return state.authenticatedVaccineRecord.vaccinationRecords;
+    }
+
+    return Object.assign(
+        new Map<string, VaccinationRecord>(),
+        state.authenticatedVaccineRecord.vaccinationRecords
+    );
+}

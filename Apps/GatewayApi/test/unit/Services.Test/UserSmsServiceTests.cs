@@ -68,7 +68,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
                 userProfileDelegate.Object,
                 new Mock<INotificationSettingsService>().Object);
 
-            PrimitiveRequestResult<bool> actualResult = service.ValidateSms(HdIdMock, smsValidationCode);
+            RequestResult<bool> actualResult = service.ValidateSms(HdIdMock, smsValidationCode);
 
             Assert.True(actualResult.ResourcePayload);
         }
@@ -106,7 +106,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
                 userProfileDelegate.Object,
                 new Mock<INotificationSettingsService>().Object);
 
-            PrimitiveRequestResult<bool> actualResult = service.ValidateSms(HdIdMock, smsValidationCode);
+            RequestResult<bool> actualResult = service.ValidateSms(HdIdMock, smsValidationCode);
 
             Assert.False(actualResult.ResourcePayload);
         }

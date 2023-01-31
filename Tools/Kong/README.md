@@ -32,3 +32,7 @@ After the configurations for the environments have been generated, they can be p
 ```shell
 ./publish.sh
 ```
+
+## Publish to Kong using the pipeline
+
+The actual publishing to Cong dev, test and prod is done from a Azure DevOps pipeline using the preconfigured `Kong - [env]` library variable groups.

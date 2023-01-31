@@ -17,18 +17,18 @@ namespace HealthGateway.Mock.Controllers
 {
     using System;
     using System.Collections.Generic;
-    using System.Diagnostics.CodeAnalysis;
     using HealthGateway.Common.Utils;
+    using HealthGateway.Mock.AccessManagement.Authorization;
     using HealthGateway.Mock.Models;
+    using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Mvc;
 
     /// <summary>
-    /// The Odr Mock controller.
+    /// The mock controller for ODR.
     /// </summary>
-    [Route("[controller]")]
-    [Route("v{version:apiVersion}/api/[controller]")]
+    [Authorize(Policy = AuthorizationPolicies.OdrAccess)]
+    [Route("pgw/patientGateway")]
     [ApiController]
-    [SuppressMessage("Performance", "CA1822:Mark members as static", Justification = "Mocked Controller methods.")]
     public class OdrController : ControllerBase
     {
         private const string ProtectiveWord = "KEYWORD";
@@ -59,7 +59,7 @@ namespace HealthGateway.Mock.Controllers
         /// <param name="request">The query request.</param>
         /// <returns>The mocked medication json.</returns>
         [HttpPost]
-        [Route("medication")]
+        [Route("patientProfile")]
         [Produces("application/json")]
         public ContentResult Medication([FromBody] OdrRequest request)
         {

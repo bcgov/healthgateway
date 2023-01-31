@@ -18,6 +18,8 @@ namespace HealthGateway.Database.Delegates
 {
     using System;
     using System.Collections.Generic;
+    using System.Diagnostics.CodeAnalysis;
+    using System.Threading.Tasks;
     using HealthGateway.Database.Models;
     using HealthGateway.Database.Wrapper;
 
@@ -46,6 +48,17 @@ namespace HealthGateway.Database.Delegates
 #pragma warning restore CA1716 // Identifiers should not match keywords
 
         /// <summary>
+        /// Gets the list of Resource Delegate records for a date range from the database.
+        /// </summary>
+        /// <param name="fromDate">The from date.</param>
+        /// <param name="toDate">The to date.</param>
+        /// <param name="page">The page to start at.</param>
+        /// <param name="pageSize">The amount of rows to fetch per call.</param>
+        /// <returns>A list of resourceDelegates wrapped in a DBResult.</returns>
+        [SuppressMessage("Naming", "CA1716:Identifiers should not match keywords", Justification = "Team decision")]
+        DbResult<IEnumerable<ResourceDelegate>> Get(DateTime fromDate, DateTime? toDate, int page, int pageSize);
+
+        /// <summary>
         /// Gets the count of dependents from the database.
         /// </summary>
         /// <param name="offset">The clients offset to get to UTC.</param>
@@ -67,5 +80,33 @@ namespace HealthGateway.Database.Delegates
         /// <param name="delegateId">The delegated resource hdid.</param>
         /// <returns>A DB result which encapsulates the return record and status.</returns>
         bool Exists(string ownerId, string delegateId);
+
+        /// <summary>
+        /// Search resource delegates by criteria specified in the query.
+        /// </summary>
+        /// <param name="query">the query criteria.</param>
+        /// <returns>A <see cref="Task{TResult}"/> representing the result of the asynchronous operation.</returns>
+        public Task<ResourceDelegateQueryResult> Search(ResourceDelegateQuery query);
+    }
+
+    public record ResourceDelegateQuery
+    {
+        /// <summary>
+        /// Gets or sets search by owner's hdid.
+        /// </summary>
+        public string? ByOwnerHdid { get; set; }
+
+        /// <summary>
+        /// Gets or sets search by delegate hdid.
+        /// </summary>
+        public string? ByDelegateHdid { get; set; }
+    }
+
+    public record ResourceDelegateQueryResult
+    {
+        /// <summary>
+        /// gets or sets the found items.
+        /// </summary>
+        public IEnumerable<ResourceDelegate> Items { get; set; } = Array.Empty<ResourceDelegate>();
     }
 }

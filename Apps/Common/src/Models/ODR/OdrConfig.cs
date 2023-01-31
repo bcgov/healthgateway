@@ -71,5 +71,20 @@ namespace HealthGateway.Common.Models.ODR
         /// If not enabled, the configured Url will be used.
         /// </summary>
         public bool DynamicServiceLookup { get; set; }
+
+        /// <summary>
+        /// Gets or sets the configuration for client-side certificate usage.
+        /// </summary>
+        public OdrCertificateConfig? ClientCertificate { get; set; }
+
+        /// <summary>
+        /// Gets or sets the configuration for server-side certificate usage.
+        /// </summary>
+        public OdrCertificateConfig? ServerCertificate { get; set; }
+
+        /// <summary>
+        /// Gets or sets the configuration for basic authorization usage.
+        /// </summary>
+        public OdrAuthorizationConfig? Authorization { get; set; }
     }
 }

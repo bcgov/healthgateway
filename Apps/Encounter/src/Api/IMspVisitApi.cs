@@ -29,7 +29,7 @@ namespace HealthGateway.Encounter.Api
         /// </summary>
         /// <param name="request">The Encounter request to execute against ODR.</param>
         /// <returns>The Encounter Model response wrapped in an Api Response.</returns>
-        [Post("/odr/mspVisits")]
+        [Post("/mspVisits")]
         Task<MspVisitHistory> GetMspVisitsAsync(MspVisitHistory request);
     }
 }
