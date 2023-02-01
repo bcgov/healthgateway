@@ -26,24 +26,22 @@ namespace HealthGateway.Common.AccessManagement.Authorization.Handlers
     using Microsoft.Extensions.Logging;
 
     /// <summary>
-    /// Base class for IAuthorizationHandler interface.
+    /// Base class to authorize access to one or more FHIR resources.
     /// </summary>
     public abstract class BaseFhirAuthorizationHandler : IAuthorizationHandler
     {
         private const string System = "system";
         private const string RouteResourceIdentifier = "hdid";
-        private readonly IHttpContextAccessor httpContextAccessor;
 
+        private readonly IHttpContextAccessor httpContextAccessor;
         private readonly ILogger logger;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="BaseFhirAuthorizationHandler"/> class.
         /// </summary>
-        /// <param name="logger">the injected logger.</param>
-        /// <param name="httpContextAccessor">The HTTP Context accessor.</param>
-        protected BaseFhirAuthorizationHandler(
-            ILogger logger,
-            IHttpContextAccessor httpContextAccessor)
+        /// <param name="logger">The injected logger.</param>
+        /// <param name="httpContextAccessor">The injected HttpContext accessor.</param>
+        protected BaseFhirAuthorizationHandler(ILogger logger, IHttpContextAccessor httpContextAccessor)
         {
             this.logger = logger;
             this.httpContextAccessor = httpContextAccessor;
@@ -53,69 +51,41 @@ namespace HealthGateway.Common.AccessManagement.Authorization.Handlers
         public abstract Task HandleAsync(AuthorizationHandlerContext context);
 
         /// <summary>
-        /// Gets the resource hdid from the request context.
+        /// Gets the subject identifier for requested health data resource(s) from the request context.
         /// </summary>
-        /// <param name="requirement">The Fhir Requirement.</param>
-        /// <returns>The resource hdid.</returns>
-        protected string? GetResourceHdid(FhirRequirement requirement)
+        /// <param name="lookupMethod">The mechanism with which to retrieve the subject identifier.</param>
+        /// <returns>The subject identifier for requested health data resource(s).</returns>
+        protected string? GetResourceHdid(FhirSubjectLookupMethod lookupMethod)
         {
-            string? retVal = null;
-            if (requirement.Lookup == FhirResourceLookup.Route)
+            string? retVal = lookupMethod switch
             {
-                retVal = this.httpContextAccessor.HttpContext?.Request.RouteValues[RouteResourceIdentifier] as string;
-            }
-            else if (requirement.Lookup == FhirResourceLookup.Parameter)
-            {
-                retVal = this.httpContextAccessor.HttpContext?.Request.Query[RouteResourceIdentifier];
-            }
+                FhirSubjectLookupMethod.Route => this.httpContextAccessor.HttpContext?.Request.RouteValues[RouteResourceIdentifier] as string,
+                FhirSubjectLookupMethod.Parameter => this.httpContextAccessor.HttpContext?.Request.Query[RouteResourceIdentifier],
+                _ => null,
+            };
 
             return retVal;
         }
 
         /// <summary>
-        /// Check if the authenticated user is the owner of the resource being accessed.
+        /// Check if the authenticated user has system-delegated access to the resource(s).
         /// </summary>
         /// <param name="context">The authorization handler context.</param>
-        /// <param name="resourceHdid">The health data resource subject identifier.</param>
-        /// <returns>True if the authenticated user is the owner of the resource, false otherwise.</returns>
-        protected bool IsOwner(AuthorizationHandlerContext context, string resourceHdid)
-        {
-            bool retVal = false;
-            string? userHdid = context.User.FindFirst(c => c.Type == GatewayClaims.Hdid)?.Value;
-            if (userHdid != null)
-            {
-                retVal = userHdid == resourceHdid;
-                string message = $"{userHdid} is {(!retVal ? "not " : string.Empty)}the resource owner";
-                this.logger.LogDebug("{Message}", message);
-            }
-            else
-            {
-                this.logger.LogDebug("Unable to validate resource owner for {ResourceHdid} as no HDID claims present", resourceHdid);
-            }
-
-            return retVal;
-        }
-
-        /// <summary>
-        /// Check if the authenticated user has system delegated access to the resource.
-        /// </summary>
-        /// <param name="context">The authorization handler context.</param>
-        /// <param name="resourceHdid">The health data resource subject identifier.</param>
-        /// <param name="requirement">The Fhir requirement to satisfy.</param>
-        /// <returns>True if the authenticated user has system delegated scope, false otherwise.</returns>
-        protected bool IsSystemDelegated(AuthorizationHandlerContext context, string resourceHdid, FhirRequirement requirement)
+        /// <param name="requirement">The requirement to satisfy.</param>
+        /// <returns>True if the authenticated user has system-delegated scope, false otherwise.</returns>
+        protected bool IsSystemDelegated(AuthorizationHandlerContext context, GeneralFhirRequirement requirement)
         {
             bool retVal = false;
             if (context.User.HasClaim(c => c.Type == GatewayClaims.Scope))
             {
                 string scopeClaim = context.User.FindFirstValue(GatewayClaims.Scope) ?? string.Empty;
                 string[] scopes = scopeClaim.Split(' ');
-                this.logger.LogDebug("Performing system delegation validation for resource {ResourceHdid}", resourceHdid);
+                this.logger.LogDebug("Performing system delegation validation for resource type {ResourceType}", requirement.ResourceType);
                 this.logger.LogDebug("Caller has the following scopes: {ScopeClaim}", scopeClaim);
                 string[] systemDelegatedScopes = GetAcceptedScopes(System, requirement);
                 if (scopes.Intersect(systemDelegatedScopes).Any())
                 {
-                    this.logger.LogDebug("Authorized caller as system to have {AccessType} access to resource {ResourceHdid}", requirement.AccessType, resourceHdid);
+                    this.logger.LogDebug("Authorized caller as system to have {AccessType} access to resource type {ResourceType}", requirement.AccessType, requirement.ResourceType);
                     retVal = true;
                 }
             }
@@ -128,16 +98,16 @@ namespace HealthGateway.Common.AccessManagement.Authorization.Handlers
         /// No validation is done on the parameters.
         /// </summary>
         /// <param name="type">The type: System or User.</param>
-        /// <param name="requirement">The requirement to get the resource and access from.</param>
+        /// <param name="requirement">The requirement that defines the type of resource and type of access.</param>
         /// <returns>An array of acceptable scopes.</returns>
-        private static string[] GetAcceptedScopes(string type, FhirRequirement requirement)
+        private static string[] GetAcceptedScopes(string type, GeneralFhirRequirement requirement)
         {
             string[] acceptedScopes =
             {
                 $"{type}/{FhirResource.Wildcard}.{FhirAccessType.Wildcard}",
                 $"{type}/{FhirResource.Wildcard}.{requirement.AccessType}",
-                $"{type}/{requirement.Resource}.{FhirAccessType.Wildcard}",
-                $"{type}/{requirement.Resource}.{requirement.AccessType}",
+                $"{type}/{requirement.ResourceType}.{FhirAccessType.Wildcard}",
+                $"{type}/{requirement.ResourceType}.{requirement.AccessType}",
             };
             return acceptedScopes;
         }
