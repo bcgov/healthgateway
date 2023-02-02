@@ -32,6 +32,8 @@ module.exports = defineConfig({
         "keycloak.unregistered.username": "hthgtwy02",
         "idir.username": "hgateway",
         "idir.password": "",
+        "keycloak.phsa.client": "",
+        "keycloak.phsa.secret": "",
         phoneNumber: "",
         emailAddress: "fakeemail@healthgateway.gov.bc.ca",
         phn: "9735353315",
