@@ -69,6 +69,7 @@ export default class NoteEditComponent extends Vue {
     private isVisible = false;
 
     private isNewNote = true;
+    private isNoteDateValid = true;
 
     private readonly unsavedChangesText =
         "You have unsaved changes. Are you sure you want to leave?";
@@ -202,7 +203,7 @@ export default class NoteEditComponent extends Vue {
         // Prevent modal from closing
         bvModalEvt.preventDefault();
         this.$v.$touch();
-        if (this.$v.$invalid) {
+        if (this.$v.$invalid || !this.isNoteDateValid) {
             return;
         } else if (this.isNewNote) {
             this.create();
@@ -284,11 +285,12 @@ export default class NoteEditComponent extends Vue {
                         id="date"
                         v-model="dateString"
                         data-testid="noteDateInput"
-                        :state="isValid($v.dateString)"
                         @blur="$v.dateString.$touch()"
+                        @change="$v.dateString.$touch()"
+                        @is-date-valid="isNoteDateValid = $event"
                     />
                     <b-form-invalid-feedback :state="isValid($v.dateString)">
-                        Invalid Date
+                        Date is required.
                     </b-form-invalid-feedback>
                 </b-col>
             </b-row>
