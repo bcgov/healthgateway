@@ -1,4 +1,4 @@
-describe("WebClient Communication Service", () => {
+describe("GatewayApi Communication Service", () => {
     const BASEURL = "Communication/";
 
     it("Verify Get Communication", () => {

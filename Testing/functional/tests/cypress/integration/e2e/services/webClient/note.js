@@ -1,4 +1,4 @@
-describe("WebClient Note Service", () => {
+describe("GatewayApi Note Service", () => {
     const BASEURL = "Note/";
     const HDID = "DEV4FPEGCXG2NB5K2USBL52S66SC3GOUHWRP3GTXR2BTY5HEC4YA";
     const BOGUSHDID = "BOGUSHDID";
