@@ -234,10 +234,10 @@ export default class NewDependentComponent extends Vue {
                                         id="dateOfBirth"
                                         v-model="dependent.dateOfBirth"
                                         data-testid="dateOfBirthInput"
-                                        :state="
-                                            isValid($v.dependent.dateOfBirth)
+                                        @blur.native="
+                                            $v.dependent.dateOfBirth.$touch()
                                         "
-                                        @blur="
+                                        @change.native="
                                             $v.dependent.dateOfBirth.$touch()
                                         "
                                     />
