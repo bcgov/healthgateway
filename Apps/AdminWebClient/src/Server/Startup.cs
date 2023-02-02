@@ -104,6 +104,7 @@ namespace HealthGateway.Admin
             services.AddTransient<IVaccineProofDelegate, VaccineProofDelegate>();
             services.AddTransient<IAdminUserProfileDelegate, DbAdminUserProfileDelegate>();
             services.AddTransient<IAuthenticationDelegate, AuthenticationDelegate>();
+            services.AddTransient<IResourceDelegateDelegate, DbResourceDelegateDelegate>();
 
             // Configure SPA
             services.AddControllersWithViews();
@@ -161,7 +162,6 @@ namespace HealthGateway.Admin
                         endpoints.MapToVueCliProxy(
                             "{*path}",
                             new SpaOptions { SourcePath = "ClientApp" },
-                            "serve",
                             regex: "Compiled successfully",
                             forceKill: true);
                     }
