@@ -37,6 +37,19 @@ export default class DatePickerComponent extends Vue {
         // (this.datePicker.$refs.control as any).show();
     }
 
+    @Watch("inputValue")
+    private onInputValueChanged(): void {
+        this.$v.inputValue.$touch();
+        if (this.isValid(this.$v.inputValue)) {
+            this.value = this.inputValue
+                ? DateWrapper.fromStringFormat(this.inputValue).toISODate()
+                : "";
+        } else {
+            this.value = "";
+        }
+        this.setDateValid();
+    }
+
     @Watch("value")
     private onValueChanged(): void {
         this.inputValue = this.value
@@ -50,13 +63,9 @@ export default class DatePickerComponent extends Vue {
         this.value = this.model;
     }
 
-    private onInputChanged(): void {
-        this.$v.inputValue.$touch();
-        if (this.isValid(this.$v.inputValue)) {
-            this.value = this.inputValue
-                ? DateWrapper.fromStringFormat(this.inputValue).toISODate()
-                : "";
-        }
+    @Emit("is-date-valid")
+    private setDateValid(): boolean {
+        return this.isValid(this.$v.inputValue) ?? true;
     }
 
     @Emit("change")
@@ -112,7 +121,6 @@ export default class DatePickerComponent extends Vue {
             @focus.native="onFocus"
             @blur.native="onBlur"
             @click.native.capture.stop
-            @change="onInputChanged"
         ></b-form-input>
         <b-input-group-append>
             <b-form-datepicker
@@ -128,6 +136,9 @@ export default class DatePickerComponent extends Vue {
                 </template>
             </b-form-datepicker>
         </b-input-group-append>
+        <b-form-invalid-feedback :state="isValid($v.inputValue)">
+            Invalid date.
+        </b-form-invalid-feedback>
     </b-input-group>
 </template>
 
