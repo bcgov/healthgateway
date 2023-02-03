@@ -46,6 +46,7 @@ export default class NewDependentComponent extends Vue {
     private dependentService!: IDependentService;
     private isVisible = false;
     private isLoading = true;
+    private isDateOfBirthValidDate = true;
     private errorMessage = "";
     private dependent: AddDependentRequest = {
         firstName: "",
@@ -111,7 +112,7 @@ export default class NewDependentComponent extends Vue {
         // Prevent modal from closing
         bvModalEvt.preventDefault();
         this.$v.$touch();
-        if (!this.$v.$invalid) {
+        if (!this.$v.$invalid && this.isDateOfBirthValidDate) {
             this.$v.$reset();
             this.addDependent();
         }
@@ -234,11 +235,17 @@ export default class NewDependentComponent extends Vue {
                                         id="dateOfBirth"
                                         v-model="dependent.dateOfBirth"
                                         data-testid="dateOfBirthInput"
+                                        :state="
+                                            isValid($v.dependent.dateOfBirth)
+                                        "
                                         @blur.native="
                                             $v.dependent.dateOfBirth.$touch()
                                         "
                                         @change.native="
                                             $v.dependent.dateOfBirth.$touch()
+                                        "
+                                        @is-date-valid="
+                                            isDateOfBirthValidDate = $event
                                         "
                                     />
                                     <b-form-invalid-feedback
