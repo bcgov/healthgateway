@@ -136,9 +136,6 @@ export default class DatePickerComponent extends Vue {
                 </template>
             </b-form-datepicker>
         </b-input-group-append>
-        <b-form-invalid-feedback :state="isValid($v.inputValue)">
-            Invalid date.
-        </b-form-invalid-feedback>
     </b-input-group>
 </template>
 

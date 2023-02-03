@@ -113,7 +113,7 @@ export default class ReportsView extends Vue {
     private hasRecords = false;
 
     private reportFilter = ReportFilterBuilder.create().build();
-    private isReportFilterDateValid = true;
+    private isReportFilterDateValidDate = true;
 
     private logger!: ILogger;
 
@@ -508,7 +508,9 @@ export default class ReportsView extends Vue {
                             id="start-date"
                             v-model="selectedStartDate"
                             data-testid="startDateInput"
-                            @is-date-valid="isReportFilterDateValid = $event"
+                            @is-date-valid="
+                                isReportFilterDateValidDate = $event
+                            "
                         />
                     </b-col>
                     <b-col class="col-12 col-lg-4 pt-3">
@@ -517,7 +519,9 @@ export default class ReportsView extends Vue {
                             id="end-date"
                             v-model="selectedEndDate"
                             data-testid="endDateInput"
-                            @is-date-valid="isReportFilterDateValid = $event"
+                            @is-date-valid="
+                                isReportFilterDateValidDate = $event
+                            "
                         />
                     </b-col>
                 </b-row>
@@ -550,7 +554,9 @@ export default class ReportsView extends Vue {
                             variant="primary"
                             data-testid="applyFilterBtn"
                             class="mb-1 ml-1"
-                            :disabled="isLoading || !isReportFilterDateValid"
+                            :disabled="
+                                isLoading || !isReportFilterDateValidDate
+                            "
                             @click="updateFilter"
                         >
                             Apply
