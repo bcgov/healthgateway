@@ -35,7 +35,7 @@
     <AuthorizeView Roles="@($"{Roles.Admin},{Roles.Reviewer}")">
         <MudNavLink Href="feedback" Icon="@Icons.Material.Filled.Email">Feedback Review</MudNavLink>
     </AuthorizeView>
-    <AuthorizeView Roles="@Roles.Admin">
+    <AuthorizeView Roles="@($"{Roles.Admin},{Roles.Reviewer}")">
         <MudNavLink Href="analytics" Icon="fas fa-download">System Analytics</MudNavLink>
     </AuthorizeView>
     <AuthorizeView Roles="@($"{Roles.Admin},{Roles.Reviewer}")">
