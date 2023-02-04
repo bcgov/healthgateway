@@ -35,6 +35,6 @@ namespace HealthGateway.Common.Data.ViewModels
         /// <summary>
         /// Gets or sets the user's last login date time.
         /// </summary>
-        public DateTime? LastLoginDateTime { get; set; }
+        public DateTime LastLoginDateTime { get; set; }
     }
 }

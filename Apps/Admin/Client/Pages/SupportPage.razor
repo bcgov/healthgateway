@@ -76,7 +76,7 @@
                         </MudTableSortLabel>
                     </MudTh>
                     <MudTh>
-                        <MudTableSortLabel SortBy="new Func<SupportUserRow, object>(x => x.LastLoginDateTime ?? DateTime.MinValue)"
+                        <MudTableSortLabel SortBy="new Func<SupportUserRow, object>(x => x.LastLoginDateTime)"
                                            InitialDirection="@SortDirection.Descending">
                             Last Login
                         </MudTableSortLabel>
@@ -86,7 +86,9 @@
                 <RowTemplate>
                     <MudTd DataLabel="HDID" data-testid=@($"user-table-hdid-{context.Hdid}")>@context.Hdid</MudTd>
                     <MudTd DataLabel="PHN" data-testid=@($"user-table-phn-{context.Hdid}")>@context.PersonalHealthNumber</MudTd>
-                    <MudTd DataLabel="Last Login" data-testid=@($"user-table-last-login-{context.Hdid}")>@DateFormatter.ToShortDateAndTime(context.LastLoginDateTime)</MudTd>
+                    <MudTd DataLabel="Last Login" data-testid=@($"user-table-last-login-{context.Hdid}")>
+                        @DateFormatter.ToShortDateAndTime(context.LastLoginDateTime.ToLocalTime())
+                    </MudTd>
                     <MudTd Style="text-align:right">
                         <div>
                             <MudTooltip Text="@(context.IsExpanded ? "Collapse" : "Expand")">

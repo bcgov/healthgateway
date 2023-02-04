@@ -41,9 +41,7 @@ namespace HealthGateway.Admin.Server.MapUtils
                 adminUserProfile,
                 opts =>
                     opts.AfterMap(
-                        (_, dest) => dest.LastLoginDateTime = dest.LastLoginDateTime != null
-                            ? TimeZoneInfo.ConvertTimeFromUtc((DateTime)dest.LastLoginDateTime, timezone)
-                            : dest.LastLoginDateTime));
+                        (_, dest) => dest.LastLoginDateTime = TimeZoneInfo.ConvertTimeFromUtc(dest.LastLoginDateTime, timezone)));
             return adminUserProfileView;
         }
     }

@@ -133,7 +133,6 @@ namespace HealthGateway.Admin.Tests.Services
             {
                 AdminUserProfileId = null,
                 UserId = userRepresentation.UserId,
-                LastLoginDateTime = null,
                 Username = userRepresentation.Username,
                 Email = userRepresentation.Email,
                 FirstName = userRepresentation.FirstName,
