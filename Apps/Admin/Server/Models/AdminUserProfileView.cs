@@ -60,6 +60,6 @@ namespace HealthGateway.Admin.Server.Models
         /// <summary>
         /// Gets or sets the user's last login date time from DB AdminUserProfile.
         /// </summary>
-        public DateTime LastLoginDateTime { get; set; }
+        public DateTime? LastLoginDateTime { get; set; }
     }
 }
