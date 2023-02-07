@@ -24,13 +24,16 @@ namespace HealthGateway.Common.Services
     using HealthGateway.Common.Data.Constants;
     using HealthGateway.Common.Data.ErrorHandling;
     using HealthGateway.Common.Data.Models;
+    using HealthGateway.Common.Data.Utils;
     using HealthGateway.Common.Data.ViewModels;
     using HealthGateway.Common.Factories;
     using HealthGateway.Common.Models;
+    using HealthGateway.Common.Utils;
     using HealthGateway.Database.Constants;
     using HealthGateway.Database.Delegates;
     using HealthGateway.Database.Models;
     using HealthGateway.Database.Wrapper;
+    using Microsoft.Extensions.Configuration;
     using Microsoft.IdentityModel.Tokens;
     using UserQueryType = HealthGateway.Common.Data.Constants.UserQueryType;
 
@@ -42,6 +45,7 @@ namespace HealthGateway.Common.Services
         private readonly IPatientService patientService;
         private readonly IResourceDelegateDelegate resourceDelegateDelegate;
         private readonly IUserProfileDelegate userProfileDelegate;
+        private readonly IConfiguration configuration;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="SupportService"/> class.
@@ -51,25 +55,33 @@ namespace HealthGateway.Common.Services
         /// <param name="patientService">The patient service to lookup HDIDs by PHN.</param>
         /// <param name="resourceDelegateDelegate">The resource delegate used to lookup delegates and owners.</param>
         /// <param name="autoMapper">The injected automapper provider.</param>
+        /// <param name="configuration">The configuration to use.</param>
         public SupportService(
             IUserProfileDelegate userProfileDelegate,
             IMessagingVerificationDelegate messagingVerificationDelegate,
             IPatientService patientService,
             IResourceDelegateDelegate resourceDelegateDelegate,
-            IMapper autoMapper)
+            IMapper autoMapper,
+            IConfiguration configuration)
         {
             this.userProfileDelegate = userProfileDelegate;
             this.messagingVerificationDelegate = messagingVerificationDelegate;
             this.patientService = patientService;
             this.resourceDelegateDelegate = resourceDelegateDelegate;
             this.autoMapper = autoMapper;
+            this.configuration = configuration;
         }
 
         /// <inheritdoc/>
         public RequestResult<IEnumerable<MessagingVerificationModel>> GetMessageVerifications(string hdid)
         {
             DbResult<IEnumerable<MessagingVerification>> dbResult = this.messagingVerificationDelegate.GetUserMessageVerifications(hdid);
-            IList<MessagingVerificationModel> verificationModels = this.autoMapper.Map<IList<MessagingVerificationModel>>(dbResult.Payload);
+            TimeZoneInfo localTimezone = DateFormatter.GetLocalTimeZone(this.configuration);
+            IList<MessagingVerificationModel>
+                verificationModels =
+                    dbResult.Payload.Select(
+                            m => MessagingVerificationMapUtils.ToUiModel(m, this.autoMapper, localTimezone))
+                        .ToList();
             RequestResult<IEnumerable<MessagingVerificationModel>> result = new()
             {
                 ResultStatus = ResultType.Success,
@@ -137,7 +149,8 @@ namespace HealthGateway.Common.Services
                 DbResult<UserProfile> dbResult = this.userProfileDelegate.GetUserProfile(patientResult.ResourcePayload.HdId);
                 if (dbResult.Status == DbStatusCode.Read)
                 {
-                    SupportUser supportUser = this.autoMapper.Map<SupportUser>(dbResult.Payload);
+                    TimeZoneInfo localTimezone = DateFormatter.GetLocalTimeZone(this.configuration);
+                    SupportUser supportUser = SupportUserMapUtils.ToUiModel(dbResult.Payload, this.autoMapper, localTimezone);
                     supportUser.PersonalHealthNumber = patientResult.ResourcePayload.PersonalHealthNumber;
                     supportUsers.Add(supportUser);
                     result.ResourcePayload = supportUsers;
@@ -165,7 +178,10 @@ namespace HealthGateway.Common.Services
         private void PopulateSupportUser(RequestResult<IEnumerable<SupportUser>> result, Database.Constants.UserQueryType queryType, string queryString)
         {
             DbResult<List<UserProfile>> dbResult = this.userProfileDelegate.GetUserProfiles(queryType, queryString);
-            result.ResourcePayload = this.autoMapper.Map<IEnumerable<SupportUser>>(dbResult.Payload);
+            TimeZoneInfo localTimezone = DateFormatter.GetLocalTimeZone(this.configuration);
+            result.ResourcePayload = dbResult.Payload.Select(
+                    m => SupportUserMapUtils.ToUiModel(m, this.autoMapper, localTimezone))
+                .ToList();
             result.ResultStatus = ResultType.Success;
         }
 

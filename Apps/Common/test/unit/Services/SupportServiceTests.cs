@@ -32,6 +32,7 @@ namespace HealthGateway.CommonTests.Services
     using HealthGateway.Database.Delegates;
     using HealthGateway.Database.Models;
     using HealthGateway.Database.Wrapper;
+    using Microsoft.Extensions.Configuration;
     using Moq;
     using Xunit;
     using UserQueryType = HealthGateway.Common.Data.Constants.UserQueryType;
@@ -49,6 +50,9 @@ namespace HealthGateway.CommonTests.Services
         private const string ClientRegistryError = "Client Registry Error";
         private const string ProfileNotFound = $"Unable to find user profile for hdid: {Hdid}";
         private const string PatientResponseCode = $"500|{ClientRegistryWarning}";
+        private const string ConfigUnixTimeZoneId = "America/Vancouver";
+        private const string ConfigWindowsTimeZoneId = "Pacific Standard Time";
+        private static readonly IConfiguration Configuration = GetIConfigurationRoot();
 
         /// <summary>
         /// Gets Users by Hdid.
@@ -403,7 +407,21 @@ namespace HealthGateway.CommonTests.Services
                 messagingVerificationDelegateMock.Object,
                 patientServiceMock.Object,
                 resourceDelegateDelegateMock.Object,
-                autoMapper);
+                autoMapper,
+                Configuration);
+        }
+
+        private static IConfigurationRoot GetIConfigurationRoot()
+        {
+            Dictionary<string, string?> myConfiguration = new()
+            {
+                { "TimeZone:UnixTimeZoneId", ConfigUnixTimeZoneId },
+                { "TimeZone:WindowsTimeZoneId", ConfigWindowsTimeZoneId },
+            };
+
+            return new ConfigurationBuilder()
+                .AddInMemoryCollection(myConfiguration.ToList())
+                .Build();
         }
     }
 }
