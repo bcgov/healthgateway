@@ -277,9 +277,7 @@ export default class SupportView extends Vue {
         if (!date) {
             return "";
         }
-        return new DateWrapper(date, { isUtc: true }).format(
-            DateWrapper.defaultDateTimeFormat
-        );
+        return new DateWrapper(date).format(DateWrapper.defaultDateTimeFormat);
     }
 
     public formatOptionalField(value: string | null | undefined) {
