@@ -1,4 +1,4 @@
-describe("WebClient UserProfile Service", () => {
+describe("GatewayApi UserProfile Service", () => {
     const BASEURL = "UserProfile/";
     const HDID = "P6FFO433A5WPMVTGM7T4ZVWBKCSVNAYGTWTU3J2LWMGUMERKI72A";
     const BOGUSHDID = "BOGUSHDID";

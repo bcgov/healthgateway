@@ -1,4 +1,4 @@
-describe("WebClient Service", () => {
+describe("GatewayApi Service", () => {
     it("Verify Swagger", () => {
         cy.logout();
         cy.readConfig().then((config) => {
