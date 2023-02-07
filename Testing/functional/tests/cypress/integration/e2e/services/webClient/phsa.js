@@ -1,4 +1,5 @@
 function getPhsaTokens(config) {
+    cy.log("Requesting access token");
     return cy
         .request({
             method: "POST",
@@ -9,6 +10,11 @@ function getPhsaTokens(config) {
                 client_id: Cypress.env("keycloak.phsa.client"),
                 client_secret: Cypress.env("keycloak.phsa.secret"),
             },
+            failOnStatusCode: false, // prevent leaking credentials on failures
+        })
+        .should((response) => {
+            expect(response.status).to.eq(200);
+            expect(response.body?.access_token).to.exist;
         })
         .its("body");
 }
