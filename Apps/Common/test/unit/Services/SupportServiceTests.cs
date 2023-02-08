@@ -70,6 +70,8 @@ namespace HealthGateway.CommonTests.Services
             // Assert
             Assert.Equal(ResultType.Success, actualResult.ResultStatus);
             Assert.Single(actualResult.ResourcePayload);
+            Assert.NotEmpty(actualResult.ResourcePayload.Single().PhysicalAddress);
+            Assert.NotEmpty(actualResult.ResourcePayload.Single().PostalAddress);
         }
 
         /// <summary>
@@ -264,6 +266,20 @@ namespace HealthGateway.CommonTests.Services
                         {
                             HdId = Hdid,
                             PersonalHealthNumber = Phn,
+                            PhysicalAddress = new()
+                            {
+                                StreetLines = { "1025 Sutlej Street", "Suite 310" },
+                                City = "Victoria",
+                                State = "BC",
+                                PostalCode = "V8V2V8",
+                            },
+                            PostalAddress = new()
+                            {
+                                StreetLines = { "1535 Belcher Avenue", "Suite 202" },
+                                City = "Victoria",
+                                State = "BC",
+                                PostalCode = "V8R4N2",
+                            },
                         },
                     };
                 case ResultType.ActionRequired:
