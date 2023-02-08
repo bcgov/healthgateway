@@ -36,5 +36,15 @@ namespace HealthGateway.Common.Data.ViewModels
         /// Gets or sets the user's last login date time.
         /// </summary>
         public DateTime? LastLoginDateTime { get; set; }
+
+        /// <summary>
+        /// Gets or sets the physical address for the patient.
+        /// </summary>
+        public string PhysicalAddress { get; set; } = string.Empty;
+
+        /// <summary>
+        /// Gets or sets the postal address for the patient.
+        /// </summary>
+        public string PostalAddress { get; set; } = string.Empty;
     }
 }
