@@ -4,15 +4,15 @@ import "vue-loading-overlay/dist/vue-loading.css";
 import { library } from "@fortawesome/fontawesome-svg-core";
 import {
     faEdit,
-    faMicroscope,
     faPills,
     faSyringe,
+    faVial,
 } from "@fortawesome/free-solid-svg-icons";
 import Vue from "vue";
 import Loading from "vue-loading-overlay";
 import { Component, Prop } from "vue-property-decorator";
 
-library.add(faEdit, faMicroscope, faPills, faSyringe);
+library.add(faEdit, faVial, faPills, faSyringe);
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const options: any = {
