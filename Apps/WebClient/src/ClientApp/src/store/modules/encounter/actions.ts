@@ -19,7 +19,7 @@ import EventTracker from "@/utility/eventTracker";
 import { EncounterActions } from "./types";
 
 export const actions: EncounterActions = {
-    retrievePatientEncounters(
+    retrieveHealthVisits(
         context,
         params: { hdid: string }
     ): Promise<RequestResult<Encounter[]>> {
@@ -30,22 +30,23 @@ export const actions: EncounterActions = {
 
         return new Promise((resolve, reject) => {
             if (
-                context.state.encounters[params.hdid]?.status ===
+                context.state.healthVisits[params.hdid]?.status ===
                 LoadStatus.LOADED
             ) {
                 logger.debug(`Encounters found stored, not querying!`);
-                const patientEncounters: Encounter[] =
-                    context.getters.patientEncounters(params.hdid);
+                const healthVisits: Encounter[] = context.getters.healthVisits(
+                    params.hdid
+                );
                 resolve({
                     pageIndex: 0,
                     pageSize: 0,
-                    resourcePayload: patientEncounters,
+                    resourcePayload: healthVisits,
                     resultStatus: ResultType.Success,
-                    totalResultCount: patientEncounters.length,
+                    totalResultCount: healthVisits.length,
                 });
             } else {
-                logger.debug(`Retrieving Patient Encounters`);
-                context.commit("setPatientEncountersRequested", params.hdid);
+                logger.debug(`Retrieving Health Visits`);
+                context.commit("setHealthVisitsRequested", params.hdid);
                 encounterService
                     .getPatientEncounters(params.hdid)
                     .then((result) => {
@@ -62,9 +63,9 @@ export const actions: EncounterActions = {
                                 EntryType.Encounter,
                                 result.resourcePayload.length
                             );
-                            context.commit("setPatientEncounters", {
+                            context.commit("setHealthVisits", {
                                 hdid: params.hdid,
-                                patientEncounters: result.resourcePayload,
+                                healthVisits: result.resourcePayload,
                             });
                             resolve(result);
                         }
@@ -99,7 +100,7 @@ export const actions: EncounterActions = {
                 const hospitalVisits: HospitalVisit[] =
                     context.getters.hospitalVisits(params.hdid);
                 const hospitalVisitsQueued: boolean =
-                    context.getters.isHospitalVisitQueued(params.hdid);
+                    context.getters.hospitalVisitsAreQueued(params.hdid);
                 resolve({
                     pageIndex: 0,
                     pageSize: 0,
@@ -190,13 +191,13 @@ export const actions: EncounterActions = {
 
         switch (params.errorSourceType) {
             case ErrorSourceType.Encounter:
-                context.commit("encounterError", {
+                context.commit("setHealthVisitsError", {
                     hdid: params.hdid,
                     error: params.error,
                 });
                 break;
             case ErrorSourceType.HospitalVisit:
-                context.commit("hospitalVisitsError", {
+                context.commit("setHospitalVisitsError", {
                     hdid: params.hdid,
                     error: params.error,
                 });

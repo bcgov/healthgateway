@@ -97,8 +97,8 @@ export default class TimelineView extends Vue {
     @Action("retrieve", { namespace: "immunization" })
     retrieveImmunizations!: (params: { hdid: string }) => Promise<void>;
 
-    @Action("retrievePatientEncounters", { namespace: "encounter" })
-    retrieveEncounters!: (params: { hdid: string }) => Promise<void>;
+    @Action("retrieveHealthVisits", { namespace: "encounter" })
+    retrieveHealthVisits!: (params: { hdid: string }) => Promise<void>;
 
     @Action("retrieveHospitalVisits", { namespace: "encounter" })
     retrieveHospitalVisits!: (params: { hdid: string }) => Promise<void>;
@@ -150,11 +150,11 @@ export default class TimelineView extends Vue {
     @Getter("laboratoryOrdersAreLoading", { namespace: "laboratory" })
     isLaboratoryLoading!: boolean;
 
-    @Getter("isEncounterLoading", { namespace: "encounter" })
-    isEncounterLoading!: (hdid: string) => boolean;
+    @Getter("healthVisitsAreLoading", { namespace: "encounter" })
+    healthVisitsAreLoading!: (hdid: string) => boolean;
 
-    @Getter("isHospitalVisitLoading", { namespace: "encounter" })
-    isHospitalVisitLoading!: (hdid: string) => boolean;
+    @Getter("hospitalVisitsAreLoading", { namespace: "encounter" })
+    hospitalVisitsAreLoading!: (hdid: string) => boolean;
 
     @Getter("isLoading", { namespace: "immunization" })
     isImmunizationLoading!: boolean;
@@ -174,8 +174,8 @@ export default class TimelineView extends Vue {
     @Getter("covidImmunizations", { namespace: "immunization" })
     covidImmunizations!: ImmunizationEvent[];
 
-    @Getter("patientEncounters", { namespace: "encounter" })
-    patientEncounters!: (hdid: string) => Encounter[];
+    @Getter("healthVisits", { namespace: "encounter" })
+    healthVisits!: (hdid: string) => Encounter[];
 
     @Getter("hospitalVisits", { namespace: "encounter" })
     hospitalVisits!: (hdid: string) => HospitalVisit[];
@@ -260,10 +260,10 @@ export default class TimelineView extends Vue {
             );
         }
 
-        // Add the Encounter entries to the timeline list
-        for (const encounter of this.patientEncounters(this.user.hdid)) {
+        // Add the health visit entries to the timeline list
+        for (const healthVisit of this.healthVisits(this.user.hdid)) {
             timelineEntries.push(
-                new EncounterTimelineEntry(encounter, this.getEntryComments)
+                new EncounterTimelineEntry(healthVisit, this.getEntryComments)
             );
         }
 
@@ -320,8 +320,8 @@ export default class TimelineView extends Vue {
             !this.isImmunizationDeferred &&
             !this.isCovid19LaboratoryLoading &&
             !this.isLaboratoryLoading &&
-            !this.isEncounterLoading(this.user.hdid) &&
-            !this.isHospitalVisitLoading(this.user.hdid) &&
+            !this.healthVisitsAreLoading(this.user.hdid) &&
+            !this.hospitalVisitsAreLoading(this.user.hdid) &&
             !this.isClinicalDocumentLoading &&
             !this.isNoteLoading &&
             !this.isCommentLoading
@@ -368,14 +368,14 @@ export default class TimelineView extends Vue {
         filtersLoaded.push(
             this.isSelectedFilterModuleLoading(
                 EntryType.Encounter,
-                this.isEncounterLoading(this.user.hdid)
+                this.healthVisitsAreLoading(this.user.hdid)
             )
         );
 
         filtersLoaded.push(
             this.isSelectedFilterModuleLoading(
                 EntryType.HospitalVisit,
-                this.isHospitalVisitLoading(this.user.hdid)
+                this.hospitalVisitsAreLoading(this.user.hdid)
             )
         );
 
@@ -465,7 +465,7 @@ export default class TimelineView extends Vue {
             this.retrieveImmunizations({ hdid: this.user.hdid }),
             this.retrieveCovid19LaboratoryOrders({ hdid: this.user.hdid }),
             this.retrieveLaboratoryOrders({ hdid: this.user.hdid }),
-            this.retrieveEncounters({ hdid: this.user.hdid }),
+            this.retrieveHealthVisits({ hdid: this.user.hdid }),
             this.retrieveHospitalVisits({ hdid: this.user.hdid }),
             this.retrieveClinicalDocuments({ hdid: this.user.hdid }),
             this.retrieveNotes({ hdid: this.user.hdid }),

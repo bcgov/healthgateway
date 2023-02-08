@@ -27,14 +27,14 @@ interface EncounterRow {
 export default class MSPVisitsReportComponent extends Vue {
     @Prop() private filter!: ReportFilter;
 
-    @Action("retrievePatientEncounters", { namespace: "encounter" })
-    retrieveEncounters!: (params: { hdid: string }) => Promise<void>;
+    @Action("retrieveHealthVisits", { namespace: "encounter" })
+    retrieveHealthVisits!: (params: { hdid: string }) => Promise<void>;
 
-    @Getter("isEncounterLoading", { namespace: "encounter" })
-    isEncounterLoading!: (hdid: string) => boolean;
+    @Getter("healthVisitsAreLoading", { namespace: "encounter" })
+    healthVisitsAreLoading!: (hdid: string) => boolean;
 
-    @Getter("patientEncounters", { namespace: "encounter" })
-    patientEncounters!: (hdid: string) => Encounter[];
+    @Getter("healthVisits", { namespace: "encounter" })
+    healthVisits!: (hdid: string) => Encounter[];
 
     @Getter("user", { namespace: "user" })
     private user!: User;
@@ -44,11 +44,11 @@ export default class MSPVisitsReportComponent extends Vue {
     private readonly headerClass = "encounter-report-table-header";
 
     private get isLoading(): boolean {
-        return this.isEncounterLoading(this.user.hdid);
+        return this.healthVisitsAreLoading(this.user.hdid);
     }
 
     private get visibleRecords(): Encounter[] {
-        let records = this.patientEncounters(this.user.hdid).filter((record) =>
+        let records = this.healthVisits(this.user.hdid).filter((record) =>
             this.filter.allowsDate(record.encounterDate)
         );
         records.sort((a, b) => {
@@ -96,7 +96,7 @@ export default class MSPVisitsReportComponent extends Vue {
 
     private created(): void {
         this.logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
-        this.retrieveEncounters({ hdid: this.user.hdid }).catch((err) =>
+        this.retrieveHealthVisits({ hdid: this.user.hdid }).catch((err) =>
             this.logger.error(`Error loading encounter data: ${err}`)
         );
     }

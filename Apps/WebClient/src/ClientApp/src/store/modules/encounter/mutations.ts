@@ -6,49 +6,49 @@ import { LoadStatus } from "@/models/storeOperations";
 
 import { EncounterMutations, EncounterState } from "./types";
 import {
-    getEncounterState,
+    getHealthVisitState,
     getHospitalVisitState,
-    setEncounterState,
+    setHealthVisitState,
     setHospitalVisitState,
 } from "./util";
 
 export const mutations: EncounterMutations = {
-    setPatientEncountersRequested(state: EncounterState, hdid: string) {
-        const currentState = getEncounterState(state, hdid);
+    setHealthVisitsRequested(state: EncounterState, hdid: string) {
+        const currentState = getHealthVisitState(state, hdid);
         const nextState: DatasetState<Encounter[]> = {
             ...currentState,
             status: LoadStatus.REQUESTED,
         };
-        setEncounterState(state, hdid, nextState);
+        setHealthVisitState(state, hdid, nextState);
     },
-    setPatientEncounters(
+    setHealthVisits(
         state: EncounterState,
-        payload: { hdid: string; patientEncounters: Encounter[] }
+        payload: { hdid: string; healthVisits: Encounter[] }
     ) {
-        const { hdid, patientEncounters } = payload;
-        const currentState = getEncounterState(state, hdid);
+        const { hdid, healthVisits } = payload;
+        const currentState = getHealthVisitState(state, hdid);
         const nextState: DatasetState<Encounter[]> = {
             ...currentState,
-            data: patientEncounters,
+            data: healthVisits,
             error: undefined,
             statusMessage: "success",
             status: LoadStatus.LOADED,
         };
-        setEncounterState(state, hdid, nextState);
+        setHealthVisitState(state, hdid, nextState);
     },
-    encounterError(
+    setHealthVisitsError(
         state: EncounterState,
         payload: { hdid: string; error: ResultError }
     ) {
         const { hdid, error } = payload;
-        const currentState = getEncounterState(state, hdid);
+        const currentState = getHealthVisitState(state, hdid);
         const nextState: DatasetState<Encounter[]> = {
             ...currentState,
             error: error,
             statusMessage: error.resultMessage,
             status: LoadStatus.ERROR,
         };
-        setEncounterState(state, hdid, nextState);
+        setHealthVisitState(state, hdid, nextState);
     },
     setHospitalVisitsRequested(state: EncounterState, hdid: string) {
         const currentState = getHospitalVisitState(state, hdid);
@@ -90,7 +90,7 @@ export const mutations: EncounterMutations = {
         };
         setHospitalVisitState(state, hdid, nextState);
     },
-    hospitalVisitsError(
+    setHospitalVisitsError(
         state: EncounterState,
         payload: { hdid: string; error: ResultError }
     ) {
