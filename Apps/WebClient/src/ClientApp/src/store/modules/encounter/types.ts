@@ -16,25 +16,25 @@ import RequestResult from "@/models/requestResult";
 import { RootState } from "@/store/types";
 
 export interface EncounterState {
-    encounters: Dictionary<DatasetState<Encounter[]>>;
+    healthVisits: Dictionary<DatasetState<Encounter[]>>;
     hospitalVisits: Dictionary<HospitalVisitState>;
 }
 
 export interface EncounterGetters
     extends GetterTree<EncounterState, RootState> {
-    patientEncounters(state: EncounterState): (hdid: string) => Encounter[];
-    encounterCount(state: EncounterState): (hdid: string) => number;
-    isEncounterLoading(state: EncounterState): (hdid: string) => boolean;
+    healthVisits(state: EncounterState): (hdid: string) => Encounter[];
+    healthVisitsCount(state: EncounterState): (hdid: string) => number;
+    healthVisitsAreLoading(state: EncounterState): (hdid: string) => boolean;
     hospitalVisits(state: EncounterState): (hdid: string) => HospitalVisit[];
-    hospitalVisitCount(state: EncounterState): (hdid: string) => number;
-    isHospitalVisitLoading(state: EncounterState): (hdid: string) => boolean;
-    isHospitalVisitQueued(state: EncounterState): (hdid: string) => boolean;
+    hospitalVisitsCount(state: EncounterState): (hdid: string) => number;
+    hospitalVisitsAreLoading(state: EncounterState): (hdid: string) => boolean;
+    hospitalVisitsAreQueued(state: EncounterState): (hdid: string) => boolean;
 }
 
 type StoreContext = ActionContext<EncounterState, RootState>;
 export interface EncounterActions
     extends ActionTree<EncounterState, RootState> {
-    retrievePatientEncounters(
+    retrieveHealthVisits(
         context: StoreContext,
         params: { hdid: string }
     ): Promise<RequestResult<Encounter[]>>;
@@ -49,15 +49,15 @@ export interface EncounterActions
 }
 
 export interface EncounterMutations extends MutationTree<EncounterState> {
-    setPatientEncountersRequested(state: EncounterState, hdid: string): void;
-    setPatientEncounters(
+    setHealthVisitsRequested(state: EncounterState, hdid: string): void;
+    setHealthVisits(
         state: EncounterState,
         payload: {
             hdid: string;
-            patientEncounters: Encounter[];
+            healthVisits: Encounter[];
         }
     ): void;
-    encounterError(
+    setHealthVisitsError(
         state: EncounterState,
         payload: {
             hdid: string;
@@ -79,7 +79,7 @@ export interface EncounterMutations extends MutationTree<EncounterState> {
             hospitalVisits: HospitalVisitResult;
         }
     ): void;
-    hospitalVisitsError(
+    setHospitalVisitsError(
         state: EncounterState,
         payload: {
             hdid: string;

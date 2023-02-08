@@ -4,7 +4,7 @@ import { mutations } from "./mutations";
 import { EncounterModule, EncounterState } from "./types";
 
 const state: EncounterState = {
-    encounters: {},
+    healthVisits: {},
     hospitalVisits: {},
 };
 

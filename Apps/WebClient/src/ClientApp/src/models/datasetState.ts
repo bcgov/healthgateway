@@ -1,4 +1,4 @@
-import { HospitalVisit } from "./encounter";
+import { Encounter, HospitalVisit } from "./encounter";
 import { ResultError } from "./errors";
 import { LoadStatus } from "./storeOperations";
 
@@ -8,6 +8,8 @@ export interface DatasetState<T> {
     statusMessage: string;
     error?: ResultError;
 }
+
+export type HealthVisitState = DatasetState<Encounter[]>;
 
 export interface HospitalVisitState extends DatasetState<HospitalVisit[]> {
     queued: boolean;

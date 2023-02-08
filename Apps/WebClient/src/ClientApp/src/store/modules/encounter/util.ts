@@ -1,12 +1,11 @@
 import Vue from "vue";
 
-import { DatasetState, HospitalVisitState } from "@/models/datasetState";
-import { Encounter } from "@/models/encounter";
+import { HealthVisitState, HospitalVisitState } from "@/models/datasetState";
 import { LoadStatus } from "@/models/storeOperations";
 
 import { EncounterState } from "./types";
 
-export const defaultEncounterState: DatasetState<Encounter[]> = {
+export const defaultHealthVisitState: HealthVisitState = {
     data: [],
     status: LoadStatus.NONE,
     statusMessage: "",
@@ -22,30 +21,30 @@ export const defaultHospitalVisitState: HospitalVisitState = {
 };
 
 /**
- * Retrieves the encounter state for a particular HDID.
+ * Retrieves the health visit state for a particular HDID.
  * @param state The store state.
  * @param hdid The HDID associated with the dataset state.
  * @returns The dataset state for the HDID, if it exists, or a new dataset state initialized to default values.
  */
-export function getEncounterState(
+export function getHealthVisitState(
     state: EncounterState,
     hdid: string
-): DatasetState<Encounter[]> {
-    return state.encounters[hdid] ?? { ...defaultEncounterState };
+): HealthVisitState {
+    return state.healthVisits[hdid] ?? { ...defaultHealthVisitState };
 }
 
 /**
- * Updates the encounter state for a particular HDID.
+ * Updates the health visit state for a particular HDID.
  * @param state The store state.
  * @param hdid The HDID associated with the dataset state.
  * @param datasetState The new dataset state.
  */
-export function setEncounterState(
+export function setHealthVisitState(
     state: EncounterState,
     hdid: string,
-    datasetState: DatasetState<Encounter[]>
+    datasetState: HealthVisitState
 ) {
-    Vue.set(state.encounters, hdid, datasetState);
+    Vue.set(state.healthVisits, hdid, datasetState);
 }
 
 /**

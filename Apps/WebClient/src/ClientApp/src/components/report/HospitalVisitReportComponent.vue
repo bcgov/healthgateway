@@ -31,8 +31,8 @@ export default class HospitalVisitReportComponent extends Vue {
     @Action("retrieveHospitalVisits", { namespace: "encounter" })
     retrieveHospitalVisits!: (params: { hdid: string }) => Promise<void>;
 
-    @Getter("isHospitalVisitLoading", { namespace: "encounter" })
-    isHospitalVisitLoading!: (hdid: string) => boolean;
+    @Getter("hospitalVisitsAreLoading", { namespace: "encounter" })
+    hospitalVisitsAreLoading!: (hdid: string) => boolean;
 
     @Getter("hospitalVisits", { namespace: "encounter" })
     hospitalVisits!: (hdid: string) => HospitalVisit[];
@@ -45,7 +45,7 @@ export default class HospitalVisitReportComponent extends Vue {
     private readonly headerClass = "hospital-visit-report-table-header";
 
     private get isLoading(): boolean {
-        return this.isHospitalVisitLoading(this.user.hdid);
+        return this.hospitalVisitsAreLoading(this.user.hdid);
     }
 
     private get visibleRecords(): HospitalVisit[] {
