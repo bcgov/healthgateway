@@ -106,7 +106,7 @@
                             <MudText Typo="Typo.subtitle1">
                                 Physical Address
                             </MudText>
-                            <MudText Typo="Typo.body2" data-testid="physical-address-{context.Hdid}">
+                            <MudText Typo="Typo.body2" data-testid=@($"physical-address-{context.Hdid}")>
                                 @if (context.IsPhysicalAddressShown)
                                 {
                                     @context.PhysicalAddress
@@ -122,7 +122,7 @@
                         <MudText Typo="Typo.subtitle1">
                             @context.PostalAddressLabel
                         </MudText>
-                        <MudText Typo="Typo.body2" data-testid="postal-address-{context.Hdid}">
+                        <MudText Typo="Typo.body2" data-testid=@($"postal-address-{context.Hdid}")>
                             @if (context.IsPostalAddressShown)
                             {
                                 @context.PostalAddress
