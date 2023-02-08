@@ -77,9 +77,9 @@ namespace HealthGateway.GatewayApi.Services
             using Activity? activity = Source.StartActivity();
             this.logger.LogDebug("Sending request to dismiss web alerts to PHSA.");
             PersonalAccount personalAccount = await this.personalAccountsService.GetPatientAccountAsync(hdid).ConfigureAwait(true);
-            string pid = personalAccount.PatientIdentity.Pid.ToString();
+            string accountId = personalAccount.Id.ToString();
 
-            await this.webAlertApi.DeleteWebAlertsAsync(pid).ConfigureAwait(true);
+            await this.webAlertApi.DeleteWebAlertsAsync(accountId).ConfigureAwait(true);
             this.logger.LogDebug("Finished sending request to dismiss web alerts to PHSA.");
         }
 
@@ -89,9 +89,9 @@ namespace HealthGateway.GatewayApi.Services
             using Activity? activity = Source.StartActivity();
             this.logger.LogDebug("Sending request to dismiss web alert to PHSA.");
             PersonalAccount personalAccount = await this.personalAccountsService.GetPatientAccountAsync(hdid).ConfigureAwait(true);
-            string pid = personalAccount.PatientIdentity.Pid.ToString();
+            string accountId = personalAccount.Id.ToString();
 
-            await this.webAlertApi.DeleteWebAlertAsync(pid, webAlertId).ConfigureAwait(true);
+            await this.webAlertApi.DeleteWebAlertAsync(accountId, webAlertId).ConfigureAwait(true);
             this.logger.LogDebug("Finished sending request to dismiss web alert to PHSA.");
         }
     }
