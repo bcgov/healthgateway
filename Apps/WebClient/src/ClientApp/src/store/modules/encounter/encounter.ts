@@ -1,24 +1,11 @@
-import { LoadStatus } from "@/models/storeOperations";
-
 import { actions } from "./actions";
 import { getters } from "./getters";
 import { mutations } from "./mutations";
 import { EncounterModule, EncounterState } from "./types";
 
 const state: EncounterState = {
-    encounter: {
-        statusMessage: "",
-        patientEncounters: [],
-        error: undefined,
-        status: LoadStatus.NONE,
-    },
-    hospitalVisit: {
-        statusMessage: "",
-        hospitalVisits: [],
-        error: undefined,
-        status: LoadStatus.NONE,
-        queued: false,
-    },
+    encounters: {},
+    hospitalVisits: {},
 };
 
 const namespaced = true;

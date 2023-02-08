@@ -1,54 +1,107 @@
+import { DatasetState, HospitalVisitState } from "@/models/datasetState";
 import { Encounter } from "@/models/encounter";
 import { ResultError } from "@/models/errors";
 import HospitalVisitResult from "@/models/hospitalVisitResult";
 import { LoadStatus } from "@/models/storeOperations";
 
 import { EncounterMutations, EncounterState } from "./types";
+import {
+    getEncounterState,
+    getHospitalVisitState,
+    setEncounterState,
+    setHospitalVisitState,
+} from "./util";
 
 export const mutations: EncounterMutations = {
-    setPatientEncountersRequested(state: EncounterState) {
-        state.encounter.status = LoadStatus.REQUESTED;
+    setPatientEncountersRequested(state: EncounterState, hdid: string) {
+        const currentState = getEncounterState(state, hdid);
+        const nextState: DatasetState<Encounter[]> = {
+            ...currentState,
+            status: LoadStatus.REQUESTED,
+        };
+        setEncounterState(state, hdid, nextState);
     },
     setPatientEncounters(
         state: EncounterState,
-        patientEncounters: Encounter[]
+        payload: { hdid: string; patientEncounters: Encounter[] }
     ) {
-        state.encounter.patientEncounters = patientEncounters;
-        state.encounter.error = undefined;
-        state.encounter.statusMessage = "success";
-        state.encounter.status = LoadStatus.LOADED;
+        const { hdid, patientEncounters } = payload;
+        const currentState = getEncounterState(state, hdid);
+        const nextState: DatasetState<Encounter[]> = {
+            ...currentState,
+            data: patientEncounters,
+            error: undefined,
+            statusMessage: "success",
+            status: LoadStatus.LOADED,
+        };
+        setEncounterState(state, hdid, nextState);
     },
-    encounterError(state: EncounterState, error: ResultError) {
-        state.encounter.error = error;
-        state.encounter.statusMessage = error.resultMessage;
-        state.encounter.status = LoadStatus.ERROR;
+    encounterError(
+        state: EncounterState,
+        payload: { hdid: string; error: ResultError }
+    ) {
+        const { hdid, error } = payload;
+        const currentState = getEncounterState(state, hdid);
+        const nextState: DatasetState<Encounter[]> = {
+            ...currentState,
+            error: error,
+            statusMessage: error.resultMessage,
+            status: LoadStatus.ERROR,
+        };
+        setEncounterState(state, hdid, nextState);
     },
-    setHospitalVisitsRequested(state: EncounterState) {
-        state.hospitalVisit.status = LoadStatus.REQUESTED;
+    setHospitalVisitsRequested(state: EncounterState, hdid: string) {
+        const currentState = getHospitalVisitState(state, hdid);
+        const nextState: HospitalVisitState = {
+            ...currentState,
+            status: LoadStatus.REQUESTED,
+        };
+        setHospitalVisitState(state, hdid, nextState);
     },
     setHospitalVisits(
         state: EncounterState,
-        hospitalVisitResult: HospitalVisitResult
+        payload: { hdid: string; hospitalVisitResult: HospitalVisitResult }
     ) {
-        state.hospitalVisit.hospitalVisits = hospitalVisitResult.hospitalVisits;
-        state.hospitalVisit.error = undefined;
-        state.hospitalVisit.statusMessage = "success";
-        state.hospitalVisit.status = LoadStatus.LOADED;
-        state.hospitalVisit.queued = hospitalVisitResult.queued;
+        const { hdid, hospitalVisitResult } = payload;
+        const currentState = getHospitalVisitState(state, hdid);
+        const nextState: HospitalVisitState = {
+            ...currentState,
+            data: hospitalVisitResult.hospitalVisits,
+            error: undefined,
+            statusMessage: "success",
+            status: LoadStatus.LOADED,
+            queued: hospitalVisitResult.queued,
+        };
+        setHospitalVisitState(state, hdid, nextState);
     },
     setHospitalVisitRefreshInProgress(
         state: EncounterState,
-        hospitalVisitResult: HospitalVisitResult
+        payload: { hdid: string; hospitalVisits: HospitalVisitResult }
     ) {
-        state.hospitalVisit.hospitalVisits = hospitalVisitResult.hospitalVisits;
-        state.hospitalVisit.error = undefined;
-        state.hospitalVisit.statusMessage = "";
-        state.hospitalVisit.status = LoadStatus.REQUESTED;
-        state.hospitalVisit.queued = hospitalVisitResult.queued;
+        const { hdid, hospitalVisits } = payload;
+        const currentState = getHospitalVisitState(state, hdid);
+        const nextState: HospitalVisitState = {
+            ...currentState,
+            data: hospitalVisits.hospitalVisits,
+            error: undefined,
+            statusMessage: "",
+            status: LoadStatus.REQUESTED,
+            queued: hospitalVisits.queued,
+        };
+        setHospitalVisitState(state, hdid, nextState);
     },
-    hospitalVisitsError(state: EncounterState, error: ResultError) {
-        state.hospitalVisit.error = error;
-        state.hospitalVisit.statusMessage = error.resultMessage;
-        state.hospitalVisit.status = LoadStatus.ERROR;
+    hospitalVisitsError(
+        state: EncounterState,
+        payload: { hdid: string; error: ResultError }
+    ) {
+        const { hdid, error } = payload;
+        const currentState = getHospitalVisitState(state, hdid);
+        const nextState: HospitalVisitState = {
+            ...currentState,
+            error: error,
+            statusMessage: error.resultMessage,
+            status: LoadStatus.ERROR,
+        };
+        setHospitalVisitState(state, hdid, nextState);
     },
 };

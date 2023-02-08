@@ -7,6 +7,7 @@ import { EntryType, entryTypeMap } from "@/constants/entryType";
 import { DateWrapper } from "@/models/dateWrapper";
 import TimelineEntry, { DateGroup } from "@/models/timelineEntry";
 import TimelineFilter from "@/models/timelineFilter";
+import User from "@/models/user";
 import container from "@/plugins/container";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import { ILogger } from "@/services/interfaces";
@@ -76,10 +77,10 @@ export default class LinearTimelineComponent extends Vue {
     isLaboratoryLoading!: boolean;
 
     @Getter("isEncounterLoading", { namespace: "encounter" })
-    isEncounterLoading!: boolean;
+    isEncounterLoading!: (hdid: string) => boolean;
 
     @Getter("isHospitalVisitLoading", { namespace: "encounter" })
-    isHospitalVisitLoading!: boolean;
+    isHospitalVisitLoading!: (hdid: string) => boolean;
 
     @Getter("isLoading", { namespace: "immunization" })
     isImmunizationLoading!: boolean;
@@ -92,6 +93,9 @@ export default class LinearTimelineComponent extends Vue {
 
     @Getter("isDeferredLoad", { namespace: "immunization" })
     isImmunizationDeferred!: boolean;
+
+    @Getter("user", { namespace: "user" })
+    user!: User;
 
     @Prop()
     private timelineEntries!: TimelineEntry[];
@@ -110,8 +114,8 @@ export default class LinearTimelineComponent extends Vue {
             !this.isImmunizationDeferred &&
             !this.isCovid19LaboratoryLoading &&
             !this.isLaboratoryLoading &&
-            !this.isEncounterLoading &&
-            !this.isHospitalVisitLoading &&
+            !this.isEncounterLoading(this.user.hdid) &&
+            !this.isHospitalVisitLoading(this.user.hdid) &&
             !this.isClinicalDocumentLoading &&
             !this.isNoteLoading &&
             !this.isCommentLoading;
@@ -159,14 +163,14 @@ export default class LinearTimelineComponent extends Vue {
         filtersLoaded.push(
             this.isSelectedFilterModuleLoading(
                 EntryType.Encounter,
-                this.isEncounterLoading
+                this.isEncounterLoading(this.user.hdid)
             )
         );
 
         filtersLoaded.push(
             this.isSelectedFilterModuleLoading(
                 EntryType.HospitalVisit,
-                this.isHospitalVisitLoading
+                this.isHospitalVisitLoading(this.user.hdid)
             )
         );
 

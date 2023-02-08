@@ -69,10 +69,10 @@ export default class FilterComponent extends Vue {
     laboratoryOrdersCount!: number;
 
     @Getter("encounterCount", { namespace: "encounter" })
-    encounterCount!: number;
+    encounterCount!: (hdid: string) => number;
 
     @Getter("hospitalVisitCount", { namespace: "encounter" })
-    hospitalVisitCount!: number;
+    hospitalVisitCount!: (hdid: string) => number;
 
     @Getter("noteCount", { namespace: "note" })
     noteCount!: number;
@@ -186,9 +186,9 @@ export default class FilterComponent extends Vue {
             case EntryType.Covid19LaboratoryOrder:
                 return this.covid19LaboratoryOrdersCount;
             case EntryType.Encounter:
-                return this.encounterCount;
+                return this.encounterCount(this.user.hdid);
             case EntryType.HospitalVisit:
-                return this.hospitalVisitCount;
+                return this.hospitalVisitCount(this.user.hdid);
             case EntryType.Note:
                 return this.noteCount;
             case EntryType.MedicationRequest:

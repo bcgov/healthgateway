@@ -151,10 +151,10 @@ export default class TimelineView extends Vue {
     isLaboratoryLoading!: boolean;
 
     @Getter("isEncounterLoading", { namespace: "encounter" })
-    isEncounterLoading!: boolean;
+    isEncounterLoading!: (hdid: string) => boolean;
 
     @Getter("isHospitalVisitLoading", { namespace: "encounter" })
-    isHospitalVisitLoading!: boolean;
+    isHospitalVisitLoading!: (hdid: string) => boolean;
 
     @Getter("isLoading", { namespace: "immunization" })
     isImmunizationLoading!: boolean;
@@ -175,10 +175,10 @@ export default class TimelineView extends Vue {
     covidImmunizations!: ImmunizationEvent[];
 
     @Getter("patientEncounters", { namespace: "encounter" })
-    patientEncounters!: Encounter[];
+    patientEncounters!: (hdid: string) => Encounter[];
 
     @Getter("hospitalVisits", { namespace: "encounter" })
-    hospitalVisits!: HospitalVisit[];
+    hospitalVisits!: (hdid: string) => HospitalVisit[];
 
     @Getter("medicationStatements", { namespace: "medication" })
     medicationStatements!: MedicationStatementHistory[];
@@ -261,14 +261,14 @@ export default class TimelineView extends Vue {
         }
 
         // Add the Encounter entries to the timeline list
-        for (const encounter of this.patientEncounters) {
+        for (const encounter of this.patientEncounters(this.user.hdid)) {
             timelineEntries.push(
                 new EncounterTimelineEntry(encounter, this.getEntryComments)
             );
         }
 
         // Add the hospital visit entries to the timeline list
-        for (const visit of this.hospitalVisits) {
+        for (const visit of this.hospitalVisits(this.user.hdid)) {
             timelineEntries.push(
                 new HospitalVisitTimelineEntry(visit, this.getEntryComments)
             );
@@ -320,8 +320,8 @@ export default class TimelineView extends Vue {
             !this.isImmunizationDeferred &&
             !this.isCovid19LaboratoryLoading &&
             !this.isLaboratoryLoading &&
-            !this.isEncounterLoading &&
-            !this.isHospitalVisitLoading &&
+            !this.isEncounterLoading(this.user.hdid) &&
+            !this.isHospitalVisitLoading(this.user.hdid) &&
             !this.isClinicalDocumentLoading &&
             !this.isNoteLoading &&
             !this.isCommentLoading
@@ -368,14 +368,14 @@ export default class TimelineView extends Vue {
         filtersLoaded.push(
             this.isSelectedFilterModuleLoading(
                 EntryType.Encounter,
-                this.isEncounterLoading
+                this.isEncounterLoading(this.user.hdid)
             )
         );
 
         filtersLoaded.push(
             this.isSelectedFilterModuleLoading(
                 EntryType.HospitalVisit,
-                this.isHospitalVisitLoading
+                this.isHospitalVisitLoading(this.user.hdid)
             )
         );
 
