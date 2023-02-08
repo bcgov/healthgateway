@@ -45,20 +45,20 @@ else
         <MudItem xs="6" lg="6">
             <MudPaper Class="my-2 pa-4" Outlined="true">
                 <MudText Align="Align.Center" Typo="Typo.subtitle1">
-                    <strong>Registered Users</strong>
+                    Registered Users
                 </MudText>
                 <MudText Align="Align.Center" Typo="Typo.subtitle1" data-testid="total-registered-users">
-                    <strong>@TotalRegisteredUsers</strong>
+                    @TotalRegisteredUsers
                 </MudText>
             </MudPaper>
         </MudItem>
         <MudItem xs="6" lg="6">
             <MudPaper Class="my-2 pa-4" Outlined="true">
                 <MudText Align="Align.Center" Typo="Typo.subtitle1">
-                    <strong>Dependents</strong>
+                    Dependents
                 </MudText>
                 <MudText Align="Align.Center" Typo="Typo.subtitle1" data-testid="total-dependents">
-                    <strong>@TotalDependents</strong>
+                    @TotalDependents
                 </MudText>
             </MudPaper>
         </MudItem>
@@ -121,36 +121,36 @@ else
 else
 {
     <MudText Class="my-3" Typo="Typo.subtitle1">
-        <strong>User Counts</strong>
+        User Counts
     </MudText>
     <MudGrid>
         <MudItem xs="12" lg="4">
             <MudPaper Class="my-2 pa-4" Outlined="true">
                 <MudText Align="Align.Center" Typo="Typo.subtitle1">
-                    <strong>Recurring Users</strong>
+                    Recurring Users
                 </MudText>
                 <MudText Align="Align.Center" Typo="Typo.subtitle1" data-testid="total-unique-users">
-                    <strong>@RecurringUserCount</strong>
+                    @RecurringUserCount
                 </MudText>
             </MudPaper>
         </MudItem>
         <MudItem xs="12" lg="4">
             <MudPaper Class="my-2 pa-4" Outlined="true">
                 <MudText Align="Align.Center" Typo="Typo.subtitle1">
-                    <strong>Mobile Logins</strong>
+                    Mobile Logins
                 </MudText>
                 <MudText Align="Align.Center" Typo="Typo.subtitle1" data-testid="total-mobile-users">
-                    <strong>@MobileUserCount</strong>
+                    @MobileUserCount
                 </MudText>
             </MudPaper>
         </MudItem>
         <MudItem xs="12" lg="4">
             <MudPaper Class="my-2 pa-4" Outlined="true">
                 <MudText Align="Align.Center" Typo="Typo.subtitle1">
-                    <strong>Web Logins</strong>
+                    Web Logins
                 </MudText>
                 <MudText Align="Align.Center" Typo="Typo.subtitle1" data-testid="total-web-users">
-                    <strong>@WebUserCount</strong>
+                    @WebUserCount
                 </MudText>
             </MudPaper>
         </MudItem>
@@ -165,7 +165,7 @@ else
 else
 {
     <MudText Class="my-3" Typo="Typo.subtitle1">
-        <strong>Rating Summary</strong>
+        Rating Summary
     </MudText>
     <RatingSummary />
 }
@@ -173,7 +173,7 @@ else
 <MudGrid>
     <MudItem xs="12" lg="12">
         <MudText Class="mt-3" Typo="Typo.subtitle1">
-            <strong>Daily Data</strong>
+            Daily Data
         </MudText>
         <MudTable Class="mt-3"
                   Loading="@(RegisteredUsersLoading || LoggedInUsersLoading || DependentsLoading)"
