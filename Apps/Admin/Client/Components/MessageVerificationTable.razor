@@ -2,7 +2,7 @@
 @inherits Fluxor.Blazor.Web.Components.FluxorComponent
 
 <MudText Class="ma-4" Typo="Typo.subtitle1">
-    <strong>Verification</strong>
+    Verification
 </MudText>
 
 <MudTable Class="ma-4"
@@ -40,12 +40,10 @@
     <RowTemplate>
         <MudTd data-testid="messaging-verification-table-email-sms" DataLabel="Email/SMS">@context.EmailOrSms</MudTd>
         <MudTd data-testid="messaging-verification-verified" DataLabel="Verified">@context.Verified</MudTd>
-        <MudTd data-testid="messaging-verification-table-date" DataLabel="Verification Date">@DateFormatter.ToShortDateAndTime(@context.VerificationDate)</MudTd>
+        <MudTd data-testid="messaging-verification-table-date" DataLabel="Verification Date">@DateFormatter.ToShortDateAndTime(context.VerificationDate)</MudTd>
         <MudTd data-testid="messaging-verification-table-code" DataLabel="Verification Code">@context.VerificationCode</MudTd>
     </RowTemplate>
     <PagerContent>
         <MudTablePager />
     </PagerContent>
 </MudTable>
-
-

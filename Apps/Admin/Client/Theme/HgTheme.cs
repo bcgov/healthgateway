@@ -50,6 +50,7 @@ namespace HealthGateway.Admin.Client.Theme
             // found at https://material.io/design/typography/the-type-system.html
             typography.H1.FontSize = "95px";
             typography.H2.FontSize = "59px";
+            typography.Subtitle1.FontWeight = 700;
 
             this.Typography = typography;
         }

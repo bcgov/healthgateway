@@ -27,8 +27,8 @@ namespace HealthGateway.Common.Services
     using HealthGateway.Common.Data.Utils;
     using HealthGateway.Common.Data.ViewModels;
     using HealthGateway.Common.Factories;
+    using HealthGateway.Common.MapUtils;
     using HealthGateway.Common.Models;
-    using HealthGateway.Common.Utils;
     using HealthGateway.Database.Constants;
     using HealthGateway.Database.Delegates;
     using HealthGateway.Database.Models;
@@ -150,8 +150,7 @@ namespace HealthGateway.Common.Services
                 if (dbResult.Status == DbStatusCode.Read)
                 {
                     TimeZoneInfo localTimezone = DateFormatter.GetLocalTimeZone(this.configuration);
-                    SupportUser supportUser = SupportUserMapUtils.ToUiModel(dbResult.Payload, this.autoMapper, localTimezone);
-                    supportUser.PersonalHealthNumber = patientResult.ResourcePayload.PersonalHealthNumber;
+                    SupportUser supportUser = SupportUserMapUtils.ToUiModel(dbResult.Payload, patientResult.ResourcePayload, this.autoMapper, localTimezone);
                     supportUsers.Add(supportUser);
                     result.ResourcePayload = supportUsers;
                     result.ResultStatus = ResultType.Success;
