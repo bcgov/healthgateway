@@ -165,6 +165,13 @@ export default class LinearTimelineComponent extends Vue {
 
         filtersLoaded.push(
             this.isSelectedFilterModuleLoading(
+                EntryType.HospitalVisit,
+                this.isHospitalVisitLoading
+            )
+        );
+
+        filtersLoaded.push(
+            this.isSelectedFilterModuleLoading(
                 EntryType.ClinicalDocument,
                 this.isClinicalDocumentLoading
             )
