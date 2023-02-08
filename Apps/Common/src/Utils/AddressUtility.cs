@@ -36,11 +36,13 @@ namespace HealthGateway.Common.Utils
             {
                 string streetLines = string.Join(", ", address.StreetLines.Where(s => !string.IsNullOrEmpty(s)));
                 string city = address.City;
+                string state = address.State;
                 string postalCode = address.PostalCode;
 
                 StringBuilder sb = new();
                 BuildString(sb, streetLines);
                 BuildString(sb, city);
+                BuildString(sb, state);
                 BuildString(sb, postalCode);
                 return sb.ToString();
             }
