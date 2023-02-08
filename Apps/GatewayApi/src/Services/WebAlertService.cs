@@ -61,9 +61,9 @@ namespace HealthGateway.GatewayApi.Services
             using Activity? activity = Source.StartActivity();
             this.logger.LogDebug("Retrieving web alerts from PHSA.");
             PersonalAccount personalAccount = await this.personalAccountsService.GetPatientAccountAsync(hdid).ConfigureAwait(true);
-            string pid = personalAccount.PatientIdentity.Pid.ToString();
+            string accountId = personalAccount.Id.ToString();
 
-            IList<PhsaWebAlert> phsaWebAlerts = await this.webAlertApi.GetWebAlertsAsync(pid).ConfigureAwait(true);
+            IList<PhsaWebAlert> phsaWebAlerts = await this.webAlertApi.GetWebAlertsAsync(accountId).ConfigureAwait(true);
             IList<WebAlert> webAlerts = this.autoMapper.Map<IEnumerable<PhsaWebAlert>, IList<WebAlert>>(
                 phsaWebAlerts.Where(a => a.ExpirationDateTimeUtc > DateTime.UtcNow && a.ScheduledDateTimeUtc < DateTime.UtcNow)
                     .OrderByDescending(a => a.ScheduledDateTimeUtc));
