@@ -30,11 +30,11 @@ export default class MSPVisitsReportComponent extends Vue {
     @Action("retrievePatientEncounters", { namespace: "encounter" })
     retrieveEncounters!: (params: { hdid: string }) => Promise<void>;
 
-    @Getter("isLoading", { namespace: "encounter" })
-    isLoading!: boolean;
+    @Getter("isEncounterLoading", { namespace: "encounter" })
+    isEncounterLoading!: (hdid: string) => boolean;
 
     @Getter("patientEncounters", { namespace: "encounter" })
-    patientEncounters!: Encounter[];
+    patientEncounters!: (hdid: string) => Encounter[];
 
     @Getter("user", { namespace: "user" })
     private user!: User;
@@ -43,8 +43,12 @@ export default class MSPVisitsReportComponent extends Vue {
 
     private readonly headerClass = "encounter-report-table-header";
 
+    private get isLoading(): boolean {
+        return this.isEncounterLoading(this.user.hdid);
+    }
+
     private get visibleRecords(): Encounter[] {
-        let records = this.patientEncounters.filter((record) =>
+        let records = this.patientEncounters(this.user.hdid).filter((record) =>
             this.filter.allowsDate(record.encounterDate)
         );
         records.sort((a, b) => {

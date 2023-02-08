@@ -2,27 +2,30 @@ import { Encounter, HospitalVisit } from "@/models/encounter";
 import { LoadStatus } from "@/models/storeOperations";
 
 import { EncounterGetters, EncounterState } from "./types";
+import { getEncounterState, getHospitalVisitState } from "./util";
 
 export const getters: EncounterGetters = {
-    patientEncounters(state: EncounterState): Encounter[] {
-        return state.encounter.patientEncounters;
+    patientEncounters(state: EncounterState): (hdid: string) => Encounter[] {
+        return (hdid: string) => getEncounterState(state, hdid).data;
     },
-    encounterCount(state: EncounterState): number {
-        return state.encounter.patientEncounters.length;
+    encounterCount(state: EncounterState): (hdid: string) => number {
+        return (hdid: string) => getEncounterState(state, hdid).data.length;
     },
-    isEncounterLoading(state: EncounterState): boolean {
-        return state.encounter.status === LoadStatus.REQUESTED;
+    isEncounterLoading(state: EncounterState): (hdid: string) => boolean {
+        return (hdid: string) =>
+            getEncounterState(state, hdid).status === LoadStatus.REQUESTED;
     },
-    hospitalVisits(state: EncounterState): HospitalVisit[] {
-        return state.hospitalVisit.hospitalVisits;
+    hospitalVisits(state: EncounterState): (hdid: string) => HospitalVisit[] {
+        return (hdid: string) => getHospitalVisitState(state, hdid).data;
     },
-    hospitalVisitCount(state: EncounterState): number {
-        return state.hospitalVisit.hospitalVisits.length;
+    hospitalVisitCount(state: EncounterState): (hdid: string) => number {
+        return (hdid: string) => getHospitalVisitState(state, hdid).data.length;
     },
-    isHospitalVisitLoading(state: EncounterState): boolean {
-        return state.hospitalVisit.status === LoadStatus.REQUESTED;
+    isHospitalVisitLoading(state: EncounterState): (hdid: string) => boolean {
+        return (hdid: string) =>
+            getHospitalVisitState(state, hdid).status === LoadStatus.REQUESTED;
     },
-    isHospitalVisitQueued(state: EncounterState): boolean {
-        return state.hospitalVisit.queued;
+    isHospitalVisitQueued(state: EncounterState): (hdid: string) => boolean {
+        return (hdid: string) => getHospitalVisitState(state, hdid).queued;
     },
 };
