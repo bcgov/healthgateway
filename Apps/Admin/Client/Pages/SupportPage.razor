@@ -100,7 +100,7 @@
                     </MudTd>
                 </RowTemplate>
                 <ChildRowContent>
-                    @if (!context.IsSameAddress)
+                    @if (!context.IsSameAddress && SelectedQueryType is UserQueryType.Phn or UserQueryType.Hdid)
                     {
                         <div Class="mx-4 my-3">
                             <MudText Typo="Typo.subtitle1">
@@ -118,21 +118,24 @@
                             </MudText>
                         </div>
                     }
-                    <div Class="mx-4 my-3">
-                        <MudText Typo="Typo.subtitle1">
-                            @context.PostalAddressLabel
-                        </MudText>
-                        <MudText Typo="Typo.body2" data-testid=@($"postal-address-{context.Hdid}")>
-                            @if (context.IsPostalAddressShown)
-                            {
-                                @context.PostalAddress
-                            }
-                            else
-                            {
-                                @SupportUserRow.NoAddressMessage
-                            }
-                        </MudText>
-                    </div>
+                    @if (SelectedQueryType is UserQueryType.Phn or UserQueryType.Hdid)
+                    {
+                        <div Class="mx-4 my-3">
+                            <MudText Typo="Typo.subtitle1">
+                                @context.PostalAddressLabel
+                            </MudText>
+                            <MudText Typo="Typo.body2" data-testid=@($"postal-address-{context.Hdid}")>
+                                @if (context.IsPostalAddressShown)
+                                {
+                                    @context.PostalAddress
+                                }
+                                else
+                                {
+                                    @SupportUserRow.NoAddressMessage
+                                }
+                            </MudText>
+                        </div>
+                    }
                     @if (context.IsExpanded)
                     {
                         <MessageVerificationTable Data="@GetMessagingVerificationModels(context.Hdid)" IsLoading="@MessagingVerificationsLoading" />
