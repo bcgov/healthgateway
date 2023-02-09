@@ -103,7 +103,7 @@
                     @if (!context.IsSameAddress && SelectedQueryType is UserQueryType.Phn or UserQueryType.Hdid)
                     {
                         <div Class="mx-4 my-3">
-                            <MudText Typo="Typo.subtitle1">
+                            <MudText Typo="Typo.subtitle1" data-testid=@($"physical-address-label-{context.Hdid}")>
                                 Physical Address
                             </MudText>
                             <MudText Typo="Typo.body2" data-testid=@($"physical-address-{context.Hdid}")>
@@ -121,7 +121,7 @@
                     @if (SelectedQueryType is UserQueryType.Phn or UserQueryType.Hdid)
                     {
                         <div Class="mx-4 my-3">
-                            <MudText Typo="Typo.subtitle1">
+                            <MudText Typo="Typo.subtitle1" data-testid=@($"postal-address-label-{context.Hdid}")>
                                 @context.PostalAddressLabel
                             </MudText>
                             <MudText Typo="Typo.body2" data-testid=@($"postal-address-{context.Hdid}")>

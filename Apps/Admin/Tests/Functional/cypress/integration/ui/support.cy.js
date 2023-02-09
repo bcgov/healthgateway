@@ -29,8 +29,12 @@ function verifyUserTableResults(queryType, personlHealthNumber) {
         cy.get(`[data-testid=postal-address-${hdid}]`).contains(postalAddress);
     } else {
         cy.get(`[data-testid=user-table-phn-${hdid}]`).should("be.empty");
-        cy.get(`[data-testid=physical-address-${hdid}]`).should("not.exist");
-        cy.get(`[data-testid=postal-address-${hdid}]`).should("not.exist");
+        cy.get(`[data-testid=physical-address-label-${hdid}]`).should(
+            "not.exist"
+        );
+        cy.get(`[data-testid=postal-address-label-${hdid}]`).should(
+            "not.exist"
+        );
     }
 }
 
