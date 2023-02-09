@@ -32,6 +32,7 @@ import { ReportFilterBuilder } from "@/models/reportFilter";
 import ReportHeader from "@/models/reportHeader";
 import { ReportFormatType } from "@/models/reportRequest";
 import RequestResult from "@/models/requestResult";
+import User from "@/models/user";
 import container from "@/plugins/container";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import { ILogger } from "@/services/interfaces";
@@ -71,12 +72,16 @@ export default class ReportsView extends Vue {
     config!: WebClientConfiguration;
 
     @Getter("laboratoryOrdersAreQueued", { namespace: "laboratory" })
-    isLaboratoryQueued!: boolean;
+    laboratoryOrdersAreQueued!: (hdid: string) => boolean;
 
     @Getter("patientData", { namespace: "user" })
     patientData!: PatientData;
+
     @Getter("medicationStatements", { namespace: "medication" })
     medicationStatements!: MedicationStatementHistory[];
+
+    @Getter("user", { namespace: "user" })
+    user!: User;
 
     @Ref("messageModal")
     readonly messageModal!: MessageModalComponent;
@@ -180,7 +185,7 @@ export default class ReportsView extends Vue {
     private get showLaboratoryOrderQueuedMessage(): boolean {
         return (
             this.reportComponentName === laboratoryReport &&
-            this.isLaboratoryQueued
+            this.laboratoryOrdersAreQueued(this.user.hdid)
         );
     }
 

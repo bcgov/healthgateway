@@ -142,13 +142,13 @@ export default class TimelineView extends Vue {
     isCommentLoading!: boolean;
 
     @Getter("covid19LaboratoryOrdersAreLoading", { namespace: "laboratory" })
-    isCovid19LaboratoryLoading!: boolean;
+    covid19LaboratoryOrdersAreLoading!: (hdid: string) => boolean;
 
     @Getter("laboratoryOrdersAreQueued", { namespace: "laboratory" })
-    isLaboratoryQueued!: boolean;
+    laboratoryOrdersAreQueued!: (hdid: string) => boolean;
 
     @Getter("laboratoryOrdersAreLoading", { namespace: "laboratory" })
-    isLaboratoryLoading!: boolean;
+    laboratoryOrdersAreLoading!: (hdid: string) => boolean;
 
     @Getter("healthVisitsAreLoading", { namespace: "encounter" })
     healthVisitsAreLoading!: (hdid: string) => boolean;
@@ -187,10 +187,10 @@ export default class TimelineView extends Vue {
     medicationRequests!: MedicationRequest[];
 
     @Getter("covid19LaboratoryOrders", { namespace: "laboratory" })
-    covid19LaboratoryOrders!: Covid19LaboratoryOrder[];
+    covid19LaboratoryOrders!: (hdid: string) => Covid19LaboratoryOrder[];
 
     @Getter("laboratoryOrders", { namespace: "laboratory" })
-    laboratoryOrders!: LaboratoryOrder[];
+    laboratoryOrders!: (hdid: string) => LaboratoryOrder[];
 
     @Getter("records", { namespace: "clinicalDocument" })
     clinicalDocuments!: ClinicalDocument[];
@@ -222,6 +222,10 @@ export default class TimelineView extends Vue {
         },
     ];
 
+    private get isLaboratoryQueued(): boolean {
+        return this.laboratoryOrdersAreQueued(this.user.hdid);
+    }
+
     private get timelineEntries(): TimelineEntry[] {
         this.logger.debug("Updating timeline Entries");
 
@@ -243,8 +247,8 @@ export default class TimelineView extends Vue {
             );
         }
 
-        // Add the COVID-19 Laboratory entries to the timeline list
-        for (const order of this.covid19LaboratoryOrders) {
+        // Add the COVID-19 laboratory entries to the timeline list
+        for (const order of this.covid19LaboratoryOrders(this.user.hdid)) {
             timelineEntries.push(
                 new Covid19LaboratoryOrderTimelineEntry(
                     order,
@@ -253,8 +257,8 @@ export default class TimelineView extends Vue {
             );
         }
 
-        // Add the Laboratory entries to the timeline list
-        for (const order of this.laboratoryOrders) {
+        // Add the laboratory entries to the timeline list
+        for (const order of this.laboratoryOrders(this.user.hdid)) {
             timelineEntries.push(
                 new LaboratoryOrderTimelineEntry(order, this.getEntryComments)
             );
@@ -318,8 +322,8 @@ export default class TimelineView extends Vue {
             !this.isMedicationStatementLoading &&
             !this.isImmunizationLoading &&
             !this.isImmunizationDeferred &&
-            !this.isCovid19LaboratoryLoading &&
-            !this.isLaboratoryLoading &&
+            !this.covid19LaboratoryOrdersAreLoading(this.user.hdid) &&
+            !this.laboratoryOrdersAreLoading(this.user.hdid) &&
             !this.healthVisitsAreLoading(this.user.hdid) &&
             !this.hospitalVisitsAreLoading(this.user.hdid) &&
             !this.isClinicalDocumentLoading &&
@@ -354,14 +358,14 @@ export default class TimelineView extends Vue {
         filtersLoaded.push(
             this.isSelectedFilterModuleLoading(
                 EntryType.Covid19LaboratoryOrder,
-                this.isCovid19LaboratoryLoading
+                this.covid19LaboratoryOrdersAreLoading(this.user.hdid)
             )
         );
 
         filtersLoaded.push(
             this.isSelectedFilterModuleLoading(
                 EntryType.LaboratoryOrder,
-                this.isLaboratoryLoading
+                this.laboratoryOrdersAreLoading(this.user.hdid)
             )
         );
 

@@ -71,10 +71,10 @@ export default class LinearTimelineComponent extends Vue {
     isCommentLoading!: boolean;
 
     @Getter("covid19LaboratoryOrdersAreLoading", { namespace: "laboratory" })
-    isCovid19LaboratoryLoading!: boolean;
+    covid19LaboratoryOrdersAreLoading!: (hdid: string) => boolean;
 
     @Getter("laboratoryOrdersAreLoading", { namespace: "laboratory" })
-    isLaboratoryLoading!: boolean;
+    laboratoryOrdersAreLoading!: (hdid: string) => boolean;
 
     @Getter("healthVisitsAreLoading", { namespace: "encounter" })
     healthVisitsAreLoading!: (hdid: string) => boolean;
@@ -112,8 +112,8 @@ export default class LinearTimelineComponent extends Vue {
             !this.isMedicationStatementLoading &&
             !this.isImmunizationLoading &&
             !this.isImmunizationDeferred &&
-            !this.isCovid19LaboratoryLoading &&
-            !this.isLaboratoryLoading &&
+            !this.covid19LaboratoryOrdersAreLoading(this.user.hdid) &&
+            !this.laboratoryOrdersAreLoading(this.user.hdid) &&
             !this.healthVisitsAreLoading(this.user.hdid) &&
             !this.hospitalVisitsAreLoading(this.user.hdid) &&
             !this.isClinicalDocumentLoading &&
@@ -149,14 +149,14 @@ export default class LinearTimelineComponent extends Vue {
         filtersLoaded.push(
             this.isSelectedFilterModuleLoading(
                 EntryType.Covid19LaboratoryOrder,
-                this.isCovid19LaboratoryLoading
+                this.covid19LaboratoryOrdersAreLoading(this.user.hdid)
             )
         );
 
         filtersLoaded.push(
             this.isSelectedFilterModuleLoading(
                 EntryType.LaboratoryOrder,
-                this.isLaboratoryLoading
+                this.laboratoryOrdersAreLoading(this.user.hdid)
             )
         );
 

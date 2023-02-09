@@ -19,6 +19,7 @@ import { ILaboratoryService, ILogger } from "@/services/interfaces";
 import EventTracker from "@/utility/eventTracker";
 
 import { LaboratoryActions } from "./types";
+import { getCovid19TestResultState, getLabResultState } from "./util";
 
 export const actions: LaboratoryActions = {
     retrieveCovid19LaboratoryOrders(
@@ -31,14 +32,15 @@ export const actions: LaboratoryActions = {
         );
 
         return new Promise((resolve, reject) => {
-            const covid19LaboratoryOrders: Covid19LaboratoryOrder[] =
-                context.getters.covid19LaboratoryOrders;
             if (
-                context.state.authenticatedCovid19.status === LoadStatus.LOADED
+                getCovid19TestResultState(context.state, params.hdid).status ===
+                LoadStatus.LOADED
             ) {
                 logger.debug(
                     "COVID-19 Laboratory Orders found stored, not querying!"
                 );
+                const covid19LaboratoryOrders: Covid19LaboratoryOrder[] =
+                    context.getters.covid19LaboratoryOrders(params.hdid);
                 resolve({
                     pageIndex: 0,
                     pageSize: 0,
@@ -52,7 +54,10 @@ export const actions: LaboratoryActions = {
                 });
             } else {
                 logger.debug("Retrieving COVID-19 Laboratory Orders");
-                context.commit("setCovid19LaboratoryOrdersRequested");
+                context.commit(
+                    "setCovid19LaboratoryOrdersRequested",
+                    params.hdid
+                );
                 laboratoryService
                     .getCovid19LaboratoryOrders(params.hdid)
                     .then((result) => {
@@ -62,10 +67,10 @@ export const actions: LaboratoryActions = {
                                 EntryType.Covid19LaboratoryOrder,
                                 result.totalResultCount
                             );
-                            context.commit(
-                                "setCovid19LaboratoryOrders",
-                                payload.orders
-                            );
+                            context.commit("setCovid19LaboratoryOrders", {
+                                hdid: params.hdid,
+                                laboratoryOrders: payload.orders,
+                            });
                             resolve(result);
                         } else if (
                             result.resultError?.actionCode ===
@@ -90,6 +95,7 @@ export const actions: LaboratoryActions = {
                             resolve(result);
                         } else {
                             context.dispatch("handleError", {
+                                hdid: params.hdid,
                                 error: result.resultError,
                                 errorType: ErrorType.Retrieve,
                                 errorSourceType:
@@ -100,6 +106,7 @@ export const actions: LaboratoryActions = {
                     })
                     .catch((error: ResultError) => {
                         context.dispatch("handleError", {
+                            hdid: params.hdid,
                             error,
                             errorType: ErrorType.Retrieve,
                             errorSourceType: ErrorSourceType.Covid19Laboratory,
@@ -119,11 +126,15 @@ export const actions: LaboratoryActions = {
         );
 
         return new Promise((resolve, reject) => {
-            const laboratoryOrders: LaboratoryOrder[] =
-                context.getters.laboratoryOrders;
-            const laboratoryQueued: boolean = context.getters.queued;
-            if (context.state.authenticated.status === LoadStatus.LOADED) {
+            if (
+                getLabResultState(context.state, params.hdid).status ===
+                LoadStatus.LOADED
+            ) {
                 logger.debug("Laboratory Orders found stored, not querying!");
+                const laboratoryOrders: LaboratoryOrder[] =
+                    context.getters.laboratoryOrders(params.hdid);
+                const laboratoryQueued: boolean =
+                    context.getters.laboratoryOrdersAreQueued(params.hdid);
                 resolve({
                     pageIndex: 0,
                     pageSize: 0,
@@ -138,7 +149,7 @@ export const actions: LaboratoryActions = {
                 });
             } else {
                 logger.debug("Retrieving Laboratory Orders");
-                context.commit("setLaboratoryOrdersRequested");
+                context.commit("setLaboratoryOrdersRequested", params.hdid);
                 laboratoryService
                     .getLaboratoryOrders(params.hdid)
                     .then((result) => {
@@ -152,7 +163,10 @@ export const actions: LaboratoryActions = {
                                 result.totalResultCount
                             );
                             logger.info("Laboratory Orders loaded.");
-                            context.commit("setLaboratoryOrders", payload);
+                            context.commit("setLaboratoryOrders", {
+                                hdid: params.hdid,
+                                laboratoryOrderResult: payload,
+                            });
                             resolve(result);
                         } else if (
                             result.resultError?.actionCode ===
@@ -165,7 +179,10 @@ export const actions: LaboratoryActions = {
                             );
                             context.commit(
                                 "setLaboratoryOrdersRefreshInProgress",
-                                payload
+                                {
+                                    hdid: params.hdid,
+                                    laboratoryOrderResult: payload,
+                                }
                             );
                             setTimeout(() => {
                                 logger.info(
@@ -178,6 +195,7 @@ export const actions: LaboratoryActions = {
                             resolve(result);
                         } else {
                             context.dispatch("handleError", {
+                                hdid: params.hdid,
                                 error: result.resultError,
                                 errorType: ErrorType.Retrieve,
                                 errorSourceType: ErrorSourceType.Laboratory,
@@ -187,6 +205,7 @@ export const actions: LaboratoryActions = {
                     })
                     .catch((error: ResultError) => {
                         context.dispatch("handleError", {
+                            hdid: params.hdid,
                             error,
                             errorType: ErrorType.Retrieve,
                             errorSourceType: ErrorSourceType.Laboratory,
@@ -199,6 +218,7 @@ export const actions: LaboratoryActions = {
     handleError(
         context,
         params: {
+            hdid: string;
             error: ResultError;
             errorType: ErrorType;
             errorSourceType: ErrorSourceType;
@@ -210,10 +230,16 @@ export const actions: LaboratoryActions = {
 
         switch (params.errorSourceType) {
             case ErrorSourceType.Laboratory:
-                context.commit("laboratoryError", params.error);
+                context.commit("setLaboratoryError", {
+                    hdid: params.hdid,
+                    error: params.error,
+                });
                 break;
             case ErrorSourceType.Covid19Laboratory:
-                context.commit("covid19LaboratoryError", params.error);
+                context.commit("setCovid19LaboratoryError", {
+                    hdid: params.hdid,
+                    error: params.error,
+                });
                 break;
             default:
                 break;
