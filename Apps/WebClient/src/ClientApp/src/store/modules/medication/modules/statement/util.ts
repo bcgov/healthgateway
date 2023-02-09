@@ -14,7 +14,7 @@ export const defaultMedicationState: MedicationState = {
 };
 
 /**
- * Retrieves the hospital visit state for a particular HDID.
+ * Retrieves the medication state for a particular HDID.
  * @param state The store state.
  * @param hdid The HDID associated with the dataset state.
  * @returns The dataset state for the HDID, if it exists, or a new dataset state initialized to default values.
@@ -27,7 +27,7 @@ export function getMedicationState(
 }
 
 /**
- * Updates the hospital visit state for a particular HDID.
+ * Updates the medication state for a particular HDID.
  * @param state The store state.
  * @param hdid The HDID associated with the dataset state.
  * @param datasetState The new dataset state.
