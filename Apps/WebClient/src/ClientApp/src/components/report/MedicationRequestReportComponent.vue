@@ -31,14 +31,16 @@ export default class MedicationRequestReportComponent extends Vue {
     @Prop()
     filter!: ReportFilter;
 
-    @Action("retrieveMedicationRequests", { namespace: "medication" })
-    retrieve!: (params: { hdid: string }) => Promise<void>;
+    @Action("retrieveSpecialAuthorityRequests", { namespace: "medication" })
+    retrieveSpecialAuthorityRequests!: (params: {
+        hdid: string;
+    }) => Promise<void>;
 
-    @Getter("isMedicationRequestLoading", { namespace: "medication" })
-    isMedicationRequestLoading!: (hdid: string) => boolean;
+    @Getter("specialAuthorityRequestsAreLoading", { namespace: "medication" })
+    specialAuthorityRequestsAreLoading!: (hdid: string) => boolean;
 
-    @Getter("medicationRequests", { namespace: "medication" })
-    medicationRequests!: (hdid: string) => MedicationRequest[];
+    @Getter("specialAuthorityRequests", { namespace: "medication" })
+    specialAuthorityRequests!: (hdid: string) => MedicationRequest[];
 
     @Getter("user", { namespace: "user" })
     user!: User;
@@ -48,7 +50,7 @@ export default class MedicationRequestReportComponent extends Vue {
     private readonly headerClass = "medication-request-report-table-header";
 
     private get isLoading(): boolean {
-        return this.isMedicationRequestLoading(this.user.hdid);
+        return this.specialAuthorityRequestsAreLoading(this.user.hdid);
     }
 
     private get isEmpty(): boolean {
@@ -56,8 +58,8 @@ export default class MedicationRequestReportComponent extends Vue {
     }
 
     private get visibleRecords(): MedicationRequest[] {
-        let records = this.medicationRequests(this.user.hdid).filter((record) =>
-            this.filter.allowsDate(record.requestedDate)
+        let records = this.specialAuthorityRequests(this.user.hdid).filter(
+            (record) => this.filter.allowsDate(record.requestedDate)
         );
         records.sort((a, b) => {
             const firstDate = new DateWrapper(a.requestedDate);
@@ -109,8 +111,11 @@ export default class MedicationRequestReportComponent extends Vue {
 
     private created(): void {
         this.logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
-        this.retrieve({ hdid: this.user.hdid }).catch((err) =>
-            this.logger.error(`Error loading medication requests data: ${err}`)
+        this.retrieveSpecialAuthorityRequests({ hdid: this.user.hdid }).catch(
+            (err) =>
+                this.logger.error(
+                    `Error loading Special Authority requests data: ${err}`
+                )
         );
     }
 

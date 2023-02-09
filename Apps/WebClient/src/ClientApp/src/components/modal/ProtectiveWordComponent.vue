@@ -13,17 +13,17 @@ import { ILogger } from "@/services/interfaces";
 
 @Component
 export default class ProtectiveWordComponent extends Vue {
-    @Action("retrieveMedicationStatements", { namespace: "medication" })
+    @Action("retrieveMedications", { namespace: "medication" })
     retrieveMedications!: (params: {
         hdid: string;
         protectiveWord?: string;
     }) => Promise<RequestResult<MedicationStatementHistory[]>>;
 
-    @Getter("isProtected", { namespace: "medication" })
-    isProtected!: (hdid: string) => boolean;
+    @Getter("medicationsAreProtected", { namespace: "medication" })
+    medicationsAreProtected!: (hdid: string) => boolean;
 
-    @Getter("protectedWordAttempts", { namespace: "medication" })
-    protectedWordAttempts!: (hdid: string) => number;
+    @Getter("protectiveWordAttempts", { namespace: "medication" })
+    protectiveWordAttempts!: (hdid: string) => number;
 
     @Getter("user", { namespace: "user" })
     user!: User;
@@ -37,7 +37,7 @@ export default class ProtectiveWordComponent extends Vue {
 
     private get isVisible(): boolean {
         return (
-            this.isProtected(this.user.hdid) &&
+            this.medicationsAreProtected(this.user.hdid) &&
             !this.isLoading &&
             !this.isDismissed
         );
@@ -48,7 +48,7 @@ export default class ProtectiveWordComponent extends Vue {
     }
 
     private get error(): boolean {
-        return this.protectedWordAttempts(this.user.hdid) > 1;
+        return this.protectiveWordAttempts(this.user.hdid) > 1;
     }
 
     private created(): void {

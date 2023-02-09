@@ -14,7 +14,7 @@ import { MedicationRequestActions } from "./types";
 import { getSpecialAuthorityRequestState } from "./util";
 
 export const actions: MedicationRequestActions = {
-    retrieveMedicationRequests(
+    retrieveSpecialAuthorityRequests(
         context,
         params: { hdid: string }
     ): Promise<RequestResult<MedicationRequest[]>> {
@@ -24,65 +24,75 @@ export const actions: MedicationRequestActions = {
         );
 
         return new Promise((resolve, reject) => {
-            const medicationRequests: MedicationRequest[] =
-                context.getters.medicationRequests(params.hdid);
             if (
                 getSpecialAuthorityRequestState(context.state, params.hdid)
-                    .status === LoadStatus.LOADED ||
-                medicationRequests.length > 0
+                    .status === LoadStatus.LOADED
             ) {
-                logger.debug("Medication Requests found stored, not querying!");
+                logger.debug(
+                    "Special Authority requests found stored, not querying!"
+                );
+                const specialAuthorityRequests: MedicationRequest[] =
+                    context.getters.specialAuthorityRequests(params.hdid);
                 resolve({
                     pageIndex: 0,
                     pageSize: 0,
-                    resourcePayload: medicationRequests,
+                    resourcePayload: specialAuthorityRequests,
                     resultStatus: ResultType.Success,
-                    totalResultCount: medicationRequests.length,
+                    totalResultCount: specialAuthorityRequests.length,
                 });
             } else {
-                logger.debug("Retrieving Medication Requests");
-                context.commit("setMedicationRequestRequested", params.hdid);
+                logger.debug("Retrieving Special Authority requests");
+                context.commit(
+                    "setSpecialAuthorityRequestsRequested",
+                    params.hdid
+                );
                 return specialAuthorityService
                     .getPatientMedicationRequest(params.hdid)
                     .then((result) => {
                         if (result.resultStatus === ResultType.Error) {
-                            context.dispatch("handleMedicationRequestError", {
-                                hdid: params.hdid,
-                                error: result.resultError,
-                                errorType: ErrorType.Retrieve,
-                            });
+                            context.dispatch(
+                                "handleSpecialAuthorityRequestsError",
+                                {
+                                    hdid: params.hdid,
+                                    error: result.resultError,
+                                    errorType: ErrorType.Retrieve,
+                                }
+                            );
                             reject(result.resultError);
                         } else {
                             EventTracker.loadData(
                                 EntryType.MedicationRequest,
                                 result.resourcePayload.length
                             );
-                            context.commit("setMedicationRequestResult", {
+                            context.commit("setSpecialAuthorityRequests", {
                                 hdid: params.hdid,
-                                medicationRequestResult: result,
+                                specialAuthorityRequestsResult: result,
                             });
                             resolve(result);
                         }
                     })
                     .catch((error: ResultError) => {
-                        context.dispatch("handleMedicationRequestError", {
-                            hdid: params.hdid,
-                            error,
-                            errorType: ErrorType.Retrieve,
-                        });
+                        context.dispatch(
+                            "handleSpecialAuthorityRequestsError",
+                            {
+                                hdid: params.hdid,
+                                error,
+                                errorType: ErrorType.Retrieve,
+                            }
+                        );
                         reject(error);
                     });
             }
         });
     },
-    handleMedicationRequestError(
+    handleSpecialAuthorityRequestsError(
         context,
         params: { hdid: string; error: ResultError; errorType: ErrorType }
     ) {
         const logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
 
         logger.error(`ERROR: ${JSON.stringify(params.error)}`);
-        context.commit("medicationRequestError", {
+        context.commit("setSpecialAuthorityRequestsError", {
             hdid: params.hdid,
             error: params.error,
         });

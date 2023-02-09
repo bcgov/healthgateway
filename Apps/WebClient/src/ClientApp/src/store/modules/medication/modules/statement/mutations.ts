@@ -12,10 +12,7 @@ import {
 import { getMedicationState, setMedicationState } from "./util";
 
 export const mutations: MedicationStatementMutations = {
-    setMedicationStatementRequested(
-        state: MedicationStatementState,
-        hdid: string
-    ) {
+    setMedicationsRequested(state: MedicationStatementState, hdid: string) {
         const currentState = getMedicationState(state, hdid);
         const nextState: MedicationState = {
             ...currentState,
@@ -23,7 +20,7 @@ export const mutations: MedicationStatementMutations = {
         };
         setMedicationState(state, hdid, nextState);
     },
-    setMedicationStatementResult(
+    setMedications(
         state: MedicationStatementState,
         payload: {
             hdid: string;
@@ -53,13 +50,13 @@ export const mutations: MedicationStatementMutations = {
         } else {
             nextState.status = LoadStatus.ERROR;
             nextState.statusMessage =
-                "Error returned from the medication statements call";
+                "Error returned from the medications call";
             nextState.error = medicationResult.resultError;
         }
 
         setMedicationState(state, hdid, nextState);
     },
-    medicationStatementError(
+    setMedicationsError(
         state: MedicationStatementState,
         payload: { hdid: string; error: Error }
     ) {

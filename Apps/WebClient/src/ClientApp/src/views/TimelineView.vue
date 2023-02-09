@@ -114,14 +114,16 @@ export default class TimelineView extends Vue {
     @Action("retrieveLaboratoryOrders", { namespace: "laboratory" })
     retrieveLaboratoryOrders!: (params: { hdid: string }) => Promise<void>;
 
-    @Action("retrieveMedicationStatements", { namespace: "medication" })
+    @Action("retrieveMedications", { namespace: "medication" })
     retrieveMedications!: (params: {
         hdid: string;
         protectiveWord?: string;
     }) => Promise<void>;
 
-    @Action("retrieveMedicationRequests", { namespace: "medication" })
-    retrieveMedicationRequests!: (params: { hdid: string }) => Promise<void>;
+    @Action("retrieveSpecialAuthorityRequests", { namespace: "medication" })
+    retrieveSpecialAuthorityRequests!: (params: {
+        hdid: string;
+    }) => Promise<void>;
 
     @Action("retrieve", { namespace: "clinicalDocument" })
     retrieveClinicalDocuments!: (params: { hdid: string }) => Promise<void>;
@@ -132,11 +134,11 @@ export default class TimelineView extends Vue {
     @Action("setFilter", { namespace: "timeline" })
     setFilter!: (filterBuilder: TimelineFilterBuilder) => void;
 
-    @Getter("isMedicationStatementLoading", { namespace: "medication" })
-    isMedicationStatementLoading!: (hdid: string) => boolean;
+    @Getter("medicationsAreLoading", { namespace: "medication" })
+    medicationsAreLoading!: (hdid: string) => boolean;
 
-    @Getter("isMedicationRequestLoading", { namespace: "medication" })
-    isMedicationRequestLoading!: (hdid: string) => boolean;
+    @Getter("specialAuthorityRequestsAreLoading", { namespace: "medication" })
+    specialAuthorityRequestsAreLoading!: (hdid: string) => boolean;
 
     @Getter("isLoading", { namespace: "comment" })
     isCommentLoading!: boolean;
@@ -180,11 +182,11 @@ export default class TimelineView extends Vue {
     @Getter("hospitalVisits", { namespace: "encounter" })
     hospitalVisits!: (hdid: string) => HospitalVisit[];
 
-    @Getter("medicationStatements", { namespace: "medication" })
-    medicationStatements!: (hdid: string) => MedicationStatementHistory[];
+    @Getter("medications", { namespace: "medication" })
+    medications!: (hdid: string) => MedicationStatementHistory[];
 
-    @Getter("medicationRequests", { namespace: "medication" })
-    medicationRequests!: (hdid: string) => MedicationRequest[];
+    @Getter("specialAuthorityRequests", { namespace: "medication" })
+    specialAuthorityRequests!: (hdid: string) => MedicationRequest[];
 
     @Getter("covid19LaboratoryOrders", { namespace: "laboratory" })
     covid19LaboratoryOrders!: (hdid: string) => Covid19LaboratoryOrder[];
@@ -232,19 +234,17 @@ export default class TimelineView extends Vue {
         let timelineEntries = [];
 
         // Add the Special Authority request entries to the timeline list
-        for (const medicationRequest of this.medicationRequests(
-            this.user.hdid
-        )) {
+        for (const request of this.specialAuthorityRequests(this.user.hdid)) {
             timelineEntries.push(
                 new MedicationRequestTimelineEntry(
-                    medicationRequest,
+                    request,
                     this.getEntryComments
                 )
             );
         }
 
         // Add the medication entries to the timeline list
-        for (const medication of this.medicationStatements(this.user.hdid)) {
+        for (const medication of this.medications(this.user.hdid)) {
             timelineEntries.push(
                 new MedicationTimelineEntry(medication, this.getEntryComments)
             );
@@ -321,8 +321,8 @@ export default class TimelineView extends Vue {
 
     private get isFullyLoaded(): boolean {
         return (
-            !this.isMedicationRequestLoading(this.user.hdid) &&
-            !this.isMedicationStatementLoading(this.user.hdid) &&
+            !this.specialAuthorityRequestsAreLoading(this.user.hdid) &&
+            !this.medicationsAreLoading(this.user.hdid) &&
             !this.isImmunizationLoading &&
             !this.isImmunizationDeferred &&
             !this.covid19LaboratoryOrdersAreLoading(this.user.hdid) &&
@@ -340,14 +340,14 @@ export default class TimelineView extends Vue {
         filtersLoaded.push(
             this.isSelectedFilterModuleLoading(
                 EntryType.MedicationRequest,
-                this.isMedicationRequestLoading(this.user.hdid)
+                this.specialAuthorityRequestsAreLoading(this.user.hdid)
             )
         );
 
         filtersLoaded.push(
             this.isSelectedFilterModuleLoading(
                 EntryType.Medication,
-                this.isMedicationStatementLoading(this.user.hdid)
+                this.medicationsAreLoading(this.user.hdid)
             )
         );
 
@@ -468,7 +468,7 @@ export default class TimelineView extends Vue {
     private fetchTimelineData(): void {
         Promise.all([
             this.retrieveMedications({ hdid: this.user.hdid }),
-            this.retrieveMedicationRequests({ hdid: this.user.hdid }),
+            this.retrieveSpecialAuthorityRequests({ hdid: this.user.hdid }),
             this.retrieveImmunizations({ hdid: this.user.hdid }),
             this.retrieveCovid19LaboratoryOrders({ hdid: this.user.hdid }),
             this.retrieveLaboratoryOrders({ hdid: this.user.hdid }),
@@ -639,7 +639,7 @@ export default class TimelineView extends Vue {
             <content-placeholders-text :lines="3" />
         </content-placeholders>
         <ProtectiveWordComponent
-            :is-loading="isMedicationStatementLoading(user.hdid)"
+            :is-loading="medicationsAreLoading(user.hdid)"
         />
         <NoteEditComponent :is-loading="isNoteLoading" />
         <EntryDetailsComponent />

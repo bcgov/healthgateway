@@ -20,29 +20,29 @@ export interface MedicationStatementState {
 
 export interface MedicationStatementGetters
     extends GetterTree<MedicationStatementState, RootState> {
-    medicationStatements(
+    medications(
         state: MedicationStatementState
     ): (hdid: string) => MedicationStatementHistory[];
-    medicationStatementCount(
-        state: MedicationStatementState
-    ): (hdid: string) => number;
-    protectedWordAttempts(
-        state: MedicationStatementState
-    ): (hdid: string) => number;
-    isProtected(state: MedicationStatementState): (hdid: string) => boolean;
-    isMedicationStatementLoading(
+    medicationsCount(state: MedicationStatementState): (hdid: string) => number;
+    medicationsAreLoading(
         state: MedicationStatementState
     ): (hdid: string) => boolean;
+    medicationsAreProtected(
+        state: MedicationStatementState
+    ): (hdid: string) => boolean;
+    protectiveWordAttempts(
+        state: MedicationStatementState
+    ): (hdid: string) => number;
 }
 
 type StoreContext = ActionContext<MedicationStatementState, RootState>;
 export interface MedicationStatementActions
     extends ActionTree<MedicationStatementState, RootState> {
-    retrieveMedicationStatements(
+    retrieveMedications(
         context: StoreContext,
         params: { hdid: string; protectiveWord?: string }
     ): Promise<RequestResult<MedicationStatementHistory[]>>;
-    handleMedicationStatementError(
+    handleMedicationsError(
         context: StoreContext,
         params: { hdid: string; error: ResultError; errorType: ErrorType }
     ): void;
@@ -50,18 +50,18 @@ export interface MedicationStatementActions
 
 export interface MedicationStatementMutations
     extends MutationTree<MedicationStatementState> {
-    setMedicationStatementRequested(
+    setMedicationsRequested(
         state: MedicationStatementState,
         hdid: string
     ): void;
-    setMedicationStatementResult(
+    setMedications(
         state: MedicationStatementState,
         payload: {
             hdid: string;
             medicationResult: RequestResult<MedicationStatementHistory[]>;
         }
     ): void;
-    medicationStatementError(
+    setMedicationsError(
         state: MedicationStatementState,
         payload: { hdid: string; error: Error }
     ): void;

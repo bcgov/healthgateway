@@ -11,7 +11,10 @@ import {
 } from "./util";
 
 export const mutations: MedicationRequestMutations = {
-    setMedicationRequestRequested(state: MedicationRequestState, hdid: string) {
+    setSpecialAuthorityRequestsRequested(
+        state: MedicationRequestState,
+        hdid: string
+    ) {
         const currentState = getSpecialAuthorityRequestState(state, hdid);
         const nextState: SpecialAuthorityRequestState = {
             ...currentState,
@@ -20,35 +23,35 @@ export const mutations: MedicationRequestMutations = {
         setSpecialAuthorityRequestState(state, hdid, nextState);
     },
 
-    setMedicationRequestResult(
+    setSpecialAuthorityRequests(
         state: MedicationRequestState,
         payload: {
             hdid: string;
-            medicationRequestResult: RequestResult<MedicationRequest[]>;
+            specialAuthorityRequestsResult: RequestResult<MedicationRequest[]>;
         }
     ) {
-        const { hdid, medicationRequestResult } = payload;
+        const { hdid, specialAuthorityRequestsResult } = payload;
         const currentState = getSpecialAuthorityRequestState(state, hdid);
 
         const nextState: SpecialAuthorityRequestState = {
             ...currentState,
         };
 
-        if (medicationRequestResult.resultStatus == ResultType.Success) {
-            nextState.data = medicationRequestResult.resourcePayload;
+        if (specialAuthorityRequestsResult.resultStatus == ResultType.Success) {
+            nextState.data = specialAuthorityRequestsResult.resourcePayload;
             nextState.statusMessage = "success";
             nextState.error = undefined;
             nextState.status = LoadStatus.LOADED;
         } else {
             nextState.status = LoadStatus.ERROR;
             nextState.statusMessage =
-                "Error returned from the medication requests call";
-            nextState.error = medicationRequestResult.resultError;
+                "Error returned from the Special Authority requests call";
+            nextState.error = specialAuthorityRequestsResult.resultError;
         }
 
         setSpecialAuthorityRequestState(state, hdid, nextState);
     },
-    medicationRequestError(
+    setSpecialAuthorityRequestsError(
         state: MedicationRequestState,
         payload: { hdid: string; error: Error }
     ) {

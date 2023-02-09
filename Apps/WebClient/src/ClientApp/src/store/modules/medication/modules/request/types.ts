@@ -20,13 +20,13 @@ export interface MedicationRequestState {
 
 export interface MedicationRequestGetters
     extends GetterTree<MedicationRequestState, RootState> {
-    medicationRequests(
+    specialAuthorityRequests(
         state: MedicationRequestState
     ): (hdid: string) => MedicationRequest[];
-    medicationRequestCount(
+    specialAuthorityRequestsCount(
         state: MedicationRequestState
     ): (hdid: string) => number;
-    isMedicationRequestLoading(
+    specialAuthorityRequestsAreLoading(
         state: MedicationRequestState
     ): (hdid: string) => boolean;
 }
@@ -34,11 +34,11 @@ export interface MedicationRequestGetters
 type StoreContext = ActionContext<MedicationRequestState, RootState>;
 export interface MedicationRequestActions
     extends ActionTree<MedicationRequestState, RootState> {
-    retrieveMedicationRequests(
+    retrieveSpecialAuthorityRequests(
         context: StoreContext,
         params: { hdid: string }
     ): Promise<RequestResult<MedicationRequest[]>>;
-    handleMedicationRequestError(
+    handleSpecialAuthorityRequestsError(
         context: StoreContext,
         params: { hdid: string; error: ResultError; errorType: ErrorType }
     ): void;
@@ -46,18 +46,18 @@ export interface MedicationRequestActions
 
 export interface MedicationRequestMutations
     extends MutationTree<MedicationRequestState> {
-    setMedicationRequestRequested(
+    setSpecialAuthorityRequestsRequested(
         state: MedicationRequestState,
         hdid: string
     ): void;
-    setMedicationRequestResult(
+    setSpecialAuthorityRequests(
         state: MedicationRequestState,
         payload: {
             hdid: string;
-            medicationRequestResult: RequestResult<MedicationRequest[]>;
+            specialAuthorityRequestsResult: RequestResult<MedicationRequest[]>;
         }
     ): void;
-    medicationRequestError(
+    setSpecialAuthorityRequestsError(
         state: MedicationRequestState,
         payload: {
             hdid: string;

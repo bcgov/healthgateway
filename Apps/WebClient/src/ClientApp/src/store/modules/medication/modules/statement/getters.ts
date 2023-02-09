@@ -5,30 +5,32 @@ import { MedicationStatementGetters, MedicationStatementState } from "./types";
 import { getMedicationState } from "./util";
 
 export const getters: MedicationStatementGetters = {
-    medicationStatements(
+    medications(
         state: MedicationStatementState
     ): (hdid: string) => MedicationStatementHistory[] {
         return (hdid: string) => getMedicationState(state, hdid).data;
     },
-    medicationStatementCount(
+    medicationsCount(
         state: MedicationStatementState
     ): (hdid: string) => number {
         return (hdid: string) => getMedicationState(state, hdid).data.length;
     },
-    protectedWordAttempts(
-        state: MedicationStatementState
-    ): (hdid: string) => number {
-        return (hdid: string) =>
-            getMedicationState(state, hdid).protectiveWordAttempts;
-    },
-    isProtected(state: MedicationStatementState): (hdid: string) => boolean {
-        return (hdid: string) =>
-            getMedicationState(state, hdid).status === LoadStatus.PROTECTED;
-    },
-    isMedicationStatementLoading(
+    medicationsAreLoading(
         state: MedicationStatementState
     ): (hdid: string) => boolean {
         return (hdid: string) =>
             getMedicationState(state, hdid).status === LoadStatus.REQUESTED;
+    },
+    medicationsAreProtected(
+        state: MedicationStatementState
+    ): (hdid: string) => boolean {
+        return (hdid: string) =>
+            getMedicationState(state, hdid).status === LoadStatus.PROTECTED;
+    },
+    protectiveWordAttempts(
+        state: MedicationStatementState
+    ): (hdid: string) => number {
+        return (hdid: string) =>
+            getMedicationState(state, hdid).protectiveWordAttempts;
     },
 };

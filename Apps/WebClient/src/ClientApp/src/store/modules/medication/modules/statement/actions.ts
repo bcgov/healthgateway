@@ -14,7 +14,7 @@ import { MedicationStatementActions } from "./types";
 import { getMedicationState } from "./util";
 
 export const actions: MedicationStatementActions = {
-    retrieveMedicationStatements(
+    retrieveMedications(
         context,
         params: { hdid: string; protectiveWord?: string }
     ): Promise<RequestResult<MedicationStatementHistory[]>> {
@@ -24,26 +24,23 @@ export const actions: MedicationStatementActions = {
         );
 
         return new Promise((resolve, reject) => {
-            const medicationStatements: MedicationStatementHistory[] =
-                context.getters.medicationStatements(params.hdid);
             if (
                 getMedicationState(context.state, params.hdid).status ===
-                    LoadStatus.LOADED ||
-                medicationStatements.length > 0
+                LoadStatus.LOADED
             ) {
-                logger.debug(
-                    "Medication Statements found stored, not querying!"
-                );
+                logger.debug("Medications found stored, not querying!");
+                const medications: MedicationStatementHistory[] =
+                    context.getters.medications(params.hdid);
                 resolve({
                     pageIndex: 0,
                     pageSize: 0,
-                    resourcePayload: medicationStatements,
+                    resourcePayload: medications,
                     resultStatus: ResultType.Success,
-                    totalResultCount: medicationStatements.length,
+                    totalResultCount: medications.length,
                 });
             } else {
-                logger.debug("Retrieving Medication Statements");
-                context.commit("setMedicationStatementRequested", params.hdid);
+                logger.debug("Retrieving medications");
+                context.commit("setMedicationsRequested", params.hdid);
                 return medicationService
                     .getPatientMedicationStatementHistory(
                         params.hdid,
@@ -51,7 +48,7 @@ export const actions: MedicationStatementActions = {
                     )
                     .then((result) => {
                         if (result.resultStatus === ResultType.Error) {
-                            context.dispatch("handleMedicationStatementError", {
+                            context.dispatch("handleMedicationsError", {
                                 hdid: params.hdid,
                                 error: result.resultError,
                                 errorType: ErrorType.Retrieve,
@@ -64,7 +61,7 @@ export const actions: MedicationStatementActions = {
                                     result.resourcePayload.length
                                 );
                             }
-                            context.commit("setMedicationStatementResult", {
+                            context.commit("setMedications", {
                                 hdid: params.hdid,
                                 medicationResult: result,
                             });
@@ -72,7 +69,7 @@ export const actions: MedicationStatementActions = {
                         }
                     })
                     .catch((error: ResultError) => {
-                        context.dispatch("handleMedicationStatementError", {
+                        context.dispatch("handleMedicationsError", {
                             hdid: params.hdid,
                             error,
                             errorType: ErrorType.Retrieve,
@@ -82,14 +79,14 @@ export const actions: MedicationStatementActions = {
             }
         });
     },
-    handleMedicationStatementError(
+    handleMedicationsError(
         context,
         params: { hdid: string; error: ResultError; errorType: ErrorType }
     ) {
         const logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
 
         logger.error(`ERROR: ${JSON.stringify(params.error)}`);
-        context.commit("medicationStatementError", {
+        context.commit("setMedicationsError", {
             hdid: params.hdid,
             error: params.error,
         });
