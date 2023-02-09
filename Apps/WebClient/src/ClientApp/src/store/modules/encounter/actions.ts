@@ -17,6 +17,7 @@ import {
 import EventTracker from "@/utility/eventTracker";
 
 import { EncounterActions } from "./types";
+import { getHealthVisitState, getHospitalVisitState } from "./util";
 
 export const actions: EncounterActions = {
     retrieveHealthVisits(
@@ -30,7 +31,7 @@ export const actions: EncounterActions = {
 
         return new Promise((resolve, reject) => {
             if (
-                context.state.healthVisits[params.hdid]?.status ===
+                getHealthVisitState(context.state, params.hdid).status ===
                 LoadStatus.LOADED
             ) {
                 logger.debug(`Encounters found stored, not querying!`);
@@ -93,7 +94,7 @@ export const actions: EncounterActions = {
 
         return new Promise((resolve, reject) => {
             if (
-                context.state.hospitalVisits[params.hdid]?.status ===
+                getHospitalVisitState(context.state, params.hdid).status ===
                 LoadStatus.LOADED
             ) {
                 logger.debug(`Hospital Visits found stored, not querying!`);
