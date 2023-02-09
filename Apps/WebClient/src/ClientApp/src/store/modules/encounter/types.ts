@@ -6,9 +6,9 @@ import {
     MutationTree,
 } from "vuex";
 
-import { ErrorType } from "@/constants/errorType";
+import { ErrorSourceType, ErrorType } from "@/constants/errorType";
 import { Dictionary } from "@/models/baseTypes";
-import { DatasetState, HospitalVisitState } from "@/models/datasetState";
+import { HealthVisitState, HospitalVisitState } from "@/models/datasetState";
 import { Encounter, HospitalVisit } from "@/models/encounter";
 import { ResultError } from "@/models/errors";
 import HospitalVisitResult from "@/models/hospitalVisitResult";
@@ -16,7 +16,7 @@ import RequestResult from "@/models/requestResult";
 import { RootState } from "@/store/types";
 
 export interface EncounterState {
-    healthVisits: Dictionary<DatasetState<Encounter[]>>;
+    healthVisits: Dictionary<HealthVisitState>;
     hospitalVisits: Dictionary<HospitalVisitState>;
 }
 
@@ -44,7 +44,12 @@ export interface EncounterActions
     ): Promise<RequestResult<HospitalVisitResult>>;
     handleError(
         context: StoreContext,
-        params: { error: ResultError; errorType: ErrorType }
+        params: {
+            hdid: string;
+            error: ResultError;
+            errorType: ErrorType;
+            errorSourceType: ErrorSourceType;
+        }
     ): void;
 }
 

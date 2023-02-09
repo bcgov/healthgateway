@@ -1,4 +1,4 @@
-import { DatasetState, HospitalVisitState } from "@/models/datasetState";
+import { HealthVisitState, HospitalVisitState } from "@/models/datasetState";
 import { Encounter } from "@/models/encounter";
 import { ResultError } from "@/models/errors";
 import HospitalVisitResult from "@/models/hospitalVisitResult";
@@ -15,7 +15,7 @@ import {
 export const mutations: EncounterMutations = {
     setHealthVisitsRequested(state: EncounterState, hdid: string) {
         const currentState = getHealthVisitState(state, hdid);
-        const nextState: DatasetState<Encounter[]> = {
+        const nextState: HealthVisitState = {
             ...currentState,
             status: LoadStatus.REQUESTED,
         };
@@ -27,7 +27,7 @@ export const mutations: EncounterMutations = {
     ) {
         const { hdid, healthVisits } = payload;
         const currentState = getHealthVisitState(state, hdid);
-        const nextState: DatasetState<Encounter[]> = {
+        const nextState: HealthVisitState = {
             ...currentState,
             data: healthVisits,
             error: undefined,
@@ -42,7 +42,7 @@ export const mutations: EncounterMutations = {
     ) {
         const { hdid, error } = payload;
         const currentState = getHealthVisitState(state, hdid);
-        const nextState: DatasetState<Encounter[]> = {
+        const nextState: HealthVisitState = {
             ...currentState,
             error: error,
             statusMessage: error.resultMessage,
