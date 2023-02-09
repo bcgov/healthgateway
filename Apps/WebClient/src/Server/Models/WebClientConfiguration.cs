@@ -54,6 +54,16 @@ namespace HealthGateway.WebClient.Server.Models
         public Dictionary<string, bool> Modules { get; set; } = new();
 
         /// <summary>
+        /// Gets or sets the FeatureToggleFilePath.
+        /// </summary>
+        public string FeatureToggleFilePath { get; set; } = string.Empty;
+
+        /// <summary>
+        /// Gets or sets the state of the Health Gateway features.
+        /// </summary>
+        public FeatureToggleConfiguration? FeatureToggleConfiguration { get; set; }
+
+        /// <summary>
         /// Gets or sets the number of hours until an account is removed after being closed.
         /// </summary>
         public int HoursForDeletion { get; set; }

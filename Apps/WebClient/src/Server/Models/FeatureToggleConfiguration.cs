@@ -15,6 +15,8 @@
 // -------------------------------------------------------------------------
 namespace HealthGateway.WebClient.Server.Models
 {
+#pragma warning disable CA1819
+
     /// <summary>
     /// Configuration data to be used by Health Gateway web client.
     /// </summary>
@@ -26,42 +28,40 @@ namespace HealthGateway.WebClient.Server.Models
     /// <param name="Covid19">Settings for covid19 features.</param>
     /// <param name="Dependents">Settings for dependents features.</param>
     public record FeatureToggleConfiguration(
-        Homepage Homepage,
-        WaitingQueue WaitingQueue,
-        NotificationCentre NotificationCentre,
-        Timeline Timeline,
-#pragma warning disable CA1819
-        Datasets[] Datasets,
-#pragma warning restore CA1819
-        Covid19 Covid19,
-        Dependents Dependents);
+        HomepageSettings Homepage,
+        WaitingQueueSettings WaitingQueue,
+        NotificationCentreSettings NotificationCentre,
+        TimelineSettings Timeline,
+        DatasetSettings[] Datasets,
+        Covid19Settings Covid19,
+        DependentsSettings Dependents);
 
     /// <summary>
     /// Settings for the home page.
     /// </summary>
     /// <param name="ShowFederalProofOfVaccination">Toggles federal proof of vaccination.</param>
-    public record Homepage(
+    public record HomepageSettings(
         bool ShowFederalProofOfVaccination);
 
     /// <summary>
     /// Settings for the waiting queue.
     /// </summary>
     /// <param name="Enabled">Toggles the waiting queue feature.</param>
-    public record WaitingQueue(
+    public record WaitingQueueSettings(
         bool Enabled);
 
     /// <summary>
     /// Settings for the notification centre.
     /// </summary>
     /// <param name="Enabled">Toggles notification centre.</param>
-    public record NotificationCentre(
+    public record NotificationCentreSettings(
         bool Enabled);
 
     /// <summary>
     /// Settings for the timeline.
     /// </summary>
     /// <param name="Comment">Toggles the comment feature.</param>
-    public record Timeline(
+    public record TimelineSettings(
         bool Comment);
 
     /// <summary>
@@ -69,19 +69,17 @@ namespace HealthGateway.WebClient.Server.Models
     /// </summary>
     /// <param name="Name">Name of the data set.</param>
     /// <param name="Enabled">Toggles the data set.</param>
-    public record Datasets(
+    public record DatasetSettings(
         string Name,
         bool Enabled);
 
     /// <summary>
     /// Settings for covid19 features.
     /// </summary>
-    /// <param name="Enabled">Toggles covid19 features.</param>
     /// <param name="PcrTestEnabled">Toggles pcr test.</param>
     /// <param name="PublicCovid19">Settings for public covid19 feature.</param>
     /// <param name="ProofOfVaccination">Settings for proof of vaccination feature.</param>
-    public record Covid19(
-        bool Enabled,
+    public record Covid19Settings(
         bool PcrTestEnabled,
         PublicCovid19 PublicCovid19,
         ProofOfVaccination ProofOfVaccination);
@@ -99,28 +97,17 @@ namespace HealthGateway.WebClient.Server.Models
     /// Settings for proof of vaccination feature.
     /// </summary>
     /// <param name="ExportPdf">Toggles export of pdf feature.</param>
-    /// <param name="ExportImage">Toggles export image feature.</param>
     public record ProofOfVaccination(
-        bool ExportPdf,
-        bool ExportImage);
+        bool ExportPdf);
 
     /// <summary>
     /// Settings for dependents features.
     /// </summary>
     /// <param name="Enabled">Toggles dependents features.</param>
-    /// <param name="DependentDatasets">Settings for dependents data sets.</param>
-    public record Dependents(
+    /// <param name="Datasets">Settings for dependents data sets.</param>
+    public record DependentsSettings(
         bool Enabled,
-#pragma warning disable CA1819
-        DependentDatasets[] DependentDatasets);
-#pragma warning restore CA1819
+        DatasetSettings[] Datasets);
 
-    /// <summary>
-    /// Settings for dependents data sets.
-    /// </summary>
-    /// <param name="Name">Name of the data set.</param>
-    /// <param name="Enabled">Toggles the data set for dependents.</param>
-    public record DependentDatasets(
-        string Name,
-        bool Enabled);
+#pragma warning restore CA1819
 }

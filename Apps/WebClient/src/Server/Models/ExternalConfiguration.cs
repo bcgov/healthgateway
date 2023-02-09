@@ -42,11 +42,6 @@ namespace HealthGateway.WebClient.Server.Models
         public WebClientConfiguration WebClient { get; set; } = new();
 
         /// <summary>
-        /// Gets or sets the state of the Health Gateway features.
-        /// </summary>
-        public FeatureToggleConfiguration? FeatureToggleConfiguration { get; set; }
-
-        /// <summary>
         /// Gets or sets the Service Endpoints.
         /// </summary>
         [SuppressMessage("Usage", "CA2227:Collection properties should be read only", Justification = "Team decision")]

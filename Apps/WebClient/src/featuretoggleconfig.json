@@ -13,6 +13,14 @@
     },
     "datasets": [
         {
+            "name": "clinicalDocument",
+            "enabled": true
+        },
+        {
+            "name": "covid19TestResult",
+            "enabled": true
+        },
+        {
             "name": "healthVisit",
             "enabled": true
         },
@@ -21,49 +29,43 @@
             "enabled": true
         },
         {
-            "name": "medication",
-            "enabled":true
+            "name": "immunization",
+            "enabled": true
         },
         {
             "name": "labResult",
             "enabled": true
         },
         {
-            "name": "clinicalDocument",
-            "enabled": true
-        },
-        {
-            "name": "immunization",
-            "enabled": true
-        },
-        {
-            "name": "specialAuthority",
-            "enabled": true
-        },
-        {
-            "name": "covid19TestResult",
+            "name": "medication",
             "enabled": true
         },
         {
             "name": "note",
             "enabled": true
+        },
+        {
+            "name": "specialAuthority",
+            "enabled": true
         }
     ],
     "covid19": {
-        "enabled": true,
         "pcrTestEnabled": true,
         "publicCovid19": {
             "enableTestResults": false,
             "showFederalProofOfVaccination": true
         },
         "proofOfVaccination": {
-            "exportPdf": true,
-            "exportImage": true
+            "exportPdf": true
         }
     },
     "dependents": {
         "enabled": true,
-        "dependentDatasets": [
+        "datasets": [
+            {
+                "name": "clinicalDocument",
+                "enabled": false
+            },
             {
                 "name": "healthVisit",
                 "enabled": false
@@ -73,23 +75,19 @@
                 "enabled": false
             },
             {
-                "name": "medication",
-                "enabled": false
-            },
-            {
                 "name": "labResult",
                 "enabled": false
             },
             {
-                "name": "clinicalDocument",
-                "enabled": false
-            },
-            {
-                "name": "specialAuthority",
+                "name": "medication",
                 "enabled": false
             },
             {
                 "name": "note",
+                "enabled": false
+            },
+            {
+                "name": "specialAuthority",
                 "enabled": false
             }
         ]
