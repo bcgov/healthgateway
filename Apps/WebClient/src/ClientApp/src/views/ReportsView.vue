@@ -78,7 +78,7 @@ export default class ReportsView extends Vue {
     patientData!: PatientData;
 
     @Getter("medicationStatements", { namespace: "medication" })
-    medicationStatements!: MedicationStatementHistory[];
+    medicationStatements!: (hdid: string) => MedicationStatementHistory[];
 
     @Getter("user", { namespace: "user" })
     user!: User;
@@ -150,19 +150,17 @@ export default class ReportsView extends Vue {
     }
 
     private get medicationOptions(): SelectOption[] {
-        let medications = this.medicationStatements.reduce<MedicationSummary[]>(
-            (acumulator: MedicationSummary[], current) => {
-                let med = current.medicationSummary;
-                if (
-                    acumulator.findIndex((x) => x.brandName === med.brandName) <
-                    0
-                ) {
-                    acumulator.push(med);
-                }
-                return acumulator;
-            },
-            []
-        );
+        let medications = this.medicationStatements(this.user.hdid).reduce<
+            MedicationSummary[]
+        >((acumulator: MedicationSummary[], current) => {
+            let med = current.medicationSummary;
+            if (
+                acumulator.findIndex((x) => x.brandName === med.brandName) < 0
+            ) {
+                acumulator.push(med);
+            }
+            return acumulator;
+        }, []);
 
         medications.sort((a, b) => a.brandName.localeCompare(b.brandName));
 

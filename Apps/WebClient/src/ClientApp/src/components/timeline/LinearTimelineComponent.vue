@@ -62,10 +62,10 @@ export default class LinearTimelineComponent extends Vue {
     hasActiveFilter!: boolean;
 
     @Getter("isMedicationStatementLoading", { namespace: "medication" })
-    isMedicationStatementLoading!: boolean;
+    isMedicationStatementLoading!: (hdid: string) => boolean;
 
     @Getter("isMedicationRequestLoading", { namespace: "medication" })
-    isMedicationRequestLoading!: boolean;
+    isMedicationRequestLoading!: (hdid: string) => boolean;
 
     @Getter("isLoading", { namespace: "comment" })
     isCommentLoading!: boolean;
@@ -108,8 +108,8 @@ export default class LinearTimelineComponent extends Vue {
 
     private get isFullyLoaded(): boolean {
         const fullyLoaded =
-            !this.isMedicationRequestLoading &&
-            !this.isMedicationStatementLoading &&
+            !this.isMedicationRequestLoading(this.user.hdid) &&
+            !this.isMedicationStatementLoading(this.user.hdid) &&
             !this.isImmunizationLoading &&
             !this.isImmunizationDeferred &&
             !this.covid19LaboratoryOrdersAreLoading(this.user.hdid) &&
@@ -125,17 +125,18 @@ export default class LinearTimelineComponent extends Vue {
 
     private get isFilterLoading(): boolean {
         const filtersLoaded = [];
+
         filtersLoaded.push(
             this.isSelectedFilterModuleLoading(
                 EntryType.MedicationRequest,
-                this.isMedicationRequestLoading
+                this.isMedicationRequestLoading(this.user.hdid)
             )
         );
 
         filtersLoaded.push(
             this.isSelectedFilterModuleLoading(
                 EntryType.Medication,
-                this.isMedicationStatementLoading
+                this.isMedicationStatementLoading(this.user.hdid)
             )
         );
 

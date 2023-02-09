@@ -28,30 +28,35 @@ interface MedicationRequestRow {
 
 @Component
 export default class MedicationRequestReportComponent extends Vue {
-    @Prop() private filter!: ReportFilter;
-
-    @Getter("user", { namespace: "user" })
-    private user!: User;
+    @Prop()
+    filter!: ReportFilter;
 
     @Action("retrieveMedicationRequests", { namespace: "medication" })
-    private retrieve!: (params: { hdid: string }) => Promise<void>;
+    retrieve!: (params: { hdid: string }) => Promise<void>;
 
     @Getter("isMedicationRequestLoading", { namespace: "medication" })
-    isLoading!: boolean;
+    isMedicationRequestLoading!: (hdid: string) => boolean;
 
     @Getter("medicationRequests", { namespace: "medication" })
-    medicationRequests!: MedicationRequest[];
+    medicationRequests!: (hdid: string) => MedicationRequest[];
+
+    @Getter("user", { namespace: "user" })
+    user!: User;
 
     private logger!: ILogger;
 
     private readonly headerClass = "medication-request-report-table-header";
+
+    private get isLoading(): boolean {
+        return this.isMedicationRequestLoading(this.user.hdid);
+    }
 
     private get isEmpty(): boolean {
         return this.visibleRecords.length === 0;
     }
 
     private get visibleRecords(): MedicationRequest[] {
-        let records = this.medicationRequests.filter((record) =>
+        let records = this.medicationRequests(this.user.hdid).filter((record) =>
             this.filter.allowsDate(record.requestedDate)
         );
         records.sort((a, b) => {

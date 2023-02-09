@@ -11,6 +11,7 @@ import { ILogger, IMedicationService } from "@/services/interfaces";
 import EventTracker from "@/utility/eventTracker";
 
 import { MedicationStatementActions } from "./types";
+import { getMedicationState } from "./util";
 
 export const actions: MedicationStatementActions = {
     retrieveMedicationStatements(
@@ -24,9 +25,10 @@ export const actions: MedicationStatementActions = {
 
         return new Promise((resolve, reject) => {
             const medicationStatements: MedicationStatementHistory[] =
-                context.getters.medicationStatements;
+                context.getters.medicationStatements(params.hdid);
             if (
-                context.state.status === LoadStatus.LOADED ||
+                getMedicationState(context.state, params.hdid).status ===
+                    LoadStatus.LOADED ||
                 medicationStatements.length > 0
             ) {
                 logger.debug(
@@ -41,7 +43,7 @@ export const actions: MedicationStatementActions = {
                 });
             } else {
                 logger.debug("Retrieving Medication Statements");
-                context.commit("setMedicationStatementRequested");
+                context.commit("setMedicationStatementRequested", params.hdid);
                 return medicationService
                     .getPatientMedicationStatementHistory(
                         params.hdid,
@@ -50,6 +52,7 @@ export const actions: MedicationStatementActions = {
                     .then((result) => {
                         if (result.resultStatus === ResultType.Error) {
                             context.dispatch("handleMedicationStatementError", {
+                                hdid: params.hdid,
                                 error: result.resultError,
                                 errorType: ErrorType.Retrieve,
                             });
@@ -61,15 +64,16 @@ export const actions: MedicationStatementActions = {
                                     result.resourcePayload.length
                                 );
                             }
-                            context.commit(
-                                "setMedicationStatementResult",
-                                result
-                            );
+                            context.commit("setMedicationStatementResult", {
+                                hdid: params.hdid,
+                                medicationResult: result,
+                            });
                             resolve(result);
                         }
                     })
                     .catch((error: ResultError) => {
                         context.dispatch("handleMedicationStatementError", {
+                            hdid: params.hdid,
                             error,
                             errorType: ErrorType.Retrieve,
                         });
@@ -80,12 +84,15 @@ export const actions: MedicationStatementActions = {
     },
     handleMedicationStatementError(
         context,
-        params: { error: ResultError; errorType: ErrorType }
+        params: { hdid: string; error: ResultError; errorType: ErrorType }
     ) {
         const logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
 
         logger.error(`ERROR: ${JSON.stringify(params.error)}`);
-        context.commit("medicationStatementError", params.error);
+        context.commit("medicationStatementError", {
+            hdid: params.hdid,
+            error: params.error,
+        });
 
         if (params.error.statusCode === 429) {
             context.dispatch(

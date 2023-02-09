@@ -54,10 +54,10 @@ export default class FilterComponent extends Vue {
     isSidebarOpen!: boolean;
 
     @Getter("medicationStatementCount", { namespace: "medication" })
-    medicationStatementCount!: number;
+    medicationStatementCount!: (hdid: string) => number;
 
     @Getter("medicationRequestCount", { namespace: "medication" })
-    medicationRequestCount!: number;
+    medicationRequestCount!: (hdid: string) => number;
 
     @Getter("immunizationCount", { namespace: "immunization" })
     immunizationCount!: number;
@@ -180,7 +180,7 @@ export default class FilterComponent extends Vue {
             case EntryType.Immunization:
                 return this.immunizationCount;
             case EntryType.Medication:
-                return this.medicationStatementCount;
+                return this.medicationStatementCount(this.user.hdid);
             case EntryType.LaboratoryOrder:
                 return this.laboratoryOrdersCount(this.user.hdid);
             case EntryType.Covid19LaboratoryOrder:
@@ -192,7 +192,7 @@ export default class FilterComponent extends Vue {
             case EntryType.Note:
                 return this.noteCount;
             case EntryType.MedicationRequest:
-                return this.medicationRequestCount;
+                return this.medicationRequestCount(this.user.hdid);
             case EntryType.ClinicalDocument:
                 return this.clinicalDocumentCount;
             default:

@@ -2,23 +2,33 @@ import MedicationStatementHistory from "@/models/medicationStatementHistory";
 import { LoadStatus } from "@/models/storeOperations";
 
 import { MedicationStatementGetters, MedicationStatementState } from "./types";
+import { getMedicationState } from "./util";
 
 export const getters: MedicationStatementGetters = {
     medicationStatements(
         state: MedicationStatementState
-    ): MedicationStatementHistory[] {
-        return state.medicationStatements;
+    ): (hdid: string) => MedicationStatementHistory[] {
+        return (hdid: string) => getMedicationState(state, hdid).data;
     },
-    medicationStatementCount(state: MedicationStatementState): number {
-        return state.medicationStatements.length;
+    medicationStatementCount(
+        state: MedicationStatementState
+    ): (hdid: string) => number {
+        return (hdid: string) => getMedicationState(state, hdid).data.length;
     },
-    protectedWordAttempts(state: MedicationStatementState): number {
-        return state.protectiveWordAttempts;
+    protectedWordAttempts(
+        state: MedicationStatementState
+    ): (hdid: string) => number {
+        return (hdid: string) =>
+            getMedicationState(state, hdid).protectiveWordAttempts;
     },
-    isProtected(state: MedicationStatementState): boolean {
-        return state.status === LoadStatus.PROTECTED;
+    isProtected(state: MedicationStatementState): (hdid: string) => boolean {
+        return (hdid: string) =>
+            getMedicationState(state, hdid).status === LoadStatus.PROTECTED;
     },
-    isMedicationStatementLoading(state: MedicationStatementState): boolean {
-        return state.status === LoadStatus.REQUESTED;
+    isMedicationStatementLoading(
+        state: MedicationStatementState
+    ): (hdid: string) => boolean {
+        return (hdid: string) =>
+            getMedicationState(state, hdid).status === LoadStatus.REQUESTED;
     },
 };
