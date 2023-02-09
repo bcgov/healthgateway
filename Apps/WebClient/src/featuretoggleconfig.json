@@ -56,7 +56,7 @@
             "showFederalProofOfVaccination": true
         },
         "proofOfVaccination": {
-            "exportPdf": true
+            "exportPdf": false
         }
     },
     "dependents": {
