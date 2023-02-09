@@ -1,0 +1,97 @@
+{
+    "homepage": {
+        "showFederalProofOfVaccination": true
+    },
+    "waitingQueue":{
+        "enabled": true
+    },
+    "notificationCentre": {
+        "enabled": true
+    },
+    "timeline": {
+        "comment": true
+    },
+    "datasets": [
+        {
+            "name": "healthVisit",
+            "enabled": true
+        },
+        {
+            "name": "hospitalVisit",
+            "enabled": true
+        },
+        {
+            "name": "medication",
+            "enabled":true
+        },
+        {
+            "name": "labResult",
+            "enabled": true
+        },
+        {
+            "name": "clinicalDocument",
+            "enabled": true
+        },
+        {
+            "name": "immunization",
+            "enabled": true
+        },
+        {
+            "name": "specialAuthority",
+            "enabled": true
+        },
+        {
+            "name": "covid19TestResult",
+            "enabled": true
+        },
+        {
+            "name": "note",
+            "enabled": true
+        }
+    ],
+    "covid19": {
+        "enabled": true,
+        "pcrTestEnabled": true,
+        "publicCovid19": {
+            "enableTestResults": false,
+            "showFederalProofOfVaccination": true
+        },
+        "proofOfVaccination": {
+            "exportPdf": true,
+            "exportImage": true
+        }
+    },
+    "dependents": {
+        "enabled": true,
+        "dependentDatasets": [
+            {
+                "name": "healthVisit",
+                "enabled": false
+            },
+            {
+                "name": "hospitalVisit",
+                "enabled": false
+            },
+            {
+                "name": "medication",
+                "enabled": false
+            },
+            {
+                "name": "labResult",
+                "enabled": false
+            },
+            {
+                "name": "clinicalDocument",
+                "enabled": false
+            },
+            {
+                "name": "specialAuthority",
+                "enabled": false
+            },
+            {
+                "name": "note",
+                "enabled": false
+            }
+        ]
+    }
+}
