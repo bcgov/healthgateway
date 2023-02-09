@@ -1,4 +1,4 @@
-import MedicationRequest from "@/models/MedicationRequest";
+import MedicationRequest from "@/models/medicationRequest";
 import { LoadStatus } from "@/models/storeOperations";
 
 import { MedicationRequestGetters, MedicationRequestState } from "./types";

@@ -8,7 +8,7 @@ import {
 
 import { ErrorType } from "@/constants/errorType";
 import { ResultError } from "@/models/errors";
-import MedicationRequest from "@/models/MedicationRequest";
+import MedicationRequest from "@/models/medicationRequest";
 import RequestResult from "@/models/requestResult";
 import { LoadStatus } from "@/models/storeOperations";
 import { RootState } from "@/store/types";

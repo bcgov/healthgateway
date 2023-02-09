@@ -40,7 +40,7 @@ import { ImmunizationEvent } from "@/models/immunizationModel";
 import ImmunizationTimelineEntry from "@/models/immunizationTimelineEntry";
 import { Covid19LaboratoryOrder, LaboratoryOrder } from "@/models/laboratory";
 import LaboratoryOrderTimelineEntry from "@/models/laboratoryOrderTimelineEntry";
-import MedicationRequest from "@/models/MedicationRequest";
+import MedicationRequest from "@/models/medicationRequest";
 import MedicationRequestTimelineEntry from "@/models/medicationRequestTimelineEntry";
 import MedicationStatementHistory from "@/models/medicationStatementHistory";
 import MedicationTimelineEntry from "@/models/medicationTimelineEntry";

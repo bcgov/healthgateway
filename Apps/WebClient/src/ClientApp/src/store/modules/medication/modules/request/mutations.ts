@@ -1,5 +1,5 @@
 import { ResultType } from "@/constants/resulttype";
-import MedicationRequest from "@/models/MedicationRequest";
+import MedicationRequest from "@/models/medicationRequest";
 import RequestResult from "@/models/requestResult";
 import { LoadStatus } from "@/models/storeOperations";
 
