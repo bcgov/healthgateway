@@ -7,29 +7,32 @@ import {
 } from "vuex";
 
 import { ErrorType } from "@/constants/errorType";
+import { Dictionary } from "@/models/baseTypes";
+import { ImmunizationDatasetState } from "@/models/datasetState";
 import { ResultError } from "@/models/errors";
 import { ImmunizationEvent, Recommendation } from "@/models/immunizationModel";
 import ImmunizationResult from "@/models/immunizationResult";
-import { LoadStatus } from "@/models/storeOperations";
 import { RootState } from "@/store/types";
 
 export interface ImmunizationState {
-    immunizations: ImmunizationEvent[];
-    recommendations: Recommendation[];
-    statusMessage: string;
-    error?: ResultError;
-    status: LoadStatus;
+    immunizations: Dictionary<ImmunizationDatasetState>;
 }
 
 export interface ImmunizationGetters
     extends GetterTree<ImmunizationState, RootState> {
-    immunizations(state: ImmunizationState): ImmunizationEvent[];
-    covidImmunizations(state: ImmunizationState): ImmunizationEvent[];
-    recomendations(state: ImmunizationState): Recommendation[];
-    error(state: ImmunizationState): ResultError | undefined;
-    immunizationCount(state: ImmunizationState): number;
-    isDeferredLoad(state: ImmunizationState): boolean;
-    isLoading(state: ImmunizationState): boolean;
+    immunizations(
+        state: ImmunizationState
+    ): (hdid: string) => ImmunizationEvent[];
+    covidImmunizations(
+        state: ImmunizationState
+    ): (hdid: string) => ImmunizationEvent[];
+    recomendations(
+        state: ImmunizationState
+    ): (hdid: string) => Recommendation[];
+    error(state: ImmunizationState): (hdid: string) => ResultError | undefined;
+    immunizationCount(state: ImmunizationState): (hdid: string) => number;
+    isDeferredLoad(state: ImmunizationState): (hdid: string) => boolean;
+    isLoading(state: ImmunizationState): (hdid: string) => boolean;
 }
 
 type StoreContext = ActionContext<ImmunizationState, RootState>;
@@ -38,17 +41,26 @@ export interface ImmunizationActions
     retrieve(context: StoreContext, params: { hdid: string }): Promise<void>;
     handleError(
         context: StoreContext,
-        params: { error: ResultError; errorType: ErrorType }
+        params: { hdid: string; error: ResultError; errorType: ErrorType }
     ): void;
 }
 
 export interface ImmunizationMutations extends MutationTree<ImmunizationState> {
-    setRequested(state: ImmunizationState): void;
+    setImmunizationRequested(state: ImmunizationState, hdid: string): void;
     setImmunizationResult(
         state: ImmunizationState,
-        immunizationResult: ImmunizationResult
+        payload: {
+            hdid: string;
+            immunizationResult: ImmunizationResult;
+        }
     ): void;
-    immunizationError(state: ImmunizationState, error: ResultError): void;
+    immunizationError(
+        state: ImmunizationState,
+        payload: {
+            hdid: string;
+            error: ResultError;
+        }
+    ): void;
 }
 
 export interface ImmunizationModule

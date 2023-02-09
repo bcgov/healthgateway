@@ -83,7 +83,7 @@ export default class LinearTimelineComponent extends Vue {
     hospitalVisitsAreLoading!: (hdid: string) => boolean;
 
     @Getter("isLoading", { namespace: "immunization" })
-    isImmunizationLoading!: boolean;
+    isImmunizationLoading!: (hdid: string) => boolean;
 
     @Getter("isLoading", { namespace: "note" })
     isNoteLoading!: boolean;
@@ -92,7 +92,7 @@ export default class LinearTimelineComponent extends Vue {
     isClinicalDocumentLoading!: boolean;
 
     @Getter("isDeferredLoad", { namespace: "immunization" })
-    isImmunizationDeferred!: boolean;
+    isImmunizationDeferred!: (hdid: string) => boolean;
 
     @Getter("user", { namespace: "user" })
     user!: User;
@@ -110,8 +110,8 @@ export default class LinearTimelineComponent extends Vue {
         const fullyLoaded =
             !this.isMedicationRequestLoading &&
             !this.isMedicationStatementLoading &&
-            !this.isImmunizationLoading &&
-            !this.isImmunizationDeferred &&
+            !this.isImmunizationLoading(this.user.hdid) &&
+            !this.isImmunizationDeferred(this.user.hdid) &&
             !this.covid19LaboratoryOrdersAreLoading(this.user.hdid) &&
             !this.laboratoryOrdersAreLoading(this.user.hdid) &&
             !this.healthVisitsAreLoading(this.user.hdid) &&
@@ -142,7 +142,7 @@ export default class LinearTimelineComponent extends Vue {
         filtersLoaded.push(
             this.isSelectedFilterModuleLoading(
                 EntryType.Immunization,
-                this.isImmunizationLoading
+                this.isImmunizationLoading(this.user.hdid)
             )
         );
 

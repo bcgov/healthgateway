@@ -1,32 +1,57 @@
+import { ImmunizationDatasetState } from "@/models/datasetState";
 import { ResultError } from "@/models/errors";
 import ImmunizationResult from "@/models/immunizationResult";
 import { LoadStatus } from "@/models/storeOperations";
 
 import { ImmunizationMutations, ImmunizationState } from "./types";
+import {
+    getImmunizationDatasetState,
+    setImmunizationDatasetState,
+} from "./util";
 
 export const mutations: ImmunizationMutations = {
-    setRequested(state: ImmunizationState) {
-        state.status =
-            state.status === LoadStatus.DEFERRED
-                ? LoadStatus.ASYNC_REQUESTED
-                : LoadStatus.REQUESTED;
+    setImmunizationRequested(state: ImmunizationState, hdid: string) {
+        const currentState = getImmunizationDatasetState(state, hdid);
+        const nextState: ImmunizationDatasetState = {
+            ...currentState,
+            status:
+                currentState.status === LoadStatus.DEFERRED
+                    ? LoadStatus.ASYNC_REQUESTED
+                    : LoadStatus.REQUESTED,
+        };
+        setImmunizationDatasetState(state, hdid, nextState);
     },
+
     setImmunizationResult(
         state: ImmunizationState,
-        immunizationResult: ImmunizationResult
+        payload: { hdid: string; immunizationResult: ImmunizationResult }
     ) {
-        state.immunizations = immunizationResult.immunizations;
-        state.recommendations = immunizationResult.recommendations;
-        state.error = undefined;
-        if (immunizationResult.loadState.refreshInProgress) {
-            state.status = LoadStatus.DEFERRED;
-        } else {
-            state.status = LoadStatus.LOADED;
-        }
+        const { hdid, immunizationResult } = payload;
+        const currentState = getImmunizationDatasetState(state, hdid);
+        const nextState: ImmunizationDatasetState = {
+            ...currentState,
+            data: immunizationResult.immunizations,
+            recommendations: immunizationResult.recommendations,
+            error: undefined,
+            statusMessage: "success",
+            status: immunizationResult.loadState.refreshInProgress
+                ? LoadStatus.DEFERRED
+                : LoadStatus.LOADED,
+        };
+        setImmunizationDatasetState(state, hdid, nextState);
     },
-    immunizationError(state: ImmunizationState, error: ResultError) {
-        state.error = error;
-        state.statusMessage = error.resultMessage;
-        state.status = LoadStatus.ERROR;
+    immunizationError(
+        state: ImmunizationState,
+        payload: { hdid: string; error: ResultError }
+    ) {
+        const { hdid, error } = payload;
+        const currentState = getImmunizationDatasetState(state, hdid);
+        const nextState: ImmunizationDatasetState = {
+            ...currentState,
+            error: error,
+            statusMessage: error.resultMessage,
+            status: LoadStatus.ERROR,
+        };
+        setImmunizationDatasetState(state, hdid, nextState);
     },
 };

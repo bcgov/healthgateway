@@ -1,5 +1,6 @@
 import { Encounter, HospitalVisit } from "./encounter";
 import { ResultError } from "./errors";
+import { ImmunizationEvent, Recommendation } from "./immunizationModel";
 import { Covid19LaboratoryOrder, LaboratoryOrder } from "./laboratory";
 import { LoadStatus } from "./storeOperations";
 
@@ -17,4 +18,8 @@ export interface HospitalVisitState extends DatasetState<HospitalVisit[]> {
 }
 export interface LabResultState extends DatasetState<LaboratoryOrder[]> {
     queued: boolean;
+}
+export interface ImmunizationDatasetState
+    extends DatasetState<ImmunizationEvent[]> {
+    recommendations: Recommendation[];
 }

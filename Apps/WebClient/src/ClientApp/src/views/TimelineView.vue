@@ -157,10 +157,10 @@ export default class TimelineView extends Vue {
     hospitalVisitsAreLoading!: (hdid: string) => boolean;
 
     @Getter("isLoading", { namespace: "immunization" })
-    isImmunizationLoading!: boolean;
+    isImmunizationLoading!: (hdid: string) => boolean;
 
     @Getter("isDeferredLoad", { namespace: "immunization" })
-    isImmunizationDeferred!: boolean;
+    isImmunizationDeferred!: (hdid: string) => boolean;
 
     @Getter("isLoading", { namespace: "note" })
     isNoteLoading!: boolean;
@@ -169,10 +169,7 @@ export default class TimelineView extends Vue {
     isClinicalDocumentLoading!: boolean;
 
     @Getter("immunizations", { namespace: "immunization" })
-    patientImmunizations!: ImmunizationEvent[];
-
-    @Getter("covidImmunizations", { namespace: "immunization" })
-    covidImmunizations!: ImmunizationEvent[];
+    patientImmunizations!: (hdid: string) => ImmunizationEvent[];
 
     @Getter("healthVisits", { namespace: "encounter" })
     healthVisits!: (hdid: string) => Encounter[];
@@ -294,7 +291,7 @@ export default class TimelineView extends Vue {
         }
 
         // Add the immunization entries to the timeline list
-        for (const immunization of this.patientImmunizations) {
+        for (const immunization of this.patientImmunizations(this.user.hdid)) {
             timelineEntries.push(new ImmunizationTimelineEntry(immunization));
         }
 
@@ -320,10 +317,10 @@ export default class TimelineView extends Vue {
         return (
             !this.isMedicationRequestLoading &&
             !this.isMedicationStatementLoading &&
-            !this.isImmunizationLoading &&
-            !this.isImmunizationDeferred &&
             !this.covid19LaboratoryOrdersAreLoading(this.user.hdid) &&
             !this.laboratoryOrdersAreLoading(this.user.hdid) &&
+            !this.isImmunizationLoading(this.user.hdid) &&
+            !this.isImmunizationDeferred(this.user.hdid) &&
             !this.healthVisitsAreLoading(this.user.hdid) &&
             !this.hospitalVisitsAreLoading(this.user.hdid) &&
             !this.isClinicalDocumentLoading &&
@@ -351,7 +348,7 @@ export default class TimelineView extends Vue {
         filtersLoaded.push(
             this.isSelectedFilterModuleLoading(
                 EntryType.Immunization,
-                this.isImmunizationLoading
+                this.isImmunizationLoading(this.user.hdid)
             )
         );
 
