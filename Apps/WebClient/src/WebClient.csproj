@@ -14,6 +14,10 @@
     <Content Remove="Listeners\**" />
     <EmbeddedResource Remove="Listeners\**" />
     <None Remove="Listeners\**" />
+    <Content Remove="featuretoggleconfig.json" />
+    <None Include="featuretoggleconfig.json">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNet.WebApi.Client" Version="5.2.9" />

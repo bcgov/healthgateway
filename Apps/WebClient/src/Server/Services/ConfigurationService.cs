@@ -15,6 +15,8 @@
 //-------------------------------------------------------------------------
 namespace HealthGateway.WebClient.Server.Services
 {
+    using System.IO;
+    using System.Text.Json;
     using HealthGateway.WebClient.Server.Models;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.Logging;
@@ -38,6 +40,15 @@ namespace HealthGateway.WebClient.Server.Services
             this.logger = logger;
             this.config = new ExternalConfiguration();
             this.config = configuration.Get<ExternalConfiguration>() ?? new();
+
+            if (!string.IsNullOrEmpty(this.config.WebClient.FeatureToggleFilePath))
+            {
+                string fileContent = File.ReadAllText(this.config.WebClient.FeatureToggleFilePath);
+                this.config.WebClient.FeatureToggleConfiguration = JsonSerializer.Deserialize<FeatureToggleConfiguration>(
+                    fileContent,
+                    new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+            }
+
             this.mobileConfig = new MobileConfiguration();
             configuration.Bind("MobileConfiguration", this.mobileConfig);
         }
