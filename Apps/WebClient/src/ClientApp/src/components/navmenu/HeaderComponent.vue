@@ -154,7 +154,7 @@ export default class HeaderComponent extends Vue {
 
     private get isNotificationCentreAvailable(): boolean {
         return (
-            this.config.modules["NotificationCentre"] &&
+            this.config.featureToggleConfiguration.notificationCentre.enabled &&
             !this.isOffline &&
             !this.isQueuePage &&
             !this.isPcrTest &&

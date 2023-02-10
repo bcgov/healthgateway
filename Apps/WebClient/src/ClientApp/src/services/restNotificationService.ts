@@ -26,7 +26,8 @@ export class RestNotificationService implements INotificationService {
         http: IHttpDelegate
     ): void {
         this.http = http;
-        this.isEnabled = config.webClient.modules["NotificationCentre"];
+        this.isEnabled =
+            config.webClient.featureToggleConfiguration.notificationCentre.enabled;
         this.baseUri = config.serviceEndpoints["GatewayApi"];
     }
 
