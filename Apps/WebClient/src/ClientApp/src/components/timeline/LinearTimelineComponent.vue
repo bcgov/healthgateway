@@ -67,8 +67,8 @@ export default class LinearTimelineComponent extends Vue {
     @Getter("specialAuthorityRequestsAreLoading", { namespace: "medication" })
     specialAuthorityRequestsAreLoading!: (hdid: string) => boolean;
 
-    @Getter("isLoading", { namespace: "comment" })
-    isCommentLoading!: boolean;
+    @Getter("commentsAreLoading", { namespace: "comment" })
+    commentsAreLoading!: boolean;
 
     @Getter("covid19LaboratoryOrdersAreLoading", { namespace: "laboratory" })
     covid19LaboratoryOrdersAreLoading!: (hdid: string) => boolean;
@@ -118,7 +118,7 @@ export default class LinearTimelineComponent extends Vue {
             !this.hospitalVisitsAreLoading(this.user.hdid) &&
             !this.clinicalDocumentsAreLoading(this.user.hdid) &&
             !this.notesAreLoading &&
-            !this.isCommentLoading;
+            !this.commentsAreLoading;
         this.logger.debug(`Linear Timeline is fully loaded: ${fullyLoaded}`);
         return fullyLoaded;
     }
