@@ -28,7 +28,7 @@ import FilterComponent from "@/components/timeline/FilterComponent.vue";
 import LinearTimelineComponent from "@/components/timeline/LinearTimelineComponent.vue";
 import { EntryType, entryTypeMap } from "@/constants/entryType";
 import BreadcrumbItem from "@/models/breadcrumbItem";
-import ClinicalDocument from "@/models/clinicalDocument";
+import { ClinicalDocument } from "@/models/clinicalDocument";
 import ClinicalDocumentTimelineEntry from "@/models/clinicalDocumentTimelineEntry";
 import type { WebClientConfiguration } from "@/models/configData";
 import Covid19LaboratoryOrderTimelineEntry from "@/models/covid19LaboratoryOrderTimelineEntry";
@@ -94,7 +94,7 @@ export default class TimelineView extends Vue {
     @Getter("webClient", { namespace: "config" })
     config!: WebClientConfiguration;
 
-    @Action("retrieve", { namespace: "immunization" })
+    @Action("retrieveImmunizations", { namespace: "immunization" })
     retrieveImmunizations!: (params: { hdid: string }) => Promise<void>;
 
     @Action("retrieveHealthVisits", { namespace: "encounter" })
@@ -103,7 +103,7 @@ export default class TimelineView extends Vue {
     @Action("retrieveHospitalVisits", { namespace: "encounter" })
     retrieveHospitalVisits!: (params: { hdid: string }) => Promise<void>;
 
-    @Action("retrieve", { namespace: "note" })
+    @Action("retrieveNotes", { namespace: "note" })
     retrieveNotes!: (params: { hdid: string }) => Promise<void>;
 
     @Action("retrieveCovid19LaboratoryOrders", { namespace: "laboratory" })
@@ -125,10 +125,10 @@ export default class TimelineView extends Vue {
         hdid: string;
     }) => Promise<void>;
 
-    @Action("retrieve", { namespace: "clinicalDocument" })
+    @Action("retrieveClinicalDocuments", { namespace: "clinicalDocument" })
     retrieveClinicalDocuments!: (params: { hdid: string }) => Promise<void>;
 
-    @Action("retrieve", { namespace: "comment" })
+    @Action("retrieveComments", { namespace: "comment" })
     retrieveComments!: (params: { hdid: string }) => Promise<void>;
 
     @Action("setFilter", { namespace: "timeline" })
@@ -140,8 +140,8 @@ export default class TimelineView extends Vue {
     @Getter("specialAuthorityRequestsAreLoading", { namespace: "medication" })
     specialAuthorityRequestsAreLoading!: (hdid: string) => boolean;
 
-    @Getter("isLoading", { namespace: "comment" })
-    isCommentLoading!: boolean;
+    @Getter("commentsAreLoading", { namespace: "comment" })
+    commentsAreLoading!: boolean;
 
     @Getter("covid19LaboratoryOrdersAreLoading", { namespace: "laboratory" })
     covid19LaboratoryOrdersAreLoading!: (hdid: string) => boolean;
@@ -158,17 +158,17 @@ export default class TimelineView extends Vue {
     @Getter("hospitalVisitsAreLoading", { namespace: "encounter" })
     hospitalVisitsAreLoading!: (hdid: string) => boolean;
 
-    @Getter("isLoading", { namespace: "immunization" })
-    isImmunizationLoading!: (hdid: string) => boolean;
+    @Getter("immunizationsAreLoading", { namespace: "immunization" })
+    immunizationsAreLoading!: (hdid: string) => boolean;
 
-    @Getter("isDeferredLoad", { namespace: "immunization" })
-    isImmunizationDeferred!: (hdid: string) => boolean;
+    @Getter("immunizationsAreDeferred", { namespace: "immunization" })
+    immunizationsAreDeferred!: (hdid: string) => boolean;
 
-    @Getter("isLoading", { namespace: "note" })
-    isNoteLoading!: boolean;
+    @Getter("notesAreLoading", { namespace: "note" })
+    notesAreLoading!: boolean;
 
-    @Getter("isLoading", { namespace: "clinicalDocument" })
-    isClinicalDocumentLoading!: boolean;
+    @Getter("clinicalDocumentsAreLoading", { namespace: "clinicalDocument" })
+    clinicalDocumentsAreLoading!: (hdid: string) => boolean;
 
     @Getter("immunizations", { namespace: "immunization" })
     patientImmunizations!: (hdid: string) => ImmunizationEvent[];
@@ -191,8 +191,8 @@ export default class TimelineView extends Vue {
     @Getter("laboratoryOrders", { namespace: "laboratory" })
     laboratoryOrders!: (hdid: string) => LaboratoryOrder[];
 
-    @Getter("records", { namespace: "clinicalDocument" })
-    clinicalDocuments!: ClinicalDocument[];
+    @Getter("clinicalDocuments", { namespace: "clinicalDocument" })
+    clinicalDocuments!: (hdid: string) => ClinicalDocument[];
 
     @Getter("notes", { namespace: "note" })
     userNotes!: UserNote[];
@@ -279,7 +279,7 @@ export default class TimelineView extends Vue {
         }
 
         // Add the clinical document entries to the timeline list
-        for (const clinicalDocument of this.clinicalDocuments) {
+        for (const clinicalDocument of this.clinicalDocuments(this.user.hdid)) {
             timelineEntries.push(
                 new ClinicalDocumentTimelineEntry(
                     clinicalDocument,
@@ -322,13 +322,13 @@ export default class TimelineView extends Vue {
             !this.medicationsAreLoading(this.user.hdid) &&
             !this.covid19LaboratoryOrdersAreLoading(this.user.hdid) &&
             !this.laboratoryOrdersAreLoading(this.user.hdid) &&
-            !this.isImmunizationLoading(this.user.hdid) &&
-            !this.isImmunizationDeferred(this.user.hdid) &&
+            !this.immunizationsAreLoading(this.user.hdid) &&
+            !this.immunizationsAreDeferred(this.user.hdid) &&
             !this.healthVisitsAreLoading(this.user.hdid) &&
             !this.hospitalVisitsAreLoading(this.user.hdid) &&
-            !this.isClinicalDocumentLoading &&
-            !this.isNoteLoading &&
-            !this.isCommentLoading
+            !this.clinicalDocumentsAreLoading(this.user.hdid) &&
+            !this.notesAreLoading &&
+            !this.commentsAreLoading
         );
     }
 
@@ -351,7 +351,7 @@ export default class TimelineView extends Vue {
         filtersLoaded.push(
             this.isSelectedFilterModuleLoading(
                 EntryType.Immunization,
-                this.isImmunizationLoading(this.user.hdid)
+                this.immunizationsAreLoading(this.user.hdid)
             )
         );
 
@@ -386,14 +386,14 @@ export default class TimelineView extends Vue {
         filtersLoaded.push(
             this.isSelectedFilterModuleLoading(
                 EntryType.Note,
-                this.isNoteLoading
+                this.notesAreLoading
             )
         );
 
         filtersLoaded.push(
             this.isSelectedFilterModuleLoading(
                 EntryType.ClinicalDocument,
-                this.isClinicalDocumentLoading
+                this.clinicalDocumentsAreLoading(this.user.hdid)
             )
         );
 
@@ -586,7 +586,7 @@ export default class TimelineView extends Vue {
         </b-alert>
         <page-title title="Timeline">
             <div class="float-right">
-                <add-note-button v-if="isNoteEnabled && !isNoteLoading" />
+                <add-note-button v-if="isNoteEnabled && !notesAreLoading" />
             </div>
         </page-title>
         <div
@@ -638,7 +638,7 @@ export default class TimelineView extends Vue {
         <ProtectiveWordComponent
             :is-loading="medicationsAreLoading(user.hdid)"
         />
-        <NoteEditComponent :is-loading="isNoteLoading" />
+        <NoteEditComponent :is-loading="notesAreLoading" />
         <EntryDetailsComponent />
     </div>
 </template>

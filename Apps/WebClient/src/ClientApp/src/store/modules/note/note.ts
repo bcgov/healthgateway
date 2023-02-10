@@ -8,8 +8,8 @@ import { NoteModule, NoteState } from "./types";
 const state: NoteState = {
     notes: [],
     status: LoadStatus.NONE,
-    error: undefined,
     statusMessage: "",
+    error: undefined,
     lastOperation: null,
 };
 

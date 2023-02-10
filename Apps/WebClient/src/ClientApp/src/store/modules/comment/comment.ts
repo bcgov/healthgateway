@@ -6,10 +6,10 @@ import { mutations } from "./mutations";
 import { CommentModule, CommentState } from "./types";
 
 const state: CommentState = {
-    statusMessage: "",
     profileComments: {},
-    error: undefined,
     status: LoadStatus.NONE,
+    statusMessage: "",
+    error: undefined,
 };
 
 const namespaced = true;

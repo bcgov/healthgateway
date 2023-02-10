@@ -29,16 +29,25 @@ export interface ImmunizationGetters
     recomendations(
         state: ImmunizationState
     ): (hdid: string) => Recommendation[];
-    error(state: ImmunizationState): (hdid: string) => ResultError | undefined;
-    immunizationCount(state: ImmunizationState): (hdid: string) => number;
-    isDeferredLoad(state: ImmunizationState): (hdid: string) => boolean;
-    isLoading(state: ImmunizationState): (hdid: string) => boolean;
+    immunizationsCount(state: ImmunizationState): (hdid: string) => number;
+    immunizationsAreLoading(
+        state: ImmunizationState
+    ): (hdid: string) => boolean;
+    immunizationsAreDeferred(
+        state: ImmunizationState
+    ): (hdid: string) => boolean;
+    immunizationsError(
+        state: ImmunizationState
+    ): (hdid: string) => ResultError | undefined;
 }
 
 type StoreContext = ActionContext<ImmunizationState, RootState>;
 export interface ImmunizationActions
     extends ActionTree<ImmunizationState, RootState> {
-    retrieve(context: StoreContext, params: { hdid: string }): Promise<void>;
+    retrieveImmunizations(
+        context: StoreContext,
+        params: { hdid: string }
+    ): Promise<void>;
     handleError(
         context: StoreContext,
         params: { hdid: string; error: ResultError; errorType: ErrorType }
@@ -46,15 +55,15 @@ export interface ImmunizationActions
 }
 
 export interface ImmunizationMutations extends MutationTree<ImmunizationState> {
-    setImmunizationRequested(state: ImmunizationState, hdid: string): void;
-    setImmunizationResult(
+    setImmunizationsRequested(state: ImmunizationState, hdid: string): void;
+    setImmunizations(
         state: ImmunizationState,
         payload: {
             hdid: string;
             immunizationResult: ImmunizationResult;
         }
     ): void;
-    immunizationError(
+    setImmunizationsError(
         state: ImmunizationState,
         payload: {
             hdid: string;

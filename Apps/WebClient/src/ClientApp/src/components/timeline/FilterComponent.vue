@@ -59,8 +59,8 @@ export default class FilterComponent extends Vue {
     @Getter("specialAuthorityRequestsCount", { namespace: "medication" })
     specialAuthorityRequestsCount!: (hdid: string) => number;
 
-    @Getter("immunizationCount", { namespace: "immunization" })
-    immunizationCount!: (hdid: string) => number;
+    @Getter("immunizationsCount", { namespace: "immunization" })
+    immunizationsCount!: (hdid: string) => number;
 
     @Getter("covid19LaboratoryOrdersCount", { namespace: "laboratory" })
     covid19LaboratoryOrdersCount!: (hdid: string) => number;
@@ -74,11 +74,11 @@ export default class FilterComponent extends Vue {
     @Getter("hospitalVisitsCount", { namespace: "encounter" })
     hospitalVisitsCount!: (hdid: string) => number;
 
-    @Getter("noteCount", { namespace: "note" })
-    noteCount!: number;
+    @Getter("notesCount", { namespace: "note" })
+    notesCount!: number;
 
-    @Getter("recordCount", { namespace: "clinicalDocument" })
-    clinicalDocumentCount!: number;
+    @Getter("clinicalDocumentsCount", { namespace: "clinicalDocument" })
+    clinicalDocumentsCount!: (hdid: string) => number;
 
     @Getter("filter", { namespace: "timeline" })
     activeFilter!: TimelineFilter;
@@ -178,7 +178,7 @@ export default class FilterComponent extends Vue {
     private getFilterCount(entryType: EntryType): number | undefined {
         switch (entryType) {
             case EntryType.Immunization:
-                return this.immunizationCount(this.user.hdid);
+                return this.immunizationsCount(this.user.hdid);
             case EntryType.Medication:
                 return this.medicationsCount(this.user.hdid);
             case EntryType.LaboratoryOrder:
@@ -190,11 +190,11 @@ export default class FilterComponent extends Vue {
             case EntryType.HospitalVisit:
                 return this.hospitalVisitsCount(this.user.hdid);
             case EntryType.Note:
-                return this.noteCount;
+                return this.notesCount;
             case EntryType.MedicationRequest:
                 return this.specialAuthorityRequestsCount(this.user.hdid);
             case EntryType.ClinicalDocument:
-                return this.clinicalDocumentCount;
+                return this.clinicalDocumentsCount(this.user.hdid);
             default:
                 return undefined;
         }

@@ -1,3 +1,4 @@
+import { ClinicalDocument } from "./clinicalDocument";
 import { Encounter, HospitalVisit } from "./encounter";
 import { ResultError } from "./errors";
 import { ImmunizationEvent, Recommendation } from "./immunizationModel";
@@ -13,6 +14,7 @@ export interface DatasetState<T> {
     error?: ResultError;
 }
 
+export type ClinicalDocumentDatasetState = DatasetState<ClinicalDocument[]>;
 export type Covid19TestResultState = DatasetState<Covid19LaboratoryOrder[]>;
 export type HealthVisitState = DatasetState<Encounter[]>;
 export interface HospitalVisitState extends DatasetState<HospitalVisit[]> {
