@@ -4,7 +4,7 @@ import { Component, Emit, Prop, Watch } from "vue-property-decorator";
 import { Action, Getter } from "vuex-class";
 
 import { DateWrapper } from "@/models/dateWrapper";
-import MedicationRequest from "@/models/MedicationRequest";
+import MedicationRequest from "@/models/medicationRequest";
 import Report from "@/models/report";
 import ReportField from "@/models/reportField";
 import ReportFilter from "@/models/reportFilter";
@@ -28,31 +28,38 @@ interface MedicationRequestRow {
 
 @Component
 export default class MedicationRequestReportComponent extends Vue {
-    @Prop() private filter!: ReportFilter;
+    @Prop()
+    filter!: ReportFilter;
+
+    @Action("retrieveSpecialAuthorityRequests", { namespace: "medication" })
+    retrieveSpecialAuthorityRequests!: (params: {
+        hdid: string;
+    }) => Promise<void>;
+
+    @Getter("specialAuthorityRequestsAreLoading", { namespace: "medication" })
+    specialAuthorityRequestsAreLoading!: (hdid: string) => boolean;
+
+    @Getter("specialAuthorityRequests", { namespace: "medication" })
+    specialAuthorityRequests!: (hdid: string) => MedicationRequest[];
 
     @Getter("user", { namespace: "user" })
-    private user!: User;
-
-    @Action("retrieveMedicationRequests", { namespace: "medication" })
-    private retrieve!: (params: { hdid: string }) => Promise<void>;
-
-    @Getter("isMedicationRequestLoading", { namespace: "medication" })
-    isLoading!: boolean;
-
-    @Getter("medicationRequests", { namespace: "medication" })
-    medicationRequests!: MedicationRequest[];
+    user!: User;
 
     private logger!: ILogger;
 
     private readonly headerClass = "medication-request-report-table-header";
+
+    private get isLoading(): boolean {
+        return this.specialAuthorityRequestsAreLoading(this.user.hdid);
+    }
 
     private get isEmpty(): boolean {
         return this.visibleRecords.length === 0;
     }
 
     private get visibleRecords(): MedicationRequest[] {
-        let records = this.medicationRequests.filter((record) =>
-            this.filter.allowsDate(record.requestedDate)
+        let records = this.specialAuthorityRequests(this.user.hdid).filter(
+            (record) => this.filter.allowsDate(record.requestedDate)
         );
         records.sort((a, b) => {
             const firstDate = new DateWrapper(a.requestedDate);
@@ -104,8 +111,11 @@ export default class MedicationRequestReportComponent extends Vue {
 
     private created(): void {
         this.logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
-        this.retrieve({ hdid: this.user.hdid }).catch((err) =>
-            this.logger.error(`Error loading medication requests data: ${err}`)
+        this.retrieveSpecialAuthorityRequests({ hdid: this.user.hdid }).catch(
+            (err) =>
+                this.logger.error(
+                    `Error loading Special Authority requests data: ${err}`
+                )
         );
     }
 
