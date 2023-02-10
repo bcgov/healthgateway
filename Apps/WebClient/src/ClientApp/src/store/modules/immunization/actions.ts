@@ -9,6 +9,7 @@ import { IImmunizationService, ILogger } from "@/services/interfaces";
 import EventTracker from "@/utility/eventTracker";
 
 import { ImmunizationActions } from "./types";
+import { getImmunizationDatasetState } from "./util";
 
 export const actions: ImmunizationActions = {
     retrieve(context, params: { hdid: string }): Promise<void> {
@@ -19,8 +20,8 @@ export const actions: ImmunizationActions = {
 
         return new Promise((resolve, reject) => {
             if (
-                context.state.immunizations[params.hdid]?.status ===
-                LoadStatus.LOADED
+                getImmunizationDatasetState(context.state, params.hdid)
+                    .status === LoadStatus.LOADED
             ) {
                 logger.debug(`Immunizations found stored, not querying!`);
                 resolve();
