@@ -51,6 +51,8 @@ export interface WebClientConfiguration {
     externalURLs: Dictionary<string>;
     // Gets or sets the Module state.
     modules: Dictionary<boolean>;
+    // Gets or sets the FeatureToggleConfiguration state.
+    featureToggleConfiguration: FeatureToggleConfiguration;
     // Gets or sets the hours for deletion.
     hoursForDeletion: number;
     // Gets or sets the minimum required patient age allowed for registration.
@@ -61,6 +63,58 @@ export interface WebClientConfiguration {
     clientIP?: string;
     // Gets or sets the sets the offline configuration.
     offlineMode?: OfflineModeConfiguration;
+}
+
+// Configuration data to be used by the Health Gateway Webclient.
+export interface FeatureToggleConfiguration {
+    homepage: HomepageSettings;
+    waitingQueue: WaitingQueueSettings;
+    notificationCentre: NotificationCentreSettings;
+    timeline: TimelineSettings;
+    dataset: DatasetSettings[];
+    covid19: Covid19Settings;
+    dependents: DependentsSettings;
+}
+
+export interface HomepageSettings {
+    showFederalProofOfVaccination: boolean;
+}
+
+export interface WaitingQueueSettings {
+    enabled: boolean;
+}
+
+export interface NotificationCentreSettings {
+    enabled: boolean;
+}
+
+export interface TimelineSettings {
+    comment: boolean;
+}
+
+export interface DatasetSettings {
+    name: string;
+    enabled: boolean;
+}
+
+export interface Covid19Settings {
+    pcrTestEnabled: boolean;
+    publicCovid19: PublicCovid19Settings;
+    proofOfVaccination: ProofOfVaccinationSettings;
+}
+
+export interface PublicCovid19Settings {
+    enableTestResults: boolean;
+    showFederalProofOfVaccination: boolean;
+}
+
+export interface ProofOfVaccinationSettings {
+    exportPdf: boolean;
+}
+
+export interface DependentsSettings {
+    enabled: boolean;
+    dataSets: DatasetSettings[];
 }
 
 // Various timeout values used by the VUE WebClient application.

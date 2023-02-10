@@ -261,6 +261,19 @@ Cypress.Commands.add("enableModules", (modules) => {
         });
 });
 
+Cypress.Commands.add("configureSettings", (settings) => {
+    return cy
+        .readConfig()
+        .as("config")
+        .then((config) => {
+            config.webClient.featureToggleConfiguration = settings;
+            cy.intercept("GET", "**/configuration/", {
+                statusCode: 200,
+                body: config,
+            });
+        });
+});
+
 Cypress.Commands.add("setupDownloads", () => {
     const downloadsFolder = "cypress/downloads";
     // The next command allow downloads in Electron, Chrome, and Edge

@@ -81,15 +81,15 @@ namespace HealthGateway.WebClient.Server.Models
     /// <param name="ProofOfVaccination">Settings for proof of vaccination feature.</param>
     public record Covid19Settings(
         bool PcrTestEnabled,
-        PublicCovid19 PublicCovid19,
-        ProofOfVaccination ProofOfVaccination);
+        PublicCovid19Settings PublicCovid19,
+        ProofOfVaccinationSettings ProofOfVaccination);
 
     /// <summary>
     /// Settings for public covid19 feature.
     /// </summary>
     /// <param name="EnableTestResults">Toggles test results.</param>
     /// <param name="ShowFederalProofOfVaccination">Toggles federal proof of vaccination.</param>
-    public record PublicCovid19(
+    public record PublicCovid19Settings(
         bool EnableTestResults,
         bool ShowFederalProofOfVaccination);
 
@@ -97,7 +97,7 @@ namespace HealthGateway.WebClient.Server.Models
     /// Settings for proof of vaccination feature.
     /// </summary>
     /// <param name="ExportPdf">Toggles export of pdf feature.</param>
-    public record ProofOfVaccination(
+    public record ProofOfVaccinationSettings(
         bool ExportPdf);
 
     /// <summary>
