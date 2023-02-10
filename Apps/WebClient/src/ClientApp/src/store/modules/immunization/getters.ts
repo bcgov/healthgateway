@@ -41,14 +41,20 @@ export const getters: ImmunizationGetters = {
         return (hdid: string) =>
             getImmunizationDatasetState(state, hdid).recommendations;
     },
-    immunizationCount(state: ImmunizationState): (hdid: string) => number {
+    immunizationsCount(state: ImmunizationState): (hdid: string) => number {
         return (hdid: string) =>
             getImmunizationDatasetState(state, hdid).data.length;
     },
-    error(state: ImmunizationState): (hdid: string) => ResultError | undefined {
-        return (hdid: string) => getImmunizationDatasetState(state, hdid).error;
+    immunizationsAreLoading(
+        state: ImmunizationState
+    ): (hdid: string) => boolean {
+        return (hdid: string) =>
+            getImmunizationDatasetState(state, hdid).status ===
+            LoadStatus.REQUESTED;
     },
-    isDeferredLoad(state: ImmunizationState): (hdid: string) => boolean {
+    immunizationsAreDeferred(
+        state: ImmunizationState
+    ): (hdid: string) => boolean {
         return (hdid: string) => {
             const datasetState = getImmunizationDatasetState(state, hdid);
             return (
@@ -57,9 +63,9 @@ export const getters: ImmunizationGetters = {
             );
         };
     },
-    isLoading(state: ImmunizationState): (hdid: string) => boolean {
-        return (hdid: string) =>
-            getImmunizationDatasetState(state, hdid).status ===
-            LoadStatus.REQUESTED;
+    immunizationsError(
+        state: ImmunizationState
+    ): (hdid: string) => ResultError | undefined {
+        return (hdid: string) => getImmunizationDatasetState(state, hdid).error;
     },
 };

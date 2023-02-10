@@ -54,7 +54,7 @@ const options: any = {
 
 @Component(options)
 export default class Covid19View extends Vue {
-    @Action("retrieve", { namespace: "immunization" })
+    @Action("retrieveImmunizations", { namespace: "immunization" })
     retrieveImmunizations!: (params: { hdid: string }) => Promise<void>;
 
     @Action("retrieveAuthenticatedVaccineStatus", {
@@ -91,17 +91,17 @@ export default class Covid19View extends Vue {
     @Getter("authenticatedError", { namespace: "vaccinationStatus" })
     vaccinationStatusError!: ResultError | undefined;
 
-    @Getter("isLoading", { namespace: "immunization" })
-    isImmunizationLoading!: (hdid: string) => boolean;
+    @Getter("immunizationsAreLoading", { namespace: "immunization" })
+    immunizationsAreLoading!: (hdid: string) => boolean;
 
-    @Getter("isDeferredLoad", { namespace: "immunization" })
-    immunizationIsDeferred!: (hdid: string) => boolean;
+    @Getter("immunizationsAreDeferred", { namespace: "immunization" })
+    immunizationsAreDeferred!: (hdid: string) => boolean;
 
     @Getter("covidImmunizations", { namespace: "immunization" })
     covidImmunizations!: (hdid: string) => ImmunizationEvent[];
 
-    @Getter("error", { namespace: "immunization" })
-    immunizationResultError!: (hdid: string) => ResultError | undefined;
+    @Getter("immunizationsError", { namespace: "immunization" })
+    immunizationsError!: (hdid: string) => ResultError | undefined;
 
     @Getter("authenticatedVaccineRecords", { namespace: "vaccinationStatus" })
     vaccineRecords!: Map<string, VaccinationRecord>;
@@ -204,8 +204,8 @@ export default class Covid19View extends Vue {
 
     private get isHistoryLoading(): boolean {
         return (
-            this.isImmunizationLoading(this.user.hdid) ||
-            this.immunizationIsDeferred(this.user.hdid)
+            this.immunizationsAreLoading(this.user.hdid) ||
+            this.immunizationsAreDeferred(this.user.hdid)
         );
     }
 
@@ -227,10 +227,6 @@ export default class Covid19View extends Vue {
 
     private get patientBirthdate(): string {
         return this.formatDate(this.vaccinationStatus?.birthdate ?? undefined);
-    }
-
-    private get immunizationError(): ResultError | undefined {
-        return this.immunizationResultError(this.user.hdid);
     }
 
     private formatDate(date: string | undefined): string {
@@ -445,7 +441,7 @@ export default class Covid19View extends Vue {
             />
         </div>
         <div
-            v-if="!isHistoryLoading && !immunizationError"
+            v-if="!isHistoryLoading && !immunizationsError(user.hdid)"
             v-show="isImmunizationHistoryShown"
             class="immunization-history flex-grow-1 align-self-center w-100 p-3"
         >

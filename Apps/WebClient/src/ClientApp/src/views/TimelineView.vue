@@ -94,7 +94,7 @@ export default class TimelineView extends Vue {
     @Getter("webClient", { namespace: "config" })
     config!: WebClientConfiguration;
 
-    @Action("retrieve", { namespace: "immunization" })
+    @Action("retrieveImmunizations", { namespace: "immunization" })
     retrieveImmunizations!: (params: { hdid: string }) => Promise<void>;
 
     @Action("retrieveHealthVisits", { namespace: "encounter" })
@@ -158,11 +158,11 @@ export default class TimelineView extends Vue {
     @Getter("hospitalVisitsAreLoading", { namespace: "encounter" })
     hospitalVisitsAreLoading!: (hdid: string) => boolean;
 
-    @Getter("isLoading", { namespace: "immunization" })
-    isImmunizationLoading!: (hdid: string) => boolean;
+    @Getter("immunizationsAreLoading", { namespace: "immunization" })
+    immunizationsAreLoading!: (hdid: string) => boolean;
 
-    @Getter("isDeferredLoad", { namespace: "immunization" })
-    isImmunizationDeferred!: (hdid: string) => boolean;
+    @Getter("immunizationsAreDeferred", { namespace: "immunization" })
+    immunizationsAreDeferred!: (hdid: string) => boolean;
 
     @Getter("isLoading", { namespace: "note" })
     isNoteLoading!: boolean;
@@ -322,8 +322,8 @@ export default class TimelineView extends Vue {
             !this.medicationsAreLoading(this.user.hdid) &&
             !this.covid19LaboratoryOrdersAreLoading(this.user.hdid) &&
             !this.laboratoryOrdersAreLoading(this.user.hdid) &&
-            !this.isImmunizationLoading(this.user.hdid) &&
-            !this.isImmunizationDeferred(this.user.hdid) &&
+            !this.immunizationsAreLoading(this.user.hdid) &&
+            !this.immunizationsAreDeferred(this.user.hdid) &&
             !this.healthVisitsAreLoading(this.user.hdid) &&
             !this.hospitalVisitsAreLoading(this.user.hdid) &&
             !this.clinicalDocumentsAreLoading(this.user.hdid) &&
@@ -351,7 +351,7 @@ export default class TimelineView extends Vue {
         filtersLoaded.push(
             this.isSelectedFilterModuleLoading(
                 EntryType.Immunization,
-                this.isImmunizationLoading(this.user.hdid)
+                this.immunizationsAreLoading(this.user.hdid)
             )
         );
 

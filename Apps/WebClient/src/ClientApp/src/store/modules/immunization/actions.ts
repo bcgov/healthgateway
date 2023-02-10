@@ -12,7 +12,7 @@ import { ImmunizationActions } from "./types";
 import { getImmunizationDatasetState } from "./util";
 
 export const actions: ImmunizationActions = {
-    retrieve(context, params: { hdid: string }): Promise<void> {
+    retrieveImmunizations(context, params: { hdid: string }): Promise<void> {
         const logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
         const immunizationService = container.get<IImmunizationService>(
             SERVICE_IDENTIFIER.ImmunizationService
@@ -27,7 +27,7 @@ export const actions: ImmunizationActions = {
                 resolve();
             } else {
                 logger.debug(`Retrieving Immunizations`);
-                context.commit("setImmunizationRequested", params.hdid);
+                context.commit("setImmunizationsRequested", params.hdid);
                 immunizationService
                     .getPatientImmunizations(params.hdid)
                     .then((result) => {
@@ -39,7 +39,7 @@ export const actions: ImmunizationActions = {
                                     logger.info(
                                         "Re-querying for immunizations"
                                     );
-                                    context.dispatch("retrieve", {
+                                    context.dispatch("retrieveImmunizations", {
                                         hdid: params.hdid,
                                     });
                                 }, 10000);
@@ -50,7 +50,7 @@ export const actions: ImmunizationActions = {
                                 );
                             }
 
-                            context.commit("setImmunizationResult", {
+                            context.commit("setImmunizations", {
                                 hdid: params.hdid,
                                 immunizationResult: payload,
                             });
@@ -82,7 +82,7 @@ export const actions: ImmunizationActions = {
         const logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
 
         logger.error(`ERROR: ${JSON.stringify(params.error)}`);
-        context.commit("immunizationError", {
+        context.commit("setImmunizationsError", {
             hdid: params.hdid,
             error: params.error,
         });

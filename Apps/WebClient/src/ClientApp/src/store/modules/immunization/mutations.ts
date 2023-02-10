@@ -10,7 +10,7 @@ import {
 } from "./util";
 
 export const mutations: ImmunizationMutations = {
-    setImmunizationRequested(state: ImmunizationState, hdid: string) {
+    setImmunizationsRequested(state: ImmunizationState, hdid: string) {
         const currentState = getImmunizationDatasetState(state, hdid);
         const nextState: ImmunizationDatasetState = {
             ...currentState,
@@ -22,7 +22,7 @@ export const mutations: ImmunizationMutations = {
         setImmunizationDatasetState(state, hdid, nextState);
     },
 
-    setImmunizationResult(
+    setImmunizations(
         state: ImmunizationState,
         payload: { hdid: string; immunizationResult: ImmunizationResult }
     ) {
@@ -40,7 +40,7 @@ export const mutations: ImmunizationMutations = {
         };
         setImmunizationDatasetState(state, hdid, nextState);
     },
-    immunizationError(
+    setImmunizationsError(
         state: ImmunizationState,
         payload: { hdid: string; error: ResultError }
     ) {

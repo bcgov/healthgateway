@@ -39,14 +39,14 @@ export default class ImmunizationHistoryReportComponent extends Vue {
     @Getter("user", { namespace: "user" })
     user!: User;
 
-    @Getter("isDeferredLoad", { namespace: "immunization" })
-    immunizationIsDeferred!: (hdid: string) => boolean;
+    @Getter("immunizationsAreDeferred", { namespace: "immunization" })
+    immunizationsAreDeferred!: (hdid: string) => boolean;
 
-    @Action("retrieve", { namespace: "immunization" })
+    @Action("retrieveImmunizations", { namespace: "immunization" })
     retrieveImmunizations!: (params: { hdid: string }) => Promise<void>;
 
-    @Getter("isLoading", { namespace: "immunization" })
-    isImmunizationLoading!: (hdid: string) => boolean;
+    @Getter("immunizationsAreLoading", { namespace: "immunization" })
+    immunizationsAreLoading!: (hdid: string) => boolean;
 
     @Getter("immunizations", { namespace: "immunization" })
     patientImmunizations!: (hdid: string) => ImmunizationEvent[];
@@ -60,8 +60,8 @@ export default class ImmunizationHistoryReportComponent extends Vue {
 
     private get isLoading(): boolean {
         return (
-            this.immunizationIsDeferred(this.user.hdid) ||
-            this.isImmunizationLoading(this.user.hdid)
+            this.immunizationsAreDeferred(this.user.hdid) ||
+            this.immunizationsAreLoading(this.user.hdid)
         );
     }
 
