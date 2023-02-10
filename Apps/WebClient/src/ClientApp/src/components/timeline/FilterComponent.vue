@@ -299,7 +299,6 @@ export default class FilterComponent extends Vue {
             placement="bottom"
             fallback-placement="clockwise"
             boundary="viewport"
-            menu-class="z-index-large w-100"
         >
             <div class="px-1">
                 <b-row class="mt-2">
