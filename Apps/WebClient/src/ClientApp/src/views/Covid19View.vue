@@ -92,16 +92,16 @@ export default class Covid19View extends Vue {
     vaccinationStatusError!: ResultError | undefined;
 
     @Getter("isLoading", { namespace: "immunization" })
-    isImmunizationLoading!: boolean;
+    isImmunizationLoading!: (hdid: string) => boolean;
 
     @Getter("isDeferredLoad", { namespace: "immunization" })
-    immunizationIsDeferred!: boolean;
+    immunizationIsDeferred!: (hdid: string) => boolean;
 
     @Getter("covidImmunizations", { namespace: "immunization" })
-    covidImmunizations!: ImmunizationEvent[];
+    covidImmunizations!: (hdid: string) => ImmunizationEvent[];
 
     @Getter("error", { namespace: "immunization" })
-    immunizationError!: ResultError | undefined;
+    immunizationResultError!: (hdid: string) => ResultError | undefined;
 
     @Getter("authenticatedVaccineRecords", { namespace: "vaccinationStatus" })
     vaccineRecords!: Map<string, VaccinationRecord>;
@@ -131,7 +131,7 @@ export default class Covid19View extends Vue {
     ];
 
     private get doses(): Dose[] {
-        return this.covidImmunizations.map((element) => {
+        return this.covidImmunizations(this.user.hdid).map((element) => {
             const agent = element.immunization.immunizationAgents[0];
             return {
                 product: agent.productName,
@@ -203,7 +203,10 @@ export default class Covid19View extends Vue {
     }
 
     private get isHistoryLoading(): boolean {
-        return this.isImmunizationLoading || this.immunizationIsDeferred;
+        return (
+            this.isImmunizationLoading(this.user.hdid) ||
+            this.immunizationIsDeferred(this.user.hdid)
+        );
     }
 
     private get isLoading(): boolean {
@@ -224,6 +227,10 @@ export default class Covid19View extends Vue {
 
     private get patientBirthdate(): string {
         return this.formatDate(this.vaccinationStatus?.birthdate ?? undefined);
+    }
+
+    private get immunizationError(): ResultError | undefined {
+        return this.immunizationResultError(this.user.hdid);
     }
 
     private formatDate(date: string | undefined): string {

@@ -4,47 +4,62 @@ import { ImmunizationEvent, Recommendation } from "@/models/immunizationModel";
 import { LoadStatus } from "@/models/storeOperations";
 
 import { ImmunizationGetters, ImmunizationState } from "./types";
+import { getImmunizationDatasetState } from "./util";
 
 export const getters: ImmunizationGetters = {
-    immunizations(state: ImmunizationState): ImmunizationEvent[] {
-        return state.immunizations;
+    immunizations(
+        state: ImmunizationState
+    ): (hdid: string) => ImmunizationEvent[] {
+        return (hdid: string) => getImmunizationDatasetState(state, hdid).data;
     },
-    covidImmunizations(state: ImmunizationState): ImmunizationEvent[] {
-        return state.immunizations
-            .filter(
-                (x) =>
-                    x.targetedDisease?.toLowerCase().includes("covid") &&
-                    x.valid
-            )
-            .sort((a, b) => {
-                const firstDate = new DateWrapper(a.dateOfImmunization);
-                const secondDate = new DateWrapper(b.dateOfImmunization);
+    covidImmunizations(
+        state: ImmunizationState
+    ): (hdid: string) => ImmunizationEvent[] {
+        return (hdid: string) =>
+            getImmunizationDatasetState(state, hdid)
+                .data.filter(
+                    (x) =>
+                        x.targetedDisease?.toLowerCase().includes("covid") &&
+                        x.valid
+                )
+                .sort((a, b) => {
+                    const firstDate = new DateWrapper(a.dateOfImmunization);
+                    const secondDate = new DateWrapper(b.dateOfImmunization);
 
-                if (firstDate.isAfter(secondDate)) {
-                    return 1;
-                }
-                if (firstDate.isBefore(secondDate)) {
-                    return -1;
-                }
-                return 0;
-            });
+                    if (firstDate.isAfter(secondDate)) {
+                        return 1;
+                    }
+                    if (firstDate.isBefore(secondDate)) {
+                        return -1;
+                    }
+                    return 0;
+                });
     },
-    recomendations(state: ImmunizationState): Recommendation[] {
-        return state.recommendations;
+    recomendations(
+        state: ImmunizationState
+    ): (hdid: string) => Recommendation[] {
+        return (hdid: string) =>
+            getImmunizationDatasetState(state, hdid).recommendations;
     },
-    immunizationCount(state: ImmunizationState): number {
-        return state.immunizations.length;
+    immunizationCount(state: ImmunizationState): (hdid: string) => number {
+        return (hdid: string) =>
+            getImmunizationDatasetState(state, hdid).data.length;
     },
-    error(state: ImmunizationState): ResultError | undefined {
-        return state.error;
+    error(state: ImmunizationState): (hdid: string) => ResultError | undefined {
+        return (hdid: string) => getImmunizationDatasetState(state, hdid).error;
     },
-    isDeferredLoad(state: ImmunizationState): boolean {
-        return (
-            state.status === LoadStatus.DEFERRED ||
-            state.status === LoadStatus.ASYNC_REQUESTED
-        );
+    isDeferredLoad(state: ImmunizationState): (hdid: string) => boolean {
+        return (hdid: string) => {
+            const datasetState = getImmunizationDatasetState(state, hdid);
+            return (
+                datasetState.status === LoadStatus.DEFERRED ||
+                datasetState.status === LoadStatus.ASYNC_REQUESTED
+            );
+        };
     },
-    isLoading(state: ImmunizationState): boolean {
-        return state.status === LoadStatus.REQUESTED;
+    isLoading(state: ImmunizationState): (hdid: string) => boolean {
+        return (hdid: string) =>
+            getImmunizationDatasetState(state, hdid).status ===
+            LoadStatus.REQUESTED;
     },
 };

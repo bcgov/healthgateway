@@ -40,26 +40,29 @@ export default class ImmunizationHistoryReportComponent extends Vue {
     user!: User;
 
     @Getter("isDeferredLoad", { namespace: "immunization" })
-    immunizationIsDeferred!: boolean;
+    immunizationIsDeferred!: (hdid: string) => boolean;
 
     @Action("retrieve", { namespace: "immunization" })
     retrieveImmunizations!: (params: { hdid: string }) => Promise<void>;
 
     @Getter("isLoading", { namespace: "immunization" })
-    isImmunizationLoading!: boolean;
+    isImmunizationLoading!: (hdid: string) => boolean;
 
     @Getter("immunizations", { namespace: "immunization" })
-    patientImmunizations!: ImmunizationEvent[];
+    patientImmunizations!: (hdid: string) => ImmunizationEvent[];
 
     @Getter("recomendations", { namespace: "immunization" })
-    patientRecommendations!: Recommendation[];
+    patientRecommendations!: (hdid: string) => Recommendation[];
 
     private logger!: ILogger;
 
     private readonly headerClass = "immunization-report-table-header";
 
     private get isLoading(): boolean {
-        return this.immunizationIsDeferred || this.isImmunizationLoading;
+        return (
+            this.immunizationIsDeferred(this.user.hdid) ||
+            this.isImmunizationLoading(this.user.hdid)
+        );
     }
 
     private get isEmpty(): boolean {
@@ -71,8 +74,8 @@ export default class ImmunizationHistoryReportComponent extends Vue {
     }
 
     private get visibleImmunizations(): ImmunizationEvent[] {
-        let records = this.patientImmunizations.filter((record) =>
-            this.filter.allowsDate(record.dateOfImmunization)
+        let records = this.patientImmunizations(this.user.hdid).filter(
+            (record) => this.filter.allowsDate(record.dateOfImmunization)
         );
 
         records.sort((a, b) => {
@@ -103,7 +106,7 @@ export default class ImmunizationHistoryReportComponent extends Vue {
     }
 
     private get visibleRecomendations(): Recommendation[] {
-        let records = this.patientRecommendations.filter(
+        let records = this.patientRecommendations(this.user.hdid).filter(
             (x) => x.recommendedVaccinations
         );
 
