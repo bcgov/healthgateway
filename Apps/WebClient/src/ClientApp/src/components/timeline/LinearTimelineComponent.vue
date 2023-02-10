@@ -88,8 +88,8 @@ export default class LinearTimelineComponent extends Vue {
     @Getter("isLoading", { namespace: "note" })
     isNoteLoading!: boolean;
 
-    @Getter("isLoading", { namespace: "clinicalDocument" })
-    isClinicalDocumentLoading!: (hdid: string) => boolean;
+    @Getter("clinicalDocumentsAreLoading", { namespace: "clinicalDocument" })
+    clinicalDocumentsAreLoading!: (hdid: string) => boolean;
 
     @Getter("isDeferredLoad", { namespace: "immunization" })
     isImmunizationDeferred!: (hdid: string) => boolean;
@@ -116,7 +116,7 @@ export default class LinearTimelineComponent extends Vue {
             !this.laboratoryOrdersAreLoading(this.user.hdid) &&
             !this.healthVisitsAreLoading(this.user.hdid) &&
             !this.hospitalVisitsAreLoading(this.user.hdid) &&
-            !this.isClinicalDocumentLoading(this.user.hdid) &&
+            !this.clinicalDocumentsAreLoading(this.user.hdid) &&
             !this.isNoteLoading &&
             !this.isCommentLoading;
         this.logger.debug(`Linear Timeline is fully loaded: ${fullyLoaded}`);
@@ -178,7 +178,7 @@ export default class LinearTimelineComponent extends Vue {
         filtersLoaded.push(
             this.isSelectedFilterModuleLoading(
                 EntryType.ClinicalDocument,
-                this.isClinicalDocumentLoading(this.user.hdid)
+                this.clinicalDocumentsAreLoading(this.user.hdid)
             )
         );
 

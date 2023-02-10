@@ -25,16 +25,22 @@ export interface ClinicalDocumentState {
 
 export interface ClinicalDocumentGetters
     extends GetterTree<ClinicalDocumentState, RootState> {
-    records(state: ClinicalDocumentState): (hdid: string) => ClinicalDocument[];
-    recordCount(state: ClinicalDocumentState): (hdid: string) => number;
-    isLoading(state: ClinicalDocumentState): (hdid: string) => boolean;
+    clinicalDocuments(
+        state: ClinicalDocumentState
+    ): (hdid: string) => ClinicalDocument[];
+    clinicalDocumentsCount(
+        state: ClinicalDocumentState
+    ): (hdid: string) => number;
+    clinicalDocumentsAreLoading(
+        state: ClinicalDocumentState
+    ): (hdid: string) => boolean;
     files(state: ClinicalDocumentState): Dictionary<ClinicalDocumentFile>;
 }
 
 type StoreContext = ActionContext<ClinicalDocumentState, RootState>;
 export interface ClinicalDocumentActions
     extends ActionTree<ClinicalDocumentState, RootState> {
-    retrieve(
+    retrieveClinicalDocuments(
         context: StoreContext,
         params: { hdid: string }
     ): Promise<RequestResult<ClinicalDocument[]>>;
@@ -55,12 +61,15 @@ export interface ClinicalDocumentActions
 
 export interface ClinicalDocumentMutations
     extends MutationTree<ClinicalDocumentState> {
-    setRequested(state: ClinicalDocumentState, hdid: string): void;
-    setRecords(
+    setClinicalDocumentsRequested(
         state: ClinicalDocumentState,
-        payload: { hdid: string; records: ClinicalDocument[] }
+        hdid: string
     ): void;
-    setError(
+    setClinicalDocuments(
+        state: ClinicalDocumentState,
+        payload: { hdid: string; clinicalDocuments: ClinicalDocument[] }
+    ): void;
+    setClinicalDocumentsError(
         state: ClinicalDocumentState,
         payload: { hdid: string; error: ResultError }
     ): void;

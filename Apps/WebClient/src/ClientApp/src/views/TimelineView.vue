@@ -125,7 +125,7 @@ export default class TimelineView extends Vue {
         hdid: string;
     }) => Promise<void>;
 
-    @Action("retrieve", { namespace: "clinicalDocument" })
+    @Action("retrieveClinicalDocuments", { namespace: "clinicalDocument" })
     retrieveClinicalDocuments!: (params: { hdid: string }) => Promise<void>;
 
     @Action("retrieve", { namespace: "comment" })
@@ -167,8 +167,8 @@ export default class TimelineView extends Vue {
     @Getter("isLoading", { namespace: "note" })
     isNoteLoading!: boolean;
 
-    @Getter("isLoading", { namespace: "clinicalDocument" })
-    isClinicalDocumentLoading!: (hdid: string) => boolean;
+    @Getter("clinicalDocumentsAreLoading", { namespace: "clinicalDocument" })
+    clinicalDocumentsAreLoading!: (hdid: string) => boolean;
 
     @Getter("immunizations", { namespace: "immunization" })
     patientImmunizations!: (hdid: string) => ImmunizationEvent[];
@@ -191,7 +191,7 @@ export default class TimelineView extends Vue {
     @Getter("laboratoryOrders", { namespace: "laboratory" })
     laboratoryOrders!: (hdid: string) => LaboratoryOrder[];
 
-    @Getter("records", { namespace: "clinicalDocument" })
+    @Getter("clinicalDocuments", { namespace: "clinicalDocument" })
     clinicalDocuments!: (hdid: string) => ClinicalDocument[];
 
     @Getter("notes", { namespace: "note" })
@@ -326,7 +326,7 @@ export default class TimelineView extends Vue {
             !this.isImmunizationDeferred(this.user.hdid) &&
             !this.healthVisitsAreLoading(this.user.hdid) &&
             !this.hospitalVisitsAreLoading(this.user.hdid) &&
-            !this.isClinicalDocumentLoading(this.user.hdid) &&
+            !this.clinicalDocumentsAreLoading(this.user.hdid) &&
             !this.isNoteLoading &&
             !this.isCommentLoading
         );
@@ -393,7 +393,7 @@ export default class TimelineView extends Vue {
         filtersLoaded.push(
             this.isSelectedFilterModuleLoading(
                 EntryType.ClinicalDocument,
-                this.isClinicalDocumentLoading(this.user.hdid)
+                this.clinicalDocumentsAreLoading(this.user.hdid)
             )
         );
 

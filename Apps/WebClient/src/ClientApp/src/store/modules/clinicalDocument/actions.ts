@@ -15,7 +15,7 @@ import { ClinicalDocumentActions } from "./types";
 import { getClinicalDocumentDatasetState } from "./util";
 
 export const actions: ClinicalDocumentActions = {
-    retrieve(
+    retrieveClinicalDocuments(
         context,
         params: { hdid: string }
     ): Promise<RequestResult<ClinicalDocument[]>> {
@@ -42,7 +42,7 @@ export const actions: ClinicalDocumentActions = {
                 });
             } else {
                 logger.debug("Retrieving clinical documents");
-                context.commit("setRequested", params.hdid);
+                context.commit("setClinicalDocumentsRequested", params.hdid);
                 clinicalDocumentService
                     .getRecords(params.hdid)
                     .then((result) => {
@@ -58,9 +58,9 @@ export const actions: ClinicalDocumentActions = {
                                 EntryType.ClinicalDocument,
                                 result.resourcePayload.length
                             );
-                            context.commit("setRecords", {
+                            context.commit("setClinicalDocuments", {
                                 hdid: params.hdid,
-                                records: result.resourcePayload,
+                                clinicalDocuments: result.resourcePayload,
                             });
                             resolve(result);
                         }
@@ -138,7 +138,7 @@ export const actions: ClinicalDocumentActions = {
                 error: params.error,
             });
         } else {
-            context.commit("setError", {
+            context.commit("setClinicalDocumentsError", {
                 hdid: params.hdid,
                 error: params.error,
             });

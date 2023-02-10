@@ -16,7 +16,7 @@ import {
 } from "./util";
 
 export const mutations: ClinicalDocumentMutations = {
-    setRequested(state: ClinicalDocumentState, hdid: string) {
+    setClinicalDocumentsRequested(state: ClinicalDocumentState, hdid: string) {
         const currentState = getClinicalDocumentDatasetState(state, hdid);
         const nextState: ClinicalDocumentDatasetState = {
             ...currentState,
@@ -24,22 +24,22 @@ export const mutations: ClinicalDocumentMutations = {
         };
         setClinicalDocumentDatasetState(state, hdid, nextState);
     },
-    setRecords(
+    setClinicalDocuments(
         state: ClinicalDocumentState,
-        payload: { hdid: string; records: ClinicalDocument[] }
+        payload: { hdid: string; clinicalDocuments: ClinicalDocument[] }
     ) {
-        const { hdid, records } = payload;
+        const { hdid, clinicalDocuments } = payload;
         const currentState = getClinicalDocumentDatasetState(state, hdid);
         const nextState: ClinicalDocumentDatasetState = {
             ...currentState,
-            data: records,
+            data: clinicalDocuments,
             error: undefined,
             statusMessage: "success",
             status: LoadStatus.LOADED,
         };
         setClinicalDocumentDatasetState(state, hdid, nextState);
     },
-    setError(
+    setClinicalDocumentsError(
         state: ClinicalDocumentState,
         payload: { hdid: string; error: ResultError }
     ) {

@@ -9,7 +9,7 @@ import { ClinicalDocumentGetters, ClinicalDocumentState } from "./types";
 import { getClinicalDocumentDatasetState } from "./util";
 
 export const getters: ClinicalDocumentGetters = {
-    records(
+    clinicalDocuments(
         state: ClinicalDocumentState
     ): (hdid: string) => ClinicalDocument[] {
         return (hdid: string) =>
@@ -21,7 +21,9 @@ export const getters: ClinicalDocumentGetters = {
         return (hdid: string) =>
             getClinicalDocumentDatasetState(state, hdid).data.length;
     },
-    isLoading(state: ClinicalDocumentState): (hdid: string) => boolean {
+    clinicalDocumentsAreLoading(
+        state: ClinicalDocumentState
+    ): (hdid: string) => boolean {
         return (hdid: string) =>
             getClinicalDocumentDatasetState(state, hdid).status ===
             LoadStatus.REQUESTED;

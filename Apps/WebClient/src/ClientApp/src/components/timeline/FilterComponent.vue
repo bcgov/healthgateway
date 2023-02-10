@@ -77,8 +77,8 @@ export default class FilterComponent extends Vue {
     @Getter("noteCount", { namespace: "note" })
     noteCount!: number;
 
-    @Getter("recordCount", { namespace: "clinicalDocument" })
-    clinicalDocumentCount!: (hdid: string) => number;
+    @Getter("clinicalDocumentsCount", { namespace: "clinicalDocument" })
+    clinicalDocumentsCount!: (hdid: string) => number;
 
     @Getter("filter", { namespace: "timeline" })
     activeFilter!: TimelineFilter;
@@ -194,7 +194,7 @@ export default class FilterComponent extends Vue {
             case EntryType.MedicationRequest:
                 return this.specialAuthorityRequestsCount(this.user.hdid);
             case EntryType.ClinicalDocument:
-                return this.clinicalDocumentCount(this.user.hdid);
+                return this.clinicalDocumentsCount(this.user.hdid);
             default:
                 return undefined;
         }

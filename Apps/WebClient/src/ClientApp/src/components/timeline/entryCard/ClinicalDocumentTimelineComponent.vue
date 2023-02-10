@@ -7,6 +7,7 @@ import { Action, Getter } from "vuex-class";
 import MessageModalComponent from "@/components/modal/MessageModalComponent.vue";
 import { EntryType, entryTypeMap } from "@/constants/entryType";
 import type { Dictionary } from "@/models/baseTypes";
+import { ClinicalDocumentFile } from "@/models/clinicalDocument";
 import ClinicalDocumentTimelineEntry from "@/models/clinicalDocumentTimelineEntry";
 import EncodedMedia from "@/models/encodedMedia";
 import { LoadStatus } from "@/models/storeOperations";
@@ -14,7 +15,6 @@ import User from "@/models/user";
 import container from "@/plugins/container";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import { ILogger } from "@/services/interfaces";
-import { ClinicalDocumentFileState } from "@/store/modules/clinicalDocument/types";
 import SnowPlow from "@/utility/snowPlow";
 
 import EntrycardTimelineComponent from "./EntrycardTimelineComponent.vue";
@@ -48,7 +48,7 @@ export default class ClinicalDocumentTimelineComponent extends Vue {
     }) => Promise<EncodedMedia>;
 
     @Getter("files", { namespace: "clinicalDocument" })
-    files!: Dictionary<ClinicalDocumentFileState>;
+    files!: Dictionary<ClinicalDocumentFile>;
 
     @Getter("user", { namespace: "user" })
     user!: User;
