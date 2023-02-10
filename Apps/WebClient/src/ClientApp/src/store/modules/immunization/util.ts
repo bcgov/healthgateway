@@ -27,7 +27,7 @@ export function getImmunizationDatasetState(
 }
 
 /**
- * Updates the health visit state for a particular HDID.
+ * Updates the immunization state for a particular HDID.
  * @param state The store state.
  * @param hdid The HDID associated with the dataset state.
  * @param datasetState The new dataset state.

@@ -49,11 +49,13 @@ export const getters: ImmunizationGetters = {
         return (hdid: string) => getImmunizationDatasetState(state, hdid).error;
     },
     isDeferredLoad(state: ImmunizationState): (hdid: string) => boolean {
-        return (hdid: string) =>
-            getImmunizationDatasetState(state, hdid).status ===
-                LoadStatus.DEFERRED ||
-            getImmunizationDatasetState(state, hdid).status ===
-                LoadStatus.ASYNC_REQUESTED;
+        return (hdid: string) => {
+            const datasetState = getImmunizationDatasetState(state, hdid);
+            return (
+                datasetState.status === LoadStatus.DEFERRED ||
+                datasetState.status === LoadStatus.ASYNC_REQUESTED
+            );
+        };
     },
     isLoading(state: ImmunizationState): (hdid: string) => boolean {
         return (hdid: string) =>
