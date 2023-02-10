@@ -103,7 +103,7 @@ export default class TimelineView extends Vue {
     @Action("retrieveHospitalVisits", { namespace: "encounter" })
     retrieveHospitalVisits!: (params: { hdid: string }) => Promise<void>;
 
-    @Action("retrieve", { namespace: "note" })
+    @Action("retrieveNotes", { namespace: "note" })
     retrieveNotes!: (params: { hdid: string }) => Promise<void>;
 
     @Action("retrieveCovid19LaboratoryOrders", { namespace: "laboratory" })
@@ -164,8 +164,8 @@ export default class TimelineView extends Vue {
     @Getter("immunizationsAreDeferred", { namespace: "immunization" })
     immunizationsAreDeferred!: (hdid: string) => boolean;
 
-    @Getter("isLoading", { namespace: "note" })
-    isNoteLoading!: boolean;
+    @Getter("notesAreLoading", { namespace: "note" })
+    notesAreLoading!: boolean;
 
     @Getter("clinicalDocumentsAreLoading", { namespace: "clinicalDocument" })
     clinicalDocumentsAreLoading!: (hdid: string) => boolean;
@@ -327,7 +327,7 @@ export default class TimelineView extends Vue {
             !this.healthVisitsAreLoading(this.user.hdid) &&
             !this.hospitalVisitsAreLoading(this.user.hdid) &&
             !this.clinicalDocumentsAreLoading(this.user.hdid) &&
-            !this.isNoteLoading &&
+            !this.notesAreLoading &&
             !this.isCommentLoading
         );
     }
@@ -386,7 +386,7 @@ export default class TimelineView extends Vue {
         filtersLoaded.push(
             this.isSelectedFilterModuleLoading(
                 EntryType.Note,
-                this.isNoteLoading
+                this.notesAreLoading
             )
         );
 
@@ -586,7 +586,7 @@ export default class TimelineView extends Vue {
         </b-alert>
         <page-title title="Timeline">
             <div class="float-right">
-                <add-note-button v-if="isNoteEnabled && !isNoteLoading" />
+                <add-note-button v-if="isNoteEnabled && !notesAreLoading" />
             </div>
         </page-title>
         <div
@@ -638,7 +638,7 @@ export default class TimelineView extends Vue {
         <ProtectiveWordComponent
             :is-loading="medicationsAreLoading(user.hdid)"
         />
-        <NoteEditComponent :is-loading="isNoteLoading" />
+        <NoteEditComponent :is-loading="notesAreLoading" />
         <EntryDetailsComponent />
     </div>
 </template>
