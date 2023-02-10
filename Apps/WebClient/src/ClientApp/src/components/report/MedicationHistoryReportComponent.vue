@@ -40,29 +40,33 @@ const options: any = {
 export default class MedicationHistoryReportComponent extends Vue {
     @Prop() private filter!: ReportFilter;
 
-    @Getter("user", { namespace: "user" })
-    private user!: User;
-
-    @Action("retrieveMedicationStatements", { namespace: "medication" })
+    @Action("retrieveMedications", { namespace: "medication" })
     private retrieveMedications!: (params: { hdid: string }) => Promise<void>;
 
-    @Getter("isMedicationStatementLoading", { namespace: "medication" })
-    isLoading!: boolean;
+    @Getter("medicationsAreLoading", { namespace: "medication" })
+    medicationsAreLoading!: (hdid: string) => boolean;
 
-    @Getter("medicationStatements", { namespace: "medication" })
-    medicationStatements!: MedicationStatementHistory[];
+    @Getter("medications", { namespace: "medication" })
+    medications!: (hdid: string) => MedicationStatementHistory[];
+
+    @Getter("user", { namespace: "user" })
+    user!: User;
 
     private logger!: ILogger;
     private notFoundText = "Not Found";
 
     private readonly headerClass = "medication-report-table-header";
 
+    private get isLoading(): boolean {
+        return this.medicationsAreLoading(this.user.hdid);
+    }
+
     private get isEmpty(): boolean {
         return this.visibleRecords.length === 0;
     }
 
     private get visibleRecords(): MedicationStatementHistory[] {
-        let records = this.medicationStatements.filter(
+        let records = this.medications(this.user.hdid).filter(
             (record) =>
                 this.filter.allowsDate(record.dispensedDate) &&
                 this.filter.allowsMedication(record.medicationSummary.brandName)

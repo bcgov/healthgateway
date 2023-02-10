@@ -74,11 +74,11 @@ export default class ReportsView extends Vue {
     @Getter("laboratoryOrdersAreQueued", { namespace: "laboratory" })
     laboratoryOrdersAreQueued!: (hdid: string) => boolean;
 
+    @Getter("medications", { namespace: "medication" })
+    medications!: (hdid: string) => MedicationStatementHistory[];
+
     @Getter("patientData", { namespace: "user" })
     patientData!: PatientData;
-
-    @Getter("medicationStatements", { namespace: "medication" })
-    medicationStatements!: MedicationStatementHistory[];
 
     @Getter("user", { namespace: "user" })
     user!: User;
@@ -150,23 +150,21 @@ export default class ReportsView extends Vue {
     }
 
     private get medicationOptions(): SelectOption[] {
-        let medications = this.medicationStatements.reduce<MedicationSummary[]>(
-            (acumulator: MedicationSummary[], current) => {
-                let med = current.medicationSummary;
-                if (
-                    acumulator.findIndex((x) => x.brandName === med.brandName) <
-                    0
-                ) {
-                    acumulator.push(med);
-                }
-                return acumulator;
-            },
-            []
-        );
+        let records = this.medications(this.user.hdid).reduce<
+            MedicationSummary[]
+        >((acumulator: MedicationSummary[], current) => {
+            let med = current.medicationSummary;
+            if (
+                acumulator.findIndex((x) => x.brandName === med.brandName) < 0
+            ) {
+                acumulator.push(med);
+            }
+            return acumulator;
+        }, []);
 
-        medications.sort((a, b) => a.brandName.localeCompare(b.brandName));
+        records.sort((a, b) => a.brandName.localeCompare(b.brandName));
 
-        return medications.map<SelectOption>((x) => ({
+        return records.map<SelectOption>((x) => ({
             text: x.brandName,
             value: x.brandName,
         }));

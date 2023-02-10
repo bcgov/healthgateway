@@ -7,47 +7,63 @@ import {
 } from "vuex";
 
 import { ErrorType } from "@/constants/errorType";
+import { Dictionary } from "@/models/baseTypes";
+import { SpecialAuthorityRequestState } from "@/models/datasetState";
 import { ResultError } from "@/models/errors";
-import MedicationRequest from "@/models/MedicationRequest";
+import MedicationRequest from "@/models/medicationRequest";
 import RequestResult from "@/models/requestResult";
-import { LoadStatus } from "@/models/storeOperations";
 import { RootState } from "@/store/types";
 
 export interface MedicationRequestState {
-    medicationRequests: MedicationRequest[];
-    statusMessage: string;
-    error?: ResultError;
-    status: LoadStatus;
+    specialAuthorityRequests: Dictionary<SpecialAuthorityRequestState>;
 }
 
 export interface MedicationRequestGetters
     extends GetterTree<MedicationRequestState, RootState> {
-    medicationRequests(state: MedicationRequestState): MedicationRequest[];
-    medicationRequestCount(state: MedicationRequestState): number;
-    isMedicationRequestLoading(state: MedicationRequestState): boolean;
+    specialAuthorityRequests(
+        state: MedicationRequestState
+    ): (hdid: string) => MedicationRequest[];
+    specialAuthorityRequestsCount(
+        state: MedicationRequestState
+    ): (hdid: string) => number;
+    specialAuthorityRequestsAreLoading(
+        state: MedicationRequestState
+    ): (hdid: string) => boolean;
 }
 
 type StoreContext = ActionContext<MedicationRequestState, RootState>;
 export interface MedicationRequestActions
     extends ActionTree<MedicationRequestState, RootState> {
-    retrieveMedicationRequests(
+    retrieveSpecialAuthorityRequests(
         context: StoreContext,
         params: { hdid: string }
     ): Promise<RequestResult<MedicationRequest[]>>;
-    handleMedicationRequestError(
+    handleSpecialAuthorityRequestsError(
         context: StoreContext,
-        params: { error: ResultError; errorType: ErrorType }
+        params: { hdid: string; error: ResultError; errorType: ErrorType }
     ): void;
 }
 
 export interface MedicationRequestMutations
     extends MutationTree<MedicationRequestState> {
-    setMedicationRequestRequested(state: MedicationRequestState): void;
-    setMedicationRequestResult(
+    setSpecialAuthorityRequestsRequested(
         state: MedicationRequestState,
-        medicationRequestResult: RequestResult<MedicationRequest[]>
+        hdid: string
     ): void;
-    medicationRequestError(state: MedicationRequestState, error: Error): void;
+    setSpecialAuthorityRequests(
+        state: MedicationRequestState,
+        payload: {
+            hdid: string;
+            specialAuthorityRequestsResult: RequestResult<MedicationRequest[]>;
+        }
+    ): void;
+    setSpecialAuthorityRequestsError(
+        state: MedicationRequestState,
+        payload: {
+            hdid: string;
+            error: Error;
+        }
+    ): void;
 }
 
 export interface MedicationRequestModule

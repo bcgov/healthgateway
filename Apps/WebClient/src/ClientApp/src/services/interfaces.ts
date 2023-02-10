@@ -23,7 +23,7 @@ import {
     LaboratoryReport,
     PublicCovidTestResponseResult,
 } from "@/models/laboratory";
-import MedicationRequest from "@/models/MedicationRequest";
+import MedicationRequest from "@/models/medicationRequest";
 import MedicationStatementHistory from "@/models/medicationStatementHistory";
 import Notification from "@/models/notification";
 import PatientData from "@/models/patientData";
