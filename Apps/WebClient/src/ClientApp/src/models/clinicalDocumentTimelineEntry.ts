@@ -1,5 +1,5 @@
 import { EntryType } from "@/constants/entryType";
-import ClinicalDocument from "@/models/clinicalDocument";
+import { ClinicalDocument } from "@/models/clinicalDocument";
 import { DateWrapper } from "@/models/dateWrapper";
 import TimelineEntry from "@/models/timelineEntry";
 import { UserComment } from "@/models/userComment";

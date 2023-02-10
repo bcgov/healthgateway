@@ -1,15 +1,10 @@
-import { LoadStatus } from "@/models/storeOperations";
-
 import { actions } from "./actions";
 import { getters } from "./getters";
 import { mutations } from "./mutations";
 import { ClinicalDocumentModule, ClinicalDocumentState } from "./types";
 
 const state: ClinicalDocumentState = {
-    records: [],
-    error: undefined,
-    statusMessage: "",
-    status: LoadStatus.NONE,
+    clinicalDocuments: {},
     files: {},
 };
 

@@ -1,24 +1,32 @@
 import { Dictionary } from "@/models/baseTypes";
-import ClinicalDocument from "@/models/clinicalDocument";
+import {
+    ClinicalDocument,
+    ClinicalDocumentFile,
+} from "@/models/clinicalDocument";
 import { LoadStatus } from "@/models/storeOperations";
 
-import {
-    ClinicalDocumentFileState,
-    ClinicalDocumentGetters,
-    ClinicalDocumentState,
-} from "./types";
+import { ClinicalDocumentGetters, ClinicalDocumentState } from "./types";
+import { getClinicalDocumentDatasetState } from "./util";
 
 export const getters: ClinicalDocumentGetters = {
-    records(state: ClinicalDocumentState): ClinicalDocument[] {
-        return state.records;
+    records(
+        state: ClinicalDocumentState
+    ): (hdid: string) => ClinicalDocument[] {
+        return (hdid: string) =>
+            getClinicalDocumentDatasetState(state, hdid).data;
     },
-    recordCount(state: ClinicalDocumentState): number {
-        return state.records.length;
+    clinicalDocumentsCount(
+        state: ClinicalDocumentState
+    ): (hdid: string) => number {
+        return (hdid: string) =>
+            getClinicalDocumentDatasetState(state, hdid).data.length;
     },
-    isLoading(state: ClinicalDocumentState): boolean {
-        return state.status === LoadStatus.REQUESTED;
+    isLoading(state: ClinicalDocumentState): (hdid: string) => boolean {
+        return (hdid: string) =>
+            getClinicalDocumentDatasetState(state, hdid).status ===
+            LoadStatus.REQUESTED;
     },
-    files(state: ClinicalDocumentState): Dictionary<ClinicalDocumentFileState> {
+    files(state: ClinicalDocumentState): Dictionary<ClinicalDocumentFile> {
         return state.files;
     },
 };

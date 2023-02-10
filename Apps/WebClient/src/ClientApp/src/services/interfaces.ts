@@ -4,7 +4,7 @@ import AddDependentRequest from "@/models/addDependentRequest";
 import ApiResult from "@/models/apiResult";
 import { Dictionary } from "@/models/baseTypes";
 import { CheckInRequest } from "@/models/checkInRequest";
-import ClinicalDocument from "@/models/clinicalDocument";
+import { ClinicalDocument } from "@/models/clinicalDocument";
 import Communication, { CommunicationType } from "@/models/communication";
 import {
     ExternalConfiguration,
