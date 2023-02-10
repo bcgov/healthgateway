@@ -99,16 +99,16 @@ export interface DatasetSettings {
 
 export interface Covid19Settings {
     pcrTestEnabled: boolean;
-    publicCovid19: PublicCovid19;
-    proofOfVaccination: ProofOfVaccination;
+    publicCovid19: PublicCovid19Settings;
+    proofOfVaccination: ProofOfVaccinationSettings;
 }
 
-export interface PublicCovid19 {
+export interface PublicCovid19Settings {
     enableTestResults: boolean;
     showFederalProofOfVaccination: boolean;
 }
 
-export interface ProofOfVaccination {
+export interface ProofOfVaccinationSettings {
     exportPdf: boolean;
 }
 
