@@ -322,8 +322,6 @@ export default class TimelineComponent extends Vue {
     }
 
     get unfilteredTimelineEntries(): TimelineEntry[] {
-        this.logger.debug("Updating timeline entries");
-
         const getComments = this.getEntryComments;
         let entries = [];
 
