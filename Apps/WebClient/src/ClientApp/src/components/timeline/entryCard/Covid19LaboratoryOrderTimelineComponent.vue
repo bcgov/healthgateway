@@ -67,7 +67,7 @@ export default class Covid19LaboratoryOrderTimelineComponent extends Vue {
     private logger!: ILogger;
 
     private get entryIcon(): string | undefined {
-        return entryTypeMap.get(EntryType.Covid19LaboratoryOrder)?.icon;
+        return entryTypeMap.get(EntryType.Covid19TestResult)?.icon;
     }
 
     private get reportAvailable(): boolean {

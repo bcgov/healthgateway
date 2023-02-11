@@ -181,21 +181,21 @@ export default class FilterComponent extends Vue {
         switch (entryType) {
             case EntryType.ClinicalDocument:
                 return this.clinicalDocumentsCount(this.hdid);
-            case EntryType.Covid19LaboratoryOrder:
+            case EntryType.Covid19TestResult:
                 return this.covid19LaboratoryOrdersCount(this.hdid);
-            case EntryType.Encounter:
+            case EntryType.HealthVisit:
                 return this.healthVisitsCount(this.hdid);
             case EntryType.HospitalVisit:
                 return this.hospitalVisitsCount(this.hdid);
             case EntryType.Immunization:
                 return this.immunizationsCount(this.hdid);
-            case EntryType.LaboratoryOrder:
+            case EntryType.LabResult:
                 return this.laboratoryOrdersCount(this.hdid);
             case EntryType.Medication:
                 return this.medicationsCount(this.hdid);
             case EntryType.Note:
                 return this.notesCount;
-            case EntryType.MedicationRequest:
+            case EntryType.SpecialAuthorityRequest:
                 return this.specialAuthorityRequestsCount(this.hdid);
             default:
                 return undefined;

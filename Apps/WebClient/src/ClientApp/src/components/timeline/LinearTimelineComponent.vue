@@ -479,21 +479,21 @@ export default class LinearTimelineComponent extends Vue {
         switch (entryType) {
             case EntryType.ClinicalDocument:
                 return this.clinicalDocumentsAreLoading(this.hdid);
-            case EntryType.Covid19LaboratoryOrder:
+            case EntryType.Covid19TestResult:
                 return this.covid19LaboratoryOrdersAreLoading(this.hdid);
-            case EntryType.Encounter:
+            case EntryType.HealthVisit:
                 return this.healthVisitsAreLoading(this.hdid);
             case EntryType.HospitalVisit:
                 return this.hospitalVisitsAreLoading(this.hdid);
             case EntryType.Immunization:
                 return this.immunizationsAreLoading(this.hdid);
-            case EntryType.LaboratoryOrder:
+            case EntryType.LabResult:
                 return this.laboratoryOrdersAreLoading(this.hdid);
             case EntryType.Medication:
                 return this.medicationsAreLoading(this.hdid);
             case EntryType.Note:
                 return this.notesAreLoading;
-            case EntryType.MedicationRequest:
+            case EntryType.SpecialAuthorityRequest:
                 return this.specialAuthorityRequestsAreLoading(this.hdid);
             default:
                 throw new Error(`Unknown dataset "${entryType}"`);
@@ -504,23 +504,23 @@ export default class LinearTimelineComponent extends Vue {
         switch (entryType) {
             case EntryType.ClinicalDocument:
                 return this.retrieveClinicalDocuments({ hdid: this.hdid });
-            case EntryType.Covid19LaboratoryOrder:
+            case EntryType.Covid19TestResult:
                 return this.retrieveCovid19LaboratoryOrders({
                     hdid: this.hdid,
                 });
-            case EntryType.Encounter:
+            case EntryType.HealthVisit:
                 return this.retrieveHealthVisits({ hdid: this.hdid });
             case EntryType.HospitalVisit:
                 return this.retrieveHospitalVisits({ hdid: this.hdid });
             case EntryType.Immunization:
                 return this.retrieveImmunizations({ hdid: this.hdid });
-            case EntryType.LaboratoryOrder:
+            case EntryType.LabResult:
                 return this.retrieveLaboratoryOrders({ hdid: this.hdid });
             case EntryType.Medication:
                 return this.retrieveMedications({ hdid: this.hdid });
             case EntryType.Note:
                 return this.retrieveNotes({ hdid: this.hdid });
-            case EntryType.MedicationRequest:
+            case EntryType.SpecialAuthorityRequest:
                 return this.retrieveSpecialAuthorityRequests({
                     hdid: this.hdid,
                 });

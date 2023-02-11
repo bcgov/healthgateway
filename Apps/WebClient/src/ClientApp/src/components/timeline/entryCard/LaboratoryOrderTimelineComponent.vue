@@ -64,7 +64,7 @@ export default class LaboratoryOrderTimelineComponent extends Vue {
     }
 
     private get entryIcon(): string | undefined {
-        return entryTypeMap.get(EntryType.LaboratoryOrder)?.icon;
+        return entryTypeMap.get(EntryType.LabResult)?.icon;
     }
 
     private formatDate(date: DateWrapper): string {

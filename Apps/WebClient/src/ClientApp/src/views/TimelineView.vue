@@ -84,14 +84,14 @@ export default class TimelineView extends Vue {
     get entryTypes(): EntryType[] {
         return [
             EntryType.ClinicalDocument,
-            EntryType.Covid19LaboratoryOrder,
-            EntryType.Encounter,
+            EntryType.Covid19TestResult,
+            EntryType.HealthVisit,
             EntryType.HospitalVisit,
             EntryType.Immunization,
-            EntryType.LaboratoryOrder,
+            EntryType.LabResult,
             EntryType.Medication,
             EntryType.Note,
-            EntryType.MedicationRequest,
+            EntryType.SpecialAuthorityRequest,
         ].filter((entryType) => this.config.modules[entryType]);
     }
 

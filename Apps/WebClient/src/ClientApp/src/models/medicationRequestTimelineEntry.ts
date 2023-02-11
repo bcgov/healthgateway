@@ -23,7 +23,7 @@ export default class MedicationRequestTimelineEntry extends TimelineEntry {
     ) {
         super(
             model.referenceNumber,
-            EntryType.MedicationRequest,
+            EntryType.SpecialAuthorityRequest,
             new DateWrapper(model.requestedDate)
         );
 

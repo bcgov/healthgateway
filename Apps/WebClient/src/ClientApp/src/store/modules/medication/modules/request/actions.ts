@@ -61,7 +61,7 @@ export const actions: MedicationRequestActions = {
                             reject(result.resultError);
                         } else {
                             EventTracker.loadData(
-                                EntryType.MedicationRequest,
+                                EntryType.SpecialAuthorityRequest,
                                 result.resourcePayload.length
                             );
                             context.commit("setSpecialAuthorityRequests", {

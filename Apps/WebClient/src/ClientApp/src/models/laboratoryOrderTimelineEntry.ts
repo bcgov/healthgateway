@@ -29,7 +29,7 @@ export default class LaboratoryOrderTimelineEntry extends TimelineEntry {
     ) {
         super(
             model.labPdfId,
-            EntryType.LaboratoryOrder,
+            EntryType.LabResult,
             new DateWrapper(model.timelineDateTime, {
                 hasTime: true,
             })

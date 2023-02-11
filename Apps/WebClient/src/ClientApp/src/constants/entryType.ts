@@ -1,15 +1,15 @@
 import { CommentEntryType } from "@/constants/commentEntryType";
 
 export enum EntryType {
-    MedicationRequest = "MedicationRequest",
-    Medication = "Medication",
-    Immunization = "Immunization",
-    Covid19LaboratoryOrder = "Laboratory",
-    LaboratoryOrder = "AllLaboratory",
-    Encounter = "Encounter",
-    Note = "Note",
     ClinicalDocument = "ClinicalDocument",
+    Covid19TestResult = "Laboratory",
+    HealthVisit = "Encounter",
     HospitalVisit = "HospitalVisit",
+    Immunization = "Immunization",
+    LabResult = "AllLaboratory",
+    Medication = "Medication",
+    Note = "Note",
+    SpecialAuthorityRequest = "MedicationRequest",
 }
 
 export class EntryTypeDetails {
@@ -45,9 +45,9 @@ entryTypeMap.set(EntryType.Medication, {
     eventName: "medications",
 });
 
-entryTypeMap.set(EntryType.LaboratoryOrder, {
-    type: EntryType.LaboratoryOrder,
-    commentType: CommentEntryType.LaboratoryOrder,
+entryTypeMap.set(EntryType.LabResult, {
+    type: EntryType.LabResult,
+    commentType: CommentEntryType.LabResult,
     name: "Lab Results",
     description:
         "Find out your lab results within about 48 hours of taking a test",
@@ -56,9 +56,9 @@ entryTypeMap.set(EntryType.LaboratoryOrder, {
     eventName: "lab_results",
 });
 
-entryTypeMap.set(EntryType.Covid19LaboratoryOrder, {
-    type: EntryType.Covid19LaboratoryOrder,
-    commentType: CommentEntryType.Covid19LaboratoryOrder,
+entryTypeMap.set(EntryType.Covid19TestResult, {
+    type: EntryType.Covid19TestResult,
+    commentType: CommentEntryType.Covid19TestResult,
     name: "COVID‑19 Tests",
     description:
         "View and download your COVID‑19 test results as soon as they are available",
@@ -67,9 +67,9 @@ entryTypeMap.set(EntryType.Covid19LaboratoryOrder, {
     eventName: "covid_test",
 });
 
-entryTypeMap.set(EntryType.Encounter, {
-    type: EntryType.Encounter,
-    commentType: CommentEntryType.Encounter,
+entryTypeMap.set(EntryType.HealthVisit, {
+    type: EntryType.HealthVisit,
+    commentType: CommentEntryType.HealthVisit,
     name: "Health Visits",
     description:
         "See the last seven years of your health visits billed to the BC Medical Services Plan",
@@ -88,9 +88,9 @@ entryTypeMap.set(EntryType.Note, {
     eventName: "my_notes",
 });
 
-entryTypeMap.set(EntryType.MedicationRequest, {
-    type: EntryType.MedicationRequest,
-    commentType: CommentEntryType.MedicationRequest,
+entryTypeMap.set(EntryType.SpecialAuthorityRequest, {
+    type: EntryType.SpecialAuthorityRequest,
+    commentType: CommentEntryType.SpecialAuthorityRequest,
     name: "Special Authority",
     description:
         "Check the status of your Special Authority Requests since March 2021",
