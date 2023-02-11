@@ -56,7 +56,7 @@ const options: any = {
 };
 
 @Component(options)
-export default class TimelineView extends Vue {
+export default class UserTimelineView extends Vue {
     @Getter("webClient", { namespace: "config" })
     config!: WebClientConfiguration;
 
