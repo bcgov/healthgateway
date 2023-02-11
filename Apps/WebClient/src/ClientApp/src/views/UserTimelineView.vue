@@ -21,7 +21,7 @@ import { Getter } from "vuex-class";
 import NoteEditComponent from "@/components/modal/NoteEditComponent.vue";
 import BreadcrumbComponent from "@/components/navmenu/BreadcrumbComponent.vue";
 import AddNoteButtonComponent from "@/components/timeline/AddNoteButtonComponent.vue";
-import LinearTimelineComponent from "@/components/timeline/LinearTimelineComponent.vue";
+import TimelineComponent from "@/components/timeline/TimelineComponent.vue";
 import { EntryType } from "@/constants/entryType";
 import BreadcrumbItem from "@/models/breadcrumbItem";
 import type { WebClientConfiguration } from "@/models/configData";
@@ -50,8 +50,8 @@ const options: any = {
     components: {
         AddNoteButtonComponent,
         BreadcrumbComponent,
-        LinearTimelineComponent,
         NoteEditComponent,
+        TimelineComponent,
     },
 };
 
@@ -115,7 +115,7 @@ export default class UserTimelineView extends Vue {
                 />
             </div>
         </page-title>
-        <LinearTimelineComponent
+        <TimelineComponent
             :hdid="user.hdid"
             :entry-types="entryTypes"
             :comments-are-enabled="commentsAreEnabled"

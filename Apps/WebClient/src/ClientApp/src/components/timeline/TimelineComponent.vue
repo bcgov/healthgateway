@@ -68,7 +68,7 @@ const options: any = {
 };
 
 @Component(options)
-export default class LinearTimelineComponent extends Vue {
+export default class TimelineComponent extends Vue {
     @Prop({ required: true })
     hdid!: string;
 
