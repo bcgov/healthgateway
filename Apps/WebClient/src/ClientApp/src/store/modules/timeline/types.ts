@@ -24,7 +24,7 @@ export interface TimelineGetters extends GetterTree<TimelineState, RootState> {
     keyword(state: TimelineState): string;
     linearDate(state: TimelineState): DateWrapper;
     selectedDate(state: TimelineState): DateWrapper | null;
-    entryTypes(state: TimelineState): Set<EntryType>;
+    selectedEntryTypes(state: TimelineState): Set<EntryType>;
 }
 
 type StoreContext = ActionContext<TimelineState, RootState>;

@@ -22,6 +22,7 @@ import NoteEditComponent from "@/components/modal/NoteEditComponent.vue";
 import BreadcrumbComponent from "@/components/navmenu/BreadcrumbComponent.vue";
 import AddNoteButtonComponent from "@/components/timeline/AddNoteButtonComponent.vue";
 import LinearTimelineComponent from "@/components/timeline/LinearTimelineComponent.vue";
+import { EntryType } from "@/constants/entryType";
 import BreadcrumbItem from "@/models/breadcrumbItem";
 import type { WebClientConfiguration } from "@/models/configData";
 import User from "@/models/user";
@@ -47,10 +48,10 @@ library.add(
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const options: any = {
     components: {
+        AddNoteButtonComponent,
         BreadcrumbComponent,
+        LinearTimelineComponent,
         NoteEditComponent,
-        LinearTimeline: LinearTimelineComponent,
-        "add-note-button": AddNoteButtonComponent,
     },
 };
 
@@ -76,7 +77,25 @@ export default class TimelineView extends Vue {
         },
     ];
 
-    get isNoteEnabled(): boolean {
+    get commentsAreEnabled(): boolean {
+        return this.config.modules["Comment"];
+    }
+
+    get entryTypes(): EntryType[] {
+        return [
+            EntryType.ClinicalDocument,
+            EntryType.Covid19LaboratoryOrder,
+            EntryType.Encounter,
+            EntryType.HospitalVisit,
+            EntryType.Immunization,
+            EntryType.LaboratoryOrder,
+            EntryType.Medication,
+            EntryType.Note,
+            EntryType.MedicationRequest,
+        ].filter((entryType) => this.config.modules[entryType]);
+    }
+
+    get notesAreEnabled(): boolean {
         return this.config.modules["Note"];
     }
 
@@ -91,10 +110,16 @@ export default class TimelineView extends Vue {
         <BreadcrumbComponent :items="breadcrumbItems" />
         <page-title title="Timeline">
             <div class="float-right">
-                <add-note-button v-if="isNoteEnabled && !notesAreLoading" />
+                <AddNoteButtonComponent
+                    v-if="notesAreEnabled && !notesAreLoading"
+                />
             </div>
         </page-title>
-        <LinearTimeline />
+        <LinearTimelineComponent
+            :hdid="user.hdid"
+            :entry-types="entryTypes"
+            :comments-are-enabled="commentsAreEnabled"
+        />
         <NoteEditComponent :is-loading="notesAreLoading" />
     </div>
 </template>

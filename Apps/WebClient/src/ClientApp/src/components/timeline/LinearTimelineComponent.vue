@@ -1,7 +1,7 @@
 <script lang="ts">
 import { BToast } from "bootstrap-vue";
 import Vue from "vue";
-import { Component, Watch } from "vue-property-decorator";
+import { Component, Prop, Watch } from "vue-property-decorator";
 import { Action, Getter } from "vuex-class";
 
 import ProtectiveWordComponent from "@/components/modal/ProtectiveWordComponent.vue";
@@ -26,7 +26,6 @@ import MedicationTimelineEntry from "@/models/medicationTimelineEntry";
 import NoteTimelineEntry from "@/models/noteTimelineEntry";
 import TimelineEntry, { DateGroup } from "@/models/timelineEntry";
 import TimelineFilter, { TimelineFilterBuilder } from "@/models/timelineFilter";
-import User from "@/models/user";
 import { UserComment } from "@/models/userComment";
 import UserNote from "@/models/userNote";
 import container from "@/plugins/container";
@@ -55,7 +54,7 @@ const options: any = {
         BToast,
         ProtectiveWordComponent,
         EntryDetailsComponent,
-        Filters: FilterComponent,
+        FilterComponent,
         MedicationRequestComponent: MedicationRequestTimelineComponent,
         MedicationComponent: MedicationTimelineComponent,
         ImmunizationComponent: ImmunizationTimelineComponent,
@@ -71,6 +70,15 @@ const options: any = {
 
 @Component(options)
 export default class LinearTimelineComponent extends Vue {
+    @Prop({ required: true })
+    hdid!: string;
+
+    @Prop({ default: [] })
+    entryTypes!: EntryType[];
+
+    @Prop({ default: false })
+    commentsAreEnabled!: boolean;
+
     @Action("retrieveComments", { namespace: "comment" })
     retrieveComments!: (params: { hdid: string }) => Promise<void>;
 
@@ -121,7 +129,7 @@ export default class LinearTimelineComponent extends Vue {
     clinicalDocumentsAreLoading!: (hdid: string) => boolean;
 
     @Getter("getEntryComments", { namespace: "comment" })
-    getEntryComments!: (entyId: string) => UserComment[] | null;
+    getEntryComments!: (entryId: string) => UserComment[] | null;
 
     @Getter("commentsAreLoading", { namespace: "comment" })
     commentsAreLoading!: boolean;
@@ -183,8 +191,8 @@ export default class LinearTimelineComponent extends Vue {
     @Getter("notesAreLoading", { namespace: "note" })
     notesAreLoading!: boolean;
 
-    @Getter("entryTypes", { namespace: "timeline" })
-    entryTypes!: Set<EntryType>;
+    @Getter("selectedEntryTypes", { namespace: "timeline" })
+    selectedEntryTypes!: Set<EntryType>;
 
     @Getter("filter", { namespace: "timeline" })
     filter!: TimelineFilter;
@@ -198,17 +206,12 @@ export default class LinearTimelineComponent extends Vue {
     @Getter("selectedDate", { namespace: "timeline" })
     selectedDate!: DateWrapper | null;
 
-    @Getter("user", { namespace: "user" })
-    user!: User;
-
     currentPage = 1;
-
     readonly pageSize = 25;
-
     logger!: ILogger;
 
     get dateGroups(): DateGroup[] {
-        if (this.timelineIsEmpty) {
+        if (this.visibleTimelineEntries.length === 0) {
             return [];
         }
 
@@ -223,7 +226,7 @@ export default class LinearTimelineComponent extends Vue {
             labels.push([FilterLabelType.Keyword, `"${this.filter.keyword}"`]);
         }
 
-        this.entryTypes.forEach((entryType) => {
+        this.selectedEntryTypes.forEach((entryType) => {
             const label = entryTypeMap.get(entryType)?.name;
             if (label) {
                 labels.push([FilterLabelType.Type, label]);
@@ -248,120 +251,42 @@ export default class LinearTimelineComponent extends Vue {
     }
 
     get filteredTimelineEntries(): TimelineEntry[] {
-        let filteredEntries = [];
-
+        let entries = this.unfilteredTimelineEntries;
         if (this.filter.hasActiveFilter()) {
-            filteredEntries = this.timelineEntries.filter((entry) =>
-                entry.filterApplies(this.filter)
-            );
-        } else {
-            filteredEntries = this.timelineEntries;
+            entries = entries.filter((e) => e.filterApplies(this.filter));
         }
-
-        return filteredEntries;
+        return entries;
     }
 
-    get isFilterLoading(): boolean {
-        const filtersLoaded = [];
-
-        filtersLoaded.push(
-            this.isSelectedFilterModuleLoading(
-                EntryType.ClinicalDocument,
-                this.clinicalDocumentsAreLoading(this.user.hdid)
-            )
+    get selectedDatasetsAreLoading(): boolean {
+        return this.entryTypes.some(
+            (entryType) =>
+                this.selectedEntryTypes.has(entryType) &&
+                this.datasetIsLoading(entryType)
         );
-
-        filtersLoaded.push(
-            this.isSelectedFilterModuleLoading(
-                EntryType.Covid19LaboratoryOrder,
-                this.covid19LaboratoryOrdersAreLoading(this.user.hdid)
-            )
-        );
-
-        filtersLoaded.push(
-            this.isSelectedFilterModuleLoading(
-                EntryType.Encounter,
-                this.healthVisitsAreLoading(this.user.hdid)
-            )
-        );
-
-        filtersLoaded.push(
-            this.isSelectedFilterModuleLoading(
-                EntryType.Immunization,
-                this.immunizationsAreLoading(this.user.hdid)
-            )
-        );
-
-        filtersLoaded.push(
-            this.isSelectedFilterModuleLoading(
-                EntryType.HospitalVisit,
-                this.hospitalVisitsAreLoading(this.user.hdid)
-            )
-        );
-
-        filtersLoaded.push(
-            this.isSelectedFilterModuleLoading(
-                EntryType.LaboratoryOrder,
-                this.laboratoryOrdersAreLoading(this.user.hdid)
-            )
-        );
-
-        filtersLoaded.push(
-            this.isSelectedFilterModuleLoading(
-                EntryType.Medication,
-                this.medicationsAreLoading(this.user.hdid)
-            )
-        );
-
-        filtersLoaded.push(
-            this.isSelectedFilterModuleLoading(
-                EntryType.Note,
-                this.notesAreLoading
-            )
-        );
-
-        filtersLoaded.push(
-            this.isSelectedFilterModuleLoading(
-                EntryType.MedicationRequest,
-                this.specialAuthorityRequestsAreLoading(this.user.hdid)
-            )
-        );
-
-        return filtersLoaded.includes(true);
-    }
-
-    get isFilterModuleSelected(): boolean {
-        const entryTypes = Array.from(this.entryTypes);
-        this.logger.debug(
-            `Number of imeline filter modules selected: ${entryTypes.length}`
-        );
-        return entryTypes.length > 0;
     }
 
     get isFullyLoaded(): boolean {
-        return (
-            !this.clinicalDocumentsAreLoading(this.user.hdid) &&
-            !this.commentsAreLoading &&
-            !this.covid19LaboratoryOrdersAreLoading(this.user.hdid) &&
-            !this.healthVisitsAreLoading(this.user.hdid) &&
-            !this.hospitalVisitsAreLoading(this.user.hdid) &&
-            !this.immunizationsAreDeferred(this.user.hdid) &&
-            !this.immunizationsAreLoading(this.user.hdid) &&
-            !this.laboratoryOrdersAreLoading(this.user.hdid) &&
-            !this.medicationsAreLoading(this.user.hdid) &&
-            !this.notesAreLoading &&
-            !this.specialAuthorityRequestsAreLoading(this.user.hdid)
+        const loadingDatasets = this.entryTypes.some((entryType) =>
+            this.datasetIsLoading(entryType)
         );
-    }
 
-    get isLaboratoryQueued(): boolean {
-        return this.laboratoryOrdersAreQueued(this.user.hdid);
+        const loadingComments =
+            this.commentsAreEnabled && this.commentsAreLoading;
+
+        const loadingMoreImmunizations =
+            this.entryTypes.includes(EntryType.Immunization) &&
+            this.immunizationsAreDeferred(this.hdid);
+
+        return (
+            !loadingDatasets && !loadingComments && !loadingMoreImmunizations
+        );
     }
 
     get isOnlyImmunizationSelected(): boolean {
         return (
-            this.entryTypes.size === 1 &&
-            this.entryTypes.has(EntryType.Immunization)
+            this.selectedEntryTypes.size === 1 &&
+            this.selectedEntryTypes.has(EntryType.Immunization)
         );
     }
 
@@ -376,8 +301,8 @@ export default class LinearTimelineComponent extends Vue {
     }
 
     get showContentPlaceholders(): boolean {
-        if (this.isFilterModuleSelected) {
-            return this.isFilterLoading;
+        if (this.selectedEntryTypes.size > 0) {
+            return this.selectedDatasetsAreLoading;
         }
         return !this.isFullyLoaded && this.filteredTimelineEntries.length === 0;
     }
@@ -385,104 +310,89 @@ export default class LinearTimelineComponent extends Vue {
     get showDisplayCount(): boolean {
         return this.visibleTimelineEntries.length > 0;
     }
+
     get showEmptyState(): boolean {
-        return this.timelineIsEmpty && !this.isFilterLoading;
+        return (
+            this.filteredTimelineEntries.length === 0 &&
+            !this.selectedDatasetsAreLoading
+        );
     }
 
     get showTimelineEntries(): boolean {
-        return this.timelineEntries.length > 0 || this.isFullyLoaded;
+        return this.unfilteredTimelineEntries.length > 0 || this.isFullyLoaded;
     }
 
-    get timelineEntries(): TimelineEntry[] {
-        this.logger.debug("Updating timeline Entries");
+    get unfilteredTimelineEntries(): TimelineEntry[] {
+        this.logger.debug("Updating timeline entries");
 
-        let timelineEntries = [];
+        const getComments = this.getEntryComments;
+        let entries = [];
 
         // Add the Special Authority request entries to the timeline list
-        for (const request of this.specialAuthorityRequests(this.user.hdid)) {
-            timelineEntries.push(
-                new MedicationRequestTimelineEntry(
-                    request,
-                    this.getEntryComments
-                )
+        for (const request of this.specialAuthorityRequests(this.hdid)) {
+            entries.push(
+                new MedicationRequestTimelineEntry(request, getComments)
             );
         }
 
         // Add the medication entries to the timeline list
-        for (const medication of this.medications(this.user.hdid)) {
-            timelineEntries.push(
-                new MedicationTimelineEntry(medication, this.getEntryComments)
+        for (const medication of this.medications(this.hdid)) {
+            entries.push(new MedicationTimelineEntry(medication, getComments));
+        }
+
+        // Add the COVID-19 test result entries to the timeline list
+        for (const result of this.covid19LaboratoryOrders(this.hdid)) {
+            entries.push(
+                new Covid19LaboratoryOrderTimelineEntry(result, getComments)
             );
         }
 
-        // Add the COVID-19 laboratory entries to the timeline list
-        for (const order of this.covid19LaboratoryOrders(this.user.hdid)) {
-            timelineEntries.push(
-                new Covid19LaboratoryOrderTimelineEntry(
-                    order,
-                    this.getEntryComments
-                )
-            );
-        }
-
-        // Add the laboratory entries to the timeline list
-        for (const order of this.laboratoryOrders(this.user.hdid)) {
-            timelineEntries.push(
-                new LaboratoryOrderTimelineEntry(order, this.getEntryComments)
-            );
+        // Add the lab result entries to the timeline list
+        for (const order of this.laboratoryOrders(this.hdid)) {
+            entries.push(new LaboratoryOrderTimelineEntry(order, getComments));
         }
 
         // Add the health visit entries to the timeline list
-        for (const healthVisit of this.healthVisits(this.user.hdid)) {
-            timelineEntries.push(
-                new EncounterTimelineEntry(healthVisit, this.getEntryComments)
-            );
+        for (const healthVisit of this.healthVisits(this.hdid)) {
+            entries.push(new EncounterTimelineEntry(healthVisit, getComments));
         }
 
         // Add the hospital visit entries to the timeline list
-        for (const visit of this.hospitalVisits(this.user.hdid)) {
-            timelineEntries.push(
-                new HospitalVisitTimelineEntry(visit, this.getEntryComments)
-            );
+        for (const visit of this.hospitalVisits(this.hdid)) {
+            entries.push(new HospitalVisitTimelineEntry(visit, getComments));
         }
 
         // Add the clinical document entries to the timeline list
-        for (const clinicalDocument of this.clinicalDocuments(this.user.hdid)) {
-            timelineEntries.push(
-                new ClinicalDocumentTimelineEntry(
-                    clinicalDocument,
-                    this.getEntryComments
-                )
-            );
+        for (const doc of this.clinicalDocuments(this.hdid)) {
+            entries.push(new ClinicalDocumentTimelineEntry(doc, getComments));
         }
 
-        // Add the Note entries to the timeline list
+        // Add the note entries to the timeline list
         for (const note of this.userNotes) {
-            timelineEntries.push(new NoteTimelineEntry(note));
+            entries.push(new NoteTimelineEntry(note));
         }
 
         // Add the immunization entries to the timeline list
-        for (const immunization of this.patientImmunizations(this.user.hdid)) {
-            timelineEntries.push(new ImmunizationTimelineEntry(immunization));
+        for (const immunization of this.patientImmunizations(this.hdid)) {
+            entries.push(new ImmunizationTimelineEntry(immunization));
         }
 
-        timelineEntries = this.sortEntries(timelineEntries);
-        return timelineEntries;
-    }
+        // Sort entries with newest first
+        entries.sort((a, b) => {
+            if (a.date.isBefore(b.date)) {
+                return 1;
+            }
+            if (a.date.isAfter(b.date)) {
+                return -1;
+            }
+            return 0;
+        });
 
-    get timelineIsEmpty(): boolean {
-        this.logger.debug(
-            `Linear Timeline Entries length: ${this.filteredTimelineEntries.length}`
-        );
-        return this.filteredTimelineEntries.length === 0;
-    }
-
-    get timelineEntryCount(): number {
-        return this.filteredTimelineEntries.length;
+        return entries;
     }
 
     get visibleTimelineEntries(): TimelineEntry[] {
-        if (this.timelineIsEmpty) {
+        if (this.filteredTimelineEntries.length === 0) {
             return [];
         }
 
@@ -498,10 +408,6 @@ export default class LinearTimelineComponent extends Vue {
             this.filteredTimelineEntries.length
         );
         return this.filteredTimelineEntries.slice(lowerIndex, upperIndex);
-    }
-
-    get visibleTimelineEntryCount(): number {
-        return this.visibleTimelineEntries.length;
     }
 
     @Watch("currentPage")
@@ -538,7 +444,7 @@ export default class LinearTimelineComponent extends Vue {
         let keyword = this.filter.keyword;
         let startDate = this.filter.startDate;
         let endDate = this.filter.endDate;
-        let entryTypes = [...this.entryTypes];
+        let entryTypes = [...this.selectedEntryTypes];
 
         switch (label) {
             case FilterLabelType.Keyword:
@@ -569,19 +475,70 @@ export default class LinearTimelineComponent extends Vue {
         this.setFilter(builder);
     }
 
+    datasetIsLoading(entryType: EntryType): boolean {
+        switch (entryType) {
+            case EntryType.ClinicalDocument:
+                return this.clinicalDocumentsAreLoading(this.hdid);
+            case EntryType.Covid19LaboratoryOrder:
+                return this.covid19LaboratoryOrdersAreLoading(this.hdid);
+            case EntryType.Encounter:
+                return this.healthVisitsAreLoading(this.hdid);
+            case EntryType.HospitalVisit:
+                return this.hospitalVisitsAreLoading(this.hdid);
+            case EntryType.Immunization:
+                return this.immunizationsAreLoading(this.hdid);
+            case EntryType.LaboratoryOrder:
+                return this.laboratoryOrdersAreLoading(this.hdid);
+            case EntryType.Medication:
+                return this.medicationsAreLoading(this.hdid);
+            case EntryType.Note:
+                return this.notesAreLoading;
+            case EntryType.MedicationRequest:
+                return this.specialAuthorityRequestsAreLoading(this.hdid);
+            default:
+                throw new Error(`Unknown dataset "${entryType}"`);
+        }
+    }
+
+    fetchDataset(entryType: EntryType): Promise<void> {
+        switch (entryType) {
+            case EntryType.ClinicalDocument:
+                return this.retrieveClinicalDocuments({ hdid: this.hdid });
+            case EntryType.Covid19LaboratoryOrder:
+                return this.retrieveCovid19LaboratoryOrders({
+                    hdid: this.hdid,
+                });
+            case EntryType.Encounter:
+                return this.retrieveHealthVisits({ hdid: this.hdid });
+            case EntryType.HospitalVisit:
+                return this.retrieveHospitalVisits({ hdid: this.hdid });
+            case EntryType.Immunization:
+                return this.retrieveImmunizations({ hdid: this.hdid });
+            case EntryType.LaboratoryOrder:
+                return this.retrieveLaboratoryOrders({ hdid: this.hdid });
+            case EntryType.Medication:
+                return this.retrieveMedications({ hdid: this.hdid });
+            case EntryType.Note:
+                return this.retrieveNotes({ hdid: this.hdid });
+            case EntryType.MedicationRequest:
+                return this.retrieveSpecialAuthorityRequests({
+                    hdid: this.hdid,
+                });
+            default:
+                return Promise.reject(`Unknown dataset "${entryType}"`);
+        }
+    }
+
     fetchTimelineData(): void {
-        Promise.all([
-            this.retrieveMedications({ hdid: this.user.hdid }),
-            this.retrieveSpecialAuthorityRequests({ hdid: this.user.hdid }),
-            this.retrieveImmunizations({ hdid: this.user.hdid }),
-            this.retrieveCovid19LaboratoryOrders({ hdid: this.user.hdid }),
-            this.retrieveLaboratoryOrders({ hdid: this.user.hdid }),
-            this.retrieveHealthVisits({ hdid: this.user.hdid }),
-            this.retrieveHospitalVisits({ hdid: this.user.hdid }),
-            this.retrieveClinicalDocuments({ hdid: this.user.hdid }),
-            this.retrieveNotes({ hdid: this.user.hdid }),
-            this.retrieveComments({ hdid: this.user.hdid }),
-        ]).catch((err) =>
+        const promises = this.entryTypes.map((entryType) =>
+            this.fetchDataset(entryType)
+        );
+
+        if (this.commentsAreEnabled) {
+            promises.push(this.retrieveComments({ hdid: this.hdid }));
+        }
+
+        Promise.all(promises).catch((err) =>
             this.logger.error(`Error loading timeline data: ${err}`)
         );
     }
@@ -594,27 +551,6 @@ export default class LinearTimelineComponent extends Vue {
 
     getComponentForEntry(entryType: EntryType): string {
         return entryTypeMap.get(entryType)?.component ?? "";
-    }
-
-    isFilterApplied(entryType: EntryType): boolean {
-        const entryTypes = Array.from(this.entryTypes);
-        const filterApplied = !!entryTypes.includes(entryType);
-        this.logger.debug(
-            `Timeline filter entry type: ${entryType} applied: ${filterApplied}`
-        );
-        return filterApplied;
-    }
-
-    isSelectedFilterModuleLoading(
-        entryType: EntryType,
-        loading: boolean
-    ): boolean {
-        const filterApplied = this.isFilterApplied(entryType);
-        const isLoading = filterApplied && loading;
-        this.logger.debug(
-            `Timeline filter entry type: ${entryType} applied: ${filterApplied} - filter loading: ${loading} and filter isLoading: ${isLoading}`
-        );
-        return isLoading;
     }
 
     linkGen(pageNum: number): string {
@@ -632,18 +568,6 @@ export default class LinearTimelineComponent extends Vue {
         } else {
             return false;
         }
-    }
-
-    sortEntries(timelineEntries: TimelineEntry[]): TimelineEntry[] {
-        return timelineEntries.sort((a, b) => {
-            if (a.date.isBefore(b.date)) {
-                return 1;
-            }
-            if (a.date.isAfter(b.date)) {
-                return -1;
-            }
-            return 0;
-        });
     }
 }
 </script>
@@ -670,7 +594,7 @@ export default class LinearTimelineComponent extends Vue {
             data-testid="loading-in-progress"
         />
         <b-alert
-            v-if="isLaboratoryQueued"
+            v-if="laboratoryOrdersAreQueued(hdid)"
             show
             dismissible
             variant="info"
@@ -692,7 +616,11 @@ export default class LinearTimelineComponent extends Vue {
                 align-v="start"
             >
                 <b-col class="col-auto">
-                    <Filters class="my-1" />
+                    <FilterComponent
+                        class="my-1"
+                        :hdid="hdid"
+                        :entry-types="entryTypes"
+                    />
                 </b-col>
                 <b-col class="mx-2">
                     <b-form-tag
@@ -725,8 +653,8 @@ export default class LinearTimelineComponent extends Vue {
                 data-testid="displayCountText"
             >
                 <b-col class="py-2" data-testid="timeline-record-count">
-                    Displaying {{ visibleTimelineEntryCount }} out of
-                    {{ timelineEntryCount }} records
+                    Displaying {{ visibleTimelineEntries.length }} out of
+                    {{ filteredTimelineEntries.length }} records
                 </b-col>
             </b-row>
             <div
@@ -764,6 +692,7 @@ export default class LinearTimelineComponent extends Vue {
                         :datekey="dateGroup.key"
                         :entry="entry"
                         :index="index"
+                        :hdid="hdid"
                         data-testid="timelineCard"
                     />
                 </div>
@@ -771,7 +700,7 @@ export default class LinearTimelineComponent extends Vue {
             <b-row align-h="center">
                 <b-col cols="auto">
                     <b-pagination-nav
-                        v-if="!timelineIsEmpty"
+                        v-if="filteredTimelineEntries.length > 0"
                         v-model="currentPage"
                         :link-gen="linkGen"
                         :number-of-pages="numberOfPages"
@@ -821,9 +750,7 @@ export default class LinearTimelineComponent extends Vue {
             <content-placeholders-heading :img="true" />
             <content-placeholders-text :lines="3" />
         </content-placeholders>
-        <ProtectiveWordComponent
-            :is-loading="medicationsAreLoading(user.hdid)"
-        />
+        <ProtectiveWordComponent :hdid="hdid" />
         <EntryDetailsComponent />
     </div>
 </template>
