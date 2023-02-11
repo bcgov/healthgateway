@@ -26,16 +26,15 @@ library.add(faArrowLeft);
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const options: any = {
     components: {
-        MedicationRequestComponent: MedicationRequestTimelineComponent,
-        MedicationComponent: MedicationTimelineComponent,
-        ImmunizationComponent: ImmunizationTimelineComponent,
-        Covid19LaboratoryOrderComponent:
-            Covid19LaboratoryOrderTimelineComponent,
-        LaboratoryOrderComponent: LaboratoryOrderTimelineComponent,
-        EncounterComponent: EncounterTimelineComponent,
-        NoteComponent: NoteTimelineComponent,
-        ClinicalDocumentComponent: ClinicalDocumentTimelineComponent,
-        HospitalVisitComponent: HospitalVisitTimelineComponent,
+        ClinicalDocumentTimelineComponent,
+        Covid19LaboratoryOrderTimelineComponent,
+        EncounterTimelineComponent,
+        HospitalVisitTimelineComponent,
+        ImmunizationTimelineComponent,
+        LaboratoryOrderTimelineComponent,
+        MedicationRequestTimelineComponent,
+        MedicationTimelineComponent,
+        NoteTimelineComponent,
     },
 };
 

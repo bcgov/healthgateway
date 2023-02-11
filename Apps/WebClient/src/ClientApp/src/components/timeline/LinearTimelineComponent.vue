@@ -52,19 +52,18 @@ enum FilterLabelType {
 const options: any = {
     components: {
         BToast,
-        ProtectiveWordComponent,
+        ClinicalDocumentTimelineComponent,
+        Covid19LaboratoryOrderTimelineComponent,
+        EncounterTimelineComponent,
         EntryDetailsComponent,
         FilterComponent,
-        MedicationRequestComponent: MedicationRequestTimelineComponent,
-        MedicationComponent: MedicationTimelineComponent,
-        ImmunizationComponent: ImmunizationTimelineComponent,
-        Covid19LaboratoryOrderComponent:
-            Covid19LaboratoryOrderTimelineComponent,
-        LaboratoryOrderComponent: LaboratoryOrderTimelineComponent,
-        EncounterComponent: EncounterTimelineComponent,
-        NoteComponent: NoteTimelineComponent,
-        ClinicalDocumentComponent: ClinicalDocumentTimelineComponent,
-        HospitalVisitComponent: HospitalVisitTimelineComponent,
+        HospitalVisitTimelineComponent,
+        ImmunizationTimelineComponent,
+        LaboratoryOrderTimelineComponent,
+        MedicationRequestTimelineComponent,
+        MedicationTimelineComponent,
+        NoteTimelineComponent,
+        ProtectiveWordComponent,
     },
 };
 
