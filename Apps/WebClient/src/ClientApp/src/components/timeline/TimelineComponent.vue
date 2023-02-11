@@ -748,7 +748,7 @@ export default class TimelineComponent extends Vue {
             <content-placeholders-text :lines="3" />
         </content-placeholders>
         <ProtectiveWordComponent :hdid="hdid" />
-        <EntryDetailsComponent />
+        <EntryDetailsComponent :hdid="hdid" />
     </div>
 </template>
 
