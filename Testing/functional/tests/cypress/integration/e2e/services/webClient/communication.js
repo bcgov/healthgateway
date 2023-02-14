@@ -1,11 +1,11 @@
-describe("WebClient Communication Service", () => {
+describe("GatewayApi Communication Service", () => {
     const BASEURL = "Communication/";
 
     it("Verify Get Communication", () => {
         cy.logout();
         cy.readConfig().then((config) => {
             cy.request({
-                url: `${config.serviceEndpoints.GatewayApi}${BASEURL}/0`,
+                url: `${config.serviceEndpoints.GatewayApi}${BASEURL}0`,
                 followRedirect: false,
                 failOnStatusCode: false,
             }).should((response) => {

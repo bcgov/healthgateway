@@ -16,17 +16,18 @@
 namespace HealthGateway.Common.Constants
 {
     /// <summary>
-    /// An enumeration representing the mechanism with which to lookup the fhir resource identifer.
+    /// An enumeration representing the mechanism with which to retrieve the subject identifier for the requested health data
+    /// resource(s).
     /// </summary>
-    public enum FhirResourceLookup
+    public enum FhirSubjectLookupMethod
     {
         /// <summary>
-        /// Lookup the identifer via the http route.
+        /// Look up the identifier via the HTTP route.
         /// </summary>
         Route,
 
         /// <summary>
-        /// Lookup the identifer via parameter.
+        /// Look up the identifier via query parameter.
         /// </summary>
         Parameter,
     }

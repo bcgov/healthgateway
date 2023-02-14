@@ -201,6 +201,8 @@ namespace HealthGateway.Admin.Client.Pages
                 this.PersonalHealthNumber = model.PersonalHealthNumber;
                 this.LastLoginDateTime = model.LastLoginDateTime;
                 this.IsExpanded = model.IsExpanded;
+                this.PhysicalAddress = model.PhysicalAddress;
+                this.PostalAddress = model.PostalAddress;
             }
 
             public string Hdid { get; }
@@ -210,6 +212,20 @@ namespace HealthGateway.Admin.Client.Pages
             public DateTime? LastLoginDateTime { get; }
 
             public bool IsExpanded { get; }
+
+            public string PhysicalAddress { get; }
+
+            public string PostalAddress { get; }
+
+            public string PostalAddressLabel => !this.IsSameAddress || (this.PhysicalAddress.Length > 0 && this.PostalAddress.Length == 0) ? "Mailing Address" : "Address";
+
+            public bool IsSameAddress => this.PhysicalAddress.Equals(this.PostalAddress, StringComparison.OrdinalIgnoreCase);
+
+            public bool IsPhysicalAddressShown => this.PhysicalAddress.Length > 0 && !this.IsSameAddress;
+
+            public bool IsPostalAddressShown => this.PostalAddress.Length > 0;
+
+            public static string NoAddressMessage => "No address on record";
         }
     }
 }

@@ -9,6 +9,8 @@ const hdid = "P6FFO433A5WPMVTGM7T4ZVWBKCSVNAYGTWTU3J2LWMGUMERKI72A";
 const hdidNotFound = "P123456789";
 const sms = "2501234567";
 const smsNotFound = "5551234567";
+const physicalAddress = "3815 HILLSPOINT STREET, CHATHAM, BC, V0G8B8";
+const postalAddress = "2000 MAIN STREET, VICTORIA, BC, V0G8B8";
 
 function verifyUserTableResults(queryType, personlHealthNumber) {
     // Expecting 1 row to return but you also need to consider the table headers. As a result, length should be 2.
@@ -17,11 +19,21 @@ function verifyUserTableResults(queryType, personlHealthNumber) {
     // Hdid is unique and is used as a unique identifier for each row in the table.
     cy.get(`[data-testid=user-table-hdid-${hdid}]`).contains(hdid);
 
-    if (queryType === "SMS") {
-        cy.get(`[data-testid=user-table-phn-${hdid}]`).should("be.empty");
-    } else {
+    if (queryType === "PHN" || queryType === "HDID") {
         cy.get(`[data-testid=user-table-phn-${hdid}]`).contains(
             personlHealthNumber
+        );
+        cy.get(`[data-testid=physical-address-${hdid}]`).contains(
+            physicalAddress
+        );
+        cy.get(`[data-testid=postal-address-${hdid}]`).contains(postalAddress);
+    } else {
+        cy.get(`[data-testid=user-table-phn-${hdid}]`).should("be.empty");
+        cy.get(`[data-testid=physical-address-label-${hdid}]`).should(
+            "not.exist"
+        );
+        cy.get(`[data-testid=postal-address-label-${hdid}]`).should(
+            "not.exist"
         );
     }
 }
@@ -40,7 +52,7 @@ describe("Support", () => {
         // HDID with results
         cy.intercept(
             "GET",
-            `**/Support/Users?queryString=${hdid}&queryType=HDID`,
+            `**/Support/Users?queryString=${hdid}&queryType=Hdid`,
             {
                 fixture: "SupportService/users-hdid.json",
             }
@@ -49,7 +61,7 @@ describe("Support", () => {
         // SMS with results
         cy.intercept(
             "GET",
-            `**/Support/Users?queryString=${sms}&queryType=SMS`,
+            `**/Support/Users?queryString=${sms}&queryType=Sms`,
             {
                 fixture: "SupportService/users-sms.json",
             }
@@ -85,7 +97,7 @@ describe("Support", () => {
         // HDID no results
         cy.intercept(
             "GET",
-            `**/Support/Users?queryString=${hdidNotFound}&queryType=HDID`,
+            `**/Support/Users?queryString=${hdidNotFound}&queryType=Hdid`,
             {
                 fixture: "SupportService/users-hdid-no-results.json",
             }
@@ -94,7 +106,7 @@ describe("Support", () => {
         // SMS no results
         cy.intercept(
             "GET",
-            `**/Support/Users?queryString=${smsNotFound}&queryType=SMS`,
+            `**/Support/Users?queryString=${smsNotFound}&queryType=Sms`,
             {
                 fixture: "SupportService/users-sms-no-results.json",
             }
@@ -112,7 +124,7 @@ describe("Support", () => {
         // Messaging Verification
         cy.intercept(
             "GET",
-            `**/Support/Verifications?hdid=${hdid}&queryType=HDID`,
+            `**/Support/Verifications?hdid=${hdid}&queryType=Hdid`,
             {
                 fixture: "SupportService/messaging-verification.json",
             }

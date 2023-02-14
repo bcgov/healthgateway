@@ -3,7 +3,9 @@
         {
             "personalHealthNumber": "9735353315",
             "hdid": "P6FFO433A5WPMVTGM7T4ZVWBKCSVNAYGTWTU3J2LWMGUMERKI72A",
-            "lastLoginDateTime": "2022-10-14T19:00:26.631761Z"
+            "lastLoginDateTime": "2022-10-14T19:00:26.631761Z",
+            "physicalAddress": "3815 HILLSPOINT STREET, CHATHAM, BC, V0G8B8",
+            "postalAddress": "2000 MAIN STREET, VICTORIA, BC, V0G8B8"
         }
     ],
     "totalResultCount": null,

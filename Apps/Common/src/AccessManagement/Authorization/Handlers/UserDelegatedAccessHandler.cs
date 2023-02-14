@@ -31,25 +31,25 @@ namespace HealthGateway.Common.AccessManagement.Authorization.Handlers
     using Microsoft.Extensions.Logging;
 
     /// <summary>
-    /// FhirResourceAuthorizationHandler validates that a FhirRequirement with User Delegation has been met.
+    /// Authorizes access to FHIR resources when the user is user-delegated to access the resources.
     /// </summary>
-    public class FhirResourceDelegateAuthorizationHandler : BaseFhirAuthorizationHandler
+    public class UserDelegatedAccessHandler : BaseFhirAuthorizationHandler
     {
-        private readonly ILogger<FhirResourceDelegateAuthorizationHandler> logger;
+        private readonly ILogger<UserDelegatedAccessHandler> logger;
         private readonly int? maxDependentAge;
         private readonly IPatientService patientService;
         private readonly IResourceDelegateDelegate resourceDelegateDelegate;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="FhirResourceDelegateAuthorizationHandler"/> class.
+        /// Initializes a new instance of the <see cref="UserDelegatedAccessHandler"/> class.
         /// </summary>
         /// <param name="logger">the injected logger.</param>
         /// <param name="configuration">The Configuration to use.</param>
         /// <param name="httpContextAccessor">The HTTP Context accessor.</param>
         /// <param name="patientService">The injected Patient service.</param>
         /// <param name="resourceDelegateDelegate">The ResourceDelegate delegate to interact with the DB.</param>
-        public FhirResourceDelegateAuthorizationHandler(
-            ILogger<FhirResourceDelegateAuthorizationHandler> logger,
+        public UserDelegatedAccessHandler(
+            ILogger<UserDelegatedAccessHandler> logger,
             IConfiguration configuration,
             IHttpContextAccessor httpContextAccessor,
             IPatientService patientService,
@@ -63,18 +63,16 @@ namespace HealthGateway.Common.AccessManagement.Authorization.Handlers
         }
 
         /// <summary>
-        /// Asserts that the user accessing the resource (hdid in route) is:
-        ///     1) User Delegated to access the resource.
+        /// Asserts that the user accessing the resource(s) is user-delegated to access the resource(s).
         /// </summary>
-        /// <param name="context">the AuthorizationHandlerContext context.</param>
-        /// <returns>The Authorization Result.</returns>
+        /// <param name="context">The authorization information.</param>
+        /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
         public override Task HandleAsync(AuthorizationHandlerContext context)
         {
-            IEnumerable<FhirRequirement> pendingRequirements =
-                context.PendingRequirements.OfType<FhirRequirement>();
-            foreach (FhirRequirement requirement in pendingRequirements)
+            IEnumerable<PersonalFhirRequirement> pendingRequirements = context.PendingRequirements.OfType<PersonalFhirRequirement>();
+            foreach (PersonalFhirRequirement requirement in pendingRequirements)
             {
-                string? resourceHdid = this.GetResourceHdid(requirement);
+                string? resourceHdid = this.GetResourceHdid(requirement.SubjectLookupMethod);
                 if (resourceHdid != null)
                 {
                     if (requirement.SupportsUserDelegation)
@@ -95,7 +93,7 @@ namespace HealthGateway.Common.AccessManagement.Authorization.Handlers
                 }
                 else
                 {
-                    this.logger.LogWarning("Fhir resource Handler has been invoked without route resource being specified, ignoring");
+                    this.logger.LogWarning("UserDelegatedAccessHandler has been invoked without patient HDID specified in the request, ignoring");
                 }
             }
 
@@ -108,7 +106,7 @@ namespace HealthGateway.Common.AccessManagement.Authorization.Handlers
         /// <param name="context">The authorization handler context.</param>
         /// <param name="resourceHdid">The health data resource subject identifier.</param>
         /// <param name="requirement">The Fhir requirement to satisfy.</param>
-        private bool IsDelegated(AuthorizationHandlerContext context, string resourceHdid, FhirRequirement requirement)
+        private bool IsDelegated(AuthorizationHandlerContext context, string resourceHdid, PersonalFhirRequirement requirement)
         {
             bool retVal = false;
             this.logger.LogInformation("Performing user delegation validation for resource {ResourceHdid}", resourceHdid);

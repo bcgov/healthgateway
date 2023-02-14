@@ -113,6 +113,8 @@ export default class ReportsView extends Vue {
     private hasRecords = false;
 
     private reportFilter = ReportFilterBuilder.create().build();
+    private isReportFilterStartDateValidDate = true;
+    private isReportFilterEndDateValidDate = true;
 
     private logger!: ILogger;
 
@@ -261,17 +263,31 @@ export default class ReportsView extends Vue {
     }
 
     private cancelFilter(): void {
-        this.selectedStartDate = this.reportFilter.startDate;
-        this.selectedEndDate = this.reportFilter.endDate;
+        this.selectedStartDate = this.convertEmptyStringDateToNull(
+            this.reportFilter.startDate
+        );
+        this.selectedEndDate = this.convertEmptyStringDateToNull(
+            this.reportFilter.endDate
+        );
         this.selectedMedicationOptions = this.reportFilter.medications;
     }
 
     private updateFilter(): void {
         this.reportFilter = ReportFilterBuilder.create()
-            .withStartDate(this.selectedStartDate)
-            .withEndDate(this.selectedEndDate)
+            .withStartDate(
+                this.convertEmptyStringDateToNull(this.selectedStartDate)
+            )
+            .withEndDate(
+                this.convertEmptyStringDateToNull(this.selectedEndDate)
+            )
             .withMedications(this.selectedMedicationOptions)
             .build();
+    }
+
+    private convertEmptyStringDateToNull(
+        date: StringISODate | null
+    ): string | null {
+        return !date ? null : date;
     }
 
     private showConfirmationModal(reportFormatType: ReportFormatType): void {
@@ -493,6 +509,9 @@ export default class ReportsView extends Vue {
                             id="start-date"
                             v-model="selectedStartDate"
                             data-testid="startDateInput"
+                            @is-date-valid="
+                                isReportFilterStartDateValidDate = $event
+                            "
                         />
                     </b-col>
                     <b-col class="col-12 col-lg-4 pt-3">
@@ -501,6 +520,9 @@ export default class ReportsView extends Vue {
                             id="end-date"
                             v-model="selectedEndDate"
                             data-testid="endDateInput"
+                            @is-date-valid="
+                                isReportFilterEndDateValidDate = $event
+                            "
                         />
                     </b-col>
                 </b-row>
@@ -533,7 +555,11 @@ export default class ReportsView extends Vue {
                             variant="primary"
                             data-testid="applyFilterBtn"
                             class="mb-1 ml-1"
-                            :disabled="isLoading"
+                            :disabled="
+                                isLoading ||
+                                !isReportFilterStartDateValidDate ||
+                                !isReportFilterEndDateValidDate
+                            "
                             @click="updateFilter"
                         >
                             Apply

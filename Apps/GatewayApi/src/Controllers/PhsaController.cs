@@ -57,7 +57,7 @@ namespace HealthGateway.GatewayApi.Controllers
         /// is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.
         /// </response>
         [HttpGet]
-        [Authorize(Policy = UserProfilePolicy.Read)]
+        [Authorize(Policy = SystemDelegatedPatientPolicy.Read)]
         [Route("dependents/{hdid}")]
         public ActionResult<RequestResult<IEnumerable<DependentModel>>> GetAll(string hdid)
         {
@@ -79,7 +79,7 @@ namespace HealthGateway.GatewayApi.Controllers
         /// is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.
         /// </response>
         [HttpGet]
-        [Authorize(Policy = UserProfilePolicy.Read)]
+        [Authorize(Policy = SystemDelegatedPatientPolicy.Read)]
         [Route("dependents")]
         public ActionResult<RequestResult<IEnumerable<GetDependentResponse>>> GetAll(
             [FromQuery] DateTime fromDateUtc,

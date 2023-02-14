@@ -93,6 +93,8 @@ export default class FilterComponent extends Vue {
     private isModalVisible = false;
     private isMenuVisible = false;
     private isFilterTutorialHidden = false;
+    private isFilterStartDateValidDate = true;
+    private isFilterEndDateValidDate = true;
 
     private startDate = "";
     private endDate = "";
@@ -354,6 +356,7 @@ export default class FilterComponent extends Vue {
                             id="start-date"
                             v-model="startDate"
                             data-testid="filterStartDateInput"
+                            @is-date-valid="isFilterStartDateValidDate = $event"
                         />
                     </b-col>
                 </b-row>
@@ -363,6 +366,7 @@ export default class FilterComponent extends Vue {
                             id="end-date"
                             v-model="endDate"
                             data-testid="filterEndDateInput"
+                            @is-date-valid="isFilterEndDateValidDate = $event"
                         />
                     </b-col>
                 </b-row>
@@ -382,6 +386,10 @@ export default class FilterComponent extends Vue {
                             data-testid="btnFilterApply"
                             class="btn-primary px-2"
                             variant="primary"
+                            :disabled="
+                                !isFilterStartDateValidDate ||
+                                !isFilterEndDateValidDate
+                            "
                             @click.stop="apply"
                         >
                             Apply
@@ -456,6 +464,7 @@ export default class FilterComponent extends Vue {
                             id="start-date"
                             v-model="startDate"
                             data-testid="filterStartDateInput"
+                            @is-date-valid="isFilterStartDateValidDate = $event"
                         />
                     </b-col>
                 </b-row>
@@ -465,6 +474,7 @@ export default class FilterComponent extends Vue {
                             id="end-date"
                             v-model="endDate"
                             data-testid="filterEndDateInput"
+                            @is-date-valid="isFilterEndDateValidDate = $event"
                         />
                     </b-col>
                 </b-row>
@@ -485,6 +495,10 @@ export default class FilterComponent extends Vue {
                         data-testid="btnFilterApply"
                         class="px-2"
                         variant="primary"
+                        :disabled="
+                            !isFilterStartDateValidDate ||
+                            !isFilterEndDateValidDate
+                        "
                         @click.stop="apply"
                     >
                         Apply

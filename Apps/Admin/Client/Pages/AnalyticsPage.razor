@@ -1,6 +1,6 @@
 @page "/analytics"
 @layout MainLayout
-@attribute [Authorize(Roles = Roles.Admin)]
+@attribute [Authorize(Roles = $"{Roles.Admin},{Roles.Reviewer}")]
 @using HealthGateway.Admin.Client.Store.Analytics
 @inherits Fluxor.Blazor.Web.Components.FluxorComponent
 
