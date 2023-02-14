@@ -52,7 +52,10 @@ public partial class BroadcastDialog : FluxorComponent
             {
                 case BroadcastActionType.InternalLink:
                 case BroadcastActionType.ExternalLink:
-                    return urlString.StartsWith("https://", StringComparison.OrdinalIgnoreCase) ? null : "URL is invalid";
+                    return urlString.StartsWith("https://", StringComparison.InvariantCultureIgnoreCase)
+                           && Uri.TryCreate(this.ActionUrlString, UriKind.Absolute, out Uri? _)
+                        ? null
+                        : "URL is invalid";
                 case BroadcastActionType.None:
                 default:
                     return urlString.Length == 0 ? null : "Selected Action Type does not support Action URL";
@@ -120,6 +123,7 @@ public partial class BroadcastDialog : FluxorComponent
             this.EffectiveTime = now.TimeOfDay;
             this.ExpiryDate = tomorrow.Date;
             this.ExpiryTime = tomorrow.TimeOfDay;
+            this.ActionUrlString = string.Empty;
         }
         else
         {
@@ -127,6 +131,7 @@ public partial class BroadcastDialog : FluxorComponent
             this.EffectiveTime = this.Broadcast.ScheduledDateUtc.ToLocalTime().TimeOfDay;
             this.ExpiryDate = this.Broadcast.ExpirationDateUtc?.ToLocalTime().Date;
             this.ExpiryTime = this.Broadcast.ExpirationDateUtc?.ToLocalTime().TimeOfDay;
+            this.ActionUrlString = this.Broadcast.ActionUrl?.ToString() ?? string.Empty;
         }
     }
 
