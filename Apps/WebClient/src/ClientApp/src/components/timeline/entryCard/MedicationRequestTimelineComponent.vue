@@ -24,7 +24,7 @@ export default class MedicationRequestTimelineComponent extends Vue {
     @Prop() isMobileDetails!: boolean;
 
     private get entryIcon(): string | undefined {
-        return entryTypeMap.get(EntryType.MedicationRequest)?.icon;
+        return entryTypeMap.get(EntryType.SpecialAuthorityRequest)?.icon;
     }
 
     private formatDate(dateValue: string): string {

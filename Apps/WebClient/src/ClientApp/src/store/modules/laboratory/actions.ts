@@ -64,7 +64,7 @@ export const actions: LaboratoryActions = {
                         const payload = result.resourcePayload;
                         if (result.resultStatus === ResultType.Success) {
                             EventTracker.loadData(
-                                EntryType.Covid19LaboratoryOrder,
+                                EntryType.Covid19TestResult,
                                 result.totalResultCount
                             );
                             context.commit("setCovid19LaboratoryOrders", {
@@ -159,7 +159,7 @@ export const actions: LaboratoryActions = {
                             payload.loaded
                         ) {
                             EventTracker.loadData(
-                                EntryType.LaboratoryOrder,
+                                EntryType.LabResult,
                                 result.totalResultCount
                             );
                             logger.info("Laboratory Orders loaded.");

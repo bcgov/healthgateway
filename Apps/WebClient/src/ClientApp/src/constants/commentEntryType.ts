@@ -1,11 +1,11 @@
 export const enum CommentEntryType {
     None = "NA",
-    MedicationRequest = "SAR",
-    Medication = "Med",
-    Immunization = "Imm",
-    Covid19LaboratoryOrder = "Lab",
-    LaboratoryOrder = "ALO",
-    Encounter = "Enc",
     ClinicalDocument = "CDO",
+    Covid19TestResult = "Lab",
+    HealthVisit = "Enc",
     HospitalVisit = "Hos",
+    Immunization = "Imm",
+    LabResult = "ALO",
+    Medication = "Med",
+    SpecialAuthorityRequest = "SAR",
 }

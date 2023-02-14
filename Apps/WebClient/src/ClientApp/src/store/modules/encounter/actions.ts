@@ -61,7 +61,7 @@ export const actions: EncounterActions = {
                             reject(result.resultError);
                         } else {
                             EventTracker.loadData(
-                                EntryType.Encounter,
+                                EntryType.HealthVisit,
                                 result.resourcePayload.length
                             );
                             context.commit("setHealthVisits", {

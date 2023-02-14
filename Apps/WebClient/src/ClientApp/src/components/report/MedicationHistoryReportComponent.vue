@@ -216,10 +216,7 @@ export default class MedicationHistoryReportComponent extends Vue {
                 </template>
             </b-table>
         </section>
-        <ProtectiveWordComponent
-            ref="protectiveWordModal"
-            :is-loading="isLoading"
-        />
+        <ProtectiveWordComponent ref="protectiveWordModal" :hdid="user.hdid" />
     </div>
 </template>
 

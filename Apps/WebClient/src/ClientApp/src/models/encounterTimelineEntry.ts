@@ -20,7 +20,7 @@ export default class EncounterTimelineEntry extends TimelineEntry {
     ) {
         super(
             model.id,
-            EntryType.Encounter,
+            EntryType.HealthVisit,
             new DateWrapper(model.encounterDate)
         );
         this.practitionerName =

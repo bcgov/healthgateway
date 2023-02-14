@@ -6,29 +6,29 @@ import { Action, Getter } from "vuex-class";
 import { ResultError } from "@/models/errors";
 import MedicationStatementHistory from "@/models/medicationStatementHistory";
 import RequestResult from "@/models/requestResult";
-import User from "@/models/user";
 import container from "@/plugins/container";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import { ILogger } from "@/services/interfaces";
 
 @Component
 export default class ProtectiveWordComponent extends Vue {
+    @Prop({ required: true })
+    hdid!: string;
+
     @Action("retrieveMedications", { namespace: "medication" })
     retrieveMedications!: (params: {
         hdid: string;
         protectiveWord?: string;
     }) => Promise<RequestResult<MedicationStatementHistory[]>>;
 
+    @Getter("medicationsAreLoading", { namespace: "medication" })
+    medicationsAreLoading!: (hdid: string) => boolean;
+
     @Getter("medicationsAreProtected", { namespace: "medication" })
     medicationsAreProtected!: (hdid: string) => boolean;
 
     @Getter("protectiveWordAttempts", { namespace: "medication" })
     protectiveWordAttempts!: (hdid: string) => number;
-
-    @Getter("user", { namespace: "user" })
-    user!: User;
-
-    @Prop({ default: false }) isLoading!: boolean;
 
     private protectiveWord = "";
     private isDismissed = false;
@@ -37,8 +37,8 @@ export default class ProtectiveWordComponent extends Vue {
 
     private get isVisible(): boolean {
         return (
-            this.medicationsAreProtected(this.user.hdid) &&
-            !this.isLoading &&
+            this.medicationsAreProtected(this.hdid) &&
+            !this.medicationsAreLoading &&
             !this.isDismissed
         );
     }
@@ -48,7 +48,7 @@ export default class ProtectiveWordComponent extends Vue {
     }
 
     private get error(): boolean {
-        return this.protectiveWordAttempts(this.user.hdid) > 1;
+        return this.protectiveWordAttempts(this.hdid) > 1;
     }
 
     private created(): void {
@@ -63,7 +63,7 @@ export default class ProtectiveWordComponent extends Vue {
 
     private fetchMedications(): void {
         this.retrieveMedications({
-            hdid: this.user.hdid,
+            hdid: this.hdid,
             protectiveWord: this.protectiveWord,
         }).catch((err: ResultError) =>
             this.logger.error(
