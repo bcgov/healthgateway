@@ -118,7 +118,6 @@ namespace HealthGateway.CommonTests.Utils
             Assert.Equal(expected, actual);
         }
 
-
         /// <summary>
         /// Should not get address as a single line given null address.
         /// </summary>
@@ -138,7 +137,7 @@ namespace HealthGateway.CommonTests.Utils
         }
 
         /// <summary>
-        /// Should not get address as a single line given emoty address.
+        /// Should not get address as a single line given empty address.
         /// </summary>
         [Fact]
         public void ShouldNotGetAddressAsSingleLineGivenEmptyAddress()
@@ -146,7 +145,7 @@ namespace HealthGateway.CommonTests.Utils
             string expected = string.Empty;
 
             // Arrange
-            Address? address = new();
+            Address address = new();
 
             // Act
             string actual = AddressUtility.GetAddressAsSingleLine(address);

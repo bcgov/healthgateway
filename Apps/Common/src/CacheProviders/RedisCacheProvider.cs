@@ -69,7 +69,7 @@ namespace HealthGateway.Common.CacheProviders
         }
 
         /// <inheritdoc/>
-        public T? GetOrSet<T>(string key, Func<T> valueGetter, TimeSpan? expiry = null)
+        public T GetOrSet<T>(string key, Func<T> valueGetter, TimeSpan? expiry = null)
         {
             T? item = this.GetItem<T>(key);
             if (item == null)
