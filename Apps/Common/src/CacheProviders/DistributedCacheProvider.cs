@@ -45,14 +45,16 @@ namespace HealthGateway.Common.CacheProviders
         }
 
         /// <inheritdoc/>
-        public T GetOrSet<T>(string key, Func<T> valueGetter, TimeSpan? expiry = null)
+        public T? GetOrSet<T>(string key, Func<T?> valueGetter, TimeSpan? expiry = null)
         {
             T? value = this.GetItem<T>(key);
             if (value == null)
             {
-                // cache miss
                 value = valueGetter();
-                this.AddItem(key, value, expiry);
+                if (value != null)
+                {
+                    this.AddItem(key, value, expiry);
+                }
             }
 
             return value;
