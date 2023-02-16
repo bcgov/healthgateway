@@ -38,7 +38,7 @@ export default class ProtectiveWordComponent extends Vue {
     private get isVisible(): boolean {
         return (
             this.medicationsAreProtected(this.hdid) &&
-            !this.medicationsAreLoading &&
+            !this.medicationsAreLoading(this.hdid) &&
             !this.isDismissed
         );
     }
