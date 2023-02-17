@@ -262,11 +262,7 @@ export default class RegistrationView extends Vue {
                 },
             });
 
-            const path = this.webClientConfig.modules["VaccinationStatus"]
-                ? "/home"
-                : "/timeline";
-
-            await this.$router.push({ path });
+            await this.$router.push("/home");
         } catch {
             this.logger.error("Error while registering.");
         } finally {

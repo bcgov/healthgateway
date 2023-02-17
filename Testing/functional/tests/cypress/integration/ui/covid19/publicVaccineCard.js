@@ -18,7 +18,6 @@ const feedbackPhnIsRequiredSelector = "[data-testid=feedbackPhnIsRequired]";
 const feedbackDobIsRequiredSelector = "[data-testid=feedbackDobIsRequired]";
 const feedbackDovIsRequiredSelector = "[data-testid=feedbackDovIsRequired]";
 
-const vaccinationStatusModule = "VaccinationStatus";
 const vaccineCardUrl = "/vaccinecard";
 
 const dummyYear = "2021";
@@ -46,7 +45,7 @@ function clickVaccineCardEnterButton() {
 
 describe("Public Vaccine Card Form", () => {
     beforeEach(() => {
-        cy.enableModules(["Immunization", "VaccinationStatus"]);
+        cy.enableModules(["Immunization"]);
         cy.logout();
         cy.visit(vaccineCardUrl);
     });
@@ -216,12 +215,7 @@ describe("Public Vaccine Card Form", () => {
 
 describe("Public Vaccine Card Downloads", () => {
     beforeEach(() => {
-        cy.enableModules([
-            "Immunization",
-            "VaccinationStatus",
-            "VaccinationStatusPdf",
-            "PublicVaccineDownloadPdf",
-        ]);
+        cy.enableModules(["Immunization", "PublicVaccineDownloadPdf"]);
         cy.logout();
         cy.intercept("GET", "**/PublicVaccineStatus", {
             fixture: "ImmunizationService/publicVaccineStatusLoaded.json",
@@ -305,11 +299,7 @@ describe("Public Vaccine Card Downloads", () => {
 
 describe("Public Vaccine Card Downloads When PublicVaccineDownloadPdf Disabled", () => {
     it("Save Image When PublicVaccineDownloadPdf Disabled", () => {
-        cy.enableModules([
-            "Immunization",
-            "VaccinationStatus",
-            "VaccinationStatusPdf",
-        ]);
+        cy.enableModules(["Immunization"]);
         cy.logout();
         cy.intercept("GET", "**/PublicVaccineStatus", {
             fixture: "ImmunizationService/publicVaccineStatusLoaded.json",
