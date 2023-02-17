@@ -211,7 +211,8 @@ export default class HomeView extends Vue {
     }
 
     private get showFederalCardButton(): boolean {
-        return this.config.modules["FederalCardButton"];
+        return this.config.featureToggleConfiguration.homepage
+            .showFederalProofOfVaccination;
     }
 
     private get vaccinationStatusModuleEnabled(): boolean {
