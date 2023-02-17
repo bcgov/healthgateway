@@ -15,11 +15,7 @@ describe("Immunization - With Refresh", () => {
             }
             isLoading = !isLoading;
         });
-        cy.enableModules([
-            "Immunization",
-            "VaccinationStatus",
-            "VaccinationStatusPdf",
-        ]);
+        cy.enableModules(["Immunization"]);
         cy.login(
             Cypress.env("keycloak.username"),
             Cypress.env("keycloak.password"),

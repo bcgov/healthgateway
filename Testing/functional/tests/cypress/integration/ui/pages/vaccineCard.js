@@ -1,6 +1,5 @@
 const homeUrl = "/";
 const vaccineCardUrl = "/vaccinecard";
-const vaccinationStatusModule = "VaccinationStatus";
 
 describe("Vaccine Card Page", () => {
     it("Landing Page - Vaccine Card Button does not exist - Vaccine Status module disabled", () => {
@@ -18,13 +17,11 @@ describe("Vaccine Card Page", () => {
     });
 
     it("Landing Page - Vaccine Card Button Exists - Vaccine Status module enabled", () => {
-        cy.enableModules(vaccinationStatusModule);
         cy.logout();
         cy.visit(homeUrl);
     });
 
     it("Landing Page - Vaccination Card - unauthenticated user", () => {
-        cy.enableModules(vaccinationStatusModule);
         cy.logout();
         cy.visit(vaccineCardUrl);
 

@@ -233,7 +233,6 @@ function testRemoveQuickLinkError(statusCode = serverErrorStatusCode) {
 }
 
 function testHideVaccineCardQuickLinkError(statusCode = serverErrorStatusCode) {
-    cy.enableModules(["VaccinationStatus"]);
     cy.intercept("PUT", "**/UserProfile/*/preference", {
         statusCode,
     });
