@@ -10,7 +10,7 @@ function testPageBreadcrumb(url, dataTestId) {
 
 describe("Breadcrumbs", () => {
     it("Breadcrumbs present when logged in", () => {
-        cy.enableModules(["Dependent", "VaccinationStatus"]);
+        cy.enableModules(["Dependent"]);
         cy.login(
             Cypress.env("keycloak.username"),
             Cypress.env("keycloak.password"),

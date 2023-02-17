@@ -94,10 +94,7 @@ export default class AddQuickLinkComponent extends Vue {
     private get showVaccineCard(): boolean {
         const preference =
             this.user.preferences[UserPreferenceType.HideVaccineCardQuickLink];
-        return (
-            preference?.value === "true" &&
-            this.webClientConfig.modules["VaccinationStatus"]
-        );
+        return preference?.value === "true";
     }
 
     private get showImmunizationRecord(): boolean {

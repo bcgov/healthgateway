@@ -12,7 +12,6 @@ const vaccineCardAddQuickLinkCheckboxSelector =
 
 describe("Vaccine Card Quick Link", () => {
     it("Remove and Add Vaccine Card Quick Link", () => {
-        cy.enableModules(["VaccinationStatus"]);
         cy.login(
             Cypress.env("keycloak.username"),
             Cypress.env("keycloak.password"),
@@ -51,11 +50,6 @@ describe("Vaccine Card Quick Link", () => {
             .should("be.visible")
             .should("be.enabled")
             .click();
-
-        cy.log("Verifying add quick link button is disabled");
-        cy.get(addQuickLinkButtonSelector)
-            .should("be.visible")
-            .should("not.be.enabled");
 
         cy.log("Verifying vaccine quick link card is present");
         cy.get(vaccineCardQuickLinkCardSelector).should(

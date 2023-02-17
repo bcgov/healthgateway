@@ -42,11 +42,7 @@ describe("Public Vaccine Card Result", () => {
         const dovMonth = "July";
         const dovDay = "4";
 
-        cy.enableModules([
-            "Immunization",
-            "VaccinationStatus",
-            "VaccinationStatusPdf",
-        ]);
+        cy.enableModules(["Immunization"]);
         cy.logout();
         cy.visit(vaccineCardUrl);
 
@@ -66,11 +62,7 @@ describe("Public Vaccine Card Result", () => {
     });
 
     it("Fully Vaccinated", () => {
-        cy.enableModules([
-            "Immunization",
-            "VaccinationStatus",
-            "VaccinationStatusPdf",
-        ]);
+        cy.enableModules(["Immunization"]);
         cy.logout();
         cy.visit(vaccineCardUrl);
 
@@ -91,12 +83,7 @@ describe("Public Vaccine Card Result", () => {
 
 describe("Public Vaccine Card Downloads", () => {
     beforeEach(() => {
-        cy.enableModules([
-            "Immunization",
-            "VaccinationStatus",
-            "VaccinationStatusPdf",
-            "PublicVaccineDownloadPdf",
-        ]);
+        cy.enableModules(["Immunization", "PublicVaccineDownloadPdf"]);
         cy.logout();
         cy.visit(vaccineCardUrl);
 

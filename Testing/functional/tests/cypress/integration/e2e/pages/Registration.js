@@ -29,7 +29,6 @@ describe("Registration Page", () => {
     });
 
     it("Registering leads to home page", () => {
-        cy.enableModules(["VaccinationStatus"]);
         cy.login(
             Cypress.env("keycloak.unregistered.username"),
             Cypress.env("keycloak.password"),

@@ -10,11 +10,7 @@ describe("Authenticated Vaccine Card Downloads", () => {
     });
 
     it("Save Image", () => {
-        cy.enableModules([
-            "Immunization",
-            "VaccinationStatus",
-            "VaccinationStatusPdf",
-        ]);
+        cy.enableModules(["Immunization"]);
         cy.login(
             Cypress.env("keycloak.username"),
             Cypress.env("keycloak.password"),
@@ -51,12 +47,7 @@ describe("Authenticated Vaccine Card Downloads", () => {
                 isLoading = !isLoading;
             }
         );
-        cy.enableModules([
-            "Immunization",
-            "VaccinationStatus",
-            "VaccinationStatusPdf",
-            "VaccinationExportPdf",
-        ]);
+        cy.enableModules(["Immunization", "VaccinationExportPdf"]);
         cy.login(
             Cypress.env("keycloak.username"),
             Cypress.env("keycloak.password"),

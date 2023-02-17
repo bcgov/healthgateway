@@ -5,7 +5,6 @@ const timelineUrl = "/timeline";
 
 describe("Authenticated User - Home Page", () => {
     it("Home Page exists", () => {
-        cy.enableModules("VaccinationStatus");
         cy.login(
             Cypress.env("keycloak.username"),
             Cypress.env("keycloak.password"),
@@ -31,7 +30,6 @@ describe("Authenticated User - Home Page", () => {
     });
 
     it("Home - Link to COVID-19 page", () => {
-        cy.enableModules(["VaccinationStatus"]);
         cy.login(
             Cypress.env("keycloak.username"),
             Cypress.env("keycloak.password"),

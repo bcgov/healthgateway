@@ -184,10 +184,6 @@ export default class SidebarComponent extends Vue {
         return this.$route.path == "/covid19";
     }
 
-    private get isVaccinationStatusEnabled(): boolean {
-        return this.config.modules["VaccinationStatus"];
-    }
-
     private get isTermsOfService(): boolean {
         return this.$route.path == "/profile/termsOfService";
     }
@@ -269,7 +265,7 @@ export default class SidebarComponent extends Vue {
                     </hg-button>
                     <!-- COVID-19 button -->
                     <hg-button
-                        v-show="isVaccinationStatusEnabled && userIsActive"
+                        v-show="userIsActive"
                         id="menuBtnCovid19"
                         data-testid="menu-btn-covid19-link"
                         to="/covid19"

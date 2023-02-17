@@ -48,7 +48,7 @@ describe("Authenticated Vaccine Card Downloads", () => {
         cy.intercept("GET", "**/AuthenticatedVaccineStatus?hdid=*", {
             statusCode: 429,
         });
-        cy.enableModules(["Immunization", "VaccinationStatus"]);
+        cy.enableModules(["Immunization"]);
         cy.login(
             Cypress.env("keycloak.username"),
             Cypress.env("keycloak.password"),
@@ -63,12 +63,7 @@ describe("Authenticated Vaccine Card Downloads", () => {
         cy.intercept("GET", "**/AuthenticatedVaccineStatus/pdf?hdid=*", {
             statusCode: 429,
         });
-        cy.enableModules([
-            "Immunization",
-            "VaccinationStatus",
-            "VaccinationStatusPdf",
-            "VaccinationExportPdf",
-        ]);
+        cy.enableModules(["Immunization", "VaccinationExportPdf"]);
         cy.login(
             Cypress.env("keycloak.username"),
             Cypress.env("keycloak.password"),
@@ -115,7 +110,7 @@ describe("Public Vaccine Card Form", () => {
         cy.intercept("GET", "**/PublicVaccineStatus", {
             statusCode: 429,
         });
-        cy.enableModules(["Immunization", "VaccinationStatus"]);
+        cy.enableModules(["Immunization"]);
         cy.logout();
         cy.visit(vaccineCardUrl);
 
@@ -140,12 +135,7 @@ describe("Public Vaccine Card Downloads", () => {
         cy.intercept("GET", "**/PublicVaccineStatus/pdf", {
             statusCode: 429,
         });
-        cy.enableModules([
-            "Immunization",
-            "VaccinationStatus",
-            "VaccinationStatusPdf",
-            "PublicVaccineDownloadPdf",
-        ]);
+        cy.enableModules(["Immunization", "PublicVaccineDownloadPdf"]);
         cy.logout();
         cy.visit(vaccineCardUrl);
 
