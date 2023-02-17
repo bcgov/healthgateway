@@ -33,7 +33,7 @@ namespace HealthGateway.Common.Data.Tests.Utils
         {
             const string expected = "TermsOfService";
 
-            string actual = EnumUtility.ToEnumString<LegalAgreementType>(LegalAgreementType.TermsOfService);
+            string actual = EnumUtility.ToEnumString(LegalAgreementType.TermsOfService);
 
             Assert.Equal(expected, actual);
         }
@@ -46,7 +46,7 @@ namespace HealthGateway.Common.Data.Tests.Utils
         {
             const string expected = "ToS";
 
-            string actual = EnumUtility.ToEnumString<LegalAgreementType>(LegalAgreementType.TermsOfService, true);
+            string actual = EnumUtility.ToEnumString(LegalAgreementType.TermsOfService, true);
 
             Assert.Equal(expected, actual);
         }

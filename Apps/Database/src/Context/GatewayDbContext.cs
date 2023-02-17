@@ -133,7 +133,7 @@ namespace HealthGateway.Database.Context
                 .HasForeignKey(k => k.EmailStatusCode);
 
             ValueConverter<EmailFormat, string> emailFormatCodeConvertor = new(
-                v => EnumUtility.ToEnumString<EmailFormat>(v, true),
+                v => EnumUtility.ToEnumString(v, true),
                 v => EnumUtility.ToEnum<EmailFormat>(v, true));
 
             modelBuilder.Entity<Email>()
@@ -155,7 +155,7 @@ namespace HealthGateway.Database.Context
                 .HasConversion(emailFormatCodeConvertor);
 
             ValueConverter<EmailStatus, string> emailStatusCodeConvertor = new(
-                v => EnumUtility.ToEnumString<EmailStatus>(v, false),
+                v => EnumUtility.ToEnumString(v, false),
                 v => EnumUtility.ToEnum<EmailStatus>(v, false));
 
             modelBuilder.Entity<Email>()
@@ -181,7 +181,7 @@ namespace HealthGateway.Database.Context
                 .OnDelete(DeleteBehavior.Restrict);
 
             ValueConverter<AuditTransactionResult, string> auditTransactionResultConvertor = new(
-                v => EnumUtility.ToEnumString<AuditTransactionResult>(v, true),
+                v => EnumUtility.ToEnumString(v, true),
                 v => EnumUtility.ToEnum<AuditTransactionResult>(v, true));
 
             modelBuilder.Entity<AuditEvent>()
@@ -255,7 +255,7 @@ namespace HealthGateway.Database.Context
                 .HasForeignKey(k => k.CommunicationStatusCode);
 
             ValueConverter<CommunicationStatus, string> communicationStatusCodeConverter = new(
-                v => EnumUtility.ToEnumString<CommunicationStatus>(v, false),
+                v => EnumUtility.ToEnumString(v, false),
                 v => EnumUtility.ToEnum<CommunicationStatus>(v, false));
 
             modelBuilder.Entity<Communication>()
@@ -267,7 +267,7 @@ namespace HealthGateway.Database.Context
                 .HasConversion(communicationStatusCodeConverter);
 
             ValueConverter<CommunicationType, string> communicationTypeCodeConverter = new(
-                v => EnumUtility.ToEnumString<CommunicationType>(v, false),
+                v => EnumUtility.ToEnumString(v, false),
                 v => EnumUtility.ToEnum<CommunicationType>(v, false));
 
             modelBuilder.Entity<Communication>()
@@ -282,7 +282,7 @@ namespace HealthGateway.Database.Context
                 .Property(e => e.LegalAgreementCode)
                 .HasConversion(
                     new ValueConverter<LegalAgreementType, string>(
-                        v => EnumUtility.ToEnumString<LegalAgreementType>(v, true),
+                        v => EnumUtility.ToEnumString(v, true),
                         v => EnumUtility.ToEnum<LegalAgreementType>(v, true)));
 
             // Resource Delegate Models
@@ -305,7 +305,7 @@ namespace HealthGateway.Database.Context
                 .HasForeignKey(k => k.ProfileHdid);
 
             ValueConverter<ResourceDelegateReason, string> resourceDelegateReasonCodeConverter = new(
-                v => EnumUtility.ToEnumString<ResourceDelegateReason>(v, true),
+                v => EnumUtility.ToEnumString(v, true),
                 v => EnumUtility.ToEnum<ResourceDelegateReason>(v, true));
 
             modelBuilder.Entity<ResourceDelegate>()
@@ -375,7 +375,7 @@ namespace HealthGateway.Database.Context
                 .Property(e => e.UserLoginClientCode)
                 .HasConversion(
                     new ValueConverter<UserLoginClientType, string>(
-                        v => EnumUtility.ToEnumString<UserLoginClientType>(v, false),
+                        v => EnumUtility.ToEnumString(v, false),
                         v => EnumUtility.ToEnum<UserLoginClientType>(v, false)));
 
             modelBuilder.HasDbFunction(DateTruncMethod).HasName("date_trunc");
