@@ -261,11 +261,20 @@ Cypress.Commands.add("enableModules", (modules) => {
         });
 });
 
-Cypress.Commands.add("configureSettings", (settings) => {
+Cypress.Commands.add("configureSettings", (settings, modules) => {
+    const isArrayOfModules = Array.isArray(modules);
     return cy
         .readConfig()
         .as("config")
         .then((config) => {
+            Object.keys(config.webClient.modules).forEach((key) => {
+                if (isArrayOfModules) {
+                    config.webClient.modules[key] = modules.includes(key);
+                } else {
+                    config.webClient.modules[key] = modules === key;
+                }
+            });
+
             config.webClient.featureToggleConfiguration = settings;
             cy.intercept("GET", "**/configuration/", {
                 statusCode: 200,
