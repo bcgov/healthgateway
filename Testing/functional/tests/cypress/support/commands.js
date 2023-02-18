@@ -11,6 +11,40 @@ const { AuthMethod } = require("./constants");
 const { globalStorage } = require("./globalStorage");
 require("cy-verify-downloads").addCustomCommand();
 
+function configureDatasets(datasets, deltaset) {
+    console.log("Delta: " + JSON.stringify(deltaset));
+    let newDatasets = [];
+    if (deltaset !== undefined && Array.isArray(deltaset)) {
+        const setTable = {};
+        datasets.forEach((s) => (setTable[s.name] = s.enabled));
+        deltaset.forEach((d) => (setTable[d.name] = d.enabled));
+
+        for (const key in setTable) {
+            newDatasets.push({ name: key, enabled: setTable[key] });
+        }
+    }
+    return newDatasets;
+}
+
+function patchObject(baseObj, delta) {
+    const deltaKeys = Object.keys(delta);
+    if (deltaKeys && deltaKeys.length > 0) {
+        for (const key of deltaKeys) {
+            const baseValue = baseObj[key];
+            const baseValueKeys = Object.keys(baseValue);
+            if (
+                baseValueKeys &&
+                baseValueKeys.length > 0 &&
+                !Array.isArray(baseValue)
+            ) {
+                patchObject(baseObj[key], delta[key]);
+            } else {
+                baseObj[key] = delta[key];
+            }
+        }
+    }
+}
+
 function generateRandomString(length) {
     var text = "";
     var possible =
@@ -275,7 +309,23 @@ Cypress.Commands.add("configureSettings", (settings, modules) => {
                 }
             });
 
-            config.webClient.featureToggleConfiguration = settings;
+            // Datasets should be merged before patching config with patchObject
+            const datasets = configureDatasets(
+                config.webClient.featureToggleConfiguration.datasets,
+                settings.datasets
+            );
+
+            const dependentDatasets = configureDatasets(
+                config.webClient.featureToggleConfiguration.dependents.datasets,
+                settings.dependents?.datasets
+            );
+
+            patchObject(config.webClient.featureToggleConfiguration, settings);
+
+            config.webClient.featureToggleConfiguration.datasets = datasets;
+            config.webClient.featureToggleConfiguration.dependents.datasets =
+                dependentDatasets;
+
             cy.intercept("GET", "**/configuration/", {
                 statusCode: 200,
                 body: config,
