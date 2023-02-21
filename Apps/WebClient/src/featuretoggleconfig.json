@@ -61,6 +61,7 @@
     },
     "dependents": {
         "enabled": true,
+        "timelineEnabled": true,
         "datasets": [
             {
                 "name": "clinicalDocument",
