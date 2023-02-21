@@ -2,7 +2,7 @@ import { injectable } from "inversify";
 
 import { ResultType } from "@/constants/resulttype";
 import { ServiceCode } from "@/constants/serviceCodes";
-import ClinicalDocument from "@/models/clinicalDocument";
+import { ClinicalDocument } from "@/models/clinicalDocument";
 import { ExternalConfiguration } from "@/models/configData";
 import EncodedMedia from "@/models/encodedMedia";
 import { HttpError } from "@/models/errors";

@@ -18,7 +18,7 @@ import { ActionType } from "@/constants/actionType";
 import { ClientModule } from "@/constants/clientModule";
 import { ErrorSourceType, ErrorType } from "@/constants/errorType";
 import { ResultType } from "@/constants/resulttype";
-import ClinicalDocument from "@/models/clinicalDocument";
+import { ClinicalDocument } from "@/models/clinicalDocument";
 import type { WebClientConfiguration } from "@/models/configData";
 import CovidVaccineRecord from "@/models/covidVaccineRecord";
 import { DateWrapper, StringISODate } from "@/models/dateWrapper";

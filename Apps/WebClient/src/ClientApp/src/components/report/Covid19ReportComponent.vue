@@ -33,10 +33,10 @@ export default class Covid19ReportComponent extends Vue {
     }) => Promise<void>;
 
     @Getter("covid19LaboratoryOrders", { namespace: "laboratory" })
-    covid19LaboratoryOrders!: Covid19LaboratoryOrder[];
+    covid19LaboratoryOrders!: (hdid: string) => Covid19LaboratoryOrder[];
 
     @Getter("covid19LaboratoryOrdersAreLoading", { namespace: "laboratory" })
-    isCovid19LaboratoryLoading!: boolean;
+    covid19LaboratoryOrdersAreLoading!: (hdid: string) => boolean;
 
     @Getter("user", { namespace: "user" })
     private user!: User;
@@ -45,9 +45,14 @@ export default class Covid19ReportComponent extends Vue {
 
     private readonly headerClass = "covid19-laboratory-report-table-header";
 
+    private get isCovid19LaboratoryLoading(): boolean {
+        return this.covid19LaboratoryOrdersAreLoading(this.user.hdid);
+    }
+
     private get visibleRecords(): Covid19LaboratoryOrder[] {
-        let records = this.covid19LaboratoryOrders.filter((record) =>
-            this.filter.allowsDate(record.labResults[0].collectedDateTime)
+        let records = this.covid19LaboratoryOrders(this.user.hdid).filter(
+            (record) =>
+                this.filter.allowsDate(record.labResults[0].collectedDateTime)
         );
         records.sort((a, b) => {
             const firstDate = new DateWrapper(

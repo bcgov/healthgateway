@@ -107,11 +107,11 @@ export default class LandingView extends Vue {
 
     private entryTypes: EntryType[] = [
         EntryType.Medication,
-        EntryType.LaboratoryOrder,
-        EntryType.Covid19LaboratoryOrder,
-        EntryType.Encounter,
+        EntryType.LabResult,
+        EntryType.Covid19TestResult,
+        EntryType.HealthVisit,
         EntryType.Immunization,
-        EntryType.MedicationRequest,
+        EntryType.SpecialAuthorityRequest,
         EntryType.ClinicalDocument,
         EntryType.HospitalVisit,
     ];

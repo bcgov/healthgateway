@@ -9,21 +9,25 @@ import { IImmunizationService, ILogger } from "@/services/interfaces";
 import EventTracker from "@/utility/eventTracker";
 
 import { ImmunizationActions } from "./types";
+import { getImmunizationDatasetState } from "./util";
 
 export const actions: ImmunizationActions = {
-    retrieve(context, params: { hdid: string }): Promise<void> {
+    retrieveImmunizations(context, params: { hdid: string }): Promise<void> {
         const logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
         const immunizationService = container.get<IImmunizationService>(
             SERVICE_IDENTIFIER.ImmunizationService
         );
 
         return new Promise((resolve, reject) => {
-            if (context.state.status === LoadStatus.LOADED) {
+            if (
+                getImmunizationDatasetState(context.state, params.hdid)
+                    .status === LoadStatus.LOADED
+            ) {
                 logger.debug(`Immunizations found stored, not querying!`);
                 resolve();
             } else {
                 logger.debug(`Retrieving Immunizations`);
-                context.commit("setRequested");
+                context.commit("setImmunizationsRequested", params.hdid);
                 immunizationService
                     .getPatientImmunizations(params.hdid)
                     .then((result) => {
@@ -35,7 +39,7 @@ export const actions: ImmunizationActions = {
                                     logger.info(
                                         "Re-querying for immunizations"
                                     );
-                                    context.dispatch("retrieve", {
+                                    context.dispatch("retrieveImmunizations", {
                                         hdid: params.hdid,
                                     });
                                 }, 10000);
@@ -46,10 +50,14 @@ export const actions: ImmunizationActions = {
                                 );
                             }
 
-                            context.commit("setImmunizationResult", payload);
+                            context.commit("setImmunizations", {
+                                hdid: params.hdid,
+                                immunizationResult: payload,
+                            });
                             resolve();
                         } else {
                             context.dispatch("handleError", {
+                                hdid: params.hdid,
                                 error: result.resultError,
                                 errorType: ErrorType.Retrieve,
                             });
@@ -58,6 +66,7 @@ export const actions: ImmunizationActions = {
                     })
                     .catch((error: ResultError) => {
                         context.dispatch("handleError", {
+                            hdid: params.hdid,
                             error,
                             errorType: ErrorType.Retrieve,
                         });
@@ -66,11 +75,17 @@ export const actions: ImmunizationActions = {
             }
         });
     },
-    handleError(context, params: { error: ResultError; errorType: ErrorType }) {
+    handleError(
+        context,
+        params: { hdid: string; error: ResultError; errorType: ErrorType }
+    ) {
         const logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
 
         logger.error(`ERROR: ${JSON.stringify(params.error)}`);
-        context.commit("immunizationError", params.error);
+        context.commit("setImmunizationsError", {
+            hdid: params.hdid,
+            error: params.error,
+        });
 
         if (params.error.statusCode === 429) {
             context.dispatch(

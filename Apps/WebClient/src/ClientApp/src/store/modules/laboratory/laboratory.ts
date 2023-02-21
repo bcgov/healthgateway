@@ -12,19 +12,8 @@ const state: LaboratoryState = {
         status: LoadStatus.NONE,
         statusMessage: "",
     },
-    authenticatedCovid19: {
-        statusMessage: "",
-        laboratoryOrders: [],
-        error: undefined,
-        status: LoadStatus.NONE,
-    },
-    authenticated: {
-        statusMessage: "",
-        laboratoryOrders: [],
-        error: undefined,
-        status: LoadStatus.NONE,
-        queued: false,
-    },
+    covid19TestResults: {},
+    labResults: {},
 };
 
 const namespaced = true;

@@ -31,20 +31,24 @@ export default class LaboratoryReportComponent extends Vue {
     retrieveLaboratoryOrders!: (params: { hdid: string }) => Promise<void>;
 
     @Getter("laboratoryOrders", { namespace: "laboratory" })
-    laboratoryOrders!: LaboratoryOrder[];
+    laboratoryOrders!: (hdid: string) => LaboratoryOrder[];
 
     @Getter("laboratoryOrdersAreLoading", { namespace: "laboratory" })
-    isLaboratoryLoading!: boolean;
+    laboratoryOrdersAreLoading!: (hdid: string) => boolean;
 
     @Getter("user", { namespace: "user" })
-    private user!: User;
+    user!: User;
 
     private logger!: ILogger;
 
     private readonly headerClass = "laboratory-test-report-table-header";
 
+    private get isLaboratoryLoading(): boolean {
+        return this.laboratoryOrdersAreLoading(this.user.hdid);
+    }
+
     private get visibleRecords(): LaboratoryOrder[] {
-        let records = this.laboratoryOrders.filter((record) =>
+        let records = this.laboratoryOrders(this.user.hdid).filter((record) =>
             this.filter.allowsDate(record.timelineDateTime)
         );
         records.sort((a, b) => {

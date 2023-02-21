@@ -4,7 +4,7 @@ import { faDownload } from "@fortawesome/free-solid-svg-icons";
 import { saveAs } from "file-saver";
 import Vue from "vue";
 import { Component, Prop, Ref } from "vue-property-decorator";
-import { Action, Getter } from "vuex-class";
+import { Action } from "vuex-class";
 
 import Covid19LaboratoryTestDescriptionComponent from "@/components/laboratory/Covid19LaboratoryTestDescriptionComponent.vue";
 import MessageModalComponent from "@/components/modal/MessageModalComponent.vue";
@@ -13,7 +13,6 @@ import { ErrorSourceType, ErrorType } from "@/constants/errorType";
 import Covid19LaboratoryOrderTimelineEntry from "@/models/covid19LaboratoryOrderTimelineEntry";
 import { DateWrapper } from "@/models/dateWrapper";
 import { ResultError } from "@/models/errors";
-import User from "@/models/user";
 import container from "@/plugins/container";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import { ILaboratoryService, ILogger } from "@/services/interfaces";
@@ -34,11 +33,20 @@ const options: any = {
 
 @Component(options)
 export default class Covid19LaboratoryOrderTimelineComponent extends Vue {
-    @Prop() entry!: Covid19LaboratoryOrderTimelineEntry;
-    @Prop() index!: number;
-    @Prop() datekey!: string;
-    @Prop() isMobileDetails!: boolean;
-    @Getter("user", { namespace: "user" }) user!: User;
+    @Prop({ required: true })
+    hdid!: string;
+
+    @Prop()
+    entry!: Covid19LaboratoryOrderTimelineEntry;
+
+    @Prop()
+    index!: number;
+
+    @Prop()
+    datekey!: string;
+
+    @Prop()
+    isMobileDetails!: boolean;
 
     @Ref("messageModal")
     readonly messageModal!: MessageModalComponent;
@@ -59,7 +67,7 @@ export default class Covid19LaboratoryOrderTimelineComponent extends Vue {
     private logger!: ILogger;
 
     private get entryIcon(): string | undefined {
-        return entryTypeMap.get(EntryType.Covid19LaboratoryOrder)?.icon;
+        return entryTypeMap.get(EntryType.Covid19TestResult)?.icon;
     }
 
     private get reportAvailable(): boolean {
@@ -100,7 +108,7 @@ export default class Covid19LaboratoryOrderTimelineComponent extends Vue {
 
         this.isLoadingDocument = true;
         this.laboratoryService
-            .getReportDocument(this.entry.id, this.user.hdid, true)
+            .getReportDocument(this.entry.id, this.hdid, true)
             .then((result) => {
                 const dateString =
                     this.entry.displayDate.format("yyyy_MM_dd-HH_mm");

@@ -7,13 +7,12 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import Vue from "vue";
 import Component from "vue-class-component";
-import { Watch } from "vue-property-decorator";
+import { Prop, Watch } from "vue-property-decorator";
 import { Action, Getter } from "vuex-class";
 
 import DatePickerComponent from "@/components/DatePickerComponent.vue";
 import { EntryType, entryTypeMap } from "@/constants/entryType";
 import UserPreferenceType from "@/constants/userPreferenceType";
-import type { WebClientConfiguration } from "@/models/configData";
 import TimelineFilter, { TimelineFilterBuilder } from "@/models/timelineFilter";
 import User from "@/models/user";
 import { UserPreference } from "@/models/userPreference";
@@ -38,14 +37,17 @@ const options: any = {
 
 @Component(options)
 export default class FilterComponent extends Vue {
+    @Prop({ required: true })
+    hdid!: string;
+
+    @Prop({ default: [] })
+    entryTypes!: EntryType[];
+
     @Action("setFilter", { namespace: "timeline" })
     setFilter!: (filterBuilder: TimelineFilterBuilder) => void;
 
     @Action("setUserPreference", { namespace: "user" })
     setUserPreference!: (params: { preference: UserPreference }) => void;
-
-    @Getter("webClient", { namespace: "config" })
-    config!: WebClientConfiguration;
 
     @Getter("isMobile")
     isMobileView!: boolean;
@@ -53,37 +55,37 @@ export default class FilterComponent extends Vue {
     @Getter("isSidebarOpen", { namespace: "navbar" })
     isSidebarOpen!: boolean;
 
-    @Getter("medicationStatementCount", { namespace: "medication" })
-    medicationStatementCount!: number;
+    @Getter("medicationsCount", { namespace: "medication" })
+    medicationsCount!: (hdid: string) => number;
 
-    @Getter("medicationRequestCount", { namespace: "medication" })
-    medicationRequestCount!: number;
+    @Getter("specialAuthorityRequestsCount", { namespace: "medication" })
+    specialAuthorityRequestsCount!: (hdid: string) => number;
 
-    @Getter("immunizationCount", { namespace: "immunization" })
-    immunizationCount!: number;
+    @Getter("immunizationsCount", { namespace: "immunization" })
+    immunizationsCount!: (hdid: string) => number;
 
     @Getter("covid19LaboratoryOrdersCount", { namespace: "laboratory" })
-    covid19LaboratoryOrdersCount!: number;
+    covid19LaboratoryOrdersCount!: (hdid: string) => number;
 
     @Getter("laboratoryOrdersCount", { namespace: "laboratory" })
-    laboratoryOrdersCount!: number;
+    laboratoryOrdersCount!: (hdid: string) => number;
 
-    @Getter("encounterCount", { namespace: "encounter" })
-    encounterCount!: number;
+    @Getter("healthVisitsCount", { namespace: "encounter" })
+    healthVisitsCount!: (hdid: string) => number;
 
-    @Getter("hospitalVisitCount", { namespace: "encounter" })
-    hospitalVisitCount!: number;
+    @Getter("hospitalVisitsCount", { namespace: "encounter" })
+    hospitalVisitsCount!: (hdid: string) => number;
 
-    @Getter("noteCount", { namespace: "note" })
-    noteCount!: number;
+    @Getter("notesCount", { namespace: "note" })
+    notesCount!: number;
 
-    @Getter("recordCount", { namespace: "clinicalDocument" })
-    clinicalDocumentCount!: number;
+    @Getter("clinicalDocumentsCount", { namespace: "clinicalDocument" })
+    clinicalDocumentsCount!: (hdid: string) => number;
 
     @Getter("filter", { namespace: "timeline" })
     activeFilter!: TimelineFilter;
 
-    @Getter("entryTypes", { namespace: "timeline" })
+    @Getter("selectedEntryTypes", { namespace: "timeline" })
     activeEntryTypes!: Set<EntryType>;
 
     @Getter("user", { namespace: "user" })
@@ -102,12 +104,12 @@ export default class FilterComponent extends Vue {
     private keywordInputText = "";
 
     private get enabledEntryTypes(): EntryTypeFilter[] {
-        return [...entryTypeMap.values()]
-            .filter((details) => this.config.modules[details.type])
-            .map((details) => ({
-                type: details.type,
-                display: details.name,
-            }));
+        return this.entryTypes
+            .map<EntryTypeFilter>((entryType) => ({
+                type: entryType,
+                display: entryTypeMap.get(entryType)?.name ?? "",
+            }))
+            .filter((entryTypeFilter) => entryTypeFilter.display !== "");
     }
 
     private get hasFilterSelected(): boolean {
@@ -177,24 +179,24 @@ export default class FilterComponent extends Vue {
 
     private getFilterCount(entryType: EntryType): number | undefined {
         switch (entryType) {
-            case EntryType.Immunization:
-                return this.immunizationCount;
-            case EntryType.Medication:
-                return this.medicationStatementCount;
-            case EntryType.LaboratoryOrder:
-                return this.laboratoryOrdersCount;
-            case EntryType.Covid19LaboratoryOrder:
-                return this.covid19LaboratoryOrdersCount;
-            case EntryType.Encounter:
-                return this.encounterCount;
-            case EntryType.HospitalVisit:
-                return this.hospitalVisitCount;
-            case EntryType.Note:
-                return this.noteCount;
-            case EntryType.MedicationRequest:
-                return this.medicationRequestCount;
             case EntryType.ClinicalDocument:
-                return this.clinicalDocumentCount;
+                return this.clinicalDocumentsCount(this.hdid);
+            case EntryType.Covid19TestResult:
+                return this.covid19LaboratoryOrdersCount(this.hdid);
+            case EntryType.HealthVisit:
+                return this.healthVisitsCount(this.hdid);
+            case EntryType.HospitalVisit:
+                return this.hospitalVisitsCount(this.hdid);
+            case EntryType.Immunization:
+                return this.immunizationsCount(this.hdid);
+            case EntryType.LabResult:
+                return this.laboratoryOrdersCount(this.hdid);
+            case EntryType.Medication:
+                return this.medicationsCount(this.hdid);
+            case EntryType.Note:
+                return this.notesCount;
+            case EntryType.SpecialAuthorityRequest:
+                return this.specialAuthorityRequestsCount(this.hdid);
             default:
                 return undefined;
         }
@@ -299,7 +301,6 @@ export default class FilterComponent extends Vue {
             placement="bottom"
             fallback-placement="clockwise"
             boundary="viewport"
-            menu-class="z-index-large w-100"
         >
             <div class="px-1">
                 <b-row class="mt-2">

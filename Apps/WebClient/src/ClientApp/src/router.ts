@@ -60,8 +60,8 @@ const RegistrationView = () =>
     );
 const HomeView = () =>
     import(/* webpackChunkName: "home" */ "@/views/HomeView.vue");
-const TimelineView = () =>
-    import(/* webpackChunkName: "timeline" */ "@/views/TimelineView.vue");
+const UserTimelineView = () =>
+    import(/* webpackChunkName: "timeline" */ "@/views/UserTimelineView.vue");
 const Covid19View = () =>
     import(/* webpackChunkName: "covid19" */ "@/views/Covid19View.vue");
 const ValidateEmailView = () =>
@@ -254,7 +254,7 @@ const routes = [
     },
     {
         path: TIMELINE_PATH,
-        component: TimelineView,
+        component: UserTimelineView,
         meta: {
             validStates: [UserState.registered],
             requiresProcessedWaitlistTicket: true,

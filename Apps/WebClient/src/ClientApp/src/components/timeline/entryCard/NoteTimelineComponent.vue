@@ -3,14 +3,13 @@ import { library } from "@fortawesome/fontawesome-svg-core";
 import { faEllipsisV } from "@fortawesome/free-solid-svg-icons";
 import Vue from "vue";
 import { Component, Prop } from "vue-property-decorator";
-import { Action, Getter } from "vuex-class";
+import { Action } from "vuex-class";
 
 import { EntryType, entryTypeMap } from "@/constants/entryType";
 import { ErrorSourceType, ErrorType } from "@/constants/errorType";
 import EventBus, { EventMessageName } from "@/eventbus";
 import { ResultError } from "@/models/errors";
 import NoteTimelineEntry from "@/models/noteTimelineEntry";
-import User from "@/models/user";
 import UserNote from "@/models/userNote";
 
 import EntrycardTimelineComponent from "./EntrycardTimelineComponent.vue";
@@ -26,6 +25,15 @@ const options: any = {
 
 @Component(options)
 export default class NoteTimelineComponent extends Vue {
+    @Prop({ required: true })
+    hdid!: string;
+
+    @Prop()
+    entry!: NoteTimelineEntry;
+
+    @Prop()
+    isMobileDetails!: boolean;
+
     @Action("addError", { namespace: "errorBanner" })
     addError!: (params: {
         errorType: ErrorType;
@@ -35,11 +43,6 @@ export default class NoteTimelineComponent extends Vue {
 
     @Action("deleteNote", { namespace: "note" })
     deleteNote!: (params: { hdid: string; note: UserNote }) => Promise<void>;
-
-    @Getter("user", { namespace: "user" }) user!: User;
-
-    @Prop() entry!: NoteTimelineEntry;
-    @Prop() isMobileDetails!: boolean;
 
     private isSaving = false;
     private eventBus = EventBus;
@@ -59,7 +62,7 @@ export default class NoteTimelineComponent extends Vue {
         if (confirm("Are you sure you want to delete this note?")) {
             this.isSaving = true;
             this.deleteNote({
-                hdid: this.user.hdid,
+                hdid: this.hdid,
                 note: this.entry.toModel(),
             })
                 .catch((err: ResultError) => {

@@ -3,7 +3,7 @@ import { DateWrapper } from "@/models/dateWrapper";
 import TimelineEntry from "@/models/timelineEntry";
 import { UserComment } from "@/models/userComment";
 
-import MedicationRequest from "./MedicationRequest";
+import MedicationRequest from "./medicationRequest";
 
 // The medication timeline entry model
 export default class MedicationRequestTimelineEntry extends TimelineEntry {
@@ -23,7 +23,7 @@ export default class MedicationRequestTimelineEntry extends TimelineEntry {
     ) {
         super(
             model.referenceNumber,
-            EntryType.MedicationRequest,
+            EntryType.SpecialAuthorityRequest,
             new DateWrapper(model.requestedDate)
         );
 

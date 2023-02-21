@@ -10,7 +10,7 @@ import { ILogger, IUserCommentService } from "@/services/interfaces";
 import { CommentActions } from "./types";
 
 export const actions: CommentActions = {
-    retrieve(context, params: { hdid: string }): Promise<void> {
+    retrieveComments(context, params: { hdid: string }): Promise<void> {
         const logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
         const commentService = container.get<IUserCommentService>(
             SERVICE_IDENTIFIER.UserCommentService
@@ -22,7 +22,7 @@ export const actions: CommentActions = {
                 resolve();
             } else {
                 logger.debug(`Retrieving User comments`);
-                context.commit("setRequested");
+                context.commit("setCommentsRequested");
                 commentService
                     .getCommentsForProfile(params.hdid)
                     .then((result) => {
@@ -34,7 +34,7 @@ export const actions: CommentActions = {
                             reject(result.resultError);
                         } else {
                             context.commit(
-                                "setProfileComments",
+                                "setComments",
                                 result.resourcePayload
                             );
                             resolve();
@@ -126,7 +126,7 @@ export const actions: CommentActions = {
         const logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
 
         logger.error(`ERROR: ${JSON.stringify(params.error)}`);
-        context.commit("commentError", params.error);
+        context.commit("setCommentsError", params.error);
 
         if (params.error.statusCode === 429) {
             let action = "errorBanner/setTooManyRequestsError";

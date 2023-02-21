@@ -15,22 +15,22 @@ import { RootState } from "@/store/types";
 
 export interface NoteState {
     notes: UserNote[];
+    status: LoadStatus;
     statusMessage: string;
     error?: ResultError;
-    status: LoadStatus;
     lastOperation: Operation | null;
 }
 
 export interface NoteGetters extends GetterTree<NoteState, RootState> {
     notes(state: NoteState): UserNote[];
-    noteCount(state: NoteState): number;
+    notesCount(state: NoteState): number;
+    notesAreLoading(state: NoteState): boolean;
     lastOperation(state: NoteState): Operation | null;
-    isLoading(state: NoteState): boolean;
 }
 
 type StoreContext = ActionContext<NoteState, RootState>;
 export interface NoteActions extends ActionTree<NoteState, RootState> {
-    retrieve(
+    retrieveNotes(
         context: StoreContext,
         params: { hdid: string }
     ): Promise<RequestResult<UserNote[]>>;
@@ -41,12 +41,12 @@ export interface NoteActions extends ActionTree<NoteState, RootState> {
 }
 
 export interface NoteMutations extends MutationTree<NoteState> {
-    setRequested(state: NoteState): void;
+    setNotesRequested(state: NoteState): void;
     setNotes(state: NoteState, notes: UserNote[]): void;
     addNote(state: NoteState, note: UserNote): void;
     updateNote(state: NoteState, note: UserNote): void;
     deleteNote(state: NoteState, note: UserNote): void;
-    noteError(state: NoteState, error: Error): void;
+    setNotesError(state: NoteState, error: Error): void;
 }
 
 export interface NoteModule extends Module<NoteState, RootState> {

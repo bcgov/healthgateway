@@ -26,11 +26,11 @@ interface UserNoteRow {
 export default class NotesReportComponent extends Vue {
     @Prop() private filter!: ReportFilter;
 
-    @Action("retrieve", { namespace: "note" })
+    @Action("retrieveNotes", { namespace: "note" })
     retrieveNotes!: (params: { hdid: string }) => Promise<void>;
 
-    @Getter("isLoading", { namespace: "note" })
-    isLoading!: boolean;
+    @Getter("notesAreLoading", { namespace: "note" })
+    notesAreLoading!: boolean;
 
     @Getter("notes", { namespace: "note" })
     notes!: UserNote[];
@@ -41,6 +41,10 @@ export default class NotesReportComponent extends Vue {
     private logger!: ILogger;
 
     private readonly headerClass = "note-report-table-header";
+
+    private get isLoading(): boolean {
+        return this.notesAreLoading;
+    }
 
     private get visibleRecords(): UserNote[] {
         let records = this.notes.filter((record) =>
