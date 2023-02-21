@@ -7,14 +7,13 @@ import { Action, Getter } from "vuex-class";
 import MessageModalComponent from "@/components/modal/MessageModalComponent.vue";
 import { EntryType, entryTypeMap } from "@/constants/entryType";
 import type { Dictionary } from "@/models/baseTypes";
+import { ClinicalDocumentFile } from "@/models/clinicalDocument";
 import ClinicalDocumentTimelineEntry from "@/models/clinicalDocumentTimelineEntry";
 import EncodedMedia from "@/models/encodedMedia";
 import { LoadStatus } from "@/models/storeOperations";
-import User from "@/models/user";
 import container from "@/plugins/container";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import { ILogger } from "@/services/interfaces";
-import { ClinicalDocumentFileState } from "@/store/modules/clinicalDocument/types";
 import SnowPlow from "@/utility/snowPlow";
 
 import EntrycardTimelineComponent from "./EntrycardTimelineComponent.vue";
@@ -29,6 +28,9 @@ const options: any = {
 
 @Component(options)
 export default class ClinicalDocumentTimelineComponent extends Vue {
+    @Prop({ required: true })
+    hdid!: string;
+
     @Prop()
     entry!: ClinicalDocumentTimelineEntry;
 
@@ -48,10 +50,7 @@ export default class ClinicalDocumentTimelineComponent extends Vue {
     }) => Promise<EncodedMedia>;
 
     @Getter("files", { namespace: "clinicalDocument" })
-    files!: Dictionary<ClinicalDocumentFileState>;
-
-    @Getter("user", { namespace: "user" })
-    user!: User;
+    files!: Dictionary<ClinicalDocumentFile>;
 
     @Ref("messageModal")
     readonly messageModal!: MessageModalComponent;
@@ -86,7 +85,7 @@ export default class ClinicalDocumentTimelineComponent extends Vue {
             text: "document",
         });
 
-        this.getFile({ fileId: this.entry.fileId, hdid: this.user.hdid })
+        this.getFile({ fileId: this.entry.fileId, hdid: this.hdid })
             .then((result: EncodedMedia) => {
                 const dateString = this.entry.date.format("yyyy_MM_dd-HH_mm");
                 fetch(

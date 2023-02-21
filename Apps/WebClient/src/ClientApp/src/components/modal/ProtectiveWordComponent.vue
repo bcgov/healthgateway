@@ -6,27 +6,29 @@ import { Action, Getter } from "vuex-class";
 import { ResultError } from "@/models/errors";
 import MedicationStatementHistory from "@/models/medicationStatementHistory";
 import RequestResult from "@/models/requestResult";
-import User from "@/models/user";
 import container from "@/plugins/container";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import { ILogger } from "@/services/interfaces";
 
-const med = "medication";
 @Component
 export default class ProtectiveWordComponent extends Vue {
-    @Action("retrieveMedicationStatements", { namespace: med })
+    @Prop({ required: true })
+    hdid!: string;
+
+    @Action("retrieveMedications", { namespace: "medication" })
     retrieveMedications!: (params: {
         hdid: string;
         protectiveWord?: string;
     }) => Promise<RequestResult<MedicationStatementHistory[]>>;
 
-    @Getter("isProtected", { namespace: med })
-    isProtected!: boolean;
-    @Getter("user", { namespace: "user" }) user!: User;
-    @Getter("protectedWordAttempts", { namespace: med })
-    protectedWordAttempts!: number;
+    @Getter("medicationsAreLoading", { namespace: "medication" })
+    medicationsAreLoading!: (hdid: string) => boolean;
 
-    @Prop({ default: false }) isLoading!: boolean;
+    @Getter("medicationsAreProtected", { namespace: "medication" })
+    medicationsAreProtected!: (hdid: string) => boolean;
+
+    @Getter("protectiveWordAttempts", { namespace: "medication" })
+    protectiveWordAttempts!: (hdid: string) => number;
 
     private protectiveWord = "";
     private isDismissed = false;
@@ -34,7 +36,11 @@ export default class ProtectiveWordComponent extends Vue {
     private logger!: ILogger;
 
     private get isVisible(): boolean {
-        return this.isProtected && !this.isLoading && !this.isDismissed;
+        return (
+            this.medicationsAreProtected(this.hdid) &&
+            !this.medicationsAreLoading(this.hdid) &&
+            !this.isDismissed
+        );
     }
 
     private set isVisible(visible: boolean) {
@@ -42,7 +48,7 @@ export default class ProtectiveWordComponent extends Vue {
     }
 
     private get error(): boolean {
-        return this.protectedWordAttempts > 1;
+        return this.protectiveWordAttempts(this.hdid) > 1;
     }
 
     private created(): void {
@@ -57,7 +63,7 @@ export default class ProtectiveWordComponent extends Vue {
 
     private fetchMedications(): void {
         this.retrieveMedications({
-            hdid: this.user.hdid,
+            hdid: this.hdid,
             protectiveWord: this.protectiveWord,
         }).catch((err: ResultError) =>
             this.logger.error(

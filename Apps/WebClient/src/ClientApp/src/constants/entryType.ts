@@ -1,15 +1,15 @@
 import { CommentEntryType } from "@/constants/commentEntryType";
 
 export enum EntryType {
-    MedicationRequest = "MedicationRequest",
-    Medication = "Medication",
-    Immunization = "Immunization",
-    Covid19LaboratoryOrder = "Laboratory",
-    LaboratoryOrder = "AllLaboratory",
-    Encounter = "Encounter",
-    Note = "Note",
     ClinicalDocument = "ClinicalDocument",
+    Covid19TestResult = "Laboratory",
+    HealthVisit = "Encounter",
     HospitalVisit = "HospitalVisit",
+    Immunization = "Immunization",
+    LabResult = "AllLaboratory",
+    Medication = "Medication",
+    Note = "Note",
+    SpecialAuthorityRequest = "MedicationRequest",
 }
 
 export class EntryTypeDetails {
@@ -31,7 +31,7 @@ entryTypeMap.set(EntryType.Immunization, {
     description:
         "View immunizations you received from public health and community pharmacies",
     icon: "syringe",
-    component: "ImmunizationComponent",
+    component: "ImmunizationTimelineComponent",
     eventName: "immunizations",
 });
 
@@ -41,40 +41,40 @@ entryTypeMap.set(EntryType.Medication, {
     name: "Medications",
     description: "See your medication history dating back to 1995",
     icon: "pills",
-    component: "MedicationComponent",
+    component: "MedicationTimelineComponent",
     eventName: "medications",
 });
 
-entryTypeMap.set(EntryType.LaboratoryOrder, {
-    type: EntryType.LaboratoryOrder,
-    commentType: CommentEntryType.LaboratoryOrder,
+entryTypeMap.set(EntryType.LabResult, {
+    type: EntryType.LabResult,
+    commentType: CommentEntryType.LabResult,
     name: "Lab Results",
     description:
         "Find out your lab results within about 48 hours of taking a test",
     icon: "microscope",
-    component: "LaboratoryOrderComponent",
+    component: "LaboratoryOrderTimelineComponent",
     eventName: "lab_results",
 });
 
-entryTypeMap.set(EntryType.Covid19LaboratoryOrder, {
-    type: EntryType.Covid19LaboratoryOrder,
-    commentType: CommentEntryType.Covid19LaboratoryOrder,
+entryTypeMap.set(EntryType.Covid19TestResult, {
+    type: EntryType.Covid19TestResult,
+    commentType: CommentEntryType.Covid19TestResult,
     name: "COVID‑19 Tests",
     description:
         "View and download your COVID‑19 test results as soon as they are available",
     icon: "vial",
-    component: "Covid19LaboratoryOrderComponent",
+    component: "Covid19LaboratoryOrderTimelineComponent",
     eventName: "covid_test",
 });
 
-entryTypeMap.set(EntryType.Encounter, {
-    type: EntryType.Encounter,
-    commentType: CommentEntryType.Encounter,
+entryTypeMap.set(EntryType.HealthVisit, {
+    type: EntryType.HealthVisit,
+    commentType: CommentEntryType.HealthVisit,
     name: "Health Visits",
     description:
         "See the last seven years of your health visits billed to the BC Medical Services Plan",
     icon: "stethoscope",
-    component: "EncounterComponent",
+    component: "EncounterTimelineComponent",
     eventName: "health_visits",
 });
 
@@ -84,18 +84,18 @@ entryTypeMap.set(EntryType.Note, {
     name: "My Notes",
     description: "Create and edit your own notes on your health records",
     icon: "edit",
-    component: "NoteComponent",
+    component: "NoteTimelineComponent",
     eventName: "my_notes",
 });
 
-entryTypeMap.set(EntryType.MedicationRequest, {
-    type: EntryType.MedicationRequest,
-    commentType: CommentEntryType.MedicationRequest,
+entryTypeMap.set(EntryType.SpecialAuthorityRequest, {
+    type: EntryType.SpecialAuthorityRequest,
+    commentType: CommentEntryType.SpecialAuthorityRequest,
     name: "Special Authority",
     description:
         "Check the status of your Special Authority Requests since March 2021",
     icon: "file-medical",
-    component: "MedicationRequestComponent",
+    component: "MedicationRequestTimelineComponent",
     eventName: "special_authority",
 });
 
@@ -106,7 +106,7 @@ entryTypeMap.set(EntryType.ClinicalDocument, {
     description:
         "View documents shared by your care providers. You can get consultation notes, hospital discharge summaries, outpatient clinic notes and more.",
     icon: "file-waveform",
-    component: "ClinicalDocumentComponent",
+    component: "ClinicalDocumentTimelineComponent",
     eventName: "document",
 });
 
@@ -117,7 +117,7 @@ entryTypeMap.set(EntryType.HospitalVisit, {
     description:
         "View a list of your hospital visits. You can get the admission and discharge dates, location and provider for each visit.",
     icon: "house-medical",
-    component: "HospitalVisitComponent",
+    component: "HospitalVisitTimelineComponent",
     eventName: "hospital_visits",
 });
 

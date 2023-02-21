@@ -109,7 +109,7 @@ namespace HealthGateway.GatewayApi.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
-        public async Task<IActionResult> Dismiss(string hdid, [FromQuery] Guid id)
+        public async Task<IActionResult> Dismiss(string hdid, Guid id)
         {
             await this.webAlertService.DismissWebAlertAsync(hdid, id).ConfigureAwait(true);
             return this.Ok();

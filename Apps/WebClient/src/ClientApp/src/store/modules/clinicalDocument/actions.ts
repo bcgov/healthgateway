@@ -1,7 +1,7 @@
 import { EntryType } from "@/constants/entryType";
 import { ErrorSourceType, ErrorType } from "@/constants/errorType";
 import { ResultType } from "@/constants/resulttype";
-import ClinicalDocument from "@/models/clinicalDocument";
+import { ClinicalDocument } from "@/models/clinicalDocument";
 import EncodedMedia from "@/models/encodedMedia";
 import { ResultError } from "@/models/errors";
 import RequestResult from "@/models/requestResult";
@@ -12,9 +12,10 @@ import { IClinicalDocumentService, ILogger } from "@/services/interfaces";
 import EventTracker from "@/utility/eventTracker";
 
 import { ClinicalDocumentActions } from "./types";
+import { getClinicalDocumentDatasetState } from "./util";
 
 export const actions: ClinicalDocumentActions = {
-    retrieve(
+    retrieveClinicalDocuments(
         context,
         params: { hdid: string }
     ): Promise<RequestResult<ClinicalDocument[]>> {
@@ -24,9 +25,14 @@ export const actions: ClinicalDocumentActions = {
         );
 
         return new Promise((resolve, reject) => {
-            const records: ClinicalDocument[] = context.getters.records;
-            if (context.state.status === LoadStatus.LOADED) {
+            if (
+                getClinicalDocumentDatasetState(context.state, params.hdid)
+                    .status === LoadStatus.LOADED
+            ) {
                 logger.debug("Clinical documents found stored, not querying!");
+                const records: ClinicalDocument[] = context.getters.records(
+                    params.hdid
+                );
                 resolve({
                     pageIndex: 0,
                     pageSize: 0,
@@ -36,7 +42,7 @@ export const actions: ClinicalDocumentActions = {
                 });
             } else {
                 logger.debug("Retrieving clinical documents");
-                context.commit("setRequested");
+                context.commit("setClinicalDocumentsRequested", params.hdid);
                 clinicalDocumentService
                     .getRecords(params.hdid)
                     .then((result) => {
@@ -44,6 +50,7 @@ export const actions: ClinicalDocumentActions = {
                             context.dispatch("handleError", {
                                 error: result.resultError,
                                 errorType: ErrorType.Retrieve,
+                                hdid: params.hdid,
                             });
                             reject(result.resultError);
                         } else {
@@ -51,10 +58,10 @@ export const actions: ClinicalDocumentActions = {
                                 EntryType.ClinicalDocument,
                                 result.resourcePayload.length
                             );
-                            context.commit(
-                                "setRecords",
-                                result.resourcePayload
-                            );
+                            context.commit("setClinicalDocuments", {
+                                hdid: params.hdid,
+                                clinicalDocuments: result.resourcePayload,
+                            });
                             resolve(result);
                         }
                     })
@@ -62,6 +69,7 @@ export const actions: ClinicalDocumentActions = {
                         context.dispatch("handleError", {
                             error,
                             errorType: ErrorType.Retrieve,
+                            hdid: params.hdid,
                         });
                         reject(error);
                     });
@@ -114,7 +122,12 @@ export const actions: ClinicalDocumentActions = {
     },
     handleError(
         context,
-        params: { error: ResultError; errorType: ErrorType; fileId?: string }
+        params: {
+            error: ResultError;
+            errorType: ErrorType;
+            hdid?: string;
+            fileId?: string;
+        }
     ) {
         const logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
 
@@ -125,7 +138,10 @@ export const actions: ClinicalDocumentActions = {
                 error: params.error,
             });
         } else {
-            context.commit("setError", params.error);
+            context.commit("setClinicalDocumentsError", {
+                hdid: params.hdid,
+                error: params.error,
+            });
         }
 
         if (params.error.statusCode === 429) {

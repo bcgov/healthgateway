@@ -26,7 +26,7 @@ export default class EncounterTimelineComponent extends Vue {
     @Prop() isMobileDetails!: boolean;
 
     private get entryIcon(): string | undefined {
-        return entryTypeMap.get(EntryType.Encounter)?.icon;
+        return entryTypeMap.get(EntryType.HealthVisit)?.icon;
     }
 
     private get showEncounterRolloffAlert(): boolean {

@@ -4,7 +4,7 @@ import AddDependentRequest from "@/models/addDependentRequest";
 import ApiResult from "@/models/apiResult";
 import { Dictionary } from "@/models/baseTypes";
 import { CheckInRequest } from "@/models/checkInRequest";
-import ClinicalDocument from "@/models/clinicalDocument";
+import { ClinicalDocument } from "@/models/clinicalDocument";
 import Communication, { CommunicationType } from "@/models/communication";
 import {
     ExternalConfiguration,
@@ -23,7 +23,7 @@ import {
     LaboratoryReport,
     PublicCovidTestResponseResult,
 } from "@/models/laboratory";
-import MedicationRequest from "@/models/MedicationRequest";
+import MedicationRequest from "@/models/medicationRequest";
 import MedicationStatementHistory from "@/models/medicationStatementHistory";
 import Notification from "@/models/notification";
 import PatientData from "@/models/patientData";

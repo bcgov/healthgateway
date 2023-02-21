@@ -1,33 +1,60 @@
 import Vue from "vue";
 
-import ClinicalDocument from "@/models/clinicalDocument";
+import {
+    ClinicalDocument,
+    ClinicalDocumentFile,
+} from "@/models/clinicalDocument";
+import { ClinicalDocumentDatasetState } from "@/models/datasetState";
 import EncodedMedia from "@/models/encodedMedia";
 import { ResultError } from "@/models/errors";
 import { LoadStatus } from "@/models/storeOperations";
 
+import { ClinicalDocumentMutations, ClinicalDocumentState } from "./types";
 import {
-    ClinicalDocumentFileState,
-    ClinicalDocumentMutations,
-    ClinicalDocumentState,
-} from "./types";
+    getClinicalDocumentDatasetState,
+    setClinicalDocumentDatasetState,
+} from "./util";
 
 export const mutations: ClinicalDocumentMutations = {
-    setRequested(state: ClinicalDocumentState) {
-        state.status = LoadStatus.REQUESTED;
+    setClinicalDocumentsRequested(state: ClinicalDocumentState, hdid: string) {
+        const currentState = getClinicalDocumentDatasetState(state, hdid);
+        const nextState: ClinicalDocumentDatasetState = {
+            ...currentState,
+            status: LoadStatus.REQUESTED,
+        };
+        setClinicalDocumentDatasetState(state, hdid, nextState);
     },
-    setRecords(state: ClinicalDocumentState, records: ClinicalDocument[]) {
-        state.records = records;
-        state.error = undefined;
-        state.statusMessage = "success";
-        state.status = LoadStatus.LOADED;
+    setClinicalDocuments(
+        state: ClinicalDocumentState,
+        payload: { hdid: string; clinicalDocuments: ClinicalDocument[] }
+    ) {
+        const { hdid, clinicalDocuments } = payload;
+        const currentState = getClinicalDocumentDatasetState(state, hdid);
+        const nextState: ClinicalDocumentDatasetState = {
+            ...currentState,
+            data: clinicalDocuments,
+            error: undefined,
+            statusMessage: "success",
+            status: LoadStatus.LOADED,
+        };
+        setClinicalDocumentDatasetState(state, hdid, nextState);
     },
-    setError(state: ClinicalDocumentState, error: ResultError) {
-        state.error = error;
-        state.statusMessage = error.resultMessage;
-        state.status = LoadStatus.ERROR;
+    setClinicalDocumentsError(
+        state: ClinicalDocumentState,
+        payload: { hdid: string; error: ResultError }
+    ) {
+        const { hdid, error } = payload;
+        const currentState = getClinicalDocumentDatasetState(state, hdid);
+        const nextState: ClinicalDocumentDatasetState = {
+            ...currentState,
+            error: error,
+            statusMessage: error.resultMessage,
+            status: LoadStatus.ERROR,
+        };
+        setClinicalDocumentDatasetState(state, hdid, nextState);
     },
     setFileRequested(state: ClinicalDocumentState, fileId: string) {
-        const fileState: ClinicalDocumentFileState = {
+        const fileState: ClinicalDocumentFile = {
             fileId,
             status: LoadStatus.REQUESTED,
         };
@@ -37,7 +64,7 @@ export const mutations: ClinicalDocumentMutations = {
         state: ClinicalDocumentState,
         payload: { fileId: string; file: EncodedMedia }
     ) {
-        const fileState: ClinicalDocumentFileState = {
+        const fileState: ClinicalDocumentFile = {
             fileId: payload.fileId,
             file: payload.file,
             error: undefined,
@@ -49,7 +76,7 @@ export const mutations: ClinicalDocumentMutations = {
         state: ClinicalDocumentState,
         payload: { fileId: string; error: ResultError }
     ) {
-        const fileState: ClinicalDocumentFileState = {
+        const fileState: ClinicalDocumentFile = {
             fileId: payload.fileId,
             file: undefined,
             error: payload.error,

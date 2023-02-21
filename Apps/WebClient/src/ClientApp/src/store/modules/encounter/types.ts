@@ -6,45 +6,35 @@ import {
     MutationTree,
 } from "vuex";
 
-import { ErrorType } from "@/constants/errorType";
+import { ErrorSourceType, ErrorType } from "@/constants/errorType";
+import { Dictionary } from "@/models/baseTypes";
+import { HealthVisitState, HospitalVisitState } from "@/models/datasetState";
 import { Encounter, HospitalVisit } from "@/models/encounter";
 import { ResultError } from "@/models/errors";
 import HospitalVisitResult from "@/models/hospitalVisitResult";
 import RequestResult from "@/models/requestResult";
-import { LoadStatus } from "@/models/storeOperations";
 import { RootState } from "@/store/types";
 
 export interface EncounterState {
-    encounter: {
-        patientEncounters: Encounter[];
-        statusMessage: string;
-        error?: ResultError;
-        status: LoadStatus;
-    };
-    hospitalVisit: {
-        hospitalVisits: HospitalVisit[];
-        statusMessage: string;
-        error?: ResultError;
-        status: LoadStatus;
-        queued: boolean;
-    };
+    healthVisits: Dictionary<HealthVisitState>;
+    hospitalVisits: Dictionary<HospitalVisitState>;
 }
 
 export interface EncounterGetters
     extends GetterTree<EncounterState, RootState> {
-    patientEncounters(state: EncounterState): Encounter[];
-    encounterCount(state: EncounterState): number;
-    isEncounterLoading(state: EncounterState): boolean;
-    hospitalVisits(state: EncounterState): HospitalVisit[];
-    hospitalVisitCount(state: EncounterState): number;
-    isHospitalVisitLoading(state: EncounterState): boolean;
-    isHospitalVisitQueued(state: EncounterState): boolean;
+    healthVisits(state: EncounterState): (hdid: string) => Encounter[];
+    healthVisitsCount(state: EncounterState): (hdid: string) => number;
+    healthVisitsAreLoading(state: EncounterState): (hdid: string) => boolean;
+    hospitalVisits(state: EncounterState): (hdid: string) => HospitalVisit[];
+    hospitalVisitsCount(state: EncounterState): (hdid: string) => number;
+    hospitalVisitsAreLoading(state: EncounterState): (hdid: string) => boolean;
+    hospitalVisitsAreQueued(state: EncounterState): (hdid: string) => boolean;
 }
 
 type StoreContext = ActionContext<EncounterState, RootState>;
 export interface EncounterActions
     extends ActionTree<EncounterState, RootState> {
-    retrievePatientEncounters(
+    retrieveHealthVisits(
         context: StoreContext,
         params: { hdid: string }
     ): Promise<RequestResult<Encounter[]>>;
@@ -54,27 +44,53 @@ export interface EncounterActions
     ): Promise<RequestResult<HospitalVisitResult>>;
     handleError(
         context: StoreContext,
-        params: { error: ResultError; errorType: ErrorType }
+        params: {
+            hdid: string;
+            error: ResultError;
+            errorType: ErrorType;
+            errorSourceType: ErrorSourceType;
+        }
     ): void;
 }
 
 export interface EncounterMutations extends MutationTree<EncounterState> {
-    setPatientEncountersRequested(state: EncounterState): void;
-    setPatientEncounters(
+    setHealthVisitsRequested(state: EncounterState, hdid: string): void;
+    setHealthVisits(
         state: EncounterState,
-        patientEncounters: Encounter[]
+        payload: {
+            hdid: string;
+            healthVisits: Encounter[];
+        }
     ): void;
-    encounterError(state: EncounterState, error: ResultError): void;
-    setHospitalVisitsRequested(state: EncounterState): void;
+    setHealthVisitsError(
+        state: EncounterState,
+        payload: {
+            hdid: string;
+            error: ResultError;
+        }
+    ): void;
+    setHospitalVisitsRequested(state: EncounterState, hdid: string): void;
     setHospitalVisits(
         state: EncounterState,
-        hospitalVisits: HospitalVisitResult
+        payload: {
+            hdid: string;
+            hospitalVisitResult: HospitalVisitResult;
+        }
     ): void;
     setHospitalVisitRefreshInProgress(
         state: EncounterState,
-        hospitalVisits: HospitalVisitResult
+        payload: {
+            hdid: string;
+            hospitalVisits: HospitalVisitResult;
+        }
     ): void;
-    hospitalVisitsError(state: EncounterState, error: ResultError): void;
+    setHospitalVisitsError(
+        state: EncounterState,
+        payload: {
+            hdid: string;
+            error: ResultError;
+        }
+    ): void;
 }
 
 export interface EncounterModule extends Module<EncounterState, RootState> {

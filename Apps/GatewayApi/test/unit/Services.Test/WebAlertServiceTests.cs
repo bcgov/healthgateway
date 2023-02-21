@@ -40,7 +40,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
         private const string CategoryName = "mock category name";
         private const string DisplayText = "mock display text";
 
-        private static readonly Guid accountId = Guid.NewGuid();
+        private static readonly Guid AccountId = Guid.NewGuid();
         private static readonly Guid WebAlertId = Guid.NewGuid();
         private static readonly Uri Uri = new("https://www2.gov.bc.ca/gov/content/home");
         private static readonly DateTime PastDateTimeUtc = DateTime.UtcNow.AddDays(-7);
@@ -182,7 +182,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
         {
             Mock<IPersonalAccountsService> mockPersonalAccountsService = new();
 
-            PersonalAccount mockPersonalAccount = new() { Id = accountId };
+            PersonalAccount mockPersonalAccount = new() { Id = AccountId };
             mockPersonalAccountsService.Setup(s => s.GetPatientAccountAsync(Hdid)).ReturnsAsync(mockPersonalAccount);
 
             return mockPersonalAccountsService.Object;
@@ -192,9 +192,9 @@ namespace HealthGateway.GatewayApiTests.Services.Test
         {
             Mock<IWebAlertApi> mockWebAlertApi = new();
 
-            mockWebAlertApi.Setup(s => s.GetWebAlertsAsync(accountId.ToString())).ReturnsAsync(GetPhsaWebAlerts());
-            mockWebAlertApi.Setup(s => s.DeleteWebAlertsAsync(accountId.ToString())).Returns(Task.CompletedTask);
-            mockWebAlertApi.Setup(s => s.DeleteWebAlertAsync(accountId.ToString(), WebAlertId)).Returns(Task.CompletedTask);
+            mockWebAlertApi.Setup(s => s.GetWebAlertsAsync(AccountId.ToString())).ReturnsAsync(GetPhsaWebAlerts());
+            mockWebAlertApi.Setup(s => s.DeleteWebAlertsAsync(AccountId.ToString())).Returns(Task.CompletedTask);
+            mockWebAlertApi.Setup(s => s.DeleteWebAlertAsync(AccountId.ToString(), WebAlertId)).Returns(Task.CompletedTask);
 
             return new WebAlertService(
                 new Mock<ILogger<WebAlertService>>().Object,

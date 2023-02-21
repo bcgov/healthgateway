@@ -4,7 +4,7 @@ import { ResultType } from "@/constants/resulttype";
 import { ServiceCode } from "@/constants/serviceCodes";
 import { ExternalConfiguration } from "@/models/configData";
 import { HttpError } from "@/models/errors";
-import MedicationRequest from "@/models/MedicationRequest";
+import MedicationRequest from "@/models/medicationRequest";
 import RequestResult from "@/models/requestResult";
 import container from "@/plugins/container";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";

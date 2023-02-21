@@ -7,54 +7,63 @@ import {
 } from "vuex";
 
 import { ErrorType } from "@/constants/errorType";
+import { Dictionary } from "@/models/baseTypes";
+import { MedicationState } from "@/models/datasetState";
 import { ResultError } from "@/models/errors";
 import MedicationStatementHistory from "@/models/medicationStatementHistory";
 import RequestResult from "@/models/requestResult";
-import { LoadStatus } from "@/models/storeOperations";
 import { RootState } from "@/store/types";
 
 export interface MedicationStatementState {
-    medicationStatements: MedicationStatementHistory[];
-    protectiveWordAttempts: number;
-    statusMessage: string;
-    error?: ResultError;
-    status: LoadStatus;
+    medications: Dictionary<MedicationState>;
 }
 
 export interface MedicationStatementGetters
     extends GetterTree<MedicationStatementState, RootState> {
-    medicationStatements(
+    medications(
         state: MedicationStatementState
-    ): MedicationStatementHistory[];
-    medicationStatementCount(state: MedicationStatementState): number;
-    protectedWordAttempts(state: MedicationStatementState): number;
-    isProtected(state: MedicationStatementState): boolean;
-    isMedicationStatementLoading(state: MedicationStatementState): boolean;
+    ): (hdid: string) => MedicationStatementHistory[];
+    medicationsCount(state: MedicationStatementState): (hdid: string) => number;
+    medicationsAreLoading(
+        state: MedicationStatementState
+    ): (hdid: string) => boolean;
+    medicationsAreProtected(
+        state: MedicationStatementState
+    ): (hdid: string) => boolean;
+    protectiveWordAttempts(
+        state: MedicationStatementState
+    ): (hdid: string) => number;
 }
 
 type StoreContext = ActionContext<MedicationStatementState, RootState>;
 export interface MedicationStatementActions
     extends ActionTree<MedicationStatementState, RootState> {
-    retrieveMedicationStatements(
+    retrieveMedications(
         context: StoreContext,
         params: { hdid: string; protectiveWord?: string }
     ): Promise<RequestResult<MedicationStatementHistory[]>>;
-    handleMedicationStatementError(
+    handleMedicationsError(
         context: StoreContext,
-        params: { error: ResultError; errorType: ErrorType }
+        params: { hdid: string; error: ResultError; errorType: ErrorType }
     ): void;
 }
 
 export interface MedicationStatementMutations
     extends MutationTree<MedicationStatementState> {
-    setMedicationStatementRequested(state: MedicationStatementState): void;
-    setMedicationStatementResult(
+    setMedicationsRequested(
         state: MedicationStatementState,
-        medicationResult: RequestResult<MedicationStatementHistory[]>
+        hdid: string
     ): void;
-    medicationStatementError(
+    setMedications(
         state: MedicationStatementState,
-        error: Error
+        payload: {
+            hdid: string;
+            medicationResult: RequestResult<MedicationStatementHistory[]>;
+        }
+    ): void;
+    setMedicationsError(
+        state: MedicationStatementState,
+        payload: { hdid: string; error: Error }
     ): void;
 }
 
