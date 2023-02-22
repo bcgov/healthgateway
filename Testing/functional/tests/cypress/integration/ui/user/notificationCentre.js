@@ -6,15 +6,8 @@ const HDID = "P6FFO433A5WPMVTGM7T4ZVWBKCSVNAYGTWTU3J2LWMGUMERKI72A";
 describe("Notification Centre", () => {
     beforeEach(() => {
         cy.configureSettings({
-            datasets: {
-                name: "medication",
-                enabled: true,
-            },
             notificationCentre: {
                 enabled: true,
-            },
-            waitingQueue: {
-                enabled: false,
             },
         });
 
