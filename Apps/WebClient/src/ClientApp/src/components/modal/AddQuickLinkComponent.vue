@@ -4,10 +4,9 @@ import { Component } from "vue-property-decorator";
 import { Action, Getter } from "vuex-class";
 
 import TooManyRequestsComponent from "@/components/TooManyRequestsComponent.vue";
-import { EntryType, entryTypeMap } from "@/constants/entryType";
+import { entryTypeMap, getEntryTypeByModule } from "@/constants/entryType";
 import { ErrorSourceType, ErrorType } from "@/constants/errorType";
 import UserPreferenceType from "@/constants/userPreferenceType";
-import type { WebClientConfiguration } from "@/models/configData";
 import { BannerError, isTooManyRequestsError } from "@/models/errors";
 import { QuickLink } from "@/models/quickLink";
 import User from "@/models/user";
@@ -15,12 +14,13 @@ import { UserPreference } from "@/models/userPreference";
 import container from "@/plugins/container";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import { ILogger } from "@/services/interfaces";
+import ConfigUtil from "@/utility/configUtil";
 import ErrorTranslator from "@/utility/errorTranslator";
 import PromiseUtility from "@/utility/promiseUtility";
 
 interface QuickLinkFilter {
     name: string;
-    module: EntryType;
+    module: string;
     enabled: boolean;
 }
 
@@ -50,9 +50,6 @@ export default class AddQuickLinkComponent extends Vue {
         preference: UserPreference;
     }) => Promise<void>;
 
-    @Getter("webClient", { namespace: "config" })
-    webClientConfig!: WebClientConfiguration;
-
     @Getter("tooManyRequestsError", { namespace: "errorBanner" })
     tooManyRequestsError!: string | undefined;
 
@@ -72,10 +69,8 @@ export default class AddQuickLinkComponent extends Vue {
     private get quickLinkFilter(): QuickLinkFilter[] {
         return [...entryTypeMap.values()].map((details) => ({
             name: details.name,
-            module: details.type,
-            enabled: details.enabled(
-                this.webClientConfig.featureToggleConfiguration
-            ),
+            module: details.moduleName,
+            enabled: ConfigUtil.isDatasetEnabled(details.type),
         }));
     }
 
@@ -152,7 +147,7 @@ export default class AddQuickLinkComponent extends Vue {
 
         const quickLinks: QuickLink[] = this.quickLinks ?? [];
         this.selectedQuickLinks.forEach((module) => {
-            const details = entryTypeMap.get(module as EntryType);
+            const details = getEntryTypeByModule(module);
             if (details) {
                 quickLinks.push({
                     name: details.name,

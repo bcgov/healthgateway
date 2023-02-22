@@ -1,16 +1,15 @@
 import { CommentEntryType } from "@/constants/commentEntryType";
-import { FeatureToggleConfiguration } from "@/models/configData";
 
 export enum EntryType {
     ClinicalDocument = "ClinicalDocument",
-    Covid19TestResult = "Laboratory",
-    HealthVisit = "Encounter",
+    Covid19TestResult = "Covid19TestResult",
+    HealthVisit = "HealthVisit",
     HospitalVisit = "HospitalVisit",
     Immunization = "Immunization",
-    LabResult = "AllLaboratory",
+    LabResult = "LabResult",
     Medication = "Medication",
     Note = "Note",
-    SpecialAuthorityRequest = "MedicationRequest",
+    SpecialAuthorityRequest = "SpecialAuthority",
 }
 
 export class EntryTypeDetails {
@@ -21,19 +20,16 @@ export class EntryTypeDetails {
     component!: string;
     commentType!: CommentEntryType;
     eventName!: string;
-    enabled!: (config: FeatureToggleConfiguration) => boolean;
+    moduleName!: string;
 }
 
 const entryTypeMap = new Map<EntryType | undefined, EntryTypeDetails>();
 
-function isDatasetEnabled(
-    config: FeatureToggleConfiguration,
-    datasetName: string
-): boolean {
-    return (
-        config.datasets.find(
-            (ds) => ds.name.toLowerCase() == datasetName.toLowerCase()
-        )?.enabled ?? false
+export function getEntryTypeByModule(
+    module: string
+): EntryTypeDetails | undefined {
+    return Array.from(entryTypeMap.values()).find(
+        (e) => e.moduleName === module
     );
 }
 
@@ -46,7 +42,7 @@ entryTypeMap.set(EntryType.Immunization, {
     icon: "syringe",
     component: "ImmunizationTimelineComponent",
     eventName: "immunizations",
-    enabled: (config) => isDatasetEnabled(config, EntryType.Immunization),
+    moduleName: "Immunization",
 });
 
 entryTypeMap.set(EntryType.Medication, {
@@ -57,7 +53,7 @@ entryTypeMap.set(EntryType.Medication, {
     icon: "pills",
     component: "MedicationTimelineComponent",
     eventName: "medications",
-    enabled: (config) => isDatasetEnabled(config, EntryType.Medication),
+    moduleName: "Medication",
 });
 
 entryTypeMap.set(EntryType.LabResult, {
@@ -69,7 +65,7 @@ entryTypeMap.set(EntryType.LabResult, {
     icon: "microscope",
     component: "LaboratoryOrderTimelineComponent",
     eventName: "lab_results",
-    enabled: (config) => isDatasetEnabled(config, "LabResult"),
+    moduleName: "AllLaboratory",
 });
 
 entryTypeMap.set(EntryType.Covid19TestResult, {
@@ -81,7 +77,7 @@ entryTypeMap.set(EntryType.Covid19TestResult, {
     icon: "vial",
     component: "Covid19LaboratoryOrderTimelineComponent",
     eventName: "covid_test",
-    enabled: (config) => isDatasetEnabled(config, "Covid19TestResult"),
+    moduleName: "Laboratory",
 });
 
 entryTypeMap.set(EntryType.HealthVisit, {
@@ -93,7 +89,7 @@ entryTypeMap.set(EntryType.HealthVisit, {
     icon: "stethoscope",
     component: "EncounterTimelineComponent",
     eventName: "health_visits",
-    enabled: (config) => isDatasetEnabled(config, "HealthVisit"),
+    moduleName: "Encounter",
 });
 
 entryTypeMap.set(EntryType.Note, {
@@ -104,7 +100,7 @@ entryTypeMap.set(EntryType.Note, {
     icon: "edit",
     component: "NoteTimelineComponent",
     eventName: "my_notes",
-    enabled: (config) => isDatasetEnabled(config, EntryType.Note),
+    moduleName: "Note",
 });
 
 entryTypeMap.set(EntryType.SpecialAuthorityRequest, {
@@ -116,7 +112,7 @@ entryTypeMap.set(EntryType.SpecialAuthorityRequest, {
     icon: "file-medical",
     component: "MedicationRequestTimelineComponent",
     eventName: "special_authority",
-    enabled: (config) => isDatasetEnabled(config, "SpecialAuthority"),
+    moduleName: "MedicationRequest",
 });
 
 entryTypeMap.set(EntryType.ClinicalDocument, {
@@ -128,7 +124,7 @@ entryTypeMap.set(EntryType.ClinicalDocument, {
     icon: "file-waveform",
     component: "ClinicalDocumentTimelineComponent",
     eventName: "document",
-    enabled: (config) => isDatasetEnabled(config, EntryType.ClinicalDocument),
+    moduleName: "ClinicalDocument",
 });
 
 entryTypeMap.set(EntryType.HospitalVisit, {
@@ -140,7 +136,7 @@ entryTypeMap.set(EntryType.HospitalVisit, {
     icon: "house-medical",
     component: "HospitalVisitTimelineComponent",
     eventName: "hospital_visits",
-    enabled: (config) => isDatasetEnabled(config, EntryType.HospitalVisit),
+    moduleName: "HospitalVisit",
 });
 
 export { entryTypeMap };
