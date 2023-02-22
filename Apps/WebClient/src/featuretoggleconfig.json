@@ -2,7 +2,7 @@
     "homepage": {
         "showFederalProofOfVaccination": true
     },
-    "waitingQueue":{
+    "waitingQueue": {
         "enabled": true
     },
     "notificationCentre": {
@@ -45,7 +45,7 @@
             "enabled": true
         },
         {
-            "name": "specialAuthority",
+            "name": "specialAuthorityRequest",
             "enabled": true
         }
     ],
