@@ -80,7 +80,6 @@ export default class AddQuickLinkComponent extends Vue {
     }
 
     private get enabledQuickLinkFilter(): QuickLinkFilter[] {
-        console.debug(this.quickLinkFilter);
         return this.quickLinkFilter.filter(
             (filter) =>
                 filter.enabled &&
