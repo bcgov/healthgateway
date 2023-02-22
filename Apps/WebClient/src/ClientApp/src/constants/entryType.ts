@@ -9,7 +9,7 @@ export enum EntryType {
     LabResult = "LabResult",
     Medication = "Medication",
     Note = "Note",
-    SpecialAuthorityRequest = "SpecialAuthority",
+    SpecialAuthorityRequest = "SpecialAuthorityRequest",
 }
 
 export class EntryTypeDetails {
