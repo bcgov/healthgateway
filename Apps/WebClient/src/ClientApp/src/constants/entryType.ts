@@ -116,7 +116,7 @@ entryTypeMap.set(EntryType.MedicationRequest, {
     icon: "file-medical",
     component: "MedicationRequestComponent",
     eventName: "special_authority",
-    enabled: (config) => isDatasetEnabled(config, "Medication"),
+    enabled: (config) => isDatasetEnabled(config, "SpecialAuthority"),
 });
 
 entryTypeMap.set(EntryType.ClinicalDocument, {
