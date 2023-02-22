@@ -30,6 +30,7 @@ import type { WebClientConfiguration } from "@/models/configData";
 import container from "@/plugins/container";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import { ILogger } from "@/services/interfaces";
+import ConfigUtil from "@/utility/configUtil";
 
 library.add(
     faCheckCircle,
@@ -88,7 +89,8 @@ export default class LandingView extends Vue {
     }
 
     private get isPublicLaboratoryResultEnabled(): boolean {
-        return this.config.modules["PublicLaboratoryResult"];
+        return this.config.featureToggleConfiguration.covid19.publicCovid19
+            .enableTestResults;
     }
 
     private get isSidebarAvailable(): boolean {
@@ -144,9 +146,6 @@ export default class LandingView extends Vue {
 
         // Add Proof of Vaccination tile to tiles
         this.addProofOfVaccinationTile();
-
-        // Populate tiles with active value from config module
-        this.populateActiveValue();
     }
 
     private getProofOfVaccinationTile(): Tile {
@@ -155,7 +154,8 @@ export default class LandingView extends Vue {
             icon: "check-circle",
             name: "Proof of Vaccination",
             description: "View and download your proof of vaccination",
-            active: true,
+            active: this.config.featureToggleConfiguration.covid19.publicCovid19
+                .showFederalProofOfVaccination,
         };
 
         this.logger.debug(
@@ -183,27 +183,6 @@ export default class LandingView extends Vue {
 
     private addProofOfVaccinationTile(): void {
         this.tiles.splice(2, 0, this.getProofOfVaccinationTile());
-        this.tiles.forEach((tile) =>
-            this.logger.debug(
-                `Add Proof of Vaccine - Tile:  ${JSON.stringify(tile)}`
-            )
-        );
-    }
-
-    private populateActiveValue(): void {
-        for (const moduleName in this.config.modules) {
-            const tile = this.tiles.find(
-                (tileEntry) => tileEntry.type === moduleName
-            );
-            if (tile) {
-                tile.active = this.config.modules[moduleName];
-            }
-        }
-        this.tiles.forEach((tile) =>
-            this.logger.debug(
-                `Populate Active Value - Tile:  ${JSON.stringify(tile)}`
-            )
-        );
     }
 
     private loadCoreTiles(): void {
@@ -215,7 +194,7 @@ export default class LandingView extends Vue {
                 icon: details?.icon ?? "",
                 name: details?.name ?? "",
                 description: details?.description ?? "",
-                active: false,
+                active: ConfigUtil.isDatasetEnabled(type),
             };
             return tile;
         });
