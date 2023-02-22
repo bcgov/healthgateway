@@ -71,7 +71,7 @@ export interface FeatureToggleConfiguration {
     waitingQueue: WaitingQueueSettings;
     notificationCentre: NotificationCentreSettings;
     timeline: TimelineSettings;
-    dataset: DatasetSettings[];
+    datasets: DatasetSettings[];
     covid19: Covid19Settings;
     dependents: DependentsSettings;
 }
@@ -114,7 +114,7 @@ export interface ProofOfVaccinationSettings {
 
 export interface DependentsSettings {
     enabled: boolean;
-    dataSets: DatasetSettings[];
+    datasets: DatasetSettings[];
 }
 
 // Various timeout values used by the VUE WebClient application.

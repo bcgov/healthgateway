@@ -1,4 +1,5 @@
 import { CommentEntryType } from "@/constants/commentEntryType";
+import { FeatureToggleConfiguration } from "@/models/configData";
 
 export enum EntryType {
     MedicationRequest = "MedicationRequest",
@@ -20,9 +21,21 @@ export class EntryTypeDetails {
     component!: string;
     commentType!: CommentEntryType;
     eventName!: string;
+    enabled!: (config: FeatureToggleConfiguration) => boolean;
 }
 
 const entryTypeMap = new Map<EntryType | undefined, EntryTypeDetails>();
+
+function isDatasetEnabled(
+    config: FeatureToggleConfiguration,
+    datasetName: string
+): boolean {
+    return (
+        config.datasets.find(
+            (ds) => ds.name.toLowerCase() == datasetName.toLowerCase()
+        )?.enabled ?? false
+    );
+}
 
 entryTypeMap.set(EntryType.Immunization, {
     type: EntryType.Immunization,
@@ -33,6 +46,7 @@ entryTypeMap.set(EntryType.Immunization, {
     icon: "syringe",
     component: "ImmunizationComponent",
     eventName: "immunizations",
+    enabled: (config) => isDatasetEnabled(config, EntryType.Immunization),
 });
 
 entryTypeMap.set(EntryType.Medication, {
@@ -43,6 +57,7 @@ entryTypeMap.set(EntryType.Medication, {
     icon: "pills",
     component: "MedicationComponent",
     eventName: "medications",
+    enabled: (config) => isDatasetEnabled(config, EntryType.Medication),
 });
 
 entryTypeMap.set(EntryType.LaboratoryOrder, {
@@ -54,6 +69,7 @@ entryTypeMap.set(EntryType.LaboratoryOrder, {
     icon: "microscope",
     component: "LaboratoryOrderComponent",
     eventName: "lab_results",
+    enabled: (config) => isDatasetEnabled(config, "LabResult"),
 });
 
 entryTypeMap.set(EntryType.Covid19LaboratoryOrder, {
@@ -65,6 +81,7 @@ entryTypeMap.set(EntryType.Covid19LaboratoryOrder, {
     icon: "vial",
     component: "Covid19LaboratoryOrderComponent",
     eventName: "covid_test",
+    enabled: (config) => isDatasetEnabled(config, "Covid19TestResult"),
 });
 
 entryTypeMap.set(EntryType.Encounter, {
@@ -76,6 +93,7 @@ entryTypeMap.set(EntryType.Encounter, {
     icon: "stethoscope",
     component: "EncounterComponent",
     eventName: "health_visits",
+    enabled: (config) => isDatasetEnabled(config, "HealthVisit"),
 });
 
 entryTypeMap.set(EntryType.Note, {
@@ -86,6 +104,7 @@ entryTypeMap.set(EntryType.Note, {
     icon: "edit",
     component: "NoteComponent",
     eventName: "my_notes",
+    enabled: (config) => isDatasetEnabled(config, EntryType.Note),
 });
 
 entryTypeMap.set(EntryType.MedicationRequest, {
@@ -97,6 +116,7 @@ entryTypeMap.set(EntryType.MedicationRequest, {
     icon: "file-medical",
     component: "MedicationRequestComponent",
     eventName: "special_authority",
+    enabled: (config) => isDatasetEnabled(config, "Medication"),
 });
 
 entryTypeMap.set(EntryType.ClinicalDocument, {
@@ -108,6 +128,7 @@ entryTypeMap.set(EntryType.ClinicalDocument, {
     icon: "file-waveform",
     component: "ClinicalDocumentComponent",
     eventName: "document",
+    enabled: (config) => isDatasetEnabled(config, EntryType.ClinicalDocument),
 });
 
 entryTypeMap.set(EntryType.HospitalVisit, {
@@ -119,6 +140,7 @@ entryTypeMap.set(EntryType.HospitalVisit, {
     icon: "house-medical",
     component: "HospitalVisitComponent",
     eventName: "hospital_visits",
+    enabled: (config) => isDatasetEnabled(config, EntryType.HospitalVisit),
 });
 
 export { entryTypeMap };

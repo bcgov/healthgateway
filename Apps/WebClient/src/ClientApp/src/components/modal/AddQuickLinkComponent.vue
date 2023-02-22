@@ -21,6 +21,7 @@ import PromiseUtility from "@/utility/promiseUtility";
 interface QuickLinkFilter {
     name: string;
     module: EntryType;
+    enabled: boolean;
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -68,17 +69,21 @@ export default class AddQuickLinkComponent extends Vue {
     private isLoading = false;
 
     private selectedQuickLinks: string[] = [];
-    private quickLinkFilter: QuickLinkFilter[] = [...entryTypeMap.values()].map(
-        (details) => ({
+    private get quickLinkFilter(): QuickLinkFilter[] {
+        return [...entryTypeMap.values()].map((details) => ({
             name: details.name,
             module: details.type,
-        })
-    );
+            enabled: details.enabled(
+                this.webClientConfig.featureToggleConfiguration
+            ),
+        }));
+    }
 
     private get enabledQuickLinkFilter(): QuickLinkFilter[] {
+        console.debug(this.quickLinkFilter);
         return this.quickLinkFilter.filter(
             (filter) =>
-                this.webClientConfig.modules[filter.module] &&
+                filter.enabled &&
                 this.quickLinks?.find(
                     (existingLink) =>
                         existingLink.filter.modules.length === 1 &&
