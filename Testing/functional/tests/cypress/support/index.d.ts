@@ -11,6 +11,7 @@ declare namespace Cypress {
         readConfig(): Chainable<any>;
         checkTimelineHasLoaded(): void;
         enableModules(modules: string[]): Chainable<any>;
+        configureSettings(settings: any, modules?: string[]): Chainable<any>;
         setupDownloads(): void;
         restoreAuthCookies(): void;
         /**
