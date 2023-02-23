@@ -18,7 +18,14 @@ describe("Comments Disable", () => {
 
 describe("Comments Enable", () => {
     beforeEach(() => {
-        cy.enableModules(["Laboratory", "Comment"]);
+        cy.configureSettings(
+            {
+                timeline: {
+                    comment: true,
+                },
+            },
+            "Laboratory"
+        );
         cy.login(
             Cypress.env("keycloak.username"),
             Cypress.env("keycloak.password"),
@@ -63,7 +70,7 @@ describe("Comments Enable", () => {
     });
 
     it("Validate Edit", () => {
-        var testEditComment = " Test Edit Comment";
+        var testEditComment = "Test Edit Comment";
 
         cy.get("[data-testid=entryCardDetailsTitle]").first().click();
         cy.get("[data-testid=showCommentsBtn]").first().click();

@@ -78,7 +78,7 @@ export default class UserTimelineView extends Vue {
     ];
 
     get commentsAreEnabled(): boolean {
-        return this.config.modules["Comment"];
+        return this.config.featureToggleConfiguration.timeline.comment;
     }
 
     get entryTypes(): EntryType[] {

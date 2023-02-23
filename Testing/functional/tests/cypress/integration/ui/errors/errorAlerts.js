@@ -166,7 +166,14 @@ function testAddQuickLinkError(statusCode = serverErrorStatusCode) {
 }
 
 function testAddCommentError(statusCode = serverErrorStatusCode) {
-    cy.configureSettings({}, ["Comment", "AllLaboratory"]);
+    cy.configureSettings(
+        {
+            timeline: {
+                comment: true,
+            },
+        },
+        "AllLaboratory"
+    );
     cy.intercept("POST", "**/UserProfile/*/Comment", {
         statusCode,
     });
