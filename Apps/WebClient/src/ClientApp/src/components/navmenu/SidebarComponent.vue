@@ -197,7 +197,7 @@ export default class SidebarComponent extends Vue {
     }
 
     private get isDependentEnabled(): boolean {
-        return this.config.modules["Dependent"];
+        return this.config.featureToggleConfiguration.dependents.enabled;
     }
 
     private get isDependents(): boolean {
