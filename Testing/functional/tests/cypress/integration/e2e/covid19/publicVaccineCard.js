@@ -42,7 +42,17 @@ describe("Public Vaccine Card Result", () => {
         const dovMonth = "July";
         const dovDay = "4";
 
-        cy.enableModules(["Immunization"]);
+        cy.configureSettings(
+            {
+                covid19: {
+                    publicCovid19: {
+                        showFederalProofOfVaccination: true,
+                    },
+                },
+            },
+            ["Immunization"]
+        );
+
         cy.logout();
         cy.visit(vaccineCardUrl);
 
@@ -62,7 +72,16 @@ describe("Public Vaccine Card Result", () => {
     });
 
     it("Fully Vaccinated", () => {
-        cy.enableModules(["Immunization"]);
+        cy.configureSettings(
+            {
+                covid19: {
+                    publicCovid19: {
+                        showFederalProofOfVaccination: true,
+                    },
+                },
+            },
+            ["Immunization"]
+        );
         cy.logout();
         cy.visit(vaccineCardUrl);
 
@@ -83,7 +102,16 @@ describe("Public Vaccine Card Result", () => {
 
 describe("Public Vaccine Card Downloads", () => {
     beforeEach(() => {
-        cy.enableModules(["Immunization", "PublicVaccineDownloadPdf"]);
+        cy.configureSettings(
+            {
+                covid19: {
+                    publicCovid19: {
+                        showFederalProofOfVaccination: true,
+                    },
+                },
+            },
+            ["Immunization"]
+        );
         cy.logout();
         cy.visit(vaccineCardUrl);
 

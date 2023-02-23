@@ -5,6 +5,7 @@ const timelineUrl = "/timeline";
 
 describe("Authenticated User - Home Page", () => {
     it("Home Page exists", () => {
+        cy.configureSettings({}, []);
         cy.login(
             Cypress.env("keycloak.username"),
             Cypress.env("keycloak.password"),
@@ -18,6 +19,11 @@ describe("Authenticated User - Home Page", () => {
 
     it("Home - Federal Card button enabled", () => {
         cy.enableModules(["FederalCardButton"]);
+        cy.configureSettings({
+            homepage: {
+                showFederalProofOfVaccination: true,
+            },
+        });
 
         cy.login(
             Cypress.env("keycloak.username"),
@@ -30,6 +36,7 @@ describe("Authenticated User - Home Page", () => {
     });
 
     it("Home - Link to COVID-19 page", () => {
+        cy.configureSettings({});
         cy.login(
             Cypress.env("keycloak.username"),
             Cypress.env("keycloak.password"),
@@ -45,7 +52,7 @@ describe("Authenticated User - Home Page", () => {
     });
 
     it("Home - Link to timeline page", () => {
-        cy.enableModules([]);
+        cy.configureSettings({});
         cy.login(
             Cypress.env("keycloak.username"),
             Cypress.env("keycloak.password"),
@@ -61,7 +68,7 @@ describe("Authenticated User - Home Page", () => {
     });
 
     it("Home - Federal Card button disabled", () => {
-        cy.enableModules([]);
+        cy.configureSettings({});
 
         cy.login(
             Cypress.env("keycloak.username"),
@@ -74,7 +81,7 @@ describe("Authenticated User - Home Page", () => {
     });
 
     it("Home - Notes Card link to Timeline", () => {
-        cy.enableModules([
+        cy.configureSettings({}, [
             "MedicationRequest",
             "Medication",
             "Immunization",
