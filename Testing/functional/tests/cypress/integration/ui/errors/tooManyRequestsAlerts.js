@@ -157,14 +157,12 @@ describe("Public Vaccine Card Downloads", () => {
             {
                 covid19: {
                     publicCovid19: {
-                        enableTestResults: true,
                         showFederalProofOfVaccination: true,
                     },
                 },
             },
             ["Immunization"]
         );
-        //cy.enableModules(["Immunization", "PublicVaccineDownloadPdf"]);
         cy.logout();
         cy.visit(vaccineCardUrl);
 

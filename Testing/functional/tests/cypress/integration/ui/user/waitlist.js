@@ -30,12 +30,14 @@ function getTicket(status, queuePosition = 0) {
 describe("Waitlist Ticket Module Enabled", () => {
     beforeEach(() => {
         cy.logout();
-        cy.configureSettings({
-            waitingQueue: {
-                enabled: true,
+        cy.configureSettings(
+            {
+                waitingQueue: {
+                    enabled: true,
+                },
             },
-        });
-        cy.enableModules(["Ticket"]);
+            ["Ticket"]
+        );
     });
 
     it("Verify create ticket is not called on unprotected page", () => {

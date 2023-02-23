@@ -9,7 +9,6 @@ const serverErrorStatusCode = 500;
 
 function testGetConfigurationError(statusCode = serverErrorStatusCode) {
     cy.configureSettings({});
-    cy.wait(1000);
     cy.intercept("GET", "/configuration", {
         statusCode,
     });
