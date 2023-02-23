@@ -45,16 +45,7 @@ function clickVaccineCardEnterButton() {
 
 describe("Public Vaccine Card Form", () => {
     beforeEach(() => {
-        cy.configureSettings(
-            {
-                covid19: {
-                    publicCovid19: {
-                        showFederalProofOfVaccination: true,
-                    },
-                },
-            },
-            ["Immunization"]
-        );
+        cy.configureSettings({}, ["Immunization"]);
         cy.logout();
         cy.visit(vaccineCardUrl);
     });

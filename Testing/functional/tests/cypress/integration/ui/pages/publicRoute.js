@@ -21,7 +21,6 @@ describe("Public Route", () => {
             },
             ["Laboratory"]
         );
-        cy.enableModules(["Laboratory", "PublicLaboratoryResult"]);
         cy.logout();
         cy.visit(covidTestPath);
         cy.get("[data-testid=loginBtn]").should("not.exist");

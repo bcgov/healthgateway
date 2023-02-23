@@ -18,7 +18,6 @@ describe("Authenticated User - Home Page", () => {
     });
 
     it("Home - Federal Card button enabled", () => {
-        cy.enableModules(["FederalCardButton"]);
         cy.configureSettings({
             homepage: {
                 showFederalProofOfVaccination: true,
