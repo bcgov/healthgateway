@@ -75,7 +75,7 @@ export default class EntrycardTimelineComponent extends Vue {
     }
 
     private get isCommentEnabled(): boolean {
-        return this.config.modules["Comment"];
+        return this.config.featureToggleConfiguration.timeline.comment;
     }
 
     private get commentCount(): number {

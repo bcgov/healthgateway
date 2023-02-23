@@ -2,7 +2,7 @@ const { AuthMethod } = require("../../../support/constants");
 
 describe("Tutorial", () => {
     it("Validate Add Note Popover", () => {
-        cy.enableModules("Note");
+        cy.configureSettings({}, "Note");
         cy.intercept("GET", "**/UserProfile/*", (req) => {
             req.reply((res) => {
                 res.body.resourcePayload.preferences.tutorialMenuNote.value =
@@ -19,7 +19,7 @@ describe("Tutorial", () => {
     });
 
     it("Validate Export Records Popover", () => {
-        cy.enableModules([]);
+        cy.configureSettings({});
         cy.intercept("GET", "**/UserProfile/*", (req) => {
             req.reply((res) => {
                 res.body.resourcePayload.preferences.tutorialMenuExport.value =
@@ -36,7 +36,11 @@ describe("Tutorial", () => {
     });
 
     it("Validate Add Dependent Popover", () => {
-        cy.enableModules(["Dependent"]);
+        cy.configureSettings({
+            dependents: {
+                enabled: true,
+            },
+        });
         cy.intercept("GET", "**/UserProfile/*", (req) => {
             req.reply((res) => {
                 res.body.resourcePayload.preferences.tutorialAddDependent = {
@@ -77,7 +81,7 @@ describe("Tutorial", () => {
     });
 
     it("Validate Timeline Filter Popover", () => {
-        cy.enableModules([]);
+        cy.configureSettings({});
         cy.intercept("GET", "**/UserProfile/*", (req) => {
             req.reply((res) => {
                 res.body.resourcePayload.preferences.tutorialTimelineFilter = {
@@ -95,7 +99,14 @@ describe("Tutorial", () => {
     });
 
     it("Validate Comment Popover", () => {
-        cy.enableModules(["Comment", "Medication"]);
+        cy.configureSettings(
+            {
+                timeline: {
+                    comment: true,
+                },
+            },
+            "Medication"
+        );
         cy.intercept("GET", "**/UserProfile/*", (req) => {
             req.reply((res) => {
                 res.body.resourcePayload.preferences.tutorialComment = {

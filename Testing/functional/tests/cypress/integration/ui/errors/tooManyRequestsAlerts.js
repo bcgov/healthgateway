@@ -755,7 +755,14 @@ describe("Comments", () => {
         cy.intercept("POST", "**/UserProfile/*/Comment", {
             statusCode: 429,
         });
-        cy.configureSettings({}, ["Laboratory", "Comment"]);
+        cy.configureSettings(
+            {
+                timeline: {
+                    comment: true,
+                },
+            },
+            "Laboratory"
+        );
         cy.login(
             Cypress.env("keycloak.username"),
             Cypress.env("keycloak.password"),
