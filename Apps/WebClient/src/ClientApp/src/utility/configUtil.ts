@@ -8,14 +8,13 @@ import { STORE_IDENTIFIER } from "@/plugins/inversify";
 import { IStoreProvider } from "@/services/interfaces";
 
 export default abstract class ConfigUtil {
-    private static storeWrapper = container.get<IStoreProvider>(
-        STORE_IDENTIFIER.StoreProvider
-    );
-
-    private static store = ConfigUtil.storeWrapper.getStore();
-
     public static getWebClientConfiguration(): WebClientConfiguration {
-        return ConfigUtil.store.getters["config/webClient"];
+        const storeWrapper = container.get<IStoreProvider>(
+            STORE_IDENTIFIER.StoreProvider
+        );
+        const store = storeWrapper.getStore();
+
+        return store.getters["config/webClient"];
     }
 
     public static getFeatureConfiguration(): FeatureToggleConfiguration {

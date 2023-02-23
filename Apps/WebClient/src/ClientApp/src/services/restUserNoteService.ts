@@ -1,5 +1,6 @@
 import { injectable } from "inversify";
 
+import { EntryType } from "@/constants/entryType";
 import { ResultType } from "@/constants/resulttype";
 import { ServiceCode } from "@/constants/serviceCodes";
 import { Dictionary } from "@/models/baseTypes";
@@ -14,6 +15,7 @@ import {
     ILogger,
     IUserNoteService,
 } from "@/services/interfaces";
+import ConfigUtil from "@/utility/configUtil";
 import ErrorTranslator from "@/utility/errorTranslator";
 import RequestResultUtil from "@/utility/requestResultUtil";
 
@@ -29,9 +31,9 @@ export class RestUserNoteService implements IUserNoteService {
         config: ExternalConfiguration,
         http: IHttpDelegate
     ): void {
-        this.http = http;
-        this.isEnabled = config.webClient.modules["Note"];
         this.baseUri = config.serviceEndpoints["GatewayApi"];
+        this.http = http;
+        this.isEnabled = ConfigUtil.isDatasetEnabled(EntryType.Note);
     }
 
     public getNotes(hdid: string): Promise<RequestResult<UserNote[]>> {
