@@ -28,9 +28,7 @@ const entryTypeMap = new Map<EntryType | undefined, EntryTypeDetails>();
 export function getEntryTypeByModule(
     module: string
 ): EntryTypeDetails | undefined {
-    return Array.from(entryTypeMap.values()).find(
-        (e) => e.moduleName === module
-    );
+    return [...entryTypeMap.values()].find((e) => e.moduleName === module);
 }
 
 entryTypeMap.set(EntryType.Immunization, {

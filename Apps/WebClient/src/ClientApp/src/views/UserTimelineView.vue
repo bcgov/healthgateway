@@ -22,13 +22,14 @@ import NoteEditComponent from "@/components/modal/NoteEditComponent.vue";
 import BreadcrumbComponent from "@/components/navmenu/BreadcrumbComponent.vue";
 import AddNoteButtonComponent from "@/components/timeline/AddNoteButtonComponent.vue";
 import TimelineComponent from "@/components/timeline/TimelineComponent.vue";
-import { EntryType } from "@/constants/entryType";
+import { EntryType, entryTypeMap } from "@/constants/entryType";
 import BreadcrumbItem from "@/models/breadcrumbItem";
 import type { WebClientConfiguration } from "@/models/configData";
 import User from "@/models/user";
 import container from "@/plugins/container";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import { ILogger } from "@/services/interfaces";
+import ConfigUtil from "@/utility/configUtil";
 
 library.add(
     faCheckCircle,
@@ -82,17 +83,9 @@ export default class UserTimelineView extends Vue {
     }
 
     get entryTypes(): EntryType[] {
-        return [
-            EntryType.ClinicalDocument,
-            EntryType.Covid19TestResult,
-            EntryType.HealthVisit,
-            EntryType.HospitalVisit,
-            EntryType.Immunization,
-            EntryType.LabResult,
-            EntryType.Medication,
-            EntryType.Note,
-            EntryType.SpecialAuthorityRequest,
-        ].filter((entryType) => this.config.modules[entryType]);
+        return [...entryTypeMap.values()]
+            .filter((d) => ConfigUtil.isDatasetEnabled(d.type))
+            .map((d) => d.type);
     }
 
     get notesAreEnabled(): boolean {
