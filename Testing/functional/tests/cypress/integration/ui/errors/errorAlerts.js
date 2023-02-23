@@ -8,7 +8,8 @@ const tooManyRequestsStatusCode = 429;
 const serverErrorStatusCode = 500;
 
 function testGetConfigurationError(statusCode = serverErrorStatusCode) {
-    cy.enableModules([]);
+    cy.configureSettings({});
+    cy.wait(1000);
     cy.intercept("GET", "/configuration", {
         statusCode,
     });
@@ -22,7 +23,7 @@ function testGetConfigurationError(statusCode = serverErrorStatusCode) {
 }
 
 function testGetProfileErrorOnLoad(statusCode = serverErrorStatusCode) {
-    cy.enableModules([]);
+    cy.configureSettings({});
     cy.login(
         Cypress.env("keycloak.username"),
         Cypress.env("keycloak.password"),
@@ -42,7 +43,7 @@ function testGetProfileErrorOnLoad(statusCode = serverErrorStatusCode) {
 }
 
 function testRegisterError(statusCode = serverErrorStatusCode) {
-    cy.enableModules([]);
+    cy.configureSettings({});
     const hdid = "S22BPV6WHS5TRLBL4XKGQDBVDUKLPIRSBGYSEJAHYMYRP22SP2TA";
     cy.intercept("GET", `**/UserProfile/${hdid}`, {
         fixture: "UserProfileService/userProfileUnregistered.json",
@@ -93,7 +94,7 @@ function testRegisterError(statusCode = serverErrorStatusCode) {
 }
 
 function testValidateEmailError(statusCode = serverErrorStatusCode) {
-    cy.enableModules([]);
+    cy.configureSettings({});
     cy.intercept("GET", "**/UserProfile/*/email/validate/dummyinvitekey", {
         statusCode,
     }).as("validateEmail");
@@ -112,15 +113,26 @@ function testValidateEmailError(statusCode = serverErrorStatusCode) {
 }
 
 function testAddQuickLinkError(statusCode = serverErrorStatusCode) {
-    cy.enableModules([
-        "Encounter",
-        "Immunization",
-        "Laboratory",
-        "AllLaboratory",
-        "Medication",
-        "MedicationRequest",
-        "Note",
-    ]);
+    cy.configureSettings(
+        {
+            datasets: [
+                {
+                    name: "covid19TestResult",
+                    enabled: true,
+                },
+            ],
+        },
+        [
+            "Encounter",
+            "Immunization",
+            "Laboratory",
+            "AllLaboratory",
+            "Medication",
+            "MedicationRequest",
+            "Note",
+        ]
+    );
+
     cy.intercept("PUT", "**/UserProfile/*/preference", {
         statusCode,
     });
@@ -155,7 +167,7 @@ function testAddQuickLinkError(statusCode = serverErrorStatusCode) {
 }
 
 function testAddCommentError(statusCode = serverErrorStatusCode) {
-    cy.enableModules(["Comment", "AllLaboratory"]);
+    cy.configureSettings({}, ["Comment", "AllLaboratory"]);
     cy.intercept("POST", "**/UserProfile/*/Comment", {
         statusCode,
     });
@@ -192,7 +204,7 @@ function getQuickLinkCard(title) {
 }
 
 function testRemoveQuickLinkError(statusCode = serverErrorStatusCode) {
-    cy.enableModules([
+    cy.configureSettings({}, [
         "Encounter",
         "Immunization",
         "Laboratory",
@@ -265,7 +277,7 @@ function testHideVaccineCardQuickLinkError(statusCode = serverErrorStatusCode) {
 }
 
 function testEditSmsError(statusCode = serverErrorStatusCode) {
-    cy.enableModules([]);
+    cy.configureSettings({});
     cy.intercept("GET", "**/UserProfile/*", {
         fixture: "UserProfileService/userProfile.json",
     });
@@ -294,7 +306,7 @@ function testEditSmsError(statusCode = serverErrorStatusCode) {
 }
 
 function testVerifySmsError(statusCode = serverErrorStatusCode) {
-    cy.enableModules([]);
+    cy.configureSettings({});
     cy.intercept("GET", "**/UserProfile/*/sms/validate/*", {
         statusCode,
     });
@@ -325,7 +337,7 @@ function testVerifySmsError(statusCode = serverErrorStatusCode) {
 }
 
 function testEditEmailError(statusCode = serverErrorStatusCode) {
-    cy.enableModules([]);
+    cy.configureSettings({});
     cy.intercept("PUT", "**/UserProfile/*/email", {
         statusCode,
     });

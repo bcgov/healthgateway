@@ -45,7 +45,16 @@ function clickVaccineCardEnterButton() {
 
 describe("Public Vaccine Card Form", () => {
     beforeEach(() => {
-        cy.enableModules(["Immunization"]);
+        cy.configureSettings(
+            {
+                covid19: {
+                    publicCovid19: {
+                        showFederalProofOfVaccination: true,
+                    },
+                },
+            },
+            ["Immunization"]
+        );
         cy.logout();
         cy.visit(vaccineCardUrl);
     });
@@ -215,7 +224,16 @@ describe("Public Vaccine Card Form", () => {
 
 describe("Public Vaccine Card Downloads", () => {
     beforeEach(() => {
-        cy.enableModules(["Immunization", "PublicVaccineDownloadPdf"]);
+        cy.configureSettings(
+            {
+                covid19: {
+                    publicCovid19: {
+                        showFederalProofOfVaccination: true,
+                    },
+                },
+            },
+            ["Immunization"]
+        );
         cy.logout();
         cy.intercept("GET", "**/PublicVaccineStatus", {
             fixture: "ImmunizationService/publicVaccineStatusLoaded.json",
@@ -299,7 +317,7 @@ describe("Public Vaccine Card Downloads", () => {
 
 describe("Public Vaccine Card Downloads When PublicVaccineDownloadPdf Disabled", () => {
     it("Save Image When PublicVaccineDownloadPdf Disabled", () => {
-        cy.enableModules(["Immunization"]);
+        cy.configureSettings({}, ["Immunization"]);
         cy.logout();
         cy.intercept("GET", "**/PublicVaccineStatus", {
             fixture: "ImmunizationService/publicVaccineStatusLoaded.json",

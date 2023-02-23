@@ -328,8 +328,6 @@ const routes = [
                 UserState.registered,
                 UserState.pendingDeletion,
             ],
-            requiredFeaturesEnabled: (config: FeatureToggleConfiguration) =>
-                config.covid19.publicCovid19.showFederalProofOfVaccination,
             requiresProcessedWaitlistTicket: true,
         },
     },
@@ -461,7 +459,7 @@ export const beforeEachGuard: NavigationGuard = async (
     );
     const store = storeWrapper.getStore();
 
-    const webClientConfig: WebClientConfiguration =
+    const webClientConfig: WebClientConfiguration | undefined =
         store.getters["config/webClient"];
 
     logger.debug(
@@ -481,10 +479,9 @@ export const beforeEachGuard: NavigationGuard = async (
         return;
     }
 
-    //const enabledModules = getEnabledModules();
-
     const waitlistIsEnabled =
-        webClientConfig.featureToggleConfiguration.waitingQueue.enabled;
+        webClientConfig?.featureToggleConfiguration?.waitingQueue?.enabled ??
+        false;
     const isAuthenticated: boolean = store.getters["auth/oidcIsAuthenticated"];
     let metaRequiresProcessedWaitlistTicket =
         meta.requiresProcessedWaitlistTicket;
@@ -510,9 +507,10 @@ export const beforeEachGuard: NavigationGuard = async (
     const isValidState = meta.validStates.includes(currentUserState);
     const requiredFeaturesEnabled =
         meta.requiredFeaturesEnabled === undefined ||
-        meta.requiredFeaturesEnabled(
-            webClientConfig.featureToggleConfiguration
-        );
+        (webClientConfig !== undefined &&
+            meta.requiredFeaturesEnabled(
+                webClientConfig.featureToggleConfiguration
+            ));
 
     if (isValidState && requiredFeaturesEnabled) {
         next();

@@ -11,6 +11,16 @@ describe("Public Route", () => {
     });
 
     it("Redirect to Covid Test", () => {
+        cy.configureSettings(
+            {
+                covid19: {
+                    publicCovid19: {
+                        enableTestResults: true,
+                    },
+                },
+            },
+            ["Laboratory"]
+        );
         cy.enableModules(["Laboratory", "PublicLaboratoryResult"]);
         cy.logout();
         cy.visit(covidTestPath);
