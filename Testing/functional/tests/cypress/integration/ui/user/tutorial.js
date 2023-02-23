@@ -36,14 +36,11 @@ describe("Tutorial", () => {
     });
 
     it("Validate Add Dependent Popover", () => {
-        cy.configureSettings(
-            {
-                dependents: {
-                    enabled: true,
-                },
+        cy.configureSettings({
+            dependents: {
+                enabled: true,
             },
-            ["Dependent"]
-        );
+        });
         cy.intercept("GET", "**/UserProfile/*", (req) => {
             req.reply((res) => {
                 res.body.resourcePayload.preferences.tutorialAddDependent = {
