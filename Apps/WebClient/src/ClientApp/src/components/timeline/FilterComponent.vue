@@ -144,7 +144,7 @@ export default class FilterComponent extends Vue {
         this.keywordInputText = this.activeFilter.keyword;
         this.startDate = this.activeFilter.startDate;
         this.endDate = this.activeFilter.endDate;
-        this.selectedEntryTypes = Array.from(this.activeEntryTypes);
+        this.selectedEntryTypes = [...this.activeEntryTypes];
     }
 
     private toggleMenu(): void {

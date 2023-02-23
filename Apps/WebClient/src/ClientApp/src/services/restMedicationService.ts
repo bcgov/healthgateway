@@ -1,5 +1,6 @@
 import { injectable } from "inversify";
 
+import { EntryType } from "@/constants/entryType";
 import { ResultType } from "@/constants/resulttype";
 import { ServiceCode } from "@/constants/serviceCodes";
 import { Dictionary } from "@/models/baseTypes";
@@ -14,6 +15,7 @@ import {
     ILogger,
     IMedicationService,
 } from "@/services/interfaces";
+import ConfigUtil from "@/utility/configUtil";
 import ErrorTranslator from "@/utility/errorTranslator";
 
 @injectable()
@@ -31,7 +33,7 @@ export class RestMedicationService implements IMedicationService {
     ): void {
         this.baseUri = config.serviceEndpoints["Medication"];
         this.http = http;
-        this.isEnabled = config.webClient.modules["Medication"];
+        this.isEnabled = ConfigUtil.isDatasetEnabled(EntryType.Medication);
     }
 
     public getPatientMedicationStatementHistory(

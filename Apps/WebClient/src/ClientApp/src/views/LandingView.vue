@@ -27,9 +27,7 @@ import { Getter } from "vuex-class";
 import { EntryType, entryTypeMap } from "@/constants/entryType";
 import { RegistrationStatus } from "@/constants/registrationStatus";
 import type { WebClientConfiguration } from "@/models/configData";
-import container from "@/plugins/container";
-import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
-import { ILogger } from "@/services/interfaces";
+import ConfigUtil from "@/utility/configUtil";
 
 library.add(
     faCheckCircle,
@@ -83,29 +81,7 @@ export default class LandingView extends Vue {
     @Getter("patientRetrievalFailed", { namespace: "user" })
     patientRetrievalFailed!: boolean;
 
-    private get isVaccinationBannerEnabled(): boolean {
-        return false;
-    }
-
-    private get isPublicLaboratoryResultEnabled(): boolean {
-        return this.config.modules["PublicLaboratoryResult"];
-    }
-
-    private get isSidebarAvailable(): boolean {
-        return (
-            !this.isOffline &&
-            this.oidcIsAuthenticated &&
-            this.isValidIdentityProvider &&
-            this.userIsRegistered &&
-            this.userIsActive &&
-            !this.patientRetrievalFailed
-        );
-    }
-
-    private logger!: ILogger;
-    private selectedPreviewDevice = "laptop";
-
-    private entryTypes: EntryType[] = [
+    entryTypes: EntryType[] = [
         EntryType.Medication,
         EntryType.LabResult,
         EntryType.Covid19TestResult,
@@ -116,58 +92,72 @@ export default class LandingView extends Vue {
         EntryType.HospitalVisit,
     ];
 
-    private tiles: Tile[] = [];
+    selectedPreviewDevice = "laptop";
 
-    private get offlineMessage(): string {
-        if (this.isOffline) {
-            return this.config.offlineMode?.message || "";
-        } else {
-            return "";
-        }
+    get isVaccinationBannerEnabled(): boolean {
+        return false;
     }
 
-    private get activeTiles(): Tile[] {
-        return this.tiles.filter((tile) => tile.active);
+    get isPublicLaboratoryResultEnabled(): boolean {
+        return this.config.featureToggleConfiguration.covid19.publicCovid19
+            .enableTestResults;
     }
 
-    private get isOpenRegistration(): boolean {
-        return this.config.registrationStatus === RegistrationStatus.Open;
+    get isSidebarAvailable(): boolean {
+        return (
+            !this.isOffline &&
+            this.oidcIsAuthenticated &&
+            this.isValidIdentityProvider &&
+            this.userIsRegistered &&
+            this.userIsActive &&
+            !this.patientRetrievalFailed
+        );
     }
 
-    private created(): void {
-        this.logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
+    get offlineMessage(): string {
+        return this.config.offlineMode?.message ?? "";
     }
 
-    private mounted(): void {
-        // Get core tiles from entry type constants
-        this.loadCoreTiles();
-
-        // Add Proof of Vaccination tile to tiles
-        this.addProofOfVaccinationTile();
-
-        // Populate tiles with active value from config module
-        this.populateActiveValue();
-    }
-
-    private getProofOfVaccinationTile(): Tile {
-        const proofOfVaccinationTile: Tile = {
+    get proofOfVaccinationTile(): Tile {
+        return {
             type: "ProofOfVaccination",
             icon: "check-circle",
             name: "Proof of Vaccination",
             description: "View and download your proof of vaccination",
-            active: true,
+            active: this.config.featureToggleConfiguration.covid19.publicCovid19
+                .showFederalProofOfVaccination,
         };
-
-        this.logger.debug(
-            `Proof of Vaccination Tile:  ${JSON.stringify(
-                proofOfVaccinationTile
-            )}`
-        );
-
-        return proofOfVaccinationTile;
     }
 
-    private getTile(entryType: EntryType): Tile | undefined {
+    get tiles(): Tile[] {
+        // Get core tiles from entry type constants
+        const tiles = this.entryTypes.map((type) => {
+            const details = entryTypeMap.get(type);
+            const tile: Tile = {
+                type,
+                icon: details?.icon ?? "",
+                name: details?.name ?? "",
+                description: details?.description ?? "",
+                active: ConfigUtil.isDatasetEnabled(type),
+            };
+            return tile;
+        });
+
+        // Add Proof of Vaccination tile
+        tiles.splice(2, 0, this.proofOfVaccinationTile);
+
+        return tiles;
+    }
+
+    get activeTiles(): Tile[] {
+        return this.tiles.filter((tile) => tile.active);
+    }
+
+    get isOpenRegistration(): boolean {
+        return this.config.registrationStatus === RegistrationStatus.Open;
+    }
+
+    getTile(entryType: EntryType): Tile | undefined {
         const entry = entryTypeMap.get(entryType);
         if (entry) {
             return {
@@ -181,51 +171,7 @@ export default class LandingView extends Vue {
         return undefined;
     }
 
-    private addProofOfVaccinationTile(): void {
-        this.tiles.splice(2, 0, this.getProofOfVaccinationTile());
-        this.tiles.forEach((tile) =>
-            this.logger.debug(
-                `Add Proof of Vaccine - Tile:  ${JSON.stringify(tile)}`
-            )
-        );
-    }
-
-    private populateActiveValue(): void {
-        for (const moduleName in this.config.modules) {
-            const tile = this.tiles.find(
-                (tileEntry) => tileEntry.type === moduleName
-            );
-            if (tile) {
-                tile.active = this.config.modules[moduleName];
-            }
-        }
-        this.tiles.forEach((tile) =>
-            this.logger.debug(
-                `Populate Active Value - Tile:  ${JSON.stringify(tile)}`
-            )
-        );
-    }
-
-    private loadCoreTiles(): void {
-        // Get core tiles from entry type constants
-        this.tiles = this.entryTypes.map((type) => {
-            const details = entryTypeMap.get(type);
-            const tile: Tile = {
-                type,
-                icon: details?.icon ?? "",
-                name: details?.name ?? "",
-                description: details?.description ?? "",
-                active: false,
-            };
-            return tile;
-        });
-
-        this.tiles.forEach((tile) =>
-            this.logger.debug(`Core Tile:  ${JSON.stringify(tile)}`)
-        );
-    }
-
-    private selectPreviewDevice(deviceName: string): void {
+    selectPreviewDevice(deviceName: string): void {
         this.selectedPreviewDevice = deviceName;
         this.$root.$emit(
             "bv::hide::tooltip",

@@ -1,5 +1,6 @@
 import { injectable } from "inversify";
 
+import { EntryType } from "@/constants/entryType";
 import { ResultType } from "@/constants/resulttype";
 import { ServiceCode } from "@/constants/serviceCodes";
 import { ExternalConfiguration } from "@/models/configData";
@@ -13,6 +14,7 @@ import {
     IImmunizationService,
     ILogger,
 } from "@/services/interfaces";
+import ConfigUtil from "@/utility/configUtil";
 import ErrorTranslator from "@/utility/errorTranslator";
 
 @injectable()
@@ -29,7 +31,7 @@ export class RestImmunizationService implements IImmunizationService {
     ): void {
         this.baseUri = config.serviceEndpoints["Immunization"];
         this.http = http;
-        this.isEnabled = config.webClient.modules["Immunization"];
+        this.isEnabled = ConfigUtil.isDatasetEnabled(EntryType.Immunization);
     }
 
     public getPatientImmunizations(
