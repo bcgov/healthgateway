@@ -27,9 +27,10 @@ export class RestPcrTestService implements IPcrTestService {
         config: ExternalConfiguration,
         http: IHttpDelegate
     ): void {
-        this.http = http;
-        this.isEnabled = config.webClient.modules["PcrTest"];
         this.baseUri = config.serviceEndpoints["Laboratory"];
+        this.http = http;
+        this.isEnabled =
+            config.webClient.featureToggleConfiguration.covid19.pcrTestEnabled;
     }
 
     public registerTestKit(
