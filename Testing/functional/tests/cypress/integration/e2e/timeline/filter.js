@@ -13,7 +13,14 @@ function verifyActiveFilters(filterLabels) {
 
 describe("Disabled Filters", () => {
     beforeEach(() => {
-        cy.enableModules("Medication");
+        cy.configureSettings({
+            datasets: [
+                {
+                    name: "medication",
+                    enabled: true,
+                },
+            ],
+        });
         cy.login(
             Cypress.env("keycloak.username"),
             Cypress.env("keycloak.password"),
@@ -27,11 +34,13 @@ describe("Disabled Filters", () => {
         cy.get("[data-testid=filterDropdown]").click();
         cy.get("[data-testid=MedicationCount]").should("be.visible");
         cy.get("[data-testid=ImmunizationCount]").should("not.exist");
-        cy.get("[data-testid=EncounterCount]").should("not.exist");
+        cy.get("[data-testid=HealthVisitCount]").should("not.exist");
         cy.get("[data-testid=NoteCount]").should("not.exist");
-        cy.get("[data-testid=LaboratoryCount]").should("not.exist");
-        cy.get("[data-testid=AllLaboratoryCount]").should("not.exist");
-        cy.get("[data-testid=MedicationRequestCount]").should("not.exist");
+        cy.get("[data-testid=Covid19TestResultCount]").should("not.exist");
+        cy.get("[data-testid=LabResultCount]").should("not.exist");
+        cy.get("[data-testid=SpecialAuthorityRequestCount]").should(
+            "not.exist"
+        );
         cy.get("[data-testid=ClinicalDocumentCount]").should("not.exist");
         cy.get("[data-testid=HospitalVisitCount]").should("not.exist");
         cy.get("[data-testid=btnFilterCancel]").click();
@@ -40,17 +49,46 @@ describe("Disabled Filters", () => {
 
 describe("Filters", () => {
     beforeEach(() => {
-        cy.enableModules([
-            "AllLaboratory",
-            "ClinicalDocument",
-            "Encounter",
-            "Immunization",
-            "Laboratory",
-            "Medication",
-            "MedicationRequest",
-            "Note",
-            "HospitalVisit",
-        ]);
+        cy.configureSettings({
+            datasets: [
+                {
+                    name: "clinicalDocument",
+                    enabled: true,
+                },
+                {
+                    name: "covid19TestResult",
+                    enabled: true,
+                },
+                {
+                    name: "healthVisit",
+                    enabled: true,
+                },
+                {
+                    name: "hospitalVisit",
+                    enabled: true,
+                },
+                {
+                    name: "immunization",
+                    enabled: true,
+                },
+                {
+                    name: "labResult",
+                    enabled: true,
+                },
+                {
+                    name: "medication",
+                    enabled: true,
+                },
+                {
+                    name: "note",
+                    enabled: true,
+                },
+                {
+                    name: "specialAuthorityRequest",
+                    enabled: true,
+                },
+            ],
+        });
         cy.login(
             Cypress.env("keycloak.username"),
             Cypress.env("keycloak.password"),
@@ -68,19 +106,19 @@ describe("Filters", () => {
         cy.get("[data-testid=MedicationCount]")
             .should("be.visible")
             .contains(countRegex);
-        cy.get("[data-testid=AllLaboratoryCount]")
+        cy.get("[data-testid=LabResultCount]")
             .should("be.visible")
             .contains(countRegex);
-        cy.get("[data-testid=LaboratoryCount]")
+        cy.get("[data-testid=Covid19TestResultCount]")
             .should("be.visible")
             .contains(countRegex);
-        cy.get("[data-testid=EncounterCount]")
+        cy.get("[data-testid=HealthVisitCount]")
             .should("be.visible")
             .contains(countRegex);
         cy.get("[data-testid=NoteCount]")
             .should("be.visible")
             .contains(countRegex);
-        cy.get("[data-testid=MedicationRequestCount]")
+        cy.get("[data-testid=SpecialAuthorityRequestCount]")
             .should("be.visible")
             .contains(countRegex);
         cy.get("[data-testid=ClinicalDocumentCount]")
@@ -149,8 +187,10 @@ describe("Filters", () => {
         cy.get("[data-testid=Medication-filter]").should("not.to.be.checked");
         cy.get("[data-testid=Note-filter]").should("not.to.be.checked");
         cy.get("[data-testid=Immunization-filter]").should("not.to.be.checked");
-        cy.get("[data-testid=Laboratory-filter]").should("not.to.be.checked");
-        cy.get("[data-testid=Encounter-filter]").should("not.to.be.checked");
+        cy.get("[data-testid=Covid19TestResult-filter]").should(
+            "not.to.be.checked"
+        );
+        cy.get("[data-testid=HealthVisit-filter]").should("not.to.be.checked");
         cy.get("[data-testid=ClinicalDocument-filter]").should(
             "not.to.be.checked"
         );
@@ -167,12 +207,14 @@ describe("Filters", () => {
         cy.get("[data-testid=btnFilterApply]").click();
 
         cy.get("[data-testid=noteTitle]").should("not.exist");
-        cy.get("[data-testid=encounterTitle]").should("not.exist");
-        cy.get("[data-testid=laboratoryTitle]").should("not.exist");
-        cy.get("[data-testid=alllaboratoryTitle]").should("not.exist");
+        cy.get("[data-testid=healthvisitTitle]").should("not.exist");
+        cy.get("[data-testid=covid19testresultTitle]").should("not.exist");
+        cy.get("[data-testid=labresultTitle]").should("not.exist");
         cy.get("[data-testid=medicationTitle]").should("not.exist");
         cy.get("[data-testid=immunizationTitle]").should("be.visible");
-        cy.get("[data-testid=medicationrequestTitle]").should("not.exist");
+        cy.get("[data-testid=specialauthorityrequestTitle]").should(
+            "not.exist"
+        );
         cy.get("[data-testid=clinicaldocumentTitle]").should("not.exist");
         cy.get("[data-testid=hospitalvisitTitle]").should("not.exist");
         verifyActiveFilters(["Immunization"]);
@@ -205,11 +247,13 @@ describe("Filters", () => {
 
         cy.get("[data-testid=immunizationTitle]").should("not.exist");
         cy.get("[data-testid=noteTitle]").should("not.exist");
-        cy.get("[data-testid=encounterTitle]").should("not.exist");
-        cy.get("[data-testid=laboratoryTitle]").should("not.exist");
-        cy.get("[data-testid=alllaboratoryTitle]").should("not.exist");
+        cy.get("[data-testid=healthvisitTitle]").should("not.exist");
+        cy.get("[data-testid=covid19testresultTitle]").should("not.exist");
+        cy.get("[data-testid=labresultTitle]").should("not.exist");
         cy.get("[data-testid=medicationTitle]").should("be.visible");
-        cy.get("[data-testid=medicationrequestTitle]").should("not.exist");
+        cy.get("[data-testid=specialauthorityrequestTitle]").should(
+            "not.exist"
+        );
         cy.get("[data-testid=clinicaldocumentTitle]").should("not.exist");
         cy.get("[data-testid=hospitalvisitTitle]").should("not.exist");
         verifyActiveFilters(["Medication"]);
@@ -218,16 +262,18 @@ describe("Filters", () => {
     it("Filter Encounter", () => {
         cy.get("[data-testid=filterContainer]").should("not.exist");
         cy.get("[data-testid=filterDropdown]").click();
-        cy.get("[data-testid=Encounter-filter]").click({ force: true });
+        cy.get("[data-testid=HealthVisit-filter]").click({ force: true });
         cy.get("[data-testid=btnFilterApply]").click();
 
-        cy.get("[data-testid=encounterTitle]").should("be.visible");
+        cy.get("[data-testid=healthvisitTitle]").should("be.visible");
         cy.get("[data-testid=noteTitle]").should("not.exist");
         cy.get("[data-testid=immunizationTitle]").should("not.exist");
-        cy.get("[data-testid=laboratoryTitle]").should("not.exist");
-        cy.get("[data-testid=alllaboratoryTitle]").should("not.exist");
+        cy.get("[data-testid=covid19testresultTitle]").should("not.exist");
+        cy.get("[data-testid=labresultTitle]").should("not.exist");
         cy.get("[data-testid=medicationTitle]").should("not.exist");
-        cy.get("[data-testid=medicationrequestTitle]").should("not.exist");
+        cy.get("[data-testid=specialauthorityrequestTitle]").should(
+            "not.exist"
+        );
         cy.get("[data-testid=clinicaldocumentTitle]").should("not.exist");
         cy.get("[data-testid=hospitalvisitTitle]").should("not.exist");
         verifyActiveFilters(["Health Visits"]);
@@ -236,16 +282,18 @@ describe("Filters", () => {
     it("Filter COVID-19", () => {
         cy.get("[data-testid=filterContainer]").should("not.exist");
         cy.get("[data-testid=filterDropdown]").click();
-        cy.get("[data-testid=Laboratory-filter]").click({ force: true });
+        cy.get("[data-testid=Covid19TestResult-filter]").click({ force: true });
         cy.get("[data-testid=btnFilterApply]").click();
 
-        cy.get("[data-testid=encounterTitle]").should("not.exist");
+        cy.get("[data-testid=healthvisitTitle]").should("not.exist");
         cy.get("[data-testid=noteTitle]").should("not.exist");
         cy.get("[data-testid=immunizationTitle]").should("not.exist");
-        cy.get("[data-testid=laboratoryTitle]").should("be.visible");
+        cy.get("[data-testid=covid19testresultTitle]").should("be.visible");
         cy.get("[data-testid=medicationTitle]").should("not.exist");
-        cy.get("[data-testid=alllaboratoryTitle]").should("not.exist");
-        cy.get("[data-testid=medicationrequestTitle]").should("not.exist");
+        cy.get("[data-testid=labresultTitle]").should("not.exist");
+        cy.get("[data-testid=specialauthorityrequestTitle]").should(
+            "not.exist"
+        );
         cy.get("[data-testid=clinicaldocumentTitle]").should("not.exist");
         cy.get("[data-testid=hospitalvisitTitle]").should("not.exist");
         verifyActiveFilters(["COVID‑19 Tests"]);
@@ -254,16 +302,18 @@ describe("Filters", () => {
     it("Filter Laboratory", () => {
         cy.get("[data-testid=filterContainer]").should("not.exist");
         cy.get("[data-testid=filterDropdown]").click();
-        cy.get("[data-testid=AllLaboratory-filter]").click({ force: true });
+        cy.get("[data-testid=LabResult-filter]").click({ force: true });
         cy.get("[data-testid=btnFilterApply]").click();
 
-        cy.get("[data-testid=encounterTitle]").should("not.exist");
+        cy.get("[data-testid=healthvisitTitle]").should("not.exist");
         cy.get("[data-testid=noteTitle]").should("not.exist");
         cy.get("[data-testid=immunizationTitle]").should("not.exist");
-        cy.get("[data-testid=laboratoryTitle]").should("not.exist");
-        cy.get("[data-testid=alllaboratoryTitle]").should("be.visible");
+        cy.get("[data-testid=covid19testresultTitle]").should("not.exist");
+        cy.get("[data-testid=labresultTitle]").should("be.visible");
         cy.get("[data-testid=medicationTitle]").should("not.exist");
-        cy.get("[data-testid=medicationrequestTitle]").should("not.exist");
+        cy.get("[data-testid=specialauthorityrequestTitle]").should(
+            "not.exist"
+        );
         cy.get("[data-testid=clinicaldocumentTitle]").should("not.exist");
         cy.get("[data-testid=hospitalvisitTitle]").should("not.exist");
         verifyActiveFilters(["Lab Results"]);
@@ -272,16 +322,20 @@ describe("Filters", () => {
     it("Filter Special Authority", () => {
         cy.get("[data-testid=filterContainer]").should("not.exist");
         cy.get("[data-testid=filterDropdown]").click();
-        cy.get("[data-testid=MedicationRequest-filter]").click({ force: true });
+        cy.get("[data-testid=SpecialAuthorityRequest-filter]").click({
+            force: true,
+        });
         cy.get("[data-testid=btnFilterApply]").click();
 
-        cy.get("[data-testid=encounterTitle]").should("not.exist");
+        cy.get("[data-testid=healthvisitTitle]").should("not.exist");
         cy.get("[data-testid=noteTitle]").should("not.exist");
         cy.get("[data-testid=immunizationTitle]").should("not.exist");
         cy.get("[data-testid=medicationTitle]").should("not.exist");
-        cy.get("[data-testid=laboratoryTitle]").should("not.exist");
-        cy.get("[data-testid=alllaboratoryTitle]").should("not.exist");
-        cy.get("[data-testid=medicationrequestTitle]").should("be.visible");
+        cy.get("[data-testid=covid19testresultTitle]").should("not.exist");
+        cy.get("[data-testid=labresultTitle]").should("not.exist");
+        cy.get("[data-testid=specialauthorityrequestTitle]").should(
+            "be.visible"
+        );
         cy.get("[data-testid=clinicaldocumentTitle]").should("not.exist");
         cy.get("[data-testid=hospitalvisitTitle]").should("not.exist");
         verifyActiveFilters(["Special Authority"]);
@@ -293,13 +347,15 @@ describe("Filters", () => {
         cy.get("[data-testid=ClinicalDocument-filter]").click({ force: true });
         cy.get("[data-testid=btnFilterApply]").click();
 
-        cy.get("[data-testid=encounterTitle]").should("not.exist");
+        cy.get("[data-testid=healthvisitTitle]").should("not.exist");
         cy.get("[data-testid=noteTitle]").should("not.exist");
         cy.get("[data-testid=immunizationTitle]").should("not.exist");
-        cy.get("[data-testid=laboratoryTitle]").should("not.exist");
-        cy.get("[data-testid=alllaboratoryTitle]").should("not.exist");
+        cy.get("[data-testid=covid19testresultTitle]").should("not.exist");
+        cy.get("[data-testid=labresultTitle]").should("not.exist");
         cy.get("[data-testid=medicationTitle]").should("not.exist");
-        cy.get("[data-testid=medicationrequestTitle]").should("not.exist");
+        cy.get("[data-testid=specialauthorityrequestTitle]").should(
+            "not.exist"
+        );
         cy.get("[data-testid=clinicaldocumentTitle]").should("be.visible");
         cy.get("[data-testid=hospitalvisitTitle]").should("not.exist");
         verifyActiveFilters(["Clinical Documents"]);
@@ -311,13 +367,15 @@ describe("Filters", () => {
         cy.get("[data-testid=HospitalVisit-filter]").click({ force: true });
         cy.get("[data-testid=btnFilterApply]").click();
 
-        cy.get("[data-testid=encounterTitle]").should("not.exist");
+        cy.get("[data-testid=healthvisitTitle]").should("not.exist");
         cy.get("[data-testid=noteTitle]").should("not.exist");
         cy.get("[data-testid=immunizationTitle]").should("not.exist");
-        cy.get("[data-testid=laboratoryTitle]").should("not.exist");
-        cy.get("[data-testid=alllaboratoryTitle]").should("not.exist");
+        cy.get("[data-testid=covid19testresultTitle]").should("not.exist");
+        cy.get("[data-testid=labresultTitle]").should("not.exist");
         cy.get("[data-testid=medicationTitle]").should("not.exist");
-        cy.get("[data-testid=medicationrequestTitle]").should("not.exist");
+        cy.get("[data-testid=specialauthorityrequestTitle]").should(
+            "not.exist"
+        );
         cy.get("[data-testid=clinicaldocumentTitle]").should("not.exist");
         cy.get("[data-testid=hospitalvisitTitle]").should("be.visible");
         verifyActiveFilters(["Hospital Visits"]);
@@ -330,12 +388,12 @@ describe("Filters", () => {
         cy.get("[data-testid=Medication-filter]").should("not.to.be.checked");
         cy.get("[data-testid=Note-filter]").should("not.to.be.checked");
         cy.get("[data-testid=Immunization-filter]").should("not.to.be.checked");
-        cy.get("[data-testid=Laboratory-filter]").should("not.to.be.checked");
-        cy.get("[data-testid=AllLaboratory-filter]").should(
+        cy.get("[data-testid=Covid19TestResult-filter]").should(
             "not.to.be.checked"
         );
-        cy.get("[data-testid=Encounter-filter]").should("not.to.be.checked");
-        cy.get("[data-testid=MedicationRequest-filter]").should(
+        cy.get("[data-testid=LabResult-filter]").should("not.to.be.checked");
+        cy.get("[data-testid=HealthVisit-filter]").should("not.to.be.checked");
+        cy.get("[data-testid=SpecialAuthorityRequest-filter]").should(
             "not.to.be.checked"
         );
         cy.get("[data-testid=ClinicalDocument-filter]").should(
@@ -351,20 +409,24 @@ describe("Filters", () => {
         cy.get("[data-testid=filterContainer]").should("be.visible");
         cy.get("[data-testid=Immunization-filter]").click({ force: true });
         cy.get("[data-testid=Medication-filter]").click({ force: true });
-        cy.get("[data-testid=Encounter-filter]").click({ force: true });
-        cy.get("[data-testid=Laboratory-filter]").click({ force: true });
-        cy.get("[data-testid=AllLaboratory-filter]").click({ force: true });
+        cy.get("[data-testid=HealthVisit-filter]").click({ force: true });
+        cy.get("[data-testid=Covid19TestResult-filter]").click({ force: true });
+        cy.get("[data-testid=LabResult-filter]").click({ force: true });
         cy.get("[data-testid=Note-filter]").click({ force: true });
-        cy.get("[data-testid=MedicationRequest-filter]").click({ force: true });
+        cy.get("[data-testid=SpecialAuthorityRequest-filter]").click({
+            force: true,
+        });
         cy.get("[data-testid=ClinicalDocument-filter]").click({ force: true });
         cy.get("[data-testid=HospitalVisit-filter]").click({ force: true });
         cy.get("[data-testid=Medication-filter]").should("be.checked");
         cy.get("[data-testid=Note-filter]").should("be.checked");
         cy.get("[data-testid=Immunization-filter]").should("be.checked");
-        cy.get("[data-testid=Laboratory-filter]").should("be.checked");
-        cy.get("[data-testid=AllLaboratory-filter]").should("be.checked");
-        cy.get("[data-testid=Encounter-filter]").should("be.checked");
-        cy.get("[data-testid=MedicationRequest-filter]").should("be.checked");
+        cy.get("[data-testid=Covid19TestResult-filter]").should("be.checked");
+        cy.get("[data-testid=LabResult-filter]").should("be.checked");
+        cy.get("[data-testid=HealthVisit-filter]").should("be.checked");
+        cy.get("[data-testid=SpecialAuthorityRequest-filter]").should(
+            "be.checked"
+        );
         cy.get("[data-testid=ClinicalDocument-filter]").should("be.checked");
         cy.get("[data-testid=HospitalVisit-filter]").should("be.checked");
         cy.get("[data-testid=btnFilterCancel]").click();
@@ -375,12 +437,12 @@ describe("Filters", () => {
         cy.get("[data-testid=Medication-filter]").should("not.to.be.checked");
         cy.get("[data-testid=Note-filter]").should("not.to.be.checked");
         cy.get("[data-testid=Immunization-filter]").should("not.to.be.checked");
-        cy.get("[data-testid=Laboratory-filter]").should("not.to.be.checked");
-        cy.get("[data-testid=AllLaboratory-filter]").should(
+        cy.get("[data-testid=Covid19TestResult-filter]").should(
             "not.to.be.checked"
         );
-        cy.get("[data-testid=Encounter-filter]").should("not.to.be.checked");
-        cy.get("[data-testid=MedicationRequest-filter]").should(
+        cy.get("[data-testid=LabResult-filter]").should("not.to.be.checked");
+        cy.get("[data-testid=HealthVisit-filter]").should("not.to.be.checked");
+        cy.get("[data-testid=SpecialAuthorityRequest-filter]").should(
             "not.to.be.checked"
         );
         cy.get("[data-testid=ClinicalDocument-filter]").should(

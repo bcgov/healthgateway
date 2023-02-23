@@ -8,7 +8,18 @@ describe("Filters", () => {
         cy.intercept("GET", "**/Encounter/*", {
             fixture: "EncounterService/encounters.json",
         });
-        cy.enableModules(["Immunization", "Encounter"]);
+        cy.configureSettings({
+            datasets: [
+                {
+                    name: "healthVisit",
+                    enabled: true,
+                },
+                {
+                    name: "immunization",
+                    enabled: true,
+                },
+            ],
+        });
         cy.login(
             Cypress.env("keycloak.username"),
             Cypress.env("keycloak.password"),
@@ -81,7 +92,7 @@ describe("Filters", () => {
         ).should("be.visible");
 
         cy.get("[data-testid=filterDropdown]").click();
-        cy.get("[data-testid=Encounter-filter]").click({ force: true });
+        cy.get("[data-testid=HealthVisit-filter]").click({ force: true });
         cy.get("[data-testid=btnFilterApply]").click();
 
         cy.get(
