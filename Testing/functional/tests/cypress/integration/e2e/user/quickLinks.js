@@ -75,8 +75,8 @@ describe("Quick Links", () => {
         cy.get("[data-testid=filterContainer]").should("not.exist");
         cy.get("[data-testid=filterDropdown]").click();
         cy.get("[data-testid=filterContainer]").should("be.visible");
-        cy.get("[data-testid=Laboratory-filter]").should("be.checked");
-        cy.get("[data-testid=laboratoryTitle]").should("be.visible");
+        cy.get("[data-testid=Covid19TestResult-filter]").should("be.checked");
+        cy.get("[data-testid=covid19testresultTitle]").should("be.visible");
 
         cy.log("Returning to home page");
         cy.get("[data-testid=menu-btn-home-link]").should("be.visible").click();
