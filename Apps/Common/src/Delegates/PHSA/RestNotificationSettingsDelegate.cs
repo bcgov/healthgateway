@@ -17,6 +17,7 @@ namespace HealthGateway.Common.Delegates.PHSA
 {
     using System;
     using System.Diagnostics;
+    using System.Net;
     using System.Net.Http;
     using System.Threading.Tasks;
     using HealthGateway.Common.Api;
@@ -74,10 +75,16 @@ namespace HealthGateway.Common.Delegates.PHSA
             }
             catch (Exception e) when (e is ApiException or HttpRequestException)
             {
+                string errorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.Phsa);
+                if (e is ApiException { StatusCode: HttpStatusCode.UnprocessableEntity })
+                {
+                    errorCode = ErrorTranslator.ServiceError(ErrorType.SmsInvalid, ServiceType.Phsa);
+                }
+
                 retVal.ResultError = new RequestResultError
                 {
                     ResultMessage = "Error while sending notification settings to PHSA",
-                    ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.Phsa),
+                    ErrorCode = errorCode,
                 };
                 this.logger.LogError("Unexpected exception in SetNotificationSettings {Exception}", e);
             }

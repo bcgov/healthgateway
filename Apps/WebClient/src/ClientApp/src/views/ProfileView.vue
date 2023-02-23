@@ -6,7 +6,6 @@ import Vue from "vue";
 import { Component, Ref } from "vue-property-decorator";
 import {
     email,
-    helpers,
     minLength,
     not,
     requiredIf,
@@ -19,6 +18,7 @@ import LoadingComponent from "@/components/LoadingComponent.vue";
 import VerifySMSComponent from "@/components/modal/VerifySMSComponent.vue";
 import BreadcrumbComponent from "@/components/navmenu/BreadcrumbComponent.vue";
 import { ErrorSourceType, ErrorType } from "@/constants/errorType";
+import ValidationRegEx from "@/constants/validationRegEx";
 import BreadcrumbItem from "@/models/breadcrumbItem";
 import type { WebClientConfiguration } from "@/models/configData";
 import { DateWrapper } from "@/models/dateWrapper";
@@ -29,6 +29,7 @@ import UserProfile from "@/models/userProfile";
 import container from "@/plugins/container";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import { ILogger, IUserProfileService } from "@/services/interfaces";
+import PhoneUtil from "@/utility/phoneUtil";
 
 library.add(faExclamationTriangle);
 
@@ -301,14 +302,22 @@ export default class ProfileView extends Vue {
     }
 
     private validations(): unknown {
-        const sms = helpers.regex("sms", /^\D?(\d{3})\D?\D?(\d{3})\D?(\d{4})$/);
+        const validPhoneNumberFormat = async (rawInputSmsNumber: string) => {
+            if (!ValidationRegEx.PhoneNumberMasked.test(rawInputSmsNumber)) {
+                return false;
+            }
+            const phoneNumber = PhoneUtil.stripPhoneMask(rawInputSmsNumber);
+            return await this.userProfileService.isPhoneNumberValid(
+                phoneNumber
+            );
+        };
         return {
             smsNumber: {
                 required: requiredIf(
                     () => this.isSMSEditable && this.smsNumber !== ""
                 ),
                 newSMSNumber: not(sameAs("tempSMS")),
-                sms,
+                sms: validPhoneNumberFormat,
             },
             smsVerificationCode: {
                 required: requiredIf(
