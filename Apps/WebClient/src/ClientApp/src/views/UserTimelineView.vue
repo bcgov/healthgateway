@@ -89,7 +89,7 @@ export default class UserTimelineView extends Vue {
     }
 
     get notesAreEnabled(): boolean {
-        return this.config.modules["Note"];
+        return ConfigUtil.isDatasetEnabled(EntryType.Note);
     }
 
     created(): void {
