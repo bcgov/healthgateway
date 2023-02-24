@@ -11,8 +11,6 @@ const collectionDateMonthSelector =
 const collectionDateDaySelector =
     "[data-testid=dateOfCollectionInput] [data-testid=formSelectDay]";
 
-const publicLaboratoryResultModule = "PublicLaboratoryResult";
-const laboratoryModule = "Laboratory";
 const covidTestUrl = "/covidtest";
 
 const phn = "9875813462";

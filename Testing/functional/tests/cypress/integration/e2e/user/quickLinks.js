@@ -6,9 +6,7 @@ const encounterModule = "Encounter";
 const immunizationModule = "Immunization";
 const laboratoryModule = "Laboratory";
 const allLaboratoryModule = "AllLaboratory";
-const medicationModule = "Medication";
 const medicationRequestModule = "MedicationRequest";
-const noteModule = "Note";
 
 const encounterTitle = "Health Visits";
 const immunizationTitle = "Immunizations";
