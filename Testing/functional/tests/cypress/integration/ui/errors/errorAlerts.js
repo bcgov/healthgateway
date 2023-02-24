@@ -112,25 +112,42 @@ function testValidateEmailError(statusCode = serverErrorStatusCode) {
 }
 
 function testAddQuickLinkError(statusCode = serverErrorStatusCode) {
-    cy.configureSettings(
-        {
-            datasets: [
-                {
-                    name: "covid19TestResult",
-                    enabled: true,
-                },
-            ],
-        },
-        [
-            "Encounter",
-            "Immunization",
-            "Laboratory",
-            "AllLaboratory",
-            "Medication",
-            "MedicationRequest",
-            "Note",
-        ]
-    );
+    cy.configureSettings({
+        datasets: [
+            {
+                name: "covid19TestResult",
+                enabled: true,
+            },
+            {
+                name: "labResult",
+                enabled: true,
+            },
+            {
+                name: "healthVisit",
+                enabled: true,
+            },
+            {
+                name: "hospitalVisit",
+                enabled: true,
+            },
+            {
+                name: "immunization",
+                enabled: true,
+            },
+            {
+                name: "medication",
+                enabled: true,
+            },
+            {
+                name: "specialAuthorityRequest",
+                enabled: true,
+            },
+            {
+                name: "note",
+                enabled: true,
+            },
+        ],
+    });
 
     cy.intercept("PUT", "**/UserProfile/*/preference", {
         statusCode,
@@ -166,14 +183,17 @@ function testAddQuickLinkError(statusCode = serverErrorStatusCode) {
 }
 
 function testAddCommentError(statusCode = serverErrorStatusCode) {
-    cy.configureSettings(
-        {
-            timeline: {
-                comment: true,
-            },
+    cy.configureSettings({
+        timeline: {
+            comment: true,
         },
-        "AllLaboratory"
-    );
+        datasets: [
+            {
+                name: "covid19TestResult",
+                enabled: true,
+            },
+        ],
+    });
     cy.intercept("POST", "**/UserProfile/*/Comment", {
         statusCode,
     });
@@ -210,15 +230,42 @@ function getQuickLinkCard(title) {
 }
 
 function testRemoveQuickLinkError(statusCode = serverErrorStatusCode) {
-    cy.configureSettings({}, [
-        "Encounter",
-        "Immunization",
-        "Laboratory",
-        "AllLaboratory",
-        "Medication",
-        "MedicationRequest",
-        "Note",
-    ]);
+    cy.configureSettings({
+        datasets: [
+            {
+                name: "covid19TestResult",
+                enabled: true,
+            },
+            {
+                name: "labResult",
+                enabled: true,
+            },
+            {
+                name: "healthVisit",
+                enabled: true,
+            },
+            {
+                name: "hospitalVisit",
+                enabled: true,
+            },
+            {
+                name: "immunization",
+                enabled: true,
+            },
+            {
+                name: "medication",
+                enabled: true,
+            },
+            {
+                name: "specialAuthorityRequest",
+                enabled: true,
+            },
+            {
+                name: "note",
+                enabled: true,
+            },
+        ],
+    });
     cy.intercept("PUT", "**/UserProfile/*/preference", {
         statusCode,
     });

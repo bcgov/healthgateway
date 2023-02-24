@@ -11,16 +11,19 @@ describe("Public Route", () => {
     });
 
     it("Redirect to Covid Test", () => {
-        cy.configureSettings(
-            {
-                covid19: {
-                    publicCovid19: {
-                        enableTestResults: true,
-                    },
+        cy.configureSettings({
+            covid19: {
+                publicCovid19: {
+                    enableTestResults: true,
                 },
             },
-            ["Laboratory"]
-        );
+            datasets: [
+                {
+                    name: "covid19TestResult",
+                    enabled: true,
+                },
+            ],
+        });
         cy.logout();
         cy.visit(covidTestPath);
         cy.get("[data-testid=loginBtn]").should("not.exist");
