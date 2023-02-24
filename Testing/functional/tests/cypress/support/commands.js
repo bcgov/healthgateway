@@ -354,8 +354,7 @@ Cypress.Commands.add("configureSettings", (settings, modules) => {
 
             // Apply disabled datasets to configuration object
             featureToggleConfiguration.datasets = disabledDatasets;
-            featureToggleConfiguration.dependents.datasets =
-                disabledDependentsDatasets;
+            featureToggleConfiguration.dependents.datasets = [];
 
             // Configure datasets with overrides
             const datasets = configureDatasets(
