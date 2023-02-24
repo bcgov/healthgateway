@@ -7,7 +7,20 @@ describe("Authenticated Vaccine Card", () => {
             "getVaccinationStatus"
         );
 
-        cy.enableModules(["Immunization", "VaccinationStatus"]);
+        cy.configureSettings({
+            covid19: {
+                proofOfVaccination: {
+                    exportPdf: true,
+                },
+            },
+            datasets: [
+                {
+                    name: "immunization",
+                    enabled: true,
+                },
+            ],
+        });
+
         cy.login(
             Cypress.env("keycloak.username"),
             Cypress.env("keycloak.password"),
@@ -69,7 +82,14 @@ describe("Authenticated Vaccine Card", () => {
             "getVaccinationStatus"
         );
 
-        cy.enableModules(["Immunization", "VaccinationStatus"]);
+        cy.configureSettings({
+            covid19: {
+                proofOfVaccination: {
+                    exportPdf: true,
+                },
+            },
+        });
+
         cy.login(
             Cypress.env("keycloak.notfound.username"),
             Cypress.env("keycloak.password"),
@@ -95,12 +115,14 @@ describe("Authenticated Vaccine Card", () => {
             "getVaccineProof"
         );
 
-        cy.enableModules([
-            "Immunization",
-            "VaccinationStatus",
-            "VaccinationStatusPdf",
-            "VaccinationExportPdf",
-        ]);
+        cy.configureSettings({
+            covid19: {
+                proofOfVaccination: {
+                    exportPdf: true,
+                },
+            },
+        });
+
         cy.login(
             Cypress.env("keycloak.username"),
             Cypress.env("keycloak.password"),

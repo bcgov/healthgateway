@@ -153,9 +153,8 @@ export default class PublicVaccineCardView extends Vue {
 
     private get downloadButtonShown(): boolean {
         return (
-            this.config.modules["VaccinationStatusPdf"] &&
-            (this.status?.state === VaccinationState.PartiallyVaccinated ||
-                this.status?.state === VaccinationState.FullyVaccinated)
+            this.status?.state === VaccinationState.PartiallyVaccinated ||
+            this.status?.state === VaccinationState.FullyVaccinated
         );
     }
 
@@ -213,7 +212,8 @@ export default class PublicVaccineCardView extends Vue {
     }
 
     private get saveExportPdfShown(): boolean {
-        return this.config.modules["PublicVaccineDownloadPdf"];
+        return this.config.featureToggleConfiguration.covid19.publicCovid19
+            .showFederalProofOfVaccination;
     }
 
     private download(): void {

@@ -23,7 +23,8 @@ export class RestTicketService implements ITicketService {
         http: IHttpDelegate
     ): void {
         this.http = http;
-        this.isEnabled = config.webClient.modules["Ticket"];
+        this.isEnabled =
+            config.webClient.featureToggleConfiguration.waitingQueue.enabled;
         this.baseUri = config.serviceEndpoints["Ticket"];
     }
 

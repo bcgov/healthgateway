@@ -2,7 +2,7 @@ const { AuthMethod } = require("../../../support/constants");
 
 describe("Validate Star Rating", () => {
     beforeEach(() => {
-        cy.enableModules([]);
+        cy.configureSettings({});
         cy.login(
             Cypress.env("keycloak.username"),
             Cypress.env("keycloak.password"),

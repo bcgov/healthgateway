@@ -4,7 +4,17 @@ const homePath = "/home";
 
 describe("Bookmark", () => {
     beforeEach(() => {
-        cy.enableModules(["Medication", "Comment"]);
+        cy.configureSettings({
+            timeline: {
+                comment: true,
+            },
+            datasets: [
+                {
+                    name: "medication",
+                    enabled: true,
+                },
+            ],
+        });
     });
 
     it("Redirect to UserProfile", () => {

@@ -5,7 +5,12 @@ const HDID = "P6FFO433A5WPMVTGM7T4ZVWBKCSVNAYGTWTU3J2LWMGUMERKI72A";
 
 describe("Notification Centre", () => {
     beforeEach(() => {
-        cy.enableModules(["NotificationCentre"]);
+        cy.configureSettings({
+            notificationCentre: {
+                enabled: true,
+            },
+        });
+
         cy.intercept("GET", `**/Notification/${HDID}`, {
             fixture: "NotificationService/notifications.json",
         });

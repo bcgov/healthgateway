@@ -1,14 +1,11 @@
 describe("Landing Page", () => {
-    beforeEach(() => {
-        cy.logout();
-        cy.visit("/");
-    });
-
     it("Title", () => {
+        cy.visit("/");
         cy.title().should("eq", "Health Gateway");
     });
 
     it("Sign Up Button", () => {
+        cy.visit("/");
         cy.get("#btnStart")
             .should("be.visible")
             .should("have.attr", "href", "/registration")
@@ -16,6 +13,7 @@ describe("Landing Page", () => {
     });
 
     it("Login Button", () => {
+        cy.visit("/");
         cy.get("[data-testid=btnLogin]")
             .should("be.visible")
             .parent()
@@ -23,6 +21,7 @@ describe("Landing Page", () => {
     });
 
     it("Device Previews", () => {
+        cy.visit("/");
         cy.log("Laptop preview should be displayed by default");
         cy.get("[data-testid=preview-device-button-laptop]").should(
             "be.disabled"
@@ -118,15 +117,62 @@ describe("Landing Page", () => {
     });
 
     it("Validate clinical doc tile when module enabled", () => {
-        cy.enableModules(["ClinicalDocument"]);
+        cy.configureSettings({
+            datasets: [
+                {
+                    name: "clinicalDocument",
+                    enabled: true,
+                },
+            ],
+        });
+        cy.visit("/");
         cy.get("[data-testid=active-tile-ClinicalDocument]").should(
             "be.visible"
         );
     });
 
     it("Validate no clinical doc tile when module not enabled", () => {
-        cy.enableModules([]);
+        cy.configureSettings({
+            datasets: [
+                {
+                    name: "medication",
+                    enabled: true,
+                },
+            ],
+        });
+        cy.visit("/");
+        cy.get("[data-testid=active-tile-Medication]").should("be.visible");
         cy.get("[data-testid=active-tile-ClinicalDocument]").should(
+            "not.exist"
+        );
+    });
+
+    it("Validate proof of vaccination tile when setting enabled", () => {
+        cy.configureSettings({
+            covid19: {
+                publicCovid19: {
+                    showFederalProofOfVaccination: true,
+                },
+            },
+        });
+        cy.visit("/");
+        cy.get("[data-testid=active-tile-ProofOfVaccination]").should(
+            "be.visible"
+        );
+    });
+
+    it("Validate no proof of vaccination tile when setting not enabled", () => {
+        cy.configureSettings({
+            datasets: [
+                {
+                    name: "medication",
+                    enabled: true,
+                },
+            ],
+        });
+        cy.visit("/");
+        cy.get("[data-testid=active-tile-Medication]").should("be.visible");
+        cy.get("[data-testid=active-tile-ProofOfVaccination]").should(
             "not.exist"
         );
     });

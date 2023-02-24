@@ -11,6 +11,65 @@ const { AuthMethod } = require("./constants");
 const { globalStorage } = require("./globalStorage");
 require("cy-verify-downloads").addCustomCommand();
 
+function configureDatasets(datasets, deltaset) {
+    let newDatasets = [];
+    if (deltaset !== undefined && Array.isArray(deltaset)) {
+        const setTable = {};
+        datasets.forEach((s) => (setTable[s.name] = s.enabled));
+        deltaset.forEach((d) => (setTable[d.name] = d.enabled));
+
+        for (const key in setTable) {
+            newDatasets.push({ name: key, enabled: setTable[key] });
+        }
+    }
+    return newDatasets;
+}
+
+function disableDatasets(datasets) {
+    return datasets.map((s) => {
+        s.enabled = false;
+        return s;
+    });
+}
+
+function configureObject(baseObj, delta) {
+    const deltaKeys = Object.keys(delta);
+    if (deltaKeys && deltaKeys.length > 0) {
+        for (const key of deltaKeys) {
+            const baseValue = baseObj[key];
+            const baseValueKeys = Object.keys(baseValue);
+            if (
+                baseValueKeys &&
+                baseValueKeys.length > 0 &&
+                !Array.isArray(baseValue)
+            ) {
+                configureObject(baseObj[key], delta[key]);
+            } else if (!Array.isArray(baseValue)) {
+                baseObj[key] = delta[key];
+            }
+        }
+    }
+}
+
+function disableObject(config) {
+    const configKeys = Object.keys(config);
+    if (configKeys && configKeys.length > 0) {
+        for (const key of configKeys) {
+            const configValue = config[key];
+            const configValueKeys = Object.keys(configValue);
+            if (
+                configValueKeys &&
+                configValueKeys.length > 0 &&
+                !Array.isArray(configValue)
+            ) {
+                disableObject(config[key]);
+            } else if (!Array.isArray(configValue)) {
+                config[key] = false;
+            }
+        }
+    }
+}
+
 function generateRandomString(length) {
     var text = "";
     var possible =
@@ -241,19 +300,56 @@ Cypress.Commands.add("checkTimelineHasLoaded", () => {
     cy.get("[data-testid=loading-in-progress]").should("not.exist");
 });
 
-Cypress.Commands.add("enableModules", (modules) => {
-    const isArrayOfModules = Array.isArray(modules);
+Cypress.Commands.add("configureSettings", (settings) => {
     return cy
         .readConfig()
         .as("config")
         .then((config) => {
-            Object.keys(config.webClient.modules).forEach((key) => {
-                if (isArrayOfModules) {
-                    config.webClient.modules[key] = modules.includes(key);
-                } else {
-                    config.webClient.modules[key] = modules === key;
-                }
-            });
+            // Create new configuration object to be configured and mutated
+            const featureToggleConfiguration = {
+                ...config.webClient.featureToggleConfiguration,
+            };
+
+            // Disable datasets
+            const disabledDatasets = disableDatasets(
+                config.webClient.featureToggleConfiguration.datasets
+            );
+
+            // Disable dependents datasets
+            const disabledDependentsDatasets = disableDatasets(
+                config.webClient.featureToggleConfiguration.dependents?.datasets
+            );
+
+            // Disable non dataset object properties
+            disableObject(featureToggleConfiguration);
+
+            // Apply disabled datasets to configuration object
+            featureToggleConfiguration.datasets = disabledDatasets;
+            featureToggleConfiguration.dependents.datasets = [];
+
+            // Configure datasets with overrides
+            const datasets = configureDatasets(
+                featureToggleConfiguration.datasets,
+                settings.datasets
+            );
+
+            // Configure dependents datasets with overrides
+            const dependentsDatasets = configureDatasets(
+                featureToggleConfiguration.dependents.datasets,
+                settings.dependents?.datasets
+            );
+
+            // Configure overrides to non dataset object properties
+            configureObject(featureToggleConfiguration, settings);
+
+            // Apply dataset overrides to configuration object
+            featureToggleConfiguration.datasets = datasets;
+            featureToggleConfiguration.dependents.datasets = dependentsDatasets;
+
+            // Apply configured configuration object to configuration to be returned in intercept
+            config.webClient.featureToggleConfiguration =
+                featureToggleConfiguration;
+
             cy.intercept("GET", "**/configuration/", {
                 statusCode: 200,
                 body: config,

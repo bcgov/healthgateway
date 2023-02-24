@@ -2,7 +2,14 @@ const { AuthMethod } = require("../../../support/constants");
 
 describe("Report Filtering", () => {
     beforeEach(() => {
-        cy.enableModules("Medication");
+        cy.configureSettings({
+            datasets: [
+                {
+                    name: "medication",
+                    enabled: true,
+                },
+            ],
+        });
         cy.intercept("GET", "**/MedicationStatement/*", {
             fixture: "MedicationService/medicationStatement.json",
         });

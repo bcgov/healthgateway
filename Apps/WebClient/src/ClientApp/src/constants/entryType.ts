@@ -2,14 +2,14 @@ import { CommentEntryType } from "@/constants/commentEntryType";
 
 export enum EntryType {
     ClinicalDocument = "ClinicalDocument",
-    Covid19TestResult = "Laboratory",
-    HealthVisit = "Encounter",
+    Covid19TestResult = "Covid19TestResult",
+    HealthVisit = "HealthVisit",
     HospitalVisit = "HospitalVisit",
     Immunization = "Immunization",
-    LabResult = "AllLaboratory",
+    LabResult = "LabResult",
     Medication = "Medication",
     Note = "Note",
-    SpecialAuthorityRequest = "MedicationRequest",
+    SpecialAuthorityRequest = "SpecialAuthorityRequest",
 }
 
 export class EntryTypeDetails {
@@ -20,9 +20,16 @@ export class EntryTypeDetails {
     component!: string;
     commentType!: CommentEntryType;
     eventName!: string;
+    moduleName!: string;
 }
 
 const entryTypeMap = new Map<EntryType | undefined, EntryTypeDetails>();
+
+export function getEntryTypeByModule(
+    module: string
+): EntryTypeDetails | undefined {
+    return [...entryTypeMap.values()].find((e) => e.moduleName === module);
+}
 
 entryTypeMap.set(EntryType.Immunization, {
     type: EntryType.Immunization,
@@ -33,6 +40,7 @@ entryTypeMap.set(EntryType.Immunization, {
     icon: "syringe",
     component: "ImmunizationTimelineComponent",
     eventName: "immunizations",
+    moduleName: "Immunization",
 });
 
 entryTypeMap.set(EntryType.Medication, {
@@ -43,6 +51,7 @@ entryTypeMap.set(EntryType.Medication, {
     icon: "pills",
     component: "MedicationTimelineComponent",
     eventName: "medications",
+    moduleName: "Medication",
 });
 
 entryTypeMap.set(EntryType.LabResult, {
@@ -54,6 +63,7 @@ entryTypeMap.set(EntryType.LabResult, {
     icon: "microscope",
     component: "LaboratoryOrderTimelineComponent",
     eventName: "lab_results",
+    moduleName: "AllLaboratory",
 });
 
 entryTypeMap.set(EntryType.Covid19TestResult, {
@@ -65,6 +75,7 @@ entryTypeMap.set(EntryType.Covid19TestResult, {
     icon: "vial",
     component: "Covid19LaboratoryOrderTimelineComponent",
     eventName: "covid_test",
+    moduleName: "Laboratory",
 });
 
 entryTypeMap.set(EntryType.HealthVisit, {
@@ -76,6 +87,7 @@ entryTypeMap.set(EntryType.HealthVisit, {
     icon: "stethoscope",
     component: "EncounterTimelineComponent",
     eventName: "health_visits",
+    moduleName: "Encounter",
 });
 
 entryTypeMap.set(EntryType.Note, {
@@ -86,6 +98,7 @@ entryTypeMap.set(EntryType.Note, {
     icon: "edit",
     component: "NoteTimelineComponent",
     eventName: "my_notes",
+    moduleName: "Note",
 });
 
 entryTypeMap.set(EntryType.SpecialAuthorityRequest, {
@@ -97,6 +110,7 @@ entryTypeMap.set(EntryType.SpecialAuthorityRequest, {
     icon: "file-medical",
     component: "MedicationRequestTimelineComponent",
     eventName: "special_authority",
+    moduleName: "MedicationRequest",
 });
 
 entryTypeMap.set(EntryType.ClinicalDocument, {
@@ -108,6 +122,7 @@ entryTypeMap.set(EntryType.ClinicalDocument, {
     icon: "file-waveform",
     component: "ClinicalDocumentTimelineComponent",
     eventName: "document",
+    moduleName: "ClinicalDocument",
 });
 
 entryTypeMap.set(EntryType.HospitalVisit, {
@@ -119,6 +134,7 @@ entryTypeMap.set(EntryType.HospitalVisit, {
     icon: "house-medical",
     component: "HospitalVisitTimelineComponent",
     eventName: "hospital_visits",
+    moduleName: "HospitalVisit",
 });
 
 export { entryTypeMap };

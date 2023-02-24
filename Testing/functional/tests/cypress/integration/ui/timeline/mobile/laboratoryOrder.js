@@ -18,7 +18,14 @@ describe("Laboratory Orders", () => {
         cy.intercept("GET", "**/Laboratory/LaboratoryOrders*", {
             fixture: "LaboratoryService/laboratoryOrders.json",
         });
-        cy.enableModules("AllLaboratory");
+        cy.configureSettings({
+            datasets: [
+                {
+                    name: "labResult",
+                    enabled: true,
+                },
+            ],
+        });
         cy.viewport("iphone-6");
         cy.login(
             Cypress.env("keycloak.username"),
@@ -239,7 +246,14 @@ describe("Laboratory Orders Refresh", () => {
             }
             isLoading = !isLoading;
         });
-        cy.enableModules("AllLaboratory");
+        cy.configureSettings({
+            datasets: [
+                {
+                    name: "labResult",
+                    enabled: true,
+                },
+            ],
+        });
         cy.viewport("iphone-6");
         cy.login(
             Cypress.env("keycloak.username"),
@@ -281,7 +295,14 @@ describe("Laboratory Orders Queued", () => {
         cy.intercept("GET", "**/Laboratory/LaboratoryOrders*", {
             fixture: "LaboratoryService/laboratoryOrdersQueued.json",
         });
-        cy.enableModules("AllLaboratory");
+        cy.configureSettings({
+            datasets: [
+                {
+                    name: "labResult",
+                    enabled: true,
+                },
+            ],
+        });
         cy.viewport("iphone-6");
         cy.login(
             Cypress.env("keycloak.username"),

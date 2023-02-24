@@ -4,11 +4,10 @@ const HDID = "P6FFO433A5WPMVTGM7T4ZVWBKCSVNAYGTWTU3J2LWMGUMERKI72A";
 
 describe("User Profile", () => {
     beforeEach(() => {
-        cy.enableModules([]);
         cy.intercept("GET", `**/UserProfile/${HDID}`, {
             fixture: "UserProfileService/userProfile.json",
         });
-
+        cy.configureSettings({});
         cy.login(
             Cypress.env("keycloak.username"),
             Cypress.env("keycloak.password"),

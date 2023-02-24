@@ -11,8 +11,6 @@ const collectionDateMonthSelector =
 const collectionDateDaySelector =
     "[data-testid=dateOfCollectionInput] [data-testid=formSelectDay]";
 
-const publicLaboratoryResultModule = "PublicLaboratoryResult";
-const laboratoryModule = "Laboratory";
 const covidTestUrl = "/covidtest";
 
 const phn = "9875813462";
@@ -107,7 +105,19 @@ function checkResult(
 
 describe("Public COVID-19 Test Results", () => {
     beforeEach(() => {
-        cy.enableModules([laboratoryModule, publicLaboratoryResultModule]);
+        cy.configureSettings({
+            covid19: {
+                publicCovid19: {
+                    enableTestResults: true,
+                },
+            },
+            datasets: [
+                {
+                    name: "covid19TestResult",
+                    enabled: true,
+                },
+            ],
+        });
         cy.logout();
         cy.visit(covidTestUrl);
     });

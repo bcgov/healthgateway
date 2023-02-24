@@ -19,6 +19,7 @@ import MedicationHistoryReportComponent from "@/components/report/MedicationHist
 import MedicationRequestReportComponent from "@/components/report/MedicationRequestReportComponent.vue";
 import MSPVisitsReportComponent from "@/components/report/MSPVisitsReportComponent.vue";
 import NotesReportComponent from "@/components/report/NotesReportComponent.vue";
+import { EntryType } from "@/constants/entryType";
 import { ErrorSourceType, ErrorType } from "@/constants/errorType";
 import BreadcrumbItem from "@/models/breadcrumbItem";
 import type { WebClientConfiguration } from "@/models/configData";
@@ -36,6 +37,7 @@ import User from "@/models/user";
 import container from "@/plugins/container";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import { ILogger } from "@/services/interfaces";
+import ConfigUtil from "@/utility/configUtil";
 import EventTracker from "@/utility/eventTracker";
 
 const medicationReport = "medication-report";
@@ -194,49 +196,49 @@ export default class ReportsView extends Vue {
     private created(): void {
         this.logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
 
-        if (this.config.modules["Medication"]) {
+        if (ConfigUtil.isDatasetEnabled(EntryType.Medication)) {
             this.reportTypeOptions.push({
                 value: medicationReport,
                 text: "Medications",
             });
         }
-        if (this.config.modules["Encounter"]) {
+        if (ConfigUtil.isDatasetEnabled(EntryType.HealthVisit)) {
             this.reportTypeOptions.push({
                 value: mspVisitReport,
                 text: "Health Visits",
             });
         }
-        if (this.config.modules["Laboratory"]) {
+        if (ConfigUtil.isDatasetEnabled(EntryType.Covid19TestResult)) {
             this.reportTypeOptions.push({
                 value: covid19Report,
                 text: "COVID‑19 Test Results",
             });
         }
-        if (this.config.modules["Immunization"]) {
+        if (ConfigUtil.isDatasetEnabled(EntryType.Immunization)) {
             this.reportTypeOptions.push({
                 value: immunizationReport,
                 text: "Immunizations",
             });
         }
-        if (this.config.modules["MedicationRequest"]) {
+        if (ConfigUtil.isDatasetEnabled(EntryType.SpecialAuthorityRequest)) {
             this.reportTypeOptions.push({
                 value: medicationRequestReport,
                 text: "Special Authority Requests",
             });
         }
-        if (this.config.modules["Note"]) {
+        if (ConfigUtil.isDatasetEnabled(EntryType.Note)) {
             this.reportTypeOptions.push({
                 value: noteReport,
                 text: "My Notes",
             });
         }
-        if (this.config.modules["AllLaboratory"]) {
+        if (ConfigUtil.isDatasetEnabled(EntryType.LabResult)) {
             this.reportTypeOptions.push({
                 value: laboratoryReport,
                 text: "Laboratory Tests",
             });
         }
-        if (this.config.modules["HospitalVisit"]) {
+        if (ConfigUtil.isDatasetEnabled(EntryType.HospitalVisit)) {
             this.reportTypeOptions.push({
                 value: hospitalVisitReport,
                 text: "Hospital Visits",

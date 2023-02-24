@@ -28,9 +28,10 @@ export class RestDependentService implements IDependentService {
         config: ExternalConfiguration,
         http: IHttpDelegate
     ): void {
-        this.http = http;
-        this.isEnabled = config.webClient.modules["Dependent"];
         this.baseUri = config.serviceEndpoints["GatewayApi"];
+        this.http = http;
+        this.isEnabled =
+            config.webClient.featureToggleConfiguration.dependents.enabled;
     }
 
     public addDependent(

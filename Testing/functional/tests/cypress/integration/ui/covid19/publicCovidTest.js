@@ -19,8 +19,6 @@ const feedbackDobIsRequiredSelector = "[data-testid=feedbackDobIsRequired]";
 const feedbackCollectionDateIsRequiredSelector =
     "[data-testid=feedbackCollectionDateIsRequired]";
 
-const publicLaboratoryResultModule = "PublicLaboratoryResult";
-const laboratoryModule = "Laboratory";
 const covidTestUrl = "/covidtest";
 
 const dummyYear = "2021";
@@ -40,7 +38,13 @@ function clickCovidTestEnterButton() {
 
 describe("Public COVID-19 Test Form", () => {
     beforeEach(() => {
-        cy.enableModules([laboratoryModule, publicLaboratoryResultModule]);
+        cy.configureSettings({
+            covid19: {
+                publicCovid19: {
+                    enableTestResults: true,
+                },
+            },
+        });
         cy.logout();
         cy.visit(covidTestUrl);
     });
@@ -215,7 +219,14 @@ describe("Public COVID-19 Test Form", () => {
 
 describe("Public COVID-19 Test Results", () => {
     beforeEach(() => {
-        cy.enableModules([laboratoryModule, publicLaboratoryResultModule]);
+        cy.configureSettings({
+            covid19: {
+                publicCovid19: {
+                    enableTestResults: true,
+                },
+            },
+            datasets: [{ name: "covid19TestResult", enabled: true }],
+        });
         cy.logout();
         cy.visit(covidTestUrl);
     });

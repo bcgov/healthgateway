@@ -12,7 +12,8 @@ const vaccineCardAddQuickLinkCheckboxSelector =
 
 describe("Vaccine Card Quick Link", () => {
     it("Remove and Add Vaccine Card Quick Link", () => {
-        cy.enableModules(["VaccinationStatus"]);
+        cy.configureSettings({});
+
         cy.login(
             Cypress.env("keycloak.username"),
             Cypress.env("keycloak.password"),
@@ -65,7 +66,14 @@ describe("Vaccine Card Quick Link", () => {
     });
 
     it("Vaccine Card quick link not showing when module is disabled", () => {
-        cy.enableModules(["Encounter"]);
+        cy.configureSettings({
+            datasets: [
+                {
+                    name: "healthVisit",
+                    enabled: true,
+                },
+            ],
+        });
         cy.login(
             Cypress.env("keycloak.username"),
             Cypress.env("keycloak.password"),

@@ -22,7 +22,12 @@ describe("Federal Proof of Vaccination", () => {
             }
         );
 
-        cy.enableModules(["Immunization", "FederalCardButton"]);
+        cy.configureSettings({
+            homepage: {
+                showFederalProofOfVaccination: true,
+            },
+            datasets: [{ name: "immunization", enabled: true }],
+        });
 
         cy.login(
             Cypress.env("keycloak.username"),
@@ -44,7 +49,12 @@ describe("Federal Proof of Vaccination", () => {
     });
 
     it("Federal Proof of Vaccination Absent When Disabled", () => {
-        cy.enableModules(["Immunization"]);
+        cy.configureSettings({
+            homepage: {
+                showFederalProofOfVaccination: false,
+            },
+            datasets: [{ name: "immunization", enabled: true }],
+        });
 
         cy.login(
             Cypress.env("keycloak.username"),

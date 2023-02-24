@@ -4,7 +4,7 @@ const homePath = "/home";
 
 describe("Registration Page", () => {
     it("Minimum age error", () => {
-        cy.enableModules([]);
+        cy.configureSettings({});
         cy.login(
             Cypress.env("keycloak.hlthgw401.username"),
             Cypress.env("keycloak.password"),
@@ -16,7 +16,7 @@ describe("Registration Page", () => {
     });
 
     it("No sidebar or footer", () => {
-        cy.enableModules([]);
+        cy.configureSettings({});
         cy.login(
             Cypress.env("keycloak.unregistered.username"),
             Cypress.env("keycloak.password"),
@@ -29,7 +29,6 @@ describe("Registration Page", () => {
     });
 
     it("Registering leads to home page", () => {
-        cy.enableModules(["VaccinationStatus"]);
         cy.login(
             Cypress.env("keycloak.unregistered.username"),
             Cypress.env("keycloak.password"),
@@ -60,7 +59,7 @@ describe("Registration Page", () => {
     });
 
     it("Validate Closed Profile Registration", () => {
-        cy.enableModules([]);
+        cy.configureSettings({});
         cy.login(
             Cypress.env("keycloak.accountclosure.username"),
             Cypress.env("keycloak.password"),

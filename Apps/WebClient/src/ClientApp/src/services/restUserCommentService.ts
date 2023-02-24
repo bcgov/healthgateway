@@ -30,7 +30,8 @@ export class RestUserCommentService implements IUserCommentService {
         http: IHttpDelegate
     ): void {
         this.http = http;
-        this.isEnabled = config.webClient.modules["Comment"];
+        this.isEnabled =
+            config.webClient.featureToggleConfiguration.timeline.comment;
         this.baseUri = config.serviceEndpoints["GatewayApi"];
     }
 
