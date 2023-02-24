@@ -22,10 +22,6 @@ describe("COVID-19", () => {
             },
             datasets: [
                 {
-                    name: "laboratory",
-                    enabled: true,
-                },
-                {
                     name: "covid19TestResult",
                     enabled: true,
                 },
@@ -136,10 +132,6 @@ describe("COVID-19 - Vaccine Proof download", () => {
             },
             datasets: [
                 {
-                    name: "laboratory",
-                    enabled: true,
-                },
-                {
                     name: "covid19TestResult",
                     enabled: true,
                 },
@@ -202,10 +194,6 @@ describe("COVID-19 - Vaccine Proof download", () => {
                 enabled: true,
             },
             datasets: [
-                {
-                    name: "laboratory",
-                    enabled: true,
-                },
                 {
                     name: "covid19TestResult",
                     enabled: true,
@@ -496,14 +484,6 @@ describe("Dependents - Lab Results Tab - Enabled", () => {
                 enabled: true,
             },
             datasets: [
-                {
-                    name: "laboratory",
-                    enabled: true,
-                },
-                {
-                    name: "covid19TestResult",
-                    enabled: true,
-                },
                 {
                     name: "labResult",
                     enabled: true,
