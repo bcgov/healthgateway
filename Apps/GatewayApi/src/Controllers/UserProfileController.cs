@@ -395,7 +395,7 @@ namespace HealthGateway.GatewayApi.Controllers
         /// </summary>
         /// <param name="phoneNumber">Phone number stripped of any masked characters.</param>
         /// <returns>True if the submitted phone number conforms to US standards.</returns>
-        /// <response code="200">Returns the result of the validation attempt</response>
+        /// <response code="200">Returns the result of the validation attempt.</response>
         [HttpGet]
         [Route("IsValidPhoneNumber/{phoneNumber}")]
         [Authorize]
