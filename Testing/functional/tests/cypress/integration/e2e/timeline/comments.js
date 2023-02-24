@@ -2,7 +2,14 @@ const { AuthMethod } = require("../../../support/constants");
 
 describe("Comments Disable", () => {
     beforeEach(() => {
-        cy.enableModules(["Laboratory"]);
+        cy.configureSettings({
+            datasets: [
+                {
+                    name: "covid19TestResult",
+                    enabled: true,
+                },
+            ],
+        });
         cy.login(
             Cypress.env("keycloak.username"),
             Cypress.env("keycloak.password"),
@@ -10,7 +17,14 @@ describe("Comments Disable", () => {
         );
     });
     it("Comments Disable", () => {
-        cy.enableModules(["Laboratory"]);
+        cy.configureSettings({
+            datasets: [
+                {
+                    name: "covid19TestResult",
+                    enabled: true,
+                },
+            ],
+        });
         cy.get("[data-testid=addCommentTextArea]").should("not.exist");
         cy.get("[data-testid=postCommentBtn]").should("not.exist");
     });
@@ -18,14 +32,17 @@ describe("Comments Disable", () => {
 
 describe("Comments Enable", () => {
     beforeEach(() => {
-        cy.configureSettings(
-            {
-                timeline: {
-                    comment: true,
-                },
+        cy.configureSettings({
+            timeline: {
+                comment: true,
             },
-            "Laboratory"
-        );
+            datasets: [
+                {
+                    name: "clinicalDocument",
+                    enabled: true,
+                },
+            ],
+        });
         cy.login(
             Cypress.env("keycloak.username"),
             Cypress.env("keycloak.password"),

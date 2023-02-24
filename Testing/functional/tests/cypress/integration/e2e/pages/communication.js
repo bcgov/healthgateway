@@ -2,7 +2,7 @@ const { AuthMethod } = require("../../../support/constants");
 
 describe("Communication", () => {
     beforeEach(() => {
-        cy.enableModules([""]);
+        cy.configureSettings({});
     });
 
     it("Landing Banner", () => {

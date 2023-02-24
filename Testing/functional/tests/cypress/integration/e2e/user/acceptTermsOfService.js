@@ -3,7 +3,7 @@ const HDID = "K6HL4VX67CZ2PGSZ2ZOIR4C3PGMFFBW5CIOXM74D6EQ7RYYL7P4A";
 
 describe("Need to accept terms of service", () => {
     beforeEach(() => {
-        cy.enableModules([]);
+        cy.configureSettings({});
         cy.login(
             Cypress.env("keycloak.accept.tos.username"),
             Cypress.env("keycloak.password"),
@@ -31,7 +31,7 @@ describe("Need to accept terms of service", () => {
 
 describe("Does not need to accept terms of service", () => {
     beforeEach(() => {
-        cy.enableModules([]);
+        cy.configureSettings({});
         cy.login(
             Cypress.env("keycloak.username"),
             Cypress.env("keycloak.password"),

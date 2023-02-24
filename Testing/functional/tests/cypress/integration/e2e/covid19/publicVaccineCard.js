@@ -72,16 +72,19 @@ describe("Public Vaccine Card Result", () => {
     });
 
     it("Fully Vaccinated", () => {
-        cy.configureSettings(
-            {
-                covid19: {
-                    publicCovid19: {
-                        showFederalProofOfVaccination: true,
-                    },
+        cy.configureSettings({
+            covid19: {
+                publicCovid19: {
+                    showFederalProofOfVaccination: true,
                 },
             },
-            ["Immunization"]
-        );
+            datasets: [
+                {
+                    name: "immunization",
+                    enabled: true,
+                },
+            ],
+        });
         cy.logout();
         cy.visit(vaccineCardUrl);
 
@@ -102,16 +105,19 @@ describe("Public Vaccine Card Result", () => {
 
 describe("Public Vaccine Card Downloads", () => {
     beforeEach(() => {
-        cy.configureSettings(
-            {
-                covid19: {
-                    publicCovid19: {
-                        showFederalProofOfVaccination: true,
-                    },
+        cy.configureSettings({
+            covid19: {
+                publicCovid19: {
+                    showFederalProofOfVaccination: true,
                 },
             },
-            ["Immunization"]
-        );
+            datasets: [
+                {
+                    name: "immunization",
+                    enabled: true,
+                },
+            ],
+        });
         cy.logout();
         cy.visit(vaccineCardUrl);
 

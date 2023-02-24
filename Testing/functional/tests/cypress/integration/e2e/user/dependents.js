@@ -21,17 +21,29 @@ describe("dependents", () => {
     const validDependentHdid = "162346565465464564565463257";
 
     beforeEach(() => {
-        cy.enableModules([
-            "CovidLabResults",
-            "Immunization",
-            "Laboratory",
-            "Dependent",
-            "DependentImmunizationTab",
-            "ClinicalDocument",
-            "DependentClinicalDocumentTab",
-            "AllLaboratory",
-            "DependentLaboratoryOrderTab",
-        ]);
+        cy.configureSettings({
+            dependents: {
+                enabled: true,
+            },
+            datasets: [
+                {
+                    name: "immunization",
+                    enabled: true,
+                },
+                {
+                    name: "covid19TestResult",
+                    enabled: true,
+                },
+                {
+                    name: "clinicalDocument",
+                    enabled: true,
+                },
+                {
+                    name: "labResult",
+                    enabled: true,
+                },
+            ],
+        });
         cy.login(
             Cypress.env("keycloak.username"),
             Cypress.env("keycloak.password"),
@@ -496,7 +508,17 @@ describe("dependents", () => {
 
         cy.log("Removing dependent from original user");
 
-        cy.enableModules(["CovidLabResults", "Laboratory", "Dependent"]);
+        cy.configureSettings({
+            dependents: {
+                enabled: true,
+            },
+            datasets: [
+                {
+                    name: "covid19TestResult",
+                    enabled: true,
+                },
+            ],
+        });
         cy.login(
             Cypress.env("keycloak.username"),
             Cypress.env("keycloak.password"),
