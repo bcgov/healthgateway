@@ -12,7 +12,14 @@ describe("Laboratory Orders - Report", () => {
                 fixture: "LaboratoryService/laboratoryReportPdf.json",
             }
         );
-        cy.enableModules("AllLaboratory");
+        cy.configureSettings({
+            datasets: [
+                {
+                    name: "labResult",
+                    enabled: true,
+                },
+            ],
+        });
         cy.viewport("iphone-6");
         cy.login(
             Cypress.env("keycloak.username"),

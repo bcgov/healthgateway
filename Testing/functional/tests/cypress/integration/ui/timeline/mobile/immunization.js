@@ -5,7 +5,14 @@ describe("Immunization", () => {
         cy.intercept("GET", "**/Immunization?*", {
             fixture: "ImmunizationService/immunization.json",
         });
-        cy.enableModules("Immunization");
+        cy.configureSettings({
+            datasets: [
+                {
+                    name: "immunization",
+                    enabled: true,
+                },
+            ],
+        });
         cy.viewport("iphone-6");
         cy.login(
             Cypress.env("keycloak.username"),

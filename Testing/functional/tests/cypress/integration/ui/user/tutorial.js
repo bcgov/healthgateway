@@ -2,7 +2,14 @@ const { AuthMethod } = require("../../../support/constants");
 
 describe("Tutorial", () => {
     it("Validate Add Note Popover", () => {
-        cy.configureSettings({}, "Note");
+        cy.configureSettings({
+            datasets: [
+                {
+                    name: "note",
+                    enabled: true,
+                },
+            ],
+        });
         cy.intercept("GET", "**/UserProfile/*", (req) => {
             req.reply((res) => {
                 res.body.resourcePayload.preferences.tutorialMenuNote.value =
@@ -99,14 +106,18 @@ describe("Tutorial", () => {
     });
 
     it("Validate Comment Popover", () => {
-        cy.configureSettings(
-            {
-                timeline: {
-                    comment: true,
-                },
+        cy.configureSettings({
+            timeline: {
+                comment: true,
             },
-            "Medication"
-        );
+            datasets: [
+                {
+                    name: "medication",
+                    enabled: true,
+                },
+            ],
+        });
+
         cy.intercept("GET", "**/UserProfile/*", (req) => {
             req.reply((res) => {
                 res.body.resourcePayload.preferences.tutorialComment = {

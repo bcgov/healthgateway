@@ -5,7 +5,14 @@ describe("COVID-19 Orders", () => {
         cy.intercept("GET", "**/Laboratory/Covid19Orders*", {
             fixture: "LaboratoryService/covid19Orders.json",
         });
-        cy.enableModules("Laboratory");
+        cy.configureSettings({
+            datasets: [
+                {
+                    name: "covid19TestResult",
+                    enabled: true,
+                },
+            ],
+        });
         cy.viewport("iphone-6");
         cy.login(
             Cypress.env("keycloak.username"),
