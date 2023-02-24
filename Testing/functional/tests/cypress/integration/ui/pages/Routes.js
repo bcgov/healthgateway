@@ -4,14 +4,17 @@ const homePath = "/home";
 
 describe("Bookmark", () => {
     beforeEach(() => {
-        cy.configureSettings(
-            {
-                timeline: {
-                    comment: true,
-                },
+        cy.configureSettings({
+            timeline: {
+                comment: true,
             },
-            "Medication"
-        );
+            datasets: [
+                {
+                    name: "medication",
+                    enabled: true,
+                },
+            ],
+        });
     });
 
     it("Redirect to UserProfile", () => {

@@ -23,7 +23,11 @@ const feedbackTestTakenIsRequiredSelector =
 
 describe("Authenticated Pcr Test Registration", () => {
     beforeEach(() => {
-        cy.enableModules("PcrTest");
+        cy.configureSettings({
+            covid19: {
+                pcrTestEnabled: true,
+            },
+        });
         cy.login(
             Cypress.env("keycloak.username"),
             Cypress.env("keycloak.password"),
@@ -70,7 +74,11 @@ describe("Authenticated Pcr Test Registration", () => {
 
 describe("Authenticated Pcr Test Registration with Test Kit ID (Error)", () => {
     beforeEach(() => {
-        cy.enableModules("PcrTest");
+        cy.configureSettings({
+            covid19: {
+                pcrTestEnabled: true,
+            },
+        });
         cy.login(
             Cypress.env("keycloak.username"),
             Cypress.env("keycloak.password"),
@@ -104,7 +112,11 @@ describe("Authenticated Pcr Test Registration with Test Kit ID (Error)", () => {
 
 describe("Previously Registered Test Kit", () => {
     beforeEach(() => {
-        cy.enableModules("PcrTest");
+        cy.configureSettings({
+            covid19: {
+                pcrTestEnabled: true,
+            },
+        });
         cy.login(
             Cypress.env("keycloak.username"),
             Cypress.env("keycloak.password"),

@@ -7,7 +7,14 @@ describe("Immunization History Report", () => {
     beforeEach(() => {
         cy.setupDownloads();
         let isLoading = false;
-        cy.enableModules("Immunization");
+        cy.configureSettings({
+            datasets: [
+                {
+                    name: "immunization",
+                    enabled: true,
+                },
+            ],
+        });
         cy.intercept("GET", "**/Immunization?*", (req) => {
             if (!isLoading) {
                 req.reply({
@@ -94,7 +101,14 @@ describe("Export Reports - Immunizations - Invalid Doses", () => {
         cy.intercept("GET", "**/Immunization?*", {
             fixture: "ImmunizationService/immunizationInvalidDoses.json",
         });
-        cy.enableModules(["Immunization"]);
+        cy.configureSettings({
+            datasets: [
+                {
+                    name: "immunization",
+                    enabled: true,
+                },
+            ],
+        });
         cy.login(
             Cypress.env("keycloak.username"),
             Cypress.env("keycloak.password"),

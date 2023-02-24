@@ -10,7 +10,9 @@ describe("Authenticated Vaccine Card Downloads", () => {
     });
 
     it("Save Image", () => {
-        cy.configureSettings({}, ["Immunization"]);
+        cy.configureSettings({
+            datasets: [{ name: "immunization", enabled: true }],
+        });
         cy.login(
             Cypress.env("keycloak.username"),
             Cypress.env("keycloak.password"),
@@ -47,16 +49,14 @@ describe("Authenticated Vaccine Card Downloads", () => {
                 isLoading = !isLoading;
             }
         );
-        cy.configureSettings(
-            {
-                covid19: {
-                    proofOfVaccination: {
-                        exportPdf: true,
-                    },
+        cy.configureSettings({
+            covid19: {
+                proofOfVaccination: {
+                    exportPdf: true,
                 },
             },
-            ["Immunization"]
-        );
+            datasets: [{ name: "immunization", enabled: true }],
+        });
         cy.login(
             Cypress.env("keycloak.username"),
             Cypress.env("keycloak.password"),
