@@ -6,9 +6,7 @@ const encounterModule = "Encounter";
 const immunizationModule = "Immunization";
 const laboratoryModule = "Laboratory";
 const allLaboratoryModule = "AllLaboratory";
-const medicationModule = "Medication";
 const medicationRequestModule = "MedicationRequest";
-const noteModule = "Note";
 
 const encounterTitle = "Health Visits";
 const immunizationTitle = "Immunizations";
@@ -38,7 +36,14 @@ function getQuickLinkCard(title) {
 
 describe("Quick Links", () => {
     it("Add and Remove Quick Link", () => {
-        cy.enableModules([laboratoryModule]);
+        cy.configureSettings({
+            datasets: [
+                {
+                    name: "covid19TestResult",
+                    enabled: true,
+                },
+            ],
+        });
         cy.login(
             Cypress.env("keycloak.username"),
             Cypress.env("keycloak.password"),
@@ -103,11 +108,22 @@ describe("Quick Links", () => {
     });
 
     it("Add and Remove Multiple Quick Links", () => {
-        cy.enableModules([
-            encounterModule,
-            immunizationModule,
-            laboratoryModule,
-        ]);
+        cy.configureSettings({
+            datasets: [
+                {
+                    name: "healthVisit",
+                    enabled: true,
+                },
+                {
+                    name: "immunization",
+                    enabled: true,
+                },
+                {
+                    name: "covid19TestResult",
+                    enabled: true,
+                },
+            ],
+        });
         cy.login(
             Cypress.env("keycloak.username"),
             Cypress.env("keycloak.password"),
@@ -199,16 +215,38 @@ describe("Quick Links", () => {
 
 describe("Add Quick Link Modal", () => {
     beforeEach(() => {
-        cy.enableModules([
-            laboratoryModule,
-            encounterModule,
-            immunizationModule,
-            laboratoryModule,
-            allLaboratoryModule,
-            medicationModule,
-            medicationRequestModule,
-            noteModule,
-        ]);
+        cy.configureSettings({
+            datasets: [
+                {
+                    name: "covid19TestResult",
+                    enabled: true,
+                },
+                {
+                    name: "healthVisit",
+                    enabled: true,
+                },
+                {
+                    name: "immunization",
+                    enabled: true,
+                },
+                {
+                    name: "labResult",
+                    enabled: true,
+                },
+                {
+                    name: "medication",
+                    enabled: true,
+                },
+                {
+                    name: "specialAuthorityRequest",
+                    enabled: true,
+                },
+                {
+                    name: "note",
+                    enabled: true,
+                },
+            ],
+        });
         cy.login(
             Cypress.env("keycloak.username"),
             Cypress.env("keycloak.password"),

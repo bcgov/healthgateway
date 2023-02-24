@@ -3,7 +3,17 @@ const homeUrl = "/home";
 
 describe("Federal Proof of Vaccination", () => {
     it("Save Federal Proof of Vaccination", () => {
-        cy.enableModules(["Immunization", "FederalCardButton"]);
+        cy.configureSettings({
+            homepage: {
+                showFederalProofOfVaccination: true,
+            },
+            datasets: [
+                {
+                    name: "immunization",
+                    enabled: true,
+                },
+            ],
+        });
 
         cy.login(
             Cypress.env("keycloak.username"),

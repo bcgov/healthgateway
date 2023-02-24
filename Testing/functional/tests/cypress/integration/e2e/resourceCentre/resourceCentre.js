@@ -2,7 +2,11 @@ const { AuthMethod } = require("../../../support/constants");
 
 describe("Resource Centre", () => {
     beforeEach(() => {
-        cy.enableModules(["Dependent"]);
+        cy.configureSettings({
+            dependents: {
+                enabled: true,
+            },
+        });
         cy.login(
             Cypress.env("keycloak.username"),
             Cypress.env("keycloak.password"),

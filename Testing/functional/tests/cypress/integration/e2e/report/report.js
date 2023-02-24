@@ -5,15 +5,38 @@ describe("Reports", () => {
         " The file that you are downloading contains personal information. If you are on a public computer, please ensure that the file is deleted before you log off. ";
     beforeEach(() => {
         cy.setupDownloads();
-        cy.enableModules([
-            "Encounter",
-            "Medication",
-            "Laboratory",
-            "Immunization",
-            "MedicationRequest",
-            "AllLaboratory",
-            "HospitalVisit",
-        ]);
+        cy.configureSettings({
+            datasets: [
+                {
+                    name: "healthVisit",
+                    enabled: true,
+                },
+                {
+                    name: "medication",
+                    enabled: true,
+                },
+                {
+                    name: "immunization",
+                    enabled: true,
+                },
+                {
+                    name: "covid19TestResult",
+                    enabled: true,
+                },
+                {
+                    name: "specialAuthorityRequest",
+                    enabled: true,
+                },
+                {
+                    name: "labResult",
+                    enabled: true,
+                },
+                {
+                    name: "hospitalVisit",
+                    enabled: true,
+                },
+            ],
+        });
         cy.login(
             Cypress.env("keycloak.username"),
             Cypress.env("keycloak.password"),
@@ -258,7 +281,14 @@ describe("Reports - Notes", () => {
         " The file that you are downloading contains personal information. If you are on a public computer, please ensure that the file is deleted before you log off. ";
     beforeEach(() => {
         cy.setupDownloads();
-        cy.enableModules(["Note"]);
+        cy.configureSettings({
+            datasets: [
+                {
+                    name: "note",
+                    enabled: true,
+                },
+            ],
+        });
         cy.login(
             Cypress.env("keycloak.hthgtwy20.username"),
             Cypress.env("keycloak.password"),

@@ -15,7 +15,14 @@ describe("Immunization - With Refresh", () => {
             }
             isLoading = !isLoading;
         });
-        cy.configureSettings({}, ["Immunization"]);
+        cy.configureSettings({
+            datasets: [
+                {
+                    name: "immunization",
+                    enabled: true,
+                },
+            ],
+        });
         cy.login(
             Cypress.env("keycloak.username"),
             Cypress.env("keycloak.password"),
@@ -57,7 +64,14 @@ describe("Immunization", () => {
         cy.intercept("GET", "**/Immunization?*", {
             fixture: "ImmunizationService/immunizationEmptyName.json",
         });
-        cy.configureSettings({}, ["Immunization"]);
+        cy.configureSettings({
+            datasets: [
+                {
+                    name: "immunization",
+                    enabled: true,
+                },
+            ],
+        });
         cy.login(
             Cypress.env("keycloak.username"),
             Cypress.env("keycloak.password"),
@@ -79,7 +93,14 @@ describe("Timeline - Immunization - Invalid Doses", () => {
         cy.intercept("GET", "**/Immunization?*", {
             fixture: "ImmunizationService/immunizationInvalidDoses.json",
         });
-        cy.configureSettings({}, ["Immunization"]);
+        cy.configureSettings({
+            datasets: [
+                {
+                    name: "immunization",
+                    enabled: true,
+                },
+            ],
+        });
         cy.login(
             Cypress.env("keycloak.username"),
             Cypress.env("keycloak.password"),

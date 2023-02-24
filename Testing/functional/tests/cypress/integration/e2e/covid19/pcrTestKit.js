@@ -31,7 +31,11 @@ const processedBanner = "[data-testid=alreadyProcessedBanner]";
 
 describe("Authenticated PCR Test Kit Registration", () => {
     beforeEach(() => {
-        cy.enableModules("PcrTest");
+        cy.configureSettings({
+            covid19: {
+                pcrTestEnabled: true,
+            },
+        });
         cy.login(
             Cypress.env("keycloak.username"),
             Cypress.env("keycloak.password"),
@@ -127,7 +131,11 @@ describe("Authenticated PCR Test Kit Registration", () => {
 
 describe("Unauthenticated PCR Test Kit Registration", () => {
     beforeEach(() => {
-        cy.enableModules("PcrTest");
+        cy.configureSettings({
+            covid19: {
+                pcrTestEnabled: true,
+            },
+        });
         cy.logout();
     });
 

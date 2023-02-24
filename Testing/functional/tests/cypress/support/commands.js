@@ -300,40 +300,11 @@ Cypress.Commands.add("checkTimelineHasLoaded", () => {
     cy.get("[data-testid=loading-in-progress]").should("not.exist");
 });
 
-Cypress.Commands.add("enableModules", (modules) => {
-    const isArrayOfModules = Array.isArray(modules);
+Cypress.Commands.add("configureSettings", (settings) => {
     return cy
         .readConfig()
         .as("config")
         .then((config) => {
-            Object.keys(config.webClient.modules).forEach((key) => {
-                if (isArrayOfModules) {
-                    config.webClient.modules[key] = modules.includes(key);
-                } else {
-                    config.webClient.modules[key] = modules === key;
-                }
-            });
-            cy.intercept("GET", "**/configuration/", {
-                statusCode: 200,
-                body: config,
-            });
-        });
-});
-
-Cypress.Commands.add("configureSettings", (settings, modules) => {
-    const isArrayOfModules = Array.isArray(modules);
-    return cy
-        .readConfig()
-        .as("config")
-        .then((config) => {
-            Object.keys(config.webClient.modules).forEach((key) => {
-                if (isArrayOfModules) {
-                    config.webClient.modules[key] = modules.includes(key);
-                } else {
-                    config.webClient.modules[key] = modules === key;
-                }
-            });
-
             // Create new configuration object to be configured and mutated
             const featureToggleConfiguration = {
                 ...config.webClient.featureToggleConfiguration,

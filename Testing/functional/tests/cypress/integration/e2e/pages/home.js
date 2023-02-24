@@ -4,15 +4,30 @@ const timelineUrl = "/timeline";
 
 describe("Home Page", () => {
     beforeEach(() => {
-        cy.enableModules([
-            "MedicationRequest",
-            "Medication",
-            "Immunization",
-            "Covid19LaboratoryOrder",
-            "LaboratoryOrder",
-            "Encounter",
-            "Note",
-        ]);
+        cy.configureSettings({
+            datasets: [
+                {
+                    name: "specialAuthorityRequest",
+                    enabled: true,
+                },
+                {
+                    name: "medication",
+                    enabled: true,
+                },
+                {
+                    name: "immunization",
+                    enabled: true,
+                },
+                {
+                    name: "healthVisit",
+                    enabled: true,
+                },
+                {
+                    name: "note",
+                    enabled: true,
+                },
+            ],
+        });
 
         cy.login(
             Cypress.env("keycloak.username"),

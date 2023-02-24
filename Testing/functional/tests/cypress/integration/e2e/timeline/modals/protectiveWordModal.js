@@ -2,7 +2,14 @@ const { AuthMethod } = require("../../../../support/constants");
 
 describe("Validate Modals Popup", () => {
     it("Protective Word Modal", () => {
-        cy.enableModules("Medication");
+        cy.configureSettings({
+            datasets: [
+                {
+                    name: "medication",
+                    enabled: true,
+                },
+            ],
+        });
         cy.login(
             Cypress.env("keycloak.protected.username"),
             Cypress.env("keycloak.password"),
@@ -55,7 +62,14 @@ describe("Validate Modals Popup", () => {
     });
 
     it("Dismiss Protective Word", () => {
-        cy.enableModules("Medication");
+        cy.configureSettings({
+            datasets: [
+                {
+                    name: "medication",
+                    enabled: true,
+                },
+            ],
+        });
         cy.login(
             Cypress.env("keycloak.protected.username"),
             Cypress.env("keycloak.password"),

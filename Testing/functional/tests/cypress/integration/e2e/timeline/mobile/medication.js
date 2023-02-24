@@ -2,7 +2,14 @@ const { AuthMethod } = require("../../../../support/constants");
 
 describe("Medication", () => {
     beforeEach(() => {
-        cy.enableModules("Medication");
+        cy.configureSettings({
+            datasets: [
+                {
+                    name: "medication",
+                    enabled: true,
+                },
+            ],
+        });
         cy.viewport("iphone-6");
         cy.login(
             Cypress.env("keycloak.username"),
