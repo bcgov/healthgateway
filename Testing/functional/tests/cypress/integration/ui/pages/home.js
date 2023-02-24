@@ -5,7 +5,7 @@ const timelineUrl = "/timeline";
 
 describe("Authenticated User - Home Page", () => {
     it("Home Page exists", () => {
-        cy.configureSettings({}, []);
+        cy.configureSettings({});
         cy.login(
             Cypress.env("keycloak.username"),
             Cypress.env("keycloak.password"),
@@ -80,15 +80,42 @@ describe("Authenticated User - Home Page", () => {
     });
 
     it("Home - Notes Card link to Timeline", () => {
-        cy.configureSettings({}, [
-            "MedicationRequest",
-            "Medication",
-            "Immunization",
-            "Covid19LaboratoryOrder",
-            "LaboratoryOrder",
-            "Encounter",
-            "Note",
-        ]);
+        cy.configureSettings({
+            datasets: [
+                {
+                    name: "covid19TestResult",
+                    enabled: true,
+                },
+                {
+                    name: "labResult",
+                    enabled: true,
+                },
+                {
+                    name: "healthVisit",
+                    enabled: true,
+                },
+                {
+                    name: "hospitalVisit",
+                    enabled: true,
+                },
+                {
+                    name: "immunization",
+                    enabled: true,
+                },
+                {
+                    name: "medication",
+                    enabled: true,
+                },
+                {
+                    name: "specialAuthorityRequest",
+                    enabled: true,
+                },
+                {
+                    name: "note",
+                    enabled: true,
+                },
+            ],
+        });
 
         cy.intercept("GET", "**/Note/*", {
             fixture: "NoteService/notes-no-records.json",

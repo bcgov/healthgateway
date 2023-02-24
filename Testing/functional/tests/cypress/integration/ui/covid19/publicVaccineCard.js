@@ -45,7 +45,9 @@ function clickVaccineCardEnterButton() {
 
 describe("Public Vaccine Card Form", () => {
     beforeEach(() => {
-        cy.configureSettings({}, ["Immunization"]);
+        cy.configureSettings({
+            datasets: [{ name: "immunization", enabled: true }],
+        });
         cy.logout();
         cy.visit(vaccineCardUrl);
     });
@@ -308,7 +310,14 @@ describe("Public Vaccine Card Downloads", () => {
 
 describe("Public Vaccine Card Downloads When PublicVaccineDownloadPdf Disabled", () => {
     it("Save Image When PublicVaccineDownloadPdf Disabled", () => {
-        cy.configureSettings({}, ["Immunization"]);
+        cy.configureSettings({
+            datasets: [
+                {
+                    name: "immunization",
+                    enabled: true,
+                },
+            ],
+        });
         cy.logout();
         cy.intercept("GET", "**/PublicVaccineStatus", {
             fixture: "ImmunizationService/publicVaccineStatusLoaded.json",
