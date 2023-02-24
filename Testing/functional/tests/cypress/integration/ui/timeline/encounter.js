@@ -7,7 +7,14 @@ describe("MSP Visits Rolloff", () => {
                 fixture: "EncounterService/encountersrolloff.json",
             });
         });
-        cy.enableModules("Encounter");
+        cy.configureSettings({
+            datasets: [
+                {
+                    name: "healthVisit",
+                    enabled: true,
+                },
+            ],
+        });
         cy.login(
             Cypress.env("keycloak.username"),
             Cypress.env("keycloak.password"),

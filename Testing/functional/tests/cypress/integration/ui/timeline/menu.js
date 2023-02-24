@@ -1,7 +1,14 @@
 const { AuthMethod } = require("../../../support/constants");
 
 function login(isMobile) {
-    cy.enableModules("Note");
+    cy.configureSettings({
+        datasets: [
+            {
+                name: "note",
+                enabled: true,
+            },
+        ],
+    });
     if (isMobile) {
         cy.viewport("iphone-6"); // Set viewport to 375px x 667px
     }

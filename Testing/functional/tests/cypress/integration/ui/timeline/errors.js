@@ -5,7 +5,15 @@ describe("Banner Error", () => {
         cy.intercept("GET", "**/Note/*", {
             fixture: "WebClientService/dbError.json",
         });
-        cy.enableModules("Note");
+        cy.configureSettings({
+            datasets: [
+                {
+                    name: "note",
+                    enabled: true,
+                },
+            ],
+        });
+
         cy.login(
             Cypress.env("keycloak.username"),
             Cypress.env("keycloak.password"),
