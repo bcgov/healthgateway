@@ -490,7 +490,7 @@ namespace HealthGateway.GatewayApi.Services
                 return RequestResultFactory.Error<UserProfileModel>(ErrorType.SmsInvalid, "Profile values entered are invalid");
             }
 
-            return null!;
+            return null;
         }
     }
 }
