@@ -3,7 +3,14 @@ const covidTestPath = "/covidTest";
 
 describe("Public Route", () => {
     it("Redirect to Public Vaccine Card", () => {
-        cy.enableModules(["Immunization"]);
+        cy.configureSettings({
+            datasets: [
+                {
+                    name: "immunization",
+                    enabled: true,
+                },
+            ],
+        });
         cy.logout();
         cy.visit(vaccineCardPath);
         cy.get("[data-testid=loginBtn]").should("not.exist");

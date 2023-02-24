@@ -217,16 +217,19 @@ describe("Public Vaccine Card Form", () => {
 
 describe("Public Vaccine Card Downloads", () => {
     beforeEach(() => {
-        cy.configureSettings(
-            {
-                covid19: {
-                    publicCovid19: {
-                        showFederalProofOfVaccination: true,
-                    },
+        cy.configureSettings({
+            covid19: {
+                publicCovid19: {
+                    showFederalProofOfVaccination: true,
                 },
             },
-            ["Immunization"]
-        );
+            datasets: [
+                {
+                    name: "immunization",
+                    enabled: true,
+                },
+            ],
+        });
         cy.logout();
         cy.intercept("GET", "**/PublicVaccineStatus", {
             fixture: "ImmunizationService/publicVaccineStatusLoaded.json",

@@ -2,17 +2,14 @@ const { AuthMethod } = require("../../../../support/constants");
 
 describe("COVID-19 Orders", () => {
     beforeEach(() => {
-        cy.configureSettings(
-            {
-                datasets: [
-                    {
-                        name: "covid19TestResult",
-                        enabled: true,
-                    },
-                ],
-            },
-            []
-        );
+        cy.configureSettings({
+            datasets: [
+                {
+                    name: "covid19TestResult",
+                    enabled: true,
+                },
+            ],
+        });
         cy.viewport("iphone-6");
         cy.login(
             Cypress.env("keycloak.username"),

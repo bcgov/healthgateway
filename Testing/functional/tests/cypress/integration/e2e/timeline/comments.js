@@ -38,7 +38,7 @@ describe("Comments Enable", () => {
             },
             datasets: [
                 {
-                    name: "clinicalDocument",
+                    name: "covid19TestResult",
                     enabled: true,
                 },
             ],
