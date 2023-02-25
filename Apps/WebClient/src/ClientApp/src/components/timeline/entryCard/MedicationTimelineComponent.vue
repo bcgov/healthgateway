@@ -22,6 +22,9 @@ export default class MedicationTimelineComponent extends Vue {
     @Prop() datekey!: string;
     @Prop() isMobileDetails!: boolean;
 
+    @Prop({ default: false })
+    commentsAreEnabled!: boolean;
+
     private get entryIcon(): string | undefined {
         return entryTypeMap.get(EntryType.Medication)?.icon;
     }
@@ -40,6 +43,7 @@ export default class MedicationTimelineComponent extends Vue {
         :subtitle="entry.medication.genericName"
         :entry="entry"
         :is-mobile-details="isMobileDetails"
+        :allow-comment="commentsAreEnabled"
     >
         <b-row slot="details-body" class="justify-content-between">
             <b-col>

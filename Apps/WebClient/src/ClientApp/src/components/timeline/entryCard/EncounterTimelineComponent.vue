@@ -25,6 +25,9 @@ export default class EncounterTimelineComponent extends Vue {
     @Prop() datekey!: string;
     @Prop() isMobileDetails!: boolean;
 
+    @Prop({ default: false })
+    commentsAreEnabled!: boolean;
+
     private get entryIcon(): string | undefined {
         return entryTypeMap.get(EntryType.HealthVisit)?.icon;
     }
@@ -43,6 +46,7 @@ export default class EncounterTimelineComponent extends Vue {
         :subtitle="entry.practitionerName"
         :entry="entry"
         :is-mobile-details="isMobileDetails"
+        :allow-comment="commentsAreEnabled"
     >
         <b-row slot="details-body">
             <b-col>

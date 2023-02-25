@@ -48,6 +48,9 @@ export default class Covid19LaboratoryOrderTimelineComponent extends Vue {
     @Prop()
     isMobileDetails!: boolean;
 
+    @Prop({ default: false })
+    commentsAreEnabled!: boolean;
+
     @Ref("messageModal")
     readonly messageModal!: MessageModalComponent;
 
@@ -147,6 +150,7 @@ export default class Covid19LaboratoryOrderTimelineComponent extends Vue {
         :title="entry.summaryTitle"
         :entry="entry"
         :is-mobile-details="isMobileDetails"
+        :allow-comment="commentsAreEnabled"
         :has-attachment="reportAvailable"
     >
         <div v-if="entry.tests.length === 1" slot="header-description">
