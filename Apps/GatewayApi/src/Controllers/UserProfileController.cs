@@ -391,10 +391,10 @@ namespace HealthGateway.GatewayApi.Controllers
         }
 
         /// <summary>
-        /// Test US phone number validation required by the GatewayAPI and PHSA.
+        /// Test phone number validation required by the GatewayAPI and PHSA.
         /// </summary>
         /// <param name="phoneNumber">Phone number stripped of any masked characters.</param>
-        /// <returns>True if the submitted phone number conforms to US standards.</returns>
+        /// <returns>True if the submitted phone number conforms to the appropriate standards.</returns>
         /// <response code="200">Returns the result of the validation attempt.</response>
         [HttpGet]
         [Route("IsValidPhoneNumber/{phoneNumber}")]
