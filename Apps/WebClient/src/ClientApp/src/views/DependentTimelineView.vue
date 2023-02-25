@@ -93,17 +93,11 @@ export default class DependentTimelineView extends Vue {
                 dataTestId: "breadcrumb-dependents",
             },
             {
-                text: `${this.formattedName} Timeline`,
+                text: this.formattedName,
                 active: true,
                 dataTestId: "breadcrumb-dependent-name",
             },
         ];
-    }
-
-    get entryTypes(): EntryType[] {
-        return [...entryTypeMap.values()]
-            .filter((d) => ConfigUtil.isDependentDatasetEnabled(d.type))
-            .map((d) => d.type);
     }
 
     get dependent(): Dependent | undefined {
@@ -112,6 +106,12 @@ export default class DependentTimelineView extends Vue {
 
     get dependentInfo(): DependentInformation | undefined {
         return this.dependent?.dependentInformation;
+    }
+
+    get entryTypes(): EntryType[] {
+        return [...entryTypeMap.values()]
+            .filter((d) => ConfigUtil.isDependentDatasetEnabled(d.type))
+            .map((d) => d.type);
     }
 
     get formattedName(): string {
@@ -130,9 +130,15 @@ export default class DependentTimelineView extends Vue {
             .join(" ");
     }
 
-    created(): void {
+    async created(): Promise<void> {
         this.logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
-        this.retrieveDependents({ hdid: this.user.hdid, bypassCache: false });
+        await this.retrieveDependents({
+            hdid: this.user.hdid,
+            bypassCache: false,
+        });
+        if (this.dependent === undefined) {
+            await this.$router.push({ path: "/unauthorized" });
+        }
     }
 }
 </script>
@@ -140,7 +146,7 @@ export default class DependentTimelineView extends Vue {
 <template>
     <div>
         <LoadingComponent :is-loading="dependentsAreLoading" />
-        <div v-if="!dependentsAreLoading">
+        <div v-if="!dependentsAreLoading && dependent !== undefined">
             <BreadcrumbComponent :items="breadcrumbItems" />
             <page-title :title="title" />
             <TimelineComponent :hdid="hdid" :entry-types="entryTypes" />
