@@ -13,7 +13,8 @@ import { Action, Getter } from "vuex-class";
 
 import RatingComponent from "@/components/modal/RatingComponent.vue";
 import type { WebClientConfiguration } from "@/models/configData";
-import { DateWrapper } from "@/models/dateWrapper";
+import type { StringISODateTime } from "@/models/dateWrapper";
+import * as dateWrapper from "@/models/dateWrapper";
 import Notification from "@/models/notification";
 import User, { OidcUserInfo } from "@/models/user";
 import container from "@/plugins/container";
@@ -64,6 +65,9 @@ export default class HeaderComponent extends Vue {
     @Getter("user", { namespace: "user" })
     user!: User;
 
+    @Getter("lastLoginDateTime", { namespace: "user" })
+    userLastLoginDateTime!: StringISODateTime;
+
     @Getter("oidcUserInfo", { namespace: "user" })
     oidcUserInfo!: OidcUserInfo | undefined;
 
@@ -84,6 +88,7 @@ export default class HeaderComponent extends Vue {
 
     private lastScrollTop = 0;
     private static minimunScrollChange = 2;
+    private notificationButtonClicked = false;
 
     private get userName(): string {
         if (this.oidcUserInfo === undefined) {
@@ -192,12 +197,18 @@ export default class HeaderComponent extends Vue {
     }
 
     public get newNotifications(): Notification[] {
-        if (this.user.lastLoginDateTime) {
-            const lastLoginDateTime = new DateWrapper(
-                this.user.lastLoginDateTime
+        if (this.userLastLoginDateTime) {
+            this.logger.debug(`Last login date: ${this.userLastLoginDateTime}`);
+            this.notifications.forEach((n) =>
+                this.logger.debug(
+                    `Notification effective date: ${n.scheduledDateTimeUtc}`
+                )
+            );
+            const lastLoginDateTime = new dateWrapper.DateWrapper(
+                this.userLastLoginDateTime
             );
             return this.notifications.filter((n) =>
-                new DateWrapper(n.scheduledDateTimeUtc).isAfter(
+                new dateWrapper.DateWrapper(n.scheduledDateTimeUtc).isAfter(
                     lastLoginDateTime
                 )
             );
@@ -207,7 +218,10 @@ export default class HeaderComponent extends Vue {
 
     private get notificationBadgeContent(): string | boolean {
         const count = this.newNotifications.length;
-        return count === 0 ? false : count.toString();
+        this.logger.debug(`Notification count: ${count}`);
+        return count === 0 || this.notificationButtonClicked
+            ? false
+            : count.toString();
     }
 
     private onScroll(): void {
@@ -303,6 +317,7 @@ export default class HeaderComponent extends Vue {
                     icon="bell"
                     class="text-white my-3 mx-2 rounded-0"
                     data-testid="notification-centre-button"
+                    @click="notificationButtonClicked = true"
                 />
                 <b-nav-item-dropdown
                     v-if="isLoggedInMenuShown"

@@ -14,5 +14,21 @@
         "actionUrl": "http://test2.com",
         "actionType": "None",
         "scheduledDateTimeUtc": "2021-08-01T00:00:00"
+    },
+    {
+        "id": "9eb24f30-ab74-4cdc-3280-08db134f5424",
+        "categoryName": "NOTIFICATION BADGE 1",
+        "displayText": "NOTIFICATION BADGE 1",
+        "actionUrl": "",
+        "actionType": "None",
+        "scheduledDateTimeUtc": "2023-02-25T00:00:01"
+    },
+    {
+        "id": "1f2d31d1-d540-4034-327f-08db134f5424",
+        "categoryName": "NOTIFICATION BADGE 2",
+        "displayText": "NOTIFICATION BADGE 2",
+        "actionUrl": "",
+        "actionType": "None",
+        "scheduledDateTimeUtc": "2023-02-23T00:00:01"
     }
 ]

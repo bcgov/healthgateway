@@ -1,5 +1,5 @@
 import UserPreferenceType from "@/constants/userPreferenceType";
-import { DateWrapper } from "@/models/dateWrapper";
+import { DateWrapper, StringISODateTime } from "@/models/dateWrapper";
 import PatientData from "@/models/patientData";
 import { QuickLink } from "@/models/quickLink";
 import { LoadStatus } from "@/models/storeOperations";
@@ -12,6 +12,16 @@ export const getters: UserGetters = {
     user(state: UserState): User {
         const { user } = state;
         return user;
+    },
+    lastLoginDateTime(state: UserState): StringISODateTime {
+        const { user } = state;
+        const loginDateTimes = user.lastLoginDateTimes;
+
+        // If there is only 1 login, then it means this is the user's first time logging in.
+        if (loginDateTimes.length == 1) {
+            return loginDateTimes[0];
+        }
+        return loginDateTimes[1];
     },
     oidcUserInfo(state: UserState): OidcUserInfo | undefined {
         const { oidcUserInfo } = state;
