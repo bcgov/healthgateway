@@ -88,16 +88,16 @@ export default class HeaderComponent extends Vue {
 
     private lastScrollTop = 0;
     private static minimunScrollChange = 2;
-    private notificationButtonClicked = false;
+    public notificationButtonClicked = false;
 
-    private get userName(): string {
+    public get userName(): string {
         if (this.oidcUserInfo === undefined) {
             return "";
         }
         return `${this.oidcUserInfo.given_name} ${this.oidcUserInfo.family_name}`;
     }
 
-    private get userInitials(): string {
+    public get userInitials(): string {
         const first = this.oidcUserInfo?.given_name;
         const last = this.oidcUserInfo?.family_name;
         if (first && last) {
@@ -143,7 +143,7 @@ export default class HeaderComponent extends Vue {
         );
     }
 
-    private get isSidebarButtonShown(): boolean {
+    public get isSidebarButtonShown(): boolean {
         return (
             !this.isOffline &&
             this.oidcIsAuthenticated &&
@@ -157,7 +157,7 @@ export default class HeaderComponent extends Vue {
         );
     }
 
-    private get isNotificationCentreAvailable(): boolean {
+    public get isNotificationCentreAvailable(): boolean {
         return (
             this.config.featureToggleConfiguration.notificationCentre.enabled &&
             !this.isOffline &&
@@ -171,15 +171,15 @@ export default class HeaderComponent extends Vue {
         );
     }
 
-    private get isLoggedInMenuShown(): boolean {
+    public get isLoggedInMenuShown(): boolean {
         return this.oidcIsAuthenticated && !this.isPcrTest && !this.isQueuePage;
     }
 
-    private get isLogOutButtonShown(): boolean {
+    public get isLogOutButtonShown(): boolean {
         return this.oidcIsAuthenticated && this.isPcrTest;
     }
 
-    private get isLogInButtonShown(): boolean {
+    public get isLogInButtonShown(): boolean {
         return (
             !this.oidcIsAuthenticated &&
             !this.isOffline &&
@@ -188,7 +188,7 @@ export default class HeaderComponent extends Vue {
         );
     }
 
-    private get isProfileLinkAvailable(): boolean {
+    public get isProfileLinkAvailable(): boolean {
         return (
             this.isLoggedInMenuShown &&
             this.isValidIdentityProvider &&
@@ -198,12 +198,6 @@ export default class HeaderComponent extends Vue {
 
     public get newNotifications(): Notification[] {
         if (this.userLastLoginDateTime) {
-            this.logger.debug(`Last login date: ${this.userLastLoginDateTime}`);
-            this.notifications.forEach((n) =>
-                this.logger.debug(
-                    `Notification effective date: ${n.scheduledDateTimeUtc}`
-                )
-            );
             const lastLoginDateTime = new dateWrapper.DateWrapper(
                 this.userLastLoginDateTime
             );
@@ -216,9 +210,8 @@ export default class HeaderComponent extends Vue {
         return this.notifications;
     }
 
-    private get notificationBadgeContent(): string | boolean {
+    public get notificationBadgeContent(): string | boolean {
         const count = this.newNotifications.length;
-        this.logger.debug(`Notification count: ${count}`);
         return count === 0 || this.notificationButtonClicked
             ? false
             : count.toString();
@@ -247,7 +240,7 @@ export default class HeaderComponent extends Vue {
         this.lastScrollTop = st <= 0 ? 0 : st;
     }
 
-    private handleToggleClick(): void {
+    public handleToggleClick(): void {
         this.toggleSidebar();
     }
 
@@ -255,7 +248,7 @@ export default class HeaderComponent extends Vue {
         this.toggleSidebar();
     }
 
-    private handleLogoutClick(): void {
+    public handleLogoutClick(): void {
         if (this.isValidIdentityProvider) {
             this.showRating();
         } else {
@@ -267,7 +260,7 @@ export default class HeaderComponent extends Vue {
         this.ratingComponent.showModal();
     }
 
-    private processLogout(): void {
+    public processLogout(): void {
         this.logger.debug(`redirecting to logout view ...`);
         this.$router.push({ path: "/logout" });
     }
