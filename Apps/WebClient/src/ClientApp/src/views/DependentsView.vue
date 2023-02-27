@@ -13,14 +13,12 @@ import { ErrorSourceType, ErrorType } from "@/constants/errorType";
 import UserPreferenceType from "@/constants/userPreferenceType";
 import BreadcrumbItem from "@/models/breadcrumbItem";
 import type { WebClientConfiguration } from "@/models/configData";
-import { DateWrapper } from "@/models/dateWrapper";
 import type { Dependent } from "@/models/dependent";
-import { ResultError } from "@/models/errors";
 import User from "@/models/user";
 import { UserPreference } from "@/models/userPreference";
 import container from "@/plugins/container";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
-import { IDependentService, ILogger } from "@/services/interfaces";
+import { ILogger } from "@/services/interfaces";
 
 library.add(faUserPlus);
 
@@ -36,6 +34,12 @@ const options: any = {
 
 @Component(options)
 export default class DependentsView extends Vue {
+    @Action("retrieveDependents", { namespace: "dependent" })
+    retrieveDependents!: (params: {
+        hdid: string;
+        bypassCache: boolean;
+    }) => Promise<void>;
+
     @Action("addError", { namespace: "errorBanner" })
     addError!: (params: {
         errorType: ErrorType;
@@ -54,20 +58,22 @@ export default class DependentsView extends Vue {
     @Getter("isMobile")
     isMobileView!: boolean;
 
-    @Getter("user", { namespace: "user" })
-    user!: User;
-
     @Getter("webClient", { namespace: "config" })
     webClientConfig!: WebClientConfiguration;
+
+    @Getter("dependents", { namespace: "dependent" })
+    dependents!: Dependent[];
+
+    @Getter("dependentsAreLoading", { namespace: "dependent" })
+    dependentsAreLoading!: boolean;
+
+    @Getter("user", { namespace: "user" })
+    user!: User;
 
     @Ref("newDependentModal")
     readonly newDependentModal!: NewDependentComponent;
 
     private logger!: ILogger;
-    private dependentService!: IDependentService;
-
-    private isLoading = true;
-    private dependents: Dependent[] = [];
 
     private breadcrumbItems: BreadcrumbItem[] = [
         {
@@ -90,57 +96,7 @@ export default class DependentsView extends Vue {
 
     private created(): void {
         this.logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
-    }
-
-    private mounted(): void {
-        this.dependentService = container.get<IDependentService>(
-            SERVICE_IDENTIFIER.DependentService
-        );
-        this.fetchDependents();
-    }
-
-    private fetchDependents(): void {
-        this.isLoading = true;
-        this.dependentService
-            .getAll(this.user.hdid)
-            .then((results) => this.setDependents(results))
-            .catch((error: ResultError) => {
-                this.logger.error(error.resultMessage);
-                if (error.statusCode === 429) {
-                    this.setTooManyRequestsWarning({ key: "page" });
-                } else {
-                    this.addError({
-                        errorType: ErrorType.Retrieve,
-                        source: ErrorSourceType.Dependent,
-                        traceId: error.traceId,
-                    });
-                }
-            })
-            .finally(() => {
-                this.isLoading = false;
-            });
-    }
-
-    private setDependents(dependents: Dependent[]): void {
-        this.dependents = dependents;
-        this.dependents.sort((a, b) => {
-            const firstDate = new DateWrapper(
-                a.dependentInformation.dateOfBirth
-            );
-            const secondDate = new DateWrapper(
-                b.dependentInformation.dateOfBirth
-            );
-
-            if (firstDate.isBefore(secondDate)) {
-                return 1;
-            }
-
-            if (firstDate.isAfter(secondDate)) {
-                return -1;
-            }
-
-            return 0;
-        });
+        this.retrieveDependents({ hdid: this.user.hdid, bypassCache: false });
     }
 
     private dismissAddDependentTutorial(): void {
@@ -162,15 +118,15 @@ export default class DependentsView extends Vue {
         this.newDependentModal.hideModal();
     }
 
-    private needsUpdate(): void {
-        this.fetchDependents();
+    private refreshDependents(): void {
+        this.retrieveDependents({ hdid: this.user.hdid, bypassCache: true });
     }
 }
 </script>
 <template>
     <div>
         <BreadcrumbComponent :items="breadcrumbItems" />
-        <LoadingComponent :is-loading="isLoading" />
+        <LoadingComponent :is-loading="dependentsAreLoading" />
         <page-title title="Dependents">
             <hg-button
                 id="add-dependent-button"
@@ -214,12 +170,12 @@ export default class DependentsView extends Vue {
             :key="dependent.ownerId"
             :dependent="dependent"
             class="mt-2"
-            @needs-update="needsUpdate"
+            @needs-update="refreshDependents"
         />
         <NewDependentComponent
             ref="newDependentModal"
             @show="showModal"
-            @handle-submit="fetchDependents"
+            @handle-submit="refreshDependents"
         />
     </div>
 </template>

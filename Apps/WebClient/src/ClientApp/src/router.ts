@@ -87,6 +87,10 @@ const ContactUsView = () =>
     import(/* webpackChunkName: "contactUs" */ "@/views/ContactUsView.vue");
 const DependentsView = () =>
     import(/* webpackChunkName: "dependents" */ "@/views/DependentsView.vue");
+const DependentTimelineView = () =>
+    import(
+        /* webpackChunkName: "dependents" */ "@/views/DependentTimelineView.vue"
+    );
 const FAQView = () =>
     import(/* webpackChunkName: "faq" */ "@/views/FaqView.vue");
 const PcrTestView = () =>
@@ -269,6 +273,21 @@ const routes = [
             validStates: [UserState.registered],
             requiredFeaturesEnabled: (config: FeatureToggleConfiguration) =>
                 config.dependents.enabled,
+            requiresProcessedWaitlistTicket: true,
+        },
+    },
+    {
+        path: "/dependents/:id",
+        redirect: "/dependents/:id/timeline",
+    },
+    {
+        path: "/dependents/:id/timeline",
+        component: DependentTimelineView,
+        props: true,
+        meta: {
+            validStates: [UserState.registered],
+            requiredFeaturesEnabled: (config: FeatureToggleConfiguration) =>
+                config.dependents.enabled && config.dependents.timelineEnabled,
             requiresProcessedWaitlistTicket: true,
         },
     },

@@ -116,6 +116,7 @@ export interface ProofOfVaccinationSettings {
 
 export interface DependentsSettings {
     enabled: boolean;
+    timelineEnabled: boolean;
     datasets: DatasetSettings[];
 }
 
