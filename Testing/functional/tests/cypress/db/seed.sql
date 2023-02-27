@@ -40,7 +40,7 @@ VALUES (
 	null,
 	null,
 	null,
-	current_timestamp - INTERVAL '2 day', 
+	current_timestamp, 
 	'CwqU7+gCkL3jMWWcUpq80Oh42QejXOwI+Ov0tmsVWBI=',
 	null,
 	'1967',
