@@ -61,21 +61,14 @@
     },
     "dependents": {
         "enabled": true,
+        "timelineEnabled": true,
         "datasets": [
-            {
-                "name": "clinicalDocument",
-                "enabled": false
-            },
             {
                 "name": "healthVisit",
                 "enabled": false
             },
             {
                 "name": "hospitalVisit",
-                "enabled": false
-            },
-            {
-                "name": "labResult",
                 "enabled": false
             },
             {
@@ -87,7 +80,7 @@
                 "enabled": false
             },
             {
-                "name": "specialAuthority",
+                "name": "specialAuthorityRequest",
                 "enabled": false
             }
         ]

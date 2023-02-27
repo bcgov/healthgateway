@@ -46,6 +46,9 @@ export default class LaboratoryOrderTimelineComponent extends Vue {
     @Prop()
     isMobileDetails!: boolean;
 
+    @Prop({ default: false })
+    commentsAreEnabled!: boolean;
+
     @Ref("messageModal")
     readonly messageModal!: MessageModalComponent;
 
@@ -136,6 +139,7 @@ export default class LaboratoryOrderTimelineComponent extends Vue {
         :entry="entry"
         :is-mobile-details="isMobileDetails"
         :has-attachment="entry.reportAvailable"
+        :allow-comment="commentsAreEnabled"
     >
         <div slot="header-description">
             <span>Order Status: </span>
