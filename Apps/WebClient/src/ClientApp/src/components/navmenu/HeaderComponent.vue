@@ -13,8 +13,7 @@ import { Action, Getter } from "vuex-class";
 
 import RatingComponent from "@/components/modal/RatingComponent.vue";
 import type { WebClientConfiguration } from "@/models/configData";
-import type { StringISODateTime } from "@/models/dateWrapper";
-import * as dateWrapper from "@/models/dateWrapper";
+import { DateWrapper, StringISODateTime } from "@/models/dateWrapper";
 import Notification from "@/models/notification";
 import User, { OidcUserInfo } from "@/models/user";
 import container from "@/plugins/container";
@@ -66,7 +65,7 @@ export default class HeaderComponent extends Vue {
     user!: User;
 
     @Getter("lastLoginDateTime", { namespace: "user" })
-    userLastLoginDateTime!: StringISODateTime;
+    userLastLoginDateTime!: StringISODateTime | undefined;
 
     @Getter("oidcUserInfo", { namespace: "user" })
     oidcUserInfo!: OidcUserInfo | undefined;
@@ -197,14 +196,16 @@ export default class HeaderComponent extends Vue {
     }
 
     public get newNotifications(): Notification[] {
+        this.logger.debug(`User last login: ${this.userLastLoginDateTime}`);
         if (this.userLastLoginDateTime) {
-            const lastLoginDateTime = new dateWrapper.DateWrapper(
+            const lastLoginDateTime = new DateWrapper(
                 this.userLastLoginDateTime
             );
             return this.notifications.filter((n) =>
-                new dateWrapper.DateWrapper(n.scheduledDateTimeUtc).isAfter(
-                    lastLoginDateTime
-                )
+                new DateWrapper(n.scheduledDateTimeUtc, {
+                    isUtc: true,
+                    hasTime: true,
+                }).isAfter(lastLoginDateTime)
             );
         }
         return this.notifications;
