@@ -32,7 +32,7 @@ export interface UserState {
 
 export interface UserGetters extends GetterTree<UserState, RootState> {
     user(state: UserState): User;
-    lastLoginDateTime(state: UserState): StringISODateTime;
+    lastLoginDateTime(state: UserState): StringISODateTime | undefined;
     oidcUserInfo(state: UserState): OidcUserInfo | undefined;
     isValidIdentityProvider(state: UserState): boolean;
     userIsRegistered(state: UserState): boolean;

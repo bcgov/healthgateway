@@ -13,15 +13,20 @@ export const getters: UserGetters = {
         const { user } = state;
         return user;
     },
-    lastLoginDateTime(state: UserState): StringISODateTime {
+    lastLoginDateTime(state: UserState): StringISODateTime | undefined {
         const { user } = state;
         const loginDateTimes = user.lastLoginDateTimes;
+        const loginDateTimesLength = user.lastLoginDateTimes.length;
 
-        // If there is only 1 login, then it means this is the user's first time logging in.
-        if (loginDateTimes.length == 1) {
-            return loginDateTimes[0];
+        if (loginDateTimesLength > 0) {
+            // If there is only one entry, then it means this is the user's first time logging in.
+            if (loginDateTimesLength == 1) {
+                return loginDateTimes[0];
+            }
+            // If there is more than one entry, then it means the second entry is the actual last login, whereas the first entry is the current login.
+            return loginDateTimes[1];
         }
-        return loginDateTimes[1];
+        return undefined;
     },
     oidcUserInfo(state: UserState): OidcUserInfo | undefined {
         const { oidcUserInfo } = state;
