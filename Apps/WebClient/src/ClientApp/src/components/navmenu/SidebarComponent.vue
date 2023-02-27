@@ -350,6 +350,7 @@ export default class SidebarComponent extends Vue {
                             </b-col>
                             <b-col
                                 v-show="isFullyOpen"
+                                data-testid="servicesLabel"
                                 class="button-text pl-3"
                             >
                                 <span>Services</span>
