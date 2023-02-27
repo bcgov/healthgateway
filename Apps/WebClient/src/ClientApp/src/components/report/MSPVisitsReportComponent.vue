@@ -11,7 +11,6 @@ import ReportFilter from "@/models/reportFilter";
 import ReportHeader from "@/models/reportHeader";
 import { ReportFormatType, TemplateType } from "@/models/reportRequest";
 import RequestResult from "@/models/requestResult";
-import User from "@/models/user";
 import container from "@/plugins/container";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import { ILogger, IReportService } from "@/services/interfaces";
@@ -25,6 +24,9 @@ interface EncounterRow {
 
 @Component
 export default class MSPVisitsReportComponent extends Vue {
+    @Prop({ required: true })
+    hdid!: string;
+
     @Prop() private filter!: ReportFilter;
 
     @Action("retrieveHealthVisits", { namespace: "encounter" })
@@ -36,19 +38,16 @@ export default class MSPVisitsReportComponent extends Vue {
     @Getter("healthVisits", { namespace: "encounter" })
     healthVisits!: (hdid: string) => Encounter[];
 
-    @Getter("user", { namespace: "user" })
-    private user!: User;
-
     private logger!: ILogger;
 
     private readonly headerClass = "encounter-report-table-header";
 
     private get isLoading(): boolean {
-        return this.healthVisitsAreLoading(this.user.hdid);
+        return this.healthVisitsAreLoading(this.hdid);
     }
 
     private get visibleRecords(): Encounter[] {
-        let records = this.healthVisits(this.user.hdid).filter((record) =>
+        let records = this.healthVisits(this.hdid).filter((record) =>
             this.filter.allowsDate(record.encounterDate)
         );
         records.sort((a, b) => {
@@ -96,7 +95,7 @@ export default class MSPVisitsReportComponent extends Vue {
 
     private created(): void {
         this.logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
-        this.retrieveHealthVisits({ hdid: this.user.hdid }).catch((err) =>
+        this.retrieveHealthVisits({ hdid: this.hdid }).catch((err) =>
             this.logger.error(`Error loading encounter data: ${err}`)
         );
     }

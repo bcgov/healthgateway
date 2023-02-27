@@ -11,7 +11,6 @@ import ReportFilter from "@/models/reportFilter";
 import ReportHeader from "@/models/reportHeader";
 import { ReportFormatType, TemplateType } from "@/models/reportRequest";
 import RequestResult from "@/models/requestResult";
-import User from "@/models/user";
 import container from "@/plugins/container";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import { ILogger, IReportService } from "@/services/interfaces";
@@ -28,6 +27,9 @@ interface MedicationRequestRow {
 
 @Component
 export default class MedicationRequestReportComponent extends Vue {
+    @Prop({ required: true })
+    hdid!: string;
+
     @Prop()
     filter!: ReportFilter;
 
@@ -42,15 +44,12 @@ export default class MedicationRequestReportComponent extends Vue {
     @Getter("specialAuthorityRequests", { namespace: "medication" })
     specialAuthorityRequests!: (hdid: string) => MedicationRequest[];
 
-    @Getter("user", { namespace: "user" })
-    user!: User;
-
     private logger!: ILogger;
 
     private readonly headerClass = "medication-request-report-table-header";
 
     private get isLoading(): boolean {
-        return this.specialAuthorityRequestsAreLoading(this.user.hdid);
+        return this.specialAuthorityRequestsAreLoading(this.hdid);
     }
 
     private get isEmpty(): boolean {
@@ -58,7 +57,7 @@ export default class MedicationRequestReportComponent extends Vue {
     }
 
     private get visibleRecords(): MedicationRequest[] {
-        let records = this.specialAuthorityRequests(this.user.hdid).filter(
+        let records = this.specialAuthorityRequests(this.hdid).filter(
             (record) => this.filter.allowsDate(record.requestedDate)
         );
         records.sort((a, b) => {
@@ -111,7 +110,7 @@ export default class MedicationRequestReportComponent extends Vue {
 
     private created(): void {
         this.logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
-        this.retrieveSpecialAuthorityRequests({ hdid: this.user.hdid }).catch(
+        this.retrieveSpecialAuthorityRequests({ hdid: this.hdid }).catch(
             (err) =>
                 this.logger.error(
                     `Error loading Special Authority requests data: ${err}`
