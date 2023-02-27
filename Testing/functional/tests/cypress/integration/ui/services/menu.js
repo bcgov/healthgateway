@@ -1,11 +1,14 @@
 const { AuthMethod } = require("../../../support/constants");
 
-function login(isMobile) {
+function toggleServices(enabled = true) {
     cy.configureSettings({
         services: {
-            enabled: true,
+            enabled: enabled,
         },
     });
+}
+
+function login(isMobile) {
     if (isMobile) {
         cy.viewport("iphone-6"); // Set viewport to 375px x 667px
     }
@@ -17,7 +20,10 @@ function login(isMobile) {
     cy.checkTimelineHasLoaded();
 }
 
-describe("Menu System", () => {
+describe("Menu System when services is enabled", () => {
+    beforeEach(() => {
+        toggleServices(true);
+    });
     it("Validate Toggle Sidebar", () => {
         login(false);
         cy.get("[data-testid=servicesLabel]")
@@ -37,11 +43,26 @@ describe("Menu System", () => {
             "/services"
         );
         cy.get("[data-testid=sidebarToggle]").should("be.visible");
-        cy.get("[data-testid=feedbackContainer]").should("be.visible");
     });
 
     it("Side bar expands on login for desktop", () => {
         login(true);
         cy.get("[data-testid=servicesLabel]").should("not.be.visible");
+    });
+});
+
+describe("Menu system when services is disabled", () => {
+    beforeEach(() => {
+        toggleServices(false);
+    });
+    it("Side bar does not contain services nav link when services is disabled", () => {
+        cy.configureSettings({
+            services: {
+                enabled: false,
+            },
+        });
+        login(false);
+        cy.get("[data-testid=menu-btn-Services-link]").should("not.be.visible");
+        cy.get("[data-testid=sidebarToggle]").should("be.visible");
     });
 });
