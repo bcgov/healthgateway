@@ -21,7 +21,7 @@
         "displayText": "NOTIFICATION BADGE 1",
         "actionUrl": "",
         "actionType": "None",
-        "scheduledDateTimeUtc": "2023-02-25T00:00:01"
+        "scheduledDateTimeUtc": "2021-11-22T05:49:48"
     },
     {
         "id": "1f2d31d1-d540-4034-327f-08db134f5424",
@@ -29,6 +29,6 @@
         "displayText": "NOTIFICATION BADGE 2",
         "actionUrl": "",
         "actionType": "None",
-        "scheduledDateTimeUtc": "2023-02-23T00:00:01"
+        "scheduledDateTimeUtc": "2021-11-23T00:00:01"
     }
 ]

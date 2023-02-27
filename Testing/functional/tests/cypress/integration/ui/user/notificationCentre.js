@@ -136,6 +136,8 @@ describe("Notification Badge", () => {
             fixture: "UserProfileService/userProfile.json",
         });
 
+        // The scheduledDateTimeUtc must be after user profile's last login in lastLoginDateTimes, which is the second entry
+        // not the first entry. The first entry is the current login.
         cy.intercept("GET", `**/Notification/${HDID}`, {
             fixture: "NotificationService/notifications.json",
         });
