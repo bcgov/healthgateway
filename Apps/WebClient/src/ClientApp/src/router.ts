@@ -98,6 +98,9 @@ const QueueFullView = () =>
         /* webpackChunkName: "queueFull" */ "@/views/waitlist/QueueFullView.vue"
     );
 
+const ServicesView = () =>
+    import(/* webpackChunkName: "services" */ "@/views/ServicesView.vue");
+
 export enum UserState {
     offline = "offline",
     unauthenticated = "unauthenticated",
@@ -266,6 +269,16 @@ const routes = [
             validStates: [UserState.registered],
             requiredFeaturesEnabled: (config: FeatureToggleConfiguration) =>
                 config.dependents.enabled,
+            requiresProcessedWaitlistTicket: true,
+        },
+    },
+    {
+        path: "/services",
+        component: ServicesView,
+        meta: {
+            validStates: [UserState.registered],
+            requiredFeaturesEnabled: (config: FeatureToggleConfiguration) =>
+                config.services.enabled,
             requiresProcessedWaitlistTicket: true,
         },
     },

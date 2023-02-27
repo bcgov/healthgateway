@@ -34,7 +34,8 @@ namespace HealthGateway.WebClient.Server.Models
         TimelineSettings Timeline,
         DatasetSettings[] Datasets,
         Covid19Settings Covid19,
-        DependentsSettings Dependents);
+        DependentsSettings Dependents,
+        ServicesSettings Services);
 
     /// <summary>
     /// Settings for the home page.
@@ -108,6 +109,12 @@ namespace HealthGateway.WebClient.Server.Models
     public record DependentsSettings(
         bool Enabled,
         DatasetSettings[] Datasets);
+
+    /// <summary>
+    /// Settings for the services feature.
+    /// </summary>
+    /// <param name="Enabled">Toggles services feature.</param>
+    public record ServicesSettings(bool Enabled);
 
 #pragma warning restore CA1819
 }
