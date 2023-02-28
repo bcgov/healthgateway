@@ -102,33 +102,33 @@ export default class ReportsComponent extends Vue {
     @Action("setTooManyRequestsError", { namespace: "errorBanner" })
     setTooManyRequestsError!: (params: { key: string }) => void;
 
-    private ReportFormatType: unknown = ReportFormatType;
-    private isLoading = false;
-    private isGeneratingReport = false;
-    private reportFormatType = ReportFormatType.PDF;
-    private reportComponentName = "";
-    private reportTypeOptions = [{ value: "", text: "Select" }];
+    ReportFormatType: unknown = ReportFormatType;
+    isLoading = false;
+    isGeneratingReport = false;
+    reportFormatType = ReportFormatType.PDF;
+    reportComponentName = "";
+    reportTypeOptions = [{ value: "", text: "Select" }];
 
-    private selectedStartDate: StringISODate | null = null;
-    private selectedEndDate: StringISODate | null = null;
-    private selectedMedicationOptions: string[] = [];
+    selectedStartDate: StringISODate | null = null;
+    selectedEndDate: StringISODate | null = null;
+    selectedMedicationOptions: string[] = [];
 
-    private hasRecords = false;
+    hasRecords = false;
 
-    private reportFilter = ReportFilterBuilder.create().build();
-    private isReportFilterStartDateValidDate = true;
-    private isReportFilterEndDateValidDate = true;
+    reportFilter = ReportFilterBuilder.create().build();
+    isReportFilterStartDateValidDate = true;
+    isReportFilterEndDateValidDate = true;
 
-    private logger!: ILogger;
+    logger!: ILogger;
 
-    public get showLaboratoryOrderQueuedMessage(): boolean {
+    get showLaboratoryOrderQueuedMessage(): boolean {
         return (
             this.reportComponentName === laboratoryReport &&
             this.laboratoryOrdersAreQueued(this.hdid)
         );
     }
 
-    private get headerData(): ReportHeader {
+    get headerData(): ReportHeader {
         return {
             phn: this.patientData.personalhealthnumber,
             dateOfBirth: this.formatDate(this.patientData.birthdate || ""),
@@ -141,11 +141,11 @@ export default class ReportsComponent extends Vue {
         };
     }
 
-    private get isMedicationReport(): boolean {
+    get isMedicationReport(): boolean {
         return this.reportComponentName === medicationReport;
     }
 
-    private get medicationOptions(): SelectOption[] {
+    get medicationOptions(): SelectOption[] {
         let records = this.medications(this.hdid).reduce<MedicationSummary[]>(
             (acumulator: MedicationSummary[], current) => {
                 let med = current.medicationSummary;
@@ -168,7 +168,7 @@ export default class ReportsComponent extends Vue {
         }));
     }
 
-    private get isDownloadDisabled(): boolean {
+    get isDownloadDisabled(): boolean {
         this.logger.debug(`Report Component Name: ${this.reportComponentName}`);
         return (
             this.isLoading ||
@@ -178,11 +178,11 @@ export default class ReportsComponent extends Vue {
         );
     }
 
-    private formatDate(date: string): string {
+    formatDate(date: string): string {
         return DateWrapper.format(date);
     }
 
-    private created(): void {
+    created(): void {
         this.logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
 
         if (ConfigUtil.isDatasetEnabled(EntryType.Medication)) {
@@ -235,20 +235,20 @@ export default class ReportsComponent extends Vue {
         }
     }
 
-    private clearFilter(): void {
+    clearFilter(): void {
         this.selectedStartDate = null;
         this.selectedEndDate = null;
         this.selectedMedicationOptions = [];
         this.updateFilter();
     }
 
-    private clearFilterDates(): void {
+    clearFilterDates(): void {
         this.selectedStartDate = null;
         this.selectedEndDate = null;
         this.updateFilter();
     }
 
-    private clearFilterMedication(medicationName: string): void {
+    clearFilterMedication(medicationName: string): void {
         let index = this.selectedMedicationOptions.indexOf(medicationName);
         if (index >= 0) {
             this.selectedMedicationOptions.splice(index, 1);
@@ -256,7 +256,7 @@ export default class ReportsComponent extends Vue {
         }
     }
 
-    private cancelFilter(): void {
+    cancelFilter(): void {
         this.selectedStartDate = this.convertEmptyStringDateToNull(
             this.reportFilter.startDate
         );
@@ -266,7 +266,7 @@ export default class ReportsComponent extends Vue {
         this.selectedMedicationOptions = this.reportFilter.medications;
     }
 
-    private updateFilter(): void {
+    updateFilter(): void {
         this.reportFilter = ReportFilterBuilder.create()
             .withStartDate(
                 this.convertEmptyStringDateToNull(this.selectedStartDate)
@@ -278,18 +278,16 @@ export default class ReportsComponent extends Vue {
             .build();
     }
 
-    private convertEmptyStringDateToNull(
-        date: StringISODate | null
-    ): string | null {
+    convertEmptyStringDateToNull(date: StringISODate | null): string | null {
         return !date ? null : date;
     }
 
-    private showConfirmationModal(reportFormatType: ReportFormatType): void {
+    showConfirmationModal(reportFormatType: ReportFormatType): void {
         this.reportFormatType = reportFormatType;
         this.messageModal.showModal();
     }
 
-    private downloadReport(): void {
+    downloadReport(): void {
         if (this.reportComponentName === "") {
             return;
         }
@@ -328,7 +326,7 @@ export default class ReportsComponent extends Vue {
             });
     }
 
-    private getMimeType(reportFormatType: ReportFormatType): string {
+    getMimeType(reportFormatType: ReportFormatType): string {
         switch (reportFormatType) {
             case ReportFormatType.PDF:
                 return "application/pdf";
@@ -341,7 +339,7 @@ export default class ReportsComponent extends Vue {
         }
     }
 
-    private trackDownload(): void {
+    trackDownload(): void {
         let reportName = "";
         switch (this.reportComponentName) {
             case medicationReport:

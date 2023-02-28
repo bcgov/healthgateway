@@ -25,7 +25,7 @@ export default class ReportsView extends Vue {
     @Getter("user", { namespace: "user" })
     user!: User;
 
-    public breadcrumbItems: BreadcrumbItem[] = [
+    breadcrumbItems: BreadcrumbItem[] = [
         {
             text: "Export Records",
             to: "/reports",
