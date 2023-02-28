@@ -87,16 +87,16 @@ export default class HeaderComponent extends Vue {
 
     private lastScrollTop = 0;
     private static minimunScrollChange = 2;
-    public notificationButtonClicked = false;
+    private notificationButtonClicked = false;
 
-    public get userName(): string {
+    private get userName(): string {
         if (this.oidcUserInfo === undefined) {
             return "";
         }
         return `${this.oidcUserInfo.given_name} ${this.oidcUserInfo.family_name}`;
     }
 
-    public get userInitials(): string {
+    private get userInitials(): string {
         const first = this.oidcUserInfo?.given_name;
         const last = this.oidcUserInfo?.family_name;
         if (first && last) {
@@ -142,7 +142,7 @@ export default class HeaderComponent extends Vue {
         );
     }
 
-    public get isSidebarButtonShown(): boolean {
+    private get isSidebarButtonShown(): boolean {
         return (
             !this.isOffline &&
             this.oidcIsAuthenticated &&
@@ -156,7 +156,7 @@ export default class HeaderComponent extends Vue {
         );
     }
 
-    public get isNotificationCentreAvailable(): boolean {
+    private get isNotificationCentreAvailable(): boolean {
         return (
             this.config.featureToggleConfiguration.notificationCentre.enabled &&
             !this.isOffline &&
@@ -170,15 +170,15 @@ export default class HeaderComponent extends Vue {
         );
     }
 
-    public get isLoggedInMenuShown(): boolean {
+    private get isLoggedInMenuShown(): boolean {
         return this.oidcIsAuthenticated && !this.isPcrTest && !this.isQueuePage;
     }
 
-    public get isLogOutButtonShown(): boolean {
+    private get isLogOutButtonShown(): boolean {
         return this.oidcIsAuthenticated && this.isPcrTest;
     }
 
-    public get isLogInButtonShown(): boolean {
+    private get isLogInButtonShown(): boolean {
         return (
             !this.oidcIsAuthenticated &&
             !this.isOffline &&
@@ -187,7 +187,7 @@ export default class HeaderComponent extends Vue {
         );
     }
 
-    public get isProfileLinkAvailable(): boolean {
+    private get isProfileLinkAvailable(): boolean {
         return (
             this.isLoggedInMenuShown &&
             this.isValidIdentityProvider &&
@@ -195,7 +195,7 @@ export default class HeaderComponent extends Vue {
         );
     }
 
-    public get newNotifications(): Notification[] {
+    private get newNotifications(): Notification[] {
         this.logger.debug(`User last login: ${this.userLastLoginDateTime}`);
         if (this.userLastLoginDateTime) {
             const lastLoginDateTime = new DateWrapper(
@@ -211,7 +211,7 @@ export default class HeaderComponent extends Vue {
         return this.notifications;
     }
 
-    public get notificationBadgeContent(): string | boolean {
+    private get notificationBadgeContent(): string | boolean {
         const count = this.newNotifications.length;
         return count === 0 || this.notificationButtonClicked
             ? false
@@ -241,7 +241,7 @@ export default class HeaderComponent extends Vue {
         this.lastScrollTop = st <= 0 ? 0 : st;
     }
 
-    public handleToggleClick(): void {
+    private handleToggleClick(): void {
         this.toggleSidebar();
     }
 
@@ -249,7 +249,7 @@ export default class HeaderComponent extends Vue {
         this.toggleSidebar();
     }
 
-    public handleLogoutClick(): void {
+    private handleLogoutClick(): void {
         if (this.isValidIdentityProvider) {
             this.showRating();
         } else {
@@ -261,7 +261,7 @@ export default class HeaderComponent extends Vue {
         this.ratingComponent.showModal();
     }
 
-    public processLogout(): void {
+    private processLogout(): void {
         this.logger.debug(`redirecting to logout view ...`);
         this.$router.push({ path: "/logout" });
     }
