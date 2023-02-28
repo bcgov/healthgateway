@@ -22,7 +22,8 @@
     },
     "vueCompilerOptions": {
         "target": 2.7,
-        "experimentalDisableTemplateSupport": true
+        "experimentalDisableTemplateSupport": true,
+        "experimentalUseElementAccessInTemplate": true
     },
     "include": ["./src/**/*.ts", "./src/**/*.vue", "./test/**/*.ts"],
     "exclude": ["node_modules"]
