@@ -26,12 +26,13 @@ import TimelineComponent from "@/components/timeline/TimelineComponent.vue";
 import { EntryType, entryTypeMap } from "@/constants/entryType";
 import BreadcrumbItem from "@/models/breadcrumbItem";
 import type { WebClientConfiguration } from "@/models/configData";
-import { Dependent, DependentInformation } from "@/models/dependent";
+import { Dependent } from "@/models/dependent";
 import User from "@/models/user";
 import container from "@/plugins/container";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import { ILogger } from "@/services/interfaces";
 import ConfigUtil from "@/utility/configUtil";
+import DependentUtil from "@/utility/dependentUtil";
 
 library.add(
     faCheckCircle,
@@ -104,10 +105,6 @@ export default class DependentTimelineView extends Vue {
         return this.dependents.find((d) => d.ownerId === this.hdid);
     }
 
-    get dependentInfo(): DependentInformation | undefined {
-        return this.dependent?.dependentInformation;
-    }
-
     get entryTypes(): EntryType[] {
         return [...entryTypeMap.values()]
             .filter((d) => ConfigUtil.isDependentDatasetEnabled(d.type))
@@ -115,9 +112,7 @@ export default class DependentTimelineView extends Vue {
     }
 
     get formattedName(): string {
-        const firstName = this.dependentInfo?.firstname;
-        const lastInitial = this.dependentInfo?.lastname?.slice(0, 1);
-        return [firstName, lastInitial].filter((s) => Boolean(s)).join(" ");
+        return DependentUtil.formatName(this.dependent?.dependentInformation);
     }
 
     get hdid(): string {
