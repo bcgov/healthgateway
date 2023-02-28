@@ -37,6 +37,9 @@ function configureObject(baseObj, delta) {
     if (deltaKeys && deltaKeys.length > 0) {
         for (const key of deltaKeys) {
             const baseValue = baseObj[key];
+            if (baseValue === undefined) {
+                throw new Error(`Unknown property: ${key}`);
+            }
             const baseValueKeys = Object.keys(baseValue);
             if (
                 baseValueKeys &&
