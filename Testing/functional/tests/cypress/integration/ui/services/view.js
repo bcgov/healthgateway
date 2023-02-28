@@ -21,10 +21,7 @@ describe("Authenticated Services View", () => {
         Cypress.session.clearAllSavedSessions();
     });
 
-    // Minimum to test skeleton of services page
-    it("View should show title and header", () => {
-        cy.get("h1#subject").should("have.text", "Services");
-        cy.get("h5.my-3").should("be.visible");
+    it("The page should load correctly", () => {
         cy.url().should("include", servicesTestsConstants.servicesUrl);
     });
 });

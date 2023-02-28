@@ -27,6 +27,7 @@ namespace HealthGateway.WebClient.Server.Models
     /// <param name="Datasets">Settings for the data sets.</param>
     /// <param name="Covid19">Settings for covid19 features.</param>
     /// <param name="Dependents">Settings for dependents features.</param>
+    /// <param name="Services">Settings for services features.</param>
     public record FeatureToggleConfiguration(
         HomepageSettings Homepage,
         WaitingQueueSettings WaitingQueue,

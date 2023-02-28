@@ -101,7 +101,6 @@ const QueueFullView = () =>
     import(
         /* webpackChunkName: "queueFull" */ "@/views/waitlist/QueueFullView.vue"
     );
-
 const ServicesView = () =>
     import(/* webpackChunkName: "services" */ "@/views/ServicesView.vue");
 

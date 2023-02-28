@@ -119,7 +119,6 @@ export interface DependentsSettings {
     timelineEnabled: boolean;
     datasets: DatasetSettings[];
 }
-
 export interface ServicesSettings {
     enabled: boolean;
 }

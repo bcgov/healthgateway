@@ -15,8 +15,7 @@ const options: any = {
 };
 @Component(options)
 export default class ServicesView extends Vue {
-    private isLoading = true;
-    private breadcrumbItems: BreadcrumbItem[] = [
+    breadcrumbItems: BreadcrumbItem[] = [
         {
             text: "Services",
             to: "/services",
@@ -25,8 +24,8 @@ export default class ServicesView extends Vue {
         },
     ];
 
-    private mounted(): void {
-        this.isLoading = false;
+    get isLoading() {
+        return false;
     }
 }
 </script>
@@ -35,12 +34,10 @@ export default class ServicesView extends Vue {
     <div>
         <BreadcrumbComponent :items="breadcrumbItems" />
         <LoadingComponent :is-loading="isLoading" />
-        <page-title title="Services"></page-title>
+        <page-title title="Services" />
         <h5 class="my-3">
             You can check and update your Organ Donor Registry information here.
             More health services will be added in future.
         </h5>
     </div>
 </template>
-
-<style scoped></style>

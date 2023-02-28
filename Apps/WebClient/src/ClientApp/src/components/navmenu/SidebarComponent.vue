@@ -26,10 +26,10 @@ library.add(
     faAngleDoubleLeft,
     faCheckCircle,
     faClipboardList,
+    faHandHoldingMedical,
     faHome,
     faStream,
-    faUserFriends,
-    faHandHoldingMedical
+    faUserFriends
 );
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -334,7 +334,7 @@ export default class SidebarComponent extends Vue {
                     <hg-button
                         v-show="isServicesEnabled && userIsActive"
                         id="menuBtnServices"
-                        data-testid="menu-btn-Services-link"
+                        data-testid="menu-btn-services-link"
                         to="/services"
                         variant="nav"
                         class="my-3 px-3 px-md-4"

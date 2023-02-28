@@ -15,9 +15,9 @@ function login(isMobile) {
     cy.login(
         Cypress.env("keycloak.username"),
         Cypress.env("keycloak.password"),
-        AuthMethod.KeyCloak
+        AuthMethod.KeyCloak,
+        "/home"
     );
-    cy.checkTimelineHasLoaded();
 }
 
 describe("Menu System when services is enabled", () => {
@@ -37,7 +37,7 @@ describe("Menu System when services is enabled", () => {
 
     it("Side bar contains services nav link", () => {
         login(false);
-        cy.get("[data-testid=menu-btn-Services-link]").should(
+        cy.get("[data-testid=menu-btn-services-link]").should(
             "have.attr",
             "href",
             "/services"
@@ -62,7 +62,7 @@ describe("Menu system when services is disabled", () => {
             },
         });
         login(false);
-        cy.get("[data-testid=menu-btn-Services-link]").should("not.be.visible");
         cy.get("[data-testid=sidebarToggle]").should("be.visible");
+        cy.get("[data-testid=menu-btn-services-link]").should("not.be.visible");
     });
 });
