@@ -27,6 +27,7 @@ namespace HealthGateway.WebClient.Server.Models
     /// <param name="Datasets">Settings for the data sets.</param>
     /// <param name="Covid19">Settings for covid19 features.</param>
     /// <param name="Dependents">Settings for dependents features.</param>
+    /// <param name="Services">Settings for services features.</param>
     public record FeatureToggleConfiguration(
         HomepageSettings Homepage,
         WaitingQueueSettings WaitingQueue,
@@ -34,7 +35,8 @@ namespace HealthGateway.WebClient.Server.Models
         TimelineSettings Timeline,
         DatasetSettings[] Datasets,
         Covid19Settings Covid19,
-        DependentsSettings Dependents);
+        DependentsSettings Dependents,
+        ServicesSettings Services);
 
     /// <summary>
     /// Settings for the home page.
@@ -110,6 +112,12 @@ namespace HealthGateway.WebClient.Server.Models
         bool Enabled,
         bool TimelineEnabled,
         DatasetSettings[] Datasets);
+
+    /// <summary>
+    /// Settings for the services feature.
+    /// </summary>
+    /// <param name="Enabled">Toggles services feature.</param>
+    public record ServicesSettings(bool Enabled);
 
 #pragma warning restore CA1819
 }

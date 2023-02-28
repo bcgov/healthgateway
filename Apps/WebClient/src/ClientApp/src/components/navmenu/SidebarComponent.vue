@@ -4,6 +4,7 @@ import {
     faAngleDoubleLeft,
     faCheckCircle,
     faClipboardList,
+    faHandHoldingMedical,
     faHome,
     faStream,
     faUserFriends,
@@ -25,6 +26,7 @@ library.add(
     faAngleDoubleLeft,
     faCheckCircle,
     faClipboardList,
+    faHandHoldingMedical,
     faHome,
     faStream,
     faUserFriends
@@ -184,6 +186,10 @@ export default class SidebarComponent extends Vue {
         return this.$route.path == "/covid19";
     }
 
+    private get isServices(): boolean {
+        return this.$route.path == "/services";
+    }
+
     private get isTermsOfService(): boolean {
         return this.$route.path == "/profile/termsOfService";
     }
@@ -198,6 +204,10 @@ export default class SidebarComponent extends Vue {
 
     private get isDependentEnabled(): boolean {
         return this.config.featureToggleConfiguration.dependents.enabled;
+    }
+
+    private get isServicesEnabled(): boolean {
+        return this.config.featureToggleConfiguration.services.enabled;
     }
 
     private get isDependents(): boolean {
@@ -317,6 +327,33 @@ export default class SidebarComponent extends Vue {
                                 class="button-text pl-3"
                             >
                                 <span>Dependents</span>
+                            </b-col>
+                        </b-row>
+                    </hg-button>
+                    <!-- Services button -->
+                    <hg-button
+                        v-show="isServicesEnabled && userIsActive"
+                        id="menuBtnServices"
+                        data-testid="menu-btn-services-link"
+                        to="/services"
+                        variant="nav"
+                        class="my-3 px-3 px-md-4"
+                        :class="{ selected: isServices }"
+                    >
+                        <b-row class="align-items-center" no-gutters>
+                            <b-col title="Services" cols="auto" class="pr-md-4">
+                                <hg-icon
+                                    icon="fa-solid fa-hand-holding-medical"
+                                    size="large"
+                                    square
+                                />
+                            </b-col>
+                            <b-col
+                                v-show="isFullyOpen"
+                                data-testid="servicesLabel"
+                                class="button-text pl-3"
+                            >
+                                <span>Services</span>
                             </b-col>
                         </b-row>
                     </hg-button>

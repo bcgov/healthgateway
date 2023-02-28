@@ -84,5 +84,8 @@
                 "enabled": false
             }
         ]
+    },
+    "services": {
+        "enabled": true
     }
 }
