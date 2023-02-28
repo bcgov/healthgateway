@@ -23,6 +23,7 @@ namespace HealthGateway.JobScheduler.Jobs
     using HealthGateway.Common.Data.Constants;
     using HealthGateway.Common.Data.ViewModels;
     using HealthGateway.Common.Delegates.PHSA;
+    using HealthGateway.Common.ErrorHandling;
     using HealthGateway.Common.Jobs;
     using HealthGateway.Common.Models;
     using HealthGateway.Database.Delegates;
@@ -102,7 +103,10 @@ namespace HealthGateway.JobScheduler.Jobs
                         if (retVal.ResultStatus != ResultType.Success)
                         {
                             this.logger.LogError("Unable to send Notification Settings to PHSA, Error:\n{ResultMessage}", retVal.ResultError?.ResultMessage);
-                            throw new FormatException($"Unable to send Notification Settings to PHSA, Error:\n{retVal.ResultError?.ResultMessage}");
+                            if (!string.Equals(retVal.ResultError?.ErrorCode, ErrorTranslator.ServiceError(ErrorType.SmsInvalid, ServiceType.Phsa), StringComparison.OrdinalIgnoreCase))
+                            {
+                                throw new FormatException($"Unable to send Notification Settings to PHSA, Error:\n{retVal.ResultError?.ResultMessage}");
+                            }
                         }
                     }
                 }
