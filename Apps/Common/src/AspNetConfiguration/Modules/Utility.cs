@@ -45,7 +45,7 @@ namespace HealthGateway.Common.AspNetConfiguration.Modules
             configuration.GetSection("OpenTelemetry").Bind(config);
             if (config.Enabled)
             {
-                services.AddOpenTelemetryTracing(
+                services.AddOpenTelemetry().WithTracing(
                     builder =>
                     {
                         builder.SetResourceBuilder(ResourceBuilder.CreateDefault().AddService(config.ServiceName))
