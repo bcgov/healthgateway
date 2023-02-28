@@ -28,7 +28,7 @@ namespace HealthGateway.GatewayApi.Validations
         /// Initializes a new instance of the <see cref="PhoneNumberValidator"/> class.
         /// </summary>
         /// <param name="region">The region that the phone number should be validated against.</param>
-        public PhoneNumberValidator(string region = "CA")
+        public PhoneNumberValidator(string region = "US")
         {
             PhoneNumberUtil util = PhoneNumberUtil.GetInstance();
             this.RuleFor(number => number)
@@ -52,9 +52,9 @@ namespace HealthGateway.GatewayApi.Validations
         /// Validate a phone number against a desired region (default: US).
         /// </summary>
         /// <param name="phoneNumber">Phone number for validation.</param>
-        /// <param name="region">defaults to the "CA" region.</param>
+        /// <param name="region">defaults to the "US" region.</param>
         /// <returns>True if phone number passes the validation for the current region.</returns>
-        public static bool IsValid(string? phoneNumber, string region = "CA")
+        public static bool IsValid(string? phoneNumber, string region = "US")
         {
             return !string.IsNullOrEmpty(phoneNumber) && new PhoneNumberValidator(region).Validate(phoneNumber).IsValid;
         }
