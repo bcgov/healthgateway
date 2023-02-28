@@ -142,10 +142,6 @@ export default class DependentTimelineView extends Vue {
             await this.$router.push({ path: "/unauthorized" });
         }
     }
-
-    handleBack(): void {
-        this.$router.push({ path: "/dependents" });
-    }
 }
 </script>
 
@@ -154,22 +150,19 @@ export default class DependentTimelineView extends Vue {
         <LoadingComponent :is-loading="dependentsAreLoading" />
         <div v-if="!dependentsAreLoading && dependent !== undefined">
             <BreadcrumbComponent :items="breadcrumbItems" />
-            <b-row class="w-100 h-100">
-                <b-col cols="auto">
+            <page-title :title="title">
+                <template #prepend>
                     <b-button
+                        to="/dependents"
                         data-testid="backBtn"
                         variant="link"
                         size="sm"
-                        class="back-button-icon mt-2 p-2"
-                        @click="handleBack"
+                        class="back-button-icon p-1"
                     >
-                        <hg-icon icon="arrow-left" size="large" />
+                        <hg-icon icon="arrow-left" size="large" square />
                     </b-button>
-                </b-col>
-                <b-col>
-                    <page-title :title="title" />
-                </b-col>
-            </b-row>
+                </template>
+            </page-title>
             <TimelineComponent :hdid="hdid" :entry-types="entryTypes" />
         </div>
     </div>

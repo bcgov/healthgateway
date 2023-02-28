@@ -9,6 +9,10 @@ export default class PageTitleComponent extends Vue {
     private get hasSlot(): boolean {
         return this.$slots.default !== undefined;
     }
+
+    private get hasPrependSlot(): boolean {
+        return this.$slots.prepend !== undefined;
+    }
 }
 </script>
 
@@ -16,7 +20,9 @@ export default class PageTitleComponent extends Vue {
     <div id="pageTitle">
         <b-row no-gutters class="justify-content-between">
             <b-col cols="auto" sm>
-                <h1 id="subject">{{ title }}</h1>
+                <h1 id="subject">
+                    <slot v-if="hasPrependSlot" name="prepend" /> {{ title }}
+                </h1>
             </b-col>
             <b-col v-if="hasSlot" class="mb-2 ml-2">
                 <slot />
