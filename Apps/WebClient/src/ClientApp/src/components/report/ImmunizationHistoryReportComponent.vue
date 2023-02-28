@@ -15,7 +15,6 @@ import ReportFilter from "@/models/reportFilter";
 import ReportHeader from "@/models/reportHeader";
 import { ReportFormatType, TemplateType } from "@/models/reportRequest";
 import RequestResult from "@/models/requestResult";
-import User from "@/models/user";
 import container from "@/plugins/container";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import { ILogger, IReportService } from "@/services/interfaces";
@@ -34,10 +33,10 @@ interface RecomendationRow {
 
 @Component
 export default class ImmunizationHistoryReportComponent extends Vue {
-    @Prop() private filter!: ReportFilter;
+    @Prop({ required: true })
+    hdid!: string;
 
-    @Getter("user", { namespace: "user" })
-    user!: User;
+    @Prop() private filter!: ReportFilter;
 
     @Getter("immunizationsAreDeferred", { namespace: "immunization" })
     immunizationsAreDeferred!: (hdid: string) => boolean;
@@ -60,8 +59,8 @@ export default class ImmunizationHistoryReportComponent extends Vue {
 
     private get isLoading(): boolean {
         return (
-            this.immunizationsAreDeferred(this.user.hdid) ||
-            this.immunizationsAreLoading(this.user.hdid)
+            this.immunizationsAreDeferred(this.hdid) ||
+            this.immunizationsAreLoading(this.hdid)
         );
     }
 
@@ -74,8 +73,8 @@ export default class ImmunizationHistoryReportComponent extends Vue {
     }
 
     private get visibleImmunizations(): ImmunizationEvent[] {
-        let records = this.patientImmunizations(this.user.hdid).filter(
-            (record) => this.filter.allowsDate(record.dateOfImmunization)
+        let records = this.patientImmunizations(this.hdid).filter((record) =>
+            this.filter.allowsDate(record.dateOfImmunization)
         );
 
         records.sort((a, b) => {
@@ -106,7 +105,7 @@ export default class ImmunizationHistoryReportComponent extends Vue {
     }
 
     private get visibleRecomendations(): Recommendation[] {
-        let records = this.patientRecommendations(this.user.hdid).filter(
+        let records = this.patientRecommendations(this.hdid).filter(
             (x) => x.recommendedVaccinations
         );
 
@@ -173,10 +172,8 @@ export default class ImmunizationHistoryReportComponent extends Vue {
 
     private created(): void {
         this.logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
-        this.logger.debug(
-            `Retrieving immunizations for Hdid: ${this.user.hdid}`
-        );
-        this.retrieveImmunizations({ hdid: this.user.hdid }).catch((err) =>
+        this.logger.debug(`Retrieving immunizations for Hdid: ${this.hdid}`);
+        this.retrieveImmunizations({ hdid: this.hdid }).catch((err) =>
             this.logger.error(`Error loading immunization data: ${err}`)
         );
     }

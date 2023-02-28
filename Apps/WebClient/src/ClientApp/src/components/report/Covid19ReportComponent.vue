@@ -11,7 +11,6 @@ import ReportFilter from "@/models/reportFilter";
 import ReportHeader from "@/models/reportHeader";
 import { ReportFormatType, TemplateType } from "@/models/reportRequest";
 import RequestResult from "@/models/requestResult";
-import User from "@/models/user";
 import container from "@/plugins/container";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import { ILogger, IReportService } from "@/services/interfaces";
@@ -25,6 +24,9 @@ interface Covid19LaboratoryOrderRow {
 
 @Component
 export default class Covid19ReportComponent extends Vue {
+    @Prop({ required: true })
+    hdid!: string;
+
     @Prop() private filter!: ReportFilter;
 
     @Action("retrieveCovid19LaboratoryOrders", { namespace: "laboratory" })
@@ -38,21 +40,17 @@ export default class Covid19ReportComponent extends Vue {
     @Getter("covid19LaboratoryOrdersAreLoading", { namespace: "laboratory" })
     covid19LaboratoryOrdersAreLoading!: (hdid: string) => boolean;
 
-    @Getter("user", { namespace: "user" })
-    private user!: User;
-
     private logger!: ILogger;
 
     private readonly headerClass = "covid19-laboratory-report-table-header";
 
     private get isCovid19LaboratoryLoading(): boolean {
-        return this.covid19LaboratoryOrdersAreLoading(this.user.hdid);
+        return this.covid19LaboratoryOrdersAreLoading(this.hdid);
     }
 
     private get visibleRecords(): Covid19LaboratoryOrder[] {
-        let records = this.covid19LaboratoryOrders(this.user.hdid).filter(
-            (record) =>
-                this.filter.allowsDate(record.labResults[0].collectedDateTime)
+        let records = this.covid19LaboratoryOrders(this.hdid).filter((record) =>
+            this.filter.allowsDate(record.labResults[0].collectedDateTime)
         );
         records.sort((a, b) => {
             const firstDate = new DateWrapper(
@@ -106,8 +104,8 @@ export default class Covid19ReportComponent extends Vue {
 
     private created(): void {
         this.logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
-        this.retrieveCovid19LaboratoryOrders({ hdid: this.user.hdid }).catch(
-            (err) => this.logger.error(`Error loading Covid19 data: ${err}`)
+        this.retrieveCovid19LaboratoryOrders({ hdid: this.hdid }).catch((err) =>
+            this.logger.error(`Error loading Covid19 data: ${err}`)
         );
     }
 
