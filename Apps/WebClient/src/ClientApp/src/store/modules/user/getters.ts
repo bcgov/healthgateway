@@ -18,14 +18,12 @@ export const getters: UserGetters = {
         const loginDateTimes = user.lastLoginDateTimes;
         const loginDateTimesLength = user.lastLoginDateTimes.length;
 
-        if (loginDateTimesLength > 0) {
-            // If there is only one entry, then it means this is the user's first time logging in.
-            if (loginDateTimesLength == 1) {
-                return loginDateTimes[0];
-            }
-            // If there is more than one entry, then it means the second entry is the actual last login, whereas the first entry is the current login.
+        // Check user profile history
+        if (loginDateTimesLength > 1) {
+            // Return the second entry as that is the acutal last login, whereas the first entry is the current login.
             return loginDateTimes[1];
         }
+        // First time logging so there is no last login.
         return undefined;
     },
     oidcUserInfo(state: UserState): OidcUserInfo | undefined {
