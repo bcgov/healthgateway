@@ -298,7 +298,7 @@ Cypress.Commands.add("checkOnTimeline", () => {
 });
 
 Cypress.Commands.add("checkTimelineHasLoaded", () => {
-    cy.get("#subject").should("be.visible").and("have.text", "Timeline");
+    cy.contains("#subject", "Timeline").should("be.visible");
     cy.get("[data-testid=loading-toast]").should("not.exist");
     cy.get("[data-testid=loading-in-progress]").should("not.exist");
 });
