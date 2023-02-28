@@ -104,9 +104,11 @@ namespace HealthGateway.WebClient.Server.Models
     /// Settings for dependents features.
     /// </summary>
     /// <param name="Enabled">Toggles dependents features.</param>
+    /// <param name="TimelineEnabled">Toggles dependent timeline.</param>
     /// <param name="Datasets">Settings for dependents data sets.</param>
     public record DependentsSettings(
         bool Enabled,
+        bool TimelineEnabled,
         DatasetSettings[] Datasets);
 
 #pragma warning restore CA1819

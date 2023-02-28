@@ -43,6 +43,9 @@ export default class EntryDetailsComponent extends Vue {
     @Prop({ required: true })
     hdid!: string;
 
+    @Prop({ default: false })
+    commentsAreEnabled!: boolean;
+
     @Action("setHeaderState", { namespace: "navbar" })
     setHeaderState!: (isOpen: boolean) => void;
 
@@ -168,6 +171,7 @@ export default class EntryDetailsComponent extends Vue {
             :index="1"
             :is-mobile-details="true"
             :hdid="hdid"
+            :comments-are-enabled="commentsAreEnabled"
             data-testid="entryDetailsCard"
         />
     </b-modal>

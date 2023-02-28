@@ -21,6 +21,9 @@ export default class ImmunizationTimelineComponent extends Vue {
     @Prop() datekey!: string;
     @Prop() isMobileDetails!: boolean;
 
+    @Prop({ default: false })
+    commentsAreEnabled!: boolean;
+
     private get isCovidImmunization(): boolean {
         return (
             this.entry.immunization.valid &&

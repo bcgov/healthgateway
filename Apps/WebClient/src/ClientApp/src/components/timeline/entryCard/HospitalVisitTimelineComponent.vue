@@ -36,6 +36,9 @@ export default class HospitalVisitTimelineComponent extends Vue {
     @Prop()
     isMobileDetails!: boolean;
 
+    @Prop({ default: false })
+    commentsAreEnabled!: boolean;
+
     @Getter("user", { namespace: "user" })
     user!: User;
 
@@ -66,6 +69,7 @@ export default class HospitalVisitTimelineComponent extends Vue {
         :subtitle="entry.visitType"
         :entry="entry"
         :is-mobile-details="isMobileDetails"
+        :allow-comment="commentsAreEnabled"
     >
         <div slot="details-body">
             <div class="my-2">
