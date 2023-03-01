@@ -94,7 +94,7 @@ namespace HealthGateway.Admin.Client.Components
                 this.Id = model.Id;
                 this.Subject = model.Subject;
                 this.Status = model.CommunicationStatusCode.ToString();
-                this.EffectiveDate = DateFormatter.ToShortDateAndTime(model.EffectiveDateTime.ToLocalTime());
+                this.EffectiveDate = model.EffectiveDateTime.ToLocalTime();
                 this.ExpiryDate = DateFormatter.ToShortDateAndTime(model.ExpiryDateTime.ToLocalTime());
                 this.Text = (MarkupString)model.Text;
                 this.IsExpanded = model.IsExpanded;
@@ -106,7 +106,7 @@ namespace HealthGateway.Admin.Client.Components
 
             public string Status { get; init; }
 
-            public string EffectiveDate { get; init; }
+            public DateTime EffectiveDate { get; init; }
 
             public string ExpiryDate { get; init; }
 

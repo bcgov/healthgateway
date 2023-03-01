@@ -1,3 +1,4 @@
+@using HealthGateway.Common.Data.Utils
 @inherits Fluxor.Blazor.Web.Components.FluxorComponent
 
 <MudTable Class="mt-3"
@@ -46,7 +47,7 @@
     </HeaderContent>
     <RowTemplate>
         <MudTd data-testid="broadcast-table-subject" DataLabel="Subject">@context.Subject</MudTd>
-        <MudTd data-testid="broadcast-table-effective-date" DataLabel="Effective On">@context.EffectiveDate</MudTd>
+        <MudTd data-testid="broadcast-table-effective-date" DataLabel="Effective On">@DateFormatter.ToShortDateAndTime(context.EffectiveDate)</MudTd>
         <MudTd data-testid="broadcast-table-expiry-date" DataLabel="Expires On">@context.ExpiryDate</MudTd>
         <MudTd data-testid="broadcast-table-action-type" DataLabel="Action Type">@context.ActionType</MudTd>
         <MudTd DataLabel="Actions" Style="text-align:right">

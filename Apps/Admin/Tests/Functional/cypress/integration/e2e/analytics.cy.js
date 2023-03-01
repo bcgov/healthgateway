@@ -2,7 +2,7 @@ const timeout = 45000;
 
 function formatDate(date) {
     // yyyy-mm-dd
-    return date.toLocaleDateString("en-CA");
+    return date.toISOString().substring(0, 10);
 }
 
 function getFileName(name) {
