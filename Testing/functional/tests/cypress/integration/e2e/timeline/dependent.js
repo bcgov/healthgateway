@@ -2,6 +2,7 @@ const { AuthMethod, Dataset } = require("../../../support/constants");
 
 const authorizedDependentHdid = "162346565465464564565463257";
 const unauthorizedDependentHdid = "BNV554213556";
+const formattedDependentName = "JENNIFER T";
 
 const homePath = "/home";
 const unauthorizedPath = "/unauthorized";
@@ -214,6 +215,40 @@ describe("Dependent Timeline", () => {
         cy.checkTimelineHasLoaded();
 
         cy.get("[data-testid=backBtn]").should("be.visible").click();
+        cy.location("pathname").should("eq", `/dependents`);
+    });
+
+    it("Validate page title includes formatted name", () => {
+        const dependentTimelinePath = `/dependents/${authorizedDependentHdid}/timeline`;
+        cy.visit(dependentTimelinePath);
+        cy.location("pathname").should("eq", dependentTimelinePath);
+        cy.checkTimelineHasLoaded();
+
+        cy.get("[data-testid=page-title]")
+            .should("be.visible")
+            .contains(formattedDependentName);
+    });
+
+    it("Validate bread crumb includes formatted name", () => {
+        const dependentTimelinePath = `/dependents/${authorizedDependentHdid}/timeline`;
+        cy.visit(dependentTimelinePath);
+        cy.location("pathname").should("eq", dependentTimelinePath);
+        cy.checkTimelineHasLoaded();
+
+        cy.get("[data-testid=breadcrumb-dependent-name]")
+            .should("be.visible")
+            .contains(formattedDependentName);
+    });
+
+    it("Validate bread crumb link goes to dependents page", () => {
+        const dependentTimelinePath = `/dependents/${authorizedDependentHdid}/timeline`;
+        cy.visit(dependentTimelinePath);
+        cy.location("pathname").should("eq", dependentTimelinePath);
+        cy.checkTimelineHasLoaded();
+
+        cy.get("[data-testid=breadcrumb-dependents]")
+            .should("be.visible")
+            .click();
         cy.location("pathname").should("eq", `/dependents`);
     });
 });

@@ -150,7 +150,7 @@ export default class DependentTimelineView extends Vue {
         <LoadingComponent :is-loading="dependentsAreLoading" />
         <div v-if="!dependentsAreLoading && dependent !== undefined">
             <BreadcrumbComponent :items="breadcrumbItems" />
-            <page-title :title="title">
+            <page-title :title="title" data-testid="page-title">
                 <template #prepend>
                     <b-button
                         to="/dependents"
