@@ -1,5 +1,6 @@
 import { ErrorSourceType, ErrorType } from "@/constants/errorType";
 import { DateWrapper } from "@/models/dateWrapper";
+import { Dependent } from "@/models/dependent";
 import { ResultError } from "@/models/errors";
 import { LoadStatus } from "@/models/storeOperations";
 import container from "@/plugins/container";
@@ -27,7 +28,7 @@ export const actions: DependentActions = {
                 resolve();
             } else {
                 logger.debug("Retrieving dependents");
-                context.commit("setDependentsRequested");
+                context.commit("setDependentsLoading");
                 dependentService
                     .getAll(params.hdid)
                     .then((result) => {
@@ -60,6 +61,33 @@ export const actions: DependentActions = {
                         reject(error);
                     });
             }
+        });
+    },
+    removeDependent(
+        context,
+        params: { hdid: string; dependent: Dependent }
+    ): Promise<void> {
+        const logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
+        const dependentService = container.get<IDependentService>(
+            SERVICE_IDENTIFIER.DependentService
+        );
+
+        return new Promise((resolve, reject) => {
+            logger.debug("Removing dependent");
+            context.commit("setDependentsLoading");
+            dependentService
+                .removeDependent(params.hdid, params.dependent)
+                .then(() => {
+                    context.commit("removeDependent", params.dependent);
+                    resolve();
+                })
+                .catch((error: ResultError) => {
+                    context.dispatch("handleDependentsError", {
+                        error,
+                        errorType: ErrorType.Delete,
+                    });
+                    reject(error);
+                });
         });
     },
     handleDependentsError(
