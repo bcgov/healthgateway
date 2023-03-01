@@ -206,6 +206,16 @@ describe("Dependent Timeline", () => {
         cy.get("[data-testid=addCommentTextArea]").should("not.exist");
         cy.get("[data-testid=postCommentBtn]").should("not.exist");
     });
+
+    it("Validate back button goes to dependents page", () => {
+        const dependentTimelinePath = `/dependents/${authorizedDependentHdid}/timeline`;
+        cy.visit(dependentTimelinePath);
+        cy.location("pathname").should("eq", dependentTimelinePath);
+        cy.checkTimelineHasLoaded();
+
+        cy.get("[data-testid=backBtn]").should("be.visible").click();
+        cy.location("pathname").should("eq", `/dependents`);
+    });
 });
 
 describe("Dependent Timeline Datasets", () => {
