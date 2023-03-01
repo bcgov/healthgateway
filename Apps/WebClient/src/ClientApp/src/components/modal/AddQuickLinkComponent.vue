@@ -215,6 +215,9 @@ export default class AddQuickLinkComponent extends Vue {
                 );
             }
         } finally {
+            // Clear selected quick links
+            this.selectedQuickLinks = [];
+
             // Force checkbox component to re-render
             this.forceCheckboxComponentRerender();
 
