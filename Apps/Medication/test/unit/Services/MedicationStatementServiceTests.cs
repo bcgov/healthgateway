@@ -41,6 +41,7 @@ namespace HealthGateway.MedicationTests.Services
     using Microsoft.Extensions.Logging;
     using Moq;
     using Xunit;
+    using Name = HealthGateway.Common.Models.Name;
 
     /// <summary>
     /// MedicationStatementService's Unit Tests.
@@ -132,8 +133,11 @@ namespace HealthGateway.MedicationTests.Services
                             ResourcePayload = new PatientModel
                             {
                                 Birthdate = DateTime.Parse("2000/01/31", CultureInfo.CurrentCulture),
-                                FirstName = "Patient",
-                                LastName = "Zero",
+                                CommonName = new Name
+                                {
+                                    GivenName = "Patient",
+                                    Surname = "Zero",
+                                },
                                 HdId = this.hdid,
                                 PersonalHealthNumber = this.phn,
                             },
@@ -190,8 +194,11 @@ namespace HealthGateway.MedicationTests.Services
                             ResourcePayload = new PatientModel
                             {
                                 Birthdate = DateTime.Parse("2000/01/31", CultureInfo.CurrentCulture),
-                                FirstName = "Patient",
-                                LastName = "Zero",
+                                CommonName = new Name
+                                {
+                                    GivenName = "Patient",
+                                    Surname = "Zero",
+                                },
                                 HdId = this.hdid,
                                 PersonalHealthNumber = this.phn,
                             },
@@ -240,8 +247,11 @@ namespace HealthGateway.MedicationTests.Services
                             ResourcePayload = new PatientModel
                             {
                                 Birthdate = DateTime.Parse("2000/01/31", CultureInfo.CurrentCulture),
-                                FirstName = "Patient",
-                                LastName = "Zero",
+                                CommonName = new Name
+                                {
+                                    GivenName = "Patient",
+                                    Surname = "Zero",
+                                },
                                 HdId = this.hdid,
                                 PersonalHealthNumber = this.phn,
                             },
@@ -327,8 +337,11 @@ namespace HealthGateway.MedicationTests.Services
                             ResourcePayload = new PatientModel
                             {
                                 Birthdate = DateTime.Parse("2000/01/31", CultureInfo.CurrentCulture),
-                                FirstName = "Patient",
-                                LastName = "Zero",
+                                CommonName = new Name
+                                {
+                                    GivenName = "Patient",
+                                    Surname = "Zero",
+                                },
                                 HdId = this.hdid,
                                 PersonalHealthNumber = this.phn,
                             },
@@ -399,8 +412,11 @@ namespace HealthGateway.MedicationTests.Services
                             ResourcePayload = new PatientModel
                             {
                                 Birthdate = DateTime.Parse("2000/01/31", CultureInfo.CurrentCulture),
-                                FirstName = "Patient",
-                                LastName = "Zero",
+                                CommonName = new Name
+                                {
+                                    GivenName = "Patient",
+                                    Surname = "Zero",
+                                },
                                 HdId = this.hdid,
                                 PersonalHealthNumber = this.phn,
                             },
@@ -475,8 +491,11 @@ namespace HealthGateway.MedicationTests.Services
                             ResourcePayload = new PatientModel
                             {
                                 Birthdate = DateTime.Parse("2000/01/31", CultureInfo.CurrentCulture),
-                                FirstName = "Patient",
-                                LastName = "Zero",
+                                CommonName = new Name
+                                {
+                                    GivenName = "Patient",
+                                    Surname = "Zero",
+                                },
                                 HdId = this.hdid,
                                 PersonalHealthNumber = this.phn,
                             },

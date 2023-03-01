@@ -16,10 +16,12 @@
 namespace HealthGateway.Patient.Controllers
 {
     using System.Threading.Tasks;
+    using AutoMapper;
     using HealthGateway.Common.AccessManagement.Authorization.Policy;
     using HealthGateway.Common.Data.ViewModels;
     using HealthGateway.Common.Models;
     using HealthGateway.Common.Services;
+    using HealthGateway.Patient.Models;
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
@@ -42,15 +44,18 @@ namespace HealthGateway.Patient.Controllers
         /// </summary>
         private readonly Services.IPatientService serviceV2;
 
+        private readonly IMapper autoMapper;
+
         /// <summary>
         /// Initializes a new instance of the <see cref="PatientController"/> class.
         /// </summary>
         /// <param name="patientService">The patient data service.</param>
         /// <param name="patientServiceV2">The V2 patient data service.</param>
-        public PatientController(IPatientService patientService, Services.IPatientService patientServiceV2)
+        public PatientController(IPatientService patientService, Services.IPatientService patientServiceV2, IMapper autoMapper)
         {
             this.service = patientService;
             this.serviceV2 = patientServiceV2;
+            this.autoMapper = autoMapper;
         }
 
         /// <summary>
@@ -69,9 +74,14 @@ namespace HealthGateway.Patient.Controllers
         [ApiVersion("1.0")]
         [Route("{hdid}")]
         [Authorize(Policy = PatientPolicy.Read)]
-        public async Task<RequestResult<PatientModel>> GetPatient(string hdid)
+        public async Task<RequestResult<PatientModelV1>> GetPatient(string hdid)
         {
-            return await this.service.GetPatient(hdid).ConfigureAwait(true);
+            RequestResult<PatientModel> patientRequestResult = await this.service.GetPatient(hdid).ConfigureAwait(true);
+
+            // Map PatientModel to PatientModelV1
+            RequestResult<PatientModelV1> v1RequestResult = this.autoMapper.Map<RequestResult<PatientModel>, RequestResult<PatientModelV1>>(patientRequestResult);
+            v1RequestResult.ResourcePayload = this.autoMapper.Map<PatientModel, PatientModelV1>(patientRequestResult.ResourcePayload);
+            return v1RequestResult;
         }
 
         /// <summary>

@@ -131,8 +131,11 @@ namespace HealthGateway.PatientTests.Services
             {
                 ResourcePayload = new PatientModel
                 {
-                    FirstName = "John",
-                    LastName = "Doe",
+                    CommonName = new Name
+                    {
+                        GivenName = "John",
+                        Surname = "Doe",
+                    },
                     PersonalHealthNumber = expectedPhn,
                     HdId = Hdid,
                 },

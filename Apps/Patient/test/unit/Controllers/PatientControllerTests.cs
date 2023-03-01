@@ -16,6 +16,7 @@
 namespace HealthGateway.PatientTests.Controllers
 {
     using System;
+    using AutoMapper;
     using DeepEqual.Syntax;
     using HealthGateway.Common.Constants;
     using HealthGateway.Common.Data.Constants;
@@ -23,6 +24,8 @@ namespace HealthGateway.PatientTests.Controllers
     using HealthGateway.Common.Models;
     using HealthGateway.Common.Services;
     using HealthGateway.Patient.Controllers;
+    using HealthGateway.Patient.Models;
+    using HealthGateway.PatientTests.Utils;
     using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
     using Moq;
@@ -39,6 +42,7 @@ namespace HealthGateway.PatientTests.Controllers
         private const string MockedGender = "Male";
         private const string MockedPersonalHealthNumber = "mockedPersonalHealthNumber";
         private static readonly DateTime MockedBirthDate = DateTime.Now;
+        private static readonly IMapper AutoMapper = MapperUtil.InitializeAutoMapper();
 
         /// <summary>
         /// GetPatients Test.
@@ -49,14 +53,14 @@ namespace HealthGateway.PatientTests.Controllers
             // Arrange
             PatientController patientController = GetPatientController();
             PatientModel patientModel = GetPatientModel();
-            RequestResult<PatientModel> expectedResult = new()
+            RequestResult<PatientModelV1> expectedResult = new()
             {
                 ResultStatus = ResultType.Success,
-                ResourcePayload = new PatientModel
+                ResourcePayload = new PatientModelV1
                 {
                     Birthdate = patientModel.Birthdate,
-                    FirstName = patientModel.FirstName,
-                    LastName = patientModel.LastName,
+                    FirstName = patientModel.PreferredName.GivenName,
+                    LastName = patientModel.PreferredName.Surname,
                     Gender = patientModel.Gender,
                     HdId = patientModel.HdId,
                     PersonalHealthNumber = patientModel.PersonalHealthNumber,
@@ -66,7 +70,7 @@ namespace HealthGateway.PatientTests.Controllers
             };
 
             // Act
-            RequestResult<PatientModel> actualResult = patientController.GetPatient("123").Result;
+            RequestResult<PatientModelV1> actualResult = patientController.GetPatient("123").Result;
 
             // Assert
             expectedResult.ShouldDeepEqual(actualResult);
@@ -97,8 +101,12 @@ namespace HealthGateway.PatientTests.Controllers
             return new()
             {
                 Birthdate = MockedBirthDate,
-                FirstName = MockedFirstName,
-                LastName = MockedLastName,
+
+                CommonName = new Name
+                {
+                    GivenName = MockedFirstName,
+                    Surname = MockedLastName,
+                },
                 Gender = MockedGender,
                 HdId = MockedHdId,
                 PersonalHealthNumber = MockedPersonalHealthNumber,
@@ -134,7 +142,7 @@ namespace HealthGateway.PatientTests.Controllers
 
             patientServiceV2.Setup(x => x.GetPatient(It.IsAny<string>(), PatientIdentifierType.Hdid, false)).ReturnsAsync(apiResult);
             patientServiceV1.Setup(x => x.GetPatient(It.IsAny<string>(), PatientIdentifierType.Hdid, false)).ReturnsAsync(requestResult);
-            return new(patientServiceV1.Object, patientServiceV2.Object);
+            return new(patientServiceV1.Object, patientServiceV2.Object, AutoMapper);
         }
     }
 }

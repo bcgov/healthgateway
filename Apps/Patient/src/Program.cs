@@ -20,6 +20,7 @@ namespace HealthGateway.Patient
     using HealthGateway.Common.AspNetConfiguration;
     using HealthGateway.Common.AspNetConfiguration.Modules;
     using HealthGateway.Patient.Delegates;
+    using HealthGateway.Patient.MapProfiles;
     using HealthGateway.Patient.Services;
     using Microsoft.AspNetCore.Builder;
     using Microsoft.AspNetCore.Hosting;
@@ -59,6 +60,7 @@ namespace HealthGateway.Patient
             // POC V2 Patient Access
             services.AddTransient<IClientRegistriesDelegate, ClientRegistriesDelegate>();
             services.AddTransient<IPatientService, PatientService>();
+            services.AddAutoMapper(typeof(Program), typeof(PatientV1Profile));
 
             Utility.ConfigureTracing(services, logger, configuration);
 

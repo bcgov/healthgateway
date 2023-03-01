@@ -25,41 +25,34 @@ namespace HealthGateway.Common.Models
     public class PatientModel
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="PatientModel"/> class.
-        /// </summary>
-        public PatientModel()
-        {
-            this.HdId = string.Empty;
-            this.PersonalHealthNumber = string.Empty;
-            this.FirstName = string.Empty;
-            this.LastName = string.Empty;
-            this.Gender = string.Empty;
-            this.ResponseCode = string.Empty;
-        }
-
-        /// <summary>
         /// Gets or sets the health directed identifier.
         /// </summary>
         [JsonPropertyName("hdid")]
-        public string HdId { get; set; }
+        public string HdId { get; set; } = string.Empty;
 
         /// <summary>
         /// Gets or sets the patient's PHN.
         /// </summary>
         [JsonPropertyName("personalhealthnumber")]
-        public string PersonalHealthNumber { get; set; }
+        public string PersonalHealthNumber { get; set; } = string.Empty;
 
         /// <summary>
-        /// Gets or sets the patient's first name.
+        /// Gets or sets the patient's common name.
         /// </summary>
-        [JsonPropertyName("firstname")]
-        public string FirstName { get; set; }
+        [JsonPropertyName("commonname")]
+        public Name? CommonName { get; set; } = new();
 
         /// <summary>
-        /// Gets or sets the patient's last name.
+        /// Gets or sets the patient's legal name.
         /// </summary>
-        [JsonPropertyName("lastname")]
-        public string LastName { get; set; }
+        [JsonPropertyName("legalname")]
+        public Name LegalName { get; set; } = null!;
+
+        /// <summary>
+        /// Gets the patient's preferred name.
+        /// </summary>
+        [JsonPropertyName("preferredname")]
+        public Name PreferredName => this.CommonName ?? this.LegalName;
 
         /// <summary>
         /// Gets or sets the patient's date of birth.
@@ -71,7 +64,7 @@ namespace HealthGateway.Common.Models
         /// Gets or sets the patient's gender.
         /// </summary>
         [JsonPropertyName("gender")]
-        public string Gender { get; set; }
+        public string Gender { get; set; } = string.Empty;
 
         /// <summary>
         /// Gets or sets the physical address for the patient.
@@ -86,6 +79,28 @@ namespace HealthGateway.Common.Models
         /// <summary>
         /// Gets or sets the response code for the patient.
         /// </summary>
-        public string ResponseCode { get; set; }
+        public string ResponseCode { get; set; } = string.Empty;
+
+        /// <summary>
+        /// Test a string against the possible surnames of the patient.
+        /// </summary>
+        /// <param name="incomingSurname">string to compare against the surname values.</param>
+        /// <returns>true if the incoming string matches any of the registered surnames.</returns>
+        public bool TestSurnameMatch(string incomingSurname)
+        {
+            bool? result = this.PreferredName?.Surname.Equals(incomingSurname, StringComparison.OrdinalIgnoreCase);
+            return result ?? false;
+        }
+
+        /// <summary>
+        /// Test a string against the possible given names of the patient.
+        /// </summary>
+        /// <param name="incomingGivenName">string to compare against the given name values.</param>
+        /// <returns>true if the incoming string matches any of the registered surnames.</returns>
+        public bool TestGivenNameMatch(string incomingGivenName)
+        {
+            bool? result = this.PreferredName?.GivenName.Equals(incomingGivenName, StringComparison.OrdinalIgnoreCase);
+            return result ?? false;
+        }
     }
 }

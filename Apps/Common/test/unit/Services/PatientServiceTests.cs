@@ -111,8 +111,11 @@ namespace HealthGateway.CommonTests.Services
                 PageSize = 1,
                 ResourcePayload = new PatientModel
                 {
-                    FirstName = "John",
-                    LastName = "Doe",
+                    CommonName = new Name
+                    {
+                        GivenName = "John",
+                        Surname = "Doe",
+                    },
                     PersonalHealthNumber = Phn,
                 },
             };
@@ -150,8 +153,11 @@ namespace HealthGateway.CommonTests.Services
                 PageSize = 1,
                 ResourcePayload = new PatientModel
                 {
-                    FirstName = "John",
-                    LastName = "Doe",
+                    CommonName = new Name
+                    {
+                        GivenName = "John",
+                        Surname = "Doe",
+                    },
                     PersonalHealthNumber = "abc123",
                 },
             };
@@ -191,8 +197,11 @@ namespace HealthGateway.CommonTests.Services
                 PageSize = 1,
                 ResourcePayload = new PatientModel
                 {
-                    FirstName = "John",
-                    LastName = "Doe",
+                    CommonName = new Name
+                    {
+                        GivenName = "John",
+                        Surname = "Doe",
+                    },
                     PersonalHealthNumber = phn,
                 },
             };
@@ -221,8 +230,11 @@ namespace HealthGateway.CommonTests.Services
                 PageSize = 1,
                 ResourcePayload = new PatientModel
                 {
-                    FirstName = "John",
-                    LastName = "Doe",
+                    CommonName = new Name
+                    {
+                        GivenName = "John",
+                        Surname = "Doe",
+                    },
                     HdId = Hdid,
                     PersonalHealthNumber = Phn,
                 },
@@ -257,8 +269,11 @@ namespace HealthGateway.CommonTests.Services
                 PageSize = 1,
                 ResourcePayload = new PatientModel
                 {
-                    FirstName = "John",
-                    LastName = "Doe",
+                    CommonName = new Name
+                    {
+                        GivenName = "John",
+                        Surname = "Doe",
+                    },
                     HdId = Hdid,
                     PersonalHealthNumber = Phn,
                 },

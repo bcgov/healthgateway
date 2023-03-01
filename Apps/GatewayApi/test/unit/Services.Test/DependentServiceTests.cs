@@ -236,8 +236,11 @@ namespace HealthGateway.GatewayApiTests.Services.Test
                 {
                     HdId = string.Empty,
                     PersonalHealthNumber = this.mockPhn,
-                    FirstName = this.mockFirstName,
-                    LastName = this.mockLastName,
+                    CommonName = new Name
+                    {
+                        GivenName = this.mockFirstName,
+                        Surname = this.mockLastName,
+                    },
                     Birthdate = this.mockDateOfBirth,
                     Gender = this.mockGender,
                 },
@@ -358,8 +361,11 @@ namespace HealthGateway.GatewayApiTests.Services.Test
                     {
                         HdId = this.mockHdId,
                         PersonalHealthNumber = this.mockPhn,
-                        FirstName = this.mockFirstName,
-                        LastName = this.mockLastName,
+                        CommonName = new Name
+                        {
+                            GivenName = this.mockFirstName,
+                            Surname = this.mockLastName,
+                        },
                         Birthdate = this.mockDateOfBirth,
                         Gender = this.mockGender,
                     },
@@ -403,8 +409,11 @@ namespace HealthGateway.GatewayApiTests.Services.Test
                     {
                         HdId = this.mockHdId,
                         PersonalHealthNumber = this.mockPhn,
-                        FirstName = this.mockFirstName,
-                        LastName = this.mockLastName,
+                        CommonName = new Name
+                        {
+                            GivenName = this.mockFirstName,
+                            Surname = this.mockLastName,
+                        },
                         Birthdate = this.mockDateOfBirth,
                         Gender = this.mockGender,
                     },

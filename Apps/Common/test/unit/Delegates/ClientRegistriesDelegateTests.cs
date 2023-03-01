@@ -350,8 +350,8 @@ namespace HealthGateway.CommonTests.Delegates
             Assert.Equal(ResultType.Success, actual.ResultStatus);
             Assert.Equal(expectedHdId, actual.ResourcePayload?.HdId);
             Assert.Equal(expectedPhn, actual.ResourcePayload?.PersonalHealthNumber);
-            Assert.Equal(expectedFirstName, actual.ResourcePayload?.FirstName);
-            Assert.Equal(expectedLastName, actual.ResourcePayload?.LastName);
+            Assert.Equal(expectedFirstName, actual.ResourcePayload?.PreferredName?.GivenName);
+            Assert.Equal(expectedLastName, actual.ResourcePayload?.PreferredName?.Surname);
             Assert.Equal(expectedBirthDate, actual.ResourcePayload?.Birthdate);
             Assert.Equal(expectedGender, actual.ResourcePayload?.Gender);
             expectedPhysicalAddr.ShouldDeepEqual(actual.ResourcePayload?.PhysicalAddress);
@@ -581,8 +581,8 @@ namespace HealthGateway.CommonTests.Delegates
             Assert.Equal(ResultType.Success, actual.ResultStatus);
             Assert.Equal(expectedHdId, actual.ResourcePayload?.HdId);
             Assert.Equal(expectedPhn, actual.ResourcePayload?.PersonalHealthNumber);
-            Assert.Equal(expectedFirstName, actual.ResourcePayload?.FirstName);
-            Assert.Equal(expectedLastName, actual.ResourcePayload?.LastName);
+            Assert.Equal(expectedFirstName, actual.ResourcePayload?.PreferredName?.GivenName);
+            Assert.Equal(expectedLastName, actual.ResourcePayload?.PreferredName?.Surname);
             Assert.Equal(expectedBirthDate, actual.ResourcePayload?.Birthdate);
             Assert.Equal(expectedGender, actual.ResourcePayload?.Gender);
         }
@@ -731,8 +731,8 @@ namespace HealthGateway.CommonTests.Delegates
             Assert.Equal(ResultType.Success, actual.ResultStatus);
             Assert.Equal(expectedHdId, actual.ResourcePayload?.HdId);
             Assert.Equal(expectedPhn, actual.ResourcePayload?.PersonalHealthNumber);
-            Assert.Equal(expectedFirstName, actual.ResourcePayload?.FirstName);
-            Assert.Equal(expectedLastName, actual.ResourcePayload?.LastName);
+            Assert.Equal(expectedFirstName, actual.ResourcePayload?.PreferredName?.GivenName);
+            Assert.Equal(expectedLastName, actual.ResourcePayload?.PreferredName?.Surname);
             Assert.Equal(expectedBirthDate, actual.ResourcePayload?.Birthdate);
             Assert.Equal(expectedGender, actual.ResourcePayload?.Gender);
         }

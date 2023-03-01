@@ -159,6 +159,31 @@ namespace HealthGateway.Patient.Delegates
             }
         }
 
+        private static Name ExtractName(PN nameSection)
+        {
+            // Extract the subject names
+            List<string> givenNameList = new();
+            List<string> lastNameList = new();
+            foreach (ENXP name in nameSection.Items)
+            {
+                if (name.GetType() == typeof(engiven) && (name.qualifier == null || !name.qualifier.Contains(cs_EntityNamePartQualifier.CL)))
+                {
+                    givenNameList.Add(name.Text[0]);
+                }
+                else if (name.GetType() == typeof(enfamily) && (name.qualifier == null || !name.qualifier.Contains(cs_EntityNamePartQualifier.CL)))
+                {
+                    lastNameList.Add(name.Text[0]);
+                }
+            }
+
+            const string delimiter = " ";
+            return new Name
+            {
+                GivenName = givenNameList.Aggregate((i, j) => i + delimiter + j),
+                Surname = lastNameList.Aggregate((i, j) => i + delimiter + j),
+            };
+        }
+
         private static Address? MapAddress(AD? address)
         {
             Address? retAddress = null;
@@ -311,26 +336,15 @@ namespace HealthGateway.Patient.Delegates
                 }
             }
 
-            PN nameSection = (documentedName ?? legalName)!;
-
-            // Extract the subject names
-            List<string> givenNameList = new();
-            List<string> lastNameList = new();
-            foreach (ENXP name in nameSection.Items)
+            if (documentedName != null)
             {
-                if (name.GetType() == typeof(engiven) && (name.qualifier == null || !name.qualifier.Contains(cs_EntityNamePartQualifier.CL)))
-                {
-                    givenNameList.Add(name.Text[0]);
-                }
-                else if (name.GetType() == typeof(enfamily) && (name.qualifier == null || !name.qualifier.Contains(cs_EntityNamePartQualifier.CL)))
-                {
-                    lastNameList.Add(name.Text[0]);
-                }
+                patient.CommonName = ExtractName(documentedName);
             }
 
-            const string delimiter = " ";
-            patient.FirstName = givenNameList.Aggregate((i, j) => i + delimiter + j);
-            patient.LastName = lastNameList.Aggregate((i, j) => i + delimiter + j);
+            if (legalName != null)
+            {
+                patient.LegalName = ExtractName(legalName);
+            }
 
             return true;
         }
