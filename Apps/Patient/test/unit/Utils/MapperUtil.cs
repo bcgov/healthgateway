@@ -19,7 +19,7 @@ namespace HealthGateway.PatientTests.Utils
     using HealthGateway.Patient.MapProfiles;
 
     /// <summary>
-    /// Utility class to build mapper in unit tests
+    /// Utility class to build mapper in unit tests.
     /// </summary>
     public static class MapperUtil
     {

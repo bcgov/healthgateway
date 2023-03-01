@@ -25,7 +25,6 @@ namespace HealthGateway.Common.Models
         /// </summary>
         public string GivenName { get; set; } = string.Empty;
 
-
         /// <summary>
         /// Gets or sets the surname of a person.
         /// </summary>

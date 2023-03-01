@@ -252,13 +252,14 @@ namespace HealthGateway.GatewayApi.Services
                 return false;
             }
 
-            bool? result = patientModel.PreferredName?.Surname.Equals(dependent.LastName, StringComparison.OrdinalIgnoreCase);
-            if (!patientModel.TestSurnameMatch(dependent.LastName))
+            bool surnameMatchResult = patientModel.PreferredName.Surname.Equals(dependent.LastName, StringComparison.OrdinalIgnoreCase);
+            if (surnameMatchResult)
             {
                 return false;
             }
 
-            if (!patientModel.TestGivenNameMatch(dependent.FirstName))
+            bool givenNameMatchResult = patientModel.PreferredName.GivenName.Equals(dependent.FirstName, StringComparison.OrdinalIgnoreCase);
+            if (givenNameMatchResult)
             {
                 return false;
             }

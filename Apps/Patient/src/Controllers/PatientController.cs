@@ -51,6 +51,7 @@ namespace HealthGateway.Patient.Controllers
         /// </summary>
         /// <param name="patientService">The patient data service.</param>
         /// <param name="patientServiceV2">The V2 patient data service.</param>
+        /// <param name="autoMapper">Automapper service.</param>
         public PatientController(IPatientService patientService, Services.IPatientService patientServiceV2, IMapper autoMapper)
         {
             this.service = patientService;

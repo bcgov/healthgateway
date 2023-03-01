@@ -80,27 +80,5 @@ namespace HealthGateway.Common.Models
         /// Gets or sets the response code for the patient.
         /// </summary>
         public string ResponseCode { get; set; } = string.Empty;
-
-        /// <summary>
-        /// Test a string against the possible surnames of the patient.
-        /// </summary>
-        /// <param name="incomingSurname">string to compare against the surname values.</param>
-        /// <returns>true if the incoming string matches any of the registered surnames.</returns>
-        public bool TestSurnameMatch(string incomingSurname)
-        {
-            bool? result = this.PreferredName?.Surname.Equals(incomingSurname, StringComparison.OrdinalIgnoreCase);
-            return result ?? false;
-        }
-
-        /// <summary>
-        /// Test a string against the possible given names of the patient.
-        /// </summary>
-        /// <param name="incomingGivenName">string to compare against the given name values.</param>
-        /// <returns>true if the incoming string matches any of the registered surnames.</returns>
-        public bool TestGivenNameMatch(string incomingGivenName)
-        {
-            bool? result = this.PreferredName?.GivenName.Equals(incomingGivenName, StringComparison.OrdinalIgnoreCase);
-            return result ?? false;
-        }
     }
 }

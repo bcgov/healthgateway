@@ -20,12 +20,12 @@ namespace HealthGateway.Patient.Models
     using HealthGateway.Common.Models;
 
     /// <summary>
-    /// V1 Model for patient data, required for V1 GetPatient Endpoint
+    /// V1 Model for patient data, required for V1 GetPatient Endpoint.
     /// </summary>
     public class PatientModelV1
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="PatientModel"/> class.
+        /// Initializes a new instance of the <see cref="PatientModelV1"/> class.
         /// </summary>
         public PatientModelV1()
         {

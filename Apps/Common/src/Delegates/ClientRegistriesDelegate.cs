@@ -16,7 +16,6 @@
 namespace HealthGateway.Common.Delegates
 {
     using System;
-    using System.Collections.Generic;
     using System.Diagnostics;
     using System.Globalization;
     using System.Linq;
@@ -28,6 +27,7 @@ namespace HealthGateway.Common.Delegates
     using HealthGateway.Common.Data.ViewModels;
     using HealthGateway.Common.ErrorHandling;
     using HealthGateway.Common.Models;
+    using HealthGateway.Common.Utils.EMPI;
     using Microsoft.AspNetCore.Http;
     using Microsoft.Extensions.Logging;
     using ServiceReference;
@@ -206,32 +206,6 @@ namespace HealthGateway.Common.Delegates
             return retAddress;
         }
 
-        // TODO: This is a duplicate of HealthGateway.Patient.PatientService's version.... what to do here?
-        private static Name ExtractName(PN nameSection)
-        {
-            // Extract the subject names
-            List<string> givenNameList = new();
-            List<string> lastNameList = new();
-            foreach (ENXP name in nameSection.Items)
-            {
-                if (name.GetType() == typeof(engiven) && (name.qualifier == null || !name.qualifier.Contains(cs_EntityNamePartQualifier.CL)))
-                {
-                    givenNameList.Add(name.Text[0]);
-                }
-                else if (name.GetType() == typeof(enfamily) && (name.qualifier == null || !name.qualifier.Contains(cs_EntityNamePartQualifier.CL)))
-                {
-                    lastNameList.Add(name.Text[0]);
-                }
-            }
-
-            const string delimiter = " ";
-            return new Name
-            {
-                GivenName = givenNameList.Aggregate((i, j) => i + delimiter + j),
-                Surname = lastNameList.Aggregate((i, j) => i + delimiter + j),
-            };
-        }
-
         private RequestResult<PatientModel> CheckResponseCode(string responseCode)
         {
             if (responseCode.Contains("BCHCIM.GD.2.0018", StringComparison.InvariantCulture))
@@ -406,12 +380,12 @@ namespace HealthGateway.Common.Delegates
 
             if (documentedName != null)
             {
-                patient.CommonName = ExtractName(documentedName);
+                patient.CommonName = ClientRegistriesNameUtility.ExtractName(documentedName);
             }
 
             if (legalName != null)
             {
-                patient.LegalName = ExtractName(legalName);
+                patient.LegalName = ClientRegistriesNameUtility.ExtractName(legalName);
             }
 
             return true;

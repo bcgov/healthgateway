@@ -19,6 +19,9 @@ namespace HealthGateway.Patient.MapProfiles
     using HealthGateway.Common.Models;
     using HealthGateway.Patient.Models;
 
+    /// <summary>
+    /// Automapper profile class to map to legacy V1 PatientModel.
+    /// </summary>
     public class PatientV1Profile : Profile
     {
         /// <summary>
