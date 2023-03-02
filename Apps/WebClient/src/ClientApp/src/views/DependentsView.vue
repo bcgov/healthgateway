@@ -9,13 +9,13 @@ import DependentCardComponent from "@/components/DependentCardComponent.vue";
 import LoadingComponent from "@/components/LoadingComponent.vue";
 import NewDependentComponent from "@/components/modal/NewDependentComponent.vue";
 import BreadcrumbComponent from "@/components/navmenu/BreadcrumbComponent.vue";
+import TutorialComponent from "@/components/shared/TutorialComponent.vue";
 import { ErrorSourceType, ErrorType } from "@/constants/errorType";
 import UserPreferenceType from "@/constants/userPreferenceType";
 import BreadcrumbItem from "@/models/breadcrumbItem";
 import type { WebClientConfiguration } from "@/models/configData";
 import type { Dependent } from "@/models/dependent";
 import User from "@/models/user";
-import { UserPreference } from "@/models/userPreference";
 import container from "@/plugins/container";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import { ILogger } from "@/services/interfaces";
@@ -29,6 +29,7 @@ const options: any = {
         LoadingComponent,
         DependentCardComponent,
         NewDependentComponent,
+        TutorialComponent,
     },
 };
 
@@ -49,14 +50,6 @@ export default class DependentsView extends Vue {
 
     @Action("setTooManyRequestsWarning", { namespace: "errorBanner" })
     setTooManyRequestsWarning!: (params: { key: string }) => void;
-
-    @Action("setUserPreference", { namespace: "user" })
-    setUserPreference!: (params: {
-        preference: UserPreference;
-    }) => Promise<void>;
-
-    @Getter("isMobile")
-    isMobileView!: boolean;
 
     @Getter("webClient", { namespace: "config" })
     webClientConfig!: WebClientConfiguration;
@@ -84,30 +77,13 @@ export default class DependentsView extends Vue {
         },
     ];
 
-    private isAddDependentTutorialHidden = false;
-
-    private get showAddDependentTutorial(): boolean {
-        const preferenceType = UserPreferenceType.TutorialAddDependent;
-        return (
-            this.user.preferences[preferenceType]?.value === "true" &&
-            !this.isAddDependentTutorialHidden
-        );
+    private get addDependentTutorialPreference(): string {
+        return UserPreferenceType.TutorialAddDependent;
     }
 
     private created(): void {
         this.logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
         this.retrieveDependents({ hdid: this.user.hdid, bypassCache: false });
-    }
-
-    private dismissAddDependentTutorial(): void {
-        this.logger.debug("Dismissing add dependent tutorial");
-        this.isAddDependentTutorialHidden = true;
-
-        const preference = {
-            ...this.user.preferences[UserPreferenceType.TutorialAddDependent],
-            value: "false",
-        };
-        this.setUserPreference({ preference });
     }
 
     private showModal(): void {
@@ -138,26 +114,15 @@ export default class DependentsView extends Vue {
                 <hg-icon icon="user-plus" size="medium" class="mr-2" />
                 <span>Add</span>
             </hg-button>
-            <b-popover
-                triggers="manual"
-                :show="showAddDependentTutorial"
+            <TutorialComponent
+                :preference-type="addDependentTutorialPreference"
                 target="add-dependent-button"
-                :placement="isMobileView ? 'bottom' : 'left'"
-                boundary="viewport"
             >
-                <div>
-                    <hg-button
-                        class="float-right text-dark p-0 ml-2"
-                        variant="icon"
-                        @click="dismissAddDependentTutorial()"
-                        >×</hg-button
-                    >
-                </div>
                 <div data-testid="add-dependent-tutorial-popover">
                     Add a dependent under 12 years old to get their health
                     records.
                 </div>
-            </b-popover>
+            </TutorialComponent>
         </page-title>
         <h5 class="my-3">
             You can add your dependents under the age of
