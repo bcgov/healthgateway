@@ -59,9 +59,9 @@ namespace HealthGateway.GatewayApi.Services
         {
             using Activity? activity = Source.StartActivity();
             this.logger.LogDebug("Retrieving web alerts from PHSA.");
-            Guid? pid = await this.GetPersonalAccountPidByHdid(hdid).ConfigureAwait(true) ?? throw new InvalidOperationException($"No pid found for hdid {hdid}");
+            Guid pid = await this.GetPersonalAccountPidByHdid(hdid).ConfigureAwait(true) ?? throw new InvalidOperationException($"No pid found for hdid {hdid}");
 
-            IList<PhsaWebAlert> phsaWebAlerts = await this.webAlertApi.GetWebAlertsAsync(pid.Value).ConfigureAwait(true);
+            IList<PhsaWebAlert> phsaWebAlerts = await this.webAlertApi.GetWebAlertsAsync(pid).ConfigureAwait(true);
             IList<WebAlert> webAlerts = this.autoMapper.Map<IEnumerable<PhsaWebAlert>, IList<WebAlert>>(
                 phsaWebAlerts.Where(a => a.ExpirationDateTimeUtc > DateTime.UtcNow && a.ScheduledDateTimeUtc < DateTime.UtcNow)
                     .OrderByDescending(a => a.ScheduledDateTimeUtc));
@@ -74,9 +74,9 @@ namespace HealthGateway.GatewayApi.Services
         {
             using Activity? activity = Source.StartActivity();
             this.logger.LogDebug("Sending request to dismiss web alerts to PHSA.");
-            Guid? pid = await this.GetPersonalAccountPidByHdid(hdid).ConfigureAwait(true) ?? throw new InvalidOperationException($"No pid found for hdid {hdid}");
+            Guid pid = await this.GetPersonalAccountPidByHdid(hdid).ConfigureAwait(true) ?? throw new InvalidOperationException($"No pid found for hdid {hdid}");
 
-            await this.webAlertApi.DeleteWebAlertsAsync(pid.Value).ConfigureAwait(true);
+            await this.webAlertApi.DeleteWebAlertsAsync(pid).ConfigureAwait(true);
             this.logger.LogDebug("Finished sending request to dismiss web alerts to PHSA.");
         }
 
@@ -85,9 +85,9 @@ namespace HealthGateway.GatewayApi.Services
         {
             using Activity? activity = Source.StartActivity();
             this.logger.LogDebug("Sending request to dismiss web alert to PHSA.");
-            Guid? pid = await this.GetPersonalAccountPidByHdid(hdid).ConfigureAwait(true) ?? throw new InvalidOperationException($"No pid found for hdid {hdid}");
+            Guid pid = await this.GetPersonalAccountPidByHdid(hdid).ConfigureAwait(true) ?? throw new InvalidOperationException($"No pid found for hdid {hdid}");
 
-            await this.webAlertApi.DeleteWebAlertAsync(pid.Value, webAlertId).ConfigureAwait(true);
+            await this.webAlertApi.DeleteWebAlertAsync(pid, webAlertId).ConfigureAwait(true);
             this.logger.LogDebug("Finished sending request to dismiss web alert to PHSA.");
         }
 
