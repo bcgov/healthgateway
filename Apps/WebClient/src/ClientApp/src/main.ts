@@ -23,6 +23,8 @@ import {
     BFormTags,
     BPopover,
     BSidebar,
+    BTab,
+    BTabs,
 } from "bootstrap-vue";
 import IdleVue from "idle-vue";
 import Vue from "vue";
@@ -93,6 +95,8 @@ Vue.component("BFormTag", BFormTag);
 Vue.component("BFormTags", BFormTags);
 Vue.component("BPopover", BPopover);
 Vue.component("BSidebar", BSidebar);
+Vue.component("BTab", BTab);
+Vue.component("BTabs", BTabs);
 
 Vue.component("HgButton", HgButtonComponent);
 Vue.component("HgCardButton", HgCardButtonComponent);
