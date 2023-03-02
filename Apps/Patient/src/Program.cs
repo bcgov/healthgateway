@@ -60,7 +60,7 @@ namespace HealthGateway.Patient
             // POC V2 Patient Access
             services.AddTransient<IClientRegistriesDelegate, ClientRegistriesDelegate>();
             services.AddTransient<IPatientService, PatientService>();
-            services.AddAutoMapper(typeof(Program), typeof(PatientV1Profile));
+            services.AddAutoMapper(typeof(Program), typeof(PatientV1Profile), typeof(RequestResultProfile));
 
             Utility.ConfigureTracing(services, logger, configuration);
 

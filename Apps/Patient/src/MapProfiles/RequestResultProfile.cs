@@ -13,30 +13,24 @@
 //  See the License for the specific language governing permissions and
 //  limitations under the License.
 // -------------------------------------------------------------------------
-namespace HealthGateway.PatientTests.Utils
+namespace HealthGateway.Patient.MapProfiles
 {
     using AutoMapper;
-    using HealthGateway.Patient.MapProfiles;
+    using HealthGateway.Common.Data.ViewModels;
 
     /// <summary>
-    /// Utility class to build mapper in unit tests.
+    /// Mapping profile for the generic RequestResult model to assist transferring from one payload type to another.
+    /// This is primarily to assist in honouring PatientModel's V1 format.
     /// </summary>
-    public static class MapperUtil
+    public class RequestResultProfile : Profile
     {
         /// <summary>
-        /// Creates an AutoMapper.
+        /// Initializes a new instance of the <see cref="RequestResultProfile"/> class.
         /// </summary>
-        /// <returns>A configured AutoMapper.</returns>
-        public static IMapper InitializeAutoMapper()
+        public RequestResultProfile()
         {
-            MapperConfiguration config = new(
-                cfg =>
-                {
-                    cfg.AddProfile(new PatientV1Profile());
-                    cfg.AddProfile(new RequestResultProfile());
-                });
-
-            return config.CreateMapper();
+            this.CreateMap(typeof(RequestResult<>), typeof(RequestResult<>))
+                .ForMember("ResourcePayload", opts => opts.Ignore());
         }
     }
 }
