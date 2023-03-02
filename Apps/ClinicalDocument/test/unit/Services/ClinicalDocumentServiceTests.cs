@@ -153,12 +153,12 @@ namespace HealthGateway.ClinicalDocumentTests.Services
             if (!throwException)
             {
                 clinicalDocumentApiMock.Setup(c => c.GetClinicalDocumentRecordsAsync(It.IsAny<string>())).ReturnsAsync(content);
-                clinicalDocumentApiMock.Setup(c => c.GetClinicalDocumentFileAsync(It.IsAny<string>(), It.IsAny<string>())).ReturnsAsync(new EncodedMedia());
+                clinicalDocumentApiMock.Setup(c => c.GetClinicalDocumentFileAsync(It.IsAny<Guid>(), It.IsAny<string>())).ReturnsAsync(new EncodedMedia());
             }
             else
             {
                 clinicalDocumentApiMock.Setup(c => c.GetClinicalDocumentRecordsAsync(It.IsAny<string>())).ThrowsAsync(new HttpRequestException("Unit Test HTTP Request Exception"));
-                clinicalDocumentApiMock.Setup(c => c.GetClinicalDocumentFileAsync(It.IsAny<string>(), It.IsAny<string>())).ThrowsAsync(new HttpRequestException("Unit Test HTTP Request Exception"));
+                clinicalDocumentApiMock.Setup(c => c.GetClinicalDocumentFileAsync(It.IsAny<Guid>(), It.IsAny<string>())).ThrowsAsync(new HttpRequestException("Unit Test HTTP Request Exception"));
             }
 
             PatientIdentity patientIdentity = new()
