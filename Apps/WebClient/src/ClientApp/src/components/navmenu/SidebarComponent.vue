@@ -14,10 +14,10 @@ import { Component, Watch } from "vue-property-decorator";
 import { Action, Getter } from "vuex-class";
 
 import FeedbackComponent from "@/components/FeedbackComponent.vue";
+import TutorialComponent from "@/components/shared/TutorialComponent.vue";
 import UserPreferenceType from "@/constants/userPreferenceType";
 import type { WebClientConfiguration } from "@/models/configData";
 import User from "@/models/user";
-import type { UserPreference } from "@/models/userPreference";
 import container from "@/plugins/container";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import { ILogger } from "@/services/interfaces";
@@ -36,16 +36,12 @@ library.add(
 const options: any = {
     components: {
         FeedbackComponent,
+        TutorialComponent,
     },
 };
 
 @Component(options)
 export default class SidebarComponent extends Vue {
-    @Action("setUserPreference", { namespace: "user" })
-    setUserPreference!: (params: {
-        preference: UserPreference;
-    }) => Promise<void>;
-
     @Getter("isMobile")
     isMobileWidth!: boolean;
 
@@ -87,8 +83,6 @@ export default class SidebarComponent extends Vue {
 
     private logger!: ILogger;
 
-    private isExportTutorialHidden = false;
-
     @Watch("$route")
     private onRouteChanged(): void {
         this.clearOverlay();
@@ -126,15 +120,8 @@ export default class SidebarComponent extends Vue {
         }
     }
 
-    private dismissExportTutorial(): void {
-        this.logger.debug("Dismissing export tutorial");
-        this.isExportTutorialHidden = true;
-
-        const preference = {
-            ...this.user.preferences[UserPreferenceType.TutorialMenuExport],
-            value: "false",
-        };
-        this.setUserPreference({ preference });
+    private get exportTutorialPreference(): string {
+        return UserPreferenceType.TutorialMenuExport;
     }
 
     private get isQueuePage(): boolean {
@@ -157,13 +144,7 @@ export default class SidebarComponent extends Vue {
     }
 
     private get showExportTutorial(): boolean {
-        const preferenceType = UserPreferenceType.TutorialMenuExport;
-        return (
-            this.user.preferences[preferenceType]?.value === "true" &&
-            !this.isExportTutorialHidden &&
-            (this.isOpen || !this.isMobileWidth) &&
-            !this.isAnimating
-        );
+        return (this.isOpen || !this.isMobileWidth) && !this.isAnimating;
     }
 
     private get isFullyOpen(): boolean {
@@ -387,23 +368,13 @@ export default class SidebarComponent extends Vue {
                                 <span>Export Records</span>
                             </b-col>
                         </b-row>
-                        <b-popover
-                            triggers="manual"
-                            :show="showExportTutorial"
+                        <TutorialComponent
+                            :preference-type="exportTutorialPreference"
                             target="menuBtnReports"
+                            :show="showExportTutorial"
                             custom-class="elevation-1"
-                            fallback-placement="clockwise"
                             placement="right"
-                            boundary="viewport"
                         >
-                            <div>
-                                <hg-button
-                                    class="float-right text-dark p-0 ml-2"
-                                    variant="icon"
-                                    @click="dismissExportTutorial()"
-                                    >×</hg-button
-                                >
-                            </div>
                             <div
                                 data-testid="exportRecordsPopover"
                                 class="popover-content"
@@ -411,7 +382,7 @@ export default class SidebarComponent extends Vue {
                                 Download and print health records, such as your
                                 immunization history and more.
                             </div>
-                        </b-popover>
+                        </TutorialComponent>
                     </hg-button>
                     <br />
                 </b-col>
