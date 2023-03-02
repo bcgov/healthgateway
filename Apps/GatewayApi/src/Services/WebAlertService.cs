@@ -21,7 +21,6 @@ namespace HealthGateway.GatewayApi.Services
     using System.Linq;
     using System.Threading.Tasks;
     using AutoMapper;
-    using HealthGateway.Common.Models.PHSA;
     using HealthGateway.Common.Services;
     using HealthGateway.GatewayApi.Api;
     using HealthGateway.GatewayApi.Models;
@@ -60,10 +59,9 @@ namespace HealthGateway.GatewayApi.Services
         {
             using Activity? activity = Source.StartActivity();
             this.logger.LogDebug("Retrieving web alerts from PHSA.");
-            PersonalAccount personalAccount = await this.personalAccountsService.GetPatientAccountAsync(hdid).ConfigureAwait(true);
-            string accountId = personalAccount.Id.ToString();
+            Guid? pid = await this.GetPersonalAccountPidByHdid(hdid).ConfigureAwait(true) ?? throw new InvalidOperationException($"No pid found for hdid {hdid}");
 
-            IList<PhsaWebAlert> phsaWebAlerts = await this.webAlertApi.GetWebAlertsAsync(accountId).ConfigureAwait(true);
+            IList<PhsaWebAlert> phsaWebAlerts = await this.webAlertApi.GetWebAlertsAsync(pid.Value).ConfigureAwait(true);
             IList<WebAlert> webAlerts = this.autoMapper.Map<IEnumerable<PhsaWebAlert>, IList<WebAlert>>(
                 phsaWebAlerts.Where(a => a.ExpirationDateTimeUtc > DateTime.UtcNow && a.ScheduledDateTimeUtc < DateTime.UtcNow)
                     .OrderByDescending(a => a.ScheduledDateTimeUtc));
@@ -76,10 +74,9 @@ namespace HealthGateway.GatewayApi.Services
         {
             using Activity? activity = Source.StartActivity();
             this.logger.LogDebug("Sending request to dismiss web alerts to PHSA.");
-            PersonalAccount personalAccount = await this.personalAccountsService.GetPatientAccountAsync(hdid).ConfigureAwait(true);
-            string accountId = personalAccount.Id.ToString();
+            Guid? pid = await this.GetPersonalAccountPidByHdid(hdid).ConfigureAwait(true) ?? throw new InvalidOperationException($"No pid found for hdid {hdid}");
 
-            await this.webAlertApi.DeleteWebAlertsAsync(accountId).ConfigureAwait(true);
+            await this.webAlertApi.DeleteWebAlertsAsync(pid.Value).ConfigureAwait(true);
             this.logger.LogDebug("Finished sending request to dismiss web alerts to PHSA.");
         }
 
@@ -88,11 +85,13 @@ namespace HealthGateway.GatewayApi.Services
         {
             using Activity? activity = Source.StartActivity();
             this.logger.LogDebug("Sending request to dismiss web alert to PHSA.");
-            PersonalAccount personalAccount = await this.personalAccountsService.GetPatientAccountAsync(hdid).ConfigureAwait(true);
-            string accountId = personalAccount.Id.ToString();
+            Guid? pid = await this.GetPersonalAccountPidByHdid(hdid).ConfigureAwait(true) ?? throw new InvalidOperationException($"No pid found for hdid {hdid}");
 
-            await this.webAlertApi.DeleteWebAlertAsync(accountId, webAlertId).ConfigureAwait(true);
+            await this.webAlertApi.DeleteWebAlertAsync(pid.Value, webAlertId).ConfigureAwait(true);
             this.logger.LogDebug("Finished sending request to dismiss web alert to PHSA.");
         }
+
+        private async Task<Guid?> GetPersonalAccountPidByHdid(string hdid) =>
+            (await this.personalAccountsService.GetPatientAccountAsync(hdid).ConfigureAwait(true)).PatientIdentity?.Pid;
     }
 }
