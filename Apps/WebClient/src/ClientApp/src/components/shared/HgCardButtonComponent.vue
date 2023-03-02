@@ -6,12 +6,18 @@ import { Component, Prop } from "vue-property-decorator";
 export default class HgCardButtonComponent extends Vue {
     @Prop({ required: true }) title!: string;
 
+    @Prop({ required: false, default: false }) hasChevron!: boolean;
+
     private get hasIconSlot(): boolean {
         return this.$slots.icon !== undefined;
     }
 
     private get hasMenuSlot(): boolean {
         return this.$slots.menu !== undefined;
+    }
+
+    private get hasDefaultSlot(): boolean {
+        return this.$slots.default !== undefined;
     }
 }
 </script>
@@ -22,7 +28,12 @@ export default class HgCardButtonComponent extends Vue {
         v-bind="$attrs"
         v-on="$listeners"
     >
-        <b-row no-gutters align-h="end" class="mb-4 mt-n3 w-100">
+        <b-row
+            no-gutters
+            align-h="end"
+            class="mt-n3 w-100"
+            :class="{ 'mb-4': hasDefaultSlot }"
+        >
             <b-col
                 v-if="hasIconSlot"
                 cols="auto"
@@ -36,6 +47,19 @@ export default class HgCardButtonComponent extends Vue {
                 class="hg-card-button-title mt-3"
             >
                 {{ title }}
+            </b-col>
+            <b-col
+                v-if="hasChevron"
+                cols="auto"
+                align-self="center"
+                class="mt-3 d-flex"
+            >
+                <hg-icon
+                    icon="chevron-right"
+                    class="chevron-icon align-self-center"
+                    size="medium"
+                    square
+                />
             </b-col>
             <b-col v-if="hasMenuSlot" cols="auto" class="mt-2">
                 <slot name="menu" />
@@ -90,6 +114,10 @@ export default class HgCardButtonComponent extends Vue {
         outline-width: 0.2rem;
         outline-style: solid;
         outline-color: rgba(86, 86, 86, 0.25);
+    }
+
+    .chevron-icon {
+        color: $primary;
     }
 }
 </style>
