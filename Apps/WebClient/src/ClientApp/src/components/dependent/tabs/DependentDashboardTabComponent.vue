@@ -218,6 +218,7 @@ export default class DependentDashboardTabComponent extends Vue {
             <b-col v-for="entry in entryTypes" :key="entry.type" class="p-3">
                 <hg-card-button
                     :title="entry.name"
+                    dense
                     has-chevron
                     :data-testid="`dependent-entry-type-${dependent.ownerId}`"
                     @click="handleClickEntryType(entry.type)"
@@ -235,6 +236,7 @@ export default class DependentDashboardTabComponent extends Vue {
             <b-col v-if="showFederalProofOfVaccination" class="p-3">
                 <hg-card-button
                     title="Proof of Vaccination"
+                    dense
                     :data-testid="`proof-vaccination-card-btn-${dependent.ownerId}`"
                     @click="showSensitiveDocumentDownloadModal()"
                 >

@@ -4,9 +4,14 @@ import { Component, Prop } from "vue-property-decorator";
 
 @Component
 export default class HgCardButtonComponent extends Vue {
-    @Prop({ required: true }) title!: string;
+    @Prop({ required: true })
+    title!: string;
 
-    @Prop({ required: false, default: false }) hasChevron!: boolean;
+    @Prop({ required: false, default: false })
+    dense!: boolean;
+
+    @Prop({ required: false, default: false })
+    hasChevron!: boolean;
 
     private get hasIconSlot(): boolean {
         return this.$slots.icon !== undefined;
@@ -24,7 +29,8 @@ export default class HgCardButtonComponent extends Vue {
 
 <template>
     <b-button
-        class="hg-card-button h-100 w-100 p-4 d-flex flex-column align-content-start text-left rounded shadow"
+        class="hg-card-button h-100 w-100 d-flex flex-column align-content-start text-left rounded shadow"
+        :class="{ 'p-3': dense, 'p-4': !dense }"
         v-bind="$attrs"
         v-on="$listeners"
     >
@@ -45,6 +51,7 @@ export default class HgCardButtonComponent extends Vue {
             <b-col
                 data-testid="card-button-title"
                 class="hg-card-button-title mt-3"
+                :class="{ dense: dense }"
             >
                 {{ title }}
             </b-col>
@@ -86,8 +93,10 @@ export default class HgCardButtonComponent extends Vue {
         outline-color 0.15s ease-in-out;
 
     .hg-card-button-title {
-        font-size: 1.2rem;
-        font-weight: bold;
+        &:not(.dense) {
+            font-size: 1.2rem;
+            font-weight: bold;
+        }
 
         // add text-decoration-color to transition
         transition: text-decoration-color 0.15s ease-in-out;
