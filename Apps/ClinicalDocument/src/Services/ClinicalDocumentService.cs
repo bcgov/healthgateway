@@ -121,10 +121,9 @@ namespace HealthGateway.ClinicalDocument.Services
                 RequestResult<PersonalAccount> response = await this.personalAccountsService.GetPatientAccountResultAsync(hdid).ConfigureAwait(true);
                 if (response.ResultStatus == ResultType.Success)
                 {
-                    string? pid = response.ResourcePayload?.PatientIdentity.Pid.ToString();
+                    Guid pid = response.ResourcePayload?.PatientIdentity.Pid ?? throw new InvalidOperationException($"Pid not found for hdid {hdid}");
                     this.logger.LogDebug("PID Fetched: {Pid}", pid);
-                    EncodedMedia apiResponse =
-                        await this.clinicalDocumentsApi.GetClinicalDocumentFileAsync(pid, fileId).ConfigureAwait(true);
+                    EncodedMedia apiResponse = await this.clinicalDocumentsApi.GetClinicalDocumentFileAsync(pid, fileId).ConfigureAwait(true);
 
                     requestResult.ResultStatus = ResultType.Success;
                     requestResult.ResourcePayload = apiResponse;
