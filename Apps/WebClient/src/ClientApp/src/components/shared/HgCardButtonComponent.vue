@@ -115,6 +115,7 @@ export default class HgCardButtonComponent extends Vue {
         outline-style: solid;
         outline-color: rgba(86, 86, 86, 0.25);
     }
+
     .chevron-icon {
         color: $primary;
     }

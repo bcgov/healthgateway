@@ -181,7 +181,7 @@ export default class DependentDashboardTabComponent extends Vue {
         this.logger.debug(`Handle entry type clicked: ${type}`);
         SnowPlow.trackEvent({
             action: "click",
-            text: `Dependent_${type.toLocaleLowerCase}`,
+            text: `Dependent_${type.toLocaleLowerCase()}`,
         });
         const entryTypes: EntryType[] = [type];
         const builder =
@@ -266,10 +266,6 @@ export default class DependentDashboardTabComponent extends Vue {
 
 <style lang="scss" scoped>
 @import "@/assets/scss/_variables.scss";
-
-.canada-government-logo {
-    height: 1.5em;
-}
 
 .entry-link-card-icon {
     color: $primary;
