@@ -79,10 +79,9 @@ export default class EncounterTimelineComponent extends Vue {
                                 href="https://www2.gov.bc.ca/gov/content?id=FE8BA7F9F1F0416CB2D24CF71C4BAF80"
                                 target="_blank"
                                 rel="noopener"
+                                >FAQ</a
                             >
-                                FAQ
-                            </a>
-                            &nbsp;page.
+                            page.
                         </span>
                     </b-popover>
                 </div>
