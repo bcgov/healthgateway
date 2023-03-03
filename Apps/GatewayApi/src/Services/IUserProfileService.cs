@@ -99,5 +99,12 @@ namespace HealthGateway.GatewayApi.Services
         /// <param name="termsOfServiceId">The terms of service id accepted.</param>
         /// <returns>A user profile model wrapped in a RequestResult.</returns>
         RequestResult<UserProfileModel> UpdateAcceptedTerms(string hdid, Guid termsOfServiceId);
+
+        /// <summary>
+        /// Validates a phone number against the system wide accepted number validation logic.
+        /// </summary>
+        /// <param name="phoneNumber">This should be a phone number without a mask.</param>
+        /// <returns>True if the phone number is valid.</returns>
+        bool IsPhoneNumberValid(string phoneNumber);
     }
 }

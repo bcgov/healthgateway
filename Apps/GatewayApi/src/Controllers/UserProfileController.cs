@@ -294,6 +294,7 @@ namespace HealthGateway.GatewayApi.Controllers
         /// <param name="smsNumber">The new sms number.</param>
         /// <returns>True if the action was successful.</returns>
         /// <response code="200">Returns true if the call was successful.</response>
+        /// <response code="400">the client must ensure sms number is valid.</response>
         /// <response code="401">the client must authenticate itself to get the requested response.</response>
         /// <response code="403">
         /// The client does not have access rights to the content; that is, it is unauthorized, so the server
@@ -387,6 +388,20 @@ namespace HealthGateway.GatewayApi.Controllers
             this.AddUserPreferences(result.ResourcePayload);
 
             return result;
+        }
+
+        /// <summary>
+        /// Test phone number validation required by the GatewayAPI and PHSA.
+        /// </summary>
+        /// <param name="phoneNumber">Phone number stripped of any masked characters.</param>
+        /// <returns>True if the submitted phone number conforms to the appropriate standards.</returns>
+        /// <response code="200">Returns the result of the validation attempt.</response>
+        [HttpGet]
+        [Route("IsValidPhoneNumber/{phoneNumber}")]
+        [Authorize]
+        public ActionResult<bool> IsValidPhoneNumber(string phoneNumber)
+        {
+            return this.userProfileService.IsPhoneNumberValid(phoneNumber);
         }
 
         private void AddUserPreferences(UserProfileModel? profile)

@@ -29,26 +29,26 @@ namespace HealthGateway.GatewayApi.Api
         /// <summary>
         /// Retrieves all web alerts for a patient.
         /// </summary>
-        /// <param name="accountId">The patient's account ID.</param>
+        /// <param name="pid">The patient's pid.</param>
         /// <returns>The collection of web alerts for the specified patient.</returns>
-        [Get("/personal-accounts/{accountId}/web-alerts")]
-        Task<IList<PhsaWebAlert>> GetWebAlertsAsync(string accountId);
+        [Get("/personal-accounts/{pid}/web-alerts")]
+        Task<IList<PhsaWebAlert>> GetWebAlertsAsync(Guid pid);
 
         /// <summary>
         /// Dismisses all web alerts for a patient.
         /// </summary>
-        /// <param name="accountId">The patient's account ID.</param>
+        /// <param name="pid">The patient's pid.</param>
         /// <returns>A task representing the asynchronous operation.</returns>
-        [Delete("/personal-accounts/{accountId}/web-alerts")]
-        Task DeleteWebAlertsAsync(string accountId);
+        [Delete("/personal-accounts/{pid}/web-alerts")]
+        Task DeleteWebAlertsAsync(Guid pid);
 
         /// <summary>
         /// Dismisses a web alert for a patient.
         /// </summary>
-        /// <param name="accountId">The patient's account ID.</param>
+        /// <param name="pid">The patient's pid.</param>
         /// <param name="id">The ID of the web alert to be deleted.</param>
         /// <returns>A task representing the asynchronous operation.</returns>
-        [Delete("/personal-accounts/{accountId}/web-alerts/{id}")]
-        Task DeleteWebAlertAsync(string accountId, Guid id);
+        [Delete("/personal-accounts/{pid}/web-alerts/{id}")]
+        Task DeleteWebAlertAsync(Guid pid, Guid id);
     }
 }

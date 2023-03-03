@@ -170,6 +170,7 @@ export interface IUserProfileService {
         hdid: string,
         termsOfServiceId: string
     ): Promise<UserProfile>;
+    isPhoneNumberValid(phoneNumber: string): Promise<boolean>;
 }
 
 export interface IUserFeedbackService {
