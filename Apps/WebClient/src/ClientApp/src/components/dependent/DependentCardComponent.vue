@@ -97,13 +97,21 @@ export default class DependentCardComponent extends Vue {
                     title="Dashboard"
                     data-testid="dashboard-tab"
                 >
-                    <div v-if="isExpired" class="text-center">
+                    <div
+                        v-if="isExpired"
+                        class="text-center"
+                        :data-testid="`dependent-is-expired-div-${dependent.ownerId}`"
+                    >
                         <h5>Your access has expired</h5>
                         <p>
                             You no longer have access to this dependent as they
                             have turned {{ config.maxDependentAge }}
                         </p>
-                        <hg-button variant="secondary" @click="remove">
+                        <hg-button
+                            variant="secondary"
+                            :data-testid="`remove-dependent-btn-${dependent.ownerId}`"
+                            @click="remove"
+                        >
                             Remove Dependent
                         </hg-button>
                     </div>

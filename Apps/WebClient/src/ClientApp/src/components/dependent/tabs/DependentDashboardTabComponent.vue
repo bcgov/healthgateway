@@ -181,7 +181,7 @@ export default class DependentDashboardTabComponent extends Vue {
         this.logger.debug(`Handle entry type clicked: ${type}`);
         SnowPlow.trackEvent({
             action: "click",
-            text: `Dependent_${type.toLocaleLowerCase()}`,
+            text: `Dependent_${type}`,
         });
         const entryTypes: EntryType[] = [type];
         const builder =
@@ -220,7 +220,7 @@ export default class DependentDashboardTabComponent extends Vue {
                     :title="entry.name"
                     dense
                     has-chevron
-                    :data-testid="`dependent-entry-type-${dependent.ownerId}`"
+                    :data-testid="`dependent-entry-type-${entry.type}-${dependent.ownerId}`"
                     @click="handleClickEntryType(entry.type)"
                 >
                     <template #icon>
