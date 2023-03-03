@@ -133,6 +133,24 @@ namespace HealthGateway.Database.Delegates
         }
 
         /// <inheritdoc/>
+        public async Task<DbResult<Dictionary<string, int>>> GetTotalDelegateCountsAsync(IEnumerable<string> dependentHdids)
+        {
+            this.logger.LogTrace("Getting total delegate counts from DB...");
+            string[] dependentArray = dependentHdids.ToArray();
+            DbResult<Dictionary<string, int>> result = new()
+            {
+                Payload = await this.dbContext.ResourceDelegate
+                    .Where(d => dependentArray.Contains(d.ResourceOwnerHdid))
+                    .GroupBy(d => d.ResourceOwnerHdid)
+                    .ToDictionaryAsync(g => g.Key, g => g.Count())
+                    .ConfigureAwait(true),
+                Status = DbStatusCode.Read,
+            };
+            this.logger.LogTrace("Finished getting total delegate counts from DB");
+            return result;
+        }
+
+        /// <inheritdoc/>
         public DbResult<ResourceDelegate> Delete(ResourceDelegate resourceDelegate, bool commit)
         {
             this.logger.LogTrace("Deleting resourceDelegate from DB...");

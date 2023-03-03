@@ -53,26 +53,32 @@ namespace HealthGateway.GatewayApiTests.Services.Test
         private readonly string mockParentHdid = "MockFirstName";
         private readonly string mockPhn = "9735353315";
         private readonly string noHdidError = "Please ensure you are using a current BC Services Card.";
+        private readonly int mockTotalDelegateCount = 2;
         private readonly DateTime fromDate = DateTime.UtcNow.AddDays(-1);
         private readonly DateTime toDate = DateTime.UtcNow.AddDays(1);
 
         /// <summary>
-        /// GetDependents by hdid - Happy Path.
+        /// GetDependentsAsync by hdid - Happy Path.
         /// </summary>
+        /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
         [Fact]
-        public void GetDependentsByHdid()
+        public async Task GetDependentsByHdid()
         {
             IDependentService service = this.SetupMockForGetDependents();
 
-            RequestResult<IEnumerable<DependentModel>> actualResult = service.GetDependents(this.mockParentHdid);
+            RequestResult<IEnumerable<DependentModel>> actualResult = await service.GetDependentsAsync(this.mockParentHdid).ConfigureAwait(true);
 
             Assert.Equal(ResultType.Success, actualResult.ResultStatus);
             Assert.Equal(10, actualResult.TotalResultCount);
 
-            // Validate masked PHN
+            Dictionary<string, int> delegateCounts = this.GenerateMockDelegateCounts();
             foreach (DependentModel model in actualResult.ResourcePayload!)
             {
-                Assert.Equal(model.DependentInformation.Phn, this.mockPhn);
+                // Validate masked PHN
+                Assert.Equal(this.mockPhn, model.DependentInformation.Phn);
+
+                // Validate total delegate count
+                Assert.Equal(delegateCounts[model.OwnerId], model.TotalDelegateCount);
             }
         }
 
@@ -97,15 +103,16 @@ namespace HealthGateway.GatewayApiTests.Services.Test
         }
 
         /// <summary>
-        /// GetDependents - Empty Patient Error.
+        /// GetDependentsAsync - Empty Patient Error.
         /// </summary>
+        /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
         [Fact]
-        public void GetDependentsWithEmptyPatientResPayloadError()
+        public async Task GetDependentsWithEmptyPatientResPayloadError()
         {
             RequestResult<PatientModel> patientResult = new();
             IDependentService service = this.SetupMockForGetDependents(patientResult);
 
-            RequestResult<IEnumerable<DependentModel>> actualResult = service.GetDependents(this.mockParentHdid);
+            RequestResult<IEnumerable<DependentModel>> actualResult = await service.GetDependentsAsync(this.mockParentHdid).ConfigureAwait(true);
 
             Assert.Equal(ResultType.Error, actualResult.ResultStatus);
             Assert.True(actualResult.ResultError?.ErrorCode.EndsWith("-CE-PAT", StringComparison.InvariantCulture));
@@ -117,22 +124,26 @@ namespace HealthGateway.GatewayApiTests.Services.Test
         /// <summary>
         /// ValidateDependent - Happy Path.
         /// </summary>
+        /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
         [Fact]
-        public void ValidateDependent()
+        public async Task ValidateDependent()
         {
             AddDependentRequest addDependentRequest = this.SetupMockInput();
             IDependentService service = this.SetupMockDependentService(addDependentRequest);
 
-            RequestResult<DependentModel> actualResult = service.AddDependent(this.mockParentHdid, addDependentRequest);
+            RequestResult<DependentModel> actualResult = await service.AddDependentAsync(this.mockParentHdid, addDependentRequest).ConfigureAwait(true);
 
             Assert.Equal(ResultType.Success, actualResult.ResultStatus);
+            Dictionary<string, int> delegateCounts = this.GenerateMockDelegateCounts(true);
+            Assert.Equal(delegateCounts[actualResult.ResourcePayload?.OwnerId], actualResult.ResourcePayload?.TotalDelegateCount);
         }
 
         /// <summary>
         /// ValidateDependent - Empty Patient Error.
         /// </summary>
+        /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
         [Fact]
-        public void ValidateDependentWithEmptyPatientResPayloadError()
+        public async Task ValidateDependentWithEmptyPatientResPayloadError()
         {
             AddDependentRequest addDependentRequest = this.SetupMockInput();
             RequestResult<PatientModel> patientResult = new();
@@ -140,7 +151,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
             // Test Scenario - Happy Path: Found HdId for the PHN, Found Patient.
             IDependentService service = this.SetupMockDependentService(addDependentRequest, null, patientResult);
 
-            RequestResult<DependentModel> actualResult = service.AddDependent(this.mockParentHdid, addDependentRequest);
+            RequestResult<DependentModel> actualResult = await service.AddDependentAsync(this.mockParentHdid, addDependentRequest).ConfigureAwait(true);
 
             Assert.Equal(ResultType.Error, actualResult.ResultStatus);
             Assert.True(actualResult.ResultError?.ErrorCode.EndsWith("-CE-PAT", StringComparison.InvariantCulture));
@@ -149,8 +160,9 @@ namespace HealthGateway.GatewayApiTests.Services.Test
         /// <summary>
         /// ValidateDependent - Database Error.
         /// </summary>
+        /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
         [Fact]
-        public void ValidateDependentWithDbError()
+        public async Task ValidateDependentWithDbError()
         {
             DbResult<ResourceDelegate> insertResult = new()
             {
@@ -162,7 +174,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
             AddDependentRequest addDependentRequest = this.SetupMockInput();
             IDependentService service = this.SetupMockDependentService(addDependentRequest, insertResult);
 
-            RequestResult<DependentModel> actualResult = service.AddDependent(this.mockParentHdid, addDependentRequest);
+            RequestResult<DependentModel> actualResult = await service.AddDependentAsync(this.mockParentHdid, addDependentRequest).ConfigureAwait(true);
 
             Assert.Equal(ResultType.Error, actualResult.ResultStatus);
             string serviceError = ErrorTranslator.ServiceError(ErrorType.CommunicationInternal, ServiceType.Database);
@@ -172,14 +184,15 @@ namespace HealthGateway.GatewayApiTests.Services.Test
         /// <summary>
         /// ValidateDependent - Wrong First Name Error.
         /// </summary>
+        /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
         [Fact]
-        public void ValidateDependentWithWrongFirstName()
+        public async Task ValidateDependentWithWrongFirstName()
         {
             AddDependentRequest addDependentRequest = this.SetupMockInput();
             addDependentRequest.FirstName = "wrong";
             IDependentService service = this.SetupMockDependentService(addDependentRequest);
 
-            RequestResult<DependentModel> actualResult = service.AddDependent(this.mockParentHdid, addDependentRequest);
+            RequestResult<DependentModel> actualResult = await service.AddDependentAsync(this.mockParentHdid, addDependentRequest).ConfigureAwait(true);
 
             RequestResultError userError = ErrorTranslator.ActionRequired(ErrorMessages.DataMismatch, ActionType.DataMismatch);
             Assert.Equal(ResultType.ActionRequired, actualResult.ResultStatus);
@@ -190,14 +203,15 @@ namespace HealthGateway.GatewayApiTests.Services.Test
         /// <summary>
         /// ValidateDependent - Wrong Last Name Error.
         /// </summary>
+        /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
         [Fact]
-        public void ValidateDependentWithWrongLastName()
+        public async Task ValidateDependentWithWrongLastName()
         {
             AddDependentRequest addDependentRequest = this.SetupMockInput();
             addDependentRequest.LastName = "wrong";
             IDependentService service = this.SetupMockDependentService(addDependentRequest);
 
-            RequestResult<DependentModel> actualResult = service.AddDependent(this.mockParentHdid, addDependentRequest);
+            RequestResult<DependentModel> actualResult = await service.AddDependentAsync(this.mockParentHdid, addDependentRequest).ConfigureAwait(true);
 
             RequestResultError userError = ErrorTranslator.ActionRequired(ErrorMessages.DataMismatch, ActionType.DataMismatch);
             Assert.Equal(ResultType.ActionRequired, actualResult.ResultStatus);
@@ -208,14 +222,15 @@ namespace HealthGateway.GatewayApiTests.Services.Test
         /// <summary>
         /// ValidateDependent - Wrong Date of Birth Error.
         /// </summary>
+        /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
         [Fact]
-        public void ValidateDependentWithWrongDateOfBirth()
+        public async Task ValidateDependentWithWrongDateOfBirth()
         {
             AddDependentRequest addDependentRequest = this.SetupMockInput();
             addDependentRequest.DateOfBirth = DateTime.Now;
             IDependentService service = this.SetupMockDependentService(addDependentRequest);
 
-            RequestResult<DependentModel> actualResult = service.AddDependent(this.mockParentHdid, addDependentRequest);
+            RequestResult<DependentModel> actualResult = await service.AddDependentAsync(this.mockParentHdid, addDependentRequest).ConfigureAwait(true);
 
             RequestResultError userError = ErrorTranslator.ActionRequired(ErrorMessages.DataMismatch, ActionType.DataMismatch);
             Assert.Equal(ResultType.ActionRequired, actualResult.ResultStatus);
@@ -226,8 +241,9 @@ namespace HealthGateway.GatewayApiTests.Services.Test
         /// <summary>
         /// ValidateDependent - No HdId Error.
         /// </summary>
+        /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
         [Fact]
-        public void ValidateDependentWithNoHdId()
+        public async Task ValidateDependentWithNoHdId()
         {
             RequestResult<PatientModel> patientResult = new()
             {
@@ -245,7 +261,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
             AddDependentRequest addDependentRequest = this.SetupMockInput();
             IDependentService service = this.SetupMockDependentService(addDependentRequest, patientResult: patientResult);
 
-            RequestResult<DependentModel> actualResult = service.AddDependent(this.mockParentHdid, addDependentRequest);
+            RequestResult<DependentModel> actualResult = await service.AddDependentAsync(this.mockParentHdid, addDependentRequest).ConfigureAwait(true);
 
             RequestResultError userError = ErrorTranslator.ActionRequired(ErrorMessages.InvalidServicesCard, ActionType.NoHdId);
             Assert.Equal(ResultType.ActionRequired, actualResult.ResultStatus);
@@ -324,47 +340,77 @@ namespace HealthGateway.GatewayApiTests.Services.Test
                     new ResourceDelegate
                     {
                         ProfileHdid = this.mockParentHdid,
-                        ResourceOwnerHdid = $"{this.mockHdId}-{i}",
+                        ResourceOwnerHdid = this.GetMockDependentHdid(i),
                     });
             }
 
             return resourceDelegates;
         }
 
+        private string GetMockDependentHdid(int? index = null)
+        {
+            return index == null ? this.mockHdId : $"{this.mockHdId}-{index}";
+        }
+
+        private int GetMockTotalResultCount(int? index = null)
+        {
+            return index == null ? this.mockTotalDelegateCount : this.mockTotalDelegateCount + index.Value;
+        }
+
+        private Dictionary<string, int> GenerateMockDelegateCounts(bool single = false)
+        {
+            Dictionary<string, int> delegateCounts = new();
+
+            if (single)
+            {
+                delegateCounts.Add(this.GetMockDependentHdid(), this.GetMockTotalResultCount());
+            }
+            else
+            {
+                for (int i = 0; i < 10; i++)
+                {
+                    delegateCounts.Add(this.GetMockDependentHdid(i), this.GetMockTotalResultCount(i));
+                }
+            }
+
+            return delegateCounts;
+        }
+
         private IDependentService SetupMockForGetDependents(RequestResult<PatientModel>? patientResult = null)
         {
             // (1) Setup ResourceDelegateDelegate's mock
-            IEnumerable<ResourceDelegate> expectedResourceDelegates = this.GenerateMockResourceDelegatesList();
-
-            DbResult<IEnumerable<ResourceDelegate>> readResult = new()
+            DbResult<IEnumerable<ResourceDelegate>> mockResourceDelegateResult = new()
             {
                 Status = DbStatusCode.Read,
+                Payload = this.GenerateMockResourceDelegatesList(),
             };
-            readResult.Payload = expectedResourceDelegates;
+            DbResult<Dictionary<string, int>> mockDelegateCountsResult = new()
+            {
+                Status = DbStatusCode.Read,
+                Payload = this.GenerateMockDelegateCounts(),
+            };
 
             Mock<IResourceDelegateDelegate> mockDependentDelegate = new();
-            mockDependentDelegate.Setup(s => s.Get(this.mockParentHdid, 0, 500)).Returns(readResult);
-            mockDependentDelegate.Setup(s => s.Get(this.fromDate, this.toDate, 0, 5000)).Returns(readResult);
+            mockDependentDelegate.Setup(s => s.Get(this.mockParentHdid, 0, 500)).Returns(mockResourceDelegateResult);
+            mockDependentDelegate.Setup(s => s.Get(this.fromDate, this.toDate, 0, 5000)).Returns(mockResourceDelegateResult);
+            mockDependentDelegate.Setup(s => s.GetTotalDelegateCountsAsync(It.IsAny<IEnumerable<string>>())).ReturnsAsync(mockDelegateCountsResult);
 
             // (2) Setup PatientDelegate's mock
             Mock<IPatientService> mockPatientService = new();
 
-            if (patientResult == null)
+            patientResult ??= new RequestResult<PatientModel>
             {
-                patientResult = new RequestResult<PatientModel>
+                ResultStatus = ResultType.Success,
+                ResourcePayload = new PatientModel
                 {
-                    ResultStatus = ResultType.Success,
-                    ResourcePayload = new PatientModel
-                    {
-                        HdId = this.mockHdId,
-                        PersonalHealthNumber = this.mockPhn,
-                        FirstName = this.mockFirstName,
-                        LastName = this.mockLastName,
-                        Birthdate = this.mockDateOfBirth,
-                        Gender = this.mockGender,
-                    },
-                };
-            }
+                    HdId = this.mockHdId,
+                    PersonalHealthNumber = this.mockPhn,
+                    FirstName = this.mockFirstName,
+                    LastName = this.mockLastName,
+                    Birthdate = this.mockDateOfBirth,
+                    Gender = this.mockGender,
+                },
+            };
 
             mockPatientService.Setup(s => s.GetPatient(It.IsAny<string>(), It.IsAny<PatientIdentifierType>(), false)).Returns(Task.FromResult(patientResult));
 
@@ -393,35 +439,29 @@ namespace HealthGateway.GatewayApiTests.Services.Test
                 patientHdIdResult.ResourcePayload = this.mockHdId;
             }
 
-            if (patientResult == null)
+            // Test Scenario - Happy Path: Found HdId for the PHN, Found Patient.
+            patientResult ??= new RequestResult<PatientModel>
             {
-                // Test Scenario - Happy Path: Found HdId for the PHN, Found Patient.
-                patientResult = new RequestResult<PatientModel>
+                ResultStatus = ResultType.Success,
+                ResourcePayload = new PatientModel
                 {
-                    ResultStatus = ResultType.Success,
-                    ResourcePayload = new PatientModel
-                    {
-                        HdId = this.mockHdId,
-                        PersonalHealthNumber = this.mockPhn,
-                        FirstName = this.mockFirstName,
-                        LastName = this.mockLastName,
-                        Birthdate = this.mockDateOfBirth,
-                        Gender = this.mockGender,
-                    },
-                };
-            }
+                    HdId = this.mockHdId,
+                    PersonalHealthNumber = this.mockPhn,
+                    FirstName = this.mockFirstName,
+                    LastName = this.mockLastName,
+                    Birthdate = this.mockDateOfBirth,
+                    Gender = this.mockGender,
+                },
+            };
 
             mockPatientService.Setup(s => s.GetPatient(It.IsAny<string>(), It.IsAny<PatientIdentifierType>(), false)).Returns(Task.FromResult(patientResult));
 
             ResourceDelegate expectedDbDependent = new() { ProfileHdid = this.mockParentHdid, ResourceOwnerHdid = this.mockHdId };
 
-            if (insertResult == null)
+            insertResult ??= new DbResult<ResourceDelegate>
             {
-                insertResult = new DbResult<ResourceDelegate>
-                {
-                    Status = DbStatusCode.Created,
-                };
-            }
+                Status = DbStatusCode.Created,
+            };
 
             insertResult.Payload = expectedDbDependent;
 
@@ -429,6 +469,12 @@ namespace HealthGateway.GatewayApiTests.Services.Test
             mockDependentDelegate.Setup(
                     s => s.Insert(It.Is<ResourceDelegate>(r => r.ProfileHdid == expectedDbDependent.ProfileHdid && r.ResourceOwnerHdid == expectedDbDependent.ResourceOwnerHdid), true))
                 .Returns(insertResult);
+            DbResult<Dictionary<string, int>> mockDelegateCountsResult = new()
+            {
+                Status = DbStatusCode.Read,
+                Payload = this.GenerateMockDelegateCounts(true),
+            };
+            mockDependentDelegate.Setup(s => s.GetTotalDelegateCountsAsync(It.IsAny<IEnumerable<string>>())).ReturnsAsync(mockDelegateCountsResult);
 
             Mock<IUserProfileDelegate> mockUserProfileDelegate = new();
             mockUserProfileDelegate.Setup(s => s.GetUserProfile(this.mockParentHdid))

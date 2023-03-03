@@ -17,7 +17,9 @@ namespace HealthGateway.GatewayApi.Controllers
 {
     using System.Collections.Generic;
     using System.Security.Claims;
+    using System.Threading.Tasks;
     using HealthGateway.Common.AccessManagement.Authorization.Policy;
+    using HealthGateway.Common.Data.Constants;
     using HealthGateway.Common.Data.ViewModels;
     using HealthGateway.GatewayApi.Models;
     using HealthGateway.GatewayApi.Services;
@@ -69,9 +71,9 @@ namespace HealthGateway.GatewayApi.Controllers
         [HttpGet]
         [Authorize(Policy = UserProfilePolicy.Read)]
         [Route("{hdid}/[controller]")]
-        public RequestResult<IEnumerable<DependentModel>> GetAll(string hdid)
+        public async Task<RequestResult<IEnumerable<DependentModel>>> GetAll(string hdid)
         {
-            return this.dependentService.GetDependents(hdid);
+            return await this.dependentService.GetDependentsAsync(hdid).ConfigureAwait(true);
         }
 
         /// <summary>
@@ -89,13 +91,13 @@ namespace HealthGateway.GatewayApi.Controllers
         [HttpPost]
         [Authorize(Policy = UserProfilePolicy.Write)]
         [Route("{hdid}/[controller]")]
-        public RequestResult<DependentModel> AddDependent([FromBody] AddDependentRequest addDependentRequest)
+        public async Task<RequestResult<DependentModel>> AddDependent([FromBody] AddDependentRequest addDependentRequest)
         {
             ClaimsPrincipal? user = this.httpContextAccessor.HttpContext?.User;
-            var delegateHdId = user?.FindFirst("hdid")?.Value ?? string.Empty;
-            var result = this.dependentService.AddDependent(delegateHdId, addDependentRequest);
+            string delegateHdId = user?.FindFirst("hdid")?.Value ?? string.Empty;
+            RequestResult<DependentModel> result = await this.dependentService.AddDependentAsync(delegateHdId, addDependentRequest).ConfigureAwait(true);
 
-            if (result.ResultStatus == Common.Data.Constants.ResultType.Error)
+            if (result.ResultStatus == ResultType.Error)
             {
                 this.logger.LogError("Error adding a dependent: {Error}", result.ResultError);
             }

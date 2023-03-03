@@ -26,19 +26,19 @@ namespace HealthGateway.Database.Models
     public class ResourceDelegate : AuditableEntity
     {
         /// <summary>
-        /// Gets or sets the owner of the hdid.
+        /// Gets or sets the HDID corresponding to the resource owner (the dependent).
         /// </summary>
         [MaxLength(52)]
         public string ResourceOwnerHdid { get; set; } = null!;
 
         /// <summary>
-        /// Gets or sets the hdid which has delegated access to the owner Id.
+        /// Gets or sets the HDID corresponding to the user with delegated access to the resources (the delegate).
         /// </summary>
         [MaxLength(52)]
         public string ProfileHdid { get; set; } = null!;
 
         /// <summary>
-        /// Gets or sets reason code for the resource delegate.
+        /// Gets or sets the reason code for the delegation.
         /// </summary>
         [Required]
         [MaxLength(10)]
