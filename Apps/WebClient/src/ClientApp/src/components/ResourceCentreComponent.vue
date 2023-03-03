@@ -37,7 +37,12 @@ export default class ResourceCentreComponent extends Vue {}
                 Resource Centre
             </b-dropdown-text>
             <b-dropdown-divider />
-            <b-dropdown-item to="/faq">FAQ</b-dropdown-item>
+            <b-dropdown-item
+                href="https://www2.gov.bc.ca/gov/content?id=FE8BA7F9F1F0416CB2D24CF71C4BAF80"
+                target="_blank"
+            >
+                FAQ
+            </b-dropdown-item>
             <b-dropdown-item to="/release-notes">Release Notes</b-dropdown-item>
         </b-dropdown>
     </div>
