@@ -107,7 +107,11 @@ export default class DependentCardComponent extends Vue {
                             You no longer have access to this dependent as they
                             have turned {{ config.maxDependentAge }}
                         </p>
-                        <hg-button variant="secondary" @click="remove">
+                        <hg-button
+                            variant="secondary"
+                            :data-testid="`remove-dependent-btn-${dependent.ownerId}`"
+                            @click="remove"
+                        >
                             Remove Dependent
                         </hg-button>
                     </div>

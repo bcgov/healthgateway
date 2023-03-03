@@ -1,8 +1,8 @@
 const { AuthMethod } = require("../../../../support/constants");
 
 const validDependent = {
-    firstName: "Sam ", // Aooend space to ensure field is trimmed
-    lastName: "Testfive ", // Aooend space to ensure field is trimmed
+    firstName: "Sam ", // Append space to ensure field is trimmed
+    lastName: "Testfive ", // Append space to ensure field is trimmed
     name: "Sam T",
     wrongLastName: "Testfive2",
     invalidDoB: "2007-Aug-05",
@@ -19,9 +19,10 @@ const noHdidDependent = {
 };
 
 const agedOutDependentHdid = "232434345442257";
-const agedOoutDependentCardId = `[data-testid=dependent-card-${agedOutDependentHdid}]`;
-const agedOoutDependentDivId = `[data-testid=dependent-is-expired-div-${agedOutDependentHdid}]`;
+const agedOutDependentCardId = `[data-testid=dependent-card-${agedOutDependentHdid}]`;
+const agedOutDependentDivId = `[data-testid=dependent-is-expired-div-${agedOutDependentHdid}]`;
 const agedOutDependentName = "John T";
+const agedOutDependentRemoveButtonId = `[data-testid=remove-dependent-btn-${agedOutDependentHdid}]`;
 const validDependentHdid = "162346565465464564565463257";
 const validDependentTimelinePath = `/dependents/${validDependentHdid}/timeline`;
 const validDependentClinicalDocumentsButtonId = `[data-testid=dependent-entry-type-ClinicalDocument-${validDependentHdid}]`;
@@ -104,30 +105,19 @@ describe("dependents - dashboard", () => {
     });
 
     it("Validate dashboard aged out dependent and remove", () => {
-        cy.get(agedOoutDependentCardId)
+        cy.get(agedOutDependentCardId)
             .as("agedOutDependentCard")
             .within(() => {
                 cy.get("[data-testid=dependentName]").contains(
                     agedOutDependentName
                 );
-                cy.get(agedOoutDependentDivId).should("be.visible");
+                cy.get(agedOutDependentDivId).should("be.visible");
             });
 
         cy.get("@agedOutDependentCard").within(() => {
-            cy.get("[data-testid=dependentMenuBtn]").click();
-            cy.get("[data-testid=deleteDependentMenuBtn]").click();
+            cy.get(agedOutDependentRemoveButtonId).click();
         });
 
-        cy.get("[data-testid=confirmDeleteBtn]").should("be.visible");
-        cy.get("[data-testid=cancelDeleteBtn]").should("be.visible");
-        cy.get("[data-testid=cancelDeleteBtn]").click();
-
-        cy.get("@agedOutDependentCard").within(() => {
-            cy.get("[data-testid=dependentMenuBtn]").click();
-            cy.get("[data-testid=deleteDependentMenuBtn]").click();
-        });
-
-        cy.get("[data-testid=confirmDeleteBtn]").click();
         cy.get("@agedOutDependentCard").should("not.exist");
     });
 
