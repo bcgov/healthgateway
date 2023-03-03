@@ -133,7 +133,7 @@ export default class ReportsComponent extends Vue {
             phn: this.patientData.personalhealthnumber,
             dateOfBirth: this.formatDate(this.patientData.birthdate || ""),
             name: this.patientData
-                ? `${this.patientData.preferredName.givenName} ${this.patientData.preferredName.surname}`
+                ? `${this.patientData.preferredname.givenName} ${this.patientData.preferredname.surname}`
                 : "",
             isRedacted: this.reportFilter.hasMedicationsFilter(),
             datePrinted: new DateWrapper(new DateWrapper().toISO()).format(),

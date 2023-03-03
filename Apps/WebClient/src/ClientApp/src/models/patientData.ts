@@ -3,9 +3,9 @@ import { StringISODate } from "@/models/dateWrapper";
 export default class PatientData {
     public hdid!: string;
     public personalhealthnumber!: string;
-    public preferredName!: Name;
-    public commonName: Name | undefined;
-    public legalName: Name | undefined;
+    public preferredname!: Name;
+    public commonname: Name | undefined;
+    public legalname: Name | undefined;
     public birthdate?: StringISODate;
     public physicalAddress?: Address;
     public postalAddress?: Address;
