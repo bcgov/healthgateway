@@ -163,7 +163,7 @@ export default class LaboratoryReportComponent extends Vue {
                 :busy="isLaboratoryLoading"
                 :items="items"
                 :fields="fields"
-                class="table-style"
+                class="table-style d-none d-md-table"
             >
                 <template #table-busy>
                     <content-placeholders>

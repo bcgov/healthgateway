@@ -340,7 +340,7 @@ export default class ImmunizationHistoryReportComponent extends Vue {
                         :busy="isLoading"
                         :items="recomendationItems"
                         :fields="recomendationFields"
-                        class="mt-2 table-style"
+                        class="mt-2 table-style d-none d-md-table"
                     >
                         <template #table-busy>
                             <content-placeholders>

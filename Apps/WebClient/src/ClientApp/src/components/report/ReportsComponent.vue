@@ -566,7 +566,7 @@ export default class ReportsComponent extends Vue {
         <div
             v-if="reportComponentName"
             data-testid="reportSample"
-            class="sample d-none d-md-block"
+            class="preview"
         >
             <component
                 :is="reportComponentName"
@@ -604,7 +604,7 @@ export default class ReportsComponent extends Vue {
 <style lang="scss" scoped>
 @import "@/assets/scss/_variables.scss";
 
-.sample {
+.preview {
     width: 100%;
     height: 600px;
     overflow-y: scroll;
