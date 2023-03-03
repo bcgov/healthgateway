@@ -3,13 +3,17 @@ import { StringISODate } from "@/models/dateWrapper";
 export default class PatientData {
     public hdid!: string;
     public personalhealthnumber!: string;
-    public firstname!: string;
-    public lastname!: string;
+    public preferredName!: Name;
+    public commonName: Name | undefined;
+    public legalName: Name | undefined;
     public birthdate?: StringISODate;
     public physicalAddress?: Address;
     public postalAddress?: Address;
 }
-
+export class Name {
+    public givenName!: string;
+    public surname!: string;
+}
 export class Address {
     public city!: string;
     public state!: string;

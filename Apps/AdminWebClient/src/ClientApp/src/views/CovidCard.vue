@@ -104,7 +104,7 @@ export default class CovidCardView extends Vue {
     }
 
     private get patientName(): string {
-        return `${this.searchResult?.patient?.firstname} ${this.searchResult?.patient?.lastname}`;
+        return `${this.searchResult?.patient?.preferredName.givenName} ${this.searchResult?.patient?.preferredName.surname}`;
     }
 
     private get patientHdid(): string {

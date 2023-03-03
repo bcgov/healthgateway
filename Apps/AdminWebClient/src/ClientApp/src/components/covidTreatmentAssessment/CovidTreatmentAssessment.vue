@@ -151,7 +151,7 @@ export default class CovidTreatmentAssessmentComponent extends Vue {
     }
 
     private get patientFullName(): string {
-        return `${this.patient.firstname} ${this.patient.lastname} `;
+        return `${this.patient.preferredName.givenName} ${this.patient.preferredName.surname} `;
     }
 
     private get patientPersonalHealthNumber(): string {
@@ -195,9 +195,11 @@ export default class CovidTreatmentAssessmentComponent extends Vue {
     private populateRequest(): void {
         this.covidTreatmentAssessmentRequest.phn =
             this.patient.personalhealthnumber;
-        this.covidTreatmentAssessmentRequest.firstName = this.patient.firstname;
+        this.covidTreatmentAssessmentRequest.firstName =
+            this.patient.preferredName.givenName;
         this.covidTreatmentAssessmentRequest.dob = this.patient.birthdate;
-        this.covidTreatmentAssessmentRequest.lastName = this.patient.lastname;
+        this.covidTreatmentAssessmentRequest.lastName =
+            this.patient.preferredName.surname;
         this.covidTreatmentAssessmentRequest.country = this.address.country;
         this.covidTreatmentAssessmentRequest.postalCode =
             this.address.postalCode;
@@ -477,7 +479,7 @@ export default class CovidTreatmentAssessmentComponent extends Vue {
                             </ValidationProvider>
                         </Card>
                         <Card
-                            title="7. Have you been diagnosed by a health care provider with a chronic condition 
+                            title="7. Have you been diagnosed by a health care provider with a chronic condition
                             or received a letter from Dr. Bonnie Henry stating that you
                             are Clinically Extremely Vulnerable (CEV)?"
                             additional-info="Citizen has a chronic condition."
@@ -515,7 +517,7 @@ export default class CovidTreatmentAssessmentComponent extends Vue {
                             />
                         </Card>
                         <Card
-                            title="10. Do you agree to the information being added to your CareConnect electronic 
+                            title="10. Do you agree to the information being added to your CareConnect electronic
                             health record as part of the process to obtain COVID‑19 treatment?*"
                         >
                             <ValidationProvider
