@@ -36,6 +36,7 @@ namespace HealthGateway.GatewayApi.Services
     using HealthGateway.Database.Delegates;
     using HealthGateway.Database.Models;
     using HealthGateway.Database.Wrapper;
+    using HealthGateway.GatewayApi.MapUtils;
     using HealthGateway.GatewayApi.Models;
     using HealthGateway.GatewayApi.Validations;
     using Microsoft.Extensions.Configuration;
@@ -83,7 +84,7 @@ namespace HealthGateway.GatewayApi.Services
         }
 
         /// <inheritdoc/>
-        public RequestResult<DependentModel> AddDependent(string delegateHdId, AddDependentRequest addDependentRequest)
+        public async Task<RequestResult<DependentModel>> AddDependentAsync(string delegateHdId, AddDependentRequest addDependentRequest)
         {
             ValidationResult? validationResults = new AddDependentRequestValidator(this.maxDependentAge).Validate(addDependentRequest);
 
@@ -134,21 +135,31 @@ namespace HealthGateway.GatewayApi.Services
 
             this.UpdateNotificationSettings(dependent.ResourceOwnerHdid, delegateHdId);
 
-            return RequestResultFactory.Success(this.FromModels(dbDependent.Payload, patientResult.ResourcePayload));
+            DbResult<Dictionary<string, int>> totalDelegateCounts = await this.resourceDelegateDelegate.GetTotalDelegateCountsAsync(
+                    new List<string> { dependent.ResourceOwnerHdid })
+                .ConfigureAwait(true);
+            int totalDelegateCount = totalDelegateCounts.Payload.GetValueOrDefault(dependent.ResourceOwnerHdid);
+
+            return RequestResultFactory.Success(DependentMapUtils.CreateFromDbModels(dbDependent.Payload, patientResult.ResourcePayload, totalDelegateCount, this.autoMapper));
         }
 
         /// <inheritdoc/>
-        public RequestResult<IEnumerable<DependentModel>> GetDependents(string hdId, int page = 0, int pageSize = 500)
+        public async Task<RequestResult<IEnumerable<DependentModel>>> GetDependentsAsync(string hdId, int page = 0, int pageSize = 500)
         {
-            // Get Dependents from database
-            DbResult<IEnumerable<ResourceDelegate>> dbResourceDelegates = this.resourceDelegateDelegate.Get(hdId, page, pageSize);
-
-            // Get Dependents Details from Patient service
-            List<DependentModel> dependentModels = new();
             RequestResult<IEnumerable<DependentModel>> result = new()
             {
                 ResultStatus = ResultType.Success,
             };
+
+            // Get Dependents from database
+            DbResult<IEnumerable<ResourceDelegate>> dbResourceDelegates = this.resourceDelegateDelegate.Get(hdId, page, pageSize);
+
+            DbResult<Dictionary<string, int>> totalDelegateCounts = await this.resourceDelegateDelegate.GetTotalDelegateCountsAsync(
+                    dbResourceDelegates.Payload.Select(d => d.ResourceOwnerHdid))
+                .ConfigureAwait(true);
+
+            // Get Dependents Details from Patient service
+            List<DependentModel> dependentModels = new();
             StringBuilder resultErrorMessage = new();
             foreach (ResourceDelegate resourceDelegate in dbResourceDelegates.Payload)
             {
@@ -157,7 +168,8 @@ namespace HealthGateway.GatewayApi.Services
 
                 if (patientResult.ResourcePayload != null)
                 {
-                    dependentModels.Add(this.FromModels(resourceDelegate, patientResult.ResourcePayload));
+                    int totalDelegateCount = totalDelegateCounts.Payload.GetValueOrDefault(resourceDelegate.ResourceOwnerHdid);
+                    dependentModels.Add(DependentMapUtils.CreateFromDbModels(resourceDelegate, patientResult.ResourcePayload, totalDelegateCount, this.autoMapper));
                 }
                 else
                 {
@@ -176,7 +188,6 @@ namespace HealthGateway.GatewayApi.Services
             result.ResourcePayload = dependentModels;
             if (result.ResultStatus != ResultType.Error)
             {
-                result.ResultStatus = ResultType.Success;
                 result.ResultError = null;
                 result.TotalResultCount = dependentModels.Count;
             }
@@ -293,14 +304,6 @@ namespace HealthGateway.GatewayApi.Services
             }
 
             this.notificationSettingsService.QueueNotificationSettings(request);
-        }
-
-        private DependentModel FromModels(ResourceDelegate resourceDelegate, PatientModel patientModel)
-        {
-            DependentModel dependent = this.autoMapper.Map<DependentModel>(resourceDelegate);
-            dependent.DependentInformation = this.autoMapper.Map<DependentInformation>(patientModel);
-
-            return dependent;
         }
     }
 }
