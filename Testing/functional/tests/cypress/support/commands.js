@@ -294,7 +294,7 @@ Cypress.Commands.add("readConfig", () => {
 });
 
 Cypress.Commands.add("checkOnTimeline", () => {
-    cy.get("#subject").should("be.visible").and("have.text", "Timeline");
+    cy.contains("#subject", "Timeline").should("be.visible");
 });
 
 Cypress.Commands.add("checkTimelineHasLoaded", () => {
