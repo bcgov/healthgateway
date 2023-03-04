@@ -56,7 +56,7 @@ namespace HealthGateway.GatewayApi.Validations
         /// <returns>True if phone number passes the validation for the current region.</returns>
         public static bool IsValid(string? phoneNumber, string region = "US")
         {
-            return !string.IsNullOrEmpty(phoneNumber) && new PhoneNumberValidator(region).Validate(phoneNumber).IsValid;
+            return string.IsNullOrEmpty(phoneNumber) || new PhoneNumberValidator(region).Validate(phoneNumber).IsValid;
         }
     }
 }

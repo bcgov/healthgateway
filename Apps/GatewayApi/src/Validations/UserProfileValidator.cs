@@ -29,7 +29,7 @@ namespace HealthGateway.GatewayApi.Validations
         public UserProfileValidator()
         {
             this.RuleFor(profile => profile.SmsNumber)
-                .Must(smsNumber => string.IsNullOrEmpty(smsNumber) || PhoneNumberValidator.IsValid(smsNumber));
+                .Must(smsNumber => PhoneNumberValidator.IsValid(smsNumber));
         }
     }
 }
