@@ -1,6 +1,7 @@
 <script lang="ts">
 import { library } from "@fortawesome/fontawesome-svg-core";
 import {
+    faArrowLeft,
     faCheckCircle,
     faEdit,
     faFileMedical,
@@ -35,6 +36,7 @@ import ConfigUtil from "@/utility/configUtil";
 import DependentUtil from "@/utility/dependentUtil";
 
 library.add(
+    faArrowLeft,
     faCheckCircle,
     faEdit,
     faFileMedical,
@@ -143,8 +145,28 @@ export default class DependentTimelineView extends Vue {
         <LoadingComponent :is-loading="dependentsAreLoading" />
         <div v-if="!dependentsAreLoading && dependent !== undefined">
             <BreadcrumbComponent :items="breadcrumbItems" />
-            <page-title :title="title" />
+            <page-title :title="title" data-testid="page-title">
+                <template #prepend>
+                    <b-button
+                        to="/dependents"
+                        data-testid="backBtn"
+                        variant="link"
+                        size="sm"
+                        class="back-button-icon p-1"
+                    >
+                        <hg-icon icon="arrow-left" size="large" square />
+                    </b-button>
+                </template>
+            </page-title>
             <TimelineComponent :hdid="hdid" :entry-types="entryTypes" />
         </div>
     </div>
 </template>
+
+<style lang="scss" scoped>
+@import "@/assets/scss/_variables.scss";
+
+.back-button-icon {
+    color: grey;
+}
+</style>

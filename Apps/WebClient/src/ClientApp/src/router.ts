@@ -83,8 +83,6 @@ const ReleaseNotesView = () =>
     import(
         /* webpackChunkName: "releaseNotes" */ "@/views/ReleaseNotesView.vue"
     );
-const ContactUsView = () =>
-    import(/* webpackChunkName: "contactUs" */ "@/views/ContactUsView.vue");
 const DependentViewSelectorComponent = () =>
     import(
         /* webpackChunkName: "dependents" */ "@/components/dependent/DependentViewSelectorComponent.vue"
@@ -93,8 +91,6 @@ const DependentTimelineView = () =>
     import(
         /* webpackChunkName: "dependents" */ "@/views/DependentTimelineView.vue"
     );
-const FAQView = () =>
-    import(/* webpackChunkName: "faq" */ "@/views/FaqView.vue");
 const PcrTestView = () =>
     import(/* webpackChunkName: "pcrTest" */ "@/views/PcrTestView.vue");
 const QueueView = () =>
@@ -381,34 +377,6 @@ const routes = [
     {
         path: "/release-notes",
         component: ReleaseNotesView,
-        meta: {
-            validStates: [
-                UserState.unauthenticated,
-                UserState.invalidIdentityProvider,
-                UserState.noPatientData,
-                UserState.registered,
-                UserState.pendingDeletion,
-            ],
-            requiresProcessedWaitlistTicket: false,
-        },
-    },
-    {
-        path: "/contact-us",
-        component: ContactUsView,
-        meta: {
-            validStates: [
-                UserState.unauthenticated,
-                UserState.invalidIdentityProvider,
-                UserState.noPatientData,
-                UserState.registered,
-                UserState.pendingDeletion,
-            ],
-            requiresProcessedWaitlistTicket: false,
-        },
-    },
-    {
-        path: "/faq",
-        component: FAQView,
         meta: {
             validStates: [
                 UserState.unauthenticated,
