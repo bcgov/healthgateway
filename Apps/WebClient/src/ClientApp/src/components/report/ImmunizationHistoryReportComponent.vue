@@ -258,12 +258,18 @@ export default class ImmunizationHistoryReportComponent extends Vue {
 <template>
     <div>
         <section>
-            <b-row>
+            <b-row class="d-none d-md-block">
                 <b-col>
                     <h4>Immunization History</h4>
                 </b-col>
             </b-row>
-            <b-row v-if="isEmpty && !isLoading">
+            <b-row v-if="isEmpty && !isLoading" class="d-none d-md-block">
+                <b-col>No records found.</b-col>
+            </b-row>
+            <b-row
+                v-if="isRecommendationEmpty && isEmpty && !isLoading"
+                class="mt-2 d-md-none"
+            >
                 <b-col>No records found.</b-col>
             </b-row>
             <b-table
@@ -272,7 +278,7 @@ export default class ImmunizationHistoryReportComponent extends Vue {
                 :busy="isLoading"
                 :items="immunizationItems"
                 :fields="immunizationFields"
-                class="table-style"
+                class="table-style d-none d-md-table"
             >
                 <!-- A custom formatted header cell for field 'name' -->
                 <template #head(agents)>
@@ -300,12 +306,12 @@ export default class ImmunizationHistoryReportComponent extends Vue {
             </b-table>
             <b-row class="mt-3">
                 <b-col class="col-7">
-                    <b-row>
+                    <b-row class="d-none d-md-block">
                         <b-col>
                             <h4>Recommended Immunizations</h4>
                         </b-col>
                     </b-row>
-                    <b-row>
+                    <b-row class="d-none d-md-block">
                         <b-col>
                             <div id="disclaimer">
                                 <p>
@@ -329,7 +335,7 @@ export default class ImmunizationHistoryReportComponent extends Vue {
                     </b-row>
                     <b-row
                         v-if="isRecommendationEmpty && !isLoading"
-                        class="mt-2"
+                        class="mt-2 d-none d-md-block"
                     >
                         <b-col>No recommendations found.</b-col>
                     </b-row>
@@ -340,7 +346,7 @@ export default class ImmunizationHistoryReportComponent extends Vue {
                         :busy="isLoading"
                         :items="recomendationItems"
                         :fields="recomendationFields"
-                        class="mt-2 table-style"
+                        class="mt-2 table-style d-none d-md-table"
                     >
                         <template #table-busy>
                             <content-placeholders>

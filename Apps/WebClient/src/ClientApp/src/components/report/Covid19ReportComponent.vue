@@ -169,7 +169,7 @@ export default class Covid19ReportComponent extends Vue {
                 :busy="isCovid19LaboratoryLoading"
                 :items="items"
                 :fields="fields"
-                class="table-style"
+                class="table-style d-none d-md-table"
             >
                 <template #table-busy>
                     <content-placeholders>
