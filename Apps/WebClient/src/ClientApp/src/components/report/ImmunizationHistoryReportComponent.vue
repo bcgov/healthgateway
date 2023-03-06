@@ -258,7 +258,7 @@ export default class ImmunizationHistoryReportComponent extends Vue {
 <template>
     <div>
         <section>
-            <b-row>
+            <b-row class="d-none d-md-block">
                 <b-col>
                     <h4>Immunization History</h4>
                 </b-col>
