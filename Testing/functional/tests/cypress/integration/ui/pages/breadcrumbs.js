@@ -1,4 +1,4 @@
-const pageUrls = ["/faq", "/release-notes", "/termsOfService", "/contact-us"];
+const pageUrls = ["/release-notes", "/termsOfService"];
 
 describe("Breadcrumbs", () => {
     it("Breadcrumbs hidden when logged out", () => {

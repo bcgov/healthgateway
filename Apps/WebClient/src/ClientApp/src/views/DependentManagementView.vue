@@ -1,72 +1,48 @@
 <script lang="ts">
-import { library } from "@fortawesome/fontawesome-svg-core";
-import { faUserPlus } from "@fortawesome/free-solid-svg-icons";
 import Vue from "vue";
 import { Component, Ref } from "vue-property-decorator";
 import { Action, Getter } from "vuex-class";
 
-import DependentCardComponent from "@/components/DependentCardComponent.vue";
+import DependentCardComponent from "@/components/dependent/DependentCardComponent.vue";
 import LoadingComponent from "@/components/LoadingComponent.vue";
 import NewDependentComponent from "@/components/modal/NewDependentComponent.vue";
 import BreadcrumbComponent from "@/components/navmenu/BreadcrumbComponent.vue";
 import TutorialComponent from "@/components/shared/TutorialComponent.vue";
-import { ErrorSourceType, ErrorType } from "@/constants/errorType";
 import UserPreferenceType from "@/constants/userPreferenceType";
 import BreadcrumbItem from "@/models/breadcrumbItem";
-import type { WebClientConfiguration } from "@/models/configData";
-import type { Dependent } from "@/models/dependent";
+import { Dependent } from "@/models/dependent";
 import User from "@/models/user";
-import container from "@/plugins/container";
-import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
-import { ILogger } from "@/services/interfaces";
-
-library.add(faUserPlus);
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const options: any = {
     components: {
         BreadcrumbComponent,
-        LoadingComponent,
         DependentCardComponent,
+        LoadingComponent,
         NewDependentComponent,
         TutorialComponent,
     },
 };
 
 @Component(options)
-export default class DependentsView extends Vue {
+export default class DependentManagementView extends Vue {
     @Action("retrieveDependents", { namespace: "dependent" })
-    retrieveDependents!: (params: {
+    private retrieveDependents!: (params: {
         hdid: string;
         bypassCache: boolean;
     }) => Promise<void>;
 
-    @Action("addError", { namespace: "errorBanner" })
-    addError!: (params: {
-        errorType: ErrorType;
-        source: ErrorSourceType;
-        traceId: string | undefined;
-    }) => void;
-
-    @Action("setTooManyRequestsWarning", { namespace: "errorBanner" })
-    setTooManyRequestsWarning!: (params: { key: string }) => void;
-
-    @Getter("webClient", { namespace: "config" })
-    webClientConfig!: WebClientConfiguration;
-
     @Getter("dependents", { namespace: "dependent" })
-    dependents!: Dependent[];
+    private dependents!: Dependent[];
 
     @Getter("dependentsAreLoading", { namespace: "dependent" })
-    dependentsAreLoading!: boolean;
+    private dependentsAreLoading!: boolean;
 
     @Getter("user", { namespace: "user" })
-    user!: User;
+    private user!: User;
 
     @Ref("newDependentModal")
     readonly newDependentModal!: NewDependentComponent;
-
-    private logger!: ILogger;
 
     private breadcrumbItems: BreadcrumbItem[] = [
         {
@@ -77,32 +53,34 @@ export default class DependentsView extends Vue {
         },
     ];
 
+    private get isLoading(): boolean {
+        return this.dependentsAreLoading;
+    }
+
     private get addDependentTutorialPreference(): string {
         return UserPreferenceType.TutorialAddDependent;
     }
 
-    private created(): void {
-        this.logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
-        this.retrieveDependents({ hdid: this.user.hdid, bypassCache: false });
-    }
-
-    private showModal(): void {
-        this.newDependentModal.showModal();
-    }
-
-    private hideModal(): void {
-        this.newDependentModal.hideModal();
+    private async created(): Promise<void> {
+        await this.retrieveDependents({
+            hdid: this.user.hdid,
+            bypassCache: false,
+        });
     }
 
     private refreshDependents(): void {
         this.retrieveDependents({ hdid: this.user.hdid, bypassCache: true });
+    }
+
+    private showModal(): void {
+        this.newDependentModal.showModal();
     }
 }
 </script>
 <template>
     <div>
         <BreadcrumbComponent :items="breadcrumbItems" />
-        <LoadingComponent :is-loading="dependentsAreLoading" />
+        <LoadingComponent :is-loading="isLoading" />
         <page-title title="Dependents">
             <hg-button
                 id="add-dependent-button"
@@ -124,18 +102,11 @@ export default class DependentsView extends Vue {
                 </div>
             </TutorialComponent>
         </page-title>
-        <h5 class="my-3">
-            You can add your dependents under the age of
-            {{ webClientConfig.maxDependentAge }} to view their health records.
-            Make sure you include all given names exactly as shown on their BC
-            Services Card.
-        </h5>
         <DependentCardComponent
             v-for="dependent in dependents"
             :key="dependent.ownerId"
             :dependent="dependent"
-            class="mt-2"
-            @needs-update="refreshDependents"
+            class="my-3"
         />
         <NewDependentComponent
             ref="newDependentModal"

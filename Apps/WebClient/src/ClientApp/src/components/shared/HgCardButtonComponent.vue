@@ -4,7 +4,14 @@ import { Component, Prop } from "vue-property-decorator";
 
 @Component
 export default class HgCardButtonComponent extends Vue {
-    @Prop({ required: true }) title!: string;
+    @Prop({ required: true })
+    title!: string;
+
+    @Prop({ required: false, default: false })
+    dense!: boolean;
+
+    @Prop({ required: false, default: false })
+    hasChevron!: boolean;
 
     private get hasIconSlot(): boolean {
         return this.$slots.icon !== undefined;
@@ -13,16 +20,26 @@ export default class HgCardButtonComponent extends Vue {
     private get hasMenuSlot(): boolean {
         return this.$slots.menu !== undefined;
     }
+
+    private get hasDefaultSlot(): boolean {
+        return this.$slots.default !== undefined;
+    }
 }
 </script>
 
 <template>
     <b-button
-        class="hg-card-button h-100 w-100 p-4 d-flex flex-column align-content-start text-left rounded shadow"
+        class="hg-card-button h-100 w-100 d-flex flex-column align-content-start text-left rounded shadow"
+        :class="{ 'p-3': dense, 'p-4': !dense }"
         v-bind="$attrs"
         v-on="$listeners"
     >
-        <b-row no-gutters align-h="end" class="mb-4 mt-n3 w-100">
+        <b-row
+            no-gutters
+            align-h="end"
+            class="mt-n3 w-100"
+            :class="{ 'mb-4': hasDefaultSlot }"
+        >
             <b-col
                 v-if="hasIconSlot"
                 cols="auto"
@@ -34,8 +51,22 @@ export default class HgCardButtonComponent extends Vue {
             <b-col
                 data-testid="card-button-title"
                 class="hg-card-button-title mt-3"
+                :class="{ dense: dense }"
             >
                 {{ title }}
+            </b-col>
+            <b-col
+                v-if="hasChevron"
+                cols="auto"
+                align-self="center"
+                class="mt-3 d-flex"
+            >
+                <hg-icon
+                    icon="chevron-right"
+                    class="chevron-icon align-self-center"
+                    size="medium"
+                    square
+                />
             </b-col>
             <b-col v-if="hasMenuSlot" cols="auto" class="mt-2">
                 <slot name="menu" />
@@ -62,8 +93,10 @@ export default class HgCardButtonComponent extends Vue {
         outline-color 0.15s ease-in-out;
 
     .hg-card-button-title {
-        font-size: 1.2rem;
-        font-weight: bold;
+        &:not(.dense) {
+            font-size: 1.2rem;
+            font-weight: bold;
+        }
 
         // add text-decoration-color to transition
         transition: text-decoration-color 0.15s ease-in-out;
@@ -90,6 +123,10 @@ export default class HgCardButtonComponent extends Vue {
         outline-width: 0.2rem;
         outline-style: solid;
         outline-color: rgba(86, 86, 86, 0.25);
+    }
+
+    .chevron-icon {
+        color: $primary;
     }
 }
 </style>

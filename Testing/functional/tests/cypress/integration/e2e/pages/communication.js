@@ -12,16 +12,6 @@ describe("Communication", () => {
             .should("exist")
             .contains("Test Banner");
 
-        cy.visit("/faq");
-        cy.get("[data-testid=communicationBanner]")
-            .should("exist")
-            .contains("Test Banner");
-
-        cy.visit("/contact-us");
-        cy.get("[data-testid=communicationBanner]")
-            .should("exist")
-            .contains("Test Banner");
-
         cy.visit("/release-notes");
         cy.get("[data-testid=communicationBanner]")
             .should("exist")

@@ -26,9 +26,7 @@ describe("Breadcrumbs", () => {
         testPageBreadcrumb("/dependents", "breadcrumb-dependents");
         testPageBreadcrumb("/reports", "breadcrumb-export-records");
         testPageBreadcrumb("/profile", "breadcrumb-profile");
-        testPageBreadcrumb("/faq", "breadcrumb-faq");
         testPageBreadcrumb("/release-notes", "breadcrumb-release-notes");
         testPageBreadcrumb("/termsOfService", "breadcrumb-terms-of-service");
-        testPageBreadcrumb("/contact-us", "breadcrumb-contact-us");
     });
 });
