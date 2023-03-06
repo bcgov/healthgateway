@@ -24,6 +24,7 @@ import { Action, Getter } from "vuex-class";
 import LoadingComponent from "@/components/LoadingComponent.vue";
 import AddQuickLinkComponent from "@/components/modal/AddQuickLinkComponent.vue";
 import MessageModalComponent from "@/components/modal/MessageModalComponent.vue";
+import TutorialComponent from "@/components/shared/TutorialComponent.vue";
 import {
     EntryTypeDetails,
     entryTypeMap,
@@ -73,9 +74,10 @@ interface QuickLinkCard {
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const options: any = {
     components: {
+        AddQuickLinkComponent,
         LoadingComponent,
         MessageModalComponent,
-        AddQuickLinkComponent,
+        TutorialComponent,
     },
 };
 
@@ -120,9 +122,6 @@ export default class HomeView extends Vue {
         preference: UserPreference;
     }) => Promise<void>;
 
-    @Getter("isMobile")
-    isMobileView!: boolean;
-
     @Getter("webClient", { namespace: "config" })
     config!: WebClientConfiguration;
 
@@ -150,14 +149,9 @@ export default class HomeView extends Vue {
     readonly addQuickLinkModal!: AddQuickLinkComponent;
 
     private logger!: ILogger;
-    private isAddQuickLinkTutorialHidden = false;
 
-    private get showAddQuickLinkTutorial(): boolean {
-        const preferenceType = UserPreferenceType.TutorialAddQuickLink;
-        return (
-            this.user.preferences[preferenceType]?.value === "true" &&
-            !this.isAddQuickLinkTutorialHidden
-        );
+    private get addQuickLinkTutorialPreference(): string {
+        return UserPreferenceType.TutorialAddQuickLink;
     }
 
     private get isVaccineRecordDownloading(): boolean {
@@ -339,17 +333,6 @@ export default class HomeView extends Vue {
 
     private getVaccinationRecord(): VaccinationRecord | undefined {
         return this.vaccineRecords.get(this.user.hdid);
-    }
-
-    private dismissAddQuickLinkTutorial(): void {
-        this.logger.debug("Dismissing add quick link tutorial");
-        this.isAddQuickLinkTutorialHidden = true;
-
-        const preference = {
-            ...this.user.preferences[UserPreferenceType.TutorialAddQuickLink],
-            value: "false",
-        };
-        this.setUserPreference({ preference });
     }
 
     private handleClickHealthRecords(): void {
@@ -536,26 +519,15 @@ export default class HomeView extends Vue {
                 <hg-icon icon="plus" size="medium" class="mr-2" />
                 <span>Add Quick Link</span>
             </hg-button>
-            <b-popover
-                triggers="manual"
-                :show="showAddQuickLinkTutorial"
+            <TutorialComponent
+                :preference-type="addQuickLinkTutorialPreference"
                 target="add-quick-link-button"
-                :placement="isMobileView ? 'bottom' : 'left'"
-                boundary="viewport"
             >
-                <div>
-                    <hg-button
-                        class="float-right text-dark p-0 ml-2"
-                        variant="icon"
-                        @click="dismissAddQuickLinkTutorial()"
-                        >×</hg-button
-                    >
-                </div>
                 <div data-testid="add-quick-link-tutorial-popover">
                     Add a quick link to easily access a health record type from
                     your home screen.
                 </div>
-            </b-popover>
+            </TutorialComponent>
         </page-title>
         <h2>What do you want to focus on today?</h2>
         <b-row cols="1" cols-lg="2" cols-xl="3">

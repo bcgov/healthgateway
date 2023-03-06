@@ -83,8 +83,10 @@ const ReleaseNotesView = () =>
     import(
         /* webpackChunkName: "releaseNotes" */ "@/views/ReleaseNotesView.vue"
     );
-const DependentsView = () =>
-    import(/* webpackChunkName: "dependents" */ "@/views/DependentsView.vue");
+const DependentViewSelectorComponent = () =>
+    import(
+        /* webpackChunkName: "dependents" */ "@/components/dependent/DependentViewSelectorComponent.vue"
+    );
 const DependentTimelineView = () =>
     import(
         /* webpackChunkName: "dependents" */ "@/views/DependentTimelineView.vue"
@@ -263,7 +265,7 @@ const routes = [
     },
     {
         path: "/dependents",
-        component: DependentsView,
+        component: DependentViewSelectorComponent,
         meta: {
             validStates: [UserState.registered],
             requiredFeaturesEnabled: (config: FeatureToggleConfiguration) =>

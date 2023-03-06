@@ -5,11 +5,20 @@ import { LoadStatus } from "@/models/storeOperations";
 import { DependentMutations, DependentState } from "./types";
 
 export const mutations: DependentMutations = {
-    setDependentsRequested(state: DependentState) {
+    setDependentsLoading(state: DependentState) {
         state.status = LoadStatus.REQUESTED;
     },
     setDependents(state: DependentState, dependents: Dependent[]) {
         state.dependents = dependents;
+        state.error = undefined;
+        state.status = LoadStatus.LOADED;
+    },
+    removeDependent(state: DependentState, dependent: Dependent) {
+        state.dependents = state.dependents.filter(
+            (d) =>
+                d.delegateId !== dependent.delegateId ||
+                d.ownerId !== dependent.ownerId
+        );
         state.error = undefined;
         state.status = LoadStatus.LOADED;
     },

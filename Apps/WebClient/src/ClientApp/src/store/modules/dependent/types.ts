@@ -30,7 +30,11 @@ export interface DependentActions
     extends ActionTree<DependentState, RootState> {
     retrieveDependents(
         context: StoreContext,
-        params: { hdid: string }
+        params: { hdid: string; bypassCache: boolean }
+    ): Promise<void>;
+    removeDependent(
+        context: StoreContext,
+        params: { hdid: string; dependent: Dependent }
     ): Promise<void>;
     handleDependentsError(
         context: StoreContext,
@@ -39,8 +43,9 @@ export interface DependentActions
 }
 
 export interface DependentMutations extends MutationTree<DependentState> {
-    setDependentsRequested(state: DependentState): void;
+    setDependentsLoading(state: DependentState): void;
     setDependents(state: DependentState, dependents: Dependent[]): void;
+    removeDependent(state: DependentState, dependent: Dependent): void;
     setDependentsError(state: DependentState, error: ResultError): void;
 }
 
