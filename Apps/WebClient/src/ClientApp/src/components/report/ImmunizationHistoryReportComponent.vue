@@ -268,7 +268,7 @@ export default class ImmunizationHistoryReportComponent extends Vue {
             </b-row>
             <b-row
                 v-if="isRecommendationEmpty && isEmpty && !isLoading"
-                class="mt-2 d-sm-block d-md-none"
+                class="mt-2 d-md-none"
             >
                 <b-col>No records found.</b-col>
             </b-row>
