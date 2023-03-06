@@ -451,7 +451,7 @@ namespace HealthGateway.GatewayApi.Services
         /// <inheritdoc/>
         public bool IsPhoneNumberValid(string phoneNumber)
         {
-            return PhoneNumberValidator.IsValid(phoneNumber);
+            return UserProfileValidator.ValidateUserProfileSmsNumber(phoneNumber);
         }
 
         private void QueueEmail(string toEmail, string templateName)

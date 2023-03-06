@@ -302,14 +302,15 @@ export default class ProfileView extends Vue {
     }
 
     private validations(): unknown {
-        const validPhoneNumberFormat = async (rawInputSmsNumber: string) => {
+        const validPhoneNumberFormat = (rawInputSmsNumber: string) => {
+            if (!rawInputSmsNumber) {
+                return true;
+            }
             if (!ValidationRegEx.PhoneNumberMasked.test(rawInputSmsNumber)) {
                 return false;
             }
             const phoneNumber = PhoneUtil.stripPhoneMask(rawInputSmsNumber);
-            return await this.userProfileService.isPhoneNumberValid(
-                phoneNumber
-            );
+            return this.userProfileService.isPhoneNumberValid(phoneNumber);
         };
         return {
             smsNumber: {
@@ -812,7 +813,9 @@ export default class ProfileView extends Vue {
                 <div>
                     <b-form-group
                         :state="
-                            isValid($v.smsNumber) || !isSMSEditable
+                            $v.smsNumber.$pending ||
+                            isValid($v.smsNumber) ||
+                            !isSMSEditable
                                 ? null
                                 : false
                         "
@@ -845,6 +848,7 @@ export default class ProfileView extends Vue {
                                         "
                                         :disabled="!isSMSEditable"
                                         :state="
+                                            $v.smsNumber.$pending ||
                                             isValid($v.smsNumber) ||
                                             !isSMSEditable
                                                 ? null
@@ -874,7 +878,10 @@ export default class ProfileView extends Vue {
                                 </b-col>
                             </b-row>
                         </div>
-                        <b-form-invalid-feedback :state="$v.smsNumber.sms">
+                        <b-form-invalid-feedback
+                            v-if="!$v.smsNumber.$pending"
+                            :state="$v.smsNumber.sms"
+                        >
                             Valid SMS number is required
                         </b-form-invalid-feedback>
                         <b-form-invalid-feedback

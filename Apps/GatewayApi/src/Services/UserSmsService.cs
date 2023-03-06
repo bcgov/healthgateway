@@ -121,7 +121,7 @@ namespace HealthGateway.GatewayApi.Services
         {
             this.logger.LogTrace("Removing user sms number {Hdid}", hdid);
             string sanitizedSms = this.SanitizeSms(sms);
-            if (!PhoneNumberValidator.IsValid(sanitizedSms))
+            if (!UserProfileValidator.ValidateUserProfileSmsNumber(sanitizedSms))
             {
                 this.logger.LogWarning("Proposed sms number is not valid {SmsNumber}", sanitizedSms);
                 throw new ProblemDetailsException(

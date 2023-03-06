@@ -188,14 +188,15 @@ export default class RegistrationView extends Vue {
     }
 
     private validations(): unknown {
-        const validPhoneNumberFormat = async (rawInputSmsNumber: string) => {
+        const validPhoneNumberFormat = (rawInputSmsNumber: string) => {
+            if (!rawInputSmsNumber) {
+                return true;
+            }
             if (!ValidationRegEx.PhoneNumberMasked.test(rawInputSmsNumber)) {
                 return false;
             }
             const phoneNumber = PhoneUtil.stripPhoneMask(rawInputSmsNumber);
-            return await this.userProfileService.isPhoneNumberValid(
-                phoneNumber
-            );
+            return this.userProfileService.isPhoneNumberValid(phoneNumber);
         };
         return {
             smsNumber: {
@@ -382,14 +383,19 @@ export default class RegistrationView extends Vue {
                             v-model="$v.smsNumber.$model"
                             v-mask="'(###) ###-####'"
                             :disabled="!isSMSNumberChecked"
-                            :state="isValid($v.smsNumber)"
+                            :state="
+                                $v.smsNumber.$pending || isValid($v.smsNumber)
+                            "
                             class="d-flex"
                             data-testid="smsNumberInput"
                             placeholder="Your phone number"
                             type="tel"
                         >
                         </b-form-input>
-                        <b-form-invalid-feedback :state="isValid($v.smsNumber)">
+                        <b-form-invalid-feedback
+                            v-if="!$v.smsNumber.$pending"
+                            :state="isValid($v.smsNumber)"
+                        >
                             Valid sms number is required
                         </b-form-invalid-feedback>
                     </div>

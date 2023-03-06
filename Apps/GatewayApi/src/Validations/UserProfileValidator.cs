@@ -31,5 +31,19 @@ namespace HealthGateway.GatewayApi.Validations
             this.RuleFor(profile => profile.SmsNumber)
                 .Must(smsNumber => string.IsNullOrEmpty(smsNumber) || PhoneNumberValidator.IsValid(smsNumber));
         }
+
+        /// <summary>
+        /// Convenience method to test sms phone number in the userprofile context.
+        /// </summary>
+        /// <param name="phoneNumber">Phone number for sms notifications.</param>
+        /// <returns>True if UserProfileValidator rules for SmsNumber member pass.</returns>
+        public static bool ValidateUserProfileSmsNumber(string? phoneNumber)
+        {
+            UserProfile tempProfile = new()
+            {
+                SmsNumber = phoneNumber,
+            };
+            return new UserProfileValidator().Validate(tempProfile).IsValid;
+        }
     }
 }
