@@ -18,7 +18,7 @@ namespace HealthGateway.Patient.Delegates
     using System.Threading.Tasks;
     using HealthGateway.Common.Constants;
     using HealthGateway.Common.Data.ViewModels;
-    using HealthGateway.Common.Models;
+    using HealthGateway.Patient.Models;
 
     /// <summary>
     /// The Patient data service.
@@ -32,6 +32,6 @@ namespace HealthGateway.Patient.Delegates
         /// <param name="identifier">The associated oid type's identifier to retrieve the patient demographics information.</param>
         /// <param name="disableIdValidation">Disables the validation on HDID/PHN when true.</param>
         /// <returns>The patient model wrapped in an api result object.</returns>
-        Task<ApiResult<PatientModel>> GetDemographicsAsync(OidType type, string identifier, bool disableIdValidation = false);
+        Task<ApiResult<PatientModelV2>> GetDemographicsAsync(OidType type, string identifier, bool disableIdValidation = false);
     }
 }

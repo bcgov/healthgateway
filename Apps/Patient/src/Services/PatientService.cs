@@ -24,8 +24,8 @@ namespace HealthGateway.Patient.Services
     using HealthGateway.Common.Data.ErrorHandling;
     using HealthGateway.Common.Data.Validations;
     using HealthGateway.Common.Data.ViewModels;
-    using HealthGateway.Common.Models;
     using HealthGateway.Patient.Delegates;
+    using HealthGateway.Patient.Models;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.Logging;
 
@@ -67,11 +67,11 @@ namespace HealthGateway.Patient.Services
         private static ActivitySource Source { get; } = new(nameof(PatientService));
 
         /// <inheritdoc/>
-        public async Task<ApiResult<PatientModel>> GetPatient(string identifier, PatientIdentifierType identifierType = PatientIdentifierType.Hdid, bool disableIdValidation = false)
+        public async Task<ApiResult<PatientModelV2>> GetPatient(string identifier, PatientIdentifierType identifierType = PatientIdentifierType.Hdid, bool disableIdValidation = false)
         {
             using Activity? activity = Source.StartActivity();
 
-            ApiResult<PatientModel> apiResult = new()
+            ApiResult<PatientModelV2> apiResult = new()
             {
                 ResourcePayload = this.GetFromCache(identifier, identifierType),
             };
@@ -112,22 +112,22 @@ namespace HealthGateway.Patient.Services
         /// <param name="identifier">The resource identifier used to determine the key to use.</param>
         /// <param name="identifierType">The type of patient identifier we are searching for.</param>
         /// <returns>The found Patient model or null.</returns>
-        private PatientModel? GetFromCache(string identifier, PatientIdentifierType identifierType)
+        private PatientModelV2? GetFromCache(string identifier, PatientIdentifierType identifierType)
         {
             using Activity? activity = Source.StartActivity();
-            PatientModel? retPatient = null;
+            PatientModelV2? retPatient = null;
             if (this.cacheTtl > 0)
             {
                 switch (identifierType)
                 {
                     case PatientIdentifierType.Hdid:
                         this.logger.LogDebug("Querying Patient Cache by HDID");
-                        retPatient = this.cacheProvider.GetItem<PatientModel>($"{PatientCacheDomain}:HDID:{identifier}");
+                        retPatient = this.cacheProvider.GetItem<PatientModelV2>($"{PatientCacheDomain}:HDID:{identifier}");
                         break;
 
                     case PatientIdentifierType.Phn:
                         this.logger.LogDebug("Querying Patient Cache by PHN");
-                        retPatient = this.cacheProvider.GetItem<PatientModel>($"{PatientCacheDomain}:PHN:{identifier}");
+                        retPatient = this.cacheProvider.GetItem<PatientModelV2>($"{PatientCacheDomain}:PHN:{identifier}");
                         break;
                 }
 
@@ -143,7 +143,7 @@ namespace HealthGateway.Patient.Services
         /// Caches the Patient model if enabled.
         /// </summary>
         /// <param name="patient">The patient to cache.</param>
-        private void CachePatient(PatientModel patient)
+        private void CachePatient(PatientModelV2 patient)
         {
             using Activity? activity = Source.StartActivity();
             string hdid = patient.HdId;

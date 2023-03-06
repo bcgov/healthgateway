@@ -18,7 +18,7 @@ namespace HealthGateway.Patient.Services
     using System.Threading.Tasks;
     using HealthGateway.Common.Constants;
     using HealthGateway.Common.Data.ViewModels;
-    using HealthGateway.Common.Models;
+    using HealthGateway.Patient.Models;
 
     /// <summary>
     /// The Patient data service.
@@ -32,6 +32,6 @@ namespace HealthGateway.Patient.Services
         /// <param name="identifierType">The type of identifier being passed in.</param>
         /// <param name="disableIdValidation">Disables the validation on HDID/PHN when true.</param>
         /// <returns>The patient model.</returns>
-        Task<ApiResult<PatientModel>> GetPatient(string identifier, PatientIdentifierType identifierType = PatientIdentifierType.Hdid, bool disableIdValidation = false);
+        Task<ApiResult<PatientModelV2>> GetPatient(string identifier, PatientIdentifierType identifierType = PatientIdentifierType.Hdid, bool disableIdValidation = false);
     }
 }

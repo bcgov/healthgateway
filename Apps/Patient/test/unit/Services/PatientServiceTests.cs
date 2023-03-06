@@ -22,8 +22,8 @@ namespace HealthGateway.PatientTests.Services
     using HealthGateway.Common.Constants;
     using HealthGateway.Common.Data.ErrorHandling;
     using HealthGateway.Common.Data.ViewModels;
-    using HealthGateway.Common.Models;
     using HealthGateway.Patient.Delegates;
+    using HealthGateway.Patient.Models;
     using HealthGateway.Patient.Services;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.Logging;
@@ -48,7 +48,7 @@ namespace HealthGateway.PatientTests.Services
             IPatientService service = GetPatientService(Phn, Hdid);
 
             // Act
-            ApiResult<PatientModel> actual = Task.Run(async () => await service.GetPatient(Hdid).ConfigureAwait(true)).Result;
+            ApiResult<PatientModelV2> actual = Task.Run(async () => await service.GetPatient(Hdid).ConfigureAwait(true)).Result;
 
             // Verify
             Assert.Equal(Hdid, actual.ResourcePayload?.HdId);
@@ -64,7 +64,7 @@ namespace HealthGateway.PatientTests.Services
             IPatientService service = GetPatientService(Phn, Hdid, true);
 
             // Act
-            ApiResult<PatientModel> actual = Task.Run(async () => await service.GetPatient(Hdid).ConfigureAwait(true)).Result;
+            ApiResult<PatientModelV2> actual = Task.Run(async () => await service.GetPatient(Hdid).ConfigureAwait(true)).Result;
 
             // Verify
             Assert.Equal(Hdid, actual.ResourcePayload?.HdId);
@@ -80,7 +80,7 @@ namespace HealthGateway.PatientTests.Services
             IPatientService service = GetPatientService(Phn, Phn, true);
 
             // Act
-            ApiResult<PatientModel> actual = Task.Run(async () => await service.GetPatient(Phn, PatientIdentifierType.Phn).ConfigureAwait(true)).Result;
+            ApiResult<PatientModelV2> actual = Task.Run(async () => await service.GetPatient(Phn, PatientIdentifierType.Phn).ConfigureAwait(true)).Result;
 
             // Verify
             Assert.Equal(Hdid, actual.ResourcePayload?.HdId);
@@ -96,7 +96,7 @@ namespace HealthGateway.PatientTests.Services
             IPatientService service = GetPatientService(Phn, Phn);
 
             // Act
-            ApiResult<PatientModel> actual = Task.Run(async () => await service.GetPatient(Phn, PatientIdentifierType.Phn).ConfigureAwait(true)).Result;
+            ApiResult<PatientModelV2> actual = Task.Run(async () => await service.GetPatient(Phn, PatientIdentifierType.Phn).ConfigureAwait(true)).Result;
 
             // Verify
             Assert.Equal(Phn, actual.ResourcePayload?.PersonalHealthNumber);
@@ -127,12 +127,15 @@ namespace HealthGateway.PatientTests.Services
 
         private static IPatientService GetPatientService(string expectedPhn, string expectedIdentifier, bool returnValidCache = false)
         {
-            ApiResult<PatientModel> requestResult = new()
+            ApiResult<PatientModelV2> requestResult = new()
             {
-                ResourcePayload = new PatientModel
+                ResourcePayload = new PatientModelV2
                 {
-                    FirstName = "John",
-                    LastName = "Doe",
+                    CommonName = new Name
+                    {
+                        GivenName = "John",
+                        Surname = "Doe",
+                    },
                     PersonalHealthNumber = expectedPhn,
                     HdId = Hdid,
                 },
@@ -152,7 +155,7 @@ namespace HealthGateway.PatientTests.Services
             Mock<ICacheProvider> cacheProviderMock = new();
             if (returnValidCache)
             {
-                cacheProviderMock.Setup(p => p.GetItem<PatientModel>(It.IsAny<string>())).Returns(requestResult.ResourcePayload);
+                cacheProviderMock.Setup(p => p.GetItem<PatientModelV2>(It.IsAny<string>())).Returns(requestResult.ResourcePayload);
             }
 
             return new PatientService(

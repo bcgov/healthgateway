@@ -26,6 +26,7 @@ namespace HealthGateway.Patient.Delegates
     using HealthGateway.Common.Data.ErrorHandling;
     using HealthGateway.Common.Data.ViewModels;
     using HealthGateway.Common.Models;
+    using HealthGateway.Patient.Models;
     using Microsoft.Extensions.Logging;
     using ServiceReference;
 
@@ -54,10 +55,10 @@ namespace HealthGateway.Patient.Delegates
         private static ActivitySource Source { get; } = new(nameof(ClientRegistriesDelegate));
 
         /// <inheritdoc/>
-        public async Task<ApiResult<PatientModel>> GetDemographicsAsync(OidType type, string identifier, bool disableIdValidation = false)
+        public async Task<ApiResult<PatientModelV2>> GetDemographicsAsync(OidType type, string identifier, bool disableIdValidation = false)
         {
             this.logger.LogDebug("Getting patient for type: {Type} and value: {Identifier} started", type, identifier);
-            ApiResult<PatientModel> apiResult = new();
+            ApiResult<PatientModelV2> apiResult = new();
             using Activity? activity = Source.StartActivity();
 
             // Create request object
@@ -195,6 +196,31 @@ namespace HealthGateway.Patient.Delegates
             return retAddress;
         }
 
+        private static Name ExtractName(PN nameSection)
+        {
+            // Extract the subject names
+            List<string> givenNameList = new();
+            List<string> lastNameList = new();
+            foreach (ENXP name in nameSection.Items)
+            {
+                if (name.GetType() == typeof(engiven) && (name.qualifier == null || !name.qualifier.Contains(cs_EntityNamePartQualifier.CL)))
+                {
+                    givenNameList.Add(name.Text[0]);
+                }
+                else if (name.GetType() == typeof(enfamily) && (name.qualifier == null || !name.qualifier.Contains(cs_EntityNamePartQualifier.CL)))
+                {
+                    lastNameList.Add(name.Text[0]);
+                }
+            }
+
+            const string delimiter = " ";
+            return new Name
+            {
+                GivenName = givenNameList.Aggregate((i, j) => i + delimiter + j),
+                Surname = lastNameList.Aggregate((i, j) => i + delimiter + j),
+            };
+        }
+
         private void CheckResponseCode(string responseCode)
         {
             if (responseCode.Contains("BCHCIM.GD.2.0018", StringComparison.InvariantCulture))
@@ -227,7 +253,7 @@ namespace HealthGateway.Patient.Delegates
             }
         }
 
-        private void ParseResponse(ApiResult<PatientModel> apiResult, HCIM_IN_GetDemographicsResponse1 reply, bool disableIdValidation)
+        private void ParseResponse(ApiResult<PatientModelV2> apiResult, HCIM_IN_GetDemographicsResponse1 reply, bool disableIdValidation)
         {
             using (Source.StartActivity())
             {
@@ -250,7 +276,7 @@ namespace HealthGateway.Patient.Delegates
                 // Initialize model
                 string? dobStr = retrievedPerson.identifiedPerson.birthTime.value; // yyyyMMdd
                 DateTime dob = DateTime.ParseExact(dobStr, "yyyyMMdd", CultureInfo.InvariantCulture);
-                PatientModel patient = new()
+                PatientModelV2 patient = new()
                 {
                     Birthdate = dob,
                     Gender = retrievedPerson.identifiedPerson.administrativeGenderCode.code switch
@@ -296,7 +322,7 @@ namespace HealthGateway.Patient.Delegates
             }
         }
 
-        private bool PopulateNames(HCIM_IN_GetDemographicsResponseIdentifiedPerson retrievedPerson, PatientModel patient)
+        private bool PopulateNames(HCIM_IN_GetDemographicsResponseIdentifiedPerson retrievedPerson, PatientModelV2 patient)
         {
             PN? documentedName = retrievedPerson.identifiedPerson.name.FirstOrDefault(x => x.use.Any(u => u == cs_EntityNameUse.C));
             PN? legalName = retrievedPerson.identifiedPerson.name.FirstOrDefault(x => x.use.Any(u => u == cs_EntityNameUse.L));
@@ -311,31 +337,20 @@ namespace HealthGateway.Patient.Delegates
                 }
             }
 
-            PN nameSection = (documentedName ?? legalName)!;
-
-            // Extract the subject names
-            List<string> givenNameList = new();
-            List<string> lastNameList = new();
-            foreach (ENXP name in nameSection.Items)
+            if (documentedName != null)
             {
-                if (name.GetType() == typeof(engiven) && (name.qualifier == null || !name.qualifier.Contains(cs_EntityNamePartQualifier.CL)))
-                {
-                    givenNameList.Add(name.Text[0]);
-                }
-                else if (name.GetType() == typeof(enfamily) && (name.qualifier == null || !name.qualifier.Contains(cs_EntityNamePartQualifier.CL)))
-                {
-                    lastNameList.Add(name.Text[0]);
-                }
+                patient.CommonName = ExtractName(documentedName);
             }
 
-            const string delimiter = " ";
-            patient.FirstName = givenNameList.Aggregate((i, j) => i + delimiter + j);
-            patient.LastName = lastNameList.Aggregate((i, j) => i + delimiter + j);
+            if (legalName != null)
+            {
+                patient.LegalName = ExtractName(legalName);
+            }
 
             return true;
         }
 
-        private bool PopulateIdentifiers(HCIM_IN_GetDemographicsResponseIdentifiedPerson retrievedPerson, PatientModel patient)
+        private bool PopulateIdentifiers(HCIM_IN_GetDemographicsResponseIdentifiedPerson retrievedPerson, PatientModelV2 patient)
         {
             II? identifiedPersonId = retrievedPerson.identifiedPerson?.id?.FirstOrDefault(x => x.root == OidType.Phn.ToString());
             if (identifiedPersonId == null)

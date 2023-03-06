@@ -151,7 +151,7 @@ export default class ProfileView extends Vue {
     }
 
     private get phn(): string {
-        return this.patientData.personalhealthnumber;
+        return this.patientData.personalHealthNumber;
     }
 
     private get isEmptyEmail(): boolean {
