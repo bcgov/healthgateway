@@ -4,6 +4,7 @@ import { Component, Prop, Ref } from "vue-property-decorator";
 import { Action, Getter } from "vuex-class";
 
 import DependentDashboardTabComponent from "@/components/dependent/tabs/DependentDashboardTabComponent.vue";
+import DependentProfileTabComponent from "@/components/dependent/tabs/DependentProfileTabComponent.vue";
 import DeleteModalComponent from "@/components/modal/DeleteModalComponent.vue";
 import type { WebClientConfiguration } from "@/models/configData";
 import { DateWrapper } from "@/models/dateWrapper";
@@ -16,6 +17,7 @@ const options: any = {
     components: {
         DeleteModalComponent,
         DependentDashboardTabComponent,
+        DependentProfileTabComponent,
     },
 };
 
@@ -119,6 +121,14 @@ export default class DependentCardComponent extends Vue {
                         v-else
                         :dependent="dependent"
                     />
+                </b-tab>
+                <b-tab
+                    no-body
+                    :disabled="isExpired"
+                    title="Profile"
+                    data-testid="profile-tab"
+                >
+                    <DependentProfileTabComponent :dependent="dependent" />
                 </b-tab>
             </b-tabs>
         </b-card>
