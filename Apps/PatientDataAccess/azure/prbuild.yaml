@@ -13,7 +13,7 @@ trigger: none
 extends:
   template: /Build/hg.yaml
   parameters:
-    Application: PatientDataAccess
+    Application: Patient
     DotNetTests: true
     NPMInstall: false
     Library: true
