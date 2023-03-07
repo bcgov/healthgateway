@@ -41,19 +41,19 @@ namespace HealthGateway.Patient.Models
         /// Gets or sets the patient's common name.
         /// </summary>
         [JsonPropertyName("commonName")]
-        public Name? CommonName { get; set; } = new();
+        public Name? CommonName { get; set; }
 
         /// <summary>
         /// Gets or sets the patient's legal name.
         /// </summary>
         [JsonPropertyName("legalName")]
-        public Name LegalName { get; set; } = null!;
+        public Name? LegalName { get; set; }
 
         /// <summary>
         /// Gets the patient's preferred name.
         /// </summary>
         [JsonPropertyName("preferredName")]
-        public Name PreferredName => this.CommonName ?? this.LegalName;
+        public Name PreferredName => this.CommonName ?? this.LegalName!;
 
         /// <summary>
         /// Gets or sets the patient's date of birth.
