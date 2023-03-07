@@ -130,10 +130,12 @@ export default class ReportsComponent extends Vue {
 
     get headerData(): ReportHeader {
         return {
-            phn: this.patientData.personalhealthnumber,
+            phn: this.patientData.personalHealthNumber,
             dateOfBirth: this.formatDate(this.patientData.birthdate || ""),
             name: this.patientData
-                ? this.patientData.firstname + " " + this.patientData.lastname
+                ? this.patientData.preferredName.givenName +
+                  " " +
+                  this.patientData.preferredName.surname
                 : "",
             isRedacted: this.reportFilter.hasMedicationsFilter(),
             datePrinted: new DateWrapper(new DateWrapper().toISO()).format(),
