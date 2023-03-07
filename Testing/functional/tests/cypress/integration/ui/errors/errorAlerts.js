@@ -349,7 +349,7 @@ function testEditSmsError(statusCode = serverErrorStatusCode) {
     );
 
     cy.get("[data-testid=editSMSBtn]").click();
-    cy.get("[data-testid=smsNumberInput]").clear().type("7781234567");
+    cy.get("[data-testid=smsNumberInput]").clear().type("2506714848");
     cy.get("[data-testid=saveSMSEditBtn]").click();
 
     if (statusCode === tooManyRequestsStatusCode) {

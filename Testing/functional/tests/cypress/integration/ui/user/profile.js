@@ -1,5 +1,5 @@
 const { AuthMethod } = require("../../../support/constants");
-const fakeSMSNumber = "2508801234";
+const fakeSMSNumber = "2506714848";
 const HDID = "P6FFO433A5WPMVTGM7T4ZVWBKCSVNAYGTWTU3J2LWMGUMERKI72A";
 
 describe("User Profile", () => {
