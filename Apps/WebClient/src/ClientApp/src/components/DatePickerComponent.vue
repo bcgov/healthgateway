@@ -21,13 +21,18 @@ library.add(faCalendar);
 export default class DatePickerComponent extends Vue {
     @Model("change", { type: String }) public model!: string;
     @Prop({ default: undefined }) state?: boolean;
+    @Prop({ default: undefined }) maxPickerDate?: Date;
     @Ref("datePicker") datePicker!: BFormDatepicker;
 
     private value = "";
     private inputValue = "";
+    private maxDate = new Date("2100-01-01");
 
     private mounted(): void {
         this.value = this.model;
+        if (this.maxPickerDate) {
+            this.maxDate = this.maxPickerDate;
+        }
     }
 
     private onFocus(): void {
@@ -126,6 +131,7 @@ export default class DatePickerComponent extends Vue {
             <b-form-datepicker
                 ref="datePicker"
                 v-model="value"
+                :max="maxDate"
                 menu-class="datepicker-style"
                 button-only
                 right
@@ -141,7 +147,7 @@ export default class DatePickerComponent extends Vue {
 
 <style lang="scss">
 @import "@/assets/scss/_variables.scss";
-// Fixes datepicker displaing under site header on mobile
+// Fixes datepicker displaying under site header on mobile
 .datepicker-style {
     z-index: $z_datepicker;
 }
