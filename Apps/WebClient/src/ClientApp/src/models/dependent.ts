@@ -50,6 +50,11 @@ export interface Dependent {
     delegateId: string;
 
     /**
+     * The total number of users that have delegated access to this dependent.
+     */
+    totalDelegateCount: number;
+
+    /**
      * Code that defines the reason for delegation.
      */
     reasonCode: number;
