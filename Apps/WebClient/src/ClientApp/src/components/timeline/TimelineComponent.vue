@@ -690,6 +690,7 @@ export default class TimelineComponent extends Vue {
                         :entry="entry"
                         :index="index"
                         :hdid="hdid"
+                        :comments-are-enabled="commentsAreEnabled"
                         data-testid="timelineCard"
                     />
                 </div>
@@ -748,7 +749,10 @@ export default class TimelineComponent extends Vue {
             <content-placeholders-text :lines="3" />
         </content-placeholders>
         <ProtectiveWordComponent :hdid="hdid" />
-        <EntryDetailsComponent :hdid="hdid" />
+        <EntryDetailsComponent
+            :hdid="hdid"
+            :comments-are-enabled="commentsAreEnabled"
+        />
     </div>
 </template>
 

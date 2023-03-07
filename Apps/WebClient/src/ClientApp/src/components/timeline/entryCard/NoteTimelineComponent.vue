@@ -34,6 +34,9 @@ export default class NoteTimelineComponent extends Vue {
     @Prop()
     isMobileDetails!: boolean;
 
+    @Prop({ default: false })
+    commentsAreEnabled!: boolean;
+
     @Action("addError", { namespace: "errorBanner" })
     addError!: (params: {
         errorType: ErrorType;
@@ -94,9 +97,9 @@ export default class NoteTimelineComponent extends Vue {
         :title="entry.title"
         :subtitle="entry.textSummary"
         :entry="entry"
-        :allow-comment="false"
         :can-show-details="canShowDetails"
         :is-mobile-details="isMobileDetails"
+        :allow-comment="false"
     >
         <b-navbar-nav slot="header-menu">
             <b-nav-item-dropdown

@@ -421,4 +421,30 @@ export class RestUserProfileService implements IUserProfileService {
                 })
         );
     }
+
+    public isPhoneNumberValid(phoneNumber: string): Promise<boolean> {
+        return new Promise<boolean>((resolve, reject) => {
+            this.http
+                .get<boolean>(
+                    `${this.baseUri}${this.USER_PROFILE_BASE_URI}/IsValidPhoneNumber/${phoneNumber}`
+                )
+                .then((result: boolean) => {
+                    this.logger.verbose(
+                        `Validate phone number format result: ${result}`
+                    );
+                    resolve(result);
+                })
+                .catch((err: HttpError) => {
+                    this.logger.error(
+                        `Error in RestUserProfileService.isPhoneNumberValid()`
+                    );
+                    reject(
+                        ErrorTranslator.internalNetworkError(
+                            err,
+                            ServiceCode.HealthGatewayUser
+                        )
+                    );
+                });
+        });
+    }
 }

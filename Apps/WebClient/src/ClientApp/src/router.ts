@@ -83,12 +83,14 @@ const ReleaseNotesView = () =>
     import(
         /* webpackChunkName: "releaseNotes" */ "@/views/ReleaseNotesView.vue"
     );
-const ContactUsView = () =>
-    import(/* webpackChunkName: "contactUs" */ "@/views/ContactUsView.vue");
-const DependentsView = () =>
-    import(/* webpackChunkName: "dependents" */ "@/views/DependentsView.vue");
-const FAQView = () =>
-    import(/* webpackChunkName: "faq" */ "@/views/FaqView.vue");
+const DependentViewSelectorComponent = () =>
+    import(
+        /* webpackChunkName: "dependents" */ "@/components/dependent/DependentViewSelectorComponent.vue"
+    );
+const DependentTimelineView = () =>
+    import(
+        /* webpackChunkName: "dependents" */ "@/views/DependentTimelineView.vue"
+    );
 const PcrTestView = () =>
     import(/* webpackChunkName: "pcrTest" */ "@/views/PcrTestView.vue");
 const QueueView = () =>
@@ -97,6 +99,8 @@ const QueueFullView = () =>
     import(
         /* webpackChunkName: "queueFull" */ "@/views/waitlist/QueueFullView.vue"
     );
+const ServicesView = () =>
+    import(/* webpackChunkName: "services" */ "@/views/ServicesView.vue");
 
 export enum UserState {
     offline = "offline",
@@ -261,11 +265,36 @@ const routes = [
     },
     {
         path: "/dependents",
-        component: DependentsView,
+        component: DependentViewSelectorComponent,
         meta: {
             validStates: [UserState.registered],
             requiredFeaturesEnabled: (config: FeatureToggleConfiguration) =>
                 config.dependents.enabled,
+            requiresProcessedWaitlistTicket: true,
+        },
+    },
+    {
+        path: "/dependents/:id",
+        redirect: "/dependents/:id/timeline",
+    },
+    {
+        path: "/dependents/:id/timeline",
+        component: DependentTimelineView,
+        props: true,
+        meta: {
+            validStates: [UserState.registered],
+            requiredFeaturesEnabled: (config: FeatureToggleConfiguration) =>
+                config.dependents.enabled && config.dependents.timelineEnabled,
+            requiresProcessedWaitlistTicket: true,
+        },
+    },
+    {
+        path: "/services",
+        component: ServicesView,
+        meta: {
+            validStates: [UserState.registered],
+            requiredFeaturesEnabled: (config: FeatureToggleConfiguration) =>
+                config.services.enabled,
             requiresProcessedWaitlistTicket: true,
         },
     },
@@ -348,34 +377,6 @@ const routes = [
     {
         path: "/release-notes",
         component: ReleaseNotesView,
-        meta: {
-            validStates: [
-                UserState.unauthenticated,
-                UserState.invalidIdentityProvider,
-                UserState.noPatientData,
-                UserState.registered,
-                UserState.pendingDeletion,
-            ],
-            requiresProcessedWaitlistTicket: false,
-        },
-    },
-    {
-        path: "/contact-us",
-        component: ContactUsView,
-        meta: {
-            validStates: [
-                UserState.unauthenticated,
-                UserState.invalidIdentityProvider,
-                UserState.noPatientData,
-                UserState.registered,
-                UserState.pendingDeletion,
-            ],
-            requiresProcessedWaitlistTicket: false,
-        },
-    },
-    {
-        path: "/faq",
-        component: FAQView,
         meta: {
             validStates: [
                 UserState.unauthenticated,

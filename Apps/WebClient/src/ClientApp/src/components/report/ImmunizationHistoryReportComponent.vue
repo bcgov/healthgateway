@@ -15,7 +15,6 @@ import ReportFilter from "@/models/reportFilter";
 import ReportHeader from "@/models/reportHeader";
 import { ReportFormatType, TemplateType } from "@/models/reportRequest";
 import RequestResult from "@/models/requestResult";
-import User from "@/models/user";
 import container from "@/plugins/container";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import { ILogger, IReportService } from "@/services/interfaces";
@@ -34,10 +33,10 @@ interface RecomendationRow {
 
 @Component
 export default class ImmunizationHistoryReportComponent extends Vue {
-    @Prop() private filter!: ReportFilter;
+    @Prop({ required: true })
+    hdid!: string;
 
-    @Getter("user", { namespace: "user" })
-    user!: User;
+    @Prop() private filter!: ReportFilter;
 
     @Getter("immunizationsAreDeferred", { namespace: "immunization" })
     immunizationsAreDeferred!: (hdid: string) => boolean;
@@ -60,8 +59,8 @@ export default class ImmunizationHistoryReportComponent extends Vue {
 
     private get isLoading(): boolean {
         return (
-            this.immunizationsAreDeferred(this.user.hdid) ||
-            this.immunizationsAreLoading(this.user.hdid)
+            this.immunizationsAreDeferred(this.hdid) ||
+            this.immunizationsAreLoading(this.hdid)
         );
     }
 
@@ -74,8 +73,8 @@ export default class ImmunizationHistoryReportComponent extends Vue {
     }
 
     private get visibleImmunizations(): ImmunizationEvent[] {
-        let records = this.patientImmunizations(this.user.hdid).filter(
-            (record) => this.filter.allowsDate(record.dateOfImmunization)
+        let records = this.patientImmunizations(this.hdid).filter((record) =>
+            this.filter.allowsDate(record.dateOfImmunization)
         );
 
         records.sort((a, b) => {
@@ -106,7 +105,7 @@ export default class ImmunizationHistoryReportComponent extends Vue {
     }
 
     private get visibleRecomendations(): Recommendation[] {
-        let records = this.patientRecommendations(this.user.hdid).filter(
+        let records = this.patientRecommendations(this.hdid).filter(
             (x) => x.recommendedVaccinations
         );
 
@@ -173,10 +172,8 @@ export default class ImmunizationHistoryReportComponent extends Vue {
 
     private created(): void {
         this.logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
-        this.logger.debug(
-            `Retrieving immunizations for Hdid: ${this.user.hdid}`
-        );
-        this.retrieveImmunizations({ hdid: this.user.hdid }).catch((err) =>
+        this.logger.debug(`Retrieving immunizations for Hdid: ${this.hdid}`);
+        this.retrieveImmunizations({ hdid: this.hdid }).catch((err) =>
             this.logger.error(`Error loading immunization data: ${err}`)
         );
     }
@@ -261,12 +258,18 @@ export default class ImmunizationHistoryReportComponent extends Vue {
 <template>
     <div>
         <section>
-            <b-row>
+            <b-row class="d-none d-md-block">
                 <b-col>
                     <h4>Immunization History</h4>
                 </b-col>
             </b-row>
-            <b-row v-if="isEmpty && !isLoading">
+            <b-row v-if="isEmpty && !isLoading" class="d-none d-md-block">
+                <b-col>No records found.</b-col>
+            </b-row>
+            <b-row
+                v-if="isRecommendationEmpty && isEmpty && !isLoading"
+                class="mt-2 d-md-none"
+            >
                 <b-col>No records found.</b-col>
             </b-row>
             <b-table
@@ -275,7 +278,8 @@ export default class ImmunizationHistoryReportComponent extends Vue {
                 :busy="isLoading"
                 :items="immunizationItems"
                 :fields="immunizationFields"
-                class="table-style"
+                data-testid="immunization-history-report-table"
+                class="table-style d-none d-md-table"
             >
                 <!-- A custom formatted header cell for field 'name' -->
                 <template #head(agents)>
@@ -303,12 +307,12 @@ export default class ImmunizationHistoryReportComponent extends Vue {
             </b-table>
             <b-row class="mt-3">
                 <b-col class="col-7">
-                    <b-row>
+                    <b-row class="d-none d-md-block">
                         <b-col>
                             <h4>Recommended Immunizations</h4>
                         </b-col>
                     </b-row>
-                    <b-row>
+                    <b-row class="d-none d-md-block">
                         <b-col>
                             <div id="disclaimer">
                                 <p>
@@ -332,7 +336,7 @@ export default class ImmunizationHistoryReportComponent extends Vue {
                     </b-row>
                     <b-row
                         v-if="isRecommendationEmpty && !isLoading"
-                        class="mt-2"
+                        class="mt-2 d-none d-md-block"
                     >
                         <b-col>No recommendations found.</b-col>
                     </b-row>
@@ -343,7 +347,8 @@ export default class ImmunizationHistoryReportComponent extends Vue {
                         :busy="isLoading"
                         :items="recomendationItems"
                         :fields="recomendationFields"
-                        class="mt-2 table-style"
+                        data-testid="recommendation-history-report-table"
+                        class="mt-2 table-style d-none d-md-table"
                     >
                         <template #table-busy>
                             <content-placeholders>

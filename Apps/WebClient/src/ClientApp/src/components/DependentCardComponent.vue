@@ -5,7 +5,6 @@ import {
     faEllipsisV,
     faInfoCircle,
 } from "@fortawesome/free-solid-svg-icons";
-import { BTab, BTabs } from "bootstrap-vue";
 import { saveAs } from "file-saver";
 import Vue from "vue";
 import { Component, Emit, Prop, Ref, Watch } from "vue-property-decorator";
@@ -78,8 +77,6 @@ interface RecommendationRow {
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const options: any = {
     components: {
-        BTabs,
-        BTab,
         LoadingComponent,
         MessageModalComponent,
         DeleteModalComponent,

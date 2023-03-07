@@ -41,6 +41,11 @@ export CYPRESS_BASE_URL=http://localhost:5002
 npx cypress open --e2e --browser chrome
 ```
 
+```Powershell
+$Env:CYPRESS_BASE_URL = "http://localhost:5002"
+npx cypress open --e2e --browser chrome
+```
+
 If you want to verify the tests against <https://dev.healthgateway.gov.bc.ca> then do not set the CYPRESS_BASE_URL environment variable.
 
 e2e: contains tests that will be run in the dev environment only.

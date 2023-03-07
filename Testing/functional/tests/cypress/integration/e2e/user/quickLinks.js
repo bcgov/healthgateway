@@ -164,6 +164,11 @@ describe("Quick Links", () => {
             .should("be.enabled")
             .click();
 
+        cy.log("Verifying submit quick link button is disabled");
+        cy.get(addQuickLinkSubmitButtonSelector)
+            .should("be.visible")
+            .should("not.be.enabled");
+
         cy.log("Verifying 1 checkbox remains");
         cy.get(addQuickLinkCheckboxSelector).should("have.length", 1);
         getQuickLinkCheckbox(laboratoryModule)

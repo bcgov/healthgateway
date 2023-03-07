@@ -11,6 +11,7 @@ export default class User {
     public verifiedSMS = false;
     public hasTermsOfServiceUpdated = false;
     public lastLoginDateTime?: StringISODateTime;
+    public lastLoginDateTimes: StringISODateTime[] = [];
     public closedDateTime?: StringISODateTime;
     public preferences: Dictionary<UserPreference> = {};
 }

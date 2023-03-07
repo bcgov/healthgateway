@@ -5,19 +5,26 @@ import Vue from "vue";
 import { Component, Emit, Prop, Watch } from "vue-property-decorator";
 import { Action, Getter } from "vuex-class";
 
+import TutorialComponent from "@/components/shared/TutorialComponent.vue";
 import UserPreferenceType from "@/constants/userPreferenceType";
 import { DateWrapper } from "@/models/dateWrapper";
 import { ResultError } from "@/models/errors";
 import User from "@/models/user";
 import type { UserComment } from "@/models/userComment";
-import { UserPreference } from "@/models/userPreference";
 import container from "@/plugins/container";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import { ILogger } from "@/services/interfaces";
 
 library.add(faArrowCircleUp, faLock);
 
-@Component
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const options: any = {
+    components: {
+        TutorialComponent,
+    },
+};
+
+@Component(options)
 export default class AddCommentComponent extends Vue {
     @Prop()
     comment!: UserComment;
@@ -40,11 +47,6 @@ export default class AddCommentComponent extends Vue {
     @Action("setSeenTutorialComment", { namespace: "user" })
     setSeenTutorialComment!: (params: { value: boolean }) => void;
 
-    @Action("setUserPreference", { namespace: "user" })
-    setUserPreference!: (params: {
-        preference: UserPreference;
-    }) => Promise<void>;
-
     @Getter("seenTutorialComment", { namespace: "user" })
     seenTutorialComment!: boolean;
 
@@ -57,12 +59,11 @@ export default class AddCommentComponent extends Vue {
     private isCommentTutorialHidden = true;
 
     private get showCommentTutorial(): boolean {
-        const preferenceType = UserPreferenceType.TutorialComment;
-        return (
-            this.visible &&
-            this.user.preferences[preferenceType]?.value === "true" &&
-            !this.isCommentTutorialHidden
-        );
+        return this.visible && !this.isCommentTutorialHidden;
+    }
+
+    private get commentTutorialPreference(): string {
+        return UserPreferenceType.TutorialComment;
     }
 
     private get privacyInfoId(): string {
@@ -132,17 +133,6 @@ export default class AddCommentComponent extends Vue {
     private onCommentAdded(comment: UserComment): UserComment {
         return comment;
     }
-
-    private dismissCommentTutorial(): void {
-        this.logger.debug("Dismissing comment tutorial");
-        this.isCommentTutorialHidden = true;
-
-        const preference = {
-            ...this.user.preferences[UserPreferenceType.TutorialComment],
-            value: "false",
-        };
-        this.setUserPreference({ preference });
-    }
 }
 </script>
 
@@ -163,26 +153,17 @@ export default class AddCommentComponent extends Vue {
         >
             Only you can see comments added to your medical records.
         </b-tooltip>
-        <b-popover
-            triggers="manual"
-            :show="showCommentTutorial"
+        <TutorialComponent
+            :preference-type="commentTutorialPreference"
             :target="privacyInfoId"
+            :show="showCommentTutorial"
             placement="topright"
-            boundary="viewport"
         >
-            <div>
-                <hg-button
-                    class="float-right text-dark p-0 ml-2"
-                    variant="icon"
-                    @click="dismissCommentTutorial()"
-                    >×</hg-button
-                >
-            </div>
             <div data-testid="comment-tutorial-popover">
                 You can add comments to help you keep track of important health
                 details. Only you can see them.
             </div>
-        </b-popover>
+        </TutorialComponent>
         <b-col class="ml-2">
             <b-input-group>
                 <b-form-textarea

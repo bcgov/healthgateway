@@ -16,15 +16,8 @@ describe("Comments Disable", () => {
             AuthMethod.KeyCloak
         );
     });
+
     it("Comments Disable", () => {
-        cy.configureSettings({
-            datasets: [
-                {
-                    name: "covid19TestResult",
-                    enabled: true,
-                },
-            ],
-        });
         cy.get("[data-testid=addCommentTextArea]").should("not.exist");
         cy.get("[data-testid=postCommentBtn]").should("not.exist");
     });

@@ -43,6 +43,9 @@ export default class ClinicalDocumentTimelineComponent extends Vue {
     @Prop()
     isMobileDetails!: boolean;
 
+    @Prop({ default: false })
+    commentsAreEnabled!: boolean;
+
     @Action("getFile", { namespace: "clinicalDocument" })
     getFile!: (params: {
         fileId: string;
@@ -109,6 +112,7 @@ export default class ClinicalDocumentTimelineComponent extends Vue {
         :subtitle="entry.documentType"
         :entry="entry"
         :is-mobile-details="isMobileDetails"
+        :allow-comment="commentsAreEnabled"
         has-attachment
     >
         <div slot="details-body">

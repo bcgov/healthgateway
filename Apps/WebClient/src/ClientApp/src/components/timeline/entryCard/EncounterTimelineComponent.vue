@@ -25,6 +25,9 @@ export default class EncounterTimelineComponent extends Vue {
     @Prop() datekey!: string;
     @Prop() isMobileDetails!: boolean;
 
+    @Prop({ default: false })
+    commentsAreEnabled!: boolean;
+
     private get entryIcon(): string | undefined {
         return entryTypeMap.get(EntryType.HealthVisit)?.icon;
     }
@@ -43,6 +46,7 @@ export default class EncounterTimelineComponent extends Vue {
         :subtitle="entry.practitionerName"
         :entry="entry"
         :is-mobile-details="isMobileDetails"
+        :allow-comment="commentsAreEnabled"
     >
         <b-row slot="details-body">
             <b-col>
@@ -71,7 +75,13 @@ export default class EncounterTimelineComponent extends Vue {
                             Information is from the billing claim and may show a
                             different practitioner or clinic from the one you
                             visited. For more information, visit the
-                            <router-link to="/faq">FAQ</router-link> page.
+                            <a
+                                href="https://www2.gov.bc.ca/gov/content?id=FE8BA7F9F1F0416CB2D24CF71C4BAF80"
+                                target="_blank"
+                                rel="noopener"
+                                >FAQ</a
+                            >
+                            page.
                         </span>
                     </b-popover>
                 </div>

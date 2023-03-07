@@ -19,3 +19,15 @@ export const monthNames = [
     "November",
     "December",
 ];
+
+export const Dataset = {
+    ClinicalDocument: "clinicalDocument",
+    Covid19TestResult: "covid19TestResult",
+    HealthVisit: "healthVisit",
+    HospitalVisit: "hospitalVisit",
+    Immunization: "immunization",
+    LabResult: "labResult",
+    Medication: "medication",
+    Note: "note",
+    SpecialAuthorityRequest: "specialAuthorityRequest",
+};

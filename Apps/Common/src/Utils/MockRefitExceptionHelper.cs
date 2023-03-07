@@ -23,7 +23,7 @@ namespace HealthGateway.Common.Utils
     /// <summary>
     /// Utility to mock exceptions.
     /// </summary>
-    public static class MockRefitException
+    public static class MockRefitExceptionHelper
     {
         /// <summary>
         /// Build the api exception that the mock will throw.
