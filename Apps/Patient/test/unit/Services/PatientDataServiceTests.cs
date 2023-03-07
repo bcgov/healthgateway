@@ -25,7 +25,7 @@ using Moq;
 using Shouldly;
 using Xunit;
 
-namespace HealthGateway.PatientTests.Controllers
+namespace HealthGateway.PatientTests.Services
 {
     public class PatientDataServiceTests
     {
@@ -68,7 +68,8 @@ namespace HealthGateway.PatientTests.Controllers
 
             var patientDataRepository = new Mock<PatientDataAccess.IPatientDataRepository>();
             patientDataRepository
-                .Setup(o => o.Query(It.Is<PatientDataAccess.HealthServicesQuery>(q => q.Pid == pid && q.Categories.Any(c => c == PatientDataAccess.HealthServiceCategory.OrganDonor))))
+                .Setup(o => o.Query(It.Is<PatientDataAccess.HealthServicesQuery>(q =>
+                    q.Pid == pid && q.Categories.Any(c => c == PatientDataAccess.HealthServiceCategory.OrganDonor))))
                 .ReturnsAsync(new PatientDataAccess.QueryResult(new[] { expected }));
             var personalAccountService = new Mock<IPersonalAccountsService>();
             personalAccountService.Setup(o => o.GetPatientAccountAsync(hdid)).ReturnsAsync(new Common.Models.PHSA.PersonalAccount

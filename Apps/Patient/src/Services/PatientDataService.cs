@@ -29,8 +29,7 @@ namespace HealthGateway.Patient.Services
         private readonly IPersonalAccountsService personalAccountsService;
 
         private async Task<Guid> ResolvePidFromHdid(string patientHdid) =>
-            (await personalAccountsService.GetPatientAccountAsync(patientHdid))?.PatientIdentity?.Pid ??
-                throw new InvalidOperationException($"No pid found for patient with hdid {patientHdid}");
+            (await personalAccountsService.GetPatientAccountAsync(patientHdid)).PatientIdentity.Pid;
 
         public PatientDataService(IPatientDataRepository patientDataRepository, IPersonalAccountsService personalAccountsService)
         {
@@ -38,7 +37,7 @@ namespace HealthGateway.Patient.Services
             this.personalAccountsService = personalAccountsService;
         }
 
-        public async Task<PatientDataResponse> Query(PatientDataQuery query, CancellationToken cacnellationToken)
+        public async Task<PatientDataResponse> Query(PatientDataQuery query, CancellationToken cancellationToken)
         {
             var pid = await ResolvePidFromHdid(query.Hdid);
             var results = await patientDataRepository.Query(new HealthServicesQuery(pid, query.PatientDataTypes.Select(MapToHealthServiceCategory)));

@@ -36,7 +36,7 @@ namespace HealthGateway.PatientDataAccess
     /// <summary>
     /// Abstract query record
     /// </summary>
-    public abstract record PatientDataQuery();
+    public abstract record PatientDataQuery;
 
     /// <summary>
     /// Query parameters for health services
@@ -62,12 +62,12 @@ namespace HealthGateway.PatientDataAccess
     /// <summary>
     /// abstract record for health data
     /// </summary>
-    public abstract record HealthData();
+    public abstract record HealthData;
 
     /// <summary>
     /// abstract class for health service data
     /// </summary>
-    public abstract record HealthServiceData() : HealthData;
+    public abstract record HealthServiceData : HealthData;
 
     /// <summary>
     /// BC Transplant organ donor service data

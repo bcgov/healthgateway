@@ -27,10 +27,7 @@ namespace PatientDataAccessTests
 
         private IPatientDataRepository CreateSut(IPatientApi api)
         {
-            var mapper = new MapperConfiguration(cfg =>
-            {
-                cfg.AddMaps(typeof(Mappings));
-            }).CreateMapper();
+            var mapper = new MapperConfiguration(cfg => { cfg.AddMaps(typeof(Mappings)); }).CreateMapper();
 
             return new PatientDataRepository(api, mapper);
         }
@@ -38,7 +35,7 @@ namespace PatientDataAccessTests
         [Fact]
         public async Task CanGetPatientData()
         {
-            var api = new Mock<IPatientApi>();
+            var patientApi = new Mock<IPatientApi>();
             var phsaOrganDonorResponse = new OrganDonor
             {
                 DonorStatus = DonorStatus.Registered,
@@ -47,10 +44,10 @@ namespace PatientDataAccessTests
                 HealthOptionsId = "optid"
             };
 
-            api.Setup(api => api.GetHealthOptionsAsync(pid, It.IsAny<string[]>(), It.IsAny<CancellationToken>()))
+            patientApi.Setup(api => api.GetHealthOptionsAsync(pid, It.IsAny<string[]>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(new HealthOptionsResult(new HealthOptionMetadata(), new[] { phsaOrganDonorResponse }));
 
-            var sut = CreateSut(api.Object);
+            var sut = CreateSut(patientApi.Object);
 
             var result = await sut.Query(new HealthServicesQuery(pid, new[] { HealthServiceCategory.OrganDonor }));
 

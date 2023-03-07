@@ -32,10 +32,10 @@ namespace HealthGateway.PatientDataAccess.Phsa
 
     internal record HealthOptionsResult(HealthOptionMetadata Metadata, IEnumerable<HealthOptionData> Data);
 
-    internal record HealthOptionMetadata();
+    internal record HealthOptionMetadata;
 
     [JsonConverter(typeof(HealthOptionDataJsonConverter))]
-    internal abstract record HealthOptionData();
+    internal abstract record HealthOptionData;
 
     internal record OrganDonor : HealthOptionData
     {

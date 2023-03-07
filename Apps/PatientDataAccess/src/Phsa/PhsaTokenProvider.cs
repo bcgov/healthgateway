@@ -33,7 +33,7 @@ namespace HealthGateway.PatientDataAccess.Phsa
         private readonly IDistributedCache cache;
         private readonly PhsaClientConfiguration config;
 
-        private string? UserId => httpContextAccessor.HttpContext!.User?.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        private string? UserId => httpContextAccessor.HttpContext!.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
         private async Task<string?> GetUserAccessToken() => await httpContextAccessor.HttpContext!.GetTokenAsync("access_token");
 
@@ -73,6 +73,7 @@ namespace HealthGateway.PatientDataAccess.Phsa
                 phsaToken = await tokenApi.SwapTokenAsync(content, ct);
                 await cache.SetAsync(cacheKey, phsaToken, TimeSpan.FromMinutes(phsaToken.ExpiresIn), ct);
             }
+
             return phsaToken.AccessToken;
         }
 

@@ -44,7 +44,7 @@ namespace HealthGateway.Common.Utils
         /// Resolves a type for deserialization by the desciminator value
         /// </summary>
         /// <param name="discriminatorValue">The disovered discriminator value</param>
-        /// <returns>Type to use for deserialization</returns>
+        /// <returns>Type to use for deserialization, null if type not found</returns>
         protected virtual Type? ResolveType(string discriminatorValue) => Type.GetType(discriminatorValue);
 
         /// <summary>
@@ -52,7 +52,7 @@ namespace HealthGateway.Common.Utils
         /// </summary>
         /// <param name="value">The serialized value</param>
         /// <returns>The discriminator value</returns>
-        protected virtual string ResolveDisciminatorValue(T value) => value!.GetType().AssemblyQualifiedName!;
+        protected virtual string ResolveDiscriminatorValue(T value) => value!.GetType().AssemblyQualifiedName!;
 
         /// <inheritdoc/>
         public override T Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
@@ -73,9 +73,10 @@ namespace HealthGateway.Common.Utils
                     }
                 }
             }
+
             if (actualType == null) throw new JsonException($"serialized json doesn't have a {Discriminator} property");
             return (T)(JsonSerializer.Deserialize(ref reader, actualType, options)
-                ?? throw new JsonException($"failed to deserizlize type {actualType.Name}"));
+                       ?? throw new JsonException($"failed to deserizlize type {actualType.Name}"));
         }
 
         /// <inheritdoc/>
@@ -83,7 +84,7 @@ namespace HealthGateway.Common.Utils
         {
             if (value == null) return;
             var serializedValue = JsonSerializer.SerializeToNode(value, value.GetType(), options)!.AsObject();
-            serializedValue.Add(Discriminator, ResolveDisciminatorValue(value));
+            serializedValue.Add(Discriminator, ResolveDiscriminatorValue(value));
             serializedValue.WriteTo(writer, options);
         }
     }

@@ -92,6 +92,6 @@ namespace HealthGateway.GatewayApi.Services
         }
 
         private async Task<Guid?> GetPersonalAccountPidByHdid(string hdid) =>
-            (await this.personalAccountsService.GetPatientAccountAsync(hdid).ConfigureAwait(true)).PatientIdentity?.Pid;
+            (await this.personalAccountsService.GetPatientAccountAsync(hdid).ConfigureAwait(true)).PatientIdentity.Pid;
     }
 }

@@ -33,9 +33,9 @@ namespace HealthGateway.Patient.Services
         /// Query data services
         /// </summary>
         /// <param name="query">The query message</param>
-        /// <param name="cacnellationToken">The cancellation token</param>
+        /// <param name="cancellationToken">The cancellation token</param>
         /// <returns>The Response message</returns>
-        Task<PatientDataResponse> Query(PatientDataQuery query, CancellationToken cacnellationToken);
+        Task<PatientDataResponse> Query(PatientDataQuery query, CancellationToken cancellationToken);
     }
 
     /// <summary>
@@ -115,14 +115,14 @@ namespace HealthGateway.Patient.Services
 
     internal class PatientDataJsonConverter : PolymorphicJsonConverter<PatientData>
     {
-        protected override string ResolveDisciminatorValue(PatientData value) => value.Type;
+        protected override string ResolveDiscriminatorValue(PatientData value) => value.Type;
 
         protected override Type? ResolveType(string discriminatorValue) =>
             discriminatorValue switch
             {
                 nameof(OrganDonorRegistrationData) => typeof(OrganDonorRegistrationData),
 
-                _ => throw new NotImplementedException($"No PatientData type found for {discriminatorValue}")
+                _ => null
             };
     }
 }
