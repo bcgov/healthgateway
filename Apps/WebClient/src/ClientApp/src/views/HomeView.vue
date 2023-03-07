@@ -31,6 +31,7 @@ import {
     getEntryTypeByModule,
 } from "@/constants/entryType";
 import { ErrorSourceType, ErrorType } from "@/constants/errorType";
+import { ServiceName } from "@/constants/serviceName";
 import UserPreferenceType from "@/constants/userPreferenceType";
 import type { WebClientConfiguration } from "@/models/configData";
 import CovidVaccineRecord from "@/models/covidVaccineRecord";
@@ -239,13 +240,10 @@ export default class HomeView extends Vue {
 
     private get showOrganDonorButton(): boolean {
         const showPreference = !this.preferenceOrganDonorHidden;
-        const servicesConfig = ConfigUtil.getFeatureConfiguration().services;
-        const servicesEnabled = servicesConfig && servicesConfig.enabled;
-        const donorFeatureEnabled =
-            servicesConfig &&
-            servicesConfig.organDonor &&
-            servicesConfig.enabled;
-        return servicesEnabled && donorFeatureEnabled && showPreference;
+        const servicesEnabled = ConfigUtil.isServiceEnabled(
+            ServiceName.OrganDonorRegistration
+        );
+        return servicesEnabled && showPreference;
     }
 
     private get showImmunizationRecordButton(): boolean {
@@ -364,7 +362,7 @@ export default class HomeView extends Vue {
     }
 
     private handleClickOrganDonorCard(): void {
-        this.trackClickLink("organ_donor_card");
+        this.trackClickLink("organ_donor_registration");
         this.$router.push({ path: "/services" });
     }
 
@@ -603,7 +601,7 @@ export default class HomeView extends Vue {
             <b-col v-if="showOrganDonorButton" class="p-3">
                 <hg-card-button
                     title="Organ Donor Registration"
-                    data-testid="bc-vaccine-card-card"
+                    data-testid="organ-donor-registration-card"
                     @click="handleClickOrganDonorCard()"
                 >
                     <template #icon>

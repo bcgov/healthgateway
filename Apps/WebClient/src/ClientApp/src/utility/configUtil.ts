@@ -1,4 +1,5 @@
 import { EntryType } from "@/constants/entryType";
+import { ServiceName } from "@/constants/serviceName";
 import {
     FeatureToggleConfiguration,
     WebClientConfiguration,
@@ -30,6 +31,18 @@ export default abstract class ConfigUtil {
                 (ds) => ds.name.toLowerCase() === datasetName.toLowerCase()
             )?.enabled === true
         );
+    }
+
+    public static isServiceEnabled(serviceName: ServiceName) {
+        const config = ConfigUtil.getFeatureConfiguration();
+        if (config.services && config.services.enabled) {
+            return config.services.services.some(
+                (service) =>
+                    service.name.toLowerCase() === serviceName.toLowerCase() &&
+                    service.enabled
+            );
+        }
+        return false;
     }
 
     public static isDependentDatasetEnabled(datasetName: EntryType): boolean {

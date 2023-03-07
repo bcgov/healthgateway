@@ -113,18 +113,20 @@ export interface ProofOfVaccinationSettings {
     exportPdf: boolean;
 }
 
-export interface OrganDonorSettings {
-    enabled: boolean;
-}
-
 export interface DependentsSettings {
     enabled: boolean;
     timelineEnabled: boolean;
     datasets: DatasetSettings[];
 }
+
 export interface ServicesSettings {
     enabled: boolean;
-    organDonor: OrganDonorSettings;
+    services: ServiceSettings[];
+}
+
+export interface ServiceSettings {
+    name: string;
+    enabled: string;
 }
 
 // Various timeout values used by the VUE WebClient application.
