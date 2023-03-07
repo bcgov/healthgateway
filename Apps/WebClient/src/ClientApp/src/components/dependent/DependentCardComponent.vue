@@ -94,6 +94,7 @@ export default class DependentCardComponent extends Vue {
                     </b-row>
                 </template>
                 <b-tab
+                    :button-id="`dashboard-tab-button-${dependent.ownerId}`"
                     no-body
                     active
                     title="Dashboard"
@@ -123,6 +124,7 @@ export default class DependentCardComponent extends Vue {
                     />
                 </b-tab>
                 <b-tab
+                    :button-id="`profile-tab-button-${dependent.ownerId}`"
                     no-body
                     :disabled="isExpired"
                     title="Profile"
