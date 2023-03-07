@@ -121,3 +121,6 @@ dotnet_diagnostic.S1066.severity = suggestion
 
 # SA1623: Property summary documentation should match accessors
 dotnet_diagnostic.SA1623.severity = suggestion
+
+# CS8604: Possible null reference argument.
+dotnet_diagnostic.CS8604.severity = suggestion
