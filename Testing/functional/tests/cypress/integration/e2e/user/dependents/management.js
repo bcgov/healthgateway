@@ -217,7 +217,8 @@ describe("dependents - dashboard", () => {
         cy.get("[data-testid=cancelRegistrationBtn]").click();
     });
 
-    it("Validate adding, viewing, and removing dependents", () => {
+    // test should be skipped until the similar test for the old dependent page is removed
+    it.skip("Validate adding, viewing, and removing dependents", () => {
         cy.log("Adding dependent");
 
         cy.get("[data-testid=addNewDependentBtn]").click();
