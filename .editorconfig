@@ -111,3 +111,9 @@ dotnet_diagnostic.SA1623.severity = suggestion
 
 # CS8604: Possible null reference argument.
 dotnet_diagnostic.CS8604.severity = suggestion
+
+# CA1303: Do not pass literals as localized parameters
+dotnet_diagnostic.CA1303.severity = suggestion
+
+# S101: Types should be named in PascalCase
+dotnet_diagnostic.S101.severity = suggestion
