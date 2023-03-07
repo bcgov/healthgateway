@@ -215,8 +215,14 @@ export default class HomeView extends Vue {
     }
 
     private get preferenceVaccineCardHidden(): boolean {
-        const preferenceName = UserPreferenceType.HideVaccineCardQuickLink;
-        const preference = this.user.preferences[preferenceName];
+        const preference =
+            this.user.preferences[UserPreferenceType.HideVaccineCardQuickLink];
+        return preference?.value === "true";
+    }
+
+    private get preferenceOrganDonorHidden(): boolean {
+        const preference =
+            this.user.preferences[UserPreferenceType.HideOrganDonorQuickLink];
         return preference?.value === "true";
     }
 
@@ -229,6 +235,17 @@ export default class HomeView extends Vue {
 
     private get showVaccineCardButton(): boolean {
         return !this.preferenceVaccineCardHidden;
+    }
+
+    private get showOrganDonorButton(): boolean {
+        const showPreference = !this.preferenceOrganDonorHidden;
+        const servicesConfig = ConfigUtil.getFeatureConfiguration().services;
+        const servicesEnabled = servicesConfig && servicesConfig.enabled;
+        const donorFeatureEnabled =
+            servicesConfig &&
+            servicesConfig.organDonor &&
+            servicesConfig.enabled;
+        return servicesEnabled && donorFeatureEnabled && showPreference;
     }
 
     private get showImmunizationRecordButton(): boolean {
@@ -346,6 +363,11 @@ export default class HomeView extends Vue {
         this.$router.push({ path: "/covid19" });
     }
 
+    private handleClickOrganDonorCard(): void {
+        this.trackClickLink("organ_donor_card");
+        this.$router.push({ path: "/services" });
+    }
+
     private handleClickImmunizationRecord(): void {
         this.trackClickLink("immunization_record");
         window.open(
@@ -365,6 +387,14 @@ export default class HomeView extends Vue {
         this.logger.debug("Removing vaccine card quick link");
         this.setPreferenceValue(
             UserPreferenceType.HideVaccineCardQuickLink,
+            "true"
+        );
+    }
+
+    private handleClickRemoveOrganDonorQuickLink(): void {
+        this.logger.debug("Removing organ donor card quick link");
+        this.setPreferenceValue(
+            UserPreferenceType.HideOrganDonorQuickLink,
             "true"
         );
     }
@@ -567,6 +597,53 @@ export default class HomeView extends Vue {
                     <div>
                         Download and print your Federal Proof of Vaccination for
                         domestic and international travel.
+                    </div>
+                </hg-card-button>
+            </b-col>
+            <b-col v-if="showOrganDonorButton" class="p-3">
+                <hg-card-button
+                    title="BC Vaccine Card"
+                    data-testid="bc-vaccine-card-card"
+                    @click="handleClickOrganDonorCard()"
+                >
+                    <template #icon>
+                        <img
+                            class="organ-donor-registry-logo align-self-center"
+                            src="@/assets/images/services/odr-logo.svg"
+                            alt="Organ Donor Registry Logo"
+                        />
+                    </template>
+                    <template #menu>
+                        <b-nav align="right">
+                            <b-nav-item-dropdown
+                                right
+                                text=""
+                                :no-caret="true"
+                                menu-class="quick-link-menu"
+                                toggle-class="quick-link-menu-button"
+                            >
+                                <template slot="button-content">
+                                    <hg-icon
+                                        icon="ellipsis-v"
+                                        size="medium"
+                                        data-testid="quick-link-menu-button"
+                                    />
+                                </template>
+                                <b-dropdown-item
+                                    data-testid="remove-quick-link-button"
+                                    @click.stop="
+                                        handleClickRemoveOrganDonorQuickLink()
+                                    "
+                                >
+                                    Remove
+                                </b-dropdown-item>
+                            </b-nav-item-dropdown>
+                        </b-nav>
+                    </template>
+                    <div>
+                        BC Transplant oversees all aspects of organ donation and
+                        transplant across BC and manages the BC Organ Donor
+                        Registry.
                     </div>
                 </hg-card-button>
             </b-col>

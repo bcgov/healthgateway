@@ -117,7 +117,16 @@ namespace HealthGateway.WebClient.Server.Models
     /// Settings for the services feature.
     /// </summary>
     /// <param name="Enabled">Toggles services feature.</param>
-    public record ServicesSettings(bool Enabled);
+    /// <param name="OrganDonor">Contains the settings for the organ donor service feature.</param>
+    public record ServicesSettings(
+        bool Enabled,
+        OrganDonorSettings OrganDonor);
+
+    /// <summary>
+    /// Settings for organ donor service feature.
+    /// </summary>
+    /// <param name="Enabled">Toggles organ donor services feature.</param>
+    public record OrganDonorSettings(bool Enabled);
 
 #pragma warning restore CA1819
 }
