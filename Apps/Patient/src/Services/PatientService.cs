@@ -37,7 +37,7 @@ namespace HealthGateway.Patient.Services
         /// <summary>
         /// The generic cache domain to store patients against.
         /// </summary>
-        private const string PatientCacheDomain = "Patient";
+        private const string PatientCacheDomain = "PatientV2";
 
         private readonly ICacheProvider cacheProvider;
         private readonly int cacheTtl;
