@@ -335,6 +335,9 @@ function testEditSmsError(statusCode = serverErrorStatusCode) {
     cy.intercept("GET", "**/UserProfile/*", {
         fixture: "UserProfileService/userProfile.json",
     });
+    cy.intercept("GET", "**/UserProfile/IsValidPhoneNumber/*", {
+        body: true,
+    });
     cy.intercept("PUT", "**/UserProfile/*/sms", {
         statusCode,
     });
@@ -361,6 +364,9 @@ function testEditSmsError(statusCode = serverErrorStatusCode) {
 
 function testVerifySmsError(statusCode = serverErrorStatusCode) {
     cy.configureSettings({});
+    cy.intercept("GET", "**/UserProfile/IsValidPhoneNumber/*", {
+        body: true,
+    });
     cy.intercept("GET", "**/UserProfile/*/sms/validate/*", {
         statusCode,
     });
@@ -392,6 +398,9 @@ function testVerifySmsError(statusCode = serverErrorStatusCode) {
 
 function testEditEmailError(statusCode = serverErrorStatusCode) {
     cy.configureSettings({});
+    cy.intercept("GET", "**/UserProfile/IsValidPhoneNumber/*", {
+        body: true,
+    });
     cy.intercept("PUT", "**/UserProfile/*/email", {
         statusCode,
     });
