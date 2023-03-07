@@ -278,6 +278,7 @@ export default class ImmunizationHistoryReportComponent extends Vue {
                 :busy="isLoading"
                 :items="immunizationItems"
                 :fields="immunizationFields"
+                data-testid="immunization-history-report-table"
                 class="table-style d-none d-md-table"
             >
                 <!-- A custom formatted header cell for field 'name' -->
@@ -346,6 +347,7 @@ export default class ImmunizationHistoryReportComponent extends Vue {
                         :busy="isLoading"
                         :items="recomendationItems"
                         :fields="recomendationFields"
+                        data-testid="recommendation-history-report-table"
                         class="mt-2 table-style d-none d-md-table"
                     >
                         <template #table-busy>

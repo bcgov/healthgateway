@@ -160,6 +160,7 @@ export default class MSPVisitsReportComponent extends Vue {
                     :busy="isLoading"
                     :items="items"
                     :fields="fields"
+                    data-testid="msp-visits-report-table"
                     class="table-style d-none d-md-table"
                 >
                     <template #table-busy>
