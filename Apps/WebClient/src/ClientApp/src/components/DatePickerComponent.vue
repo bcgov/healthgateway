@@ -21,18 +21,14 @@ library.add(faCalendar);
 export default class DatePickerComponent extends Vue {
     @Model("change", { type: String }) public model!: string;
     @Prop({ default: undefined }) state?: boolean;
-    @Prop({ default: undefined }) maxPickerDate?: Date;
+    @Prop({ default: new DateWrapper("2100-01-01") }) maxDate!: DateWrapper;
     @Ref("datePicker") datePicker!: BFormDatepicker;
 
     private value = "";
     private inputValue = "";
-    private maxDate = new Date("2100-01-01");
 
     private mounted(): void {
         this.value = this.model;
-        if (this.maxPickerDate) {
-            this.maxDate = this.maxPickerDate;
-        }
     }
 
     private onFocus(): void {
@@ -101,9 +97,7 @@ export default class DatePickerComponent extends Vue {
                     ),
                 maxValue: (value: string) =>
                     !value ||
-                    DateWrapper.fromStringFormat(value).isBefore(
-                        new DateWrapper("2100-01-01")
-                    ),
+                    DateWrapper.fromStringFormat(value).isBefore(this.maxDate),
             },
         };
     }
@@ -131,7 +125,7 @@ export default class DatePickerComponent extends Vue {
             <b-form-datepicker
                 ref="datePicker"
                 v-model="value"
-                :max="maxDate"
+                :max="maxDate.toJSDate()"
                 menu-class="datepicker-style"
                 button-only
                 right

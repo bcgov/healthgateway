@@ -55,7 +55,7 @@ export default class NewDependentComponent extends Vue {
         PHN: "",
     };
     private accepted = false;
-    private maxDate = new Date();
+    private maxDate = new DateWrapper();
 
     private validations(): unknown {
         return {
@@ -236,7 +236,7 @@ export default class NewDependentComponent extends Vue {
                                         id="dateOfBirth"
                                         v-model="dependent.dateOfBirth"
                                         data-testid="dateOfBirthInput"
-                                        :max-picker-date="maxDate"
+                                        :max-date="maxDate"
                                         :state="
                                             isValid($v.dependent.dateOfBirth)
                                         "
@@ -252,21 +252,25 @@ export default class NewDependentComponent extends Vue {
                                     />
                                     <b-form-invalid-feedback
                                         :state="
+                                            !$v.dependent.dateOfBirth.$dirty ||
+                                            ($v.dependent.dateOfBirth
+                                                .required &&
+                                                $v.dependent.dateOfBirth
+                                                    .minLength &&
+                                                $v.dependent.dateOfBirth
+                                                    .maxValue)
+                                        "
+                                    >
+                                        Invalid date
+                                    </b-form-invalid-feedback>
+                                    <b-form-invalid-feedback
+                                        :state="
+                                            !$v.dependent.dateOfBirth.$dirty ||
                                             $v.dependent.dateOfBirth.minValue
                                         "
                                     >
                                         Dependent must be under the age of
                                         {{ webClientConfig.maxDependentAge }}
-                                    </b-form-invalid-feedback>
-                                    <b-form-invalid-feedback
-                                        :state="
-                                            $v.dependent.dateOfBirth.$dirty
-                                                ? $v.dependent.dateOfBirth
-                                                      .maxValue
-                                                : undefined
-                                        "
-                                    >
-                                        Invalid date
                                     </b-form-invalid-feedback>
                                 </b-col>
                             </b-row>
