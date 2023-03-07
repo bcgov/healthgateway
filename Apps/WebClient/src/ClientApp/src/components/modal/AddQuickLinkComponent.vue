@@ -6,6 +6,7 @@ import { Action, Getter } from "vuex-class";
 import TooManyRequestsComponent from "@/components/TooManyRequestsComponent.vue";
 import { entryTypeMap, getEntryTypeByModule } from "@/constants/entryType";
 import { ErrorSourceType, ErrorType } from "@/constants/errorType";
+import { ServiceName } from "@/constants/serviceName";
 import UserPreferenceType from "@/constants/userPreferenceType";
 import { BannerError, isTooManyRequestsError } from "@/models/errors";
 import { QuickLink } from "@/models/quickLink";
@@ -97,12 +98,12 @@ export default class AddQuickLinkComponent extends Vue {
     }
 
     private get showOrganDonorCard(): boolean {
-        const servicesConfig = ConfigUtil.getFeatureConfiguration().services;
-        const servicesEnabled = servicesConfig?.enabled ?? false;
-        const donorEnabled = servicesConfig?.organDonor?.enabled ?? false;
+        const servicesEnabled = ConfigUtil.isServiceEnabled(
+            ServiceName.OrganDonorRegistration
+        );
         const preference =
             this.user.preferences[UserPreferenceType.HideOrganDonorQuickLink];
-        return servicesEnabled && donorEnabled && preference?.value === "true";
+        return servicesEnabled && preference?.value === "true";
     }
 
     private get showImmunizationRecord(): boolean {
@@ -313,7 +314,7 @@ export default class AddQuickLinkComponent extends Vue {
                         id="organ-donor-card-filter"
                         :key="checkboxComponentKey"
                         v-model="selectedQuickLinks"
-                        data-testid="bc-organ-donor-card-filter"
+                        data-testid="organ-donor-registration-card-filter"
                         name="organ-donor-card-filter"
                         value="organ-donor-card"
                     >
