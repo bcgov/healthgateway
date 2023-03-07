@@ -38,11 +38,11 @@ export default class ReleaseNotesView extends Vue {
         >
             <ul>
                 <li>
-                    We moved the FAQ page to another site. You will
-                    find the new support guide linked in the footer of the website.
+                    We moved the FAQ page to another site. You will find the new
+                    support guide linked in the footer of the website.
                 </li>
-            </ul>
-        </release-note><release-note
+            </ul> </release-note
+        ><release-note
             date="February 16, 2023"
             version="v2023.2.16"
             title="Notification Centre"
@@ -50,9 +50,9 @@ export default class ReleaseNotesView extends Vue {
             <ul>
                 <li>
                     We added a notification centre where you will get notified
-                    about changes to the application. In the future, the notification
-                    centre will have alerts on health records and other services
-                    that you have opted in to.
+                    about changes to the application. In the future, the
+                    notification centre will have alerts on health records and
+                    other services that you have opted in to.
                 </li>
             </ul>
         </release-note>
