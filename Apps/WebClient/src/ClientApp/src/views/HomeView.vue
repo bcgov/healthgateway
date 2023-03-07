@@ -602,7 +602,7 @@ export default class HomeView extends Vue {
             </b-col>
             <b-col v-if="showOrganDonorButton" class="p-3">
                 <hg-card-button
-                    title="BC Vaccine Card"
+                    title="Organ Donor Registration"
                     data-testid="bc-vaccine-card-card"
                     @click="handleClickOrganDonorCard()"
                 >
