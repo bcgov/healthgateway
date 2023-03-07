@@ -32,6 +32,31 @@ export default class ReleaseNotesView extends Vue {
         <BreadcrumbComponent :items="breadcrumbItems" />
         <page-title title="Health Gateway Release Notes" />
         <release-note
+            date="March 7, 2023"
+            version="v2023.3.07"
+            title="Hospital Visits"
+        >
+            <ul>
+                <li>
+                    We moved the FAQ page to another site. You will
+                    find the new support guide linked in the footer of the website.
+                </li>
+            </ul>
+        </release-note><release-note
+            date="February 16, 2023"
+            version="v2023.2.16"
+            title="Notification Centre"
+        >
+            <ul>
+                <li>
+                    We added a notification centre where you will get notified
+                    about changes to the application. In the future, the notification
+                    centre will have alerts on health records and other services
+                    that you have opted in to.
+                </li>
+            </ul>
+        </release-note>
+        <release-note
             date="January 18, 2023"
             version="v2023.1.18"
             title="Hospital Visits"
