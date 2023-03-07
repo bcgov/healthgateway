@@ -16,11 +16,14 @@
 namespace HealthGateway.Patient
 {
     using System.Diagnostics.CodeAnalysis;
+    using System.Text.Json.Serialization;
     using System.Threading.Tasks;
     using HealthGateway.Common.AspNetConfiguration;
     using HealthGateway.Common.AspNetConfiguration.Modules;
     using HealthGateway.Patient.Delegates;
     using HealthGateway.Patient.Services;
+    using HealthGateway.PatientDataAccess;
+    using HealthGateway.PatientDataAccess.Phsa;
     using Microsoft.AspNetCore.Builder;
     using Microsoft.AspNetCore.Hosting;
     using Microsoft.Extensions.Configuration;
@@ -54,13 +57,21 @@ namespace HealthGateway.Patient
             Auth.ConfigureAuthServicesForJwtBearer(services, logger, configuration, environment);
             Auth.ConfigureAuthorizationServices(services, logger, configuration);
             SwaggerDoc.ConfigureSwaggerServices(services, configuration);
-            Patient.ConfigurePatientAccess(services, logger, configuration);
 
-            // POC V2 Patient Access
+            Patient.ConfigurePatientAccess(services, logger, configuration);
+            PersonalAccount.ConfigurePersonalAccountAccess(services, logger, configuration);
+
             services.AddTransient<IClientRegistriesDelegate, ClientRegistriesDelegate>();
             services.AddTransient<IPatientService, PatientService>();
+            services.AddTransient<IPatientDataService, PatientDataService>();
+
+            services.AddPatientDataAccess(new PatientDataAccessConfiguration(configuration.GetSection("PhsaV2").Get<PhsaClientConfiguration>()!));
 
             Utility.ConfigureTracing(services, logger, configuration);
+            services.AddControllers().AddJsonOptions(opts =>
+            {
+                opts.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
+            });
 
             ExceptionHandling.ConfigureProblemDetails(services, environment);
 

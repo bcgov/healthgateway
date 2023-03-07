@@ -1,23 +1,28 @@
-<?xml version="1.0" encoding="utf-8"?>
 <Project Sdk="Microsoft.NET.Sdk.Web">
-  <PropertyGroup>
-    <AspNetCoreHostingModel>InProcess</AspNetCoreHostingModel>
-    <RootNamespace>HealthGateway.Patient</RootNamespace>
-    <DocumentationFile>bin\$(Configuration)\$(TargetFramework)\$(MSBuildThisFileName).xml</DocumentationFile>
-    <UserSecretsId>84e2fe9a-a1f5-4de7-bef6-4518a33fa8b9</UserSecretsId>
-  </PropertyGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\..\Common\src\Common.csproj" />
-  </ItemGroup>
-  <ItemGroup>
-    <SonarQubeSetting Include="sonar.stylecop.projectFilePath">
-      <Value>$(MSBuildProjectFullPath)/src</Value>
-    </SonarQubeSetting>
-  </ItemGroup>
-  <ItemGroup>
-    <AdditionalFiles Include="..\..\stylecop.json" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Remove="wwwroot\dist\vendor-manifest.json" />
-  </ItemGroup>
+    <PropertyGroup>
+        <RootNamespace>HealthGateway.Patient</RootNamespace>
+        <DocumentationFile>bin\$(Configuration)\$(TargetFramework)\$(MSBuildThisFileName).xml</DocumentationFile>
+        <UserSecretsId>84e2fe9a-a1f5-4de7-bef6-4518a33fa8b9</UserSecretsId>
+        <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\..\Common\src\Common.csproj" />
+        <ProjectReference Include="..\..\PatientDataAccess\src\PatientDataAccess.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <SonarQubeSetting Include="sonar.stylecop.projectFilePath">
+            <Value>$(MSBuildProjectFullPath)/src</Value>
+        </SonarQubeSetting>
+    </ItemGroup>
+
+    <ItemGroup>
+        <AdditionalFiles Include="..\..\stylecop.json" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <InternalsVisibleTo Include="PatientTests" />
+    </ItemGroup>
+
 </Project>

@@ -42,5 +42,16 @@ namespace HealthGateway.Common.Data.ErrorHandling
                 Instance = $"{typeName}.{memberName}",
             };
         }
+
+        /// <summary>
+        /// Creates a problem details descibing a validation error with 400 bad request status
+        /// </summary>
+        /// <param name="memberName">The invalid member name</param>
+        /// <param name="details">The details of the validation error</param>
+        /// <returns>ProblemDetail instance with validation type and 400 http error</returns>
+        public static ProblemDetails CreateValidationError(string memberName, string details)
+        {
+            return CreateProblemDetails(details, HttpStatusCode.BadGateway, "Validation", memberName);
+        }
     }
 }
