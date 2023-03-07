@@ -9,4 +9,5 @@ export default abstract class UserPreferenceType {
     public static HideVaccineCardQuickLink = "hideVaccineCardQuickLink";
     public static HideImmunizationRecordQuickLink =
         "hideImmunizationRecordQuickLink";
+    public static HideOrganDonorQuickLink = "hideOrganDonorQuickLink";
 }

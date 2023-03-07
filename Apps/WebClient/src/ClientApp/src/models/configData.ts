@@ -74,7 +74,6 @@ export interface FeatureToggleConfiguration {
     datasets: DatasetSettings[];
     covid19: Covid19Settings;
     dependents: DependentsSettings;
-
     services: ServicesSettings;
 }
 
@@ -114,6 +113,10 @@ export interface ProofOfVaccinationSettings {
     exportPdf: boolean;
 }
 
+export interface OrganDonorSettings {
+    enabled: boolean;
+}
+
 export interface DependentsSettings {
     enabled: boolean;
     timelineEnabled: boolean;
@@ -121,6 +124,7 @@ export interface DependentsSettings {
 }
 export interface ServicesSettings {
     enabled: boolean;
+    organDonor: OrganDonorSettings;
 }
 
 // Various timeout values used by the VUE WebClient application.

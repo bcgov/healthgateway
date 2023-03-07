@@ -86,6 +86,9 @@
         ]
     },
     "services": {
-        "enabled": true
+        "enabled": true,
+        "organDonor": {
+            "enabled": false
+        }
     }
 }

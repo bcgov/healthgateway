@@ -96,6 +96,15 @@ export default class AddQuickLinkComponent extends Vue {
         return preference?.value === "true";
     }
 
+    private get showOrganDonorCard(): boolean {
+        const servicesConfig = ConfigUtil.getFeatureConfiguration().services;
+        const servicesEnabled = servicesConfig?.enabled ?? false;
+        const donorEnabled = servicesConfig?.organDonor?.enabled ?? false;
+        const preference =
+            this.user.preferences[UserPreferenceType.HideOrganDonorQuickLink];
+        return servicesEnabled && donorEnabled && preference?.value === "true";
+    }
+
     private get showImmunizationRecord(): boolean {
         const preference =
             this.user.preferences[
@@ -162,6 +171,24 @@ export default class AddQuickLinkComponent extends Vue {
             const promises = [
                 this.updateQuickLinks({ hdid: this.user.hdid, quickLinks }),
             ];
+
+            if (this.selectedQuickLinks.includes("organ-donor-card")) {
+                const preference = {
+                    ...this.user.preferences[
+                        UserPreferenceType.HideOrganDonorQuickLink
+                    ],
+                    value: "false",
+                };
+
+                promises.push(
+                    this.setUserPreference({ preference }).then(() => {
+                        this.selectedQuickLinks =
+                            this.selectedQuickLinks.filter(
+                                (link) => link !== "organ-donor-card"
+                            );
+                    })
+                );
+            }
 
             if (this.selectedQuickLinks.includes("bc-vaccine-card")) {
                 const preference = {
@@ -277,6 +304,20 @@ export default class AddQuickLinkComponent extends Vue {
                         :value="quickLink.module"
                     >
                         {{ quickLink.name }}
+                    </b-form-checkbox>
+                </b-col>
+            </b-row>
+            <b-row v-if="showOrganDonorCard">
+                <b-col cols="8" align-self="start">
+                    <b-form-checkbox
+                        id="organ-donor-card-filter"
+                        :key="checkboxComponentKey"
+                        v-model="selectedQuickLinks"
+                        data-testid="bc-organ-donor-card-filter"
+                        name="organ-donor-card-filter"
+                        value="organ-donor-card"
+                    >
+                        Organ Donor Card
                     </b-form-checkbox>
                 </b-col>
             </b-row>
