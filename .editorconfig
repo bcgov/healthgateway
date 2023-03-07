@@ -16,19 +16,6 @@ indent_size = 2
 
 [*.{cs,razor,cshtml}]
 
-# All Rules are enabled with default severity.
-# Rules with IsEnabledByDefault = false are force-enabled with default severity.
-
-# S101: Types should be named in PascalCase
-dotnet_diagnostic.s101.severity = none
-
-
-
-# Microsoft .NET properties
-
-# ReSharper inspection severities
-
-
 # SA1629: Documentation text should end with a period
 dotnet_diagnostic.SA1629.severity = none
 
