@@ -202,6 +202,7 @@ export default class MedicationRequestReportComponent extends Vue {
                 :busy="isLoading"
                 :items="items"
                 :fields="fields"
+                data-testid="medication-request-report-table"
                 class="table-style d-none d-md-table"
             >
                 <template #table-busy>

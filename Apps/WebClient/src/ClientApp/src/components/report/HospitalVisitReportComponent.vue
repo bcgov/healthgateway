@@ -165,6 +165,7 @@ export default class HospitalVisitReportComponent extends Vue {
                     :busy="isLoading"
                     :items="items"
                     :fields="fields"
+                    data-testid="hospital-visit-report-table"
                     class="table-style d-none d-md-table"
                 >
                     <template #table-busy>
