@@ -14,11 +14,10 @@
 //  limitations under the License.
 // -------------------------------------------------------------------------
 
+using AutoMapper;
+
 namespace HealthGateway.PatientDataAccess
 {
-    using AutoMapper;
-    using HealthGateway.PatientDataAccess.Phsa;
-
     internal class Mappings : Profile
     {
         public Mappings()

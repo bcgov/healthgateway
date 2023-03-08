@@ -14,9 +14,12 @@
 //  limitations under the License.
 // -------------------------------------------------------------------------
 
+using System;
+using HealthGateway.Common.Utils.Phsa;
+using Refit;
+
 namespace HealthGateway.PatientDataAccess
 {
-    using HealthGateway.PatientDataAccess.Phsa;
     using Microsoft.Extensions.DependencyInjection;
 
     /// <summary>
@@ -32,9 +35,11 @@ namespace HealthGateway.PatientDataAccess
         /// <returns>DI service collection</returns>
         public static IServiceCollection AddPatientDataAccess(this IServiceCollection services, PatientDataAccessConfiguration configuration)
         {
-            services.AddPhsaClient(configuration.PhsaClientConfiguration);
             services.AddAutoMapper(typeof(Mappings));
             services.AddTransient<IPatientDataRepository, PatientDataRepository>();
+            services.AddRefitClient<IPatientApi>()
+                .ConfigureHttpClient(c => c.BaseAddress = configuration.PhsaApiBaseUrl)
+                .AddHttpMessageHandler<AuthHeaderHandler>();
 
             return services;
         }
@@ -43,5 +48,5 @@ namespace HealthGateway.PatientDataAccess
     /// <summary>
     /// Configuration settings for PatientDataAccess
     /// </summary>
-    public record PatientDataAccessConfiguration(PhsaClientConfiguration PhsaClientConfiguration);
+    public record PatientDataAccessConfiguration(Uri PhsaApiBaseUrl);
 }

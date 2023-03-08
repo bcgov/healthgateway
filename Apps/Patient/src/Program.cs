@@ -13,23 +13,24 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //-------------------------------------------------------------------------
+
+using System;
+using System.Diagnostics.CodeAnalysis;
+using System.Text.Json.Serialization;
+using System.Threading.Tasks;
+using HealthGateway.Common.AspNetConfiguration;
+using HealthGateway.Common.AspNetConfiguration.Modules;
+using HealthGateway.Patient.Delegates;
+using HealthGateway.Patient.Services;
+using HealthGateway.PatientDataAccess;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
+
 namespace HealthGateway.Patient
 {
-    using System.Diagnostics.CodeAnalysis;
-    using System.Text.Json.Serialization;
-    using System.Threading.Tasks;
-    using HealthGateway.Common.AspNetConfiguration;
-    using HealthGateway.Common.AspNetConfiguration.Modules;
-    using HealthGateway.Patient.Delegates;
-    using HealthGateway.Patient.Services;
-    using HealthGateway.PatientDataAccess;
-    using HealthGateway.PatientDataAccess.Phsa;
-    using Microsoft.AspNetCore.Builder;
-    using Microsoft.AspNetCore.Hosting;
-    using Microsoft.Extensions.Configuration;
-    using Microsoft.Extensions.DependencyInjection;
-    using Microsoft.Extensions.Logging;
-
     /// <summary>
     /// The entry point for the project.
     /// </summary>
@@ -58,20 +59,18 @@ namespace HealthGateway.Patient
             Auth.ConfigureAuthorizationServices(services, logger, configuration);
             SwaggerDoc.ConfigureSwaggerServices(services, configuration);
 
-            Patient.ConfigurePatientAccess(services, logger, configuration);
+            Common.AspNetConfiguration.Modules.Patient.ConfigurePatientAccess(services, logger, configuration);
             PersonalAccount.ConfigurePersonalAccountAccess(services, logger, configuration);
 
             services.AddTransient<IClientRegistriesDelegate, ClientRegistriesDelegate>();
             services.AddTransient<IPatientService, PatientService>();
             services.AddTransient<IPatientDataService, PatientDataService>();
 
-            services.AddPatientDataAccess(new PatientDataAccessConfiguration(configuration.GetSection("PhsaV2").Get<PhsaClientConfiguration>()!));
+            PhsaV2.ConfigurePhsaV2Access(services, logger, configuration);
+            services.AddPatientDataAccess(new PatientDataAccessConfiguration(configuration.GetSection("PhsaV2:BaseUrl").Get<Uri>()!));
 
             Utility.ConfigureTracing(services, logger, configuration);
-            services.AddControllers().AddJsonOptions(opts =>
-            {
-                opts.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
-            });
+            services.AddControllers().AddJsonOptions(opts => { opts.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter()); });
 
             ExceptionHandling.ConfigureProblemDetails(services, environment);
 

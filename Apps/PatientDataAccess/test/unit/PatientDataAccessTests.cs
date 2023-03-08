@@ -16,7 +16,6 @@
 
 using AutoMapper;
 using HealthGateway.PatientDataAccess;
-using HealthGateway.PatientDataAccess.Phsa;
 using Moq;
 
 namespace PatientDataAccessTests
@@ -25,7 +24,7 @@ namespace PatientDataAccessTests
     {
         private readonly Guid pid = Guid.NewGuid();
 
-        private IPatientDataRepository CreateSut(IPatientApi api)
+        private static IPatientDataRepository CreateSut(IPatientApi api)
         {
             var mapper = new MapperConfiguration(cfg => { cfg.AddMaps(typeof(Mappings)); }).CreateMapper();
 

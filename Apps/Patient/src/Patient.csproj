@@ -12,12 +12,6 @@
     </ItemGroup>
 
     <ItemGroup>
-        <SonarQubeSetting Include="sonar.stylecop.projectFilePath">
-            <Value>$(MSBuildProjectFullPath)/src</Value>
-        </SonarQubeSetting>
-    </ItemGroup>
-
-    <ItemGroup>
         <AdditionalFiles Include="..\..\stylecop.json" />
     </ItemGroup>
 

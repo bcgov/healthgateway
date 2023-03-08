@@ -14,16 +14,16 @@
 //  limitations under the License.
 // -------------------------------------------------------------------------
 
-namespace HealthGateway.PatientDataAccess.Phsa
-{
-    using System;
-    using System.Collections.Generic;
-    using System.Text.Json.Serialization;
-    using System.Threading;
-    using System.Threading.Tasks;
-    using HealthGateway.Common.Utils;
-    using Refit;
+using System;
+using System.Collections.Generic;
+using System.Text.Json.Serialization;
+using System.Threading;
+using System.Threading.Tasks;
+using HealthGateway.Common.Utils;
+using Refit;
 
+namespace HealthGateway.PatientDataAccess
+{
     internal interface IPatientApi
     {
         [Get("/patient/{pid}/health-options")]
@@ -40,8 +40,11 @@ namespace HealthGateway.PatientDataAccess.Phsa
     internal record OrganDonor : HealthOptionData
     {
         public string? HealthOptionsId { get; set; }
+
         public DonorStatus DonorStatus { get; set; }
+
         public string? StatusMessage { get; set; }
+
         public string? HealthDataFileId { get; set; }
     }
 

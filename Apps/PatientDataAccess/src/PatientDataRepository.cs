@@ -1,4 +1,4 @@
-﻿// -------------------------------------------------------------------------
+// -------------------------------------------------------------------------
 //  Copyright © 2019 Province of British Columbia
 //
 //  Licensed under the Apache License, Version 2.0 (the "License");
@@ -14,15 +14,14 @@
 //  limitations under the License.
 // -------------------------------------------------------------------------
 
+using System;
+using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
+using AutoMapper;
+
 namespace HealthGateway.PatientDataAccess
 {
-    using System;
-    using System.Linq;
-    using System.Threading;
-    using System.Threading.Tasks;
-    using AutoMapper;
-    using HealthGateway.PatientDataAccess.Phsa;
-
     internal class PatientDataRepository : IPatientDataRepository
     {
         private readonly IPatientApi patientApi;
@@ -55,10 +54,11 @@ namespace HealthGateway.PatientDataAccess
 
         private HealthData Map(HealthOptionData healthOptionData) => mapper.Map<HealthData>(healthOptionData);
 
-        private string Map(HealthServiceCategory category) =>
+        private static string Map(HealthServiceCategory category) =>
             category switch
             {
                 HealthServiceCategory.OrganDonor => "BcTransplantOrganDonor",
+
                 _ => throw new NotImplementedException($"{category}"),
             };
     }
