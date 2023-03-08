@@ -18,7 +18,7 @@
         <PackageReference Include="Microsoft.AspNetCore.SpaServices" Version="3.1.32" />
         <PackageReference Include="Microsoft.AspNetCore.SpaServices.Extensions" Version="7.0.3" />
         <PackageReference Include="Microsoft.Extensions.Caching.StackExchangeRedis" Version="7.0.3" />
-        <PackageReference Include="Microsoft.OpenApi" Version="1.6.2" />
+        <PackageReference Include="Microsoft.OpenApi" Version="1.6.3" />
         <PackageReference Include="Npgsql.OpenTelemetry" Version="7.0.2" />
         <PackageReference Include="Refit" Version="6.3.2" />
         <PackageReference Include="Refit.HttpClientFactory" Version="6.3.2" />
