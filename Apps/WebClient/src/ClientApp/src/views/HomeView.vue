@@ -299,7 +299,8 @@ export default class HomeView extends Vue {
                     ) === undefined
             ).length === 0 &&
             !this.preferenceImmunizationRecordHidden &&
-            !this.preferenceVaccineCardHidden
+            !this.preferenceVaccineCardHidden &&
+            !this.preferenceOrganDonorHidden
         );
     }
 

@@ -173,7 +173,7 @@ export default class AddQuickLinkComponent extends Vue {
                 this.updateQuickLinks({ hdid: this.user.hdid, quickLinks }),
             ];
 
-            if (this.selectedQuickLinks.includes("organ-donor-card")) {
+            if (this.selectedQuickLinks.includes("organ-donor-registration")) {
                 const preference = {
                     ...this.user.preferences[
                         UserPreferenceType.HideOrganDonorQuickLink
@@ -185,7 +185,7 @@ export default class AddQuickLinkComponent extends Vue {
                     this.setUserPreference({ preference }).then(() => {
                         this.selectedQuickLinks =
                             this.selectedQuickLinks.filter(
-                                (link) => link !== "organ-donor-card"
+                                (link) => link !== "organ-donor-registration"
                             );
                     })
                 );
@@ -311,12 +311,12 @@ export default class AddQuickLinkComponent extends Vue {
             <b-row v-if="showOrganDonorCard">
                 <b-col cols="8" align-self="start">
                     <b-form-checkbox
-                        id="organ-donor-card-filter"
+                        id="organ-donor-registration-filter"
                         :key="checkboxComponentKey"
                         v-model="selectedQuickLinks"
-                        data-testid="organ-donor-registration-card-filter"
-                        name="organ-donor-card-filter"
-                        value="organ-donor-card"
+                        data-testid="organ-donor-registration-filter"
+                        name="organ-donor-registration-filter"
+                        value="organ-donor-registration"
                     >
                         Organ Donor Card
                     </b-form-checkbox>
