@@ -19,10 +19,17 @@ library.add(faCalendar);
 
 @Component
 export default class DatePickerComponent extends Vue {
-    @Model("change", { type: String }) public model!: string;
-    @Prop({ default: undefined }) state?: boolean;
-    @Prop({ default: new DateWrapper("2100-01-01") }) maxDate!: DateWrapper;
-    @Ref("datePicker") datePicker!: BFormDatepicker;
+    @Model("change", { type: String })
+    public model!: string;
+
+    @Prop({ default: undefined })
+    state?: boolean;
+
+    @Prop({ default: () => new DateWrapper("2100-01-01") })
+    maxDate!: DateWrapper;
+
+    @Ref("datePicker")
+    datePicker!: BFormDatepicker;
 
     private value = "";
     private inputValue = "";
