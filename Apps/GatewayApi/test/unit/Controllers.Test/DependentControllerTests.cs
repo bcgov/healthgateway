@@ -18,6 +18,7 @@ namespace HealthGateway.GatewayApiTests.Controllers.Test
     using System;
     using System.Collections.Generic;
     using System.Security.Claims;
+    using System.Threading.Tasks;
     using DeepEqual.Syntax;
     using HealthGateway.Common.Data.Constants;
     using HealthGateway.Common.Data.ViewModels;
@@ -44,39 +45,41 @@ namespace HealthGateway.GatewayApiTests.Controllers.Test
         private readonly string lastname = "DependentName";
 
         /// <summary>
-        /// GetDependents - Happy path scenario.
+        /// GetDependentsAsync - Happy path scenario.
         /// </summary>
+        /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
         [Fact]
-        public void ShouldGetDependents()
+        public async Task ShouldGetDependents()
         {
             Mock<IHttpContextAccessor> httpContextAccessorMock = CreateValidHttpContext(this.token, this.userId, this.hdid);
             Mock<IDependentService> dependentServiceMock = new();
-            IEnumerable<DependentModel> expectedDependends = GetMockDependends();
+            IEnumerable<DependentModel> expectedDependents = GetMockDependents();
             RequestResult<IEnumerable<DependentModel>> expectedResult = new()
             {
-                ResourcePayload = expectedDependends,
+                ResourcePayload = expectedDependents,
                 ResultStatus = ResultType.Success,
             };
-            dependentServiceMock.Setup(s => s.GetDependents(this.hdid, 0, 500)).Returns(expectedResult);
+            dependentServiceMock.Setup(s => s.GetDependentsAsync(this.hdid, 0, 500)).ReturnsAsync(expectedResult);
 
             DependentController dependentController = new(
                 new Mock<ILogger<DependentController>>().Object,
                 dependentServiceMock.Object,
                 httpContextAccessorMock.Object);
-            RequestResult<IEnumerable<DependentModel>> actualResult = dependentController.GetAll(this.hdid);
+            RequestResult<IEnumerable<DependentModel>> actualResult = await dependentController.GetAll(this.hdid).ConfigureAwait(true);
 
             expectedResult.ShouldDeepEqual(actualResult);
         }
 
         /// <summary>
-        /// AddDependent - Happy path scenario.
+        /// AddDependentAsync - Happy path scenario.
         /// </summary>
+        /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
         [Fact]
-        public void ShouldAddDependent()
+        public async Task ShouldAddDependent()
         {
             Mock<IHttpContextAccessor> httpContextAccessorMock = CreateValidHttpContext(this.token, this.userId, this.hdid);
             Mock<IDependentService> dependentServiceMock = new();
-            DependentModel expectedDependend = new()
+            DependentModel expectedDependent = new()
             {
                 OwnerId = "OWNER",
                 DelegateId = "DELEGATER",
@@ -91,16 +94,16 @@ namespace HealthGateway.GatewayApiTests.Controllers.Test
             };
             RequestResult<DependentModel> expectedResult = new()
             {
-                ResourcePayload = expectedDependend,
+                ResourcePayload = expectedDependent,
                 ResultStatus = ResultType.Success,
             };
-            dependentServiceMock.Setup(s => s.AddDependent(this.hdid, It.IsAny<AddDependentRequest>())).Returns(expectedResult);
+            dependentServiceMock.Setup(s => s.AddDependentAsync(this.hdid, It.IsAny<AddDependentRequest>())).ReturnsAsync(expectedResult);
 
             DependentController dependentController = new(
                 new Mock<ILogger<DependentController>>().Object,
                 dependentServiceMock.Object,
                 httpContextAccessorMock.Object);
-            RequestResult<DependentModel> actualResult = dependentController.AddDependent(new AddDependentRequest());
+            RequestResult<DependentModel> actualResult = await dependentController.AddDependent(new AddDependentRequest()).ConfigureAwait(true);
 
             expectedResult.ShouldDeepEqual(actualResult);
         }
@@ -165,7 +168,7 @@ namespace HealthGateway.GatewayApiTests.Controllers.Test
             Assert.IsType<BadRequestResult>(actualResult.Result);
         }
 
-        private static IEnumerable<DependentModel> GetMockDependends()
+        private static IEnumerable<DependentModel> GetMockDependents()
         {
             List<DependentModel> dependentModels = new();
 

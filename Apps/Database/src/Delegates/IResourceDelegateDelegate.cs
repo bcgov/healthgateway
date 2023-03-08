@@ -66,6 +66,13 @@ namespace HealthGateway.Database.Delegates
         IDictionary<DateTime, int> GetDailyDependentCount(TimeSpan offset);
 
         /// <summary>
+        /// Gets the total number of delegates associated with each specified dependent from the database.
+        /// </summary>
+        /// <param name="dependentHdids">The HDIDs corresponding to the dependents whose total delegate counts should be retrieved.</param>
+        /// <returns>A dictionary that associates dependent HDIDs with their total number of delegates, wrapped in a DBResult.</returns>
+        Task<DbResult<Dictionary<string, int>>> GetTotalDelegateCountsAsync(IEnumerable<string> dependentHdids);
+
+        /// <summary>
         /// Deletes a Resource Delegate record in the database.
         /// </summary>
         /// <param name="resourceDelegate">The model to be deleted.</param>
