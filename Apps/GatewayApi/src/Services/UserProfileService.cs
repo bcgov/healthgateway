@@ -21,6 +21,7 @@ namespace HealthGateway.GatewayApi.Services
     using System.Linq;
     using System.Threading.Tasks;
     using AutoMapper;
+    using FluentValidation.Results;
     using HealthGateway.Common.AccessManagement.Authentication;
     using HealthGateway.Common.Constants;
     using HealthGateway.Common.Data.Constants;
@@ -39,6 +40,7 @@ namespace HealthGateway.GatewayApi.Services
     using HealthGateway.GatewayApi.Constants;
     using HealthGateway.GatewayApi.MapUtils;
     using HealthGateway.GatewayApi.Models;
+    using HealthGateway.GatewayApi.Validations;
     using Microsoft.AspNetCore.Http;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.Logging;
@@ -212,19 +214,13 @@ namespace HealthGateway.GatewayApi.Services
                 return RequestResultFactory.Error<UserProfileModel>(ErrorType.InvalidState, "Registration is closed");
             }
 
-            // Validate registration age
-            string hdid = createProfileRequest.Profile.HdId;
-            RequestResult<bool> isMinimumAgeResult = await this.ValidateMinimumAge(hdid).ConfigureAwait(true);
-            if (isMinimumAgeResult.ResultStatus != ResultType.Success)
+            RequestResult<UserProfileModel>? validationResult = await this.ValidateUserProfile(createProfileRequest).ConfigureAwait(true);
+            if (validationResult != null)
             {
-                return RequestResultFactory.Error<UserProfileModel>(isMinimumAgeResult.ResultError);
+                return validationResult;
             }
 
-            if (!isMinimumAgeResult.ResourcePayload)
-            {
-                this.logger.LogWarning("Patient under minimum age... {Hdid}", createProfileRequest.Profile.HdId);
-                return RequestResultFactory.Error<UserProfileModel>(ErrorType.InvalidState, "Patient under minimum age");
-            }
+            string hdid = createProfileRequest.Profile.HdId;
 
             RequestResult<PatientModel> patientResult = await this.patientService.GetPatient(hdid).ConfigureAwait(true);
             DateTime? birthDate = patientResult.ResourcePayload?.Birthdate;
@@ -452,6 +448,12 @@ namespace HealthGateway.GatewayApi.Services
             return RequestResultFactory.Success(UserProfileMapUtils.CreateFromDbModel(profileResult.Payload, termsOfServiceResult.ResourcePayload?.Id, this.autoMapper));
         }
 
+        /// <inheritdoc/>
+        public bool IsPhoneNumberValid(string phoneNumber)
+        {
+            return UserProfileValidator.ValidateUserProfileSmsNumber(phoneNumber);
+        }
+
         private void QueueEmail(string toEmail, string templateName)
         {
             string activationHost = this.httpContextAccessor.HttpContext!.Request
@@ -462,6 +464,33 @@ namespace HealthGateway.GatewayApi.Services
 
             Dictionary<string, string> keyValues = new() { [EmailTemplateVariable.Host] = hostUrl };
             this.emailQueueService.QueueNewEmail(toEmail, templateName, keyValues);
+        }
+
+        private async Task<RequestResult<UserProfileModel>?> ValidateUserProfile(CreateUserRequest createProfileRequest)
+        {
+            // Validate registration age
+            string hdid = createProfileRequest.Profile.HdId;
+            RequestResult<bool> isMinimumAgeResult = await this.ValidateMinimumAge(hdid).ConfigureAwait(true);
+            if (isMinimumAgeResult.ResultStatus != ResultType.Success)
+            {
+                return RequestResultFactory.Error<UserProfileModel>(isMinimumAgeResult.ResultError);
+            }
+
+            if (!isMinimumAgeResult.ResourcePayload)
+            {
+                this.logger.LogWarning("Patient under minimum age... {Hdid}", createProfileRequest.Profile.HdId);
+                return RequestResultFactory.Error<UserProfileModel>(ErrorType.InvalidState, "Patient under minimum age");
+            }
+
+            // Validate UserProfile inputs
+            ValidationResult profileValidationResult = new UserProfileValidator().Validate(createProfileRequest.Profile);
+            if (!profileValidationResult.IsValid)
+            {
+                this.logger.LogWarning("Profile inputs have failed validation for {Hdid}", createProfileRequest.Profile.HdId);
+                return RequestResultFactory.Error<UserProfileModel>(ErrorType.SmsInvalid, "Profile values entered are invalid");
+            }
+
+            return null;
         }
     }
 }

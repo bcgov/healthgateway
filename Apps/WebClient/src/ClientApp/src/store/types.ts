@@ -6,6 +6,7 @@ import { AuthModule } from "./modules/auth/types";
 import { ClinicalDocumentModule } from "./modules/clinicalDocument/types";
 import { CommentModule } from "./modules/comment/types";
 import { ConfigModule } from "./modules/config/types";
+import { DependentModule } from "./modules/dependent/types";
 import { EncounterModule } from "./modules/encounter/types";
 import { ErrorBannerModule } from "./modules/error/types";
 import { IdleModule } from "./modules/idle/types";
@@ -49,6 +50,7 @@ export interface GatewayStoreOptions extends StoreOptions<RootState> {
         auth: AuthModule;
         config: ConfigModule;
         user: UserModule;
+        dependent: DependentModule;
         medication: MedicationModule;
         laboratory: LaboratoryModule;
         comment: CommentModule;

@@ -23,8 +23,11 @@ export default class MedicationRequestTimelineComponent extends Vue {
     @Prop() datekey!: string;
     @Prop() isMobileDetails!: boolean;
 
+    @Prop({ default: false })
+    commentsAreEnabled!: boolean;
+
     private get entryIcon(): string | undefined {
-        return entryTypeMap.get(EntryType.MedicationRequest)?.icon;
+        return entryTypeMap.get(EntryType.SpecialAuthorityRequest)?.icon;
     }
 
     private formatDate(dateValue: string): string {
@@ -41,6 +44,7 @@ export default class MedicationRequestTimelineComponent extends Vue {
         :subtitle="'Status: ' + entry.requestStatus"
         :entry="entry"
         :is-mobile-details="isMobileDetails"
+        :allow-comment="commentsAreEnabled"
     >
         <b-row slot="details-body" class="justify-content-between">
             <b-col>

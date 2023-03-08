@@ -2,22 +2,12 @@ const { AuthMethod } = require("../../../support/constants");
 
 describe("Communication", () => {
     beforeEach(() => {
-        cy.enableModules([""]);
+        cy.configureSettings({});
     });
 
     it("Landing Banner", () => {
         cy.logout();
         cy.visit("/");
-        cy.get("[data-testid=communicationBanner]")
-            .should("exist")
-            .contains("Test Banner");
-
-        cy.visit("/faq");
-        cy.get("[data-testid=communicationBanner]")
-            .should("exist")
-            .contains("Test Banner");
-
-        cy.visit("/contact-us");
         cy.get("[data-testid=communicationBanner]")
             .should("exist")
             .contains("Test Banner");

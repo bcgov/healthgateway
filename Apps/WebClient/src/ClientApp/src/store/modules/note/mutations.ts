@@ -6,7 +6,7 @@ import UserNote from "@/models/userNote";
 import { NoteMutations, NoteState } from "./types";
 
 export const mutations: NoteMutations = {
-    setRequested(state: NoteState) {
+    setNotesRequested(state: NoteState) {
         state.status = LoadStatus.REQUESTED;
     },
     setNotes(state: NoteState, notes: UserNote[]) {
@@ -39,7 +39,7 @@ export const mutations: NoteMutations = {
             state.notes.splice(noteIndex, 1);
         }
     },
-    noteError(state: NoteState, error: Error) {
+    setNotesError(state: NoteState, error: Error) {
         state.statusMessage = error.message;
         state.status = LoadStatus.ERROR;
     },

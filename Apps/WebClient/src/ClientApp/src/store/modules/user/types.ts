@@ -7,7 +7,7 @@ import {
 } from "vuex";
 
 import { ErrorType } from "@/constants/errorType";
-import { DateWrapper } from "@/models/dateWrapper";
+import { DateWrapper, StringISODateTime } from "@/models/dateWrapper";
 import { ResultError } from "@/models/errors";
 import PatientData from "@/models/patientData";
 import { QuickLink } from "@/models/quickLink";
@@ -32,6 +32,7 @@ export interface UserState {
 
 export interface UserGetters extends GetterTree<UserState, RootState> {
     user(state: UserState): User;
+    lastLoginDateTime(state: UserState): StringISODateTime | undefined;
     oidcUserInfo(state: UserState): OidcUserInfo | undefined;
     isValidIdentityProvider(state: UserState): boolean;
     userIsRegistered(state: UserState): boolean;

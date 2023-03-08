@@ -2,7 +2,14 @@ const { AuthMethod } = require("../../../support/constants");
 
 describe("Notes", () => {
     beforeEach(() => {
-        cy.enableModules("Note");
+        cy.configureSettings({
+            datasets: [
+                {
+                    name: "note",
+                    enabled: true,
+                },
+            ],
+        });
         cy.login(
             Cypress.env("keycloak.username"),
             Cypress.env("keycloak.password"),

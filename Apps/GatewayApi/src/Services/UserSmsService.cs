@@ -17,14 +17,17 @@ namespace HealthGateway.GatewayApi.Services
 {
     using System;
     using System.Globalization;
+    using System.Net;
     using System.Security.Cryptography;
     using System.Text.RegularExpressions;
     using HealthGateway.Common.Data.Constants;
+    using HealthGateway.Common.Data.ErrorHandling;
     using HealthGateway.Common.Data.Models;
     using HealthGateway.Common.Data.ViewModels;
     using HealthGateway.Common.Models;
     using HealthGateway.Common.Services;
     using HealthGateway.Database.Delegates;
+    using HealthGateway.GatewayApi.Validations;
     using Microsoft.Extensions.Logging;
 
     /// <inheritdoc/>
@@ -118,6 +121,16 @@ namespace HealthGateway.GatewayApi.Services
         {
             this.logger.LogTrace("Removing user sms number {Hdid}", hdid);
             string sanitizedSms = this.SanitizeSms(sms);
+            if (!UserProfileValidator.ValidateUserProfileSmsNumber(sanitizedSms))
+            {
+                this.logger.LogWarning("Proposed sms number is not valid {SmsNumber}", sanitizedSms);
+                throw new ProblemDetailsException(
+                    ExceptionUtility.CreateProblemDetails(
+                        $"Proposed sms number is not valid {sanitizedSms}",
+                        HttpStatusCode.BadRequest,
+                        nameof(UserSmsService)));
+            }
+
             UserProfile userProfile = this.profileDelegate.GetUserProfile(hdid).Payload;
             userProfile.SmsNumber = null;
             this.profileDelegate.Update(userProfile);

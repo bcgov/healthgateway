@@ -2,7 +2,14 @@ const { AuthMethod } = require("../../../support/constants");
 
 describe("MSP Visits", () => {
     beforeEach(() => {
-        cy.enableModules("Encounter");
+        cy.configureSettings({
+            datasets: [
+                {
+                    name: "healthVisit",
+                    enabled: true,
+                },
+            ],
+        });
         cy.login(
             Cypress.env("keycloak.username"),
             Cypress.env("keycloak.password"),
@@ -12,7 +19,7 @@ describe("MSP Visits", () => {
     });
 
     it("Validate Encounter Card Details", () => {
-        cy.get("[data-testid=encounterTitle]").should("be.visible");
+        cy.get("[data-testid=healthvisitTitle]").should("be.visible");
         cy.get("[data-testid=entryCardDetailsTitle").first().click();
         cy.get("[data-testid=encounterClinicLabel").should("be.visible");
         cy.get("[data-testid=encounterClinicName").should("be.visible");
@@ -21,7 +28,14 @@ describe("MSP Visits", () => {
 
 describe("Hospital Visits", () => {
     beforeEach(() => {
-        cy.enableModules("HospitalVisit");
+        cy.configureSettings({
+            datasets: [
+                {
+                    name: "hospitalVisit",
+                    enabled: true,
+                },
+            ],
+        });
         cy.login(
             Cypress.env("keycloak.username"),
             Cypress.env("keycloak.password"),

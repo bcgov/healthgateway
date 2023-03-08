@@ -4,14 +4,13 @@ import { Component, Emit, Prop, Watch } from "vue-property-decorator";
 import { Action, Getter } from "vuex-class";
 
 import { DateWrapper } from "@/models/dateWrapper";
-import MedicationRequest from "@/models/MedicationRequest";
+import MedicationRequest from "@/models/medicationRequest";
 import Report from "@/models/report";
 import ReportField from "@/models/reportField";
 import ReportFilter from "@/models/reportFilter";
 import ReportHeader from "@/models/reportHeader";
 import { ReportFormatType, TemplateType } from "@/models/reportRequest";
 import RequestResult from "@/models/requestResult";
-import User from "@/models/user";
 import container from "@/plugins/container";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import { ILogger, IReportService } from "@/services/interfaces";
@@ -28,31 +27,38 @@ interface MedicationRequestRow {
 
 @Component
 export default class MedicationRequestReportComponent extends Vue {
-    @Prop() private filter!: ReportFilter;
+    @Prop({ required: true })
+    hdid!: string;
 
-    @Getter("user", { namespace: "user" })
-    private user!: User;
+    @Prop()
+    filter!: ReportFilter;
 
-    @Action("retrieveMedicationRequests", { namespace: "medication" })
-    private retrieve!: (params: { hdid: string }) => Promise<void>;
+    @Action("retrieveSpecialAuthorityRequests", { namespace: "medication" })
+    retrieveSpecialAuthorityRequests!: (params: {
+        hdid: string;
+    }) => Promise<void>;
 
-    @Getter("isMedicationRequestLoading", { namespace: "medication" })
-    isLoading!: boolean;
+    @Getter("specialAuthorityRequestsAreLoading", { namespace: "medication" })
+    specialAuthorityRequestsAreLoading!: (hdid: string) => boolean;
 
-    @Getter("medicationRequests", { namespace: "medication" })
-    medicationRequests!: MedicationRequest[];
+    @Getter("specialAuthorityRequests", { namespace: "medication" })
+    specialAuthorityRequests!: (hdid: string) => MedicationRequest[];
 
     private logger!: ILogger;
 
     private readonly headerClass = "medication-request-report-table-header";
+
+    private get isLoading(): boolean {
+        return this.specialAuthorityRequestsAreLoading(this.hdid);
+    }
 
     private get isEmpty(): boolean {
         return this.visibleRecords.length === 0;
     }
 
     private get visibleRecords(): MedicationRequest[] {
-        let records = this.medicationRequests.filter((record) =>
-            this.filter.allowsDate(record.requestedDate)
+        let records = this.specialAuthorityRequests(this.hdid).filter(
+            (record) => this.filter.allowsDate(record.requestedDate)
         );
         records.sort((a, b) => {
             const firstDate = new DateWrapper(a.requestedDate);
@@ -104,8 +110,11 @@ export default class MedicationRequestReportComponent extends Vue {
 
     private created(): void {
         this.logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
-        this.retrieve({ hdid: this.user.hdid }).catch((err) =>
-            this.logger.error(`Error loading medication requests data: ${err}`)
+        this.retrieveSpecialAuthorityRequests({ hdid: this.hdid }).catch(
+            (err) =>
+                this.logger.error(
+                    `Error loading Special Authority requests data: ${err}`
+                )
         );
     }
 
@@ -193,7 +202,8 @@ export default class MedicationRequestReportComponent extends Vue {
                 :busy="isLoading"
                 :items="items"
                 :fields="fields"
-                class="table-style"
+                data-testid="medication-request-report-table"
+                class="table-style d-none d-md-table"
             >
                 <template #table-busy>
                     <content-placeholders>

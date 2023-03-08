@@ -5,15 +5,38 @@ describe("Reports", () => {
         " The file that you are downloading contains personal information. If you are on a public computer, please ensure that the file is deleted before you log off. ";
     beforeEach(() => {
         cy.setupDownloads();
-        cy.enableModules([
-            "Encounter",
-            "Medication",
-            "Laboratory",
-            "Immunization",
-            "MedicationRequest",
-            "AllLaboratory",
-            "HospitalVisit",
-        ]);
+        cy.configureSettings({
+            datasets: [
+                {
+                    name: "healthVisit",
+                    enabled: true,
+                },
+                {
+                    name: "medication",
+                    enabled: true,
+                },
+                {
+                    name: "immunization",
+                    enabled: true,
+                },
+                {
+                    name: "covid19TestResult",
+                    enabled: true,
+                },
+                {
+                    name: "specialAuthorityRequest",
+                    enabled: true,
+                },
+                {
+                    name: "labResult",
+                    enabled: true,
+                },
+                {
+                    name: "hospitalVisit",
+                    enabled: true,
+                },
+            ],
+        });
         cy.login(
             Cypress.env("keycloak.username"),
             Cypress.env("keycloak.password"),
@@ -56,10 +79,14 @@ describe("Reports", () => {
 
     it("Validate Medication Report", () => {
         cy.get("[data-testid=reportType]").select("Medications");
-        cy.get("[data-testid=reportSample]").should("be.visible");
+        cy.get("[data-testid=medication-history-report-table]").should(
+            "be.visible"
+        );
 
         cy.viewport("iphone-6");
-        cy.get("[data-testid=reportSample]").should("not.be.visible");
+        cy.get("[data-testid=medication-history-report-table]").should(
+            "not.be.visible"
+        );
         cy.viewport(1440, 600);
 
         cy.get("[data-testid=exportRecordBtn] button").click();
@@ -81,10 +108,12 @@ describe("Reports", () => {
     it("Validate MSP Visits Report", () => {
         cy.get("[data-testid=reportType]").select("Health Visits");
 
-        cy.get("[data-testid=reportSample]").should("be.visible");
+        cy.get("[data-testid=msp-visits-report-table]").should("be.visible");
 
         cy.viewport("iphone-6");
-        cy.get("[data-testid=reportSample]").should("not.be.visible");
+        cy.get("[data-testid=msp-visits-report-table]").should(
+            "not.be.visible"
+        );
         cy.viewport(1440, 600);
 
         cy.get("[data-testid=exportRecordBtn] button")
@@ -108,13 +137,13 @@ describe("Reports", () => {
     it("Validate COVID-19 Report", () => {
         cy.get("[data-testid=reportType]").select("COVID‑19 Test Results");
 
-        cy.get("[data-testid=reportSample]").should("be.visible");
+        cy.get("[data-testid=covid19-report-table]").should("be.visible");
         cy.get("[data-testid=covid19DateItem]", { timeout: 60000 })
             .last()
             .contains(/\d{4}-[A-Z]{1}[a-z]{2}-\d{2}/);
 
         cy.viewport("iphone-6");
-        cy.get("[data-testid=reportSample]").should("not.be.visible");
+        cy.get("[data-testid=covid19-report-table]").should("not.be.visible");
         cy.viewport(1440, 600);
 
         cy.get("[data-testid=exportRecordBtn] button")
@@ -138,13 +167,17 @@ describe("Reports", () => {
     it("Validate Immunization Report", () => {
         cy.get("[data-testid=reportType]").select("Immunizations");
 
-        cy.get("[data-testid=reportSample]").should("be.visible");
+        cy.get("[data-testid=immunization-history-report-table]").should(
+            "be.visible"
+        );
         cy.get("[data-testid=immunizationDateItem]", { timeout: 60000 })
             .last()
             .contains(/\d{4}-[A-Z]{1}[a-z]{2}-\d{2}/);
 
         cy.viewport("iphone-6");
-        cy.get("[data-testid=reportSample]").should("not.be.visible");
+        cy.get("[data-testid=immunization-history-report-table]").should(
+            "not.be.visible"
+        );
         cy.viewport(1440, 600);
 
         cy.get("[data-testid=exportRecordBtn] button")
@@ -168,10 +201,14 @@ describe("Reports", () => {
     it("Validate Special Authority Report", () => {
         cy.get("[data-testid=reportType]").select("Special Authority Requests");
 
-        cy.get("[data-testid=reportSample]").should("be.visible");
+        cy.get("[data-testid=medication-request-report-table]").should(
+            "be.visible"
+        );
 
         cy.viewport("iphone-6");
-        cy.get("[data-testid=reportSample]").should("not.be.visible");
+        cy.get("[data-testid=medication-request-report-table]").should(
+            "not.be.visible"
+        );
         cy.viewport(1440, 600);
 
         cy.get("[data-testid=exportRecordBtn] button")
@@ -195,13 +232,15 @@ describe("Reports", () => {
     it("Validate Laboratory Report", () => {
         cy.get("[data-testid=reportType]").select("Laboratory Tests");
 
-        cy.get("[data-testid=reportSample]").should("be.visible");
+        cy.get("[data-testid=laboratory-report-table]").should("be.visible");
         cy.get("[data-testid=labResultDateItem]", { timeout: 60000 })
             .last()
             .contains(/\d{4}-[A-Z]{1}[a-z]{2}-\d{2}/);
 
         cy.viewport("iphone-6");
-        cy.get("[data-testid=reportSample]").should("not.be.visible");
+        cy.get("[data-testid=laboratory-report-table]").should(
+            "not.be.visible"
+        );
         cy.viewport(1440, 600);
 
         cy.get("[data-testid=exportRecordBtn] button")
@@ -225,13 +264,17 @@ describe("Reports", () => {
     it("Validate Hospital Visits Report", () => {
         cy.get("[data-testid=reportType]").select("Hospital Visits");
 
-        cy.get("[data-testid=reportSample]").should("be.visible");
+        cy.get("[data-testid=hospital-visit-report-table]").should(
+            "be.visible"
+        );
         cy.get("[data-testid=hospital-visit-date]", { timeout: 60000 })
             .last()
             .contains(/\d{4}-[A-Z]{1}[a-z]{2}-\d{2}/);
 
         cy.viewport("iphone-6");
-        cy.get("[data-testid=reportSample]").should("not.be.visible");
+        cy.get("[data-testid=hospital-visit-report-table]").should(
+            "not.be.visible"
+        );
         cy.viewport(1440, 600);
 
         cy.get("[data-testid=exportRecordBtn] button")
@@ -258,7 +301,14 @@ describe("Reports - Notes", () => {
         " The file that you are downloading contains personal information. If you are on a public computer, please ensure that the file is deleted before you log off. ";
     beforeEach(() => {
         cy.setupDownloads();
-        cy.enableModules(["Note"]);
+        cy.configureSettings({
+            datasets: [
+                {
+                    name: "note",
+                    enabled: true,
+                },
+            ],
+        });
         cy.login(
             Cypress.env("keycloak.hthgtwy20.username"),
             Cypress.env("keycloak.password"),
@@ -273,7 +323,7 @@ describe("Reports - Notes", () => {
         cy.get("[data-testid=reportSample]").should("be.visible");
 
         cy.viewport("iphone-6");
-        cy.get("[data-testid=reportSample]").should("not.be.visible");
+        cy.get("[data-testid=notes-report-table]").should("not.be.visible");
         cy.viewport(1440, 600);
 
         cy.get("[data-testid=exportRecordBtn] button")

@@ -11,7 +11,6 @@ import ReportFilter from "@/models/reportFilter";
 import ReportHeader from "@/models/reportHeader";
 import { ReportFormatType, TemplateType } from "@/models/reportRequest";
 import RequestResult from "@/models/requestResult";
-import User from "@/models/user";
 import container from "@/plugins/container";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import { ILogger, IReportService } from "@/services/interfaces";
@@ -25,26 +24,30 @@ interface LabTestRow {
 
 @Component
 export default class LaboratoryReportComponent extends Vue {
+    @Prop({ required: true })
+    hdid!: string;
+
     @Prop() private filter!: ReportFilter;
 
     @Action("retrieveLaboratoryOrders", { namespace: "laboratory" })
     retrieveLaboratoryOrders!: (params: { hdid: string }) => Promise<void>;
 
     @Getter("laboratoryOrders", { namespace: "laboratory" })
-    laboratoryOrders!: LaboratoryOrder[];
+    laboratoryOrders!: (hdid: string) => LaboratoryOrder[];
 
     @Getter("laboratoryOrdersAreLoading", { namespace: "laboratory" })
-    isLaboratoryLoading!: boolean;
-
-    @Getter("user", { namespace: "user" })
-    private user!: User;
+    laboratoryOrdersAreLoading!: (hdid: string) => boolean;
 
     private logger!: ILogger;
 
     private readonly headerClass = "laboratory-test-report-table-header";
 
+    private get isLaboratoryLoading(): boolean {
+        return this.laboratoryOrdersAreLoading(this.hdid);
+    }
+
     private get visibleRecords(): LaboratoryOrder[] {
-        let records = this.laboratoryOrders.filter((record) =>
+        let records = this.laboratoryOrders(this.hdid).filter((record) =>
             this.filter.allowsDate(record.timelineDateTime)
         );
         records.sort((a, b) => {
@@ -95,7 +98,7 @@ export default class LaboratoryReportComponent extends Vue {
 
     private created(): void {
         this.logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
-        this.retrieveLaboratoryOrders({ hdid: this.user.hdid }).catch((err) =>
+        this.retrieveLaboratoryOrders({ hdid: this.hdid }).catch((err) =>
             this.logger.error(`Error loading Laboratory data: ${err}`)
         );
     }
@@ -160,7 +163,8 @@ export default class LaboratoryReportComponent extends Vue {
                 :busy="isLaboratoryLoading"
                 :items="items"
                 :fields="fields"
-                class="table-style"
+                data-testid="laboratory-report-table"
+                class="table-style d-none d-md-table"
             >
                 <template #table-busy>
                     <content-placeholders>

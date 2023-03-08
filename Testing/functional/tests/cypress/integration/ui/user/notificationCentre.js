@@ -5,7 +5,12 @@ const HDID = "P6FFO433A5WPMVTGM7T4ZVWBKCSVNAYGTWTU3J2LWMGUMERKI72A";
 
 describe("Notification Centre", () => {
     beforeEach(() => {
-        cy.enableModules(["NotificationCentre"]);
+        cy.configureSettings({
+            notificationCentre: {
+                enabled: true,
+            },
+        });
+
         cy.intercept("GET", `**/Notification/${HDID}`, {
             fixture: "NotificationService/notifications.json",
         });
@@ -116,5 +121,61 @@ describe("Notification Centre", () => {
         cy.get("[data-testid=notification-centre-close-button]").should(
             "not.be.visible"
         );
+    });
+});
+
+describe("Notification Badge", () => {
+    beforeEach(() => {
+        cy.configureSettings({
+            notificationCentre: {
+                enabled: true,
+            },
+        });
+
+        cy.intercept("GET", `**/UserProfile/${HDID}`, {
+            fixture: "UserProfileService/userProfile.json",
+        });
+
+        // The scheduledDateTimeUtc must be after user profile's last login in lastLoginDateTimes, which is the second entry
+        // not the first entry. The first entry is the current login.
+        cy.intercept("GET", `**/Notification/${HDID}`, {
+            fixture: "NotificationService/notifications.json",
+        });
+
+        cy.login(
+            Cypress.env("keycloak.username"),
+            Cypress.env("keycloak.password"),
+            AuthMethod.KeyCloak,
+            "/home"
+        );
+    });
+
+    it("Verify notification badge", () => {
+        cy.get("[data-testid=notification-centre-button]")
+            .get("span")
+            .should("have.class", "b-avatar-badge badge-danger")
+            .contains("2");
+
+        cy.get("[data-testid=notification-centre-button]")
+            .should("be.visible")
+            .should("be.enabled")
+            .click();
+
+        cy.get("[data-testid=notification-centre-close-button]")
+            .should("be.visible")
+            .should("be.enabled")
+            .click();
+
+        cy.get("[data-testid=notification-centre-button]").should(
+            "not.have.class",
+            "b-avatar-badge badge-danger"
+        );
+
+        cy.reload();
+
+        cy.get("[data-testid=notification-centre-button]")
+            .get("span")
+            .should("have.class", "b-avatar-badge badge-danger")
+            .contains("2");
     });
 });

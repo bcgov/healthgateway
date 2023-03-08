@@ -7,28 +7,45 @@ import {
 import { LoadStatus } from "@/models/storeOperations";
 
 import { LaboratoryGetters, LaboratoryState } from "./types";
+import { getCovid19TestResultState, getLabResultState } from "./util";
 
 export const getters: LaboratoryGetters = {
-    covid19LaboratoryOrders(state: LaboratoryState): Covid19LaboratoryOrder[] {
-        return state.authenticatedCovid19.laboratoryOrders;
+    covid19LaboratoryOrders(
+        state: LaboratoryState
+    ): (hdid: string) => Covid19LaboratoryOrder[] {
+        return (hdid: string) => getCovid19TestResultState(state, hdid).data;
     },
-    covid19LaboratoryOrdersCount(state: LaboratoryState): number {
-        return state.authenticatedCovid19.laboratoryOrders.length;
+    covid19LaboratoryOrdersCount(
+        state: LaboratoryState
+    ): (hdid: string) => number {
+        return (hdid: string) =>
+            getCovid19TestResultState(state, hdid).data.length;
     },
-    covid19LaboratoryOrdersAreLoading(state: LaboratoryState): boolean {
-        return state.authenticatedCovid19.status === LoadStatus.REQUESTED;
+    covid19LaboratoryOrdersAreLoading(
+        state: LaboratoryState
+    ): (hdid: string) => boolean {
+        return (hdid: string) =>
+            getCovid19TestResultState(state, hdid).status ===
+            LoadStatus.REQUESTED;
     },
-    laboratoryOrders(state: LaboratoryState): LaboratoryOrder[] {
-        return state.authenticated.laboratoryOrders;
+    laboratoryOrders(
+        state: LaboratoryState
+    ): (hdid: string) => LaboratoryOrder[] {
+        return (hdid: string) => getLabResultState(state, hdid).data;
     },
-    laboratoryOrdersCount(state: LaboratoryState): number {
-        return state.authenticated.laboratoryOrders.length;
+    laboratoryOrdersCount(state: LaboratoryState): (hdid: string) => number {
+        return (hdid: string) => getLabResultState(state, hdid).data.length;
     },
-    laboratoryOrdersAreLoading(state: LaboratoryState): boolean {
-        return state.authenticated.status === LoadStatus.REQUESTED;
+    laboratoryOrdersAreLoading(
+        state: LaboratoryState
+    ): (hdid: string) => boolean {
+        return (hdid: string) =>
+            getLabResultState(state, hdid).status === LoadStatus.REQUESTED;
     },
-    laboratoryOrdersAreQueued(state: LaboratoryState): boolean {
-        return state.authenticated.queued;
+    laboratoryOrdersAreQueued(
+        state: LaboratoryState
+    ): (hdid: string) => boolean {
+        return (hdid: string) => getLabResultState(state, hdid).queued;
     },
     publicCovidTestResponseResult(
         state: LaboratoryState

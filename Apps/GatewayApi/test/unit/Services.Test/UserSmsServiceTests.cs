@@ -117,7 +117,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
         [Fact]
         public void ShouldValidateUpdate()
         {
-            string sms = "2501234567";
+            string sms = "2508801234";
             MessagingVerification expectedResult = new()
             {
                 UserProfileId = HdIdMock,

@@ -10,7 +10,6 @@ import ReportFilter from "@/models/reportFilter";
 import ReportHeader from "@/models/reportHeader";
 import { ReportFormatType, TemplateType } from "@/models/reportRequest";
 import RequestResult from "@/models/requestResult";
-import User from "@/models/user";
 import UserNote from "@/models/userNote";
 import container from "@/plugins/container";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
@@ -24,23 +23,27 @@ interface UserNoteRow {
 
 @Component
 export default class NotesReportComponent extends Vue {
+    @Prop({ required: true })
+    hdid!: string;
+
     @Prop() private filter!: ReportFilter;
 
-    @Action("retrieve", { namespace: "note" })
+    @Action("retrieveNotes", { namespace: "note" })
     retrieveNotes!: (params: { hdid: string }) => Promise<void>;
 
-    @Getter("isLoading", { namespace: "note" })
-    isLoading!: boolean;
+    @Getter("notesAreLoading", { namespace: "note" })
+    notesAreLoading!: boolean;
 
     @Getter("notes", { namespace: "note" })
     notes!: UserNote[];
 
-    @Getter("user", { namespace: "user" })
-    private user!: User;
-
     private logger!: ILogger;
 
     private readonly headerClass = "note-report-table-header";
+
+    private get isLoading(): boolean {
+        return this.notesAreLoading;
+    }
 
     private get visibleRecords(): UserNote[] {
         let records = this.notes.filter((record) =>
@@ -90,7 +93,7 @@ export default class NotesReportComponent extends Vue {
 
     private created(): void {
         this.logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
-        this.retrieveNotes({ hdid: this.user.hdid }).catch((err) =>
+        this.retrieveNotes({ hdid: this.hdid }).catch((err) =>
             this.logger.error(`Error loading user note data: ${err}`)
         );
     }
@@ -154,7 +157,8 @@ export default class NotesReportComponent extends Vue {
                     :busy="isLoading"
                     :items="items"
                     :fields="fields"
-                    class="table-style"
+                    data-testid="notes-report-table"
+                    class="table-style d-none d-md-table"
                 >
                     <template #table-busy>
                         <content-placeholders>

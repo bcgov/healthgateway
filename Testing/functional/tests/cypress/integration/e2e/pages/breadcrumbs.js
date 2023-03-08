@@ -10,7 +10,11 @@ function testPageBreadcrumb(url, dataTestId) {
 
 describe("Breadcrumbs", () => {
     it("Breadcrumbs present when logged in", () => {
-        cy.enableModules(["Dependent", "VaccinationStatus"]);
+        cy.configureSettings({
+            dependents: {
+                enabled: true,
+            },
+        });
         cy.login(
             Cypress.env("keycloak.username"),
             Cypress.env("keycloak.password"),
@@ -22,9 +26,7 @@ describe("Breadcrumbs", () => {
         testPageBreadcrumb("/dependents", "breadcrumb-dependents");
         testPageBreadcrumb("/reports", "breadcrumb-export-records");
         testPageBreadcrumb("/profile", "breadcrumb-profile");
-        testPageBreadcrumb("/faq", "breadcrumb-faq");
         testPageBreadcrumb("/release-notes", "breadcrumb-release-notes");
         testPageBreadcrumb("/termsOfService", "breadcrumb-terms-of-service");
-        testPageBreadcrumb("/contact-us", "breadcrumb-contact-us");
     });
 });

@@ -4,7 +4,7 @@ import { faDownload } from "@fortawesome/free-solid-svg-icons";
 import { saveAs } from "file-saver";
 import Vue from "vue";
 import { Component, Prop, Ref } from "vue-property-decorator";
-import { Action, Getter } from "vuex-class";
+import { Action } from "vuex-class";
 
 import MessageModalComponent from "@/components/modal/MessageModalComponent.vue";
 import { EntryType, entryTypeMap } from "@/constants/entryType";
@@ -12,7 +12,6 @@ import { ErrorSourceType, ErrorType } from "@/constants/errorType";
 import { DateWrapper } from "@/models/dateWrapper";
 import { ResultError } from "@/models/errors";
 import LaboratoryOrderTimelineEntry from "@/models/laboratoryOrderTimelineEntry";
-import User from "@/models/user";
 import container from "@/plugins/container";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import { ILaboratoryService, ILogger } from "@/services/interfaces";
@@ -32,11 +31,23 @@ const options: any = {
 
 @Component(options)
 export default class LaboratoryOrderTimelineComponent extends Vue {
-    @Prop() entry!: LaboratoryOrderTimelineEntry;
-    @Prop() index!: number;
-    @Prop() datekey!: string;
-    @Prop() isMobileDetails!: boolean;
-    @Getter("user", { namespace: "user" }) user!: User;
+    @Prop({ required: true })
+    hdid!: string;
+
+    @Prop()
+    entry!: LaboratoryOrderTimelineEntry;
+
+    @Prop()
+    index!: number;
+
+    @Prop()
+    datekey!: string;
+
+    @Prop()
+    isMobileDetails!: boolean;
+
+    @Prop({ default: false })
+    commentsAreEnabled!: boolean;
 
     @Ref("messageModal")
     readonly messageModal!: MessageModalComponent;
@@ -64,7 +75,7 @@ export default class LaboratoryOrderTimelineComponent extends Vue {
     }
 
     private get entryIcon(): string | undefined {
-        return entryTypeMap.get(EntryType.LaboratoryOrder)?.icon;
+        return entryTypeMap.get(EntryType.LabResult)?.icon;
     }
 
     private formatDate(date: DateWrapper): string {
@@ -88,7 +99,7 @@ export default class LaboratoryOrderTimelineComponent extends Vue {
 
         this.isLoadingDocument = true;
         this.laboratoryService
-            .getReportDocument(this.entry.id, this.user.hdid, false)
+            .getReportDocument(this.entry.id, this.hdid, false)
             .then((result) => {
                 const dateString =
                     this.entry.timelineDateTime.format("yyyy_MM_dd-HH_mm");
@@ -128,6 +139,7 @@ export default class LaboratoryOrderTimelineComponent extends Vue {
         :entry="entry"
         :is-mobile-details="isMobileDetails"
         :has-attachment="entry.reportAvailable"
+        :allow-comment="commentsAreEnabled"
     >
         <div slot="header-description">
             <span>Order Status: </span>

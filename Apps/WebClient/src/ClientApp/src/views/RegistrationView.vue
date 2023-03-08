@@ -3,7 +3,7 @@ import { library } from "@fortawesome/fontawesome-svg-core";
 import { faExclamationTriangle } from "@fortawesome/free-solid-svg-icons";
 import Vue from "vue";
 import { Component, Prop, Ref } from "vue-property-decorator";
-import { email, helpers, requiredIf, sameAs } from "vuelidate/lib/validators";
+import { email, requiredIf, sameAs } from "vuelidate/lib/validators";
 import { Validation } from "vuelidate/vuelidate";
 import { Action, Getter } from "vuex-class";
 
@@ -11,6 +11,7 @@ import HtmlTextAreaComponent from "@/components/HtmlTextAreaComponent.vue";
 import LoadingComponent from "@/components/LoadingComponent.vue";
 import { ErrorSourceType, ErrorType } from "@/constants/errorType";
 import { RegistrationStatus } from "@/constants/registrationStatus";
+import ValidationRegEx from "@/constants/validationRegEx";
 import type { WebClientConfiguration } from "@/models/configData";
 import { ResultError } from "@/models/errors";
 import { TermsOfService } from "@/models/termsOfService";
@@ -19,6 +20,7 @@ import { CreateUserRequest } from "@/models/userProfile";
 import container from "@/plugins/container";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import { ILogger, IUserProfileService } from "@/services/interfaces";
+import PhoneUtil from "@/utility/phoneUtil";
 
 library.add(faExclamationTriangle);
 
@@ -122,6 +124,10 @@ export default class RegistrationView extends Vue {
         return false;
     }
 
+    private get termsOfServiceLoaded(): boolean {
+        return !this.isLoading && Boolean(this.termsOfService?.content);
+    }
+
     private mounted(): void {
         this.logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
         this.minimumAge = this.webClientConfig.minPatientAge;
@@ -182,11 +188,20 @@ export default class RegistrationView extends Vue {
     }
 
     private validations(): unknown {
-        const sms = helpers.regex("sms", /^\D?(\d{3})\D?\D?(\d{3})\D?(\d{4})$/);
+        const validPhoneNumberFormat = (rawInputSmsNumber: string) => {
+            if (!rawInputSmsNumber) {
+                return true;
+            }
+            if (!ValidationRegEx.PhoneNumberMasked.test(rawInputSmsNumber)) {
+                return false;
+            }
+            const phoneNumber = PhoneUtil.stripPhoneMask(rawInputSmsNumber);
+            return this.userProfileService.isPhoneNumberValid(phoneNumber);
+        };
         return {
             smsNumber: {
                 required: requiredIf(() => this.isSMSNumberChecked),
-                sms,
+                sms: validPhoneNumberFormat,
             },
             email: {
                 required: requiredIf(() => this.isEmailChecked),
@@ -262,11 +277,7 @@ export default class RegistrationView extends Vue {
                 },
             });
 
-            const path = this.webClientConfig.modules["VaccinationStatus"]
-                ? "/home"
-                : "/timeline";
-
-            await this.$router.push({ path });
+            await this.$router.push("/home");
         } catch {
             this.logger.error("Error while registering.");
         } finally {
@@ -285,10 +296,6 @@ export default class RegistrationView extends Vue {
         if (!isChecked) {
             this.smsNumber = "";
         }
-    }
-
-    private get termsOfServiceLoaded(): boolean {
-        return !this.isLoading && Boolean(this.termsOfService?.content);
     }
 }
 </script>
@@ -331,11 +338,11 @@ export default class RegistrationView extends Vue {
                         <b-form-input
                             id="emailInput"
                             v-model="$v.email.$model"
-                            data-testid="emailInput"
-                            type="email"
-                            placeholder="Your email address"
                             :disabled="isPredefinedEmail || !isEmailChecked"
                             :state="isValid($v.email)"
+                            data-testid="emailInput"
+                            placeholder="Your email address"
+                            type="email"
                         />
                         <b-form-invalid-feedback :state="isValid($v.email)">
                             Valid email is required
@@ -345,11 +352,11 @@ export default class RegistrationView extends Vue {
                         <b-form-input
                             id="emailConfirmationInput"
                             v-model="$v.emailConfirmation.$model"
-                            data-testid="emailConfirmationInput"
-                            type="email"
-                            placeholder="Confirm your email address"
                             :disabled="!isEmailChecked"
                             :state="isValid($v.emailConfirmation)"
+                            data-testid="emailConfirmationInput"
+                            placeholder="Confirm your email address"
+                            type="email"
                         />
                         <b-form-invalid-feedback
                             :state="$v.emailConfirmation.sameAsEmail"
@@ -375,15 +382,20 @@ export default class RegistrationView extends Vue {
                             id="smsNumberInput"
                             v-model="$v.smsNumber.$model"
                             v-mask="'(###) ###-####'"
-                            type="tel"
-                            data-testid="smsNumberInput"
-                            class="d-flex"
-                            placeholder="Your phone number"
-                            :state="isValid($v.smsNumber)"
                             :disabled="!isSMSNumberChecked"
+                            :state="
+                                $v.smsNumber.$pending || isValid($v.smsNumber)
+                            "
+                            class="d-flex"
+                            data-testid="smsNumberInput"
+                            placeholder="Your phone number"
+                            type="tel"
                         >
                         </b-form-input>
-                        <b-form-invalid-feedback :state="isValid($v.smsNumber)">
+                        <b-form-invalid-feedback
+                            v-if="!$v.smsNumber.$pending"
+                            :state="isValid($v.smsNumber)"
+                        >
                             Valid sms number is required
                         </b-form-invalid-feedback>
                     </div>
@@ -392,10 +404,10 @@ export default class RegistrationView extends Vue {
                         class="font-weight-bold text-primary"
                     >
                         <hg-icon
-                            icon="exclamation-triangle"
-                            size="medium"
                             aria-hidden="true"
                             class="mr-2"
+                            icon="exclamation-triangle"
+                            size="medium"
                         />
                         <span
                             >You won't receive notifications from the Health
@@ -405,16 +417,16 @@ export default class RegistrationView extends Vue {
                     </div>
                     <h4 class="subheading mt-4">Terms of Service</h4>
                     <HtmlTextAreaComponent
-                        class="termsOfService mb-3"
                         :input="termsOfService.content"
+                        class="termsOfService mb-3"
                     />
                     <div class="mb-3">
                         <b-form-checkbox
                             id="accept"
                             v-model="accepted"
-                            data-testid="acceptCheckbox"
-                            class="accept"
                             :state="isValid($v.accepted)"
+                            class="accept"
+                            data-testid="acceptCheckbox"
                         >
                             I agree to the terms of service above
                         </b-form-checkbox>
@@ -424,13 +436,13 @@ export default class RegistrationView extends Vue {
                     </div>
                     <div class="mb-3 text-right">
                         <hg-button
-                            class="px-5"
-                            type="submit"
-                            data-testid="registerButton"
-                            variant="primary"
                             :disabled="!accepted"
-                            >Register</hg-button
-                        >
+                            class="px-5"
+                            data-testid="registerButton"
+                            type="submit"
+                            variant="primary"
+                            >Register
+                        </hg-button>
                     </div>
                 </b-form>
                 <div v-else-if="isValidAge === false">

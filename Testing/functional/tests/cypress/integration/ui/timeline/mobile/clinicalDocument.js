@@ -12,7 +12,15 @@ describe("Clinical Document", () => {
                 fixture: "ClinicalDocumentService/clinicalDocumentPdf.json",
             }
         );
-        cy.enableModules("ClinicalDocument");
+        cy.configureSettings({
+            datasets: [
+                {
+                    name: "clinicalDocument",
+                    enabled: true,
+                },
+            ],
+        });
+
         cy.viewport("iphone-6");
         cy.login(
             Cypress.env("keycloak.username"),

@@ -1,5 +1,6 @@
 import { injectable } from "inversify";
 
+import { EntryType } from "@/constants/entryType";
 import { ResultType } from "@/constants/resulttype";
 import { ServiceCode } from "@/constants/serviceCodes";
 import { Dictionary } from "@/models/baseTypes";
@@ -19,6 +20,7 @@ import {
     ILaboratoryService,
     ILogger,
 } from "@/services/interfaces";
+import ConfigUtil from "@/utility/configUtil";
 import ErrorTranslator from "@/utility/errorTranslator";
 
 @injectable()
@@ -37,8 +39,10 @@ export class RestLaboratoryService implements ILaboratoryService {
     ): void {
         this.baseUri = config.serviceEndpoints["Laboratory"];
         this.http = http;
-        this.isEnabled = config.webClient.modules["AllLaboratory"];
-        this.isCovid19Enabled = config.webClient.modules["Laboratory"];
+        this.isEnabled = ConfigUtil.isDatasetEnabled(EntryType.LabResult);
+        this.isCovid19Enabled = ConfigUtil.isDatasetEnabled(
+            EntryType.Covid19TestResult
+        );
     }
 
     getPublicCovid19Tests(

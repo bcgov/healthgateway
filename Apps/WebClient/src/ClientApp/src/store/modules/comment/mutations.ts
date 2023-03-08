@@ -9,10 +9,10 @@ import { UserComment } from "@/models/userComment";
 import { CommentMutations, CommentState } from "./types";
 
 export const mutations: CommentMutations = {
-    setRequested(state: CommentState) {
+    setCommentsRequested(state: CommentState) {
         state.status = LoadStatus.REQUESTED;
     },
-    setProfileComments(
+    setComments(
         state: CommentState,
         profileComments: Dictionary<UserComment[]>
     ) {
@@ -71,7 +71,7 @@ export const mutations: CommentMutations = {
         }
     },
 
-    commentError(state: CommentState, error: ResultError) {
+    setCommentsError(state: CommentState, error: ResultError) {
         state.error = error;
         state.statusMessage = error.resultMessage;
         state.status = LoadStatus.ERROR;

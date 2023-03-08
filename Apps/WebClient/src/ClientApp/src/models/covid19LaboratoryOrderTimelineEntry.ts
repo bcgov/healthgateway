@@ -32,7 +32,7 @@ export default class Covid19LaboratoryOrderTimelineEntry extends TimelineEntry {
     ) {
         super(
             model.id,
-            EntryType.Covid19LaboratoryOrder,
+            EntryType.Covid19TestResult,
             new DateWrapper(model.labResults[0].collectedDateTime, {
                 hasTime: true,
             })

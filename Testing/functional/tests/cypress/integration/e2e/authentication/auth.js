@@ -2,7 +2,7 @@ const { AuthMethod, localDevUri } = require("../../../support/constants");
 
 describe("Authentication", () => {
     beforeEach(() => {
-        cy.enableModules("");
+        cy.configureSettings({});
     });
 
     afterEach(() => {

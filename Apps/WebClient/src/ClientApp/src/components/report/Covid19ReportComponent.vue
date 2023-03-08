@@ -11,7 +11,6 @@ import ReportFilter from "@/models/reportFilter";
 import ReportHeader from "@/models/reportHeader";
 import { ReportFormatType, TemplateType } from "@/models/reportRequest";
 import RequestResult from "@/models/requestResult";
-import User from "@/models/user";
 import container from "@/plugins/container";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import { ILogger, IReportService } from "@/services/interfaces";
@@ -25,6 +24,9 @@ interface Covid19LaboratoryOrderRow {
 
 @Component
 export default class Covid19ReportComponent extends Vue {
+    @Prop({ required: true })
+    hdid!: string;
+
     @Prop() private filter!: ReportFilter;
 
     @Action("retrieveCovid19LaboratoryOrders", { namespace: "laboratory" })
@@ -33,20 +35,21 @@ export default class Covid19ReportComponent extends Vue {
     }) => Promise<void>;
 
     @Getter("covid19LaboratoryOrders", { namespace: "laboratory" })
-    covid19LaboratoryOrders!: Covid19LaboratoryOrder[];
+    covid19LaboratoryOrders!: (hdid: string) => Covid19LaboratoryOrder[];
 
     @Getter("covid19LaboratoryOrdersAreLoading", { namespace: "laboratory" })
-    isCovid19LaboratoryLoading!: boolean;
-
-    @Getter("user", { namespace: "user" })
-    private user!: User;
+    covid19LaboratoryOrdersAreLoading!: (hdid: string) => boolean;
 
     private logger!: ILogger;
 
     private readonly headerClass = "covid19-laboratory-report-table-header";
 
+    private get isCovid19LaboratoryLoading(): boolean {
+        return this.covid19LaboratoryOrdersAreLoading(this.hdid);
+    }
+
     private get visibleRecords(): Covid19LaboratoryOrder[] {
-        let records = this.covid19LaboratoryOrders.filter((record) =>
+        let records = this.covid19LaboratoryOrders(this.hdid).filter((record) =>
             this.filter.allowsDate(record.labResults[0].collectedDateTime)
         );
         records.sort((a, b) => {
@@ -101,8 +104,8 @@ export default class Covid19ReportComponent extends Vue {
 
     private created(): void {
         this.logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
-        this.retrieveCovid19LaboratoryOrders({ hdid: this.user.hdid }).catch(
-            (err) => this.logger.error(`Error loading Covid19 data: ${err}`)
+        this.retrieveCovid19LaboratoryOrders({ hdid: this.hdid }).catch((err) =>
+            this.logger.error(`Error loading Covid19 data: ${err}`)
         );
     }
 
@@ -166,7 +169,8 @@ export default class Covid19ReportComponent extends Vue {
                 :busy="isCovid19LaboratoryLoading"
                 :items="items"
                 :fields="fields"
-                class="table-style"
+                data-testid="covid19-report-table"
+                class="table-style d-none d-md-table"
             >
                 <template #table-busy>
                     <content-placeholders>

@@ -42,7 +42,7 @@ export const getters: TimelineGetters = {
         return new DateWrapper(state.linearDate);
     },
 
-    entryTypes(state: TimelineState): Set<EntryType> {
+    selectedEntryTypes(state: TimelineState): Set<EntryType> {
         if (
             state.filter instanceof TimelineFilter &&
             state.filter.entryTypes instanceof Set<EntryType>

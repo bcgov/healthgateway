@@ -33,7 +33,7 @@ export default class EntrycardTimelineComponent extends Vue {
     @Prop() subtitle!: string;
     @Prop() entryIcon: string | undefined;
     @Prop() iconClass!: string;
-    @Prop({ default: true }) allowComment!: boolean;
+    @Prop({ default: false }) allowComment!: boolean;
     @Prop({ default: true }) canShowDetails!: boolean;
     @Prop({ default: false }) isMobileDetails!: boolean;
     @Prop({ default: false }) hasAttachment!: boolean;
@@ -72,10 +72,6 @@ export default class EntrycardTimelineComponent extends Vue {
 
     private get dateString(): string {
         return this.entry.date.format();
-    }
-
-    private get isCommentEnabled(): boolean {
-        return this.config.modules["Comment"];
     }
 
     private get commentCount(): number {
@@ -188,7 +184,7 @@ export default class EntrycardTimelineComponent extends Vue {
                         <slot name="details-body" />
                     </b-col>
                 </b-row>
-                <b-row v-if="allowComment && isCommentEnabled">
+                <b-row v-if="allowComment">
                     <b-col class="leftPane d-none d-md-block" />
                     <b-col class="pb-1 pt-1 px-3">
                         <CommentSectionComponent

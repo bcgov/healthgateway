@@ -48,7 +48,14 @@ describe("Authenticated Vaccine Card Downloads", () => {
         cy.intercept("GET", "**/AuthenticatedVaccineStatus?hdid=*", {
             statusCode: 429,
         });
-        cy.enableModules(["Immunization", "VaccinationStatus"]);
+        cy.configureSettings({
+            datasets: [
+                {
+                    name: "immunization",
+                    enabled: true,
+                },
+            ],
+        });
         cy.login(
             Cypress.env("keycloak.username"),
             Cypress.env("keycloak.password"),
@@ -63,12 +70,19 @@ describe("Authenticated Vaccine Card Downloads", () => {
         cy.intercept("GET", "**/AuthenticatedVaccineStatus/pdf?hdid=*", {
             statusCode: 429,
         });
-        cy.enableModules([
-            "Immunization",
-            "VaccinationStatus",
-            "VaccinationStatusPdf",
-            "VaccinationExportPdf",
-        ]);
+        cy.configureSettings({
+            covid19: {
+                proofOfVaccination: {
+                    exportPdf: true,
+                },
+            },
+            datasets: [
+                {
+                    name: "immunization",
+                    enabled: true,
+                },
+            ],
+        });
         cy.login(
             Cypress.env("keycloak.username"),
             Cypress.env("keycloak.password"),
@@ -93,7 +107,19 @@ describe("Public COVID-19 Test Results", () => {
         cy.intercept("GET", "**/PublicLaboratory/CovidTests", {
             statusCode: 429,
         });
-        cy.enableModules(["Laboratory", "PublicLaboratoryResult"]);
+        cy.configureSettings({
+            covid19: {
+                publicCovid19: {
+                    enableTestResults: true,
+                },
+            },
+            datasets: [
+                {
+                    name: "covid19TestResult",
+                    enabled: true,
+                },
+            ],
+        });
         cy.logout();
         cy.visit(covidTestUrl);
 
@@ -115,7 +141,14 @@ describe("Public Vaccine Card Form", () => {
         cy.intercept("GET", "**/PublicVaccineStatus", {
             statusCode: 429,
         });
-        cy.enableModules(["Immunization", "VaccinationStatus"]);
+        cy.configureSettings({
+            datasets: [
+                {
+                    name: "immunization",
+                    enabled: true,
+                },
+            ],
+        });
         cy.logout();
         cy.visit(vaccineCardUrl);
 
@@ -140,12 +173,19 @@ describe("Public Vaccine Card Downloads", () => {
         cy.intercept("GET", "**/PublicVaccineStatus/pdf", {
             statusCode: 429,
         });
-        cy.enableModules([
-            "Immunization",
-            "VaccinationStatus",
-            "VaccinationStatusPdf",
-            "PublicVaccineDownloadPdf",
-        ]);
+        cy.configureSettings({
+            covid19: {
+                publicCovid19: {
+                    showFederalProofOfVaccination: true,
+                },
+            },
+            datasets: [
+                {
+                    name: "immunization",
+                    enabled: true,
+                },
+            ],
+        });
         cy.logout();
         cy.visit(vaccineCardUrl);
 
@@ -172,6 +212,7 @@ describe("Public Vaccine Card Downloads", () => {
 
 describe("Landing Page - Too Many Requests", () => {
     it("Too Many Requests Banner Appears on 429 Response", () => {
+        cy.configureSettings({});
         cy.intercept("GET", "**/Communication/*", { statusCode: 429 });
         cy.visit("/");
 
@@ -182,6 +223,7 @@ describe("Landing Page - Too Many Requests", () => {
     });
 
     it("Too Many Requests Banner Doesn't Appear on 200 Response", () => {
+        cy.configureSettings({});
         cy.intercept("GET", "**/Communication/*", { statusCode: 200 }).as(
             "getCommunication"
         );
@@ -203,7 +245,14 @@ describe("Immunization", () => {
         cy.intercept("GET", "**/Immunization?*", {
             statusCode: 429,
         });
-        cy.enableModules("Immunization");
+        cy.configureSettings({
+            datasets: [
+                {
+                    name: "immunization",
+                    enabled: true,
+                },
+            ],
+        });
         cy.login(
             Cypress.env("keycloak.username"),
             Cypress.env("keycloak.password"),
@@ -219,7 +268,14 @@ describe("Encounter", () => {
         cy.intercept("GET", "**/Encounter/*", {
             statusCode: 429,
         });
-        cy.enableModules("Encounter");
+        cy.configureSettings({
+            datasets: [
+                {
+                    name: "healthVisit",
+                    enabled: true,
+                },
+            ],
+        });
         cy.login(
             Cypress.env("keycloak.username"),
             Cypress.env("keycloak.password"),
@@ -235,7 +291,14 @@ describe("Hospital Visits", () => {
         cy.intercept("GET", "**/HospitalVisit/*", {
             statusCode: 429,
         });
-        cy.enableModules("HospitalVisit");
+        cy.configureSettings({
+            datasets: [
+                {
+                    name: "hospitalVisit",
+                    enabled: true,
+                },
+            ],
+        });
         cy.login(
             Cypress.env("keycloak.username"),
             Cypress.env("keycloak.password"),
@@ -251,7 +314,14 @@ describe("Medication Request", () => {
         cy.intercept("GET", "**/MedicationRequest/*", {
             statusCode: 429,
         });
-        cy.enableModules("MedicationRequest");
+        cy.configureSettings({
+            datasets: [
+                {
+                    name: "specialAuthorityRequest",
+                    enabled: true,
+                },
+            ],
+        });
         cy.login(
             Cypress.env("keycloak.username"),
             Cypress.env("keycloak.password"),
@@ -267,7 +337,14 @@ describe("Mobile - COVID-19 Orders", () => {
         cy.intercept("GET", "**/Laboratory/Covid19Orders*", {
             statusCode: 429,
         });
-        cy.enableModules("Laboratory");
+        cy.configureSettings({
+            datasets: [
+                {
+                    name: "covid19TestResult",
+                    enabled: true,
+                },
+            ],
+        });
         cy.viewport("iphone-6");
         cy.login(
             Cypress.env("keycloak.username"),
@@ -284,7 +361,14 @@ describe("Mobile - Immunization: Unsuccessful Response", () => {
         cy.intercept("GET", "**/Immunization?*", {
             statusCode: 429,
         });
-        cy.enableModules("Immunization");
+        cy.configureSettings({
+            datasets: [
+                {
+                    name: "immunization",
+                    enabled: true,
+                },
+            ],
+        });
         cy.viewport("iphone-6");
         cy.login(
             Cypress.env("keycloak.username"),
@@ -301,7 +385,14 @@ describe("Mobile - Encounter", () => {
         cy.intercept("GET", "**/Encounter/*", {
             statusCode: 429,
         });
-        cy.enableModules("Encounter");
+        cy.configureSettings({
+            datasets: [
+                {
+                    name: "healthVisit",
+                    enabled: true,
+                },
+            ],
+        });
         cy.viewport("iphone-6");
         cy.login(
             Cypress.env("keycloak.username"),
@@ -318,7 +409,14 @@ describe("Mobile - Hospital Visits", () => {
         cy.intercept("GET", "**/HospitalVisit/*", {
             statusCode: 429,
         });
-        cy.enableModules("HospitalVisit");
+        cy.configureSettings({
+            datasets: [
+                {
+                    name: "hospitalVisit",
+                    enabled: true,
+                },
+            ],
+        });
         cy.viewport("iphone-6");
         cy.login(
             Cypress.env("keycloak.username"),
@@ -335,7 +433,14 @@ describe("Mobile - Laboratory Orders", () => {
         cy.intercept("GET", "**/Laboratory/LaboratoryOrders*", {
             statusCode: 429,
         });
-        cy.enableModules("AllLaboratory");
+        cy.configureSettings({
+            datasets: [
+                {
+                    name: "labResult",
+                    enabled: true,
+                },
+            ],
+        });
         cy.viewport("iphone-6");
         cy.login(
             Cypress.env("keycloak.username"),
@@ -353,7 +458,14 @@ describe("Mobile - Laboratory Orders Report Download", () => {
             fixture: "LaboratoryService/laboratoryOrders.json",
         });
 
-        cy.enableModules("AllLaboratory");
+        cy.configureSettings({
+            datasets: [
+                {
+                    name: "labResult",
+                    enabled: true,
+                },
+            ],
+        });
         cy.viewport("iphone-6");
         cy.login(
             Cypress.env("keycloak.username"),
@@ -427,7 +539,14 @@ describe("Mobile - Covid19 Orders Report Download", () => {
         cy.intercept("GET", "**/Laboratory/Covid19Orders*", {
             fixture: "LaboratoryService/covid19Orders.json",
         });
-        cy.enableModules("Laboratory");
+        cy.configureSettings({
+            datasets: [
+                {
+                    name: "covid19TestResult",
+                    enabled: true,
+                },
+            ],
+        });
         cy.viewport("iphone-6");
         cy.login(
             Cypress.env("keycloak.username"),
@@ -498,7 +617,7 @@ describe("Mobile - Covid19 Orders Report Download", () => {
 
 describe("User Profile", () => {
     beforeEach(() => {
-        cy.enableModules([]);
+        cy.configureSettings({});
         cy.intercept("GET", `**/UserProfile/${HDID}`, {
             fixture: "UserProfileService/userProfile.json",
         });
@@ -567,13 +686,22 @@ describe("Dependents", () => {
         cy.intercept("GET", "**/UserProfile/*/Dependent", {
             fixture: "UserProfileService/dependent.json",
         });
-        cy.enableModules([
-            "CovidLabResults",
-            "Immunization",
-            "Laboratory",
-            "Dependent",
-            "DependentImmunizationTab",
-        ]);
+        cy.configureSettings({
+            dependents: {
+                enabled: true,
+            },
+            datasets: [
+                {
+                    name: "covid19TestResult",
+                    enabled: true,
+                },
+                {
+                    name: "immunization",
+                    enabled: true,
+                },
+            ],
+        });
+
         cy.login(
             Cypress.env("keycloak.username"),
             Cypress.env("keycloak.password"),
@@ -629,11 +757,17 @@ describe("Dependent - Immunizaation History Tab - report download error handling
         cy.intercept("GET", "**/Immunization?hdid=*", {
             fixture: "ImmunizationService/dependentImmunization.json",
         });
-        cy.enableModules([
-            "Dependent",
-            "Immunization",
-            "DependentImmunizationTab",
-        ]);
+        cy.configureSettings({
+            dependents: {
+                enabled: true,
+            },
+            datasets: [
+                {
+                    name: "immunization",
+                    enabled: true,
+                },
+            ],
+        });
         cy.login(
             Cypress.env("keycloak.username"),
             Cypress.env("keycloak.password"),
@@ -726,7 +860,17 @@ describe("Comments", () => {
         cy.intercept("POST", "**/UserProfile/*/Comment", {
             statusCode: 429,
         });
-        cy.enableModules(["Laboratory", "Comment"]);
+        cy.configureSettings({
+            timeline: {
+                comment: true,
+            },
+            datasets: [
+                {
+                    name: "covid19TestResult",
+                    enabled: true,
+                },
+            ],
+        });
         cy.login(
             Cypress.env("keycloak.username"),
             Cypress.env("keycloak.password"),
@@ -750,7 +894,14 @@ describe("Notes", () => {
         cy.intercept("POST", "**/Note/*", {
             statusCode: 429,
         });
-        cy.enableModules("Note");
+        cy.configureSettings({
+            datasets: [
+                {
+                    name: "note",
+                    enabled: true,
+                },
+            ],
+        });
         cy.login(
             Cypress.env("keycloak.username"),
             Cypress.env("keycloak.password"),
@@ -777,7 +928,14 @@ describe("Notes", () => {
         cy.intercept("PUT", "**/Note/*", {
             statusCode: 429,
         });
-        cy.enableModules("Note");
+        cy.configureSettings({
+            datasets: [
+                {
+                    name: "note",
+                    enabled: true,
+                },
+            ],
+        });
         cy.login(
             Cypress.env("keycloak.username"),
             Cypress.env("keycloak.password"),
@@ -801,7 +959,14 @@ describe("Notes", () => {
         cy.intercept("DELETE", "**/Note/*", {
             statusCode: 429,
         });
-        cy.enableModules("Note");
+        cy.configureSettings({
+            datasets: [
+                {
+                    name: "note",
+                    enabled: true,
+                },
+            ],
+        });
         cy.login(
             Cypress.env("keycloak.username"),
             Cypress.env("keycloak.password"),
@@ -820,7 +985,14 @@ describe("Notes", () => {
             cy.intercept("GET", "**/Immunization?hdid=*", {
                 fixture: "ImmunizationService/immunization.json",
             });
-            cy.enableModules("Immunization");
+            cy.configureSettings({
+                datasets: [
+                    {
+                        name: "immunization",
+                        enabled: true,
+                    },
+                ],
+            });
             cy.login(
                 Cypress.env("keycloak.username"),
                 Cypress.env("keycloak.password"),

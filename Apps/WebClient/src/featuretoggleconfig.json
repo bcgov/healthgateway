@@ -1,0 +1,91 @@
+{
+    "homepage": {
+        "showFederalProofOfVaccination": true
+    },
+    "waitingQueue": {
+        "enabled": true
+    },
+    "notificationCentre": {
+        "enabled": true
+    },
+    "timeline": {
+        "comment": true
+    },
+    "datasets": [
+        {
+            "name": "clinicalDocument",
+            "enabled": true
+        },
+        {
+            "name": "covid19TestResult",
+            "enabled": true
+        },
+        {
+            "name": "healthVisit",
+            "enabled": true
+        },
+        {
+            "name": "hospitalVisit",
+            "enabled": true
+        },
+        {
+            "name": "immunization",
+            "enabled": true
+        },
+        {
+            "name": "labResult",
+            "enabled": true
+        },
+        {
+            "name": "medication",
+            "enabled": true
+        },
+        {
+            "name": "note",
+            "enabled": true
+        },
+        {
+            "name": "specialAuthorityRequest",
+            "enabled": true
+        }
+    ],
+    "covid19": {
+        "pcrTestEnabled": true,
+        "publicCovid19": {
+            "enableTestResults": false,
+            "showFederalProofOfVaccination": true
+        },
+        "proofOfVaccination": {
+            "exportPdf": false
+        }
+    },
+    "dependents": {
+        "enabled": true,
+        "timelineEnabled": true,
+        "datasets": [
+            {
+                "name": "healthVisit",
+                "enabled": false
+            },
+            {
+                "name": "hospitalVisit",
+                "enabled": false
+            },
+            {
+                "name": "medication",
+                "enabled": false
+            },
+            {
+                "name": "note",
+                "enabled": false
+            },
+            {
+                "name": "specialAuthorityRequest",
+                "enabled": false
+            }
+        ]
+    },
+    "services": {
+        "enabled": true
+    }
+}

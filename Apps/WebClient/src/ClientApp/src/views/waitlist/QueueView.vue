@@ -3,7 +3,6 @@ import Vue from "vue";
 import { Component, Watch } from "vue-property-decorator";
 import { Getter } from "vuex-class";
 
-import { ClientModule } from "@/constants/clientModule";
 import type { WebClientConfiguration } from "@/models/configData";
 import type { Ticket } from "@/models/ticket";
 
@@ -31,7 +30,7 @@ export default class QueueView extends Vue {
 
     private created(): void {
         if (
-            !this.config.modules[ClientModule.Ticket] ||
+            !this.config.featureToggleConfiguration.waitingQueue.enabled ||
             !this.ticket ||
             this.ticketIsProcessed
         ) {

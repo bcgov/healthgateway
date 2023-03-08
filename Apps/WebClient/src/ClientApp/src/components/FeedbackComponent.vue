@@ -21,24 +21,21 @@ import { IUserFeedbackService } from "@/services/interfaces";
 
 library.add(faAngleDown, faComments, faExclamationCircle);
 
-const navbar = "navbar";
-const user = "user";
-
 @Component
 export default class FeedbackComponent extends Vue {
     @Action("setTooManyRequestsError", { namespace: "errorBanner" })
     setTooManyRequestsError!: (params: { key: string }) => void;
 
-    @Action("toggleSidebar", { namespace: navbar })
+    @Action("toggleSidebar", { namespace: "navbar" })
     toggleSidebar!: () => void;
 
-    @Getter("isSidebarOpen", { namespace: navbar })
+    @Getter("isSidebarOpen", { namespace: "navbar" })
     isSidebarOpen!: boolean;
 
     @Getter("isSidebarAnimating", { namespace: "navbar" })
     isSidebarAnimating!: boolean;
 
-    @Getter("user", { namespace: user })
+    @Getter("user", { namespace: "user" })
     user!: User;
 
     private comment = "";

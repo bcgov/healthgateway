@@ -54,7 +54,7 @@ const options: any = {
 
 @Component(options)
 export default class Covid19View extends Vue {
-    @Action("retrieve", { namespace: "immunization" })
+    @Action("retrieveImmunizations", { namespace: "immunization" })
     retrieveImmunizations!: (params: { hdid: string }) => Promise<void>;
 
     @Action("retrieveAuthenticatedVaccineStatus", {
@@ -91,17 +91,17 @@ export default class Covid19View extends Vue {
     @Getter("authenticatedError", { namespace: "vaccinationStatus" })
     vaccinationStatusError!: ResultError | undefined;
 
-    @Getter("isLoading", { namespace: "immunization" })
-    isImmunizationLoading!: boolean;
+    @Getter("immunizationsAreLoading", { namespace: "immunization" })
+    immunizationsAreLoading!: (hdid: string) => boolean;
 
-    @Getter("isDeferredLoad", { namespace: "immunization" })
-    immunizationIsDeferred!: boolean;
+    @Getter("immunizationsAreDeferred", { namespace: "immunization" })
+    immunizationsAreDeferred!: (hdid: string) => boolean;
 
     @Getter("covidImmunizations", { namespace: "immunization" })
-    covidImmunizations!: ImmunizationEvent[];
+    covidImmunizations!: (hdid: string) => ImmunizationEvent[];
 
-    @Getter("error", { namespace: "immunization" })
-    immunizationError!: ResultError | undefined;
+    @Getter("immunizationsError", { namespace: "immunization" })
+    immunizationsError!: (hdid: string) => ResultError | undefined;
 
     @Getter("authenticatedVaccineRecords", { namespace: "vaccinationStatus" })
     vaccineRecords!: Map<string, VaccinationRecord>;
@@ -131,7 +131,7 @@ export default class Covid19View extends Vue {
     ];
 
     private get doses(): Dose[] {
-        return this.covidImmunizations.map((element) => {
+        return this.covidImmunizations(this.user.hdid).map((element) => {
             const agent = element.immunization.immunizationAgents[0];
             return {
                 product: agent.productName,
@@ -186,16 +186,15 @@ export default class Covid19View extends Vue {
 
     private get downloadButtonShown(): boolean {
         return (
-            this.config.modules["VaccinationStatusPdf"] &&
-            (this.vaccinationStatus?.state ===
+            this.vaccinationStatus?.state ===
                 VaccinationState.PartiallyVaccinated ||
-                this.vaccinationStatus?.state ===
-                    VaccinationState.FullyVaccinated)
+            this.vaccinationStatus?.state === VaccinationState.FullyVaccinated
         );
     }
 
     private get saveExportPdfShown(): boolean {
-        return this.config.modules["VaccinationExportPdf"];
+        return this.config.featureToggleConfiguration.covid19.proofOfVaccination
+            .exportPdf;
     }
 
     private get isVaccineCardLoading(): boolean {
@@ -203,7 +202,10 @@ export default class Covid19View extends Vue {
     }
 
     private get isHistoryLoading(): boolean {
-        return this.isImmunizationLoading || this.immunizationIsDeferred;
+        return (
+            this.immunizationsAreLoading(this.user.hdid) ||
+            this.immunizationsAreDeferred(this.user.hdid)
+        );
     }
 
     private get isLoading(): boolean {
@@ -438,7 +440,7 @@ export default class Covid19View extends Vue {
             />
         </div>
         <div
-            v-if="!isHistoryLoading && !immunizationError"
+            v-if="!isHistoryLoading && !immunizationsError(user.hdid)"
             v-show="isImmunizationHistoryShown"
             class="immunization-history flex-grow-1 align-self-center w-100 p-3"
         >

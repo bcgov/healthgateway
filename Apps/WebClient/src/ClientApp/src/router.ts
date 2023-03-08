@@ -5,10 +5,11 @@ import VueRouter, {
 } from "vue-router";
 import { Position, PositionResult } from "vue-router/types/router";
 
-import { ClientModule } from "@/constants/clientModule";
 import { TicketStatus } from "@/constants/ticketStatus";
-import { Dictionary } from "@/models/baseTypes";
-import { WebClientConfiguration } from "@/models/configData";
+import {
+    FeatureToggleConfiguration,
+    WebClientConfiguration,
+} from "@/models/configData";
 import { Ticket } from "@/models/ticket";
 import container from "@/plugins/container";
 import { SnowplowWindow } from "@/plugins/extensions";
@@ -60,8 +61,8 @@ const RegistrationView = () =>
     );
 const HomeView = () =>
     import(/* webpackChunkName: "home" */ "@/views/HomeView.vue");
-const TimelineView = () =>
-    import(/* webpackChunkName: "timeline" */ "@/views/TimelineView.vue");
+const UserTimelineView = () =>
+    import(/* webpackChunkName: "timeline" */ "@/views/UserTimelineView.vue");
 const Covid19View = () =>
     import(/* webpackChunkName: "covid19" */ "@/views/Covid19View.vue");
 const ValidateEmailView = () =>
@@ -82,12 +83,14 @@ const ReleaseNotesView = () =>
     import(
         /* webpackChunkName: "releaseNotes" */ "@/views/ReleaseNotesView.vue"
     );
-const ContactUsView = () =>
-    import(/* webpackChunkName: "contactUs" */ "@/views/ContactUsView.vue");
-const DependentsView = () =>
-    import(/* webpackChunkName: "dependents" */ "@/views/DependentsView.vue");
-const FAQView = () =>
-    import(/* webpackChunkName: "faq" */ "@/views/FaqView.vue");
+const DependentViewSelectorComponent = () =>
+    import(
+        /* webpackChunkName: "dependents" */ "@/components/dependent/DependentViewSelectorComponent.vue"
+    );
+const DependentTimelineView = () =>
+    import(
+        /* webpackChunkName: "dependents" */ "@/views/DependentTimelineView.vue"
+    );
 const PcrTestView = () =>
     import(/* webpackChunkName: "pcrTest" */ "@/views/PcrTestView.vue");
 const QueueView = () =>
@@ -96,6 +99,8 @@ const QueueFullView = () =>
     import(
         /* webpackChunkName: "queueFull" */ "@/views/waitlist/QueueFullView.vue"
     );
+const ServicesView = () =>
+    import(/* webpackChunkName: "services" */ "@/views/ServicesView.vue");
 
 export enum UserState {
     offline = "offline",
@@ -141,24 +146,6 @@ function calculateUserState(): UserState {
     } else {
         return UserState.registered;
     }
-}
-
-function getEnabledModules(): string[] {
-    const storeWrapper = container.get<IStoreProvider>(
-        STORE_IDENTIFIER.StoreProvider
-    );
-    const store = storeWrapper.getStore();
-    const webClientConfig: WebClientConfiguration =
-        store.getters["config/webClient"];
-    const configModules: Dictionary<boolean> = webClientConfig?.modules ?? [];
-    const availableModules: string[] = [];
-
-    for (const moduleName in configModules) {
-        if (configModules[moduleName]) {
-            availableModules.push(moduleName);
-        }
-    }
-    return availableModules;
 }
 
 const ACCEPT_TERMS_OF_SERVICE_PATH = "/acceptTermsOfService";
@@ -254,7 +241,7 @@ const routes = [
     },
     {
         path: TIMELINE_PATH,
-        component: TimelineView,
+        component: UserTimelineView,
         meta: {
             validStates: [UserState.registered],
             requiresProcessedWaitlistTicket: true,
@@ -265,7 +252,6 @@ const routes = [
         component: Covid19View,
         meta: {
             validStates: [UserState.registered],
-            requiredModules: [ClientModule.VaccinationStatus],
             requiresProcessedWaitlistTicket: true,
         },
     },
@@ -279,10 +265,36 @@ const routes = [
     },
     {
         path: "/dependents",
-        component: DependentsView,
+        component: DependentViewSelectorComponent,
         meta: {
             validStates: [UserState.registered],
-            requiredModules: [ClientModule.Dependent],
+            requiredFeaturesEnabled: (config: FeatureToggleConfiguration) =>
+                config.dependents.enabled,
+            requiresProcessedWaitlistTicket: true,
+        },
+    },
+    {
+        path: "/dependents/:id",
+        redirect: "/dependents/:id/timeline",
+    },
+    {
+        path: "/dependents/:id/timeline",
+        component: DependentTimelineView,
+        props: true,
+        meta: {
+            validStates: [UserState.registered],
+            requiredFeaturesEnabled: (config: FeatureToggleConfiguration) =>
+                config.dependents.enabled && config.dependents.timelineEnabled,
+            requiresProcessedWaitlistTicket: true,
+        },
+    },
+    {
+        path: "/services",
+        component: ServicesView,
+        meta: {
+            validStates: [UserState.registered],
+            requiredFeaturesEnabled: (config: FeatureToggleConfiguration) =>
+                config.services.enabled,
             requiresProcessedWaitlistTicket: true,
         },
     },
@@ -297,7 +309,8 @@ const routes = [
                 UserState.registered,
                 UserState.pendingDeletion,
             ],
-            requiredModules: [ClientModule.PublicLaboratoryResult],
+            requiredFeaturesEnabled: (config: FeatureToggleConfiguration) =>
+                config.covid19.publicCovid19.enableTestResults,
             requiresProcessedWaitlistTicket: true,
         },
     },
@@ -312,7 +325,8 @@ const routes = [
                 UserState.notRegistered,
                 UserState.pendingDeletion,
             ],
-            requiredModules: [ClientModule.PcrTest],
+            requiredFeaturesEnabled: (config: FeatureToggleConfiguration) =>
+                config.covid19.pcrTestEnabled,
             requiresProcessedWaitlistTicket: true,
         },
     },
@@ -327,7 +341,8 @@ const routes = [
                 UserState.notRegistered,
                 UserState.pendingDeletion,
             ],
-            requiredModules: [ClientModule.PcrTest],
+            requiredFeaturesEnabled: (config: FeatureToggleConfiguration) =>
+                config.covid19.pcrTestEnabled,
             requiresProcessedWaitlistTicket: true,
         },
     },
@@ -342,7 +357,6 @@ const routes = [
                 UserState.registered,
                 UserState.pendingDeletion,
             ],
-            requiredModules: [ClientModule.VaccinationStatus],
             requiresProcessedWaitlistTicket: true,
         },
     },
@@ -363,34 +377,6 @@ const routes = [
     {
         path: "/release-notes",
         component: ReleaseNotesView,
-        meta: {
-            validStates: [
-                UserState.unauthenticated,
-                UserState.invalidIdentityProvider,
-                UserState.noPatientData,
-                UserState.registered,
-                UserState.pendingDeletion,
-            ],
-            requiresProcessedWaitlistTicket: false,
-        },
-    },
-    {
-        path: "/contact-us",
-        component: ContactUsView,
-        meta: {
-            validStates: [
-                UserState.unauthenticated,
-                UserState.invalidIdentityProvider,
-                UserState.noPatientData,
-                UserState.registered,
-                UserState.pendingDeletion,
-            ],
-            requiresProcessedWaitlistTicket: false,
-        },
-    },
-    {
-        path: "/faq",
-        component: FAQView,
         meta: {
             validStates: [
                 UserState.unauthenticated,
@@ -473,6 +459,10 @@ export const beforeEachGuard: NavigationGuard = async (
         STORE_IDENTIFIER.StoreProvider
     );
     const store = storeWrapper.getStore();
+
+    const webClientConfig: WebClientConfiguration | undefined =
+        store.getters["config/webClient"];
+
     logger.debug(
         `from.fullPath: ${JSON.stringify(
             from.fullPath
@@ -490,9 +480,9 @@ export const beforeEachGuard: NavigationGuard = async (
         return;
     }
 
-    const enabledModules = getEnabledModules();
-
-    const waitlistIsEnabled = enabledModules.includes(ClientModule.Ticket);
+    const waitlistIsEnabled =
+        webClientConfig?.featureToggleConfiguration?.waitingQueue?.enabled ??
+        false;
     const isAuthenticated: boolean = store.getters["auth/oidcIsAuthenticated"];
     let metaRequiresProcessedWaitlistTicket =
         meta.requiresProcessedWaitlistTicket;
@@ -516,19 +506,23 @@ export const beforeEachGuard: NavigationGuard = async (
     logger.debug(`current state: ${currentUserState}`);
 
     const isValidState = meta.validStates.includes(currentUserState);
-    const hasRequiredModules =
-        meta.requiredModules === undefined ||
-        meta.requiredModules.every((val: string) =>
-            enabledModules.includes(val)
-        );
+    const requiredFeaturesEnabled =
+        meta.requiredFeaturesEnabled === undefined ||
+        (webClientConfig !== undefined &&
+            meta.requiredFeaturesEnabled(
+                webClientConfig.featureToggleConfiguration
+            ));
 
-    if (isValidState && hasRequiredModules) {
+    if (isValidState && requiredFeaturesEnabled) {
         next();
         return;
     }
 
     // If the route does not accept the state, go to one of the default locations
-    const defaultPath = getDefaultPath(currentUserState, hasRequiredModules);
+    const defaultPath = getDefaultPath(
+        currentUserState,
+        requiredFeaturesEnabled
+    );
 
     if (defaultPath === LOGIN_PATH) {
         next({ path: defaultPath, query: { redirect: to.path } });
@@ -611,7 +605,7 @@ function ticketIsValid(ticket: Ticket | undefined): boolean {
 
 function getDefaultPath(
     currentUserState: UserState,
-    hasRequiredModules: boolean
+    requiredFeaturesEnabled: boolean
 ): string {
     switch (currentUserState) {
         case UserState.offline:
@@ -619,7 +613,7 @@ function getDefaultPath(
         case UserState.pendingDeletion:
             return PROFILE_PATH;
         case UserState.registered:
-            return hasRequiredModules ? HOME_PATH : UNAUTHORIZED_PATH;
+            return requiredFeaturesEnabled ? HOME_PATH : UNAUTHORIZED_PATH;
         case UserState.notRegistered:
             return REGISTRATION_PATH;
         case UserState.invalidIdentityProvider:
@@ -627,7 +621,7 @@ function getDefaultPath(
         case UserState.noPatientData:
             return PATIENT_RETRIEVAL_ERROR_PATH;
         case UserState.unauthenticated:
-            return hasRequiredModules ? LOGIN_PATH : UNAUTHORIZED_PATH;
+            return requiredFeaturesEnabled ? LOGIN_PATH : UNAUTHORIZED_PATH;
         case UserState.acceptTermsOfService:
             return ACCEPT_TERMS_OF_SERVICE_PATH;
         default:

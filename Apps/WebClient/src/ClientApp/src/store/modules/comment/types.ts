@@ -15,9 +15,9 @@ import { RootState } from "@/store/types";
 
 export interface CommentState {
     profileComments: Dictionary<UserComment[]>;
+    status: LoadStatus;
     statusMessage: string;
     error?: ResultError;
-    status: LoadStatus;
 }
 
 export interface CommentGetters extends GetterTree<CommentState, RootState> {
@@ -26,12 +26,15 @@ export interface CommentGetters extends GetterTree<CommentState, RootState> {
         state: CommentState
     ) => (entryId: string) => UserComment[] | null;
     entryHasComments: (state: CommentState) => (entryId: string) => boolean;
-    isLoading(state: CommentState): boolean;
+    commentsAreLoading(state: CommentState): boolean;
 }
 
 type StoreContext = ActionContext<CommentState, RootState>;
 export interface CommentActions extends ActionTree<CommentState, RootState> {
-    retrieve(context: StoreContext, params: { hdid: string }): Promise<void>;
+    retrieveComments(
+        context: StoreContext,
+        params: { hdid: string }
+    ): Promise<void>;
     createComment(
         context: StoreContext,
         params: { hdid: string; comment: UserComment }
@@ -51,15 +54,15 @@ export interface CommentActions extends ActionTree<CommentState, RootState> {
 }
 
 export interface CommentMutations extends MutationTree<CommentState> {
-    setRequested(state: CommentState): void;
-    setProfileComments(
+    setCommentsRequested(state: CommentState): void;
+    setComments(
         state: CommentState,
         profileComments: Dictionary<UserComment[]>
     ): void;
     addComment(state: CommentState, userComment: UserComment): void;
     updateComment(state: CommentState, userComment: UserComment): void;
     deleteComment(state: CommentState, userComment: UserComment): void;
-    commentError(state: CommentState, error: ResultError): void;
+    setCommentsError(state: CommentState, error: ResultError): void;
 }
 
 export interface CommentModule extends Module<CommentState, RootState> {

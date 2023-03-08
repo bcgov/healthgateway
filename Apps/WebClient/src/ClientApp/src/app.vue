@@ -259,7 +259,7 @@ export default class App extends Vue {
 
     private get isNotificationCentreEnabled(): boolean {
         return (
-            this.config.modules["NotificationCentre"] &&
+            this.config.featureToggleConfiguration.notificationCentre.enabled &&
             !this.isOffline &&
             this.oidcIsAuthenticated &&
             this.isValidIdentityProvider &&

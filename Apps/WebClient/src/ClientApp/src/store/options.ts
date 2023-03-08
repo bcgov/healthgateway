@@ -8,6 +8,7 @@ import { auth } from "./modules/auth/auth";
 import { clinicalDocument } from "./modules/clinicalDocument/clinicalDocument";
 import { comment } from "./modules/comment/comment";
 import { config } from "./modules/config/config";
+import { dependent } from "./modules/dependent/dependent";
 import { encounter } from "./modules/encounter/encounter";
 import { errorBanner } from "./modules/error/errorBanner";
 import { idle } from "./modules/idle/idle";
@@ -66,6 +67,7 @@ export class StoreOptions implements GatewayStoreOptions {
         auth,
         config,
         user,
+        dependent,
         medication,
         laboratory,
         comment,

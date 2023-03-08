@@ -6,9 +6,7 @@ const encounterModule = "Encounter";
 const immunizationModule = "Immunization";
 const laboratoryModule = "Laboratory";
 const allLaboratoryModule = "AllLaboratory";
-const medicationModule = "Medication";
 const medicationRequestModule = "MedicationRequest";
-const noteModule = "Note";
 
 const encounterTitle = "Health Visits";
 const immunizationTitle = "Immunizations";
@@ -38,7 +36,14 @@ function getQuickLinkCard(title) {
 
 describe("Quick Links", () => {
     it("Add and Remove Quick Link", () => {
-        cy.enableModules([laboratoryModule]);
+        cy.configureSettings({
+            datasets: [
+                {
+                    name: "covid19TestResult",
+                    enabled: true,
+                },
+            ],
+        });
         cy.login(
             Cypress.env("keycloak.username"),
             Cypress.env("keycloak.password"),
@@ -75,8 +80,8 @@ describe("Quick Links", () => {
         cy.get("[data-testid=filterContainer]").should("not.exist");
         cy.get("[data-testid=filterDropdown]").click();
         cy.get("[data-testid=filterContainer]").should("be.visible");
-        cy.get("[data-testid=Laboratory-filter]").should("be.checked");
-        cy.get("[data-testid=laboratoryTitle]").should("be.visible");
+        cy.get("[data-testid=Covid19TestResult-filter]").should("be.checked");
+        cy.get("[data-testid=covid19testresultTitle]").should("be.visible");
 
         cy.log("Returning to home page");
         cy.get("[data-testid=menu-btn-home-link]").should("be.visible").click();
@@ -103,11 +108,22 @@ describe("Quick Links", () => {
     });
 
     it("Add and Remove Multiple Quick Links", () => {
-        cy.enableModules([
-            encounterModule,
-            immunizationModule,
-            laboratoryModule,
-        ]);
+        cy.configureSettings({
+            datasets: [
+                {
+                    name: "healthVisit",
+                    enabled: true,
+                },
+                {
+                    name: "immunization",
+                    enabled: true,
+                },
+                {
+                    name: "covid19TestResult",
+                    enabled: true,
+                },
+            ],
+        });
         cy.login(
             Cypress.env("keycloak.username"),
             Cypress.env("keycloak.password"),
@@ -147,6 +163,11 @@ describe("Quick Links", () => {
             .should("be.visible")
             .should("be.enabled")
             .click();
+
+        cy.log("Verifying submit quick link button is disabled");
+        cy.get(addQuickLinkSubmitButtonSelector)
+            .should("be.visible")
+            .should("not.be.enabled");
 
         cy.log("Verifying 1 checkbox remains");
         cy.get(addQuickLinkCheckboxSelector).should("have.length", 1);
@@ -199,16 +220,38 @@ describe("Quick Links", () => {
 
 describe("Add Quick Link Modal", () => {
     beforeEach(() => {
-        cy.enableModules([
-            laboratoryModule,
-            encounterModule,
-            immunizationModule,
-            laboratoryModule,
-            allLaboratoryModule,
-            medicationModule,
-            medicationRequestModule,
-            noteModule,
-        ]);
+        cy.configureSettings({
+            datasets: [
+                {
+                    name: "covid19TestResult",
+                    enabled: true,
+                },
+                {
+                    name: "healthVisit",
+                    enabled: true,
+                },
+                {
+                    name: "immunization",
+                    enabled: true,
+                },
+                {
+                    name: "labResult",
+                    enabled: true,
+                },
+                {
+                    name: "medication",
+                    enabled: true,
+                },
+                {
+                    name: "specialAuthorityRequest",
+                    enabled: true,
+                },
+                {
+                    name: "note",
+                    enabled: true,
+                },
+            ],
+        });
         cy.login(
             Cypress.env("keycloak.username"),
             Cypress.env("keycloak.password"),

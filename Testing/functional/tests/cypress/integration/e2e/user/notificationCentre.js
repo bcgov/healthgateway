@@ -3,6 +3,11 @@ const HDID = "P6FFO433A5WPMVTGM7T4ZVWBKCSVNAYGTWTU3J2LWMGUMERKI72A";
 
 describe("Notification Centre", () => {
     beforeEach(() => {
+        cy.configureSettings({
+            notificationCentre: {
+                enabled: true,
+            },
+        });
         cy.login(
             Cypress.env("keycloak.username"),
             Cypress.env("keycloak.password"),

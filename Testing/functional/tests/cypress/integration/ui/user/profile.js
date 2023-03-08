@@ -1,14 +1,17 @@
 const { AuthMethod } = require("../../../support/constants");
-const fakeSMSNumber = "7781234567";
+const fakeSMSNumber = "2506714848";
 const HDID = "P6FFO433A5WPMVTGM7T4ZVWBKCSVNAYGTWTU3J2LWMGUMERKI72A";
 
 describe("User Profile", () => {
     beforeEach(() => {
-        cy.enableModules([]);
+        cy.configureSettings({});
         cy.intercept("GET", `**/UserProfile/${HDID}`, {
             fixture: "UserProfileService/userProfile.json",
         });
-
+        cy.intercept("GET", "**/UserProfile/IsValidPhoneNumber/*", {
+            body: true,
+        });
+        cy.configureSettings({});
         cy.login(
             Cypress.env("keycloak.username"),
             Cypress.env("keycloak.password"),
@@ -131,14 +134,18 @@ describe("User Profile", () => {
 
 describe("User Profile - Validate Address", () => {
     beforeEach(() => {
+        cy.configureSettings({});
         cy.intercept("GET", `**/UserProfile/${HDID}`, {
             fixture: "UserProfileService/userProfile.json",
+        });
+        cy.intercept("GET", "**/UserProfile/IsValidPhoneNumber/*", {
+            body: true,
         });
         cy.login(
             Cypress.env("keycloak.username"),
             Cypress.env("keycloak.password"),
             AuthMethod.KeyCloak,
-            "/home"
+            "/profile"
         );
     });
 
@@ -150,7 +157,6 @@ describe("User Profile - Validate Address", () => {
                 fixture: "PatientService/patientCombinedAddress.json",
             }
         );
-        cy.visit("/profile");
         cy.get("[data-testid=postal-address-label]")
             .should("be.visible")
             .contains("Address");
@@ -172,7 +178,6 @@ describe("User Profile - Validate Address", () => {
                 fixture: "PatientService/patientDifferentAddress.json",
             }
         );
-        cy.visit("/profile");
 
         // Postal Address
         cy.get("[data-testid=postal-address-label]")
@@ -203,7 +208,6 @@ describe("User Profile - Validate Address", () => {
                 fixture: "PatientService/patientNoAddress.json",
             }
         );
-        cy.visit("/profile");
 
         // Postal Address
         cy.get("[data-testid=postal-address-label]")
@@ -223,7 +227,6 @@ describe("User Profile - Validate Address", () => {
                 fixture: "PatientService/patientOnlyPhysicalAddress.json",
             }
         );
-        cy.visit("/profile");
 
         // Postal Address
         cy.get("[data-testid=postal-address-label]")
@@ -249,7 +252,6 @@ describe("User Profile - Validate Address", () => {
                 fixture: "PatientService/patientOnlyPostalAddress.json",
             }
         );
-        cy.visit("/profile");
 
         // Postal Address
         cy.get("[data-testid=postal-address-label]")

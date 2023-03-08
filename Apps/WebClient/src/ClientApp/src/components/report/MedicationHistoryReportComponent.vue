@@ -12,7 +12,6 @@ import ReportFilter from "@/models/reportFilter";
 import ReportHeader from "@/models/reportHeader";
 import { ReportFormatType, TemplateType } from "@/models/reportRequest";
 import RequestResult from "@/models/requestResult";
-import User from "@/models/user";
 import container from "@/plugins/container";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import { ILogger, IReportService } from "@/services/interfaces";
@@ -38,31 +37,35 @@ const options: any = {
 
 @Component(options)
 export default class MedicationHistoryReportComponent extends Vue {
+    @Prop({ required: true })
+    hdid!: string;
+
     @Prop() private filter!: ReportFilter;
 
-    @Getter("user", { namespace: "user" })
-    private user!: User;
-
-    @Action("retrieveMedicationStatements", { namespace: "medication" })
+    @Action("retrieveMedications", { namespace: "medication" })
     private retrieveMedications!: (params: { hdid: string }) => Promise<void>;
 
-    @Getter("isMedicationStatementLoading", { namespace: "medication" })
-    isLoading!: boolean;
+    @Getter("medicationsAreLoading", { namespace: "medication" })
+    medicationsAreLoading!: (hdid: string) => boolean;
 
-    @Getter("medicationStatements", { namespace: "medication" })
-    medicationStatements!: MedicationStatementHistory[];
+    @Getter("medications", { namespace: "medication" })
+    medications!: (hdid: string) => MedicationStatementHistory[];
 
     private logger!: ILogger;
     private notFoundText = "Not Found";
 
     private readonly headerClass = "medication-report-table-header";
 
+    private get isLoading(): boolean {
+        return this.medicationsAreLoading(this.hdid);
+    }
+
     private get isEmpty(): boolean {
         return this.visibleRecords.length === 0;
     }
 
     private get visibleRecords(): MedicationStatementHistory[] {
-        let records = this.medicationStatements.filter(
+        let records = this.medications(this.hdid).filter(
             (record) =>
                 this.filter.allowsDate(record.dispensedDate) &&
                 this.filter.allowsMedication(record.medicationSummary.brandName)
@@ -119,7 +122,7 @@ export default class MedicationHistoryReportComponent extends Vue {
 
     private created(): void {
         this.logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
-        this.retrieveMedications({ hdid: this.user.hdid }).catch((err) =>
+        this.retrieveMedications({ hdid: this.hdid }).catch((err) =>
             this.logger.error(`Error loading medication data: ${err}`)
         );
     }
@@ -203,7 +206,8 @@ export default class MedicationHistoryReportComponent extends Vue {
                 :busy="isLoading"
                 :items="items"
                 :fields="fields"
-                class="table-style"
+                data-testid="medication-history-report-table"
+                class="table-style d-none d-md-table"
             >
                 <template #table-busy>
                     <content-placeholders>
@@ -212,10 +216,7 @@ export default class MedicationHistoryReportComponent extends Vue {
                 </template>
             </b-table>
         </section>
-        <ProtectiveWordComponent
-            ref="protectiveWordModal"
-            :is-loading="isLoading"
-        />
+        <ProtectiveWordComponent ref="protectiveWordModal" :hdid="hdid" />
     </div>
 </template>
 

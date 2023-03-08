@@ -11,7 +11,6 @@ import ReportFilter from "@/models/reportFilter";
 import ReportHeader from "@/models/reportHeader";
 import { ReportFormatType, TemplateType } from "@/models/reportRequest";
 import RequestResult from "@/models/requestResult";
-import User from "@/models/user";
 import container from "@/plugins/container";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import { ILogger, IReportService } from "@/services/interfaces";
@@ -26,26 +25,30 @@ interface HospitalVisitRow {
 
 @Component
 export default class HospitalVisitReportComponent extends Vue {
+    @Prop({ required: true })
+    hdid!: string;
+
     @Prop() private filter!: ReportFilter;
 
     @Action("retrieveHospitalVisits", { namespace: "encounter" })
     retrieveHospitalVisits!: (params: { hdid: string }) => Promise<void>;
 
-    @Getter("isHospitalVisitLoading", { namespace: "encounter" })
-    isLoading!: boolean;
+    @Getter("hospitalVisitsAreLoading", { namespace: "encounter" })
+    hospitalVisitsAreLoading!: (hdid: string) => boolean;
 
     @Getter("hospitalVisits", { namespace: "encounter" })
-    hospitalVisits!: HospitalVisit[];
-
-    @Getter("user", { namespace: "user" })
-    private user!: User;
+    hospitalVisits!: (hdid: string) => HospitalVisit[];
 
     private logger!: ILogger;
 
     private readonly headerClass = "hospital-visit-report-table-header";
 
+    private get isLoading(): boolean {
+        return this.hospitalVisitsAreLoading(this.hdid);
+    }
+
     private get visibleRecords(): HospitalVisit[] {
-        let records = this.hospitalVisits.filter((record) =>
+        let records = this.hospitalVisits(this.hdid).filter((record) =>
             this.filter.allowsDate(record.admitDateTime)
         );
         records.sort((a, b) => {
@@ -94,7 +97,7 @@ export default class HospitalVisitReportComponent extends Vue {
 
     private created(): void {
         this.logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
-        this.retrieveHospitalVisits({ hdid: this.user.hdid }).catch((err) =>
+        this.retrieveHospitalVisits({ hdid: this.hdid }).catch((err) =>
             this.logger.error(`Error loading hospital visit data: ${err}`)
         );
     }
@@ -162,7 +165,8 @@ export default class HospitalVisitReportComponent extends Vue {
                     :busy="isLoading"
                     :items="items"
                     :fields="fields"
-                    class="table-style"
+                    data-testid="hospital-visit-report-table"
+                    class="table-style d-none d-md-table"
                 >
                     <template #table-busy>
                         <content-placeholders>

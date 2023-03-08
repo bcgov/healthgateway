@@ -5,7 +5,6 @@ import {
     faEllipsisV,
     faInfoCircle,
 } from "@fortawesome/free-solid-svg-icons";
-import { BTab, BTabs } from "bootstrap-vue";
 import { saveAs } from "file-saver";
 import Vue from "vue";
 import { Component, Emit, Prop, Ref, Watch } from "vue-property-decorator";
@@ -15,10 +14,10 @@ import Covid19LaboratoryTestDescriptionComponent from "@/components/laboratory/C
 import DeleteModalComponent from "@/components/modal/DeleteModalComponent.vue";
 import MessageModalComponent from "@/components/modal/MessageModalComponent.vue";
 import { ActionType } from "@/constants/actionType";
-import { ClientModule } from "@/constants/clientModule";
+import { EntryType } from "@/constants/entryType";
 import { ErrorSourceType, ErrorType } from "@/constants/errorType";
 import { ResultType } from "@/constants/resulttype";
-import ClinicalDocument from "@/models/clinicalDocument";
+import { ClinicalDocument } from "@/models/clinicalDocument";
 import type { WebClientConfiguration } from "@/models/configData";
 import CovidVaccineRecord from "@/models/covidVaccineRecord";
 import { DateWrapper, StringISODate } from "@/models/dateWrapper";
@@ -48,6 +47,7 @@ import {
     ILogger,
     IReportService,
 } from "@/services/interfaces";
+import ConfigUtil from "@/utility/configUtil";
 import SnowPlow from "@/utility/snowPlow";
 
 import LoadingComponent from "./LoadingComponent.vue";
@@ -77,8 +77,6 @@ interface RecommendationRow {
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const options: any = {
     components: {
-        BTabs,
-        BTab,
         LoadingComponent,
         MessageModalComponent,
         DeleteModalComponent,
@@ -267,28 +265,21 @@ export default class DependentCardComponent extends Vue {
     }
 
     public get isCovid19TabShown(): boolean {
-        return this.modulesAreEnabled(ClientModule.Laboratory);
+        return ConfigUtil.isDependentDatasetEnabled(
+            EntryType.Covid19TestResult
+        );
     }
 
     public get isImmunizationTabShown(): boolean {
-        return this.modulesAreEnabled(
-            ClientModule.DependentImmunizationTab,
-            ClientModule.Immunization
-        );
+        return ConfigUtil.isDependentDatasetEnabled(EntryType.Immunization);
     }
 
     public get isLaboratoryOrderTabShown(): boolean {
-        return this.modulesAreEnabled(
-            ClientModule.DependentLaboratoryOrderTab,
-            ClientModule.AllLaboratory
-        );
+        return ConfigUtil.isDependentDatasetEnabled(EntryType.LabResult);
     }
 
     public get isClinicalDocumentTabShown(): boolean {
-        return this.modulesAreEnabled(
-            ClientModule.DependentClinicalDocumentTab,
-            ClientModule.ClinicalDocument
-        );
+        return ConfigUtil.isDependentDatasetEnabled(EntryType.ClinicalDocument);
     }
 
     public get tabIndicesMap(): (number | undefined)[] {
@@ -1006,10 +997,6 @@ export default class DependentCardComponent extends Vue {
 
     public showDeleteConfirmationModal(): void {
         this.deleteModal.showModal();
-    }
-
-    private modulesAreEnabled(...modules: ClientModule[]) {
-        return modules.every((m) => this.webClientConfig.modules[m]);
     }
 
     private trackClickLink(action: string, linkType: string | undefined): void {

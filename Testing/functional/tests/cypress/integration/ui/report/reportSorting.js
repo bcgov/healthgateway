@@ -7,13 +7,18 @@ function getDate(value) {
 
 describe("Reports - Medication", () => {
     beforeEach(() => {
-        cy.enableModules([
-            "Encounter",
-            "Medication",
-            "Laboratory",
-            "Immunization",
-            "MedicationRequest",
-        ]);
+        cy.configureSettings({
+            datasets: [
+                {
+                    name: "immunization",
+                    enabled: true,
+                },
+                {
+                    name: "medication",
+                    enabled: true,
+                },
+            ],
+        });
         cy.login(
             Cypress.env("keycloak.username"),
             Cypress.env("keycloak.password"),
@@ -115,14 +120,14 @@ describe("Reports - Medication", () => {
 
 describe("Reports - Covid19", () => {
     beforeEach(() => {
-        cy.enableModules([
-            "Encounter",
-            "Medication",
-            "Laboratory",
-            "Immunization",
-            "MedicationRequest",
-            "AllLaboratory",
-        ]);
+        cy.configureSettings({
+            datasets: [
+                {
+                    name: "covid19TestResult",
+                    enabled: true,
+                },
+            ],
+        });
         cy.login(
             Cypress.env("keycloak.username"),
             Cypress.env("keycloak.password"),
@@ -168,13 +173,14 @@ describe("Reports - Covid19", () => {
 
 describe("Reports - Immunization", () => {
     beforeEach(() => {
-        cy.enableModules([
-            "Encounter",
-            "Medication",
-            "Laboratory",
-            "Immunization",
-            "MedicationRequest",
-        ]);
+        cy.configureSettings({
+            datasets: [
+                {
+                    name: "immunization",
+                    enabled: true,
+                },
+            ],
+        });
         cy.login(
             Cypress.env("keycloak.username"),
             Cypress.env("keycloak.password"),
@@ -251,13 +257,14 @@ describe("Reports - Immunization", () => {
 
 describe("Reports - MSP Visit", () => {
     beforeEach(() => {
-        cy.enableModules([
-            "Encounter",
-            "Medication",
-            "Laboratory",
-            "Immunization",
-            "MedicationRequest",
-        ]);
+        cy.configureSettings({
+            datasets: [
+                {
+                    name: "healthVisit",
+                    enabled: true,
+                },
+            ],
+        });
         cy.login(
             Cypress.env("keycloak.username"),
             Cypress.env("keycloak.password"),
@@ -303,7 +310,14 @@ describe("Reports - MSP Visit", () => {
 
 describe("Reports - Hospital Visits", () => {
     beforeEach(() => {
-        cy.enableModules(["HospitalVisit"]);
+        cy.configureSettings({
+            datasets: [
+                {
+                    name: "hospitalVisit",
+                    enabled: true,
+                },
+            ],
+        });
         cy.login(
             Cypress.env("keycloak.username"),
             Cypress.env("keycloak.password"),
@@ -349,14 +363,14 @@ describe("Reports - Hospital Visits", () => {
 
 describe("Reports - Notes (User-Entered)", () => {
     beforeEach(() => {
-        cy.enableModules([
-            "Encounter",
-            "Medication",
-            "Laboratory",
-            "Immunization",
-            "MedicationRequest",
-            "Note",
-        ]);
+        cy.configureSettings({
+            datasets: [
+                {
+                    name: "note",
+                    enabled: true,
+                },
+            ],
+        });
         cy.login(
             Cypress.env("keycloak.username"),
             Cypress.env("keycloak.password"),
@@ -402,15 +416,14 @@ describe("Reports - Notes (User-Entered)", () => {
 
 describe("Reports - Laboratory Tests", () => {
     beforeEach(() => {
-        cy.enableModules([
-            "Encounter",
-            "Medication",
-            "Laboratory",
-            "Immunization",
-            "MedicationRequest",
-            "Note",
-            "AllLaboratory",
-        ]);
+        cy.configureSettings({
+            datasets: [
+                {
+                    name: "labResult",
+                    enabled: true,
+                },
+            ],
+        });
         cy.login(
             Cypress.env("keycloak.username"),
             Cypress.env("keycloak.password"),

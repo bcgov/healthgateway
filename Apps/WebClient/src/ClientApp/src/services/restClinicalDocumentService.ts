@@ -1,8 +1,9 @@
 import { injectable } from "inversify";
 
+import { EntryType } from "@/constants/entryType";
 import { ResultType } from "@/constants/resulttype";
 import { ServiceCode } from "@/constants/serviceCodes";
-import ClinicalDocument from "@/models/clinicalDocument";
+import { ClinicalDocument } from "@/models/clinicalDocument";
 import { ExternalConfiguration } from "@/models/configData";
 import EncodedMedia from "@/models/encodedMedia";
 import { HttpError } from "@/models/errors";
@@ -14,6 +15,7 @@ import {
     IHttpDelegate,
     ILogger,
 } from "@/services/interfaces";
+import ConfigUtil from "@/utility/configUtil";
 import ErrorTranslator from "@/utility/errorTranslator";
 
 @injectable()
@@ -30,7 +32,9 @@ export class RestClinicalDocumentService implements IClinicalDocumentService {
     ): void {
         this.baseUri = config.serviceEndpoints["ClinicalDocument"];
         this.http = http;
-        this.isEnabled = config.webClient.modules["ClinicalDocument"];
+        this.isEnabled = ConfigUtil.isDatasetEnabled(
+            EntryType.ClinicalDocument
+        );
     }
 
     public getRecords(

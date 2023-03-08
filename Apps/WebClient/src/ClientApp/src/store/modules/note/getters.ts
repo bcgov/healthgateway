@@ -7,13 +7,13 @@ export const getters: NoteGetters = {
     notes(state: NoteState): UserNote[] {
         return state.notes;
     },
-    noteCount(state: NoteState): number {
+    notesCount(state: NoteState): number {
         return state.notes.length;
     },
     lastOperation(state: NoteState): Operation | null {
         return state.lastOperation;
     },
-    isLoading(state: NoteState): boolean {
+    notesAreLoading(state: NoteState): boolean {
         return state.status === LoadStatus.REQUESTED;
     },
 };

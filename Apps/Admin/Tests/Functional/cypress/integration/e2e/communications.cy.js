@@ -1,7 +1,8 @@
 function getTodayPlusDaysDate(days) {
     let ms = new Date(Date.now());
     ms.setDate(ms.getDate() + days);
-    return ms.toLocaleDateString("en-CA");
+    // yyyy-mm-dd
+    return ms.toISOString().substring(0, 10);
 }
 
 describe("Communications", () => {
@@ -232,9 +233,7 @@ describe("Communications", () => {
             .contains("New")
             .click({ force: true });
         cy.get("[data-testid=save-btn]").click({ force: true });
-        cy.get("[data-testid=comm-table-subject]").contains(
-            "New Mobile Comm"
-        );
+        cy.get("[data-testid=comm-table-subject]").contains("New Mobile Comm");
 
         cy.log("Validate add communication finished.");
     });

@@ -16,7 +16,18 @@ describe("COVID-19", () => {
         cy.intercept("GET", "**/UserProfile/*/Dependent", {
             fixture: "UserProfileService/dependent.json",
         });
-        cy.enableModules(["CovidLabResults", "Laboratory", "Dependent"]);
+        cy.configureSettings({
+            dependents: {
+                enabled: true,
+            },
+            datasets: [
+                {
+                    name: "covid19TestResult",
+                    enabled: true,
+                },
+            ],
+        });
+
         cy.login(
             Cypress.env("keycloak.username"),
             Cypress.env("keycloak.password"),
@@ -114,12 +125,22 @@ describe("COVID-19 - Vaccine Proof download", () => {
         cy.intercept("GET", "**/UserProfile/*/Dependent", {
             fixture: "UserProfileService/dependent.json",
         });
-        cy.enableModules([
-            "CovidLabResults",
-            "Laboratory",
-            "Dependent",
-            "Immunization",
-        ]);
+
+        cy.configureSettings({
+            dependents: {
+                enabled: true,
+            },
+            datasets: [
+                {
+                    name: "covid19TestResult",
+                    enabled: true,
+                },
+                {
+                    name: "immunization",
+                    enabled: true,
+                },
+            ],
+        });
 
         cy.login(
             Cypress.env("keycloak.username"),
@@ -167,12 +188,22 @@ describe("COVID-19 - Vaccine Proof download", () => {
         cy.intercept("GET", "**/UserProfile/*/Dependent", {
             fixture: "UserProfileService/dependent.json",
         });
-        cy.enableModules([
-            "CovidLabResults",
-            "Laboratory",
-            "Dependent",
-            "Immunization",
-        ]);
+
+        cy.configureSettings({
+            dependents: {
+                enabled: true,
+            },
+            datasets: [
+                {
+                    name: "covid19TestResult",
+                    enabled: true,
+                },
+                {
+                    name: "immunization",
+                    enabled: true,
+                },
+            ],
+        });
 
         cy.login(
             Cypress.env("keycloak.username"),
@@ -202,11 +233,18 @@ describe("Dependents - Immunization Tab - Enabled", () => {
             fixture: "UserProfileService/dependent.json",
         });
 
-        cy.enableModules([
-            "Dependent",
-            "Immunization",
-            "DependentImmunizationTab",
-        ]);
+        cy.configureSettings({
+            dependents: {
+                enabled: true,
+            },
+            datasets: [
+                {
+                    name: "immunization",
+                    enabled: true,
+                },
+            ],
+        });
+
         cy.login(
             Cypress.env("keycloak.username"),
             Cypress.env("keycloak.password"),
@@ -441,11 +479,18 @@ describe("Dependents - Lab Results Tab - Enabled", () => {
             fixture: "UserProfileService/dependent.json",
         });
 
-        cy.enableModules([
-            "Dependent",
-            "AllLaboratory",
-            "DependentLaboratoryOrderTab",
-        ]);
+        cy.configureSettings({
+            dependents: {
+                enabled: true,
+            },
+            datasets: [
+                {
+                    name: "labResult",
+                    enabled: true,
+                },
+            ],
+        });
+
         cy.login(
             Cypress.env("keycloak.username"),
             Cypress.env("keycloak.password"),
@@ -510,11 +555,18 @@ describe("Dependents - Clinical Document Tab - Enabled", () => {
             fixture: "UserProfileService/dependent.json",
         });
 
-        cy.enableModules([
-            "Dependent",
-            "ClinicalDocument",
-            "DependentClinicalDocumentTab",
-        ]);
+        cy.configureSettings({
+            dependents: {
+                enabled: true,
+            },
+            datasets: [
+                {
+                    name: "clinicalDocument",
+                    enabled: true,
+                },
+            ],
+        });
+
         cy.login(
             Cypress.env("keycloak.username"),
             Cypress.env("keycloak.password"),
@@ -575,7 +627,12 @@ describe("Dependents - Clinical Document Tab - Enabled", () => {
 describe("Dependents Tabs Disabled", () => {
     const dependentHdid = "645645767756756767";
     beforeEach(() => {
-        cy.enableModules(["Dependent"]);
+        cy.configureSettings({
+            dependents: {
+                enabled: true,
+            },
+        });
+
         cy.login(
             Cypress.env("keycloak.username"),
             Cypress.env("keycloak.password"),

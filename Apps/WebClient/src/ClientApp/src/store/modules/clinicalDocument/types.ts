@@ -8,54 +8,71 @@ import {
 
 import { ErrorType } from "@/constants/errorType";
 import { Dictionary } from "@/models/baseTypes";
-import ClinicalDocument from "@/models/clinicalDocument";
+import {
+    ClinicalDocument,
+    ClinicalDocumentFile,
+} from "@/models/clinicalDocument";
+import { ClinicalDocumentDatasetState } from "@/models/datasetState";
 import EncodedMedia from "@/models/encodedMedia";
 import { ResultError } from "@/models/errors";
 import RequestResult from "@/models/requestResult";
-import { LoadStatus } from "@/models/storeOperations";
 import { RootState } from "@/store/types";
 
 export interface ClinicalDocumentState {
-    records: ClinicalDocument[];
-    error?: ResultError;
-    statusMessage: string;
-    status: LoadStatus;
-    files: Dictionary<ClinicalDocumentFileState>;
-}
-
-export interface ClinicalDocumentFileState {
-    fileId: string;
-    file?: EncodedMedia;
-    error?: ResultError;
-    status: LoadStatus;
+    clinicalDocuments: Dictionary<ClinicalDocumentDatasetState>;
+    files: Dictionary<ClinicalDocumentFile>;
 }
 
 export interface ClinicalDocumentGetters
     extends GetterTree<ClinicalDocumentState, RootState> {
-    records(state: ClinicalDocumentState): ClinicalDocument[];
-    recordCount(state: ClinicalDocumentState): number;
-    isLoading(state: ClinicalDocumentState): boolean;
-    files(state: ClinicalDocumentState): Dictionary<ClinicalDocumentFileState>;
+    clinicalDocuments(
+        state: ClinicalDocumentState
+    ): (hdid: string) => ClinicalDocument[];
+    clinicalDocumentsCount(
+        state: ClinicalDocumentState
+    ): (hdid: string) => number;
+    clinicalDocumentsAreLoading(
+        state: ClinicalDocumentState
+    ): (hdid: string) => boolean;
+    files(state: ClinicalDocumentState): Dictionary<ClinicalDocumentFile>;
 }
 
 type StoreContext = ActionContext<ClinicalDocumentState, RootState>;
 export interface ClinicalDocumentActions
     extends ActionTree<ClinicalDocumentState, RootState> {
-    retrieve(
+    retrieveClinicalDocuments(
         context: StoreContext,
         params: { hdid: string }
     ): Promise<RequestResult<ClinicalDocument[]>>;
+    getFile(
+        context: StoreContext,
+        params: { fileId: string; hdid: string }
+    ): Promise<EncodedMedia>;
     handleError(
         context: StoreContext,
-        params: { error: ResultError; errorType: ErrorType }
+        params: {
+            error: ResultError;
+            errorType: ErrorType;
+            hdid?: string;
+            fileId?: string;
+        }
     ): void;
 }
 
 export interface ClinicalDocumentMutations
     extends MutationTree<ClinicalDocumentState> {
-    setRequested(state: ClinicalDocumentState): void;
-    setRecords(state: ClinicalDocumentState, records: ClinicalDocument[]): void;
-    setError(state: ClinicalDocumentState, error: ResultError): void;
+    setClinicalDocumentsRequested(
+        state: ClinicalDocumentState,
+        hdid: string
+    ): void;
+    setClinicalDocuments(
+        state: ClinicalDocumentState,
+        payload: { hdid: string; clinicalDocuments: ClinicalDocument[] }
+    ): void;
+    setClinicalDocumentsError(
+        state: ClinicalDocumentState,
+        payload: { hdid: string; error: ResultError }
+    ): void;
     setFileRequested(state: ClinicalDocumentState, fileId: string): void;
     setFile(
         state: ClinicalDocumentState,

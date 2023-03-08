@@ -1,6 +1,9 @@
-import { StringISODate } from "@/models/dateWrapper";
+import { StringISODate } from "./dateWrapper";
+import EncodedMedia from "./encodedMedia";
+import { ResultError } from "./errors";
+import { LoadStatus } from "./storeOperations";
 
-export default interface ClinicalDocument {
+export interface ClinicalDocument {
     id: string;
     fileId: string;
     name: string;
@@ -8,4 +11,11 @@ export default interface ClinicalDocument {
     facilityName: string;
     discipline: string;
     serviceDate: StringISODate;
+}
+
+export interface ClinicalDocumentFile {
+    fileId: string;
+    file?: EncodedMedia;
+    error?: ResultError;
+    status: LoadStatus;
 }

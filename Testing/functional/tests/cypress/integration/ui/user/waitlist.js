@@ -30,18 +30,22 @@ function getTicket(status, queuePosition = 0) {
 describe("Waitlist Ticket Module Enabled", () => {
     beforeEach(() => {
         cy.logout();
-        cy.enableModules(["Ticket"]);
+        cy.configureSettings({
+            waitingQueue: {
+                enabled: true,
+            },
+        });
     });
 
     it("Verify create ticket is not called on unprotected page", () => {
         cy.intercept("POST", "**/Ticket?room=healthgateway", {
             statusCode: serviceUnavailable,
         });
-        cy.visit("/faq");
+        cy.visit("/release-notes");
         cy.log(
             "Verify unprotected page was accessed successfully without creating ticket."
         );
-        cy.url().should("include", "/faq");
+        cy.url().should("include", "/release-notes");
     });
 
     it("Verify creating a ticket and then successfully checking in on a protected page", () => {
@@ -112,7 +116,7 @@ describe("Waitlist Ticket Module Enabled", () => {
 describe("Waitlist Ticket Module Disabled", () => {
     it("Verify ticket module has been disabled and home page is displayed", () => {
         cy.logout();
-        cy.enableModules([]);
+        cy.configureSettings({});
         cy.intercept("POST", "**/Ticket?room=healthgateway", {
             statusCode: serviceUnavailable,
         });

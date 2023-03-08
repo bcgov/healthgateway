@@ -2,7 +2,7 @@
 import { library } from "@fortawesome/fontawesome-svg-core";
 import { faArrowLeft } from "@fortawesome/free-solid-svg-icons";
 import Vue from "vue";
-import { Component, Watch } from "vue-property-decorator";
+import { Component, Prop, Watch } from "vue-property-decorator";
 import { Action, Getter } from "vuex-class";
 
 import { entryTypeMap } from "@/constants/entryType";
@@ -26,21 +26,26 @@ library.add(faArrowLeft);
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const options: any = {
     components: {
-        MedicationRequestComponent: MedicationRequestTimelineComponent,
-        MedicationComponent: MedicationTimelineComponent,
-        ImmunizationComponent: ImmunizationTimelineComponent,
-        Covid19LaboratoryOrderComponent:
-            Covid19LaboratoryOrderTimelineComponent,
-        LaboratoryOrderComponent: LaboratoryOrderTimelineComponent,
-        EncounterComponent: EncounterTimelineComponent,
-        NoteComponent: NoteTimelineComponent,
-        ClinicalDocumentComponent: ClinicalDocumentTimelineComponent,
-        HospitalVisitComponent: HospitalVisitTimelineComponent,
+        ClinicalDocumentTimelineComponent,
+        Covid19LaboratoryOrderTimelineComponent,
+        EncounterTimelineComponent,
+        HospitalVisitTimelineComponent,
+        ImmunizationTimelineComponent,
+        LaboratoryOrderTimelineComponent,
+        MedicationRequestTimelineComponent,
+        MedicationTimelineComponent,
+        NoteTimelineComponent,
     },
 };
 
 @Component(options)
 export default class EntryDetailsComponent extends Vue {
+    @Prop({ required: true })
+    hdid!: string;
+
+    @Prop({ default: false })
+    commentsAreEnabled!: boolean;
+
     @Action("setHeaderState", { namespace: "navbar" })
     setHeaderState!: (isOpen: boolean) => void;
 
@@ -165,6 +170,8 @@ export default class EntryDetailsComponent extends Vue {
             :entry="entry"
             :index="1"
             :is-mobile-details="true"
+            :hdid="hdid"
+            :comments-are-enabled="commentsAreEnabled"
             data-testid="entryDetailsCard"
         />
     </b-modal>

@@ -1,10 +1,11 @@
 import { injectable } from "inversify";
 
+import { EntryType } from "@/constants/entryType";
 import { ResultType } from "@/constants/resulttype";
 import { ServiceCode } from "@/constants/serviceCodes";
 import { ExternalConfiguration } from "@/models/configData";
 import { HttpError } from "@/models/errors";
-import MedicationRequest from "@/models/MedicationRequest";
+import MedicationRequest from "@/models/medicationRequest";
 import RequestResult from "@/models/requestResult";
 import container from "@/plugins/container";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
@@ -13,6 +14,7 @@ import {
     ILogger,
     ISpecialAuthorityService,
 } from "@/services/interfaces";
+import ConfigUtil from "@/utility/configUtil";
 import ErrorTranslator from "@/utility/errorTranslator";
 
 @injectable()
@@ -29,7 +31,9 @@ export class RestSpecialAuthorityService implements ISpecialAuthorityService {
     ): void {
         this.baseUri = config.serviceEndpoints["SpecialAuthority"];
         this.http = http;
-        this.isEnabled = config.webClient.modules["MedicationRequest"];
+        this.isEnabled = ConfigUtil.isDatasetEnabled(
+            EntryType.SpecialAuthorityRequest
+        );
     }
 
     public getPatientMedicationRequest(

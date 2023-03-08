@@ -11,7 +11,7 @@ import { ILogger, IUserNoteService } from "@/services/interfaces";
 import { NoteActions } from "./types";
 
 export const actions: NoteActions = {
-    retrieve(
+    retrieveNotes(
         context,
         params: { hdid: string }
     ): Promise<RequestResult<UserNote[]>> {
@@ -33,7 +33,7 @@ export const actions: NoteActions = {
                 });
             } else {
                 logger.debug(`Retrieving User notes`);
-                context.commit("setRequested");
+                context.commit("setNotesRequested");
                 noteService
                     .getNotes(params.hdid)
                     .then((result) => {
@@ -134,7 +134,7 @@ export const actions: NoteActions = {
         const logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
 
         logger.error(`ERROR: ${JSON.stringify(params.error)}`);
-        context.commit("noteError", params.error);
+        context.commit("setNotesError", params.error);
 
         if (params.error.statusCode === 429) {
             if (params.errorType === ErrorType.Retrieve) {

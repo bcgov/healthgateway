@@ -2,7 +2,14 @@ const { AuthMethod } = require("../../../../support/constants");
 
 describe("MSP Visits", () => {
     beforeEach(() => {
-        cy.enableModules("Encounter");
+        cy.configureSettings({
+            datasets: [
+                {
+                    name: "healthVisit",
+                    enabled: true,
+                },
+            ],
+        });
         cy.viewport("iphone-6");
         cy.login(
             Cypress.env("keycloak.username"),
@@ -31,7 +38,14 @@ describe("MSP Visits", () => {
 
 describe("Hospital Visits", () => {
     beforeEach(() => {
-        cy.enableModules("HospitalVisit");
+        cy.configureSettings({
+            datasets: [
+                {
+                    name: "hospitalVisit",
+                    enabled: true,
+                },
+            ],
+        });
         cy.viewport("iphone-6");
         cy.login(
             Cypress.env("keycloak.username"),

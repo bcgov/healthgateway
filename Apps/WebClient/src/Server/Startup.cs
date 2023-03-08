@@ -66,9 +66,6 @@ namespace HealthGateway.WebClient.Server
             this.startupConfig.ConfigureSwaggerServices(services);
             this.startupConfig.ConfigureTracing(services);
 
-            // Add services
-            services.AddTransient<IConfigurationService, ConfigurationService>();
-
             // Add Background Services
             services.Configure<ApiBehaviorOptions>(options => options.SuppressModelStateInvalidFilter = true);
 
@@ -78,7 +75,16 @@ namespace HealthGateway.WebClient.Server
             // In production, the Vue files will be served from this directory
             services.AddSpaStaticFiles(options => options.RootPath = "ClientApp/dist");
 
-            services.AddControllers().AddJsonOptions(options => options.JsonSerializerOptions.Converters.Add(new DateOnlyJsonConverter()));
+            services.AddControllers()
+                .AddJsonOptions(
+                    options =>
+                    {
+                        options.JsonSerializerOptions.Converters.Add(new DateOnlyJsonConverter());
+                        options.JsonSerializerOptions.PropertyNameCaseInsensitive = true;
+                    });
+
+            // Add services
+            services.AddSingleton<IConfigurationService, ConfigurationService>();
         }
 
         /// <summary>

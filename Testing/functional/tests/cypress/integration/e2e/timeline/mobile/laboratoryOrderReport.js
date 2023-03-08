@@ -7,7 +7,14 @@ describe("Laboratory Orders - Download Report", () => {
             "**/Laboratory/*/Report?hdid=P6FFO433A5WPMVTGM7T4ZVWBKCSVNAYGTWTU3J2LWMGUMERKI72A&isCovid19=false"
         ).as("getLaboratoryReport");
 
-        cy.enableModules("AllLaboratory");
+        cy.configureSettings({
+            datasets: [
+                {
+                    name: "labResult",
+                    enabled: true,
+                },
+            ],
+        });
         cy.viewport("iphone-6");
         cy.login(
             Cypress.env("keycloak.username"),

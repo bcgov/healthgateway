@@ -24,7 +24,12 @@ import { Action, Getter } from "vuex-class";
 import LoadingComponent from "@/components/LoadingComponent.vue";
 import AddQuickLinkComponent from "@/components/modal/AddQuickLinkComponent.vue";
 import MessageModalComponent from "@/components/modal/MessageModalComponent.vue";
-import { EntryType, entryTypeMap } from "@/constants/entryType";
+import TutorialComponent from "@/components/shared/TutorialComponent.vue";
+import {
+    EntryTypeDetails,
+    entryTypeMap,
+    getEntryTypeByModule,
+} from "@/constants/entryType";
 import { ErrorSourceType, ErrorType } from "@/constants/errorType";
 import UserPreferenceType from "@/constants/userPreferenceType";
 import type { WebClientConfiguration } from "@/models/configData";
@@ -39,6 +44,7 @@ import VaccinationRecord from "@/models/vaccinationRecord";
 import container from "@/plugins/container";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import { ILogger } from "@/services/interfaces";
+import ConfigUtil from "@/utility/configUtil";
 import SnowPlow from "@/utility/snowPlow";
 
 library.add(
@@ -68,9 +74,10 @@ interface QuickLinkCard {
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const options: any = {
     components: {
+        AddQuickLinkComponent,
         LoadingComponent,
         MessageModalComponent,
-        AddQuickLinkComponent,
+        TutorialComponent,
     },
 };
 
@@ -115,9 +122,6 @@ export default class HomeView extends Vue {
         preference: UserPreference;
     }) => Promise<void>;
 
-    @Getter("isMobile")
-    isMobileView!: boolean;
-
     @Getter("webClient", { namespace: "config" })
     config!: WebClientConfiguration;
 
@@ -145,14 +149,9 @@ export default class HomeView extends Vue {
     readonly addQuickLinkModal!: AddQuickLinkComponent;
 
     private logger!: ILogger;
-    private isAddQuickLinkTutorialHidden = false;
 
-    private get showAddQuickLinkTutorial(): boolean {
-        const preferenceType = UserPreferenceType.TutorialAddQuickLink;
-        return (
-            this.user.preferences[preferenceType]?.value === "true" &&
-            !this.isAddQuickLinkTutorialHidden
-        );
+    private get addQuickLinkTutorialPreference(): string {
+        return UserPreferenceType.TutorialAddQuickLink;
     }
 
     private get isVaccineRecordDownloading(): boolean {
@@ -211,11 +210,8 @@ export default class HomeView extends Vue {
     }
 
     private get showFederalCardButton(): boolean {
-        return this.config.modules["FederalCardButton"];
-    }
-
-    private get vaccinationStatusModuleEnabled(): boolean {
-        return this.config.modules["VaccinationStatus"];
+        return this.config.featureToggleConfiguration.homepage
+            .showFederalProofOfVaccination;
     }
 
     private get preferenceVaccineCardHidden(): boolean {
@@ -232,10 +228,7 @@ export default class HomeView extends Vue {
     }
 
     private get showVaccineCardButton(): boolean {
-        return (
-            !this.preferenceVaccineCardHidden &&
-            this.vaccinationStatusModuleEnabled
-        );
+        return !this.preferenceVaccineCardHidden;
     }
 
     private get showImmunizationRecordButton(): boolean {
@@ -245,9 +238,13 @@ export default class HomeView extends Vue {
     private get enabledQuickLinks(): QuickLink[] {
         return (
             this.quickLinks?.filter((quickLink) =>
-                quickLink.filter.modules.every(
-                    (module) => this.config.modules[module]
-                )
+                quickLink.filter.modules.every((module) => {
+                    const entryType = getEntryTypeByModule(module)?.type;
+                    return (
+                        entryType !== undefined &&
+                        ConfigUtil.isDatasetEnabled(entryType)
+                    );
+                })
             ) ?? []
         );
     }
@@ -263,7 +260,7 @@ export default class HomeView extends Vue {
 
             const modules = quickLink.filter.modules;
             if (quickLink.filter.modules.length === 1) {
-                const details = entryTypeMap.get(modules[0] as EntryType);
+                const details = getEntryTypeByModule(modules[0]);
                 if (details) {
                     card.description = details.description;
                     card.icon = details.icon;
@@ -278,16 +275,16 @@ export default class HomeView extends Vue {
         return (
             [...entryTypeMap.values()].filter(
                 (details) =>
-                    this.config.modules[details.type] &&
+                    ConfigUtil.isDatasetEnabled(details.type) &&
                     this.enabledQuickLinks.find(
                         (existingLink) =>
                             existingLink.filter.modules.length === 1 &&
-                            existingLink.filter.modules[0] === details.type
+                            existingLink.filter.modules[0] ===
+                                details.moduleName
                     ) === undefined
             ).length === 0 &&
             !this.preferenceImmunizationRecordHidden &&
-            (!this.vaccinationStatusModuleEnabled ||
-                !this.preferenceVaccineCardHidden)
+            !this.preferenceVaccineCardHidden
         );
     }
 
@@ -336,17 +333,6 @@ export default class HomeView extends Vue {
 
     private getVaccinationRecord(): VaccinationRecord | undefined {
         return this.vaccineRecords.get(this.user.hdid);
-    }
-
-    private dismissAddQuickLinkTutorial(): void {
-        this.logger.debug("Dismissing add quick link tutorial");
-        this.isAddQuickLinkTutorialHidden = true;
-
-        const preference = {
-            ...this.user.preferences[UserPreferenceType.TutorialAddQuickLink],
-            value: "false",
-        };
-        this.setUserPreference({ preference });
     }
 
     private handleClickHealthRecords(): void {
@@ -414,15 +400,16 @@ export default class HomeView extends Vue {
     private handleClickQuickLink(index: number): void {
         const quickLink = this.enabledQuickLinks[index];
 
-        const entryTypes = quickLink.filter.modules
-            .map((module) => module as EntryType)
-            .filter((entryType) => entryType !== undefined);
+        const detailsCollection = quickLink.filter.modules
+            .map((module) => getEntryTypeByModule(module))
+            .filter((d): d is EntryTypeDetails => d !== undefined);
 
-        if (entryTypes.length === 1) {
-            const linkType = entryTypeMap.get(entryTypes[0])?.eventName;
+        if (detailsCollection.length === 1) {
+            const linkType = detailsCollection[0].eventName;
             this.trackClickLink(linkType);
         }
 
+        const entryTypes = detailsCollection.map((d) => d.type);
         const builder =
             TimelineFilterBuilder.create().withEntryTypes(entryTypes);
 
@@ -532,26 +519,15 @@ export default class HomeView extends Vue {
                 <hg-icon icon="plus" size="medium" class="mr-2" />
                 <span>Add Quick Link</span>
             </hg-button>
-            <b-popover
-                triggers="manual"
-                :show="showAddQuickLinkTutorial"
+            <TutorialComponent
+                :preference-type="addQuickLinkTutorialPreference"
                 target="add-quick-link-button"
-                :placement="isMobileView ? 'bottom' : 'left'"
-                boundary="viewport"
             >
-                <div>
-                    <hg-button
-                        class="float-right text-dark p-0 ml-2"
-                        variant="icon"
-                        @click="dismissAddQuickLinkTutorial()"
-                        >×</hg-button
-                    >
-                </div>
                 <div data-testid="add-quick-link-tutorial-popover">
                     Add a quick link to easily access a health record type from
                     your home screen.
                 </div>
-            </b-popover>
+            </TutorialComponent>
         </page-title>
         <h2>What do you want to focus on today?</h2>
         <b-row cols="1" cols-lg="2" cols-xl="3">
