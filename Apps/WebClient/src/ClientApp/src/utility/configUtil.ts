@@ -35,15 +35,12 @@ export default abstract class ConfigUtil {
 
     public static isServiceEnabled(serviceName: ServiceName) {
         const config = ConfigUtil.getFeatureConfiguration();
-        console.log("isServiceEnabled - config log:", config);
         if (config.services && config.services.enabled) {
-            const result = config.services.services.some(
+            return config.services.services.some(
                 (service) =>
                     service.name.toLowerCase() === serviceName.toLowerCase() &&
                     service.enabled
             );
-            console.log("isServiceEnabled: " + serviceName, result);
-            return result;
         }
         return false;
     }
