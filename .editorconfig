@@ -20,19 +20,19 @@ indent_size = 2
 dotnet_diagnostic.SA1629.severity = none
 
 # SA1600: Elements should be documented
-dotnet_diagnostic.SA1600.severity = suggestion
+dotnet_diagnostic.SA1600.severity = none
 
 # SA1502: Element should not be on a single line
 dotnet_diagnostic.SA1502.severity = suggestion
 
 # SA1649: File name should match first type name
-dotnet_diagnostic.SA1649.severity = suggestion
+dotnet_diagnostic.SA1649.severity = silent
 
 # SA1413: Use trailing comma in multi-line initializers
 dotnet_diagnostic.SA1413.severity = none
 
 # SA1602: Enumeration items should be documented
-dotnet_diagnostic.SA1602.severity = suggestion
+dotnet_diagnostic.SA1602.severity = silent
 
 # SA1518: Use line endings correctly at end of file
 dotnet_diagnostic.SA1518.severity = suggestion
@@ -41,7 +41,7 @@ dotnet_diagnostic.SA1518.severity = suggestion
 dotnet_diagnostic.SA1201.severity = none
 
 # SA1101: Prefix local calls with this
-dotnet_diagnostic.SA1101.severity = suggestion
+dotnet_diagnostic.SA1101.severity = none
 
 # CA2007: Consider calling ConfigureAwait on the awaited task
 dotnet_diagnostic.CA2007.severity = none
@@ -71,7 +71,7 @@ dotnet_diagnostic.CA1062.severity = suggestion
 csharp_prefer_braces = when_multiline
 
 # SA1503: Braces should not be omitted
-dotnet_diagnostic.SA1503.severity = suggestion
+dotnet_diagnostic.SA1503.severity = silent
 
 # SA1513: Closing brace should be followed by blank line
 dotnet_diagnostic.SA1513.severity = silent
@@ -107,7 +107,7 @@ dotnet_diagnostic.SA1516.severity = suggestion
 dotnet_diagnostic.S1066.severity = suggestion
 
 # SA1623: Property summary documentation should match accessors
-dotnet_diagnostic.SA1623.severity = suggestion
+dotnet_diagnostic.SA1623.severity = silent
 
 # CS8604: Possible null reference argument.
 dotnet_diagnostic.CS8604.severity = suggestion
@@ -117,3 +117,12 @@ dotnet_diagnostic.CA1303.severity = suggestion
 
 # S101: Types should be named in PascalCase
 dotnet_diagnostic.S101.severity = suggestion
+
+# S125: Sections of code should not be commented out
+dotnet_diagnostic.S125.severity = suggestion
+
+# SA1515: Single-line comment should be preceded by blank line
+dotnet_diagnostic.SA1515.severity = suggestion
+
+# SA1204: Static elements should appear before instance elements
+dotnet_diagnostic.SA1204.severity = none
