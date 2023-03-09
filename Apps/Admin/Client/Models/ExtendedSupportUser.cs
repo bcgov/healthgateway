@@ -45,6 +45,7 @@ public class ExtendedSupportUser : SupportUser
     {
         this.PersonalHealthNumber = model.PersonalHealthNumber;
         this.Hdid = model.Hdid;
+        this.CreatedDateTime = model.CreatedDateTime;
         this.LastLoginDateTime = model.LastLoginDateTime;
         this.PhysicalAddress = model.PhysicalAddress;
         this.PostalAddress = model.PostalAddress;

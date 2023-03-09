@@ -22,6 +22,7 @@ namespace HealthGateway.Admin.Client.Pages
     using Fluxor;
     using Fluxor.Blazor.Web.Components;
     using HealthGateway.Admin.Client.Models;
+    using HealthGateway.Admin.Client.Store.Configuration;
     using HealthGateway.Admin.Client.Store.MessageVerification;
     using HealthGateway.Admin.Client.Store.SupportUser;
     using HealthGateway.Common.Data.Constants;
@@ -53,6 +54,9 @@ namespace HealthGateway.Admin.Client.Pages
 
         [Inject]
         private NavigationManager NavigationManager { get; set; } = default!;
+
+        [Inject]
+        private IState<ConfigurationState> ConfigurationState { get; set; } = default!;
 
         private UserQueryType QueryType { get; set; } = UserQueryType.Phn;
 
@@ -91,7 +95,7 @@ namespace HealthGateway.Admin.Client.Pages
         private IEnumerable<ExtendedSupportUser> SupportUsers =>
             this.SupportUserState.Value.Data ?? Enumerable.Empty<ExtendedSupportUser>();
 
-        private IEnumerable<SupportUserRow> SupportUserRows => this.SupportUsers.Select(v => new SupportUserRow(v));
+        private IEnumerable<SupportUserRow> SupportUserRows => this.SupportUsers.Select(v => new SupportUserRow(v, this.GetTimeZone()));
 
         private Func<string, string?> ValidateQueryParameter => parameter =>
         {
@@ -151,6 +155,13 @@ namespace HealthGateway.Admin.Client.Pages
             return this.MessagingVerifications.Where(v => v.UserProfileId == hdid).ToList();
         }
 
+        private TimeZoneInfo GetTimeZone()
+        {
+            string unixTzValue = this.ConfigurationState.Value.Result?.TimeZone[DateFormatter.UnixTzIdKey] ?? DateFormatter.DefaultUnixTzValue;
+            string windowsTzValue = this.ConfigurationState.Value.Result?.TimeZone[DateFormatter.WindowsTzIdKey] ?? DateFormatter.DefaultWindowsTzValue;
+            return DateFormatter.GetLocalTimeZone(unixTzValue, windowsTzValue);
+        }
+
         private bool HasMessagingVerification(string hdid)
         {
             return this.MessagingVerifications.ToList().Exists(v => v.UserProfileId == hdid);
@@ -195,11 +206,12 @@ namespace HealthGateway.Admin.Client.Pages
 
         private sealed record SupportUserRow
         {
-            public SupportUserRow(ExtendedSupportUser model)
+            public SupportUserRow(ExtendedSupportUser model, TimeZoneInfo timezone)
             {
                 this.Hdid = model.Hdid;
                 this.PersonalHealthNumber = model.PersonalHealthNumber;
-                this.LastLoginDateTime = model.LastLoginDateTime;
+                this.CreatedDateTime = model.CreatedDateTime != null ? TimeZoneInfo.ConvertTimeFromUtc((DateTime)model.CreatedDateTime, timezone) : model.CreatedDateTime;
+                this.LastLoginDateTime = model.LastLoginDateTime != null ? TimeZoneInfo.ConvertTimeFromUtc((DateTime)model.LastLoginDateTime, timezone) : model.LastLoginDateTime;
                 this.IsExpanded = model.IsExpanded;
                 this.PhysicalAddress = model.PhysicalAddress;
                 this.PostalAddress = model.PostalAddress;
@@ -208,6 +220,8 @@ namespace HealthGateway.Admin.Client.Pages
             public string Hdid { get; }
 
             public string PersonalHealthNumber { get; }
+
+            public DateTime? CreatedDateTime { get; }
 
             public DateTime? LastLoginDateTime { get; }
 

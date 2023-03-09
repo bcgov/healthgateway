@@ -81,12 +81,19 @@
                             Last Login
                         </MudTableSortLabel>
                     </MudTh>
+                    <MudTh>
+                        <MudTableSortLabel SortBy="new Func<SupportUserRow, object>(x => x.CreatedDateTime ?? DateTime.MinValue)"
+                                           InitialDirection="@SortDirection.Descending">
+                            Account Created
+                        </MudTableSortLabel>
+                    </MudTh>
                     <MudTh Style="text-align:right"></MudTh>
                 </HeaderContent>
                 <RowTemplate>
                     <MudTd DataLabel="HDID" data-testid=@($"user-table-hdid-{context.Hdid}")>@context.Hdid</MudTd>
                     <MudTd DataLabel="PHN" data-testid=@($"user-table-phn-{context.Hdid}")>@context.PersonalHealthNumber</MudTd>
                     <MudTd DataLabel="Last Login" data-testid=@($"user-table-last-login-{context.Hdid}")>@DateFormatter.ToShortDateAndTime(context.LastLoginDateTime)</MudTd>
+                    <MudTd DataLabel="Account Created" data-testid=@($"user-table-account-created-{context.Hdid}")>@DateFormatter.ToShortDateAndTime(context.CreatedDateTime)</MudTd>
                     <MudTd Style="text-align:right">
                         <div>
                             <MudTooltip Text="@(context.IsExpanded ? "Collapse" : "Expand")">

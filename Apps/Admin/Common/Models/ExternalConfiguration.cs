@@ -47,5 +47,11 @@ namespace HealthGateway.Admin.Common.Models
         /// </summary>
         [SuppressMessage("Usage", "CA2227:Collection properties should be read only", Justification = "Team decision")]
         public Dictionary<string, Uri> ServiceEndpoints { get; set; } = new();
+
+        /// <summary>
+        /// Gets or sets the TimeZone values.
+        /// </summary>
+        [SuppressMessage("Usage", "CA2227:Collection properties should be read only", Justification = "Team decision")]
+        public Dictionary<string, string> TimeZone { get; set; } = new();
     }
 }

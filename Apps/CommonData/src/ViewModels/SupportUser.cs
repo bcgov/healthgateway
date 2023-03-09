@@ -33,6 +33,11 @@ namespace HealthGateway.Common.Data.ViewModels
         public string Hdid { get; set; } = string.Empty;
 
         /// <summary>
+        /// Gets or sets the user's created date time.
+        /// </summary>
+        public DateTime? CreatedDateTime { get; set; }
+
+        /// <summary>
         /// Gets or sets the user's last login date time.
         /// </summary>
         public DateTime? LastLoginDateTime { get; set; }
