@@ -18,6 +18,7 @@ namespace HealthGateway.GatewayApi.Controllers
 {
     using System;
     using System.Collections.Generic;
+    using System.Threading.Tasks;
     using HealthGateway.Common.AccessManagement.Authorization.Policy;
     using HealthGateway.Common.Data.ViewModels;
     using HealthGateway.GatewayApi.Models;
@@ -59,9 +60,9 @@ namespace HealthGateway.GatewayApi.Controllers
         [HttpGet]
         [Authorize(Policy = SystemDelegatedPatientPolicy.Read)]
         [Route("dependents/{hdid}")]
-        public ActionResult<RequestResult<IEnumerable<DependentModel>>> GetAll(string hdid)
+        public async Task<ActionResult<RequestResult<IEnumerable<DependentModel>>>> GetAll(string hdid)
         {
-            return this.dependentService.GetDependents(hdid);
+            return await this.dependentService.GetDependentsAsync(hdid).ConfigureAwait(true);
         }
 
         /// <summary>

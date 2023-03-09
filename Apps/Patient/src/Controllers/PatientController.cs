@@ -20,6 +20,7 @@ namespace HealthGateway.Patient.Controllers
     using HealthGateway.Common.Data.ViewModels;
     using HealthGateway.Common.Models;
     using HealthGateway.Common.Services;
+    using HealthGateway.Patient.Models;
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
@@ -89,7 +90,7 @@ namespace HealthGateway.Patient.Controllers
         /// <response code="502">Unable to get response from client registry.</response>
         [HttpGet]
         [Produces("application/json")]
-        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(ApiResult<PatientModel>))]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(ApiResult<PatientModelV2>))]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]

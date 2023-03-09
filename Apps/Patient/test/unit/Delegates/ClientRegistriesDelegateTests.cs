@@ -25,6 +25,7 @@ namespace HealthGateway.PatientTests.Delegates
     using HealthGateway.Common.Data.ViewModels;
     using HealthGateway.Common.Models;
     using HealthGateway.Patient.Delegates;
+    using HealthGateway.Patient.Models;
     using Microsoft.Extensions.Logging;
     using Moq;
     using ServiceReference;
@@ -347,13 +348,13 @@ namespace HealthGateway.PatientTests.Delegates
                 clientMock.Object);
 
             // Act
-            ApiResult<PatientModel> actual = await clientRegistryDelegate.GetDemographicsAsync(OidType.Hdid, expectedHdId).ConfigureAwait(true);
+            ApiResult<PatientModelV2> actual = await clientRegistryDelegate.GetDemographicsAsync(OidType.Hdid, expectedHdId).ConfigureAwait(true);
 
             // Verify
             Assert.Equal(expectedHdId, actual.ResourcePayload?.HdId);
             Assert.Equal(expectedPhn, actual.ResourcePayload?.PersonalHealthNumber);
-            Assert.Equal(expectedFirstName, actual.ResourcePayload?.FirstName);
-            Assert.Equal(expectedLastName, actual.ResourcePayload?.LastName);
+            Assert.Equal(expectedFirstName, actual.ResourcePayload?.PreferredName.GivenName);
+            Assert.Equal(expectedLastName, actual.ResourcePayload?.PreferredName.Surname);
             Assert.Equal(expectedBirthDate, actual.ResourcePayload?.Birthdate);
             Assert.Equal(expectedGender, actual.ResourcePayload?.Gender);
             expectedPhysicalAddr.ShouldDeepEqual(actual.ResourcePayload?.PhysicalAddress);
@@ -578,13 +579,13 @@ namespace HealthGateway.PatientTests.Delegates
                 clientMock.Object);
 
             // Act
-            ApiResult<PatientModel> actual = await clientRegistryDelegate.GetDemographicsAsync(OidType.Hdid, expectedHdId).ConfigureAwait(true);
+            ApiResult<PatientModelV2> actual = await clientRegistryDelegate.GetDemographicsAsync(OidType.Hdid, expectedHdId).ConfigureAwait(true);
 
             // Verify
             Assert.Equal(expectedHdId, actual.ResourcePayload?.HdId);
             Assert.Equal(expectedPhn, actual.ResourcePayload?.PersonalHealthNumber);
-            Assert.Equal(expectedFirstName, actual.ResourcePayload?.FirstName);
-            Assert.Equal(expectedLastName, actual.ResourcePayload?.LastName);
+            Assert.Equal(expectedFirstName, actual.ResourcePayload?.PreferredName.GivenName);
+            Assert.Equal(expectedLastName, actual.ResourcePayload?.PreferredName.Surname);
             Assert.Equal(expectedBirthDate, actual.ResourcePayload?.Birthdate);
             Assert.Equal(expectedGender, actual.ResourcePayload?.Gender);
         }
@@ -726,13 +727,13 @@ namespace HealthGateway.PatientTests.Delegates
                 clientMock.Object);
 
             // Act
-            ApiResult<PatientModel> actual = await clientRegistryDelegate.GetDemographicsAsync(OidType.Hdid, expectedHdId).ConfigureAwait(true);
+            ApiResult<PatientModelV2> actual = await clientRegistryDelegate.GetDemographicsAsync(OidType.Hdid, expectedHdId).ConfigureAwait(true);
 
             // Verify
             Assert.Equal(expectedHdId, actual.ResourcePayload?.HdId);
             Assert.Equal(expectedPhn, actual.ResourcePayload?.PersonalHealthNumber);
-            Assert.Equal(expectedFirstName, actual.ResourcePayload?.FirstName);
-            Assert.Equal(expectedLastName, actual.ResourcePayload?.LastName);
+            Assert.Equal(expectedFirstName, actual.ResourcePayload?.PreferredName.GivenName);
+            Assert.Equal(expectedLastName, actual.ResourcePayload?.PreferredName.Surname);
             Assert.Equal(expectedBirthDate, actual.ResourcePayload?.Birthdate);
             Assert.Equal(expectedGender, actual.ResourcePayload?.Gender);
         }
@@ -833,7 +834,7 @@ namespace HealthGateway.PatientTests.Delegates
                 clientMock.Object);
 
             // Act
-            ApiResult<PatientModel> actual = await clientRegistryDelegate.GetDemographicsAsync(OidType.Phn, expectedPhn).ConfigureAwait(true);
+            ApiResult<PatientModelV2> actual = await clientRegistryDelegate.GetDemographicsAsync(OidType.Phn, expectedPhn).ConfigureAwait(true);
 
             // Verify
             Assert.Contains("BCHCIM.GD.0.0019", actual.ResourcePayload?.ResponseCode, StringComparison.InvariantCultureIgnoreCase);
@@ -935,7 +936,7 @@ namespace HealthGateway.PatientTests.Delegates
                 clientMock.Object);
 
             // Act
-            ApiResult<PatientModel> actual = await clientRegistryDelegate.GetDemographicsAsync(OidType.Phn, expectedPhn).ConfigureAwait(true);
+            ApiResult<PatientModelV2> actual = await clientRegistryDelegate.GetDemographicsAsync(OidType.Phn, expectedPhn).ConfigureAwait(true);
 
             // Verify
             Assert.Contains("BCHCIM.GD.0.0021", actual.ResourcePayload?.ResponseCode, StringComparison.InvariantCultureIgnoreCase);
@@ -1037,7 +1038,7 @@ namespace HealthGateway.PatientTests.Delegates
                 clientMock.Object);
 
             // Act
-            ApiResult<PatientModel> actual = await clientRegistryDelegate.GetDemographicsAsync(OidType.Phn, expectedPhn).ConfigureAwait(true);
+            ApiResult<PatientModelV2> actual = await clientRegistryDelegate.GetDemographicsAsync(OidType.Phn, expectedPhn).ConfigureAwait(true);
 
             // Verify
             Assert.Contains("BCHCIM.GD.0.0022", actual.ResourcePayload?.ResponseCode, StringComparison.InvariantCultureIgnoreCase);
@@ -1139,7 +1140,7 @@ namespace HealthGateway.PatientTests.Delegates
                 clientMock.Object);
 
             // Act
-            ApiResult<PatientModel> actual = await clientRegistryDelegate.GetDemographicsAsync(OidType.Phn, expectedPhn).ConfigureAwait(true);
+            ApiResult<PatientModelV2> actual = await clientRegistryDelegate.GetDemographicsAsync(OidType.Phn, expectedPhn).ConfigureAwait(true);
 
             // Verify
             Assert.Contains("BCHCIM.GD.0.0023", actual.ResourcePayload?.ResponseCode, StringComparison.InvariantCultureIgnoreCase);
@@ -1220,7 +1221,7 @@ namespace HealthGateway.PatientTests.Delegates
             IClientRegistriesDelegate clientRegistryDelegate = GetClientRegistriesDelegate(false, false, true);
 
             // Act
-            ApiResult<PatientModel> actual = await clientRegistryDelegate.GetDemographicsAsync(OidType.Phn, Phn, true).ConfigureAwait(true);
+            ApiResult<PatientModelV2> actual = await clientRegistryDelegate.GetDemographicsAsync(OidType.Phn, Phn, true).ConfigureAwait(true);
 
             // Verify
             Assert.NotNull(actual.ResourcePayload);

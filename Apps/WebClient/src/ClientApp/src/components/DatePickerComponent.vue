@@ -19,9 +19,17 @@ library.add(faCalendar);
 
 @Component
 export default class DatePickerComponent extends Vue {
-    @Model("change", { type: String }) public model!: string;
-    @Prop({ default: undefined }) state?: boolean;
-    @Ref("datePicker") datePicker!: BFormDatepicker;
+    @Model("change", { type: String })
+    public model!: string;
+
+    @Prop({ default: undefined })
+    state?: boolean;
+
+    @Prop({ default: () => new DateWrapper("2100-01-01") })
+    maxDate!: DateWrapper;
+
+    @Ref("datePicker")
+    datePicker!: BFormDatepicker;
 
     private value = "";
     private inputValue = "";
@@ -96,9 +104,7 @@ export default class DatePickerComponent extends Vue {
                     ),
                 maxValue: (value: string) =>
                     !value ||
-                    DateWrapper.fromStringFormat(value).isBefore(
-                        new DateWrapper("2100-01-01")
-                    ),
+                    DateWrapper.fromStringFormat(value).isBefore(this.maxDate),
             },
         };
     }
@@ -126,6 +132,7 @@ export default class DatePickerComponent extends Vue {
             <b-form-datepicker
                 ref="datePicker"
                 v-model="value"
+                :max="maxDate.toJSDate()"
                 menu-class="datepicker-style"
                 button-only
                 right
@@ -141,7 +148,7 @@ export default class DatePickerComponent extends Vue {
 
 <style lang="scss">
 @import "@/assets/scss/_variables.scss";
-// Fixes datepicker displaing under site header on mobile
+// Fixes datepicker displaying under site header on mobile
 .datepicker-style {
     z-index: $z_datepicker;
 }

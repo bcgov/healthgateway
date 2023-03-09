@@ -38,6 +38,11 @@ namespace HealthGateway.GatewayApi.Models
         public string DelegateId { get; set; } = null!;
 
         /// <summary>
+        /// Gets or sets the total number of users that have delegated access to this dependent.
+        /// </summary>
+        public int TotalDelegateCount { get; set; }
+
+        /// <summary>
         /// Gets or sets the delegate reason code.
         /// </summary>
         public ResourceDelegateReason ReasonCode { get; set; }

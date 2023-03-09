@@ -23,6 +23,7 @@ namespace HealthGateway.PatientTests.Controllers
     using HealthGateway.Common.Models;
     using HealthGateway.Common.Services;
     using HealthGateway.Patient.Controllers;
+    using HealthGateway.Patient.Models;
     using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
     using Moq;
@@ -88,7 +89,7 @@ namespace HealthGateway.PatientTests.Controllers
             Assert.IsType<OkObjectResult>(actualResult);
             OkObjectResult? okResult = actualResult as OkObjectResult;
             Assert.Equal(StatusCodes.Status200OK, okResult?.StatusCode);
-            ApiResult<PatientModel> apiResult = Assert.IsAssignableFrom<ApiResult<PatientModel>>(okResult?.Value);
+            ApiResult<PatientModelV2> apiResult = Assert.IsAssignableFrom<ApiResult<PatientModelV2>>(okResult?.Value);
             Assert.Equal(MockedHdId, apiResult.ResourcePayload!.HdId);
         }
 
@@ -117,6 +118,34 @@ namespace HealthGateway.PatientTests.Controllers
             };
         }
 
+        private static PatientModelV2 GetPatientModelV2()
+        {
+            return new()
+            {
+                Birthdate = MockedBirthDate,
+                CommonName = new Name
+                {
+                    GivenName = MockedFirstName,
+                    Surname = MockedLastName,
+                },
+                Gender = MockedGender,
+                HdId = MockedHdId,
+                PersonalHealthNumber = MockedPersonalHealthNumber,
+                PhysicalAddress = new Address
+                {
+                    City = "Victoria",
+                    State = "BC",
+                    Country = "CA",
+                },
+                PostalAddress = new Address
+                {
+                    City = "Vancouver",
+                    State = "BC",
+                    Country = "CA",
+                },
+            };
+        }
+
         private static PatientController GetPatientController()
         {
             Mock<IPatientService> patientServiceV1 = new();
@@ -127,9 +156,9 @@ namespace HealthGateway.PatientTests.Controllers
                 ResourcePayload = GetPatientModel(),
             };
 
-            ApiResult<PatientModel> apiResult = new()
+            ApiResult<PatientModelV2> apiResult = new()
             {
-                ResourcePayload = GetPatientModel(),
+                ResourcePayload = GetPatientModelV2(),
             };
 
             patientServiceV2.Setup(x => x.GetPatient(It.IsAny<string>(), PatientIdentifierType.Hdid, false)).ReturnsAsync(apiResult);

@@ -4,7 +4,7 @@
         "acceptedTermsOfService": true,
         "email": null,
         "isEmailVerified": false,
-        "smsNumber": "2501234567",
+        "smsNumber": "2506715000",
         "isSMSNumberVerified": false,
         "hasTermsOfServiceUpdated": false,
         "lastLoginDateTime": "2021-11-23T05:55:14Z",
@@ -14,7 +14,7 @@
             "2021-11-21T05:49:16Z"
         ],
         "closedDateTime": null,
-        "preferences": {            
+        "preferences": {
             "tutorialMenuExport": {
                 "hdId": "P6FFO433A5WPMVTGM7T4ZVWBKCSVNAYGTWTU3J2LWMGUMERKI72A",
                 "preference": "tutorialMenuExport",

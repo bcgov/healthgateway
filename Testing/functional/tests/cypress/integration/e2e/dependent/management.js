@@ -1,4 +1,8 @@
-const { AuthMethod } = require("../../../../support/constants");
+const { AuthMethod } = require("../../../support/constants");
+import {
+    getCardSelector,
+    getTabButtonSelector,
+} from "../../../support/functions/dependent";
 
 const validDependent = {
     firstName: "Sam ", // Append space to ensure field is trimmed
@@ -19,28 +23,9 @@ const noHdidDependent = {
 };
 
 const agedOutDependentHdid = "232434345442257";
-const agedOutDependentCardId = `[data-testid=dependent-card-${agedOutDependentHdid}]`;
 const agedOutDependentDivId = `[data-testid=dependent-is-expired-div-${agedOutDependentHdid}]`;
 const agedOutDependentName = "John T";
 const agedOutDependentRemoveButtonId = `[data-testid=remove-dependent-btn-${agedOutDependentHdid}]`;
-const validDependentHdid = "162346565465464564565463257";
-const validDependentTimelinePath = `/dependents/${validDependentHdid}/timeline`;
-const validDependentClinicalDocumentsButtonId = `[data-testid=dependent-entry-type-ClinicalDocument-${validDependentHdid}]`;
-const validDependentCovid19TestResultsButtonId = `[data-testid=dependent-entry-type-Covid19TestResult-${validDependentHdid}]`;
-const validDependentFederalProofOfVaccinationButtonId = `[data-testid=proof-vaccination-card-btn-${validDependentHdid}]`;
-const validDependentImmunizationsButtonId = `[data-testid=dependent-entry-type-Immunization-${validDependentHdid}]`;
-const validDependentLabResultsButtonId = `[data-testid=dependent-entry-type-LabResult-${validDependentHdid}]`;
-
-function validateDashboardCard(buttonId, filterType) {
-    cy.get(buttonId).should("be.enabled", "be.visible").click();
-    cy.location("pathname").should("eq", validDependentTimelinePath);
-    cy.checkTimelineHasLoaded();
-
-    cy.get("[data-testid=filterContainer]").should("not.exist");
-    cy.get("[data-testid=filterDropdown]").click();
-    cy.get(`[data-testid=${filterType}-filter]`).should("to.be.checked");
-    cy.get("[data-testid=btnFilterCancel]").click();
-}
 
 describe("dependents - dashboard", () => {
     beforeEach(() => {
@@ -79,39 +64,24 @@ describe("dependents - dashboard", () => {
         );
     });
 
-    it("Validate dashboard immunizations tab click to timeline", () => {
-        validateDashboardCard(
-            validDependentImmunizationsButtonId,
-            "Immunization"
-        );
-    });
+    it("Validate and remove aged out dependent", () => {
+        const hdid = agedOutDependentHdid;
 
-    it("Validate dashboard lab results tab click to timeline", () => {
-        validateDashboardCard(validDependentLabResultsButtonId, "LabResult");
-    });
-
-    it("Validate dashboard covid19 test results tab click to timeline", () => {
-        validateDashboardCard(
-            validDependentCovid19TestResultsButtonId,
-            "Covid19TestResult"
-        );
-    });
-
-    it("Validate dashboard clinical documents tab click to timeline", () => {
-        validateDashboardCard(
-            validDependentClinicalDocumentsButtonId,
-            "ClinicalDocument"
-        );
-    });
-
-    it("Validate dashboard aged out dependent and remove", () => {
-        cy.get(agedOutDependentCardId)
+        cy.get(getCardSelector(hdid))
             .as("agedOutDependentCard")
             .within(() => {
                 cy.get("[data-testid=dependentName]").contains(
                     agedOutDependentName
                 );
                 cy.get(agedOutDependentDivId).should("be.visible");
+
+                const profileTabButtonSelector = getTabButtonSelector(
+                    hdid,
+                    "profile"
+                );
+                cy.get(profileTabButtonSelector)
+                    .should("be.visible")
+                    .should("have.class", "disabled");
             });
 
         cy.get("@agedOutDependentCard").within(() => {
@@ -119,23 +89,6 @@ describe("dependents - dashboard", () => {
         });
 
         cy.get("@agedOutDependentCard").should("not.exist");
-    });
-
-    it("Validate download of federal proof of vaccination", () => {
-        cy.intercept("GET", "**/AuthenticatedVaccineStatus/pdf?hdid=*");
-
-        cy.get(validDependentFederalProofOfVaccinationButtonId)
-            .should("be.visible", "be.enabled")
-            .click();
-
-        cy.get("[data-testid=genericMessageModal]").should("be.visible");
-        cy.get("[data-testid=genericMessageSubmitBtn]").click();
-
-        cy.get("[data-testid=loadingSpinner]").should("be.visible");
-        cy.verifyDownload("VaccineProof.pdf", {
-            timeout: 60000,
-            interval: 5000,
-        });
     });
 
     it("Validate text fields on add dependent modal", () => {
@@ -177,7 +130,7 @@ describe("dependents - dashboard", () => {
         cy.get("[data-testid=newDependentModal]").should("not.exist");
     });
 
-    it("Validate maximum age check", () => {
+    it("Validate maximum age check on add dependent modal", () => {
         // Validate that adding a dependent fails when they are over the age of 12
         cy.get("[data-testid=addNewDependentBtn]").click();
         cy.get("[data-testid=newDependentModalText]").should(
@@ -200,7 +153,7 @@ describe("dependents - dashboard", () => {
         cy.get("[data-testid=cancelRegistrationBtn]").click();
     });
 
-    it("Validate data mismatch", () => {
+    it("Validate data mismatch on add dependent modal", () => {
         cy.get("[data-testid=addNewDependentBtn]").click();
 
         cy.get("[data-testid=newDependentModalText]").should(
@@ -232,7 +185,7 @@ describe("dependents - dashboard", () => {
         cy.get("[data-testid=cancelRegistrationBtn]").click();
     });
 
-    it("Validate no hdid", () => {
+    it("Validate no hdid on add dependent modal", () => {
         cy.get("[data-testid=addNewDependentBtn]").click();
 
         cy.get("[data-testid=newDependentModalText]").should(
@@ -264,7 +217,8 @@ describe("dependents - dashboard", () => {
         cy.get("[data-testid=cancelRegistrationBtn]").click();
     });
 
-    it("Validate adding, viewing, and removing dependents", () => {
+    // test should be skipped until the similar test for the old dependent page is removed
+    it.skip("Validate adding, viewing, and removing dependents", () => {
         cy.log("Adding dependent");
 
         cy.get("[data-testid=addNewDependentBtn]").click();

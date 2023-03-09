@@ -55,6 +55,7 @@ export default class NewDependentComponent extends Vue {
         PHN: "",
     };
     private accepted = false;
+    private maxDate = new DateWrapper();
 
     private validations(): unknown {
         return {
@@ -235,6 +236,7 @@ export default class NewDependentComponent extends Vue {
                                         id="dateOfBirth"
                                         v-model="dependent.dateOfBirth"
                                         data-testid="dateOfBirthInput"
+                                        :max-date="maxDate"
                                         :state="
                                             isValid($v.dependent.dateOfBirth)
                                         "
@@ -250,7 +252,21 @@ export default class NewDependentComponent extends Vue {
                                     />
                                     <b-form-invalid-feedback
                                         :state="
-                                            isValid($v.dependent.dateOfBirth)
+                                            !$v.dependent.dateOfBirth.$dirty ||
+                                            ($v.dependent.dateOfBirth
+                                                .required &&
+                                                $v.dependent.dateOfBirth
+                                                    .minLength &&
+                                                $v.dependent.dateOfBirth
+                                                    .maxValue)
+                                        "
+                                    >
+                                        Invalid date
+                                    </b-form-invalid-feedback>
+                                    <b-form-invalid-feedback
+                                        :state="
+                                            !$v.dependent.dateOfBirth.$dirty ||
+                                            $v.dependent.dateOfBirth.minValue
                                         "
                                     >
                                         Dependent must be under the age of
