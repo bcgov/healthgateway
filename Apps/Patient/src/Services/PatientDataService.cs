@@ -37,12 +37,24 @@ namespace HealthGateway.Patient.Services
             this.personalAccountsService = personalAccountsService;
         }
 
-        public async Task<PatientDataResponse> Query(PatientDataQuery query, CancellationToken cancellationToken)
+        public async Task<PatientDataResponse> Query(PatientDataQuery query, CancellationToken ct)
         {
             var pid = await ResolvePidFromHdid(query.Hdid);
-            var results = await patientDataRepository.Query(new HealthServicesQuery(pid, query.PatientDataTypes.Select(MapToHealthServiceCategory)));
+            var results = await patientDataRepository.Query(
+                new HealthServicesQuery(pid, query.PatientDataTypes.Select(MapToHealthServiceCategory)),
+                ct);
 
             return new PatientDataResponse(results.Items.Select(MapToPatientData).ToArray());
+        }
+
+        public async Task<PatientFileResponse?> Query(PatientFileQuery query, CancellationToken ct)
+        {
+            var pid = await ResolvePidFromHdid(query.Hdid);
+            var file = (await patientDataRepository.Query(new PatientDataAccess.PatientFileQuery(pid, query.FileId), ct)).Items.FirstOrDefault() as PatientFile;
+
+            return file != null
+                ? new PatientFileResponse(file.Content, file.ContentType)
+                : null;
         }
 
         private PatientData MapToPatientData(HealthData healthData)

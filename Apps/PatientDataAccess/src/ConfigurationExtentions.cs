@@ -16,6 +16,7 @@
 
 using System;
 using HealthGateway.Common.Utils.Phsa;
+using HealthGateway.PatientDataAccess.Api;
 using Refit;
 
 namespace HealthGateway.PatientDataAccess

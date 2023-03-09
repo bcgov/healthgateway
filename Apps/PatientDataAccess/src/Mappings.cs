@@ -15,6 +15,7 @@
 // -------------------------------------------------------------------------
 
 using AutoMapper;
+using HealthGateway.PatientDataAccess.Api;
 
 namespace HealthGateway.PatientDataAccess
 {
@@ -28,7 +29,6 @@ namespace HealthGateway.PatientDataAccess
             CreateMap<OrganDonor, OrganDonorRegistration>()
                 .ForMember(d => d.Status, opts => opts.MapFrom(s => s.DonorStatus))
                 .ForMember(d => d.RegistrationFileId, opts => opts.MapFrom(s => s.HealthDataFileId))
-
                 ;
         }
     }

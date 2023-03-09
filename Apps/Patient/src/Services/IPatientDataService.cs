@@ -33,9 +33,17 @@ namespace HealthGateway.Patient.Services
         /// Query data services
         /// </summary>
         /// <param name="query">The query message</param>
-        /// <param name="cancellationToken">The cancellation token</param>
+        /// <param name="ct">The cancellation token</param>
         /// <returns>The Response message</returns>
-        Task<PatientDataResponse> Query(PatientDataQuery query, CancellationToken cancellationToken);
+        Task<PatientDataResponse> Query(PatientDataQuery query, CancellationToken ct);
+
+        /// <summary>
+        /// Query patient files
+        /// </summary>
+        /// <param name="query">The query</param>
+        /// <param name="ct">The cancellation token</param>
+        /// <returns>Patient file or null if not found</returns>
+        Task<PatientFileResponse?> Query(PatientFileQuery query, CancellationToken ct);
     }
 
     /// <summary>
@@ -112,6 +120,20 @@ namespace HealthGateway.Patient.Services
         /// <inheritdoc/>
         public override string Type { get; set; } = nameof(OrganDonorRegistrationData);
     }
+
+    /// <summary>
+    /// Query patient files
+    /// </summary>
+    /// <param name="Hdid">Patient's hdid</param>
+    /// <param name="FileId">File id</param>
+    public record PatientFileQuery(string Hdid, string FileId);
+
+    /// <summary>
+    /// Patient file response
+    /// </summary>
+    /// <param name="Content">The file content</param>
+    /// <param name="ContentType">The file content type</param>
+    public record PatientFileResponse(byte[] Content, string ContentType);
 
     internal class PatientDataJsonConverter : PolymorphicJsonConverter<PatientData>
     {

@@ -16,14 +16,18 @@
 
 using System;
 using System.Linq;
+using System.Security.Cryptography;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 using HealthGateway.Common.Services;
 using HealthGateway.Patient.Services;
+using HealthGateway.PatientDataAccess;
 using Moq;
 using Shouldly;
 using Xunit;
+using PatientDataQuery = HealthGateway.Patient.Services.PatientDataQuery;
+using PatientFileQuery = HealthGateway.Patient.Services.PatientFileQuery;
 
 namespace HealthGateway.PatientTests.Services
 {
@@ -68,9 +72,12 @@ namespace HealthGateway.PatientTests.Services
 
             var patientDataRepository = new Mock<PatientDataAccess.IPatientDataRepository>();
             patientDataRepository
-                .Setup(o => o.Query(It.Is<PatientDataAccess.HealthServicesQuery>(q =>
-                    q.Pid == pid && q.Categories.Any(c => c == PatientDataAccess.HealthServiceCategory.OrganDonor))))
-                .ReturnsAsync(new PatientDataAccess.QueryResult(new[] { expected }));
+                .Setup(o => o.Query(
+                    It.Is<PatientDataAccess.HealthServicesQuery>(q =>
+                        q.Pid == pid && q.Categories.Any(c => c == PatientDataAccess.HealthServiceCategory.OrganDonor)),
+                    It.IsAny<CancellationToken>()))
+                .ReturnsAsync(new PatientDataAccess.PatientDataQueryResult(new[] { expected }));
+
             var personalAccountService = new Mock<IPersonalAccountsService>();
             personalAccountService.Setup(o => o.GetPatientAccountAsync(hdid)).ReturnsAsync(new Common.Models.PHSA.PersonalAccount
             {
@@ -86,6 +93,62 @@ namespace HealthGateway.PatientTests.Services
             actual.Status.ShouldBe(expected.Status.ToString());
             actual.StatusMessage.ShouldBe(expected.StatusMessage);
             actual.RegistrationFileId.ShouldBe(expected.RegistrationFileId);
+        }
+
+        [Fact]
+        public async Task CanGetPatientFile()
+        {
+            var expected = new PatientDataAccess.PatientFile(Guid.NewGuid().ToString(), RandomNumberGenerator.GetBytes(1024), "text/plain");
+
+            var patientDataRepository = new Mock<PatientDataAccess.IPatientDataRepository>();
+            patientDataRepository
+                .Setup(o => o.Query(
+                    It.Is<PatientDataAccess.PatientFileQuery>(q =>
+                        q.Pid == pid && q.FileId == expected.FileId),
+                    It.IsAny<CancellationToken>()))
+                .ReturnsAsync(new PatientDataAccess.PatientDataQueryResult(new[] { expected }));
+
+            var personalAccountService = new Mock<IPersonalAccountsService>();
+            personalAccountService.Setup(o => o.GetPatientAccountAsync(hdid)).ReturnsAsync(new Common.Models.PHSA.PersonalAccount
+            {
+                Id = Guid.NewGuid(),
+                PatientIdentity = new Common.Models.PHSA.PatientIdentity { Pid = pid }
+            });
+
+            var sut = new PatientDataService(patientDataRepository.Object, personalAccountService.Object);
+
+            var result = await sut.Query(new PatientFileQuery(hdid, expected.FileId), CancellationToken.None);
+
+            var actual = result.ShouldBeOfType<PatientFileResponse>();
+            actual.Content.ShouldBe(expected.Content);
+            actual.ContentType.ShouldBe(expected.ContentType);
+        }
+
+        [Fact]
+        public async Task CanHandlePatientFileNotFound()
+        {
+            var fileId = Guid.NewGuid().ToString();
+
+            var patientDataRepository = new Mock<PatientDataAccess.IPatientDataRepository>();
+            patientDataRepository
+                .Setup(o => o.Query(
+                    It.Is<PatientDataAccess.PatientFileQuery>(q =>
+                        q.Pid == pid && q.FileId == fileId),
+                    It.IsAny<CancellationToken>()))
+                .ReturnsAsync(new PatientDataAccess.PatientDataQueryResult(Array.Empty<PatientFile>()));
+
+            var personalAccountService = new Mock<IPersonalAccountsService>();
+            personalAccountService.Setup(o => o.GetPatientAccountAsync(hdid)).ReturnsAsync(new Common.Models.PHSA.PersonalAccount
+            {
+                Id = Guid.NewGuid(),
+                PatientIdentity = new Common.Models.PHSA.PatientIdentity { Pid = pid }
+            });
+
+            var sut = new PatientDataService(patientDataRepository.Object, personalAccountService.Object);
+
+            var result = await sut.Query(new PatientFileQuery(hdid, fileId), CancellationToken.None);
+
+            result.ShouldBeNull();
         }
     }
 }

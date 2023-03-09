@@ -16,9 +16,11 @@
 
 using System;
 using System.Linq;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using AutoMapper;
+using HealthGateway.PatientDataAccess.Api;
 
 namespace HealthGateway.PatientDataAccess
 {
@@ -33,23 +35,33 @@ namespace HealthGateway.PatientDataAccess
             this.mapper = mapper;
         }
 
-        public async Task<QueryResult> Query(PatientDataQuery query)
+        public async Task<PatientDataQueryResult> Query(PatientDataQuery query, CancellationToken ct)
         {
-            using var cts = new CancellationTokenSource();
-
-            return await (query switch
+            return query switch
             {
-                HealthServicesQuery q => Handle(q, cts.Token),
-                _ => throw new NotImplementedException()
-            });
+                HealthServicesQuery q => await Handle(q, ct),
+                PatientFileQuery q => await Handle(q, ct),
+
+                _ => throw new NotImplementedException($"Query type {query.GetType().Name}")
+            };
         }
 
-        private async Task<QueryResult> Handle(HealthServicesQuery query, CancellationToken ct)
+        private async Task<PatientDataQueryResult> Handle(HealthServicesQuery query, CancellationToken ct)
         {
             var categories = query.Categories.Select(c => Map(c)).ToArray();
-            var results = await patientApi.GetHealthOptionsAsync(query.Pid, categories, ct);
+            var results = await patientApi.GetHealthOptionsAsync(query.Pid, categories, ct) ??
+                          new HealthOptionsResult(new HealthOptionMetadata(), Array.Empty<HealthOptionData>());
 
-            return new QueryResult(results.Data.Select(d => Map(d)));
+            return new PatientDataQueryResult(results.Data.Select(Map));
+        }
+
+        private async Task<PatientDataQueryResult> Handle(PatientFileQuery query, CancellationToken ct)
+        {
+            var fileResult = await patientApi.GetFile(query.Pid, query.FileId, ct);
+            var mappedFiles = new[] { fileResult }
+                .Where(f => f?.Data != null)
+                .Select(f => Map(query.FileId, f!));
+            return new PatientDataQueryResult(mappedFiles);
         }
 
         private HealthData Map(HealthOptionData healthOptionData) => mapper.Map<HealthData>(healthOptionData);
@@ -61,5 +73,8 @@ namespace HealthGateway.PatientDataAccess
 
                 _ => throw new NotImplementedException($"{category}"),
             };
+
+        private static PatientFile Map(string fileId, FileResult file) =>
+            new(fileId, Encoding.Default.GetBytes(file.Data!), file.MediaType ?? string.Empty);
     }
 }

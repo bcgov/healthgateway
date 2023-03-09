@@ -14,6 +14,8 @@
 //  limitations under the License.
 // -------------------------------------------------------------------------
 
+using System.Threading;
+
 namespace HealthGateway.PatientDataAccess
 {
     using System;
@@ -29,8 +31,9 @@ namespace HealthGateway.PatientDataAccess
         /// Query patient data
         /// </summary>
         /// <param name="query">The query</param>
+        /// <param name="ct">Cancellation token</param>
         /// <returns>The query result</returns>
-        Task<QueryResult> Query(PatientDataQuery query);
+        Task<PatientDataQueryResult> Query(PatientDataQuery query, CancellationToken ct);
     }
 
     /// <summary>
@@ -44,6 +47,11 @@ namespace HealthGateway.PatientDataAccess
     public record HealthServicesQuery(Guid Pid, IEnumerable<HealthServiceCategory> Categories) : PatientDataQuery;
 
     /// <summary>
+    /// Query patient files
+    /// </summary>
+    public record PatientFileQuery(Guid Pid, string FileId) : PatientDataQuery;
+
+    /// <summary>
     /// Health service categories
     /// </summary>
     public enum HealthServiceCategory
@@ -55,9 +63,9 @@ namespace HealthGateway.PatientDataAccess
     }
 
     /// <summary>
-    /// The query result payload
+    /// The health data query result payload
     /// </summary>
-    public record QueryResult(IEnumerable<HealthData> Items);
+    public record PatientDataQueryResult(IEnumerable<HealthData> Items);
 
     /// <summary>
     /// abstract record for health data
@@ -115,4 +123,9 @@ namespace HealthGateway.PatientDataAccess
         /// </summary>
         Pending
     }
+
+    /// <summary>
+    /// Represents a patient file
+    /// </summary>
+    public record PatientFile(string FileId, byte[] Content, string ContentType) : HealthData;
 }

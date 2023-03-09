@@ -22,13 +22,18 @@ using System.Threading.Tasks;
 using HealthGateway.Common.Utils;
 using Refit;
 
-namespace HealthGateway.PatientDataAccess
+namespace HealthGateway.PatientDataAccess.Api
 {
     internal interface IPatientApi
     {
+        [Get("/patient/{pid}/file/{fileId")]
+        Task<FileResult?> GetFile(Guid pid, string fileId, CancellationToken ct);
+
         [Get("/patient/{pid}/health-options")]
-        Task<HealthOptionsResult> GetHealthOptionsAsync(Guid pid, [Query] string[] categories, CancellationToken ct);
+        Task<HealthOptionsResult?> GetHealthOptionsAsync(Guid pid, [Query] string[] categories, CancellationToken ct);
     }
+
+    internal record FileResult(string? MediaType, string? Data, string? Encoding);
 
     internal record HealthOptionsResult(HealthOptionMetadata Metadata, IEnumerable<HealthOptionData> Data);
 
