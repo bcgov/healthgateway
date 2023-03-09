@@ -14,12 +14,11 @@
 //  limitations under the License.
 // -------------------------------------------------------------------------
 
-using System.Threading;
-
 namespace HealthGateway.PatientDataAccess
 {
     using System;
     using System.Collections.Generic;
+    using System.Threading;
     using System.Threading.Tasks;
 
     /// <summary>

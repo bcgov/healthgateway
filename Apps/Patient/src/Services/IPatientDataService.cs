@@ -14,16 +14,16 @@
 //  limitations under the License.
 // -------------------------------------------------------------------------
 
-using System;
-using System.Collections.Generic;
-using System.Runtime.Serialization;
-using System.Text.Json.Serialization;
-using System.Threading;
-using System.Threading.Tasks;
-using HealthGateway.Common.Utils;
-
 namespace HealthGateway.Patient.Services
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Runtime.Serialization;
+    using System.Text.Json.Serialization;
+    using System.Threading;
+    using System.Threading.Tasks;
+    using HealthGateway.Common.Utils;
+
     /// <summary>
     /// Provides access to patient related data services
     /// </summary>

@@ -14,11 +14,11 @@
 //  limitations under the License.
 // -------------------------------------------------------------------------
 
-using AutoMapper;
-using HealthGateway.PatientDataAccess.Api;
-
 namespace HealthGateway.PatientDataAccess
 {
+    using AutoMapper;
+    using HealthGateway.PatientDataAccess.Api;
+
     internal class Mappings : Profile
     {
         public Mappings()

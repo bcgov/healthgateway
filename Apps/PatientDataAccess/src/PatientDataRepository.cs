@@ -14,17 +14,17 @@
 //  limitations under the License.
 // -------------------------------------------------------------------------
 
-using System;
-using System.Linq;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
-using AutoMapper;
-using HealthGateway.PatientDataAccess.Api;
-using Refit;
-
 namespace HealthGateway.PatientDataAccess
 {
+    using System;
+    using System.Linq;
+    using System.Text;
+    using System.Threading;
+    using System.Threading.Tasks;
+    using AutoMapper;
+    using HealthGateway.PatientDataAccess.Api;
+    using Refit;
+
     internal class PatientDataRepository : IPatientDataRepository
     {
         private readonly IPatientApi patientApi;

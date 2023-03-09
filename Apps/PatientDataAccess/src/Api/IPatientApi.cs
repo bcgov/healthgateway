@@ -14,16 +14,16 @@
 //  limitations under the License.
 // -------------------------------------------------------------------------
 
-using System;
-using System.Collections.Generic;
-using System.Text.Json.Serialization;
-using System.Threading;
-using System.Threading.Tasks;
-using HealthGateway.Common.Utils;
-using Refit;
-
 namespace HealthGateway.PatientDataAccess.Api
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Text.Json.Serialization;
+    using System.Threading;
+    using System.Threading.Tasks;
+    using HealthGateway.Common.Utils;
+    using Refit;
+
     internal interface IPatientApi
     {
         [Get("/patient/{pid}/file/{fileId}")]

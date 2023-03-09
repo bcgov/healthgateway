@@ -673,6 +673,9 @@ dotnet_diagnostic.s1135.severity = warning
 # SA1000: Keywords should be spaced correctly
 dotnet_diagnostic.sa1000.severity = error
 
+ # SA1200: Using directives should be placed correctly
+dotnet_diagnostic.sa1200.severity = none
+
 # Microsoft .NET properties
 csharp_new_line_before_members_in_object_initializers = false
 csharp_preferred_modifier_order = public, private, protected, internal, new, static, abstract, virtual, sealed, readonly, override, extern, unsafe, volatile, async:suggestion

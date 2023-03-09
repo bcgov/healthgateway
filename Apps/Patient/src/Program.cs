@@ -14,23 +14,23 @@
 // limitations under the License.
 //-------------------------------------------------------------------------
 
-using System;
-using System.Diagnostics.CodeAnalysis;
-using System.Text.Json.Serialization;
-using System.Threading.Tasks;
-using HealthGateway.Common.AspNetConfiguration;
-using HealthGateway.Common.AspNetConfiguration.Modules;
-using HealthGateway.Patient.Delegates;
-using HealthGateway.Patient.Services;
-using HealthGateway.PatientDataAccess;
-using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
-
 namespace HealthGateway.Patient
 {
+    using System;
+    using System.Diagnostics.CodeAnalysis;
+    using System.Text.Json.Serialization;
+    using System.Threading.Tasks;
+    using HealthGateway.Common.AspNetConfiguration;
+    using HealthGateway.Common.AspNetConfiguration.Modules;
+    using HealthGateway.Patient.Delegates;
+    using HealthGateway.Patient.Services;
+    using HealthGateway.PatientDataAccess;
+    using Microsoft.AspNetCore.Builder;
+    using Microsoft.AspNetCore.Hosting;
+    using Microsoft.Extensions.Configuration;
+    using Microsoft.Extensions.DependencyInjection;
+    using Microsoft.Extensions.Logging;
+
     /// <summary>
     /// The entry point for the project.
     /// </summary>

@@ -14,15 +14,15 @@
 //  limitations under the License.
 // -------------------------------------------------------------------------
 
-using System;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
-using HealthGateway.Common.Services;
-using HealthGateway.PatientDataAccess;
-
 namespace HealthGateway.Patient.Services
 {
+    using System;
+    using System.Linq;
+    using System.Threading;
+    using System.Threading.Tasks;
+    using HealthGateway.Common.Services;
+    using HealthGateway.PatientDataAccess;
+
     internal class PatientDataService : IPatientDataService
     {
         private readonly IPatientDataRepository patientDataRepository;

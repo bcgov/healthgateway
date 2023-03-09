@@ -14,14 +14,13 @@
 //  limitations under the License.
 // -------------------------------------------------------------------------
 
-using System;
-using HealthGateway.Common.Utils.Phsa;
-using HealthGateway.PatientDataAccess.Api;
-using Refit;
-
 namespace HealthGateway.PatientDataAccess
 {
+    using System;
+    using HealthGateway.Common.Utils.Phsa;
+    using HealthGateway.PatientDataAccess.Api;
     using Microsoft.Extensions.DependencyInjection;
+    using Refit;
 
     /// <summary>
     /// Helper class to add and configure <see cref="IPatientDataRepository"/> dependencies

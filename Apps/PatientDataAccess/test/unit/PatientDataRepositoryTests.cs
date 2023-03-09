@@ -14,16 +14,16 @@
 //  limitations under the License.
 // -------------------------------------------------------------------------
 
-using System.Net;
-using System.Text;
-using AutoMapper;
-using HealthGateway.PatientDataAccess;
-using HealthGateway.PatientDataAccess.Api;
-using Moq;
-using Refit;
-
 namespace PatientDataAccessTests
 {
+    using System.Net;
+    using System.Text;
+    using AutoMapper;
+    using HealthGateway.PatientDataAccess;
+    using HealthGateway.PatientDataAccess.Api;
+    using Moq;
+    using Refit;
+
     public class PatientDataRepositoryTests
     {
         private readonly Guid pid = Guid.NewGuid();

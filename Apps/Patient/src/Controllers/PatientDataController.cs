@@ -14,18 +14,18 @@
 //  limitations under the License.
 // -------------------------------------------------------------------------
 
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
-using HealthGateway.Common.AccessManagement.Authorization.Policy;
-using HealthGateway.Common.Data.ErrorHandling;
-using HealthGateway.Patient.Services;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-
 namespace HealthGateway.Patient.Controllers
 {
+    using System.Linq;
+    using System.Threading;
+    using System.Threading.Tasks;
+    using HealthGateway.Common.AccessManagement.Authorization.Policy;
+    using HealthGateway.Common.Data.ErrorHandling;
+    using HealthGateway.Patient.Services;
+    using Microsoft.AspNetCore.Authorization;
+    using Microsoft.AspNetCore.Http;
+    using Microsoft.AspNetCore.Mvc;
+
     /// <summary>
     /// Endpoint to query and manage patient related data
     /// </summary>

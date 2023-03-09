@@ -14,18 +14,18 @@
 //  limitations under the License.
 // -------------------------------------------------------------------------
 
-using System.Diagnostics.CodeAnalysis;
-using HealthGateway.Common.Api;
-using HealthGateway.Common.Models.PHSA;
-using HealthGateway.Common.Utils.Phsa;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.DependencyInjection.Extensions;
-using Microsoft.Extensions.Logging;
-using Refit;
-
 namespace HealthGateway.Common.AspNetConfiguration.Modules
 {
+    using System.Diagnostics.CodeAnalysis;
+    using HealthGateway.Common.Api;
+    using HealthGateway.Common.Models.PHSA;
+    using HealthGateway.Common.Utils.Phsa;
+    using Microsoft.Extensions.Configuration;
+    using Microsoft.Extensions.DependencyInjection;
+    using Microsoft.Extensions.DependencyInjection.Extensions;
+    using Microsoft.Extensions.Logging;
+    using Refit;
+
     /// <summary>
     /// Provides ASP.Net Services for personal account access.
     /// </summary>

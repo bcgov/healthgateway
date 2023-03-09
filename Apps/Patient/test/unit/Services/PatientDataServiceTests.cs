@@ -14,23 +14,23 @@
 //  limitations under the License.
 // -------------------------------------------------------------------------
 
-using System;
-using System.Linq;
-using System.Security.Cryptography;
-using System.Text.Json;
-using System.Threading;
-using System.Threading.Tasks;
-using HealthGateway.Common.Services;
-using HealthGateway.Patient.Services;
-using HealthGateway.PatientDataAccess;
-using Moq;
-using Shouldly;
-using Xunit;
-using PatientDataQuery = HealthGateway.Patient.Services.PatientDataQuery;
-using PatientFileQuery = HealthGateway.Patient.Services.PatientFileQuery;
-
 namespace HealthGateway.PatientTests.Services
 {
+    using System;
+    using System.Linq;
+    using System.Security.Cryptography;
+    using System.Text.Json;
+    using System.Threading;
+    using System.Threading.Tasks;
+    using HealthGateway.Common.Services;
+    using HealthGateway.Patient.Services;
+    using HealthGateway.PatientDataAccess;
+    using Moq;
+    using Shouldly;
+    using Xunit;
+    using PatientDataQuery = HealthGateway.Patient.Services.PatientDataQuery;
+    using PatientFileQuery = HealthGateway.Patient.Services.PatientFileQuery;
+
     public class PatientDataServiceTests
     {
         private readonly Guid pid = Guid.NewGuid();

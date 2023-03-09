@@ -14,12 +14,12 @@
 //  limitations under the License.
 // -------------------------------------------------------------------------
 
-using System;
-using System.Text.Json;
-using System.Text.Json.Serialization;
-
 namespace HealthGateway.Common.Utils
 {
+    using System;
+    using System.Text.Json;
+    using System.Text.Json.Serialization;
+
     /// <summary>
     /// A json converter for types that inherits from T.
     /// It uses a discriminator to write and read json payload
