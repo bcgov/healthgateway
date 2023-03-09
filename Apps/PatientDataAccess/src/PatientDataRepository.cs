@@ -17,6 +17,7 @@
 namespace HealthGateway.PatientDataAccess
 {
     using System;
+    using System.Diagnostics.CodeAnalysis;
     using System.Linq;
     using System.Text;
     using System.Threading;
@@ -25,6 +26,7 @@ namespace HealthGateway.PatientDataAccess
     using HealthGateway.PatientDataAccess.Api;
     using Refit;
 
+    [SuppressMessage("StyleCop.CSharp.DocumentationRules", "SA1600:Elements should be documented", Justification = "Team decision")]
     internal class PatientDataRepository : IPatientDataRepository
     {
         private readonly IPatientApi patientApi;

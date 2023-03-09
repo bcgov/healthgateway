@@ -16,9 +16,11 @@
 
 namespace HealthGateway.PatientDataAccess
 {
+    using System.Diagnostics.CodeAnalysis;
     using AutoMapper;
     using HealthGateway.PatientDataAccess.Api;
 
+    [SuppressMessage("StyleCop.CSharp.DocumentationRules", "SA1600:Elements should be documented", Justification = "Team decision")]
     internal class Mappings : Profile
     {
         public Mappings()

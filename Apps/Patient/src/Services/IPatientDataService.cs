@@ -18,6 +18,7 @@ namespace HealthGateway.Patient.Services
 {
     using System;
     using System.Collections.Generic;
+    using System.Diagnostics.CodeAnalysis;
     using System.Runtime.Serialization;
     using System.Text.Json.Serialization;
     using System.Threading;
@@ -134,10 +135,13 @@ namespace HealthGateway.Patient.Services
     /// <param name="ContentType">The file content type</param>
     public record PatientFileResponse(byte[] Content, string ContentType);
 
+    [SuppressMessage("StyleCop.CSharp.DocumentationRules", "SA1600:Elements should be documented", Justification = "Team decision")]
     internal class PatientDataJsonConverter : PolymorphicJsonConverter<PatientData>
     {
+        /// <inheritdoc/>
         protected override string ResolveDiscriminatorValue(PatientData value) => value.Type;
 
+        /// <inheritdoc/>
         protected override Type? ResolveType(string discriminatorValue) =>
             discriminatorValue switch
             {

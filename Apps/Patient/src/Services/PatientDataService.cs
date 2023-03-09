@@ -17,12 +17,14 @@
 namespace HealthGateway.Patient.Services
 {
     using System;
+    using System.Diagnostics.CodeAnalysis;
     using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
     using HealthGateway.Common.Services;
     using HealthGateway.PatientDataAccess;
 
+    [SuppressMessage("StyleCop.CSharp.DocumentationRules", "SA1600:Elements should be documented", Justification = "Team decision")]
     internal class PatientDataService : IPatientDataService
     {
         private readonly IPatientDataRepository patientDataRepository;

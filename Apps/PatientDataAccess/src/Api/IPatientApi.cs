@@ -14,6 +14,8 @@
 //  limitations under the License.
 // -------------------------------------------------------------------------
 
+#pragma warning disable SA1600
+#pragma warning disable SA1602
 namespace HealthGateway.PatientDataAccess.Api
 {
     using System;
