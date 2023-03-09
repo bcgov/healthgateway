@@ -14,6 +14,7 @@
 //  limitations under the License.
 // -------------------------------------------------------------------------
 
+#pragma warning disable SA1649
 namespace HealthGateway.PatientDataAccess
 {
     using System;
