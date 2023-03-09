@@ -177,10 +177,6 @@ describe("Dependent Timeline", () => {
                         name: "note",
                         enabled: false,
                     },
-                    {
-                        name: "specialAuthorityRequest",
-                        enabled: false,
-                    },
                 ],
             },
         });
@@ -290,7 +286,8 @@ describe("Dependent Timeline Datasets", () => {
         disabledDatasetShouldNotBePresent(Dataset.Note);
         disabledDependentDatasetShouldNotBePresent(Dataset.Note);
     });
-    it("Validate (lack of) Special Authority requests on dependent timeline", () => {
+    it("Validate Special Authority requests on dependent timeline", () => {
+        enabledDatasetShouldBePresent(Dataset.LabResult);
         disabledDatasetShouldNotBePresent(Dataset.SpecialAuthorityRequest);
         disabledDependentDatasetShouldNotBePresent(
             Dataset.SpecialAuthorityRequest
