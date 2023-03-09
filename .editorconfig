@@ -688,6 +688,9 @@ dotnet_diagnostic.sa1203.severity = none
 # SA1204: Static elements should appear before instance elements
 dotnet_diagnostic.sa1204.severity = none
 
+# SA1629: Documentation text should end with a period
+dotnet_diagnostic.sa1629.severity = none
+
 # Microsoft .NET properties
 csharp_new_line_before_members_in_object_initializers = false
 csharp_preferred_modifier_order = public, private, protected, internal, new, static, abstract, virtual, sealed, readonly, override, extern, unsafe, volatile, async:suggestion
