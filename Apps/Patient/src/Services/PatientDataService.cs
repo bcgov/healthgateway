@@ -57,15 +57,13 @@ namespace HealthGateway.Patient.Services
                 : null;
         }
 
-        private PatientData MapToPatientData(HealthData healthData)
-        {
-            return healthData switch
+        private PatientData MapToPatientData(HealthData healthData) =>
+            healthData switch
             {
                 OrganDonorRegistration hd => new OrganDonorRegistrationData(hd.Status.ToString(), hd.StatusMessage, hd.RegistrationFileId),
 
                 _ => throw new NotImplementedException($"{healthData.GetType().Name} is not mapped to {nameof(PatientData)}")
             };
-        }
 
         private HealthServiceCategory MapToHealthServiceCategory(PatientDataType patientDataType) =>
             patientDataType switch
