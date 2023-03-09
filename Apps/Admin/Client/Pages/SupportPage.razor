@@ -39,7 +39,7 @@
             }
         </MudItem>
         <MudItem Class="d-flex justify-end" xs="12">
-            <HgButton TopMargin="Breakpoint.Always" EndIcon="@Icons.Material.Filled.Search" Variant="Variant.Filled" Color="Color.Primary" @onclick="SearchAsync" data-testid="search-btn">Search</HgButton>
+            <HgButton TopMargin="Breakpoint.Always" EndIcon="fas fa-magnifying-glass" Variant="Variant.Filled" Color="Color.Primary" @onclick="SearchAsync" data-testid="search-btn">Search</HgButton>
         </MudItem>
     </MudGrid>
 </MudForm>
@@ -91,7 +91,7 @@
                         <div>
                             <MudTooltip Text="@(context.IsExpanded ? "Collapse" : "Expand")">
                                 <MudIconButton OnClick="@(() => ToggleExpandRow(context.Hdid))"
-                                               Icon="@(context.IsExpanded ? Icons.Material.Filled.ExpandLess : Icons.Material.Filled.ExpandMore)"
+                                               Icon="@(context.IsExpanded ? "fas fa-chevron-up" : "fas fa-chevron-down")"
                                                Color="@Color.Primary"
                                                data-testid=@($"messaging-verification-table-expand-btn-{context.Hdid}")>
                                 </MudIconButton>

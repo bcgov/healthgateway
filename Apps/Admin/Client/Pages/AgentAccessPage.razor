@@ -29,7 +29,7 @@
         <MudItem Class="d-flex justify-end" xs="12">
             <HgButton
                 TopMargin="Breakpoint.Always"
-                EndIcon="@Icons.Material.Filled.Search"
+                EndIcon="fas fa-magnifying-glass"
                 @onclick="SearchAsync"
                 data-testid="search-btn">
                 Search
@@ -37,7 +37,7 @@
         </MudItem>
         <MudItem Class="d-flex justify-end" xs="12">
             <HgButton TopMargin="Breakpoint.Always"
-                      EndIcon="@Icons.Material.Filled.Add"
+                      EndIcon="fas fa-plus"
                       @onclick="@AddAsync"
                       data-testid="create-btn">
                 Create
@@ -92,13 +92,13 @@
                 <div>
                     <MudTooltip Text="Edit">
                         <MudIconButton OnClick="@(async () => await EditAsync(context.Id))"
-                                       Icon="@Icons.Material.Filled.Edit"
+                                       Icon="fas fa-pen"
                                        Color="@Color.Primary"
                                        data-testid="agent-table-edit-btn" />
                     </MudTooltip>
                     <MudTooltip Text="Delete">
                         <MudIconButton OnClick="@(async () => await DeleteAsync(context.Id))"
-                                       Icon="@Icons.Material.Filled.Delete"
+                                       Icon="fas fa-trash"
                                        Color="@Color.Primary"
                                        data-testid="agent-table-delete-btn" />
                     </MudTooltip>
@@ -131,7 +131,7 @@
             <HgButton
                 Variant="@Variant.Filled"
                 Color="@Color.Error"
-                StartIcon="@Icons.Material.Filled.DeleteForever"
+                StartIcon="fas fa-trash"
                 RightMargin="Breakpoint.Always"
                 BottomMargin="Breakpoint.Always"
                 data-testid="confirm-delete-btn">
