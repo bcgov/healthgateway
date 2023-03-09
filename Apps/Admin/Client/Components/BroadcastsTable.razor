@@ -54,19 +54,19 @@
             <div>
                 <MudTooltip Text="@(context.IsExpanded ? "Collapse" : "Expand")">
                     <MudIconButton OnClick="@(() => ToggleExpandRow(context.Id))"
-                                   Icon="@(context.IsExpanded ? Icons.Material.Filled.ExpandLess : Icons.Material.Filled.ExpandMore)"
+                                   Icon="@(context.IsExpanded ? "fas fa-chevron-up" : "fas fa-chevron-down")"
                                    Color="@Color.Primary"
                                    data-testid="broadcast-table-expand-btn" />
                 </MudTooltip>
                 <MudTooltip Text="Edit">
                     <MudIconButton OnClick="@(async () => await EditBroadcastAsync(context.Id))"
-                                   Icon="@Icons.Material.Filled.Edit"
+                                   Icon="fas fa-pen"
                                    Color="@Color.Primary"
                                    data-testid="broadcast-table-edit-btn" />
                 </MudTooltip>
                 <MudTooltip Text="Delete">
                     <MudIconButton OnClick="@(() => DeleteBroadcast(context.Id))"
-                                   Icon="@Icons.Material.Filled.Delete"
+                                   Icon="fas fa-trash"
                                    Color="@Color.Primary"
                                    data-testid="broadcast-table-delete-btn" />
                 </MudTooltip>
@@ -95,7 +95,7 @@
         </span>
     </MessageContent>
     <YesButton>
-        <MudButton Variant="Variant.Filled" Color="Color.Error" StartIcon="@Icons.Material.Filled.DeleteForever" data-testid="confirm-delete-btn">
+        <MudButton Variant="Variant.Filled" Color="Color.Error" StartIcon="fas fa-trash" data-testid="confirm-delete-btn">
             Delete
         </MudButton>
     </YesButton>

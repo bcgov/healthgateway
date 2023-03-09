@@ -6,17 +6,17 @@
 
 <MudLayout>
     <MudAppBar Elevation="1">
-        <MudIconButton Icon="@Icons.Material.Outlined.Menu" Color="Color.Inherit" Edge="Edge.Start" OnClick="DrawerToggle" />
+        <MudIconButton Icon="fas fa-bars" Color="Color.Inherit" Edge="Edge.Start" OnClick="DrawerToggle" />
         <MudText Typo="Typo.h6" Class="ml-4">HG Admin</MudText>
         <MudSpacer />
         <MudTooltip Text="Toggle Dark Mode">
-            <MudIconButton Icon="@Icons.Material.Filled.BrightnessMedium" Color="Color.Inherit" Edge="Edge.End" OnClick="ToggleTheme" />
+            <MudIconButton Icon="fas fa-circle-half-stroke" Color="Color.Inherit" Edge="Edge.End" OnClick="ToggleTheme" />
         </MudTooltip>
         <AuthorizeView>
             <Authorized>
                 <MudMenu Direction="Direction.Left" OffsetX="true" Dense="true" Class="mt-1 ml-4">
                     <ActivatorContent>
-                        <MudIcon Icon="@Icons.Material.Filled.AccountCircle" Color="Color.Inherit" Edge="Edge.End" data-testid="user-account-icon" />
+                        <MudIcon Icon="fas fa-user" Color="Color.Inherit" Edge="Edge.End" data-testid="user-account-icon" />
                     </ActivatorContent>
                     <ChildContent>
                         <AuthorizeView Roles="@($"{Roles.Admin},{Roles.Reviewer}")" Context="_">
@@ -24,7 +24,7 @@
                                 @(context.User.Identity?.Name ?? "Unknown")
                             </MudNavLink>
                         </AuthorizeView>
-                        <MudNavLink Icon="@Icons.Material.Outlined.Logout" OnClick="@LogOut" data-testid="logout-text-link">Log Out</MudNavLink>
+                        <MudNavLink Icon="fas fa-right-from-bracket" OnClick="@LogOut" data-testid="logout-text-link">Log Out</MudNavLink>
                     </ChildContent>
                 </MudMenu>
             </Authorized>
