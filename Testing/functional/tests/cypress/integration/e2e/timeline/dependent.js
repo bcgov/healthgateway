@@ -170,10 +170,6 @@ describe("Dependent Timeline", () => {
                         enabled: false,
                     },
                     {
-                        name: "medication",
-                        enabled: false,
-                    },
-                    {
                         name: "note",
                         enabled: false,
                     },
@@ -282,7 +278,8 @@ describe("Dependent Timeline Datasets", () => {
         disabledDatasetShouldNotBePresent(Dataset.HospitalVisit);
         disabledDependentDatasetShouldNotBePresent(Dataset.HospitalVisit);
     });
-    it("Validate (lack of) medications on dependent timeline", () => {
+    it("Validate medications on dependent timeline", () => {
+        enabledDatasetShouldBePresent(Dataset.Medication);
         disabledDatasetShouldNotBePresent(Dataset.Medication);
         disabledDependentDatasetShouldNotBePresent(Dataset.Medication);
     });

@@ -72,10 +72,6 @@
                 "enabled": false
             },
             {
-                "name": "medication",
-                "enabled": false
-            },
-            {
                 "name": "note",
                 "enabled": false
             },
