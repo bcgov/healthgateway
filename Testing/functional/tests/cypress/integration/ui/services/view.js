@@ -1,4 +1,6 @@
-const servicesTestsConstants = require("./servicesTestConstants");
+const servicesTestsConstants = {
+    servicesUrl: "/services",
+};
 const { AuthMethod } = require("../../../support/constants");
 
 describe("Authenticated Services View", () => {

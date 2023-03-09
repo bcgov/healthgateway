@@ -6,6 +6,7 @@ import { Action, Getter } from "vuex-class";
 import TooManyRequestsComponent from "@/components/TooManyRequestsComponent.vue";
 import { entryTypeMap, getEntryTypeByModule } from "@/constants/entryType";
 import { ErrorSourceType, ErrorType } from "@/constants/errorType";
+import { ServiceName } from "@/constants/serviceName";
 import UserPreferenceType from "@/constants/userPreferenceType";
 import { BannerError, isTooManyRequestsError } from "@/models/errors";
 import { QuickLink } from "@/models/quickLink";
@@ -96,6 +97,15 @@ export default class AddQuickLinkComponent extends Vue {
         return preference?.value === "true";
     }
 
+    private get showOrganDonorCard(): boolean {
+        const servicesEnabled = ConfigUtil.isServiceEnabled(
+            ServiceName.OrganDonorRegistration
+        );
+        const preference =
+            this.user.preferences[UserPreferenceType.HideOrganDonorQuickLink];
+        return servicesEnabled && preference?.value === "true";
+    }
+
     private get showImmunizationRecord(): boolean {
         const preference =
             this.user.preferences[
@@ -162,6 +172,24 @@ export default class AddQuickLinkComponent extends Vue {
             const promises = [
                 this.updateQuickLinks({ hdid: this.user.hdid, quickLinks }),
             ];
+
+            if (this.selectedQuickLinks.includes("organ-donor-registration")) {
+                const preference = {
+                    ...this.user.preferences[
+                        UserPreferenceType.HideOrganDonorQuickLink
+                    ],
+                    value: "false",
+                };
+
+                promises.push(
+                    this.setUserPreference({ preference }).then(() => {
+                        this.selectedQuickLinks =
+                            this.selectedQuickLinks.filter(
+                                (link) => link !== "organ-donor-registration"
+                            );
+                    })
+                );
+            }
 
             if (this.selectedQuickLinks.includes("bc-vaccine-card")) {
                 const preference = {
@@ -277,6 +305,20 @@ export default class AddQuickLinkComponent extends Vue {
                         :value="quickLink.module"
                     >
                         {{ quickLink.name }}
+                    </b-form-checkbox>
+                </b-col>
+            </b-row>
+            <b-row v-if="showOrganDonorCard">
+                <b-col cols="8" align-self="start">
+                    <b-form-checkbox
+                        id="organ-donor-registration-filter"
+                        :key="checkboxComponentKey"
+                        v-model="selectedQuickLinks"
+                        data-testid="organ-donor-registration-filter"
+                        name="organ-donor-registration-filter"
+                        value="organ-donor-registration"
+                    >
+                        Organ Donor Card
                     </b-form-checkbox>
                 </b-col>
             </b-row>

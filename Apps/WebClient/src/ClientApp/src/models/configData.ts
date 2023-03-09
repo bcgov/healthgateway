@@ -74,7 +74,6 @@ export interface FeatureToggleConfiguration {
     datasets: DatasetSettings[];
     covid19: Covid19Settings;
     dependents: DependentsSettings;
-
     services: ServicesSettings;
 }
 
@@ -119,8 +118,15 @@ export interface DependentsSettings {
     timelineEnabled: boolean;
     datasets: DatasetSettings[];
 }
+
 export interface ServicesSettings {
     enabled: boolean;
+    services: ServiceSettings[];
+}
+
+export interface ServiceSettings {
+    name: string;
+    enabled: string;
 }
 
 // Various timeout values used by the VUE WebClient application.

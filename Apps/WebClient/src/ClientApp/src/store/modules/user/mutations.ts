@@ -66,6 +66,11 @@ export const mutations: UserMutation = {
             );
             PreferenceUtil.setDefaultValue(
                 userProfile.preferences,
+                UserPreferenceType.HideOrganDonorQuickLink,
+                "false"
+            );
+            PreferenceUtil.setDefaultValue(
+                userProfile.preferences,
                 UserPreferenceType.HideImmunizationRecordQuickLink,
                 "false"
             );

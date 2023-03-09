@@ -86,6 +86,12 @@
         ]
     },
     "services": {
-        "enabled": true
+        "enabled": true,
+        "services": [
+            {
+                "name": "organDonorRegistration",
+                "enabled": true
+            }
+        ]
     }
 }
