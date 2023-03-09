@@ -80,7 +80,6 @@ namespace HealthGateway.Patient.Services
         /// <summary>
         /// The type of the patient data
         /// </summary>
-        [JsonIgnore]
         public abstract string Type { get; set; }
     }
 
