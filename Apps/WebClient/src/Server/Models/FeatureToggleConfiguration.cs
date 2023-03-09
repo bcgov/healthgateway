@@ -117,7 +117,7 @@ namespace HealthGateway.WebClient.Server.Models
     /// Settings for the services feature.
     /// </summary>
     /// <param name="Enabled">Toggles services feature.</param>
-    /// <param name="OrganDonor">Contains the settings for the organ donor service feature.</param>
+    /// <param name="Services">Contains the array of all the services configured.</param>
     public record ServicesSettings(
         bool Enabled,
         ServiceSetting[] Services);
@@ -126,6 +126,7 @@ namespace HealthGateway.WebClient.Server.Models
     /// Settings for organ donor service feature.
     /// </summary>
     /// <param name="Enabled">Toggles organ donor services feature.</param>
+    /// <param name="Name">Name of the service the configuration element refers to.</param>
     public record ServiceSetting(
         string Name,
         bool Enabled);
