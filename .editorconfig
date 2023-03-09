@@ -806,3 +806,8 @@ resharper_unused_auto_property_accessor_global_highlighting = hint
 resharper_web_config_module_not_resolved_highlighting = warning
 resharper_web_config_type_not_resolved_highlighting = warning
 resharper_web_config_wrong_module_highlighting = warning
+
+[**/test/**.{cs}]
+
+# SA1600: Elements should be documented
+dotnet_diagnostic.SA1600.severity = none
