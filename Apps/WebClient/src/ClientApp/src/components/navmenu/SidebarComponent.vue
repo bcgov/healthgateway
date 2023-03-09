@@ -91,7 +91,6 @@ export default class SidebarComponent extends Vue {
     @Watch("isOpen")
     @Watch("isMobileWidth")
     private onIsSidebarOpenChange(isOpen: boolean): void {
-        console.log("Checking");
         if (this.isMobileWidth && isOpen) {
             document.body.classList.add("overflow-hidden");
         } else {
