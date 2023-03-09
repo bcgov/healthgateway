@@ -63,7 +63,7 @@ namespace HealthGateway.Patient.Services
             {
                 OrganDonorRegistration hd => new OrganDonorRegistrationData(hd.Status.ToString(), hd.StatusMessage, hd.RegistrationFileId),
 
-                _ => throw new InvalidOperationException($"{healthData.GetType().Name} is not mapped to {nameof(PatientData)}")
+                _ => throw new NotImplementedException($"{healthData.GetType().Name} is not mapped to {nameof(PatientData)}")
             };
         }
 
@@ -72,7 +72,7 @@ namespace HealthGateway.Patient.Services
             {
                 PatientDataType.OrganDonorRegistrationStatus => HealthServiceCategory.OrganDonor,
 
-                _ => throw new InvalidOperationException($"{patientDataType} is not mapped to {nameof(HealthServiceCategory)}")
+                _ => throw new NotImplementedException($"{patientDataType} is not mapped to {nameof(HealthServiceCategory)}")
             };
     }
 }

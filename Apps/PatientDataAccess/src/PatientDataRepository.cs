@@ -42,7 +42,7 @@ namespace HealthGateway.PatientDataAccess
                 HealthServicesQuery q => await Handle(q, ct),
                 PatientFileQuery q => await Handle(q, ct),
 
-                _ => throw new NotImplementedException($"Query type {query.GetType().Name}")
+                _ => throw new NotImplementedException($"{query.GetType().Name} doesn't have a handler")
             };
         }
 
@@ -71,7 +71,7 @@ namespace HealthGateway.PatientDataAccess
             {
                 HealthServiceCategory.OrganDonor => "BcTransplantOrganDonor",
 
-                _ => throw new NotImplementedException($"{category}"),
+                _ => throw new NotImplementedException($"No mapping implemented for {category}")
             };
 
         private static PatientFile Map(string fileId, FileResult file) =>
