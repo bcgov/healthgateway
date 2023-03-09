@@ -26,7 +26,7 @@ namespace HealthGateway.PatientDataAccess.Api
 {
     internal interface IPatientApi
     {
-        [Get("/patient/{pid}/file/{fileId")]
+        [Get("/patient/{pid}/file/{fileId}")]
         Task<FileResult?> GetFile(Guid pid, string fileId, CancellationToken ct);
 
         [Get("/patient/{pid}/health-options")]
