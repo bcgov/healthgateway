@@ -21,6 +21,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using AutoMapper;
 using HealthGateway.PatientDataAccess.Api;
+using Refit;
 
 namespace HealthGateway.PatientDataAccess
 {
@@ -49,19 +50,26 @@ namespace HealthGateway.PatientDataAccess
         private async Task<PatientDataQueryResult> Handle(HealthServicesQuery query, CancellationToken ct)
         {
             var categories = query.Categories.Select(c => Map(c)).ToArray();
-            var results = await patientApi.GetHealthOptionsAsync(query.Pid, categories, ct) ??
-                          new HealthOptionsResult(new HealthOptionMetadata(), Array.Empty<HealthOptionData>());
 
+            var results = await patientApi.GetHealthOptionsAsync(query.Pid, categories, ct) ?? new HealthOptionsResult(new HealthOptionMetadata(), Array.Empty<HealthOptionData>());
             return new PatientDataQueryResult(results.Data.Select(Map));
         }
 
         private async Task<PatientDataQueryResult> Handle(PatientFileQuery query, CancellationToken ct)
         {
-            var fileResult = await patientApi.GetFile(query.Pid, query.FileId, ct);
-            var mappedFiles = new[] { fileResult }
-                .Where(f => f?.Data != null)
-                .Select(f => Map(query.FileId, f!));
-            return new PatientDataQueryResult(mappedFiles);
+            try
+            {
+                var fileResult = await patientApi.GetFile(query.Pid, query.FileId, ct);
+                var mappedFiles = new[] { fileResult }
+                    .Where(f => f?.Data != null)
+                    .Select(f => Map(query.FileId, f!));
+                return new PatientDataQueryResult(mappedFiles);
+            }
+            catch (ApiException e) when (e.StatusCode == System.Net.HttpStatusCode.NotFound)
+            {
+                // file not found
+                return new PatientDataQueryResult(Array.Empty<HealthData>());
+            }
         }
 
         private HealthData Map(HealthOptionData healthOptionData) => mapper.Map<HealthData>(healthOptionData);

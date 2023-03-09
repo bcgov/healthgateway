@@ -14,11 +14,13 @@
 //  limitations under the License.
 // -------------------------------------------------------------------------
 
+using System.Net;
 using System.Text;
 using AutoMapper;
 using HealthGateway.PatientDataAccess;
 using HealthGateway.PatientDataAccess.Api;
 using Moq;
+using Refit;
 
 namespace PatientDataAccessTests
 {
@@ -84,7 +86,7 @@ namespace PatientDataAccessTests
         }
 
         [Fact]
-        public async Task CanHandleFileNotFound()
+        public async Task CanHandleFileNoResults()
         {
             var patientApi = new Mock<IPatientApi>();
             var fileId = Guid.NewGuid().ToString();
@@ -92,6 +94,25 @@ namespace PatientDataAccessTests
             patientApi
                 .Setup(api => api.GetFile(pid, fileId, It.IsAny<CancellationToken>()))
                 .ReturnsAsync((FileResult?)null);
+
+            var sut = CreateSut(patientApi.Object);
+
+            var result = await sut.Query(new PatientFileQuery(pid, fileId), CancellationToken.None);
+
+            result.ShouldNotBeNull().Items.ShouldBeEmpty();
+        }
+
+        [Fact]
+        public async Task CanHandleFileNotFound()
+        {
+            var patientApi = new Mock<IPatientApi>();
+            var fileId = Guid.NewGuid().ToString();
+
+#pragma warning disable CA2000 // Dispose objects before losing scope
+            patientApi
+                .Setup(api => api.GetFile(pid, fileId, It.IsAny<CancellationToken>()))
+                .ThrowsAsync(await ApiException.Create(new HttpRequestMessage(), HttpMethod.Get, new HttpResponseMessage(HttpStatusCode.NotFound), new RefitSettings { }));
+#pragma warning restore CA2000 // Dispose objects before losing scope
 
             var sut = CreateSut(patientApi.Object);
 
