@@ -4,6 +4,7 @@ import {
     faChevronRight,
     faDownload,
     faFileWaveform,
+    faHouseMedical,
     faMicroscope,
     faSyringe,
     faVial,
@@ -36,6 +37,7 @@ library.add(
     faChevronRight,
     faDownload,
     faFileWaveform,
+    faHouseMedical,
     faMicroscope,
     faSyringe,
     faVial

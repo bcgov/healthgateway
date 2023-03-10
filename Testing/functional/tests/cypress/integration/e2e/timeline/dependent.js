@@ -278,7 +278,8 @@ describe("Dependent Timeline Datasets", () => {
         disabledDatasetShouldNotBePresent(Dataset.HealthVisit);
         disabledDependentDatasetShouldNotBePresent(Dataset.HealthVisit);
     });
-    it("Validate (lack of) hospital visits on dependent timeline", () => {
+    it("Validate hospital visits on dependent timeline", () => {
+        enabledDatasetShouldBePresent(Dataset.HospitalVisit);
         disabledDatasetShouldNotBePresent(Dataset.HospitalVisit);
         disabledDependentDatasetShouldNotBePresent(Dataset.HospitalVisit);
     });
