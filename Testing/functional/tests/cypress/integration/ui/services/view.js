@@ -19,10 +19,6 @@ describe("Authenticated Services View", () => {
         cy.visit(servicesTestsConstants.servicesUrl);
     });
 
-    afterEach(() => {
-        Cypress.session.clearAllSavedSessions();
-    });
-
     it("The page should load correctly", () => {
         cy.url().should("include", servicesTestsConstants.servicesUrl);
     });
