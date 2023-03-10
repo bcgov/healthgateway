@@ -31,7 +31,7 @@ namespace HealthGateway.Patient.Services
         private readonly IPersonalAccountsService personalAccountsService;
 
         private async Task<Guid> ResolvePidFromHdid(string patientHdid) =>
-            (await personalAccountsService.GetPatientAccountAsync(patientHdid)).PatientIdentity.Pid;
+            (await this.personalAccountsService.GetPatientAccountAsync(patientHdid)).PatientIdentity.Pid;
 
         public PatientDataService(IPatientDataRepository patientDataRepository, IPersonalAccountsService personalAccountsService)
         {
@@ -41,18 +41,18 @@ namespace HealthGateway.Patient.Services
 
         public async Task<PatientDataResponse> Query(PatientDataQuery query, CancellationToken ct)
         {
-            var pid = await ResolvePidFromHdid(query.Hdid);
-            var results = await patientDataRepository.Query(
-                new HealthServicesQuery(pid, query.PatientDataTypes.Select(MapToHealthServiceCategory)),
+            var pid = await this.ResolvePidFromHdid(query.Hdid);
+            var results = await this.patientDataRepository.Query(
+                new HealthServicesQuery(pid, query.PatientDataTypes.Select(this.MapToHealthServiceCategory)),
                 ct);
 
-            return new PatientDataResponse(results.Items.Select(MapToPatientData).ToArray());
+            return new PatientDataResponse(results.Items.Select(this.MapToPatientData).ToArray());
         }
 
         public async Task<PatientFileResponse?> Query(PatientFileQuery query, CancellationToken ct)
         {
-            var pid = await ResolvePidFromHdid(query.Hdid);
-            var file = (await patientDataRepository.Query(new PatientDataAccess.PatientFileQuery(pid, query.FileId), ct)).Items.FirstOrDefault() as PatientFile;
+            var pid = await this.ResolvePidFromHdid(query.Hdid);
+            var file = (await this.patientDataRepository.Query(new PatientDataAccess.PatientFileQuery(pid, query.FileId), ct)).Items.FirstOrDefault() as PatientFile;
 
             return file != null
                 ? new PatientFileResponse(file.Content, file.ContentType)
@@ -64,7 +64,7 @@ namespace HealthGateway.Patient.Services
             {
                 OrganDonorRegistration hd => new OrganDonorRegistrationData(hd.Status.ToString(), hd.StatusMessage, hd.RegistrationFileId),
 
-                _ => throw new NotImplementedException($"{healthData.GetType().Name} is not mapped to {nameof(PatientData)}")
+                _ => throw new NotImplementedException($"{healthData.GetType().Name} is not mapped to {nameof(PatientData)}"),
             };
 
         private HealthServiceCategory MapToHealthServiceCategory(PatientDataType patientDataType) =>
@@ -72,7 +72,7 @@ namespace HealthGateway.Patient.Services
             {
                 PatientDataType.OrganDonorRegistrationStatus => HealthServiceCategory.OrganDonor,
 
-                _ => throw new NotImplementedException($"{patientDataType} is not mapped to {nameof(HealthServiceCategory)}")
+                _ => throw new NotImplementedException($"{patientDataType} is not mapped to {nameof(HealthServiceCategory)}"),
             };
     }
 }

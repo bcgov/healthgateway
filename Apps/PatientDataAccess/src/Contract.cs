@@ -59,7 +59,7 @@ namespace HealthGateway.PatientDataAccess
         /// <summary>
         /// BC Transplant Organ Donor
         /// </summary>
-        OrganDonor
+        OrganDonor,
     }
 
     /// <summary>
@@ -83,17 +83,17 @@ namespace HealthGateway.PatientDataAccess
     public record OrganDonorRegistration : HealthServiceData
     {
         /// <summary>
-        /// The donor registration status
+        /// Gets or sets the donor registration status
         /// </summary>
         public DonorRegistrationStatus Status { get; set; }
 
         /// <summary>
-        /// Status related message
+        /// Gets or sets the message associated with the donor registration status
         /// </summary>
         public string? StatusMessage { get; set; }
 
         /// <summary>
-        /// RegistrationFileId
+        /// Gets or sets the file ID associated with the donor registration
         /// </summary>
         public string? RegistrationFileId { get; set; }
     }
@@ -121,11 +121,11 @@ namespace HealthGateway.PatientDataAccess
         /// <summary>
         /// Registration is pending
         /// </summary>
-        Pending
+        Pending,
     }
 
     /// <summary>
     /// Represents a patient file
     /// </summary>
-    public record PatientFile(string FileId, byte[] Content, string ContentType) : HealthData;
+    public record PatientFile(string FileId, IEnumerable<byte> Content, string ContentType) : HealthData;
 }

@@ -59,7 +59,7 @@ namespace HealthGateway.Patient
             Auth.ConfigureAuthorizationServices(services, logger, configuration);
             SwaggerDoc.ConfigureSwaggerServices(services, configuration);
 
-            Common.AspNetConfiguration.Modules.Patient.ConfigurePatientAccess(services, logger, configuration);
+            Patient.ConfigurePatientAccess(services, logger, configuration);
             PersonalAccount.ConfigurePersonalAccountAccess(services, logger, configuration);
 
             services.AddTransient<IClientRegistriesDelegate, ClientRegistriesDelegate>();

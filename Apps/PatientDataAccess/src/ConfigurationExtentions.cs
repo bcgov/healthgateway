@@ -32,7 +32,7 @@ namespace HealthGateway.PatientDataAccess
         /// </summary>
         /// <param name="services">DI service collection</param>
         /// <param name="configuration">configuration settings</param>
-        /// <returns>DI service collection</returns>
+        /// <returns>The updated DI service collection</returns>
         public static IServiceCollection AddPatientDataAccess(this IServiceCollection services, PatientDataAccessConfiguration configuration)
         {
             services.AddAutoMapper(typeof(Mappings));

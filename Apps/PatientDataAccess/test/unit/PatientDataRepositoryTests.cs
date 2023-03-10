@@ -44,16 +44,16 @@ namespace PatientDataAccessTests
                 DonorStatus = DonorStatus.Registered,
                 StatusMessage = "statusmessage",
                 HealthDataFileId = Guid.NewGuid().ToString(),
-                HealthOptionsId = "optid"
+                HealthOptionsId = "optid",
             };
 
             patientApi
-                .Setup(api => api.GetHealthOptionsAsync(pid, It.IsAny<string[]>(), It.IsAny<CancellationToken>()))
+                .Setup(api => api.GetHealthOptionsAsync(this.pid, It.IsAny<string[]>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(new HealthOptionsResult(new HealthOptionMetadata(), new[] { phsaOrganDonorResponse }));
 
             var sut = CreateSut(patientApi.Object);
 
-            var result = await sut.Query(new HealthServicesQuery(pid, new[] { HealthServiceCategory.OrganDonor }), CancellationToken.None);
+            var result = await sut.Query(new HealthServicesQuery(this.pid, new[] { HealthServiceCategory.OrganDonor }), CancellationToken.None);
 
             result.ShouldNotBeNull();
             var organDonorRegistration = result.Items.ShouldHaveSingleItem().ShouldBeOfType<OrganDonorRegistration>();
@@ -70,19 +70,19 @@ namespace PatientDataAccessTests
             var expectedFile = new FileResult("text/plain", "somedata", "encoding");
 
             patientApi
-                .Setup(api => api.GetFile(pid, fileId, It.IsAny<CancellationToken>()))
+                .Setup(api => api.GetFile(this.pid, fileId, It.IsAny<CancellationToken>()))
                 .ReturnsAsync(expectedFile);
 
             var sut = CreateSut(patientApi.Object);
 
-            var result = await sut.Query(new PatientFileQuery(pid, fileId), CancellationToken.None);
+            var result = await sut.Query(new PatientFileQuery(this.pid, fileId), CancellationToken.None);
 
             result.ShouldNotBeNull();
             var actualFile = result.Items.ShouldHaveSingleItem().ShouldBeOfType<PatientFile>();
             actualFile.FileId.ShouldBe(fileId);
             actualFile.Content.ShouldNotBeEmpty();
             actualFile.ContentType.ShouldBe(expectedFile.MediaType);
-            Encoding.Default.GetString(actualFile.Content).ShouldBe(expectedFile.Data);
+            Encoding.Default.GetString(actualFile.Content.ToArray()).ShouldBe(expectedFile.Data);
         }
 
         [Fact]
@@ -92,12 +92,12 @@ namespace PatientDataAccessTests
             var fileId = Guid.NewGuid().ToString();
 
             patientApi
-                .Setup(api => api.GetFile(pid, fileId, It.IsAny<CancellationToken>()))
+                .Setup(api => api.GetFile(this.pid, fileId, It.IsAny<CancellationToken>()))
                 .ReturnsAsync((FileResult?)null);
 
             var sut = CreateSut(patientApi.Object);
 
-            var result = await sut.Query(new PatientFileQuery(pid, fileId), CancellationToken.None);
+            var result = await sut.Query(new PatientFileQuery(this.pid, fileId), CancellationToken.None);
 
             result.ShouldNotBeNull().Items.ShouldBeEmpty();
         }
@@ -110,13 +110,13 @@ namespace PatientDataAccessTests
 
 #pragma warning disable CA2000 // Dispose objects before losing scope
             patientApi
-                .Setup(api => api.GetFile(pid, fileId, It.IsAny<CancellationToken>()))
-                .ThrowsAsync(await ApiException.Create(new HttpRequestMessage(), HttpMethod.Get, new HttpResponseMessage(HttpStatusCode.NotFound), new RefitSettings { }));
+                .Setup(api => api.GetFile(this.pid, fileId, It.IsAny<CancellationToken>()))
+                .ThrowsAsync(await ApiException.Create(new HttpRequestMessage(), HttpMethod.Get, new HttpResponseMessage(HttpStatusCode.NotFound), new RefitSettings()));
 #pragma warning restore CA2000 // Dispose objects before losing scope
 
             var sut = CreateSut(patientApi.Object);
 
-            var result = await sut.Query(new PatientFileQuery(pid, fileId), CancellationToken.None);
+            var result = await sut.Query(new PatientFileQuery(this.pid, fileId), CancellationToken.None);
 
             result.ShouldNotBeNull().Items.ShouldBeEmpty();
         }
@@ -129,12 +129,12 @@ namespace PatientDataAccessTests
             var expectedFile = new FileResult(null, null, null);
 
             patientApi
-                .Setup(api => api.GetFile(pid, fileId, It.IsAny<CancellationToken>()))
+                .Setup(api => api.GetFile(this.pid, fileId, It.IsAny<CancellationToken>()))
                 .ReturnsAsync(expectedFile);
 
             var sut = CreateSut(patientApi.Object);
 
-            var result = await sut.Query(new PatientFileQuery(pid, fileId), CancellationToken.None);
+            var result = await sut.Query(new PatientFileQuery(this.pid, fileId), CancellationToken.None);
 
             result.ShouldNotBeNull().Items.ShouldBeEmpty();
         }

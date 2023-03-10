@@ -42,10 +42,10 @@ namespace HealthGateway.PatientDataAccess
         {
             return query switch
             {
-                HealthServicesQuery q => await Handle(q, ct),
-                PatientFileQuery q => await Handle(q, ct),
+                HealthServicesQuery q => await this.Handle(q, ct),
+                PatientFileQuery q => await this.Handle(q, ct),
 
-                _ => throw new NotImplementedException($"{query.GetType().Name} doesn't have a handler")
+                _ => throw new NotImplementedException($"{query.GetType().Name} doesn't have a handler"),
             };
         }
 
@@ -53,15 +53,15 @@ namespace HealthGateway.PatientDataAccess
         {
             var categories = query.Categories.Select(c => Map(c)).ToArray();
 
-            var results = await patientApi.GetHealthOptionsAsync(query.Pid, categories, ct) ?? new HealthOptionsResult(new HealthOptionMetadata(), Array.Empty<HealthOptionData>());
-            return new PatientDataQueryResult(results.Data.Select(Map));
+            var results = await this.patientApi.GetHealthOptionsAsync(query.Pid, categories, ct) ?? new HealthOptionsResult(new HealthOptionMetadata(), Array.Empty<HealthOptionData>());
+            return new PatientDataQueryResult(results.Data.Select(this.Map));
         }
 
         private async Task<PatientDataQueryResult> Handle(PatientFileQuery query, CancellationToken ct)
         {
             try
             {
-                var fileResult = await patientApi.GetFile(query.Pid, query.FileId, ct);
+                var fileResult = await this.patientApi.GetFile(query.Pid, query.FileId, ct);
                 var mappedFiles = new[] { fileResult }
                     .Where(f => f?.Data != null)
                     .Select(f => Map(query.FileId, f!));
@@ -74,14 +74,14 @@ namespace HealthGateway.PatientDataAccess
             }
         }
 
-        private HealthData Map(HealthOptionData healthOptionData) => mapper.Map<HealthData>(healthOptionData);
+        private HealthData Map(HealthOptionData healthOptionData) => this.mapper.Map<HealthData>(healthOptionData);
 
         private static string Map(HealthServiceCategory category) =>
             category switch
             {
                 HealthServiceCategory.OrganDonor => "BcTransplantOrganDonor",
 
-                _ => throw new NotImplementedException($"No mapping implemented for {category}")
+                _ => throw new NotImplementedException($"No mapping implemented for {category}"),
             };
 
         private static PatientFile Map(string fileId, FileResult file) =>

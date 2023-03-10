@@ -25,10 +25,10 @@ namespace HealthGateway.PatientDataAccess
     {
         public Mappings()
         {
-            CreateMap<HealthOptionData, HealthData>()
+            this.CreateMap<HealthOptionData, HealthData>()
                 .IncludeAllDerived();
 
-            CreateMap<OrganDonor, OrganDonorRegistration>()
+            this.CreateMap<OrganDonor, OrganDonorRegistration>()
                 .ForMember(d => d.Status, opts => opts.MapFrom(s => s.DonorStatus))
                 .ForMember(d => d.RegistrationFileId, opts => opts.MapFrom(s => s.HealthDataFileId))
                 ;

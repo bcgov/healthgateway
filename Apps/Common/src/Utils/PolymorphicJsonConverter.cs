@@ -28,7 +28,7 @@ namespace HealthGateway.Common.Utils
     public class PolymorphicJsonConverter<T> : JsonConverter<T>
     {
         /// <summary>
-        /// A type discriminator to read the type when deserializing or to save into the serialized json
+        /// Gets a type discriminator to read the type when deserializing or to save into the serialized json
         /// </summary>
         protected virtual string Discriminator => "_type";
 
@@ -61,20 +61,29 @@ namespace HealthGateway.Common.Utils
             Type? actualType = null;
             while (clonedReader.Read())
             {
-                if (clonedReader.TokenType == JsonTokenType.PropertyName)
+                if (clonedReader.TokenType == JsonTokenType.PropertyName &&
+                    this.Discriminator.Equals(clonedReader.GetString(), StringComparison.OrdinalIgnoreCase))
                 {
-                    if (Discriminator.Equals(clonedReader.GetString(), StringComparison.OrdinalIgnoreCase))
+                    clonedReader.Read();
+                    var typeValue = clonedReader.GetString();
+                    if (string.IsNullOrEmpty(typeValue))
                     {
-                        clonedReader.Read();
-                        var typeValue = clonedReader.GetString();
-                        if (string.IsNullOrEmpty(typeValue)) continue;
-                        actualType = ResolveType(typeValue);
-                        if (actualType != null && CanConvert(typeToConvert, actualType)) break;
+                        continue;
+                    }
+
+                    actualType = this.ResolveType(typeValue);
+                    if (actualType != null && this.CanConvert(typeToConvert, actualType))
+                    {
+                        break;
                     }
                 }
             }
 
-            if (actualType == null) throw new JsonException($"serialized json doesn't have a {Discriminator} property");
+            if (actualType == null)
+            {
+                throw new JsonException($"serialized json doesn't have a {this.Discriminator} property");
+            }
+
             return (T)(JsonSerializer.Deserialize(ref reader, actualType, options)
                        ?? throw new JsonException($"failed to deserizlize type {actualType.Name}"));
         }
@@ -82,9 +91,13 @@ namespace HealthGateway.Common.Utils
         /// <inheritdoc/>
         public override void Write(Utf8JsonWriter writer, T value, JsonSerializerOptions options)
         {
-            if (value == null) return;
+            if (value == null)
+            {
+                return;
+            }
+
             var serializedValue = JsonSerializer.SerializeToNode(value, value.GetType(), options)!.AsObject();
-            serializedValue.Add(Discriminator, ResolveDiscriminatorValue(value));
+            serializedValue.Add(this.Discriminator, this.ResolveDiscriminatorValue(value));
             serializedValue.WriteTo(writer, options);
         }
     }

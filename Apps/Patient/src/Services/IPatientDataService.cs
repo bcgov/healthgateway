@@ -52,7 +52,7 @@ namespace HealthGateway.Patient.Services
     /// </summary>
     /// <param name="Hdid">The patient hdid</param>
     /// <param name="PatientDataTypes">The data types to query</param>
-    public record PatientDataQuery(string Hdid, PatientDataType[] PatientDataTypes);
+    public record PatientDataQuery(string Hdid, IEnumerable<PatientDataType> PatientDataTypes);
 
     /// <summary>
     /// Patiend data types
@@ -79,7 +79,7 @@ namespace HealthGateway.Patient.Services
     public abstract record PatientData
     {
         /// <summary>
-        /// The type of the patient data
+        /// Gets or sets the type of the patient data
         /// </summary>
         public abstract string Type { get; set; }
     }
@@ -97,23 +97,23 @@ namespace HealthGateway.Patient.Services
         /// <param name="registrationFileId">Optional registration file id</param>
         public OrganDonorRegistrationData(string status, string? statusMessage, string? registrationFileId)
         {
-            Status = status;
-            StatusMessage = statusMessage;
-            RegistrationFileId = registrationFileId;
+            this.Status = status;
+            this.StatusMessage = statusMessage;
+            this.RegistrationFileId = registrationFileId;
         }
 
         /// <summary>
-        /// The registration status
+        /// Gets or sets the donor registration status
         /// </summary>
         public string Status { get; set; } = null!;
 
         /// <summary>
-        /// Message related to the status
+        /// Gets or sets the message associated with the donor registration status
         /// </summary>
         public string? StatusMessage { get; set; }
 
         /// <summary>
-        /// Registration file id
+        /// Gets or sets the file ID associated with the donor registration
         /// </summary>
         public string? RegistrationFileId { get; set; }
 
@@ -133,7 +133,7 @@ namespace HealthGateway.Patient.Services
     /// </summary>
     /// <param name="Content">The file content</param>
     /// <param name="ContentType">The file content type</param>
-    public record PatientFileResponse(byte[] Content, string ContentType);
+    public record PatientFileResponse(IEnumerable<byte> Content, string ContentType);
 
     [SuppressMessage("StyleCop.CSharp.DocumentationRules", "SA1600:Elements should be documented", Justification = "Team decision")]
     internal class PatientDataJsonConverter : PolymorphicJsonConverter<PatientData>
@@ -147,7 +147,7 @@ namespace HealthGateway.Patient.Services
             {
                 nameof(OrganDonorRegistrationData) => typeof(OrganDonorRegistrationData),
 
-                _ => null
+                _ => null,
             };
     }
 }

@@ -46,7 +46,7 @@ namespace HealthGateway.Common.AspNetConfiguration.Modules
                 .ConfigureHttpClient(c => c.BaseAddress = phsaConfig!.BaseUrl)
                 .AddHttpMessageHandler<AuthHeaderHandler>();
 
-            services.TryAddTransient<Common.Services.IPersonalAccountsService, Common.Services.PersonalAccountsService>();
+            services.TryAddTransient<IPersonalAccountsService, PersonalAccountsService>();
         }
     }
 }

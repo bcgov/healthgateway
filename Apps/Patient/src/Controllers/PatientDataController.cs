@@ -62,11 +62,16 @@ namespace HealthGateway.Patient.Controllers
         public async Task<ActionResult<PatientDataResponse>> Get(string hdid, [FromQuery] PatientDataType[] patientDataTypes, CancellationToken ct)
         {
             if (string.IsNullOrEmpty(hdid))
+            {
                 throw new ProblemDetailsException(ExceptionUtility.CreateValidationError(nameof(hdid), "Hdid is missing"));
-            if (patientDataTypes == null || !patientDataTypes.Any())
-                throw new ProblemDetailsException(ExceptionUtility.CreateValidationError(nameof(patientDataTypes), "Must have at least one data type"));
+            }
 
-            var response = await patientDataService.Query(new PatientDataQuery(hdid, patientDataTypes), ct);
+            if (patientDataTypes == null || !patientDataTypes.Any())
+            {
+                throw new ProblemDetailsException(ExceptionUtility.CreateValidationError(nameof(patientDataTypes), "Must have at least one data type"));
+            }
+
+            var response = await this.patientDataService.Query(new PatientDataQuery(hdid, patientDataTypes), ct);
             return response;
         }
 
@@ -88,11 +93,16 @@ namespace HealthGateway.Patient.Controllers
         public async Task<ActionResult<PatientFileResponse>> GetFile(string hdid, string fileId, CancellationToken ct)
         {
             if (string.IsNullOrEmpty(hdid))
+            {
                 throw new ProblemDetailsException(ExceptionUtility.CreateValidationError(nameof(hdid), "Hdid is missing"));
-            if (string.IsNullOrEmpty(fileId))
-                throw new ProblemDetailsException(ExceptionUtility.CreateValidationError(nameof(fileId), "File id is missing"));
+            }
 
-            return await patientDataService.Query(new PatientFileQuery(hdid, fileId), ct) ??
+            if (string.IsNullOrEmpty(fileId))
+            {
+                throw new ProblemDetailsException(ExceptionUtility.CreateValidationError(nameof(fileId), "File id is missing"));
+            }
+
+            return await this.patientDataService.Query(new PatientFileQuery(hdid, fileId), ct) ??
                    throw new ProblemDetailsException(ExceptionUtility.CreateNotFoundError($"file {fileId} not found"));
         }
     }

@@ -60,7 +60,7 @@ namespace HealthGateway.PatientDataAccess.Api
         Registered,
         NonRegistered,
         Error,
-        Pending
+        Pending,
     }
 
     internal class HealthOptionDataJsonConverter : PolymorphicJsonConverter<HealthOptionData>
@@ -72,7 +72,7 @@ namespace HealthGateway.PatientDataAccess.Api
             {
                 "BcTransplantOrganDonor" => typeof(OrganDonor),
 
-                _ => null
+                _ => null,
             };
     }
 }
