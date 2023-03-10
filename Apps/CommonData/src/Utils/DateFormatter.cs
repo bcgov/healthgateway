@@ -25,28 +25,8 @@ using Microsoft.Extensions.Configuration;
 /// </summary>
 public static class DateFormatter
 {
-    /// <summary>
-    /// Represents a default Unix timezone value.
-    /// </summary>
-    public const string DefaultUnixTzValue = "America/Vancouver";
-
-    /// <summary>
-    /// Represents a default Windows timezone value.
-    /// </summary>
-    public const string DefaultWindowsTzValue = "Pacific Standard Time";
-
-    /// <summary>
-    /// Represents a key for unix timezone id value in configuration.
-    /// </summary>
-    public const string UnixTzIdKey = "UnixTimeZoneId";
-
-    /// <summary>
-    /// Represents a key for windows timezone id value in configuration.
-    /// </summary>
-    public const string WindowsTzIdKey = "WindowsTimeZoneId";
-
-    private const string UnixTzKey = $"TimeZone:{UnixTzIdKey}";
-    private const string WindowsTzKey = $"TimeZone:{WindowsTzIdKey}";
+    private const string UnixTzKey = "TimeZone:UnixTimeZoneId";
+    private const string WindowsTzKey = "TimeZone:WindowsTimeZoneId";
 
     /// <summary>
     /// Converts the supplied date to a string formatted as YYYY-MM-DD (2022-01-01).
@@ -140,20 +120,6 @@ public static class DateFormatter
     public static bool TryParse(string dateTime, string format, out DateTime parsedDateTime)
     {
         return DateTime.TryParseExact(dateTime, format, CultureInfo.InvariantCulture, DateTimeStyles.None, out parsedDateTime);
-    }
-
-    /// <summary>
-    /// Gets local timezone.
-    /// </summary>
-    /// <param name="unixTzValue">The Unix timezone value to use.</param>
-    /// <param name="windowsTzValue">The Windows timezone value to use.</param>
-    /// <returns>TimeZoneInfo object representing local timezone.</returns>
-    public static TimeZoneInfo GetLocalTimeZone(string unixTzValue, string windowsTzValue)
-    {
-        return TimeZoneInfo.FindSystemTimeZoneById(
-            RuntimeInformation.IsOSPlatform(OSPlatform.Windows)
-                ? windowsTzValue
-                : unixTzValue);
     }
 
     /// <summary>

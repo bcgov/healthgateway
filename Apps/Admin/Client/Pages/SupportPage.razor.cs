@@ -22,7 +22,6 @@ namespace HealthGateway.Admin.Client.Pages
     using Fluxor;
     using Fluxor.Blazor.Web.Components;
     using HealthGateway.Admin.Client.Models;
-    using HealthGateway.Admin.Client.Store.Configuration;
     using HealthGateway.Admin.Client.Store.MessageVerification;
     using HealthGateway.Admin.Client.Store.SupportUser;
     using HealthGateway.Common.Data.Constants;
@@ -31,6 +30,7 @@ namespace HealthGateway.Admin.Client.Pages
     using HealthGateway.Common.Data.ViewModels;
     using Microsoft.AspNetCore.Components;
     using Microsoft.AspNetCore.WebUtilities;
+    using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.Primitives;
     using MudBlazor;
 
@@ -56,7 +56,7 @@ namespace HealthGateway.Admin.Client.Pages
         private NavigationManager NavigationManager { get; set; } = default!;
 
         [Inject]
-        private IState<ConfigurationState> ConfigurationState { get; set; } = default!;
+        private IConfiguration Configuration { get; set; } = default!;
 
         private UserQueryType QueryType { get; set; } = UserQueryType.Phn;
 
@@ -157,9 +157,7 @@ namespace HealthGateway.Admin.Client.Pages
 
         private TimeZoneInfo GetTimeZone()
         {
-            string unixTzValue = this.ConfigurationState.Value.Result?.TimeZone[DateFormatter.UnixTzIdKey] ?? DateFormatter.DefaultUnixTzValue;
-            string windowsTzValue = this.ConfigurationState.Value.Result?.TimeZone[DateFormatter.WindowsTzIdKey] ?? DateFormatter.DefaultWindowsTzValue;
-            return DateFormatter.GetLocalTimeZone(unixTzValue, windowsTzValue);
+            return DateFormatter.GetLocalTimeZone(this.Configuration);
         }
 
         private bool HasMessagingVerification(string hdid)
