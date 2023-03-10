@@ -287,7 +287,7 @@ describe("Dependent Timeline Datasets", () => {
         disabledDependentDatasetShouldNotBePresent(Dataset.Note);
     });
     it("Validate Special Authority requests on dependent timeline", () => {
-        enabledDatasetShouldBePresent(Dataset.LabResult);
+        enabledDatasetShouldBePresent(Dataset.SpecialAuthorityRequest);
         disabledDatasetShouldNotBePresent(Dataset.SpecialAuthorityRequest);
         disabledDependentDatasetShouldNotBePresent(
             Dataset.SpecialAuthorityRequest
