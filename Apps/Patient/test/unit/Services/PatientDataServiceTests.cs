@@ -63,20 +63,20 @@ namespace HealthGateway.PatientTests.Services
         [Fact]
         public async Task CanGetPatientData()
         {
-            var expected = new PatientDataAccess.OrganDonorRegistration
+            var expected = new OrganDonorRegistration
             {
-                Status = PatientDataAccess.DonorRegistrationStatus.Registered,
+                Status = DonorRegistrationStatus.Registered,
                 RegistrationFileId = Guid.NewGuid().ToString(),
                 StatusMessage = "some message"
             };
 
-            var patientDataRepository = new Mock<PatientDataAccess.IPatientDataRepository>();
+            var patientDataRepository = new Mock<IPatientDataRepository>();
             patientDataRepository
                 .Setup(o => o.Query(
-                    It.Is<PatientDataAccess.HealthServicesQuery>(q =>
-                        q.Pid == pid && q.Categories.Any(c => c == PatientDataAccess.HealthServiceCategory.OrganDonor)),
+                    It.Is<HealthServicesQuery>(q =>
+                        q.Pid == pid && q.Categories.Any(c => c == HealthServiceCategory.OrganDonor)),
                     It.IsAny<CancellationToken>()))
-                .ReturnsAsync(new PatientDataAccess.PatientDataQueryResult(new[] { expected }));
+                .ReturnsAsync(new PatientDataQueryResult(new[] { expected }));
 
             var personalAccountService = new Mock<IPersonalAccountsService>();
             personalAccountService.Setup(o => o.GetPatientAccountAsync(hdid)).ReturnsAsync(new Common.Models.PHSA.PersonalAccount
@@ -98,15 +98,15 @@ namespace HealthGateway.PatientTests.Services
         [Fact]
         public async Task CanGetPatientFile()
         {
-            var expected = new PatientDataAccess.PatientFile(Guid.NewGuid().ToString(), RandomNumberGenerator.GetBytes(1024), "text/plain");
+            var expected = new PatientFile(Guid.NewGuid().ToString(), RandomNumberGenerator.GetBytes(1024), "text/plain");
 
-            var patientDataRepository = new Mock<PatientDataAccess.IPatientDataRepository>();
+            var patientDataRepository = new Mock<IPatientDataRepository>();
             patientDataRepository
                 .Setup(o => o.Query(
                     It.Is<PatientDataAccess.PatientFileQuery>(q =>
                         q.Pid == pid && q.FileId == expected.FileId),
                     It.IsAny<CancellationToken>()))
-                .ReturnsAsync(new PatientDataAccess.PatientDataQueryResult(new[] { expected }));
+                .ReturnsAsync(new PatientDataQueryResult(new[] { expected }));
 
             var personalAccountService = new Mock<IPersonalAccountsService>();
             personalAccountService.Setup(o => o.GetPatientAccountAsync(hdid)).ReturnsAsync(new Common.Models.PHSA.PersonalAccount
@@ -129,13 +129,13 @@ namespace HealthGateway.PatientTests.Services
         {
             var fileId = Guid.NewGuid().ToString();
 
-            var patientDataRepository = new Mock<PatientDataAccess.IPatientDataRepository>();
+            var patientDataRepository = new Mock<IPatientDataRepository>();
             patientDataRepository
                 .Setup(o => o.Query(
                     It.Is<PatientDataAccess.PatientFileQuery>(q =>
                         q.Pid == pid && q.FileId == fileId),
                     It.IsAny<CancellationToken>()))
-                .ReturnsAsync(new PatientDataAccess.PatientDataQueryResult(Array.Empty<PatientFile>()));
+                .ReturnsAsync(new PatientDataQueryResult(Array.Empty<PatientFile>()));
 
             var personalAccountService = new Mock<IPersonalAccountsService>();
             personalAccountService.Setup(o => o.GetPatientAccountAsync(hdid)).ReturnsAsync(new Common.Models.PHSA.PersonalAccount

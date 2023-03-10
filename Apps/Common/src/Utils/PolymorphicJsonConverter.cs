@@ -41,7 +41,7 @@ namespace HealthGateway.Common.Utils
         protected virtual bool CanConvert(Type typeToConvert, Type actualType) => typeToConvert.IsAssignableFrom(actualType);
 
         /// <summary>
-        /// Resolves a type for deserialization by the desciminator value
+        /// Resolves a type for deserialization by the discriminator value
         /// </summary>
         /// <param name="discriminatorValue">The disovered discriminator value</param>
         /// <returns>Type to use for deserialization, null if type not found</returns>
@@ -76,7 +76,7 @@ namespace HealthGateway.Common.Utils
 
             if (actualType == null) throw new JsonException($"serialized json doesn't have a {Discriminator} property");
             return (T)(JsonSerializer.Deserialize(ref reader, actualType, options)
-                       ?? throw new JsonException($"failed to deserizlize type {actualType.Name}"));
+                       ?? throw new JsonException($"failed to deserialize type {actualType.Name}"));
         }
 
         /// <inheritdoc/>

@@ -54,7 +54,7 @@ namespace HealthGateway.Patient.Services
     public record PatientDataQuery(string Hdid, PatientDataType[] PatientDataTypes);
 
     /// <summary>
-    /// Patiend data types
+    /// Patient data types
     /// </summary>
     public enum PatientDataType
     {
