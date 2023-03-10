@@ -63,8 +63,10 @@ function configureObject(baseObj, delta) {
     if (deltaKeys && deltaKeys.length > 0) {
         for (const key of deltaKeys) {
             const baseValue = baseObj[key];
-            if (baseValue === undefined) {
-                throw new Error(`Unknown property: ${key}`);
+            if (baseValue === undefined || baseValue === null) {
+                throw new Error(
+                    `Configuring Object - Unknown property: ${key}`
+                );
             }
             const baseValueKeys = Object.keys(baseValue);
             if (
@@ -85,6 +87,9 @@ function disableObject(config) {
     if (configKeys && configKeys.length > 0) {
         for (const key of configKeys) {
             const configValue = config[key];
+            if (configValue === undefined || configValue === null) {
+                throw new Error(`Disabling Object - Unknown property: ${key}`);
+            }
             const configValueKeys = Object.keys(configValue);
             if (
                 configValueKeys &&
