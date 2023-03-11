@@ -25,6 +25,7 @@ describe("Authenticated Services View", () => {
     });
 
     it("The url should be the unauthorized url if services is disabled", () => {
+        cy.configureSettings({});
         cy.url().should("include", servicesTestsConstants.unauthorized);
     });
 });
