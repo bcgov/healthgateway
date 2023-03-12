@@ -13,53 +13,76 @@
 //  See the License for the specific language governing permissions and
 //  limitations under the License.
 // -------------------------------------------------------------------------
-
-using System;
-using System.Linq;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
-using AutoMapper;
-using HealthGateway.PatientDataAccess.Api;
-using Refit;
-
 namespace HealthGateway.PatientDataAccess
 {
+    using System;
+    using System.Linq;
+    using System.Text;
+    using System.Threading;
+    using System.Threading.Tasks;
+    using AutoMapper;
+    using HealthGateway.PatientDataAccess.Api;
+    using Refit;
+
+    /// <summary>
+    /// Provides internal data access for Patient.
+    /// </summary>
     internal class PatientDataRepository : IPatientDataRepository
     {
         private readonly IPatientApi patientApi;
         private readonly IMapper mapper;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="PatientDataRepository"/> class.
+        /// </summary>
+        /// <param name="patientApi">The patient API to use.</param>
+        /// <param name="mapper">The injected mapper.</param>
         public PatientDataRepository(IPatientApi patientApi, IMapper mapper)
         {
             this.patientApi = patientApi;
             this.mapper = mapper;
         }
 
+        /// <summary>
+        /// Performs a query against the data respository.
+        /// </summary>
+        /// <param name="query">The query to perform.</param>
+        /// <param name="ct">The cancellation token.</param>
+        /// <returns>The query result.</returns>
+        /// <exception cref="NotImplementedException">Thrown if query is not implemented.</exception>
         public async Task<PatientDataQueryResult> Query(PatientDataQuery query, CancellationToken ct)
         {
             return query switch
             {
-                HealthServicesQuery q => await Handle(q, ct),
-                PatientFileQuery q => await Handle(q, ct),
-
-                _ => throw new NotImplementedException($"{query.GetType().Name} doesn't have a handler")
+                HealthServicesQuery q => await this.Handle(q, ct).ConfigureAwait(true),
+                PatientFileQuery q => await this.Handle(q, ct).ConfigureAwait(true),
+                _ => throw new NotImplementedException($"{query.GetType().Name} doesn't have a handler"),
             };
         }
 
+        private static string Map(HealthServiceCategory category) =>
+            category switch
+            {
+                HealthServiceCategory.OrganDonor => "BcTransplantOrganDonor",
+                _ => throw new NotImplementedException($"No mapping implemented for {category}"),
+            };
+
+        private static PatientFile Map(string fileId, FileResult file) =>
+            new(fileId, Encoding.Default.GetBytes(file.Data!), file.MediaType ?? string.Empty);
+
         private async Task<PatientDataQueryResult> Handle(HealthServicesQuery query, CancellationToken ct)
         {
-            var categories = query.Categories.Select(c => Map(c)).ToArray();
+            string[] categories = query.Categories.Select(c => Map(c)).ToArray();
 
-            var results = await patientApi.GetHealthOptionsAsync(query.Pid, categories, ct) ?? new HealthOptionsResult(new HealthOptionMetadata(), Array.Empty<HealthOptionData>());
-            return new PatientDataQueryResult(results.Data.Select(Map));
+            HealthOptionsResult results = await this.patientApi.GetHealthOptionsAsync(query.Pid, categories, ct).ConfigureAwait(true) ?? new(new HealthOptionMetadata(), Array.Empty<HealthOptionData>());
+            return new PatientDataQueryResult(results.Data.Select(this.Map));
         }
 
         private async Task<PatientDataQueryResult> Handle(PatientFileQuery query, CancellationToken ct)
         {
             try
             {
-                var fileResult = await patientApi.GetFile(query.Pid, query.FileId, ct);
+                var fileResult = await this.patientApi.GetFile(query.Pid, query.FileId, ct).ConfigureAwait(true);
                 var mappedFiles = new[] { fileResult }
                     .Where(f => f?.Data != null)
                     .Select(f => Map(query.FileId, f!));
@@ -72,17 +95,6 @@ namespace HealthGateway.PatientDataAccess
             }
         }
 
-        private HealthData Map(HealthOptionData healthOptionData) => mapper.Map<HealthData>(healthOptionData);
-
-        private static string Map(HealthServiceCategory category) =>
-            category switch
-            {
-                HealthServiceCategory.OrganDonor => "BcTransplantOrganDonor",
-
-                _ => throw new NotImplementedException($"No mapping implemented for {category}")
-            };
-
-        private static PatientFile Map(string fileId, FileResult file) =>
-            new(fileId, Encoding.Default.GetBytes(file.Data!), file.MediaType ?? string.Empty);
+        private HealthData Map(HealthOptionData healthOptionData) => this.mapper.Map<HealthData>(healthOptionData);
     }
 }

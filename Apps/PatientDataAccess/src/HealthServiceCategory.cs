@@ -15,24 +15,14 @@
 // -------------------------------------------------------------------------
 namespace HealthGateway.PatientDataAccess
 {
-// Disables documentation for internal class.
-#pragma warning disable SA1600
-
-    using AutoMapper;
-    using HealthGateway.PatientDataAccess.Api;
-
-    internal class Mappings : Profile
+    /// <summary>
+    /// Health service categories.
+    /// </summary>
+    public enum HealthServiceCategory
     {
-        public Mappings()
-        {
-            this.CreateMap<HealthOptionData, HealthData>()
-                .IncludeAllDerived();
-
-            this.CreateMap<OrganDonor, OrganDonorRegistration>()
-                .ForMember(d => d.Status, opts => opts.MapFrom(s => s.DonorStatus))
-                .ForMember(d => d.RegistrationFileId, opts => opts.MapFrom(s => s.HealthDataFileId))
-                ;
-        }
+        /// <summary>
+        /// BC Transplant Organ Donor.
+        /// </summary>
+        OrganDonor,
     }
 }
-#pragma warning restore SA1600

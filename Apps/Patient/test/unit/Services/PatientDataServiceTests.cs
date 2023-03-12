@@ -13,24 +13,26 @@
 //  See the License for the specific language governing permissions and
 //  limitations under the License.
 // -------------------------------------------------------------------------
-
-using System;
-using System.Linq;
-using System.Security.Cryptography;
-using System.Text.Json;
-using System.Threading;
-using System.Threading.Tasks;
-using HealthGateway.Common.Services;
-using HealthGateway.Patient.Services;
-using HealthGateway.PatientDataAccess;
-using Moq;
-using Shouldly;
-using Xunit;
-using PatientDataQuery = HealthGateway.Patient.Services.PatientDataQuery;
-using PatientFileQuery = HealthGateway.Patient.Services.PatientFileQuery;
-
 namespace HealthGateway.PatientTests.Services
 {
+    using System;
+    using System.Linq;
+    using System.Security.Cryptography;
+    using System.Text.Json;
+    using System.Threading;
+    using System.Threading.Tasks;
+    using HealthGateway.Common.Services;
+    using HealthGateway.Patient.Constants;
+    using HealthGateway.Patient.Services;
+    using HealthGateway.PatientDataAccess;
+    using Moq;
+    using Shouldly;
+    using Xunit;
+    using PatientDataQuery = HealthGateway.Patient.Services.PatientDataQuery;
+    using PatientFileQuery = HealthGateway.Patient.Services.PatientFileQuery;
+
+// Disable documentation for tests.
+#pragma warning disable SA1600
     public class PatientDataServiceTests
     {
         private readonly Guid pid = Guid.NewGuid();
@@ -43,7 +45,7 @@ namespace HealthGateway.PatientTests.Services
 
             var data = new PatientData[]
             {
-                organDonorRegistationData
+                organDonorRegistationData,
             };
 
             var response = new PatientDataResponse(data);
@@ -67,27 +69,27 @@ namespace HealthGateway.PatientTests.Services
             {
                 Status = DonorRegistrationStatus.Registered,
                 RegistrationFileId = Guid.NewGuid().ToString(),
-                StatusMessage = "some message"
+                StatusMessage = "some message",
             };
 
             var patientDataRepository = new Mock<IPatientDataRepository>();
             patientDataRepository
                 .Setup(o => o.Query(
                     It.Is<HealthServicesQuery>(q =>
-                        q.Pid == pid && q.Categories.Any(c => c == HealthServiceCategory.OrganDonor)),
+                        q.Pid == this.pid && q.Categories.Any(c => c == HealthServiceCategory.OrganDonor)),
                     It.IsAny<CancellationToken>()))
                 .ReturnsAsync(new PatientDataQueryResult(new[] { expected }));
 
             var personalAccountService = new Mock<IPersonalAccountsService>();
-            personalAccountService.Setup(o => o.GetPatientAccountAsync(hdid)).ReturnsAsync(new Common.Models.PHSA.PersonalAccount
+            personalAccountService.Setup(o => o.GetPatientAccountAsync(this.hdid)).ReturnsAsync(new Common.Models.PHSA.PersonalAccount
             {
                 Id = Guid.NewGuid(),
-                PatientIdentity = new Common.Models.PHSA.PatientIdentity { Pid = pid }
+                PatientIdentity = new Common.Models.PHSA.PatientIdentity { Pid = this.pid },
             });
 
             var sut = new PatientDataService(patientDataRepository.Object, personalAccountService.Object);
 
-            var result = await sut.Query(new PatientDataQuery(hdid, new[] { PatientDataType.OrganDonorRegistrationStatus }), CancellationToken.None);
+            var result = await sut.Query(new PatientDataQuery(this.hdid, new[] { PatientDataType.OrganDonorRegistrationStatus }), CancellationToken.None).ConfigureAwait(true);
 
             var actual = result.Items.ShouldHaveSingleItem().ShouldBeOfType<OrganDonorRegistrationData>();
             actual.Status.ShouldBe(expected.Status.ToString());
@@ -104,20 +106,20 @@ namespace HealthGateway.PatientTests.Services
             patientDataRepository
                 .Setup(o => o.Query(
                     It.Is<PatientDataAccess.PatientFileQuery>(q =>
-                        q.Pid == pid && q.FileId == expected.FileId),
+                        q.Pid == this.pid && q.FileId == expected.FileId),
                     It.IsAny<CancellationToken>()))
                 .ReturnsAsync(new PatientDataQueryResult(new[] { expected }));
 
             var personalAccountService = new Mock<IPersonalAccountsService>();
-            personalAccountService.Setup(o => o.GetPatientAccountAsync(hdid)).ReturnsAsync(new Common.Models.PHSA.PersonalAccount
+            personalAccountService.Setup(o => o.GetPatientAccountAsync(this.hdid)).ReturnsAsync(new Common.Models.PHSA.PersonalAccount
             {
                 Id = Guid.NewGuid(),
-                PatientIdentity = new Common.Models.PHSA.PatientIdentity { Pid = pid }
+                PatientIdentity = new Common.Models.PHSA.PatientIdentity { Pid = this.pid },
             });
 
             var sut = new PatientDataService(patientDataRepository.Object, personalAccountService.Object);
 
-            var result = await sut.Query(new PatientFileQuery(hdid, expected.FileId), CancellationToken.None);
+            var result = await sut.Query(new PatientFileQuery(this.hdid, expected.FileId), CancellationToken.None).ConfigureAwait(true);
 
             var actual = result.ShouldBeOfType<PatientFileResponse>();
             actual.Content.ShouldBe(expected.Content);
@@ -133,22 +135,23 @@ namespace HealthGateway.PatientTests.Services
             patientDataRepository
                 .Setup(o => o.Query(
                     It.Is<PatientDataAccess.PatientFileQuery>(q =>
-                        q.Pid == pid && q.FileId == fileId),
+                        q.Pid == this.pid && q.FileId == fileId),
                     It.IsAny<CancellationToken>()))
                 .ReturnsAsync(new PatientDataQueryResult(Array.Empty<PatientFile>()));
 
             var personalAccountService = new Mock<IPersonalAccountsService>();
-            personalAccountService.Setup(o => o.GetPatientAccountAsync(hdid)).ReturnsAsync(new Common.Models.PHSA.PersonalAccount
+            personalAccountService.Setup(o => o.GetPatientAccountAsync(this.hdid)).ReturnsAsync(new Common.Models.PHSA.PersonalAccount
             {
                 Id = Guid.NewGuid(),
-                PatientIdentity = new Common.Models.PHSA.PatientIdentity { Pid = pid }
+                PatientIdentity = new Common.Models.PHSA.PatientIdentity { Pid = this.pid },
             });
 
             var sut = new PatientDataService(patientDataRepository.Object, personalAccountService.Object);
 
-            var result = await sut.Query(new PatientFileQuery(hdid, fileId), CancellationToken.None);
+            var result = await sut.Query(new PatientFileQuery(this.hdid, fileId), CancellationToken.None).ConfigureAwait(true);
 
             result.ShouldBeNull();
         }
     }
+#pragma warning restore SA1600
 }

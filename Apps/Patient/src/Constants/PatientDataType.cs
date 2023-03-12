@@ -13,26 +13,16 @@
 //  See the License for the specific language governing permissions and
 //  limitations under the License.
 // -------------------------------------------------------------------------
-namespace HealthGateway.PatientDataAccess
+namespace HealthGateway.Patient.Constants
 {
-// Disables documentation for internal class.
-#pragma warning disable SA1600
-
-    using AutoMapper;
-    using HealthGateway.PatientDataAccess.Api;
-
-    internal class Mappings : Profile
+    /// <summary>
+    /// Patient data types.
+    /// </summary>
+    public enum PatientDataType
     {
-        public Mappings()
-        {
-            this.CreateMap<HealthOptionData, HealthData>()
-                .IncludeAllDerived();
-
-            this.CreateMap<OrganDonor, OrganDonorRegistration>()
-                .ForMember(d => d.Status, opts => opts.MapFrom(s => s.DonorStatus))
-                .ForMember(d => d.RegistrationFileId, opts => opts.MapFrom(s => s.HealthDataFileId))
-                ;
-        }
+        /// <summary>
+        /// Organ donor registration status.
+        /// </summary>
+        OrganDonorRegistrationStatus,
     }
 }
-#pragma warning restore SA1600

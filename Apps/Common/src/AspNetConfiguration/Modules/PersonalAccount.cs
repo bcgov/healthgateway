@@ -13,19 +13,18 @@
 //  See the License for the specific language governing permissions and
 //  limitations under the License.
 // -------------------------------------------------------------------------
-
-using System.Diagnostics.CodeAnalysis;
-using HealthGateway.Common.Api;
-using HealthGateway.Common.Models.PHSA;
-using HealthGateway.Common.Utils.Phsa;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.DependencyInjection.Extensions;
-using Microsoft.Extensions.Logging;
-using Refit;
-
 namespace HealthGateway.Common.AspNetConfiguration.Modules
 {
+    using System.Diagnostics.CodeAnalysis;
+    using HealthGateway.Common.Api;
+    using HealthGateway.Common.Models.PHSA;
+    using HealthGateway.Common.Utils.Phsa;
+    using Microsoft.Extensions.Configuration;
+    using Microsoft.Extensions.DependencyInjection;
+    using Microsoft.Extensions.DependencyInjection.Extensions;
+    using Microsoft.Extensions.Logging;
+    using Refit;
+
     /// <summary>
     /// Provides ASP.Net Services for personal account access.
     /// </summary>
@@ -40,13 +39,13 @@ namespace HealthGateway.Common.AspNetConfiguration.Modules
         /// <param name="configuration">The configuration to use for values.</param>
         public static void ConfigurePersonalAccountAccess(IServiceCollection services, ILogger logger, IConfiguration configuration)
         {
-            var phsaConfig = configuration.GetSection("PhsaV2").Get<PhsaConfig>();
+            PhsaConfig? phsaConfig = configuration.GetSection("PhsaV2").Get<PhsaConfig>();
             PhsaV2.ConfigurePhsaV2Access(services, logger, configuration);
             services.AddRefitClient<IPersonalAccountsApi>()
                 .ConfigureHttpClient(c => c.BaseAddress = phsaConfig!.BaseUrl)
                 .AddHttpMessageHandler<AuthHeaderHandler>();
 
-            services.TryAddTransient<Common.Services.IPersonalAccountsService, Common.Services.PersonalAccountsService>();
+            services.TryAddTransient<Services.IPersonalAccountsService, Services.PersonalAccountsService>();
         }
     }
 }

@@ -13,17 +13,30 @@
 //  See the License for the specific language governing permissions and
 //  limitations under the License.
 // -------------------------------------------------------------------------
-
-using System;
-using System.Collections.Generic;
-using System.Text.Json.Serialization;
-using System.Threading;
-using System.Threading.Tasks;
-using HealthGateway.Common.Utils;
-using Refit;
-
 namespace HealthGateway.PatientDataAccess.Api
 {
+// Disables documentation for internal class.
+#pragma warning disable SA1600
+
+// Disables documentation for internal class.
+#pragma warning disable SA1602
+
+    using System;
+    using System.Collections.Generic;
+    using System.Text.Json.Serialization;
+    using System.Threading;
+    using System.Threading.Tasks;
+    using HealthGateway.Common.Utils;
+    using Refit;
+
+    internal enum DonorStatus
+    {
+        Registered,
+        NonRegistered,
+        Error,
+        Pending,
+    }
+
     internal interface IPatientApi
     {
         [Get("/patient/{pid}/file/{fileId}")]
@@ -53,14 +66,6 @@ namespace HealthGateway.PatientDataAccess.Api
         public string? HealthDataFileId { get; set; }
     }
 
-    internal enum DonorStatus
-    {
-        Registered,
-        NonRegistered,
-        Error,
-        Pending
-    }
-
     internal class HealthOptionDataJsonConverter : PolymorphicJsonConverter<HealthOptionData>
     {
         protected override string Discriminator => "healthOptionsType";
@@ -69,8 +74,9 @@ namespace HealthGateway.PatientDataAccess.Api
             discriminatorValue switch
             {
                 "BcTransplantOrganDonor" => typeof(OrganDonor),
-
-                _ => null
+                _ => null,
             };
     }
 }
+#pragma warning restore SA1600
+#pragma warning restore SA1602

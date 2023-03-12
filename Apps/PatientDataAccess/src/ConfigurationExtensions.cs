@@ -13,27 +13,25 @@
 //  See the License for the specific language governing permissions and
 //  limitations under the License.
 // -------------------------------------------------------------------------
-
-using System;
-using HealthGateway.Common.Utils.Phsa;
-using HealthGateway.PatientDataAccess.Api;
-using Refit;
-
 namespace HealthGateway.PatientDataAccess
 {
+    using System;
+    using HealthGateway.Common.Utils.Phsa;
+    using HealthGateway.PatientDataAccess.Api;
     using Microsoft.Extensions.DependencyInjection;
+    using Refit;
 
     /// <summary>
-    /// Helper class to add and configure <see cref="IPatientDataRepository"/> dependencies
+    /// Helper class to add and configure <see cref="IPatientDataRepository"/> dependencies.
     /// </summary>
     public static class ConfigurationExtensions
     {
         /// <summary>
-        /// Register PatientDataAccess in DI
+        /// Register PatientDataAccess in DI.
         /// </summary>
-        /// <param name="services">DI service collection</param>
-        /// <param name="configuration">configuration settings</param>
-        /// <returns>DI service collection</returns>
+        /// <param name="services">DI service collection.</param>
+        /// <param name="configuration">configuration settings.</param>
+        /// <returns>The service collection.</returns>
         public static IServiceCollection AddPatientDataAccess(this IServiceCollection services, PatientDataAccessConfiguration configuration)
         {
             services.AddAutoMapper(typeof(Mappings));
@@ -47,7 +45,7 @@ namespace HealthGateway.PatientDataAccess
     }
 
     /// <summary>
-    /// Configuration settings for PatientDataAccess
+    /// Configuration settings for PatientDataAccess.
     /// </summary>
     public record PatientDataAccessConfiguration(Uri PhsaApiBaseUrl);
 }

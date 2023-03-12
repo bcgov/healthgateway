@@ -47,19 +47,19 @@ namespace HealthGateway.Common.Data.ErrorHandling
             };
 
         /// <summary>
-        /// Creates a problem details describing a validation error with 400 bad request status
+        /// Creates a problem details describing a validation error with 400 bad request status.
         /// </summary>
-        /// <param name="memberName">The invalid member name</param>
-        /// <param name="details">The details of the validation error</param>
-        /// <returns>ProblemDetail instance with validation type and 400 http error</returns>
+        /// <param name="memberName">The invalid member name.</param>
+        /// <param name="details">The details of the validation error.</param>
+        /// <returns>ProblemDetail instance with validation type and 400 http error.</returns>
         public static ProblemDetails CreateValidationError(string memberName, string details) =>
             CreateProblemDetails(details, HttpStatusCode.BadRequest, "Validation", memberName);
 
         /// <summary>
-        /// Creates a problem details describing a not found error with 404 request status
+        /// Creates a problem details describing a not found error with 404 request status.
         /// </summary>
-        /// <param name="details">The details of what was not found</param>
-        /// <returns>ProblemDetail instance with not found type and 404 status code</returns>
+        /// <param name="details">The details of what was not found.</param>
+        /// <returns>ProblemDetail instance with not found type and 404 status code.</returns>
         public static ProblemDetails CreateNotFoundError(string details) =>
             CreateProblemDetails(details, HttpStatusCode.NotFound, "NotFound");
     }

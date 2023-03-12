@@ -15,24 +15,29 @@
 // -------------------------------------------------------------------------
 namespace HealthGateway.PatientDataAccess
 {
-// Disables documentation for internal class.
-#pragma warning disable SA1600
-
-    using AutoMapper;
-    using HealthGateway.PatientDataAccess.Api;
-
-    internal class Mappings : Profile
+    /// <summary>
+    /// Donor registration status.
+    /// </summary>
+    public enum DonorRegistrationStatus
     {
-        public Mappings()
-        {
-            this.CreateMap<HealthOptionData, HealthData>()
-                .IncludeAllDerived();
+        /// <summary>
+        /// Registered patient.
+        /// </summary>
+        Registered,
 
-            this.CreateMap<OrganDonor, OrganDonorRegistration>()
-                .ForMember(d => d.Status, opts => opts.MapFrom(s => s.DonorStatus))
-                .ForMember(d => d.RegistrationFileId, opts => opts.MapFrom(s => s.HealthDataFileId))
-                ;
-        }
+        /// <summary>
+        /// Not registered patient.
+        /// </summary>
+        NonRegistered,
+
+        /// <summary>
+        /// Error in registration.
+        /// </summary>
+        Error,
+
+        /// <summary>
+        /// Registration is pending.
+        /// </summary>
+        Pending,
     }
 }
-#pragma warning restore SA1600

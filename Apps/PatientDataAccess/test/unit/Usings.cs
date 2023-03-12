@@ -13,6 +13,7 @@
 //  See the License for the specific language governing permissions and
 //  limitations under the License.
 // -------------------------------------------------------------------------
-
+#pragma warning disable SA1200
 global using Shouldly;
 global using Xunit;
+#pragma warning restore SA1200

@@ -13,21 +13,21 @@
 //  See the License for the specific language governing permissions and
 //  limitations under the License.
 // -------------------------------------------------------------------------
-
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
-using HealthGateway.Common.AccessManagement.Authorization.Policy;
-using HealthGateway.Common.Data.ErrorHandling;
-using HealthGateway.Patient.Services;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-
 namespace HealthGateway.Patient.Controllers
 {
+    using System.Linq;
+    using System.Threading;
+    using System.Threading.Tasks;
+    using HealthGateway.Common.AccessManagement.Authorization.Policy;
+    using HealthGateway.Common.Data.ErrorHandling;
+    using HealthGateway.Patient.Constants;
+    using HealthGateway.Patient.Services;
+    using Microsoft.AspNetCore.Authorization;
+    using Microsoft.AspNetCore.Http;
+    using Microsoft.AspNetCore.Mvc;
+
     /// <summary>
-    /// Endpoint to query and manage patient related data
+    /// Endpoint to query and manage patient related data.
     /// </summary>
     [ApiController]
     [Route("[controller]")]
@@ -39,19 +39,19 @@ namespace HealthGateway.Patient.Controllers
         /// <summary>
         /// Initializes a new instance of the <see cref="PatientDataController"/> class.
         /// </summary>
-        /// <param name="patientDataService">DI service</param>
+        /// <param name="patientDataService">DI service.</param>
         public PatientDataController(IPatientDataService patientDataService)
         {
             this.patientDataService = patientDataService;
         }
 
         /// <summary>
-        /// Queries patient data for a specific patient and one or more data types
+        /// Queries patient data for a specific patient and one or more data types.
         /// </summary>
-        /// <param name="hdid">The patient hdid</param>
-        /// <param name="patientDataTypes">array of data types to query</param>
-        /// <param name="ct">cancellation token</param>
-        /// <returns>object with an array of patient data information</returns>
+        /// <param name="hdid">The patient hdid.</param>
+        /// <param name="patientDataTypes">array of data types to query.</param>
+        /// <param name="ct">cancellation token.</param>
+        /// <returns>object with an array of patient data information.</returns>
         [HttpGet("{hdid}")]
         [Authorize(policy: PatientPolicy.Read)]
         [ProducesResponseType(StatusCodes.Status200OK)]
@@ -62,21 +62,25 @@ namespace HealthGateway.Patient.Controllers
         public async Task<ActionResult<PatientDataResponse>> Get(string hdid, [FromQuery] PatientDataType[] patientDataTypes, CancellationToken ct)
         {
             if (string.IsNullOrEmpty(hdid))
+            {
                 throw new ProblemDetailsException(ExceptionUtility.CreateValidationError(nameof(hdid), "Hdid is missing"));
-            if (patientDataTypes == null || !patientDataTypes.Any())
-                throw new ProblemDetailsException(ExceptionUtility.CreateValidationError(nameof(patientDataTypes), "Must have at least one data type"));
+            }
 
-            var response = await patientDataService.Query(new PatientDataQuery(hdid, patientDataTypes), ct);
-            return response;
+            if (patientDataTypes == null || !patientDataTypes.Any())
+            {
+                throw new ProblemDetailsException(ExceptionUtility.CreateValidationError(nameof(patientDataTypes), "Must have at least one data type"));
+            }
+
+            return await this.patientDataService.Query(new PatientDataQuery(hdid, patientDataTypes), ct).ConfigureAwait(true);
         }
 
         /// <summary>
-        /// Gets a patient's file by id
+        /// Gets a patient's file by id.
         /// </summary>
-        /// <param name="hdid">The patient hdid</param>
-        /// <param name="fileId">The file id</param>
-        /// <param name="ct">cancellation token</param>
-        /// <returns>File</returns>
+        /// <param name="hdid">The patient hdid.</param>
+        /// <param name="fileId">The file id.</param>
+        /// <param name="ct">cancellation token.</param>
+        /// <returns>The patient file.</returns>
         [HttpGet("{hdid}/file/{fileId}")]
         [Authorize(policy: PatientPolicy.Read)]
         [ProducesResponseType(StatusCodes.Status200OK)]
@@ -88,11 +92,16 @@ namespace HealthGateway.Patient.Controllers
         public async Task<ActionResult<PatientFileResponse>> GetFile(string hdid, string fileId, CancellationToken ct)
         {
             if (string.IsNullOrEmpty(hdid))
+            {
                 throw new ProblemDetailsException(ExceptionUtility.CreateValidationError(nameof(hdid), "Hdid is missing"));
-            if (string.IsNullOrEmpty(fileId))
-                throw new ProblemDetailsException(ExceptionUtility.CreateValidationError(nameof(fileId), "File id is missing"));
+            }
 
-            return await patientDataService.Query(new PatientFileQuery(hdid, fileId), ct) ??
+            if (string.IsNullOrEmpty(fileId))
+            {
+                throw new ProblemDetailsException(ExceptionUtility.CreateValidationError(nameof(fileId), "File id is missing"));
+            }
+
+            return await this.patientDataService.Query(new PatientFileQuery(hdid, fileId), ct).ConfigureAwait(true) ??
                    throw new ProblemDetailsException(ExceptionUtility.CreateNotFoundError($"file {fileId} not found"));
         }
     }

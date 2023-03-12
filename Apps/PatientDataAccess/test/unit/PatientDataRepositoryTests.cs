@@ -13,27 +13,21 @@
 //  See the License for the specific language governing permissions and
 //  limitations under the License.
 // -------------------------------------------------------------------------
-
-using System.Net;
-using System.Text;
-using AutoMapper;
-using HealthGateway.PatientDataAccess;
-using HealthGateway.PatientDataAccess.Api;
-using Moq;
-using Refit;
-
 namespace PatientDataAccessTests
 {
+    using System.Net;
+    using System.Text;
+    using AutoMapper;
+    using HealthGateway.PatientDataAccess;
+    using HealthGateway.PatientDataAccess.Api;
+    using Moq;
+    using Refit;
+
+// Disable documentation for tests.
+#pragma warning disable SA1600
     public class PatientDataRepositoryTests
     {
         private readonly Guid pid = Guid.NewGuid();
-
-        private static IPatientDataRepository CreateSut(IPatientApi api)
-        {
-            var mapper = new MapperConfiguration(cfg => { cfg.AddMaps(typeof(Mappings)); }).CreateMapper();
-
-            return new PatientDataRepository(api, mapper);
-        }
 
         [Fact]
         public async Task CanGetPatientData()
@@ -44,16 +38,16 @@ namespace PatientDataAccessTests
                 DonorStatus = DonorStatus.Registered,
                 StatusMessage = "statusmessage",
                 HealthDataFileId = Guid.NewGuid().ToString(),
-                HealthOptionsId = "optid"
+                HealthOptionsId = "optid",
             };
 
             patientApi
-                .Setup(api => api.GetHealthOptionsAsync(pid, It.IsAny<string[]>(), It.IsAny<CancellationToken>()))
+                .Setup(api => api.GetHealthOptionsAsync(this.pid, It.IsAny<string[]>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(new HealthOptionsResult(new HealthOptionMetadata(), new[] { phsaOrganDonorResponse }));
 
             var sut = CreateSut(patientApi.Object);
 
-            var result = await sut.Query(new HealthServicesQuery(pid, new[] { HealthServiceCategory.OrganDonor }), CancellationToken.None);
+            var result = await sut.Query(new HealthServicesQuery(this.pid, new[] { HealthServiceCategory.OrganDonor }), CancellationToken.None).ConfigureAwait(true);
 
             result.ShouldNotBeNull();
             var organDonorRegistration = result.Items.ShouldHaveSingleItem().ShouldBeOfType<OrganDonorRegistration>();
@@ -70,12 +64,12 @@ namespace PatientDataAccessTests
             var expectedFile = new FileResult("text/plain", "somedata", "encoding");
 
             patientApi
-                .Setup(api => api.GetFile(pid, fileId, It.IsAny<CancellationToken>()))
+                .Setup(api => api.GetFile(this.pid, fileId, It.IsAny<CancellationToken>()))
                 .ReturnsAsync(expectedFile);
 
             var sut = CreateSut(patientApi.Object);
 
-            var result = await sut.Query(new PatientFileQuery(pid, fileId), CancellationToken.None);
+            var result = await sut.Query(new PatientFileQuery(this.pid, fileId), CancellationToken.None).ConfigureAwait(true);
 
             result.ShouldNotBeNull();
             var actualFile = result.Items.ShouldHaveSingleItem().ShouldBeOfType<PatientFile>();
@@ -92,12 +86,12 @@ namespace PatientDataAccessTests
             var fileId = Guid.NewGuid().ToString();
 
             patientApi
-                .Setup(api => api.GetFile(pid, fileId, It.IsAny<CancellationToken>()))
+                .Setup(api => api.GetFile(this.pid, fileId, It.IsAny<CancellationToken>()))
                 .ReturnsAsync((FileResult?)null);
 
             var sut = CreateSut(patientApi.Object);
 
-            var result = await sut.Query(new PatientFileQuery(pid, fileId), CancellationToken.None);
+            var result = await sut.Query(new PatientFileQuery(this.pid, fileId), CancellationToken.None).ConfigureAwait(true);
 
             result.ShouldNotBeNull().Items.ShouldBeEmpty();
         }
@@ -110,13 +104,13 @@ namespace PatientDataAccessTests
 
 #pragma warning disable CA2000 // Dispose objects before losing scope
             patientApi
-                .Setup(api => api.GetFile(pid, fileId, It.IsAny<CancellationToken>()))
-                .ThrowsAsync(await ApiException.Create(new HttpRequestMessage(), HttpMethod.Get, new HttpResponseMessage(HttpStatusCode.NotFound), new RefitSettings { }));
+                .Setup(api => api.GetFile(this.pid, fileId, It.IsAny<CancellationToken>()))
+                .ThrowsAsync(await ApiException.Create(new HttpRequestMessage(), HttpMethod.Get, new HttpResponseMessage(HttpStatusCode.NotFound), new RefitSettings()).ConfigureAwait(true));
 #pragma warning restore CA2000 // Dispose objects before losing scope
 
             var sut = CreateSut(patientApi.Object);
 
-            var result = await sut.Query(new PatientFileQuery(pid, fileId), CancellationToken.None);
+            var result = await sut.Query(new PatientFileQuery(this.pid, fileId), CancellationToken.None).ConfigureAwait(true);
 
             result.ShouldNotBeNull().Items.ShouldBeEmpty();
         }
@@ -129,14 +123,22 @@ namespace PatientDataAccessTests
             var expectedFile = new FileResult(null, null, null);
 
             patientApi
-                .Setup(api => api.GetFile(pid, fileId, It.IsAny<CancellationToken>()))
+                .Setup(api => api.GetFile(this.pid, fileId, It.IsAny<CancellationToken>()))
                 .ReturnsAsync(expectedFile);
 
             var sut = CreateSut(patientApi.Object);
 
-            var result = await sut.Query(new PatientFileQuery(pid, fileId), CancellationToken.None);
+            var result = await sut.Query(new PatientFileQuery(this.pid, fileId), CancellationToken.None).ConfigureAwait(true);
 
             result.ShouldNotBeNull().Items.ShouldBeEmpty();
         }
+
+        private static IPatientDataRepository CreateSut(IPatientApi api)
+        {
+            var mapper = new MapperConfiguration(cfg => { cfg.AddMaps(typeof(Mappings)); }).CreateMapper();
+
+            return new PatientDataRepository(api, mapper);
+        }
     }
+#pragma warning restore SA1600
 }
