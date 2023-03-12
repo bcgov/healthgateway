@@ -13,119 +13,82 @@
 //  See the License for the specific language governing permissions and
 //  limitations under the License.
 // -------------------------------------------------------------------------
-
-using System.Threading;
-
 namespace HealthGateway.PatientDataAccess
 {
     using System;
     using System.Collections.Generic;
+    using System.Threading;
     using System.Threading.Tasks;
 
     /// <summary>
-    /// Handle patients data
+    /// Handle patients data.
     /// </summary>
     public interface IPatientDataRepository
     {
         /// <summary>
-        /// Query patient data
+        /// Query patient data.
         /// </summary>
-        /// <param name="query">The query</param>
-        /// <param name="ct">Cancellation token</param>
-        /// <returns>The query result</returns>
+        /// <param name="query">The query.</param>
+        /// <param name="ct">Cancellation token.</param>
+        /// <returns>The query result.</returns>
         Task<PatientDataQueryResult> Query(PatientDataQuery query, CancellationToken ct);
     }
 
     /// <summary>
-    /// Abstract query record
+    /// Abstract query record.
     /// </summary>
     public abstract record PatientDataQuery;
 
     /// <summary>
-    /// Query parameters for health services
+    /// Query parameters for health services.
     /// </summary>
     public record HealthServicesQuery(Guid Pid, IEnumerable<HealthServiceCategory> Categories) : PatientDataQuery;
 
     /// <summary>
-    /// Query patient files
+    /// Query patient files.
     /// </summary>
     public record PatientFileQuery(Guid Pid, string FileId) : PatientDataQuery;
 
     /// <summary>
-    /// Health service categories
-    /// </summary>
-    public enum HealthServiceCategory
-    {
-        /// <summary>
-        /// BC Transplant Organ Donor
-        /// </summary>
-        OrganDonor
-    }
-
-    /// <summary>
-    /// The health data query result payload
+    /// The health data query result payload.
     /// </summary>
     public record PatientDataQueryResult(IEnumerable<HealthData> Items);
 
     /// <summary>
-    /// abstract record for health data
+    /// abstract record for health data.
     /// </summary>
     public abstract record HealthData;
 
     /// <summary>
-    /// abstract class for health service data
+    /// abstract class for health service data.
     /// </summary>
     public abstract record HealthServiceData : HealthData;
 
     /// <summary>
-    /// BC Transplant organ donor service data
+    /// BC Transplant organ donor service data.
     /// </summary>
     public record OrganDonorRegistration : HealthServiceData
     {
         /// <summary>
-        /// The donor registration status
+        /// Gets or sets the donor registration status.
         /// </summary>
         public DonorRegistrationStatus Status { get; set; }
 
         /// <summary>
-        /// Status related message
+        /// Gets or sets the Status related message.
         /// </summary>
         public string? StatusMessage { get; set; }
 
         /// <summary>
-        /// RegistrationFileId
+        /// Gets or sets the RegistrationFileId.
         /// </summary>
         public string? RegistrationFileId { get; set; }
     }
 
     /// <summary>
-    /// Donor registration status
+    /// Represents a patient file.
     /// </summary>
-    public enum DonorRegistrationStatus
-    {
-        /// <summary>
-        /// Registered patient
-        /// </summary>
-        Registered,
-
-        /// <summary>
-        /// Not registered patient
-        /// </summary>
-        NonRegistered,
-
-        /// <summary>
-        /// Error in registration
-        /// </summary>
-        Error,
-
-        /// <summary>
-        /// Registration is pending
-        /// </summary>
-        Pending
-    }
-
-    /// <summary>
-    /// Represents a patient file
-    /// </summary>
+#pragma warning disable CA1819
     public record PatientFile(string FileId, byte[] Content, string ContentType) : HealthData;
+#pragma warning restore CA1819
 }
