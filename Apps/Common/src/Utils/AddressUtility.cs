@@ -17,7 +17,7 @@ namespace HealthGateway.Common.Utils
 {
     using System.Linq;
     using System.Text;
-    using HealthGateway.Common.Models;
+    using HealthGateway.Common.Data.Models;
     using Microsoft.IdentityModel.Tokens;
 
     /// <summary>
