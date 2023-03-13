@@ -26,7 +26,7 @@ import {
 import MedicationRequest from "@/models/medicationRequest";
 import MedicationStatementHistory from "@/models/medicationStatementHistory";
 import Notification from "@/models/notification";
-import PatientData from "@/models/patientData";
+import Patient from "@/models/patient";
 import RegisterTestKitRequest from "@/models/registerTestKitRequest";
 import Report from "@/models/report";
 import ReportRequest from "@/models/reportRequest";
@@ -82,7 +82,7 @@ export interface IVaccinationStatusService {
 
 export interface IPatientService {
     initialize(config: ExternalConfiguration, http: IHttpDelegate): void;
-    getPatientData(hdid: string): Promise<ApiResult<PatientData>>;
+    getPatient(hdid: string): Promise<ApiResult<Patient>>;
 }
 
 export interface IMedicationService {
