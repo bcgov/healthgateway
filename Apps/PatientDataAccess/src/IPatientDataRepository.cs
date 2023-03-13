@@ -75,12 +75,12 @@ namespace HealthGateway.PatientDataAccess
         public DonorRegistrationStatus Status { get; set; }
 
         /// <summary>
-        /// Gets or sets the Status related message.
+        /// Gets or sets the message associated with the donor registration status.
         /// </summary>
         public string? StatusMessage { get; set; }
 
         /// <summary>
-        /// Gets or sets the RegistrationFileId.
+        /// Gets or sets the file ID associated with the donor registration.
         /// </summary>
         public string? RegistrationFileId { get; set; }
     }

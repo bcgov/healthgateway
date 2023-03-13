@@ -96,12 +96,12 @@ namespace HealthGateway.Patient.Services
         public string Status { get; set; } = null!;
 
         /// <summary>
-        /// Gets or sets the message related to the status.
+        /// Gets or sets the message associated with the donor registration status.
         /// </summary>
         public string? StatusMessage { get; set; }
 
         /// <summary>
-        /// Gets or sets the registration file id.
+        /// Gets or sets the file ID associated with the donor registration.
         /// </summary>
         public string? RegistrationFileId { get; set; }
 
