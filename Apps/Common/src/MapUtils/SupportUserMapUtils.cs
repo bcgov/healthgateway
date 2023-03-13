@@ -15,7 +15,6 @@
 // -------------------------------------------------------------------------
 namespace HealthGateway.Common.MapUtils
 {
-    using System;
     using AutoMapper;
     using HealthGateway.Common.Data.Models;
     using HealthGateway.Common.Data.ViewModels;
@@ -31,38 +30,16 @@ namespace HealthGateway.Common.MapUtils
         /// Creates a UI model from a DB model.
         /// </summary>
         /// <param name="userProfile">The DB model to convert.</param>
-        /// <param name="mapper">The AutoMapper IMapper.</param>
-        /// <param name="timezone">The timezone to use.</param>
-        /// <returns>The created UI model.</returns>
-        public static SupportUser ToUiModel(UserProfile userProfile, IMapper mapper, TimeZoneInfo timezone)
-        {
-            SupportUser supportUser = mapper.Map<UserProfile, SupportUser>(
-                userProfile,
-                opts => opts.AfterMap(
-                    (_, dest) => dest.LastLoginDateTime = dest.LastLoginDateTime != null
-                        ? TimeZoneInfo.ConvertTimeFromUtc((DateTime)dest.LastLoginDateTime, timezone)
-                        : dest.LastLoginDateTime));
-            return supportUser;
-        }
-
-        /// <summary>
-        /// Creates a UI model from a DB model.
-        /// </summary>
-        /// <param name="userProfile">The DB model to convert.</param>
         /// <param name="patientModel">The patient model to convert.</param>
         /// <param name="mapper">The AutoMapper IMapper.</param>
-        /// <param name="timezone">The timezone to use.</param>
         /// <returns>The created UI model.</returns>
-        public static SupportUser ToUiModel(UserProfile userProfile, PatientModel patientModel, IMapper mapper, TimeZoneInfo timezone)
+        public static SupportUser ToUiModel(UserProfile userProfile, PatientModel patientModel, IMapper mapper)
         {
             SupportUser supportUser = mapper.Map<UserProfile, SupportUser>(
                 userProfile,
                 opts => opts.AfterMap(
                     (_, dest) =>
                     {
-                        dest.LastLoginDateTime = dest.LastLoginDateTime != null
-                            ? TimeZoneInfo.ConvertTimeFromUtc((DateTime)dest.LastLoginDateTime, timezone)
-                            : dest.LastLoginDateTime;
                         dest.PersonalHealthNumber = patientModel.PersonalHealthNumber;
                         dest.PhysicalAddress = AddressUtility.GetAddressAsSingleLine(patientModel.PhysicalAddress);
                         dest.PostalAddress = AddressUtility.GetAddressAsSingleLine(patientModel.PostalAddress);

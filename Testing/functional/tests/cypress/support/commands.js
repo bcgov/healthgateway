@@ -11,13 +11,36 @@ const { AuthMethod } = require("./constants");
 const { globalStorage } = require("./globalStorage");
 require("cy-verify-downloads").addCustomCommand();
 
-function configureDatasets(datasets, deltaset) {
-    let newDatasets = [];
-    if (deltaset !== undefined && Array.isArray(deltaset)) {
-        const setTable = {};
-        datasets.forEach((s) => (setTable[s.name] = s.enabled));
-        deltaset.forEach((d) => (setTable[d.name] = d.enabled));
+function buildObjectsMap(objects, keyProperty, valueProperty) {
+    const map = {};
+    objects.forEach((obj) => {
+        const key = obj[keyProperty];
+        const value = obj[valueProperty];
+        map[key] = value;
+    });
+    return map;
+}
 
+function configureObjectArray(
+    objectArray,
+    deltaObjectArray,
+    keyProperty = "name",
+    valueProperty = "enabled"
+) {
+    let newDatasets = [];
+    if (deltaObjectArray !== undefined && Array.isArray(deltaObjectArray)) {
+        objectArray = !objectArray ? [] : objectArray;
+        const objectMap = buildObjectsMap(
+            objectArray,
+            keyProperty,
+            valueProperty
+        );
+        const deltaMap = buildObjectsMap(
+            deltaObjectArray,
+            keyProperty,
+            valueProperty
+        );
+        const setTable = { ...objectMap, ...deltaMap };
         for (const key in setTable) {
             newDatasets.push({ name: key, enabled: setTable[key] });
         }
@@ -25,9 +48,12 @@ function configureDatasets(datasets, deltaset) {
     return newDatasets;
 }
 
-function disableDatasets(datasets) {
-    return datasets.map((s) => {
-        s.enabled = false;
+function disablePropertyOfObjectArray(objectArray, property = "enabled") {
+    if (!objectArray) {
+        return [];
+    }
+    return objectArray.map((s) => {
+        s[property] = false;
         return s;
     });
 }
@@ -37,8 +63,10 @@ function configureObject(baseObj, delta) {
     if (deltaKeys && deltaKeys.length > 0) {
         for (const key of deltaKeys) {
             const baseValue = baseObj[key];
-            if (baseValue === undefined) {
-                throw new Error(`Unknown property: ${key}`);
+            if (baseValue === undefined || baseValue === null) {
+                throw new Error(
+                    `Configuring Object - Unknown property: ${key}`
+                );
             }
             const baseValueKeys = Object.keys(baseValue);
             if (
@@ -59,6 +87,9 @@ function disableObject(config) {
     if (configKeys && configKeys.length > 0) {
         for (const key of configKeys) {
             const configValue = config[key];
+            if (configValue === undefined || configValue === null) {
+                throw new Error(`Disabling Object - Unknown property: ${key}`);
+            }
             const configValueKeys = Object.keys(configValue);
             if (
                 configValueKeys &&
@@ -314,13 +345,18 @@ Cypress.Commands.add("configureSettings", (settings) => {
             };
 
             // Disable datasets
-            const disabledDatasets = disableDatasets(
+            const disabledDatasets = disablePropertyOfObjectArray(
                 config.webClient.featureToggleConfiguration.datasets
             );
 
             // Disable dependents datasets
-            const disabledDependentsDatasets = disableDatasets(
+            const disabledDependentsDatasets = disablePropertyOfObjectArray(
                 config.webClient.featureToggleConfiguration.dependents?.datasets
+            );
+
+            // Disable services
+            const disabledServices = disablePropertyOfObjectArray(
+                config.webClient.featureToggleConfiguration.services?.services
             );
 
             // Disable non dataset object properties
@@ -328,18 +364,26 @@ Cypress.Commands.add("configureSettings", (settings) => {
 
             // Apply disabled datasets to configuration object
             featureToggleConfiguration.datasets = disabledDatasets;
-            featureToggleConfiguration.dependents.datasets = [];
+            featureToggleConfiguration.dependents.datasets =
+                disabledDependentsDatasets;
+            featureToggleConfiguration.services.services = disabledServices;
 
             // Configure datasets with overrides
-            const datasets = configureDatasets(
+            const datasets = configureObjectArray(
                 featureToggleConfiguration.datasets,
                 settings.datasets
             );
 
             // Configure dependents datasets with overrides
-            const dependentsDatasets = configureDatasets(
+            const dependentsDatasets = configureObjectArray(
                 featureToggleConfiguration.dependents.datasets,
                 settings.dependents?.datasets
+            );
+
+            // Configure services.services with overrides
+            const services = configureObjectArray(
+                featureToggleConfiguration.services?.services,
+                settings.services?.services
             );
 
             // Configure overrides to non dataset object properties
@@ -348,6 +392,9 @@ Cypress.Commands.add("configureSettings", (settings) => {
             // Apply dataset overrides to configuration object
             featureToggleConfiguration.datasets = datasets;
             featureToggleConfiguration.dependents.datasets = dependentsDatasets;
+
+            // Apply services.services overrides to configuration object
+            featureToggleConfiguration.services.services = services;
 
             // Apply configured configuration object to configuration to be returned in intercept
             config.webClient.featureToggleConfiguration =
