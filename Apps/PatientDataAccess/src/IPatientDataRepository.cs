@@ -88,7 +88,5 @@ namespace HealthGateway.PatientDataAccess
     /// <summary>
     /// Represents a patient file.
     /// </summary>
-#pragma warning disable CA1819
-    public record PatientFile(string FileId, byte[] Content, string ContentType) : HealthData;
-#pragma warning restore CA1819
+    public record PatientFile(string FileId, IEnumerable<byte> Content, string ContentType) : HealthData;
 }

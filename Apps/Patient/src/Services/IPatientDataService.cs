@@ -17,7 +17,6 @@ namespace HealthGateway.Patient.Services
 {
     using System;
     using System.Collections.Generic;
-    using System.Diagnostics.CodeAnalysis;
     using System.Runtime.Serialization;
     using System.Text.Json.Serialization;
     using System.Threading;
@@ -52,8 +51,7 @@ namespace HealthGateway.Patient.Services
     /// </summary>
     /// <param name="Hdid">The patient hdid.</param>
     /// <param name="PatientDataTypes">The data types to query.</param>
-    [SuppressMessage("Performance", "CA1819:Properties should not return arrays", Justification = "Team decision")]
-    public record PatientDataQuery(string Hdid, PatientDataType[] PatientDataTypes);
+    public record PatientDataQuery(string Hdid, IEnumerable<PatientDataType> PatientDataTypes);
 
     /// <summary>
     /// Response message with patient data.
@@ -123,8 +121,7 @@ namespace HealthGateway.Patient.Services
     /// </summary>
     /// <param name="Content">The file content.</param>
     /// <param name="ContentType">The file content type.</param>
-    [SuppressMessage("Performance", "CA1819:Properties should not return arrays", Justification = "Team decision")]
-    public record PatientFileResponse(byte[] Content, string ContentType);
+    public record PatientFileResponse(IEnumerable<byte> Content, string ContentType);
 
 // Disable documentation for internal class.
 #pragma warning disable SA1600

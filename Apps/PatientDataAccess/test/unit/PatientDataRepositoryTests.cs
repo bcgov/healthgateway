@@ -76,7 +76,7 @@ namespace PatientDataAccessTests
             actualFile.FileId.ShouldBe(fileId);
             actualFile.Content.ShouldNotBeEmpty();
             actualFile.ContentType.ShouldBe(expectedFile.MediaType);
-            Encoding.Default.GetString(actualFile.Content).ShouldBe(expectedFile.Data);
+            Encoding.Default.GetString(actualFile.Content.ToArray()).ShouldBe(expectedFile.Data);
         }
 
         [Fact]
