@@ -9,11 +9,6 @@ resources:
       trigger:
         branches:
           - dev
-    - pipeline: PatientDataAccess
-      source: PatientDataAccess
-      trigger:
-        branches:
-          - dev
 
 trigger:
   batch: "true"
@@ -22,11 +17,12 @@ trigger:
       - dev
   paths:
     include:
-      - Apps/Patient
+      - Apps/PatientDataAccess
 
 extends:
   template: /Build/hg.yaml
   parameters:
-    Application: Patient
+    Application: PatientDataAccess
     DotNetTests: true
     NPMInstall: false
+    Library: true

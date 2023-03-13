@@ -16,11 +16,8 @@
 namespace HealthGateway.Common.AspNetConfiguration.Modules
 {
     using System.Diagnostics.CodeAnalysis;
-    using HealthGateway.Common.AccessManagement.Authentication;
     using HealthGateway.Common.Api;
-    using HealthGateway.Common.Delegates.PHSA;
     using HealthGateway.Common.Models.PHSA;
-    using HealthGateway.Common.Services;
     using HealthGateway.Common.Utils.Phsa;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
@@ -29,35 +26,26 @@ namespace HealthGateway.Common.AspNetConfiguration.Modules
     using Refit;
 
     /// <summary>
-    /// Provides ASP.Net Services for PHSA v2 access.
+    /// Provides ASP.Net Services for personal account access.
     /// </summary>
     [ExcludeFromCodeCoverage]
-    public static class PhsaV2
+    public static class PersonalAccount
     {
         /// <summary>
-        /// Configures the ability to authenticate to PHSA v2 services by swapping tokens.
+        /// Configures the ability to use Patient services.
         /// </summary>
-        /// <param name="services">The service collection provider.</param>
+        /// <param name="services">The service collection to add forward proxies into.</param>
         /// <param name="logger">The logger to use.</param>
         /// <param name="configuration">The configuration to use for values.</param>
-        /// <param name="configurationSectionKey">The configuration section to use when binding values.</param>
-        public static void ConfigurePhsaV2Access(IServiceCollection services, ILogger logger, IConfiguration configuration, string? configurationSectionKey = PhsaConfigV2.ConfigurationSectionKey)
+        public static void ConfigurePersonalAccountAccess(IServiceCollection services, ILogger logger, IConfiguration configuration)
         {
-            PhsaConfigV2 phsaConfig = new();
-            configuration.Bind(configurationSectionKey, phsaConfig);
+            PhsaConfig? phsaConfig = configuration.GetSection("PhsaV2").Get<PhsaConfig>();
+            PhsaV2.ConfigurePhsaV2Access(services, logger, configuration);
+            services.AddRefitClient<IPersonalAccountsApi>()
+                .ConfigureHttpClient(c => c.BaseAddress = phsaConfig!.BaseUrl)
+                .AddHttpMessageHandler<AuthHeaderHandler>();
 
-            if (phsaConfig.TokenCacheEnabled)
-            {
-                GatewayCache.ConfigureCaching(services, logger, configuration);
-            }
-
-            services.AddRefitClient<ITokenSwapApi>()
-                .ConfigureHttpClient(c => c.BaseAddress = phsaConfig.TokenBaseUrl);
-
-            services.TryAddTransient<ITokenSwapDelegate>(sp => ActivatorUtilities.CreateInstance<RestTokenSwapDelegate>(sp, configurationSectionKey));
-            services.TryAddTransient<IAuthenticationDelegate, AuthenticationDelegate>();
-            services.TryAddTransient<IAccessTokenService, AccessTokenService>();
-            services.TryAddTransient<AuthHeaderHandler>();
+            services.TryAddTransient<Services.IPersonalAccountsService, Services.PersonalAccountsService>();
         }
     }
 }
