@@ -59,4 +59,9 @@ export default abstract class ConfigUtil {
         }
         return false;
     }
+
+    public static isServicesFeatureEnabled() {
+        const config = ConfigUtil.getFeatureConfiguration();
+        return config.services && config.services.enabled;
+    }
 }
