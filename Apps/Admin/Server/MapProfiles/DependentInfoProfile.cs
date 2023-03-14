@@ -29,8 +29,7 @@ namespace HealthGateway.Admin.Server.MapProfiles
         /// </summary>
         public DependentInfoProfile()
         {
-            this.CreateMap<DependentInfo, PatientModel>()
-                .ReverseMap();
+            this.CreateMap<PatientModel, DependentInfo>();
         }
     }
 }

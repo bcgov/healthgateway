@@ -16,7 +16,6 @@
 namespace HealthGateway.Admin.Common.Models
 {
     using System;
-    using System.Text.Json.Serialization;
     using HealthGateway.Common.Data.Models;
 
     /// <summary>
@@ -25,21 +24,23 @@ namespace HealthGateway.Admin.Common.Models
     public class DependentInfo
     {
         /// <summary>
+        /// Gets or sets the health directed identifier.
+        /// </summary>
+        public string Hdid { get; set; } = string.Empty;
+
+        /// <summary>
         /// Gets or sets the dependent's first name.
         /// </summary>
-        [JsonPropertyName("firstname")]
         public string FirstName { get; set; } = string.Empty;
 
         /// <summary>
         /// Gets or sets the dependent's last name.
         /// </summary>
-        [JsonPropertyName("lastname")]
         public string LastName { get; set; } = string.Empty;
 
         /// <summary>
         /// Gets or sets the dependent's date of birth.
         /// </summary>
-        [JsonPropertyName("birthdate")]
         public DateTime Birthdate { get; set; }
 
         /// <summary>

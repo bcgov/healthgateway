@@ -34,9 +34,9 @@ namespace HealthGateway.Admin.Server.Services
     using Microsoft.Extensions.Configuration;
 
     /// <inheritdoc/>
-    public class ProtectedAccessService : IProtectedAccessService
+    public class DelegationService : IDelegationService
     {
-        private const string WebClientConfigSection = "WebClient";
+        private const string DelegationConfigSection = "Delegation";
         private const string MaxDependentAgeKey = "MaxDependentAge";
         private readonly IPatientService patientService;
         private readonly IResourceDelegateDelegate resourceDelegateDelegate;
@@ -44,13 +44,13 @@ namespace HealthGateway.Admin.Server.Services
         private readonly int maxDependentAge;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="ProtectedAccessService"/> class.
+        /// Initializes a new instance of the <see cref="DelegationService"/> class.
         /// </summary>
         /// <param name="configuration">The injected configuration provider.</param>
         /// <param name="patientService">The injected patient service.</param>
         /// <param name="resourceDelegateDelegate">The injected resource delegate delegate.</param>
         /// <param name="autoMapper">The injected automapper provider.</param>
-        public ProtectedAccessService(
+        public DelegationService(
             IConfiguration configuration,
             IPatientService patientService,
             IResourceDelegateDelegate resourceDelegateDelegate,
@@ -59,28 +59,28 @@ namespace HealthGateway.Admin.Server.Services
             this.patientService = patientService;
             this.resourceDelegateDelegate = resourceDelegateDelegate;
             this.autoMapper = autoMapper;
-            this.maxDependentAge = configuration.GetSection(WebClientConfigSection).GetValue(MaxDependentAgeKey, 12);
+            this.maxDependentAge = configuration.GetSection(DelegationConfigSection).GetValue(MaxDependentAgeKey, 12);
         }
 
         /// <inheritdoc/>
-        public async Task<ProtectedAccessResponse> GetDependentAsync(string phn)
+        public async Task<DelegationResponse> GetDelegationInformationAsync(string phn)
         {
             // Get dependent patient information
             RequestResult<PatientModel> dependentPatientResult = await this.patientService.GetPatient(phn, PatientIdentifierType.Phn).ConfigureAwait(true);
 
-            ValidationResult? validationResults = await new ProtectedAccessValidator(this.maxDependentAge).ValidateAsync(dependentPatientResult.ResourcePayload).ConfigureAwait(true);
+            ValidationResult? validationResults = await new DelegationValidator(this.maxDependentAge).ValidateAsync(dependentPatientResult.ResourcePayload).ConfigureAwait(true);
             if (!validationResults.IsValid)
             {
-                throw new ProblemDetailsException(ExceptionUtility.CreateProblemDetails(MaxDependentAgeKey, HttpStatusCode.BadRequest, nameof(ProtectedAccessService)));
+                throw new ProblemDetailsException(ExceptionUtility.CreateProblemDetails(MaxDependentAgeKey, HttpStatusCode.BadRequest, nameof(DelegationService)));
             }
 
-            ProtectedAccessResponse protectedAccessResponse = new();
+            DelegationResponse delegationResponse = new();
             if (dependentPatientResult.ResourcePayload != null)
             {
                 PatientModel dependentPatientInfo = dependentPatientResult.ResourcePayload;
                 DependentInfo dependentInfo = this.autoMapper.Map<DependentInfo>(dependentPatientInfo);
                 dependentInfo.Protected = null;
-                protectedAccessResponse.DependentInfo = dependentInfo;
+                delegationResponse.DependentInfo = dependentInfo;
 
                 // Get delegates from database
                 RequestResult<IEnumerable<ResourceDelegate>> dbResourceDelegates = await this.SearchDelegates(dependentPatientInfo.HdId).ConfigureAwait(true);
@@ -93,15 +93,15 @@ namespace HealthGateway.Admin.Server.Services
                         RequestResult<PatientModel> delegatePatientResult = await this.patientService.GetPatient(resourceDelegate.ResourceOwnerHdid).ConfigureAwait(true);
 
                         DelegateInfo delegateInfo = this.autoMapper.Map<DelegateInfo>(delegatePatientResult);
-                        delegateInfo.DelegateStatus = DelegateStatus.Added;
+                        delegateInfo.DelegationStatus = DelegationStatus.Added;
                         delegateInfos.Add(delegateInfo);
                     }
 
-                    protectedAccessResponse.DelegateInfos = delegateInfos;
+                    delegationResponse.DelegateInfos = delegateInfos;
                 }
             }
 
-            return protectedAccessResponse;
+            return delegationResponse;
         }
 
         private async Task<RequestResult<IEnumerable<ResourceDelegate>>> SearchDelegates(string ownerHdid)

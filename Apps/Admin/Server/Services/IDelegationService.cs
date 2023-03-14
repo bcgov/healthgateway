@@ -19,15 +19,15 @@ namespace HealthGateway.Admin.Server.Services
     using HealthGateway.Admin.Common.Models;
 
     /// <summary>
-    /// The Protected Access Service.
+    /// The Delegation Service.
     /// </summary>
-    public interface IProtectedAccessService
+    public interface IDelegationService
     {
         /// <summary>
-        /// Retrieves the dependent data.
+        /// Retrieves the dependent delegation information.
         /// </summary>
         /// <param name="phn">The phn to query on.</param>
         /// <returns>A <see cref="Task{TResult}"/>Representing the result of the asynchronous operation.</returns>
-        Task<ProtectedAccessResponse> GetDependentAsync(string phn);
+        Task<DelegationResponse> GetDelegationInformationAsync(string phn);
     }
 }

@@ -13,23 +13,29 @@
 //  See the License for the specific language governing permissions and
 //  limitations under the License.
 // -------------------------------------------------------------------------
-namespace HealthGateway.Admin.Common.Models
+namespace HealthGateway.Admin.Common.Constants
 {
-    using System.Collections.Generic;
+    using System.Text.Json.Serialization;
 
     /// <summary>
-    /// The protected dependent info model.
+    /// Represents the status of the delegation relationship.
     /// </summary>
-    public class ProtectedAccessResponse
+    [JsonConverter(typeof(JsonStringEnumConverter))]
+    public enum DelegationStatus
     {
         /// <summary>
-        /// Gets or sets the protected dependent info.
+        /// Indicates that status hasn't been set.
         /// </summary>
-        public DependentInfo DependentInfo { get; set; } = new();
+        Unknown,
 
         /// <summary>
-        /// Gets or sets the guardian delegate info.
+        /// Indicates that the delegation was added.
         /// </summary>
-        public IEnumerable<DelegateInfo> DelegateInfos { get; set; } = new List<DelegateInfo>();
+        Added,
+
+        /// <summary>
+        /// Indicates that the delegation is permitted.
+        /// </summary>
+        Allowed,
     }
 }

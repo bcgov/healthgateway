@@ -16,7 +16,6 @@
 namespace HealthGateway.Admin.Common.Models
 {
     using System;
-    using System.Text.Json.Serialization;
     using HealthGateway.Admin.Common.Constants;
     using HealthGateway.Common.Data.Models;
 
@@ -26,27 +25,28 @@ namespace HealthGateway.Admin.Common.Models
     public class DelegateInfo
     {
         /// <summary>
+        /// Gets or sets the health directed identifier.
+        /// </summary>
+        public string Hdid { get; set; } = string.Empty;
+
+        /// <summary>
         /// Gets or sets the delegate's PHN.
         /// </summary>
-        [JsonPropertyName("personalhealthnumber")]
         public string PersonalHealthNumber { get; set; } = string.Empty;
 
         /// <summary>
         /// Gets or sets the delegate's first name.
         /// </summary>
-        [JsonPropertyName("firstname")]
         public string FirstName { get; set; } = string.Empty;
 
         /// <summary>
         /// Gets or sets the delegate's last name.
         /// </summary>
-        [JsonPropertyName("lastname")]
         public string LastName { get; set; } = string.Empty;
 
         /// <summary>
         /// Gets or sets the delegate's date of birth.
         /// </summary>
-        [JsonPropertyName("birthdate")]
         public DateTime Birthdate { get; set; }
 
         /// <summary>
@@ -62,6 +62,6 @@ namespace HealthGateway.Admin.Common.Models
         /// <summary>
         /// Gets or sets the delegate status.
         /// </summary>
-        public DelegateStatus DelegateStatus { get; set; }
+        public DelegationStatus DelegationStatus { get; set; }
     }
 }

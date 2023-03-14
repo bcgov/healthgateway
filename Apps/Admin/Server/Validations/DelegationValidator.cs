@@ -20,17 +20,17 @@ namespace HealthGateway.Admin.Server.Validations
     using HealthGateway.Common.Models;
 
     /// <summary>
-    /// Validates <see cref="ProtectedAccessValidator"/> instances.
+    /// Validates <see cref="DelegationValidator"/> instances.
     /// </summary>
-    public class ProtectedAccessValidator : AbstractValidator<PatientModel>
+    public class DelegationValidator : AbstractValidator<PatientModel>
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="ProtectedAccessValidator"/> class.
+        /// Initializes a new instance of the <see cref="DelegationValidator"/> class.
         /// </summary>
-        /// <param name="maxDependantAge">Optionally set the maximum age of a dependent, defaults to 12.</param>
-        public ProtectedAccessValidator(int maxDependantAge = 12)
+        /// <param name="maxDependentAge">Optionally set the maximum age of a dependent, defaults to 12.</param>
+        public DelegationValidator(int maxDependentAge = 12)
         {
-            this.RuleFor(v => v.Birthdate).SetValidator(new DependentAgeValidator(maxDependentAge: maxDependantAge));
+            this.RuleFor(v => v.Birthdate).SetValidator(new DependentAgeValidator(maxDependentAge: maxDependentAge));
         }
     }
 }

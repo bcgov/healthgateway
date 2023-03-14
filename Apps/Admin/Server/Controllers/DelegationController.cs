@@ -21,35 +21,35 @@ namespace HealthGateway.Admin.Server.Controllers
     using Microsoft.AspNetCore.Mvc;
 
     /// <summary>
-    /// Web API to handle dependent protected access.
+    /// Web API to handle dependent delegation.
     /// </summary>
     [ApiController]
     [ApiVersion("1.0")]
     [Route("v{version:apiVersion}/api/[controller]")]
     [Produces("application/json")]
     [Authorize(Roles = "AdminUser")]
-    public class ProtectedAccessController
+    public class DelegationController
     {
-        private readonly IProtectedAccessService protectedAccessService;
+        private readonly IDelegationService delegationService;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="ProtectedAccessController"/> class.
+        /// Initializes a new instance of the <see cref="DelegationController"/> class.
         /// </summary>
-        /// <param name="protectedAccessService">The injected protected access service.</param>
-        public ProtectedAccessController(IProtectedAccessService protectedAccessService)
+        /// <param name="delegationService">The injected delegation service.</param>
+        public DelegationController(IDelegationService delegationService)
         {
-            this.protectedAccessService = protectedAccessService;
+            this.delegationService = delegationService;
         }
 
         /// <summary>
-        /// Gets the dependent data for the given personal health number.
+        /// Gets the dependent delegation for the given personal health number.
         /// </summary>
         /// <param name="phn">The dependent phn.</param>
         /// <returns>A <see cref="Task{TResult}"/>Representing the result of the asynchronous operation.</returns>
         [HttpGet]
-        public async Task<IActionResult> GetDependent([FromQuery] string phn)
+        public async Task<IActionResult> GetDelegationInformation([FromQuery] string phn)
         {
-            return new JsonResult(await this.protectedAccessService.GetDependentAsync(phn).ConfigureAwait(true));
+            return new JsonResult(await this.delegationService.GetDelegationInformationAsync(phn).ConfigureAwait(true));
         }
     }
 }
