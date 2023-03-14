@@ -1,4 +1,4 @@
-import PatientData from "@/models/patientData";
+import Patient from "@/models/patient";
 import { LoadStatus } from "@/models/storeOperations";
 import User from "@/models/user";
 
@@ -9,7 +9,7 @@ import { UserModule, UserState } from "./types";
 
 const state: UserState = {
     user: new User(),
-    patientData: new PatientData(),
+    patient: new Patient(),
     patientRetrievalFailed: false,
     seenTutorialComment: false,
     statusMessage: "",

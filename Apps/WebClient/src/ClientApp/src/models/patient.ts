@@ -1,6 +1,6 @@
 import { StringISODate } from "@/models/dateWrapper";
 
-export default class PatientData {
+export default class Patient {
     public hdid!: string;
     public personalHealthNumber!: string;
     public preferredName!: Name;
