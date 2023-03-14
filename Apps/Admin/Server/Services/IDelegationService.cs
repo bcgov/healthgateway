@@ -24,10 +24,10 @@ namespace HealthGateway.Admin.Server.Services
     public interface IDelegationService
     {
         /// <summary>
-        /// Retrieves the dependent delegation information.
+        /// Retrieves delegation information for a person.
         /// </summary>
         /// <param name="phn">The phn to query on.</param>
-        /// <returns>A <see cref="Task{TResult}"/>Representing the result of the asynchronous operation.</returns>
+        /// <returns>A response containing information about the person and their delegates.</returns>
         Task<DelegationResponse> GetDelegationInformationAsync(string phn);
     }
 }

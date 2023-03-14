@@ -25,11 +25,11 @@ namespace HealthGateway.Admin.Common.Models
         /// <summary>
         /// Gets or sets the dependent info.
         /// </summary>
-        public DependentInfo DependentInfo { get; set; } = new();
+        public DependentInfo Dependent { get; set; } = new();
 
         /// <summary>
-        /// Gets or sets the delegate info.
+        /// Gets or sets the collection of delegate info.
         /// </summary>
-        public IEnumerable<DelegateInfo> DelegateInfos { get; set; } = new List<DelegateInfo>();
+        public IEnumerable<DelegateInfo> Delegates { get; set; } = new List<DelegateInfo>();
     }
 }

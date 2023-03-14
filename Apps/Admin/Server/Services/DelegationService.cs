@@ -26,7 +26,6 @@ namespace HealthGateway.Admin.Server.Services
     using HealthGateway.Common.Constants;
     using HealthGateway.Common.Data.ErrorHandling;
     using HealthGateway.Common.Data.ViewModels;
-    using HealthGateway.Common.Factories;
     using HealthGateway.Common.Models;
     using HealthGateway.Common.Services;
     using HealthGateway.Database.Delegates;
@@ -79,41 +78,32 @@ namespace HealthGateway.Admin.Server.Services
             {
                 PatientModel dependentPatientInfo = dependentPatientResult.ResourcePayload;
                 DependentInfo dependentInfo = this.autoMapper.Map<DependentInfo>(dependentPatientInfo);
-                dependentInfo.Protected = null;
-                delegationResponse.DependentInfo = dependentInfo;
+                delegationResponse.Dependent = dependentInfo;
 
                 // Get delegates from database
-                RequestResult<IEnumerable<ResourceDelegate>> dbResourceDelegates = await this.SearchDelegates(dependentPatientInfo.HdId).ConfigureAwait(true);
+                IEnumerable<ResourceDelegate> dbResourceDelegates = await this.SearchDelegates(dependentPatientInfo.HdId).ConfigureAwait(true);
 
-                if (dbResourceDelegates.ResourcePayload != null)
+                List<DelegateInfo> delegates = new();
+                foreach (ResourceDelegate resourceDelegate in dbResourceDelegates)
                 {
-                    List<DelegateInfo> delegateInfos = new();
-                    foreach (ResourceDelegate resourceDelegate in dbResourceDelegates.ResourcePayload)
-                    {
-                        RequestResult<PatientModel> delegatePatientResult = await this.patientService.GetPatient(resourceDelegate.ResourceOwnerHdid).ConfigureAwait(true);
+                    RequestResult<PatientModel> delegatePatientResult = await this.patientService.GetPatient(resourceDelegate.ResourceOwnerHdid).ConfigureAwait(true);
 
-                        DelegateInfo delegateInfo = this.autoMapper.Map<DelegateInfo>(delegatePatientResult);
-                        delegateInfo.DelegationStatus = DelegationStatus.Added;
-                        delegateInfos.Add(delegateInfo);
-                    }
-
-                    delegationResponse.DelegateInfos = delegateInfos;
+                    DelegateInfo delegateInfo = this.autoMapper.Map<DelegateInfo>(delegatePatientResult);
+                    delegateInfo.DelegationStatus = DelegationStatus.Added;
+                    delegates.Add(delegateInfo);
                 }
+
+                delegationResponse.Delegates = delegates;
             }
 
             return delegationResponse;
         }
 
-        private async Task<RequestResult<IEnumerable<ResourceDelegate>>> SearchDelegates(string ownerHdid)
+        private async Task<IEnumerable<ResourceDelegate>> SearchDelegates(string ownerHdid)
         {
-            IEnumerable<ResourceDelegate> results = (await this.resourceDelegateDelegate.Search(
-                    new ResourceDelegateQuery
-                    {
-                        ByOwnerHdid = ownerHdid,
-                    })
-                .ConfigureAwait(true)).Items;
-
-            return RequestResultFactory.Success(results);
+            ResourceDelegateQuery query = new() { ByOwnerHdid = ownerHdid };
+            ResourceDelegateQueryResult result = await this.resourceDelegateDelegate.Search(query).ConfigureAwait(true);
+            return result.Items;
         }
     }
 }

@@ -20,7 +20,7 @@ namespace HealthGateway.Admin.Server.MapProfiles
     using HealthGateway.Common.Models;
 
     /// <summary>
-    /// An AutoMapper profile class which defines mapping between DB and UI Models.
+    /// An AutoMapper profile class which defines mapping between patient and delegate models.
     /// </summary>
     public class DelegateInfoProfile : Profile
     {

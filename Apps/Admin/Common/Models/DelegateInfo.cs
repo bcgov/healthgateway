@@ -60,7 +60,7 @@ namespace HealthGateway.Admin.Common.Models
         public Address? PostalAddress { get; set; }
 
         /// <summary>
-        /// Gets or sets the delegate status.
+        /// Gets or sets the delegation status.
         /// </summary>
         public DelegationStatus DelegationStatus { get; set; }
     }

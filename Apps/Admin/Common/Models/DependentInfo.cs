@@ -54,8 +54,8 @@ namespace HealthGateway.Admin.Common.Models
         public Address? PostalAddress { get; set; }
 
         /// <summary>
-        /// Gets or sets the protected state of the dependent.
+        /// Gets or sets a value indicating whether the dependent is in a protected state.
         /// </summary>
-        public bool? Protected { get; set; }
+        public bool Protected { get; set; }
     }
 }

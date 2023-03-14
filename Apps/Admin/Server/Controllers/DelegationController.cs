@@ -16,12 +16,14 @@
 namespace HealthGateway.Admin.Server.Controllers
 {
     using System.Threading.Tasks;
+    using HealthGateway.Admin.Common.Models;
     using HealthGateway.Admin.Server.Services;
     using Microsoft.AspNetCore.Authorization;
+    using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
 
     /// <summary>
-    /// Web API to handle dependent delegation.
+    /// Web API to handle delegation.
     /// </summary>
     [ApiController]
     [ApiVersion("1.0")]
@@ -42,14 +44,29 @@ namespace HealthGateway.Admin.Server.Controllers
         }
 
         /// <summary>
-        /// Gets the dependent delegation for the given personal health number.
+        /// Retrieves delegation information for a person.
         /// </summary>
-        /// <param name="phn">The dependent phn.</param>
-        /// <returns>A <see cref="Task{TResult}"/>Representing the result of the asynchronous operation.</returns>
+        /// <param name="phn">The phn to query on.</param>
+        /// <returns>A response containing information about the person and their delegates.</returns>
+        /// <response code="200">Returns the requested delegation information.</response>
+        /// <response code="400">The request parameters did not pass validation.</response>
+        /// <response code="401">The client must authenticate itself to get the requested resource.</response>
+        /// <response code="403">
+        /// The client does not have access rights to the content; that is, it is unauthorized, so the server
+        /// is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.
+        /// </response>
+        /// <response code="404">Patient could not be found.</response>
+        /// <response code="502">Unable to get response from EMPI.</response>
         [HttpGet]
-        public async Task<IActionResult> GetDelegationInformation([FromQuery] string phn)
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status502BadGateway, Type = typeof(ProblemDetails))]
+        public async Task<DelegationResponse> GetDelegationInformation([FromHeader] string phn)
         {
-            return new JsonResult(await this.delegationService.GetDelegationInformationAsync(phn).ConfigureAwait(true));
+            return await this.delegationService.GetDelegationInformationAsync(phn).ConfigureAwait(true);
         }
     }
 }
