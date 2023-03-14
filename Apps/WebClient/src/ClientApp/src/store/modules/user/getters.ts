@@ -1,6 +1,6 @@
 import UserPreferenceType from "@/constants/userPreferenceType";
 import { DateWrapper, StringISODateTime } from "@/models/dateWrapper";
-import PatientData from "@/models/patientData";
+import Patient from "@/models/patient";
 import { QuickLink } from "@/models/quickLink";
 import { LoadStatus } from "@/models/storeOperations";
 import User, { OidcUserInfo } from "@/models/user";
@@ -63,8 +63,8 @@ export const getters: UserGetters = {
         }
         return QuickLinkUtil.toQuickLinks(preference.value);
     },
-    patientData(state: UserState): PatientData {
-        return state.patientData;
+    patient(state: UserState): Patient {
+        return state.patient;
     },
     patientRetrievalFailed(state: UserState): boolean {
         return state.patientRetrievalFailed;

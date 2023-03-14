@@ -9,7 +9,7 @@ import {
 import { ErrorType } from "@/constants/errorType";
 import { DateWrapper, StringISODateTime } from "@/models/dateWrapper";
 import { ResultError } from "@/models/errors";
-import PatientData from "@/models/patientData";
+import Patient from "@/models/patient";
 import { QuickLink } from "@/models/quickLink";
 import RequestResult from "@/models/requestResult";
 import { LoadStatus } from "@/models/storeOperations";
@@ -21,7 +21,7 @@ import { RootState } from "@/store/types";
 export interface UserState {
     user: User;
     oidcUserInfo?: OidcUserInfo;
-    patientData: PatientData;
+    patient: Patient;
     patientRetrievalFailed: boolean;
     smsResendDateTime?: DateWrapper;
     seenTutorialComment: boolean;
@@ -41,7 +41,7 @@ export interface UserGetters extends GetterTree<UserState, RootState> {
     seenTutorialComment(state: UserState): boolean;
     hasTermsOfServiceUpdated(state: UserState): boolean;
     quickLinks(state: UserState): QuickLink[] | undefined;
-    patientData(state: UserState): PatientData;
+    patient(state: UserState): Patient;
     patientRetrievalFailed(state: UserState): boolean;
     isLoading(state: UserState): boolean;
 }
@@ -92,7 +92,7 @@ export interface UserMutation extends MutationTree<UserState> {
     setEmailVerified(state: UserState): void;
     setSMSResendDateTime(state: UserState, dateTime: DateWrapper): void;
     setUserPreference(state: UserState, userPreference: UserPreference): void;
-    setPatientData(state: UserState, patientData: PatientData): void;
+    setPatient(state: UserState, patient: Patient): void;
     setPatientRetrievalFailed(state: UserState): void;
     clearUserData(state: UserState): void;
     setSeenTutorialComment(state: UserState, value: boolean): void;

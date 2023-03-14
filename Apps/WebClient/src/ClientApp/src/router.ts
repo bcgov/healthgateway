@@ -106,7 +106,7 @@ export enum UserState {
     offline = "offline",
     unauthenticated = "unauthenticated",
     invalidIdentityProvider = "invalidIdentityProvider",
-    noPatientData = "noPatientData",
+    noPatient = "noPatient",
     notRegistered = "notRegistered",
     pendingDeletion = "pendingDeletion",
     acceptTermsOfService = "acceptTermsOfService",
@@ -136,7 +136,7 @@ function calculateUserState(): UserState {
     } else if (!isValidIdentityProvider) {
         return UserState.invalidIdentityProvider;
     } else if (patientRetrievalFailed) {
-        return UserState.noPatientData;
+        return UserState.noPatient;
     } else if (!isRegistered) {
         return UserState.notRegistered;
     } else if (!userIsActive) {
@@ -169,7 +169,7 @@ const routes = [
             validStates: [
                 UserState.unauthenticated,
                 UserState.invalidIdentityProvider,
-                UserState.noPatientData,
+                UserState.noPatient,
                 UserState.registered,
                 UserState.offline,
             ],
@@ -305,7 +305,7 @@ const routes = [
             validStates: [
                 UserState.unauthenticated,
                 UserState.invalidIdentityProvider,
-                UserState.noPatientData,
+                UserState.noPatient,
                 UserState.registered,
                 UserState.pendingDeletion,
             ],
@@ -353,7 +353,7 @@ const routes = [
             validStates: [
                 UserState.unauthenticated,
                 UserState.invalidIdentityProvider,
-                UserState.noPatientData,
+                UserState.noPatient,
                 UserState.registered,
                 UserState.pendingDeletion,
             ],
@@ -367,7 +367,7 @@ const routes = [
             validStates: [
                 UserState.unauthenticated,
                 UserState.invalidIdentityProvider,
-                UserState.noPatientData,
+                UserState.noPatient,
                 UserState.registered,
                 UserState.pendingDeletion,
             ],
@@ -381,7 +381,7 @@ const routes = [
             validStates: [
                 UserState.unauthenticated,
                 UserState.invalidIdentityProvider,
-                UserState.noPatientData,
+                UserState.noPatient,
                 UserState.registered,
                 UserState.pendingDeletion,
             ],
@@ -429,7 +429,7 @@ const routes = [
         path: PATIENT_RETRIEVAL_ERROR_PATH,
         component: PatientRetrievalErrorView,
         meta: {
-            validStates: [UserState.noPatientData],
+            validStates: [UserState.noPatient],
             requiresProcessedWaitlistTicket: true,
         },
     },
@@ -618,7 +618,7 @@ function getDefaultPath(
             return REGISTRATION_PATH;
         case UserState.invalidIdentityProvider:
             return IDIR_LOGGED_IN_PATH;
-        case UserState.noPatientData:
+        case UserState.noPatient:
             return PATIENT_RETRIEVAL_ERROR_PATH;
         case UserState.unauthenticated:
             return requiredFeaturesEnabled ? LOGIN_PATH : UNAUTHORIZED_PATH;

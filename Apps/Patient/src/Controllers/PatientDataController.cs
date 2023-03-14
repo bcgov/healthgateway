@@ -30,6 +30,7 @@ namespace HealthGateway.Patient.Controllers
     /// Endpoint to query and manage patient related data.
     /// </summary>
     [ApiController]
+    [ApiVersion("2.0")]
     [Route("[controller]")]
     [Authorize]
     public class PatientDataController : ControllerBase
