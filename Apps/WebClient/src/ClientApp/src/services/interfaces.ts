@@ -44,7 +44,7 @@ import UserRating from "@/models/userRating";
 import VaccinationStatus from "@/models/vaccinationStatus";
 import { RootState } from "@/store/types";
 
-export interface IService {
+export interface IHttpDelegateService {
     initialize(config: ExternalConfiguration, http: IHttpDelegate): void;
 }
 
@@ -302,7 +302,7 @@ export interface ITicketService {
     removeTicket(checkInRequest: CheckInRequest): Promise<void>;
 }
 
-export interface IPatientDataService extends IService {
+export interface IPatientDataService extends IHttpDelegateService {
     getPatientData(hdid: string): Promise<PatientData | undefined>;
     getFile(hdid: string, fileId: string): Promise<File>;
 }
