@@ -15,7 +15,7 @@
 // -------------------------------------------------------------------------
 namespace HealthGateway.CommonTests.Utils
 {
-    using HealthGateway.Common.Models;
+    using HealthGateway.Common.Data.Models;
     using HealthGateway.Common.Utils;
     using Xunit;
 
