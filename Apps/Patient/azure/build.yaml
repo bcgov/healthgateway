@@ -9,8 +9,8 @@ resources:
       trigger:
         branches:
           - dev
-    - pipeline: PatientDataAccess
-      source: PatientDataAccess
+    - pipeline: PatientDataService
+      source: PatientDataService
       trigger:
         branches:
           - dev
