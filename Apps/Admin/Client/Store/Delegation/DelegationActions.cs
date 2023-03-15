@@ -15,7 +15,6 @@
 //-------------------------------------------------------------------------
 namespace HealthGateway.Admin.Client.Store.Delegation
 {
-    using System.Collections.Generic;
     using System.Diagnostics.CodeAnalysis;
     using HealthGateway.Admin.Common.Models;
 
@@ -40,9 +39,9 @@ namespace HealthGateway.Admin.Client.Store.Delegation
             }
 
             /// <summary>
-            /// Gets or sets the PHN.
+            /// Gets the PHN.
             /// </summary>
-            public string Phn { get; set; }
+            public string Phn { get; }
         }
 
         /// <summary>
@@ -63,13 +62,13 @@ namespace HealthGateway.Admin.Client.Store.Delegation
         /// <summary>
         /// The action representing a successful search.
         /// </summary>
-        public class SearchSuccessAction : BaseSuccessAction<IEnumerable<DelegationInfo>>
+        public class SearchSuccessAction : BaseSuccessAction<DelegationInfo>
         {
             /// <summary>
             /// Initializes a new instance of the <see cref="SearchSuccessAction"/> class.
             /// </summary>
             /// <param name="data">Agent data.</param>
-            public SearchSuccessAction(IEnumerable<DelegationInfo> data)
+            public SearchSuccessAction(DelegationInfo data)
                 : base(data)
             {
             }

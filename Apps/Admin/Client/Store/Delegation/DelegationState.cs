@@ -16,7 +16,6 @@
 
 namespace HealthGateway.Admin.Client.Store.Delegation
 {
-    using System.Collections.Generic;
     using Fluxor;
     using HealthGateway.Admin.Common.Models;
 
@@ -30,12 +29,12 @@ namespace HealthGateway.Admin.Client.Store.Delegation
         /// <summary>
         /// Gets the request state for searches.
         /// </summary>
-        public BaseRequestState<IEnumerable<DelegationInfo>> Search { get; init; } = new();
+        public BaseRequestState<DelegationInfo> Search { get; init; } = new();
 
         /// <summary>
-        /// Gets the collection of data.
+        /// Gets the data.
         /// </summary>
-        public IList<DelegationInfo>? Data { get; init; }
+        public DelegationInfo? Data { get; init; }
 
         /// <summary>
         /// Gets a value indicating whether a request is loading.

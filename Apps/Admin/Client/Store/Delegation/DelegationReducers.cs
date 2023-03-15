@@ -15,7 +15,6 @@
 //-------------------------------------------------------------------------
 namespace HealthGateway.Admin.Client.Store.Delegation
 {
-    using System.Linq;
     using Fluxor;
 
 #pragma warning disable CS1591, SA1600
@@ -44,7 +43,7 @@ namespace HealthGateway.Admin.Client.Store.Delegation
                     Result = action.Data,
                     Error = null,
                 },
-                Data = action.Data.ToList(),
+                Data = action.Data,
             };
         }
 

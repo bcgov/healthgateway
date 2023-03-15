@@ -17,7 +17,6 @@
 namespace HealthGateway.Admin.Client.Store.Delegation
 {
     using System;
-    using System.Collections.Generic;
     using System.Net.Http;
     using System.Threading.Tasks;
     using Fluxor;
@@ -49,7 +48,7 @@ namespace HealthGateway.Admin.Client.Store.Delegation
             this.Logger.LogInformation("Retrieving delegation info");
             try
             {
-                IEnumerable<DelegationInfo> response = await this.Api.GetDelegationInformationAsync(action.Phn).ConfigureAwait(true);
+                DelegationInfo response = await this.Api.GetDelegationInformationAsync(action.Phn).ConfigureAwait(true);
                 this.Logger.LogInformation("Delegation info retrieved successfully");
                 dispatcher.Dispatch(new DelegationActions.SearchSuccessAction(response));
             }

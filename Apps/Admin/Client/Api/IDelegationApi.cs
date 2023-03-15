@@ -15,7 +15,6 @@
 //-------------------------------------------------------------------------
 namespace HealthGateway.Admin.Client.Api
 {
-    using System.Collections.Generic;
     using System.Threading.Tasks;
     using HealthGateway.Admin.Common.Models;
     using Refit;
@@ -31,6 +30,6 @@ namespace HealthGateway.Admin.Client.Api
         /// <param name="phn">The phn to query on.</param>
         /// <returns>Information about the person and their delegates.</returns>
         [Get("/")]
-        Task<IEnumerable<DelegationInfo>> GetDelegationInformationAsync([Header("phn")] string phn);
+        Task<DelegationInfo> GetDelegationInformationAsync([Header("phn")] string phn);
     }
 }
