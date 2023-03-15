@@ -1,3 +1,4 @@
+import { Dictionary } from "@/models/baseTypes";
 import PatientData from "@/models/patientData";
 import { LoadStatus } from "@/models/storeOperations";
 import {

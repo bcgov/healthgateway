@@ -25,10 +25,6 @@
         "experimentalDisableTemplateSupport": true,
         "experimentalUseElementAccessInTemplate": true
     },
-    "include": [
-      "./src/**/*.ts",
-      "./src/**/*.vue",
-      "../../../AdminWebClient/src/ClientApp/node_modules/vuetify/src/globals.d.ts"
-    ],
+    "include": ["./src/**/*.ts","./src/**/*.vue"],
     "exclude": ["node_modules"]
 }

@@ -12,7 +12,6 @@ const defaultPatientDataState: PatientDataRecordState = {
     statusMessage: "",
     status: LoadStatus.NONE,
     error: undefined,
-    // TODO: Error mapping here.
 };
 
 const defaultPatientDataFileState: PatientDataFileState = {
@@ -20,7 +19,6 @@ const defaultPatientDataFileState: PatientDataFileState = {
     statusMessage: "",
     status: LoadStatus.NONE,
     error: undefined,
-    // TODO: Error mapping here.
 };
 
 /**

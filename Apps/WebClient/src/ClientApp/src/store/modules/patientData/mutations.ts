@@ -29,7 +29,7 @@ export const mutations: PatientDataMutations = {
     },
     setPatientDataFileError(
         state: PatientDataState,
-        payload: { fileId: string; error: HttpError | unknown }
+        payload: { fileId: string; error: HttpError }
     ): void {
         const fileState: PatientDataFileState = {
             data: undefined,
@@ -65,7 +65,7 @@ export const mutations: PatientDataMutations = {
     },
     setPatientDataError(
         state: PatientDataState,
-        payload: { hdid: string; error: unknown }
+        payload: { hdid: string; error: HttpError }
     ): void {
         const { hdid, error } = payload;
         const currentState = getPatientDataRecordState(state, hdid);

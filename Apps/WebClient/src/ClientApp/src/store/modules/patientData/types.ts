@@ -1,21 +1,15 @@
-import * as http from "http";
 import {
     ActionContext,
     ActionTree,
     GetterTree,
     Module,
     MutationTree,
-    Store,
 } from "vuex";
 
 import { ErrorType } from "@/constants/errorType";
 import { Dictionary } from "@/models/baseTypes";
 import { HttpError } from "@/models/errors";
-import Patient from "@/models/patient";
-import PatientData, {
-    OrganDonorRegistrationData,
-    PatientDataFile,
-} from "@/models/patientData";
+import PatientData, { PatientDataFile } from "@/models/patientData";
 import { LoadStatus } from "@/models/storeOperations";
 import { RootState } from "@/store/types";
 
@@ -26,7 +20,7 @@ export interface RecordState<T> {
     data: T | undefined;
     status: LoadStatus;
     statusMessage: string;
-    error: HttpError | unknown | undefined; // TODO: Review this decision
+    error: HttpError | undefined;
 }
 
 export type PatientDataRecordState = RecordState<PatientData>;
@@ -63,7 +57,6 @@ export interface PatientDataActions
     handleError(
         context: StoreContext,
         params: {
-            // TODO: Consider this after testing
             error: HttpError;
             errorType: ErrorType;
             hdid?: string;
@@ -87,13 +80,12 @@ export interface PatientDataMutations extends MutationTree<PatientDataState> {
     ): void;
     setPatientDataError(
         state: PatientDataState,
-        // TODO: consider this after testing a failure.
-        payload: { hdid: string; error: HttpError | unknown }
+        payload: { hdid: string; error: HttpError }
     ): void;
 
     setPatientDataFileError(
         state: PatientDataState,
-        payload: { fileId: string; error: HttpError | unknown }
+        payload: { fileId: string; error: HttpError }
     ): void;
 }
 

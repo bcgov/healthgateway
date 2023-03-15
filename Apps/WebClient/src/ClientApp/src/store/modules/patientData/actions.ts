@@ -142,7 +142,6 @@ export const actions: PatientDataActions = {
                 {
                     errorType: params.errorType,
                     source: ErrorSourceType.ClinicalDocument,
-                    traceId: "", // TODO: Validate this approach
                 },
                 { root: true }
             );
