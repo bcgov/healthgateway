@@ -108,6 +108,7 @@ namespace HealthGateway.Admin.Client
             RegisterRefitClient<ICommunicationsApi>(builder, "v1/api/Communication", true);
             RegisterRefitClient<IConfigurationApi>(builder, "v1/api/Configuration", false);
             RegisterRefitClient<IDashboardApi>(builder, "v1/api/Dashboard", true);
+            RegisterRefitClient<IDelegationApi>(builder, "v1/api/Delegation", true);
             RegisterRefitClient<ISupportApi>(builder, "v1/api/Support", true);
             RegisterRefitClient<ITagApi>(builder, "v1/api/Tag", true);
             RegisterRefitClient<IUserFeedbackApi>(builder, "v1/api/UserFeedback", true);
