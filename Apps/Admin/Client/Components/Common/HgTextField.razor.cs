@@ -13,21 +13,22 @@
 //  See the License for the specific language governing permissions and
 //  limitations under the License.
 // -------------------------------------------------------------------------
-namespace HealthGateway.Admin.Client.Components
+namespace HealthGateway.Admin.Client.Components.Common
 {
-    using Blazored.TextEditor;
-    using Microsoft.AspNetCore.Components;
+    using System.Diagnostics.CodeAnalysis;
     using MudBlazor;
 
     /// <summary>
-    /// Backing logic for the HgRichTextEditor component.
+    /// Backing logic for the HgTextField component.
     /// </summary>
-    public partial class HgRichTextEditor : HgComponentBase
+    /// <typeparam name="T">The type of data to store in the field.</typeparam>
+    [SuppressMessage("Major Code Smell", "S2326:Unused type parameters should be removed", Justification = "Used in .razor file")]
+    public partial class HgTextField<T> : HgComponentBase
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="HgRichTextEditor"/> class.
+        /// Initializes a new instance of the <see cref="HgTextField{T}"/> class.
         /// </summary>
-        public HgRichTextEditor()
+        public HgTextField()
         {
             this.HorizontalMarginSize = 3;
             this.VerticalMarginSize = 3;
@@ -35,20 +36,8 @@ namespace HealthGateway.Admin.Client.Components
         }
 
         /// <summary>
-        /// Gets or sets the initial value for the input.
+        /// Gets the underlying MudBlazor component.
         /// </summary>
-        [Parameter]
-        public string InitialValue { get; set; } = string.Empty;
-
-        /// <summary>
-        /// Gets or sets the label for the input.
-        /// </summary>
-        [Parameter]
-        public string Label { get; set; } = string.Empty;
-
-        /// <summary>
-        /// Gets the underlying Blazored component.
-        /// </summary>
-        public BlazoredTextEditor BlazoredComponent { get; private set; } = default!;
+        public MudTextField<T> MudComponent { get; private set; } = default!;
     }
 }

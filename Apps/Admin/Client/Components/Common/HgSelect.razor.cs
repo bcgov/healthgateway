@@ -13,7 +13,7 @@
 //  See the License for the specific language governing permissions and
 //  limitations under the License.
 // -------------------------------------------------------------------------
-namespace HealthGateway.Admin.Client.Components
+namespace HealthGateway.Admin.Client.Components.Common
 {
     using System.Diagnostics.CodeAnalysis;
     using Microsoft.AspNetCore.Components;

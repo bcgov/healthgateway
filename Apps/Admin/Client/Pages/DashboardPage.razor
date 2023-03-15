@@ -2,6 +2,7 @@
 @layout MainLayout
 @attribute [Authorize(Roles = $"{Roles.Admin},{Roles.Reviewer}")]
 @using HealthGateway.Admin.Client.Store.Dashboard
+@using HealthGateway.Admin.Client.Components.Dashboard
 @inherits Fluxor.Blazor.Web.Components.FluxorComponent
 
 <PageTitle>Health Gateway Admin Dashboard</PageTitle>
