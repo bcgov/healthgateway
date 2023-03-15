@@ -13,10 +13,10 @@
 //  See the License for the specific language governing permissions and
 //  limitations under the License.
 // -------------------------------------------------------------------------
-namespace HealthGateway.CommonTests.Utils
+namespace HealthGateway.Common.Data.Tests.Utils
 {
     using HealthGateway.Common.Data.Models;
-    using HealthGateway.Common.Utils;
+    using HealthGateway.Common.Data.Utils;
     using Xunit;
 
     /// <summary>
