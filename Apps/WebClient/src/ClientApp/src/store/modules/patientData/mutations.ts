@@ -1,4 +1,4 @@
-﻿import Vue from "vue";
+import Vue from "vue";
 
 import { HttpError } from "@/models/errors";
 import PatientData, { PatientDataFile } from "@/models/patientData";
