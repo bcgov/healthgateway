@@ -47,7 +47,7 @@ namespace HealthGateway.Admin.Server.Controllers
         /// Retrieves delegation information for a person.
         /// </summary>
         /// <param name="phn">The phn to query on.</param>
-        /// <returns>A response containing information about the person and their delegates.</returns>
+        /// <returns>Information about the person and their delegates.</returns>
         /// <response code="200">Returns the requested delegation information.</response>
         /// <response code="400">The request parameters did not pass validation.</response>
         /// <response code="401">The client must authenticate itself to get the requested resource.</response>
@@ -64,7 +64,7 @@ namespace HealthGateway.Admin.Server.Controllers
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status502BadGateway, Type = typeof(ProblemDetails))]
-        public async Task<DelegationResponse> GetDelegationInformation([FromHeader] string phn)
+        public async Task<DelegationInfo> GetDelegationInformation([FromHeader] string phn)
         {
             return await this.delegationService.GetDelegationInformationAsync(phn).ConfigureAwait(true);
         }

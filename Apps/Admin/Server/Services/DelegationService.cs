@@ -62,7 +62,7 @@ namespace HealthGateway.Admin.Server.Services
         }
 
         /// <inheritdoc/>
-        public async Task<DelegationResponse> GetDelegationInformationAsync(string phn)
+        public async Task<DelegationInfo> GetDelegationInformationAsync(string phn)
         {
             // Get dependent patient information
             RequestResult<PatientModel> dependentPatientResult = await this.patientService.GetPatient(phn, PatientIdentifierType.Phn).ConfigureAwait(true);
@@ -73,12 +73,12 @@ namespace HealthGateway.Admin.Server.Services
                 throw new ProblemDetailsException(ExceptionUtility.CreateProblemDetails(MaxDependentAgeKey, HttpStatusCode.BadRequest, nameof(DelegationService)));
             }
 
-            DelegationResponse delegationResponse = new();
+            DelegationInfo delegationInfo = new();
             if (dependentPatientResult.ResourcePayload != null)
             {
                 PatientModel dependentPatientInfo = dependentPatientResult.ResourcePayload;
                 DependentInfo dependentInfo = this.autoMapper.Map<DependentInfo>(dependentPatientInfo);
-                delegationResponse.Dependent = dependentInfo;
+                delegationInfo.Dependent = dependentInfo;
 
                 // Get delegates from database
                 IEnumerable<ResourceDelegate> dbResourceDelegates = await this.SearchDelegates(dependentPatientInfo.HdId).ConfigureAwait(true);
@@ -93,10 +93,10 @@ namespace HealthGateway.Admin.Server.Services
                     delegates.Add(delegateInfo);
                 }
 
-                delegationResponse.Delegates = delegates;
+                delegationInfo.Delegates = delegates;
             }
 
-            return delegationResponse;
+            return delegationInfo;
         }
 
         private async Task<IEnumerable<ResourceDelegate>> SearchDelegates(string ownerHdid)
