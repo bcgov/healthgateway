@@ -22,7 +22,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Fluxor;
 using Fluxor.Blazor.Web.Components;
-using HealthGateway.Admin.Client.Components;
+using HealthGateway.Admin.Client.Components.AgentAccess;
 using HealthGateway.Admin.Client.Store.AgentAccess;
 using HealthGateway.Admin.Client.Utils;
 using HealthGateway.Admin.Common.Models;

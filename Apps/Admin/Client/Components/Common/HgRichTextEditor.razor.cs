@@ -13,22 +13,21 @@
 //  See the License for the specific language governing permissions and
 //  limitations under the License.
 // -------------------------------------------------------------------------
-namespace HealthGateway.Admin.Client.Components
+namespace HealthGateway.Admin.Client.Components.Common
 {
-    using System.Diagnostics.CodeAnalysis;
+    using Blazored.TextEditor;
+    using Microsoft.AspNetCore.Components;
     using MudBlazor;
 
     /// <summary>
-    /// Backing logic for the HgTextField component.
+    /// Backing logic for the HgRichTextEditor component.
     /// </summary>
-    /// <typeparam name="T">The type of data to store in the field.</typeparam>
-    [SuppressMessage("Major Code Smell", "S2326:Unused type parameters should be removed", Justification = "Used in .razor file")]
-    public partial class HgTextField<T> : HgComponentBase
+    public partial class HgRichTextEditor : HgComponentBase
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="HgTextField{T}"/> class.
+        /// Initializes a new instance of the <see cref="HgRichTextEditor"/> class.
         /// </summary>
-        public HgTextField()
+        public HgRichTextEditor()
         {
             this.HorizontalMarginSize = 3;
             this.VerticalMarginSize = 3;
@@ -36,8 +35,20 @@ namespace HealthGateway.Admin.Client.Components
         }
 
         /// <summary>
-        /// Gets the underlying MudBlazor component.
+        /// Gets or sets the initial value for the input.
         /// </summary>
-        public MudTextField<T> MudComponent { get; private set; } = default!;
+        [Parameter]
+        public string InitialValue { get; set; } = string.Empty;
+
+        /// <summary>
+        /// Gets or sets the label for the input.
+        /// </summary>
+        [Parameter]
+        public string Label { get; set; } = string.Empty;
+
+        /// <summary>
+        /// Gets the underlying Blazored component.
+        /// </summary>
+        public BlazoredTextEditor BlazoredComponent { get; private set; } = default!;
     }
 }

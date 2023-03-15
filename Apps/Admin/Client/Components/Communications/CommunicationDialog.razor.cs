@@ -13,13 +13,14 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //-------------------------------------------------------------------------
-namespace HealthGateway.Admin.Client.Components;
+namespace HealthGateway.Admin.Client.Components.Communications;
 
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Fluxor;
 using Fluxor.Blazor.Web.Components;
+using HealthGateway.Admin.Client.Components.Common;
 using HealthGateway.Admin.Client.Store.Communications;
 using HealthGateway.Admin.Common.Models;
 using HealthGateway.Common.Data.Constants;

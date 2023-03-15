@@ -13,14 +13,13 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //-------------------------------------------------------------------------
-namespace HealthGateway.Admin.Client.Components
+namespace HealthGateway.Admin.Client.Components.Support
 {
     using System;
     using System.Collections.Generic;
     using System.Linq;
     using Fluxor.Blazor.Web.Components;
     using HealthGateway.Common.Data.Constants;
-    using HealthGateway.Common.Data.Utils;
     using HealthGateway.Common.Data.ViewModels;
     using Microsoft.AspNetCore.Components;
 

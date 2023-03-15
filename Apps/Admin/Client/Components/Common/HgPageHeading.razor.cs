@@ -13,22 +13,23 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //-------------------------------------------------------------------------
-namespace HealthGateway.Admin.Client.Components;
-
-using Fluxor;
-using Fluxor.Blazor.Web.Components;
-using HealthGateway.Admin.Client.Store.Configuration;
-using Microsoft.AspNetCore.Components;
-
-/// <summary>
-/// Backing logic for the navigation menu.
-/// </summary>
-public partial class NavMenu : FluxorComponent
+namespace HealthGateway.Admin.Client.Components.Common
 {
-    [Inject]
-    private IState<ConfigurationState> ConfigurationState { get; set; } = default!;
+    using MudBlazor;
 
-    private string JobSchedulerUrl => this.ConfigurationState.Value.Result?.ServiceEndpoints.ContainsKey("JobScheduler") == true
-        ? this.ConfigurationState.Value.Result.ServiceEndpoints["JobScheduler"].ToString()
-        : string.Empty;
+    /// <summary>
+    /// Backing logic for the HgPageHeading component.
+    /// </summary>
+    public partial class HgPageHeading : HgComponentBase
+    {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="HgPageHeading"/> class.
+        /// </summary>
+        public HgPageHeading()
+        {
+            this.HorizontalMarginSize = 3;
+            this.VerticalMarginSize = 4;
+            this.BottomMargin = Breakpoint.Always;
+        }
+    }
 }
