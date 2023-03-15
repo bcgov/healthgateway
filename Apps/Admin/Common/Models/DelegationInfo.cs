@@ -20,7 +20,7 @@ namespace HealthGateway.Admin.Common.Models
     /// <summary>
     /// The delegation info model.
     /// </summary>
-    public class DelegationResponse
+    public class DelegationInfo
     {
         /// <summary>
         /// Gets or sets the dependent info.

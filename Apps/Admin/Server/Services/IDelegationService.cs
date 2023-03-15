@@ -27,7 +27,7 @@ namespace HealthGateway.Admin.Server.Services
         /// Retrieves delegation information for a person.
         /// </summary>
         /// <param name="phn">The phn to query on.</param>
-        /// <returns>A response containing information about the person and their delegates.</returns>
-        Task<DelegationResponse> GetDelegationInformationAsync(string phn);
+        /// <returns>Information about the person and their delegates.</returns>
+        Task<DelegationInfo> GetDelegationInformationAsync(string phn);
     }
 }
