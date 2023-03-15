@@ -1,6 +1,10 @@
-﻿import PatientData from "@/models/patientData";
+﻿import Vue from "vue";
+
+import { HttpError } from "@/models/errors";
+import PatientData, { PatientDataFile } from "@/models/patientData";
 import { LoadStatus } from "@/models/storeOperations";
 import {
+    PatientDataFileState,
     PatientDataMutations,
     PatientDataRecordState,
     PatientDataState,
@@ -11,6 +15,39 @@ import {
 } from "@/store/modules/patientData/utils";
 
 export const mutations: PatientDataMutations = {
+    setPatientDataFile(
+        state: PatientDataState,
+        payload: { fileId: string; file: PatientDataFile }
+    ): void {
+        const fileState: PatientDataFileState = {
+            data: payload.file,
+            error: undefined,
+            status: LoadStatus.LOADED,
+            statusMessage: "success",
+        };
+        Vue.set(state.patientDataFiles, payload.fileId, fileState);
+    },
+    setPatientDataFileError(
+        state: PatientDataState,
+        payload: { fileId: string; error: HttpError | unknown }
+    ): void {
+        const fileState: PatientDataFileState = {
+            data: undefined,
+            status: LoadStatus.ERROR,
+            statusMessage: "File Request Error",
+            error: payload.error,
+        };
+        Vue.set(state.patientDataFiles, payload.fileId, fileState);
+    },
+    setPatientDataFileRequested(state: PatientDataState, fileId: string): void {
+        const fileState: PatientDataFileState = {
+            data: undefined,
+            status: LoadStatus.REQUESTED,
+            statusMessage: "File Requested",
+            error: undefined,
+        };
+        Vue.set(state.patientDataFiles, fileId, fileState);
+    },
     setPatientData(
         state: PatientDataState,
         payload: { hdid: string; patientData: PatientData }
@@ -35,8 +72,8 @@ export const mutations: PatientDataMutations = {
         const nextState: PatientDataRecordState = {
             ...currentState,
             error: error,
-            statusMessage: "success",
-            status: LoadStatus.LOADED,
+            statusMessage: "error",
+            status: LoadStatus.ERROR,
         };
         setPatientDataRecordState(state, hdid, nextState);
     },

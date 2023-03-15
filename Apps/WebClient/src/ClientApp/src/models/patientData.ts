@@ -11,3 +11,8 @@ export class OrganDonorRegistrationData extends PatientHealthOptions {
     public statusMessage!: string;
     public registrationFileId: string | undefined;
 }
+
+export class PatientDataFile {
+    public content!: Blob;
+    public contentType!: string;
+}

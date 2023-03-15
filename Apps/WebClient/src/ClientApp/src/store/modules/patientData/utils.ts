@@ -2,14 +2,24 @@
 
 import { LoadStatus } from "@/models/storeOperations";
 import {
+    PatientDataFileState,
     PatientDataRecordState,
     PatientDataState,
 } from "@/store/modules/patientData/types";
 
 const defaultPatientDataState: PatientDataRecordState = {
-    data: null,
+    data: undefined,
     statusMessage: "",
     status: LoadStatus.NONE,
+    error: undefined,
+    // TODO: Error mapping here.
+};
+
+const defaultPatientDataFileState: PatientDataFileState = {
+    data: undefined,
+    statusMessage: "",
+    status: LoadStatus.NONE,
+    error: undefined,
     // TODO: Error mapping here.
 };
 
@@ -17,7 +27,7 @@ const defaultPatientDataState: PatientDataRecordState = {
  * Retrieves the patient's data state for a particular HDID.
  * @param state The store state.
  * @param hdid The HDID associated with the patient's data state.
- * @returns the health options state for the HDID, if it exists, or a new state initialized to default values.
+ * @returns the patient's data state for the HDID, if it exists, or a new state initialized to default values.
  */
 export function getPatientDataRecordState(
     state: PatientDataState,
@@ -34,7 +44,7 @@ export function getPatientDataRecordState(
  * Update the patient's data state for a particular HDID.
  * @param state The store state.
  * @param hdid The HDID associated with the patient's data state.
- * @param patientDataRecordState The patient's health options state.
+ * @param patientDataRecordState The patient's data state.
  */
 export function setPatientDataRecordState(
     state: PatientDataState,
@@ -42,4 +52,21 @@ export function setPatientDataRecordState(
     patientDataRecordState: PatientDataRecordState
 ): void {
     Vue.set(state.patientDataRecords, hdid, patientDataRecordState);
+}
+
+/**
+ * Retrieves the patient's data files state for a particular file id.
+ * @param state The store state.
+ * @param fileId The file id associated with the patient's data files state.
+ * @returns the patient data file state, if it exists, or a new state initialized to default values.
+ */
+export function getPatientDataFileState(
+    state: PatientDataState,
+    fileId: string
+): PatientDataFileState {
+    return (
+        state.patientDataFiles[fileId] ?? {
+            ...defaultPatientDataFileState,
+        }
+    );
 }

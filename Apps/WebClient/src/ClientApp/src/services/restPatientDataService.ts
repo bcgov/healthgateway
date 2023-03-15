@@ -3,7 +3,7 @@
 import { ServiceCode } from "@/constants/serviceCodes";
 import { ExternalConfiguration } from "@/models/configData";
 import { HttpError } from "@/models/errors";
-import PatientData from "@/models/patientData";
+import PatientData, { PatientDataFile } from "@/models/patientData";
 import container from "@/plugins/container";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import {
@@ -54,7 +54,30 @@ export class RestPatientDataService implements IPatientDataService {
         });
     }
 
-    getFile(hdid: string, fileId: string): Promise<File> {
-        throw new Error("Not implemented");
+    getFile(
+        hdid: string,
+        fileId: string
+    ): Promise<PatientDataFile | undefined> {
+        return new Promise((resolve, reject) => {
+            if (!this.isEnabled) {
+                resolve(undefined);
+            }
+            this.http
+                .getWithCors<PatientDataFile>(
+                    `${this.serviceBaseUri}${this.BASE_URI}/${hdid}/file/${fileId}`
+                )
+                .then(resolve)
+                .catch((err: HttpError) => {
+                    this.logger.error(
+                        `Error in RestPatientDataService.getFile()`
+                    );
+                    reject(
+                        ErrorTranslator.internalNetworkError(
+                            err,
+                            ServiceCode.PatientData
+                        )
+                    );
+                });
+        });
     }
 }

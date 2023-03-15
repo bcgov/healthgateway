@@ -7,6 +7,7 @@ import {
 } from "@/store/modules/patientData/types";
 
 const state: PatientDataState = {
+    patientDataFiles: {},
     patientDataRecords: {},
 };
 

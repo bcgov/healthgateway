@@ -1,13 +1,21 @@
 import PatientData from "@/models/patientData";
 import { LoadStatus } from "@/models/storeOperations";
 import {
+    PatientDataFileState,
     PatientDataGetters,
     PatientDataState,
 } from "@/store/modules/patientData/types";
 import { getPatientDataRecordState } from "@/store/modules/patientData/utils";
 
 export const getters: PatientDataGetters = {
-    patientData(state: PatientDataState): (hdid: string) => PatientData | null {
+    patientDataFiles(
+        state: PatientDataState
+    ): Dictionary<PatientDataFileState> {
+        return state.patientDataFiles;
+    },
+    patientData(
+        state: PatientDataState
+    ): (hdid: string) => PatientData | undefined {
         return (hdid: string) => getPatientDataRecordState(state, hdid).data;
     },
     isPatientDataLoading(state: PatientDataState): (hdid: string) => boolean {

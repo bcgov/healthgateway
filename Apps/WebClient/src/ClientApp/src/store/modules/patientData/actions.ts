@@ -1,16 +1,65 @@
 import { ErrorSourceType, ErrorType } from "@/constants/errorType";
 import { HttpError } from "@/models/errors";
-import Patient from "@/models/patient";
-import PatientData from "@/models/patientData";
+import PatientData, { PatientDataFile } from "@/models/patientData";
 import { LoadStatus } from "@/models/storeOperations";
 import container from "@/plugins/container";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import { ILogger, IPatientDataService } from "@/services/interfaces";
 import { PatientDataActions } from "@/store/modules/patientData/types";
-import { getPatientDataRecordState } from "@/store/modules/patientData/utils";
-import EventTracker from "@/utility/eventTracker";
+import {
+    getPatientDataFileState,
+    getPatientDataRecordState,
+} from "@/store/modules/patientData/utils";
 
 export const actions: PatientDataActions = {
+    retrievePatientDataFile(
+        context,
+        params: { hdid: string; fileId: string }
+    ): Promise<PatientDataFile> {
+        const logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
+        const patientDataService = container.get<IPatientDataService>(
+            SERVICE_IDENTIFIER.PatientDataService
+        );
+
+        return new Promise((resolve, reject) => {
+            const currentState = getPatientDataFileState(
+                context.state,
+                params.fileId
+            );
+            if (
+                currentState.status === LoadStatus.LOADED &&
+                currentState.data !== undefined
+            ) {
+                logger.debug("Patient data file found stored, not querying!");
+                const patientDataFile: PatientDataFile = currentState.data;
+                resolve(patientDataFile);
+            } else {
+                logger.debug("Retrieving patient data file");
+                context.commit("setPatientDataFileRequested", params.fileId);
+                patientDataService
+                    .getFile(params.hdid, params.fileId)
+                    .then((data) => {
+                        if (data === undefined) {
+                            reject(new Error("No patient data was returned"));
+                        } else {
+                            context.commit("setPatientDataFile", {
+                                fileId: params.fileId,
+                                file: data,
+                            });
+                            resolve(data);
+                        }
+                    })
+                    .catch((error: HttpError) => {
+                        context.dispatch("handleError", {
+                            error,
+                            errorType: ErrorType.Retrieve,
+                            fileId: params.fileId,
+                        });
+                        reject(error);
+                    });
+            }
+        });
+    },
     retrievePatientData(
         context,
         params: { hdid: string }
@@ -38,13 +87,13 @@ export const actions: PatientDataActions = {
                     .then((data: PatientData | undefined) => {
                         if (data === undefined) {
                             reject(new Error("No patient data was returned"));
-                            return;
+                        } else {
+                            context.commit("setPatientData", {
+                                hdid: params.hdid,
+                                patientData: data,
+                            });
+                            resolve(data);
                         }
-                        context.commit("setPatientData", {
-                            hdid: params.hdid,
-                            patientData: data,
-                        });
-                        resolve(data);
                     })
                     .catch((error: HttpError) => {
                         context.dispatch("handleError", {

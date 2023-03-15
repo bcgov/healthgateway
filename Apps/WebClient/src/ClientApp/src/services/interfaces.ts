@@ -27,7 +27,7 @@ import MedicationRequest from "@/models/medicationRequest";
 import MedicationStatementHistory from "@/models/medicationStatementHistory";
 import Notification from "@/models/notification";
 import Patient from "@/models/patient";
-import PatientData from "@/models/patientData";
+import PatientData, { PatientDataFile } from "@/models/patientData";
 import RegisterTestKitRequest from "@/models/registerTestKitRequest";
 import Report from "@/models/report";
 import ReportRequest from "@/models/reportRequest";
@@ -304,5 +304,5 @@ export interface ITicketService {
 
 export interface IPatientDataService extends IHttpDelegateService {
     getPatientData(hdid: string): Promise<PatientData | undefined>;
-    getFile(hdid: string, fileId: string): Promise<File>;
+    getFile(hdid: string, fileId: string): Promise<PatientDataFile | undefined>;
 }
