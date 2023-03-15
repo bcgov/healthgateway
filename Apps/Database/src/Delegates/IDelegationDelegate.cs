@@ -15,7 +15,6 @@
 // -------------------------------------------------------------------------
 namespace HealthGateway.Database.Delegates
 {
-    using System.Collections.Generic;
     using HealthGateway.Database.Models;
     using HealthGateway.Database.Wrapper;
 
@@ -26,8 +25,6 @@ namespace HealthGateway.Database.Delegates
     {
         /// <summary>
         /// Deletes the allowed delegation object in the DB.
-        /// Version must be set or a Concurrency exception will occur.
-        /// UpdatedDateTime will be overridden by our framework.
         /// </summary>
         /// <param name="allowedDelegation">The dependent to delete.</param>
         /// <param name="commit">if true the transaction is persisted immediately.</param>
@@ -35,7 +32,7 @@ namespace HealthGateway.Database.Delegates
         DbResult<AllowedDelegation> DeleteAllowedDelegation(AllowedDelegation allowedDelegation, bool commit = true);
 
         /// <summary>
-        /// Fetches the Dependents from the database.
+        /// Fetches the Dependent by hdid from the database.
         /// </summary>
         /// <param name="hdid">The dependent hdid to query on.</param>
         /// <param name="includeAllowedDelegation">
@@ -43,12 +40,10 @@ namespace HealthGateway.Database.Delegates
         /// dependent.
         /// </param>
         /// <returns>A DB result which encapsulates the return objects and status.</returns>
-        DbResult<IList<Dependent>> GetDependents(string hdid, bool includeAllowedDelegation = false);
+        DbResult<Dependent> GetDependent(string hdid, bool includeAllowedDelegation = false);
 
         /// <summary>
         /// Inserts the dependent object including allowed delegation associations in the DB.
-        /// Version must be set or a Concurrency exception will occur.
-        /// UpdatedDateTime will be overridden by our framework.
         /// </summary>
         /// <param name="dependent">The dependent to update.</param>
         /// <param name="commit">if true the transaction is persisted immediately.</param>
@@ -57,8 +52,6 @@ namespace HealthGateway.Database.Delegates
 
         /// <summary>
         /// Inserts the allowed delegation object in the DB.
-        /// Version must be set or a Concurrency exception will occur.
-        /// UpdatedDateTime will be overridden by our framework.
         /// </summary>
         /// <param name="allowedDelegation">The allowed delegation to insert.</param>
         /// <param name="commit">if true the transaction is persisted immediately.</param>
@@ -67,8 +60,6 @@ namespace HealthGateway.Database.Delegates
 
         /// <summary>
         /// Updates the dependent object including allowed delegation associations in the DB.
-        /// Version must be set or a Concurrency exception will occur.
-        /// UpdatedDateTime will be overridden by our framework.
         /// </summary>
         /// <param name="dependent">The dependent to update.</param>
         /// <param name="commit">if true the transaction is persisted immediately.</param>

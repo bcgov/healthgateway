@@ -15,7 +15,6 @@
 // -------------------------------------------------------------------------
 namespace HealthGateway.Database.Delegates
 {
-    using System.Collections.Generic;
     using System.Linq;
     using HealthGateway.Database.Constants;
     using HealthGateway.Database.Context;
@@ -69,28 +68,32 @@ namespace HealthGateway.Database.Delegates
         }
 
         /// <inheritdoc/>
-        public DbResult<IList<Dependent>> GetDependents(string hdid, bool includeAllowedDelegation = false)
+        public DbResult<Dependent> GetDependent(string hdid, bool includeAllowedDelegation = false)
         {
-            this.logger.LogTrace("Getting dependents - includeAllowedDelegation : {IncludeAllowedDelegation}", includeAllowedDelegation);
+            this.logger.LogTrace("Getting dependent - includeAllowedDelegation : {IncludeAllowedDelegation}", includeAllowedDelegation);
+
+            IQueryable<Dependent> query = this.dbContext.Dependent
+                .Where(d => d.HdId == hdid);
+
             if (includeAllowedDelegation)
+            {
+                query = query.Include(d => d.AllowedDelegations);
+            }
+
+            Dependent? dependent = query.SingleOrDefault();
+
+            if (dependent == null)
             {
                 return new()
                 {
-                    Payload = this.dbContext.Dependent
-                        .Where(d => d.HdId == hdid)
-                        .Include(d => d.AllowedDelegations)
-                        .OrderByDescending(d => d.CreatedDateTime)
-                        .ToList(),
-                    Status = DbStatusCode.Read,
+                    Status = DbStatusCode.NotFound,
+                    Message = $"Unable to find dependent by hdid: {hdid}",
                 };
             }
 
             return new()
             {
-                Payload = this.dbContext.Dependent
-                    .Where(d => d.HdId == hdid)
-                    .OrderByDescending(d => d.CreatedDateTime)
-                    .ToList(),
+                Payload = dependent,
                 Status = DbStatusCode.Read,
             };
         }
