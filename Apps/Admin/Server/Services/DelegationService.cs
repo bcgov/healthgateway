@@ -73,7 +73,8 @@ namespace HealthGateway.Admin.Server.Services
             ValidationResult? validationResults = await new DelegationValidator(this.maxDependentAge).ValidateAsync(dependentPatientResult.ResourcePayload).ConfigureAwait(true);
             if (!validationResults.IsValid)
             {
-                throw new ProblemDetailsException(ExceptionUtility.CreateProblemDetails(MaxDependentAgeKey, HttpStatusCode.BadRequest, nameof(DelegationService)));
+                throw new ProblemDetailsException(
+                    ExceptionUtility.CreateProblemDetails($"Dependent age exceeds the maximum limit of {this.maxDependentAge}", HttpStatusCode.BadRequest, nameof(DelegationService)));
             }
 
             DelegationInfo delegationInfo = new();
