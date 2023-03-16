@@ -1,5 +1,5 @@
 import { ErrorSourceType, ErrorType } from "@/constants/errorType";
-import { HttpError } from "@/models/errors";
+import { ResultError } from "@/models/errors";
 import PatientData, { PatientDataFile } from "@/models/patientData";
 import { LoadStatus } from "@/models/storeOperations";
 import container from "@/plugins/container";
@@ -39,17 +39,13 @@ export const actions: PatientDataActions = {
                 patientDataService
                     .getFile(params.hdid, params.fileId)
                     .then((data) => {
-                        if (data === undefined) {
-                            reject(new Error("No patient data was returned"));
-                        } else {
-                            context.commit("setPatientDataFile", {
-                                fileId: params.fileId,
-                                file: data,
-                            });
-                            resolve(data);
-                        }
+                        context.commit("setPatientDataFile", {
+                            fileId: params.fileId,
+                            file: data,
+                        });
+                        resolve(data);
                     })
-                    .catch((error: HttpError) => {
+                    .catch((error: ResultError) => {
                         context.dispatch("handleError", {
                             error,
                             errorType: ErrorType.Retrieve,
@@ -84,18 +80,14 @@ export const actions: PatientDataActions = {
                 context.commit("setPatientDataRequested", params.hdid);
                 patientDataService
                     .getPatientData(params.hdid)
-                    .then((data: PatientData | undefined) => {
-                        if (data === undefined) {
-                            reject(new Error("No patient data was returned"));
-                        } else {
-                            context.commit("setPatientData", {
-                                hdid: params.hdid,
-                                patientData: data,
-                            });
-                            resolve(data);
-                        }
+                    .then((data: PatientData) => {
+                        context.commit("setPatientData", {
+                            hdid: params.hdid,
+                            patientData: data,
+                        });
+                        resolve(data);
                     })
-                    .catch((error: HttpError) => {
+                    .catch((error: ResultError) => {
                         context.dispatch("handleError", {
                             error,
                             errorType: ErrorType.Retrieve,
@@ -109,7 +101,7 @@ export const actions: PatientDataActions = {
     handleError(
         context,
         params: {
-            error: HttpError;
+            error: ResultError;
             errorType: ErrorType;
             hdid?: string;
             fileId: string;

@@ -1,18 +1,28 @@
-import { Dictionary } from "@/models/baseTypes";
-import PatientData from "@/models/patientData";
+import PatientData, { PatientDataFile } from "@/models/patientData";
 import { LoadStatus } from "@/models/storeOperations";
 import {
-    PatientDataFileState,
     PatientDataGetters,
     PatientDataState,
 } from "@/store/modules/patientData/types";
-import { getPatientDataRecordState } from "@/store/modules/patientData/utils";
+import {
+    getPatientDataFileState,
+    getPatientDataRecordState,
+} from "@/store/modules/patientData/utils";
 
 export const getters: PatientDataGetters = {
-    patientDataFiles(
+    isPatientDataFileLoading(
         state: PatientDataState
-    ): Dictionary<PatientDataFileState> {
-        return state.patientDataFiles;
+    ): (fileId: string) => boolean {
+        return (fileId: string) =>
+            getPatientDataFileState(state, fileId).status ===
+            LoadStatus.REQUESTED;
+    },
+    patientDataFile(
+        state: PatientDataState
+    ): (fileId: string) => PatientDataFile | undefined {
+        return function (fileId: string) {
+            return getPatientDataFileState(state, fileId).data;
+        };
     },
     patientData(
         state: PatientDataState

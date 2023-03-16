@@ -22,6 +22,12 @@ export class RestPatientDataService implements IPatientDataService {
     private http!: IHttpDelegate;
     private isEnabled = false;
 
+    private isServicesEnabled(reject: (reason?: unknown) => void) {
+        if (!this.isEnabled) {
+            reject(new Error("Services feature is disabled."));
+        }
+    }
+
     public initialize(
         config: ExternalConfiguration,
         http: IHttpDelegate
@@ -30,11 +36,10 @@ export class RestPatientDataService implements IPatientDataService {
         this.http = http;
         this.isEnabled = ConfigUtil.isServicesFeatureEnabled();
     }
-    public getPatientData(hdid: string): Promise<PatientData | undefined> {
+
+    public getPatientData(hdid: string): Promise<PatientData> {
         return new Promise((resolve, reject) => {
-            if (!this.isEnabled) {
-                resolve(undefined);
-            }
+            this.isServicesEnabled(reject);
             this.http
                 .getWithCors<PatientData>(
                     `${this.serviceBaseUri}${this.BASE_URI}/${hdid}`
@@ -54,14 +59,9 @@ export class RestPatientDataService implements IPatientDataService {
         });
     }
 
-    getFile(
-        hdid: string,
-        fileId: string
-    ): Promise<PatientDataFile | undefined> {
+    getFile(hdid: string, fileId: string): Promise<PatientDataFile> {
         return new Promise((resolve, reject) => {
-            if (!this.isEnabled) {
-                resolve(undefined);
-            }
+            this.isServicesEnabled(reject);
             this.http
                 .getWithCors<PatientDataFile>(
                     `${this.serviceBaseUri}${this.BASE_URI}/${hdid}/file/${fileId}`

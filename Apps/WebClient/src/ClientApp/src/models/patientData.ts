@@ -1,5 +1,5 @@
 ﻿export default class PatientData {
-    items: PatientHealthOptions[] | undefined;
+    items!: PatientHealthOptions[];
 }
 
 export abstract class PatientHealthOptions {

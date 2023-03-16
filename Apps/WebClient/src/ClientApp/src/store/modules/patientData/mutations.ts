@@ -1,6 +1,6 @@
 import Vue from "vue";
 
-import { HttpError } from "@/models/errors";
+import { ResultError } from "@/models/errors";
 import PatientData, { PatientDataFile } from "@/models/patientData";
 import { LoadStatus } from "@/models/storeOperations";
 import {
@@ -29,7 +29,7 @@ export const mutations: PatientDataMutations = {
     },
     setPatientDataFileError(
         state: PatientDataState,
-        payload: { fileId: string; error: HttpError }
+        payload: { fileId: string; error: ResultError }
     ): void {
         const fileState: PatientDataFileState = {
             data: undefined,
@@ -65,7 +65,7 @@ export const mutations: PatientDataMutations = {
     },
     setPatientDataError(
         state: PatientDataState,
-        payload: { hdid: string; error: HttpError }
+        payload: { hdid: string; error: ResultError }
     ): void {
         const { hdid, error } = payload;
         const currentState = getPatientDataRecordState(state, hdid);

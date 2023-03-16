@@ -8,7 +8,7 @@ import {
 
 import { ErrorType } from "@/constants/errorType";
 import { Dictionary } from "@/models/baseTypes";
-import { HttpError } from "@/models/errors";
+import { ResultError } from "@/models/errors";
 import PatientData, { PatientDataFile } from "@/models/patientData";
 import { LoadStatus } from "@/models/storeOperations";
 import { RootState } from "@/store/types";
@@ -20,7 +20,7 @@ export interface RecordState<T> {
     data: T | undefined;
     status: LoadStatus;
     statusMessage: string;
-    error: HttpError | undefined;
+    error: ResultError | undefined;
 }
 
 export type PatientDataRecordState = RecordState<PatientData>;
@@ -37,7 +37,12 @@ export interface PatientDataGetters
         state: PatientDataState
     ): (hdid: string) => PatientData | undefined;
     isPatientDataLoading(state: PatientDataState): (hdid: string) => boolean;
-    patientDataFiles(state: PatientDataState): Dictionary<PatientDataFileState>;
+    patientDataFile(
+        state: PatientDataState
+    ): (fileId: string) => PatientDataFile | undefined;
+    isPatientDataFileLoading(
+        state: PatientDataState
+    ): (fileId: string) => boolean;
 }
 
 type StoreContext = ActionContext<PatientDataState, RootState>;
@@ -48,16 +53,14 @@ export interface PatientDataActions
         context: StoreContext,
         params: { hdid: string }
     ): Promise<PatientData>;
-
     retrievePatientDataFile(
         context: StoreContext,
         params: { hdid: string; fileId: string }
     ): Promise<PatientDataFile>;
-
     handleError(
         context: StoreContext,
         params: {
-            error: HttpError;
+            error: ResultError;
             errorType: ErrorType;
             hdid?: string;
             fileId?: string;
@@ -68,24 +71,21 @@ export interface PatientDataActions
 export interface PatientDataMutations extends MutationTree<PatientDataState> {
     setPatientDataRequested(state: PatientDataState, hdid: string): void;
     setPatientDataFileRequested(state: PatientDataState, fileId: string): void;
-
     setPatientData(
         state: PatientDataState,
         payload: { hdid: string; patientData: PatientData }
     ): void;
-
     setPatientDataFile(
         state: PatientDataState,
         payload: { fileId: string; file: PatientDataFile }
     ): void;
     setPatientDataError(
         state: PatientDataState,
-        payload: { hdid: string; error: HttpError }
+        payload: { hdid: string; error: ResultError }
     ): void;
-
     setPatientDataFileError(
         state: PatientDataState,
-        payload: { fileId: string; error: HttpError }
+        payload: { fileId: string; error: ResultError }
     ): void;
 }
 

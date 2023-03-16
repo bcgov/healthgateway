@@ -303,6 +303,6 @@ export interface ITicketService {
 }
 
 export interface IPatientDataService extends IHttpDelegateService {
-    getPatientData(hdid: string): Promise<PatientData | undefined>;
-    getFile(hdid: string, fileId: string): Promise<PatientDataFile | undefined>;
+    getPatientData(hdid: string): Promise<PatientData>;
+    getFile(hdid: string, fileId: string): Promise<PatientDataFile>;
 }
