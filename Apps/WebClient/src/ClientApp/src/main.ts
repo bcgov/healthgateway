@@ -67,6 +67,7 @@ import {
     ILogger,
     IMedicationService,
     INotificationService,
+    IPatientDataService,
     IPatientService,
     IPcrTestService,
     IReportService,
@@ -192,6 +193,9 @@ configService
         const ticketService = container.get<ITicketService>(
             SERVICE_IDENTIFIER.TicketService
         );
+        const patientDataService = container.get<IPatientDataService>(
+            SERVICE_IDENTIFIER.PatientDataService
+        );
 
         store.dispatch("config/initialize", config);
 
@@ -221,6 +225,7 @@ configService
         reportService.initialize(config, httpDelegate);
         vaccinationStatusService.initialize(config, httpDelegate);
         ticketService.initialize(config, httpDelegate);
+        patientDataService.initialize(config, httpDelegate);
 
         authInitializePromise.then(async () => {
             Vue.use(IdleVue, {

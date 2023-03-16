@@ -22,6 +22,7 @@ import {
     ILogger,
     IMedicationService,
     INotificationService,
+    IPatientDataService,
     IPatientService,
     IPcrTestService,
     IReportService,
@@ -54,6 +55,7 @@ import { RestUserNoteService } from "@/services/restUserNoteService";
 import { RestUserProfileService } from "@/services/restUserProfileService";
 import { RestUserRatingService } from "@/services/restUserRatingService";
 import { RestReportService } from "@/services/restReportService";
+import { RestPatientDataService } from "@/services/restPatientDataService";
 import { RestPcrTestService } from "@/services/restPcrTestService";
 import { RestVaccinationStatusService } from "@/services/restVaccinationStatusService";
 import { WinstonLogger } from "@/services/winstonLogger";
@@ -168,4 +170,8 @@ container
 container
     .bind<ITicketService>(SERVICE_IDENTIFIER.TicketService)
     .to(RestTicketService)
+    .inSingletonScope();
+container
+    .bind<IPatientDataService>(SERVICE_IDENTIFIER.PatientDataService)
+    .to(RestPatientDataService)
     .inSingletonScope();
