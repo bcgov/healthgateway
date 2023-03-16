@@ -31,7 +31,12 @@ namespace HealthGateway.Admin.Tests.Utils
         public static IMapper InitializeAutoMapper()
         {
             MapperConfiguration config = new(
-                cfg => { cfg.AddProfile(new AdminUserProfileViewProfile()); });
+                cfg =>
+                {
+                    cfg.AddProfile(new AdminUserProfileViewProfile());
+                    cfg.AddProfile(new DependentInfoProfile());
+                    cfg.AddProfile(new DelegateInfoProfile());
+                });
 
             return config.CreateMapper();
         }
