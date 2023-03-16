@@ -128,6 +128,7 @@ namespace HealthGateway.Admin.Server
             services.AddTransient<IInactiveUserService, InactiveUserService>();
             services.AddTransient<ISupportService, SupportService>();
             services.AddTransient<IAgentAccessService, AgentAccessService>();
+            services.AddTransient<IDelegationService, DelegationService>();
         }
 
         private static void AddDelegates(IServiceCollection services)
