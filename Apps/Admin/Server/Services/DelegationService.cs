@@ -15,6 +15,7 @@
 // -------------------------------------------------------------------------
 namespace HealthGateway.Admin.Server.Services
 {
+    using System;
     using System.Collections.Generic;
     using System.Net;
     using System.Threading.Tasks;
@@ -24,6 +25,7 @@ namespace HealthGateway.Admin.Server.Services
     using HealthGateway.Admin.Common.Models;
     using HealthGateway.Admin.Server.Validations;
     using HealthGateway.Common.Constants;
+    using HealthGateway.Common.Data.Constants;
     using HealthGateway.Common.Data.ErrorHandling;
     using HealthGateway.Common.Data.ViewModels;
     using HealthGateway.Common.Models;
@@ -66,6 +68,7 @@ namespace HealthGateway.Admin.Server.Services
         {
             // Get dependent patient information
             RequestResult<PatientModel> dependentPatientResult = await this.patientService.GetPatient(phn, PatientIdentifierType.Phn).ConfigureAwait(true);
+            this.ValidatePatientResult(dependentPatientResult);
 
             ValidationResult? validationResults = await new DelegationValidator(this.maxDependentAge).ValidateAsync(dependentPatientResult.ResourcePayload).ConfigureAwait(true);
             if (!validationResults.IsValid)
@@ -87,8 +90,9 @@ namespace HealthGateway.Admin.Server.Services
                 foreach (ResourceDelegate resourceDelegate in dbResourceDelegates)
                 {
                     RequestResult<PatientModel> delegatePatientResult = await this.patientService.GetPatient(resourceDelegate.ResourceOwnerHdid).ConfigureAwait(true);
+                    this.ValidatePatientResult(delegatePatientResult);
 
-                    DelegateInfo delegateInfo = this.autoMapper.Map<DelegateInfo>(delegatePatientResult);
+                    DelegateInfo delegateInfo = this.autoMapper.Map<DelegateInfo>(delegatePatientResult.ResourcePayload);
                     delegateInfo.DelegationStatus = DelegationStatus.Added;
                     delegates.Add(delegateInfo);
                 }
@@ -104,6 +108,19 @@ namespace HealthGateway.Admin.Server.Services
             ResourceDelegateQuery query = new() { ByOwnerHdid = ownerHdid };
             ResourceDelegateQueryResult result = await this.resourceDelegateDelegate.Search(query).ConfigureAwait(true);
             return result.Items;
+        }
+
+        private void ValidatePatientResult(RequestResult<PatientModel> patientResult)
+        {
+            switch (patientResult)
+            {
+                case { ResultStatus: ResultType.ActionRequired, ResultError: { } error } when error.ActionCode!.Equals(ActionType.Validation):
+                    throw new ProblemDetailsException(ExceptionUtility.CreateProblemDetails(error.ResultMessage, HttpStatusCode.BadRequest, nameof(DelegationService)));
+                case { ResultStatus: ResultType.Error, ResultError: { } error } when error.ResultMessage.StartsWith("Communication Exception", StringComparison.InvariantCulture):
+                    throw new ProblemDetailsException(ExceptionUtility.CreateProblemDetails(error.ResultMessage, HttpStatusCode.BadGateway, nameof(DelegationService)));
+                case { ResultStatus: ResultType.Error or ResultType.ActionRequired } or { ResourcePayload: null }:
+                    throw new ProblemDetailsException(ExceptionUtility.CreateProblemDetails("Patient not found", HttpStatusCode.NotFound, nameof(DelegationService)));
+            }
         }
     }
 }
