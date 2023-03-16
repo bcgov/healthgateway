@@ -4,16 +4,16 @@ import { Component } from "vue-property-decorator";
 
 import LoadingComponent from "@/components/LoadingComponent.vue";
 import BreadcrumbComponent from "@/components/navmenu/BreadcrumbComponent.vue";
+import OrganDonorDetailsCard from "@/components/services/OrganDonorDetailsCard.vue";
 import BreadcrumbItem from "@/models/breadcrumbItem";
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-const options: any = {
+@Component({
     components: {
         BreadcrumbComponent,
         LoadingComponent,
+        OrganDonorDetailsCard,
     },
-};
-@Component(options)
+})
 export default class ServicesView extends Vue {
     breadcrumbItems: BreadcrumbItem[] = [
         {
@@ -35,9 +35,14 @@ export default class ServicesView extends Vue {
         <BreadcrumbComponent :items="breadcrumbItems" />
         <LoadingComponent :is-loading="isLoading" />
         <page-title title="Services" />
-        <h5 class="my-3">
+        <p class="mb-4">
             You can check and update your Organ Donor Registry information here.
             More health services will be added in future.
-        </h5>
+        </p>
+        <div>
+            <b-row cols="1" cols-lg="2" cols-xl="3">
+                <b-col class="pb-3"> <OrganDonorDetailsCard /></b-col>
+            </b-row>
+        </div>
     </div>
 </template>
