@@ -42,6 +42,9 @@
         <MudNavLink Href="support" Icon="fas fa-headset">Support</MudNavLink>
     </AuthorizeView>
     <AuthorizeView Roles="@Roles.Admin">
+        <MudNavLink Href="delegation" Icon="fas fa-user-lock">Delegation</MudNavLink>
+    </AuthorizeView>
+    <AuthorizeView Roles="@Roles.Admin">
         <MudNavLink Href="provision" Icon="fas fa-user-shield">Provision</MudNavLink>
     </AuthorizeView>
 </MudNavMenu>
