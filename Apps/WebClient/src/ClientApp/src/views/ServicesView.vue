@@ -6,12 +6,14 @@ import { Action, Getter } from "vuex-class";
 import LoadingComponent from "@/components/LoadingComponent.vue";
 import BreadcrumbComponent from "@/components/navmenu/BreadcrumbComponent.vue";
 import OrganDonorDetailsCard from "@/components/services/OrganDonorDetailsCard.vue";
+import { ServiceName } from "@/constants/serviceName";
 import BreadcrumbItem from "@/models/breadcrumbItem";
 import { PatientDataTypes } from "@/models/patientData";
 import User from "@/models/user";
 import container from "@/plugins/container";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import { ILogger } from "@/services/interfaces";
+import ConfigUtil from "@/utility/configUtil";
 
 @Component({
     components: {
@@ -52,12 +54,18 @@ export default class ServicesView extends Vue {
         return this.user.hdid;
     }
 
+    get isOrganDonorServiceEnabled(): boolean {
+        return ConfigUtil.isServiceEnabled(ServiceName.OrganDonorRegistration);
+    }
+
     async created(): Promise<void> {
         this.logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
-        await this.retrievePatientData({
-            hdid: this.user.hdid,
-            patientDataType: PatientDataTypes.OrganDonorRegistrationStatus,
-        });
+        if (this.isOrganDonorServiceEnabled) {
+            await this.retrievePatientData({
+                hdid: this.user.hdid,
+                patientDataType: PatientDataTypes.OrganDonorRegistrationStatus,
+            });
+        }
     }
 }
 </script>
@@ -73,7 +81,10 @@ export default class ServicesView extends Vue {
         </p>
         <div>
             <b-row cols="1" cols-lg="2" cols-xl="3">
-                <b-col v-if="!isLoading" class="pb-3">
+                <b-col
+                    v-if="!isLoading && isOrganDonorServiceEnabled"
+                    class="pb-3"
+                >
                     <OrganDonorDetailsCard :hdid="hdid" />
                 </b-col>
             </b-row>

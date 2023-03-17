@@ -80,9 +80,6 @@ export default class OrganDonorDetailsCard extends Vue {
                 .catch((err) => this.logger.error(err));
         }
     }
-
-    // TODO: sensitive download displayed modal when button is clicked - EntryCard component handles submission of new/updated comments - bind state actions here.
-    // TODO: track snowplow event on "Continue" on sensitive download modal - HomeView - Line:144
 }
 </script>
 
