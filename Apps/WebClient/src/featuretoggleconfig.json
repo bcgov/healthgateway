@@ -78,10 +78,6 @@
             {
                 "name": "note",
                 "enabled": false
-            },
-            {
-                "name": "specialAuthorityRequest",
-                "enabled": false
             }
         ]
     },
