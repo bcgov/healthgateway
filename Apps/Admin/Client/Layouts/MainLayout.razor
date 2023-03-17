@@ -20,11 +20,9 @@
                         <MudIcon Icon="fas fa-user" Color="Color.Inherit" Edge="Edge.End" data-testid="user-account-icon" />
                     </ActivatorContent>
                     <ChildContent>
-                        <AuthorizeView Roles="@($"{Roles.Admin},{Roles.Reviewer}")" Context="_">
-                            <MudNavLink href="user-info" Typo="Typo.h6" Underline="Underline.None" align="center" Disabled="@UserInfoDisabled" data-testid="user-info-link">
-                                @(context.User.Identity?.Name ?? "Unknown")
-                            </MudNavLink>
-                        </AuthorizeView>
+                        <MudNavLink href="user-info" Typo="Typo.h6" Underline="Underline.None" align="center" Disabled="@UserInfoDisabled" data-testid="user-info-link">
+                            @(context.User.Identity?.Name ?? "Unknown")
+                        </MudNavLink>
                         <MudNavLink Icon="fas fa-right-from-bracket" OnClick="@LogOut" data-testid="logout-text-link">Log Out</MudNavLink>
                     </ChildContent>
                 </MudMenu>

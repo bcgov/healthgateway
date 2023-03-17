@@ -51,6 +51,7 @@ public partial class AgentAccessDialog : FluxorComponent
         IdentityAccessRole.AdminUser,
         IdentityAccessRole.AdminReviewer,
         IdentityAccessRole.SupportUser,
+        IdentityAccessRole.AdminAnalyst,
     };
 
     [CascadingParameter]
