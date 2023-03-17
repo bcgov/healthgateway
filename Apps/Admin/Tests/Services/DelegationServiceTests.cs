@@ -46,7 +46,8 @@ namespace HealthGateway.Admin.Tests.Services
     {
         private const string DependentHdid = "dependentHdid";
         private const string DelegateHdid = "delegateHdid";
-        private const string Phn = "9735353315";
+        private const string DependentPhn = "9874307168";
+        private const string DelegatePhn = "9735353315";
         private readonly IMapper autoMapper = MapperUtil.InitializeAutoMapper();
         private readonly IConfiguration configuration;
 
@@ -71,7 +72,7 @@ namespace HealthGateway.Admin.Tests.Services
             DelegationInfo expectedDelegationInfo = GetExpectedDelegationInfo(dependentResult.ResourcePayload, delegateResult.ResourcePayload);
 
             IDelegationService delegationService = this.GetDelegationService(dependentResult, delegateResult);
-            DelegationInfo actualResult = await delegationService.GetDelegationInformationAsync(Phn).ConfigureAwait(true);
+            DelegationInfo actualResult = await delegationService.GetDelegationInformationAsync(DependentPhn).ConfigureAwait(true);
 
             Assert.NotNull(actualResult);
             expectedDelegationInfo.ShouldDeepEqual(actualResult);
@@ -88,7 +89,7 @@ namespace HealthGateway.Admin.Tests.Services
             RequestResult<PatientModel> delegateResult = GetDelegateResult();
 
             IDelegationService delegationService = this.GetDelegationService(dependentResult, delegateResult);
-            await Assert.ThrowsAsync<ProblemDetailsException>(() => delegationService.GetDelegationInformationAsync(Phn)).ConfigureAwait(true);
+            await Assert.ThrowsAsync<ProblemDetailsException>(() => delegationService.GetDelegationInformationAsync(DelegatePhn)).ConfigureAwait(true);
         }
 
         /// <summary>
@@ -110,7 +111,7 @@ namespace HealthGateway.Admin.Tests.Services
 
             IDelegationService delegationService = new DelegationService(this.configuration, patientService.Object, new Mock<IResourceDelegateDelegate>().Object, this.autoMapper);
 
-            await Assert.ThrowsAsync<ProblemDetailsException>(() => delegationService.GetDelegationInformationAsync(Phn)).ConfigureAwait(true);
+            await Assert.ThrowsAsync<ProblemDetailsException>(() => delegationService.GetDelegationInformationAsync(DelegatePhn)).ConfigureAwait(true);
         }
 
         /// <summary>
@@ -205,6 +206,7 @@ namespace HealthGateway.Admin.Tests.Services
                 ResourcePayload = new PatientModel
                 {
                     HdId = DependentHdid,
+                    PersonalHealthNumber = DependentPhn,
                     FirstName = "John",
                     LastName = "Doe",
                     Birthdate = birthDate,
@@ -227,7 +229,7 @@ namespace HealthGateway.Admin.Tests.Services
                 ResourcePayload = new PatientModel
                 {
                     HdId = DelegateHdid,
-                    PersonalHealthNumber = Phn,
+                    PersonalHealthNumber = DelegatePhn,
                     FirstName = "Jane",
                     LastName = "Test",
                     Birthdate = DateTime.Now,
@@ -277,8 +279,16 @@ namespace HealthGateway.Admin.Tests.Services
         private DelegationService GetDelegationService(RequestResult<PatientModel> dependentResult, RequestResult<PatientModel> delegateResult)
         {
             Mock<IPatientService> patientService = new();
-            patientService.Setup(p => p.GetPatient(It.IsAny<string>(), PatientIdentifierType.Phn, false)).ReturnsAsync(dependentResult);
-            patientService.Setup(p => p.GetPatient(It.IsAny<string>(), PatientIdentifierType.Hdid, false)).ReturnsAsync(delegateResult);
+
+            RequestResult<PatientModel> patientErrorResult = new()
+            {
+                ResultStatus = ResultType.ActionRequired,
+                ResultError = new RequestResultError { ResultMessage = "Client Registry did not find any records", ErrorCode = "Admin.ServerServer-CE-CR" },
+            };
+
+            patientService.Setup(p => p.GetPatient(It.IsAny<string>(), It.IsAny<PatientIdentifierType>(), false)).ReturnsAsync(patientErrorResult);
+            patientService.Setup(p => p.GetPatient(dependentResult.ResourcePayload!.PersonalHealthNumber, PatientIdentifierType.Phn, false)).ReturnsAsync(dependentResult);
+            patientService.Setup(p => p.GetPatient(delegateResult.ResourcePayload!.HdId, PatientIdentifierType.Hdid, false)).ReturnsAsync(delegateResult);
 
             ResourceDelegateQueryResult result = new()
             {
