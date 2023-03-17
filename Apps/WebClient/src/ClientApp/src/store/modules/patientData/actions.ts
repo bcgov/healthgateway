@@ -1,6 +1,9 @@
 import { ErrorSourceType, ErrorType } from "@/constants/errorType";
 import { ResultError } from "@/models/errors";
-import PatientData, { PatientDataFile } from "@/models/patientData";
+import PatientData, {
+    PatientDataFile,
+    PatientDataTypes,
+} from "@/models/patientData";
 import { LoadStatus } from "@/models/storeOperations";
 import container from "@/plugins/container";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
@@ -58,7 +61,7 @@ export const actions: PatientDataActions = {
     },
     retrievePatientData(
         context,
-        params: { hdid: string }
+        params: { hdid: string; patientDataType: PatientDataTypes }
     ): Promise<PatientData> {
         const logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
         const patientDataService = container.get<IPatientDataService>(
@@ -79,7 +82,7 @@ export const actions: PatientDataActions = {
                 logger.debug("Retrieving patient data");
                 context.commit("setPatientDataRequested", params.hdid);
                 patientDataService
-                    .getPatientData(params.hdid)
+                    .getPatientData(params.hdid, params.patientDataType)
                     .then((data: PatientData) => {
                         context.commit("setPatientData", {
                             hdid: params.hdid,
@@ -111,7 +114,7 @@ export const actions: PatientDataActions = {
 
         logger.error(`ERROR: ${JSON.stringify(params.error)}`);
         if (params.fileId) {
-            context.commit("setFileError", {
+            context.commit("setPatientDataFileError", {
                 fileId: params.fileId,
                 error: params.error,
             });
@@ -133,7 +136,7 @@ export const actions: PatientDataActions = {
                 "errorBanner/addError",
                 {
                     errorType: params.errorType,
-                    source: ErrorSourceType.ClinicalDocument,
+                    source: ErrorSourceType.OrganDonorRegistration,
                 },
                 { root: true }
             );

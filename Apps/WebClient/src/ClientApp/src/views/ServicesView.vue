@@ -1,11 +1,17 @@
 ﻿<script lang="ts">
 import Vue from "vue";
 import { Component } from "vue-property-decorator";
+import { Action, Getter } from "vuex-class";
 
 import LoadingComponent from "@/components/LoadingComponent.vue";
 import BreadcrumbComponent from "@/components/navmenu/BreadcrumbComponent.vue";
 import OrganDonorDetailsCard from "@/components/services/OrganDonorDetailsCard.vue";
 import BreadcrumbItem from "@/models/breadcrumbItem";
+import { PatientDataTypes } from "@/models/patientData";
+import User from "@/models/user";
+import container from "@/plugins/container";
+import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
+import { ILogger } from "@/services/interfaces";
 
 @Component({
     components: {
@@ -15,6 +21,20 @@ import BreadcrumbItem from "@/models/breadcrumbItem";
     },
 })
 export default class ServicesView extends Vue {
+    @Getter("user", { namespace: "user" })
+    user!: User;
+
+    @Getter("isPatientDataLoading", { namespace: "patientData" })
+    isPatientDataLoading!: (hdid: string) => boolean;
+
+    @Action("retrievePatientData", { namespace: "patientData" })
+    retrievePatientData!: (params: {
+        hdid: string;
+        patientDataType: PatientDataTypes;
+    }) => Promise<void>;
+
+    logger!: ILogger;
+
     breadcrumbItems: BreadcrumbItem[] = [
         {
             text: "Services",
@@ -24,8 +44,20 @@ export default class ServicesView extends Vue {
         },
     ];
 
-    get isLoading() {
-        return false;
+    get isLoading(): boolean {
+        return this.isPatientDataLoading(this.user.hdid);
+    }
+
+    get hdid(): string {
+        return this.user.hdid;
+    }
+
+    async created(): Promise<void> {
+        this.logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
+        await this.retrievePatientData({
+            hdid: this.user.hdid,
+            patientDataType: PatientDataTypes.OrganDonorRegistrationStatus,
+        });
     }
 }
 </script>
@@ -41,7 +73,9 @@ export default class ServicesView extends Vue {
         </p>
         <div>
             <b-row cols="1" cols-lg="2" cols-xl="3">
-                <b-col class="pb-3"> <OrganDonorDetailsCard /></b-col>
+                <b-col v-if="!isLoading" class="pb-3">
+                    <OrganDonorDetailsCard :hdid="hdid" />
+                </b-col>
             </b-row>
         </div>
     </div>

@@ -1,23 +1,88 @@
 ﻿<script lang="ts">
 import { library } from "@fortawesome/fontawesome-svg-core";
 import { faCircleInfo, faDownload } from "@fortawesome/free-solid-svg-icons";
+import saveAs from "file-saver";
 import Vue from "vue";
-import { Component } from "vue-property-decorator";
+import { Component, Prop, Ref } from "vue-property-decorator";
+import { Action, Getter } from "vuex-class";
 
-import { OrganDonorRegistrationData } from "@/models/patientData";
+import MessageModalComponent from "@/components/modal/MessageModalComponent.vue";
+import PatientData, {
+    HealthOptionTypes,
+    OrganDonorRegistrationData,
+    PatientDataFile,
+    PatientHealthOptions,
+} from "@/models/patientData";
+import container from "@/plugins/container";
+import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
+import { ILogger } from "@/services/interfaces";
+import SnowPlow from "@/utility/snowPlow";
 
 library.add(faCircleInfo, faDownload);
 
-//eslint-disable-next-line @typescript-eslint/no-explicit-any
-const options: any = {};
-@Component(options)
+@Component({
+    components: { MessageModalComponent },
+})
 export default class OrganDonorDetailsCard extends Vue {
-    private registrationData: OrganDonorRegistrationData = {
-        registrationFileId: "undefined",
-        status: "Registered",
-        statusMessage: "You're registered",
-        type: "OrganDonorRegistration",
-    };
+    @Prop({ required: true })
+    hdid!: string;
+
+    @Getter("patientData", { namespace: "patientData" })
+    getPatientData!: (hdid: string) => PatientData;
+
+    @Action("retrievePatientDataFile", { namespace: "patientData" })
+    getPatientDataFile!: (params: {
+        fileId: string;
+        hdid: string;
+    }) => Promise<PatientDataFile>;
+
+    @Ref("sensitiveDocumentModal")
+    readonly sensitiveDocumentModal!: MessageModalComponent;
+
+    logger!: ILogger;
+
+    get registrationData(): OrganDonorRegistrationData | undefined {
+        return this.patientData.items.find(
+            (ho: PatientHealthOptions) =>
+                ho.type === HealthOptionTypes.OrganDonorRegistrationData
+        ) as OrganDonorRegistrationData;
+    }
+
+    get patientData(): PatientData {
+        return this.getPatientData(this.hdid);
+    }
+
+    private created(): void {
+        this.logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
+    }
+
+    private showConfirmationModal(): void {
+        this.sensitiveDocumentModal.showModal();
+    }
+
+    private getDecisionFile(): void {
+        if (this.registrationData && this.registrationData.registrationFileId) {
+            SnowPlow.trackEvent({
+                action: "download_report",
+                text: "Organ Donor",
+            });
+            this.getPatientDataFile({
+                fileId: this.registrationData.registrationFileId,
+                hdid: this.hdid,
+            })
+                .then(
+                    (patientFile: PatientDataFile) =>
+                        new Blob(patientFile.content, {
+                            type: patientFile.contentType,
+                        })
+                )
+                .then((blob) => saveAs(blob, `Organ_Donor_Registration.pdf`))
+                .catch((err) => this.logger.error(err));
+        }
+    }
+
+    // TODO: sensitive download displayed modal when button is clicked - EntryCard component handles submission of new/updated comments - bind state actions here.
+    // TODO: track snowplow event on "Continue" on sensitive download modal - HomeView - Line:144
 }
 </script>
 
@@ -70,6 +135,7 @@ export default class OrganDonorDetailsCard extends Vue {
                 <hg-button
                     v-if="registrationData.registrationFileId"
                     variant="secondary"
+                    @click="showConfirmationModal"
                     ><hg-icon
                         icon="download"
                         size="medium"
@@ -91,6 +157,12 @@ export default class OrganDonorDetailsCard extends Vue {
                 </a>
             </b-row>
         </b-container>
+        <MessageModalComponent
+            ref="sensitiveDocumentModal"
+            title="Sensitive Document Download"
+            message="The file that you are downloading contains personal information. If you are on a public computer, please ensure that the file is deleted before you log off."
+            @submit="getDecisionFile"
+        />
     </b-card>
 </template>
 

@@ -37,4 +37,5 @@ export enum ErrorSourceType {
     DependentImmunizationReport = "Dependent Immunization Report",
     ExportRecords = "Export Records",
     Notification = "notification",
+    OrganDonorRegistration = "Organ Donor Registration",
 }

@@ -2,8 +2,16 @@
     items!: PatientHealthOptions[];
 }
 
+export enum PatientDataTypes {
+    OrganDonorRegistrationStatus = "OrganDonorRegistrationStatus",
+}
+
+export enum HealthOptionTypes {
+    OrganDonorRegistrationData = "OrganDonorRegistrationData",
+}
+
 export abstract class PatientHealthOptions {
-    public type!: string;
+    public type!: HealthOptionTypes;
 }
 
 export class OrganDonorRegistrationData extends PatientHealthOptions {
@@ -13,6 +21,6 @@ export class OrganDonorRegistrationData extends PatientHealthOptions {
 }
 
 export class PatientDataFile {
-    public content!: Blob;
+    public content!: BlobPart[];
     public contentType!: string;
 }
