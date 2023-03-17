@@ -47,6 +47,10 @@ describe("dependents - dashboard", () => {
                     name: "medication",
                     enabled: true,
                 },
+                {
+                    name: "specialAuthorityRequest",
+                    enabled: true,
+                },
             ],
         });
         cy.login(
@@ -75,6 +79,10 @@ describe("dependents - dashboard", () => {
 
     it("Validate dashboard medication tab click to timeline", () => {
         validateDatasetCard("Medications");
+    });
+
+    it("Validate dashboard special authority requests tab click to timeline", () => {
+        validateDatasetCard("SpecialAuthorityRequest");
     });
 
     it("Validate download of federal proof of vaccination", () => {

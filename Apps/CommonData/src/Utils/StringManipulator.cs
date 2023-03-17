@@ -16,6 +16,7 @@
 namespace HealthGateway.Common.Data.Utils
 {
     using System.Collections.Generic;
+    using System.Linq;
     using System.Text.RegularExpressions;
 
     /// <summary>
@@ -61,6 +62,29 @@ namespace HealthGateway.Common.Data.Utils
         public static bool IsPositiveNumeric(string target)
         {
             return Regex.IsMatch(target, @"^\d+$");
+        }
+
+        /// <summary>
+        /// Joins together a collection of strings with a given separator,
+        /// excluding any that are null, empty, or contain only whitespace.
+        /// </summary>
+        /// <param name="values">A collection that contains the strings to concatenate.</param>
+        /// <param name="separator">The string to use as a separator.</param>
+        /// <returns>A string that consists of the elements of values delimited by the separator string
+        /// -or- <see cref="string.Empty"/> if values has zero non-blank elements.</returns>
+        public static string JoinWithoutBlanks(IEnumerable<string?> values, string separator = " ")
+        {
+            return string.Join(separator, ExcludeBlanks(values));
+        }
+
+        /// <summary>
+        /// Filters a collection of strings to exclude those that are null, empty, or consisting only of whitespace.
+        /// </summary>
+        /// <param name="strings">The collection of strings to filter.</param>
+        /// <returns>A collection containing the elements that are neither null, nor empty, nor consisting only of whitespace.</returns>
+        public static IEnumerable<string> ExcludeBlanks(IEnumerable<string?> strings)
+        {
+            return strings.Where(s => !string.IsNullOrWhiteSpace(s)).OfType<string>();
         }
     }
 }

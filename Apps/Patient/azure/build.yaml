@@ -9,6 +9,11 @@ resources:
       trigger:
         branches:
           - dev
+    - pipeline: PatientDataService
+      source: PatientDataService
+      trigger:
+        branches:
+          - dev
 
 trigger:
   batch: "true"

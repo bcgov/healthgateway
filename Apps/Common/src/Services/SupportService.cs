@@ -149,8 +149,7 @@ namespace HealthGateway.Common.Services
                 DbResult<UserProfile> dbResult = this.userProfileDelegate.GetUserProfile(patientResult.ResourcePayload.HdId);
                 if (dbResult.Status == DbStatusCode.Read)
                 {
-                    TimeZoneInfo localTimezone = DateFormatter.GetLocalTimeZone(this.configuration);
-                    SupportUser supportUser = SupportUserMapUtils.ToUiModel(dbResult.Payload, patientResult.ResourcePayload, this.autoMapper, localTimezone);
+                    SupportUser supportUser = SupportUserMapUtils.ToUiModel(dbResult.Payload, patientResult.ResourcePayload, this.autoMapper);
                     supportUsers.Add(supportUser);
                     result.ResourcePayload = supportUsers;
                     result.ResultStatus = ResultType.Success;
@@ -177,10 +176,7 @@ namespace HealthGateway.Common.Services
         private void PopulateSupportUser(RequestResult<IEnumerable<SupportUser>> result, Database.Constants.UserQueryType queryType, string queryString)
         {
             DbResult<List<UserProfile>> dbResult = this.userProfileDelegate.GetUserProfiles(queryType, queryString);
-            TimeZoneInfo localTimezone = DateFormatter.GetLocalTimeZone(this.configuration);
-            result.ResourcePayload = dbResult.Payload.Select(
-                    m => SupportUserMapUtils.ToUiModel(m, this.autoMapper, localTimezone))
-                .ToList();
+            result.ResourcePayload = this.autoMapper.Map<IEnumerable<SupportUser>>(dbResult.Payload);
             result.ResultStatus = ResultType.Success;
         }
 

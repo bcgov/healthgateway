@@ -44,7 +44,8 @@ namespace HealthGateway.Common.MapProfiles
             this.CreateMap<ResourceDelegate, SupportUser>()
                 .ForMember(d => d.Hdid, opts => opts.MapFrom(s => s.ProfileHdid))
                 .ForMember(d => d.PersonalHealthNumber, opts => opts.Ignore())
-                .ForMember(d => d.LastLoginDateTime, opts => opts.Ignore());
+                .ForMember(d => d.LastLoginDateTime, opts => opts.Ignore())
+                .ForMember(d => d.CreatedDateTime, opts => opts.Ignore());
         }
     }
 }

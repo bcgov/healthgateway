@@ -208,7 +208,7 @@ namespace HealthGateway.Common.AspNetConfiguration.Modules
                         {
                             policy.AuthenticationSchemes.Add(JwtBearerDefaults.AuthenticationScheme);
                             policy.RequireAuthenticatedUser();
-                            policy.Requirements.Add(new PersonalFhirRequirement(FhirResource.MedicationRequest, FhirAccessType.Read));
+                            policy.Requirements.Add(new PersonalFhirRequirement(FhirResource.MedicationRequest, FhirAccessType.Read, supportsUserDelegation: true));
                         });
                     options.AddPolicy(
                         MedicationPolicy.MedicationRequestWrite,

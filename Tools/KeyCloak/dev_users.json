@@ -198,14 +198,26 @@
             ]
         },
         {
+            "username": "blazoranalyst",
+            "enabled": true,
+            "credentials": [
+                {
+                    "type": "password",
+                    "value": "{PASSWORD}",
+                    "temporary": false
+                }
+            ]
+        },
+        {
             "username": "hgateway@idir",
             "enabled": true
-        }
+        },
 
     ],
     "roleMappings": { 
         "blazoradmin": ["AdminUser"],
         "blazorreviewer": ["AdminReviewer"],
+        "blazoranalyst": ["AdminAnalyst"],
         "hgateway@idir": ["AdminUser"]
     }
 }
