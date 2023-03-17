@@ -94,7 +94,7 @@ describe("Provision", () => {
             force: true,
         });
         cy.get("[data-testid=role]")
-            .contains("SupportUser")
+            .contains("AdminAnalyst")
             .click({ force: true });
         cy.get("[data-testid=save-btn]").click({ force: true });
         cy.get("[data-testid=provision-dialog-modal-text]").should("not.exist");
@@ -111,7 +111,7 @@ describe("Provision", () => {
                     "[data-testid^=agent-table-identity-provider-]"
                 ).contains("IDIR");
                 cy.get("[data-testid^=agent-table-roles-]").contains(
-                    "AdminUser, SupportUser"
+                    "AdminAnalyst, AdminUser"
                 );
             });
 
