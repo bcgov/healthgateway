@@ -43,7 +43,7 @@ namespace HealthGateway.Admin.Client.Components.Delegation
         {
             return status switch
             {
-                DelegationStatus.Added => Color.Primary,
+                DelegationStatus.Added => Color.Success,
                 DelegationStatus.Allowed => Color.Warning,
                 _ => Color.Default,
             };
