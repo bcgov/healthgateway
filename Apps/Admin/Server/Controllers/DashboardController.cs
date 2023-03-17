@@ -26,7 +26,7 @@ namespace HealthGateway.Admin.Server.Controllers
     [ApiVersion("1.0")]
     [Route("v{version:apiVersion}/api/[controller]")]
     [Produces("application/json")]
-    [Authorize(Roles = "AdminUser,AdminReviewer")]
+    [Authorize(Roles = "AdminUser,AdminReviewer,AdminAnalyst")]
     public class DashboardController
     {
         private readonly IDashboardService dashboardService;
