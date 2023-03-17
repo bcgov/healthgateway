@@ -90,7 +90,7 @@ namespace HealthGateway.Admin.Server.Services
                 List<DelegateInfo> delegates = new();
                 foreach (ResourceDelegate resourceDelegate in dbResourceDelegates)
                 {
-                    RequestResult<PatientModel> delegatePatientResult = await this.patientService.GetPatient(resourceDelegate.ResourceOwnerHdid).ConfigureAwait(true);
+                    RequestResult<PatientModel> delegatePatientResult = await this.patientService.GetPatient(resourceDelegate.ProfileHdid).ConfigureAwait(true);
                     this.ValidatePatientResult(delegatePatientResult);
 
                     DelegateInfo delegateInfo = this.autoMapper.Map<DelegateInfo>(delegatePatientResult.ResourcePayload);
