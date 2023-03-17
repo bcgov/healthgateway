@@ -55,7 +55,12 @@ namespace HealthGateway.Common.AspNetConfiguration.Modules
             services
                 .AddApiVersionWithExplorer()
                 .AddSwaggerOptions()
-                .AddSwaggerGen(options => Array.ForEach(xmlDocs, d => options.IncludeXmlComments(d)));
+                .AddSwaggerGen(options =>
+                {
+                    Array.ForEach(xmlDocs, d => options.IncludeXmlComments(d));
+                    options.UseAllOfForInheritance();
+                    options.UseOneOfForPolymorphism();
+                });
         }
 
         /// <summary>

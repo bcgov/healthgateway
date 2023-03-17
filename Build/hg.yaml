@@ -19,6 +19,7 @@ parameters:
       - CommonData
       - GatewayApi
       - ClinicalDocument
+      - PatientDataAccess
       - NotSpecified
 
   - name: ImageName

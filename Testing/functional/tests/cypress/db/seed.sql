@@ -751,7 +751,7 @@ INSERT INTO gateway."ResourceDelegate"(
 VALUES (
 	'232434345442257', 
 	'P6FFO433A5WPMVTGM7T4ZVWBKCSVNAYGTWTU3J2LWMGUMERKI72A', 
-	'COVIDLab', 
+	'Guardian', 
 	'System', 
 	current_timestamp, 
 	'System', 
@@ -772,7 +772,7 @@ INSERT INTO gateway."ResourceDelegate"(
 VALUES (
 	'162346565465464564565463257', 
 	'P6FFO433A5WPMVTGM7T4ZVWBKCSVNAYGTWTU3J2LWMGUMERKI72A', 
-	'COVIDLab', 
+	'Guardian', 
 	'System', 
 	current_timestamp, 
 	'System', 

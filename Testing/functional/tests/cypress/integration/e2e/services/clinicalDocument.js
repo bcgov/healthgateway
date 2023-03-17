@@ -93,8 +93,7 @@ describe("Clinical Documents Service", () => {
     });
 
     it("Verify Clinical Document File Authorized", () => {
-        const FILEID =
-            "14bac0b6-9e95-4a1b-b6fd-d354edfce4e7-710b28fa980440fd93c426e25c0ce52f";
+        const FILEID = "2cf7f493-694e-4ee9-8bb3-2214d897f712";
         cy.get("@tokens").then((tokens) => {
             cy.log("Tokens", tokens);
             cy.get("@config").then((config) => {

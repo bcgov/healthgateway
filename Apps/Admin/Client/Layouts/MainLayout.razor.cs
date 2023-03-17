@@ -20,7 +20,7 @@ namespace HealthGateway.Admin.Client.Layouts
     using System.Timers;
     using Blazored.LocalStorage;
     using Fluxor;
-    using HealthGateway.Admin.Client.Components;
+    using HealthGateway.Admin.Client.Components.Site;
     using HealthGateway.Admin.Client.Store.Configuration;
     using HealthGateway.Admin.Client.Theme;
     using HealthGateway.Common.Ui.Utils;

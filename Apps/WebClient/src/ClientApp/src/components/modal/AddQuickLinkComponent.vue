@@ -97,7 +97,7 @@ export default class AddQuickLinkComponent extends Vue {
         return preference?.value === "true";
     }
 
-    private get showOrganDonorCard(): boolean {
+    private get showOrganDonorRegistration(): boolean {
         const servicesEnabled = ConfigUtil.isServiceEnabled(
             ServiceName.OrganDonorRegistration
         );
@@ -308,7 +308,7 @@ export default class AddQuickLinkComponent extends Vue {
                     </b-form-checkbox>
                 </b-col>
             </b-row>
-            <b-row v-if="showOrganDonorCard">
+            <b-row v-if="showOrganDonorRegistration">
                 <b-col cols="8" align-self="start">
                     <b-form-checkbox
                         id="organ-donor-registration-filter"
@@ -318,7 +318,7 @@ export default class AddQuickLinkComponent extends Vue {
                         name="organ-donor-registration-filter"
                         value="organ-donor-registration"
                     >
-                        Organ Donor Card
+                        Organ Donor Registration
                     </b-form-checkbox>
                 </b-col>
             </b-row>

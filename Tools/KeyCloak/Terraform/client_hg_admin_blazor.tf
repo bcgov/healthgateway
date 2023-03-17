@@ -50,6 +50,12 @@ resource "keycloak_generic_role_mapper" "hgadminblazor_supportuser" {
   role_id   = keycloak_role.SupportUser.id
 }
 
+resource "keycloak_generic_role_mapper" "hgadminblazor_adminanalyst" {
+  realm_id  = data.keycloak_realm.hg_realm.id
+  client_id = keycloak_openid_client.hgadminblazor_client.id
+  role_id   = keycloak_role.AdminAnalyst.id
+}
+
 resource "keycloak_openid_user_attribute_protocol_mapper" "hgadminblazor_auth_method" {
   realm_id            = data.keycloak_realm.hg_realm.id
   client_id           = keycloak_openid_client.hgadminblazor_client.id
