@@ -15,13 +15,16 @@ import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import { ILogger } from "@/services/interfaces";
 import ConfigUtil from "@/utility/configUtil";
 
-@Component({
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const options: any = {
     components: {
         BreadcrumbComponent,
         LoadingComponent,
         OrganDonorDetailsCard,
     },
-})
+};
+
+@Component(options)
 export default class ServicesView extends Vue {
     @Getter("user", { namespace: "user" })
     user!: User;

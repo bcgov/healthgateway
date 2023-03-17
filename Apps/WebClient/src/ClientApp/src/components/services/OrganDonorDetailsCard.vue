@@ -20,9 +20,12 @@ import SnowPlow from "@/utility/snowPlow";
 
 library.add(faCircleInfo, faDownload);
 
-@Component({
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const options: any = {
     components: { MessageModalComponent },
-})
+};
+
+@Component(options)
 export default class OrganDonorDetailsCard extends Vue {
     @Prop({ required: true })
     hdid!: string;
