@@ -17,9 +17,9 @@ namespace HealthGateway.Common.MapUtils
 {
     using AutoMapper;
     using HealthGateway.Common.Data.Models;
+    using HealthGateway.Common.Data.Utils;
     using HealthGateway.Common.Data.ViewModels;
     using HealthGateway.Common.Models;
-    using HealthGateway.Common.Utils;
 
     /// <summary>
     /// Static Helper classes for conversion of model objects.

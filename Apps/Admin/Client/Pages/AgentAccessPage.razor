@@ -18,13 +18,13 @@
 <MudForm @ref="Form">
     <MudGrid Spacing="0">
         <MudItem xs="12">
-            <HgTextField LeftMargin="Breakpoint.Sm"
-                         T="string"
-                         Label="Query"
-                         Required="@true"
-                         Validation="@ValidateQueryParameter"
-                         @bind-Value="Query"
-                         data-testid="query-input" />
+            <HgTextField
+                T="string"
+                Label="Query"
+                Required="@true"
+                Validation="@ValidateQueryParameter"
+                @bind-Value="Query"
+                data-testid="query-input" />
         </MudItem>
         <MudItem Class="d-flex justify-end" xs="12">
             <HgButton
