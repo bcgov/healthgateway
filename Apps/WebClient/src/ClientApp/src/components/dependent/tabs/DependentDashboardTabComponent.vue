@@ -3,6 +3,7 @@ import { library } from "@fortawesome/fontawesome-svg-core";
 import {
     faChevronRight,
     faDownload,
+    faFileMedical,
     faFileWaveform,
     faHouseMedical,
     faMicroscope,
@@ -36,6 +37,7 @@ import SnowPlow from "@/utility/snowPlow";
 library.add(
     faChevronRight,
     faDownload,
+    faFileMedical,
     faFileWaveform,
     faHouseMedical,
     faMicroscope,

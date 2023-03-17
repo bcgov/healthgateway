@@ -105,7 +105,6 @@ describe("Disabling organ donor services", () => {
                 },
             ],
             services: {
-                enabled: false,
                 services: [
                     {
                         name: "organDonorRegistration",
@@ -127,12 +126,6 @@ describe("Disabling organ donor services", () => {
             ],
             services: {
                 enabled: true,
-                services: [
-                    {
-                        name: "organDonorRegistration",
-                        enabled: false,
-                    },
-                ],
             },
         });
         testOrganDonorNotPresent(cy);

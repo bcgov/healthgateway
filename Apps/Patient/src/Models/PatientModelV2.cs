@@ -18,7 +18,7 @@ namespace HealthGateway.Patient.Models
 {
     using System;
     using System.Text.Json.Serialization;
-    using HealthGateway.Common.Models;
+    using HealthGateway.Common.Data.Models;
 
     /// <summary>
     /// The patient data model.

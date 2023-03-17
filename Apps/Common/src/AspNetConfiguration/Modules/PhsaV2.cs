@@ -24,6 +24,7 @@ namespace HealthGateway.Common.AspNetConfiguration.Modules
     using HealthGateway.Common.Utils.Phsa;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
+    using Microsoft.Extensions.DependencyInjection.Extensions;
     using Microsoft.Extensions.Logging;
     using Refit;
 
@@ -53,12 +54,10 @@ namespace HealthGateway.Common.AspNetConfiguration.Modules
             services.AddRefitClient<ITokenSwapApi>()
                 .ConfigureHttpClient(c => c.BaseAddress = phsaConfig.TokenBaseUrl);
 
-            services.AddTransient<ITokenSwapDelegate>(
-                sp =>
-                    ActivatorUtilities.CreateInstance<RestTokenSwapDelegate>(sp, configurationSectionKey));
-            services.AddTransient<IAuthenticationDelegate, AuthenticationDelegate>();
-            services.AddTransient<IAccessTokenService, AccessTokenService>();
-            services.AddTransient<AuthHeaderHandler>();
+            services.TryAddTransient<ITokenSwapDelegate>(sp => ActivatorUtilities.CreateInstance<RestTokenSwapDelegate>(sp, configurationSectionKey));
+            services.TryAddTransient<IAuthenticationDelegate, AuthenticationDelegate>();
+            services.TryAddTransient<IAccessTokenService, AccessTokenService>();
+            services.TryAddTransient<AuthHeaderHandler>();
         }
     }
 }

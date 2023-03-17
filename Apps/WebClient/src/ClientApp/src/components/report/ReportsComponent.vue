@@ -25,7 +25,7 @@ import { DateWrapper, StringISODate } from "@/models/dateWrapper";
 import { ResultError } from "@/models/errors";
 import MedicationStatementHistory from "@/models/medicationStatementHistory";
 import MedicationSummary from "@/models/medicationSummary";
-import PatientData from "@/models/patientData";
+import Patient from "@/models/patient";
 import Report from "@/models/report";
 import { ReportFilterBuilder } from "@/models/reportFilter";
 import ReportHeader from "@/models/reportHeader";
@@ -78,8 +78,8 @@ export default class ReportsComponent extends Vue {
     @Getter("medications", { namespace: "medication" })
     medications!: (hdid: string) => MedicationStatementHistory[];
 
-    @Getter("patientData", { namespace: "user" })
-    patientData!: PatientData;
+    @Getter("patient", { namespace: "user" })
+    patient!: Patient;
 
     @Ref("messageModal")
     readonly messageModal!: MessageModalComponent;
@@ -130,12 +130,12 @@ export default class ReportsComponent extends Vue {
 
     get headerData(): ReportHeader {
         return {
-            phn: this.patientData.personalHealthNumber,
-            dateOfBirth: this.formatDate(this.patientData.birthdate || ""),
-            name: this.patientData
-                ? this.patientData.preferredName.givenName +
+            phn: this.patient.personalHealthNumber,
+            dateOfBirth: this.formatDate(this.patient.birthdate || ""),
+            name: this.patient
+                ? this.patient.preferredName.givenName +
                   " " +
-                  this.patientData.preferredName.surname
+                  this.patient.preferredName.surname
                 : "",
             isRedacted: this.reportFilter.hasMedicationsFilter(),
             datePrinted: new DateWrapper(new DateWrapper().toISO()).format(),
@@ -175,7 +175,7 @@ export default class ReportsComponent extends Vue {
         return (
             this.isLoading ||
             !this.reportComponentName ||
-            !this.patientData.hdid ||
+            !this.patient.hdid ||
             !this.hasRecords
         );
     }

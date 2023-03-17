@@ -23,7 +23,7 @@ import BreadcrumbItem from "@/models/breadcrumbItem";
 import type { WebClientConfiguration } from "@/models/configData";
 import { DateWrapper } from "@/models/dateWrapper";
 import { isTooManyRequestsError, ResultError } from "@/models/errors";
-import PatientData, { Address } from "@/models/patientData";
+import Patient, { Address } from "@/models/patient";
 import User, { OidcUserInfo } from "@/models/user";
 import UserProfile from "@/models/userProfile";
 import container from "@/plugins/container";
@@ -95,8 +95,8 @@ export default class ProfileView extends Vue {
     @Getter("oidcUserInfo", { namespace: "user" })
     oidcUserInfo!: OidcUserInfo | undefined;
 
-    @Getter("patientData", { namespace: "user" })
-    patientData!: PatientData;
+    @Getter("patient", { namespace: "user" })
+    patient!: Patient;
 
     @Getter("userIsActive", { namespace: "user" })
     isActiveProfile!: boolean;
@@ -151,7 +151,7 @@ export default class ProfileView extends Vue {
     }
 
     private get phn(): string {
-        return this.patientData.personalHealthNumber;
+        return this.patient.personalHealthNumber;
     }
 
     private get isEmptyEmail(): boolean {
@@ -163,8 +163,8 @@ export default class ProfileView extends Vue {
     private get isUpdateAddressCombinedTextShown(): boolean {
         return (
             this.isSameAddress() &&
-            this.patientData.physicalAddress !== null &&
-            this.patientData.postalAddress !== null
+            this.patient.physicalAddress !== null &&
+            this.patient.postalAddress !== null
         );
     }
 
@@ -174,15 +174,13 @@ export default class ProfileView extends Vue {
 
     private get isAddAddressTextShown(): boolean {
         return (
-            this.patientData.physicalAddress === null &&
-            this.patientData.postalAddress === null
+            this.patient.physicalAddress === null &&
+            this.patient.postalAddress === null
         );
     }
 
     private get isPhysicalAddressShown(): boolean {
-        return (
-            this.patientData.physicalAddress !== null && !this.isSameAddress()
-        );
+        return this.patient.physicalAddress !== null && !this.isSameAddress();
     }
 
     private get isPhysicalAddressSectionShown(): boolean {
@@ -190,14 +188,14 @@ export default class ProfileView extends Vue {
     }
 
     private get isPostalAddressShown(): boolean {
-        return this.patientData.postalAddress != null;
+        return this.patient.postalAddress != null;
     }
 
     private get postalAddressLabel(): string {
         if (
             !this.isSameAddress() ||
-            (this.patientData.physicalAddress !== null &&
-                this.patientData.postalAddress === null)
+            (this.patient.physicalAddress !== null &&
+                this.patient.postalAddress === null)
         ) {
             return "Mailing Address";
         }
@@ -616,15 +614,13 @@ export default class ProfileView extends Vue {
 
     private setAddresses(): void {
         // Physical Address
-        this.physicalAddress = this.getNewAddress(
-            this.patientData.physicalAddress
-        );
+        this.physicalAddress = this.getNewAddress(this.patient.physicalAddress);
         this.logger.debug(
             `Physical Address: ${JSON.stringify(this.physicalAddress)}`
         );
 
         // Postal Address
-        this.postalAddress = this.getNewAddress(this.patientData.postalAddress);
+        this.postalAddress = this.getNewAddress(this.patient.postalAddress);
         this.logger.debug(
             `Postal Address: ${JSON.stringify(this.postalAddress)}`
         );

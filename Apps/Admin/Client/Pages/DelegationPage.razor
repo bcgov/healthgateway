@@ -1,0 +1,58 @@
+@page "/delegation"
+@layout MainLayout
+@attribute [Authorize(Roles = $"{Roles.Admin}")]
+@using HealthGateway.Common.Ui.Constants
+@using HealthGateway.Admin.Client.Store.Delegation
+@using HealthGateway.Admin.Client.Components.Delegation
+@inherits Fluxor.Blazor.Web.Components.FluxorComponent
+
+<PageTitle>Health Gateway Admin Delegation</PageTitle>
+<HgPageHeading>Delegation</HgPageHeading>
+
+<MudForm @ref="Form">
+    <MudGrid Spacing="0">
+        <MudItem xs="12">
+            <HgTextField
+                T="string"
+                Label="PHN"
+                Required="@true"
+                Validation="@ValidateQueryParameter"
+                Mask="@(new PatternMask(Mask.PhnMaskTemplate))"
+                @bind-Value="QueryParameter"
+                data-testid="query-input" />
+        </MudItem>
+        <MudItem Class="d-flex justify-end" xs="12">
+            <HgButton
+                TopMargin="Breakpoint.Always"
+                EndIcon="fas fa-magnifying-glass"
+                Variant="@Variant.Filled"
+                Color="@Color.Primary"
+                Loading="@Searching"
+                @onclick="SearchAsync"
+                data-testid="search-btn">
+                Search
+            </HgButton>
+        </MudItem>
+    </MudGrid>
+</MudForm>
+
+<HgBannerFeedback
+    Class="mt-3"
+    Severity="Severity.Error"
+    IsEnabled="HasSearchError"
+    TResetAction="DelegationActions.ResetStateAction"
+    DataTestId="search-error-message">
+    @ErrorMessage
+</HgBannerFeedback>
+
+@if (Loaded || Loading)
+{
+    <MudText Class="mt-3" Typo="Typo.subtitle1">
+        Dependent
+    </MudText>
+    <DependentTable Data="@Dependent" />
+    <MudText Class="mt-3" Typo="Typo.subtitle1">
+        Guardians Accessing Dependent
+    </MudText>
+    <DelegateTable Data="@Delegates" />
+}

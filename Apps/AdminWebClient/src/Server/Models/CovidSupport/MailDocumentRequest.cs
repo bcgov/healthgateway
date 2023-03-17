@@ -15,7 +15,7 @@
 //-------------------------------------------------------------------------
 namespace HealthGateway.Admin.Models.CovidSupport
 {
-    using HealthGateway.Common.Models;
+    using HealthGateway.Common.Data.Models;
 
     /// <summary>
     /// Represents a request to mail document.
@@ -30,6 +30,6 @@ namespace HealthGateway.Admin.Models.CovidSupport
         /// <summary>
         /// Gets or sets the address to mail the document.
         /// </summary>
-        public Address MailAddress { get; set; } = new Address();
+        public Address MailAddress { get; set; } = new();
     }
 }

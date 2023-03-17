@@ -7,7 +7,13 @@ resource "keycloak_role" "AdminReviewer" {
 resource "keycloak_role" "AdminUser" {
   realm_id    = data.keycloak_realm.hg_realm.id
   name        = "AdminUser"
-  description = "Administrator of the Health Gateway Web Application. Grants access to the admin dashboard and related functions."
+  description = "Administrator of the Health Gateway Admin Application. Grants access to the admin dashboard and related functions."
+}
+
+resource "keycloak_role" "AdminAnalyst" {
+  realm_id    = data.keycloak_realm.hg_realm.id
+  name        = "AdminAnalyst"
+  description = "Permits the user entry to the Admin site but only allows them to access to the main dashboard."
 }
 
 resource "keycloak_role" "SupportUser" {

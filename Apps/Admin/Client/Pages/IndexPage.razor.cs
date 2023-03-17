@@ -38,7 +38,7 @@ namespace HealthGateway.Admin.Client.Pages
             AuthenticationState authState = await this.AuthenticationStateProvider.GetAuthenticationStateAsync().ConfigureAwait(true);
             ClaimsPrincipal user = authState.User;
 
-            if (user.IsInRole(Roles.Admin) || user.IsInRole(Roles.Reviewer))
+            if (user.IsInRole(Roles.Admin) || user.IsInRole(Roles.Reviewer) || user.IsInRole(Roles.Analyst))
             {
                 this.Navigation.NavigateTo("dashboard", replace: true);
             }
