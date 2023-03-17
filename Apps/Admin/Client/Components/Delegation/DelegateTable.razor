@@ -1,0 +1,41 @@
+@using HealthGateway.Common.Data.Utils
+@inherits Fluxor.Blazor.Web.Components.FluxorComponent
+
+<MudTable Class="mt-3"
+          Items="@Rows"
+          AllowUnsorted="false"
+          Breakpoint="@Breakpoint.Md"
+          HorizontalScrollbar="true"
+          Striped="true"
+          Dense="true"
+          data-testid="delegate-table">
+    <ColGroup>
+        <MudHidden Breakpoint="@Breakpoint.MdAndDown">
+            <col style="width: 300px;" />
+            <col style="width: 125px;" />
+            <col style="width: 125px;" />
+            <col />
+            <col style="width: 125px;" />
+        </MudHidden>
+    </ColGroup>
+    <HeaderContent>
+        <MudTh>Name</MudTh>
+        <MudTh>PHN</MudTh>
+        <MudTh>DOB</MudTh>
+        <MudTh>Address</MudTh>
+        <MudTh>Status</MudTh>
+    </HeaderContent>
+    <RowTemplate>
+        <MudTd data-testid="delegate-table-name" DataLabel="Name">@context.Name</MudTd>
+        <MudTd data-testid="delegate-table-phn" DataLabel="PHN">@context.PersonalHealthNumber</MudTd>
+        <MudTd data-testid="delegate-table-dob" DataLabel="DOB">@DateFormatter.ToShortDate(context.DateOfBirth)</MudTd>
+        <MudTd data-testid="delegate-table-address" DataLabel="Address">@context.Address</MudTd>
+        <MudTd data-testid="delegate-table-protected" DataLabel="Status">
+            <MudChip Text="@EnumUtility.ToEnumString(context.DelegationStatus)"
+                     Variant="@Variant.Text"
+                     Size="@Size.Small"
+                     Color="GetStatusColor(context.DelegationStatus)"
+                     data-testid="tag-collection-item" />
+        </MudTd>
+    </RowTemplate>
+</MudTable>

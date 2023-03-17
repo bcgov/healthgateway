@@ -1,0 +1,34 @@
+@using HealthGateway.Common.Data.Utils
+@inherits Fluxor.Blazor.Web.Components.FluxorComponent
+
+<MudTable Class="mt-3"
+          Items="@Rows"
+          AllowUnsorted="false"
+          Breakpoint="@Breakpoint.Md"
+          HorizontalScrollbar="true"
+          Striped="true"
+          Dense="true"
+          data-testid="dependent-table">
+    <ColGroup>
+        <MudHidden Breakpoint="@Breakpoint.MdAndDown">
+            <col style="width: 425px;" />
+            <col style="width: 125px;" />
+            <col />
+            <col style="width: 125px;" />
+        </MudHidden>
+    </ColGroup>
+    <HeaderContent>
+        <MudTh>Name</MudTh>
+        <MudTh>DOB</MudTh>
+        <MudTh>Address</MudTh>
+        <MudTh>Protected</MudTh>
+    </HeaderContent>
+    <RowTemplate>
+        <MudTd data-testid="dependent-table-name" DataLabel="Name">@context.Name</MudTd>
+        <MudTd data-testid="dependent-table-dob" DataLabel="DOB">@DateFormatter.ToShortDate(context.DateOfBirth)</MudTd>
+        <MudTd data-testid="dependent-table-address" DataLabel="Address">@context.Address</MudTd>
+        <MudTd data-testid="dependent-table-protected" DataLabel="Protected">
+            <MudSwitch T="bool" Checked="@context.Protected" Color="@Color.Success" Disabled="true" Class="mr-n4" />
+        </MudTd>
+    </RowTemplate>
+</MudTable>
