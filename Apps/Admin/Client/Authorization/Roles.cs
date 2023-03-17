@@ -36,5 +36,10 @@ namespace HealthGateway.Admin.Client.Authorization
         /// Represents a Support worker.
         /// </summary>
         public const string Support = nameof(IdentityAccessRole.SupportUser);
+
+        /// <summary>
+        /// Represents an Analyst Admin.
+        /// </summary>
+        public const string Analyst = nameof(IdentityAccessRole.AdminAnalyst);
     }
 }
