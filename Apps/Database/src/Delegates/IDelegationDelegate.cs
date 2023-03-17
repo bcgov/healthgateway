@@ -15,22 +15,15 @@
 // -------------------------------------------------------------------------
 namespace HealthGateway.Database.Delegates
 {
+    using System.Collections.Generic;
+    using System.Threading.Tasks;
     using HealthGateway.Database.Models;
-    using HealthGateway.Database.Wrapper;
 
     /// <summary>
     /// Delegate that performs operations for models relating to Dependent.
     /// </summary>
     public interface IDelegationDelegate
     {
-        /// <summary>
-        /// Deletes the allowed delegation object in the DB.
-        /// </summary>
-        /// <param name="allowedDelegation">The dependent to delete.</param>
-        /// <param name="commit">if true the transaction is persisted immediately.</param>
-        /// <returns>A DB result which encapsulates the return object and status.</returns>
-        DbResult<AllowedDelegation> DeleteAllowedDelegation(AllowedDelegation allowedDelegation, bool commit = true);
-
         /// <summary>
         /// Fetches the Dependent by hdid from the database.
         /// </summary>
@@ -40,30 +33,14 @@ namespace HealthGateway.Database.Delegates
         /// dependent.
         /// </param>
         /// <returns>A DB result which encapsulates the return objects and status.</returns>
-        DbResult<Dependent> GetDependent(string hdid, bool includeAllowedDelegation = false);
+        Task<Dependent?> GetDependent(string hdid, bool includeAllowedDelegation = false);
 
         /// <summary>
-        /// Inserts the dependent object including allowed delegation associations in the DB.
+        /// Updates the dependent object including allowed delegation associations as well as resource delegates in the DB.
         /// </summary>
         /// <param name="dependent">The dependent to update.</param>
-        /// <param name="commit">if true the transaction is persisted immediately.</param>
-        /// <returns>A DB result which encapsulates the return object and status.</returns>
-        DbResult<Dependent> InsertDependent(Dependent dependent, bool commit = true);
-
-        /// <summary>
-        /// Inserts the allowed delegation object in the DB.
-        /// </summary>
-        /// <param name="allowedDelegation">The allowed delegation to insert.</param>
-        /// <param name="commit">if true the transaction is persisted immediately.</param>
-        /// <returns>A DB result which encapsulates the return object and status.</returns>
-        DbResult<AllowedDelegation> InsertAllowedDelegation(AllowedDelegation allowedDelegation, bool commit = true);
-
-        /// <summary>
-        /// Updates the dependent object including allowed delegation associations in the DB.
-        /// </summary>
-        /// <param name="dependent">The dependent to update.</param>
-        /// <param name="commit">if true the transaction is persisted immediately.</param>
-        /// <returns>A DB result which encapsulates the return object and status.</returns>
-        DbResult<Dependent> UpdateDependent(Dependent dependent, bool commit = true);
+        /// <param name="resourceDelegates">The resource delegates to remove.</param>
+        /// <returns>A <see cref="Task"/> representing the result of the asynchronous operation.</returns>
+        Task UpdateDelegation(Dependent dependent, IEnumerable<ResourceDelegate> resourceDelegates);
     }
 }

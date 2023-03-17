@@ -15,11 +15,11 @@
 // -------------------------------------------------------------------------
 namespace HealthGateway.Database.Delegates
 {
+    using System.Collections.Generic;
     using System.Linq;
-    using HealthGateway.Database.Constants;
+    using System.Threading.Tasks;
     using HealthGateway.Database.Context;
     using HealthGateway.Database.Models;
-    using HealthGateway.Database.Wrapper;
     using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.Logging;
 
@@ -41,34 +41,7 @@ namespace HealthGateway.Database.Delegates
         }
 
         /// <inheritdoc/>
-        public DbResult<AllowedDelegation> DeleteAllowedDelegation(AllowedDelegation allowedDelegation, bool commit = true)
-        {
-            DbResult<AllowedDelegation> result = new()
-            {
-                Payload = allowedDelegation,
-                Status = DbStatusCode.Deferred,
-            };
-            this.dbContext.AllowedDelegation.Remove(allowedDelegation);
-
-            if (commit)
-            {
-                try
-                {
-                    this.dbContext.SaveChanges();
-                    result.Status = DbStatusCode.Deleted;
-                }
-                catch (DbUpdateException e)
-                {
-                    result.Status = DbStatusCode.Error;
-                    result.Message = e.Message;
-                }
-            }
-
-            return result;
-        }
-
-        /// <inheritdoc/>
-        public DbResult<Dependent> GetDependent(string hdid, bool includeAllowedDelegation = false)
+        public async Task<Dependent?> GetDependent(string hdid, bool includeAllowedDelegation = false)
         {
             this.logger.LogTrace("Getting dependent - includeAllowedDelegation : {IncludeAllowedDelegation}", includeAllowedDelegation);
 
@@ -80,92 +53,27 @@ namespace HealthGateway.Database.Delegates
                 query = query.Include(d => d.AllowedDelegations);
             }
 
-            Dependent? dependent = query.SingleOrDefault();
-
-            if (dependent == null)
-            {
-                return new()
-                {
-                    Status = DbStatusCode.NotFound,
-                    Message = $"Unable to find dependent by hdid: {hdid}",
-                };
-            }
-
-            return new()
-            {
-                Payload = dependent,
-                Status = DbStatusCode.Read,
-            };
+            return await Task.FromResult(query.SingleOrDefault()).ConfigureAwait(true);
         }
 
         /// <inheritdoc/>
-        public DbResult<Dependent> InsertDependent(Dependent dependent, bool commit = true)
+        public async Task UpdateDelegation(Dependent dependent, IEnumerable<ResourceDelegate> resourceDelegates)
         {
-            DbResult<Dependent> result = new();
-            this.dbContext.Dependent.Add(dependent);
-
-            if (commit)
+            if (dependent.Version == 0)
             {
-                try
-                {
-                    this.dbContext.SaveChanges();
-                    result.Status = DbStatusCode.Created;
-                }
-                catch (DbUpdateException e)
-                {
-                    result.Status = DbStatusCode.Error;
-                    result.Message = e.Message;
-                }
+                this.dbContext.Dependent.Add(dependent);
+            }
+            else
+            {
+                this.dbContext.Dependent.Update(dependent);
             }
 
-            return result;
-        }
-
-        /// <inheritdoc/>
-        public DbResult<AllowedDelegation> InsertAllowedDelegation(AllowedDelegation allowedDelegation, bool commit = true)
-        {
-            DbResult<AllowedDelegation> result = new();
-            this.dbContext.AllowedDelegation.Add(allowedDelegation);
-
-            if (commit)
+            foreach (ResourceDelegate resourceDelegate in resourceDelegates)
             {
-                try
-                {
-                    this.dbContext.SaveChanges();
-                    result.Status = DbStatusCode.Created;
-                }
-                catch (DbUpdateException e)
-                {
-                    result.Status = DbStatusCode.Error;
-                    result.Message = e.Message;
-                }
+                this.dbContext.ResourceDelegate.Remove(resourceDelegate);
             }
 
-            return result;
-        }
-
-        /// <inheritdoc/>
-        public DbResult<Dependent> UpdateDependent(Dependent dependent, bool commit = true)
-        {
-            this.dbContext.Dependent.Update(dependent);
-            DbResult<Dependent> result = new();
-
-            if (commit)
-            {
-                try
-                {
-                    this.dbContext.SaveChanges();
-                    result.Status = DbStatusCode.Updated;
-                    result.Payload = dependent;
-                }
-                catch (DbUpdateException e)
-                {
-                    result.Status = DbStatusCode.Error;
-                    result.Message = e.Message;
-                }
-            }
-
-            return result;
+            await Task.FromResult(this.dbContext.SaveChanges()).ConfigureAwait(true);
         }
     }
 }
