@@ -17,6 +17,7 @@
 namespace HealthGateway.Admin.Client.Store.Delegation
 {
     using System;
+    using System.Net;
     using System.Net.Http;
     using System.Threading.Tasks;
     using Fluxor;
@@ -54,7 +55,12 @@ namespace HealthGateway.Admin.Client.Store.Delegation
             }
             catch (Exception e) when (e is ApiException or HttpRequestException)
             {
-                RequestError error = StoreUtility.FormatRequestError(e);
+                RequestError error = e switch
+                {
+                    ApiException { StatusCode: HttpStatusCode.BadRequest } => new RequestError { Message = "This feature is only available for users 11 and under." },
+                    _ => StoreUtility.FormatRequestError(e),
+                };
+
                 this.Logger.LogError(e, "Error retrieving delegation info, reason: {Exception}", e.ToString());
                 dispatcher.Dispatch(new DelegationActions.SearchFailAction(error));
             }
