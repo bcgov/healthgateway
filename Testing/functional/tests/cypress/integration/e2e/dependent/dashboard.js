@@ -44,6 +44,10 @@ describe("dependents - dashboard", () => {
                     enabled: true,
                 },
                 {
+                    name: "medication",
+                    enabled: true,
+                },
+                {
                     name: "specialAuthorityRequest",
                     enabled: true,
                 },
@@ -71,6 +75,10 @@ describe("dependents - dashboard", () => {
 
     it("Validate dashboard clinical documents tab click to timeline", () => {
         validateDatasetCard("ClinicalDocument");
+    });
+
+    it("Validate dashboard medication tab click to timeline", () => {
+        validateDatasetCard("Medications");
     });
 
     it("Validate dashboard special authority requests tab click to timeline", () => {
