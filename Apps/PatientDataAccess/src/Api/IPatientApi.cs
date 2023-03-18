@@ -63,7 +63,7 @@ namespace HealthGateway.PatientDataAccess.Api
 
         public string? StatusMessage { get; set; }
 
-        public string? HealthDataFileId { get; set; }
+        public string? HealthOptionsFileId { get; set; }
     }
 
     internal class HealthOptionDataJsonConverter : PolymorphicJsonConverter<HealthOptionData>
