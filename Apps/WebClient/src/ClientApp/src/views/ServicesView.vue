@@ -78,7 +78,7 @@ export default class ServicesView extends Vue {
         <BreadcrumbComponent :items="breadcrumbItems" />
         <LoadingComponent :is-loading="isLoading" />
         <page-title title="Services" />
-        <p class="mb-4">
+        <p>
             You can check and update your Organ Donor Registry information here.
             More health services will be added in future.
         </p>
@@ -86,7 +86,7 @@ export default class ServicesView extends Vue {
             <b-row cols="1" cols-lg="2" cols-xl="3">
                 <b-col
                     v-if="!isLoading && isOrganDonorServiceEnabled"
-                    class="pb-3"
+                    class="p-3"
                 >
                     <OrganDonorDetailsCard :hdid="hdid" />
                 </b-col>
