@@ -30,6 +30,9 @@ export default class OrganDonorDetailsCard extends Vue {
     @Prop({ required: true })
     hdid!: string;
 
+    @Getter("isPatientDataFileLoading", { namespace: "patientData" })
+    isPatientDataFileLoading!: (fileId: string) => boolean;
+
     @Getter("patientData", { namespace: "patientData" })
     getPatientData!: (hdid: string) => PatientData;
 
@@ -43,6 +46,15 @@ export default class OrganDonorDetailsCard extends Vue {
     readonly sensitiveDocumentModal!: MessageModalComponent;
 
     logger!: ILogger;
+
+    get isLoadingFile(): boolean {
+        return (
+            this.registrationData?.registrationFileId !== undefined &&
+            this.isPatientDataFileLoading(
+                this.registrationData.registrationFileId
+            )
+        );
+    }
 
     get registrationData(): OrganDonorRegistrationData | undefined {
         return this.patientData.items.find(
@@ -87,97 +99,87 @@ export default class OrganDonorDetailsCard extends Vue {
 </script>
 
 <template>
-    <b-card
-        container
-        class="hg-card-button h-100 w-100 d-flex flex-column align-content-start text-left rounded shadow border-0"
-        header-class="border-0 bg-transparent d-flex"
-        v-bind="$attrs"
+    <hg-card
+        title="Organ Donor Registration"
+        data-testid="organ-donor-registration-card"
     >
-        <template #header>
+        <template #icon>
             <img
-                class="organ-donor-registry-logo align-self-center float-left mr-2 valign-baseline"
+                class="organ-donor-registry-logo align-self-center"
                 src="@/assets/images/services/odr-logo.svg"
                 alt="Organ Donor Registry Logo"
             />
-            <h5 class="align-self-end">Organ Donor Registration</h5>
         </template>
-        <b-container>
-            <b-row class="align-items-center mb-5">
-                <span
-                    class="label-color mr-2 font-weight-lighter mb-0 fs-donor-label"
-                >
-                    Status:
-                </span>
-                <span class="mr-2 font-weight-bolder mb-0 fs-donor-label">{{
-                    registrationData.status
-                }}</span>
-                <hg-icon
-                    :id="`organ-donor-registration-info-${registrationData.registrationFileId}`"
-                    class="ml-2 info-color"
-                    icon="circle-info"
-                ></hg-icon>
-                <b-popover
-                    :target="`organ-donor-registration-info-${registrationData.registrationFileId}`"
-                    triggers="hover"
-                    placement="top"
-                    boundary="viewport"
-                    data-testid="organ-donor-registration-info-popover"
-                >
-                    {{ registrationData.statusMessage }}
-                </b-popover>
-            </b-row>
-            <b-row class="align-items-center mb-5">
-                <span
-                    class="label-color mr-2 font-weight-lighter mb-0 fs-donor-label"
-                >
-                    Decision:
-                </span>
+        <div class="flex-grow-1 d-flex flex-column card-content">
+            <div data-testid="organ-donor-registration-status">
+                <span class="text-muted">Status: </span>
+                <strong>{{ registrationData?.status }}</strong>
                 <hg-button
-                    v-if="registrationData.registrationFileId"
+                    :id="`organ-donor-registration-status-info-${registrationData?.registrationFileId}`"
+                    aria-label="Info"
+                    href="#"
+                    variant="link"
+                    data-testid="organ-donor-registration-status-info-button"
+                    class="shadow-none align-baseline p-0 ml-1"
+                >
+                    <hg-icon icon="info-circle" size="small" />
+                </hg-button>
+                <b-popover
+                    :target="`organ-donor-registration-status-info-${registrationData?.registrationFileId}`"
+                    triggers="hover focus"
+                    placement="topright"
+                    boundary="viewport"
+                    data-testid="organ-donor-registration-status-info-popover"
+                >
+                    {{ registrationData?.statusMessage }}
+                </b-popover>
+            </div>
+            <div data-testid="organ-donor-registration-decision">
+                <span class="text-muted">Decision: </span>
+                <hg-button
+                    v-if="registrationData?.registrationFileId"
+                    data-testid="clinical-document-download-button"
                     variant="secondary"
+                    :disabled="isLoadingFile"
+                    class="ml-1"
                     @click="showConfirmationModal"
-                    ><hg-icon
+                >
+                    <b-spinner v-if="isLoadingFile" class="mr-1" small />
+                    <hg-icon
+                        v-else
                         icon="download"
                         size="medium"
                         square
                         aria-hidden="true"
+                        class="mr-1"
                     />
-                    Download
+                    <span>Download</span>
                 </hg-button>
-                <span v-else class="mr-2 font-weight-bolder mb-0 fs-donor-label"
-                    >Not Available</span
-                >
-            </b-row>
-            <b-row>
+                <strong v-else>Not Available</strong>
+            </div>
+            <div>
                 <a
                     href="http://www.transplant.bc.ca/Pages/Register-your-Decision.aspx"
                     target="_blank"
+                    data-testid="organ-donor-registration-link"
                 >
                     Register or update your decision
                 </a>
-            </b-row>
-        </b-container>
+            </div>
+        </div>
         <MessageModalComponent
             ref="sensitiveDocumentModal"
             title="Sensitive Document Download"
             message="The file that you are downloading contains personal information. If you are on a public computer, please ensure that the file is deleted before you log off."
             @submit="getDecisionFile"
         />
-    </b-card>
+    </hg-card>
 </template>
 
 <style lang="scss" scoped>
 @import "@/assets/scss/_variables.scss";
 
-.fs-donor-label {
-    font-size: 0.9em;
-}
-
-.info-color {
-    color: $primary !important;
-}
-
-.label-color {
-    color: grey;
+.card-content {
+    gap: 1rem;
 }
 </style>
