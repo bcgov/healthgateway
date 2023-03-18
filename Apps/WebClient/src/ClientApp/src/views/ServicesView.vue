@@ -35,7 +35,7 @@ export default class ServicesView extends Vue {
     @Action("retrievePatientData", { namespace: "patientData" })
     retrievePatientData!: (params: {
         hdid: string;
-        patientDataType: PatientDataType;
+        patientDataTypes: PatientDataType[];
     }) => Promise<void>;
 
     logger!: ILogger;
@@ -66,7 +66,9 @@ export default class ServicesView extends Vue {
         if (this.isOrganDonorServiceEnabled) {
             await this.retrievePatientData({
                 hdid: this.user.hdid,
-                patientDataType: PatientDataType.OrganDonorRegistrationStatus,
+                patientDataTypes: [
+                    PatientDataType.OrganDonorRegistrationStatus,
+                ],
             });
         }
     }
