@@ -230,26 +230,6 @@ namespace HealthGateway.Admin.Tests.Services
             await Assert.ThrowsAsync<ProblemDetailsException>(() => delegationService.UnprotectDependentAsync(DelegateHdid)).ConfigureAwait(true);
         }
 
-        private static bool AssertProtectedDependant(Dependent expected, Dependent actual)
-        {
-            Assert.Equal(expected.Protected, actual.Protected);
-            Assert.Equal(expected.AllowedDelegations.Count, actual.AllowedDelegations.Count);
-            Assert.Equal(
-                expected.AllowedDelegations.Count == 0 ? null : expected.AllowedDelegations.First().DelegateHdId,
-                actual.AllowedDelegations.Count == 0 ? null : actual.AllowedDelegations.First().DelegateHdId);
-            Assert.Equal(
-                expected.AllowedDelegations.Count == 0 ? null : expected.AllowedDelegations.Last().DelegateHdId,
-                actual.AllowedDelegations.Count == 0 ? null : actual.AllowedDelegations.Last().DelegateHdId);
-            return true;
-        }
-
-        private static bool AssertProtectedDependentResourceDelegates(List<ResourceDelegate> expected, List<ResourceDelegate> actual)
-        {
-            Assert.Equal(expected.Count, actual.Count);
-            Assert.Equal(expected.Count == 0 ? null : expected.First().ProfileHdid, actual.Count == 0 ? null : actual.First().ProfileHdid);
-            return true;
-        }
-
         /// <summary>
         /// Tests get delegation information - invalid dependent age.
         /// </summary>
@@ -356,6 +336,26 @@ namespace HealthGateway.Admin.Tests.Services
             };
             DelegateInfo actual = this.autoMapper.Map<PatientModel, DelegateInfo>(patientModel);
             expected.ShouldDeepEqual(actual);
+        }
+
+        private static bool AssertProtectedDependant(Dependent expected, Dependent actual)
+        {
+            Assert.Equal(expected.Protected, actual.Protected);
+            Assert.Equal(expected.AllowedDelegations.Count, actual.AllowedDelegations.Count);
+            Assert.Equal(
+                expected.AllowedDelegations.Count == 0 ? null : expected.AllowedDelegations.First().DelegateHdId,
+                actual.AllowedDelegations.Count == 0 ? null : actual.AllowedDelegations.First().DelegateHdId);
+            Assert.Equal(
+                expected.AllowedDelegations.Count == 0 ? null : expected.AllowedDelegations.Last().DelegateHdId,
+                actual.AllowedDelegations.Count == 0 ? null : actual.AllowedDelegations.Last().DelegateHdId);
+            return true;
+        }
+
+        private static bool AssertProtectedDependentResourceDelegates(List<ResourceDelegate> expected, List<ResourceDelegate> actual)
+        {
+            Assert.Equal(expected.Count, actual.Count);
+            Assert.Equal(expected.Count == 0 ? null : expected.First().ProfileHdid, actual.Count == 0 ? null : actual.First().ProfileHdid);
+            return true;
         }
 
         private static IConfigurationRoot GetIConfigurationRoot()
@@ -591,7 +591,7 @@ namespace HealthGateway.Admin.Tests.Services
             resourceDelegateDelegate.Setup(r => r.Search(new() { ByOwnerHdid = dependentHdid })).ReturnsAsync(GetResourceDelegates(dependentHdid));
 
             delegationDelegate.Setup(p => p.GetDependent(DependentHdid, true)).ReturnsAsync(dependent);
-            delegationDelegate.Setup(p => p.GetDependent(NewDependentHdid, true)).ReturnsAsync((string hdid, bool includeAllowedDelegation) => null);
+            delegationDelegate.Setup(p => p.GetDependent(NewDependentHdid, true)).ReturnsAsync((string _, bool _) => null);
 
             return new(this.configuration, new Mock<IPatientService>().Object, resourceDelegateDelegate.Object, delegationDelegate.Object, this.autoMapper);
         }
