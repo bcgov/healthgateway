@@ -30,7 +30,7 @@ namespace HealthGateway.PatientDataAccess
 
             this.CreateMap<OrganDonor, OrganDonorRegistration>()
                 .ForMember(d => d.Status, opts => opts.MapFrom(s => s.DonorStatus))
-                .ForMember(d => d.RegistrationFileId, opts => opts.MapFrom(s => s.HealthDataFileId))
+                .ForMember(d => d.RegistrationFileId, opts => opts.MapFrom(s => s.HealthOptionsFileId))
                 ;
         }
     }

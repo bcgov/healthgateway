@@ -7,6 +7,7 @@ import {
     faFileWaveform,
     faHouseMedical,
     faMicroscope,
+    faPills,
     faSyringe,
     faVial,
 } from "@fortawesome/free-solid-svg-icons";
@@ -41,6 +42,7 @@ library.add(
     faFileWaveform,
     faHouseMedical,
     faMicroscope,
+    faPills,
     faSyringe,
     faVial
 );
