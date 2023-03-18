@@ -2,7 +2,7 @@ import { ErrorSourceType, ErrorType } from "@/constants/errorType";
 import { ResultError } from "@/models/errors";
 import PatientData, {
     PatientDataFile,
-    PatientDataTypes,
+    PatientDataType,
 } from "@/models/patientData";
 import { LoadStatus } from "@/models/storeOperations";
 import container from "@/plugins/container";
@@ -61,7 +61,7 @@ export const actions: PatientDataActions = {
     },
     retrievePatientData(
         context,
-        params: { hdid: string; patientDataType: PatientDataTypes }
+        params: { hdid: string; patientDataTypes: PatientDataType[] }
     ): Promise<PatientData> {
         const logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
         const patientDataService = container.get<IPatientDataService>(
@@ -82,7 +82,7 @@ export const actions: PatientDataActions = {
                 logger.debug("Retrieving patient data");
                 context.commit("setPatientDataRequested", params.hdid);
                 patientDataService
-                    .getPatientData(params.hdid, params.patientDataType)
+                    .getPatientData(params.hdid, params.patientDataTypes)
                     .then((data: PatientData) => {
                         context.commit("setPatientData", {
                             hdid: params.hdid,

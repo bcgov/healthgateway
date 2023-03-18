@@ -29,7 +29,7 @@ import Notification from "@/models/notification";
 import Patient from "@/models/patient";
 import PatientData, {
     PatientDataFile,
-    PatientDataTypes,
+    PatientDataType,
 } from "@/models/patientData";
 import RegisterTestKitRequest from "@/models/registerTestKitRequest";
 import Report from "@/models/report";
@@ -308,7 +308,7 @@ export interface ITicketService {
 export interface IPatientDataService extends IHttpDelegateService {
     getPatientData(
         hdid: string,
-        patientDataType: PatientDataTypes
+        patientDataTypes: PatientDataType[]
     ): Promise<PatientData>;
     getFile(hdid: string, fileId: string): Promise<PatientDataFile>;
 }

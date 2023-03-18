@@ -1,20 +1,20 @@
 ﻿export default class PatientData {
-    items!: PatientHealthOptions[];
+    items!: PatientHealthOption[];
 }
 
-export enum PatientDataTypes {
+export enum PatientDataType {
     OrganDonorRegistrationStatus = "OrganDonorRegistrationStatus",
 }
 
-export enum HealthOptionTypes {
+export enum HealthOptionType {
     OrganDonorRegistrationData = "OrganDonorRegistrationData",
 }
 
-export abstract class PatientHealthOptions {
-    public type!: HealthOptionTypes;
+export abstract class PatientHealthOption {
+    public type!: HealthOptionType;
 }
 
-export class OrganDonorRegistrationData extends PatientHealthOptions {
+export class OrganDonorRegistrationData extends PatientHealthOption {
     public status!: string;
     public statusMessage!: string;
     public registrationFileId: string | undefined;

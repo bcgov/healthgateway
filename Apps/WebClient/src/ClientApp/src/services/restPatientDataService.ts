@@ -5,7 +5,7 @@ import { ExternalConfiguration } from "@/models/configData";
 import { HttpError } from "@/models/errors";
 import PatientData, {
     PatientDataFile,
-    PatientDataTypes,
+    PatientDataType,
 } from "@/models/patientData";
 import container from "@/plugins/container";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
@@ -42,13 +42,16 @@ export class RestPatientDataService implements IPatientDataService {
 
     public getPatientData(
         hdid: string,
-        patientDataType: PatientDataTypes
+        patientDataTypes: PatientDataType[]
     ): Promise<PatientData> {
+        const delimiter = "patientDataTypes=";
+        const patientDataTypeQueryArray =
+            delimiter + patientDataTypes.join(`&${delimiter}`);
         return new Promise((resolve, reject) => {
             this.isServicesEnabled(reject);
             this.http
                 .getWithCors<PatientData>(
-                    `${this.serviceBaseUri}${this.BASE_URI}/${hdid}?patientDataTypes=${patientDataType}&api-version=2.0`
+                    `${this.serviceBaseUri}${this.BASE_URI}/${hdid}?${patientDataTypeQueryArray}&api-version=2.0`
                 )
                 .then(resolve)
                 .catch((err: HttpError) => {

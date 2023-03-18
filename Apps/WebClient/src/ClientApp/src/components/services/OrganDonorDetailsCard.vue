@@ -8,10 +8,10 @@ import { Action, Getter } from "vuex-class";
 
 import MessageModalComponent from "@/components/modal/MessageModalComponent.vue";
 import PatientData, {
-    HealthOptionTypes,
+    HealthOptionType,
     OrganDonorRegistrationData,
     PatientDataFile,
-    PatientHealthOptions,
+    PatientHealthOption,
 } from "@/models/patientData";
 import container from "@/plugins/container";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
@@ -31,10 +31,10 @@ export default class OrganDonorDetailsCard extends Vue {
     hdid!: string;
 
     @Getter("patientData", { namespace: "patientData" })
-    getPatientData!: (hdid: string) => PatientData;
+    patientData!: (hdid: string) => PatientData;
 
     @Action("retrievePatientDataFile", { namespace: "patientData" })
-    getPatientDataFile!: (params: {
+    retrievePatientDataFile!: (params: {
         fileId: string;
         hdid: string;
     }) => Promise<PatientDataFile>;
@@ -45,17 +45,13 @@ export default class OrganDonorDetailsCard extends Vue {
     logger!: ILogger;
 
     get registrationData(): OrganDonorRegistrationData | undefined {
-        return this.patientData.items.find(
-            (ho: PatientHealthOptions) =>
-                ho.type === HealthOptionTypes.OrganDonorRegistrationData
+        return this.patientData(this.hdid).items.find(
+            (ho: PatientHealthOption) =>
+                ho.type === HealthOptionType.OrganDonorRegistrationData
         ) as OrganDonorRegistrationData;
     }
 
-    get patientData(): PatientData {
-        return this.getPatientData(this.hdid);
-    }
-
-    private created(): void {
+    async created(): Promise<void> {
         this.logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
     }
 
@@ -69,7 +65,7 @@ export default class OrganDonorDetailsCard extends Vue {
                 action: "download_report",
                 text: "Organ Donor",
             });
-            this.getPatientDataFile({
+            this.retrievePatientDataFile({
                 fileId: this.registrationData.registrationFileId,
                 hdid: this.hdid,
             })
