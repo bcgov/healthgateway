@@ -54,7 +54,7 @@ export interface PatientDataActions
     extends ActionTree<PatientDataState, RootState> {
     retrievePatientData(
         context: StoreContext,
-        params: { hdid: string; patientDataType: PatientDataType }
+        params: { hdid: string; patientDataTypes: PatientDataType[] }
     ): Promise<PatientData>;
     retrievePatientDataFile(
         context: StoreContext,
