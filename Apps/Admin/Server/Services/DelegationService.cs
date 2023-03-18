@@ -119,7 +119,10 @@ namespace HealthGateway.Admin.Server.Services
                         delegates.Where(x => x.Hdid == delegateInfo.Hdid).ToList().ForEach(x => x.DelegationStatus = DelegationStatus.Allowed);
 
                         // If delegate info does not exist in current list, then add delegate info.
-                        delegates.Where(x => x.Hdid != delegateInfo.Hdid).ToList().Add(delegateInfo);
+                        if (!delegates.Exists(x => x.Hdid == delegateInfo.Hdid))
+                        {
+                            delegates.Add(delegateInfo);
+                        }
                     }
                 }
 

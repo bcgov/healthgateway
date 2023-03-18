@@ -40,7 +40,7 @@ namespace HealthGateway.Admin.Tests.Services
     using Xunit;
 
     /// <summary>
-    /// Tests for the CsvExportService class.
+    /// Tests for the DelegationService class.
     /// </summary>
     public class DelegationServiceTests
     {
@@ -48,6 +48,13 @@ namespace HealthGateway.Admin.Tests.Services
         private const string DelegateHdid = "delegateHdid";
         private const string DependentPhn = "9874307168";
         private const string DelegatePhn = "9735353315";
+        private const string NewDelegateHdid = "RD33Y2LJEUZCY2TCMOIECUTKS3E62MEQ62CSUL6Q553IHHBI3AWQ";
+        private const string NewDependentHdid = "3ZQCSNNC6KVP2GYLA4O3EFZXGUAPWBQHU6ZEB7FXNZJ2WYCLPH3A";
+        private const string ProtectedDelegateHdid1 = "R43YCT4ZY37EIJLW2O5LV2I77BZA3K3M25EUJGWAVGVJ7JKBDKCQ";
+        private const string ProtectedDelegateHdid2 = "P6FFO433A5WPMVTGM7T4ZVWBKCSVNAYGTWTU3J2LWMGUMERKI72A";
+
+        private static readonly DateTime BirthDate = new(1990, 1, 1);
+
         private readonly IMapper autoMapper = MapperUtil.InitializeAutoMapper();
         private readonly IConfiguration configuration;
 
@@ -76,6 +83,171 @@ namespace HealthGateway.Admin.Tests.Services
 
             Assert.NotNull(actualResult);
             expectedDelegationInfo.ShouldDeepEqual(actualResult);
+        }
+
+        /// <summary>
+        /// Tests dependent should be protected given new dependent.
+        /// </summary>
+        /// <returns>A <see cref="Task"/> representing the result of the asynchronous operation.</returns>
+        [Fact]
+        public async Task ShouldProtectDependentGivenNewDependent()
+        {
+            // Arrange
+            Dependent expectedDependent = new()
+            {
+                HdId = DependentHdid,
+                Protected = true,
+                Version = 0,
+                AllowedDelegations = new List<AllowedDelegation>
+                {
+                    new()
+                    {
+                        DependentHdId = NewDependentHdid,
+                        DelegateHdId = ProtectedDelegateHdid1,
+                    },
+                    new()
+                    {
+                        DependentHdId = NewDependentHdid,
+                        DelegateHdId = NewDelegateHdid,
+                    },
+                },
+            };
+
+            List<ResourceDelegate> expectedDeletedResourceDelegates = new()
+            {
+                new()
+                    { ResourceOwnerHdid = NewDependentHdid, ProfileHdid = ProtectedDelegateHdid2, ReasonCode = ResourceDelegateReason.Guardian },
+            };
+
+            List<string> delegateHdids = new()
+            {
+                ProtectedDelegateHdid1, NewDelegateHdid,
+            };
+            Mock<IDelegationDelegate> delegationDelegate = new();
+            DelegationService delegationService = this.GetDelegationService(NewDependentHdid, delegationDelegate);
+
+            // Act
+            await delegationService.ProtectDependentAsync(NewDependentHdid, delegateHdids).ConfigureAwait(true);
+
+            // Assert
+            delegationDelegate.Verify(
+                v => v.UpdateDelegation(
+                    It.Is<Dependent>(d => AssertProtectedDependant(expectedDependent, d)),
+                    It.Is<IEnumerable<ResourceDelegate>>(rd => AssertProtectedDependentResourceDelegates(expectedDeletedResourceDelegates, rd.ToList()))));
+        }
+
+        /// <summary>
+        /// Tests dependent should be protected given new dependent.
+        /// </summary>
+        /// <returns>A <see cref="Task"/> representing the result of the asynchronous operation.</returns>
+        [Fact]
+        public async Task ShouldUnprotectDependent()
+        {
+            // Arrange
+            Dependent expectedDependent = new()
+            {
+                HdId = DependentHdid,
+                Protected = false,
+                Version = 150,
+                AllowedDelegations = new List<AllowedDelegation>(),
+            };
+
+            List<ResourceDelegate> expectedDeletedResourceDelegates = new();
+
+            Mock<IDelegationDelegate> delegationDelegate = new();
+            DelegationService delegationService = this.GetDelegationService(DependentHdid, delegationDelegate);
+
+            // Act
+            await delegationService.UnprotectDependentAsync(DependentHdid).ConfigureAwait(true);
+
+            // Assert
+            delegationDelegate.Verify(
+                v => v.UpdateDelegation(
+                    It.Is<Dependent>(d => AssertProtectedDependant(expectedDependent, d)),
+                    It.Is<IEnumerable<ResourceDelegate>>(rd => AssertProtectedDependentResourceDelegates(expectedDeletedResourceDelegates, rd.ToList()))));
+        }
+
+        /// <summary>
+        /// Tests dependent should be protected given existing dependent.
+        /// </summary>
+        /// <returns>A <see cref="Task"/> representing the result of the asynchronous operation.</returns>
+        [Fact]
+        public async Task ShouldProtectDependentGivenExistingDependent()
+        {
+            // Arrange
+            Dependent expectedDependent = new()
+            {
+                HdId = DependentHdid,
+                Protected = true,
+                Version = 150,
+                AllowedDelegations = new List<AllowedDelegation>
+                {
+                    new()
+                    {
+                        DependentHdId = DependentHdid,
+                        DelegateHdId = ProtectedDelegateHdid1,
+                    },
+                    new()
+                    {
+                        DependentHdId = DependentHdid,
+                        DelegateHdId = NewDelegateHdid,
+                    },
+                },
+            };
+
+            List<ResourceDelegate> expectedDeletedResourceDelegates = new()
+            {
+                new()
+                    { ResourceOwnerHdid = DependentHdid, ProfileHdid = ProtectedDelegateHdid2, ReasonCode = ResourceDelegateReason.Guardian },
+            };
+
+            List<string> delegateHdids = new()
+            {
+                ProtectedDelegateHdid1, NewDelegateHdid,
+            };
+            Mock<IDelegationDelegate> delegationDelegate = new();
+            DelegationService delegationService = this.GetDelegationService(DependentHdid, delegationDelegate);
+
+            // Act
+            await delegationService.ProtectDependentAsync(DependentHdid, delegateHdids).ConfigureAwait(true);
+
+            // Assert
+            delegationDelegate.Verify(
+                v => v.UpdateDelegation(
+                    It.Is<Dependent>(d => AssertProtectedDependant(expectedDependent, d)),
+                    It.Is<IEnumerable<ResourceDelegate>>(rd => AssertProtectedDependentResourceDelegates(expectedDeletedResourceDelegates, rd.ToList()))));
+        }
+
+        /// <summary>
+        /// Tests unprotect dependent throws problem details exception when dependent not found.
+        /// </summary>
+        /// <returns>A <see cref="Task"/> representing the result of the asynchronous operation.</returns>
+        [Fact]
+        public async Task ShouldUnprotectDependentThrowNotFoundException()
+        {
+            Mock<IDelegationDelegate> delegationDelegate = new();
+            DelegationService delegationService = this.GetDelegationService(DependentHdid, delegationDelegate);
+            await Assert.ThrowsAsync<ProblemDetailsException>(() => delegationService.UnprotectDependentAsync(DelegateHdid)).ConfigureAwait(true);
+        }
+
+        private static bool AssertProtectedDependant(Dependent expected, Dependent actual)
+        {
+            Assert.Equal(expected.Protected, actual.Protected);
+            Assert.Equal(expected.AllowedDelegations.Count, actual.AllowedDelegations.Count);
+            Assert.Equal(
+                expected.AllowedDelegations.Count == 0 ? null : expected.AllowedDelegations.First().DelegateHdId,
+                actual.AllowedDelegations.Count == 0 ? null : actual.AllowedDelegations.First().DelegateHdId);
+            Assert.Equal(
+                expected.AllowedDelegations.Count == 0 ? null : expected.AllowedDelegations.Last().DelegateHdId,
+                actual.AllowedDelegations.Count == 0 ? null : actual.AllowedDelegations.Last().DelegateHdId);
+            return true;
+        }
+
+        private static bool AssertProtectedDependentResourceDelegates(List<ResourceDelegate> expected, List<ResourceDelegate> actual)
+        {
+            Assert.Equal(expected.Count, actual.Count);
+            Assert.Equal(expected.Count == 0 ? null : expected.First().ProfileHdid, actual.Count == 0 ? null : actual.First().ProfileHdid);
+            return true;
         }
 
         /// <summary>
@@ -260,7 +432,7 @@ namespace HealthGateway.Admin.Tests.Services
                 Protected = false,
             };
 
-            DelegateInfo expectedDelegateInfo = new()
+            DelegateInfo expectedDelegateInfo1 = new()
             {
                 Hdid = delegateResult.HdId,
                 PersonalHealthNumber = delegateResult.PersonalHealthNumber,
@@ -269,16 +441,101 @@ namespace HealthGateway.Admin.Tests.Services
                 Birthdate = delegateResult.Birthdate,
                 PhysicalAddress = delegateResult.PhysicalAddress,
                 PostalAddress = delegateResult.PostalAddress,
-                DelegationStatus = DelegationStatus.Added,
+                DelegationStatus = DelegationStatus.Allowed,
             };
+
+            DelegateInfo expectedDelegateInfo2 = GetDelegateInfo(ProtectedDelegateHdid1, "9874307168");
+            DelegateInfo expectedDelegateInfo3 = GetDelegateInfo(ProtectedDelegateHdid2, "9874307208");
 
             DelegationInfo expectedDelegationInfo = new()
             {
                 Dependent = expectedDependentInfo,
-                Delegates = new List<DelegateInfo> { expectedDelegateInfo },
+                Delegates = new List<DelegateInfo> { expectedDelegateInfo1, expectedDelegateInfo2, expectedDelegateInfo3 },
             };
 
             return expectedDelegationInfo;
+        }
+
+        private static Address GetAddress()
+        {
+            return new()
+            {
+                City = "Victoria",
+                State = "BC",
+                Country = "CA",
+            };
+        }
+
+        private static DelegateInfo GetDelegateInfo(string hdid, string phn)
+        {
+            return new()
+            {
+                Hdid = hdid,
+                PersonalHealthNumber = phn,
+                FirstName = "FirstName",
+                LastName = "LastName",
+                Birthdate = BirthDate,
+                PhysicalAddress = GetAddress(),
+                PostalAddress = GetAddress(),
+                DelegationStatus = DelegationStatus.Allowed,
+            };
+        }
+
+        private static PatientModel GetPatientModel(string hdid, string phn)
+        {
+            return new()
+            {
+                Birthdate = BirthDate,
+                FirstName = "FirstName",
+                LastName = "LastName",
+                Gender = "Female",
+                HdId = hdid,
+                PersonalHealthNumber = phn,
+                PhysicalAddress = GetAddress(),
+                PostalAddress = GetAddress(),
+            };
+        }
+
+        private static Dependent GetProtectedDependent(string dependentHdid)
+        {
+            return new()
+            {
+                HdId = dependentHdid,
+                Protected = true,
+                Version = 150,
+                AllowedDelegations = new List<AllowedDelegation>
+                {
+                    new()
+                    {
+                        DependentHdId = dependentHdid,
+                        DelegateHdId = ProtectedDelegateHdid1,
+                    },
+                    new()
+                    {
+                        DependentHdId = dependentHdid,
+                        DelegateHdId = ProtectedDelegateHdid2,
+                    },
+                    new()
+                    {
+                        DependentHdId = dependentHdid,
+                        DelegateHdId = DelegateHdid,
+                    },
+                },
+            };
+        }
+
+        private static ResourceDelegateQueryResult GetResourceDelegates(string hdid)
+        {
+            return new ResourceDelegateQueryResult
+            {
+                Items = new[]
+                {
+                    new ResourceDelegate
+                        { ResourceOwnerHdid = hdid, ProfileHdid = ProtectedDelegateHdid1, ReasonCode = ResourceDelegateReason.Guardian },
+                    new ResourceDelegate
+                        { ResourceOwnerHdid = hdid, ProfileHdid = ProtectedDelegateHdid2, ReasonCode = ResourceDelegateReason.Guardian },
+                },
+            };
         }
 
         private DelegationService GetDelegationService(RequestResult<PatientModel> dependentResult, RequestResult<PatientModel> delegateResult)
@@ -291,7 +548,21 @@ namespace HealthGateway.Admin.Tests.Services
                 ResultError = new RequestResultError { ResultMessage = "Client Registry did not find any records", ErrorCode = "Admin.ServerServer-CE-CR" },
             };
 
+            RequestResult<PatientModel> patientResult1 = new()
+            {
+                ResultStatus = ResultType.Success,
+                ResourcePayload = GetPatientModel(ProtectedDelegateHdid1, "9874307168"),
+            };
+
+            RequestResult<PatientModel> patientResult2 = new()
+            {
+                ResultStatus = ResultType.Success,
+                ResourcePayload = GetPatientModel(ProtectedDelegateHdid2, "9874307208"),
+            };
+
             patientService.Setup(p => p.GetPatient(It.IsAny<string>(), It.IsAny<PatientIdentifierType>(), false)).ReturnsAsync(patientErrorResult);
+            patientService.Setup(p => p.GetPatient(ProtectedDelegateHdid1, PatientIdentifierType.Hdid, false)).ReturnsAsync(patientResult1);
+            patientService.Setup(p => p.GetPatient(ProtectedDelegateHdid2, PatientIdentifierType.Hdid, false)).ReturnsAsync(patientResult2);
             patientService.Setup(p => p.GetPatient(dependentResult.ResourcePayload!.PersonalHealthNumber, PatientIdentifierType.Phn, false)).ReturnsAsync(dependentResult);
             patientService.Setup(p => p.GetPatient(delegateResult.ResourcePayload!.HdId, PatientIdentifierType.Hdid, false)).ReturnsAsync(delegateResult);
 
@@ -306,7 +577,23 @@ namespace HealthGateway.Admin.Tests.Services
             Mock<IResourceDelegateDelegate> resourceDelegateDelegate = new();
             resourceDelegateDelegate.Setup(r => r.Search(It.IsAny<ResourceDelegateQuery>())).ReturnsAsync(result);
 
-            return new DelegationService(this.configuration, patientService.Object, resourceDelegateDelegate.Object, new Mock<IDelegationDelegate>().Object, this.autoMapper);
+            Dependent dependent = GetProtectedDependent(DependentHdid);
+            Mock<IDelegationDelegate> delegationDelegate = new();
+            delegationDelegate.Setup(p => p.GetDependent(DependentHdid, true)).ReturnsAsync(dependent);
+
+            return new DelegationService(this.configuration, patientService.Object, resourceDelegateDelegate.Object, delegationDelegate.Object, this.autoMapper);
+        }
+
+        private DelegationService GetDelegationService(string dependentHdid, Mock<IDelegationDelegate> delegationDelegate)
+        {
+            Dependent dependent = GetProtectedDependent(dependentHdid);
+            Mock<IResourceDelegateDelegate> resourceDelegateDelegate = new();
+            resourceDelegateDelegate.Setup(r => r.Search(new() { ByOwnerHdid = dependentHdid })).ReturnsAsync(GetResourceDelegates(dependentHdid));
+
+            delegationDelegate.Setup(p => p.GetDependent(DependentHdid, true)).ReturnsAsync(dependent);
+            delegationDelegate.Setup(p => p.GetDependent(NewDependentHdid, true)).ReturnsAsync((string hdid, bool includeAllowedDelegation) => null);
+
+            return new(this.configuration, new Mock<IPatientService>().Object, resourceDelegateDelegate.Object, delegationDelegate.Object, this.autoMapper);
         }
     }
 }
