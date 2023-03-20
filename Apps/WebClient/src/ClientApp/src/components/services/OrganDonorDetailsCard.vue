@@ -107,9 +107,11 @@ export default class OrganDonorDetailsCard extends Vue {
             />
         </template>
         <div class="flex-grow-1 d-flex flex-column card-content">
-            <div data-testid="organ-donor-registration-status">
+            <div>
                 <span class="text-muted">Status: </span>
-                <strong>{{ registrationData?.status }}</strong>
+                <strong data-testid="organ-donor-registration-status">{{
+                    registrationData?.status
+                }}</strong>
                 <hg-button
                     :id="`organ-donor-registration-status-info-${registrationData?.registrationFileId}`"
                     aria-label="Info"
@@ -130,11 +132,11 @@ export default class OrganDonorDetailsCard extends Vue {
                     {{ registrationData?.statusMessage }}
                 </b-popover>
             </div>
-            <div data-testid="organ-donor-registration-decision">
+            <div>
                 <span class="text-muted">Decision: </span>
                 <hg-button
                     v-if="registrationData?.registrationFileId"
-                    data-testid="clinical-document-download-button"
+                    data-testid="organ-donor-registration-download-button"
                     variant="secondary"
                     :disabled="isLoadingFile"
                     class="ml-1"
@@ -151,7 +153,11 @@ export default class OrganDonorDetailsCard extends Vue {
                     />
                     <span>Download</span>
                 </hg-button>
-                <strong v-else>Not Available</strong>
+                <strong
+                    v-else
+                    data-testid="organ-donor-registration-decision-no-file"
+                    >Not Available</strong
+                >
             </div>
             <div>
                 <a
