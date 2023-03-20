@@ -26,16 +26,15 @@
         <MudTh>Status</MudTh>
     </HeaderContent>
     <RowTemplate>
-        <MudTd data-testid="delegate-table-name" DataLabel="Name">@context.Name</MudTd>
-        <MudTd data-testid="delegate-table-phn" DataLabel="PHN">@context.PersonalHealthNumber</MudTd>
-        <MudTd data-testid="delegate-table-dob" DataLabel="DOB">@DateFormatter.ToShortDate(context.DateOfBirth)</MudTd>
-        <MudTd data-testid="delegate-table-address" DataLabel="Address">@context.Address</MudTd>
-        <MudTd data-testid="delegate-table-protected" DataLabel="Status">
+        <MudTd data-testid="delegate-name" DataLabel="Name">@context.Name</MudTd>
+        <MudTd data-testid="delegate-phn" DataLabel="PHN">@context.PersonalHealthNumber</MudTd>
+        <MudTd data-testid="delegate-dob" DataLabel="DOB">@DateFormatter.ToShortDate(context.DateOfBirth)</MudTd>
+        <MudTd data-testid="delegate-address" DataLabel="Address">@context.Address</MudTd>
+        <MudTd data-testid="delegate-status" DataLabel="Status">
             <MudChip Text="@EnumUtility.ToEnumString(context.DelegationStatus)"
                      Variant="@Variant.Text"
                      Size="@Size.Small"
-                     Color="GetStatusColor(context.DelegationStatus)"
-                     data-testid="tag-collection-item" />
+                     Color="GetStatusColor(context.DelegationStatus)" />
         </MudTd>
     </RowTemplate>
 </MudTable>
