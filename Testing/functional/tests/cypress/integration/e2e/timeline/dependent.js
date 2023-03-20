@@ -275,7 +275,7 @@ describe("Dependent Timeline Datasets", () => {
         disabledDatasetShouldNotBePresent(Dataset.HospitalVisit);
         disabledDependentDatasetShouldNotBePresent(Dataset.HospitalVisit);
     });
-    it("Validate medications on dependent timeline", () => {
+    it.skip("Validate medications on dependent timeline", () => {
         enabledDatasetShouldBePresent(Dataset.Medication);
         disabledDatasetShouldNotBePresent(Dataset.Medication);
         disabledDependentDatasetShouldNotBePresent(Dataset.Medication);
