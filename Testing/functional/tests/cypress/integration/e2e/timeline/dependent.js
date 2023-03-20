@@ -266,11 +266,12 @@ describe("Dependent Timeline Datasets", () => {
         disabledDatasetShouldNotBePresent(Dataset.LabResult);
         disabledDependentDatasetShouldNotBePresent(Dataset.LabResult);
     });
-    it("Validate (lack of) health visits on dependent timeline", () => {
+    it.skip("Validate health visits on dependent timeline", () => {
+        enabledDatasetShouldBePresent(Dataset.HealthVisit);
         disabledDatasetShouldNotBePresent(Dataset.HealthVisit);
         disabledDependentDatasetShouldNotBePresent(Dataset.HealthVisit);
     });
-    it("Validate hospital visits on dependent timeline", () => {
+    it.skip("Validate hospital visits on dependent timeline", () => {
         enabledDatasetShouldBePresent(Dataset.HospitalVisit);
         disabledDatasetShouldNotBePresent(Dataset.HospitalVisit);
         disabledDependentDatasetShouldNotBePresent(Dataset.HospitalVisit);

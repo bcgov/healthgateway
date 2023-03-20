@@ -44,6 +44,10 @@ describe("dependents - dashboard", () => {
                     enabled: true,
                 },
                 {
+                    name: "healthVisit",
+                    enabled: true,
+                },
+                {
                     name: "hospitalVisit",
                     enabled: true,
                 },
@@ -79,6 +83,10 @@ describe("dependents - dashboard", () => {
 
     it("Validate dashboard clinical documents tab click to timeline", () => {
         validateDatasetCard("ClinicalDocument");
+    });
+
+    it("Validate dashboard health visits tab click to timeline", () => {
+        validateDatasetCard("HealthVisit");
     });
 
     it("Validate dashboard hospital visits tab click to timeline", () => {
