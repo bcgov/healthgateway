@@ -86,7 +86,7 @@ describe("dependents - dashboard", () => {
     });
 
     it("Validate dashboard medication tab click to timeline", () => {
-        validateDatasetCard("Medications");
+        validateDatasetCard("Medication");
     });
 
     it("Validate dashboard special authority requests tab click to timeline", () => {
