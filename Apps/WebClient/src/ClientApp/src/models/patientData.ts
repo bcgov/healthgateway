@@ -1,18 +1,26 @@
 ﻿export default class PatientData {
-    items!: PatientHealthOptions[];
+    items!: PatientHealthOption[];
 }
 
-export abstract class PatientHealthOptions {
-    public type!: string;
+export enum PatientDataType {
+    OrganDonorRegistrationStatus = "OrganDonorRegistrationStatus",
 }
 
-export class OrganDonorRegistrationData extends PatientHealthOptions {
+export enum HealthOptionType {
+    OrganDonorRegistrationData = "OrganDonorRegistrationData",
+}
+
+export abstract class PatientHealthOption {
+    public type!: HealthOptionType;
+}
+
+export class OrganDonorRegistrationData extends PatientHealthOption {
     public status!: string;
     public statusMessage!: string;
     public registrationFileId: string | undefined;
 }
 
 export class PatientDataFile {
-    public content!: Blob;
+    public content!: BlobPart[];
     public contentType!: string;
 }
