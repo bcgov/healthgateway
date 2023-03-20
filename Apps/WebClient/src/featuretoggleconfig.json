@@ -64,18 +64,6 @@
         "timelineEnabled": true,
         "datasets": [
             {
-                "name": "healthVisit",
-                "enabled": false
-            },
-            {
-                "name": "hospitalVisit",
-                "enabled": false
-            },
-            {
-                "name": "medication",
-                "enabled": false
-            },
-            {
                 "name": "note",
                 "enabled": false
             }
