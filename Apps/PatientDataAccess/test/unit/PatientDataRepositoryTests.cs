@@ -37,7 +37,7 @@ namespace PatientDataAccessTests
             {
                 DonorStatus = DonorStatus.Registered,
                 StatusMessage = "statusmessage",
-                HealthDataFileId = Guid.NewGuid().ToString(),
+                HealthOptionsFileId = Guid.NewGuid().ToString(),
                 HealthOptionsId = "optid",
             };
 
@@ -53,7 +53,7 @@ namespace PatientDataAccessTests
             var organDonorRegistration = result.Items.ShouldHaveSingleItem().ShouldBeOfType<OrganDonorRegistration>();
             organDonorRegistration.Status.ShouldBe(DonorRegistrationStatus.Registered);
             organDonorRegistration.StatusMessage.ShouldBe(phsaOrganDonorResponse.StatusMessage);
-            organDonorRegistration.RegistrationFileId.ShouldBe(phsaOrganDonorResponse.HealthDataFileId);
+            organDonorRegistration.RegistrationFileId.ShouldBe(phsaOrganDonorResponse.HealthOptionsFileId);
         }
 
         [Fact]

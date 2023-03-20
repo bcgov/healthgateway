@@ -190,7 +190,7 @@ namespace HealthGateway.Common.AspNetConfiguration.Modules
                         {
                             policy.AuthenticationSchemes.Add(JwtBearerDefaults.AuthenticationScheme);
                             policy.RequireAuthenticatedUser();
-                            policy.Requirements.Add(new PersonalFhirRequirement(FhirResource.MedicationStatement, FhirAccessType.Read));
+                            policy.Requirements.Add(new PersonalFhirRequirement(FhirResource.MedicationStatement, FhirAccessType.Read, supportsUserDelegation: true));
                         });
                     options.AddPolicy(
                         MedicationPolicy.MedicationStatementWrite,
@@ -226,7 +226,7 @@ namespace HealthGateway.Common.AspNetConfiguration.Modules
                         {
                             policy.AuthenticationSchemes.Add(JwtBearerDefaults.AuthenticationScheme);
                             policy.RequireAuthenticatedUser();
-                            policy.Requirements.Add(new PersonalFhirRequirement(FhirResource.Encounter, FhirAccessType.Read));
+                            policy.Requirements.Add(new PersonalFhirRequirement(FhirResource.Encounter, FhirAccessType.Read, supportsUserDelegation: true));
                         });
                     options.AddPolicy(
                         EncounterPolicy.Write,

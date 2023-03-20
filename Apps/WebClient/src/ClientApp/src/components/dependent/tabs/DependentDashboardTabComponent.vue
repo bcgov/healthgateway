@@ -5,7 +5,9 @@ import {
     faDownload,
     faFileMedical,
     faFileWaveform,
+    faHouseMedical,
     faMicroscope,
+    faPills,
     faStethoscope,
     faSyringe,
     faVial,
@@ -39,8 +41,10 @@ library.add(
     faDownload,
     faFileMedical,
     faFileWaveform,
+    faHouseMedical,
     faMicroscope,
     faStethoscope,
+    faPills,
     faSyringe,
     faVial
 );
