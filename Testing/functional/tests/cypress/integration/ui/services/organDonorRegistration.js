@@ -1,10 +1,5 @@
 const { AuthMethod } = require("../../../support/constants");
 
-const servicesTestsConstants = {
-    servicesUrl: "/services",
-    unauthorized: "/unauthorized",
-};
-
 describe("Services - Organ Donor Registration Card", () => {
     beforeEach(() => {
         cy.login(
@@ -37,9 +32,6 @@ describe("Services - Organ Donor Registration Card", () => {
         );
 
         cy.get("[data-testid=organ-donor-registration-status]")
-            .should("be.visible");
-
-        cy.get("[data-testid=organ-donor-registration-status]")
             .should("be.visible")
             .contains("Not Registered");
 
@@ -70,12 +62,8 @@ describe("Services - Organ Donor Registration Card", () => {
         );
 
         cy.get("[data-testid=organ-donor-registration-status]")
-            .should("be.visible");
-
-        cy.get("[data-testid=organ-donor-registration-status]")
             .should("be.visible")
             .contains("Registered");
-
 
         cy.get("[data-testid=organ-donor-registration-status-info-button]")
             .should("be.visible")
@@ -83,13 +71,14 @@ describe("Services - Organ Donor Registration Card", () => {
 
         cy.get("[data-testid=organ-donor-registration-status-info-popover]")
             .should("be.visible")
-            .contains("Your decision about organ donation has been registered.");
+            .contains(
+                "Your decision about organ donation has been registered."
+            );
 
         cy.get("[data-testid=organ-donor-registration-download-button]")
             .should("be.visible")
             .click();
 
-        cy.get("[data-testid=organ-donor-registration-status-info-popover]")
-            .should("be.visible");
+        cy.get("[data-testid=genericMessageModal]").should("be.visible");
     });
 });
