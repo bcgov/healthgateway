@@ -23,6 +23,7 @@ export const SERVICE_IDENTIFIER = {
     VaccinationStatusService: Symbol.for("VaccinationStatusService"),
     PcrTestService: Symbol.for("PcrTestService"),
     TicketService: Symbol.for("TicketService"),
+    PatientDataService: Symbol.for("PatientDataService"),
 };
 
 export const DELEGATE_IDENTIFIER = {

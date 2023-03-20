@@ -3,6 +3,7 @@ import { ActionContext } from "vuex";
 import { VuexPersistence } from "vuex-persist";
 
 import { AppErrorType } from "@/constants/errorType";
+import { patientData } from "@/store/modules/patientData/patientData";
 
 import { auth } from "./modules/auth/auth";
 import { clinicalDocument } from "./modules/clinicalDocument/clinicalDocument";
@@ -82,6 +83,7 @@ export class StoreOptions implements GatewayStoreOptions {
         timeline,
         vaccinationStatus,
         waitlist,
+        patientData,
     };
     plugins = [vuexSession.plugin];
 }
