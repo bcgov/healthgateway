@@ -15,9 +15,12 @@
 // -------------------------------------------------------------------------
 namespace HealthGateway.Patient.Constants
 {
+    using System.Text.Json.Serialization;
+
     /// <summary>
     /// Patient data types.
     /// </summary>
+    [JsonConverter(typeof(JsonStringEnumMemberConverter))]
     public enum PatientDataType
     {
         /// <summary>

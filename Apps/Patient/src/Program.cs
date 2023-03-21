@@ -17,7 +17,6 @@ namespace HealthGateway.Patient
 {
     using System;
     using System.Diagnostics.CodeAnalysis;
-    using System.Text.Json.Serialization;
     using System.Threading.Tasks;
     using HealthGateway.Common.AspNetConfiguration;
     using HealthGateway.Common.AspNetConfiguration.Modules;
@@ -69,7 +68,6 @@ namespace HealthGateway.Patient
             services.AddPatientDataAccess(new PatientDataAccessConfiguration(configuration.GetSection("PhsaV2:BaseUrl").Get<Uri>()!));
 
             Utility.ConfigureTracing(services, logger, configuration);
-            services.AddControllers().AddJsonOptions(opts => { opts.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter()); });
 
             ExceptionHandling.ConfigureProblemDetails(services, environment);
 
