@@ -2,7 +2,7 @@ import Vue from "vue";
 
 import UserPreferenceType from "@/constants/userPreferenceType";
 import { DateWrapper } from "@/models/dateWrapper";
-import PatientData from "@/models/patientData";
+import Patient from "@/models/patient";
 import { LoadStatus } from "@/models/storeOperations";
 import User, { OidcUserInfo } from "@/models/user";
 import type { UserPreference } from "@/models/userPreference";
@@ -66,6 +66,11 @@ export const mutations: UserMutation = {
             );
             PreferenceUtil.setDefaultValue(
                 userProfile.preferences,
+                UserPreferenceType.HideOrganDonorQuickLink,
+                "false"
+            );
+            PreferenceUtil.setDefaultValue(
+                userProfile.preferences,
                 UserPreferenceType.HideImmunizationRecordQuickLink,
                 "false"
             );
@@ -110,7 +115,7 @@ export const mutations: UserMutation = {
 
         state.error = false;
         state.statusMessage = "success";
-        if (state.patientData.hdid !== undefined) {
+        if (state.patient.hdid !== undefined) {
             state.status = LoadStatus.LOADED;
         } else {
             state.status = LoadStatus.PARTIALLY_LOADED;
@@ -140,8 +145,8 @@ export const mutations: UserMutation = {
         state.statusMessage = "success";
         state.status = LoadStatus.LOADED;
     },
-    setPatientData(state: UserState, patientData: PatientData) {
-        state.patientData = patientData;
+    setPatient(state: UserState, patient: Patient) {
+        state.patient = patient;
         state.error = false;
         state.statusMessage = "success";
         if (state.user.hdid !== undefined) {
@@ -156,7 +161,7 @@ export const mutations: UserMutation = {
     clearUserData(state: UserState) {
         state.user = new User();
         state.oidcUserInfo = undefined;
-        state.patientData = new PatientData();
+        state.patient = new Patient();
         state.patientRetrievalFailed = false;
         state.smsResendDateTime = undefined;
         state.seenTutorialComment = false;

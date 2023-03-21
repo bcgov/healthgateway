@@ -2,11 +2,11 @@
 import { library } from "@fortawesome/fontawesome-svg-core";
 import {
     faAngleDoubleLeft,
+    faBoxArchive,
     faCheckCircle,
-    faClipboardList,
+    faCloudArrowDown,
     faHandHoldingMedical,
     faHome,
-    faStream,
     faUserFriends,
 } from "@fortawesome/free-solid-svg-icons";
 import Vue from "vue";
@@ -24,11 +24,11 @@ import { ILogger } from "@/services/interfaces";
 
 library.add(
     faAngleDoubleLeft,
+    faBoxArchive,
     faCheckCircle,
-    faClipboardList,
+    faCloudArrowDown,
     faHandHoldingMedical,
     faHome,
-    faStream,
     faUserFriends
 );
 
@@ -86,6 +86,16 @@ export default class SidebarComponent extends Vue {
     @Watch("$route")
     private onRouteChanged(): void {
         this.clearOverlay();
+    }
+
+    @Watch("isOpen")
+    @Watch("isMobileWidth")
+    private onIsSidebarOpenChange(isOpen: boolean): void {
+        if (this.isMobileWidth && isOpen) {
+            document.body.classList.add("overflow-hidden");
+        } else {
+            document.body.classList.remove("overflow-hidden");
+        }
     }
 
     private created(): void {
@@ -243,7 +253,11 @@ export default class SidebarComponent extends Vue {
                     >
                         <b-row class="align-items-center" no-gutters>
                             <b-col title="Timeline" cols="auto" class="pr-md-4">
-                                <hg-icon icon="stream" size="large" square />
+                                <hg-icon
+                                    icon="box-archive"
+                                    size="large"
+                                    square
+                                />
                             </b-col>
                             <b-col
                                 v-show="isFullyOpen"
@@ -355,7 +369,7 @@ export default class SidebarComponent extends Vue {
                                 class="pr-md-4"
                             >
                                 <hg-icon
-                                    icon="clipboard-list"
+                                    icon="cloud-arrow-down"
                                     size="large"
                                     square
                                 />

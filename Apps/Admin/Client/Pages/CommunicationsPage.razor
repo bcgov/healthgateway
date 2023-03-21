@@ -3,6 +3,7 @@
 @attribute [Authorize(Roles = $"{Roles.Admin},{Roles.Reviewer}")]
 @using HealthGateway.Admin.Client.Store.Broadcasts
 @using HealthGateway.Admin.Client.Store.Communications
+@using HealthGateway.Admin.Client.Components.Communications
 @inherits Fluxor.Blazor.Web.Components.FluxorComponent
 
 <PageTitle>Health Gateway Admin Communications</PageTitle>
@@ -28,7 +29,7 @@
 {
     <HgTabs @ref="@Tabs" data-testid="banner-tabs">
         <Header>
-            <HgButton EndIcon="@Icons.Material.Filled.Add"
+            <HgButton EndIcon="fas fa-plus"
                       TopMargin="@Breakpoint.Always"
                       RightMargin="@Breakpoint.Always"
                       BottomMargin="@Breakpoint.Always"

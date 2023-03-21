@@ -1,7 +1,8 @@
 @page "/dashboard"
 @layout MainLayout
-@attribute [Authorize(Roles = $"{Roles.Admin},{Roles.Reviewer}")]
+@attribute [Authorize(Roles = $"{Roles.Admin},{Roles.Reviewer},{Roles.Analyst}")]
 @using HealthGateway.Admin.Client.Store.Dashboard
+@using HealthGateway.Admin.Client.Components.Dashboard
 @inherits Fluxor.Blazor.Web.Components.FluxorComponent
 
 <PageTitle>Health Gateway Admin Dashboard</PageTitle>
@@ -17,7 +18,7 @@
 <MudGrid>
     <MudItem xs="12" lg="12">
         <MudPaper Class="my-2 pa-4 d-flex justify-end" Elevation="0">
-            <HgButton Loading="@(RegisteredUsersLoading || LoggedInUsersLoading || DependentsLoading || RecurringUsersLoading)" EndIcon="@Icons.Material.Filled.Refresh" @onclick="ReloadDispatchActions" data-testid="refresh-btn">Refresh</HgButton>
+            <HgButton Loading="@(RegisteredUsersLoading || LoggedInUsersLoading || DependentsLoading || RecurringUsersLoading)" EndIcon="fas fa-arrow-rotate-right" @onclick="ReloadDispatchActions" data-testid="refresh-btn">Refresh</HgButton>
         </MudPaper>
     </MudItem>
 </MudGrid>

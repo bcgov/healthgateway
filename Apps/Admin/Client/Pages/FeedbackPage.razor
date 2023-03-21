@@ -31,7 +31,7 @@
               TopMargin="@Breakpoint.Always"
               LeftMargin="@Breakpoint.Always"
               Class="flex-grow-0"
-              EndIcon="@Icons.Material.Filled.Add"
+              EndIcon="fas fa-plus"
               Variant="@Variant.Filled"
               Color="@Color.Success"
               Loading="@TagState.Value.Add.IsLoading"
@@ -117,8 +117,8 @@ else
                 <MudTd DataLabel="Email" data-testid="feedback-email">
                     @if (context.Hdid.Length > 0)
                     {
-                        <MudIconButton Icon="@Icons.Material.Filled.PersonSearch"
-                                       Color="@Color.Dark"
+                        <MudIconButton Icon="fas fa-person-circle-question"
+                                       Color="@Color.Tertiary"
                                        data-testid="feedback-person-search-button"
                                        OnClick="() => NavigateToSupport(context.Hdid)" />
                     }
@@ -146,7 +146,7 @@ else
                     </MudSelect>
                 </MudTd>
                 <MudTd DataLabel="Reviewed">
-                    <MudIconButton Icon="@(context.IsReviewed ? Icons.Material.Filled.Check : Icons.Material.Filled.Close)"
+                    <MudIconButton Icon="@(context.IsReviewed ? "fas fa-check" : "fas fa-xmark")"
                                    Color="@(context.IsReviewed ? Color.Success : Color.Error)"
                                    Disabled="@FeedbackUpdating"
                                    data-testid="feedback-review-button"

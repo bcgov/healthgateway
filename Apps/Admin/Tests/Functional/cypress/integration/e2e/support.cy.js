@@ -4,7 +4,7 @@ const emailHdid = "DEV4FPEGCXG2NB5K2USBL52S66SC3GOUHWRP3GTXR2BTY5HEC4YA";
 const phn = "9735353315";
 const hdid = "P6FFO433A5WPMVTGM7T4ZVWBKCSVNAYGTWTU3J2LWMGUMERKI72A";
 const hdidNotFound = "P123456789";
-const sms = "2501234567";
+const sms = "2506715000";
 const smsNotFound = "5551234567";
 const dependentPhn = "9874307175";
 
@@ -55,7 +55,7 @@ describe("Support", () => {
             `[data-testid=messaging-verification-table-expand-btn-${hdid}]`
         ).click({ force: true });
 
-        // Verify MessagingVerifiction table - xxpecting 2 rows to return but you also need to consider the table headers. As a result, length should be 3.
+        // Verify MessagingVerifiction table - expecting 2 rows to return but you also need to consider the table headers. As a result, length should be 3.
         cy.get("[data-testid=messaging-verification-table]")
             .find("tr")
             .should("have.length", 3);

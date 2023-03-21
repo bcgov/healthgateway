@@ -26,7 +26,11 @@ import {
 import MedicationRequest from "@/models/medicationRequest";
 import MedicationStatementHistory from "@/models/medicationStatementHistory";
 import Notification from "@/models/notification";
-import PatientData from "@/models/patientData";
+import Patient from "@/models/patient";
+import PatientData, {
+    PatientDataFile,
+    PatientDataType,
+} from "@/models/patientData";
 import RegisterTestKitRequest from "@/models/registerTestKitRequest";
 import Report from "@/models/report";
 import ReportRequest from "@/models/reportRequest";
@@ -42,6 +46,10 @@ import UserProfile, { CreateUserRequest } from "@/models/userProfile";
 import UserRating from "@/models/userRating";
 import VaccinationStatus from "@/models/vaccinationStatus";
 import { RootState } from "@/store/types";
+
+export interface IHttpDelegateService {
+    initialize(config: ExternalConfiguration, http: IHttpDelegate): void;
+}
 
 export interface IAuthenticationService {
     initialize(config: OpenIdConnectConfiguration): Promise<void>;
@@ -82,7 +90,7 @@ export interface IVaccinationStatusService {
 
 export interface IPatientService {
     initialize(config: ExternalConfiguration, http: IHttpDelegate): void;
-    getPatientData(hdid: string): Promise<ApiResult<PatientData>>;
+    getPatient(hdid: string): Promise<ApiResult<Patient>>;
 }
 
 export interface IMedicationService {
@@ -295,4 +303,12 @@ export interface ITicketService {
     createTicket(room: string): Promise<Ticket | undefined>;
     checkIn(checkInRequest: CheckInRequest): Promise<Ticket>;
     removeTicket(checkInRequest: CheckInRequest): Promise<void>;
+}
+
+export interface IPatientDataService extends IHttpDelegateService {
+    getPatientData(
+        hdid: string,
+        patientDataTypes: PatientDataType[]
+    ): Promise<PatientData>;
+    getFile(hdid: string, fileId: string): Promise<PatientDataFile>;
 }

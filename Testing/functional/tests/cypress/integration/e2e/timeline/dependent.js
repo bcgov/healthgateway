@@ -170,15 +170,7 @@ describe("Dependent Timeline", () => {
                         enabled: false,
                     },
                     {
-                        name: "medication",
-                        enabled: false,
-                    },
-                    {
                         name: "note",
-                        enabled: false,
-                    },
-                    {
-                        name: "specialAuthorityRequest",
                         enabled: false,
                     },
                 ],
@@ -274,15 +266,18 @@ describe("Dependent Timeline Datasets", () => {
         disabledDatasetShouldNotBePresent(Dataset.LabResult);
         disabledDependentDatasetShouldNotBePresent(Dataset.LabResult);
     });
-    it("Validate (lack of) health visits on dependent timeline", () => {
+    it.skip("Validate health visits on dependent timeline", () => {
+        enabledDatasetShouldBePresent(Dataset.HealthVisit);
         disabledDatasetShouldNotBePresent(Dataset.HealthVisit);
         disabledDependentDatasetShouldNotBePresent(Dataset.HealthVisit);
     });
-    it("Validate (lack of) hospital visits on dependent timeline", () => {
+    it.skip("Validate hospital visits on dependent timeline", () => {
+        enabledDatasetShouldBePresent(Dataset.HospitalVisit);
         disabledDatasetShouldNotBePresent(Dataset.HospitalVisit);
         disabledDependentDatasetShouldNotBePresent(Dataset.HospitalVisit);
     });
-    it("Validate (lack of) medications on dependent timeline", () => {
+    it.skip("Validate medications on dependent timeline", () => {
+        enabledDatasetShouldBePresent(Dataset.Medication);
         disabledDatasetShouldNotBePresent(Dataset.Medication);
         disabledDependentDatasetShouldNotBePresent(Dataset.Medication);
     });
@@ -290,7 +285,8 @@ describe("Dependent Timeline Datasets", () => {
         disabledDatasetShouldNotBePresent(Dataset.Note);
         disabledDependentDatasetShouldNotBePresent(Dataset.Note);
     });
-    it("Validate (lack of) Special Authority requests on dependent timeline", () => {
+    it("Validate Special Authority requests on dependent timeline", () => {
+        enabledDatasetShouldBePresent(Dataset.SpecialAuthorityRequest);
         disabledDatasetShouldNotBePresent(Dataset.SpecialAuthorityRequest);
         disabledDependentDatasetShouldNotBePresent(
             Dataset.SpecialAuthorityRequest

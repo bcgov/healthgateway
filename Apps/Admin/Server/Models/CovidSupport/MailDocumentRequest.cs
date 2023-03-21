@@ -15,7 +15,7 @@
 //-------------------------------------------------------------------------
 namespace HealthGateway.Admin.Server.Models.CovidSupport
 {
-    using HealthGateway.Common.Models;
+    using HealthGateway.Common.Data.Models;
 
     /// <summary>
     /// Represents a request to mail document.

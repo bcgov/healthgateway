@@ -7,7 +7,7 @@ const phnInvalid = "9999999999";
 const phnNotFound = "9735361219";
 const hdid = "P6FFO433A5WPMVTGM7T4ZVWBKCSVNAYGTWTU3J2LWMGUMERKI72A";
 const hdidNotFound = "P123456789";
-const sms = "2501234567";
+const sms = "2506715000";
 const smsNotFound = "5551234567";
 const physicalAddress = "3815 HILLSPOINT STREET, CHATHAM, BC, V0G8B8";
 const postalAddress = "2000 MAIN STREET, VICTORIA, BC, V0G8B8";
@@ -163,7 +163,7 @@ describe("Support", () => {
             `[data-testid=messaging-verification-table-expand-btn-${hdid}]`
         ).click({ force: true });
 
-        // Verify MessagingVerifiction table - xxpecting 2 rows to return but you also need to consider the table headers. As a result, length should be 3.
+        // Verify MessagingVerifiction table - expecting 2 rows to return but you also need to consider the table headers. As a result, length should be 3.
         cy.get("[data-testid=messaging-verification-table]")
             .find("tr")
             .should("have.length", 3);

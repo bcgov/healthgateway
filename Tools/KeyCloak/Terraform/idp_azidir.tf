@@ -10,7 +10,7 @@ resource "keycloak_oidc_identity_provider" "azidiridp" {
   authorization_url             = "${var.environment.base_url}/realms/standard/protocol/openid-connect/auth"
   token_url                     = "${var.environment.base_url}/realms/standard/protocol/openid-connect/token"
   logout_url                    = "${var.environment.base_url}/realms/standard/logout/protocol/openid-connect"
-  backchannel_supported         = true
+  backchannel_supported         = false
   user_info_url                 = "${var.environment.base_url}/realms/standard/protocol/openid-connect/userinfo"
   client_id                     = var.keycloak_idp_azure_idir_client.id
   client_secret                 = var.keycloak_idp_azure_idir_client.secret

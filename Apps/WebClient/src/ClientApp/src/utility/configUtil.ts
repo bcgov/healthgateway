@@ -1,4 +1,5 @@
 import { EntryType } from "@/constants/entryType";
+import { ServiceName } from "@/constants/serviceName";
 import {
     FeatureToggleConfiguration,
     WebClientConfiguration,
@@ -41,5 +42,26 @@ export default abstract class ConfigUtil {
             )?.enabled === false;
 
         return ConfigUtil.isDatasetEnabled(datasetName) && !disabledByOverride;
+    }
+
+    public static isServiceEnabled(serviceName: ServiceName) {
+        const config = ConfigUtil.getFeatureConfiguration();
+        if (
+            config.services &&
+            config.services.enabled &&
+            config.services.services
+        ) {
+            return config.services.services.some(
+                (service) =>
+                    service.name.toLowerCase() === serviceName.toLowerCase() &&
+                    service.enabled
+            );
+        }
+        return false;
+    }
+
+    public static isServicesFeatureEnabled() {
+        const config = ConfigUtil.getFeatureConfiguration();
+        return config.services && config.services.enabled;
     }
 }

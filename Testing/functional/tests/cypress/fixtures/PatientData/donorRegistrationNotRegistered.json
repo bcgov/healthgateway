@@ -1,0 +1,11 @@
+{
+    "items": [
+      {
+        "status": "Not Registered",
+        "statusMessage": "You do not have a decision registered.",
+        "registrationFileId": null,
+        "type": "OrganDonorRegistrationData",
+        "_type": "OrganDonorRegistrationData"
+      }
+    ]
+  }

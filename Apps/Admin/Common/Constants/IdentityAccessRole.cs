@@ -43,5 +43,10 @@ namespace HealthGateway.Admin.Common.Constants
         /// The role associated with service desk access to the admin website.
         /// </summary>
         SupportUser,
+
+        /// <summary>
+        /// The role associated with analyst access to the admin website.
+        /// </summary>
+        AdminAnalyst,
     }
 }

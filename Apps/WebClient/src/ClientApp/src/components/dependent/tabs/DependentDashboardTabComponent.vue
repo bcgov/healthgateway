@@ -3,8 +3,12 @@ import { library } from "@fortawesome/fontawesome-svg-core";
 import {
     faChevronRight,
     faDownload,
+    faFileMedical,
     faFileWaveform,
+    faHouseMedical,
     faMicroscope,
+    faPills,
+    faStethoscope,
     faSyringe,
     faVial,
 } from "@fortawesome/free-solid-svg-icons";
@@ -35,8 +39,12 @@ import SnowPlow from "@/utility/snowPlow";
 library.add(
     faChevronRight,
     faDownload,
+    faFileMedical,
     faFileWaveform,
+    faHouseMedical,
     faMicroscope,
+    faStethoscope,
+    faPills,
     faSyringe,
     faVial
 );

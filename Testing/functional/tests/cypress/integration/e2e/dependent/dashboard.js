@@ -43,6 +43,22 @@ describe("dependents - dashboard", () => {
                     name: "labResult",
                     enabled: true,
                 },
+                {
+                    name: "healthVisit",
+                    enabled: true,
+                },
+                {
+                    name: "hospitalVisit",
+                    enabled: true,
+                },
+                {
+                    name: "medication",
+                    enabled: true,
+                },
+                {
+                    name: "specialAuthorityRequest",
+                    enabled: true,
+                },
             ],
         });
         cy.login(
@@ -67,6 +83,22 @@ describe("dependents - dashboard", () => {
 
     it("Validate dashboard clinical documents tab click to timeline", () => {
         validateDatasetCard("ClinicalDocument");
+    });
+
+    it("Validate dashboard health visits tab click to timeline", () => {
+        validateDatasetCard("HealthVisit");
+    });
+
+    it("Validate dashboard hospital visits tab click to timeline", () => {
+        validateDatasetCard("HospitalVisit");
+    });
+
+    it("Validate dashboard medication tab click to timeline", () => {
+        validateDatasetCard("Medication");
+    });
+
+    it("Validate dashboard special authority requests tab click to timeline", () => {
+        validateDatasetCard("SpecialAuthorityRequest");
     });
 
     it("Validate download of federal proof of vaccination", () => {

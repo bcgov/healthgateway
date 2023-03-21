@@ -265,13 +265,10 @@ export const actions: UserActions = {
         return new Promise((resolve) => {
             context.commit("setRequested");
             patientService
-                .getPatientData(context.state.user.hdid)
+                .getPatient(context.state.user.hdid)
                 .then((result) => {
                     if (result.resourcePayload) {
-                        context.commit(
-                            "setPatientData",
-                            result.resourcePayload
-                        );
+                        context.commit("setPatient", result.resourcePayload);
 
                         userProfileService
                             .getProfile(context.state.user.hdid)

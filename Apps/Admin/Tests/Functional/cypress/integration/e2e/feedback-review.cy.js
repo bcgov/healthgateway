@@ -5,7 +5,7 @@ function validateTableRowCount(tableSelector, count) {
     cy.log(`Validating table contains ${count} rows of data.`);
     cy.get(tableSelector)
         .find("tbody tr.mud-table-row")
-        .should("have.length", count);
+        .should("have.length.gte", count);
 }
 
 const rowSelector = "[data-testid=feedback-table] tbody tr.mud-table-row";

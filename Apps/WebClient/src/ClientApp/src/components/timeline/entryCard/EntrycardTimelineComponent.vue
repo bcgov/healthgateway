@@ -137,7 +137,7 @@ export default class EntrycardTimelineComponent extends Vue {
                                 <strong>{{ displayTitle }}</strong>
                             </span>
                         </b-col>
-                        <b-col cols="auto" class="text-right text-nowrap">
+                        <b-col cols="auto" class="text-right text-nowrap ml-3">
                             <span
                                 class="text-muted small"
                                 data-testid="entryCardDate"
