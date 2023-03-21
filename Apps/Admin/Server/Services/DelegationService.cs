@@ -108,6 +108,8 @@ namespace HealthGateway.Admin.Server.Services
 
                 if (dependent != null)
                 {
+                    delegationInfo.Dependent.Protected = dependent.Protected;
+
                     foreach (AllowedDelegation allowedDelegation in dependent.AllowedDelegations)
                     {
                         RequestResult<PatientModel> delegatePatientResult = await this.patientService.GetPatient(allowedDelegation.DelegateHdId).ConfigureAwait(true);
