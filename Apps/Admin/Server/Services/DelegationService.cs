@@ -133,7 +133,7 @@ namespace HealthGateway.Admin.Server.Services
         }
 
         /// <inheritdoc/>
-        public async Task ProtectDependentAsync(string dependentHdid, IList<string> delegateHdids)
+        public async Task ProtectDependentAsync(string dependentHdid, IEnumerable<string> delegateHdids)
         {
             Dependent? dependent = await this.delegationDelegate.GetDependent(dependentHdid, true).ConfigureAwait(true);
 

@@ -83,7 +83,7 @@ namespace HealthGateway.Admin.Server.Controllers
         [Route("{dependentHdid}/ProtectDependent")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-        public async Task ProtectDependent(string dependentHdid, IList<string> delegateHdids)
+        public async Task ProtectDependent(string dependentHdid, IEnumerable<string> delegateHdids)
         {
             await this.delegationService.ProtectDependentAsync(dependentHdid, delegateHdids).ConfigureAwait(true);
         }

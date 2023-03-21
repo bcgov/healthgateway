@@ -113,13 +113,13 @@ namespace HealthGateway.Admin.Tests.Services
                 },
             };
 
-            List<ResourceDelegate> expectedDeletedResourceDelegates = new()
+            IEnumerable<ResourceDelegate> expectedDeletedResourceDelegates = new List<ResourceDelegate>
             {
                 new()
                     { ResourceOwnerHdid = NewDependentHdid, ProfileHdid = ProtectedDelegateHdid2, ReasonCode = ResourceDelegateReason.Guardian },
             };
 
-            List<string> delegateHdids = new()
+            IEnumerable<string> delegateHdids = new List<string>
             {
                 ProtectedDelegateHdid1, NewDelegateHdid,
             };
@@ -133,7 +133,7 @@ namespace HealthGateway.Admin.Tests.Services
             delegationDelegate.Verify(
                 v => v.UpdateDelegation(
                     It.Is<Dependent>(d => AssertProtectedDependant(expectedDependent, d)),
-                    It.Is<IEnumerable<ResourceDelegate>>(rd => AssertProtectedDependentResourceDelegates(expectedDeletedResourceDelegates, rd.ToList()))));
+                    It.Is<IEnumerable<ResourceDelegate>>(rd => AssertProtectedDependentResourceDelegates(expectedDeletedResourceDelegates.ToList(), rd.ToList()))));
         }
 
         /// <summary>
@@ -152,7 +152,7 @@ namespace HealthGateway.Admin.Tests.Services
                 AllowedDelegations = new List<AllowedDelegation>(),
             };
 
-            List<ResourceDelegate> expectedDeletedResourceDelegates = new();
+            IEnumerable<ResourceDelegate> expectedDeletedResourceDelegates = Enumerable.Empty<ResourceDelegate>();
 
             Mock<IDelegationDelegate> delegationDelegate = new();
             DelegationService delegationService = this.GetDelegationService(DependentHdid, delegationDelegate);
@@ -164,7 +164,7 @@ namespace HealthGateway.Admin.Tests.Services
             delegationDelegate.Verify(
                 v => v.UpdateDelegation(
                     It.Is<Dependent>(d => AssertProtectedDependant(expectedDependent, d)),
-                    It.Is<IEnumerable<ResourceDelegate>>(rd => AssertProtectedDependentResourceDelegates(expectedDeletedResourceDelegates, rd.ToList()))));
+                    It.Is<IEnumerable<ResourceDelegate>>(rd => AssertProtectedDependentResourceDelegates(expectedDeletedResourceDelegates.ToList(), rd.ToList()))));
         }
 
         /// <summary>
@@ -195,13 +195,13 @@ namespace HealthGateway.Admin.Tests.Services
                 },
             };
 
-            List<ResourceDelegate> expectedDeletedResourceDelegates = new()
+            IEnumerable<ResourceDelegate> expectedDeletedResourceDelegates = new List<ResourceDelegate>
             {
                 new()
                     { ResourceOwnerHdid = DependentHdid, ProfileHdid = ProtectedDelegateHdid2, ReasonCode = ResourceDelegateReason.Guardian },
             };
 
-            List<string> delegateHdids = new()
+            IEnumerable<string> delegateHdids = new List<string>
             {
                 ProtectedDelegateHdid1, NewDelegateHdid,
             };
@@ -215,7 +215,7 @@ namespace HealthGateway.Admin.Tests.Services
             delegationDelegate.Verify(
                 v => v.UpdateDelegation(
                     It.Is<Dependent>(d => AssertProtectedDependant(expectedDependent, d)),
-                    It.Is<IEnumerable<ResourceDelegate>>(rd => AssertProtectedDependentResourceDelegates(expectedDeletedResourceDelegates, rd.ToList()))));
+                    It.Is<IEnumerable<ResourceDelegate>>(rd => AssertProtectedDependentResourceDelegates(expectedDeletedResourceDelegates.ToList(), rd.ToList()))));
         }
 
         /// <summary>

@@ -38,7 +38,7 @@ namespace HealthGateway.Admin.Server.Services
         /// <param name="dependentHdid">The hdid of the dependent to protect.</param>
         /// <param name="delegateHdids">The list of delegate hdid(s) to allow delegation for the dependent.</param>
         /// <returns>The task.</returns>
-        Task ProtectDependentAsync(string dependentHdid, IList<string> delegateHdids);
+        Task ProtectDependentAsync(string dependentHdid, IEnumerable<string> delegateHdids);
 
         /// <summary>
         /// Unprotects the dependent and if necessary creates the allowed delegation(s) and keeps the resource delegates
