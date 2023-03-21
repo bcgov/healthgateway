@@ -32,9 +32,24 @@ export default class ReleaseNotesView extends Vue {
         <BreadcrumbComponent :items="breadcrumbItems" />
         <page-title title="Health Gateway Release Notes" />
         <release-note
+            date="March 16, 2023"
+            version="v2023.3.16"
+            title="Clinical Documents"
+        >
+            <ul>
+                <li>
+                    We added clinical documents shared by care providers at
+                    specific locations in Vancouver Coastal, Providence and
+                    Provincial Health Services Authority. In the future, you'll
+                    be able to get documents from more locations and health
+                    authorities.
+                </li>
+            </ul>
+        </release-note>
+        <release-note
             date="March 7, 2023"
             version="v2023.3.07"
-            title="Hospital Visits"
+            title="User Support Guide"
         >
             <ul>
                 <li>
