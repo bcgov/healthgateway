@@ -36,7 +36,7 @@
         <PackageReference Include="System.Diagnostics.DiagnosticSource" Version="7.0.2" />
         <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="6.27.0" />
         <PackageReference Include="System.ServiceModel.Duplex" Version="4.10.0" />
-        <PackageReference Include="System.ServiceModel.Http" Version="4.10.0" />
+        <PackageReference Include="System.ServiceModel.Http" Version="4.10.1" />
         <PackageReference Include="System.ServiceModel.NetTcp" Version="4.10.0" />
         <PackageReference Include="System.ServiceModel.Security" Version="4.10.0" />
     </ItemGroup>
