@@ -56,8 +56,9 @@ export default class ReleaseNotesView extends Vue {
                     We moved the FAQ page to another site. You will find the new
                     support guide linked in the footer of the website.
                 </li>
-            </ul> </release-note
-        ><release-note
+            </ul>
+        </release-note>
+        <release-note
             date="February 16, 2023"
             version="v2023.2.16"
             title="Notification Centre"
