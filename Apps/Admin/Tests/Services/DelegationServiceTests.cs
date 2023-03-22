@@ -157,9 +157,8 @@ namespace HealthGateway.Admin.Tests.Services
                 ProtectedDelegateHdid1, NewDelegateHdid,
             };
             Mock<IDelegationDelegate> delegationDelegate = new();
-            Dependent protectedDependent = GetDependent(NewDependentHdid, true);
             ResourceDelegateQueryResult resourceDelegateQueryResult = GetResourceDelegates(NewDependentHdid);
-            DelegationService delegationService = this.GetDelegationService(protectedDependent, delegationDelegate, resourceDelegateQueryResult);
+            DelegationService delegationService = this.GetDelegationService(null, delegationDelegate, resourceDelegateQueryResult, NewDependentHdid);
 
             // Act
             await delegationService.ProtectDependentAsync(NewDependentHdid, delegateHdids).ConfigureAwait(true);
@@ -192,7 +191,7 @@ namespace HealthGateway.Admin.Tests.Services
             Mock<IDelegationDelegate> delegationDelegate = new();
             Dependent protectedDependent = GetDependent(DependentHdid, true);
             ResourceDelegateQueryResult resourceDelegateQueryResult = GetResourceDelegates(DependentHdid);
-            DelegationService delegationService = this.GetDelegationService(protectedDependent, delegationDelegate, resourceDelegateQueryResult);
+            DelegationService delegationService = this.GetDelegationService(protectedDependent, delegationDelegate, resourceDelegateQueryResult, DependentHdid);
 
             // Act
             await delegationService.UnprotectDependentAsync(DependentHdid).ConfigureAwait(true);
@@ -245,7 +244,7 @@ namespace HealthGateway.Admin.Tests.Services
             Mock<IDelegationDelegate> delegationDelegate = new();
             Dependent protectedDependent = GetDependent(DependentHdid, true);
             ResourceDelegateQueryResult resourceDelegateQueryResult = GetResourceDelegates(DependentHdid);
-            DelegationService delegationService = this.GetDelegationService(protectedDependent, delegationDelegate, resourceDelegateQueryResult);
+            DelegationService delegationService = this.GetDelegationService(protectedDependent, delegationDelegate, resourceDelegateQueryResult, DependentHdid);
 
             // Act
             await delegationService.ProtectDependentAsync(DependentHdid, delegateHdids).ConfigureAwait(true);
@@ -267,7 +266,7 @@ namespace HealthGateway.Admin.Tests.Services
             Mock<IDelegationDelegate> delegationDelegate = new();
             Dependent dependent = GetDependent(DependentHdid, true);
             ResourceDelegateQueryResult resourceDelegateQueryResult = GetResourceDelegates(DependentHdid);
-            DelegationService delegationService = this.GetDelegationService(dependent, delegationDelegate, resourceDelegateQueryResult);
+            DelegationService delegationService = this.GetDelegationService(dependent, delegationDelegate, resourceDelegateQueryResult, DependentHdid);
             await Assert.ThrowsAsync<ProblemDetailsException>(() => delegationService.UnprotectDependentAsync(DelegateHdid)).ConfigureAwait(true);
         }
 
@@ -632,13 +631,12 @@ namespace HealthGateway.Admin.Tests.Services
             return new DelegationService(this.configuration, patientService.Object, resourceDelegateDelegate.Object, delegationDelegate.Object, this.autoMapper);
         }
 
-        private DelegationService GetDelegationService(Dependent dependent, Mock<IDelegationDelegate> delegationDelegate, ResourceDelegateQueryResult resourceDelegates)
+        private DelegationService GetDelegationService(Dependent? dependent, Mock<IDelegationDelegate> delegationDelegate, ResourceDelegateQueryResult resourceDelegates, string resourceOwnerHdid)
         {
             Mock<IResourceDelegateDelegate> resourceDelegateDelegate = new();
-            resourceDelegateDelegate.Setup(r => r.Search(new() { ByOwnerHdid = dependent.HdId })).ReturnsAsync(resourceDelegates);
+            resourceDelegateDelegate.Setup(r => r.Search(new() { ByOwnerHdid = resourceOwnerHdid })).ReturnsAsync(resourceDelegates);
 
-            delegationDelegate.Setup(p => p.GetDependentAsync(DependentHdid, true)).ReturnsAsync(dependent);
-            delegationDelegate.Setup(p => p.GetDependentAsync(NewDependentHdid, true)).ReturnsAsync((string _, bool _) => null);
+            delegationDelegate.Setup(p => p.GetDependentAsync(resourceOwnerHdid, true)).ReturnsAsync(dependent);
 
             return new(this.configuration, new Mock<IPatientService>().Object, resourceDelegateDelegate.Object, delegationDelegate.Object, this.autoMapper);
         }
