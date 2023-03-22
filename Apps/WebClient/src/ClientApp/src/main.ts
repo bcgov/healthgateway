@@ -34,6 +34,7 @@ import Vuelidate from "vuelidate";
 import { Store } from "vuex";
 
 import HgButtonComponent from "@/components/shared/HgButtonComponent.vue";
+import HgCardComponent from "@/components/shared/HgCardComponent.vue";
 import HgCardButtonComponent from "@/components/shared/HgCardButtonComponent.vue";
 import HgDropdownComponent from "@/components/shared/HgDropdownComponent.vue";
 import HgIconComponent from "@/components/shared/HgIconComponent.vue";
@@ -67,6 +68,7 @@ import {
     ILogger,
     IMedicationService,
     INotificationService,
+    IPatientDataService,
     IPatientService,
     IPcrTestService,
     IReportService,
@@ -99,6 +101,7 @@ Vue.component("BTab", BTab);
 Vue.component("BTabs", BTabs);
 
 Vue.component("HgButton", HgButtonComponent);
+Vue.component("HgCard", HgCardComponent);
 Vue.component("HgCardButton", HgCardButtonComponent);
 Vue.component("HgDropdown", HgDropdownComponent);
 Vue.component("HgIcon", HgIconComponent);
@@ -192,6 +195,9 @@ configService
         const ticketService = container.get<ITicketService>(
             SERVICE_IDENTIFIER.TicketService
         );
+        const patientDataService = container.get<IPatientDataService>(
+            SERVICE_IDENTIFIER.PatientDataService
+        );
 
         store.dispatch("config/initialize", config);
 
@@ -221,6 +227,7 @@ configService
         reportService.initialize(config, httpDelegate);
         vaccinationStatusService.initialize(config, httpDelegate);
         ticketService.initialize(config, httpDelegate);
+        patientDataService.initialize(config, httpDelegate);
 
         authInitializePromise.then(async () => {
             Vue.use(IdleVue, {

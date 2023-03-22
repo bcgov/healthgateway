@@ -24,11 +24,17 @@
         <MudTh>Protected</MudTh>
     </HeaderContent>
     <RowTemplate>
-        <MudTd data-testid="dependent-table-name" DataLabel="Name">@context.Name</MudTd>
-        <MudTd data-testid="dependent-table-dob" DataLabel="DOB">@DateFormatter.ToShortDate(context.DateOfBirth)</MudTd>
-        <MudTd data-testid="dependent-table-address" DataLabel="Address">@context.Address</MudTd>
-        <MudTd data-testid="dependent-table-protected" DataLabel="Protected">
-            <MudSwitch T="bool" Checked="@context.Protected" Color="@Color.Success" Disabled="true" Class="mr-n4" />
+        <MudTd data-testid="dependent-name" DataLabel="Name">@context.Name</MudTd>
+        <MudTd data-testid="dependent-dob" DataLabel="DOB">@DateFormatter.ToShortDate(context.DateOfBirth)</MudTd>
+        <MudTd data-testid="dependent-address" DataLabel="Address">@context.Address</MudTd>
+        <MudTd data-testid="dependent-protected" DataLabel="Protected">
+            <MudSwitch
+                T="bool"
+                Checked="@context.Protected"
+                Color="@Color.Success"
+                Disabled="true"
+                Class="mr-n4"
+                data-testid="dependent-protected-switch" />
         </MudTd>
     </RowTemplate>
 </MudTable>

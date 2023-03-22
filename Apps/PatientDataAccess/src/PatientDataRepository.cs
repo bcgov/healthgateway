@@ -68,7 +68,7 @@ namespace HealthGateway.PatientDataAccess
             };
 
         private static PatientFile Map(string fileId, FileResult file) =>
-            new(fileId, Encoding.Default.GetBytes(file.Data!), file.MediaType ?? string.Empty);
+            new(fileId, Convert.FromBase64String(file.Data!), file.MediaType ?? string.Empty);
 
         private async Task<PatientDataQueryResult> Handle(HealthServicesQuery query, CancellationToken ct)
         {

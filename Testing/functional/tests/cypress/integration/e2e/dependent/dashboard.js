@@ -44,6 +44,14 @@ describe("dependents - dashboard", () => {
                     enabled: true,
                 },
                 {
+                    name: "healthVisit",
+                    enabled: true,
+                },
+                {
+                    name: "hospitalVisit",
+                    enabled: true,
+                },
+                {
                     name: "medication",
                     enabled: true,
                 },
@@ -77,8 +85,16 @@ describe("dependents - dashboard", () => {
         validateDatasetCard("ClinicalDocument");
     });
 
+    it("Validate dashboard health visits tab click to timeline", () => {
+        validateDatasetCard("HealthVisit");
+    });
+
+    it("Validate dashboard hospital visits tab click to timeline", () => {
+        validateDatasetCard("HospitalVisit");
+    });
+
     it("Validate dashboard medication tab click to timeline", () => {
-        validateDatasetCard("Medications");
+        validateDatasetCard("Medication");
     });
 
     it("Validate dashboard special authority requests tab click to timeline", () => {

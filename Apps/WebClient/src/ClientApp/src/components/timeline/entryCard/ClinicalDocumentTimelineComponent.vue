@@ -84,8 +84,8 @@ export default class ClinicalDocumentTimelineComponent extends Vue {
 
     private downloadFile(): void {
         SnowPlow.trackEvent({
-            action: "download",
-            text: "document",
+            action: "download_report",
+            text: "Clinical Document PDF",
         });
 
         this.getFile({ fileId: this.entry.fileId, hdid: this.hdid })

@@ -25,6 +25,6 @@
         "experimentalDisableTemplateSupport": true,
         "experimentalUseElementAccessInTemplate": true
     },
-    "include": ["./src/**/*.ts", "./src/**/*.vue"],
+    "include": ["./src/**/*.ts","./src/**/*.vue"],
     "exclude": ["node_modules"]
 }
