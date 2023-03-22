@@ -263,11 +263,17 @@ namespace HealthGateway.Admin.Tests.Services
         [Fact]
         public async Task ShouldUnprotectDependentThrowNotFoundException()
         {
+            // Arrange
+            string invalidDependentHdid = DelegateHdid;
             Mock<IDelegationDelegate> delegationDelegate = new();
             Dependent dependent = GetDependent(DependentHdid, true);
             ResourceDelegateQueryResult resourceDelegateQueryResult = GetResourceDelegates(DependentHdid);
+
+            // Act
             DelegationService delegationService = this.GetDelegationService(dependent, delegationDelegate, resourceDelegateQueryResult, DependentHdid);
-            await Assert.ThrowsAsync<ProblemDetailsException>(() => delegationService.UnprotectDependentAsync(DelegateHdid)).ConfigureAwait(true);
+
+            // Assert
+            await Assert.ThrowsAsync<ProblemDetailsException>(() => delegationService.UnprotectDependentAsync(invalidDependentHdid)).ConfigureAwait(true);
         }
 
         /// <summary>
@@ -287,7 +293,7 @@ namespace HealthGateway.Admin.Tests.Services
             RequestResult<PatientModel> patientResult2 = GetPatientResult(patient2);
 
             IDelegationService delegationService = this.GetDelegationService(dependentResult, delegateResult, protectedDependent, patientResult1, patientResult2);
-            await Assert.ThrowsAsync<ProblemDetailsException>(() => delegationService.GetDelegationInformationAsync(DelegatePhn)).ConfigureAwait(true);
+            await Assert.ThrowsAsync<ProblemDetailsException>(() => delegationService.GetDelegationInformationAsync(DependentPhn)).ConfigureAwait(true);
         }
 
         /// <summary>
@@ -314,7 +320,7 @@ namespace HealthGateway.Admin.Tests.Services
                 new Mock<IDelegationDelegate>().Object,
                 this.autoMapper);
 
-            await Assert.ThrowsAsync<ProblemDetailsException>(() => delegationService.GetDelegationInformationAsync(DelegatePhn)).ConfigureAwait(true);
+            await Assert.ThrowsAsync<ProblemDetailsException>(() => delegationService.GetDelegationInformationAsync(DependentPhn)).ConfigureAwait(true);
         }
 
         /// <summary>
