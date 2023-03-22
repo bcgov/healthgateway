@@ -22,6 +22,16 @@ resource "keycloak_oidc_identity_provider" "phsa" {
   }
 }
 
+resource "keycloak_user_template_importer_identity_provider_mapper" "phsa_username_importer" {
+  realm                   = data.keycloak_realm.hg_realm.id
+  name                    = "username"
+  identity_provider_alias = keycloak_oidc_identity_provider.phsa.alias
+  template                = "$${CLAIM.email}@$${ALIAS}"
+  extra_config = {
+    syncMode = "INHERIT"
+  }
+}
+
 resource "keycloak_hardcoded_attribute_identity_provider_mapper" "phsa_idp" {
   realm                   = data.keycloak_realm.hg_realm.id
   name                    = "idp"
