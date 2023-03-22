@@ -7,6 +7,7 @@ import type { WebClientConfiguration } from "@/models/configData";
 import container from "@/plugins/container";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import { ILogger, IUserRatingService } from "@/services/interfaces";
+import SnowPlow from "@/utility/snowPlow";
 
 @Component
 export default class RatingComponent extends Vue {
@@ -45,7 +46,20 @@ export default class RatingComponent extends Vue {
         );
         ratingService
             .submitRating({ ratingValue: value, skip })
-            .then(() => this.logger.debug(`submitRating with success.`))
+            .then(() => {
+                if (skip) {
+                    SnowPlow.trackEvent({
+                        action: "submit_app_rating",
+                        text: "skip",
+                    });
+                } else {
+                    SnowPlow.trackEvent({
+                        action: "submit_app_rating",
+                        text: value.toString(),
+                    });
+                }
+                this.logger.debug(`submitRating with success.`);
+            })
             .catch((err) =>
                 this.logger.error(`submitRating with error: ${err}`)
             )
