@@ -41,7 +41,7 @@ namespace HealthGateway.PatientTests.Services
         [Fact]
         public void CanSerializePatientData()
         {
-            var organDonorRegistationData = new OrganDonorRegistrationData("Registered", "Message", Guid.NewGuid().ToString());
+            var organDonorRegistationData = new OrganDonorRegistrationData(DonorRegistrationStatus.Registered, "Message", Guid.NewGuid().ToString());
 
             var data = new PatientData[]
             {
@@ -92,7 +92,7 @@ namespace HealthGateway.PatientTests.Services
             var result = await sut.Query(new PatientDataQuery(this.hdid, new[] { PatientDataType.OrganDonorRegistrationStatus }), CancellationToken.None).ConfigureAwait(true);
 
             var actual = result.Items.ShouldHaveSingleItem().ShouldBeOfType<OrganDonorRegistrationData>();
-            actual.Status.ShouldBe(expected.Status.ToString());
+            actual.Status.ShouldBe(expected.Status);
             actual.StatusMessage.ShouldBe(expected.StatusMessage);
             actual.RegistrationFileId.ShouldBe(expected.RegistrationFileId);
         }
