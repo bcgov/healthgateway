@@ -37,7 +37,7 @@ namespace HealthGateway.Admin.Server.Services
         /// </summary>
         /// <param name="dependentHdid">The hdid of the dependent to protect.</param>
         /// <param name="delegateHdids">The list of delegate hdid(s) to allow delegation for the dependent.</param>
-        /// <returns>The task.</returns>
+        /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
         Task ProtectDependentAsync(string dependentHdid, IEnumerable<string> delegateHdids);
 
         /// <summary>
@@ -45,7 +45,7 @@ namespace HealthGateway.Admin.Server.Services
         /// synchronized.
         /// </summary>
         /// <param name="dependentHdid">The hdid of the dependent to unprotect.</param>
-        /// <returns>The dependent view.</returns>
+        /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
         Task UnprotectDependentAsync(string dependentHdid);
     }
 }

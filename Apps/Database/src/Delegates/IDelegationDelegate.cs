@@ -32,15 +32,15 @@ namespace HealthGateway.Database.Delegates
         /// Indicates whether allowed delegation should be included in the returned
         /// dependent.
         /// </param>
-        /// <returns>A DB result which encapsulates the return objects and status.</returns>
-        Task<Dependent?> GetDependent(string hdid, bool includeAllowedDelegation = false);
+        /// <returns>The dependent or null if not found.</returns>
+        Task<Dependent?> GetDependentAsync(string hdid, bool includeAllowedDelegation = false);
 
         /// <summary>
         /// Updates the dependent object including allowed delegation associations as well as resource delegates in the DB.
         /// </summary>
         /// <param name="dependent">The dependent to update.</param>
-        /// <param name="resourceDelegates">The resource delegates to remove.</param>
+        /// <param name="resourceDelegatesToRemove">The resource delegates to remove.</param>
         /// <returns>A <see cref="Task"/> representing the result of the asynchronous operation.</returns>
-        Task UpdateDelegation(Dependent dependent, IEnumerable<ResourceDelegate> resourceDelegates);
+        Task UpdateDelegationAsync(Dependent dependent, IEnumerable<ResourceDelegate> resourceDelegatesToRemove);
     }
 }

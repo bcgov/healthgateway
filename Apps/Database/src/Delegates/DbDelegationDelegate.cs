@@ -41,9 +41,9 @@ namespace HealthGateway.Database.Delegates
         }
 
         /// <inheritdoc/>
-        public async Task<Dependent?> GetDependent(string hdid, bool includeAllowedDelegation = false)
+        public async Task<Dependent?> GetDependentAsync(string hdid, bool includeAllowedDelegation = false)
         {
-            this.logger.LogTrace("Getting dependent - includeAllowedDelegation : {IncludeAllowedDelegation}", includeAllowedDelegation);
+            this.logger.LogTrace("Getting dependent - includeAllowedDelegation : {IncludeAllowedDelegation}", includeAllowedDelegation.ToString());
 
             IQueryable<Dependent> query = this.dbContext.Dependent
                 .Where(d => d.HdId == hdid);
@@ -53,11 +53,11 @@ namespace HealthGateway.Database.Delegates
                 query = query.Include(d => d.AllowedDelegations);
             }
 
-            return await Task.FromResult(query.SingleOrDefault()).ConfigureAwait(true);
+            return await query.SingleOrDefaultAsync().ConfigureAwait(true);
         }
 
         /// <inheritdoc/>
-        public async Task UpdateDelegation(Dependent dependent, IEnumerable<ResourceDelegate> resourceDelegates)
+        public async Task UpdateDelegationAsync(Dependent dependent, IEnumerable<ResourceDelegate> resourceDelegatesToRemove)
         {
             if (dependent.Version == 0)
             {
@@ -68,12 +68,12 @@ namespace HealthGateway.Database.Delegates
                 this.dbContext.Dependent.Update(dependent);
             }
 
-            foreach (ResourceDelegate resourceDelegate in resourceDelegates)
+            foreach (ResourceDelegate resourceDelegate in resourceDelegatesToRemove)
             {
                 this.dbContext.ResourceDelegate.Remove(resourceDelegate);
             }
 
-            await Task.FromResult(this.dbContext.SaveChanges()).ConfigureAwait(true);
+            await this.dbContext.SaveChangesAsync().ConfigureAwait(true);
         }
     }
 }

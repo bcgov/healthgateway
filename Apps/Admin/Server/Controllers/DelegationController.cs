@@ -77,7 +77,7 @@ namespace HealthGateway.Admin.Server.Controllers
         /// <param name="dependentHdid">The hdid of the dependent to protect.</param>
         /// <param name="delegateHdids">The list of delegate hdid(s) to allow delegation for the dependent.</param>
         /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
-        /// <response code="200">Returns the created dependent.</response>
+        /// <response code="200">The dependent is protected.</response>
         /// <response code="401">The client must authenticate itself to get the requested resource.</response>
         [HttpPut]
         [Route("{dependentHdid}/ProtectDependent")]
@@ -94,7 +94,7 @@ namespace HealthGateway.Admin.Server.Controllers
         /// </summary>
         /// <param name="dependentHdid">The hdid of the dependent to unprotect.</param>
         /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
-        /// <response code="200">Returns the updated dependent.</response>
+        /// <response code="200">The dependent is unprotected.</response>
         /// <response code="401">The client must authenticate itself to get the requested resource.</response>
         /// <response code="404">The dependent could not be found.</response>
         [HttpPut]
