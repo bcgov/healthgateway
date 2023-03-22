@@ -16,14 +16,13 @@
 namespace PatientDataAccessTests
 {
     using System.Net;
-    using System.Text;
     using AutoMapper;
     using HealthGateway.PatientDataAccess;
     using HealthGateway.PatientDataAccess.Api;
     using Moq;
     using Refit;
 
-// Disable documentation for tests.
+    // Disable documentation for tests.
 #pragma warning disable SA1600
     public class PatientDataRepositoryTests
     {
@@ -32,8 +31,8 @@ namespace PatientDataAccessTests
         [Fact]
         public async Task CanGetPatientData()
         {
-            var patientApi = new Mock<IPatientApi>();
-            var phsaOrganDonorResponse = new OrganDonor
+            Mock<IPatientApi> patientApi = new Mock<IPatientApi>();
+            OrganDonor phsaOrganDonorResponse = new OrganDonor
             {
                 DonorStatus = DonorStatus.Registered,
                 StatusMessage = "statusmessage",
@@ -45,12 +44,12 @@ namespace PatientDataAccessTests
                 .Setup(api => api.GetHealthOptionsAsync(this.pid, It.IsAny<string[]>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(new HealthOptionsResult(new HealthOptionMetadata(), new[] { phsaOrganDonorResponse }));
 
-            var sut = CreateSut(patientApi.Object);
+            IPatientDataRepository sut = CreateSut(patientApi.Object);
 
-            var result = await sut.Query(new HealthServicesQuery(this.pid, new[] { HealthServiceCategory.OrganDonor }), CancellationToken.None).ConfigureAwait(true);
+            PatientDataQueryResult result = await sut.Query(new HealthServicesQuery(this.pid, new[] { HealthServiceCategory.OrganDonor }), CancellationToken.None).ConfigureAwait(true);
 
             result.ShouldNotBeNull();
-            var organDonorRegistration = result.Items.ShouldHaveSingleItem().ShouldBeOfType<OrganDonorRegistration>();
+            OrganDonorRegistration organDonorRegistration = result.Items.ShouldHaveSingleItem().ShouldBeOfType<OrganDonorRegistration>();
             organDonorRegistration.Status.ShouldBe(DonorRegistrationStatus.Registered);
             organDonorRegistration.StatusMessage.ShouldBe(phsaOrganDonorResponse.StatusMessage);
             organDonorRegistration.RegistrationFileId.ShouldBe(phsaOrganDonorResponse.HealthOptionsFileId);
@@ -59,39 +58,39 @@ namespace PatientDataAccessTests
         [Fact]
         public async Task CanGetPatientFile()
         {
-            var patientApi = new Mock<IPatientApi>();
-            var fileId = Guid.NewGuid().ToString();
-            var expectedFile = new FileResult("text/plain", "somedata", "encoding");
+            Mock<IPatientApi> patientApi = new Mock<IPatientApi>();
+            string fileId = Guid.NewGuid().ToString();
+            FileResult expectedFile = new FileResult("text/plain", "somedata", "encoding");
 
             patientApi
                 .Setup(api => api.GetFile(this.pid, fileId, It.IsAny<CancellationToken>()))
                 .ReturnsAsync(expectedFile);
 
-            var sut = CreateSut(patientApi.Object);
+            IPatientDataRepository sut = CreateSut(patientApi.Object);
 
-            var result = await sut.Query(new PatientFileQuery(this.pid, fileId), CancellationToken.None).ConfigureAwait(true);
+            PatientDataQueryResult result = await sut.Query(new PatientFileQuery(this.pid, fileId), CancellationToken.None).ConfigureAwait(true);
 
             result.ShouldNotBeNull();
-            var actualFile = result.Items.ShouldHaveSingleItem().ShouldBeOfType<PatientFile>();
+            PatientFile actualFile = result.Items.ShouldHaveSingleItem().ShouldBeOfType<PatientFile>();
             actualFile.FileId.ShouldBe(fileId);
             actualFile.Content.ShouldNotBeEmpty();
             actualFile.ContentType.ShouldBe(expectedFile.MediaType);
-            Encoding.Default.GetString(actualFile.Content.ToArray()).ShouldBe(expectedFile.Data);
+            Convert.ToBase64String(actualFile.Content.ToArray()).ShouldBe(expectedFile.Data);
         }
 
         [Fact]
         public async Task CanHandleFileNoResults()
         {
-            var patientApi = new Mock<IPatientApi>();
-            var fileId = Guid.NewGuid().ToString();
+            Mock<IPatientApi> patientApi = new Mock<IPatientApi>();
+            string fileId = Guid.NewGuid().ToString();
 
             patientApi
                 .Setup(api => api.GetFile(this.pid, fileId, It.IsAny<CancellationToken>()))
                 .ReturnsAsync((FileResult?)null);
 
-            var sut = CreateSut(patientApi.Object);
+            IPatientDataRepository sut = CreateSut(patientApi.Object);
 
-            var result = await sut.Query(new PatientFileQuery(this.pid, fileId), CancellationToken.None).ConfigureAwait(true);
+            PatientDataQueryResult result = await sut.Query(new PatientFileQuery(this.pid, fileId), CancellationToken.None).ConfigureAwait(true);
 
             result.ShouldNotBeNull().Items.ShouldBeEmpty();
         }
@@ -99,8 +98,8 @@ namespace PatientDataAccessTests
         [Fact]
         public async Task CanHandleFileNotFound()
         {
-            var patientApi = new Mock<IPatientApi>();
-            var fileId = Guid.NewGuid().ToString();
+            Mock<IPatientApi> patientApi = new Mock<IPatientApi>();
+            string fileId = Guid.NewGuid().ToString();
 
 #pragma warning disable CA2000 // Dispose objects before losing scope
             patientApi
@@ -108,9 +107,9 @@ namespace PatientDataAccessTests
                 .ThrowsAsync(await ApiException.Create(new HttpRequestMessage(), HttpMethod.Get, new HttpResponseMessage(HttpStatusCode.NotFound), new RefitSettings()).ConfigureAwait(true));
 #pragma warning restore CA2000 // Dispose objects before losing scope
 
-            var sut = CreateSut(patientApi.Object);
+            IPatientDataRepository sut = CreateSut(patientApi.Object);
 
-            var result = await sut.Query(new PatientFileQuery(this.pid, fileId), CancellationToken.None).ConfigureAwait(true);
+            PatientDataQueryResult result = await sut.Query(new PatientFileQuery(this.pid, fileId), CancellationToken.None).ConfigureAwait(true);
 
             result.ShouldNotBeNull().Items.ShouldBeEmpty();
         }
@@ -118,24 +117,24 @@ namespace PatientDataAccessTests
         [Fact]
         public async Task CanHandleEmptyFile()
         {
-            var patientApi = new Mock<IPatientApi>();
-            var fileId = Guid.NewGuid().ToString();
-            var expectedFile = new FileResult(null, null, null);
+            Mock<IPatientApi> patientApi = new Mock<IPatientApi>();
+            string fileId = Guid.NewGuid().ToString();
+            FileResult expectedFile = new FileResult(null, null, null);
 
             patientApi
                 .Setup(api => api.GetFile(this.pid, fileId, It.IsAny<CancellationToken>()))
                 .ReturnsAsync(expectedFile);
 
-            var sut = CreateSut(patientApi.Object);
+            IPatientDataRepository sut = CreateSut(patientApi.Object);
 
-            var result = await sut.Query(new PatientFileQuery(this.pid, fileId), CancellationToken.None).ConfigureAwait(true);
+            PatientDataQueryResult result = await sut.Query(new PatientFileQuery(this.pid, fileId), CancellationToken.None).ConfigureAwait(true);
 
             result.ShouldNotBeNull().Items.ShouldBeEmpty();
         }
 
         private static IPatientDataRepository CreateSut(IPatientApi api)
         {
-            var mapper = new MapperConfiguration(cfg => { cfg.AddMaps(typeof(Mappings)); }).CreateMapper();
+            IMapper? mapper = new MapperConfiguration(cfg => { cfg.AddMaps(typeof(Mappings)); }).CreateMapper();
 
             return new PatientDataRepository(api, mapper);
         }
