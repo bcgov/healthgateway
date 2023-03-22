@@ -23,6 +23,7 @@ namespace HealthGateway.Patient.Services
     using System.Threading.Tasks;
     using HealthGateway.Common.Utils;
     using HealthGateway.Patient.Constants;
+    using HealthGateway.PatientDataAccess;
 
     /// <summary>
     /// Provides access to patient related data services.
@@ -83,7 +84,7 @@ namespace HealthGateway.Patient.Services
         /// <param name="status">The registration status.</param>
         /// <param name="statusMessage">Optional message related to the status.</param>
         /// <param name="registrationFileId">Optional registration file id.</param>
-        public OrganDonorRegistrationData(string status, string? statusMessage, string? registrationFileId)
+        public OrganDonorRegistrationData(DonorRegistrationStatus status, string? statusMessage, string? registrationFileId)
         {
             this.Status = status;
             this.StatusMessage = statusMessage;
@@ -93,7 +94,7 @@ namespace HealthGateway.Patient.Services
         /// <summary>
         /// Gets or sets the registration status.
         /// </summary>
-        public string Status { get; set; } = null!;
+        public DonorRegistrationStatus Status { get; set; } = DonorRegistrationStatus.NotRegistered;
 
         /// <summary>
         /// Gets or sets the message associated with the donor registration status.

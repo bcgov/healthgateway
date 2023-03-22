@@ -20,7 +20,6 @@ namespace HealthGateway.PatientDataAccess.Api
 
 // Disables documentation for internal class.
 #pragma warning disable SA1602
-
     using System;
     using System.Collections.Generic;
     using System.Text.Json.Serialization;
@@ -32,7 +31,7 @@ namespace HealthGateway.PatientDataAccess.Api
     internal enum DonorStatus
     {
         Registered,
-        NonRegistered,
+        NotRegistered,
         Error,
         Pending,
     }
