@@ -1,4 +1,4 @@
-// -------------------------------------------------------------------------
+﻿// -------------------------------------------------------------------------
 //  Copyright © 2019 Province of British Columbia
 //
 //  Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,13 +16,7 @@
 namespace HealthGateway.PatientDataAccess
 {
     /// <summary>
-    /// Health service categories.
+    /// abstract record for health data.
     /// </summary>
-    public enum HealthServiceCategory
-    {
-        /// <summary>
-        /// BC Transplant Organ Donor.
-        /// </summary>
-        OrganDonor,
-    }
+    public abstract record BasePatientData;
 }

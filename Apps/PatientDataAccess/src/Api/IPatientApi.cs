@@ -21,20 +21,10 @@ namespace HealthGateway.PatientDataAccess.Api
 // Disables documentation for internal class.
 #pragma warning disable SA1602
     using System;
-    using System.Collections.Generic;
-    using System.Text.Json.Serialization;
     using System.Threading;
     using System.Threading.Tasks;
-    using HealthGateway.Common.Utils;
+    using HealthGateway.PatientDataAccess.Api.Models;
     using Refit;
-
-    internal enum DonorStatus
-    {
-        Registered,
-        NotRegistered,
-        Error,
-        Pending,
-    }
 
     internal interface IPatientApi
     {
@@ -43,38 +33,9 @@ namespace HealthGateway.PatientDataAccess.Api
 
         [Get("/patient/{pid}/health-options")]
         Task<HealthOptionsResult?> GetHealthOptionsAsync(Guid pid, [Query] string[] categories, CancellationToken ct);
-    }
 
-    internal record FileResult(string? MediaType, string? Data, string? Encoding);
-
-    internal record HealthOptionsResult(HealthOptionMetadata Metadata, IEnumerable<HealthOptionData> Data);
-
-    internal record HealthOptionMetadata;
-
-    [JsonConverter(typeof(HealthOptionDataJsonConverter))]
-    internal abstract record HealthOptionData;
-
-    internal record OrganDonor : HealthOptionData
-    {
-        public string? HealthOptionsId { get; set; }
-
-        public DonorStatus DonorStatus { get; set; }
-
-        public string? StatusMessage { get; set; }
-
-        public string? HealthOptionsFileId { get; set; }
-    }
-
-    internal class HealthOptionDataJsonConverter : PolymorphicJsonConverter<HealthOptionData>
-    {
-        protected override string Discriminator => "healthOptionsType";
-
-        protected override Type? ResolveType(string discriminatorValue) =>
-            discriminatorValue switch
-            {
-                "BcTransplantOrganDonor" => typeof(OrganDonor),
-                _ => null,
-            };
+        [Get("/patient/{pid}/health-data")]
+        Task<HealthDataResult?> GetHealthDataAsync(Guid pid, [Query] string[] categories, CancellationToken ct);
     }
 }
 #pragma warning restore SA1600
