@@ -747,7 +747,8 @@ INSERT INTO gateway."ResourceDelegate"(
 	"UpdatedBy", 
 	"UpdatedDateTime", 
 	"ReasonObjectType", 
-	"ReasonObject")
+	"ReasonObject",
+    "ExpiryDate")
 VALUES (
 	'232434345442257', 
 	'P6FFO433A5WPMVTGM7T4ZVWBKCSVNAYGTWTU3J2LWMGUMERKI72A', 
@@ -757,7 +758,8 @@ VALUES (
 	'System', 
 	current_timestamp, 
 	'System.DateTime, System.Private.CoreLib, Version=5.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e', 
-	'"2021-01-20T00:00:00"'
+	'"2021-01-20T00:00:00"',
+	CURRENT_DATE + 4380 -- 12 years
 );
 INSERT INTO gateway."ResourceDelegate"(
 	"ResourceOwnerHdid", 
@@ -768,7 +770,8 @@ INSERT INTO gateway."ResourceDelegate"(
 	"UpdatedBy", 
 	"UpdatedDateTime", 
 	"ReasonObjectType", 
-	"ReasonObject")
+	"ReasonObject",
+    "ExpiryDate")
 VALUES (
 	'162346565465464564565463257', 
 	'P6FFO433A5WPMVTGM7T4ZVWBKCSVNAYGTWTU3J2LWMGUMERKI72A', 
@@ -778,7 +781,8 @@ VALUES (
 	'System', 
 	current_timestamp, 
 	'System.DateTime, System.Private.CoreLib, Version=5.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e', 
-	'"2021-01-20T00:00:00"'
+	'"2021-01-20T00:00:00"',
+	CURRENT_DATE + 4380 -- 12 years
 );
 
 INSERT INTO gateway."Email"(
