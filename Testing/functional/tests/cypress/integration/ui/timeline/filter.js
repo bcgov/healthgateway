@@ -2,6 +2,9 @@ const { AuthMethod } = require("../../../support/constants");
 
 describe("Filters", () => {
     beforeEach(() => {
+        cy.intercept("GET", "**/ClinicalDocument/*", {
+            fixture: "ClinicalDocumentService/clinicalDocument.json",
+        });
         cy.intercept("GET", "**/Immunization?*", {
             fixture: "ImmunizationService/immunization.json",
         });
@@ -10,6 +13,10 @@ describe("Filters", () => {
         });
         cy.configureSettings({
             datasets: [
+                {
+                    name: "clinicalDocument",
+                    enabled: true,
+                },
                 {
                     name: "healthVisit",
                     enabled: true,
@@ -29,7 +36,7 @@ describe("Filters", () => {
     });
 
     it("Verify filtered record count", () => {
-        const unfilteredRecordsMessage = "Displaying 25 out of 32 records";
+        const unfilteredRecordsMessage = "Displaying 25 out of 34 records";
 
         cy.get("[data-testid=timeline-record-count]").contains(
             unfilteredRecordsMessage
@@ -97,6 +104,29 @@ describe("Filters", () => {
 
         cy.get(
             "[data-testid=linear-timeline-immunization-disclaimer-alert]"
+        ).should("not.be.visible");
+    });
+
+    it("Verify clinical document record alert appears when only clinical document is selected", () => {
+        cy.get(
+            "[data-testid=linear-timeline-clinical-document-disclaimer-alert]"
+        ).should("not.be.visible");
+
+        cy.get("[data-testid=filterDropdown]").click();
+        cy.get("[data-testid=ClinicalDocument-filter]").click({ force: true });
+        cy.get("[data-testid=btnFilterApply]").click();
+        cy.get("[data-testid=btnFilterApply]").should("not.exist");
+
+        cy.get(
+            "[data-testid=linear-timeline-clinical-document-disclaimer-alert]"
+        ).should("be.visible");
+
+        cy.get("[data-testid=filterDropdown]").click();
+        cy.get("[data-testid=HealthVisit-filter]").click({ force: true });
+        cy.get("[data-testid=btnFilterApply]").click();
+
+        cy.get(
+            "[data-testid=linear-timeline-clinical-document-disclaimer-alert]"
         ).should("not.be.visible");
     });
 });
