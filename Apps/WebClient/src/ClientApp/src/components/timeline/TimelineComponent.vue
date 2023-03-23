@@ -670,7 +670,7 @@ export default class TimelineComponent extends Vue {
                     show
                     variant="info"
                     class="mt-0 mb-1"
-                    data-testid="linear-timeline-clinical-document-disclaimer-alert"
+                    data-testid="timeline-clinical-document-disclaimer-alert"
                 >
                     <span>
                         Only documents shared by your provider at some sites are
@@ -679,7 +679,7 @@ export default class TimelineComponent extends Vue {
                             href="https://www2.gov.bc.ca/gov/content/health/managing-your-health/health-gateway/guide#clindocs"
                             target="_blank"
                             rel="noopener"
-                            >Learn more.</a
+                            >Learn more</a
                         >.
                     </span>
                 </b-alert>

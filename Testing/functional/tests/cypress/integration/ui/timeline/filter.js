@@ -109,7 +109,7 @@ describe("Filters", () => {
 
     it("Verify clinical document record alert appears when only clinical document is selected", () => {
         cy.get(
-            "[data-testid=linear-timeline-clinical-document-disclaimer-alert]"
+            "[data-testid=timeline-clinical-document-disclaimer-alert]"
         ).should("not.be.visible");
 
         cy.get("[data-testid=filterDropdown]").click();
@@ -118,7 +118,7 @@ describe("Filters", () => {
         cy.get("[data-testid=btnFilterApply]").should("not.exist");
 
         cy.get(
-            "[data-testid=linear-timeline-clinical-document-disclaimer-alert]"
+            "[data-testid=timeline-clinical-document-disclaimer-alert]"
         ).should("be.visible");
 
         cy.get("[data-testid=filterDropdown]").click();
@@ -126,7 +126,7 @@ describe("Filters", () => {
         cy.get("[data-testid=btnFilterApply]").click();
 
         cy.get(
-            "[data-testid=linear-timeline-clinical-document-disclaimer-alert]"
+            "[data-testid=timeline-clinical-document-disclaimer-alert]"
         ).should("not.be.visible");
     });
 });
