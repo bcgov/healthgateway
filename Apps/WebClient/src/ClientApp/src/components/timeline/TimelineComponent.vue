@@ -663,7 +663,7 @@ export default class TimelineComponent extends Vue {
             </b-row>
             <div
                 v-show="isOnlyClinicalDocumentSelected"
-                id="linear-timeline-clinical-document-disclaimer"
+                id="timeline-clinical-document-disclaimer"
                 class="pb-2"
             >
                 <b-alert
