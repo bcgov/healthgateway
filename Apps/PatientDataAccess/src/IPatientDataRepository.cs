@@ -40,9 +40,14 @@ namespace HealthGateway.PatientDataAccess
     public abstract record PatientDataQuery;
 
     /// <summary>
-    /// Query parameters for health services.
+    /// Query parameters for health options endpoint.
     /// </summary>
-    public record HealthServicesQuery(Guid Pid, IEnumerable<HealthServiceCategory> Categories) : PatientDataQuery;
+    public record HealthOptionsQuery(Guid Pid, IEnumerable<HealthOptionsCategory> Categories) : PatientDataQuery;
+
+    /// <summary>
+    /// Query parameters for the health data endpoint.
+    /// </summary>
+    public record HealthDataQuery(Guid Pid, IEnumerable<HealthDataCategory> Categories) : PatientDataQuery;
 
     /// <summary>
     /// Query patient files.
@@ -50,43 +55,12 @@ namespace HealthGateway.PatientDataAccess
     public record PatientFileQuery(Guid Pid, string FileId) : PatientDataQuery;
 
     /// <summary>
-    /// The health data query result payload.
+    /// The health options query result payload.
     /// </summary>
-    public record PatientDataQueryResult(IEnumerable<HealthData> Items);
-
-    /// <summary>
-    /// abstract record for health data.
-    /// </summary>
-    public abstract record HealthData;
-
-    /// <summary>
-    /// abstract class for health service data.
-    /// </summary>
-    public abstract record HealthServiceData : HealthData;
-
-    /// <summary>
-    /// BC Transplant organ donor service data.
-    /// </summary>
-    public record OrganDonorRegistration : HealthServiceData
-    {
-        /// <summary>
-        /// Gets or sets the donor registration status.
-        /// </summary>
-        public DonorRegistrationStatus Status { get; set; }
-
-        /// <summary>
-        /// Gets or sets the message associated with the donor registration status.
-        /// </summary>
-        public string? StatusMessage { get; set; }
-
-        /// <summary>
-        /// Gets or sets the file ID associated with the donor registration.
-        /// </summary>
-        public string? RegistrationFileId { get; set; }
-    }
+    public record PatientDataQueryResult(IEnumerable<BasePatientData> Items);
 
     /// <summary>
     /// Represents a patient file.
     /// </summary>
-    public record PatientFile(string FileId, IEnumerable<byte> Content, string ContentType) : HealthData;
+    public record PatientFile(string FileId, IEnumerable<byte> Content, string ContentType) : BasePatientData;
 }
