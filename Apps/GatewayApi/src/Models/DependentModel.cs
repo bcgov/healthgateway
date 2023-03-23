@@ -15,6 +15,7 @@
 //-------------------------------------------------------------------------
 namespace HealthGateway.GatewayApi.Models
 {
+    using System;
     using HealthGateway.Database.Constants;
 
     /// <summary>
@@ -36,6 +37,11 @@ namespace HealthGateway.GatewayApi.Models
         /// Gets or sets the hdid which has delegated access to the owner Id.
         /// </summary>
         public string DelegateId { get; set; } = null!;
+
+        /// <summary>
+        /// Gets or sets the expiry date of the dependent.
+        /// </summary>
+        public DateOnly ExpiryDate { get; set; }
 
         /// <summary>
         /// Gets or sets the total number of users that have delegated access to this dependent.

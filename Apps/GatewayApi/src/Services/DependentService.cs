@@ -122,6 +122,7 @@ namespace HealthGateway.GatewayApi.Services
             {
                 ResourceOwnerHdid = patientResult.ResourcePayload.HdId,
                 ProfileHdid = delegateHdId,
+                ExpiryDate = DateOnly.FromDateTime(addDependentRequest.DateOfBirth.AddYears(this.maxDependentAge)),
                 ReasonCode = ResourceDelegateReason.Guardian,
                 ReasonObjectType = null,
                 ReasonObject = null,
