@@ -4,8 +4,8 @@ import { ServiceCode } from "@/constants/serviceCodes";
 import { ExternalConfiguration } from "@/models/configData";
 import { HttpError } from "@/models/errors";
 import PatientData, {
+    HealthOptionsType,
     PatientDataFile,
-    PatientDataType,
 } from "@/models/patientData";
 import container from "@/plugins/container";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
@@ -42,9 +42,9 @@ export class RestPatientDataService implements IPatientDataService {
 
     public getPatientData(
         hdid: string,
-        patientDataTypes: PatientDataType[]
+        patientDataTypes: HealthOptionsType[]
     ): Promise<PatientData> {
-        const delimiter = "patientDataTypes=";
+        const delimiter = "healthOptionsTypes=";
         const patientDataTypeQueryArray =
             delimiter + patientDataTypes.join(`&${delimiter}`);
         return new Promise((resolve, reject) => {

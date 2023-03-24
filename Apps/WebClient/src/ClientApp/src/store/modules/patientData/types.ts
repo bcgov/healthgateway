@@ -10,8 +10,8 @@ import { ErrorType } from "@/constants/errorType";
 import { Dictionary } from "@/models/baseTypes";
 import { ResultError } from "@/models/errors";
 import PatientData, {
+    HealthOptionsType,
     PatientDataFile,
-    PatientDataType,
 } from "@/models/patientData";
 import { LoadStatus } from "@/models/storeOperations";
 import { RootState } from "@/store/types";
@@ -54,7 +54,7 @@ export interface PatientDataActions
     extends ActionTree<PatientDataState, RootState> {
     retrievePatientData(
         context: StoreContext,
-        params: { hdid: string; patientDataTypes: PatientDataType[] }
+        params: { hdid: string; patientDataTypes: HealthOptionsType[] }
     ): Promise<PatientData>;
     retrievePatientDataFile(
         context: StoreContext,

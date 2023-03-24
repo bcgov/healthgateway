@@ -21,14 +21,18 @@ namespace HealthGateway.PatientTests.Services
     using System.Text.Json;
     using System.Threading;
     using System.Threading.Tasks;
+    using AutoMapper;
     using HealthGateway.Common.Models.PHSA;
     using HealthGateway.Common.Services;
     using HealthGateway.Patient.Constants;
+    using HealthGateway.Patient.Models;
     using HealthGateway.Patient.Services;
     using HealthGateway.PatientDataAccess;
+    using HealthGateway.PatientTests.Utils;
     using Moq;
     using Shouldly;
     using Xunit;
+    using PatientFileQuery = HealthGateway.PatientDataAccess.PatientFileQuery;
 
     // Disable documentation for tests.
 #pragma warning disable SA1600
@@ -36,6 +40,7 @@ namespace HealthGateway.PatientTests.Services
     {
         private readonly Guid pid = Guid.NewGuid();
         private readonly string hdid = Guid.NewGuid().ToString("N");
+        private readonly IMapper mapper = MapperUtil.InitializeAutoMapper();
 
         [Fact]
         public void CanSerializePatientData()
@@ -90,7 +95,7 @@ namespace HealthGateway.PatientTests.Services
                         PatientIdentity = new PatientIdentity { Pid = this.pid },
                     });
 
-            PatientDataService sut = new(patientDataRepository.Object, personalAccountService.Object);
+            PatientDataService sut = new(patientDataRepository.Object, personalAccountService.Object, this.mapper);
 
             PatientDataResponse result = await sut.Query(new PatientDataOptionsQuery(this.hdid, new[] { HealthOptionsType.OrganDonorRegistrationStatus }), CancellationToken.None).ConfigureAwait(true);
 
@@ -124,9 +129,9 @@ namespace HealthGateway.PatientTests.Services
                         PatientIdentity = new PatientIdentity { Pid = this.pid },
                     });
 
-            PatientDataService sut = new(patientDataRepository.Object, personalAccountService.Object);
+            PatientDataService sut = new(patientDataRepository.Object, personalAccountService.Object, this.mapper);
 
-            PatientFileResponse? result = await sut.Query(new Patient.Services.PatientFileQuery(this.hdid, expected.FileId), CancellationToken.None).ConfigureAwait(true);
+            PatientFileResponse? result = await sut.Query(new Patient.Models.PatientFileQuery(this.hdid, expected.FileId), CancellationToken.None).ConfigureAwait(true);
 
             PatientFileResponse actual = result.ShouldBeOfType<PatientFileResponse>();
             actual.Content.ShouldBe(expected.Content);
@@ -157,9 +162,9 @@ namespace HealthGateway.PatientTests.Services
                         PatientIdentity = new PatientIdentity { Pid = this.pid },
                     });
 
-            PatientDataService sut = new(patientDataRepository.Object, personalAccountService.Object);
+            PatientDataService sut = new(patientDataRepository.Object, personalAccountService.Object, this.mapper);
 
-            PatientFileResponse? result = await sut.Query(new Patient.Services.PatientFileQuery(this.hdid, fileId), CancellationToken.None).ConfigureAwait(true);
+            PatientFileResponse? result = await sut.Query(new Patient.Models.PatientFileQuery(this.hdid, fileId), CancellationToken.None).ConfigureAwait(true);
 
             result.ShouldBeNull();
         }

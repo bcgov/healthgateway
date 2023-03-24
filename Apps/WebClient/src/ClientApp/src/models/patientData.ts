@@ -2,16 +2,16 @@
     items!: PatientHealthOption[];
 }
 
-export enum PatientDataType {
+export enum HealthOptionsType {
     OrganDonorRegistrationStatus = "OrganDonorRegistrationStatus",
 }
 
-export enum HealthOptionType {
+export enum HealthOptionResponseType {
     OrganDonorRegistrationData = "OrganDonorRegistrationData",
 }
 
 export abstract class PatientHealthOption {
-    public type!: HealthOptionType;
+    public type!: HealthOptionResponseType;
 }
 
 export class OrganDonorRegistrationData extends PatientHealthOption {
