@@ -29,8 +29,6 @@ namespace HealthGateway.PatientTests.Services
     using Moq;
     using Shouldly;
     using Xunit;
-    using PatientDataQuery = HealthGateway.Patient.Services.PatientDataQuery;
-    using PatientFileQuery = HealthGateway.PatientDataAccess.PatientFileQuery;
 
     // Disable documentation for tests.
 #pragma warning disable SA1600
@@ -94,7 +92,7 @@ namespace HealthGateway.PatientTests.Services
 
             PatientDataService sut = new(patientDataRepository.Object, personalAccountService.Object);
 
-            PatientDataResponse result = await sut.Query(new PatientDataQuery(this.hdid, new[] { PatientDataType.OrganDonorRegistrationStatus }), CancellationToken.None).ConfigureAwait(true);
+            PatientDataResponse result = await sut.Query(new PatientDataOptionsQuery(this.hdid, new[] { HealthOptionsType.OrganDonorRegistrationStatus }), CancellationToken.None).ConfigureAwait(true);
 
             OrganDonorRegistrationData actual = result.Items.ShouldHaveSingleItem().ShouldBeOfType<OrganDonorRegistrationData>();
             actual.Status.ShouldBe(expected.Status);

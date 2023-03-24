@@ -1,4 +1,4 @@
-// -------------------------------------------------------------------------
+﻿// -------------------------------------------------------------------------
 //  Copyright © 2019 Province of British Columbia
 //
 //  Licensed under the Apache License, Version 2.0 (the "License");
@@ -13,19 +13,21 @@
 //  See the License for the specific language governing permissions and
 //  limitations under the License.
 // -------------------------------------------------------------------------
-namespace HealthGateway.Patient.Constants
+namespace HealthGateway.Patient.Mappings
 {
-    using System.Text.Json.Serialization;
+    // Disables documentation for internal class.
+#pragma warning disable SA1600
+    using AutoMapper;
+    using HealthGateway.Patient.Models;
+    using HealthGateway.PatientDataAccess;
 
-    /// <summary>
-    /// Patient data types.
-    /// </summary>
-    [JsonConverter(typeof(JsonStringEnumMemberConverter))]
-    public enum PatientDataType
+    internal class DiagnosticImagingProfile : Profile
     {
-        /// <summary>
-        /// Organ donor registration status.
-        /// </summary>
-        OrganDonorRegistrationStatus,
+        public DiagnosticImagingProfile()
+        {
+            this.CreateMap<DiagnosticImagingSummary, DiagnosticImagingData>();
+            this.CreateMap<DiagnosticImagingExam, DiagnosticImagingExamData>();
+        }
     }
+#pragma warning restore SA1600
 }
