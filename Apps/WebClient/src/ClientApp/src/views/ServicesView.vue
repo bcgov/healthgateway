@@ -8,7 +8,7 @@ import BreadcrumbComponent from "@/components/navmenu/BreadcrumbComponent.vue";
 import OrganDonorDetailsCard from "@/components/services/OrganDonorDetailsCard.vue";
 import { ServiceName } from "@/constants/serviceName";
 import BreadcrumbItem from "@/models/breadcrumbItem";
-import { PatientDataType } from "@/models/patientData";
+import { HealthOptionsType } from "@/models/patientData";
 import User from "@/models/user";
 import container from "@/plugins/container";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
@@ -35,7 +35,7 @@ export default class ServicesView extends Vue {
     @Action("retrievePatientData", { namespace: "patientData" })
     retrievePatientData!: (params: {
         hdid: string;
-        patientDataTypes: PatientDataType[];
+        patientDataTypes: HealthOptionsType[];
     }) => Promise<void>;
 
     logger!: ILogger;
@@ -67,7 +67,7 @@ export default class ServicesView extends Vue {
             await this.retrievePatientData({
                 hdid: this.user.hdid,
                 patientDataTypes: [
-                    PatientDataType.OrganDonorRegistrationStatus,
+                    HealthOptionsType.OrganDonorRegistrationStatus,
                 ],
             });
         }

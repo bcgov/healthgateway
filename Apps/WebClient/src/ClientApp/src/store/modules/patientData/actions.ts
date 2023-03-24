@@ -1,8 +1,8 @@
 import { ErrorSourceType, ErrorType } from "@/constants/errorType";
 import { ResultError } from "@/models/errors";
 import PatientData, {
+    HealthOptionsType,
     PatientDataFile,
-    PatientDataType,
 } from "@/models/patientData";
 import { LoadStatus } from "@/models/storeOperations";
 import container from "@/plugins/container";
@@ -61,7 +61,7 @@ export const actions: PatientDataActions = {
     },
     retrievePatientData(
         context,
-        params: { hdid: string; patientDataTypes: PatientDataType[] }
+        params: { hdid: string; patientDataTypes: HealthOptionsType[] }
     ): Promise<PatientData> {
         const logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
         const patientDataService = container.get<IPatientDataService>(

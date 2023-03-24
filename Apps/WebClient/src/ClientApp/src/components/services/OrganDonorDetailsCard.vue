@@ -8,7 +8,7 @@ import { Action, Getter } from "vuex-class";
 
 import MessageModalComponent from "@/components/modal/MessageModalComponent.vue";
 import PatientData, {
-    HealthOptionType,
+    HealthOptionResponseType,
     OrganDonorRegistrationData,
     PatientDataFile,
     PatientHealthOption,
@@ -59,7 +59,7 @@ export default class OrganDonorDetailsCard extends Vue {
     get registrationData(): OrganDonorRegistrationData | undefined {
         return this.patientData(this.hdid).items.find(
             (ho: PatientHealthOption) =>
-                ho.type === HealthOptionType.OrganDonorRegistrationData
+                ho.type === HealthOptionResponseType.OrganDonorRegistrationData
         ) as OrganDonorRegistrationData;
     }
 
