@@ -58,6 +58,9 @@ namespace HealthGateway.Admin.Client
             // Register Refit Clients
             RegisterRefitClients(builder);
 
+            // Register AutoMapper and profiles in assembly
+            builder.Services.AddAutoMapper(typeof(Program));
+
             // Configure Logging
             IConfigurationSection loggerConfig = builder.Configuration.GetSection("Logging");
             builder.Services
