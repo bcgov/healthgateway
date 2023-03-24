@@ -16,6 +16,7 @@
             <col style="width: 125px;" />
             <col />
             <col style="width: 125px;" />
+            <col style="width: 125px;" />
         </MudHidden>
     </ColGroup>
     <HeaderContent>
@@ -24,6 +25,9 @@
         <MudTh>DOB</MudTh>
         <MudTh>Address</MudTh>
         <MudTh>Status</MudTh>
+        <MudTh>
+            <span class="@(InEditMode ? "visible" : "invisible")">Select to Remove</span>
+        </MudTh>
     </HeaderContent>
     <RowTemplate>
         <MudTd data-testid="delegate-name" DataLabel="Name">@context.Name</MudTd>
@@ -36,5 +40,28 @@
                      Size="@Size.Small"
                      Color="GetStatusColor(context.DelegationStatus)" />
         </MudTd>
+        @if (InEditMode)
+        {
+            <MudTd DataLabel="Select to Remove">
+                <MudHidden Breakpoint="@Breakpoint.MdAndDown">
+                    <MudCheckBox
+                        T="bool"
+                        Checked="@context.ToBeRemoved"
+                        CheckedChanged="@(value => ToggleRemoveDelegate(context.Hdid, value))"
+                        Size="Size.Small"
+                        data-testid="delegate-to-be-removed-checkbox" />
+                </MudHidden>
+                <MudHidden Breakpoint="@Breakpoint.MdAndDown" Invert="true">
+                    <MudCheckBox
+                        T="bool"
+                        Checked="@context.ToBeRemoved"
+                        CheckedChanged="@(value => ToggleRemoveDelegate(context.Hdid, value))"
+                        Size="Size.Small"
+                        Dense="true"
+                        Class="mr-3"
+                        data-testid="delegate-to-be-removed-checkbox" />
+                </MudHidden>
+            </MudTd>
+        }
     </RowTemplate>
 </MudTable>

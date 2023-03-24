@@ -3,11 +3,13 @@
 @attribute [Authorize(Roles = $"{Roles.Admin}")]
 @using HealthGateway.Common.Ui.Constants
 @using HealthGateway.Admin.Client.Store.Delegation
+@using HealthGateway.Admin.Client.Components.Site
 @using HealthGateway.Admin.Client.Components.Delegation
 @inherits Fluxor.Blazor.Web.Components.FluxorComponent
 
 <PageTitle>Health Gateway Admin Delegation</PageTitle>
 <HgPageHeading>Delegation</HgPageHeading>
+<NavigationConfirmation Enabled="@AnyUnsavedDelegationChanges" />
 
 <MudForm @ref="Form">
     <MudGrid Spacing="0">
@@ -29,7 +31,7 @@
                 Color="@Color.Primary"
                 Loading="@Searching"
                 @onclick="SearchAsync"
-                data-testid="search-btn">
+                data-testid="search-button">
                 Search
             </HgButton>
         </MudItem>
@@ -45,14 +47,47 @@
     @ErrorMessage
 </HgBannerFeedback>
 
-@if (Loaded || Loading)
+@if (Dependent != null)
 {
     <MudText Class="mt-3" Typo="Typo.subtitle1">
         Dependent
     </MudText>
     <DependentTable Data="@Dependent" />
-    <MudText Class="mt-3" Typo="Typo.subtitle1">
-        Guardians Accessing Dependent
-    </MudText>
+    <div class="mt-6 d-flex align-center">
+        <MudText Typo="Typo.subtitle1" Class="flex-grow-1">
+            Guardians Accessing Dependent
+        </MudText>
+        <HgButton
+            StartIcon="fas fa-edit"
+            Variant="@Variant.Filled"
+            Color="@Color.Primary"
+            Class="@(Dependent.Protected ? "visible" : "invisible")"
+            Disabled="@(InEditMode || !Delegates.Any())"
+            @onclick="@(() => SetEditMode(true))"
+            data-testid="edit-button">
+            Edit
+        </HgButton>
+    </div>
     <DelegateTable Data="@Delegates" />
+    if (InEditMode)
+    {
+        <div class="mt-3 d-flex justify-end">
+            <HgButton
+                RightMargin="Breakpoint.Always"
+                Variant="@Variant.Outlined"
+                Color="@Color.Default"
+                @onclick="@(() => SetEditMode(false))"
+                data-testid="cancel-edit-button">
+                Cancel
+            </HgButton>
+            <HgButton
+                Variant="@Variant.Filled"
+                Color="@Color.Primary"
+                Disabled="@(!AnyUnsavedDelegationChanges)"
+                @onclick="@ConfirmProtectAsync"
+                data-testid="save-button">
+                Save
+            </HgButton>
+        </div>
+    }
 }
