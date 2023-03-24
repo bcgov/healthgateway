@@ -80,7 +80,8 @@ function testRegisterError(statusCode = serverErrorStatusCode) {
         .type(Cypress.env("phoneNumber"));
     cy.get("[data-testid=acceptCheckbox]")
         .should("be.enabled")
-        .check({ force: true });
+        .check({ force: true })
+        .wait(500);
     cy.get("[data-testid=registerButton]")
         .should("be.visible", "be.enabled")
         .click();
