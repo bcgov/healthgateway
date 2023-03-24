@@ -17,31 +17,39 @@
 namespace HealthGateway.Admin.Client.Store.Delegation
 {
     using System;
+    using System.Collections.Generic;
+    using System.Linq;
     using System.Net;
     using System.Net.Http;
     using System.Threading.Tasks;
+    using AutoMapper;
     using Fluxor;
     using HealthGateway.Admin.Client.Api;
+    using HealthGateway.Admin.Client.Models;
     using HealthGateway.Admin.Client.Utils;
+    using HealthGateway.Admin.Common.Constants;
     using HealthGateway.Admin.Common.Models;
-    using Microsoft.AspNetCore.Components;
     using Microsoft.Extensions.Logging;
     using Refit;
 
 #pragma warning disable CS1591, SA1600
     public class DelegationEffects
     {
-        public DelegationEffects(ILogger<DelegationEffects> logger, IDelegationApi api)
+        public DelegationEffects(IDelegationApi api, IMapper autoMapper, IState<DelegationState> delegationState, ILogger<DelegationEffects> logger)
         {
-            this.Logger = logger;
             this.Api = api;
+            this.AutoMapper = autoMapper;
+            this.DelegationState = delegationState;
+            this.Logger = logger;
         }
 
-        [Inject]
-        private ILogger<DelegationEffects> Logger { get; set; }
+        private IDelegationApi Api { get; }
 
-        [Inject]
-        private IDelegationApi Api { get; set; }
+        private IMapper AutoMapper { get; }
+
+        private IState<DelegationState> DelegationState { get; }
+
+        private ILogger<DelegationEffects> Logger { get; }
 
         [EffectMethod]
         public async Task HandleSearchAction(DelegationActions.SearchAction action, IDispatcher dispatcher)
@@ -51,7 +59,12 @@ namespace HealthGateway.Admin.Client.Store.Delegation
             {
                 DelegationInfo response = await this.Api.GetDelegationInformationAsync(action.Phn).ConfigureAwait(true);
                 this.Logger.LogInformation("Delegation info retrieved successfully");
-                dispatcher.Dispatch(new DelegationActions.SearchSuccessAction(response));
+                dispatcher.Dispatch(
+                    new DelegationActions.SearchSuccessAction
+                    {
+                        Dependent = response.Dependent,
+                        Delegates = this.AutoMapper.Map<IEnumerable<DelegateInfo>, IEnumerable<ExtendedDelegateInfo>>(response.Delegates),
+                    });
             }
             catch (Exception e) when (e is ApiException or HttpRequestException)
             {
@@ -63,6 +76,62 @@ namespace HealthGateway.Admin.Client.Store.Delegation
 
                 this.Logger.LogError(e, "Error retrieving delegation info, reason: {Exception}", e.ToString());
                 dispatcher.Dispatch(new DelegationActions.SearchFailAction(error));
+            }
+        }
+
+        [EffectMethod(typeof(DelegationActions.ProtectDependentAction))]
+        public async Task HandleProtectDependentAction(IDispatcher dispatcher)
+        {
+            this.Logger.LogInformation("Protect dependent");
+            try
+            {
+                string? dependentHdid = this.DelegationState.Value.Dependent?.Hdid;
+                if (dependentHdid == null)
+                {
+                    RequestError error = new() { Message = "Dependent HDID is null" };
+                    dispatcher.Dispatch(new DelegationActions.ProtectDependentFailAction(error));
+                    return;
+                }
+
+                IEnumerable<string> delegateHdids = this.DelegationState.Value.Delegates
+                    .Where(d => d.StagedDelegationStatus is DelegationStatus.Added or DelegationStatus.Allowed)
+                    .Select(x => x.Hdid);
+
+                await this.Api.ProtectDependentAsync(dependentHdid, delegateHdids).ConfigureAwait(true);
+                this.Logger.LogInformation("Dependent protected successfully");
+                dispatcher.Dispatch(new DelegationActions.ProtectDependentSuccessAction());
+            }
+            catch (Exception e) when (e is ApiException or HttpRequestException)
+            {
+                RequestError error = StoreUtility.FormatRequestError(e);
+                this.Logger.LogError("Error protecting dependent, reason: {Exception}", e.ToString());
+                dispatcher.Dispatch(new DelegationActions.ProtectDependentFailAction(error));
+            }
+        }
+
+        [EffectMethod(typeof(DelegationActions.UnprotectDependentAction))]
+        public async Task HandleUnprotectDependentAction(IDispatcher dispatcher)
+        {
+            this.Logger.LogInformation("Unprotecting dependent");
+            try
+            {
+                string? dependentHdid = this.DelegationState.Value.Dependent?.Hdid;
+                if (dependentHdid == null)
+                {
+                    RequestError error = new() { Message = "Dependent HDID is null" };
+                    dispatcher.Dispatch(new DelegationActions.UnprotectDependentFailAction(error));
+                    return;
+                }
+
+                await this.Api.UnprotectDependentAsync(dependentHdid).ConfigureAwait(true);
+                this.Logger.LogInformation("Dependent unprotected successfully");
+                dispatcher.Dispatch(new DelegationActions.UnprotectDependentSuccessAction());
+            }
+            catch (Exception e) when (e is ApiException or HttpRequestException)
+            {
+                RequestError error = StoreUtility.FormatRequestError(e);
+                this.Logger.LogError("Error unprotecting dependent, reason: {Exception}", e.ToString());
+                dispatcher.Dispatch(new DelegationActions.UnprotectDependentFailAction(error));
             }
         }
     }

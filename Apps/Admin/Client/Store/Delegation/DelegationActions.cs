@@ -15,7 +15,9 @@
 //-------------------------------------------------------------------------
 namespace HealthGateway.Admin.Client.Store.Delegation
 {
+    using System.Collections.Generic;
     using System.Diagnostics.CodeAnalysis;
+    using HealthGateway.Admin.Client.Models;
     using HealthGateway.Admin.Common.Models;
 
     /// <summary>
@@ -62,16 +64,116 @@ namespace HealthGateway.Admin.Client.Store.Delegation
         /// <summary>
         /// The action representing a successful search.
         /// </summary>
-        public class SearchSuccessAction : BaseSuccessAction<DelegationInfo>
+        public class SearchSuccessAction
         {
             /// <summary>
-            /// Initializes a new instance of the <see cref="SearchSuccessAction"/> class.
+            /// Gets the dependent info.
             /// </summary>
-            /// <param name="data">Agent data.</param>
-            public SearchSuccessAction(DelegationInfo data)
-                : base(data)
+            public required DependentInfo Dependent { get; init; }
+
+            /// <summary>
+            /// Gets the collection of delegate info.
+            /// </summary>
+            public required IEnumerable<ExtendedDelegateInfo> Delegates { get; init; }
+        }
+
+        /// <summary>
+        /// The action that sets whether a delegation should be staged to be removed.
+        /// </summary>
+        public class SetDisallowedDelegationStatusAction
+        {
+            /// <summary>
+            /// Gets the HDID associated with the delegate.
+            /// </summary>
+            public required string Hdid { get; init; }
+
+            /// <summary>
+            /// Gets a value indicating whether the delegation should be disallowed.
+            /// </summary>
+            public required bool Disallow { get; init; }
+        }
+
+        /// <summary>
+        /// The action representing the initiation of a protect dependent.
+        /// </summary>
+        public class ProtectDependentAction
+        {
+        }
+
+        /// <summary>
+        /// The action representing a protect dependent failure.
+        /// </summary>
+        public class ProtectDependentFailAction : BaseFailAction
+        {
+            /// <summary>
+            /// Initializes a new instance of the <see cref="ProtectDependentFailAction"/> class.
+            /// </summary>
+            /// <param name="error">The request error.</param>
+            public ProtectDependentFailAction(RequestError error)
+                : base(error)
             {
             }
+        }
+
+        /// <summary>
+        /// The action representing a protect dependent success.
+        /// </summary>
+        public class ProtectDependentSuccessAction
+        {
+        }
+
+        /// <summary>
+        /// The action representing the initiation of an unprotect dependent.
+        /// </summary>
+        public class UnprotectDependentAction
+        {
+        }
+
+        /// <summary>
+        /// The action representing a failed unprotect dependent.
+        /// </summary>
+        public class UnprotectDependentFailAction : BaseFailAction
+        {
+            /// <summary>
+            /// Initializes a new instance of the <see cref="UnprotectDependentFailAction"/> class.
+            /// </summary>
+            /// <param name="error">The request error.</param>
+            public UnprotectDependentFailAction(RequestError error)
+                : base(error)
+            {
+            }
+        }
+
+        /// <summary>
+        /// The action representing a successful unprotect dependent.
+        /// </summary>
+        public class UnprotectDependentSuccessAction
+        {
+        }
+
+        /// <summary>
+        /// The action that changes whether the delegation page is in edit mode.
+        /// </summary>
+        public class SetEditModeAction
+        {
+            /// <summary>
+            /// Gets a value indicating whether edit mode should be enabled.
+            /// </summary>
+            public required bool Enabled { get; init; }
+        }
+
+        /// <summary>
+        /// The action that clears any error encountered during a protect.
+        /// </summary>
+        public class ClearProtectErrorAction
+        {
+        }
+
+        /// <summary>
+        /// The action that clears any error encountered during an unprotect.
+        /// </summary>
+        public class ClearUnprotectErrorAction
+        {
         }
 
         /// <summary>

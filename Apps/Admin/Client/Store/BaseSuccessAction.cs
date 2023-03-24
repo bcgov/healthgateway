@@ -19,14 +19,14 @@ namespace HealthGateway.Admin.Client.Store
     /// <summary>
     /// The base class for a successful action.
     /// </summary>
-    /// <typeparam name="TCollection">The type of data associated with the action.</typeparam>
-    public abstract class BaseSuccessAction<TCollection>
+    /// <typeparam name="TData">The type of data associated with the action.</typeparam>
+    public abstract class BaseSuccessAction<TData>
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="BaseSuccessAction{TCollection}"/> class.
         /// </summary>
         /// <param name="data">The associated data.</param>
-        protected BaseSuccessAction(TCollection data)
+        protected BaseSuccessAction(TData data)
         {
             this.Data = data;
         }
@@ -34,6 +34,6 @@ namespace HealthGateway.Admin.Client.Store
         /// <summary>
         /// Gets the associated data.
         /// </summary>
-        public TCollection Data { get; }
+        public TData Data { get; }
     }
 }
