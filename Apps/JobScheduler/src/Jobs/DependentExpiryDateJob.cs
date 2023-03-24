@@ -81,16 +81,12 @@ namespace HealthGateway.JobScheduler.Jobs
                 {
                     DateOnly expiryDate = DateOnly.FromDateTime(patientResult.Result.ResourcePayload.Birthdate.AddYears(this.maxDependentAge));
                     resourceDelegate.ExpiryDate = expiryDate;
+                    this.dbContext.Update(resourceDelegate);
                 }
                 else
                 {
                     this.logger.LogError("Unable to find patient record for dependent Hdid: {ResourceOwnerHdid}", resourceDelegate.ResourceOwnerHdid);
                 }
-            }
-
-            foreach (ResourceDelegate resourceDelegate in resourceDelegates)
-            {
-                this.dbContext.Update(resourceDelegate);
             }
 
             this.dbContext.SaveChanges();
