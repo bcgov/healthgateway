@@ -159,13 +159,8 @@ namespace HealthGateway.PatientDataAccess.Api.Models
             return discriminatorValue switch
             {
                 "Laboratory" => typeof(LaboratoryOrder),
-                "Immunization" => typeof(HealthData),
                 "COVID19Laboratory" => typeof(LaboratoryOrder),
-                "Medication" => typeof(HealthData),
                 "ClinicalDocument" => typeof(ClinicalDocument),
-                "HealthVisit" => typeof(HealthData),
-                "NyNotes" => typeof(HealthData),
-                "SpecialAuthority" => typeof(HealthData),
                 "DiagnosticImaging" => typeof(DiSummary),
                 _ => null,
             };

@@ -21,6 +21,7 @@ namespace HealthGateway.Patient
     using HealthGateway.Common.AspNetConfiguration;
     using HealthGateway.Common.AspNetConfiguration.Modules;
     using HealthGateway.Patient.Delegates;
+    using HealthGateway.Patient.Mappings;
     using HealthGateway.Patient.Services;
     using HealthGateway.PatientDataAccess;
     using Microsoft.AspNetCore.Builder;
@@ -60,6 +61,7 @@ namespace HealthGateway.Patient
             Patient.ConfigurePatientAccess(services, logger, configuration);
             PersonalAccount.ConfigurePersonalAccountAccess(services, logger, configuration);
 
+            services.AddAutoMapper(typeof(DiagnosticImagingProfile));
             services.AddTransient<IClientRegistriesDelegate, ClientRegistriesDelegate>();
             services.AddTransient<IPatientService, PatientService>();
             services.AddTransient<IPatientDataService, PatientDataService>();

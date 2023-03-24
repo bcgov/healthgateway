@@ -21,6 +21,7 @@ namespace HealthGateway.Patient.Controllers
     using HealthGateway.Common.AccessManagement.Authorization.Policy;
     using HealthGateway.Common.Data.ErrorHandling;
     using HealthGateway.Patient.Constants;
+    using HealthGateway.Patient.Models;
     using HealthGateway.Patient.Services;
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Http;
@@ -47,10 +48,10 @@ namespace HealthGateway.Patient.Controllers
         }
 
         /// <summary>
-        /// Queries patient data for a specific patient and one or more data types.
+        /// Queries patient data for a specific patient and one or more health option types.
         /// </summary>
         /// <param name="hdid">The patient hdid.</param>
-        /// <param name="patientDataTypes">array of data types to query.</param>
+        /// <param name="healthOptionsTypes">array of health option types to query.</param>
         /// <param name="ct">cancellation token.</param>
         /// <returns>object with an array of patient data information.</returns>
         [HttpGet("{hdid}")]
@@ -60,19 +61,48 @@ namespace HealthGateway.Patient.Controllers
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status502BadGateway)]
-        public async Task<ActionResult<PatientDataResponse>> Get(string hdid, [FromQuery] PatientDataType[] patientDataTypes, CancellationToken ct)
+        public async Task<ActionResult<PatientDataResponse>> Get(string hdid, [FromQuery] HealthOptionsType[] healthOptionsTypes, CancellationToken ct)
         {
             if (string.IsNullOrEmpty(hdid))
             {
                 throw new ProblemDetailsException(ExceptionUtility.CreateValidationError(nameof(hdid), "Hdid is missing"));
             }
 
-            if (patientDataTypes == null || !patientDataTypes.Any())
+            if (healthOptionsTypes == null || !healthOptionsTypes.Any())
             {
-                throw new ProblemDetailsException(ExceptionUtility.CreateValidationError(nameof(patientDataTypes), "Must have at least one data type"));
+                throw new ProblemDetailsException(ExceptionUtility.CreateValidationError(nameof(healthOptionsTypes), "Must have at least one health option type"));
             }
 
-            return await this.patientDataService.Query(new PatientDataQuery(hdid, patientDataTypes), ct).ConfigureAwait(true);
+            return await this.patientDataService.Query(new PatientDataOptionsQuery(hdid, healthOptionsTypes), ct).ConfigureAwait(true);
+        }
+
+        /// <summary>
+        /// Queries patient data for a specific patient and one or more health data types.
+        /// </summary>
+        /// <param name="hdid">The patient hdid.</param>
+        /// <param name="healthDataTypes">array of data types to query.</param>
+        /// <param name="ct">cancellation token.</param>
+        /// <returns>object with an array of patient data information.</returns>
+        [HttpGet("{hdid}")]
+        [Authorize(policy: PatientPolicy.Read)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status502BadGateway)]
+        public async Task<ActionResult<PatientDataResponse>> Get(string hdid, [FromQuery] HealthDataType[] healthDataTypes, CancellationToken ct)
+        {
+            if (string.IsNullOrEmpty(hdid))
+            {
+                throw new ProblemDetailsException(ExceptionUtility.CreateValidationError(nameof(hdid), "Hdid is missing"));
+            }
+
+            if (healthDataTypes == null || !healthDataTypes.Any())
+            {
+                throw new ProblemDetailsException(ExceptionUtility.CreateValidationError(nameof(healthDataTypes), "Must have at least one health data type"));
+            }
+
+            return await this.patientDataService.Query(new PatientDataQuery(hdid, healthDataTypes), ct).ConfigureAwait(true);
         }
 
         /// <summary>

@@ -15,15 +15,9 @@
 // -------------------------------------------------------------------------
 namespace HealthGateway.Patient.Services
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Runtime.Serialization;
-    using System.Text.Json.Serialization;
     using System.Threading;
     using System.Threading.Tasks;
-    using HealthGateway.Common.Utils;
-    using HealthGateway.Patient.Constants;
-    using HealthGateway.PatientDataAccess;
+    using HealthGateway.Patient.Models;
 
     /// <summary>
     /// Provides access to patient related data services.
@@ -31,12 +25,12 @@ namespace HealthGateway.Patient.Services
     public interface IPatientDataService
     {
         /// <summary>
-        /// Query data services.
+        /// Query data services for health options.
         /// </summary>
         /// <param name="query">The query message.</param>
         /// <param name="ct">The cancellation token.</param>
         /// <returns>The Response message.</returns>
-        Task<PatientDataResponse> Query(PatientDataQuery query, CancellationToken ct);
+        Task<PatientDataResponse> Query(PatientDataOptionsQuery query, CancellationToken ct);
 
         /// <summary>
         /// Query patient files.
@@ -45,97 +39,13 @@ namespace HealthGateway.Patient.Services
         /// <param name="ct">The cancellation token.</param>
         /// <returns>Patient file or null if not found.</returns>
         Task<PatientFileResponse?> Query(PatientFileQuery query, CancellationToken ct);
+
+        /// <summary>
+        /// Query data services for health data.
+        /// </summary>
+        /// <param name="query">The query message.</param>
+        /// <param name="ct">The cancellation token.</param>
+        /// <returns>Patient data in the response message.</returns>
+        Task<PatientDataResponse> Query(PatientDataQuery query, CancellationToken ct);
     }
-
-    /// <summary>
-    /// Query message for patient data services.
-    /// </summary>
-    /// <param name="Hdid">The patient hdid.</param>
-    /// <param name="PatientDataTypes">The data types to query.</param>
-    public record PatientDataQuery(string Hdid, IEnumerable<PatientDataType> PatientDataTypes);
-
-    /// <summary>
-    /// Response message with patient data.
-    /// </summary>
-    /// <param name="Items">list of patient data information.</param>
-    public record PatientDataResponse(IEnumerable<PatientData> Items);
-
-    /// <summary>
-    /// abstract record that contains patient data.
-    /// </summary>
-    [JsonConverter(typeof(PatientDataJsonConverter))]
-    [KnownType(typeof(OrganDonorRegistrationData))]
-    public abstract record PatientData
-    {
-        /// <summary>
-        /// Gets or sets the type of the patient data.
-        /// </summary>
-        public abstract string Type { get; set; }
-    }
-
-    /// <summary>
-    /// Organ donor patient data.
-    /// </summary>
-    public record OrganDonorRegistrationData : PatientData
-    {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="OrganDonorRegistrationData"/> class.
-        /// </summary>
-        /// <param name="status">The registration status.</param>
-        /// <param name="statusMessage">Optional message related to the status.</param>
-        /// <param name="registrationFileId">Optional registration file id.</param>
-        public OrganDonorRegistrationData(DonorRegistrationStatus status, string? statusMessage, string? registrationFileId)
-        {
-            this.Status = status;
-            this.StatusMessage = statusMessage;
-            this.RegistrationFileId = registrationFileId;
-        }
-
-        /// <summary>
-        /// Gets or sets the registration status.
-        /// </summary>
-        public DonorRegistrationStatus Status { get; set; } = DonorRegistrationStatus.NotRegistered;
-
-        /// <summary>
-        /// Gets or sets the message associated with the donor registration status.
-        /// </summary>
-        public string? StatusMessage { get; set; }
-
-        /// <summary>
-        /// Gets or sets the file ID associated with the donor registration.
-        /// </summary>
-        public string? RegistrationFileId { get; set; }
-
-        /// <inheritdoc/>
-        public override string Type { get; set; } = nameof(OrganDonorRegistrationData);
-    }
-
-    /// <summary>
-    /// Query patient files.
-    /// </summary>
-    /// <param name="Hdid">Patient's hdid.</param>
-    /// <param name="FileId">File id.</param>
-    public record PatientFileQuery(string Hdid, string FileId);
-
-    /// <summary>
-    /// Patient file response.
-    /// </summary>
-    /// <param name="Content">The file content.</param>
-    /// <param name="ContentType">The file content type.</param>
-    public record PatientFileResponse(IEnumerable<byte> Content, string ContentType);
-
-// Disable documentation for internal class.
-#pragma warning disable SA1600
-    internal class PatientDataJsonConverter : PolymorphicJsonConverter<PatientData>
-    {
-        protected override string ResolveDiscriminatorValue(PatientData value) => value.Type;
-
-        protected override Type? ResolveType(string discriminatorValue) =>
-            discriminatorValue switch
-            {
-                nameof(OrganDonorRegistrationData) => typeof(OrganDonorRegistrationData),
-                _ => null,
-            };
-    }
-#pragma warning restore SA1600
 }

@@ -13,10 +13,21 @@
 //  See the License for the specific language governing permissions and
 //  limitations under the License.
 // -------------------------------------------------------------------------
-namespace HealthGateway.PatientDataAccess
+namespace HealthGateway.Patient.Models
 {
+    using System.Collections.Generic;
+
     /// <summary>
-    /// abstract root record for patient data access.
+    /// Query patient files.
     /// </summary>
-    public abstract record BasePatientData;
+    /// <param name="Hdid">Patient's hdid.</param>
+    /// <param name="FileId">File id.</param>
+    public record PatientFileQuery(string Hdid, string FileId);
+
+    /// <summary>
+    /// Patient file response.
+    /// </summary>
+    /// <param name="Content">The file content.</param>
+    /// <param name="ContentType">The file content type.</param>
+    public record PatientFileResponse(IEnumerable<byte> Content, string ContentType);
 }

@@ -1,4 +1,4 @@
-﻿// -------------------------------------------------------------------------
+// -------------------------------------------------------------------------
 //  Copyright © 2019 Province of British Columbia
 //
 //  Licensed under the Apache License, Version 2.0 (the "License");
@@ -13,10 +13,19 @@
 //  See the License for the specific language governing permissions and
 //  limitations under the License.
 // -------------------------------------------------------------------------
-namespace HealthGateway.PatientDataAccess
+namespace HealthGateway.Patient.Constants
 {
+    using System.Text.Json.Serialization;
+
     /// <summary>
-    /// abstract root record for patient data access.
+    /// Patient health option types.
     /// </summary>
-    public abstract record BasePatientData;
+    [JsonConverter(typeof(JsonStringEnumMemberConverter))]
+    public enum HealthOptionsType
+    {
+        /// <summary>
+        /// Organ donor registration status.
+        /// </summary>
+        OrganDonorRegistrationStatus,
+    }
 }

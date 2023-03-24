@@ -13,10 +13,34 @@
 //  See the License for the specific language governing permissions and
 //  limitations under the License.
 // -------------------------------------------------------------------------
-namespace HealthGateway.PatientDataAccess
+namespace HealthGateway.Patient.Constants
 {
+    using System.Text.Json.Serialization;
+
     /// <summary>
-    /// abstract root record for patient data access.
+    /// Patient health data types.
     /// </summary>
-    public abstract record BasePatientData;
+    [JsonConverter(typeof(JsonStringEnumMemberConverter))]
+    public enum HealthDataType
+    {
+        /// <summary>
+        /// Laboratory data.
+        /// </summary>
+        Laboratory,
+
+        /// <summary>
+        /// COVID19 Laboratory data.
+        /// </summary>
+        Covid19Laboratory,
+
+        /// <summary>
+        /// Clinical Document data.
+        /// </summary>
+        ClinicalDocument,
+
+        /// <summary>
+        /// Diagnostic Imaging data.
+        /// </summary>
+        DiagnosticImaging,
+    }
 }
