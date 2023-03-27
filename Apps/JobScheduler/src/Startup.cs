@@ -24,6 +24,7 @@ namespace HealthGateway.JobScheduler
     using HealthGateway.Common.Api;
     using HealthGateway.Common.AspNetConfiguration;
     using HealthGateway.Common.AspNetConfiguration.Modules;
+    using HealthGateway.Common.Delegates;
     using HealthGateway.Common.Delegates.PHSA;
     using HealthGateway.Common.Jobs;
     using HealthGateway.Common.Models;
@@ -114,6 +115,10 @@ namespace HealthGateway.JobScheduler
             services.AddTransient<ICommunicationService, CommunicationService>();
             services.AddTransient<IWriteAuditEventDelegate, DbWriteAuditEventDelegate>();
 
+            Patient.ConfigurePatientAccess(services, this.logger, this.configuration);
+            services.AddTransient<IClientRegistriesDelegate, ClientRegistriesDelegate>();
+            services.AddTransient<IPatientService, PatientService>();
+
             // Add API Clients
             NotificationSettingsConfig notificationSettingsConfig = new();
             this.startupConfig.Configuration.Bind(NotificationSettingsConfig.NotificationSettingsConfigSectionKey, notificationSettingsConfig);
@@ -130,6 +135,7 @@ namespace HealthGateway.JobScheduler
             services.AddTransient<IEmailJob, EmailJob>();
             services.AddTransient<INotificationSettingsJob, NotificationSettingsJob>();
             services.AddTransient<IAdminFeedbackJob, AdminFeedbackJob>();
+            services.AddTransient<DependentExpiryDateJob>();
 
             // Enable Hangfire
             services.AddHangfire(x => x.UsePostgreSqlStorage(this.configuration.GetConnectionString("GatewayConnection")));
