@@ -102,6 +102,12 @@ namespace HealthGateway.Patient.Controllers
                 throw new ProblemDetailsException(ExceptionUtility.CreateValidationError(nameof(healthDataTypes), "Must have at least one health data type"));
             }
 
+            if (healthDataTypes.Contains(HealthDataType.Laboratory) || healthDataTypes.Contains(HealthDataType.Covid19Laboratory) || healthDataTypes.Contains(HealthDataType.ClinicalDocument))
+            {
+                throw new ProblemDetailsException(
+                    ExceptionUtility.CreateValidationError(nameof(healthDataTypes), "Laboratory, Covid19Laboratory and ClinicalDocument are not yet supported in GetData"));
+            }
+
             return await this.patientDataService.Query(new PatientDataQuery(hdid, healthDataTypes), ct).ConfigureAwait(true);
         }
 
