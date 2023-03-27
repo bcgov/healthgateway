@@ -42,16 +42,16 @@ export class RestPatientDataService implements IPatientDataService {
 
     public getPatientData(
         hdid: string,
-        patientDataTypes: HealthOptionsType[]
+        healthOptionsTypes: HealthOptionsType[]
     ): Promise<PatientData> {
         const delimiter = "healthOptionsTypes=";
-        const patientDataTypeQueryArray =
-            delimiter + patientDataTypes.join(`&${delimiter}`);
+        const optionsTypeQueryArray =
+            delimiter + healthOptionsTypes.join(`&${delimiter}`);
         return new Promise((resolve, reject) => {
             this.isServicesEnabled(reject);
             this.http
                 .getWithCors<PatientData>(
-                    `${this.serviceBaseUri}${this.BASE_URI}/${hdid}/Options?${patientDataTypeQueryArray}&api-version=2.0`
+                    `${this.serviceBaseUri}${this.BASE_URI}/${hdid}/Options?${optionsTypeQueryArray}&api-version=2.0`
                 )
                 .then(resolve)
                 .catch((err: HttpError) => {
