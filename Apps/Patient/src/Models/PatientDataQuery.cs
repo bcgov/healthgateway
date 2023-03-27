@@ -28,6 +28,12 @@ namespace HealthGateway.Patient.Models
     public record PatientDataQuery(string Hdid, IEnumerable<HealthDataType> HealthDataTypes);
 
     /// <summary>
+    /// Response message with patient data health data records.
+    /// </summary>
+    /// <param name="Items">list of patient data information.</param>
+    public record PatientDataResponse(IEnumerable<BasePatientDataRecord> Items);
+
+    /// <summary>
     /// Data model for PatientDataAccess's DiagnosticImagingSummary.
     /// </summary>
     public record DiagnosticImagingData
@@ -41,7 +47,7 @@ namespace HealthGateway.Patient.Models
     /// <summary>
     /// The details of a diagnostic imaging exam.
     /// </summary>
-    public record DiagnosticImagingExamData : PatientData
+    public record DiagnosticImagingExamData : BasePatientDataRecord
     {
         /// <summary>
         /// Gets or sets the exam's procedure description.

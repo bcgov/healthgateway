@@ -45,25 +45,24 @@ namespace HealthGateway.PatientTests.Services
         [Fact]
         public void CanSerializePatientData()
         {
-            OrganDonorRegistrationData organDonorRegistationData = new(DonorRegistrationStatus.Registered, "Message", Guid.NewGuid().ToString());
+            OrganDonorRegistrationInfo organDonorRegistrationInfo = new(DonorRegistrationStatus.Registered, "Message", Guid.NewGuid().ToString());
 
-            PatientData[] data =
+            BasePatientOptionRecord[] data =
             {
-                organDonorRegistationData,
+                organDonorRegistrationInfo,
             };
+            PatientOptionsResponse optionsResponse = new(data);
 
-            PatientDataResponse response = new(data);
-
-            string serialized = JsonSerializer.Serialize(response);
+            string serialized = JsonSerializer.Serialize(optionsResponse);
 
             serialized.ShouldNotBeNullOrEmpty();
 
-            PatientDataResponse deserialized = JsonSerializer.Deserialize<PatientDataResponse>(serialized).ShouldNotBeNull();
+            PatientOptionsResponse deserialized = JsonSerializer.Deserialize<PatientOptionsResponse>(serialized).ShouldNotBeNull();
 
-            OrganDonorRegistrationData actualOrganDonorRegistrationData = deserialized.Items.ShouldHaveSingleItem().ShouldBeOfType<OrganDonorRegistrationData>();
-            actualOrganDonorRegistrationData.Status.ShouldBe(organDonorRegistationData.Status);
-            actualOrganDonorRegistrationData.StatusMessage.ShouldBe(organDonorRegistationData.StatusMessage);
-            actualOrganDonorRegistrationData.RegistrationFileId.ShouldBe(organDonorRegistationData.RegistrationFileId);
+            OrganDonorRegistrationInfo actualOrganDonorRegistrationInfo = deserialized.Items.ShouldHaveSingleItem().ShouldBeOfType<OrganDonorRegistrationInfo>();
+            actualOrganDonorRegistrationInfo.Status.ShouldBe(organDonorRegistrationInfo.Status);
+            actualOrganDonorRegistrationInfo.StatusMessage.ShouldBe(organDonorRegistrationInfo.StatusMessage);
+            actualOrganDonorRegistrationInfo.RegistrationFileId.ShouldBe(organDonorRegistrationInfo.RegistrationFileId);
         }
 
         [Fact]
@@ -97,9 +96,10 @@ namespace HealthGateway.PatientTests.Services
 
             PatientDataService sut = new(patientDataRepository.Object, personalAccountService.Object, this.mapper);
 
-            PatientDataResponse result = await sut.Query(new PatientDataOptionsQuery(this.hdid, new[] { HealthOptionsType.OrganDonorRegistrationStatus }), CancellationToken.None).ConfigureAwait(true);
+            PatientOptionsResponse result = await sut.Query(new PatientOptionsQuery(this.hdid, new[] { HealthOptionsType.OrganDonorRegistrationStatus }), CancellationToken.None)
+                .ConfigureAwait(true);
 
-            OrganDonorRegistrationData actual = result.Items.ShouldHaveSingleItem().ShouldBeOfType<OrganDonorRegistrationData>();
+            OrganDonorRegistrationInfo actual = result.Items.ShouldHaveSingleItem().ShouldBeOfType<OrganDonorRegistrationInfo>();
             actual.Status.ShouldBe(expected.Status);
             actual.StatusMessage.ShouldBe(expected.StatusMessage);
             actual.RegistrationFileId.ShouldBe(expected.RegistrationFileId);

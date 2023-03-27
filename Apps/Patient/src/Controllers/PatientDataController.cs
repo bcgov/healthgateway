@@ -54,14 +54,14 @@ namespace HealthGateway.Patient.Controllers
         /// <param name="healthOptionsTypes">array of health option types to query.</param>
         /// <param name="ct">cancellation token.</param>
         /// <returns>object with an array of patient data information.</returns>
-        [HttpGet("{hdid}")]
+        [HttpGet("{hdid}/Options")]
         [Authorize(policy: PatientPolicy.Read)]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status502BadGateway)]
-        public async Task<ActionResult<PatientDataResponse>> Get(string hdid, [FromQuery] HealthOptionsType[] healthOptionsTypes, CancellationToken ct)
+        public async Task<ActionResult<PatientOptionsResponse>> GetOptions(string hdid, [FromQuery] HealthOptionsType[] healthOptionsTypes, CancellationToken ct)
         {
             if (string.IsNullOrEmpty(hdid))
             {
@@ -73,7 +73,7 @@ namespace HealthGateway.Patient.Controllers
                 throw new ProblemDetailsException(ExceptionUtility.CreateValidationError(nameof(healthOptionsTypes), "Must have at least one health option type"));
             }
 
-            return await this.patientDataService.Query(new PatientDataOptionsQuery(hdid, healthOptionsTypes), ct).ConfigureAwait(true);
+            return await this.patientDataService.Query(new PatientOptionsQuery(hdid, healthOptionsTypes), ct).ConfigureAwait(true);
         }
 
         /// <summary>
@@ -83,14 +83,14 @@ namespace HealthGateway.Patient.Controllers
         /// <param name="healthDataTypes">array of data types to query.</param>
         /// <param name="ct">cancellation token.</param>
         /// <returns>object with an array of patient data information.</returns>
-        [HttpGet("{hdid}")]
+        [HttpGet("{hdid}/Data")]
         [Authorize(policy: PatientPolicy.Read)]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status502BadGateway)]
-        public async Task<ActionResult<PatientDataResponse>> Get(string hdid, [FromQuery] HealthDataType[] healthDataTypes, CancellationToken ct)
+        public async Task<ActionResult<PatientDataResponse>> GetData(string hdid, [FromQuery] HealthDataType[] healthDataTypes, CancellationToken ct)
         {
             if (string.IsNullOrEmpty(hdid))
             {

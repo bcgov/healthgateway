@@ -30,7 +30,7 @@ namespace HealthGateway.Patient.Services
         /// <param name="query">The query message.</param>
         /// <param name="ct">The cancellation token.</param>
         /// <returns>The Response message.</returns>
-        Task<PatientDataResponse> Query(PatientDataOptionsQuery query, CancellationToken ct);
+        Task<PatientOptionsResponse> Query(PatientOptionsQuery query, CancellationToken ct);
 
         /// <summary>
         /// Query patient files.
