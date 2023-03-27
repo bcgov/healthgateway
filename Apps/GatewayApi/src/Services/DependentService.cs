@@ -52,6 +52,7 @@ namespace HealthGateway.GatewayApi.Services
         private readonly int maxDependentAge;
         private readonly INotificationSettingsService notificationSettingsService;
         private readonly IPatientService patientService;
+        private readonly IDelegationDelegate delegationDelegate;
         private readonly IResourceDelegateDelegate resourceDelegateDelegate;
         private readonly IUserProfileDelegate userProfileDelegate;
 
@@ -60,24 +61,27 @@ namespace HealthGateway.GatewayApi.Services
         /// </summary>
         /// <param name="configuration">The injected configuration provider.</param>
         /// <param name="logger">Injected Logger Provider.</param>
-        /// <param name="userProfileDelegate">The profile delegate to interact with the DB.</param>
         /// <param name="patientService">The injected patient registry provider.</param>
         /// <param name="notificationSettingsService">Notification settings service.</param>
+        /// <param name="delegationDelegate">The delegation delegate to interact with the DB.</param>
         /// <param name="resourceDelegateDelegate">The ResourceDelegate delegate to interact with the DB.</param>
+        /// <param name="userProfileDelegate">The profile delegate to interact with the DB.</param>
         /// <param name="autoMapper">The inject automapper provider.</param>
         public DependentService(
             IConfiguration configuration,
             ILogger<DependentService> logger,
-            IUserProfileDelegate userProfileDelegate,
             IPatientService patientService,
             INotificationSettingsService notificationSettingsService,
+            IDelegationDelegate delegationDelegate,
             IResourceDelegateDelegate resourceDelegateDelegate,
+            IUserProfileDelegate userProfileDelegate,
             IMapper autoMapper)
         {
             this.logger = logger;
             this.patientService = patientService;
-            this.resourceDelegateDelegate = resourceDelegateDelegate;
             this.notificationSettingsService = notificationSettingsService;
+            this.delegationDelegate = delegationDelegate;
+            this.resourceDelegateDelegate = resourceDelegateDelegate;
             this.userProfileDelegate = userProfileDelegate;
             this.maxDependentAge = configuration.GetSection(WebClientConfigSection).GetValue(MaxDependentAgeKey, 12);
             this.autoMapper = autoMapper;
@@ -114,11 +118,18 @@ namespace HealthGateway.GatewayApi.Services
                         return RequestResultFactory.ActionRequired<DependentModel>(ActionType.NoHdId, ErrorMessages.InvalidServicesCard);
                     }
 
+                    // Verify delegate is allowed to access dependent
+                    Dependent? dependent = await this.delegationDelegate.GetDependentAsync(patientResult.ResourcePayload?.HdId, true).ConfigureAwait(true);
+                    if (dependent is { Protected: true } && dependent.AllowedDelegations.All(d => d.DelegateHdId != delegateHdId))
+                    {
+                        return RequestResultFactory.ActionRequired<DependentModel>(ActionType.Protected, ErrorMessages.CannotPerformAction);
+                    }
+
                     break;
             }
 
             // Insert Dependent to database
-            ResourceDelegate dependent = new()
+            ResourceDelegate resourceDelegate = new()
             {
                 ResourceOwnerHdid = patientResult.ResourcePayload.HdId,
                 ProfileHdid = delegateHdId,
@@ -127,19 +138,19 @@ namespace HealthGateway.GatewayApi.Services
                 ReasonObjectType = null,
                 ReasonObject = null,
             };
-            DbResult<ResourceDelegate> dbDependent = this.resourceDelegateDelegate.Insert(dependent, true);
+            DbResult<ResourceDelegate> dbDependent = this.resourceDelegateDelegate.Insert(resourceDelegate, true);
 
             if (dbDependent.Status != DbStatusCode.Created)
             {
                 return RequestResultFactory.ServiceError<DependentModel>(ErrorType.CommunicationInternal, ServiceType.Database, dbDependent.Message);
             }
 
-            this.UpdateNotificationSettings(dependent.ResourceOwnerHdid, delegateHdId);
+            this.UpdateNotificationSettings(resourceDelegate.ResourceOwnerHdid, delegateHdId);
 
             DbResult<Dictionary<string, int>> totalDelegateCounts = await this.resourceDelegateDelegate.GetTotalDelegateCountsAsync(
-                    new List<string> { dependent.ResourceOwnerHdid })
+                    new List<string> { resourceDelegate.ResourceOwnerHdid })
                 .ConfigureAwait(true);
-            int totalDelegateCount = totalDelegateCounts.Payload.GetValueOrDefault(dependent.ResourceOwnerHdid);
+            int totalDelegateCount = totalDelegateCounts.Payload.GetValueOrDefault(resourceDelegate.ResourceOwnerHdid);
 
             return RequestResultFactory.Success(DependentMapUtils.CreateFromDbModels(dbDependent.Payload, patientResult.ResourcePayload, totalDelegateCount, this.autoMapper));
         }

@@ -108,6 +108,7 @@ namespace HealthGateway.GatewayApi
             services.AddTransient<ICryptoDelegate, AesCryptoDelegate>();
             services.AddTransient<ICommunicationDelegate, DbCommunicationDelegate>();
             services.AddTransient<IUserPreferenceDelegate, DbUserPreferenceDelegate>();
+            services.AddTransient<IDelegationDelegate, DbDelegationDelegate>();
             services.AddTransient<IResourceDelegateDelegate, DbResourceDelegateDelegate>();
             services.AddTransient<ICDogsDelegate, CDogsDelegate>();
 
