@@ -30,6 +30,8 @@ export default class HospitalVisitReportComponent extends Vue {
 
     @Prop() private filter!: ReportFilter;
 
+    @Prop({ default: false }) isDependent!: boolean;
+
     @Action("retrieveHospitalVisits", { namespace: "encounter" })
     retrieveHospitalVisits!: (params: { hdid: string }) => Promise<void>;
 
@@ -159,7 +161,7 @@ export default class HospitalVisitReportComponent extends Vue {
                 </b-row>
 
                 <b-table
-                    v-if="!isEmpty || isLoading"
+                    v-if="(!isEmpty || isLoading) && !isDependent"
                     :striped="true"
                     :fixed="true"
                     :busy="isLoading"

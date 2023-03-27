@@ -38,6 +38,8 @@ export default class ImmunizationHistoryReportComponent extends Vue {
 
     @Prop() private filter!: ReportFilter;
 
+    @Prop({ default: false }) isDependent!: boolean;
+
     @Getter("immunizationsAreDeferred", { namespace: "immunization" })
     immunizationsAreDeferred!: (hdid: string) => boolean;
 
@@ -199,7 +201,9 @@ export default class ImmunizationHistoryReportComponent extends Vue {
                 records: this.immunizationItems,
                 recommendations: this.recomendationItems,
             },
-            template: TemplateType.Immunization,
+            template: this.isDependent
+                ? TemplateType.DependentImmunization
+                : TemplateType.Immunization,
             type: reportFormatType,
         });
     }
@@ -258,7 +262,7 @@ export default class ImmunizationHistoryReportComponent extends Vue {
 <template>
     <div>
         <section>
-            <b-row class="d-none d-md-block">
+            <b-row v-if="!isDependent" class="d-none d-md-block">
                 <b-col>
                     <h4>Immunization History</h4>
                 </b-col>
@@ -273,7 +277,7 @@ export default class ImmunizationHistoryReportComponent extends Vue {
                 <b-col>No records found.</b-col>
             </b-row>
             <b-table
-                v-if="!isEmpty || isLoading"
+                v-if="(!isEmpty || isLoading) && !isDependent"
                 striped
                 :busy="isLoading"
                 :items="immunizationItems"
@@ -306,7 +310,7 @@ export default class ImmunizationHistoryReportComponent extends Vue {
                 </template>
             </b-table>
             <b-row class="mt-3">
-                <b-col class="col-7">
+                <b-col v-if="!isDependent" class="col-7">
                     <b-row class="d-none d-md-block">
                         <b-col>
                             <h4>Recommended Immunizations</h4>

@@ -30,8 +30,9 @@ export default class MedicationRequestReportComponent extends Vue {
     @Prop({ required: true })
     hdid!: string;
 
-    @Prop()
-    filter!: ReportFilter;
+    @Prop() filter!: ReportFilter;
+
+    @Prop({ default: false }) isDependent!: boolean;
 
     @Action("retrieveSpecialAuthorityRequests", { namespace: "medication" })
     retrieveSpecialAuthorityRequests!: (params: {
@@ -196,7 +197,7 @@ export default class MedicationRequestReportComponent extends Vue {
                 <b-col>No records found.</b-col>
             </b-row>
             <b-table
-                v-if="!isEmpty || isLoading"
+                v-if="(!isEmpty || isLoading) && !isDependent"
                 :striped="true"
                 :fixed="true"
                 :busy="isLoading"

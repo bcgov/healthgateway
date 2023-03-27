@@ -31,7 +31,7 @@ export interface DependentInformation {
 }
 
 /**
- * Model that reprensetnts a dependent relationship
+ * Model that represents a dependent relationship
  */
 export interface Dependent {
     /**

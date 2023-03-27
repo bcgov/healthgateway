@@ -36,6 +36,7 @@ import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import { ILogger } from "@/services/interfaces";
 import ConfigUtil from "@/utility/configUtil";
 import EventTracker from "@/utility/eventTracker";
+import SnowPlow from "@/utility/snowPlow";
 
 const medicationReport = "medication-report";
 const mspVisitReport = "msp-visit-report";
@@ -45,6 +46,14 @@ const medicationRequestReport = "medication-request-report";
 const noteReport = "note-report";
 const laboratoryReport = "laboratory-report";
 const hospitalVisitReport = "hospital-visit-report";
+const medicationsText = "Medications";
+const healthVisitsText = "Health Visits";
+const covid19TestResultsText = "COVID‑19 Test Results";
+const immunizationsText = "Immunizations";
+const specialAuthorityRequestsText = "Special Authority Requests";
+const myNotesText = "My Notes";
+const laboratoryTestsText = "Laboratory Tests";
+const hospitalVisitsText = "Hospital Visits";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const options: any = {
@@ -68,6 +77,8 @@ const options: any = {
 export default class ReportsComponent extends Vue {
     @Prop({ required: true })
     hdid!: string;
+
+    @Prop({ default: false }) private isDependent!: boolean;
 
     @Getter("webClient", { namespace: "config" })
     config!: WebClientConfiguration;
@@ -184,56 +195,119 @@ export default class ReportsComponent extends Vue {
         return DateWrapper.format(date);
     }
 
-    created(): void {
-        this.logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
+    setDependentReportTypeOptions(): void {
+        if (ConfigUtil.isDependentDatasetEnabled(EntryType.Medication)) {
+            this.reportTypeOptions.push({
+                value: medicationReport,
+                text: medicationsText,
+            });
+        }
+        if (ConfigUtil.isDependentDatasetEnabled(EntryType.HealthVisit)) {
+            this.reportTypeOptions.push({
+                value: mspVisitReport,
+                text: healthVisitsText,
+            });
+        }
+        if (ConfigUtil.isDependentDatasetEnabled(EntryType.Covid19TestResult)) {
+            this.reportTypeOptions.push({
+                value: covid19Report,
+                text: covid19TestResultsText,
+            });
+        }
+        if (ConfigUtil.isDependentDatasetEnabled(EntryType.Immunization)) {
+            this.reportTypeOptions.push({
+                value: immunizationReport,
+                text: immunizationsText,
+            });
+        }
+        if (
+            ConfigUtil.isDependentDatasetEnabled(
+                EntryType.SpecialAuthorityRequest
+            )
+        ) {
+            this.reportTypeOptions.push({
+                value: medicationRequestReport,
+                text: specialAuthorityRequestsText,
+            });
+        }
+        if (ConfigUtil.isDependentDatasetEnabled(EntryType.Note)) {
+            this.reportTypeOptions.push({
+                value: noteReport,
+                text: myNotesText,
+            });
+        }
+        if (ConfigUtil.isDependentDatasetEnabled(EntryType.LabResult)) {
+            this.reportTypeOptions.push({
+                value: laboratoryReport,
+                text: laboratoryTestsText,
+            });
+        }
+        if (ConfigUtil.isDependentDatasetEnabled(EntryType.HospitalVisit)) {
+            this.reportTypeOptions.push({
+                value: hospitalVisitReport,
+                text: hospitalVisitsText,
+            });
+        }
+    }
 
+    setUserReportTypeOptions(): void {
         if (ConfigUtil.isDatasetEnabled(EntryType.Medication)) {
             this.reportTypeOptions.push({
                 value: medicationReport,
-                text: "Medications",
+                text: medicationsText,
             });
         }
         if (ConfigUtil.isDatasetEnabled(EntryType.HealthVisit)) {
             this.reportTypeOptions.push({
                 value: mspVisitReport,
-                text: "Health Visits",
+                text: healthVisitsText,
             });
         }
         if (ConfigUtil.isDatasetEnabled(EntryType.Covid19TestResult)) {
             this.reportTypeOptions.push({
                 value: covid19Report,
-                text: "COVID‑19 Test Results",
+                text: covid19TestResultsText,
             });
         }
         if (ConfigUtil.isDatasetEnabled(EntryType.Immunization)) {
             this.reportTypeOptions.push({
                 value: immunizationReport,
-                text: "Immunizations",
+                text: immunizationsText,
             });
         }
         if (ConfigUtil.isDatasetEnabled(EntryType.SpecialAuthorityRequest)) {
             this.reportTypeOptions.push({
                 value: medicationRequestReport,
-                text: "Special Authority Requests",
+                text: specialAuthorityRequestsText,
             });
         }
         if (ConfigUtil.isDatasetEnabled(EntryType.Note)) {
             this.reportTypeOptions.push({
                 value: noteReport,
-                text: "My Notes",
+                text: myNotesText,
             });
         }
         if (ConfigUtil.isDatasetEnabled(EntryType.LabResult)) {
             this.reportTypeOptions.push({
                 value: laboratoryReport,
-                text: "Laboratory Tests",
+                text: laboratoryTestsText,
             });
         }
         if (ConfigUtil.isDatasetEnabled(EntryType.HospitalVisit)) {
             this.reportTypeOptions.push({
                 value: hospitalVisitReport,
-                text: "Hospital Visits",
+                text: hospitalVisitsText,
             });
+        }
+    }
+
+    created(): void {
+        this.logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
+
+        if (this.isDependent) {
+            this.setDependentReportTypeOptions();
+        } else {
+            this.setUserReportTypeOptions();
         }
     }
 
@@ -292,6 +366,13 @@ export default class ReportsComponent extends Vue {
     downloadReport(): void {
         if (this.reportComponentName === "") {
             return;
+        }
+
+        if (this.isDependent) {
+            SnowPlow.trackEvent({
+                action: "download_report",
+                text: `Dependent_${this.reportComponentName}`,
+            });
         }
 
         this.isGeneratingReport = true;
@@ -575,6 +656,7 @@ export default class ReportsComponent extends Vue {
                 ref="report"
                 :hdid="hdid"
                 :filter="reportFilter"
+                :is-dependent="isDependent"
                 @on-is-loading-changed="isLoading = $event"
                 @on-is-empty-changed="hasRecords = !$event"
             />

@@ -29,6 +29,8 @@ export default class MSPVisitsReportComponent extends Vue {
 
     @Prop() private filter!: ReportFilter;
 
+    @Prop({ default: false }) isDependent!: boolean;
+
     @Action("retrieveHealthVisits", { namespace: "encounter" })
     retrieveHealthVisits!: (params: { hdid: string }) => Promise<void>;
 
@@ -154,7 +156,7 @@ export default class MSPVisitsReportComponent extends Vue {
                 </b-row>
 
                 <b-table
-                    v-if="!isEmpty || isLoading"
+                    v-if="(!isEmpty || isLoading) && !isDependent"
                     :striped="true"
                     :fixed="true"
                     :busy="isLoading"

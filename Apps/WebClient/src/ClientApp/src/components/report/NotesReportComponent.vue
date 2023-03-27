@@ -28,6 +28,8 @@ export default class NotesReportComponent extends Vue {
 
     @Prop() private filter!: ReportFilter;
 
+    @Prop({ default: false }) isDependent!: boolean;
+
     @Action("retrieveNotes", { namespace: "note" })
     retrieveNotes!: (params: { hdid: string }) => Promise<void>;
 
@@ -152,7 +154,7 @@ export default class NotesReportComponent extends Vue {
                 </b-row>
 
                 <b-table
-                    v-if="!isEmpty || isLoading"
+                    v-if="(!isEmpty || isLoading) && !isDependent"
                     :striped="true"
                     :busy="isLoading"
                     :items="items"

@@ -29,6 +29,8 @@ export default class LaboratoryReportComponent extends Vue {
 
     @Prop() private filter!: ReportFilter;
 
+    @Prop({ default: false }) isDependent!: boolean;
+
     @Action("retrieveLaboratoryOrders", { namespace: "laboratory" })
     retrieveLaboratoryOrders!: (params: { hdid: string }) => Promise<void>;
 
@@ -157,7 +159,7 @@ export default class LaboratoryReportComponent extends Vue {
                 <b-col>No records found.</b-col>
             </b-row>
             <b-table
-                v-if="!isEmpty || isLaboratoryLoading"
+                v-if="(!isEmpty || isLaboratoryLoading) && !isDependent"
                 :striped="true"
                 :fixed="true"
                 :busy="isLaboratoryLoading"

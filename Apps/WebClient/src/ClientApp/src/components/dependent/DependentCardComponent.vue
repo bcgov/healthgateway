@@ -5,6 +5,7 @@ import { Action, Getter } from "vuex-class";
 
 import DependentDashboardTabComponent from "@/components/dependent/tabs/DependentDashboardTabComponent.vue";
 import DependentProfileTabComponent from "@/components/dependent/tabs/DependentProfileTabComponent.vue";
+import DependentReportsTabComponent from "@/components/dependent/tabs/DependentReportsTabComponent.vue";
 import DeleteModalComponent from "@/components/modal/DeleteModalComponent.vue";
 import type { WebClientConfiguration } from "@/models/configData";
 import { DateWrapper } from "@/models/dateWrapper";
@@ -17,6 +18,7 @@ const options: any = {
     components: {
         DeleteModalComponent,
         DependentDashboardTabComponent,
+        DependentReportsTabComponent,
         DependentProfileTabComponent,
     },
 };
@@ -122,6 +124,15 @@ export default class DependentCardComponent extends Vue {
                         v-else
                         :dependent="dependent"
                     />
+                </b-tab>
+                <b-tab
+                    :button-id="`report-tab-button-${dependent.ownerId}`"
+                    no-body
+                    :disabled="isExpired"
+                    title="Export Records"
+                    data-testid="report-tab"
+                >
+                    <DependentReportsTabComponent :dependent="dependent" />
                 </b-tab>
                 <b-tab
                     :button-id="`profile-tab-button-${dependent.ownerId}`"
