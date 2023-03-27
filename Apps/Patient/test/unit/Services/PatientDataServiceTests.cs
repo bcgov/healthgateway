@@ -32,6 +32,7 @@ namespace HealthGateway.PatientTests.Services
     using Moq;
     using Shouldly;
     using Xunit;
+    using PatientDataQuery = HealthGateway.Patient.Models.PatientDataQuery;
     using PatientFileQuery = HealthGateway.PatientDataAccess.PatientFileQuery;
 
     // Disable documentation for tests.
@@ -43,7 +44,7 @@ namespace HealthGateway.PatientTests.Services
         private readonly IMapper mapper = MapperUtil.InitializeAutoMapper();
 
         [Fact]
-        public void CanSerializePatientData()
+        public void CanSerializeHealthOptions()
         {
             OrganDonorRegistrationInfo organDonorRegistrationInfo = new(DonorRegistrationStatus.Registered, "Message", Guid.NewGuid().ToString());
 
@@ -66,7 +67,7 @@ namespace HealthGateway.PatientTests.Services
         }
 
         [Fact]
-        public async Task CanGetPatientData()
+        public async Task CanGetHealthOptions()
         {
             OrganDonorRegistration expected = new()
             {
@@ -103,6 +104,97 @@ namespace HealthGateway.PatientTests.Services
             actual.Status.ShouldBe(expected.Status);
             actual.StatusMessage.ShouldBe(expected.StatusMessage);
             actual.RegistrationFileId.ShouldBe(expected.RegistrationFileId);
+        }
+
+        [Fact]
+        public void CanSerializeHealthData()
+        {
+            DiagnosticImagingExamData imagingExamData = new()
+            {
+                Status = DiagnosticImagingStatus.Completed,
+                BodyPart = "Head",
+                Modality = "CT",
+                FileId = "some file id",
+                Organization = "some organization",
+                ExamDate = DateTime.Now,
+                HealthAuthority = "some health authority",
+                ProcedureDescription = "some procedure description",
+            };
+
+            BasePatientDataRecord[] data = { imagingExamData };
+
+            PatientDataResponse dataResponse = new(data);
+
+            string serialized = JsonSerializer.Serialize(dataResponse);
+
+            serialized.ShouldNotBeNullOrEmpty();
+
+            PatientDataResponse deserialized = JsonSerializer.Deserialize<PatientDataResponse>(serialized).ShouldNotBeNull();
+
+            DiagnosticImagingExamData actualDiagnosticImageExamData = deserialized.Items.ShouldHaveSingleItem().ShouldBeOfType<DiagnosticImagingExamData>();
+            actualDiagnosticImageExamData.Status.ShouldBe(imagingExamData.Status);
+            actualDiagnosticImageExamData.BodyPart.ShouldBe(imagingExamData.BodyPart);
+            actualDiagnosticImageExamData.Modality.ShouldBe(imagingExamData.Modality);
+            actualDiagnosticImageExamData.FileId.ShouldBe(imagingExamData.FileId);
+            actualDiagnosticImageExamData.Organization.ShouldBe(imagingExamData.Organization);
+            actualDiagnosticImageExamData.ExamDate.ShouldBe(imagingExamData.ExamDate);
+            actualDiagnosticImageExamData.HealthAuthority.ShouldBe(imagingExamData.HealthAuthority);
+            actualDiagnosticImageExamData.ProcedureDescription.ShouldBe(imagingExamData.ProcedureDescription);
+        }
+
+        [Fact]
+        public async Task CanGetHealthData()
+        {
+            DiagnosticImagingExam imagingExamData = new()
+            {
+                Status = DiagnosticImagingStatus.Completed,
+                BodyPart = "Head",
+                Modality = "CT",
+                FileId = "some file id",
+                Organization = "some organization",
+                ExamDate = DateTime.Now,
+                HealthAuthority = "some health authority",
+                ProcedureDescription = "some procedure description",
+            };
+            DiagnosticImagingSummary expected = new()
+            {
+                Exams = new[] { imagingExamData },
+            };
+
+            Mock<IPatientDataRepository> patientDataRepository = new();
+            patientDataRepository
+                .Setup(
+                    o => o.Query(
+                        It.Is<HealthDataQuery>(
+                            q =>
+                                q.Pid == this.pid && q.Categories.Any(c => c == HealthDataCategory.DiagnosticImaging)),
+                        It.IsAny<CancellationToken>()))
+                .ReturnsAsync(new PatientDataQueryResult(new[] { expected }));
+
+            Mock<IPersonalAccountsService> personalAccountService = new();
+            personalAccountService.Setup(o => o.GetPatientAccountAsync(this.hdid))
+                .ReturnsAsync(
+                    new PersonalAccount
+                    {
+                        Id = Guid.NewGuid(),
+                        PatientIdentity = new PatientIdentity { Pid = this.pid },
+                    });
+
+            PatientDataService sut = new(patientDataRepository.Object, personalAccountService.Object, this.mapper);
+
+            PatientDataResponse result = await sut.Query(new PatientDataQuery(this.hdid, new[] { HealthDataType.DiagnosticImaging }), CancellationToken.None)
+                .ConfigureAwait(true);
+
+            DiagnosticImagingExamData actual = result.Items.ShouldHaveSingleItem().ShouldBeOfType<DiagnosticImagingExamData>();
+
+            actual.Status.ShouldBe(imagingExamData.Status);
+            actual.BodyPart.ShouldBe(imagingExamData.BodyPart);
+            actual.Modality.ShouldBe(imagingExamData.Modality);
+            actual.FileId.ShouldBe(imagingExamData.FileId);
+            actual.Organization.ShouldBe(imagingExamData.Organization);
+            actual.ExamDate.ShouldBe(imagingExamData.ExamDate);
+            actual.HealthAuthority.ShouldBe(imagingExamData.HealthAuthority);
+            actual.ProcedureDescription.ShouldBe(imagingExamData.ProcedureDescription);
         }
 
         [Fact]

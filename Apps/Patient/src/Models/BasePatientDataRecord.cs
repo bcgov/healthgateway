@@ -28,9 +28,9 @@ namespace HealthGateway.Patient.Models
     public abstract record BasePatientDataRecord
     {
         /// <summary>
-        /// Gets or sets the type of the patient data.
+        /// Gets the type of the patient data.
         /// </summary>
-        public abstract string Type { get; set; }
+        public abstract string Type { get; }
     }
 
     // Disable documentation for internal class.

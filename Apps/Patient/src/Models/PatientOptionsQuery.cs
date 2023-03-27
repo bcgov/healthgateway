@@ -66,6 +66,6 @@ namespace HealthGateway.Patient.Models
         public string? RegistrationFileId { get; set; }
 
         /// <inheritdoc/>
-        public override string Type { get; set; } = nameof(OrganDonorRegistrationInfo);
+        public override string Type => nameof(OrganDonorRegistrationInfo);
     }
 }

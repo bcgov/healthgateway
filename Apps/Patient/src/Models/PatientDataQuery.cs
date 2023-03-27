@@ -90,6 +90,6 @@ namespace HealthGateway.Patient.Models
         public DateTime? ExamDate { get; set; }
 
         /// <inheritdoc/>
-        public override string Type { get; set; } = nameof(DiagnosticImagingExamData);
+        public override string Type => nameof(DiagnosticImagingExamData);
     }
 }
