@@ -1,7 +1,7 @@
 const { AuthMethod, Dataset } = require("../../../support/constants");
 
 const authorizedDependentHdid = "162346565465464564565463257";
-const unauthorizedDependentHdid = "BNV554213556";
+const unauthorizedDependentHdid = "343222434345442257";
 const formattedDependentName = "JENNIFER T";
 
 const homePath = "/home";
@@ -32,7 +32,7 @@ function toPascalCase(s) {
     return s.charAt(0).toUpperCase() + s.slice(1);
 }
 
-function enabledDatasetShouldBePresent(dataset) {
+function enabledDatasetShouldBePresent(dataset, overrideDependentHdid = null) {
     cy.configureSettings({
         datasets: [
             {
@@ -50,7 +50,9 @@ function enabledDatasetShouldBePresent(dataset) {
         Cypress.env("keycloak.username"),
         Cypress.env("keycloak.password"),
         AuthMethod.KeyCloak,
-        `/dependents/${authorizedDependentHdid}/timeline`
+        `/dependents/${
+            overrideDependentHdid ?? authorizedDependentHdid
+        }/timeline`
     );
     cy.checkTimelineHasLoaded();
 
@@ -58,7 +60,10 @@ function enabledDatasetShouldBePresent(dataset) {
     assertDatasetPresence(dataset, true);
 }
 
-function disabledDatasetShouldNotBePresent(dataset) {
+function disabledDatasetShouldNotBePresent(
+    dataset,
+    overrideDependentHdid = null
+) {
     cy.configureSettings({
         datasets: [
             {
@@ -76,7 +81,9 @@ function disabledDatasetShouldNotBePresent(dataset) {
         Cypress.env("keycloak.username"),
         Cypress.env("keycloak.password"),
         AuthMethod.KeyCloak,
-        `/dependents/${authorizedDependentHdid}/timeline`
+        `/dependents/${
+            overrideDependentHdid ?? authorizedDependentHdid
+        }/timeline`
     );
     cy.checkTimelineHasLoaded();
 
@@ -84,7 +91,10 @@ function disabledDatasetShouldNotBePresent(dataset) {
     assertDatasetPresence(dataset, false);
 }
 
-function disabledDependentDatasetShouldNotBePresent(dataset) {
+function disabledDependentDatasetShouldNotBePresent(
+    dataset,
+    overrideDependentHdid = null
+) {
     cy.configureSettings({
         datasets: [
             {
@@ -104,7 +114,11 @@ function disabledDependentDatasetShouldNotBePresent(dataset) {
         },
     });
 
-    cy.visit(`/dependents/${authorizedDependentHdid}/timeline`);
+    cy.visit(
+        `/dependents/${
+            overrideDependentHdid ?? authorizedDependentHdid
+        }/timeline`
+    );
     cy.checkTimelineHasLoaded();
 
     cy.log(
@@ -266,20 +280,42 @@ describe("Dependent Timeline Datasets", () => {
         disabledDatasetShouldNotBePresent(Dataset.LabResult);
         disabledDependentDatasetShouldNotBePresent(Dataset.LabResult);
     });
-    it.skip("Validate health visits on dependent timeline", () => {
-        enabledDatasetShouldBePresent(Dataset.HealthVisit);
-        disabledDatasetShouldNotBePresent(Dataset.HealthVisit);
-        disabledDependentDatasetShouldNotBePresent(Dataset.HealthVisit);
-    });
-    it.skip("Validate hospital visits on dependent timeline", () => {
+    it("Validate hospital visits on dependent timeline", () => {
         enabledDatasetShouldBePresent(Dataset.HospitalVisit);
         disabledDatasetShouldNotBePresent(Dataset.HospitalVisit);
         disabledDependentDatasetShouldNotBePresent(Dataset.HospitalVisit);
     });
-    it.skip("Validate medications on dependent timeline", () => {
-        enabledDatasetShouldBePresent(Dataset.Medication);
-        disabledDatasetShouldNotBePresent(Dataset.Medication);
-        disabledDependentDatasetShouldNotBePresent(Dataset.Medication);
+    // Michael Testertwo
+    it("Validate health visits on dependent timeline", () => {
+        const overrideDependentHdid = "BNV554213556";
+        enabledDatasetShouldBePresent(
+            Dataset.HealthVisit,
+            overrideDependentHdid
+        );
+        disabledDatasetShouldNotBePresent(
+            Dataset.HealthVisit,
+            overrideDependentHdid
+        );
+        disabledDependentDatasetShouldNotBePresent(
+            Dataset.HealthVisit,
+            overrideDependentHdid
+        );
+    });
+    // Michael Testertwo
+    it("Validate medications on dependent timeline", () => {
+        const overrideDependentHdid = "BNV554213556";
+        enabledDatasetShouldBePresent(
+            Dataset.Medication,
+            overrideDependentHdid
+        );
+        disabledDatasetShouldNotBePresent(
+            Dataset.Medication,
+            overrideDependentHdid
+        );
+        disabledDependentDatasetShouldNotBePresent(
+            Dataset.Medication,
+            overrideDependentHdid
+        );
     });
     it("Validate (lack of) notes on dependent timeline", () => {
         disabledDatasetShouldNotBePresent(Dataset.Note);
