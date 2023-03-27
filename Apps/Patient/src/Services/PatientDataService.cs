@@ -43,7 +43,7 @@ namespace HealthGateway.Patient.Services
             this.mapper = mapper;
         }
 
-        public async Task<PatientDataResponse> Query(PatientDataOptionsQuery query, CancellationToken ct)
+        public async Task<PatientOptionsResponse> Query(PatientOptionsQuery query, CancellationToken ct)
         {
             Guid pid = await this.ResolvePidFromHdid(query.Hdid).ConfigureAwait(true);
             PatientDataQueryResult results = await this.patientDataRepository.Query(
@@ -51,7 +51,7 @@ namespace HealthGateway.Patient.Services
                     ct)
                 .ConfigureAwait(true);
 
-            return new PatientDataResponse(results.Items.SelectMany(this.MapToPatientData).ToArray());
+            return new PatientOptionsResponse(results.Items.SelectMany(this.MapToPatientOptionData));
         }
 
         public async Task<PatientFileResponse?> Query(PatientFileQuery query, CancellationToken ct)
@@ -71,7 +71,7 @@ namespace HealthGateway.Patient.Services
                     new HealthDataQuery(pid, query.HealthDataTypes.Select(this.MapToHealthDataCategory)),
                     ct)
                 .ConfigureAwait(true);
-            return new PatientDataResponse(results.Items.SelectMany(this.MapToPatientData).ToArray());
+            return new PatientDataResponse(results.Items.SelectMany(this.MapToPatientData));
         }
 
         private async Task<Guid> ResolvePidFromHdid(string patientHdid)
@@ -79,13 +79,21 @@ namespace HealthGateway.Patient.Services
             return (await this.personalAccountsService.GetPatientAccountAsync(patientHdid).ConfigureAwait(true)).PatientIdentity.Pid;
         }
 
-        private IEnumerable<PatientData> MapToPatientData(BasePatientData basePatientData)
+        private IEnumerable<BasePatientOptionRecord> MapToPatientOptionData(BasePatientData basePatientData)
         {
             return basePatientData switch
             {
-                OrganDonorRegistration hd => new[] { new OrganDonorRegistrationData(hd.Status, hd.StatusMessage, hd.RegistrationFileId) },
+                OrganDonorRegistration hd => new[] { new OrganDonorRegistrationInfo(hd.Status, hd.StatusMessage, hd.RegistrationFileId) },
+                _ => throw new NotImplementedException($"{basePatientData.GetType().Name} is not mapped to {nameof(BasePatientOptionRecord)}"),
+            };
+        }
+
+        private IEnumerable<BasePatientDataRecord> MapToPatientData(BasePatientData basePatientData)
+        {
+            return basePatientData switch
+            {
                 DiagnosticImagingSummary summary => this.mapper.Map<DiagnosticImagingData>(summary).Exams,
-                _ => throw new NotImplementedException($"{basePatientData.GetType().Name} is not mapped to {nameof(PatientData)}"),
+                _ => throw new NotImplementedException($"{basePatientData.GetType().Name} is not mapped to {nameof(BasePatientOptionRecord)}"),
             };
         }
 

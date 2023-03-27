@@ -24,26 +24,26 @@ namespace HealthGateway.Patient.Models
     /// </summary>
     /// <param name="Hdid">The patient hdid.</param>
     /// <param name="HealthOptionsTypes">The data types to query.</param>
-    public record PatientDataOptionsQuery(string Hdid, IEnumerable<HealthOptionsType> HealthOptionsTypes);
+    public record PatientOptionsQuery(string Hdid, IEnumerable<HealthOptionsType> HealthOptionsTypes);
 
     /// <summary>
-    /// Response message with patient data.
+    /// Response message with patient data health option records.
     /// </summary>
     /// <param name="Items">list of patient data information.</param>
-    public record PatientDataResponse(IEnumerable<PatientData> Items);
+    public record PatientOptionsResponse(IEnumerable<BasePatientOptionRecord> Items);
 
     /// <summary>
     /// Organ donor health option patient data.
     /// </summary>
-    public record OrganDonorRegistrationData : PatientData
+    public record OrganDonorRegistrationInfo : BasePatientOptionRecord
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="OrganDonorRegistrationData"/> class.
+        /// Initializes a new instance of the <see cref="OrganDonorRegistrationInfo"/> class.
         /// </summary>
         /// <param name="status">The registration status.</param>
         /// <param name="statusMessage">Optional message related to the status.</param>
         /// <param name="registrationFileId">Optional registration file id.</param>
-        public OrganDonorRegistrationData(DonorRegistrationStatus status, string? statusMessage, string? registrationFileId)
+        public OrganDonorRegistrationInfo(DonorRegistrationStatus status, string? statusMessage, string? registrationFileId)
         {
             this.Status = status;
             this.StatusMessage = statusMessage;
@@ -66,6 +66,6 @@ namespace HealthGateway.Patient.Models
         public string? RegistrationFileId { get; set; }
 
         /// <inheritdoc/>
-        public override string Type { get; set; } = nameof(OrganDonorRegistrationData);
+        public override string Type { get; set; } = nameof(OrganDonorRegistrationInfo);
     }
 }

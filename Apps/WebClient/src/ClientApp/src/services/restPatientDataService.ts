@@ -51,7 +51,7 @@ export class RestPatientDataService implements IPatientDataService {
             this.isServicesEnabled(reject);
             this.http
                 .getWithCors<PatientData>(
-                    `${this.serviceBaseUri}${this.BASE_URI}/${hdid}?${patientDataTypeQueryArray}&api-version=2.0`
+                    `${this.serviceBaseUri}${this.BASE_URI}/${hdid}/Options?${patientDataTypeQueryArray}&api-version=2.0`
                 )
                 .then(resolve)
                 .catch((err: HttpError) => {

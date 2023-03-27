@@ -23,9 +23,9 @@ namespace HealthGateway.Patient.Models
     /// <summary>
     /// abstract record that contains patient data.
     /// </summary>
-    [JsonConverter(typeof(PatientDataJsonConverter))]
-    [KnownType(typeof(OrganDonorRegistrationData))]
-    public abstract record PatientData
+    [JsonConverter(typeof(PatientOptionJsonConverter))]
+    [KnownType(typeof(OrganDonorRegistrationInfo))]
+    public abstract record BasePatientOptionRecord
     {
         /// <summary>
         /// Gets or sets the type of the patient data.
@@ -35,9 +35,9 @@ namespace HealthGateway.Patient.Models
 
     // Disable documentation for internal class.
 #pragma warning disable SA1600
-    internal class PatientDataJsonConverter : PolymorphicJsonConverter<PatientData>
+    internal class PatientOptionJsonConverter : PolymorphicJsonConverter<BasePatientOptionRecord>
     {
-        protected override string ResolveDiscriminatorValue(PatientData value)
+        protected override string ResolveDiscriminatorValue(BasePatientOptionRecord value)
         {
             return value.Type;
         }
@@ -46,7 +46,7 @@ namespace HealthGateway.Patient.Models
         {
             return discriminatorValue switch
             {
-                nameof(OrganDonorRegistrationData) => typeof(OrganDonorRegistrationData),
+                nameof(OrganDonorRegistrationInfo) => typeof(OrganDonorRegistrationInfo),
                 _ => null,
             };
         }

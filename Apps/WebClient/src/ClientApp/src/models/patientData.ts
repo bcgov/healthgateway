@@ -7,7 +7,7 @@ export enum HealthOptionsType {
 }
 
 export enum HealthOptionResponseType {
-    OrganDonorRegistrationData = "OrganDonorRegistrationData",
+    OrganDonorRegistrationInfo = "OrganDonorRegistrationInfo",
 }
 
 export abstract class PatientHealthOption {

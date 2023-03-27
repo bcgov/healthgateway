@@ -59,7 +59,8 @@ export default class OrganDonorDetailsCard extends Vue {
     get registrationData(): OrganDonorRegistrationData | undefined {
         return this.patientData(this.hdid).items.find(
             (ho: PatientHealthOption) =>
-                ho.type === HealthOptionResponseType.OrganDonorRegistrationData
+                ho.type ===
+                HealthOptionResponseType.OrganDonorRegistrationInfo
         ) as OrganDonorRegistrationData;
     }
 
