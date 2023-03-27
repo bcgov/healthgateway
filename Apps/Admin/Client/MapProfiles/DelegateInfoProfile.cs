@@ -13,34 +13,24 @@
 //  See the License for the specific language governing permissions and
 //  limitations under the License.
 // -------------------------------------------------------------------------
-namespace HealthGateway.Admin.Common.Constants
+namespace HealthGateway.Admin.Client.MapProfiles
 {
-    using System.Text.Json.Serialization;
+    using AutoMapper;
+    using HealthGateway.Admin.Client.Models;
+    using HealthGateway.Admin.Common.Models;
 
     /// <summary>
-    /// Represents the status of the delegation relationship.
+    /// An AutoMapper profile class which defines mappings to front-end models.
     /// </summary>
-    [JsonConverter(typeof(JsonStringEnumConverter))]
-    public enum DelegationStatus
+    public class DelegateInfoProfile : Profile
     {
         /// <summary>
-        /// Indicates that status hasn't been set.
+        /// Initializes a new instance of the <see cref="DelegateInfoProfile"/> class.
         /// </summary>
-        Unknown,
-
-        /// <summary>
-        /// Indicates that the delegation was added.
-        /// </summary>
-        Added,
-
-        /// <summary>
-        /// Indicates that the delegation is permitted.
-        /// </summary>
-        Allowed,
-
-        /// <summary>
-        /// Indicates that the delegation is not permitted.
-        /// </summary>
-        Disallowed,
+        public DelegateInfoProfile()
+        {
+            this.CreateMap<DelegateInfo, ExtendedDelegateInfo>()
+                .ForMember(dest => dest.StagedDelegationStatus, opt => opt.MapFrom(src => src.DelegationStatus));
+        }
     }
 }

@@ -13,34 +13,19 @@
 //  See the License for the specific language governing permissions and
 //  limitations under the License.
 // -------------------------------------------------------------------------
-namespace HealthGateway.Admin.Common.Constants
+
+namespace HealthGateway.Admin.Client.Models;
+
+using HealthGateway.Admin.Common.Constants;
+using HealthGateway.Admin.Common.Models;
+
+/// <summary>
+/// A delegate info model with additional state information.
+/// </summary>
+public class ExtendedDelegateInfo : DelegateInfo
 {
-    using System.Text.Json.Serialization;
-
     /// <summary>
-    /// Represents the status of the delegation relationship.
+    /// Gets or sets the delegation status that should be applied when changes are saved.
     /// </summary>
-    [JsonConverter(typeof(JsonStringEnumConverter))]
-    public enum DelegationStatus
-    {
-        /// <summary>
-        /// Indicates that status hasn't been set.
-        /// </summary>
-        Unknown,
-
-        /// <summary>
-        /// Indicates that the delegation was added.
-        /// </summary>
-        Added,
-
-        /// <summary>
-        /// Indicates that the delegation is permitted.
-        /// </summary>
-        Allowed,
-
-        /// <summary>
-        /// Indicates that the delegation is not permitted.
-        /// </summary>
-        Disallowed,
-    }
+    public DelegationStatus StagedDelegationStatus { get; set; }
 }

@@ -25,12 +25,22 @@ using MudBlazor;
 public partial class HgButton : HgComponentBase
 {
     /// <summary>
+    /// The default size of horizontal margins on the component.
+    /// </summary>
+    public const uint DefaultHorizontalMarginSize = 3;
+
+    /// <summary>
+    /// The default size of vertical margins on the component.
+    /// </summary>
+    public const uint DefaultVerticalMarginSize = 3;
+
+    /// <summary>
     /// Initializes a new instance of the <see cref="HgButton"/> class.
     /// </summary>
     public HgButton()
     {
-        this.HorizontalMarginSize = 3;
-        this.VerticalMarginSize = 3;
+        this.HorizontalMarginSize = DefaultHorizontalMarginSize;
+        this.VerticalMarginSize = DefaultVerticalMarginSize;
     }
 
     /// <summary>

@@ -85,12 +85,14 @@ namespace HealthGateway.Admin.Client.Components.Common
         /// <summary>
         /// Gets or sets the standard size of horizontal margins on the component.
         /// </summary>
-        protected uint HorizontalMarginSize { get; set; }
+        [Parameter]
+        public uint HorizontalMarginSize { get; set; }
 
         /// <summary>
         /// Gets or sets the standard size of vertical margins on the component.
         /// </summary>
-        protected uint VerticalMarginSize { get; set; }
+        [Parameter]
+        public uint VerticalMarginSize { get; set; }
 
         /// <summary>
         /// Gets the combined HTML class including standard margins.

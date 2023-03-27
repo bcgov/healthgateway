@@ -15,7 +15,12 @@
 //-------------------------------------------------------------------------
 namespace HealthGateway.Admin.Client.Store.Delegation
 {
+    using System.Collections.Immutable;
+    using System.Linq;
     using Fluxor;
+    using HealthGateway.Admin.Client.Models;
+    using HealthGateway.Admin.Common.Constants;
+    using HealthGateway.Admin.Common.Models;
 
 #pragma warning disable CS1591, SA1600
     public static class DelegationReducers
@@ -40,10 +45,11 @@ namespace HealthGateway.Admin.Client.Store.Delegation
                 Search = state.Search with
                 {
                     IsLoading = false,
-                    Result = action.Data,
+                    Result = new() { Dependent = action.Dependent, Delegates = action.Delegates },
                     Error = null,
                 },
-                Data = action.Data,
+                Dependent = action.Dependent,
+                Delegates = action.Delegates.ToImmutableList(),
             };
         }
 
@@ -60,13 +66,194 @@ namespace HealthGateway.Admin.Client.Store.Delegation
             };
         }
 
+        [ReducerMethod]
+        public static DelegationState ReduceSetDisallowedDelegationStatusAction(DelegationState state, DelegationActions.SetDisallowedDelegationStatusAction action)
+        {
+            IImmutableList<ExtendedDelegateInfo> delegates = state.Delegates
+                .Select(
+                    d =>
+                    {
+                        if (d.Hdid == action.Hdid)
+                        {
+                            d.StagedDelegationStatus = action.Disallow switch
+                            {
+                                true => DelegationStatus.Disallowed,
+                                false when d.DelegationStatus is DelegationStatus.Added or DelegationStatus.Allowed => d.DelegationStatus,
+                                _ => DelegationStatus.Allowed,
+                            };
+                        }
+
+                        return d;
+                    })
+                .ToImmutableList();
+
+            return state with
+            {
+                Delegates = delegates,
+            };
+        }
+
+        [ReducerMethod(typeof(DelegationActions.ProtectDependentAction))]
+        public static DelegationState ReduceProtectDependentAction(DelegationState state)
+        {
+            return state with
+            {
+                Protect = state.Protect with
+                {
+                    IsLoading = true,
+                },
+            };
+        }
+
+        [ReducerMethod(typeof(DelegationActions.ProtectDependentSuccessAction))]
+        public static DelegationState ReduceProtectDependentSuccessAction(DelegationState state)
+        {
+            DependentInfo? dependent = state.Dependent;
+            if (dependent != null)
+            {
+                dependent.Protected = true;
+            }
+
+            return state with
+            {
+                Protect = state.Protect with
+                {
+                    IsLoading = false,
+                    Error = null,
+                },
+                Dependent = dependent,
+                Delegates = state.Delegates
+                    .Where(d => d.StagedDelegationStatus is not DelegationStatus.Disallowed)
+                    .Select(
+                        d =>
+                        {
+                            d.DelegationStatus = d.StagedDelegationStatus;
+                            return d;
+                        })
+                    .ToImmutableList(),
+            };
+        }
+
+        [ReducerMethod]
+        public static DelegationState ReduceProtectDependentFailAction(DelegationState state, DelegationActions.ProtectDependentFailAction action)
+        {
+            return state with
+            {
+                Protect = state.Protect with
+                {
+                    IsLoading = false,
+                    Error = action.Error,
+                },
+            };
+        }
+
+        [ReducerMethod(typeof(DelegationActions.UnprotectDependentAction))]
+        public static DelegationState ReduceUnprotectDependentAction(DelegationState state)
+        {
+            return state with
+            {
+                Unprotect = state.Unprotect with
+                {
+                    IsLoading = true,
+                },
+            };
+        }
+
+        [ReducerMethod(typeof(DelegationActions.UnprotectDependentSuccessAction))]
+        public static DelegationState ReduceUnprotectDependentSuccessAction(DelegationState state)
+        {
+            DependentInfo? dependent = state.Dependent;
+            if (dependent != null)
+            {
+                dependent.Protected = false;
+            }
+
+            return state with
+            {
+                Unprotect = state.Unprotect with
+                {
+                    IsLoading = false,
+                    Error = null,
+                },
+                Dependent = dependent,
+                Delegates = state.Delegates
+                    .Where(d => d.DelegationStatus is not DelegationStatus.Allowed)
+                    .ToImmutableList(),
+            };
+        }
+
+        [ReducerMethod]
+        public static DelegationState ReduceUnprotectDependentFailAction(DelegationState state, DelegationActions.UnprotectDependentFailAction action)
+        {
+            return state with
+            {
+                Unprotect = state.Unprotect with
+                {
+                    IsLoading = false,
+                    Error = action.Error,
+                },
+            };
+        }
+
+        [ReducerMethod]
+        public static DelegationState ReduceSetEditModeAction(DelegationState state, DelegationActions.SetEditModeAction action)
+        {
+            IImmutableList<ExtendedDelegateInfo> delegates = state.Delegates;
+            if (!action.Enabled)
+            {
+                delegates = delegates
+                    .Where(d => d.DelegationStatus is DelegationStatus.Added or DelegationStatus.Allowed)
+                    .Select(
+                        d =>
+                        {
+                            d.StagedDelegationStatus = d.DelegationStatus;
+                            return d;
+                        })
+                    .ToImmutableList();
+            }
+
+            return state with
+            {
+                InEditMode = action.Enabled,
+                Delegates = delegates,
+            };
+        }
+
+        [ReducerMethod(typeof(DelegationActions.ClearProtectErrorAction))]
+        public static DelegationState ReduceClearAddErrorAction(DelegationState state)
+        {
+            return state with
+            {
+                Protect = state.Protect with
+                {
+                    Error = null,
+                },
+            };
+        }
+
+        [ReducerMethod(typeof(DelegationActions.ClearUnprotectErrorAction))]
+        public static DelegationState ReduceClearUpdateErrorAction(DelegationState state)
+        {
+            return state with
+            {
+                Unprotect = state.Unprotect with
+                {
+                    Error = null,
+                },
+            };
+        }
+
         [ReducerMethod(typeof(DelegationActions.ResetStateAction))]
         public static DelegationState ReduceResetStateAction(DelegationState state)
         {
             return state with
             {
                 Search = new(),
-                Data = null,
+                Protect = new(),
+                Unprotect = new(),
+                Dependent = null,
+                Delegates = ImmutableList<ExtendedDelegateInfo>.Empty,
+                InEditMode = false,
             };
         }
     }

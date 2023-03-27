@@ -4,7 +4,7 @@ const dependentExceedingAgeCutoff = { phn: "9735353315" };
 
 function performSearch(phn) {
     cy.get("[data-testid=query-input]").clear().type(phn);
-    cy.get("[data-testid=search-btn]").click();
+    cy.get("[data-testid=search-button]").click();
 }
 
 function getTableRows(tableSelector) {
@@ -25,7 +25,7 @@ describe("Delegation", () => {
         cy.get("[data-testid=query-input]")
             .clear()
             .type(dependentWithoutGuardian.phn);
-        cy.get("[data-testid=search-btn]").click();
+        cy.get("[data-testid=search-button]").click();
 
         getTableRows("[data-testid=dependent-table]")
             .should("have.length", 1)

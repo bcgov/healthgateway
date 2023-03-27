@@ -646,7 +646,7 @@ dotnet_diagnostic.ca5400.severity = warning
 # CA5401: Do not use CreateEncryptor with non-default IV
 dotnet_diagnostic.ca5401.severity = warning
 
-# CA5402: Use CreateEncryptor with the default IV 
+# CA5402: Use CreateEncryptor with the default IV
 dotnet_diagnostic.ca5402.severity = warning
 
 # CA5403: Do not hard-code certificate
@@ -673,9 +673,13 @@ dotnet_diagnostic.s1135.severity = warning
 # SA1000: Keywords should be spaced correctly
 dotnet_diagnostic.sa1000.severity = error
 
+# SA1206: Declaration keywords should follow order
+# disabled due to StyleCop not recognizing 'required' modifier
+dotnet_diagnostic.sa1206.severity = none
+
 # Microsoft .NET properties
 csharp_new_line_before_members_in_object_initializers = false
-csharp_preferred_modifier_order = public, private, protected, internal, new, static, abstract, virtual, sealed, readonly, override, extern, unsafe, volatile, async:suggestion
+csharp_preferred_modifier_order = public, private, protected, internal, new, static, abstract, virtual, sealed, readonly, override, extern, unsafe, volatile, async, file, required:suggestion
 csharp_style_var_elsewhere = false:suggestion
 csharp_style_var_for_built_in_types = false:suggestion
 csharp_style_var_when_type_is_apparent = false:suggestion
