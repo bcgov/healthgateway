@@ -200,6 +200,7 @@ namespace HealthGateway.JobScheduler
             SchedulerHelper.ScheduleJob<CloseAccountJob>(this.configuration, "CloseAccounts", j => j.Process());
             SchedulerHelper.ScheduleJob<OneTimeJob>(this.configuration, "OneTime", j => j.Process());
             SchedulerHelper.ScheduleJob<DeleteEmailJob>(this.configuration, "DeleteEmailJob", j => j.DeleteOldEmails());
+            SchedulerHelper.ScheduleJob<DependentExpiryDateJob>(this.configuration, "DependentExpiryDate", j => j.Process());
         }
     }
 }
