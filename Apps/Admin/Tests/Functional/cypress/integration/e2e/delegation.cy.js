@@ -1,7 +1,7 @@
 const dependentWithoutGuardian = { phn: "9874307168" };
 const dependentWithGuardian = { phn: "9874307175", guardianPhn: "9735353315" };
 const dependentExceedingAgeCutoff = { phn: "9735353315" };
-const protectDependent = "9872868095";
+const dependentToProtect = "9872868095";
 
 function performSearch(phn) {
     cy.get("[data-testid=query-input]").clear().type(phn);
@@ -112,18 +112,12 @@ describe("Delegation Protect", () => {
 
         // Protect dependent toggle
         cy.get("[data-testid=dependent-protected-switch]").should(
-            "have.attr",
-            "aria-checked",
-            "false"
+            "not.be.checked"
         );
 
         // Protect
         cy.get("[data-testid=dependent-protected-switch]").click();
-        cy.get("[data-testid=dependent-protected-switch]").should(
-            "have.attr",
-            "aria-checked",
-            "true"
-        );
+        cy.get("[data-testid=dependent-protected-switch]").should("be.checked");
         cy.get("[data-testid=cancel-edit-button]").should(
             "be.visible",
             "be.enabled"
@@ -141,11 +135,7 @@ describe("Delegation Protect", () => {
         // Cancel confirmation
         cy.get("[data-testid=cancel-button]").click();
 
-        cy.get("[data-testid=dependent-protected-switch]").should(
-            "have.attr",
-            "aria-checked",
-            "true"
-        );
+        cy.get("[data-testid=dependent-protected-switch]").should("be.checked");
 
         // Save button
         cy.get("[data-testid=save-button]").should("be.visible", "be.enabled");
@@ -154,14 +144,12 @@ describe("Delegation Protect", () => {
         cy.get("[data-testid=cancel-edit-button]").click();
 
         cy.get("[data-testid=dependent-protected-switch]").should(
-            "have.attr",
-            "aria-checked",
-            "false"
+            "not.be.checked"
         );
     });
 
     it("Verify protect/unprotect dependent toggle, select to remove, save button and confirmation button are selected.", () => {
-        cy.get("[data-testid=query-input]").clear().type(protectDependent);
+        cy.get("[data-testid=query-input]").clear().type(dependentToProtect);
         cy.get("[data-testid=search-button]").click();
 
         // Confirm delegate table
@@ -169,18 +157,12 @@ describe("Delegation Protect", () => {
 
         // Protect dependent toggle
         cy.get("[data-testid=dependent-protected-switch]").should(
-            "have.attr",
-            "aria-checked",
-            "false"
+            "not.be.checked"
         );
 
         // Protect
         cy.get("[data-testid=dependent-protected-switch]").click();
-        cy.get("[data-testid=dependent-protected-switch]").should(
-            "have.attr",
-            "aria-checked",
-            "true"
-        );
+        cy.get("[data-testid=dependent-protected-switch]").should("be.checked");
 
         // Remove delegate row before protecting dependent
         const rowSelector =
@@ -198,13 +180,9 @@ describe("Delegation Protect", () => {
         cy.get("[data-testid=confirm-button]").click();
 
         // Confirm delegate table
-        getTableRows("[data-testid=delegate-table]").should("have.length", 2);
+        getTableRows("[data-testid=delegate-table]").should("have.length", 1);
 
-        cy.get("[data-testid=dependent-protected-switch]").should(
-            "have.attr",
-            "aria-checked",
-            "true"
-        );
+        cy.get("[data-testid=dependent-protected-switch]").should("be.checked");
 
         // Unprotect
         cy.get("[data-testid=dependent-protected-switch]").click();
@@ -213,9 +191,7 @@ describe("Delegation Protect", () => {
         cy.get("[data-testid=confirm-button]").click();
 
         cy.get("[data-testid=dependent-protected-switch]").should(
-            "have.attr",
-            "aria-checked",
-            "false"
+            "not.be.checked"
         );
 
         // Confirm delegate table
