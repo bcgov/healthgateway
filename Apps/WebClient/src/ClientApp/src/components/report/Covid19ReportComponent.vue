@@ -165,7 +165,7 @@ export default class Covid19ReportComponent extends Vue {
                 <b-col>No records found.</b-col>
             </b-row>
             <b-table
-                v-if="(!isEmpty || isCovid19LaboratoryLoading) && !isDependent"
+                v-if="!isDependent && (!isEmpty || isCovid19LaboratoryLoading)"
                 :striped="true"
                 :fixed="true"
                 :busy="isCovid19LaboratoryLoading"

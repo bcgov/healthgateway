@@ -202,7 +202,7 @@ export default class MedicationHistoryReportComponent extends Vue {
                 <b-col>No records found.</b-col>
             </b-row>
             <b-table
-                v-if="(!isEmpty || isLoading) && !isDependent"
+                v-if="!isDependent && (!isEmpty || isLoading)"
                 :striped="true"
                 :fixed="true"
                 :busy="isLoading"

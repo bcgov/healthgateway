@@ -159,7 +159,7 @@ export default class LaboratoryReportComponent extends Vue {
                 <b-col>No records found.</b-col>
             </b-row>
             <b-table
-                v-if="(!isEmpty || isLaboratoryLoading) && !isDependent"
+                v-if="!isDependent && (!isEmpty || isLaboratoryLoading)"
                 :striped="true"
                 :fixed="true"
                 :busy="isLaboratoryLoading"

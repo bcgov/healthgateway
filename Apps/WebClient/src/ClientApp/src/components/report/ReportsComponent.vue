@@ -18,7 +18,7 @@ import MedicationHistoryReportComponent from "@/components/report/MedicationHist
 import MedicationRequestReportComponent from "@/components/report/MedicationRequestReportComponent.vue";
 import MSPVisitsReportComponent from "@/components/report/MSPVisitsReportComponent.vue";
 import NotesReportComponent from "@/components/report/NotesReportComponent.vue";
-import { EntryType } from "@/constants/entryType";
+import { EntryType, entryTypeMap } from "@/constants/entryType";
 import { ErrorSourceType, ErrorType } from "@/constants/errorType";
 import type { WebClientConfiguration } from "@/models/configData";
 import { DateWrapper, StringISODate } from "@/models/dateWrapper";
@@ -36,7 +36,6 @@ import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import { ILogger } from "@/services/interfaces";
 import ConfigUtil from "@/utility/configUtil";
 import EventTracker from "@/utility/eventTracker";
-import SnowPlow from "@/utility/snowPlow";
 
 const medicationReport = "medication-report";
 const mspVisitReport = "msp-visit-report";
@@ -46,14 +45,6 @@ const medicationRequestReport = "medication-request-report";
 const noteReport = "note-report";
 const laboratoryReport = "laboratory-report";
 const hospitalVisitReport = "hospital-visit-report";
-const medicationsText = "Medications";
-const healthVisitsText = "Health Visits";
-const covid19TestResultsText = "COVID‑19 Test Results";
-const immunizationsText = "Immunizations";
-const specialAuthorityRequestsText = "Special Authority Requests";
-const myNotesText = "My Notes";
-const laboratoryTestsText = "Laboratory Tests";
-const hospitalVisitsText = "Hospital Visits";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const options: any = {
@@ -195,119 +186,63 @@ export default class ReportsComponent extends Vue {
         return DateWrapper.format(date);
     }
 
-    setDependentReportTypeOptions(): void {
-        if (ConfigUtil.isDependentDatasetEnabled(EntryType.Medication)) {
-            this.reportTypeOptions.push({
-                value: medicationReport,
-                text: medicationsText,
-            });
-        }
-        if (ConfigUtil.isDependentDatasetEnabled(EntryType.HealthVisit)) {
-            this.reportTypeOptions.push({
-                value: mspVisitReport,
-                text: healthVisitsText,
-            });
-        }
-        if (ConfigUtil.isDependentDatasetEnabled(EntryType.Covid19TestResult)) {
-            this.reportTypeOptions.push({
-                value: covid19Report,
-                text: covid19TestResultsText,
-            });
-        }
-        if (ConfigUtil.isDependentDatasetEnabled(EntryType.Immunization)) {
-            this.reportTypeOptions.push({
-                value: immunizationReport,
-                text: immunizationsText,
-            });
-        }
-        if (
-            ConfigUtil.isDependentDatasetEnabled(
-                EntryType.SpecialAuthorityRequest
-            )
-        ) {
-            this.reportTypeOptions.push({
-                value: medicationRequestReport,
-                text: specialAuthorityRequestsText,
-            });
-        }
-        if (ConfigUtil.isDependentDatasetEnabled(EntryType.Note)) {
-            this.reportTypeOptions.push({
-                value: noteReport,
-                text: myNotesText,
-            });
-        }
-        if (ConfigUtil.isDependentDatasetEnabled(EntryType.LabResult)) {
-            this.reportTypeOptions.push({
-                value: laboratoryReport,
-                text: laboratoryTestsText,
-            });
-        }
-        if (ConfigUtil.isDependentDatasetEnabled(EntryType.HospitalVisit)) {
-            this.reportTypeOptions.push({
-                value: hospitalVisitReport,
-                text: hospitalVisitsText,
-            });
-        }
-    }
-
-    setUserReportTypeOptions(): void {
-        if (ConfigUtil.isDatasetEnabled(EntryType.Medication)) {
-            this.reportTypeOptions.push({
-                value: medicationReport,
-                text: medicationsText,
-            });
-        }
-        if (ConfigUtil.isDatasetEnabled(EntryType.HealthVisit)) {
-            this.reportTypeOptions.push({
-                value: mspVisitReport,
-                text: healthVisitsText,
-            });
-        }
-        if (ConfigUtil.isDatasetEnabled(EntryType.Covid19TestResult)) {
-            this.reportTypeOptions.push({
-                value: covid19Report,
-                text: covid19TestResultsText,
-            });
-        }
-        if (ConfigUtil.isDatasetEnabled(EntryType.Immunization)) {
-            this.reportTypeOptions.push({
-                value: immunizationReport,
-                text: immunizationsText,
-            });
-        }
-        if (ConfigUtil.isDatasetEnabled(EntryType.SpecialAuthorityRequest)) {
-            this.reportTypeOptions.push({
-                value: medicationRequestReport,
-                text: specialAuthorityRequestsText,
-            });
-        }
-        if (ConfigUtil.isDatasetEnabled(EntryType.Note)) {
-            this.reportTypeOptions.push({
-                value: noteReport,
-                text: myNotesText,
-            });
-        }
-        if (ConfigUtil.isDatasetEnabled(EntryType.LabResult)) {
-            this.reportTypeOptions.push({
-                value: laboratoryReport,
-                text: laboratoryTestsText,
-            });
-        }
-        if (ConfigUtil.isDatasetEnabled(EntryType.HospitalVisit)) {
-            this.reportTypeOptions.push({
-                value: hospitalVisitReport,
-                text: hospitalVisitsText,
-            });
-        }
-    }
-
+    // eslint-disable-next-line sonarjs/cognitive-complexity
     created(): void {
         this.logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
 
-        if (this.isDependent) {
-            this.setDependentReportTypeOptions();
-        } else {
-            this.setUserReportTypeOptions();
+        const isEnabled = this.isDependent
+            ? ConfigUtil.isDependentDatasetEnabled
+            : ConfigUtil.isDatasetEnabled;
+
+        if (isEnabled(EntryType.Medication)) {
+            this.reportTypeOptions.push({
+                value: medicationReport,
+                text: entryTypeMap.get(EntryType.Medication)?.name ?? "",
+            });
+        }
+        if (isEnabled(EntryType.HealthVisit)) {
+            this.reportTypeOptions.push({
+                value: mspVisitReport,
+                text: entryTypeMap.get(EntryType.HealthVisit)?.name ?? "",
+            });
+        }
+        if (isEnabled(EntryType.Covid19TestResult)) {
+            this.reportTypeOptions.push({
+                value: covid19Report,
+                text: entryTypeMap.get(EntryType.Covid19TestResult)?.name ?? "",
+            });
+        }
+        if (isEnabled(EntryType.Immunization)) {
+            this.reportTypeOptions.push({
+                value: immunizationReport,
+                text: entryTypeMap.get(EntryType.Immunization)?.name ?? "",
+            });
+        }
+        if (isEnabled(EntryType.SpecialAuthorityRequest)) {
+            this.reportTypeOptions.push({
+                value: medicationRequestReport,
+                text:
+                    entryTypeMap.get(EntryType.SpecialAuthorityRequest)?.name ??
+                    "",
+            });
+        }
+        if (isEnabled(EntryType.Note)) {
+            this.reportTypeOptions.push({
+                value: noteReport,
+                text: entryTypeMap.get(EntryType.Note)?.name ?? "",
+            });
+        }
+        if (isEnabled(EntryType.LabResult)) {
+            this.reportTypeOptions.push({
+                value: laboratoryReport,
+                text: entryTypeMap.get(EntryType.LabResult)?.name ?? "",
+            });
+        }
+        if (isEnabled(EntryType.HospitalVisit)) {
+            this.reportTypeOptions.push({
+                value: hospitalVisitReport,
+                text: entryTypeMap.get(EntryType.HospitalVisit)?.name ?? "",
+            });
         }
     }
 
@@ -366,13 +301,6 @@ export default class ReportsComponent extends Vue {
     downloadReport(): void {
         if (this.reportComponentName === "") {
             return;
-        }
-
-        if (this.isDependent) {
-            SnowPlow.trackEvent({
-                action: "download_report",
-                text: `Dependent_${this.reportComponentName}`,
-            });
         }
 
         this.isGeneratingReport = true;
@@ -454,7 +382,11 @@ export default class ReportsComponent extends Vue {
             const formatTypeName = ReportFormatType[this.reportFormatType];
             const eventName = `${reportName} (${formatTypeName})`;
 
-            EventTracker.downloadReport(eventName);
+            if (!this.isDependent) {
+                EventTracker.downloadReport(eventName);
+            } else {
+                EventTracker.downloadReport(`Dependent_${eventName}`);
+            }
         }
     }
 }
