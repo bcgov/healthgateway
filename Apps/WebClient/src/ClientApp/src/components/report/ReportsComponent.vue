@@ -581,7 +581,7 @@ export default class ReportsComponent extends Vue {
         <div
             v-if="reportComponentName"
             data-testid="reportSample"
-            class="preview"
+            :class="{ preview: !isDependent }"
         >
             <component
                 :is="reportComponentName"
