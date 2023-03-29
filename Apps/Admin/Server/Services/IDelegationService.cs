@@ -32,6 +32,13 @@ namespace HealthGateway.Admin.Server.Services
         Task<DelegationInfo> GetDelegationInformationAsync(string phn);
 
         /// <summary>
+        /// Retrieves information about a potential delegate.
+        /// </summary>
+        /// <param name="phn">The phn to query on.</param>
+        /// <returns>Information about the potential delegate.</returns>
+        Task<DelegateInfo> GetDelegateInformationAsync(string phn);
+
+        /// <summary>
         /// Protects the dependent and if necessary creates the allowed delegation(s) and keeps the resource delegates
         /// synchronized.
         /// </summary>
