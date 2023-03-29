@@ -66,6 +66,62 @@ namespace HealthGateway.Admin.Client.Store.Delegation
             };
         }
 
+        [ReducerMethod(typeof(DelegationActions.DelegateSearchAction))]
+        public static DelegationState ReduceDelegateSearchAction(DelegationState state)
+        {
+            return state with
+            {
+                DelegateSearch = state.DelegateSearch with
+                {
+                    IsLoading = true,
+                },
+            };
+        }
+
+        [ReducerMethod]
+        public static DelegationState ReduceDelegateSearchSuccessAction(DelegationState state, DelegationActions.DelegateSearchSuccessAction action)
+        {
+            return state with
+            {
+                DelegateSearch = state.DelegateSearch with
+                {
+                    IsLoading = false,
+                    Result = action.Data,
+                    Error = null,
+                },
+            };
+        }
+
+        [ReducerMethod]
+        public static DelegationState ReduceDelegateSearchFailAction(DelegationState state, DelegationActions.DelegateSearchFailAction action)
+        {
+            return state with
+            {
+                DelegateSearch = state.DelegateSearch with
+                {
+                    IsLoading = false,
+                    Error = action.Error,
+                },
+            };
+        }
+
+        [ReducerMethod]
+        public static DelegationState ReduceAddDelegateAction(DelegationState state, DelegationActions.AddDelegateAction action)
+        {
+            IImmutableList<ExtendedDelegateInfo> delegates = state.Delegates;
+            if (state.DelegateSearch.Result != null)
+            {
+                ExtendedDelegateInfo delegateInfo = state.DelegateSearch.Result;
+                delegateInfo.StagedDelegationStatus = action.StagedDelegationStatus;
+                delegates = delegates.Add(delegateInfo);
+            }
+
+            return state with
+            {
+                Delegates = delegates,
+            };
+        }
+
         [ReducerMethod]
         public static DelegationState ReduceSetDisallowedDelegationStatusAction(DelegationState state, DelegationActions.SetDisallowedDelegationStatusAction action)
         {
