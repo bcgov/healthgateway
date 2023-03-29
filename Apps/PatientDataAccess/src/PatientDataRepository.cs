@@ -95,12 +95,12 @@ namespace HealthGateway.PatientDataAccess
             }
 
             List<HealthData> results = new();
-            Task<HealthOptionsResult?> optionsTask = dataCategories.Any()
+            Task<HealthOptionsResult?> optionsTask = optionCategories.Any()
                 ? this.patientApi.GetHealthOptionsAsync(query.Pid, optionCategories, ct)
-                : Task.FromResult<>(null);
-            Task<HealthDataResult?> dataTask = optionCategories.Any()
+                : Task.FromResult<HealthOptionsResult?>(null);
+            Task<HealthDataResult?> dataTask = dataCategories.Any()
                 ? this.patientApi.GetHealthDataAsync(query.Pid, dataCategories, ct)
-                : Task.FromResult<>(null);
+                : Task.FromResult<HealthDataResult?>(null);
 
             await Task.WhenAll(optionsTask, dataTask).ConfigureAwait(true);
             results.AddRange((await optionsTask.ConfigureAwait(true))?.Data.Select(this.Map) ?? Array.Empty<HealthData>());

@@ -19,59 +19,71 @@ namespace HealthGateway.Patient.Services
     using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
+    using AutoMapper;
     using HealthGateway.Common.Services;
     using HealthGateway.Patient.Constants;
     using HealthGateway.PatientDataAccess;
 
-// Disable documentation for internal class.
+    // Disable documentation for internal class.
 #pragma warning disable SA1600
     internal class PatientDataService : IPatientDataService
     {
         private readonly IPatientDataRepository patientDataRepository;
         private readonly IPersonalAccountsService personalAccountsService;
+        private readonly IMapper mapper;
 
-        public PatientDataService(IPatientDataRepository patientDataRepository, IPersonalAccountsService personalAccountsService)
+        public PatientDataService(IPatientDataRepository patientDataRepository, IPersonalAccountsService personalAccountsService, IMapper mapper)
         {
             this.patientDataRepository = patientDataRepository;
             this.personalAccountsService = personalAccountsService;
+            this.mapper = mapper;
         }
 
         public async Task<PatientDataResponse> Query(PatientDataQuery query, CancellationToken ct)
         {
-            var pid = await this.ResolvePidFromHdid(query.Hdid).ConfigureAwait(true);
-            var results = await this.patientDataRepository.Query(
-                new HealthServicesQuery(pid, query.PatientDataTypes.Select(this.MapToHealthServiceCategory)),
-                ct).ConfigureAwait(true);
+            Guid pid = await this.ResolvePidFromHdid(query.Hdid).ConfigureAwait(true);
+            PatientDataQueryResult results = await this.patientDataRepository.Query(
+                    new HealthServicesQuery(pid, query.PatientDataTypes.Select(this.MapToHealthServiceCategory)),
+                    ct)
+                .ConfigureAwait(true);
 
             return new PatientDataResponse(results.Items.Select(this.MapToPatientData).ToArray());
         }
 
         public async Task<PatientFileResponse?> Query(PatientFileQuery query, CancellationToken ct)
         {
-            var pid = await this.ResolvePidFromHdid(query.Hdid).ConfigureAwait(true);
-            var file = (await this.patientDataRepository.Query(new PatientDataAccess.PatientFileQuery(pid, query.FileId), ct).ConfigureAwait(true)).Items.FirstOrDefault() as PatientFile;
+            Guid pid = await this.ResolvePidFromHdid(query.Hdid).ConfigureAwait(true);
+            PatientFile? file = (await this.patientDataRepository.Query(new PatientDataAccess.PatientFileQuery(pid, query.FileId), ct).ConfigureAwait(true)).Items.FirstOrDefault() as PatientFile;
 
             return file != null
                 ? new PatientFileResponse(file.Content, file.ContentType)
                 : null;
         }
 
-        private async Task<Guid> ResolvePidFromHdid(string patientHdid) =>
-            (await this.personalAccountsService.GetPatientAccountAsync(patientHdid).ConfigureAwait(true)).PatientIdentity.Pid;
+        private async Task<Guid> ResolvePidFromHdid(string patientHdid)
+        {
+            return (await this.personalAccountsService.GetPatientAccountAsync(patientHdid).ConfigureAwait(true)).PatientIdentity.Pid;
+        }
 
-        private PatientData MapToPatientData(HealthData healthData) =>
-            healthData switch
+        private PatientData MapToPatientData(HealthData healthData)
+        {
+            return healthData switch
             {
-                OrganDonorRegistration hd => new OrganDonorRegistrationData(hd.Status, hd.StatusMessage, hd.RegistrationFileId),
+                OrganDonorRegistration hd => this.mapper.Map<OrganDonorRegistrationData>(hd),
+                DiagnosticImagingExam hd => this.mapper.Map<DiagnosticImagingExamData>(hd),
                 _ => throw new NotImplementedException($"{healthData.GetType().Name} is not mapped to {nameof(PatientData)}"),
             };
+        }
 
-        private HealthServiceCategory MapToHealthServiceCategory(PatientDataType patientDataType) =>
-            patientDataType switch
+        private HealthServiceCategory MapToHealthServiceCategory(PatientDataType patientDataType)
+        {
+            return patientDataType switch
             {
                 PatientDataType.OrganDonorRegistrationStatus => HealthServiceCategory.OrganDonor,
+                PatientDataType.DiagnosticImaging => HealthServiceCategory.DiagnosticImaging,
                 _ => throw new NotImplementedException($"{patientDataType} is not mapped to {nameof(HealthServiceCategory)}"),
             };
+        }
     }
 #pragma warning restore SA1600
 }

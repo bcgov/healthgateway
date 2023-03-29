@@ -23,7 +23,7 @@ namespace HealthGateway.Patient.Services
     using System.Threading.Tasks;
     using HealthGateway.Common.Utils;
     using HealthGateway.Patient.Constants;
-    using HealthGateway.PatientDataAccess;
+    using HealthGateway.Patient.Models;
 
     /// <summary>
     /// Provides access to patient related data services.
@@ -68,9 +68,9 @@ namespace HealthGateway.Patient.Services
     public abstract record PatientData
     {
         /// <summary>
-        /// Gets or sets the type of the patient data.
+        /// Gets the type of the patient data.
         /// </summary>
-        public abstract string Type { get; set; }
+        public abstract string Type { get; }
     }
 
     /// <summary>
@@ -79,22 +79,9 @@ namespace HealthGateway.Patient.Services
     public record OrganDonorRegistrationData : PatientData
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="OrganDonorRegistrationData"/> class.
-        /// </summary>
-        /// <param name="status">The registration status.</param>
-        /// <param name="statusMessage">Optional message related to the status.</param>
-        /// <param name="registrationFileId">Optional registration file id.</param>
-        public OrganDonorRegistrationData(DonorRegistrationStatus status, string? statusMessage, string? registrationFileId)
-        {
-            this.Status = status;
-            this.StatusMessage = statusMessage;
-            this.RegistrationFileId = registrationFileId;
-        }
-
-        /// <summary>
         /// Gets or sets the registration status.
         /// </summary>
-        public DonorRegistrationStatus Status { get; set; } = DonorRegistrationStatus.NotRegistered;
+        public OrganDonorRegistrationStatus Status { get; set; } = OrganDonorRegistrationStatus.NotRegistered;
 
         /// <summary>
         /// Gets or sets the message associated with the donor registration status.
@@ -107,7 +94,56 @@ namespace HealthGateway.Patient.Services
         public string? RegistrationFileId { get; set; }
 
         /// <inheritdoc/>
-        public override string Type { get; set; } = nameof(OrganDonorRegistrationData);
+        public override string Type { get; } = nameof(OrganDonorRegistrationData);
+    }
+
+    /// <summary>
+    /// Diagnostic imaging exam patient data.
+    /// </summary>
+    public record DiagnosticImagingExamData : PatientData
+    {
+        /// <summary>
+        /// Gets or sets the exam's procedure description.
+        /// </summary>
+        public string? ProcedureDescription { get; set; }
+
+        /// <summary>
+        /// Gets or sets the exam's body part.
+        /// </summary>
+        public string? BodyPart { get; set; }
+
+        /// <summary>
+        /// Gets or sets the exam's modality.
+        /// </summary>
+        public string? Modality { get; set; }
+
+        /// <summary>
+        /// Gets or sets the exam's organization.
+        /// </summary>
+        public string? Organization { get; set; }
+
+        /// <summary>
+        /// Gets or sets the exam's health authority.
+        /// </summary>
+        public string? HealthAuthority { get; set; }
+
+        /// <summary>
+        /// Gets or sets the exam's status.
+        /// </summary>
+        public DiagnosticImagingStatus ExamStatus { get; set; }
+
+        /// <summary>
+        /// Gets or sets the exam's file id.
+        /// </summary>
+        public string? FileId { get; set; }
+
+        /// <summary>
+        /// Gets or sets the exam's date.
+        /// </summary>
+        public DateTime? ExamDate { get; set; }
+
+        /// <inheritdoc/>
+        public override string Type { get; } = nameof(DiagnosticImagingExamData);
     }
 
     /// <summary>
@@ -128,14 +164,19 @@ namespace HealthGateway.Patient.Services
 #pragma warning disable SA1600
     internal class PatientDataJsonConverter : PolymorphicJsonConverter<PatientData>
     {
-        protected override string ResolveDiscriminatorValue(PatientData value) => value.Type;
+        protected override string ResolveDiscriminatorValue(PatientData value)
+        {
+            return value.Type;
+        }
 
-        protected override Type? ResolveType(string discriminatorValue) =>
-            discriminatorValue switch
+        protected override Type? ResolveType(string discriminatorValue)
+        {
+            return discriminatorValue switch
             {
                 nameof(OrganDonorRegistrationData) => typeof(OrganDonorRegistrationData),
                 _ => null,
             };
+        }
     }
 #pragma warning restore SA1600
 }

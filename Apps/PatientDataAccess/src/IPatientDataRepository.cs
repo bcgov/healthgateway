@@ -118,7 +118,7 @@ namespace HealthGateway.PatientDataAccess
         /// <summary>
         /// Gets or sets the exam's status.
         /// </summary>
-        public DiagnosticImagingStatus Status { get; set; }
+        public DiagnosticImagingExamStatus ExamStatus { get; set; }
 
         /// <summary>
         /// Gets or sets the exam's file id.
