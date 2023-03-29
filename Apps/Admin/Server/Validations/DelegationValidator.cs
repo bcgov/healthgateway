@@ -27,10 +27,10 @@ namespace HealthGateway.Admin.Server.Validations
         /// <summary>
         /// Initializes a new instance of the <see cref="DelegationValidator"/> class.
         /// </summary>
-        /// <param name="maxDependentAge">Optionally set the maximum age of a dependent, defaults to 12.</param>
-        public DelegationValidator(int maxDependentAge = 12)
+        /// <param name="maxDependentAge">The maximum age of the dependent.</param>
+        public DelegationValidator(int maxDependentAge)
         {
-            this.RuleFor(v => v.Birthdate).SetValidator(new DependentAgeValidator(maxDependentAge: maxDependentAge));
+            this.RuleFor(v => v.Birthdate).SetValidator(new AgeRangeValidator(youngerThan: maxDependentAge));
         }
     }
 }
