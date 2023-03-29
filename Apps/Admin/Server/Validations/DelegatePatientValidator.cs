@@ -13,27 +13,24 @@
 //  See the License for the specific language governing permissions and
 //  limitations under the License.
 // -------------------------------------------------------------------------
-
-namespace HealthGateway.GatewayApi.Validations
+namespace HealthGateway.Admin.Server.Validations
 {
     using FluentValidation;
     using HealthGateway.Common.Data.Validations;
-    using HealthGateway.GatewayApi.Models;
+    using HealthGateway.Common.Models;
 
     /// <summary>
-    /// Validates <see cref="AddDependentRequestValidator"/> instances.
+    /// Validates <see cref="DelegatePatientValidator"/> instances.
     /// </summary>
-    public class AddDependentRequestValidator : AbstractValidator<AddDependentRequest>
+    public class DelegatePatientValidator : AbstractValidator<PatientModel>
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="AddDependentRequestValidator"/> class.
+        /// Initializes a new instance of the <see cref="DelegatePatientValidator"/> class.
         /// </summary>
-        /// <param name="maxDependentAge">The maximum age of the dependent.</param>
-        public AddDependentRequestValidator(int maxDependentAge)
+        /// <param name="minDelegateAge">The minimum age of the delegate.</param>
+        public DelegatePatientValidator(int minDelegateAge)
         {
-            this.RuleFor(v => v.Phn).SetValidator(new PhnValidator());
-            this.RuleFor(v => v.DateOfBirth).SetValidator(new DateOfBirthValidator());
-            this.RuleFor(v => v.DateOfBirth).SetValidator(new AgeRangeValidator(youngerThan: maxDependentAge));
+            this.RuleFor(v => v.Birthdate).SetValidator(new AgeRangeValidator(olderThan: minDelegateAge));
         }
     }
 }
