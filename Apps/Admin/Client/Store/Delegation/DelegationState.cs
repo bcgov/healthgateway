@@ -34,6 +34,11 @@ namespace HealthGateway.Admin.Client.Store.Delegation
         public BaseRequestState<DelegationInfo> Search { get; init; } = new();
 
         /// <summary>
+        /// Gets the request state for delegate searches.
+        /// </summary>
+        public BaseRequestState<ExtendedDelegateInfo> DelegateSearch { get; init; } = new();
+
+        /// <summary>
         /// Gets the request state for protects.
         /// </summary>
         public BaseRequestState Protect { get; init; } = new();
