@@ -1,4 +1,4 @@
-// -------------------------------------------------------------------------
+﻿// -------------------------------------------------------------------------
 //  Copyright © 2019 Province of British Columbia
 //
 //  Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,18 +16,38 @@
 namespace HealthGateway.PatientDataAccess
 {
     /// <summary>
-    /// Health service categories.
+    /// Diagnostic image exam statuses.
     /// </summary>
-    public enum HealthServiceCategory
+    public enum DiagnosticImagingStatus
     {
         /// <summary>
-        /// BC Transplant Organ Donor.
+        /// Exam is scheduled.
         /// </summary>
-        OrganDonor,
+        Scheduled,
 
         /// <summary>
-        /// Diagnostic Imaging services data.
+        /// Exam is in progress.
         /// </summary>
-        DiagnosticImaging,
+        InProgress,
+
+        /// <summary>
+        /// Exam is finalized.
+        /// </summary>
+        Finalized,
+
+        /// <summary>
+        /// Exam result is pending.
+        /// </summary>
+        Pending,
+
+        /// <summary>
+        /// Exam is completed.
+        /// </summary>
+        Completed,
+
+        /// <summary>
+        /// Exam is amended.
+        /// </summary>
+        Amended,
     }
 }

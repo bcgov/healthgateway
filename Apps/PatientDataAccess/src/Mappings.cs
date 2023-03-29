@@ -17,7 +17,6 @@ namespace HealthGateway.PatientDataAccess
 {
 // Disables documentation for internal class.
 #pragma warning disable SA1600
-
     using AutoMapper;
     using HealthGateway.PatientDataAccess.Api;
 
@@ -30,8 +29,12 @@ namespace HealthGateway.PatientDataAccess
 
             this.CreateMap<OrganDonor, OrganDonorRegistration>()
                 .ForMember(d => d.Status, opts => opts.MapFrom(s => s.DonorStatus))
-                .ForMember(d => d.RegistrationFileId, opts => opts.MapFrom(s => s.HealthOptionsFileId))
-                ;
+                .ForMember(d => d.RegistrationFileId, opts => opts.MapFrom(s => s.HealthOptionsFileId));
+
+            this.CreateMap<HealthDataEntry, HealthData>()
+                .IncludeAllDerived();
+
+            this.CreateMap<DiExam, DiagnosticImagingExam>();
         }
     }
 }
