@@ -29,10 +29,10 @@ namespace PatientDataAccessTests
         private readonly Guid pid = Guid.NewGuid();
 
         [Fact]
-        public async Task CanGetPatientData()
+        public async Task CanGetOrganDonorData()
         {
-            Mock<IPatientApi> patientApi = new Mock<IPatientApi>();
-            OrganDonor phsaOrganDonorResponse = new OrganDonor
+            Mock<IPatientApi> patientApi = new();
+            OrganDonor phsaOrganDonorResponse = new()
             {
                 DonorStatus = DonorStatus.Registered,
                 StatusMessage = "statusmessage",
@@ -56,11 +56,47 @@ namespace PatientDataAccessTests
         }
 
         [Fact]
+        public async Task CanGetDiagnosticImagingData()
+        {
+            Mock<IPatientApi> patientApi = new();
+            DiExam phsaDiagnosticImageExam = new()
+            {
+                BodyPart = "Some BodyPart",
+                ExamDate = new DateTime(2020, 1, 1),
+                FileId = "Some FileId",
+                HealthAuthority = "Some HealthAuthority",
+                Modality = "Some Modality",
+                Organization = "Some Organization",
+                ProcedureDescription = "Some ProcedureDescription",
+                Status = DiStatus.Scheduled,
+            };
+
+            patientApi
+                .Setup(api => api.GetHealthDataAsync(this.pid, It.IsAny<string[]>(), It.IsAny<CancellationToken>()))
+                .ReturnsAsync(new HealthDataResult(new HealthDataMetadata(), new[] { phsaDiagnosticImageExam }));
+
+            IPatientDataRepository sut = CreateSut(patientApi.Object);
+
+            PatientDataQueryResult result = await sut.Query(new HealthServicesQuery(this.pid, new[] { HealthServiceCategory.DiagnosticImaging }), CancellationToken.None).ConfigureAwait(true);
+
+            result.ShouldNotBeNull();
+            DiagnosticImagingExam exam = result.Items.ShouldHaveSingleItem().ShouldBeOfType<DiagnosticImagingExam>();
+            exam.BodyPart.ShouldBe(phsaDiagnosticImageExam.BodyPart);
+            exam.ExamDate.ShouldBe(phsaDiagnosticImageExam.ExamDate);
+            exam.ExamStatus.ShouldBe(DiagnosticImagingExamStatus.Scheduled);
+            exam.FileId.ShouldBe(phsaDiagnosticImageExam.FileId);
+            exam.HealthAuthority.ShouldBe(phsaDiagnosticImageExam.HealthAuthority);
+            exam.Modality.ShouldBe(phsaDiagnosticImageExam.Modality);
+            exam.Organization.ShouldBe(phsaDiagnosticImageExam.Organization);
+            exam.ProcedureDescription.ShouldBe(phsaDiagnosticImageExam.ProcedureDescription);
+        }
+
+        [Fact]
         public async Task CanGetPatientFile()
         {
-            Mock<IPatientApi> patientApi = new Mock<IPatientApi>();
+            Mock<IPatientApi> patientApi = new();
             string fileId = Guid.NewGuid().ToString();
-            FileResult expectedFile = new FileResult("text/plain", "somedata", "encoding");
+            FileResult expectedFile = new("text/plain", "somedata", "encoding");
 
             patientApi
                 .Setup(api => api.GetFile(this.pid, fileId, It.IsAny<CancellationToken>()))
@@ -81,7 +117,7 @@ namespace PatientDataAccessTests
         [Fact]
         public async Task CanHandleFileNoResults()
         {
-            Mock<IPatientApi> patientApi = new Mock<IPatientApi>();
+            Mock<IPatientApi> patientApi = new();
             string fileId = Guid.NewGuid().ToString();
 
             patientApi
@@ -98,7 +134,7 @@ namespace PatientDataAccessTests
         [Fact]
         public async Task CanHandleFileNotFound()
         {
-            Mock<IPatientApi> patientApi = new Mock<IPatientApi>();
+            Mock<IPatientApi> patientApi = new();
             string fileId = Guid.NewGuid().ToString();
 
 #pragma warning disable CA2000 // Dispose objects before losing scope
@@ -117,9 +153,9 @@ namespace PatientDataAccessTests
         [Fact]
         public async Task CanHandleEmptyFile()
         {
-            Mock<IPatientApi> patientApi = new Mock<IPatientApi>();
+            Mock<IPatientApi> patientApi = new();
             string fileId = Guid.NewGuid().ToString();
-            FileResult expectedFile = new FileResult(null, null, null);
+            FileResult expectedFile = new(null, null, null);
 
             patientApi
                 .Setup(api => api.GetFile(this.pid, fileId, It.IsAny<CancellationToken>()))

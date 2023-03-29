@@ -64,7 +64,7 @@ namespace HealthGateway.Patient
             services.AddTransient<IClientRegistriesDelegate, ClientRegistriesDelegate>();
             services.AddTransient<IPatientService, PatientService>();
             services.AddTransient<IPatientDataService, PatientDataService>();
-            services.AddAutoMapper(typeof(OrganDonorRegistrationProfile));
+            services.AddAutoMapper(typeof(OrganDonorRegistrationProfile), typeof(DiagnosticImagingExamProfile));
 
             PhsaV2.ConfigurePhsaV2Access(services, logger, configuration);
             services.AddPatientDataAccess(new PatientDataAccessConfiguration(configuration.GetSection("PhsaV2:BaseUrl").Get<Uri>()!));

@@ -21,30 +21,32 @@ namespace HealthGateway.Patient.Mappings
     using HealthGateway.PatientDataAccess;
 
     /// <summary>
-    /// The AutoMapper profile for the Organ Donor Registration module.
+    /// The AutoMapper profile for the Diagnostic Imaging Exams.
     /// </summary>
-    public class OrganDonorRegistrationProfile : Profile
+    public class DiagnosticImagingExamProfile : Profile
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="OrganDonorRegistrationProfile"/> class.
+        /// Initializes a new instance of the <see cref="DiagnosticImagingExamProfile"/> class.
         /// </summary>
-        public OrganDonorRegistrationProfile()
+        public DiagnosticImagingExamProfile()
         {
-            this.CreateMap<OrganDonorRegistration, OrganDonorRegistrationData>()
+            this.CreateMap<DiagnosticImagingExam, DiagnosticImagingExamData>()
                 .ForMember(
-                    d => d.Status,
-                    opts => opts.MapFrom(s => MapOrganDonorStatus(s.Status)));
+                    d => d.ExamStatus,
+                    opts => opts.MapFrom(s => MapDiagnosticImagingExamStatus(s.ExamStatus)));
         }
 
-        private static OrganDonorRegistrationStatus MapOrganDonorStatus(DonorRegistrationStatus status)
+        private static DiagnosticImagingStatus MapDiagnosticImagingExamStatus(DiagnosticImagingExamStatus status)
         {
             return status switch
             {
-                DonorRegistrationStatus.Registered => OrganDonorRegistrationStatus.Registered,
-                DonorRegistrationStatus.NotRegistered => OrganDonorRegistrationStatus.NotRegistered,
-                DonorRegistrationStatus.Error => OrganDonorRegistrationStatus.Error,
-                DonorRegistrationStatus.Pending => OrganDonorRegistrationStatus.Pending,
-                _ => OrganDonorRegistrationStatus.Error,
+                DiagnosticImagingExamStatus.Scheduled => DiagnosticImagingStatus.Scheduled,
+                DiagnosticImagingExamStatus.InProgress => DiagnosticImagingStatus.InProgress,
+                DiagnosticImagingExamStatus.Finalized => DiagnosticImagingStatus.Finalized,
+                DiagnosticImagingExamStatus.Pending => DiagnosticImagingStatus.Pending,
+                DiagnosticImagingExamStatus.Completed => DiagnosticImagingStatus.Completed,
+                DiagnosticImagingExamStatus.Amended => DiagnosticImagingStatus.Amended,
+                _ => DiagnosticImagingStatus.Pending,
             };
         }
     }
