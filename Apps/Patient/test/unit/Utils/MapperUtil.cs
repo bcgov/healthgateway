@@ -31,7 +31,11 @@ namespace HealthGateway.PatientTests.Utils
         public static IMapper InitializeAutoMapper()
         {
             MapperConfiguration config = new(
-                cfg => { cfg.AddProfile(new OrganDonorRegistrationProfile()); });
+                cfg =>
+                {
+                    cfg.AddProfile(new OrganDonorRegistrationProfile());
+                    cfg.AddProfile(new DiagnosticImagingExamProfile());
+                });
 
             return config.CreateMapper();
         }

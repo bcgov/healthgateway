@@ -65,6 +65,7 @@ namespace HealthGateway.Patient.Services
     /// </summary>
     [JsonConverter(typeof(PatientDataJsonConverter))]
     [KnownType(typeof(OrganDonorRegistrationData))]
+    [KnownType(typeof(DiagnosticImagingExamData))]
     public abstract record PatientData
     {
         /// <summary>
@@ -174,6 +175,7 @@ namespace HealthGateway.Patient.Services
             return discriminatorValue switch
             {
                 nameof(OrganDonorRegistrationData) => typeof(OrganDonorRegistrationData),
+                nameof(DiagnosticImagingExamData) => typeof(DiagnosticImagingExamData),
                 _ => null,
             };
         }
