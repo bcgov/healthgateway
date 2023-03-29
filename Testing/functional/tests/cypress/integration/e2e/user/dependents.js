@@ -11,6 +11,21 @@ describe("dependents", () => {
         hdid: "645645767756756767",
     };
 
+    const protectedDependentWithAllowedDelegation = {
+        firstName: "Leroy Desmond",
+        lastName: "Tobias",
+        doB: "2015-Dec-02",
+        phn: "9872868128",
+        hdid: "35224807075386200",
+    };
+
+    const protectedDependentWithoutAllowedDelegation = {
+        firstName: "Lenny Francesco",
+        lastName: "Dansereau",
+        doB: "2019-May-14",
+        phn: "9872868103",
+    };
+
     const noHdidDependent = {
         firstName: "Baby Girl",
         lastName: "Reid",
@@ -143,7 +158,101 @@ describe("dependents", () => {
             "be.visible",
             "not.be.empty"
         );
+        cy.get("[data-testid=not-condensed-error-contact-message]").should(
+            "exist",
+            "be.visible",
+            "not.be.empty"
+        );
         cy.get("[data-testid=cancelRegistrationBtn]").click();
+    });
+
+    it("Validate Add Protected PHN Without Allowed Delegation", () => {
+        cy.get("[data-testid=addNewDependentBtn]").click();
+
+        cy.get("[data-testid=newDependentModalText]").should(
+            "exist",
+            "be.visible"
+        );
+
+        cy.get("[data-testid=firstNameInput]")
+            .clear()
+            .type(protectedDependentWithoutAllowedDelegation.firstName);
+        cy.get("[data-testid=lastNameInput]")
+            .clear()
+            .type(protectedDependentWithoutAllowedDelegation.lastName);
+        cy.get("[data-testid=dateOfBirthInput] input")
+            .clear()
+            .type(protectedDependentWithoutAllowedDelegation.doB);
+        cy.get("[data-testid=phnInput]")
+            .clear()
+            .type(protectedDependentWithoutAllowedDelegation.phn);
+        cy.get("[data-testid=termsCheckbox]").check({ force: true });
+
+        cy.get("[data-testid=registerDependentBtn]").click();
+
+        // Validate the modal is not done
+        cy.get("[data-testid=newDependentModal]").should("exist");
+        cy.get("[data-testid=dependentErrorText]").should(
+            "exist",
+            "be.visible",
+            "not.be.empty"
+        );
+        cy.get("[data-testid=condensed-error-contact-message]").should(
+            "exist",
+            "be.visible",
+            "not.be.empty"
+        );
+        cy.get("[data-testid=cancelRegistrationBtn]").click();
+    });
+
+    it("Validate Add Protected PHN With Allowed Delegation", () => {
+        cy.get("[data-testid=addNewDependentBtn]").click();
+
+        cy.get("[data-testid=newDependentModalText]").should(
+            "exist",
+            "be.visible"
+        );
+
+        cy.get("[data-testid=firstNameInput]")
+            .clear()
+            .type(protectedDependentWithAllowedDelegation.firstName);
+        cy.get("[data-testid=lastNameInput]")
+            .clear()
+            .type(protectedDependentWithAllowedDelegation.lastName);
+        cy.get("[data-testid=dateOfBirthInput] input")
+            .clear()
+            .type(protectedDependentWithAllowedDelegation.doB);
+        cy.get("[data-testid=phnInput]")
+            .clear()
+            .type(protectedDependentWithAllowedDelegation.phn);
+        cy.get("[data-testid=termsCheckbox]").check({ force: true });
+
+        cy.get("[data-testid=registerDependentBtn]").click();
+
+        // Validate the modal is done
+        cy.get("[data-testid=newDependentModal]").should("not.exist");
+
+        cy.get("[data-testid=loadingSpinner]").should("not.be.visible");
+        cy.get(
+            `[data-testid=dependent-card-${protectedDependentWithAllowedDelegation.phn}]`
+        )
+            .as("newDependentCard")
+            .within(() => {
+                // Validate the newly added dependent tab and elements are present
+                cy.get("[data-testid=dependentName]")
+                    .contains(protectedDependentWithAllowedDelegation.firstName)
+                    .contains(protectedDependentWithAllowedDelegation.lastName);
+
+                cy.get("[data-testid=dependentPHN]").should(
+                    "have.value",
+                    protectedDependentWithAllowedDelegation.phn
+                );
+
+                cy.get("[data-testid=dependentDOB]").should(
+                    "have.value",
+                    protectedDependentWithAllowedDelegation.doB
+                );
+            });
     });
 
     it("Validate No HDID", () => {

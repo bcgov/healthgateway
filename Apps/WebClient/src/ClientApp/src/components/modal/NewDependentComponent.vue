@@ -185,13 +185,16 @@ export default class NewDependentComponent extends Vue {
             :show="!!errorMessage"
         >
             <p data-testid="dependentErrorText">{{ errorMessage }}</p>
-            <span v-if="condensedErrorContactMessage">
+            <span
+                v-if="condensedErrorContactMessage"
+                data-testid="condensed-error-contact-message"
+            >
                 Please contact
                 <a href="mailto:HealthGateway@gov.bc.ca"
                     >HealthGateway@gov.bc.ca</a
                 >.
             </span>
-            <span v-else>
+            <span v-else data-testid="not-condensed-error-contact-message">
                 If you continue to have issues, please contact
                 <a href="mailto:HealthGateway@gov.bc.ca"
                     >HealthGateway@gov.bc.ca</a
