@@ -456,7 +456,12 @@ export default class RegistrationView extends Vue {
                     <h1>Error retrieving user information</h1>
                     <p data-testid="clientRegistryErrorText">
                         There may be an issue in our Client Registry. Please
-                        contact <strong>HealthGateway@gov.bc.ca</strong>
+                        contact
+                        <strong
+                            ><a href="mailto:HealthGateway@gov.bc.ca"
+                                >HealthGateway@gov.bc.ca</a
+                            ></strong
+                        >
                     </p>
                 </div>
                 <div v-else><h1>Unknown error</h1></div>
