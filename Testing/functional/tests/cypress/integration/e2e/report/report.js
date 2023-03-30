@@ -135,7 +135,7 @@ describe("Reports", () => {
     });
 
     it("Validate COVID-19 Report", () => {
-        cy.get("[data-testid=reportType]").select("COVID‑19 Test Results");
+        cy.get("[data-testid=reportType]").select("COVID‑19 Tests");
 
         cy.get("[data-testid=covid19-report-table]").should("be.visible");
         cy.get("[data-testid=covid19DateItem]", { timeout: 60000 })
@@ -199,7 +199,7 @@ describe("Reports", () => {
     });
 
     it("Validate Special Authority Report", () => {
-        cy.get("[data-testid=reportType]").select("Special Authority Requests");
+        cy.get("[data-testid=reportType]").select("Special Authority");
 
         cy.get("[data-testid=medication-request-report-table]").should(
             "be.visible"
@@ -230,7 +230,7 @@ describe("Reports", () => {
     });
 
     it("Validate Laboratory Report", () => {
-        cy.get("[data-testid=reportType]").select("Laboratory Tests");
+        cy.get("[data-testid=reportType]").select("Lab Results");
 
         cy.get("[data-testid=laboratory-report-table]").should("be.visible");
         cy.get("[data-testid=labResultDateItem]", { timeout: 60000 })

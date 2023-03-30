@@ -29,6 +29,8 @@ export default class Covid19ReportComponent extends Vue {
 
     @Prop() private filter!: ReportFilter;
 
+    @Prop({ default: false }) isDependent!: boolean;
+
     @Action("retrieveCovid19LaboratoryOrders", { namespace: "laboratory" })
     retrieveCovid19LaboratoryOrders!: (params: {
         hdid: string;
@@ -163,7 +165,7 @@ export default class Covid19ReportComponent extends Vue {
                 <b-col>No records found.</b-col>
             </b-row>
             <b-table
-                v-if="!isEmpty || isCovid19LaboratoryLoading"
+                v-else-if="!isDependent"
                 :striped="true"
                 :fixed="true"
                 :busy="isCovid19LaboratoryLoading"
