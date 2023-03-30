@@ -19,7 +19,11 @@ export default class PatientRetrievalErrorView extends Vue {}
     <PageErrorComponent title="Error retrieving user information">
         <p>
             There may be an issue in our Client Registry. Please contact
-            <strong>HealthGateway@gov.bc.ca</strong>
+            <strong
+                ><a href="mailto:HealthGateway@gov.bc.ca"
+                    >HealthGateway@gov.bc.ca</a
+                ></strong
+            >
         </p>
     </PageErrorComponent>
 </template>

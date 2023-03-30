@@ -146,7 +146,11 @@ export default class ErrorCardComponent extends Vue {
                     <div class="py-2">
                         <p>
                             Try refreshing the page. If this issue persists,
-                            contact HealthGateway@gov.bc.ca and provide
+                            contact
+                            <a href="mailto:HealthGateway@gov.bc.ca"
+                                >HealthGateway@gov.bc.ca</a
+                            >
+                            and provide
                             <hg-button
                                 v-clipboard:copy="errorDetailsCopyToClipboard"
                                 v-clipboard:success="onCopy"

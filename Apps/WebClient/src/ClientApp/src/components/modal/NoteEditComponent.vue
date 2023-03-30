@@ -253,7 +253,9 @@ export default class NoteEditComponent extends Vue {
             <p data-testid="noteEditErrorText">{{ errorMessage }}</p>
             <span>
                 If you continue to have issues, please contact
-                HealthGateway@gov.bc.ca.
+                <a href="mailto:HealthGateway@gov.bc.ca"
+                    >HealthGateway@gov.bc.ca</a
+                >.
             </span>
         </b-alert>
         <template #modal-header>
