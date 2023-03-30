@@ -33,6 +33,7 @@
                 Checked="@(InEditMode || context.Protected)"
                 CheckedChanged="@ToggleProtectedSwitchAsync"
                 Color="@(InEditMode ? Color.Warning : Color.Success)"
+                UnCheckedColor="Color.Tertiary"
                 Class="mr-n4"
                 ReadOnly="@InEditMode"
                 data-testid="dependent-protected-switch" />
