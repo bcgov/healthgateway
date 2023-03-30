@@ -15,6 +15,7 @@
 // -------------------------------------------------------------------------
 namespace HealthGateway.Patient.Services
 {
+#pragma warning disable SA1600 // Disable documentation for internal class.
     using System;
     using System.Collections.Generic;
     using System.Linq;
@@ -25,8 +26,6 @@ namespace HealthGateway.Patient.Services
     using HealthGateway.Patient.Constants;
     using HealthGateway.PatientDataAccess;
 
-    // Disable documentation for internal class.
-#pragma warning disable SA1600
     internal class PatientDataService : IPatientDataService
     {
         private readonly IPatientDataRepository patientDataRepository;
@@ -81,14 +80,14 @@ namespace HealthGateway.Patient.Services
         {
             foreach (PatientDataType pdt in patientDataType)
             {
-                HealthDataCategory? hsc = pdt switch
+                HealthDataCategory? hdc = pdt switch
                 {
                     PatientDataType.DiagnosticImaging => HealthDataCategory.DiagnosticImaging,
                     _ => null,
                 };
-                if (hsc != null)
+                if (hdc != null)
                 {
-                    yield return hsc.Value;
+                    yield return hdc.Value;
                 }
             }
         }
@@ -101,33 +100,23 @@ namespace HealthGateway.Patient.Services
         private async Task<PatientDataQueryResult> HandleServiceQuery(Guid pid, PatientDataQuery query, CancellationToken ct)
         {
             IEnumerable<HealthServiceCategory> categories = ExtractToHealthServiceCategoryArray(query.PatientDataTypes).ToArray();
-            if (categories.Any())
-            {
-                PatientDataQueryResult results = await this.patientDataRepository.Query(
-                        new HealthServicesQuery(pid, categories),
-                        ct)
-                    .ConfigureAwait(true);
+            PatientDataQueryResult results = await this.patientDataRepository.Query(
+                    new HealthServicesQuery(pid, categories),
+                    ct)
+                .ConfigureAwait(true);
 
-                return results;
-            }
-
-            return new PatientDataQueryResult(Array.Empty<HealthData>());
+            return results;
         }
 
         private async Task<PatientDataQueryResult> HandleDataQuery(Guid pid, PatientDataQuery query, CancellationToken ct)
         {
             IEnumerable<HealthDataCategory> categories = ExtractToHealthDataCategoryArray(query.PatientDataTypes).ToArray();
-            if (categories.Any())
-            {
-                PatientDataQueryResult results = await this.patientDataRepository.Query(
-                        new HealthDataQuery(pid, categories),
-                        ct)
-                    .ConfigureAwait(true);
+            PatientDataQueryResult results = await this.patientDataRepository.Query(
+                    new HealthDataQuery(pid, categories),
+                    ct)
+                .ConfigureAwait(true);
 
-                return results;
-            }
-
-            return new PatientDataQueryResult(Array.Empty<HealthData>());
+            return results;
         }
 
         private PatientData MapToPatientData(HealthData healthData)

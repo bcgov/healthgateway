@@ -15,11 +15,8 @@
 // -------------------------------------------------------------------------
 namespace HealthGateway.PatientDataAccess.Api
 {
-// Disables documentation for internal class.
-#pragma warning disable SA1600
-
-// Disables documentation for internal class.
-#pragma warning disable SA1602
+#pragma warning disable SA1600 // Disables documentation for internal class.
+#pragma warning disable SA1602 // Disables documentation for internal class.
     using System;
     using HealthGateway.Common.Utils;
 

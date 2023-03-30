@@ -89,19 +89,29 @@ namespace HealthGateway.PatientDataAccess
         {
             string[] categories = query.Categories.Select(MapHealthOptionsCategories).ToArray();
 
-            HealthOptionsResult results = await this.patientApi.GetHealthOptionsAsync(query.Pid, categories, ct).ConfigureAwait(true) ??
-                                          new(new HealthOptionMetadata(), Array.Empty<HealthOptionData>());
-            return new PatientDataQueryResult(results.Data.Select(this.Map));
+            if (categories.Any())
+            {
+                HealthOptionsResult results = await this.patientApi.GetHealthOptionsAsync(query.Pid, categories, ct).ConfigureAwait(true) ??
+                                              new(new HealthOptionMetadata(), Array.Empty<HealthOptionData>());
+                return new PatientDataQueryResult(results.Data.Select(this.Map));
+            }
+
+            return new PatientDataQueryResult(Array.Empty<HealthData>());
         }
 
         private async Task<PatientDataQueryResult> Handle(HealthDataQuery query, CancellationToken ct)
         {
             string[] categories = query.Categories.Select(MapHealthDataCategories).ToArray();
 
-            HealthDataResult results = await this.patientApi.GetHealthDataAsync(query.Pid, categories, ct).ConfigureAwait(true) ??
-                                       new(new HealthDataMetadata(), Array.Empty<HealthDataEntry>());
+            if (categories.Any())
+            {
+                HealthDataResult results = await this.patientApi.GetHealthDataAsync(query.Pid, categories, ct).ConfigureAwait(true) ??
+                                           new(new HealthDataMetadata(), Array.Empty<HealthDataEntry>());
 
-            return new PatientDataQueryResult(results.Data.Select(this.Map));
+                return new PatientDataQueryResult(results.Data.Select(this.Map));
+            }
+
+            return new PatientDataQueryResult(Array.Empty<HealthData>());
         }
 
         private async Task<PatientDataQueryResult> Handle(PatientFileQuery query, CancellationToken ct)

@@ -15,6 +15,7 @@
 // -------------------------------------------------------------------------
 namespace HealthGateway.PatientDataAccess
 {
+#pragma warning disable SA1201 // Elements should appear in the correct order
     using System;
     using System.Collections.Generic;
     using System.Threading;
@@ -45,9 +46,31 @@ namespace HealthGateway.PatientDataAccess
     public record HealthServicesQuery(Guid Pid, IEnumerable<HealthServiceCategory> Categories) : PatientDataQuery;
 
     /// <summary>
+    /// Health service categories.
+    /// </summary>
+    public enum HealthServiceCategory
+    {
+        /// <summary>
+        /// BC Transplant Organ Donor.
+        /// </summary>
+        OrganDonor,
+    }
+
+    /// <summary>
     /// Query parameters for health data.
     /// </summary>
     public record HealthDataQuery(Guid Pid, IEnumerable<HealthDataCategory> Categories) : PatientDataQuery;
+
+    /// <summary>
+    /// Health data categories.
+    /// </summary>
+    public enum HealthDataCategory
+    {
+        /// <summary>
+        /// Diagnostic Imaging services data.
+        /// </summary>
+        DiagnosticImaging,
+    }
 
     /// <summary>
     /// Query patient files.
@@ -64,3 +87,4 @@ namespace HealthGateway.PatientDataAccess
     /// </summary>
     public record PatientFile(string FileId, IEnumerable<byte> Content, string ContentType) : HealthData;
 }
+#pragma warning disable SA1201

@@ -1,4 +1,4 @@
-﻿// -------------------------------------------------------------------------
+// -------------------------------------------------------------------------
 //  Copyright © 2019 Province of British Columbia
 //
 //  Licensed under the Apache License, Version 2.0 (the "License");
@@ -15,6 +15,7 @@
 // -------------------------------------------------------------------------
 namespace HealthGateway.PatientDataAccess
 {
+#pragma warning disable SA1201 // Elements should appear in the correct order
     /// <summary>
     /// abstract class for health service data.
     /// </summary>
@@ -40,4 +41,31 @@ namespace HealthGateway.PatientDataAccess
         /// </summary>
         public string? RegistrationFileId { get; set; }
     }
+
+    /// <summary>
+    /// Donor registration status.
+    /// </summary>
+    public enum DonorRegistrationStatus
+    {
+        /// <summary>
+        /// Registered patient.
+        /// </summary>
+        Registered,
+
+        /// <summary>
+        /// Not registered patient.
+        /// </summary>
+        NotRegistered,
+
+        /// <summary>
+        /// Error in registration.
+        /// </summary>
+        Error,
+
+        /// <summary>
+        /// Registration is pending.
+        /// </summary>
+        Pending,
+    }
 }
+#pragma warning restore SA1201

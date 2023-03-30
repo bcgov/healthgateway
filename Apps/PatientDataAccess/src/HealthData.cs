@@ -1,4 +1,4 @@
-﻿// -------------------------------------------------------------------------
+// -------------------------------------------------------------------------
 //  Copyright © 2019 Province of British Columbia
 //
 //  Licensed under the Apache License, Version 2.0 (the "License");
@@ -15,6 +15,7 @@
 // -------------------------------------------------------------------------
 namespace HealthGateway.PatientDataAccess
 {
+#pragma warning disable SA1201 // Elements should appear in the correct order
     using System;
 
     /// <summary>
@@ -67,4 +68,41 @@ namespace HealthGateway.PatientDataAccess
         /// </summary>
         public DateTime? ExamDate { get; set; }
     }
+
+    /// <summary>
+    /// Diagnostic image exam statuses.
+    /// </summary>
+    public enum DiagnosticImagingExamStatus
+    {
+        /// <summary>
+        /// Exam is scheduled.
+        /// </summary>
+        Scheduled,
+
+        /// <summary>
+        /// Exam is in progress.
+        /// </summary>
+        InProgress,
+
+        /// <summary>
+        /// Exam is finalized.
+        /// </summary>
+        Finalized,
+
+        /// <summary>
+        /// Exam result is pending.
+        /// </summary>
+        Pending,
+
+        /// <summary>
+        /// Exam is completed.
+        /// </summary>
+        Completed,
+
+        /// <summary>
+        /// Exam is amended.
+        /// </summary>
+        Amended,
+    }
 }
+#pragma warning restore SA1201
