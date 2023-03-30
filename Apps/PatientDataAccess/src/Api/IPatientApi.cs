@@ -20,15 +20,10 @@ namespace HealthGateway.PatientDataAccess.Api
 
 // Disables documentation for internal class.
 #pragma warning disable SA1602
-
-// Disables single type per file for internal class.
-#pragma warning disable SA1402
     using System;
     using System.Collections.Generic;
-    using System.Text.Json.Serialization;
     using System.Threading;
     using System.Threading.Tasks;
-    using HealthGateway.Common.Utils;
     using Refit;
 
     internal enum DonorStatus
@@ -78,145 +73,6 @@ namespace HealthGateway.PatientDataAccess.Api
     internal record HealthOptionMetadata;
 
     internal record HealthDataMetadata;
-
-    [JsonConverter(typeof(HealthOptionDataJsonConverter))]
-    internal abstract record HealthOptionData;
-
-    [JsonConverter(typeof(HealthDataJsonConverter))]
-    internal abstract record HealthDataEntry;
-
-    internal record OrganDonor : HealthOptionData
-    {
-        public string? HealthOptionsId { get; set; }
-
-        public DonorStatus DonorStatus { get; set; }
-
-        public string? StatusMessage { get; set; }
-
-        public string? HealthOptionsFileId { get; set; }
-    }
-
-    internal record ClinicalDocument : HealthDataEntry
-    {
-        public string? Name { get; set; }
-
-        public string? Type { get; set; }
-
-        public string? FacilityName { get; set; }
-
-        public string? Discipline { get; set; }
-
-        public DateTime? ServiceDate { get; set; }
-
-        public string? SourceSystemId { get; set; }
-    }
-
-    internal record LaboratoryOrder : HealthDataEntry
-    {
-        public string? SourceSystemId { get; set; }
-
-        public string? Phn { get; set; }
-
-        public string? OrderingProviderIds { get; set; }
-
-        public string? OrderingProvider { get; set; }
-
-        public string? ReportingLab { get; set; }
-
-        public string? Location { get; set; }
-
-        public string? OrmOrOru { get; set; }
-
-        public DateTime? MessageDateTime { get; set; }
-
-        public string? MessageId { get; set; }
-
-        public string? AdditionalData { get; set; }
-
-        public bool? ReportAvailable { get; set; }
-
-        public IEnumerable<LaboratoryResult>? LabResults { get; set; }
-    }
-
-    internal record LaboratoryResult
-    {
-        public string? Id { get; set; }
-
-        public string? TestType { get; set; }
-
-        public bool? OutOfRange { get; set; }
-
-        public DateTime? CollectedDateTime { get; set; }
-
-        public string? TestStatus { get; set; }
-
-        public string? ResultDescription { get; set; }
-
-        public string? LabResultOutcome { get; set; }
-
-        public string? ReceivedDateTime { get; set; }
-
-        public string? ResultDateTime { get; set; }
-
-        public string? Loinc { get; set; }
-
-        public string? LoincName { get; set; }
-
-        public string? ResultTitle { get; set; }
-
-        public string? ResultLink { get; set; }
-    }
-
-    internal record DiExam : HealthDataEntry
-    {
-        public string? ProcedureDescription { get; set; }
-
-        public string? BodyPart { get; set; }
-
-        public string? Modality { get; set; }
-
-        public string? Organization { get; set; }
-
-        public string? HealthAuthority { get; set; }
-
-        public DiStatus Status { get; set; }
-
-        public string? FileId { get; set; }
-
-        public DateTime? ExamDate { get; set; }
-    }
-
-    internal class HealthOptionDataJsonConverter : PolymorphicJsonConverter<HealthOptionData>
-    {
-        protected override string Discriminator => "healthOptionsType";
-
-        protected override Type? ResolveType(string discriminatorValue)
-        {
-            return discriminatorValue switch
-            {
-                "BcTransplantOrganDonor" => typeof(OrganDonor),
-                _ => null,
-            };
-        }
-    }
-
-    internal class HealthDataJsonConverter : PolymorphicJsonConverter<HealthDataEntry>
-    {
-        protected override string Discriminator => "healthDataType";
-
-        protected override Type? ResolveType(string discriminatorValue)
-        {
-            return discriminatorValue switch
-            {
-                "Laboratory" => typeof(LaboratoryOrder),
-                "COVID19Laboratory" => typeof(LaboratoryOrder),
-                "ClinicalDocument" => typeof(ClinicalDocument),
-                "DiagnosticImaging" => typeof(DiExam),
-                _ => null,
-            };
-        }
-    }
 }
 #pragma warning restore SA1600
 #pragma warning restore SA1602
-#pragma warning restore SA1402

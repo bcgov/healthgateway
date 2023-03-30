@@ -1,4 +1,4 @@
-// -------------------------------------------------------------------------
+﻿// -------------------------------------------------------------------------
 //  Copyright © 2019 Province of British Columbia
 //
 //  Licensed under the Apache License, Version 2.0 (the "License");
@@ -13,29 +13,29 @@
 //  See the License for the specific language governing permissions and
 //  limitations under the License.
 // -------------------------------------------------------------------------
-namespace HealthGateway.PatientDataAccess
+namespace HealthGateway.PatientDataAccess.Api
 {
 // Disables documentation for internal class.
 #pragma warning disable SA1600
-    using AutoMapper;
-    using HealthGateway.PatientDataAccess.Api;
 
-    internal class Mappings : Profile
+// Disables documentation for internal class.
+#pragma warning disable SA1602
+    using System;
+    using HealthGateway.Common.Utils;
+
+    internal class HealthOptionDataJsonConverter : PolymorphicJsonConverter<HealthOptionData>
     {
-        public Mappings()
+        protected override string Discriminator => "healthOptionsType";
+
+        protected override Type? ResolveType(string discriminatorValue)
         {
-            this.CreateMap<HealthOptionData, HealthData>()
-                .IncludeAllDerived();
-
-            this.CreateMap<HealthDataEntry, HealthData>()
-                .IncludeAllDerived();
-
-            this.CreateMap<OrganDonor, OrganDonorRegistration>()
-                .ForMember(d => d.Status, opts => opts.MapFrom(s => s.DonorStatus))
-                .ForMember(d => d.RegistrationFileId, opts => opts.MapFrom(s => s.HealthOptionsFileId));
-
-            this.CreateMap<Api.DiagnosticImagingExam, DiagnosticImagingExam>();
+            return discriminatorValue switch
+            {
+                "BcTransplantOrganDonor" => typeof(OrganDonor),
+                _ => null,
+            };
         }
     }
 }
 #pragma warning restore SA1600
+#pragma warning restore SA1602

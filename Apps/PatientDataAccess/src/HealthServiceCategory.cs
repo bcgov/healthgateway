@@ -24,10 +24,5 @@ namespace HealthGateway.PatientDataAccess
         /// BC Transplant Organ Donor.
         /// </summary>
         OrganDonor,
-
-        /// <summary>
-        /// Diagnostic Imaging services data.
-        /// </summary>
-        DiagnosticImaging,
     }
 }

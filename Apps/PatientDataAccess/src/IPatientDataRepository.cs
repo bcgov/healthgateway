@@ -45,6 +45,11 @@ namespace HealthGateway.PatientDataAccess
     public record HealthServicesQuery(Guid Pid, IEnumerable<HealthServiceCategory> Categories) : PatientDataQuery;
 
     /// <summary>
+    /// Query parameters for health data.
+    /// </summary>
+    public record HealthDataQuery(Guid Pid, IEnumerable<HealthDataCategory> Categories) : PatientDataQuery;
+
+    /// <summary>
     /// Query patient files.
     /// </summary>
     public record PatientFileQuery(Guid Pid, string FileId) : PatientDataQuery;
@@ -53,83 +58,6 @@ namespace HealthGateway.PatientDataAccess
     /// The health data query result payload.
     /// </summary>
     public record PatientDataQueryResult(IEnumerable<HealthData> Items);
-
-    /// <summary>
-    /// abstract record for health data.
-    /// </summary>
-    public abstract record HealthData;
-
-    /// <summary>
-    /// abstract class for health service data.
-    /// </summary>
-    public abstract record HealthServiceData : HealthData;
-
-    /// <summary>
-    /// BC Transplant organ donor service data.
-    /// </summary>
-    public record OrganDonorRegistration : HealthServiceData
-    {
-        /// <summary>
-        /// Gets or sets the donor registration status.
-        /// </summary>
-        public DonorRegistrationStatus Status { get; set; }
-
-        /// <summary>
-        /// Gets or sets the message associated with the donor registration status.
-        /// </summary>
-        public string? StatusMessage { get; set; }
-
-        /// <summary>
-        /// Gets or sets the file ID associated with the donor registration.
-        /// </summary>
-        public string? RegistrationFileId { get; set; }
-    }
-
-    /// <summary>
-    /// The details of a diagnostic imaging exam.
-    /// </summary>
-    public record DiagnosticImagingExam : HealthServiceData
-    {
-        /// <summary>
-        /// Gets or sets the exam's procedure description.
-        /// </summary>
-        public string? ProcedureDescription { get; set; }
-
-        /// <summary>
-        /// Gets or sets the exam's body part.
-        /// </summary>
-        public string? BodyPart { get; set; }
-
-        /// <summary>
-        /// Gets or sets the exam's modality.
-        /// </summary>
-        public string? Modality { get; set; }
-
-        /// <summary>
-        /// Gets or sets the exam's organization.
-        /// </summary>
-        public string? Organization { get; set; }
-
-        /// <summary>
-        /// Gets or sets the exam's health authority.
-        /// </summary>
-        public string? HealthAuthority { get; set; }
-
-        /// <summary>
-        /// Gets or sets the exam's status.
-        /// </summary>
-        public DiagnosticImagingExamStatus ExamStatus { get; set; }
-
-        /// <summary>
-        /// Gets or sets the exam's file id.
-        /// </summary>
-        public string? FileId { get; set; }
-
-        /// <summary>
-        /// Gets or sets the exam's date.
-        /// </summary>
-        public DateTime? ExamDate { get; set; }
-    }
 
     /// <summary>
     /// Represents a patient file.

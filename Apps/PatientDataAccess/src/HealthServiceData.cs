@@ -1,4 +1,4 @@
-// -------------------------------------------------------------------------
+﻿// -------------------------------------------------------------------------
 //  Copyright © 2019 Province of British Columbia
 //
 //  Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,28 +16,28 @@
 namespace HealthGateway.PatientDataAccess
 {
     /// <summary>
-    /// Donor registration status.
+    /// abstract class for health service data.
     /// </summary>
-    public enum DonorRegistrationStatus
+    public abstract record HealthServiceData : HealthData;
+
+    /// <summary>
+    /// BC Transplant organ donor service data.
+    /// </summary>
+    public record OrganDonorRegistration : HealthServiceData
     {
         /// <summary>
-        /// Registered patient.
+        /// Gets or sets the donor registration status.
         /// </summary>
-        Registered,
+        public DonorRegistrationStatus Status { get; set; }
 
         /// <summary>
-        /// Not registered patient.
+        /// Gets or sets the message associated with the donor registration status.
         /// </summary>
-        NotRegistered,
+        public string? StatusMessage { get; set; }
 
         /// <summary>
-        /// Error in registration.
+        /// Gets or sets the file ID associated with the donor registration.
         /// </summary>
-        Error,
-
-        /// <summary>
-        /// Registration is pending.
-        /// </summary>
-        Pending,
+        public string? RegistrationFileId { get; set; }
     }
 }

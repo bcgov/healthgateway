@@ -21,6 +21,8 @@ namespace PatientDataAccessTests
     using HealthGateway.PatientDataAccess.Api;
     using Moq;
     using Refit;
+    using DiagnosticImagingExam = HealthGateway.PatientDataAccess.Api.DiagnosticImagingExam;
+    using HealthDataCategory = HealthGateway.PatientDataAccess.HealthDataCategory;
 
     // Disable documentation for tests.
 #pragma warning disable SA1600
@@ -59,7 +61,7 @@ namespace PatientDataAccessTests
         public async Task CanGetDiagnosticImagingData()
         {
             Mock<IPatientApi> patientApi = new();
-            DiExam phsaDiagnosticImageExam = new()
+            DiagnosticImagingExam phsaDiagnosticImageExam = new()
             {
                 BodyPart = "Some BodyPart",
                 ExamDate = new DateTime(2020, 1, 1),
@@ -77,10 +79,10 @@ namespace PatientDataAccessTests
 
             IPatientDataRepository sut = CreateSut(patientApi.Object);
 
-            PatientDataQueryResult result = await sut.Query(new HealthServicesQuery(this.pid, new[] { HealthServiceCategory.DiagnosticImaging }), CancellationToken.None).ConfigureAwait(true);
+            PatientDataQueryResult result = await sut.Query(new HealthDataQuery(this.pid, new[] { HealthDataCategory.DiagnosticImaging }), CancellationToken.None).ConfigureAwait(true);
 
             result.ShouldNotBeNull();
-            DiagnosticImagingExam exam = result.Items.ShouldHaveSingleItem().ShouldBeOfType<DiagnosticImagingExam>();
+            HealthGateway.PatientDataAccess.DiagnosticImagingExam exam = result.Items.ShouldHaveSingleItem().ShouldBeOfType<HealthGateway.PatientDataAccess.DiagnosticImagingExam>();
             exam.BodyPart.ShouldBe(phsaDiagnosticImageExam.BodyPart);
             exam.ExamDate.ShouldBe(phsaDiagnosticImageExam.ExamDate);
             exam.ExamStatus.ShouldBe(DiagnosticImagingExamStatus.Scheduled);

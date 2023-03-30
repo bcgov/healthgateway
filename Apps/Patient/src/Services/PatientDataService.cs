@@ -16,6 +16,7 @@
 namespace HealthGateway.Patient.Services
 {
     using System;
+    using System.Collections.Generic;
     using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
@@ -42,12 +43,12 @@ namespace HealthGateway.Patient.Services
         public async Task<PatientDataResponse> Query(PatientDataQuery query, CancellationToken ct)
         {
             Guid pid = await this.ResolvePidFromHdid(query.Hdid).ConfigureAwait(true);
-            PatientDataQueryResult results = await this.patientDataRepository.Query(
-                    new HealthServicesQuery(pid, query.PatientDataTypes.Select(this.MapToHealthServiceCategory)),
-                    ct)
-                .ConfigureAwait(true);
+            List<Task<PatientDataQueryResult>> tasks = new();
+            tasks.Add(this.HandleServiceQuery(pid, query, ct));
+            tasks.Add(this.HandleDataQuery(pid, query, ct));
 
-            return new PatientDataResponse(results.Items.Select(this.MapToPatientData).ToArray());
+            IEnumerable<PatientDataQueryResult> results = await Task.WhenAll(tasks).ConfigureAwait(true);
+            return new PatientDataResponse(results.SelectMany(r => r.Items).Select(this.MapToPatientData).ToArray());
         }
 
         public async Task<PatientFileResponse?> Query(PatientFileQuery query, CancellationToken ct)
@@ -60,9 +61,73 @@ namespace HealthGateway.Patient.Services
                 : null;
         }
 
+        private static IEnumerable<HealthServiceCategory> ExtractToHealthServiceCategoryArray(IEnumerable<PatientDataType> patientDataType)
+        {
+            foreach (PatientDataType pdt in patientDataType)
+            {
+                HealthServiceCategory? hsc = pdt switch
+                {
+                    PatientDataType.OrganDonorRegistrationStatus => HealthServiceCategory.OrganDonor,
+                    _ => null,
+                };
+                if (hsc != null)
+                {
+                    yield return hsc.Value;
+                }
+            }
+        }
+
+        private static IEnumerable<HealthDataCategory> ExtractToHealthDataCategoryArray(IEnumerable<PatientDataType> patientDataType)
+        {
+            foreach (PatientDataType pdt in patientDataType)
+            {
+                HealthDataCategory? hsc = pdt switch
+                {
+                    PatientDataType.DiagnosticImaging => HealthDataCategory.DiagnosticImaging,
+                    _ => null,
+                };
+                if (hsc != null)
+                {
+                    yield return hsc.Value;
+                }
+            }
+        }
+
         private async Task<Guid> ResolvePidFromHdid(string patientHdid)
         {
             return (await this.personalAccountsService.GetPatientAccountAsync(patientHdid).ConfigureAwait(true)).PatientIdentity.Pid;
+        }
+
+        private async Task<PatientDataQueryResult> HandleServiceQuery(Guid pid, PatientDataQuery query, CancellationToken ct)
+        {
+            IEnumerable<HealthServiceCategory> categories = ExtractToHealthServiceCategoryArray(query.PatientDataTypes).ToArray();
+            if (categories.Any())
+            {
+                PatientDataQueryResult results = await this.patientDataRepository.Query(
+                        new HealthServicesQuery(pid, categories),
+                        ct)
+                    .ConfigureAwait(true);
+
+                return results;
+            }
+
+            return new PatientDataQueryResult(Array.Empty<HealthData>());
+        }
+
+        private async Task<PatientDataQueryResult> HandleDataQuery(Guid pid, PatientDataQuery query, CancellationToken ct)
+        {
+            IEnumerable<HealthDataCategory> categories = ExtractToHealthDataCategoryArray(query.PatientDataTypes).ToArray();
+            if (categories.Any())
+            {
+                PatientDataQueryResult results = await this.patientDataRepository.Query(
+                        new HealthDataQuery(pid, categories),
+                        ct)
+                    .ConfigureAwait(true);
+
+                return results;
+            }
+
+            return new PatientDataQueryResult(Array.Empty<HealthData>());
         }
 
         private PatientData MapToPatientData(HealthData healthData)
@@ -72,16 +137,6 @@ namespace HealthGateway.Patient.Services
                 OrganDonorRegistration hd => this.mapper.Map<OrganDonorRegistrationData>(hd),
                 DiagnosticImagingExam hd => this.mapper.Map<DiagnosticImagingExamData>(hd),
                 _ => throw new NotImplementedException($"{healthData.GetType().Name} is not mapped to {nameof(PatientData)}"),
-            };
-        }
-
-        private HealthServiceCategory MapToHealthServiceCategory(PatientDataType patientDataType)
-        {
-            return patientDataType switch
-            {
-                PatientDataType.OrganDonorRegistrationStatus => HealthServiceCategory.OrganDonor,
-                PatientDataType.DiagnosticImaging => HealthServiceCategory.DiagnosticImaging,
-                _ => throw new NotImplementedException($"{patientDataType} is not mapped to {nameof(HealthServiceCategory)}"),
             };
         }
     }

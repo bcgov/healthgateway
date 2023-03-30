@@ -56,6 +56,7 @@ namespace HealthGateway.PatientDataAccess
             return query switch
             {
                 HealthServicesQuery q => await this.Handle(q, ct).ConfigureAwait(true),
+                HealthDataQuery q => await this.Handle(q, ct).ConfigureAwait(true),
                 PatientFileQuery q => await this.Handle(q, ct).ConfigureAwait(true),
                 _ => throw new NotImplementedException($"{query.GetType().Name} doesn't have a handler"),
             };
@@ -66,16 +67,16 @@ namespace HealthGateway.PatientDataAccess
             return category switch
             {
                 HealthServiceCategory.OrganDonor => "BcTransplantOrganDonor",
-                _ => string.Empty,
+                _ => throw new NotImplementedException($"{category} doesn't have a handler"),
             };
         }
 
-        private static string MapHealthDataCategories(HealthServiceCategory category)
+        private static string MapHealthDataCategories(HealthDataCategory category)
         {
             return category switch
             {
-                HealthServiceCategory.DiagnosticImaging => "DiagnosticImaging",
-                _ => string.Empty,
+                HealthDataCategory.DiagnosticImaging => "DiagnosticImaging",
+                _ => throw new NotImplementedException($"{category} doesn't have a handler"),
             };
         }
 
@@ -86,27 +87,21 @@ namespace HealthGateway.PatientDataAccess
 
         private async Task<PatientDataQueryResult> Handle(HealthServicesQuery query, CancellationToken ct)
         {
-            string[] optionCategories = query.Categories.Select(MapHealthOptionsCategories).Where(c => !string.IsNullOrEmpty(c)).ToArray();
-            string[] dataCategories = query.Categories.Select(MapHealthDataCategories).Where(c => !string.IsNullOrEmpty(c)).ToArray();
+            string[] categories = query.Categories.Select(MapHealthOptionsCategories).ToArray();
 
-            if (!dataCategories.Any() && !optionCategories.Any())
-            {
-                throw new NotImplementedException($"No mapping implemented for {query.Categories}");
-            }
+            HealthOptionsResult results = await this.patientApi.GetHealthOptionsAsync(query.Pid, categories, ct).ConfigureAwait(true) ??
+                                          new(new HealthOptionMetadata(), Array.Empty<HealthOptionData>());
+            return new PatientDataQueryResult(results.Data.Select(this.Map));
+        }
 
-            List<HealthData> results = new();
-            Task<HealthOptionsResult?> optionsTask = optionCategories.Any()
-                ? this.patientApi.GetHealthOptionsAsync(query.Pid, optionCategories, ct)
-                : Task.FromResult<HealthOptionsResult?>(null);
-            Task<HealthDataResult?> dataTask = dataCategories.Any()
-                ? this.patientApi.GetHealthDataAsync(query.Pid, dataCategories, ct)
-                : Task.FromResult<HealthDataResult?>(null);
+        private async Task<PatientDataQueryResult> Handle(HealthDataQuery query, CancellationToken ct)
+        {
+            string[] categories = query.Categories.Select(MapHealthDataCategories).ToArray();
 
-            await Task.WhenAll(optionsTask, dataTask).ConfigureAwait(true);
-            results.AddRange((await optionsTask.ConfigureAwait(true))?.Data.Select(this.Map) ?? Array.Empty<HealthData>());
-            results.AddRange((await dataTask.ConfigureAwait(true))?.Data.Select(this.Map) ?? Array.Empty<HealthData>());
+            HealthDataResult results = await this.patientApi.GetHealthDataAsync(query.Pid, categories, ct).ConfigureAwait(true) ??
+                                       new(new HealthDataMetadata(), Array.Empty<HealthDataEntry>());
 
-            return new PatientDataQueryResult(results);
+            return new PatientDataQueryResult(results.Data.Select(this.Map));
         }
 
         private async Task<PatientDataQueryResult> Handle(PatientFileQuery query, CancellationToken ct)

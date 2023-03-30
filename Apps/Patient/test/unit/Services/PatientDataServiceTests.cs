@@ -153,8 +153,8 @@ namespace HealthGateway.PatientTests.Services
                 ExamStatus = DiagnosticImagingExamStatus.Scheduled,
             };
 
-            Mock<IPatientDataRepository> patientDataRepository = GetMockPatientDataRepository<HealthServicesQuery>(
-                q => q.Pid == this.pid && q.Categories.Any(c => c == HealthServiceCategory.DiagnosticImaging),
+            Mock<IPatientDataRepository> patientDataRepository = GetMockPatientDataRepository<HealthDataQuery>(
+                q => q.Pid == this.pid && q.Categories.Any(c => c == HealthDataCategory.DiagnosticImaging),
                 expected);
 
             Mock<IPersonalAccountsService> personalAccountService = this.GetMockPersonalAccountService();
