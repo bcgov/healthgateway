@@ -119,6 +119,44 @@ namespace HealthGateway.Admin.Tests.Services
         }
 
         /// <summary>
+        /// Tests get delegate information - happy path.
+        /// </summary>
+        /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
+        [Fact]
+        public async Task ShouldGetDelegateInformation()
+        {
+            // Arrange
+            PatientModel patientModel = GetPatientModel(DelegateHdid, DelegatePhn);
+            RequestResult<PatientModel> patientResult = GetPatientResult(patientModel);
+            IDelegationService delegationService = this.GetDelegationService(patientResult);
+
+            // Act
+            DelegateInfo actualResult = await delegationService.GetDelegateInformationAsync(DelegatePhn).ConfigureAwait(true);
+
+            // Assert
+            Assert.NotNull(actualResult);
+            Assert.Equal(DelegateHdid, actualResult.Hdid);
+            Assert.Equal(DelegatePhn, actualResult.PersonalHealthNumber);
+        }
+
+        /// <summary>
+        /// Tests get delegate information throws problem details exception when bad request is encountered.
+        /// </summary>
+        /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
+        [Fact]
+        public async Task ShouldGetDelegateInformationThrowBadRequestException()
+        {
+            // Arrange
+            DateTime invalidBirthDate = DateTime.UtcNow;
+            PatientModel patientModel = GetPatientModel(DelegateHdid, DelegatePhn, invalidBirthDate);
+            RequestResult<PatientModel> patientResult = GetPatientResult(patientModel);
+            IDelegationService delegationService = this.GetDelegationService(patientResult);
+
+            // Act and Assert
+            await Assert.ThrowsAsync<ProblemDetailsException>(() => delegationService.GetDelegateInformationAsync(DelegatePhn)).ConfigureAwait(true);
+        }
+
+        /// <summary>
         /// Tests dependent should be protected given new dependent.
         /// </summary>
         /// <returns>A <see cref="Task"/> representing the result of the asynchronous operation.</returns>
@@ -268,11 +306,9 @@ namespace HealthGateway.Admin.Tests.Services
             Mock<IDelegationDelegate> delegationDelegate = new();
             Dependent dependent = GetDependent(DependentHdid, true);
             ResourceDelegateQueryResult resourceDelegateQueryResult = GetResourceDelegates(DependentHdid);
-
-            // Act
             DelegationService delegationService = this.GetDelegationService(dependent, delegationDelegate, resourceDelegateQueryResult, DependentHdid);
 
-            // Assert
+            // Act and Assert
             await Assert.ThrowsAsync<ProblemDetailsException>(() => delegationService.UnprotectDependentAsync(invalidDependentHdid)).ConfigureAwait(true);
         }
 
@@ -533,11 +569,11 @@ namespace HealthGateway.Admin.Tests.Services
             };
         }
 
-        private static PatientModel GetPatientModel(string hdid, string phn)
+        private static PatientModel GetPatientModel(string hdid, string phn, DateTime? birthDate = null)
         {
             return new()
             {
-                Birthdate = BirthDate,
+                Birthdate = birthDate ?? BirthDate,
                 FirstName = "FirstName",
                 LastName = "LastName",
                 Gender = "Female",
@@ -645,6 +681,13 @@ namespace HealthGateway.Admin.Tests.Services
             delegationDelegate.Setup(p => p.GetDependentAsync(resourceOwnerHdid, true)).ReturnsAsync(dependent);
 
             return new(this.configuration, new Mock<IPatientService>().Object, resourceDelegateDelegate.Object, delegationDelegate.Object, this.autoMapper);
+        }
+
+        private DelegationService GetDelegationService(RequestResult<PatientModel> patient)
+        {
+            Mock<IPatientService> patientService = new();
+            patientService.Setup(p => p.GetPatient(It.IsAny<string>(), PatientIdentifierType.Phn, false)).ReturnsAsync(patient);
+            return new(this.configuration, patientService.Object, new Mock<IResourceDelegateDelegate>().Object, new Mock<IDelegationDelegate>().Object, this.autoMapper);
         }
     }
 }
