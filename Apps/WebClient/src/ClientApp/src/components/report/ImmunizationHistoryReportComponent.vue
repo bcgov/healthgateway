@@ -261,8 +261,14 @@ export default class ImmunizationHistoryReportComponent extends Vue {
 
 <template>
     <div>
-        <section>
-            <b-row v-if="!isDependent" class="d-none d-md-block">
+        <div
+            v-if="isRecommendationEmpty && isEmpty && !isLoading"
+            class="mt-2 d-md-none"
+        >
+            No records found.
+        </div>
+        <section v-else-if="!isDependent">
+            <b-row class="d-none d-md-block">
                 <b-col>
                     <h4>Immunization History</h4>
                 </b-col>
@@ -270,14 +276,8 @@ export default class ImmunizationHistoryReportComponent extends Vue {
             <b-row v-if="isEmpty && !isLoading" class="d-none d-md-block">
                 <b-col>No records found.</b-col>
             </b-row>
-            <b-row
-                v-if="isRecommendationEmpty && isEmpty && !isLoading"
-                class="mt-2 d-md-none"
-            >
-                <b-col>No records found.</b-col>
-            </b-row>
             <b-table
-                v-if="!isDependent && (!isEmpty || isLoading)"
+                v-if="!isEmpty || isLoading"
                 striped
                 :busy="isLoading"
                 :items="immunizationItems"
@@ -310,7 +310,7 @@ export default class ImmunizationHistoryReportComponent extends Vue {
                 </template>
             </b-table>
             <b-row class="mt-3">
-                <b-col v-if="!isDependent" class="col-7">
+                <b-col class="col-7">
                     <b-row class="d-none d-md-block">
                         <b-col>
                             <h4>Recommended Immunizations</h4>

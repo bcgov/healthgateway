@@ -161,7 +161,7 @@ export default class HospitalVisitReportComponent extends Vue {
                 </b-row>
 
                 <b-table
-                    v-if="!isDependent && (!isEmpty || isLoading)"
+                    v-else-if="!isDependent"
                     :striped="true"
                     :fixed="true"
                     :busy="isLoading"

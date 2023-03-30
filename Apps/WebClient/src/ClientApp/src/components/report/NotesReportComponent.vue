@@ -154,7 +154,7 @@ export default class NotesReportComponent extends Vue {
                 </b-row>
 
                 <b-table
-                    v-if="!isDependent && (!isEmpty || isLoading)"
+                    v-else-if="!isDependent"
                     :striped="true"
                     :busy="isLoading"
                     :items="items"
