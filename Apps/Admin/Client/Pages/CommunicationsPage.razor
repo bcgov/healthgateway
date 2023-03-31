@@ -33,7 +33,7 @@
                       TopMargin="@Breakpoint.Always"
                       RightMargin="@Breakpoint.Always"
                       BottomMargin="@Breakpoint.Always"
-                      @onclick="@(SelectedCommunicationType == null ? CreateBroadcastAsync : CreateCommunicationAsync)"
+                      OnClick="@(SelectedCommunicationType == null ? CreateBroadcastAsync : CreateCommunicationAsync)"
                       data-testid="create-btn">
                 Create
             </HgButton>
