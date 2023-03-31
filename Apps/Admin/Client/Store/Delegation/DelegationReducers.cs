@@ -61,6 +61,7 @@ namespace HealthGateway.Admin.Client.Store.Delegation
                 Search = state.Search with
                 {
                     IsLoading = false,
+                    Result = null,
                     Error = action.Error,
                 },
             };
@@ -100,6 +101,7 @@ namespace HealthGateway.Admin.Client.Store.Delegation
                 DelegateSearch = state.DelegateSearch with
                 {
                     IsLoading = false,
+                    Result = null,
                     Error = action.Error,
                 },
             };
@@ -113,11 +115,12 @@ namespace HealthGateway.Admin.Client.Store.Delegation
             {
                 ExtendedDelegateInfo delegateInfo = state.DelegateSearch.Result;
                 delegateInfo.StagedDelegationStatus = action.StagedDelegationStatus;
-                delegates = delegates.Add(delegateInfo);
+                delegates = delegates.Where(d => d.Hdid != delegateInfo.Hdid).Append(delegateInfo).ToImmutableList();
             }
 
             return state with
             {
+                DelegateSearch = new(),
                 Delegates = delegates,
             };
         }
@@ -272,6 +275,15 @@ namespace HealthGateway.Admin.Client.Store.Delegation
             {
                 InEditMode = action.Enabled,
                 Delegates = delegates,
+            };
+        }
+
+        [ReducerMethod(typeof(DelegationActions.ClearDelegateSearchAction))]
+        public static DelegationState ReduceClearDelegateSearchErrorAction(DelegationState state)
+        {
+            return state with
+            {
+                DelegateSearch = new(),
             };
         }
 
