@@ -18,7 +18,7 @@ import MedicationHistoryReportComponent from "@/components/report/MedicationHist
 import MedicationRequestReportComponent from "@/components/report/MedicationRequestReportComponent.vue";
 import MSPVisitsReportComponent from "@/components/report/MSPVisitsReportComponent.vue";
 import NotesReportComponent from "@/components/report/NotesReportComponent.vue";
-import { EntryType } from "@/constants/entryType";
+import { EntryType, entryTypeMap } from "@/constants/entryType";
 import { ErrorSourceType, ErrorType } from "@/constants/errorType";
 import type { WebClientConfiguration } from "@/models/configData";
 import { DateWrapper, StringISODate } from "@/models/dateWrapper";
@@ -68,6 +68,8 @@ const options: any = {
 export default class ReportsComponent extends Vue {
     @Prop({ required: true })
     hdid!: string;
+
+    @Prop({ default: false }) private isDependent!: boolean;
 
     @Getter("webClient", { namespace: "config" })
     config!: WebClientConfiguration;
@@ -184,55 +186,62 @@ export default class ReportsComponent extends Vue {
         return DateWrapper.format(date);
     }
 
+    // eslint-disable-next-line sonarjs/cognitive-complexity
     created(): void {
         this.logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
 
-        if (ConfigUtil.isDatasetEnabled(EntryType.Medication)) {
+        const isEnabled = this.isDependent
+            ? ConfigUtil.isDependentDatasetEnabled
+            : ConfigUtil.isDatasetEnabled;
+
+        if (isEnabled(EntryType.Medication)) {
             this.reportTypeOptions.push({
                 value: medicationReport,
-                text: "Medications",
+                text: entryTypeMap.get(EntryType.Medication)?.name ?? "",
             });
         }
-        if (ConfigUtil.isDatasetEnabled(EntryType.HealthVisit)) {
+        if (isEnabled(EntryType.HealthVisit)) {
             this.reportTypeOptions.push({
                 value: mspVisitReport,
-                text: "Health Visits",
+                text: entryTypeMap.get(EntryType.HealthVisit)?.name ?? "",
             });
         }
-        if (ConfigUtil.isDatasetEnabled(EntryType.Covid19TestResult)) {
+        if (isEnabled(EntryType.Covid19TestResult)) {
             this.reportTypeOptions.push({
                 value: covid19Report,
-                text: "COVID‑19 Test Results",
+                text: entryTypeMap.get(EntryType.Covid19TestResult)?.name ?? "",
             });
         }
-        if (ConfigUtil.isDatasetEnabled(EntryType.Immunization)) {
+        if (isEnabled(EntryType.Immunization)) {
             this.reportTypeOptions.push({
                 value: immunizationReport,
-                text: "Immunizations",
+                text: entryTypeMap.get(EntryType.Immunization)?.name ?? "",
             });
         }
-        if (ConfigUtil.isDatasetEnabled(EntryType.SpecialAuthorityRequest)) {
+        if (isEnabled(EntryType.SpecialAuthorityRequest)) {
             this.reportTypeOptions.push({
                 value: medicationRequestReport,
-                text: "Special Authority Requests",
+                text:
+                    entryTypeMap.get(EntryType.SpecialAuthorityRequest)?.name ??
+                    "",
             });
         }
-        if (ConfigUtil.isDatasetEnabled(EntryType.Note)) {
+        if (isEnabled(EntryType.Note)) {
             this.reportTypeOptions.push({
                 value: noteReport,
-                text: "My Notes",
+                text: entryTypeMap.get(EntryType.Note)?.name ?? "",
             });
         }
-        if (ConfigUtil.isDatasetEnabled(EntryType.LabResult)) {
+        if (isEnabled(EntryType.LabResult)) {
             this.reportTypeOptions.push({
                 value: laboratoryReport,
-                text: "Laboratory Tests",
+                text: entryTypeMap.get(EntryType.LabResult)?.name ?? "",
             });
         }
-        if (ConfigUtil.isDatasetEnabled(EntryType.HospitalVisit)) {
+        if (isEnabled(EntryType.HospitalVisit)) {
             this.reportTypeOptions.push({
                 value: hospitalVisitReport,
-                text: "Hospital Visits",
+                text: entryTypeMap.get(EntryType.HospitalVisit)?.name ?? "",
             });
         }
     }
@@ -373,7 +382,11 @@ export default class ReportsComponent extends Vue {
             const formatTypeName = ReportFormatType[this.reportFormatType];
             const eventName = `${reportName} (${formatTypeName})`;
 
-            EventTracker.downloadReport(eventName);
+            if (!this.isDependent) {
+                EventTracker.downloadReport(eventName);
+            } else {
+                EventTracker.downloadReport(`Dependent_${eventName}`);
+            }
         }
     }
 }
@@ -568,13 +581,14 @@ export default class ReportsComponent extends Vue {
         <div
             v-if="reportComponentName"
             data-testid="reportSample"
-            class="preview"
+            :class="{ preview: !isDependent }"
         >
             <component
                 :is="reportComponentName"
                 ref="report"
                 :hdid="hdid"
                 :filter="reportFilter"
+                :is-dependent="isDependent"
                 @on-is-loading-changed="isLoading = $event"
                 @on-is-empty-changed="hasRecords = !$event"
             />

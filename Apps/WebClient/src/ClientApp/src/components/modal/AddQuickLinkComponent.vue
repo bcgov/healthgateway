@@ -288,7 +288,9 @@ export default class AddQuickLinkComponent extends Vue {
                 <p>{{ bannerError.title }}</p>
                 <span>
                     If you continue to have issues, please contact
-                    HealthGateway@gov.bc.ca.
+                    <a href="mailto:HealthGateway@gov.bc.ca"
+                        >HealthGateway@gov.bc.ca</a
+                    >.
                 </span>
             </b-alert>
             <b-row

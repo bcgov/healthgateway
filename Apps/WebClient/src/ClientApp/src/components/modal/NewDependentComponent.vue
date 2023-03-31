@@ -9,6 +9,7 @@ import { Action, Getter } from "vuex-class";
 import DatePickerComponent from "@/components/DatePickerComponent.vue";
 import LoadingComponent from "@/components/LoadingComponent.vue";
 import TooManyRequestsComponent from "@/components/TooManyRequestsComponent.vue";
+import { ActionType } from "@/constants/actionType";
 import AddDependentRequest from "@/models/addDependentRequest";
 import type { WebClientConfiguration } from "@/models/configData";
 import { DateWrapper } from "@/models/dateWrapper";
@@ -48,6 +49,7 @@ export default class NewDependentComponent extends Vue {
     private isLoading = true;
     private isDateOfBirthValidDate = true;
     private errorMessage = "";
+    private condensedErrorContactMessage = false;
     private dependent: AddDependentRequest = {
         firstName: "",
         lastName: "",
@@ -132,8 +134,12 @@ export default class NewDependentComponent extends Vue {
             .catch((err: ResultError) => {
                 if (err.statusCode === 429) {
                     this.setTooManyRequestsError({ key: "addDependentModal" });
+                } else if (err.actionCode == ActionType.Protected) {
+                    this.errorMessage = "Unable to add dependent.";
+                    this.condensedErrorContactMessage = true;
                 } else {
                     this.errorMessage = err.resultMessage;
+                    this.condensedErrorContactMessage = false;
                 }
             });
     }
@@ -179,9 +185,20 @@ export default class NewDependentComponent extends Vue {
             :show="!!errorMessage"
         >
             <p data-testid="dependentErrorText">{{ errorMessage }}</p>
-            <span>
+            <span
+                v-if="condensedErrorContactMessage"
+                data-testid="condensed-error-contact-message"
+            >
+                Please contact
+                <a href="mailto:HealthGateway@gov.bc.ca"
+                    >HealthGateway@gov.bc.ca</a
+                >.
+            </span>
+            <span v-else data-testid="not-condensed-error-contact-message">
                 If you continue to have issues, please contact
-                HealthGateway@gov.bc.ca.
+                <a href="mailto:HealthGateway@gov.bc.ca"
+                    >HealthGateway@gov.bc.ca</a
+                >.
             </span>
         </b-alert>
         <b-row>

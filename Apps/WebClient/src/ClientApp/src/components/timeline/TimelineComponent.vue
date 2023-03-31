@@ -435,6 +435,10 @@ export default class TimelineComponent extends Vue {
         }
     }
 
+    beforeDestroy(): void {
+        this.clearFilters();
+    }
+
     created(): void {
         this.logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
         this.fetchTimelineData();
