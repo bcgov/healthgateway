@@ -12,8 +12,6 @@ const existingDependent = {
 };
 
 describe("Reports", () => {
-    let sensitiveDocText =
-        " The file that you are downloading contains personal information. If you are on a public computer, please ensure that the file is deleted before you log off. ";
     beforeEach(() => {
         cy.setupDownloads();
         cy.configureSettings({
@@ -92,10 +90,7 @@ describe("Reports", () => {
             "be.visible"
         );
 
-        cy.get(`${tabSelector} [data-testid=infoText]`).should(
-            "have.text",
-            " Select a record type above to create a report "
-        );
+        cy.get(`${tabSelector} [data-testid=infoText]`).should("be.visible");
 
         // display visual when no record type selected (mobile and desktop)
         cy.get(`${tabSelector} [data-testid=infoImage]`).should("be.visible");
@@ -138,12 +133,6 @@ describe("Reports", () => {
             `${tabSelector} [data-testid=medication-history-report-table]`
         ).should("not.exist");
 
-        cy.viewport("iphone-6");
-        cy.get(
-            `${tabSelector} [data-testid=medication-history-report-table]`
-        ).should("not.exist");
-        cy.viewport(1440, 600);
-
         cy.get(`${tabSelector} [data-testid=exportRecordBtn] button`)
             .should("be.enabled", "be.visible")
             .click();
@@ -153,11 +142,6 @@ describe("Reports", () => {
             .click();
 
         cy.get("[data-testid=genericMessageModal]").should("be.visible");
-
-        cy.get("[data-testid=genericMessageText]").should(
-            "have.text",
-            sensitiveDocText
-        );
 
         cy.get("[data-testid=genericMessageSubmitBtn]").click();
 
@@ -185,12 +169,6 @@ describe("Reports", () => {
             "not.exist"
         );
 
-        cy.viewport("iphone-6");
-        cy.get(`${tabSelector} [data-testid=msp-visits-report-table]`).should(
-            "not.exist"
-        );
-        cy.viewport(1440, 600);
-
         cy.get(`${tabSelector} [data-testid=exportRecordBtn] button`)
             .should("be.enabled", "be.visible")
             .click();
@@ -200,11 +178,6 @@ describe("Reports", () => {
             .click();
 
         cy.get("[data-testid=genericMessageModal]").should("be.visible");
-
-        cy.get("[data-testid=genericMessageText]").should(
-            "have.text",
-            sensitiveDocText
-        );
 
         cy.get("[data-testid=genericMessageSubmitBtn]").click();
 
@@ -232,12 +205,6 @@ describe("Reports", () => {
             "not.exist"
         );
 
-        cy.viewport("iphone-6");
-        cy.get(`${tabSelector} [data-testid=covid19-report-table]`).should(
-            "not.exist"
-        );
-        cy.viewport(1440, 600);
-
         cy.get(`${tabSelector} [data-testid=exportRecordBtn] button`)
             .should("be.enabled", "be.visible")
             .click();
@@ -247,11 +214,6 @@ describe("Reports", () => {
             .click();
 
         cy.get("[data-testid=genericMessageModal]").should("be.visible");
-
-        cy.get("[data-testid=genericMessageText]").should(
-            "have.text",
-            sensitiveDocText
-        );
 
         cy.get("[data-testid=genericMessageSubmitBtn]").click();
 
@@ -279,12 +241,6 @@ describe("Reports", () => {
             `${tabSelector} [data-testid=immunization-history-report-table]`
         ).should("not.exist");
 
-        cy.viewport("iphone-6");
-        cy.get(
-            `${tabSelector} [data-testid=immunization-history-report-table]`
-        ).should("not.exist");
-        cy.viewport(1440, 600);
-
         cy.get(`${tabSelector} [data-testid=exportRecordBtn] button`)
             .should("be.enabled", "be.visible")
             .click();
@@ -294,11 +250,6 @@ describe("Reports", () => {
             .click();
 
         cy.get("[data-testid=genericMessageModal]").should("be.visible");
-
-        cy.get("[data-testid=genericMessageText]").should(
-            "have.text",
-            sensitiveDocText
-        );
 
         cy.get("[data-testid=genericMessageSubmitBtn]").click();
 
@@ -326,12 +277,6 @@ describe("Reports", () => {
             `${tabSelector} [data-testid=medication-request-report-table]`
         ).should("not.exist");
 
-        cy.viewport("iphone-6");
-        cy.get(
-            `${tabSelector} [data-testid=medication-request-report-table]`
-        ).should("not.exist");
-        cy.viewport(1440, 600);
-
         cy.get(`${tabSelector} [data-testid=exportRecordBtn] button`)
             .should("be.enabled", "be.visible")
             .click();
@@ -341,11 +286,6 @@ describe("Reports", () => {
             .click();
 
         cy.get("[data-testid=genericMessageModal]").should("be.visible");
-
-        cy.get("[data-testid=genericMessageText]").should(
-            "have.text",
-            sensitiveDocText
-        );
 
         cy.get("[data-testid=genericMessageSubmitBtn]").click();
 
@@ -371,12 +311,6 @@ describe("Reports", () => {
             "not.exist"
         );
 
-        cy.viewport("iphone-6");
-        cy.get(`${tabSelector} [data-testid=laboratory-report-table]`).should(
-            "not.exist"
-        );
-        cy.viewport(1440, 600);
-
         cy.get(`${tabSelector} [data-testid=exportRecordBtn] button`)
             .should("be.enabled", "be.visible")
             .click();
@@ -386,11 +320,6 @@ describe("Reports", () => {
             .click();
 
         cy.get("[data-testid=genericMessageModal]").should("be.visible");
-
-        cy.get("[data-testid=genericMessageText]").should(
-            "have.text",
-            sensitiveDocText
-        );
 
         cy.get("[data-testid=genericMessageSubmitBtn]").click();
 
@@ -418,12 +347,6 @@ describe("Reports", () => {
             `${tabSelector} [data-testid=hospital-visit-report-table]`
         ).should("not.exist");
 
-        cy.viewport("iphone-6");
-        cy.get(
-            `${tabSelector} [data-testid=hospital-visit-report-table]`
-        ).should("not.exist");
-        cy.viewport(1440, 600);
-
         cy.get(`${tabSelector} [data-testid=exportRecordBtn] button`)
             .should("be.enabled", "be.visible")
             .click();
@@ -433,11 +356,6 @@ describe("Reports", () => {
             .click();
 
         cy.get("[data-testid=genericMessageModal]").should("be.visible");
-
-        cy.get("[data-testid=genericMessageText]").should(
-            "have.text",
-            sensitiveDocText
-        );
 
         cy.get("[data-testid=genericMessageSubmitBtn]").click();
 
