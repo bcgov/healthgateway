@@ -8,6 +8,11 @@
         You will be automatically logged out in @CountdownTicksRemaining @(CountdownTicksRemaining == 1 ? "second" : "seconds").
     </DialogContent>
     <DialogActions>
-        <MudButton Color="Color.Primary" OnClick="HandleClick">I'm here!</MudButton>
+        <HgButton
+            RightMargin="Breakpoint.Always"
+            BottomMargin="Breakpoint.Always"
+            OnClick="HandleClick">
+            I'm here!
+        </HgButton>
     </DialogActions>
 </MudDialog>

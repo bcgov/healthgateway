@@ -18,11 +18,11 @@
     </HgBannerFeedback>
 }
 
-<EditForm Model="@AddTagModel" OnValidSubmit="@AddTag" Class="d-flex" data-testid="add-tag-form">
+<EditForm Model="@AddTagModel" OnValidSubmit="@AddTag" Class="d-flex align-start" data-testid="add-tag-form">
     <MudTextField T="string"
                   @ref="AddTagNameInput"
                   @bind-Value="@AddTagModel.Name"
-                  Class="flex-grow-1"
+                  Class="flex-grow-1 mt-0"
                   MaxLength="20"
                   Label="Tag Name"
                   Disabled="@TagState.Value.Add.IsLoading"
@@ -149,8 +149,8 @@ else
                     <MudIconButton Icon="@(context.IsReviewed ? "fas fa-check" : "fas fa-xmark")"
                                    Color="@(context.IsReviewed ? Color.Success : Color.Error)"
                                    Disabled="@FeedbackUpdating"
-                                   data-testid="feedback-review-button"
-                                   @onclick="@(() => ToggleIsReviewed(context.Id))" />
+                                   OnClick="@(() => ToggleIsReviewed(context.Id))"
+                                   data-testid="feedback-review-button" />
                 </MudTd>
             </RowTemplate>
             <PagerContent>
