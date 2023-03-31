@@ -32,7 +32,7 @@ namespace HealthGateway.PatientTests.Services
     using Moq;
     using Shouldly;
     using Xunit;
-    using PatientDataQuery = HealthGateway.PatientDataAccess.PatientDataQuery;
+    using PatientDataQuery = HealthGateway.Patient.Services.PatientDataQuery;
     using PatientFileQuery = HealthGateway.PatientDataAccess.PatientFileQuery;
 
     // Disable documentation for tests.
@@ -121,15 +121,17 @@ namespace HealthGateway.PatientTests.Services
                 StatusMessage = "some message",
             };
 
-            Mock<IPatientDataRepository> patientDataRepository = GetMockPatientDataRepository<HealthServicesQuery>(
+            Mock<IPatientDataRepository> patientDataRepository = new();
+            patientDataRepository.AttachMockQuery<HealthServicesQuery>(
                 q => q.Pid == this.pid && q.Categories.Any(c => c == HealthServiceCategory.OrganDonor),
                 expected);
+            patientDataRepository.AttachMockQuery<HealthDataQuery>(q => q.Pid == this.pid);
 
             Mock<IPersonalAccountsService> personalAccountService = this.GetMockPersonalAccountService();
 
             PatientDataService sut = new(patientDataRepository.Object, personalAccountService.Object, this.mapper);
 
-            PatientDataResponse result = await sut.Query(new Patient.Services.PatientDataQuery(this.hdid, new[] { PatientDataType.OrganDonorRegistrationStatus }), CancellationToken.None)
+            PatientDataResponse result = await sut.Query(new PatientDataQuery(this.hdid, new[] { PatientDataType.OrganDonorRegistrationStatus }), CancellationToken.None)
                 .ConfigureAwait(true);
 
             OrganDonorRegistrationData actual = result.Items.ShouldHaveSingleItem().ShouldBeOfType<OrganDonorRegistrationData>();
@@ -153,15 +155,17 @@ namespace HealthGateway.PatientTests.Services
                 ExamStatus = DiagnosticImagingExamStatus.Scheduled,
             };
 
-            Mock<IPatientDataRepository> patientDataRepository = GetMockPatientDataRepository<HealthDataQuery>(
+            Mock<IPatientDataRepository> patientDataRepository = new();
+            patientDataRepository.AttachMockQuery<HealthDataQuery>(
                 q => q.Pid == this.pid && q.Categories.Any(c => c == HealthDataCategory.DiagnosticImaging),
                 expected);
+            patientDataRepository.AttachMockQuery<HealthServicesQuery>(q => q.Pid == this.pid);
 
             Mock<IPersonalAccountsService> personalAccountService = this.GetMockPersonalAccountService();
 
             PatientDataService sut = new(patientDataRepository.Object, personalAccountService.Object, this.mapper);
 
-            PatientDataResponse result = await sut.Query(new Patient.Services.PatientDataQuery(this.hdid, new[] { PatientDataType.DiagnosticImaging }), CancellationToken.None)
+            PatientDataResponse result = await sut.Query(new PatientDataQuery(this.hdid, new[] { PatientDataType.DiagnosticImaging }), CancellationToken.None)
                 .ConfigureAwait(true);
 
             DiagnosticImagingExamData actual = result.Items.ShouldHaveSingleItem().ShouldBeOfType<DiagnosticImagingExamData>();
@@ -180,17 +184,10 @@ namespace HealthGateway.PatientTests.Services
         {
             PatientFile expected = new(Guid.NewGuid().ToString(), RandomNumberGenerator.GetBytes(1024), "text/plain");
 
-            Mock<IPatientDataRepository> patientDataRepository = GetMockPatientDataRepository<PatientFileQuery>(
+            Mock<IPatientDataRepository> patientDataRepository = new();
+            patientDataRepository.AttachMockQuery<PatientFileQuery>(
                 q => q.Pid == this.pid && q.FileId == expected.FileId,
                 expected);
-            patientDataRepository
-                .Setup(
-                    o => o.Query(
-                        It.Is<PatientFileQuery>(
-                            q =>
-                                q.Pid == this.pid && q.FileId == expected.FileId),
-                        It.IsAny<CancellationToken>()))
-                .ReturnsAsync(new PatientDataQueryResult(new[] { expected }));
 
             Mock<IPersonalAccountsService> personalAccountService = this.GetMockPersonalAccountService();
 
@@ -208,8 +205,8 @@ namespace HealthGateway.PatientTests.Services
         {
             string fileId = Guid.NewGuid().ToString();
 
-            Mock<IPatientDataRepository> patientDataRepository = GetMockPatientDataRepository<PatientFileQuery>(
-                q => q.Pid == this.pid && q.FileId == fileId);
+            Mock<IPatientDataRepository> patientDataRepository = new();
+            patientDataRepository.AttachMockQuery<PatientFileQuery>(q => q.Pid == this.pid && q.FileId == fileId);
 
             Mock<IPersonalAccountsService> personalAccountService = this.GetMockPersonalAccountService();
 
@@ -218,20 +215,6 @@ namespace HealthGateway.PatientTests.Services
             PatientFileResponse? result = await sut.Query(new Patient.Services.PatientFileQuery(this.hdid, fileId), CancellationToken.None).ConfigureAwait(true);
 
             result.ShouldBeNull();
-        }
-
-        private static Mock<IPatientDataRepository> GetMockPatientDataRepository<T>(Func<T, bool> predicate, params HealthData[] data)
-            where T : PatientDataQuery
-        {
-            Mock<IPatientDataRepository> repo = new();
-            repo
-                .Setup(
-                    o => o.Query(
-                        It.Is<T>(q => predicate(q)),
-                        It.IsAny<CancellationToken>()))
-                .ReturnsAsync(new PatientDataQueryResult(data));
-
-            return repo;
         }
 
         private Mock<IPersonalAccountsService> GetMockPersonalAccountService()
