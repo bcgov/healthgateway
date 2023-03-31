@@ -31,7 +31,7 @@
             <MudSwitch
                 T="bool"
                 Checked="@(InEditMode || context.Protected)"
-                CheckedChanged="@ToggleProtectedSwitchAsync"
+                CheckedChanged="@ToggleProtectedSwitch"
                 Color="@(InEditMode ? Color.Warning : Color.Success)"
                 UnCheckedColor="Color.Tertiary"
                 Class="mr-n4"

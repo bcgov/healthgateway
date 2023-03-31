@@ -234,6 +234,13 @@ namespace HealthGateway.Admin.Client.Store.Delegation
         }
 
         /// <summary>
+        /// The action that clears the delegate search.
+        /// </summary>
+        public class ClearDelegateSearchAction
+        {
+        }
+
+        /// <summary>
         /// The action that clears any error encountered during a protect.
         /// </summary>
         public class ClearProtectErrorAction

@@ -87,11 +87,6 @@ namespace HealthGateway.Admin.Client.Pages
             this.ResetDelegationState();
         }
 
-        private void SetEditMode(bool enabled)
-        {
-            this.Dispatcher.Dispatch(new DelegationActions.SetEditModeAction { Enabled = enabled });
-        }
-
         /// <summary>
         /// Resets the component to its initial state.
         /// </summary>
@@ -100,7 +95,7 @@ namespace HealthGateway.Admin.Client.Pages
             this.Dispatcher.Dispatch(new DelegationActions.ResetStateAction());
         }
 
-        private async Task SearchAsync()
+        private async Task Search()
         {
             await this.Form.Validate().ConfigureAwait(true);
             if (this.Form.IsValid)
@@ -110,14 +105,19 @@ namespace HealthGateway.Admin.Client.Pages
             }
         }
 
-        private async Task ConfirmProtectAsync()
+        private void SetEditMode(bool enabled)
+        {
+            this.Dispatcher.Dispatch(new DelegationActions.SetEditModeAction { Enabled = enabled });
+        }
+
+        private async Task OpenProtectConfirmationDialog()
         {
             const string title = "Confirm Update";
             DialogParameters parameters = new()
             {
                 [nameof(DelegationConfirmationDialog.Type)] = DelegationConfirmationDialog.ConfirmationType.Protect,
             };
-            DialogOptions options = new() { DisableBackdropClick = true };
+            DialogOptions options = new() { DisableBackdropClick = true, FullWidth = true, MaxWidth = MaxWidth.ExtraSmall };
             IDialogReference dialog = await this.Dialog.ShowAsync<DelegationConfirmationDialog>(title, parameters, options).ConfigureAwait(true);
 
             DialogResult result = await dialog.Result.ConfigureAwait(true);
@@ -125,6 +125,16 @@ namespace HealthGateway.Admin.Client.Pages
             {
                 this.SetEditMode(false);
             }
+        }
+
+        private async Task OpenAddDialog()
+        {
+            const string title = "Add to Guardian List";
+            DialogParameters parameters = new();
+            DialogOptions options = new() { DisableBackdropClick = true, FullWidth = true, MaxWidth = MaxWidth.Small };
+            IDialogReference dialog = await this.Dialog.ShowAsync<DelegateDialog>(title, parameters, options).ConfigureAwait(true);
+
+            await dialog.Result.ConfigureAwait(true);
         }
     }
 }

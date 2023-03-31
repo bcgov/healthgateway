@@ -57,7 +57,7 @@ namespace HealthGateway.Admin.Client.Components.Delegation
             this.Dispatcher.Dispatch(new DelegationActions.SetEditModeAction { Enabled = enabled });
         }
 
-        private async Task ToggleProtectedSwitchAsync(bool protect)
+        private async Task ToggleProtectedSwitch(bool protect)
         {
             if (protect)
             {
@@ -65,18 +65,18 @@ namespace HealthGateway.Admin.Client.Components.Delegation
             }
             else
             {
-                await this.ConfirmUnprotectAsync().ConfigureAwait(true);
+                await this.OpenUnprotectConfirmationDialog().ConfigureAwait(true);
             }
         }
 
-        private async Task ConfirmUnprotectAsync()
+        private async Task OpenUnprotectConfirmationDialog()
         {
             const string title = "Confirm Update";
             DialogParameters parameters = new()
             {
                 [nameof(DelegationConfirmationDialog.Type)] = DelegationConfirmationDialog.ConfirmationType.Unprotect,
             };
-            DialogOptions options = new() { DisableBackdropClick = true };
+            DialogOptions options = new() { DisableBackdropClick = true, FullWidth = true, MaxWidth = MaxWidth.ExtraSmall };
             IDialogReference dialog = await this.Dialog.ShowAsync<DelegationConfirmationDialog>(title, parameters, options).ConfigureAwait(true);
 
             await dialog.Result.ConfigureAwait(true);

@@ -1,0 +1,102 @@
+@using HealthGateway.Common.Data.Utils
+@using HealthGateway.Admin.Client.Store.Delegation
+@inherits Fluxor.Blazor.Web.Components.FluxorComponent
+
+<MudDialog>
+    <DialogContent>
+        <MudForm @ref="Form" data-testid="communication-dialog-modal-text">
+            <MudGrid Spacing="0">
+                <MudItem xs="12">
+                    <div class="d-flex align-start">
+                        <HgTextField
+                            Label="PHN"
+                            @bind-Value="Phn"
+                            T="@string"
+                            Required="@true"
+                            TopMargin="Breakpoint.None"
+                            RightMargin="@Breakpoint.Always"
+                            data-testid="delegate-phn-input" />
+                        <HgButton
+                            EndIcon="fas fa-magnifying-glass"
+                            Variant="@Variant.Filled"
+                            Color="@Color.Primary"
+                            Loading="@Searching"
+                            TopMargin="Breakpoint.Always"
+                            OnClick="@HandleClickSearch"
+                            data-testid="search-button">
+                            Search
+                        </HgButton>
+                    </div>
+                </MudItem>
+                @if (Result != null)
+                {
+                    <MudItem xs="12">
+                        <HgTextField
+                            Label="Name"
+                            Value="@Result.Name"
+                            T="@string"
+                            ReadOnly="@true"
+                            Variant="@Variant.Text"
+                            TopMargin="Breakpoint.Always"
+                            data-testid="delegate-name" />
+                    </MudItem>
+                    <MudItem xs="12">
+                        <HgTextField
+                            Label="Date of Birth"
+                            Value="@DateFormatter.ToShortDate(Result.DateOfBirth)"
+                            T="@string"
+                            ReadOnly="@true"
+                            Variant="@Variant.Text"
+                            TopMargin="Breakpoint.Always"
+                            data-testid="delegate-dob" />
+                    </MudItem>
+                    <MudItem xs="12">
+                        <HgTextField
+                            Label="Address"
+                            Value="@Result.Address"
+                            T="@string"
+                            ReadOnly="@true"
+                            Variant="@Variant.Text"
+                            TopMargin="Breakpoint.Always"
+                            data-testid="delegate-address" />
+                    </MudItem>
+                }
+            </MudGrid>
+        </MudForm>
+        <HgBannerFeedback
+            Class="mt-3"
+            Severity="@Severity.Warning"
+            IsEnabled="@DelegateAlreadyAllowed"
+            TResetAction="@DelegationActions.DelegateSearchAction">
+            Guardian has already been added to allow list.
+        </HgBannerFeedback>
+        <HgBannerFeedback
+            Class="mt-3"
+            Severity="@Severity.Error"
+            IsEnabled="@HasSearchError"
+            TResetAction="@DelegationActions.DelegateSearchAction">
+            @ErrorMessage
+        </HgBannerFeedback>
+    </DialogContent>
+    <DialogActions>
+        <HgButton
+            Color="@Color.Primary"
+            Variant="@Variant.Text"
+            RightMargin="Breakpoint.Always"
+            HorizontalMarginSize="@(HgButton.DefaultHorizontalMarginSize - 2)"
+            BottomMargin="Breakpoint.Always"
+            OnClick="@HandleClickCancel"
+            data-testid="cancel-button">
+            Cancel
+        </HgButton>
+        <HgButton
+            Color="@Color.Primary"
+            Disabled="@(!Loaded)"
+            RightMargin="Breakpoint.Always"
+            BottomMargin="Breakpoint.Always"
+            OnClick="@HandleClickSave"
+            data-testid="save-button">
+            Save
+        </HgButton>
+    </DialogActions>
+</MudDialog>
