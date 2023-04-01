@@ -95,6 +95,7 @@ namespace HealthGateway.WebClient.Server
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
             this.startupConfig.UseContentSecurityPolicy(app);
+            this.startupConfig.UsePermissionPolicy(app);
             this.startupConfig.UseForwardHeaders(app);
             this.startupConfig.UseSwagger(app);
             this.startupConfig.UseHttp(app);
