@@ -22,6 +22,7 @@ import { EntryType, entryTypeMap } from "@/constants/entryType";
 import { ErrorSourceType, ErrorType } from "@/constants/errorType";
 import type { WebClientConfiguration } from "@/models/configData";
 import { DateWrapper, StringISODate } from "@/models/dateWrapper";
+import { Dependent } from "@/models/dependent";
 import { ResultError } from "@/models/errors";
 import MedicationStatementHistory from "@/models/medicationStatementHistory";
 import MedicationSummary from "@/models/medicationSummary";
@@ -83,6 +84,9 @@ export default class ReportsComponent extends Vue {
     @Getter("patient", { namespace: "user" })
     patient!: Patient;
 
+    @Getter("dependents", { namespace: "dependent" })
+    private dependents!: Dependent[];
+
     @Ref("messageModal")
     readonly messageModal!: MessageModalComponent;
 
@@ -131,18 +135,42 @@ export default class ReportsComponent extends Vue {
     }
 
     get headerData(): ReportHeader {
-        return {
-            phn: this.patient.personalHealthNumber,
-            dateOfBirth: this.formatDate(this.patient.birthdate || ""),
-            name: this.patient
-                ? this.patient.preferredName.givenName +
-                  " " +
-                  this.patient.preferredName.surname
-                : "",
-            isRedacted: this.reportFilter.hasMedicationsFilter(),
-            datePrinted: new DateWrapper(new DateWrapper().toISO()).format(),
-            filterText: this.reportFilter.filterText,
-        };
+        const dependent = this.dependents.find(
+            (d) => d.dependentInformation.hdid === this.hdid
+        );
+        if (dependent) {
+            return {
+                phn: dependent.dependentInformation.PHN,
+                dateOfBirth: this.formatDate(
+                    dependent.dependentInformation.dateOfBirth || ""
+                ),
+                name: dependent.dependentInformation
+                    ? dependent.dependentInformation.firstname +
+                      " " +
+                      dependent.dependentInformation.lastname
+                    : "",
+                isRedacted: this.reportFilter.hasMedicationsFilter(),
+                datePrinted: new DateWrapper(
+                    new DateWrapper().toISO()
+                ).format(),
+                filterText: this.reportFilter.filterText,
+            };
+        } else {
+            return {
+                phn: this.patient.personalHealthNumber,
+                dateOfBirth: this.formatDate(this.patient.birthdate || ""),
+                name: this.patient
+                    ? this.patient.preferredName.givenName +
+                      " " +
+                      this.patient.preferredName.surname
+                    : "",
+                isRedacted: this.reportFilter.hasMedicationsFilter(),
+                datePrinted: new DateWrapper(
+                    new DateWrapper().toISO()
+                ).format(),
+                filterText: this.reportFilter.filterText,
+            };
+        }
     }
 
     get isMedicationReport(): boolean {
