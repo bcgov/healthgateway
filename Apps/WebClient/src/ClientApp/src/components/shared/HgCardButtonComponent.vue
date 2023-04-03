@@ -13,8 +13,8 @@ export default class HgCardButtonComponent extends Vue {
     @Prop({ required: false, default: false })
     hasChevron!: boolean;
 
-    private get hasClickListener() {
-        return this.$listeners && this.$listeners.click;
+    private get hasClickListener(): boolean {
+        return this.$listeners && Boolean(this.$listeners.click);
     }
 
     private get hasIconSlot(): boolean {
@@ -33,7 +33,7 @@ export default class HgCardButtonComponent extends Vue {
 
 <template>
     <b-button
-        class="hg-card-button h-100 w-100 p-0"
+        class="hg-card-button h-100 w-100 p-0 shadow"
         v-bind="$attrs"
         v-on="$listeners"
     >

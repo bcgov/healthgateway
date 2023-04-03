@@ -32,9 +32,10 @@ export default class HgCardComponent extends Vue {
 
 <template>
     <div
-        class="hg-card h-100 w-100 d-flex flex-column align-content-start text-left rounded shadow"
+        class="hg-card h-100 w-100 d-flex flex-column align-content-start text-left rounded"
         :class="{
             interactable: isInteractable,
+            shadow: !isInteractable,
             'p-3': dense,
             'p-4': !dense,
         }"
