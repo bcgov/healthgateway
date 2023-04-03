@@ -44,7 +44,7 @@ namespace HealthGateway.Patient.Mappings
                 DonorRegistrationStatus.NotRegistered => OrganDonorRegistrationStatus.NotRegistered,
                 DonorRegistrationStatus.Error => OrganDonorRegistrationStatus.Error,
                 DonorRegistrationStatus.Pending => OrganDonorRegistrationStatus.Pending,
-                _ => OrganDonorRegistrationStatus.Error,
+                _ => OrganDonorRegistrationStatus.Unknown,
             };
         }
     }

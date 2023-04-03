@@ -44,5 +44,10 @@ namespace HealthGateway.Patient.Models
         /// Registration is pending.
         /// </summary>
         Pending,
+
+        /// <summary>
+        /// Unknown status.
+        /// </summary>
+        Unknown,
     }
 }

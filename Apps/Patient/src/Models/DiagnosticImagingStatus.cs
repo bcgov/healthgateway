@@ -22,6 +22,7 @@ namespace HealthGateway.Patient.Models
     /// Diagnostic image exam statuses.
     /// </summary>
     [JsonConverter(typeof(JsonStringEnumMemberConverter))]
+    [JsonStringEnumMemberConverterOptions(deserializationFailureFallbackValue: Unknown)]
     public enum DiagnosticImagingStatus
     {
         /// <summary>
@@ -54,5 +55,10 @@ namespace HealthGateway.Patient.Models
         /// Exam is amended.
         /// </summary>
         Amended,
+
+        /// <summary>
+        /// Unknown status.
+        /// </summary>
+        Unknown,
     }
 }

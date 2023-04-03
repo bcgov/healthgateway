@@ -46,7 +46,7 @@ namespace HealthGateway.Patient.Mappings
                 DiagnosticImagingExamStatus.Pending => DiagnosticImagingStatus.Pending,
                 DiagnosticImagingExamStatus.Completed => DiagnosticImagingStatus.Completed,
                 DiagnosticImagingExamStatus.Amended => DiagnosticImagingStatus.Amended,
-                _ => DiagnosticImagingStatus.Pending,
+                _ => DiagnosticImagingStatus.Unknown,
             };
         }
     }
