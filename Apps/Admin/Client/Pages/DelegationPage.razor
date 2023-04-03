@@ -12,30 +12,29 @@
 <NavigationConfirmation Enabled="@AnyUnsavedDelegationChanges" />
 
 <MudForm @ref="Form">
-    <MudGrid Spacing="0">
-        <MudItem xs="12">
-            <HgTextField
-                T="string"
-                Label="PHN"
-                Required="@true"
-                Validation="@ValidateQueryParameter"
-                Mask="@(new PatternMask(Mask.PhnMaskTemplate))"
-                @bind-Value="QueryParameter"
-                data-testid="query-input" />
-        </MudItem>
-        <MudItem Class="d-flex justify-end" xs="12">
-            <HgButton
-                TopMargin="Breakpoint.Always"
-                EndIcon="fas fa-magnifying-glass"
-                Variant="@Variant.Filled"
-                Color="@Color.Primary"
-                Loading="@Searching"
-                @onclick="SearchAsync"
-                data-testid="search-button">
-                Search
-            </HgButton>
-        </MudItem>
-    </MudGrid>
+    <div class="d-flex align-start">
+        <HgTextField
+            T="string"
+            Label="PHN"
+            Required="@true"
+            Validation="@ValidateQueryParameter"
+            Mask="@(new PatternMask(Mask.PhnMaskTemplate))"
+            TopMargin="Breakpoint.None"
+            Class="flex-grow-1"
+            @bind-Value="QueryParameter"
+            data-testid="query-input" />
+        <HgButton
+            EndIcon="fas fa-magnifying-glass"
+            Variant="@Variant.Filled"
+            Color="@Color.Primary"
+            Loading="@Searching"
+            TopMargin="Breakpoint.Always"
+            LeftMargin="Breakpoint.Always"
+            OnClick="Search"
+            data-testid="search-button">
+            Search
+        </HgButton>
+    </div>
 </MudForm>
 
 <HgBannerFeedback
@@ -53,7 +52,7 @@
         Dependent
     </MudText>
     <DependentTable Data="@Dependent" />
-    <div class="mt-6 d-flex align-center">
+    <div class="mt-6 d-flex align-start">
         <MudText Typo="Typo.subtitle1" Class="flex-grow-1">
             Guardians Accessing Dependent
         </MudText>
@@ -61,11 +60,23 @@
             StartIcon="fas fa-edit"
             Variant="@Variant.Filled"
             Color="@Color.Primary"
+            TopMargin="Breakpoint.Always"
+            RightMargin="Breakpoint.Always"
             Class="@(Dependent.Protected ? "visible" : "invisible")"
             Disabled="@(InEditMode || !Delegates.Any())"
-            @onclick="@(() => SetEditMode(true))"
+            OnClick="@(() => SetEditMode(true))"
             data-testid="edit-button">
             Edit
+        </HgButton>
+        <HgButton
+            StartIcon="fas fa-plus"
+            Variant="@Variant.Filled"
+            Color="@Color.Primary"
+            TopMargin="Breakpoint.Always"
+            Class="@(Dependent.Protected ? "visible" : "invisible")"
+            OnClick="@OpenAddDialog"
+            data-testid="add-button">
+            Add
         </HgButton>
     </div>
     <DelegateTable Data="@Delegates" />
@@ -76,7 +87,7 @@
                 RightMargin="Breakpoint.Always"
                 Variant="@Variant.Outlined"
                 Color="@Color.Default"
-                @onclick="@(() => SetEditMode(false))"
+                OnClick="@(() => SetEditMode(false))"
                 data-testid="cancel-edit-button">
                 Cancel
             </HgButton>
@@ -84,7 +95,7 @@
                 Variant="@Variant.Filled"
                 Color="@Color.Primary"
                 Disabled="@(!AnyUnsavedDelegationChanges)"
-                @onclick="@ConfirmProtectAsync"
+                OnClick="@OpenProtectConfirmationDialog"
                 data-testid="save-button">
                 Save
             </HgButton>

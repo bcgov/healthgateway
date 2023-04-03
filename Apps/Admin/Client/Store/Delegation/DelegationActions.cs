@@ -18,6 +18,7 @@ namespace HealthGateway.Admin.Client.Store.Delegation
     using System.Collections.Generic;
     using System.Diagnostics.CodeAnalysis;
     using HealthGateway.Admin.Client.Models;
+    using HealthGateway.Admin.Common.Constants;
     using HealthGateway.Admin.Common.Models;
 
     /// <summary>
@@ -75,6 +76,76 @@ namespace HealthGateway.Admin.Client.Store.Delegation
             /// Gets the collection of delegate info.
             /// </summary>
             public required IEnumerable<ExtendedDelegateInfo> Delegates { get; init; }
+        }
+
+        /// <summary>
+        /// The action representing the initiation of a delegate search.
+        /// </summary>
+        public class DelegateSearchAction
+        {
+            /// <summary>
+            /// Initializes a new instance of the <see cref="DelegateSearchAction"/> class.
+            /// </summary>
+            /// <param name="phn">The PHN to query on.</param>
+            public DelegateSearchAction(string phn)
+            {
+                this.Phn = phn;
+            }
+
+            /// <summary>
+            /// Gets the PHN.
+            /// </summary>
+            public string Phn { get; }
+        }
+
+        /// <summary>
+        /// The action representing a failed delegate search.
+        /// </summary>
+        public class DelegateSearchFailAction : BaseFailAction
+        {
+            /// <summary>
+            /// Initializes a new instance of the <see cref="DelegateSearchFailAction"/> class.
+            /// </summary>
+            /// <param name="error">The request error.</param>
+            public DelegateSearchFailAction(RequestError error)
+                : base(error)
+            {
+            }
+        }
+
+        /// <summary>
+        /// The action representing a successful delegate search.
+        /// </summary>
+        public class DelegateSearchSuccessAction : BaseSuccessAction<ExtendedDelegateInfo>
+        {
+            /// <summary>
+            /// Initializes a new instance of the <see cref="DelegateSearchSuccessAction"/> class.
+            /// </summary>
+            /// <param name="data">Delegate data.</param>
+            public DelegateSearchSuccessAction(ExtendedDelegateInfo data)
+                : base(data)
+            {
+            }
+        }
+
+        /// <summary>
+        /// The action that adds a retrieved delegate in a staged state.
+        /// </summary>
+        public class AddDelegateAction
+        {
+            /// <summary>
+            /// Initializes a new instance of the <see cref="AddDelegateAction"/> class.
+            /// </summary>
+            /// <param name="stagedDelegationStatus">The staged delegation status the delegate should have.</param>
+            public AddDelegateAction(DelegationStatus stagedDelegationStatus)
+            {
+                this.StagedDelegationStatus = stagedDelegationStatus;
+            }
+
+            /// <summary>
+            /// Gets the staged delegation status.
+            /// </summary>
+            public DelegationStatus StagedDelegationStatus { get; }
         }
 
         /// <summary>
@@ -160,6 +231,13 @@ namespace HealthGateway.Admin.Client.Store.Delegation
             /// Gets a value indicating whether edit mode should be enabled.
             /// </summary>
             public required bool Enabled { get; init; }
+        }
+
+        /// <summary>
+        /// The action that clears the delegate search.
+        /// </summary>
+        public class ClearDelegateSearchAction
+        {
         }
 
         /// <summary>

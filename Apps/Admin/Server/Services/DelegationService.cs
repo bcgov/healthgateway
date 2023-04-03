@@ -40,11 +40,13 @@ namespace HealthGateway.Admin.Server.Services
     {
         private const string DelegationConfigSection = "Delegation";
         private const string MaxDependentAgeKey = "MaxDependentAge";
+        private const string MinDelegateAgeKey = "MinDelegateAge";
         private readonly IPatientService patientService;
         private readonly IResourceDelegateDelegate resourceDelegateDelegate;
         private readonly IDelegationDelegate delegationDelegate;
         private readonly IMapper autoMapper;
         private readonly int maxDependentAge;
+        private readonly int minDelegateAge;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="DelegationService"/> class.
@@ -66,6 +68,7 @@ namespace HealthGateway.Admin.Server.Services
             this.delegationDelegate = delegationDelegate;
             this.autoMapper = autoMapper;
             this.maxDependentAge = configuration.GetSection(DelegationConfigSection).GetValue(MaxDependentAgeKey, 12);
+            this.minDelegateAge = configuration.GetSection(DelegationConfigSection).GetValue(MinDelegateAgeKey, 12);
         }
 
         /// <inheritdoc/>
@@ -75,11 +78,11 @@ namespace HealthGateway.Admin.Server.Services
             RequestResult<PatientModel> dependentPatientResult = await this.patientService.GetPatient(phn, PatientIdentifierType.Phn).ConfigureAwait(true);
             this.ValidatePatientResult(dependentPatientResult);
 
-            ValidationResult? validationResults = await new DelegationValidator(this.maxDependentAge).ValidateAsync(dependentPatientResult.ResourcePayload).ConfigureAwait(true);
+            ValidationResult? validationResults = await new DependentPatientValidator(this.maxDependentAge).ValidateAsync(dependentPatientResult.ResourcePayload).ConfigureAwait(true);
             if (!validationResults.IsValid)
             {
                 throw new ProblemDetailsException(
-                    ExceptionUtility.CreateProblemDetails($"Dependent age exceeds the maximum limit of {this.maxDependentAge}", HttpStatusCode.BadRequest, nameof(DelegationService)));
+                    ExceptionUtility.CreateProblemDetails($"Dependent age is above {this.maxDependentAge}", HttpStatusCode.BadRequest, nameof(DelegationService)));
             }
 
             DelegationInfo delegationInfo = new();
@@ -124,6 +127,22 @@ namespace HealthGateway.Admin.Server.Services
             }
 
             return delegationInfo;
+        }
+
+        /// <inheritdoc/>
+        public async Task<DelegateInfo> GetDelegateInformationAsync(string phn)
+        {
+            RequestResult<PatientModel> delegatePatientResult = await this.patientService.GetPatient(phn, PatientIdentifierType.Phn).ConfigureAwait(true);
+            this.ValidatePatientResult(delegatePatientResult);
+
+            ValidationResult? validationResults = await new DelegatePatientValidator(this.minDelegateAge).ValidateAsync(delegatePatientResult.ResourcePayload).ConfigureAwait(true);
+            if (!validationResults.IsValid)
+            {
+                throw new ProblemDetailsException(ExceptionUtility.CreateProblemDetails($"Delegate age is below {this.minDelegateAge}", HttpStatusCode.BadRequest, nameof(DelegationService)));
+            }
+
+            DelegateInfo delegateInfo = this.autoMapper.Map<DelegateInfo>(delegatePatientResult.ResourcePayload);
+            return delegateInfo;
         }
 
         /// <inheritdoc/>

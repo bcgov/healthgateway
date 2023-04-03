@@ -61,8 +61,67 @@ namespace HealthGateway.Admin.Client.Store.Delegation
                 Search = state.Search with
                 {
                     IsLoading = false,
+                    Result = null,
                     Error = action.Error,
                 },
+            };
+        }
+
+        [ReducerMethod(typeof(DelegationActions.DelegateSearchAction))]
+        public static DelegationState ReduceDelegateSearchAction(DelegationState state)
+        {
+            return state with
+            {
+                DelegateSearch = state.DelegateSearch with
+                {
+                    IsLoading = true,
+                },
+            };
+        }
+
+        [ReducerMethod]
+        public static DelegationState ReduceDelegateSearchSuccessAction(DelegationState state, DelegationActions.DelegateSearchSuccessAction action)
+        {
+            return state with
+            {
+                DelegateSearch = state.DelegateSearch with
+                {
+                    IsLoading = false,
+                    Result = action.Data,
+                    Error = null,
+                },
+            };
+        }
+
+        [ReducerMethod]
+        public static DelegationState ReduceDelegateSearchFailAction(DelegationState state, DelegationActions.DelegateSearchFailAction action)
+        {
+            return state with
+            {
+                DelegateSearch = state.DelegateSearch with
+                {
+                    IsLoading = false,
+                    Result = null,
+                    Error = action.Error,
+                },
+            };
+        }
+
+        [ReducerMethod]
+        public static DelegationState ReduceAddDelegateAction(DelegationState state, DelegationActions.AddDelegateAction action)
+        {
+            IImmutableList<ExtendedDelegateInfo> delegates = state.Delegates;
+            if (state.DelegateSearch.Result != null)
+            {
+                ExtendedDelegateInfo delegateInfo = state.DelegateSearch.Result;
+                delegateInfo.StagedDelegationStatus = action.StagedDelegationStatus;
+                delegates = delegates.Where(d => d.Hdid != delegateInfo.Hdid).Append(delegateInfo).ToImmutableList();
+            }
+
+            return state with
+            {
+                DelegateSearch = new(),
+                Delegates = delegates,
             };
         }
 
@@ -216,6 +275,15 @@ namespace HealthGateway.Admin.Client.Store.Delegation
             {
                 InEditMode = action.Enabled,
                 Delegates = delegates,
+            };
+        }
+
+        [ReducerMethod(typeof(DelegationActions.ClearDelegateSearchAction))]
+        public static DelegationState ReduceClearDelegateSearchErrorAction(DelegationState state)
+        {
+            return state with
+            {
+                DelegateSearch = new(),
             };
         }
 

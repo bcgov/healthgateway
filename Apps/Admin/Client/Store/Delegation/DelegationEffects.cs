@@ -79,6 +79,29 @@ namespace HealthGateway.Admin.Client.Store.Delegation
             }
         }
 
+        [EffectMethod]
+        public async Task HandleDelegateSearchAction(DelegationActions.DelegateSearchAction action, IDispatcher dispatcher)
+        {
+            this.Logger.LogInformation("Retrieving delegate info");
+            try
+            {
+                DelegateInfo response = await this.Api.GetDelegateInformationAsync(action.Phn).ConfigureAwait(true);
+                this.Logger.LogInformation("Delegate info retrieved successfully");
+                dispatcher.Dispatch(new DelegationActions.DelegateSearchSuccessAction(this.AutoMapper.Map<DelegateInfo, ExtendedDelegateInfo>(response)));
+            }
+            catch (Exception e) when (e is ApiException or HttpRequestException)
+            {
+                RequestError error = e switch
+                {
+                    ApiException { StatusCode: HttpStatusCode.BadRequest or HttpStatusCode.NotFound } => new RequestError { Message = "Unable to find user." },
+                    _ => StoreUtility.FormatRequestError(e),
+                };
+
+                this.Logger.LogError(e, "Error retrieving delegate info, reason: {Exception}", e.ToString());
+                dispatcher.Dispatch(new DelegationActions.DelegateSearchFailAction(error));
+            }
+        }
+
         [EffectMethod(typeof(DelegationActions.ProtectDependentAction))]
         public async Task HandleProtectDependentAction(IDispatcher dispatcher)
         {

@@ -35,11 +35,12 @@ namespace HealthGateway.Common.Data.Validations
             referenceDate ??= DateTime.UtcNow;
 
             this
-                .Transform(v => v, v => CalculateAge(referenceDate.Value.Date, v.Date))
+                .RuleFor(v => CalculateAge(referenceDate.Value.Date, v.Date))
                 .GreaterThanOrEqualTo(olderThan ?? 0)
                 .When(_ => olderThan.HasValue, ApplyConditionTo.CurrentValidator)
                 .LessThan(youngerThan ?? 0)
-                .When(_ => youngerThan.HasValue, ApplyConditionTo.CurrentValidator);
+                .When(_ => youngerThan.HasValue, ApplyConditionTo.CurrentValidator)
+                .OverridePropertyName("Age");
         }
 
         /// <summary>
