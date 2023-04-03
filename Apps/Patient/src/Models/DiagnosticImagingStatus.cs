@@ -26,6 +26,11 @@ namespace HealthGateway.Patient.Models
     public enum DiagnosticImagingStatus
     {
         /// <summary>
+        /// Unknown status.
+        /// </summary>
+        Unknown,
+
+        /// <summary>
         /// Exam is scheduled.
         /// </summary>
         Scheduled,
@@ -55,10 +60,5 @@ namespace HealthGateway.Patient.Models
         /// Exam is amended.
         /// </summary>
         Amended,
-
-        /// <summary>
-        /// Unknown status.
-        /// </summary>
-        Unknown,
     }
 }

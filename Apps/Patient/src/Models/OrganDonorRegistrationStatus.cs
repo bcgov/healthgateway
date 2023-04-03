@@ -22,8 +22,14 @@ namespace HealthGateway.Patient.Models
     /// Donor registration status.
     /// </summary>
     [JsonConverter(typeof(JsonStringEnumMemberConverter))]
+    [JsonStringEnumMemberConverterOptions(deserializationFailureFallbackValue: Unknown)]
     public enum OrganDonorRegistrationStatus
     {
+        /// <summary>
+        /// Unknown status.
+        /// </summary>
+        Unknown,
+
         /// <summary>
         /// Registered patient.
         /// </summary>
@@ -44,10 +50,5 @@ namespace HealthGateway.Patient.Models
         /// Registration is pending.
         /// </summary>
         Pending,
-
-        /// <summary>
-        /// Unknown status.
-        /// </summary>
-        Unknown,
     }
 }
