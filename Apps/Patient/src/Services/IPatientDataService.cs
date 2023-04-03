@@ -80,19 +80,19 @@ namespace HealthGateway.Patient.Services
     public record OrganDonorRegistrationData : PatientData
     {
         /// <summary>
-        /// Gets or sets the registration status.
+        /// Gets the registration status.
         /// </summary>
-        public OrganDonorRegistrationStatus Status { get; set; } = OrganDonorRegistrationStatus.NotRegistered;
+        public required OrganDonorRegistrationStatus Status { get; init; } = OrganDonorRegistrationStatus.NotRegistered;
 
         /// <summary>
-        /// Gets or sets the message associated with the donor registration status.
+        /// Gets the message associated with the donor registration status.
         /// </summary>
-        public string? StatusMessage { get; set; }
+        public required string? StatusMessage { get; init; }
 
         /// <summary>
-        /// Gets or sets the file ID associated with the donor registration.
+        /// Gets the file ID associated with the donor registration.
         /// </summary>
-        public string? RegistrationFileId { get; set; }
+        public required string? RegistrationFileId { get; init; }
 
         /// <inheritdoc/>
         public override string Type { get; } = nameof(OrganDonorRegistrationData);
