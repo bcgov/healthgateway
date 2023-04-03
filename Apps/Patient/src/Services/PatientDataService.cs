@@ -99,7 +99,7 @@ namespace HealthGateway.Patient.Services
 
         private async Task<PatientDataQueryResult> HandleServiceQuery(Guid pid, PatientDataQuery query, CancellationToken ct)
         {
-            IEnumerable<HealthServiceCategory> categories = ExtractToHealthServiceCategoryArray(query.PatientDataTypes).ToArray();
+            IEnumerable<HealthServiceCategory> categories = ExtractToHealthServiceCategoryArray(query.PatientDataTypes);
             PatientDataQueryResult results = await this.patientDataRepository.Query(
                     new HealthServicesQuery(pid, categories),
                     ct)
@@ -110,7 +110,7 @@ namespace HealthGateway.Patient.Services
 
         private async Task<PatientDataQueryResult> HandleDataQuery(Guid pid, PatientDataQuery query, CancellationToken ct)
         {
-            IEnumerable<HealthDataCategory> categories = ExtractToHealthDataCategoryArray(query.PatientDataTypes).ToArray();
+            IEnumerable<HealthDataCategory> categories = ExtractToHealthDataCategoryArray(query.PatientDataTypes);
             PatientDataQueryResult results = await this.patientDataRepository.Query(
                     new HealthDataQuery(pid, categories),
                     ct)
