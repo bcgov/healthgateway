@@ -67,14 +67,16 @@
             Class="mt-3"
             Severity="@Severity.Warning"
             IsEnabled="@DelegateAlreadyAllowed"
-            TResetAction="@DelegationActions.DelegateSearchAction">
+            TResetAction="@DelegationActions.DelegateSearchAction"
+            DataTestId="delegate-search-warning-message">
             Guardian has already been added to allow list.
         </HgBannerFeedback>
         <HgBannerFeedback
             Class="mt-3"
             Severity="@Severity.Error"
             IsEnabled="@HasSearchError"
-            TResetAction="@DelegationActions.DelegateSearchAction">
+            TResetAction="@DelegationActions.DelegateSearchAction"
+            DataTestId="delegate-search-error-message">
             @ErrorMessage
         </HgBannerFeedback>
     </DialogContent>
@@ -86,7 +88,7 @@
             HorizontalMarginSize="@(HgButton.DefaultHorizontalMarginSize - 2)"
             BottomMargin="Breakpoint.Always"
             OnClick="@HandleClickCancel"
-            data-testid="cancel-button">
+            data-testid="delegate-dialog-cancel-button">
             Cancel
         </HgButton>
         <HgButton
@@ -95,7 +97,7 @@
             RightMargin="Breakpoint.Always"
             BottomMargin="Breakpoint.Always"
             OnClick="@HandleClickSave"
-            data-testid="save-button">
+            data-testid="delegate-dialog-save-button">
             Save
         </HgButton>
     </DialogActions>
