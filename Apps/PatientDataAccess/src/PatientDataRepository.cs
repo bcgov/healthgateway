@@ -136,9 +136,9 @@ namespace HealthGateway.PatientDataAccess
             return this.mapper.Map<HealthData>(healthOptionData);
         }
 
-        private HealthData Map(HealthDataEntry healthOptionData)
+        private HealthData Map(HealthDataEntry healthDataEntry)
         {
-            return this.mapper.Map<HealthData>(healthOptionData);
+            return this.mapper.Map<HealthData>(healthDataEntry);
         }
     }
 }
