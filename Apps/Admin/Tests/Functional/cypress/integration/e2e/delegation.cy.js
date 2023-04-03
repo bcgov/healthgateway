@@ -1,7 +1,11 @@
 const dependentWithoutGuardian = { phn: "9874307168" };
 const dependentWithGuardian = { phn: "9874307175", guardianPhn: "9735353315" };
 const dependentExceedingAgeCutoff = { phn: "9735353315" };
-const dependentToProtect = "9872868095";
+const dependentToProtect = "9872868095"; // Jeffrey Lawrence Stallings
+const dependentToValidate = "9872868135"; // Oscar Calvin Gartner
+const guardianToAdd = "9735352488"; // Turpentine Garlandry
+const guardianNotFound = "9735352489";
+const guardianAlreadyAdded = "9735352495"; // Byline Ballistas
 
 function performSearch(phn) {
     cy.get("[data-testid=query-input]").clear().type(phn);
@@ -104,7 +108,7 @@ describe("Delegation Protect", () => {
         );
     });
 
-    it("Verify protect dependent toggle, save button, cancel confirmation button and cancel button are selected.", () => {
+    it("Verify protect dependent toggle and delegation cancel.", () => {
         cy.get("[data-testid=query-input]")
             .clear()
             .type(dependentWithGuardian.phn);
@@ -123,7 +127,7 @@ describe("Delegation Protect", () => {
             "be.enabled"
         );
 
-        // Save button
+        // Delegation Save button
         cy.get("[data-testid=save-button]").click();
 
         // Confirmation dialog confirmation button
@@ -132,23 +136,70 @@ describe("Delegation Protect", () => {
             "be.enabled"
         );
 
-        // Cancel confirmation
+        // Cancel confirmation dialog
         cy.get("[data-testid=cancel-button]").click();
 
+        // Protect dependent toggle
         cy.get("[data-testid=dependent-protected-switch]").should("be.checked");
 
-        // Save button
+        // Delegation Save button
         cy.get("[data-testid=save-button]").should("be.visible", "be.enabled");
 
-        // Cancel button
+        // Delegation Cancel button
         cy.get("[data-testid=cancel-edit-button]").click();
 
+        // Protect dependent toggle
         cy.get("[data-testid=dependent-protected-switch]").should(
             "not.be.checked"
         );
     });
 
-    it("Verify protect/unprotect dependent toggle, select to remove, save button and confirmation button are selected.", () => {
+    it("Verify add delegate dialog guardian not found and guardian already added.", () => {
+        cy.get("[data-testid=query-input]").clear().type(dependentToValidate);
+        cy.get("[data-testid=search-button]").click();
+
+        // Protect dependent toggle
+        cy.get("[data-testid=dependent-protected-switch]").should(
+            "not.be.checked"
+        );
+
+        // Protect
+        cy.get("[data-testid=dependent-protected-switch]").click();
+        cy.get("[data-testid=dependent-protected-switch]").should("be.checked");
+
+        // Delegation Save button
+        cy.get("[data-testid=save-button]").click();
+
+        // Delegation Confirmation button
+        cy.get("[data-testid=confirm-button]").click();
+
+        // Add guardian
+        cy.get("[data-testid=add-button]").click();
+
+        // Delegate modal - phn not found
+        cy.get("[data-testid=delegate-phn-input]")
+            .clear()
+            .type(guardianNotFound);
+        cy.get("[data-testid=communication-dialog-modal-text]").within(() => {
+            cy.get("[data-testid=search-button]").click();
+        });
+        cy.get("[data-testid=delegate-search-error-message]").should(
+            "be.visible"
+        );
+
+        // Delegate dialog - phn already added
+        cy.get("[data-testid=delegate-phn-input]")
+            .clear()
+            .type(guardianAlreadyAdded);
+        cy.get("[data-testid=communication-dialog-modal-text]").within(() => {
+            cy.get("[data-testid=search-button]").click();
+        });
+        cy.get("[data-testid=delegate-search-error-message]").should(
+            "be.visible"
+        );
+    });
+
+    it("Verify protect/unprotect dependent toggle, add delegate, remove delegate, delegation save and delegation confirmation.", () => {
         cy.get("[data-testid=query-input]").clear().type(dependentToProtect);
         cy.get("[data-testid=search-button]").click();
 
@@ -164,25 +215,59 @@ describe("Delegation Protect", () => {
         cy.get("[data-testid=dependent-protected-switch]").click();
         cy.get("[data-testid=dependent-protected-switch]").should("be.checked");
 
-        // Remove delegate row before protecting dependent
+        // Delegation Save button
+        cy.get("[data-testid=save-button]").click();
+
+        // Delegation Confirmation button
+        cy.get("[data-testid=confirm-button]").click();
+
+        // Add guardian
+        cy.get("[data-testid=add-button]").click();
+
+        // Delegate dialog - search with valid phn
+        cy.get("[data-testid=delegate-phn-input]").clear().type(guardianToAdd);
+        cy.get("[data-testid=communication-dialog-modal-text]").within(() => {
+            cy.get("[data-testid=search-button]").click();
+        });
+        cy.get("[data-testid=delegate-search-error-message]").should(
+            "not.exist"
+        );
+
+        // Delegate dialog - save
+        cy.get("[data-testid=delegate-dialog-save-button]").click();
+
+        // Delegation Save button
+        cy.get("[data-testid=save-button]").click();
+
+        // Delegation Confirmation button
+        cy.get("[data-testid=confirm-button]").click();
+
+        // Confirm guardian has been added to delegate table
+        getTableRows("[data-testid=delegate-table]").should("have.length", 3);
+
+        // Confirm protected toggle has been enabled
+        cy.get("[data-testid=dependent-protected-switch]").should("be.checked");
+
+        // Delegation Edit button
+        cy.get("[data-testid=edit-button]").click();
+
+        // Remove last delegate row in table before protecting dependent
         const rowSelector =
             "[data-testid=delegate-table] tbody tr.mud-table-row";
         cy.get(rowSelector)
-            .first()
+            .last()
             .within(() => {
                 cy.get("[data-testid=delegate-to-be-removed-checkbox]").click();
             });
 
-        // Save button
+        // Delegation Save button
         cy.get("[data-testid=save-button]").click();
 
-        // Confirmation button
+        // Delegation Confirmation button
         cy.get("[data-testid=confirm-button]").click();
 
         // Confirm delegate table
-        getTableRows("[data-testid=delegate-table]").should("have.length", 1);
-
-        cy.get("[data-testid=dependent-protected-switch]").should("be.checked");
+        getTableRows("[data-testid=delegate-table]").should("have.length", 2);
 
         // Unprotect
         cy.get("[data-testid=dependent-protected-switch]").click();
@@ -190,11 +275,9 @@ describe("Delegation Protect", () => {
         // Confirmation button
         cy.get("[data-testid=confirm-button]").click();
 
+        // Protect dependent toggle
         cy.get("[data-testid=dependent-protected-switch]").should(
             "not.be.checked"
         );
-
-        // Confirm delegate table
-        getTableRows("[data-testid=delegate-table]").should("have.length", 1);
     });
 });
