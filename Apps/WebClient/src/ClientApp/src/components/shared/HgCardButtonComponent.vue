@@ -10,15 +10,16 @@ export default class HgCardButtonComponent extends Vue {
     @Prop({ required: false, default: false })
     dense!: boolean;
 
-    @Prop({ required: false, default: false })
-    hasChevron!: boolean;
-
     private get hasClickListener(): boolean {
         return this.$listeners && Boolean(this.$listeners.click);
     }
 
     private get hasIconSlot(): boolean {
         return this.$slots.icon !== undefined;
+    }
+
+    private get hasActionIconSlot(): boolean {
+        return this.$slots.actionIcon !== undefined;
     }
 
     private get hasMenuSlot(): boolean {
@@ -40,7 +41,6 @@ export default class HgCardButtonComponent extends Vue {
         <hg-card
             :title="title"
             :dense="dense"
-            :has-chevron="hasChevron"
             :is-interactable="hasClickListener"
         >
             <template #icon>
@@ -48,6 +48,9 @@ export default class HgCardButtonComponent extends Vue {
             </template>
             <template #menu>
                 <slot name="menu" />
+            </template>
+            <template #action-icon>
+                <slot name="action-icon" />
             </template>
             <slot />
         </hg-card>

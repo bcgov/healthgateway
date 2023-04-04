@@ -1,16 +1,9 @@
 <script lang="ts">
 import { library } from "@fortawesome/fontawesome-svg-core";
 import {
+    faCheckCircle,
     faChevronRight,
     faDownload,
-    faFileMedical,
-    faFileWaveform,
-    faHouseMedical,
-    faMicroscope,
-    faPills,
-    faStethoscope,
-    faSyringe,
-    faVial,
 } from "@fortawesome/free-solid-svg-icons";
 import saveAs from "file-saver";
 import Vue from "vue";
@@ -19,35 +12,17 @@ import { Action, Getter } from "vuex-class";
 
 import LoadingComponent from "@/components/LoadingComponent.vue";
 import MessageModalComponent from "@/components/modal/MessageModalComponent.vue";
-import {
-    EntryType,
-    EntryTypeDetails,
-    entryTypeMap,
-} from "@/constants/entryType";
 import type { WebClientConfiguration } from "@/models/configData";
 import CovidVaccineRecord from "@/models/covidVaccineRecord";
 import type { Dependent } from "@/models/dependent";
 import { LoadStatus } from "@/models/storeOperations";
-import { TimelineFilterBuilder } from "@/models/timelineFilter";
 import VaccinationRecord from "@/models/vaccinationRecord";
 import container from "@/plugins/container";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import { ILogger } from "@/services/interfaces";
-import ConfigUtil from "@/utility/configUtil";
 import SnowPlow from "@/utility/snowPlow";
 
-library.add(
-    faChevronRight,
-    faDownload,
-    faFileMedical,
-    faFileWaveform,
-    faHouseMedical,
-    faMicroscope,
-    faStethoscope,
-    faPills,
-    faSyringe,
-    faVial
-);
+library.add(faCheckCircle, faChevronRight, faDownload);
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const options: any = {
@@ -79,9 +54,6 @@ export default class DependentDashboardTabComponent extends Vue {
     retrieveAuthenticatedVaccineRecord!: (params: {
         hdid: string;
     }) => Promise<CovidVaccineRecord>;
-
-    @Action("setFilter", { namespace: "timeline" })
-    setFilter!: (filterBuilder: TimelineFilterBuilder) => void;
 
     @Action("stopAuthenticatedVaccineRecordDownload", {
         namespace: "vaccinationStatus",
@@ -171,12 +143,6 @@ export default class DependentDashboardTabComponent extends Vue {
         return "";
     }
 
-    get entryTypes(): EntryTypeDetails[] {
-        return [...entryTypeMap.values()].filter((d) =>
-            ConfigUtil.isDependentDatasetEnabled(d.type)
-        );
-    }
-
     private created(): void {
         this.logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
     }
@@ -185,16 +151,11 @@ export default class DependentDashboardTabComponent extends Vue {
         return this.vaccineRecords.get(this.dependent.ownerId);
     }
 
-    private handleClickEntryType(type: EntryType): void {
-        this.logger.debug(`Handle entry type clicked: ${type}`);
+    private handleClickHealthRecordsButton(): void {
         SnowPlow.trackEvent({
             action: "click",
-            text: `Dependent_${type}`,
+            text: "dependent_all_records",
         });
-        const entryTypes: EntryType[] = [type];
-        const builder =
-            TimelineFilterBuilder.create().withEntryTypes(entryTypes);
-        this.setFilter(builder);
         this.$router.push({
             path: `/dependents/${this.dependent.ownerId}/timeline`,
         });
@@ -223,19 +184,25 @@ export default class DependentDashboardTabComponent extends Vue {
             :text="vaccineRecordStatusMessage"
         />
         <b-row cols="1" cols-lg="2" cols-xl="3">
-            <b-col v-for="entry in entryTypes" :key="entry.type" class="p-3">
+            <b-col class="p-3">
                 <hg-card-button
-                    :title="entry.name"
+                    title="Health Records"
                     dense
-                    has-chevron
-                    :data-testid="`dependent-entry-type-${entry.type}-${dependent.ownerId}`"
-                    @click="handleClickEntryType(entry.type)"
+                    :data-testid="`dependent-health-records-button-${dependent.ownerId}`"
+                    @click="handleClickHealthRecordsButton"
                 >
                     <template #icon>
+                        <img
+                            class="health-gateway-logo align-self-center"
+                            src="@/assets/images/gov/health-gateway-logo.svg"
+                            alt="Health Gateway Logo"
+                        />
+                    </template>
+                    <template #action-icon>
                         <hg-icon
-                            :icon="entry.icon"
-                            class="entry-link-card-icon align-self-center"
-                            size="large"
+                            icon="chevron-right"
+                            class="chevron-icon align-self-center"
+                            size="medium"
                             square
                         />
                     </template>
@@ -250,9 +217,17 @@ export default class DependentDashboardTabComponent extends Vue {
                 >
                     <template #icon>
                         <hg-icon
+                            class="checkmark align-self-center"
+                            icon="check-circle"
+                            size="large"
+                            square
+                        />
+                    </template>
+                    <template #action-icon>
+                        <hg-icon
                             icon="download"
                             class="entry-link-card-icon align-self-center"
-                            size="large"
+                            size="medium"
                             square
                         />
                     </template>
@@ -279,5 +254,14 @@ export default class DependentDashboardTabComponent extends Vue {
 
 .entry-link-card-icon {
     color: $primary;
+}
+
+.health-gateway-logo {
+    height: 1.5em;
+    width: 1.5em;
+}
+
+.checkmark {
+    color: $hg-state-success;
 }
 </style>
