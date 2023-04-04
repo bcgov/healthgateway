@@ -109,9 +109,6 @@ export default class HomeView extends Vue {
     @Action("setFilter", { namespace: "timeline" })
     setFilter!: (filterBuilder: TimelineFilterBuilder) => void;
 
-    @Action("clearFilter", { namespace: "timeline" })
-    clearFilter!: () => void;
-
     @Action("updateQuickLinks", { namespace: "user" })
     updateQuickLinks!: (params: {
         hdid: string;
@@ -353,7 +350,6 @@ export default class HomeView extends Vue {
 
     private handleClickHealthRecords(): void {
         this.trackClickLink("all_records");
-        this.clearFilter();
         this.$router.push({ path: "/timeline" });
     }
 
