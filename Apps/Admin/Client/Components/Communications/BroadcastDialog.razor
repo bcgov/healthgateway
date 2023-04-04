@@ -181,7 +181,23 @@
         </MudForm>
     </DialogContent>
     <DialogActions>
-        <HgButton Color="@Color.Primary" Variant="@Variant.Text" OnClick="@HandleClickCancel" data-testid="cancel-btn">Cancel</HgButton>
-        <HgButton Color="@Color.Primary" OnClick="@HandleClickSaveAsync" data-testid="save-btn">Save</HgButton>
+        <HgButton
+            Color="@Color.Primary"
+            Variant="@Variant.Text"
+            RightMargin="Breakpoint.Always"
+            HorizontalMarginSize="@(HgButton.DefaultHorizontalMarginSize - 2)"
+            BottomMargin="Breakpoint.Always"
+            OnClick="@HandleClickCancel"
+            data-testid="cancel-btn">
+            Cancel
+        </HgButton>
+        <HgButton
+            Color="@Color.Primary"
+            RightMargin="Breakpoint.Always"
+            BottomMargin="Breakpoint.Always"
+            OnClick="@HandleClickSaveAsync"
+            data-testid="save-btn">
+            Save
+        </HgButton>
     </DialogActions>
 </MudDialog>

@@ -18,10 +18,14 @@ namespace HealthGateway.Admin.Client.Components.Delegation
     using System;
     using System.Collections.Generic;
     using System.Linq;
+    using System.Threading.Tasks;
+    using Fluxor;
     using Fluxor.Blazor.Web.Components;
+    using HealthGateway.Admin.Client.Store.Delegation;
     using HealthGateway.Admin.Common.Models;
     using HealthGateway.Common.Data.Utils;
     using Microsoft.AspNetCore.Components;
+    using MudBlazor;
 
     /// <summary>
     /// Backing logic for the DependentTable component.
@@ -35,7 +39,48 @@ namespace HealthGateway.Admin.Client.Components.Delegation
         [EditorRequired]
         public DependentInfo Data { get; set; } = default!;
 
+        [Inject]
+        private IDispatcher Dispatcher { get; set; } = default!;
+
+        [Inject]
+        private IState<DelegationState> DelegationState { get; set; } = default!;
+
+        [Inject]
+        private IDialogService Dialog { get; set; } = default!;
+
+        private bool InEditMode => this.DelegationState.Value.InEditMode;
+
         private IEnumerable<DependentRow> Rows => new List<DependentInfo> { this.Data }.Select(d => new DependentRow(d));
+
+        private void SetEditMode(bool enabled)
+        {
+            this.Dispatcher.Dispatch(new DelegationActions.SetEditModeAction { Enabled = enabled });
+        }
+
+        private async Task ToggleProtectedSwitch(bool protect)
+        {
+            if (protect)
+            {
+                this.SetEditMode(true);
+            }
+            else
+            {
+                await this.OpenUnprotectConfirmationDialog().ConfigureAwait(true);
+            }
+        }
+
+        private async Task OpenUnprotectConfirmationDialog()
+        {
+            const string title = "Confirm Update";
+            DialogParameters parameters = new()
+            {
+                [nameof(DelegationConfirmationDialog.Type)] = DelegationConfirmationDialog.ConfirmationType.Unprotect,
+            };
+            DialogOptions options = new() { DisableBackdropClick = true, FullWidth = true, MaxWidth = MaxWidth.ExtraSmall };
+            IDialogReference dialog = await this.Dialog.ShowAsync<DelegationConfirmationDialog>(title, parameters, options).ConfigureAwait(true);
+
+            await dialog.Result.ConfigureAwait(true);
+        }
 
         private sealed record DependentRow
         {
@@ -53,7 +98,7 @@ namespace HealthGateway.Admin.Client.Components.Delegation
 
             public string Address { get; }
 
-            public bool Protected { get; }
+            public bool Protected { get; set; }
         }
     }
 }

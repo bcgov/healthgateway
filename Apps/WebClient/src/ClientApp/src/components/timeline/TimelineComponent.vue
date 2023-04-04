@@ -282,6 +282,13 @@ export default class TimelineComponent extends Vue {
         );
     }
 
+    get isOnlyClinicalDocumentSelected(): boolean {
+        return (
+            this.selectedEntryTypes.size === 1 &&
+            this.selectedEntryTypes.has(EntryType.ClinicalDocument)
+        );
+    }
+
     get isOnlyImmunizationSelected(): boolean {
         return (
             this.selectedEntryTypes.size === 1 &&
@@ -426,6 +433,10 @@ export default class TimelineComponent extends Vue {
                 this.focusOnDate(this.selectedDate as DateWrapper)
             );
         }
+    }
+
+    beforeDestroy(): void {
+        this.clearFilters();
     }
 
     created(): void {
@@ -654,6 +665,29 @@ export default class TimelineComponent extends Vue {
                     {{ filteredTimelineEntries.length }} records
                 </b-col>
             </b-row>
+            <div
+                v-show="isOnlyClinicalDocumentSelected"
+                id="timeline-clinical-document-disclaimer"
+                class="pb-2"
+            >
+                <b-alert
+                    show
+                    variant="info"
+                    class="mt-0 mb-1"
+                    data-testid="timeline-clinical-document-disclaimer-alert"
+                >
+                    <span>
+                        Only documents shared by your provider at some sites are
+                        available.
+                        <a
+                            href="https://www2.gov.bc.ca/gov/content/health/managing-your-health/health-gateway/guide#clindocs"
+                            target="_blank"
+                            rel="noopener"
+                            >Learn more</a
+                        >.
+                    </span>
+                </b-alert>
+            </div>
             <div
                 v-show="isOnlyImmunizationSelected"
                 id="linear-timeline-immunization-disclaimer"

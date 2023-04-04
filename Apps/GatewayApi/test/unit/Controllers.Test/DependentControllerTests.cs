@@ -77,16 +77,19 @@ namespace HealthGateway.GatewayApiTests.Controllers.Test
         [Fact]
         public async Task ShouldAddDependent()
         {
+            DateTime dateOfBirth = new(1980, 1, 1);
+            DateOnly expiryDate = DateOnly.FromDateTime(dateOfBirth.AddYears(12));
             Mock<IHttpContextAccessor> httpContextAccessorMock = CreateValidHttpContext(this.token, this.userId, this.hdid);
             Mock<IDependentService> dependentServiceMock = new();
             DependentModel expectedDependent = new()
             {
                 OwnerId = "OWNER",
                 DelegateId = "DELEGATER",
+                ExpiryDate = expiryDate,
                 Version = 1U,
                 DependentInformation = new DependentInformation
                 {
-                    DateOfBirth = new DateTime(1980, 1, 1),
+                    DateOfBirth = dateOfBirth,
                     Gender = "Female",
                     FirstName = this.firstName,
                     LastName = this.lastname,
@@ -174,16 +177,20 @@ namespace HealthGateway.GatewayApiTests.Controllers.Test
 
             for (int i = 0; i < 10; i++)
             {
+                DateTime dateOfBirth = new(1980 + i, 1, 1);
+                DateOnly expiryDate = DateOnly.FromDateTime(dateOfBirth);
+
                 dependentModels.Add(
                     new DependentModel
                     {
                         OwnerId = $"OWNER00{i}",
                         DelegateId = $"DELEGATER00{i}",
+                        ExpiryDate = expiryDate,
                         Version = (uint)i,
                         DependentInformation = new DependentInformation
                         {
                             Phn = $"{dependentModels}-{i}",
-                            DateOfBirth = new DateTime(1980 + i, 1, 1),
+                            DateOfBirth = dateOfBirth,
                             Gender = "Female",
                             FirstName = "first",
                             LastName = "last-{i}",

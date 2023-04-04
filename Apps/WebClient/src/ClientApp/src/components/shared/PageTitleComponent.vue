@@ -20,15 +20,16 @@ export default class PageTitleComponent extends Vue {
     <div id="pageTitle">
         <b-row no-gutters class="justify-content-between">
             <b-col cols="auto" sm>
-                <h1 id="subject">
-                    <slot v-if="hasPrependSlot" name="prepend" /> {{ title }}
+                <slot v-if="hasPrependSlot" name="prepend" />
+                <h1 id="subject" class="mb-0 mt-2 d-inline-block">
+                    {{ title }}
                 </h1>
             </b-col>
-            <b-col v-if="hasSlot" class="mb-2 ml-2">
+            <b-col v-if="hasSlot" class="mb-0 ml-2">
                 <slot />
             </b-col>
         </b-row>
-        <hr />
+        <hr class="my-2" />
     </div>
 </template>
 
@@ -37,6 +38,10 @@ export default class PageTitleComponent extends Vue {
 
 #pageTitle {
     color: $primary;
+}
+
+#pageTitle h1 {
+    font-size: 1.625rem;
 }
 
 #pageTitle hr {

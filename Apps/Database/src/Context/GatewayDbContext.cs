@@ -82,6 +82,8 @@ namespace HealthGateway.Database.Context
         public DbSet<AdminTag> AdminTag { get; set; } = null!;
         public DbSet<UserFeedbackTag> UserFeedbackTag { get; set; } = null!;
         public DbSet<AdminUserProfile> AdminUserProfile { get; set; } = null!;
+        public DbSet<Dependent> Dependent { get; set; } = null!;
+        public DbSet<AllowedDelegation> AllowedDelegation { get; set; } = null!;
 
 #pragma warning restore CS1591, SA1600
 
@@ -377,6 +379,13 @@ namespace HealthGateway.Database.Context
                     new ValueConverter<UserLoginClientType, string>(
                         v => EnumUtility.ToEnumString(v, false),
                         v => EnumUtility.ToEnum<UserLoginClientType>(v, false)));
+
+            // Create Foreign key for AllowedDelegation
+            modelBuilder.Entity<AllowedDelegation>()
+                .HasOne<Dependent>(ad => ad.Dependent)
+                .WithMany(d => d.AllowedDelegations)
+                .HasForeignKey(ad => ad.DependentHdId)
+                .OnDelete(DeleteBehavior.Cascade);
 
             modelBuilder.HasDbFunction(DateTruncMethod).HasName("date_trunc");
 

@@ -140,7 +140,7 @@ describe("Reports - Covid19", () => {
         cy.intercept("GET", `**/Laboratory/Covid19Orders?hdid=${HDID}`, {
             fixture: "Report/covid19UnSorted.json",
         });
-        cy.get("[data-testid=reportType]").select("COVID‑19 Test Results");
+        cy.get("[data-testid=reportType]").select("COVID‑19 Tests");
 
         cy.get("[data-testid=reportSample]").should("be.visible");
 
@@ -436,7 +436,7 @@ describe("Reports - Laboratory Tests", () => {
         cy.intercept("GET", `**/Laboratory/LaboratoryOrders?hdid=${HDID}`, {
             fixture: "Report/laboratoryUnSorted.json",
         });
-        cy.get("[data-testid=reportType]").select("Laboratory Tests");
+        cy.get("[data-testid=reportType]").select("Lab Results");
 
         cy.get("[data-testid=reportSample]").should("be.visible");
 

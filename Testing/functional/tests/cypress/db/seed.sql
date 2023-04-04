@@ -13,6 +13,7 @@ TRUNCATE gateway."Rating" CASCADE;
 TRUNCATE gateway."Email" CASCADE;
 TRUNCATE gateway."AdminTag" CASCADE;
 TRUNCATE gateway."UserFeedback" CASCADE;
+TRUNCATE gateway."Dependent" CASCADE;
 
 /* Registered HealthGateway User - Keycloak User (healthgateway) */
 INSERT INTO gateway."UserProfile"(
@@ -780,6 +781,71 @@ VALUES (
 	'System.DateTime, System.Private.CoreLib, Version=5.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e', 
 	'"2021-01-20T00:00:00"'
 );
+/* Dependent PHN:9872868095 (727302800477298080), Guardian PHN: 9735353315 (P6FFO433A5WPMVTGM7T4ZVWBKCSVNAYGTWTU3J2LWMGUMERKI72A) */
+INSERT INTO gateway."ResourceDelegate"(
+	"ResourceOwnerHdid", 
+	"ProfileHdid", 
+	"ReasonCode", 
+	"CreatedBy", 
+	"CreatedDateTime", 
+	"UpdatedBy", 
+	"UpdatedDateTime", 
+	"ReasonObjectType", 
+	"ReasonObject")
+VALUES (
+	'BNV554213556', 
+	'P6FFO433A5WPMVTGM7T4ZVWBKCSVNAYGTWTU3J2LWMGUMERKI72A', 
+	'Guardian', 
+	'System', 
+	current_timestamp, 
+	'System', 
+	current_timestamp, 
+	'System.DateTime, System.Private.CoreLib, Version=5.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e', 
+	'"2023-03-27T00:00:00"'
+);
+INSERT INTO gateway."ResourceDelegate"(
+	"ResourceOwnerHdid", 
+	"ProfileHdid", 
+	"ReasonCode", 
+	"CreatedBy", 
+	"CreatedDateTime", 
+	"UpdatedBy", 
+	"UpdatedDateTime", 
+	"ReasonObjectType", 
+	"ReasonObject")
+VALUES (
+	'727302800477298080', 
+	'P6FFO433A5WPMVTGM7T4ZVWBKCSVNAYGTWTU3J2LWMGUMERKI72A', 
+	'Guardian', 
+	'System', 
+	current_timestamp, 
+	'System', 
+	current_timestamp, 
+	'System.DateTime, System.Private.CoreLib, Version=5.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e', 
+	'"2021-01-20T00:00:00"'
+);
+/* Dependent PHN:9872868095 (727302800477298080), Guardian PHN: 9735352495 (3ZQCSNNC6KVP2GYLA4O3EFZXGUAPWBQHU6ZEB7FXNZJ2WYCLPH3A) */
+INSERT INTO gateway."ResourceDelegate"(
+	"ResourceOwnerHdid", 
+	"ProfileHdid", 
+	"ReasonCode", 
+	"CreatedBy", 
+	"CreatedDateTime", 
+	"UpdatedBy", 
+	"UpdatedDateTime", 
+	"ReasonObjectType", 
+	"ReasonObject")
+VALUES (
+	'727302800477298080', 
+	'3ZQCSNNC6KVP2GYLA4O3EFZXGUAPWBQHU6ZEB7FXNZJ2WYCLPH3A', 
+	'Guardian', 
+	'System', 
+	current_timestamp, 
+	'System', 
+	current_timestamp, 
+	'System.DateTime, System.Private.CoreLib, Version=5.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e', 
+	'"2021-01-20T00:00:00"'
+);
 
 INSERT INTO gateway."Email"(
     "EmailId", 
@@ -1263,4 +1329,55 @@ VALUES (
 	'The database seed script should populate some rows in the feedback table.',
 	false,
 	'P6FFO433A5WPMVTGM7T4ZVWBKCSVNAYGTWTU3J2LWMGUMERKI72A'
+);
+
+/* PHN: 9872868103 (508820774378599978) will have no Allowed Delegation record(s) */
+INSERT INTO gateway."Dependent"(
+	"HdId",
+	"Protected",
+	"CreatedBy",
+	"CreatedDateTime",
+	"UpdatedBy",
+	"UpdatedDateTime")
+VALUES (
+	'508820774378599978',
+	true,
+	'System',
+	current_timestamp,
+	'System',
+	current_timestamp
+);
+
+/* PHN: 9872868128 (35224807075386271) */
+INSERT INTO gateway."Dependent"(
+	"HdId",
+	"Protected",
+	"CreatedBy",
+	"CreatedDateTime",
+	"UpdatedBy",
+	"UpdatedDateTime")
+VALUES (
+	'35224807075386271',
+	true,
+	'System',
+	current_timestamp,
+	'System',
+	current_timestamp
+);
+
+/* Dependent PHN: 9872868128 (35224807075386271), Delegate PHN: 9735353315 (P6FFO433A5WPMVTGM7T4ZVWBKCSVNAYGTWTU3J2LWMGUMERKI72A) */
+INSERT INTO gateway."AllowedDelegation"(
+	"DependentHdId",
+	"DelegateHdId",
+	"CreatedBy",
+	"CreatedDateTime",
+	"UpdatedBy",
+	"UpdatedDateTime")
+VALUES (
+	'35224807075386271',
+	'P6FFO433A5WPMVTGM7T4ZVWBKCSVNAYGTWTU3J2LWMGUMERKI72A',
+	'System',
+	current_timestamp,
+	'System',
+	current_timestamp
 );

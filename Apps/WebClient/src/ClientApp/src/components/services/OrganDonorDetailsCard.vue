@@ -83,7 +83,7 @@ export default class OrganDonorDetailsCard extends Vue {
             })
                 .then(
                     (patientFile: PatientDataFile) =>
-                        new Blob(patientFile.content, {
+                        new Blob([new Uint8Array(patientFile.content)], {
                             type: patientFile.contentType,
                         })
                 )

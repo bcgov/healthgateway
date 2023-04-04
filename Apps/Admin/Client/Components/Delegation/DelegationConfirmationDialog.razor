@@ -1,0 +1,40 @@
+@using HealthGateway.Admin.Client.Store.Delegation
+@inherits Fluxor.Blazor.Web.Components.FluxorComponent
+
+<MudDialog>
+    <DialogContent>
+        <HgBannerFeedback
+            Severity="@Severity.Error"
+            IsEnabled="@HasProtectError"
+            TResetAction="@DelegationActions.ProtectDependentAction">
+            @ProtectErrorMessage
+        </HgBannerFeedback>
+        <HgBannerFeedback
+            Severity="@Severity.Error"
+            IsEnabled="@HasUnprotectError"
+            TResetAction="@DelegationActions.UnprotectDependentAction">
+            @UnprotectErrorMessage
+        </HgBannerFeedback>
+    </DialogContent>
+    <DialogActions>
+        <HgButton
+            RightMargin="Breakpoint.Always"
+            HorizontalMarginSize="@(HgButton.DefaultHorizontalMarginSize - 2)"
+            BottomMargin="Breakpoint.Always"
+            Color="@Color.Primary"
+            Variant="@Variant.Text"
+            OnClick="@HandleClickCancel"
+            data-testid="cancel-button">
+            Cancel
+        </HgButton>
+        <HgButton
+            RightMargin="Breakpoint.Always"
+            BottomMargin="Breakpoint.Always"
+            Color="@Color.Primary"
+            Loading="@Loading"
+            OnClick="@HandleClickConfirm"
+            data-testid="confirm-button">
+            Confirm
+        </HgButton>
+    </DialogActions>
+</MudDialog>

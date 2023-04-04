@@ -42,6 +42,8 @@ export default class MedicationHistoryReportComponent extends Vue {
 
     @Prop() private filter!: ReportFilter;
 
+    @Prop({ default: false }) isDependent!: boolean;
+
     @Action("retrieveMedications", { namespace: "medication" })
     private retrieveMedications!: (params: { hdid: string }) => Promise<void>;
 
@@ -200,7 +202,7 @@ export default class MedicationHistoryReportComponent extends Vue {
                 <b-col>No records found.</b-col>
             </b-row>
             <b-table
-                v-if="!isEmpty || isLoading"
+                v-else-if="!isDependent"
                 :striped="true"
                 :fixed="true"
                 :busy="isLoading"

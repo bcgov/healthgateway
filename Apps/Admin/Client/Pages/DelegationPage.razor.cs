@@ -21,6 +21,8 @@ namespace HealthGateway.Admin.Client.Pages
     using System.Threading.Tasks;
     using Fluxor;
     using Fluxor.Blazor.Web.Components;
+    using HealthGateway.Admin.Client.Components.Delegation;
+    using HealthGateway.Admin.Client.Models;
     using HealthGateway.Admin.Client.Store.Delegation;
     using HealthGateway.Admin.Common.Models;
     using HealthGateway.Common.Data.Utils;
@@ -56,25 +58,27 @@ namespace HealthGateway.Admin.Client.Pages
         [Inject]
         private IState<DelegationState> DelegationState { get; set; } = default!;
 
-        private string QueryParameter { get; set; } = string.Empty;
+        [Inject]
+        private IDialogService Dialog { get; set; } = default!;
 
         private MudForm Form { get; set; } = default!;
 
+        private string QueryParameter { get; set; } = string.Empty;
+
         private bool Searching => this.DelegationState.Value.Search.IsLoading;
-
-        private bool Loading => this.DelegationState.Value.IsLoading && !this.Searching;
-
-        private bool Loaded => this.DelegationState.Value.Loaded;
 
         private bool HasSearchError => this.DelegationState.Value.Search.Error is { Message.Length: > 0 };
 
         private string? ErrorMessage => this.HasSearchError ? this.DelegationState.Value.Search.Error?.Message : null;
 
-        private DelegationInfo? Delegation => this.DelegationState.Value.Data;
+        private bool InEditMode => this.DelegationState.Value.InEditMode;
 
-        private DependentInfo? Dependent => this.Delegation?.Dependent;
+        private DependentInfo? Dependent => this.DelegationState.Value.Dependent;
 
-        private IEnumerable<DelegateInfo> Delegates => this.Delegation?.Delegates ?? Enumerable.Empty<DelegateInfo>();
+        private IEnumerable<ExtendedDelegateInfo> Delegates => this.DelegationState.Value.Delegates;
+
+        private bool AnyUnsavedDelegationChanges =>
+            this.InEditMode && (this.Dependent?.Protected == false || this.Delegates.Any(d => d.DelegationStatus != d.StagedDelegationStatus));
 
         /// <inheritdoc/>
         protected override void OnInitialized()
@@ -91,7 +95,7 @@ namespace HealthGateway.Admin.Client.Pages
             this.Dispatcher.Dispatch(new DelegationActions.ResetStateAction());
         }
 
-        private async Task SearchAsync()
+        private async Task Search()
         {
             await this.Form.Validate().ConfigureAwait(true);
             if (this.Form.IsValid)
@@ -99,6 +103,38 @@ namespace HealthGateway.Admin.Client.Pages
                 this.ResetDelegationState();
                 this.Dispatcher.Dispatch(new DelegationActions.SearchAction(StringManipulator.StripWhitespace(this.QueryParameter)));
             }
+        }
+
+        private void SetEditMode(bool enabled)
+        {
+            this.Dispatcher.Dispatch(new DelegationActions.SetEditModeAction { Enabled = enabled });
+        }
+
+        private async Task OpenProtectConfirmationDialog()
+        {
+            const string title = "Confirm Update";
+            DialogParameters parameters = new()
+            {
+                [nameof(DelegationConfirmationDialog.Type)] = DelegationConfirmationDialog.ConfirmationType.Protect,
+            };
+            DialogOptions options = new() { DisableBackdropClick = true, FullWidth = true, MaxWidth = MaxWidth.ExtraSmall };
+            IDialogReference dialog = await this.Dialog.ShowAsync<DelegationConfirmationDialog>(title, parameters, options).ConfigureAwait(true);
+
+            DialogResult result = await dialog.Result.ConfigureAwait(true);
+            if (!result.Canceled)
+            {
+                this.SetEditMode(false);
+            }
+        }
+
+        private async Task OpenAddDialog()
+        {
+            const string title = "Add to Guardian List";
+            DialogParameters parameters = new();
+            DialogOptions options = new() { DisableBackdropClick = true, FullWidth = true, MaxWidth = MaxWidth.Small };
+            IDialogReference dialog = await this.Dialog.ShowAsync<DelegateDialog>(title, parameters, options).ConfigureAwait(true);
+
+            await dialog.Result.ConfigureAwait(true);
         }
     }
 }

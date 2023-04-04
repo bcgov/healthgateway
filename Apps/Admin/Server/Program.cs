@@ -133,6 +133,7 @@ namespace HealthGateway.Admin.Server
 
         private static void AddDelegates(IServiceCollection services)
         {
+            services.AddTransient<IDelegationDelegate, DbDelegationDelegate>();
             services.AddTransient<IMessagingVerificationDelegate, DbMessagingVerificationDelegate>();
             services.AddTransient<IFeedbackDelegate, DbFeedbackDelegate>();
             services.AddTransient<IRatingDelegate, DbRatingDelegate>();

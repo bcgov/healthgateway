@@ -28,12 +28,12 @@ namespace HealthGateway.GatewayApi.Validations
         /// <summary>
         /// Initializes a new instance of the <see cref="AddDependentRequestValidator"/> class.
         /// </summary>
-        /// <param name="maxDependantAge">optionally set the maximum age of a dependent, defaults to 12.</param>
-        public AddDependentRequestValidator(int maxDependantAge = 12)
+        /// <param name="maxDependentAge">The maximum age of the dependent.</param>
+        public AddDependentRequestValidator(int maxDependentAge)
         {
             this.RuleFor(v => v.Phn).SetValidator(new PhnValidator());
             this.RuleFor(v => v.DateOfBirth).SetValidator(new DateOfBirthValidator());
-            this.RuleFor(v => v.DateOfBirth).SetValidator(new DependentAgeValidator(maxDependentAge: maxDependantAge));
+            this.RuleFor(v => v.DateOfBirth).SetValidator(new AgeRangeValidator(youngerThan: maxDependentAge));
         }
     }
 }

@@ -16,7 +16,9 @@
 
 namespace HealthGateway.Admin.Client.Store.Delegation
 {
+    using System.Collections.Immutable;
     using Fluxor;
+    using HealthGateway.Admin.Client.Models;
     using HealthGateway.Admin.Common.Models;
 
     /// <summary>
@@ -32,18 +34,33 @@ namespace HealthGateway.Admin.Client.Store.Delegation
         public BaseRequestState<DelegationInfo> Search { get; init; } = new();
 
         /// <summary>
-        /// Gets the data.
+        /// Gets the request state for delegate searches.
         /// </summary>
-        public DelegationInfo? Data { get; init; }
+        public BaseRequestState<ExtendedDelegateInfo> DelegateSearch { get; init; } = new();
 
         /// <summary>
-        /// Gets a value indicating whether a request is loading.
+        /// Gets the request state for protects.
         /// </summary>
-        public bool IsLoading => this.Search.IsLoading;
+        public BaseRequestState Protect { get; init; } = new();
 
         /// <summary>
-        /// Gets a value indicating whether the data has been loaded.
+        /// Gets the request state for unprotects.
         /// </summary>
-        public bool Loaded => this.Data != null;
+        public BaseRequestState Unprotect { get; init; } = new();
+
+        /// <summary>
+        /// Gets the dependent info.
+        /// </summary>
+        public DependentInfo? Dependent { get; init; }
+
+        /// <summary>
+        /// Gets the collection of delegate info.
+        /// </summary>
+        public IImmutableList<ExtendedDelegateInfo> Delegates { get; init; } = ImmutableList<ExtendedDelegateInfo>.Empty;
+
+        /// <summary>
+        /// Gets a value indicating whether the delegation page is in edit mode.
+        /// </summary>
+        public bool InEditMode { get; init; }
     }
 }

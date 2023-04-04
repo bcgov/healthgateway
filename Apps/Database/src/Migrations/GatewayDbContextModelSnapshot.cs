@@ -19,7 +19,7 @@ namespace HealthGateway.Database.Migrations
 #pragma warning disable 612, 618
             modelBuilder
                 .HasDefaultSchema("gateway")
-                .HasAnnotation("ProductVersion", "7.0.3")
+                .HasAnnotation("ProductVersion", "7.0.4")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
@@ -562,6 +562,43 @@ namespace HealthGateway.Database.Migrations
                         .IsUnique();
 
                     b.ToTable("AdminUserProfile", "gateway");
+                });
+
+            modelBuilder.Entity("HealthGateway.Database.Models.AllowedDelegation", b =>
+                {
+                    b.Property<string>("DependentHdId")
+                        .HasMaxLength(52)
+                        .HasColumnType("character varying(52)");
+
+                    b.Property<string>("DelegateHdId")
+                        .HasMaxLength(52)
+                        .HasColumnType("character varying(52)");
+
+                    b.Property<string>("CreatedBy")
+                        .IsRequired()
+                        .HasMaxLength(60)
+                        .HasColumnType("character varying(60)");
+
+                    b.Property<DateTime>("CreatedDateTime")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("UpdatedBy")
+                        .IsRequired()
+                        .HasMaxLength(60)
+                        .HasColumnType("character varying(60)");
+
+                    b.Property<DateTime>("UpdatedDateTime")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<uint>("Version")
+                        .IsConcurrencyToken()
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("xid")
+                        .HasColumnName("xmin");
+
+                    b.HasKey("DependentHdId", "DelegateHdId");
+
+                    b.ToTable("AllowedDelegation", "gateway");
                 });
 
             modelBuilder.Entity("HealthGateway.Database.Models.ApplicationSetting", b =>
@@ -1309,6 +1346,42 @@ namespace HealthGateway.Database.Migrations
                         .IsUnique();
 
                     b.ToTable("Company", "gateway");
+                });
+
+            modelBuilder.Entity("HealthGateway.Database.Models.Dependent", b =>
+                {
+                    b.Property<string>("HdId")
+                        .HasMaxLength(52)
+                        .HasColumnType("character varying(52)");
+
+                    b.Property<string>("CreatedBy")
+                        .IsRequired()
+                        .HasMaxLength(60)
+                        .HasColumnType("character varying(60)");
+
+                    b.Property<DateTime>("CreatedDateTime")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<bool>("Protected")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("UpdatedBy")
+                        .IsRequired()
+                        .HasMaxLength(60)
+                        .HasColumnType("character varying(60)");
+
+                    b.Property<DateTime>("UpdatedDateTime")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<uint>("Version")
+                        .IsConcurrencyToken()
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("xid")
+                        .HasColumnName("xmin");
+
+                    b.HasKey("HdId");
+
+                    b.ToTable("Dependent", "gateway");
                 });
 
             modelBuilder.Entity("HealthGateway.Database.Models.DrugProduct", b =>
@@ -2510,6 +2583,9 @@ namespace HealthGateway.Database.Migrations
                     b.Property<DateTime>("CreatedDateTime")
                         .HasColumnType("timestamp with time zone");
 
+                    b.Property<DateOnly?>("ExpiryDate")
+                        .HasColumnType("date");
+
                     b.Property<JsonDocument>("ReasonObject")
                         .HasColumnType("jsonb");
 
@@ -3276,6 +3352,17 @@ namespace HealthGateway.Database.Migrations
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("HealthGateway.Database.Models.AllowedDelegation", b =>
+                {
+                    b.HasOne("HealthGateway.Database.Models.Dependent", "Dependent")
+                        .WithMany("AllowedDelegations")
+                        .HasForeignKey("DependentHdId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Dependent");
+                });
+
             modelBuilder.Entity("HealthGateway.Database.Models.ApplicationSetting", b =>
                 {
                     b.HasOne("HealthGateway.Database.Models.ProgramTypeCode", null)
@@ -3510,6 +3597,11 @@ namespace HealthGateway.Database.Migrations
             modelBuilder.Entity("HealthGateway.Common.Data.Models.UserProfile", b =>
                 {
                     b.Navigation("Verifications");
+                });
+
+            modelBuilder.Entity("HealthGateway.Database.Models.Dependent", b =>
+                {
+                    b.Navigation("AllowedDelegations");
                 });
 
             modelBuilder.Entity("HealthGateway.Database.Models.DrugProduct", b =>

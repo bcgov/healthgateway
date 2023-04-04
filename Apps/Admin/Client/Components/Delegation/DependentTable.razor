@@ -30,10 +30,12 @@
         <MudTd data-testid="dependent-protected" DataLabel="Protected">
             <MudSwitch
                 T="bool"
-                Checked="@context.Protected"
-                Color="@Color.Success"
-                Disabled="true"
+                Checked="@(InEditMode || context.Protected)"
+                CheckedChanged="@ToggleProtectedSwitch"
+                Color="@(InEditMode ? Color.Warning : Color.Success)"
+                UnCheckedColor="Color.Tertiary"
                 Class="mr-n4"
+                ReadOnly="@InEditMode"
                 data-testid="dependent-protected-switch" />
         </MudTd>
     </RowTemplate>

@@ -16,34 +16,32 @@
 </HgBannerFeedback>
 
 <MudForm @ref="Form">
-    <MudGrid Spacing="0">
-        <MudItem xs="12">
-            <HgTextField
-                T="string"
-                Label="Query"
-                Required="@true"
-                Validation="@ValidateQueryParameter"
-                @bind-Value="Query"
-                data-testid="query-input" />
-        </MudItem>
-        <MudItem Class="d-flex justify-end" xs="12">
-            <HgButton
-                TopMargin="Breakpoint.Always"
-                EndIcon="fas fa-magnifying-glass"
-                @onclick="SearchAsync"
-                data-testid="search-btn">
-                Search
-            </HgButton>
-        </MudItem>
-        <MudItem Class="d-flex justify-end" xs="12">
-            <HgButton TopMargin="Breakpoint.Always"
-                      EndIcon="fas fa-plus"
-                      @onclick="@AddAsync"
-                      data-testid="create-btn">
-                Create
-            </HgButton>
-        </MudItem>
-    </MudGrid>
+    <div class="d-flex align-start">
+        <HgTextField
+            T="string"
+            Label="Query"
+            Required="@true"
+            Validation="@ValidateQueryParameter"
+            @bind-Value="Query"
+            Class="flex-grow-1"
+            data-testid="query-input" />
+        <HgButton
+            TopMargin="Breakpoint.Always"
+            EndIcon="fas fa-magnifying-glass"
+            OnClick="SearchAsync"
+            data-testid="search-btn">
+            Search
+        </HgButton>
+    </div>
+    <div class="d-flex justify-end">
+        <HgButton
+            EndIcon="fas fa-plus"
+            TopMargin="Breakpoint.Always"
+            OnClick="@AddAsync"
+            data-testid="create-btn">
+            Create
+        </HgButton>
+    </div>
 </MudForm>
 
 @if (Loaded || Loading)

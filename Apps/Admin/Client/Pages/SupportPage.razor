@@ -22,7 +22,13 @@
 <MudForm @ref="Form">
     <MudGrid Spacing="0">
         <MudItem xs="12" sm="3">
-            <HgSelect T="UserQueryType" Label="Query Type" Required="@true" @bind-Value="SelectedQueryType" data-testid="query-type-select">
+            <HgSelect
+                T="UserQueryType"
+                Label="Query Type"
+                Required="@true"
+                @bind-Value="SelectedQueryType"
+                TopMargin="Breakpoint.None"
+                data-testid="query-type-select">
                 @foreach (UserQueryType queryType in QueryTypes)
                 {
                     <MudSelectItem Value="@queryType" data-testid="query-type">@FormatQueryType(queryType)</MudSelectItem>
@@ -30,17 +36,45 @@
             </HgSelect>
         </MudItem>
         <MudItem xs="12" sm="9">
-            @if (PhnOrDependentSelected)
-            {
-                <HgTextField LeftMargin="Breakpoint.Sm" T="string" Label="@FormatQueryType(UserQueryType.Phn)" Required="@true" Validation="@ValidateQueryParameter" Mask="@(new PatternMask(Mask.PhnMaskTemplate))" @bind-Value="QueryParameter" data-testid="query-input" />
-            }
-            else
-            {
-                <HgTextField LeftMargin="Breakpoint.Sm" T="string" Label="@FormatQueryType(SelectedQueryType)" Required="@true" Validation="@ValidateQueryParameter" @bind-Value="QueryParameter" data-testid="query-input" />
-            }
-        </MudItem>
-        <MudItem Class="d-flex justify-end" xs="12">
-            <HgButton TopMargin="Breakpoint.Always" EndIcon="fas fa-magnifying-glass" Variant="Variant.Filled" Color="Color.Primary" @onclick="SearchAsync" data-testid="search-btn">Search</HgButton>
+            <div class="d-flex align-start">
+                @if (PhnOrDependentSelected)
+                {
+                    <HgTextField
+                        T="string"
+                        Label="@FormatQueryType(UserQueryType.Phn)"
+                        Required="@true"
+                        Validation="@ValidateQueryParameter"
+                        Mask="@(new PatternMask(Mask.PhnMaskTemplate))"
+                        @bind-Value="QueryParameter"
+                        TopMargin="Breakpoint.None"
+                        LeftMargin="Breakpoint.Sm"
+                        Class="flex-grow-1"
+                        data-testid="query-input" />
+                }
+                else
+                {
+                    <HgTextField
+                        T="string"
+                        Label="@FormatQueryType(SelectedQueryType)"
+                        Required="@true"
+                        Validation="@ValidateQueryParameter"
+                        @bind-Value="QueryParameter"
+                        TopMargin="Breakpoint.None"
+                        LeftMargin="Breakpoint.Sm"
+                        Class="flex-grow-1"
+                        data-testid="query-input" />
+                }
+                <HgButton
+                    EndIcon="fas fa-magnifying-glass"
+                    Variant="Variant.Filled"
+                    Color="Color.Primary"
+                    TopMargin="Breakpoint.Always"
+                    LeftMargin="Breakpoint.Always"
+                    OnClick="SearchAsync"
+                    data-testid="search-btn">
+                    Search
+                </HgButton>
+            </div>
         </MudItem>
     </MudGrid>
 </MudForm>

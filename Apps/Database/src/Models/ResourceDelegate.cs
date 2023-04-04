@@ -15,6 +15,7 @@
 // -------------------------------------------------------------------------
 namespace HealthGateway.Database.Models
 {
+    using System;
     using System.ComponentModel.DataAnnotations;
     using System.Text.Json;
     using HealthGateway.Common.Data.Models;
@@ -43,6 +44,11 @@ namespace HealthGateway.Database.Models
         [Required]
         [MaxLength(10)]
         public ResourceDelegateReason ReasonCode { get; set; }
+
+        /// <summary>
+        /// Gets or sets the resource delegate's expiry date.
+        /// </summary>
+        public DateOnly? ExpiryDate { get; set; }
 
         /// <summary>
         /// Gets or sets the ReasonObject type.

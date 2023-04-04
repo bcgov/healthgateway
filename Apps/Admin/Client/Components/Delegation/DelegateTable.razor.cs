@@ -18,9 +18,11 @@ namespace HealthGateway.Admin.Client.Components.Delegation
     using System;
     using System.Collections.Generic;
     using System.Linq;
+    using Fluxor;
     using Fluxor.Blazor.Web.Components;
+    using HealthGateway.Admin.Client.Models;
+    using HealthGateway.Admin.Client.Store.Delegation;
     using HealthGateway.Admin.Common.Constants;
-    using HealthGateway.Admin.Common.Models;
     using HealthGateway.Common.Data.Utils;
     using Microsoft.AspNetCore.Components;
     using MudBlazor;
@@ -35,7 +37,15 @@ namespace HealthGateway.Admin.Client.Components.Delegation
         /// </summary>
         [Parameter]
         [EditorRequired]
-        public IEnumerable<DelegateInfo> Data { get; set; } = default!;
+        public IEnumerable<ExtendedDelegateInfo> Data { get; set; } = default!;
+
+        [Inject]
+        private IDispatcher Dispatcher { get; set; } = default!;
+
+        [Inject]
+        private IState<DelegationState> DelegationState { get; set; } = default!;
+
+        private bool InEditMode => this.DelegationState.Value.InEditMode;
 
         private IEnumerable<DelegateRow> Rows => this.Data.Select(d => new DelegateRow(d));
 
@@ -49,16 +59,29 @@ namespace HealthGateway.Admin.Client.Components.Delegation
             };
         }
 
+        private void ToggleRemoveDelegate(string hdid, bool value)
+        {
+            this.Dispatcher.Dispatch(new DelegationActions.SetDisallowedDelegationStatusAction { Hdid = hdid, Disallow = value });
+        }
+
         private sealed record DelegateRow
         {
-            public DelegateRow(DelegateInfo model)
+            public DelegateRow(ExtendedDelegateInfo model)
             {
+                this.Hdid = model.Hdid;
                 this.Name = StringManipulator.JoinWithoutBlanks(new[] { model.FirstName, model.LastName });
                 this.DateOfBirth = model.Birthdate;
                 this.PersonalHealthNumber = model.PersonalHealthNumber;
                 this.Address = AddressUtility.GetAddressAsSingleLine(model.PhysicalAddress ?? model.PostalAddress);
-                this.DelegationStatus = model.DelegationStatus;
+                this.DelegationStatus = model.DelegationStatus switch
+                {
+                    DelegationStatus.Unknown => DelegationStatus.Allowed,
+                    _ => model.DelegationStatus,
+                };
+                this.ToBeRemoved = model.StagedDelegationStatus == DelegationStatus.Disallowed;
             }
+
+            public string Hdid { get; }
 
             public string Name { get; }
 
@@ -69,6 +92,8 @@ namespace HealthGateway.Admin.Client.Components.Delegation
             public string Address { get; }
 
             public DelegationStatus DelegationStatus { get; }
+
+            public bool ToBeRemoved { get; }
         }
     }
 }

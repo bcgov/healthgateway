@@ -37,5 +37,10 @@ namespace HealthGateway.Admin.Common.Constants
         /// Indicates that the delegation is permitted.
         /// </summary>
         Allowed,
+
+        /// <summary>
+        /// Indicates that the delegation is not permitted.
+        /// </summary>
+        Disallowed,
     }
 }

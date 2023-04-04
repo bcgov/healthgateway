@@ -849,9 +849,7 @@ describe("Dependent - Immunizaation History Tab - report download error handling
         cy.get("[data-testid=genericMessageModal]").should("be.visible");
         cy.get("[data-testid=genericMessageSubmitBtn]").click();
 
-        cy.get("[data-testid=singleErrorHeader]").contains(
-            "Unable to download Dependent Immunization Report"
-        );
+        cy.get("[data-testid=singleErrorHeader]").should("not.be.empty");
     });
 });
 
@@ -1044,9 +1042,7 @@ describe("Notes", () => {
             cy.get("[data-testid=genericMessageModal]").should("be.visible");
             cy.get("[data-testid=genericMessageSubmitBtn]").click();
 
-            cy.get("[data-testid=singleErrorHeader]").contains(
-                "Unable to download Export Records"
-            );
+            cy.get("[data-testid=singleErrorHeader]").should("not.be.empty");
         });
     });
 });

@@ -13,24 +13,19 @@
 //  See the License for the specific language governing permissions and
 //  limitations under the License.
 // -------------------------------------------------------------------------
-namespace HealthGateway.Admin.Server.Validations
-{
-    using FluentValidation;
-    using HealthGateway.Common.Data.Validations;
-    using HealthGateway.Common.Models;
 
+namespace HealthGateway.Admin.Client.Models;
+
+using HealthGateway.Admin.Common.Constants;
+using HealthGateway.Admin.Common.Models;
+
+/// <summary>
+/// A delegate info model with additional state information.
+/// </summary>
+public class ExtendedDelegateInfo : DelegateInfo
+{
     /// <summary>
-    /// Validates <see cref="DelegationValidator"/> instances.
+    /// Gets or sets the delegation status that should be applied when changes are saved.
     /// </summary>
-    public class DelegationValidator : AbstractValidator<PatientModel>
-    {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="DelegationValidator"/> class.
-        /// </summary>
-        /// <param name="maxDependentAge">Optionally set the maximum age of a dependent, defaults to 12.</param>
-        public DelegationValidator(int maxDependentAge = 12)
-        {
-            this.RuleFor(v => v.Birthdate).SetValidator(new DependentAgeValidator(maxDependentAge: maxDependentAge));
-        }
-    }
+    public DelegationStatus StagedDelegationStatus { get; set; }
 }

@@ -21,6 +21,6 @@ export class OrganDonorRegistrationData extends PatientHealthOption {
 }
 
 export class PatientDataFile {
-    public content!: BlobPart[];
+    public content!: number[];
     public contentType!: string;
 }

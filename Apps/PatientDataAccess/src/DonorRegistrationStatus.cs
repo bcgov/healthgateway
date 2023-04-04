@@ -15,9 +15,13 @@
 // -------------------------------------------------------------------------
 namespace HealthGateway.PatientDataAccess
 {
+    using System.Runtime.Serialization;
+    using System.Text.Json.Serialization;
+
     /// <summary>
     /// Donor registration status.
     /// </summary>
+    [JsonConverter(typeof(JsonStringEnumMemberConverter))]
     public enum DonorRegistrationStatus
     {
         /// <summary>
@@ -28,7 +32,8 @@ namespace HealthGateway.PatientDataAccess
         /// <summary>
         /// Not registered patient.
         /// </summary>
-        NonRegistered,
+        [EnumMember(Value = "Not Registered")]
+        NotRegistered,
 
         /// <summary>
         /// Error in registration.
