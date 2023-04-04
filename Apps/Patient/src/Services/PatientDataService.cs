@@ -49,7 +49,7 @@ namespace HealthGateway.Patient.Services
         public async Task<PatientFileResponse?> Query(PatientFileQuery query, CancellationToken ct)
         {
             Guid pid = await this.ResolvePidFromHdid(query.Hdid).ConfigureAwait(true);
-            PatientFile? file = (await this.patientDataRepository.Query(new PatientDataAccess.PatientFileQuery(pid, query.FileId), ct).ConfigureAwait(true)).Items.FirstOrDefault() as PatientFile;
+            PatientFile? file = (await this.patientDataRepository.Query(new PatientDataAccess.PatientFileQuery(pid, query.FileId), ct).ConfigureAwait(true)).Items.OfType<PatientFile>().FirstOrDefault();
 
             return file != null
                 ? new PatientFileResponse(file.Content, file.ContentType)

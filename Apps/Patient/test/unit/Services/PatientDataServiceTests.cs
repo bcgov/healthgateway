@@ -25,7 +25,6 @@ namespace HealthGateway.PatientTests.Services
     using HealthGateway.Common.Models.PHSA;
     using HealthGateway.Common.Services;
     using HealthGateway.Patient.Constants;
-    using HealthGateway.Patient.Models;
     using HealthGateway.Patient.Services;
     using HealthGateway.PatientDataAccess;
     using HealthGateway.PatientTests.Utils;
@@ -33,11 +32,11 @@ namespace HealthGateway.PatientTests.Services
     using Shouldly;
     using Xunit;
     using DiagnosticImagingExam = HealthGateway.Patient.Services.DiagnosticImagingExam;
-    using DiagnosticImagingStatus = HealthGateway.PatientDataAccess.DiagnosticImagingStatus;
+    using DiagnosticImagingStatus = HealthGateway.Patient.Models.DiagnosticImagingStatus;
     using OrganDonorRegistration = HealthGateway.Patient.Services.OrganDonorRegistration;
-    using OrganDonorRegistrationStatus = HealthGateway.PatientDataAccess.OrganDonorRegistrationStatus;
+    using OrganDonorRegistrationStatus = HealthGateway.Patient.Models.OrganDonorRegistrationStatus;
     using PatientDataQuery = HealthGateway.Patient.Services.PatientDataQuery;
-    using PatientFileQuery = HealthGateway.PatientDataAccess.PatientFileQuery;
+    using PatientFileQuery = HealthGateway.Patient.Services.PatientFileQuery;
 
     // Disable documentation for tests.
 #pragma warning disable SA1600
@@ -52,7 +51,7 @@ namespace HealthGateway.PatientTests.Services
         {
             OrganDonorRegistration organDonorRegistration = new()
             {
-                Status = Patient.Models.OrganDonorRegistrationStatus.Registered,
+                Status = OrganDonorRegistrationStatus.Registered,
                 StatusMessage = "Message",
                 RegistrationFileId = Guid.NewGuid().ToString(),
             };
@@ -88,7 +87,7 @@ namespace HealthGateway.PatientTests.Services
                 Modality = "Some Modality",
                 Organization = "Some Organization",
                 ProcedureDescription = "Some ProcedureDescription",
-                ExamStatus = Patient.Models.DiagnosticImagingStatus.Scheduled,
+                ExamStatus = DiagnosticImagingStatus.Scheduled,
             };
 
             PatientData[] data =
@@ -120,7 +119,7 @@ namespace HealthGateway.PatientTests.Services
         {
             PatientDataAccess.OrganDonorRegistration expected = new()
             {
-                Status = OrganDonorRegistrationStatus.Registered,
+                Status = PatientDataAccess.OrganDonorRegistrationStatus.Registered,
                 RegistrationFileId = Guid.NewGuid().ToString(),
                 StatusMessage = "some message",
             };
@@ -138,7 +137,7 @@ namespace HealthGateway.PatientTests.Services
                 .ConfigureAwait(true);
 
             OrganDonorRegistration actual = result.Items.ShouldHaveSingleItem().ShouldBeOfType<OrganDonorRegistration>();
-            actual.Status.ShouldBe(Patient.Models.OrganDonorRegistrationStatus.Registered);
+            actual.Status.ShouldBe(OrganDonorRegistrationStatus.Registered);
             actual.StatusMessage.ShouldBe(expected.StatusMessage);
             actual.RegistrationFileId.ShouldBe(expected.RegistrationFileId);
         }
@@ -155,7 +154,7 @@ namespace HealthGateway.PatientTests.Services
                 Modality = "Some Modality",
                 Organization = "Some Organization",
                 ProcedureDescription = "Some ProcedureDescription",
-                Status = DiagnosticImagingStatus.Scheduled,
+                Status = PatientDataAccess.DiagnosticImagingStatus.Scheduled,
             };
 
             Mock<IPatientDataRepository> patientDataRepository = new();
@@ -177,7 +176,7 @@ namespace HealthGateway.PatientTests.Services
             actual.Modality.ShouldBe(expected.Modality);
             actual.Organization.ShouldBe(expected.Organization);
             actual.ProcedureDescription.ShouldBe(expected.ProcedureDescription);
-            actual.ExamStatus.ShouldBe(Patient.Models.DiagnosticImagingStatus.Scheduled);
+            actual.ExamStatus.ShouldBe(DiagnosticImagingStatus.Scheduled);
         }
 
         [Fact]
@@ -186,7 +185,7 @@ namespace HealthGateway.PatientTests.Services
             PatientFile expected = new(Guid.NewGuid().ToString(), RandomNumberGenerator.GetBytes(1024), "text/plain");
 
             Mock<IPatientDataRepository> patientDataRepository = new();
-            patientDataRepository.AttachMockQuery<PatientFileQuery>(
+            patientDataRepository.AttachMockQuery<PatientDataAccess.PatientFileQuery>(
                 q => q.Pid == this.pid && q.FileId == expected.FileId,
                 expected);
 
@@ -194,7 +193,7 @@ namespace HealthGateway.PatientTests.Services
 
             PatientDataService sut = new(patientDataRepository.Object, personalAccountService.Object, this.mapper);
 
-            PatientFileResponse? result = await sut.Query(new Patient.Services.PatientFileQuery(this.hdid, expected.FileId), CancellationToken.None).ConfigureAwait(true);
+            PatientFileResponse? result = await sut.Query(new PatientFileQuery(this.hdid, expected.FileId), CancellationToken.None).ConfigureAwait(true);
 
             PatientFileResponse actual = result.ShouldBeOfType<PatientFileResponse>();
             actual.Content.ShouldBe(expected.Content);
@@ -207,13 +206,13 @@ namespace HealthGateway.PatientTests.Services
             string fileId = Guid.NewGuid().ToString();
 
             Mock<IPatientDataRepository> patientDataRepository = new();
-            patientDataRepository.AttachMockQuery<PatientFileQuery>(q => q.Pid == this.pid && q.FileId == fileId);
+            patientDataRepository.AttachMockQuery<PatientDataAccess.PatientFileQuery>(q => q.Pid == this.pid && q.FileId == fileId);
 
             Mock<IPersonalAccountsService> personalAccountService = this.GetMockPersonalAccountService();
 
             PatientDataService sut = new(patientDataRepository.Object, personalAccountService.Object, this.mapper);
 
-            PatientFileResponse? result = await sut.Query(new Patient.Services.PatientFileQuery(this.hdid, fileId), CancellationToken.None).ConfigureAwait(true);
+            PatientFileResponse? result = await sut.Query(new PatientFileQuery(this.hdid, fileId), CancellationToken.None).ConfigureAwait(true);
 
             result.ShouldBeNull();
         }
