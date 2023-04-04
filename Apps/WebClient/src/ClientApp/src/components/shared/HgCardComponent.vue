@@ -11,13 +11,14 @@ export default class HgCardComponent extends Vue {
     dense!: boolean;
 
     @Prop({ required: false, default: false })
-    hasChevron!: boolean;
-
-    @Prop({ required: false, default: false })
     isInteractable!: boolean;
 
     private get hasIconSlot(): boolean {
         return this.$slots.icon !== undefined;
+    }
+
+    private get hasActionIconSlot(): boolean {
+        return this.$slots["action-icon"] !== undefined;
     }
 
     private get hasMenuSlot(): boolean {
@@ -62,17 +63,12 @@ export default class HgCardComponent extends Vue {
                 {{ title }}
             </b-col>
             <b-col
-                v-if="hasChevron"
+                v-if="hasActionIconSlot"
                 cols="auto"
                 align-self="center"
                 class="mt-3 d-flex"
             >
-                <hg-icon
-                    icon="chevron-right"
-                    class="chevron-icon align-self-center"
-                    size="medium"
-                    square
-                />
+                <slot name="action-icon" />
             </b-col>
             <b-col v-if="hasMenuSlot" cols="auto" class="mt-2">
                 <slot name="menu" />
