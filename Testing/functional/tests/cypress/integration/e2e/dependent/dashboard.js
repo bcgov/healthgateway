@@ -4,18 +4,6 @@ const validDependentHdid = "162346565465464564565463257";
 const validDependentTimelinePath = `/dependents/${validDependentHdid}/timeline`;
 const validDependentFederalProofOfVaccinationButtonId = `[data-testid=proof-vaccination-card-btn-${validDependentHdid}]`;
 
-function validateDatasetCard(dataset) {
-    const selector = `[data-testid=dependent-entry-type-${dataset}-${validDependentHdid}]`;
-    cy.get(selector).should("be.enabled", "be.visible").click();
-    cy.location("pathname").should("eq", validDependentTimelinePath);
-    cy.checkTimelineHasLoaded();
-
-    cy.get("[data-testid=filterContainer]").should("not.exist");
-    cy.get("[data-testid=filterDropdown]").click();
-    cy.get(`[data-testid=${dataset}-filter]`).should("to.be.checked");
-    cy.get("[data-testid=btnFilterCancel]").click();
-}
-
 describe("dependents - dashboard", () => {
     beforeEach(() => {
         cy.configureSettings({
@@ -69,36 +57,10 @@ describe("dependents - dashboard", () => {
         );
     });
 
-    it("Validate dashboard immunizations tab click to timeline", () => {
-        validateDatasetCard("Immunization");
-    });
-
-    it("Validate dashboard lab results tab click to timeline", () => {
-        validateDatasetCard("LabResult");
-    });
-
-    it("Validate dashboard covid19 test results tab click to timeline", () => {
-        validateDatasetCard("Covid19TestResult");
-    });
-
-    it("Validate dashboard clinical documents tab click to timeline", () => {
-        validateDatasetCard("ClinicalDocument");
-    });
-
-    it("Validate dashboard health visits tab click to timeline", () => {
-        validateDatasetCard("HealthVisit");
-    });
-
-    it("Validate dashboard hospital visits tab click to timeline", () => {
-        validateDatasetCard("HospitalVisit");
-    });
-
-    it("Validate dashboard medication tab click to timeline", () => {
-        validateDatasetCard("Medication");
-    });
-
-    it("Validate dashboard special authority requests tab click to timeline", () => {
-        validateDatasetCard("SpecialAuthorityRequest");
+    it("Validate clicking health records button loads timeline", () => {
+        const selector = `[data-testid=dependent-health-records-button-${validDependentHdid}]`;
+        cy.get(selector).should("be.enabled", "be.visible").click();
+        cy.location("pathname").should("eq", validDependentTimelinePath);
     });
 
     it("Validate download of federal proof of vaccination", () => {
