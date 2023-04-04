@@ -221,12 +221,21 @@ namespace HealthGateway.Common.AspNetConfiguration
         }
 
         /// <summary>
-        /// Configures the app to to use content security policies.
+        /// Configures the app to use content security policies.
         /// </summary>
         /// <param name="app">The application builder provider.</param>
         public void UseContentSecurityPolicy(IApplicationBuilder app)
         {
             HttpWeb.UseContentSecurityPolicy(app, this.Configuration);
+        }
+
+        /// <summary>
+        /// Configures the app to use permission policies.
+        /// </summary>
+        /// <param name="app">The application builder provider.</param>
+        public void UsePermissionPolicy(IApplicationBuilder app)
+        {
+            HttpWeb.UsePermissionPolicy(app, this.Configuration);
         }
 
         /// <summary>

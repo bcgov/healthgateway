@@ -73,7 +73,10 @@ namespace HealthGateway.Common.AspNetConfiguration.Modules
         /// <param name="configuration">The configuration to use.</param>
         /// <param name="environment">The environment to use.</param>
         /// <param name="blazor">If true, will add blazor optimizations for static files.</param>
-        /// <param name="useExceptionPage">If true, app will use development exception page. Should be false when using problem details middleware.</param>
+        /// <param name="useExceptionPage">
+        /// If true, app will use development exception page. Should be false when using problem
+        /// details middleware.
+        /// </param>
         public static void UseHttp(IApplicationBuilder app, ILogger logger, IConfiguration configuration, IWebHostEnvironment environment, bool blazor, bool useExceptionPage)
         {
             app.UseResponseCompression();
@@ -233,7 +236,7 @@ namespace HealthGateway.Common.AspNetConfiguration.Modules
         }
 
         /// <summary>
-        /// Configures the app to to use content security policies.
+        /// Configures the app to use content security policies.
         /// </summary>
         /// <param name="app">The application builder provider.</param>
         /// <param name="configuration">The configuration to use.</param>
@@ -248,6 +251,25 @@ namespace HealthGateway.Common.AspNetConfiguration.Modules
                     context.Response.Headers.Add("Content-Security-Policy", csp);
                     await next().ConfigureAwait(true);
                 });
+        }
+
+        /// <summary>
+        /// Configures the app to use permission policies.
+        /// </summary>
+        /// <param name="app">The application builder provider.</param>
+        /// <param name="configuration">The configuration to use.</param>
+        public static void UsePermissionPolicy(IApplicationBuilder app, IConfiguration configuration)
+        {
+            string? policyValue = configuration["PermissionPolicy"];
+            if (policyValue != null)
+            {
+                app.Use(
+                    async (context, next) =>
+                    {
+                        context.Response.Headers.Add("Permissions-Policy", policyValue);
+                        await next().ConfigureAwait(true);
+                    });
+            }
         }
 
         /// <summary>
