@@ -20,13 +20,13 @@ namespace HealthGateway.PatientDataAccess.Api
     using System.Text.Json.Serialization;
 
     [JsonConverter(typeof(HealthOptionDataJsonConverter))]
-    internal abstract record HealthOptionData;
+    internal abstract record HealthOptionsData;
 
-    internal record OrganDonor : HealthOptionData
+    internal record OrganDonorRegistration : HealthOptionsData
     {
         public string? HealthOptionsId { get; set; }
 
-        public DonorStatus DonorStatus { get; set; }
+        public OrganDonorRegistrationStatus DonorStatus { get; set; }
 
         public string? StatusMessage { get; set; }
 

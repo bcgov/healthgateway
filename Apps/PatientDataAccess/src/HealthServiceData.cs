@@ -29,7 +29,7 @@ namespace HealthGateway.PatientDataAccess
         /// <summary>
         /// Gets or sets the donor registration status.
         /// </summary>
-        public DonorRegistrationStatus Status { get; set; }
+        public OrganDonorRegistrationStatus Status { get; set; }
 
         /// <summary>
         /// Gets or sets the message associated with the donor registration status.
@@ -45,7 +45,7 @@ namespace HealthGateway.PatientDataAccess
     /// <summary>
     /// Donor registration status.
     /// </summary>
-    public enum DonorRegistrationStatus
+    public enum OrganDonorRegistrationStatus
     {
         /// <summary>
         /// Registered patient.

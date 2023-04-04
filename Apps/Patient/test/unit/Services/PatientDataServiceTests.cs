@@ -32,6 +32,10 @@ namespace HealthGateway.PatientTests.Services
     using Moq;
     using Shouldly;
     using Xunit;
+    using DiagnosticImagingExam = HealthGateway.Patient.Services.DiagnosticImagingExam;
+    using DiagnosticImagingStatus = HealthGateway.PatientDataAccess.DiagnosticImagingStatus;
+    using OrganDonorRegistration = HealthGateway.Patient.Services.OrganDonorRegistration;
+    using OrganDonorRegistrationStatus = HealthGateway.PatientDataAccess.OrganDonorRegistrationStatus;
     using PatientDataQuery = HealthGateway.Patient.Services.PatientDataQuery;
     using PatientFileQuery = HealthGateway.PatientDataAccess.PatientFileQuery;
 
@@ -46,16 +50,16 @@ namespace HealthGateway.PatientTests.Services
         [Fact]
         public void CanSerializeOrganDonorData()
         {
-            OrganDonorRegistrationData organDonorRegistrationData = new()
+            OrganDonorRegistration organDonorRegistration = new()
             {
-                Status = OrganDonorRegistrationStatus.Registered,
+                Status = Patient.Models.OrganDonorRegistrationStatus.Registered,
                 StatusMessage = "Message",
                 RegistrationFileId = Guid.NewGuid().ToString(),
             };
 
             PatientData[] data =
             {
-                organDonorRegistrationData,
+                organDonorRegistration,
             };
 
             PatientDataResponse response = new(data);
@@ -66,16 +70,16 @@ namespace HealthGateway.PatientTests.Services
 
             PatientDataResponse deserialized = JsonSerializer.Deserialize<PatientDataResponse>(serialized).ShouldNotBeNull();
 
-            OrganDonorRegistrationData actualOrganDonorRegistrationData = deserialized.Items.ShouldHaveSingleItem().ShouldBeOfType<OrganDonorRegistrationData>();
-            actualOrganDonorRegistrationData.Status.ShouldBe(organDonorRegistrationData.Status);
-            actualOrganDonorRegistrationData.StatusMessage.ShouldBe(organDonorRegistrationData.StatusMessage);
-            actualOrganDonorRegistrationData.RegistrationFileId.ShouldBe(organDonorRegistrationData.RegistrationFileId);
+            OrganDonorRegistration actualOrganDonorRegistration = deserialized.Items.ShouldHaveSingleItem().ShouldBeOfType<OrganDonorRegistration>();
+            actualOrganDonorRegistration.Status.ShouldBe(organDonorRegistration.Status);
+            actualOrganDonorRegistration.StatusMessage.ShouldBe(organDonorRegistration.StatusMessage);
+            actualOrganDonorRegistration.RegistrationFileId.ShouldBe(organDonorRegistration.RegistrationFileId);
         }
 
         [Fact]
         public void CanSerializeDiagnosticImagingData()
         {
-            DiagnosticImagingExamData diagnosticImagingExam = new()
+            DiagnosticImagingExam diagnosticImagingExam = new()
             {
                 BodyPart = "Some BodyPart",
                 ExamDate = new DateTime(2020, 1, 1),
@@ -84,7 +88,7 @@ namespace HealthGateway.PatientTests.Services
                 Modality = "Some Modality",
                 Organization = "Some Organization",
                 ProcedureDescription = "Some ProcedureDescription",
-                ExamStatus = DiagnosticImagingStatus.Scheduled,
+                ExamStatus = Patient.Models.DiagnosticImagingStatus.Scheduled,
             };
 
             PatientData[] data =
@@ -100,7 +104,7 @@ namespace HealthGateway.PatientTests.Services
 
             PatientDataResponse deserialized = JsonSerializer.Deserialize<PatientDataResponse>(serialized).ShouldNotBeNull();
 
-            DiagnosticImagingExamData actualDiagnosticImagingExam = deserialized.Items.ShouldHaveSingleItem().ShouldBeOfType<DiagnosticImagingExamData>();
+            DiagnosticImagingExam actualDiagnosticImagingExam = deserialized.Items.ShouldHaveSingleItem().ShouldBeOfType<DiagnosticImagingExam>();
             actualDiagnosticImagingExam.BodyPart.ShouldBe(diagnosticImagingExam.BodyPart);
             actualDiagnosticImagingExam.ExamDate.ShouldBe(diagnosticImagingExam.ExamDate);
             actualDiagnosticImagingExam.FileId.ShouldBe(diagnosticImagingExam.FileId);
@@ -114,18 +118,17 @@ namespace HealthGateway.PatientTests.Services
         [Fact]
         public async Task CanGetOrganDonorRegistrationData()
         {
-            OrganDonorRegistration expected = new()
+            PatientDataAccess.OrganDonorRegistration expected = new()
             {
-                Status = DonorRegistrationStatus.Registered,
+                Status = OrganDonorRegistrationStatus.Registered,
                 RegistrationFileId = Guid.NewGuid().ToString(),
                 StatusMessage = "some message",
             };
 
             Mock<IPatientDataRepository> patientDataRepository = new();
-            patientDataRepository.AttachMockQuery<HealthServicesQuery>(
-                q => q.Pid == this.pid && q.Categories.Any(c => c == HealthServiceCategory.OrganDonor),
+            patientDataRepository.AttachMockQuery<HealthQuery>(
+                q => q.Pid == this.pid && q.Categories.Any(c => c == HealthCategory.OrganDonorRegistrationStatus),
                 expected);
-            patientDataRepository.AttachMockQuery<HealthDataQuery>(q => q.Pid == this.pid);
 
             Mock<IPersonalAccountsService> personalAccountService = this.GetMockPersonalAccountService();
 
@@ -134,8 +137,8 @@ namespace HealthGateway.PatientTests.Services
             PatientDataResponse result = await sut.Query(new PatientDataQuery(this.hdid, new[] { PatientDataType.OrganDonorRegistrationStatus }), CancellationToken.None)
                 .ConfigureAwait(true);
 
-            OrganDonorRegistrationData actual = result.Items.ShouldHaveSingleItem().ShouldBeOfType<OrganDonorRegistrationData>();
-            actual.Status.ShouldBe(OrganDonorRegistrationStatus.Registered);
+            OrganDonorRegistration actual = result.Items.ShouldHaveSingleItem().ShouldBeOfType<OrganDonorRegistration>();
+            actual.Status.ShouldBe(Patient.Models.OrganDonorRegistrationStatus.Registered);
             actual.StatusMessage.ShouldBe(expected.StatusMessage);
             actual.RegistrationFileId.ShouldBe(expected.RegistrationFileId);
         }
@@ -143,7 +146,7 @@ namespace HealthGateway.PatientTests.Services
         [Fact]
         public async Task CanGetDiagnosticImagingData()
         {
-            DiagnosticImagingExam expected = new()
+            PatientDataAccess.DiagnosticImagingExam expected = new()
             {
                 BodyPart = "Some BodyPart",
                 ExamDate = new DateTime(2020, 1, 1),
@@ -152,15 +155,13 @@ namespace HealthGateway.PatientTests.Services
                 Modality = "Some Modality",
                 Organization = "Some Organization",
                 ProcedureDescription = "Some ProcedureDescription",
-                ExamStatus = DiagnosticImagingExamStatus.Scheduled,
+                Status = DiagnosticImagingStatus.Scheduled,
             };
 
             Mock<IPatientDataRepository> patientDataRepository = new();
-            patientDataRepository.AttachMockQuery<HealthDataQuery>(
-                q => q.Pid == this.pid && q.Categories.Any(c => c == HealthDataCategory.DiagnosticImaging),
+            patientDataRepository.AttachMockQuery<HealthQuery>(
+                q => q.Pid == this.pid && q.Categories.Any(c => c == HealthCategory.DiagnosticImaging),
                 expected);
-            patientDataRepository.AttachMockQuery<HealthServicesQuery>(q => q.Pid == this.pid);
-
             Mock<IPersonalAccountsService> personalAccountService = this.GetMockPersonalAccountService();
 
             PatientDataService sut = new(patientDataRepository.Object, personalAccountService.Object, this.mapper);
@@ -168,7 +169,7 @@ namespace HealthGateway.PatientTests.Services
             PatientDataResponse result = await sut.Query(new PatientDataQuery(this.hdid, new[] { PatientDataType.DiagnosticImaging }), CancellationToken.None)
                 .ConfigureAwait(true);
 
-            DiagnosticImagingExamData actual = result.Items.ShouldHaveSingleItem().ShouldBeOfType<DiagnosticImagingExamData>();
+            DiagnosticImagingExam actual = result.Items.ShouldHaveSingleItem().ShouldBeOfType<DiagnosticImagingExam>();
             actual.BodyPart.ShouldBe(expected.BodyPart);
             actual.ExamDate.ShouldBe(expected.ExamDate);
             actual.FileId.ShouldBe(expected.FileId);
@@ -176,7 +177,7 @@ namespace HealthGateway.PatientTests.Services
             actual.Modality.ShouldBe(expected.Modality);
             actual.Organization.ShouldBe(expected.Organization);
             actual.ProcedureDescription.ShouldBe(expected.ProcedureDescription);
-            actual.ExamStatus.ShouldBe(DiagnosticImagingStatus.Scheduled);
+            actual.ExamStatus.ShouldBe(Patient.Models.DiagnosticImagingStatus.Scheduled);
         }
 
         [Fact]

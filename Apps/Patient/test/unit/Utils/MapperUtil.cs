@@ -35,6 +35,7 @@ namespace HealthGateway.PatientTests.Utils
                 {
                     cfg.AddProfile(new OrganDonorRegistrationProfile());
                     cfg.AddProfile(new DiagnosticImagingExamProfile());
+                    cfg.AddProfile(new PatientDataAccessMappings());
                 });
 
             return config.CreateMapper();

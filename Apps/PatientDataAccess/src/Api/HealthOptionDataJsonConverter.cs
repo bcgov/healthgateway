@@ -20,7 +20,7 @@ namespace HealthGateway.PatientDataAccess.Api
     using System;
     using HealthGateway.Common.Utils;
 
-    internal class HealthOptionDataJsonConverter : PolymorphicJsonConverter<HealthOptionData>
+    internal class HealthOptionDataJsonConverter : PolymorphicJsonConverter<HealthOptionsData>
     {
         protected override string Discriminator => "healthOptionsType";
 
@@ -28,7 +28,7 @@ namespace HealthGateway.PatientDataAccess.Api
         {
             return discriminatorValue switch
             {
-                "BcTransplantOrganDonor" => typeof(OrganDonor),
+                "BcTransplantOrganDonor" => typeof(OrganDonorRegistration),
                 _ => null,
             };
         }

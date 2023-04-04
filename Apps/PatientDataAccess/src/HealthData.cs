@@ -56,7 +56,7 @@ namespace HealthGateway.PatientDataAccess
         /// <summary>
         /// Gets or sets the exam's status.
         /// </summary>
-        public DiagnosticImagingExamStatus ExamStatus { get; set; }
+        public DiagnosticImagingStatus Status { get; set; }
 
         /// <summary>
         /// Gets or sets the exam's file id.
@@ -72,7 +72,7 @@ namespace HealthGateway.PatientDataAccess
     /// <summary>
     /// Diagnostic image exam statuses.
     /// </summary>
-    public enum DiagnosticImagingExamStatus
+    public enum DiagnosticImagingStatus
     {
         /// <summary>
         /// Exam is scheduled.

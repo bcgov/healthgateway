@@ -43,29 +43,18 @@ namespace HealthGateway.PatientDataAccess
     /// <summary>
     /// Query parameters for health services.
     /// </summary>
-    public record HealthServicesQuery(Guid Pid, IEnumerable<HealthServiceCategory> Categories) : PatientDataQuery;
+    public record HealthQuery(Guid Pid, IEnumerable<HealthCategory> Categories) : PatientDataQuery;
 
     /// <summary>
-    /// Health service categories.
+    /// Health categories for all data.
     /// </summary>
-    public enum HealthServiceCategory
+    public enum HealthCategory
     {
         /// <summary>
         /// BC Transplant Organ Donor.
         /// </summary>
-        OrganDonor,
-    }
+        OrganDonorRegistrationStatus,
 
-    /// <summary>
-    /// Query parameters for health data.
-    /// </summary>
-    public record HealthDataQuery(Guid Pid, IEnumerable<HealthDataCategory> Categories) : PatientDataQuery;
-
-    /// <summary>
-    /// Health data categories.
-    /// </summary>
-    public enum HealthDataCategory
-    {
         /// <summary>
         /// Diagnostic Imaging services data.
         /// </summary>

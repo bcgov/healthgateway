@@ -22,7 +22,9 @@ namespace PatientDataAccessTests
     using Moq;
     using Refit;
     using DiagnosticImagingExam = HealthGateway.PatientDataAccess.Api.DiagnosticImagingExam;
-    using HealthDataCategory = HealthGateway.PatientDataAccess.HealthDataCategory;
+    using DiagnosticImagingStatus = HealthGateway.PatientDataAccess.Api.DiagnosticImagingStatus;
+    using OrganDonorRegistration = HealthGateway.PatientDataAccess.Api.OrganDonorRegistration;
+    using OrganDonorRegistrationStatus = HealthGateway.PatientDataAccess.Api.OrganDonorRegistrationStatus;
 
     // Disable documentation for tests.
 #pragma warning disable SA1600
@@ -34,9 +36,9 @@ namespace PatientDataAccessTests
         public async Task CanGetOrganDonorData()
         {
             Mock<IPatientApi> patientApi = new();
-            OrganDonor phsaOrganDonorResponse = new()
+            OrganDonorRegistration phsaOrganDonorRegistrationResponse = new()
             {
-                DonorStatus = DonorStatus.Registered,
+                DonorStatus = OrganDonorRegistrationStatus.Registered,
                 StatusMessage = "statusmessage",
                 HealthOptionsFileId = Guid.NewGuid().ToString(),
                 HealthOptionsId = "optid",
@@ -44,17 +46,18 @@ namespace PatientDataAccessTests
 
             patientApi
                 .Setup(api => api.GetHealthOptionsAsync(this.pid, It.IsAny<string[]>(), It.IsAny<CancellationToken>()))
-                .ReturnsAsync(new HealthOptionsResult(new HealthOptionMetadata(), new[] { phsaOrganDonorResponse }));
+                .ReturnsAsync(new HealthOptionsResult(new HealthOptionsMetadata(), new[] { phsaOrganDonorRegistrationResponse }));
 
             IPatientDataRepository sut = CreateSut(patientApi.Object);
 
-            PatientDataQueryResult result = await sut.Query(new HealthServicesQuery(this.pid, new[] { HealthServiceCategory.OrganDonor }), CancellationToken.None).ConfigureAwait(true);
+            PatientDataQueryResult result = await sut.Query(new HealthQuery(this.pid, new[] { HealthCategory.OrganDonorRegistrationStatus }), CancellationToken.None).ConfigureAwait(true);
 
             result.ShouldNotBeNull();
-            OrganDonorRegistration organDonorRegistration = result.Items.ShouldHaveSingleItem().ShouldBeOfType<OrganDonorRegistration>();
-            organDonorRegistration.Status.ShouldBe(DonorRegistrationStatus.Registered);
-            organDonorRegistration.StatusMessage.ShouldBe(phsaOrganDonorResponse.StatusMessage);
-            organDonorRegistration.RegistrationFileId.ShouldBe(phsaOrganDonorResponse.HealthOptionsFileId);
+            HealthGateway.PatientDataAccess.OrganDonorRegistration
+                organDonorRegistration = result.Items.ShouldHaveSingleItem().ShouldBeOfType<HealthGateway.PatientDataAccess.OrganDonorRegistration>();
+            organDonorRegistration.Status.ShouldBe(HealthGateway.PatientDataAccess.OrganDonorRegistrationStatus.Registered);
+            organDonorRegistration.StatusMessage.ShouldBe(phsaOrganDonorRegistrationResponse.StatusMessage);
+            organDonorRegistration.RegistrationFileId.ShouldBe(phsaOrganDonorRegistrationResponse.HealthOptionsFileId);
         }
 
         [Fact]
@@ -70,7 +73,7 @@ namespace PatientDataAccessTests
                 Modality = "Some Modality",
                 Organization = "Some Organization",
                 ProcedureDescription = "Some ProcedureDescription",
-                Status = DiStatus.Scheduled,
+                Status = DiagnosticImagingStatus.Scheduled,
             };
 
             patientApi
@@ -79,13 +82,13 @@ namespace PatientDataAccessTests
 
             IPatientDataRepository sut = CreateSut(patientApi.Object);
 
-            PatientDataQueryResult result = await sut.Query(new HealthDataQuery(this.pid, new[] { HealthDataCategory.DiagnosticImaging }), CancellationToken.None).ConfigureAwait(true);
+            PatientDataQueryResult result = await sut.Query(new HealthQuery(this.pid, new[] { HealthCategory.DiagnosticImaging }), CancellationToken.None).ConfigureAwait(true);
 
             result.ShouldNotBeNull();
             HealthGateway.PatientDataAccess.DiagnosticImagingExam exam = result.Items.ShouldHaveSingleItem().ShouldBeOfType<HealthGateway.PatientDataAccess.DiagnosticImagingExam>();
             exam.BodyPart.ShouldBe(phsaDiagnosticImageExam.BodyPart);
             exam.ExamDate.ShouldBe(phsaDiagnosticImageExam.ExamDate);
-            exam.ExamStatus.ShouldBe(DiagnosticImagingExamStatus.Scheduled);
+            exam.Status.ShouldBe(HealthGateway.PatientDataAccess.DiagnosticImagingStatus.Scheduled);
             exam.FileId.ShouldBe(phsaDiagnosticImageExam.FileId);
             exam.HealthAuthority.ShouldBe(phsaDiagnosticImageExam.HealthAuthority);
             exam.Modality.ShouldBe(phsaDiagnosticImageExam.Modality);

@@ -16,9 +16,8 @@
 namespace HealthGateway.Patient.Mappings
 {
     using AutoMapper;
-    using HealthGateway.Patient.Models;
-    using HealthGateway.Patient.Services;
     using HealthGateway.PatientDataAccess;
+    using DiagnosticImagingStatus = HealthGateway.Patient.Models.DiagnosticImagingStatus;
 
     /// <summary>
     /// The AutoMapper profile for the Diagnostic Imaging Exams.
@@ -30,22 +29,22 @@ namespace HealthGateway.Patient.Mappings
         /// </summary>
         public DiagnosticImagingExamProfile()
         {
-            this.CreateMap<DiagnosticImagingExam, DiagnosticImagingExamData>()
+            this.CreateMap<DiagnosticImagingExam, Services.DiagnosticImagingExam>()
                 .ForMember(
                     d => d.ExamStatus,
-                    opts => opts.MapFrom(s => MapDiagnosticImagingExamStatus(s.ExamStatus)));
+                    opts => opts.MapFrom(s => MapDiagnosticImagingExamStatus(s.Status)));
         }
 
-        private static DiagnosticImagingStatus MapDiagnosticImagingExamStatus(DiagnosticImagingExamStatus status)
+        private static DiagnosticImagingStatus MapDiagnosticImagingExamStatus(PatientDataAccess.DiagnosticImagingStatus status)
         {
             return status switch
             {
-                DiagnosticImagingExamStatus.Scheduled => DiagnosticImagingStatus.Scheduled,
-                DiagnosticImagingExamStatus.InProgress => DiagnosticImagingStatus.InProgress,
-                DiagnosticImagingExamStatus.Finalized => DiagnosticImagingStatus.Finalized,
-                DiagnosticImagingExamStatus.Pending => DiagnosticImagingStatus.Pending,
-                DiagnosticImagingExamStatus.Completed => DiagnosticImagingStatus.Completed,
-                DiagnosticImagingExamStatus.Amended => DiagnosticImagingStatus.Amended,
+                PatientDataAccess.DiagnosticImagingStatus.Scheduled => DiagnosticImagingStatus.Scheduled,
+                PatientDataAccess.DiagnosticImagingStatus.InProgress => DiagnosticImagingStatus.InProgress,
+                PatientDataAccess.DiagnosticImagingStatus.Finalized => DiagnosticImagingStatus.Finalized,
+                PatientDataAccess.DiagnosticImagingStatus.Pending => DiagnosticImagingStatus.Pending,
+                PatientDataAccess.DiagnosticImagingStatus.Completed => DiagnosticImagingStatus.Completed,
+                PatientDataAccess.DiagnosticImagingStatus.Amended => DiagnosticImagingStatus.Amended,
                 _ => DiagnosticImagingStatus.Unknown,
             };
         }

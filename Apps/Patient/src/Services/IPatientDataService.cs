@@ -64,8 +64,8 @@ namespace HealthGateway.Patient.Services
     /// abstract record that contains patient data.
     /// </summary>
     [JsonConverter(typeof(PatientDataJsonConverter))]
-    [KnownType(typeof(OrganDonorRegistrationData))]
-    [KnownType(typeof(DiagnosticImagingExamData))]
+    [KnownType(typeof(OrganDonorRegistration))]
+    [KnownType(typeof(DiagnosticImagingExam))]
     public abstract record PatientData
     {
         /// <summary>
@@ -77,7 +77,7 @@ namespace HealthGateway.Patient.Services
     /// <summary>
     /// Organ donor patient data.
     /// </summary>
-    public record OrganDonorRegistrationData : PatientData
+    public record OrganDonorRegistration : PatientData
     {
         /// <summary>
         /// Gets the registration status.
@@ -95,13 +95,13 @@ namespace HealthGateway.Patient.Services
         public required string? RegistrationFileId { get; init; }
 
         /// <inheritdoc/>
-        public override string Type { get; } = nameof(OrganDonorRegistrationData);
+        public override string Type { get; } = nameof(OrganDonorRegistration);
     }
 
     /// <summary>
     /// Diagnostic imaging exam patient data.
     /// </summary>
-    public record DiagnosticImagingExamData : PatientData
+    public record DiagnosticImagingExam : PatientData
     {
         /// <summary>
         /// Gets or sets the exam's procedure description.
@@ -144,7 +144,7 @@ namespace HealthGateway.Patient.Services
         public DateTime? ExamDate { get; set; }
 
         /// <inheritdoc/>
-        public override string Type { get; } = nameof(DiagnosticImagingExamData);
+        public override string Type { get; } = nameof(DiagnosticImagingExam);
     }
 
     /// <summary>
@@ -174,8 +174,8 @@ namespace HealthGateway.Patient.Services
         {
             return discriminatorValue switch
             {
-                nameof(OrganDonorRegistrationData) => typeof(OrganDonorRegistrationData),
-                nameof(DiagnosticImagingExamData) => typeof(DiagnosticImagingExamData),
+                nameof(OrganDonorRegistration) => typeof(OrganDonorRegistration),
+                nameof(DiagnosticImagingExam) => typeof(DiagnosticImagingExam),
                 _ => null,
             };
         }

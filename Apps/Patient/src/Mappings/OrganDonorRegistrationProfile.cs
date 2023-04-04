@@ -16,9 +16,8 @@
 namespace HealthGateway.Patient.Mappings
 {
     using AutoMapper;
-    using HealthGateway.Patient.Models;
-    using HealthGateway.Patient.Services;
     using HealthGateway.PatientDataAccess;
+    using OrganDonorRegistrationStatus = HealthGateway.Patient.Models.OrganDonorRegistrationStatus;
 
     /// <summary>
     /// The AutoMapper profile for the Organ Donor Registration module.
@@ -30,20 +29,20 @@ namespace HealthGateway.Patient.Mappings
         /// </summary>
         public OrganDonorRegistrationProfile()
         {
-            this.CreateMap<OrganDonorRegistration, OrganDonorRegistrationData>()
+            this.CreateMap<OrganDonorRegistration, Services.OrganDonorRegistration>()
                 .ForMember(
                     d => d.Status,
                     opts => opts.MapFrom(s => MapOrganDonorStatus(s.Status)));
         }
 
-        private static OrganDonorRegistrationStatus MapOrganDonorStatus(DonorRegistrationStatus status)
+        private static OrganDonorRegistrationStatus MapOrganDonorStatus(PatientDataAccess.OrganDonorRegistrationStatus status)
         {
             return status switch
             {
-                DonorRegistrationStatus.Registered => OrganDonorRegistrationStatus.Registered,
-                DonorRegistrationStatus.NotRegistered => OrganDonorRegistrationStatus.NotRegistered,
-                DonorRegistrationStatus.Error => OrganDonorRegistrationStatus.Error,
-                DonorRegistrationStatus.Pending => OrganDonorRegistrationStatus.Pending,
+                PatientDataAccess.OrganDonorRegistrationStatus.Registered => OrganDonorRegistrationStatus.Registered,
+                PatientDataAccess.OrganDonorRegistrationStatus.NotRegistered => OrganDonorRegistrationStatus.NotRegistered,
+                PatientDataAccess.OrganDonorRegistrationStatus.Error => OrganDonorRegistrationStatus.Error,
+                PatientDataAccess.OrganDonorRegistrationStatus.Pending => OrganDonorRegistrationStatus.Pending,
                 _ => OrganDonorRegistrationStatus.Unknown,
             };
         }

@@ -23,13 +23,13 @@ namespace HealthGateway.PatientDataAccess
     {
         public Mappings()
         {
-            this.CreateMap<HealthOptionData, HealthData>()
+            this.CreateMap<HealthOptionsData, HealthData>()
                 .IncludeAllDerived();
 
             this.CreateMap<HealthDataEntry, HealthData>()
                 .IncludeAllDerived();
 
-            this.CreateMap<OrganDonor, OrganDonorRegistration>()
+            this.CreateMap<Api.OrganDonorRegistration, OrganDonorRegistration>()
                 .ForMember(d => d.Status, opts => opts.MapFrom(s => s.DonorStatus))
                 .ForMember(d => d.RegistrationFileId, opts => opts.MapFrom(s => s.HealthOptionsFileId));
 

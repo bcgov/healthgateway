@@ -23,7 +23,7 @@ namespace HealthGateway.PatientDataAccess.Api
     using System.Threading.Tasks;
     using Refit;
 
-    internal enum DonorStatus
+    internal enum OrganDonorRegistrationStatus
     {
         Registered,
         NotRegistered,
@@ -39,7 +39,7 @@ namespace HealthGateway.PatientDataAccess.Api
         DiagnosticImaging,
     }
 
-    internal enum DiStatus
+    internal enum DiagnosticImagingStatus
     {
         Scheduled,
         InProgress,
@@ -63,11 +63,11 @@ namespace HealthGateway.PatientDataAccess.Api
 
     internal record FileResult(string? MediaType, string? Data, string? Encoding);
 
-    internal record HealthOptionsResult(HealthOptionMetadata Metadata, IEnumerable<HealthOptionData> Data);
+    internal record HealthOptionsResult(HealthOptionsMetadata Metadata, IEnumerable<HealthOptionsData> Data);
 
     internal record HealthDataResult(HealthDataMetadata Metadata, IEnumerable<HealthDataEntry> Data);
 
-    internal record HealthOptionMetadata;
+    internal record HealthOptionsMetadata;
 
     internal record HealthDataMetadata;
 }

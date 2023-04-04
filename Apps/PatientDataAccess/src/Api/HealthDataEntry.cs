@@ -107,7 +107,7 @@ namespace HealthGateway.PatientDataAccess.Api
 
         public string? HealthAuthority { get; set; }
 
-        public DiStatus Status { get; set; }
+        public DiagnosticImagingStatus Status { get; set; }
 
         public string? FileId { get; set; }
 
