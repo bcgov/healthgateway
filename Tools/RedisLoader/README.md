@@ -8,19 +8,19 @@ When you are not going to be at your normal workstation and thus at an IP addres
 
 ### Prerequisites
 
-1. have `redis-cli` installed globally.
+1. Have `redis-cli` installed globally.
 2. Ensure you have redis running (at the time of writing this should be in docker).
 
 ### Steps
 
-1. Using terminal (WS2L on Windows)
+1. Using terminal (WSL2 on Windows)
 2. Navigate to the directory this readme is located in.
-3. Execute all `*.redis` file within data folder using the following command:
+3. Execute all `*.redis` files within data folder using the following command:
     - `redis-cli -h localhost -p 6379 < ./data.redis`
 
 ### Extension
 
-You can either keep adding new redis-cli commands directly to the `data.redis` file, or add new files and repeat step 3 for each file.
+You can either keep adding new redis-cli commands per line directly to the `data.redis` file, or add new files and repeat step 3 for each file.
 
 ## References
 
