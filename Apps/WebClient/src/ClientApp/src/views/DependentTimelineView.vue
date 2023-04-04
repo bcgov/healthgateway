@@ -152,7 +152,7 @@ export default class DependentTimelineView extends Vue {
                         data-testid="backBtn"
                         variant="link"
                         size="sm"
-                        class="back-button-icon p-1"
+                        class="back-button-icon align-baseline p-0 mr-2"
                     >
                         <hg-icon icon="arrow-left" size="large" square />
                     </b-button>
