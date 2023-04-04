@@ -554,7 +554,6 @@ export default class HomeView extends Vue {
                 </div>
             </TutorialComponent>
         </page-title>
-        <h2>What do you want to focus on today?</h2>
         <b-row cols="1" cols-lg="2" cols-xl="3">
             <b-col class="p-3">
                 <hg-card-button
