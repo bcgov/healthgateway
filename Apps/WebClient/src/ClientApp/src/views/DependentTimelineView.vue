@@ -122,7 +122,7 @@ export default class DependentTimelineView extends Vue {
     }
 
     get title(): string {
-        return [this.formattedName, "Timeline"]
+        return ["Timeline for", this.formattedName]
             .filter((s) => Boolean(s))
             .join(" ");
     }
