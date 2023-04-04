@@ -20,8 +20,8 @@ namespace HealthGateway.Patient.Mappings
     using HealthGateway.Patient.Constants;
     using HealthGateway.Patient.Services;
     using HealthGateway.PatientDataAccess;
-    using DiagnosticImagingExam = HealthGateway.PatientDataAccess.DiagnosticImagingExam;
-    using OrganDonorRegistration = HealthGateway.PatientDataAccess.OrganDonorRegistration;
+    using DiagnosticImagingExam = HealthGateway.Patient.Services.DiagnosticImagingExam;
+    using OrganDonorRegistration = HealthGateway.Patient.Services.OrganDonorRegistration;
 
     /// <summary>
     /// Patient data access mappings.
@@ -56,8 +56,8 @@ namespace HealthGateway.Patient.Mappings
             {
                 return source switch
                 {
-                    OrganDonorRegistration hd => context.Mapper.Map<Services.OrganDonorRegistration>(hd),
-                    DiagnosticImagingExam hd => context.Mapper.Map<Services.DiagnosticImagingExam>(hd),
+                    PatientDataAccess.OrganDonorRegistration hd => context.Mapper.Map<OrganDonorRegistration>(hd),
+                    PatientDataAccess.DiagnosticImagingExam hd => context.Mapper.Map<DiagnosticImagingExam>(hd),
                     _ => throw new NotImplementedException($"{source.GetType().Name} is not mapped to {nameof(PatientData)}"),
                 };
             }
