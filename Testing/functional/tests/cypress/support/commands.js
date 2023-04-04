@@ -344,57 +344,30 @@ Cypress.Commands.add("configureSettings", (settings) => {
                 ...config.webClient.featureToggleConfiguration,
             };
 
-            // Disable datasets
-            const disabledDatasets = disablePropertyOfObjectArray(
-                config.webClient.featureToggleConfiguration.datasets
-            );
-
-            // Disable dependents datasets
-            const disabledDependentsDatasets = disablePropertyOfObjectArray(
-                config.webClient.featureToggleConfiguration.dependents?.datasets
-            );
-
-            // Disable services
-            const disabledServices = disablePropertyOfObjectArray(
-                config.webClient.featureToggleConfiguration.services?.services
-            );
-
             // Disable non dataset object properties
             disableObject(featureToggleConfiguration);
-
-            // Apply disabled datasets to configuration object
-            featureToggleConfiguration.datasets = disabledDatasets;
-            featureToggleConfiguration.dependents.datasets =
-                disabledDependentsDatasets;
-            featureToggleConfiguration.services.services = disabledServices;
-
-            // Configure datasets with overrides
-            const datasets = configureObjectArray(
-                featureToggleConfiguration.datasets,
-                settings.datasets
-            );
-
-            // Configure dependents datasets with overrides
-            const dependentsDatasets = configureObjectArray(
-                featureToggleConfiguration.dependents.datasets,
-                settings.dependents?.datasets
-            );
-
-            // Configure services.services with overrides
-            const services = configureObjectArray(
-                featureToggleConfiguration.services?.services,
-                settings.services?.services
-            );
 
             // Configure overrides to non dataset object properties
             configureObject(featureToggleConfiguration, settings);
 
             // Apply dataset overrides to configuration object
-            featureToggleConfiguration.datasets = datasets;
-            featureToggleConfiguration.dependents.datasets = dependentsDatasets;
+            featureToggleConfiguration.datasets = configureObjectArray(
+                disablePropertyOfObjectArray(
+                    config.webClient.featureToggleConfiguration.datasets
+                ),
+                settings.datasets
+            );
+            featureToggleConfiguration.dependents.datasets =
+                settings.dependents?.datasets ?? [];
 
             // Apply services.services overrides to configuration object
-            featureToggleConfiguration.services.services = services;
+            featureToggleConfiguration.services.services = configureObjectArray(
+                disablePropertyOfObjectArray(
+                    config.webClient.featureToggleConfiguration.services
+                        ?.services
+                ),
+                settings.services?.services
+            );
 
             // Apply configured configuration object to configuration to be returned in intercept
             config.webClient.featureToggleConfiguration =
