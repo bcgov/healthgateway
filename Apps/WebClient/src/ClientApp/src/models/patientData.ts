@@ -4,10 +4,12 @@
 
 export enum PatientDataType {
     OrganDonorRegistrationStatus = "OrganDonorRegistrationStatus",
+    DiagnosticImaging = "DiagnosticImaging",
 }
 
 export enum HealthOptionType {
-    OrganDonorRegistrationData = "OrganDonorRegistrationData",
+    OrganDonorRegistration = "OrganDonorRegistration",
+    DiagnosticImagingExam = "DiagnosticImagingExam",
 }
 
 export abstract class PatientHealthOption {
