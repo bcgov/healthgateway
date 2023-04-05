@@ -18,6 +18,7 @@ module.exports = {
         },
     },
     // Other rules...
+    // THIS IS A SPERING MISTAKE, change this with github suggestions.
     configureWebpack: {
         resolve: {
             fallback: {
