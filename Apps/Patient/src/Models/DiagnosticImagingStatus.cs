@@ -1,4 +1,4 @@
-// -------------------------------------------------------------------------
+﻿// -------------------------------------------------------------------------
 //  Copyright © 2019 Province of British Columbia
 //
 //  Licensed under the Apache License, Version 2.0 (the "License");
@@ -13,36 +13,52 @@
 //  See the License for the specific language governing permissions and
 //  limitations under the License.
 // -------------------------------------------------------------------------
-namespace HealthGateway.PatientDataAccess
+namespace HealthGateway.Patient.Models
 {
     using System.Runtime.Serialization;
     using System.Text.Json.Serialization;
 
     /// <summary>
-    /// Donor registration status.
+    /// Diagnostic image exam statuses.
     /// </summary>
     [JsonConverter(typeof(JsonStringEnumMemberConverter))]
-    public enum DonorRegistrationStatus
+    [JsonStringEnumMemberConverterOptions(deserializationFailureFallbackValue: Unknown)]
+    public enum DiagnosticImagingStatus
     {
         /// <summary>
-        /// Registered patient.
+        /// Unknown status.
         /// </summary>
-        Registered,
+        Unknown,
 
         /// <summary>
-        /// Not registered patient.
+        /// Exam is scheduled.
         /// </summary>
-        [EnumMember(Value = "Not Registered")]
-        NotRegistered,
+        Scheduled,
 
         /// <summary>
-        /// Error in registration.
+        /// Exam is in progress.
         /// </summary>
-        Error,
+        [EnumMember(Value = "In Progress")]
+        InProgress,
 
         /// <summary>
-        /// Registration is pending.
+        /// Exam is finalized.
+        /// </summary>
+        Finalized,
+
+        /// <summary>
+        /// Exam result is pending.
         /// </summary>
         Pending,
+
+        /// <summary>
+        /// Exam is completed.
+        /// </summary>
+        Completed,
+
+        /// <summary>
+        /// Exam is amended.
+        /// </summary>
+        Amended,
     }
 }

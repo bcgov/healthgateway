@@ -23,7 +23,7 @@ namespace HealthGateway.Patient.Services
     using System.Threading.Tasks;
     using HealthGateway.Common.Utils;
     using HealthGateway.Patient.Constants;
-    using HealthGateway.PatientDataAccess;
+    using HealthGateway.Patient.Models;
 
     /// <summary>
     /// Provides access to patient related data services.
@@ -64,50 +64,87 @@ namespace HealthGateway.Patient.Services
     /// abstract record that contains patient data.
     /// </summary>
     [JsonConverter(typeof(PatientDataJsonConverter))]
-    [KnownType(typeof(OrganDonorRegistrationData))]
+    [KnownType(typeof(OrganDonorRegistration))]
+    [KnownType(typeof(DiagnosticImagingExam))]
     public abstract record PatientData
     {
         /// <summary>
-        /// Gets or sets the type of the patient data.
+        /// Gets the type of the patient data.
         /// </summary>
-        public abstract string Type { get; set; }
+        public abstract string Type { get; }
     }
 
     /// <summary>
     /// Organ donor patient data.
     /// </summary>
-    public record OrganDonorRegistrationData : PatientData
+    public record OrganDonorRegistration : PatientData
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="OrganDonorRegistrationData"/> class.
+        /// Gets the registration status.
         /// </summary>
-        /// <param name="status">The registration status.</param>
-        /// <param name="statusMessage">Optional message related to the status.</param>
-        /// <param name="registrationFileId">Optional registration file id.</param>
-        public OrganDonorRegistrationData(DonorRegistrationStatus status, string? statusMessage, string? registrationFileId)
-        {
-            this.Status = status;
-            this.StatusMessage = statusMessage;
-            this.RegistrationFileId = registrationFileId;
-        }
+        public required OrganDonorRegistrationStatus Status { get; init; } = OrganDonorRegistrationStatus.NotRegistered;
 
         /// <summary>
-        /// Gets or sets the registration status.
+        /// Gets the message associated with the donor registration status.
         /// </summary>
-        public DonorRegistrationStatus Status { get; set; } = DonorRegistrationStatus.NotRegistered;
+        public required string? StatusMessage { get; init; }
 
         /// <summary>
-        /// Gets or sets the message associated with the donor registration status.
+        /// Gets the file ID associated with the donor registration.
         /// </summary>
-        public string? StatusMessage { get; set; }
-
-        /// <summary>
-        /// Gets or sets the file ID associated with the donor registration.
-        /// </summary>
-        public string? RegistrationFileId { get; set; }
+        public required string? RegistrationFileId { get; init; }
 
         /// <inheritdoc/>
-        public override string Type { get; set; } = nameof(OrganDonorRegistrationData);
+        public override string Type { get; } = nameof(OrganDonorRegistration);
+    }
+
+    /// <summary>
+    /// Diagnostic imaging exam patient data.
+    /// </summary>
+    public record DiagnosticImagingExam : PatientData
+    {
+        /// <summary>
+        /// Gets or sets the exam's procedure description.
+        /// </summary>
+        public string? ProcedureDescription { get; set; }
+
+        /// <summary>
+        /// Gets or sets the exam's body part.
+        /// </summary>
+        public string? BodyPart { get; set; }
+
+        /// <summary>
+        /// Gets or sets the exam's modality.
+        /// </summary>
+        public string? Modality { get; set; }
+
+        /// <summary>
+        /// Gets or sets the exam's organization.
+        /// </summary>
+        public string? Organization { get; set; }
+
+        /// <summary>
+        /// Gets or sets the exam's health authority.
+        /// </summary>
+        public string? HealthAuthority { get; set; }
+
+        /// <summary>
+        /// Gets or sets the exam's status.
+        /// </summary>
+        public DiagnosticImagingStatus ExamStatus { get; set; }
+
+        /// <summary>
+        /// Gets or sets the exam's file id.
+        /// </summary>
+        public string? FileId { get; set; }
+
+        /// <summary>
+        /// Gets or sets the exam's date.
+        /// </summary>
+        public DateTime? ExamDate { get; set; }
+
+        /// <inheritdoc/>
+        public override string Type { get; } = nameof(DiagnosticImagingExam);
     }
 
     /// <summary>
@@ -128,14 +165,20 @@ namespace HealthGateway.Patient.Services
 #pragma warning disable SA1600
     internal class PatientDataJsonConverter : PolymorphicJsonConverter<PatientData>
     {
-        protected override string ResolveDiscriminatorValue(PatientData value) => value.Type;
+        protected override string ResolveDiscriminatorValue(PatientData value)
+        {
+            return value.Type;
+        }
 
-        protected override Type? ResolveType(string discriminatorValue) =>
-            discriminatorValue switch
+        protected override Type? ResolveType(string discriminatorValue)
+        {
+            return discriminatorValue switch
             {
-                nameof(OrganDonorRegistrationData) => typeof(OrganDonorRegistrationData),
+                nameof(OrganDonorRegistration) => typeof(OrganDonorRegistration),
+                nameof(DiagnosticImagingExam) => typeof(DiagnosticImagingExam),
                 _ => null,
             };
+        }
     }
 #pragma warning restore SA1600
 }

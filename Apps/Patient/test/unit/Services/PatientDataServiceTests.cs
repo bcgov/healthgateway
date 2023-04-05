@@ -21,107 +21,181 @@ namespace HealthGateway.PatientTests.Services
     using System.Text.Json;
     using System.Threading;
     using System.Threading.Tasks;
+    using AutoMapper;
+    using HealthGateway.Common.Models.PHSA;
     using HealthGateway.Common.Services;
     using HealthGateway.Patient.Constants;
     using HealthGateway.Patient.Services;
     using HealthGateway.PatientDataAccess;
+    using HealthGateway.PatientTests.Utils;
     using Moq;
     using Shouldly;
     using Xunit;
+    using DiagnosticImagingExam = HealthGateway.Patient.Services.DiagnosticImagingExam;
+    using DiagnosticImagingStatus = HealthGateway.Patient.Models.DiagnosticImagingStatus;
+    using OrganDonorRegistration = HealthGateway.Patient.Services.OrganDonorRegistration;
+    using OrganDonorRegistrationStatus = HealthGateway.Patient.Models.OrganDonorRegistrationStatus;
     using PatientDataQuery = HealthGateway.Patient.Services.PatientDataQuery;
     using PatientFileQuery = HealthGateway.Patient.Services.PatientFileQuery;
 
-// Disable documentation for tests.
+    // Disable documentation for tests.
 #pragma warning disable SA1600
     public class PatientDataServiceTests
     {
         private readonly Guid pid = Guid.NewGuid();
         private readonly string hdid = Guid.NewGuid().ToString("N");
+        private readonly IMapper mapper = MapperUtil.InitializeAutoMapper();
 
         [Fact]
-        public void CanSerializePatientData()
+        public void CanSerializeOrganDonorData()
         {
-            var organDonorRegistationData = new OrganDonorRegistrationData(DonorRegistrationStatus.Registered, "Message", Guid.NewGuid().ToString());
-
-            var data = new PatientData[]
+            OrganDonorRegistration organDonorRegistration = new()
             {
-                organDonorRegistationData,
+                Status = OrganDonorRegistrationStatus.Registered,
+                StatusMessage = "Message",
+                RegistrationFileId = Guid.NewGuid().ToString(),
             };
 
-            var response = new PatientDataResponse(data);
+            PatientData[] data =
+            {
+                organDonorRegistration,
+            };
 
-            var serialized = JsonSerializer.Serialize(response);
+            PatientDataResponse response = new(data);
+
+            string serialized = JsonSerializer.Serialize(response);
 
             serialized.ShouldNotBeNullOrEmpty();
 
-            var deserialized = JsonSerializer.Deserialize<PatientDataResponse>(serialized).ShouldNotBeNull();
+            PatientDataResponse deserialized = JsonSerializer.Deserialize<PatientDataResponse>(serialized).ShouldNotBeNull();
 
-            var actualOrganDonorRegistrationData = deserialized.Items.ShouldHaveSingleItem().ShouldBeOfType<OrganDonorRegistrationData>();
-            actualOrganDonorRegistrationData.Status.ShouldBe(organDonorRegistationData.Status);
-            actualOrganDonorRegistrationData.StatusMessage.ShouldBe(organDonorRegistationData.StatusMessage);
-            actualOrganDonorRegistrationData.RegistrationFileId.ShouldBe(organDonorRegistationData.RegistrationFileId);
+            OrganDonorRegistration actualOrganDonorRegistration = deserialized.Items.ShouldHaveSingleItem().ShouldBeOfType<OrganDonorRegistration>();
+            actualOrganDonorRegistration.Status.ShouldBe(organDonorRegistration.Status);
+            actualOrganDonorRegistration.StatusMessage.ShouldBe(organDonorRegistration.StatusMessage);
+            actualOrganDonorRegistration.RegistrationFileId.ShouldBe(organDonorRegistration.RegistrationFileId);
         }
 
         [Fact]
-        public async Task CanGetPatientData()
+        public void CanSerializeDiagnosticImagingData()
         {
-            var expected = new OrganDonorRegistration
+            DiagnosticImagingExam diagnosticImagingExam = new()
             {
-                Status = DonorRegistrationStatus.Registered,
+                BodyPart = "Some BodyPart",
+                ExamDate = new DateTime(2020, 1, 1),
+                FileId = "Some FileId",
+                HealthAuthority = "Some HealthAuthority",
+                Modality = "Some Modality",
+                Organization = "Some Organization",
+                ProcedureDescription = "Some ProcedureDescription",
+                ExamStatus = DiagnosticImagingStatus.Scheduled,
+            };
+
+            PatientData[] data =
+            {
+                diagnosticImagingExam,
+            };
+
+            PatientDataResponse response = new(data);
+
+            string serialized = JsonSerializer.Serialize(response);
+
+            serialized.ShouldNotBeNullOrEmpty();
+
+            PatientDataResponse deserialized = JsonSerializer.Deserialize<PatientDataResponse>(serialized).ShouldNotBeNull();
+
+            DiagnosticImagingExam actualDiagnosticImagingExam = deserialized.Items.ShouldHaveSingleItem().ShouldBeOfType<DiagnosticImagingExam>();
+            actualDiagnosticImagingExam.BodyPart.ShouldBe(diagnosticImagingExam.BodyPart);
+            actualDiagnosticImagingExam.ExamDate.ShouldBe(diagnosticImagingExam.ExamDate);
+            actualDiagnosticImagingExam.FileId.ShouldBe(diagnosticImagingExam.FileId);
+            actualDiagnosticImagingExam.HealthAuthority.ShouldBe(diagnosticImagingExam.HealthAuthority);
+            actualDiagnosticImagingExam.Modality.ShouldBe(diagnosticImagingExam.Modality);
+            actualDiagnosticImagingExam.Organization.ShouldBe(diagnosticImagingExam.Organization);
+            actualDiagnosticImagingExam.ProcedureDescription.ShouldBe(diagnosticImagingExam.ProcedureDescription);
+            actualDiagnosticImagingExam.ExamStatus.ShouldBe(diagnosticImagingExam.ExamStatus);
+        }
+
+        [Fact]
+        public async Task CanGetOrganDonorRegistrationData()
+        {
+            PatientDataAccess.OrganDonorRegistration expected = new()
+            {
+                Status = PatientDataAccess.OrganDonorRegistrationStatus.Registered,
                 RegistrationFileId = Guid.NewGuid().ToString(),
                 StatusMessage = "some message",
             };
 
-            var patientDataRepository = new Mock<IPatientDataRepository>();
-            patientDataRepository
-                .Setup(o => o.Query(
-                    It.Is<HealthServicesQuery>(q =>
-                        q.Pid == this.pid && q.Categories.Any(c => c == HealthServiceCategory.OrganDonor)),
-                    It.IsAny<CancellationToken>()))
-                .ReturnsAsync(new PatientDataQueryResult(new[] { expected }));
+            Mock<IPatientDataRepository> patientDataRepository = new();
+            patientDataRepository.AttachMockQuery<HealthQuery>(
+                q => q.Pid == this.pid && q.Categories.Any(c => c == HealthCategory.OrganDonorRegistrationStatus),
+                expected);
 
-            var personalAccountService = new Mock<IPersonalAccountsService>();
-            personalAccountService.Setup(o => o.GetPatientAccountAsync(this.hdid)).ReturnsAsync(new Common.Models.PHSA.PersonalAccount
-            {
-                Id = Guid.NewGuid(),
-                PatientIdentity = new Common.Models.PHSA.PatientIdentity { Pid = this.pid },
-            });
+            Mock<IPersonalAccountsService> personalAccountService = this.GetMockPersonalAccountService();
 
-            var sut = new PatientDataService(patientDataRepository.Object, personalAccountService.Object);
+            PatientDataService sut = new(patientDataRepository.Object, personalAccountService.Object, this.mapper);
 
-            var result = await sut.Query(new PatientDataQuery(this.hdid, new[] { PatientDataType.OrganDonorRegistrationStatus }), CancellationToken.None).ConfigureAwait(true);
+            PatientDataResponse result = await sut.Query(new PatientDataQuery(this.hdid, new[] { PatientDataType.OrganDonorRegistrationStatus }), CancellationToken.None)
+                .ConfigureAwait(true);
 
-            var actual = result.Items.ShouldHaveSingleItem().ShouldBeOfType<OrganDonorRegistrationData>();
-            actual.Status.ShouldBe(expected.Status);
+            OrganDonorRegistration actual = result.Items.ShouldHaveSingleItem().ShouldBeOfType<OrganDonorRegistration>();
+            actual.Status.ShouldBe(OrganDonorRegistrationStatus.Registered);
             actual.StatusMessage.ShouldBe(expected.StatusMessage);
             actual.RegistrationFileId.ShouldBe(expected.RegistrationFileId);
         }
 
         [Fact]
+        public async Task CanGetDiagnosticImagingData()
+        {
+            PatientDataAccess.DiagnosticImagingExam expected = new()
+            {
+                BodyPart = "Some BodyPart",
+                ExamDate = new DateTime(2020, 1, 1),
+                FileId = "Some FileId",
+                HealthAuthority = "Some HealthAuthority",
+                Modality = "Some Modality",
+                Organization = "Some Organization",
+                ProcedureDescription = "Some ProcedureDescription",
+                Status = PatientDataAccess.DiagnosticImagingStatus.Scheduled,
+            };
+
+            Mock<IPatientDataRepository> patientDataRepository = new();
+            patientDataRepository.AttachMockQuery<HealthQuery>(
+                q => q.Pid == this.pid && q.Categories.Any(c => c == HealthCategory.DiagnosticImaging),
+                expected);
+            Mock<IPersonalAccountsService> personalAccountService = this.GetMockPersonalAccountService();
+
+            PatientDataService sut = new(patientDataRepository.Object, personalAccountService.Object, this.mapper);
+
+            PatientDataResponse result = await sut.Query(new PatientDataQuery(this.hdid, new[] { PatientDataType.DiagnosticImaging }), CancellationToken.None)
+                .ConfigureAwait(true);
+
+            DiagnosticImagingExam actual = result.Items.ShouldHaveSingleItem().ShouldBeOfType<DiagnosticImagingExam>();
+            actual.BodyPart.ShouldBe(expected.BodyPart);
+            actual.ExamDate.ShouldBe(expected.ExamDate);
+            actual.FileId.ShouldBe(expected.FileId);
+            actual.HealthAuthority.ShouldBe(expected.HealthAuthority);
+            actual.Modality.ShouldBe(expected.Modality);
+            actual.Organization.ShouldBe(expected.Organization);
+            actual.ProcedureDescription.ShouldBe(expected.ProcedureDescription);
+            actual.ExamStatus.ShouldBe(DiagnosticImagingStatus.Scheduled);
+        }
+
+        [Fact]
         public async Task CanGetPatientFile()
         {
-            var expected = new PatientFile(Guid.NewGuid().ToString(), RandomNumberGenerator.GetBytes(1024), "text/plain");
+            PatientFile expected = new(Guid.NewGuid().ToString(), RandomNumberGenerator.GetBytes(1024), "text/plain");
 
-            var patientDataRepository = new Mock<IPatientDataRepository>();
-            patientDataRepository
-                .Setup(o => o.Query(
-                    It.Is<PatientDataAccess.PatientFileQuery>(q =>
-                        q.Pid == this.pid && q.FileId == expected.FileId),
-                    It.IsAny<CancellationToken>()))
-                .ReturnsAsync(new PatientDataQueryResult(new[] { expected }));
+            Mock<IPatientDataRepository> patientDataRepository = new();
+            patientDataRepository.AttachMockQuery<PatientDataAccess.PatientFileQuery>(
+                q => q.Pid == this.pid && q.FileId == expected.FileId,
+                expected);
 
-            var personalAccountService = new Mock<IPersonalAccountsService>();
-            personalAccountService.Setup(o => o.GetPatientAccountAsync(this.hdid)).ReturnsAsync(new Common.Models.PHSA.PersonalAccount
-            {
-                Id = Guid.NewGuid(),
-                PatientIdentity = new Common.Models.PHSA.PatientIdentity { Pid = this.pid },
-            });
+            Mock<IPersonalAccountsService> personalAccountService = this.GetMockPersonalAccountService();
 
-            var sut = new PatientDataService(patientDataRepository.Object, personalAccountService.Object);
+            PatientDataService sut = new(patientDataRepository.Object, personalAccountService.Object, this.mapper);
 
-            var result = await sut.Query(new PatientFileQuery(this.hdid, expected.FileId), CancellationToken.None).ConfigureAwait(true);
+            PatientFileResponse? result = await sut.Query(new PatientFileQuery(this.hdid, expected.FileId), CancellationToken.None).ConfigureAwait(true);
 
-            var actual = result.ShouldBeOfType<PatientFileResponse>();
+            PatientFileResponse actual = result.ShouldBeOfType<PatientFileResponse>();
             actual.Content.ShouldBe(expected.Content);
             actual.ContentType.ShouldBe(expected.ContentType);
         }
@@ -129,28 +203,32 @@ namespace HealthGateway.PatientTests.Services
         [Fact]
         public async Task CanHandlePatientFileNotFound()
         {
-            var fileId = Guid.NewGuid().ToString();
+            string fileId = Guid.NewGuid().ToString();
 
-            var patientDataRepository = new Mock<IPatientDataRepository>();
-            patientDataRepository
-                .Setup(o => o.Query(
-                    It.Is<PatientDataAccess.PatientFileQuery>(q =>
-                        q.Pid == this.pid && q.FileId == fileId),
-                    It.IsAny<CancellationToken>()))
-                .ReturnsAsync(new PatientDataQueryResult(Array.Empty<PatientFile>()));
+            Mock<IPatientDataRepository> patientDataRepository = new();
+            patientDataRepository.AttachMockQuery<PatientDataAccess.PatientFileQuery>(q => q.Pid == this.pid && q.FileId == fileId);
 
-            var personalAccountService = new Mock<IPersonalAccountsService>();
-            personalAccountService.Setup(o => o.GetPatientAccountAsync(this.hdid)).ReturnsAsync(new Common.Models.PHSA.PersonalAccount
-            {
-                Id = Guid.NewGuid(),
-                PatientIdentity = new Common.Models.PHSA.PatientIdentity { Pid = this.pid },
-            });
+            Mock<IPersonalAccountsService> personalAccountService = this.GetMockPersonalAccountService();
 
-            var sut = new PatientDataService(patientDataRepository.Object, personalAccountService.Object);
+            PatientDataService sut = new(patientDataRepository.Object, personalAccountService.Object, this.mapper);
 
-            var result = await sut.Query(new PatientFileQuery(this.hdid, fileId), CancellationToken.None).ConfigureAwait(true);
+            PatientFileResponse? result = await sut.Query(new PatientFileQuery(this.hdid, fileId), CancellationToken.None).ConfigureAwait(true);
 
             result.ShouldBeNull();
+        }
+
+        private Mock<IPersonalAccountsService> GetMockPersonalAccountService()
+        {
+            Mock<IPersonalAccountsService> personalAccountService = new();
+            personalAccountService.Setup(o => o.GetPatientAccountAsync(this.hdid))
+                .ReturnsAsync(
+                    new PersonalAccount
+                    {
+                        Id = Guid.NewGuid(),
+                        PatientIdentity = new PatientIdentity { Pid = this.pid },
+                    });
+
+            return personalAccountService;
         }
     }
 #pragma warning restore SA1600

@@ -13,28 +13,25 @@
 //  See the License for the specific language governing permissions and
 //  limitations under the License.
 // -------------------------------------------------------------------------
-namespace HealthGateway.PatientDataAccess
+namespace HealthGateway.PatientDataAccess.Api
 {
 #pragma warning disable SA1600 // Disables documentation for internal class.
-    using AutoMapper;
-    using HealthGateway.PatientDataAccess.Api;
+#pragma warning disable SA1602 // Disables documentation for internal class.
+    using System.Text.Json.Serialization;
 
-    internal class Mappings : Profile
+    [JsonConverter(typeof(HealthOptionDataJsonConverter))]
+    internal abstract record HealthOptionsData;
+
+    internal record OrganDonorRegistration : HealthOptionsData
     {
-        public Mappings()
-        {
-            this.CreateMap<HealthOptionsData, HealthData>()
-                .IncludeAllDerived();
+        public string? HealthOptionsId { get; set; }
 
-            this.CreateMap<HealthDataEntry, HealthData>()
-                .IncludeAllDerived();
+        public OrganDonorRegistrationStatus DonorStatus { get; set; }
 
-            this.CreateMap<Api.OrganDonorRegistration, OrganDonorRegistration>()
-                .ForMember(d => d.Status, opts => opts.MapFrom(s => s.DonorStatus))
-                .ForMember(d => d.RegistrationFileId, opts => opts.MapFrom(s => s.HealthOptionsFileId));
+        public string? StatusMessage { get; set; }
 
-            this.CreateMap<Api.DiagnosticImagingExam, DiagnosticImagingExam>();
-        }
+        public string? HealthOptionsFileId { get; set; }
     }
 }
 #pragma warning restore SA1600
+#pragma warning restore SA1602

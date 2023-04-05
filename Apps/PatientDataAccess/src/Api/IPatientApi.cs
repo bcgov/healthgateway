@@ -15,25 +15,38 @@
 // -------------------------------------------------------------------------
 namespace HealthGateway.PatientDataAccess.Api
 {
-// Disables documentation for internal class.
-#pragma warning disable SA1600
-
-// Disables documentation for internal class.
-#pragma warning disable SA1602
+#pragma warning disable SA1600 // Disables documentation for internal class.
+#pragma warning disable SA1602 // Disables documentation for internal class.
     using System;
     using System.Collections.Generic;
-    using System.Text.Json.Serialization;
     using System.Threading;
     using System.Threading.Tasks;
-    using HealthGateway.Common.Utils;
     using Refit;
 
-    internal enum DonorStatus
+    internal enum OrganDonorRegistrationStatus
     {
         Registered,
         NotRegistered,
         Error,
         Pending,
+    }
+
+    internal enum HealthDataCategory
+    {
+        Laboratory,
+        COVID19Laboratory,
+        ClinicalDocument,
+        DiagnosticImaging,
+    }
+
+    internal enum DiagnosticImagingStatus
+    {
+        Scheduled,
+        InProgress,
+        Finalized,
+        Pending,
+        Completed,
+        Amended,
     }
 
     internal interface IPatientApi
@@ -43,39 +56,20 @@ namespace HealthGateway.PatientDataAccess.Api
 
         [Get("/patient/{pid}/health-options")]
         Task<HealthOptionsResult?> GetHealthOptionsAsync(Guid pid, [Query] string[] categories, CancellationToken ct);
+
+        [Get("/patient/{pid}/health-data")]
+        Task<HealthDataResult?> GetHealthDataAsync(Guid pid, [Query] string[] categories, CancellationToken ct);
     }
 
     internal record FileResult(string? MediaType, string? Data, string? Encoding);
 
-    internal record HealthOptionsResult(HealthOptionMetadata Metadata, IEnumerable<HealthOptionData> Data);
+    internal record HealthOptionsResult(HealthOptionsMetadata Metadata, IEnumerable<HealthOptionsData> Data);
 
-    internal record HealthOptionMetadata;
+    internal record HealthDataResult(HealthDataMetadata Metadata, IEnumerable<HealthDataEntry> Data);
 
-    [JsonConverter(typeof(HealthOptionDataJsonConverter))]
-    internal abstract record HealthOptionData;
+    internal record HealthOptionsMetadata;
 
-    internal record OrganDonor : HealthOptionData
-    {
-        public string? HealthOptionsId { get; set; }
-
-        public DonorStatus DonorStatus { get; set; }
-
-        public string? StatusMessage { get; set; }
-
-        public string? HealthOptionsFileId { get; set; }
-    }
-
-    internal class HealthOptionDataJsonConverter : PolymorphicJsonConverter<HealthOptionData>
-    {
-        protected override string Discriminator => "healthOptionsType";
-
-        protected override Type? ResolveType(string discriminatorValue) =>
-            discriminatorValue switch
-            {
-                "BcTransplantOrganDonor" => typeof(OrganDonor),
-                _ => null,
-            };
-    }
+    internal record HealthDataMetadata;
 }
 #pragma warning restore SA1600
 #pragma warning restore SA1602

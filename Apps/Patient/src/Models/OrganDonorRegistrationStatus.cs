@@ -1,4 +1,4 @@
-// -------------------------------------------------------------------------
+﻿// -------------------------------------------------------------------------
 //  Copyright © 2019 Province of British Columbia
 //
 //  Licensed under the Apache License, Version 2.0 (the "License");
@@ -13,24 +13,42 @@
 //  See the License for the specific language governing permissions and
 //  limitations under the License.
 // -------------------------------------------------------------------------
-namespace HealthGateway.Patient.Constants
+namespace HealthGateway.Patient.Models
 {
+    using System.Runtime.Serialization;
     using System.Text.Json.Serialization;
 
     /// <summary>
-    /// Patient data types.
+    /// Donor registration status.
     /// </summary>
     [JsonConverter(typeof(JsonStringEnumMemberConverter))]
-    public enum PatientDataType
+    [JsonStringEnumMemberConverterOptions(deserializationFailureFallbackValue: Unknown)]
+    public enum OrganDonorRegistrationStatus
     {
         /// <summary>
-        /// Organ donor registration status.
+        /// Unknown status.
         /// </summary>
-        OrganDonorRegistrationStatus,
+        Unknown,
 
         /// <summary>
-        /// Diagnostic imaging exams.
+        /// Registered patient.
         /// </summary>
-        DiagnosticImaging,
+        Registered,
+
+        /// <summary>
+        /// Not registered patient.
+        /// </summary>
+        [EnumMember(Value = "Not Registered")]
+        NotRegistered,
+
+        /// <summary>
+        /// Error in registration.
+        /// </summary>
+        Error,
+
+        /// <summary>
+        /// Registration is pending.
+        /// </summary>
+        Pending,
     }
 }

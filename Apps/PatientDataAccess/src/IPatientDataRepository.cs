@@ -15,6 +15,7 @@
 // -------------------------------------------------------------------------
 namespace HealthGateway.PatientDataAccess
 {
+#pragma warning disable SA1201 // Elements should appear in the correct order
     using System;
     using System.Collections.Generic;
     using System.Threading;
@@ -42,7 +43,23 @@ namespace HealthGateway.PatientDataAccess
     /// <summary>
     /// Query parameters for health services.
     /// </summary>
-    public record HealthServicesQuery(Guid Pid, IEnumerable<HealthServiceCategory> Categories) : PatientDataQuery;
+    public record HealthQuery(Guid Pid, IEnumerable<HealthCategory> Categories) : PatientDataQuery;
+
+    /// <summary>
+    /// Health categories for all data.
+    /// </summary>
+    public enum HealthCategory
+    {
+        /// <summary>
+        /// BC Transplant Organ Donor.
+        /// </summary>
+        OrganDonorRegistrationStatus,
+
+        /// <summary>
+        /// Diagnostic Imaging services data.
+        /// </summary>
+        DiagnosticImaging,
+    }
 
     /// <summary>
     /// Query patient files.
@@ -55,38 +72,8 @@ namespace HealthGateway.PatientDataAccess
     public record PatientDataQueryResult(IEnumerable<HealthData> Items);
 
     /// <summary>
-    /// abstract record for health data.
-    /// </summary>
-    public abstract record HealthData;
-
-    /// <summary>
-    /// abstract class for health service data.
-    /// </summary>
-    public abstract record HealthServiceData : HealthData;
-
-    /// <summary>
-    /// BC Transplant organ donor service data.
-    /// </summary>
-    public record OrganDonorRegistration : HealthServiceData
-    {
-        /// <summary>
-        /// Gets or sets the donor registration status.
-        /// </summary>
-        public DonorRegistrationStatus Status { get; set; }
-
-        /// <summary>
-        /// Gets or sets the message associated with the donor registration status.
-        /// </summary>
-        public string? StatusMessage { get; set; }
-
-        /// <summary>
-        /// Gets or sets the file ID associated with the donor registration.
-        /// </summary>
-        public string? RegistrationFileId { get; set; }
-    }
-
-    /// <summary>
     /// Represents a patient file.
     /// </summary>
     public record PatientFile(string FileId, IEnumerable<byte> Content, string ContentType) : HealthData;
 }
+#pragma warning disable SA1201
