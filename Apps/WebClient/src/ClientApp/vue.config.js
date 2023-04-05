@@ -18,7 +18,7 @@ module.exports = {
         },
     },
     // Other rules...
-    // THIS IS A SPERING MISTAKE, change this with github suggestions.
+    // THIS IS A SPELLING MISTAKE.
     configureWebpack: {
         resolve: {
             fallback: {
