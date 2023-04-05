@@ -4,11 +4,14 @@ import {
     getTabButtonSelector,
 } from "../../../support/functions/dependent";
 
-const existingDependent = {
+// JENNIFER TESTFOUR
+const dependent1 = {
     hdid: "162346565465464564565463257",
-    phn: "9874307175",
-    dateOfBirth: "2015-Aug-20",
-    otherDelegateCount: 0,
+};
+
+// MICHAEL TESTERTWO
+const dependent2 = {
+    hdid: "BNV554213556",
 };
 
 describe("Reports", () => {
@@ -73,7 +76,7 @@ describe("Reports", () => {
     });
 
     it("Validate Service Selection", () => {
-        const hdid = existingDependent.hdid;
+        const hdid = dependent1.hdid;
 
         const cardSelector = getCardSelector(hdid);
         const tabButtonSelector = getTabButtonSelector(hdid, "report");
@@ -115,8 +118,8 @@ describe("Reports", () => {
         );
     });
 
-    it.skip("Validate Medication Report", () => {
-        const hdid = existingDependent.hdid;
+    it("Validate Medication Report", () => {
+        const hdid = dependent2.hdid;
 
         const cardSelector = getCardSelector(hdid);
         const tabButtonSelector = getTabButtonSelector(hdid, "report");
@@ -148,8 +151,8 @@ describe("Reports", () => {
         cy.get("[data-testid=genericMessageModal]").should("not.exist");
     });
 
-    it.skip("Validate MSP Visits Report", () => {
-        const hdid = existingDependent.hdid;
+    it("Validate MSP Visits Report", () => {
+        const hdid = dependent2.hdid;
 
         const cardSelector = getCardSelector(hdid);
         const tabButtonSelector = getTabButtonSelector(hdid, "report");
@@ -185,7 +188,7 @@ describe("Reports", () => {
     });
 
     it("Validate COVID-19 Report", () => {
-        const hdid = existingDependent.hdid;
+        const hdid = dependent1.hdid;
 
         const cardSelector = getCardSelector(hdid);
         const tabButtonSelector = getTabButtonSelector(hdid, "report");
@@ -221,7 +224,7 @@ describe("Reports", () => {
     });
 
     it("Validate Immunization Report", () => {
-        const hdid = existingDependent.hdid;
+        const hdid = dependent1.hdid;
 
         const cardSelector = getCardSelector(hdid);
         const tabButtonSelector = getTabButtonSelector(hdid, "report");
@@ -257,7 +260,7 @@ describe("Reports", () => {
     });
 
     it("Validate Special Authority Report", () => {
-        const hdid = existingDependent.hdid;
+        const hdid = dependent1.hdid;
 
         const cardSelector = getCardSelector(hdid);
         const tabButtonSelector = getTabButtonSelector(hdid, "report");
@@ -293,7 +296,7 @@ describe("Reports", () => {
     });
 
     it("Validate Laboratory Report", () => {
-        const hdid = existingDependent.hdid;
+        const hdid = dependent1.hdid;
 
         const cardSelector = getCardSelector(hdid);
         const tabButtonSelector = getTabButtonSelector(hdid, "report");
@@ -327,7 +330,7 @@ describe("Reports", () => {
     });
 
     it("Validate Hospital Visits Report", () => {
-        const hdid = existingDependent.hdid;
+        const hdid = dependent1.hdid;
 
         const cardSelector = getCardSelector(hdid);
         const tabButtonSelector = getTabButtonSelector(hdid, "report");
