@@ -3,6 +3,7 @@ import { CommentEntryType } from "@/constants/commentEntryType";
 export enum EntryType {
     ClinicalDocument = "ClinicalDocument",
     Covid19TestResult = "Covid19TestResult",
+    DiagnosticImaging = "DiagnosticImaging",
     HealthVisit = "HealthVisit",
     HospitalVisit = "HospitalVisit",
     Immunization = "Immunization",
@@ -135,6 +136,18 @@ entryTypeMap.set(EntryType.HospitalVisit, {
     component: "HospitalVisitTimelineComponent",
     eventName: "hospital_visits",
     moduleName: "HospitalVisit",
+});
+
+entryTypeMap.set(EntryType.DiagnosticImaging, {
+    type: EntryType.DiagnosticImaging,
+    commentType: CommentEntryType.DiagnosticImaging,
+    name: "Diagnostic Imaging",
+    description:
+        "View a list of your diagnostic imaging exams. You can get details of each exam performed.",
+    icon: "x-ray",
+    component: "DiagnosticImagingTimelineComponent",
+    eventName: "diagnostic_imaging",
+    moduleName: "DiagnosticImaging",
 });
 
 export { entryTypeMap };

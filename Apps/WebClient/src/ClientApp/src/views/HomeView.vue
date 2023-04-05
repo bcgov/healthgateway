@@ -15,6 +15,7 @@ import {
     faSyringe,
     faUpload,
     faVial,
+    faXRay,
 } from "@fortawesome/free-solid-svg-icons";
 import { saveAs } from "file-saver";
 import Vue from "vue";
@@ -62,7 +63,8 @@ library.add(
     faStethoscope,
     faSyringe,
     faUpload,
-    faVial
+    faVial,
+    faXRay
 );
 
 interface QuickLinkCard {
