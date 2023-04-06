@@ -3,10 +3,10 @@
 import { ServiceCode } from "@/constants/serviceCodes";
 import { ExternalConfiguration } from "@/models/configData";
 import { HttpError } from "@/models/errors";
-import PatientData, {
+import PatientDataResponse, {
     PatientDataFile,
     PatientDataType,
-} from "@/models/patientData";
+} from "@/models/patientDataResponse";
 import container from "@/plugins/container";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import {
@@ -43,14 +43,14 @@ export class RestPatientDataService implements IPatientDataService {
     public getPatientData(
         hdid: string,
         patientDataTypes: PatientDataType[]
-    ): Promise<PatientData> {
+    ): Promise<PatientDataResponse> {
         const delimiter = "patientDataTypes=";
         const patientDataTypeQueryArray =
             delimiter + patientDataTypes.join(`&${delimiter}`);
         return new Promise((resolve, reject) => {
             this.isServicesEnabled(reject);
             this.http
-                .getWithCors<PatientData>(
+                .getWithCors<PatientDataResponse>(
                     `${this.serviceBaseUri}${this.BASE_URI}/${hdid}?${patientDataTypeQueryArray}&api-version=2.0`
                 )
                 .then(resolve)

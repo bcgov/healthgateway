@@ -8,7 +8,7 @@ import BreadcrumbComponent from "@/components/navmenu/BreadcrumbComponent.vue";
 import OrganDonorDetailsCard from "@/components/services/OrganDonorDetailsCard.vue";
 import { ServiceName } from "@/constants/serviceName";
 import BreadcrumbItem from "@/models/breadcrumbItem";
-import { PatientDataType } from "@/models/patientData";
+import { PatientDataType } from "@/models/patientDataResponse";
 import User from "@/models/user";
 import container from "@/plugins/container";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";

@@ -1,4 +1,8 @@
-import PatientData, { PatientDataFile } from "@/models/patientData";
+import {
+    PatientData,
+    PatientDataFile,
+    PatientDataType,
+} from "@/models/patientDataResponse";
 import { LoadStatus } from "@/models/storeOperations";
 import {
     PatientDataGetters,
@@ -26,8 +30,20 @@ export const getters: PatientDataGetters = {
     },
     patientData(
         state: PatientDataState
-    ): (hdid: string) => PatientData | undefined {
-        return (hdid: string) => getPatientDataRecordState(state, hdid).data;
+    ): (hdid: string, patientDataTypes: PatientDataType[]) => PatientData[] {
+        return (hdid: string, patientDataTypes: PatientDataType[]) => {
+            const records: PatientData[] = [];
+            const data = getPatientDataRecordState(state, hdid).data;
+            if (data) {
+                patientDataTypes.forEach((patientDataType) => {
+                    const patientData = data[patientDataType];
+                    if (patientData) {
+                        records.push(...patientData);
+                    }
+                });
+            }
+            return records;
+        };
     },
     isPatientDataLoading(state: PatientDataState): (hdid: string) => boolean {
         return (hdid: string) =>

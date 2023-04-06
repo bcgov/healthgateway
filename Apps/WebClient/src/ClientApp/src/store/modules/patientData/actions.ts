@@ -1,9 +1,9 @@
 import { ErrorSourceType, ErrorType } from "@/constants/errorType";
 import { ResultError } from "@/models/errors";
-import PatientData, {
+import PatientDataResponse, {
     PatientDataFile,
     PatientDataType,
-} from "@/models/patientData";
+} from "@/models/patientDataResponse";
 import { LoadStatus } from "@/models/storeOperations";
 import container from "@/plugins/container";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
@@ -12,6 +12,7 @@ import { PatientDataActions } from "@/store/modules/patientData/types";
 import {
     getPatientDataFileState,
     getPatientDataRecordState,
+    isAllPatientDataTypesStored,
 } from "@/store/modules/patientData/utils";
 
 export const actions: PatientDataActions = {
@@ -62,7 +63,7 @@ export const actions: PatientDataActions = {
     retrievePatientData(
         context,
         params: { hdid: string; patientDataTypes: PatientDataType[] }
-    ): Promise<PatientData> {
+    ): Promise<PatientDataResponse> {
         const logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
         const patientDataService = container.get<IPatientDataService>(
             SERVICE_IDENTIFIER.PatientDataService
@@ -71,22 +72,27 @@ export const actions: PatientDataActions = {
         return new Promise((resolve, reject) => {
             if (
                 getPatientDataRecordState(context.state, params.hdid).status ===
-                LoadStatus.LOADED
+                    LoadStatus.LOADED &&
+                isAllPatientDataTypesStored(
+                    context.state,
+                    params.hdid,
+                    params.patientDataTypes
+                )
             ) {
                 logger.debug("Patient data found stored, not querying!");
-                const patientData: PatientData = context.getters.patientData(
-                    params.hdid
-                );
+                const patientData: PatientDataResponse =
+                    context.getters.patientData(params.hdid);
                 resolve(patientData);
             } else {
                 logger.debug("Retrieving patient data");
                 context.commit("setPatientDataRequested", params.hdid);
                 patientDataService
                     .getPatientData(params.hdid, params.patientDataTypes)
-                    .then((data: PatientData) => {
+                    .then((data: PatientDataResponse) => {
                         context.commit("setPatientData", {
                             hdid: params.hdid,
                             patientData: data,
+                            patientDataTypes: params.patientDataTypes,
                         });
                         resolve(data);
                     })
@@ -95,6 +101,7 @@ export const actions: PatientDataActions = {
                             error,
                             errorType: ErrorType.Retrieve,
                             hdid: params.hdid,
+                            patientDataTypes: params.patientDataTypes,
                         });
                         reject(error);
                     });
