@@ -155,9 +155,10 @@ namespace HealthGateway.Admin.Server.Services
         {
             string authenticatedUserId = this.authenticationDelegate.FetchAuthenticatedUserId() ?? UserId.DefaultUser;
             Dependent? dependent = await this.delegationDelegate.GetDependentAsync(dependentHdid, true).ConfigureAwait(true);
-            dependent ??= new() { HdId = dependentHdid, CreatedBy = authenticatedUserId, UpdatedBy = authenticatedUserId };
+            dependent ??= new() { HdId = dependentHdid, CreatedBy = authenticatedUserId };
 
             dependent.Protected = true;
+            dependent.UpdatedBy = authenticatedUserId;
             await this.UpdateDelegationAsync(dependent, delegateHdids.ToList(), authenticatedUserId).ConfigureAwait(true);
         }
 
