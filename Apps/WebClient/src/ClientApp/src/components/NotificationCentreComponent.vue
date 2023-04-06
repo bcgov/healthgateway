@@ -5,9 +5,21 @@ import Vue from "vue";
 import { Component } from "vue-property-decorator";
 import { Action, Getter } from "vuex-class";
 
+import { EntryType } from "@/constants/entryType";
 import { DateWrapper, StringISODateTime } from "@/models/dateWrapper";
 import Notification, { NotificationActionType } from "@/models/notification";
+import { TimelineFilterBuilder } from "@/models/timelineFilter";
 import User from "@/models/user";
+
+const bctOdrCategory = "BctOdr";
+const clinicalDocumentCategory = "ClinicalDocument";
+const covid19LaboratoryCategory = "COVID19Laboratory";
+const healthVisitCategory = "HealthVisit";
+const immunizationCategory = "Immunization";
+const laboratoryCategory = "Laboratory";
+const medicationCategory = "Medications";
+const noteCategory = "MyNote";
+const specialAuthorityCategory = "SpecialAuthority";
 
 library.add(faAngleDoubleRight, faXmark);
 
@@ -18,6 +30,9 @@ export default class NotificationCentreComponent extends Vue {
 
     @Action("dismissNotification", { namespace: "notification" })
     dismissNotification!: (params: { notificationId: string }) => void;
+
+    @Action("setFilter", { namespace: "timeline" })
+    setFilter!: (filterBuilder: TimelineFilterBuilder) => void;
 
     @Getter("notifications", { namespace: "notification" })
     notifications!: Notification[];
@@ -40,6 +55,46 @@ export default class NotificationCentreComponent extends Vue {
             );
         }
         return this.notifications;
+    }
+
+    handleClickNotificationAction(
+        categoryName: string,
+        actionUrl: string
+    ): void {
+        const entryType = this.getEntryType(categoryName);
+        if (entryType) {
+            const builder =
+                TimelineFilterBuilder.create().withEntryType(entryType);
+            this.setFilter(builder);
+            this.$router.push({ path: "/timeline" });
+        } else if (categoryName === bctOdrCategory) {
+            this.$router.push({ path: "/services" });
+        } else {
+            this.$router.push({ path: actionUrl });
+        }
+    }
+
+    getEntryType(categoryName: string): EntryType | undefined {
+        switch (categoryName) {
+            case clinicalDocumentCategory:
+                return EntryType.ClinicalDocument;
+            case covid19LaboratoryCategory:
+                return EntryType.Covid19TestResult;
+            case healthVisitCategory:
+                return EntryType.HealthVisit;
+            case immunizationCategory:
+                return EntryType.Immunization;
+            case laboratoryCategory:
+                return EntryType.LabResult;
+            case medicationCategory:
+                return EntryType.Medication;
+            case noteCategory:
+                return EntryType.Note;
+            case specialAuthorityCategory:
+                return EntryType.SpecialAuthorityRequest;
+            default:
+                return undefined;
+        }
     }
 
     formatDate(date: StringISODateTime): string {
@@ -151,13 +206,19 @@ export default class NotificationCentreComponent extends Vue {
                         v-if="showActionButton(notification)"
                         class="text-right mt-2"
                     >
-                        <b-link
+                        <hg-button
                             :data-testid="`notification-${notification.id}-action-button`"
-                            :href="notification.actionUrl"
+                            variant="link"
                             class="card-link"
+                            @click="
+                                handleClickNotificationAction(
+                                    notification.categoryName,
+                                    notification.actionUrl
+                                )
+                            "
                             >{{
                                 formatActionText(notification.actionType)
-                            }}</b-link
+                            }}</hg-button
                         >
                     </div>
                 </div>
