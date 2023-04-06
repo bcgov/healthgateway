@@ -26,7 +26,7 @@ const options: any = {
 };
 
 @Component(options)
-export default class EntrycardTimelineComponent extends Vue {
+export default class EntryCardTimelineComponent extends Vue {
     @Prop() entry!: TimelineEntry;
     @Prop() cardId!: string;
     @Prop() title!: string;

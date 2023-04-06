@@ -44,13 +44,18 @@ export interface PatientDataGetters
     patientData(
         state: PatientDataState
     ): (hdid: string, patientDataTypes: PatientDataType[]) => PatientData[];
-    isPatientDataLoading(state: PatientDataState): (hdid: string) => boolean;
+    patientDataAreLoading(state: PatientDataState): (hdid: string) => boolean;
     patientDataFile(
         state: PatientDataState
     ): (fileId: string) => PatientDataFile | undefined;
     isPatientDataFileLoading(
         state: PatientDataState
     ): (fileId: string) => boolean;
+
+    patientDataCount(
+        state: PatientDataState,
+        getters: PatientDataGetters
+    ): (hdid: string, patientDataTypes: PatientDataType[]) => number;
 }
 
 type StoreContext = ActionContext<PatientDataState, RootState>;

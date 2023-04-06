@@ -45,9 +45,20 @@ export const getters: PatientDataGetters = {
             return records;
         };
     },
-    isPatientDataLoading(state: PatientDataState): (hdid: string) => boolean {
+    patientDataAreLoading(state: PatientDataState): (hdid: string) => boolean {
         return (hdid: string) =>
             getPatientDataRecordState(state, hdid).status ===
             LoadStatus.REQUESTED;
+    },
+    patientDataCount(
+        state: PatientDataState,
+        getters: PatientDataGetters
+    ): (hdid: string, patientDataTypes: PatientDataType[]) => number {
+        return (hdid: string, patientDataTypes: PatientDataType[]) => {
+            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+            // @ts-ignore
+            const data = getters.patientData(hdid, patientDataTypes);
+            return data.length;
+        };
     },
 };

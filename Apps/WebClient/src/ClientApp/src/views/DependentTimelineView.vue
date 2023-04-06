@@ -14,6 +14,7 @@ import {
     faStethoscope,
     faSyringe,
     faVial,
+    faXRay,
 } from "@fortawesome/free-solid-svg-icons";
 import Vue from "vue";
 import { Component, Prop } from "vue-property-decorator";
@@ -48,7 +49,8 @@ library.add(
     faSearch,
     faStethoscope,
     faSyringe,
-    faVial
+    faVial,
+    faXRay
 );
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any

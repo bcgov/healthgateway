@@ -1,7 +1,9 @@
+import { EntryType } from "@/constants/entryType";
 import { ErrorSourceType, ErrorType } from "@/constants/errorType";
 import { ResultError } from "@/models/errors";
 import PatientDataResponse, {
     PatientDataFile,
+    PatientDataToHealthDataTypeMap,
     PatientDataType,
 } from "@/models/patientDataResponse";
 import { LoadStatus } from "@/models/storeOperations";
@@ -14,7 +16,39 @@ import {
     getPatientDataRecordState,
     isAllPatientDataTypesStored,
 } from "@/store/modules/patientData/utils";
+import EventTracker from "@/utility/eventTracker";
 
+const patientDataTypeMap = new Map<PatientDataType, EntryType>([
+    [PatientDataType.DiagnosticImaging, EntryType.DiagnosticImaging],
+]);
+
+function reportDataLoaded(
+    patientDataTypes: PatientDataType[],
+    data: PatientDataResponse
+) {
+    // call event tracker load data for each patient data type's count on the patient data response
+    patientDataTypes.forEach((patientDataType) => {
+        const dataSet = data.items.filter(
+            (i) =>
+                i.type === PatientDataToHealthDataTypeMap.get(patientDataType)
+        );
+        const entryType = patientDataTypeMap.get(patientDataType);
+        if (dataSet && entryType !== undefined) {
+            EventTracker.loadData(entryType, dataSet.length);
+        }
+    });
+}
+
+function getErrorSource(patientDataType: PatientDataType): ErrorSourceType {
+    switch (patientDataType) {
+        case PatientDataType.DiagnosticImaging:
+            return ErrorSourceType.DiagnosticImaging;
+        case PatientDataType.OrganDonorRegistrationStatus:
+            return ErrorSourceType.OrganDonorRegistration;
+        default:
+            return ErrorSourceType.PatientData;
+    }
+}
 export const actions: PatientDataActions = {
     retrievePatientDataFile(
         context,
@@ -89,6 +123,7 @@ export const actions: PatientDataActions = {
                 patientDataService
                     .getPatientData(params.hdid, params.patientDataTypes)
                     .then((data: PatientDataResponse) => {
+                        reportDataLoaded(params.patientDataTypes, data);
                         context.commit("setPatientData", {
                             hdid: params.hdid,
                             patientData: data,
@@ -115,6 +150,7 @@ export const actions: PatientDataActions = {
             errorType: ErrorType;
             hdid?: string;
             fileId: string;
+            patientDataTypes: PatientDataType[];
         }
     ): void {
         const logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
@@ -139,14 +175,27 @@ export const actions: PatientDataActions = {
                 { root: true }
             );
         } else {
-            context.dispatch(
-                "errorBanner/addError",
-                {
-                    errorType: params.errorType,
-                    source: ErrorSourceType.OrganDonorRegistration,
-                },
-                { root: true }
-            );
+            if (params.patientDataTypes && params.patientDataTypes.length > 0) {
+                params.patientDataTypes.forEach((patientDataType) => {
+                    context.dispatch(
+                        "errorBanner/addError",
+                        {
+                            errorType: params.errorType,
+                            source: getErrorSource(patientDataType),
+                        },
+                        { root: true }
+                    );
+                });
+            } else {
+                context.dispatch(
+                    "errorBanner/addError",
+                    {
+                        errorType: params.errorType,
+                        source: ErrorSourceType.PatientData,
+                    },
+                    { root: true }
+                );
+            }
         }
     },
 };

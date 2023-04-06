@@ -17,7 +17,7 @@ import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import { ILaboratoryService, ILogger } from "@/services/interfaces";
 import SnowPlow from "@/utility/snowPlow";
 
-import EntrycardTimelineComponent from "./EntrycardTimelineComponent.vue";
+import EntryCardTimelineComponent from "./EntrycardTimelineComponent.vue";
 
 library.add(faDownload);
 
@@ -25,7 +25,7 @@ library.add(faDownload);
 const options: any = {
     components: {
         MessageModalComponent,
-        EntryCard: EntrycardTimelineComponent,
+        EntryCard: EntryCardTimelineComponent,
     },
 };
 

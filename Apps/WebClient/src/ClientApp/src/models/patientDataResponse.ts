@@ -28,6 +28,7 @@ PatientDataToHealthDataTypeMap.set(
 );
 
 export abstract class PatientData {
+    public id: string | undefined;
     public type!: HealthDataType;
 }
 
@@ -35,6 +36,17 @@ export class OrganDonorRegistration extends PatientData {
     public status!: string;
     public statusMessage!: string;
     public registrationFileId: string | undefined;
+}
+
+export class DiagnosticImagingExam extends PatientData {
+    public procedureDescription!: string;
+    public bodyPart!: string;
+    public modality!: string;
+    public organization!: string;
+    public healthAuthority!: string;
+    public examStatus!: string;
+    public fileId: string | undefined;
+    public examDate!: string;
 }
 
 export class PatientDataFile {
