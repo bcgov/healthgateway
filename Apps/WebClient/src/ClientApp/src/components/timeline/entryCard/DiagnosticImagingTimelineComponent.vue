@@ -114,19 +114,19 @@ export default class DiagnosticImagingTimelineComponent extends Vue {
             <div class="my-2">
                 <div data-testid="diagnostic-imaging-body-part">
                     <strong>Body Part: </strong>
-                    <span>{{ entry.bodyPart ?? "N/A" }}</span>
+                    <span>{{ entry.bodyPart }}</span>
                 </div>
                 <div data-testid="diagnostic-imaging-procedure-description">
                     <strong>Description: </strong>
-                    <span>{{ entry.procedureDescription ?? "N/A" }}</span>
+                    <span>{{ entry.procedureDescription }}</span>
                 </div>
                 <div data-testid="diagnostic-imaging-health-authority">
                     <strong>Health Authority: </strong>
-                    <span>{{ entry.healthAuthority ?? "N/A" }}</span>
+                    <span>{{ entry.healthAuthority }}</span>
                 </div>
                 <div data-testid="diagnostic-imaging-facility">
                     <strong>Facility: </strong>
-                    <span>{{ entry.facility ?? "N/A" }}</span>
+                    <span>{{ entry.facility }}</span>
                 </div>
             </div>
             <div class="mt-3">

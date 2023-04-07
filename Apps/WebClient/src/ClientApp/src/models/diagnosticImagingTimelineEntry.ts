@@ -6,14 +6,14 @@ import TimelineEntry from "@/models/timelineEntry";
 import { UserComment } from "@/models/userComment";
 
 export default class DiagnosticImagingTimelineEntry extends TimelineEntry {
-    public procedureDescription!: string;
-    public bodyPart!: string;
-    public modality!: string;
-    public organization!: string;
-    public healthAuthority!: string;
-    public examStatus!: string;
+    public procedureDescription: string;
+    public bodyPart: string;
+    public modality: string;
+    public organization: string;
+    public healthAuthority: string;
+    public examStatus: string;
     public fileId: string | undefined;
-    public examDate!: StringISODate;
+    public examDate: StringISODate;
 
     private getComments: (entryId: string) => UserComment[] | null;
 
@@ -27,12 +27,12 @@ export default class DiagnosticImagingTimelineEntry extends TimelineEntry {
             new DateWrapper(model.examDate)
         );
 
-        this.procedureDescription = model.procedureDescription;
-        this.bodyPart = model.bodyPart;
-        this.modality = model.modality;
-        this.organization = model.organization;
-        this.healthAuthority = model.healthAuthority;
-        this.examStatus = model.examStatus;
+        this.procedureDescription = model.procedureDescription || "N/A";
+        this.bodyPart = model.bodyPart || "N/A";
+        this.modality = model.modality || "N/A";
+        this.organization = model.organization || "N/A";
+        this.healthAuthority = model.healthAuthority || "N/A";
+        this.examStatus = model.examStatus || "N/A";
         this.fileId = model.fileId;
         this.examDate = model.examDate;
         this.getComments = getComments;
