@@ -519,7 +519,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
             mockDependentDelegate.Setup(s => s.GetTotalDelegateCountsAsync(It.IsAny<IEnumerable<string>>())).ReturnsAsync(mockDelegateCountsResult);
 
             Mock<IDelegationDelegate> delegationDelegate = new();
-            delegationDelegate.Setup(s => s.GetDependentAsync(this.mockHdId, true)).ReturnsAsync(dependent);
+            delegationDelegate.Setup(s => s.GetDependentAsync(this.mockHdId, true, false)).ReturnsAsync(dependent);
 
             Mock<IUserProfileDelegate> mockUserProfileDelegate = new();
             mockUserProfileDelegate.Setup(s => s.GetUserProfile(this.mockParentHdid))

@@ -670,7 +670,7 @@ namespace HealthGateway.Admin.Tests.Services
             resourceDelegateDelegate.Setup(r => r.Search(It.IsAny<ResourceDelegateQuery>())).ReturnsAsync(result);
 
             Mock<IDelegationDelegate> delegationDelegate = new();
-            delegationDelegate.Setup(p => p.GetDependentAsync(DependentHdid, true)).ReturnsAsync(protectedDependent);
+            delegationDelegate.Setup(p => p.GetDependentAsync(DependentHdid, true, false)).ReturnsAsync(protectedDependent);
 
             return new DelegationService(
                 this.configuration,
@@ -686,7 +686,7 @@ namespace HealthGateway.Admin.Tests.Services
             Mock<IResourceDelegateDelegate> resourceDelegateDelegate = new();
             resourceDelegateDelegate.Setup(r => r.Search(new() { ByOwnerHdid = resourceOwnerHdid })).ReturnsAsync(resourceDelegates);
 
-            delegationDelegate.Setup(p => p.GetDependentAsync(resourceOwnerHdid, true)).ReturnsAsync(dependent);
+            delegationDelegate.Setup(p => p.GetDependentAsync(resourceOwnerHdid, true, false)).ReturnsAsync(dependent);
 
             return new(this.configuration, new Mock<IPatientService>().Object, resourceDelegateDelegate.Object, delegationDelegate.Object, new Mock<IAuthenticationDelegate>().Object, this.autoMapper);
         }

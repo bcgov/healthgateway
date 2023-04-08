@@ -83,6 +83,7 @@ namespace HealthGateway.Database.Context
         public DbSet<UserFeedbackTag> UserFeedbackTag { get; set; } = null!;
         public DbSet<AdminUserProfile> AdminUserProfile { get; set; } = null!;
         public DbSet<Dependent> Dependent { get; set; } = null!;
+        public DbSet<DependentAudit> DependentAudit { get; set; } = null!;
         public DbSet<AllowedDelegation> AllowedDelegation { get; set; } = null!;
 
 #pragma warning restore CS1591, SA1600
@@ -387,6 +388,33 @@ namespace HealthGateway.Database.Context
                 .HasForeignKey(ad => ad.DependentHdId)
                 .OnDelete(DeleteBehavior.Cascade);
 
+            // Create Foreign key for DependentAudit to Dependent
+            modelBuilder.Entity<DependentAudit>()
+                .HasOne<Dependent>(da => da.Dependent)
+                .WithMany(d => d.DependentAudits)
+                .HasForeignKey(da => da.DelegateHdId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            // Create Foreign key for DependentAudit to DependentAuditOperationCode
+            modelBuilder.Entity<DependentAudit>()
+                .HasOne<DependentAuditOperationCode>()
+                .WithMany()
+                .HasPrincipalKey(k => k.Code)
+                .HasForeignKey(k => k.OperationCode)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            ValueConverter<DependentAuditOperation, string> dependentAuditOperationCodeConverter = new(
+                v => EnumUtility.ToEnumString(v, false),
+                v => EnumUtility.ToEnum<DependentAuditOperation>(v, false));
+
+            modelBuilder.Entity<DependentAudit>()
+                .Property(e => e.OperationCode)
+                .HasConversion(dependentAuditOperationCodeConverter);
+
+            modelBuilder.Entity<DependentAuditOperationCode>()
+                .Property(e => e.Code)
+                .HasConversion(dependentAuditOperationCodeConverter);
+
             modelBuilder.HasDbFunction(DateTruncMethod).HasName("date_trunc");
 
             // Initial seed data
@@ -399,6 +427,7 @@ namespace HealthGateway.Database.Context
             this.SeedResourceDelegateReason(modelBuilder);
             this.SeedCommentEntryTypeCode(modelBuilder);
             this.SeedUserLoginClientTypeCode(modelBuilder);
+            this.SeedDependentAuditOperationCodes(modelBuilder);
         }
 
         /// <summary>
@@ -1085,6 +1114,34 @@ namespace HealthGateway.Database.Context
                         CreatedDateTime = this.DefaultSeedDate,
                         UpdatedBy = UserId.DefaultUser,
                         UpdatedDateTime = this.DefaultSeedDate,
+                    });
+        }
+
+        /// <summary>
+        /// Seeds the Dependent Audit Operation Codes.
+        /// </summary>
+        /// <param name="modelBuilder">The passed in model builder.</param>
+        private void SeedDependentAuditOperationCodes(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<DependentAuditOperationCode>()
+                .HasData(
+                    new DependentAuditOperationCode
+                    {
+                        Code = DependentAuditOperation.Protect,
+                        Description = "Protect Dependent Operation Code",
+                        CreatedBy = UserId.DefaultUser,
+                        CreatedDateTime = this.DefaultSeedDate.ToUniversalTime(),
+                        UpdatedBy = UserId.DefaultUser,
+                        UpdatedDateTime = this.DefaultSeedDate.ToUniversalTime(),
+                    },
+                    new DependentAuditOperationCode
+                    {
+                        Code = DependentAuditOperation.Unprotect,
+                        Description = "Unprotect Dependent Operation Code",
+                        CreatedBy = UserId.DefaultUser,
+                        CreatedDateTime = this.DefaultSeedDate.ToUniversalTime(),
+                        UpdatedBy = UserId.DefaultUser,
+                        UpdatedDateTime = this.DefaultSeedDate.ToUniversalTime(),
                     });
         }
     }

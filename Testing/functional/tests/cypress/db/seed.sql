@@ -1381,3 +1381,27 @@ VALUES (
 	'System',
 	current_timestamp
 );
+
+INSERT INTO gateway."DependentAudit"(
+	"DependentAuditId",
+	"DelegateHdId",
+	"AgentUsername",
+	"ProtectedReason",
+	"OperationCode",
+	"TransactionDateTime",
+	"CreatedBy",
+	"CreatedDateTime",
+	"UpdatedBy",
+	"UpdatedDateTime")
+VALUES (
+	uuid_generate_v4(), 
+	'35224807075386271', 
+	'agent@idir', 
+	'Protecting dependent', 
+	'Protect', 
+	current_timestamp,
+	'System',
+	current_timestamp,
+	'System',
+	current_timestamp
+);

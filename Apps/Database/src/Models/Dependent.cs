@@ -42,5 +42,11 @@ namespace HealthGateway.Database.Models
         /// </summary>
         [SuppressMessage("Usage", "CA2227:Collection properties should be read only", Justification = "Team decision")]
         public IList<AllowedDelegation> AllowedDelegations { get; set; } = new List<AllowedDelegation>();
+
+        /// <summary>
+        /// Gets or sets the dependent audits for this dependent.
+        /// </summary>
+        [SuppressMessage("Usage", "CA2227:Collection properties should be read only", Justification = "Team decision")]
+        public IList<DependentAudit> DependentAudits { get; set; } = new List<DependentAudit>();
     }
 }
