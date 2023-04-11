@@ -29,7 +29,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace HealthGateway.Database.Migrations
 {
     [DbContext(typeof(GatewayDbContext))]
-    [Migration("20230411200422_CreateDependentAuditTables")]
+    [Migration("20230411202749_CreateDependentAuditTables")]
     partial class CreateDependentAuditTables
     {
         /// <inheritdoc />
@@ -1407,7 +1407,8 @@ namespace HealthGateway.Database.Migrations
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
+                        .HasColumnType("uuid")
+                        .HasColumnName("DependentAuditId");
 
                     b.Property<string>("AgentUsername")
                         .IsRequired()

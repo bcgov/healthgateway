@@ -53,7 +53,7 @@ namespace HealthGateway.Database.Migrations
                 schema: "gateway",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    DependentAuditId = table.Column<Guid>(type: "uuid", nullable: false),
                     DependentHdId = table.Column<string>(type: "character varying(52)", maxLength: 52, nullable: false),
                     AgentUsername = table.Column<string>(type: "character varying(255)", maxLength: 255, nullable: false),
                     ProtectedReason = table.Column<string>(type: "character varying(500)", maxLength: 500, nullable: false),
@@ -67,7 +67,7 @@ namespace HealthGateway.Database.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_DependentAudit", x => x.Id);
+                    table.PrimaryKey("PK_DependentAudit", x => x.DependentAuditId);
                     table.ForeignKey(
                         name: "FK_DependentAudit_DependentAuditOperationCode_OperationCode",
                         column: x => x.OperationCode,

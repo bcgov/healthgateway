@@ -31,6 +31,7 @@ namespace HealthGateway.Database.Models
         /// </summary>
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+        [Column("DependentAuditId")]
         public Guid Id { get; set; }
 
         /// <summary>
