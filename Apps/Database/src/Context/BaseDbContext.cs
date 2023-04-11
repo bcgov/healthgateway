@@ -20,6 +20,8 @@ namespace HealthGateway.Database.Context
     using System.Diagnostics.CodeAnalysis;
     using System.Globalization;
     using System.Linq;
+    using System.Threading;
+    using System.Threading.Tasks;
     using HealthGateway.Common.Data.Models;
     using Microsoft.EntityFrameworkCore;
     using Microsoft.EntityFrameworkCore.ChangeTracking;
@@ -64,6 +66,33 @@ namespace HealthGateway.Database.Context
         /// <inheritdoc/>
         public override int SaveChanges()
         {
+            this.UpdateAuditProperties();
+            return base.SaveChanges();
+        }
+
+        /// <inheritdoc/>
+        public override int SaveChanges(bool acceptAllChangesOnSuccess)
+        {
+            this.UpdateAuditProperties();
+            return base.SaveChanges(acceptAllChangesOnSuccess);
+        }
+
+        /// <inheritdoc/>
+        public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
+        {
+            this.UpdateAuditProperties();
+            return base.SaveChangesAsync(cancellationToken);
+        }
+
+        /// <inheritdoc/>
+        public override Task<int> SaveChangesAsync(bool acceptAllChangesOnSuccess, CancellationToken cancellationToken = default)
+        {
+            this.UpdateAuditProperties();
+            return base.SaveChangesAsync(acceptAllChangesOnSuccess, cancellationToken);
+        }
+
+        private void UpdateAuditProperties()
+        {
             DateTime now = DateTime.UtcNow;
             IEnumerable<EntityEntry> entities = this.ChangeTracker.Entries()
                 .Where(x => (x.Entity is IAuditable || x.Entity is IConcurrencyGuard) && (x.State == EntityState.Added || x.State == EntityState.Modified));
@@ -73,12 +102,12 @@ namespace HealthGateway.Database.Context
                 {
                     if (entityEntry.State == EntityState.Added)
                     {
-                        // newly created records must have a createdby and date/time stamp associated to them
+                        // newly created records must have a createdBy and date/time stamp associated to them
                         entityEntry.Property(nameof(IAuditable.CreatedDateTime)).CurrentValue = now;
                     }
                     else if (entityEntry.State == EntityState.Modified)
                     {
-                        // Updated entriews cannot have thier createdBy and createdDateTime changed.
+                        // Updated entries cannot have their createdBy and createdDateTime changed.
                         entityEntry.Property(nameof(IAuditable.CreatedBy)).IsModified = false;
                         entityEntry.Property(nameof(IAuditable.CreatedDateTime)).IsModified = false;
                     }
@@ -98,8 +127,6 @@ namespace HealthGateway.Database.Context
                         entityEntry.Property(nameof(IConcurrencyGuard.Version)).CurrentValue;
                 }
             }
-
-            return base.SaveChanges();
         }
     }
 }

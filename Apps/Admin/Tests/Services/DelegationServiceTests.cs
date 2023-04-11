@@ -25,6 +25,7 @@ namespace HealthGateway.Admin.Tests.Services
     using HealthGateway.Admin.Common.Models;
     using HealthGateway.Admin.Server.Services;
     using HealthGateway.Admin.Tests.Utils;
+    using HealthGateway.Common.AccessManagement.Authentication;
     using HealthGateway.Common.Constants;
     using HealthGateway.Common.Data.Constants;
     using HealthGateway.Common.Data.ErrorHandling;
@@ -354,6 +355,7 @@ namespace HealthGateway.Admin.Tests.Services
                 patientService.Object,
                 new Mock<IResourceDelegateDelegate>().Object,
                 new Mock<IDelegationDelegate>().Object,
+                new Mock<IAuthenticationDelegate>().Object,
                 this.autoMapper);
 
             await Assert.ThrowsAsync<ProblemDetailsException>(() => delegationService.GetDelegationInformationAsync(DependentPhn)).ConfigureAwait(true);
@@ -670,7 +672,13 @@ namespace HealthGateway.Admin.Tests.Services
             Mock<IDelegationDelegate> delegationDelegate = new();
             delegationDelegate.Setup(p => p.GetDependentAsync(DependentHdid, true)).ReturnsAsync(protectedDependent);
 
-            return new DelegationService(this.configuration, patientService.Object, resourceDelegateDelegate.Object, delegationDelegate.Object, this.autoMapper);
+            return new DelegationService(
+                this.configuration,
+                patientService.Object,
+                resourceDelegateDelegate.Object,
+                delegationDelegate.Object,
+                new Mock<IAuthenticationDelegate>().Object,
+                this.autoMapper);
         }
 
         private DelegationService GetDelegationService(Dependent? dependent, Mock<IDelegationDelegate> delegationDelegate, ResourceDelegateQueryResult resourceDelegates, string resourceOwnerHdid)
@@ -680,14 +688,20 @@ namespace HealthGateway.Admin.Tests.Services
 
             delegationDelegate.Setup(p => p.GetDependentAsync(resourceOwnerHdid, true)).ReturnsAsync(dependent);
 
-            return new(this.configuration, new Mock<IPatientService>().Object, resourceDelegateDelegate.Object, delegationDelegate.Object, this.autoMapper);
+            return new(this.configuration, new Mock<IPatientService>().Object, resourceDelegateDelegate.Object, delegationDelegate.Object, new Mock<IAuthenticationDelegate>().Object, this.autoMapper);
         }
 
         private DelegationService GetDelegationService(RequestResult<PatientModel> patient)
         {
             Mock<IPatientService> patientService = new();
             patientService.Setup(p => p.GetPatient(It.IsAny<string>(), PatientIdentifierType.Phn, false)).ReturnsAsync(patient);
-            return new(this.configuration, patientService.Object, new Mock<IResourceDelegateDelegate>().Object, new Mock<IDelegationDelegate>().Object, this.autoMapper);
+            return new(
+                this.configuration,
+                patientService.Object,
+                new Mock<IResourceDelegateDelegate>().Object,
+                new Mock<IDelegationDelegate>().Object,
+                new Mock<IAuthenticationDelegate>().Object,
+                this.autoMapper);
         }
     }
 }

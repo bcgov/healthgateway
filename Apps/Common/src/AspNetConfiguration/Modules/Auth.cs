@@ -18,9 +18,7 @@ namespace HealthGateway.Common.AspNetConfiguration.Modules
     using System;
     using System.Diagnostics.CodeAnalysis;
     using System.IdentityModel.Tokens.Jwt;
-    using System.Net;
     using System.Security.Claims;
-    using System.Text.Json;
     using System.Threading.Tasks;
     using HealthGateway.Common.AccessManagement.Authorization.Admin;
     using HealthGateway.Common.AccessManagement.Authorization.Handlers;
@@ -453,16 +451,7 @@ namespace HealthGateway.Common.AspNetConfiguration.Modules
 
             auditLogger.WriteAuditEvent(auditEvent);
 
-            context.Response.StatusCode = (int)HttpStatusCode.Unauthorized;
-            context.Response.ContentType = "application/json";
-
-            return context.Response.WriteAsync(
-                JsonSerializer.Serialize(
-                    new
-                    {
-                        State = "AuthenticationFailed",
-                        Message = context.Exception.ToString(),
-                    }));
+            return Task.CompletedTask;
         }
     }
 }
