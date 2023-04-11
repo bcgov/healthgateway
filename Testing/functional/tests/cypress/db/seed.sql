@@ -1385,8 +1385,8 @@ VALUES (
 );
 
 INSERT INTO gateway."DependentAudit"(
-	"DependentAuditId",
-	"DelegateHdId",
+	"Id",
+	"DependentHdId",
 	"AgentUsername",
 	"ProtectedReason",
 	"OperationCode",
@@ -1409,8 +1409,8 @@ VALUES (
 );
 
 INSERT INTO gateway."DependentAudit"(
-	"DependentAuditId",
-	"DelegateHdId",
+	"Id",
+	"DependentHdId",
 	"AgentUsername",
 	"ProtectedReason",
 	"OperationCode",
@@ -1433,8 +1433,8 @@ VALUES (
 );
 
 INSERT INTO gateway."DependentAudit"(
-	"DependentAuditId",
-	"DelegateHdId",
+	"Id",
+	"DependentHdId",
 	"AgentUsername",
 	"ProtectedReason",
 	"OperationCode",

@@ -31,14 +31,14 @@ namespace HealthGateway.Database.Models
         /// </summary>
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        public Guid DependentAuditId { get; set; }
+        public Guid Id { get; set; }
 
         /// <summary>
-        /// Gets or sets the delegate hdid.
+        /// Gets or sets the dependent hdid.
         /// </summary>
         [Required]
         [MaxLength(52)]
-        public string DelegateHdId { get; set; } = null!;
+        public string DependentHdId { get; set; } = null!;
 
         /// <summary>
         /// Gets or sets the agent username.
