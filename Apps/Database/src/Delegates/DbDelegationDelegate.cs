@@ -41,7 +41,7 @@ namespace HealthGateway.Database.Delegates
         }
 
         /// <inheritdoc/>
-        public async Task<Dependent?> GetDependentAsync(string hdid, bool includeAllowedDelegation = false, bool includeDependentAudit = false)
+        public async Task<Dependent?> GetDependentAsync(string hdid, bool includeAllowedDelegation = false)
         {
             this.logger.LogTrace("Getting dependent - includeAllowedDelegation : {IncludeAllowedDelegation}", includeAllowedDelegation.ToString());
 
@@ -51,11 +51,6 @@ namespace HealthGateway.Database.Delegates
             if (includeAllowedDelegation)
             {
                 query = query.Include(d => d.AllowedDelegations);
-            }
-
-            if (includeDependentAudit)
-            {
-                query = query.Include(d => d.DependentAudits);
             }
 
             return await query.SingleOrDefaultAsync().ConfigureAwait(true);

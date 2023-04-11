@@ -32,12 +32,8 @@ namespace HealthGateway.Database.Delegates
         /// Indicates whether allowed delegation should be included in the returned
         /// dependent.
         /// </param>
-        /// <param name="includeDependentAudit">
-        /// Indicates whether dependent audit should be included in the returned
-        /// dependent.
-        /// </param>
         /// <returns>The dependent or null if not found.</returns>
-        Task<Dependent?> GetDependentAsync(string hdid, bool includeAllowedDelegation = false, bool includeDependentAudit = false);
+        Task<Dependent?> GetDependentAsync(string hdid, bool includeAllowedDelegation = false);
 
         /// <summary>
         /// Updates the dependent object including allowed delegation associations as well as resource delegates in the DB.

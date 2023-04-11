@@ -40,11 +40,6 @@ namespace HealthGateway.Database.Models
         public string DelegateHdId { get; set; } = null!;
 
         /// <summary>
-        /// Gets or sets the dependent associated to this dependent audit.
-        /// </summary>
-        public Dependent Dependent { get; set; } = null!;
-
-        /// <summary>
         /// Gets or sets the agent username.
         /// </summary>
         [MaxLength(255)]

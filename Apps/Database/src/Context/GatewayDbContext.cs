@@ -388,13 +388,6 @@ namespace HealthGateway.Database.Context
                 .HasForeignKey(ad => ad.DependentHdId)
                 .OnDelete(DeleteBehavior.Cascade);
 
-            // Create Foreign key for DependentAudit to Dependent
-            modelBuilder.Entity<DependentAudit>()
-                .HasOne<Dependent>(da => da.Dependent)
-                .WithMany(d => d.DependentAudits)
-                .HasForeignKey(da => da.DelegateHdId)
-                .OnDelete(DeleteBehavior.SetNull);
-
             // Create Foreign key for DependentAudit to DependentAuditOperationCode
             modelBuilder.Entity<DependentAudit>()
                 .HasOne<DependentAuditOperationCode>()
