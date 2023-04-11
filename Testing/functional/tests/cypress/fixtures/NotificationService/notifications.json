@@ -17,18 +17,26 @@
     },
     {
         "id": "9eb24f30-ab74-4cdc-3280-08db134f5424",
-        "categoryName": "NOTIFICATION BADGE 1",
-        "displayText": "NOTIFICATION BADGE 1",
+        "categoryName": "Immunization",
+        "displayText": "You have a new Immunization result",
         "actionUrl": "",
-        "actionType": "None",
+        "actionType": "InternalLink",
         "scheduledDateTimeUtc": "2021-11-22T05:49:48"
     },
     {
         "id": "1f2d31d1-d540-4034-327f-08db134f5424",
-        "categoryName": "NOTIFICATION BADGE 2",
-        "displayText": "NOTIFICATION BADGE 2",
+        "categoryName": "BctOdr",
+        "displayText": "Your BC Organ Donor Status have changed",
         "actionUrl": "",
-        "actionType": "None",
+        "actionType": "InternalLink",
         "scheduledDateTimeUtc": "2021-11-23T00:00:01"
+    },
+    {
+        "id": "37592c14-4cc1-4bd0-0b13-08db340e7e77",
+        "categoryName": "Welcome",
+        "displayText": "We added a new feature which allows you to view your lab results",
+        "actionUrl": "/reports",
+        "actionType": "InternalLink",
+        "scheduledDateTimeUtc": "2021-11-24T01:10:01"
     }
 ]
