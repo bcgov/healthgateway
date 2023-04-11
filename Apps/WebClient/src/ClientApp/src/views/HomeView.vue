@@ -635,9 +635,8 @@ export default class HomeView extends Vue {
                         </b-nav>
                     </template>
                     <div>
-                        BC Transplant oversees all aspects of organ donation and
-                        transplant across BC and manages the BC Organ Donor
-                        Registry.
+                        Check your organ donor registration status and view your
+                        decision.
                     </div>
                 </hg-card-button>
             </b-col>
