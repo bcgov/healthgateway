@@ -14,6 +14,8 @@ TRUNCATE gateway."Email" CASCADE;
 TRUNCATE gateway."AdminTag" CASCADE;
 TRUNCATE gateway."UserFeedback" CASCADE;
 TRUNCATE gateway."Dependent" CASCADE;
+TRUNCATE gateway."DependentAudit" CASCADE;
+
 
 /* Registered HealthGateway User - Keycloak User (healthgateway) */
 INSERT INTO gateway."UserProfile"(
@@ -1380,4 +1382,76 @@ VALUES (
 	current_timestamp,
 	'System',
 	current_timestamp
+);
+
+INSERT INTO gateway."DependentAudit"(
+	"DependentAuditId",
+	"DependentHdId",
+	"AgentUsername",
+	"ProtectedReason",
+	"OperationCode",
+	"TransactionDateTime",
+	"CreatedBy",
+	"CreatedDateTime",
+	"UpdatedBy",
+	"UpdatedDateTime")
+VALUES (
+	uuid_generate_v4(), 
+	'35224807075386271', 
+	'agent@idir', 
+	'Protecting dependent', 
+	'Protect', 
+	current_timestamp,
+	'System',
+	current_timestamp,
+	'System',
+	current_timestamp
+);
+
+INSERT INTO gateway."DependentAudit"(
+	"DependentAuditId",
+	"DependentHdId",
+	"AgentUsername",
+	"ProtectedReason",
+	"OperationCode",
+	"TransactionDateTime",
+	"CreatedBy",
+	"CreatedDateTime",
+	"UpdatedBy",
+	"UpdatedDateTime")
+VALUES (
+	uuid_generate_v4(), 
+	'35224807075386271', 
+	'agent@idir', 
+	'Unprotecting dependent', 
+	'Unprotect', 
+	current_timestamp - INTERVAL '1 day', 
+	'System',
+	current_timestamp - INTERVAL '1 day', 
+	'System',
+	current_timestamp - INTERVAL '1 day'
+);
+
+INSERT INTO gateway."DependentAudit"(
+	"DependentAuditId",
+	"DependentHdId",
+	"AgentUsername",
+	"ProtectedReason",
+	"OperationCode",
+	"TransactionDateTime",
+	"CreatedBy",
+	"CreatedDateTime",
+	"UpdatedBy",
+	"UpdatedDateTime")
+VALUES (
+	uuid_generate_v4(), 
+	'35224807075386271', 
+	'agent@idir', 
+	'Protecting dependent', 
+	'Protect', 
+	current_timestamp - INTERVAL '2 day', 
+	'System',
+	current_timestamp - INTERVAL '2 day', 
+	'System',
+	current_timestamp - INTERVAL '2 day'
 );
