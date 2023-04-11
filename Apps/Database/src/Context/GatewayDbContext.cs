@@ -393,7 +393,7 @@ namespace HealthGateway.Database.Context
                 .HasOne<Dependent>(da => da.Dependent)
                 .WithMany(d => d.DependentAudits)
                 .HasForeignKey(da => da.DelegateHdId)
-                .OnDelete(DeleteBehavior.Cascade);
+                .OnDelete(DeleteBehavior.SetNull);
 
             // Create Foreign key for DependentAudit to DependentAuditOperationCode
             modelBuilder.Entity<DependentAudit>()

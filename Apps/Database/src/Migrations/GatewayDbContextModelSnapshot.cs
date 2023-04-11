@@ -3553,7 +3553,7 @@ namespace HealthGateway.Database.Migrations
                     b.HasOne("HealthGateway.Database.Models.Dependent", "Dependent")
                         .WithMany("DependentAudits")
                         .HasForeignKey("DelegateHdId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.SetNull)
                         .IsRequired();
 
                     b.HasOne("HealthGateway.Database.Models.DependentAuditOperationCode", null)
