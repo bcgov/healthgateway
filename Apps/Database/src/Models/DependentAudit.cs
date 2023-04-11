@@ -36,18 +36,21 @@ namespace HealthGateway.Database.Models
         /// <summary>
         /// Gets or sets the delegate hdid.
         /// </summary>
+        [Required]
         [MaxLength(52)]
         public string DelegateHdId { get; set; } = null!;
 
         /// <summary>
         /// Gets or sets the agent username.
         /// </summary>
+        [Required]
         [MaxLength(255)]
         public string AgentUsername { get; set; } = null!;
 
         /// <summary>
         /// Gets or sets the protected reason.
         /// </summary>
+        [Required]
         [MaxLength(500)]
         public string ProtectedReason { get; set; } = string.Empty;
 

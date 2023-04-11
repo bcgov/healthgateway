@@ -29,7 +29,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace HealthGateway.Database.Migrations
 {
     [DbContext(typeof(GatewayDbContext))]
-    [Migration("20230411190237_CreateDependentAuditTables")]
+    [Migration("20230411193034_CreateDependentAuditTables")]
     partial class CreateDependentAuditTables
     {
         /// <inheritdoc />
