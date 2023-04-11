@@ -216,10 +216,9 @@ export default class NotificationCentreComponent extends Vue {
                                     notification.actionUrl
                                 )
                             "
-                            >{{
-                                formatActionText(notification.actionType)
-                            }}</hg-button
                         >
+                            {{ formatActionText(notification.actionType) }}
+                        </hg-button>
                     </div>
                 </div>
             </b-card>
