@@ -151,7 +151,7 @@ namespace HealthGateway.Admin.Server.Services
         }
 
         /// <inheritdoc/>
-        public async Task ProtectDependentAsync(string dependentHdid, IEnumerable<string> delegateHdids)
+        public async Task ProtectDependentAsync(string dependentHdid, IEnumerable<string> delegateHdids, string reason)
         {
             string authenticatedUserId = this.authenticationDelegate.FetchAuthenticatedUserId() ?? UserId.DefaultUser;
             Dependent? dependent = await this.delegationDelegate.GetDependentAsync(dependentHdid, true).ConfigureAwait(true);
@@ -159,11 +159,22 @@ namespace HealthGateway.Admin.Server.Services
 
             dependent.Protected = true;
             dependent.UpdatedBy = authenticatedUserId;
-            await this.UpdateDelegationAsync(dependent, delegateHdids.ToList(), authenticatedUserId).ConfigureAwait(true);
+
+            DependentAudit dependentAudit = new()
+            {
+                DependentHdId = dependentHdid,
+                ProtectedReason = reason,
+                OperationCode = DependentAuditOperation.Protect,
+                AgentUsername = this.authenticationDelegate.FetchAuthenticatedPreferredUsername() ?? authenticatedUserId,
+                CreatedBy = authenticatedUserId,
+                UpdatedBy = authenticatedUserId,
+            };
+
+            await this.UpdateDelegationAsync(dependent, delegateHdids.ToList(), authenticatedUserId, dependentAudit).ConfigureAwait(true);
         }
 
         /// <inheritdoc/>
-        public async Task UnprotectDependentAsync(string dependentHdid)
+        public async Task UnprotectDependentAsync(string dependentHdid, string reason)
         {
             string authenticatedUserId = this.authenticationDelegate.FetchAuthenticatedUserId() ?? UserId.DefaultUser;
             Dependent? dependent = await this.delegationDelegate.GetDependentAsync(dependentHdid, true).ConfigureAwait(true);
@@ -176,10 +187,21 @@ namespace HealthGateway.Admin.Server.Services
             dependent.Protected = false;
             dependent.UpdatedBy = authenticatedUserId;
             dependent.AllowedDelegations.Clear();
-            await this.delegationDelegate.UpdateDelegationAsync(dependent, Enumerable.Empty<ResourceDelegate>()).ConfigureAwait(true);
+
+            DependentAudit dependentAudit = new()
+            {
+                DependentHdId = dependentHdid,
+                ProtectedReason = reason,
+                OperationCode = DependentAuditOperation.Unprotect,
+                AgentUsername = this.authenticationDelegate.FetchAuthenticatedPreferredUsername() ?? authenticatedUserId,
+                CreatedBy = authenticatedUserId,
+                UpdatedBy = authenticatedUserId,
+            };
+
+            await this.delegationDelegate.UpdateDelegationAsync(dependent, Enumerable.Empty<ResourceDelegate>(), dependentAudit).ConfigureAwait(true);
         }
 
-        private async Task UpdateDelegationAsync(Dependent dependent, IList<string> delegateHdids, string authenticatedUserId)
+        private async Task UpdateDelegationAsync(Dependent dependent, IList<string> delegateHdids, string authenticatedUserId, DependentAudit dependentAudit)
         {
             // Compare dependent allowed delegations in database with passed in delegate hdids to determine which allowed delegations to remove.
             IEnumerable<AllowedDelegation> allowedDelegationsToDelete =
@@ -212,7 +234,7 @@ namespace HealthGateway.Admin.Server.Services
             IEnumerable<ResourceDelegate> resourceDelegatesToDelete = resourceDelegates.Where(r => delegateHdids.All(a => a != r.ProfileHdid));
 
             // Update dependent, allow delegation and resource delegate in database
-            await this.delegationDelegate.UpdateDelegationAsync(dependent, resourceDelegatesToDelete).ConfigureAwait(true);
+            await this.delegationDelegate.UpdateDelegationAsync(dependent, resourceDelegatesToDelete, dependentAudit).ConfigureAwait(true);
         }
 
         private async Task<IEnumerable<ResourceDelegate>> SearchDelegates(string ownerHdid)

@@ -102,7 +102,7 @@ namespace HealthGateway.Admin.Server.Controllers
         /// synchronized.
         /// </summary>
         /// <param name="dependentHdid">The hdid of the dependent to protect.</param>
-        /// <param name="delegateHdids">The list of delegate hdid(s) to allow delegation for the dependent.</param>
+        /// <param name="request">The request object containing data used to protect a dependent.</param>
         /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
         /// <response code="200">The dependent is protected.</response>
         /// <response code="401">The client must authenticate itself to get the requested resource.</response>
@@ -110,9 +110,9 @@ namespace HealthGateway.Admin.Server.Controllers
         [Route("{dependentHdid}/ProtectDependent")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-        public async Task ProtectDependent(string dependentHdid, IEnumerable<string> delegateHdids)
+        public async Task ProtectDependent(string dependentHdid, ProtectDependentRequest request)
         {
-            await this.delegationService.ProtectDependentAsync(dependentHdid, delegateHdids).ConfigureAwait(true);
+            await this.delegationService.ProtectDependentAsync(dependentHdid, request.DelegateHdids, request.Reason).ConfigureAwait(true);
         }
 
         /// <summary>
@@ -120,6 +120,7 @@ namespace HealthGateway.Admin.Server.Controllers
         /// synchronized.
         /// </summary>
         /// <param name="dependentHdid">The hdid of the dependent to unprotect.</param>
+        /// <param name="request">The request object containing data used to unprotect a dependent.</param>
         /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
         /// <response code="200">The dependent is unprotected.</response>
         /// <response code="401">The client must authenticate itself to get the requested resource.</response>
@@ -129,9 +130,22 @@ namespace HealthGateway.Admin.Server.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task UnprotectDependent(string dependentHdid)
+        public async Task UnprotectDependent(string dependentHdid, UnprotectDependentRequest request)
         {
-            await this.delegationService.UnprotectDependentAsync(dependentHdid).ConfigureAwait(true);
+            await this.delegationService.UnprotectDependentAsync(dependentHdid, request.Reason).ConfigureAwait(true);
         }
     }
+
+    /// <summary>
+    /// Request data to protect dependent.
+    /// </summary>
+    /// <param name="DelegateHdids">The list of delegate hdid(s) to allow delegation for the dependent.</param>
+    /// <param name="Reason">The reason to protect dependent.</param>
+    public record ProtectDependentRequest(IEnumerable<string> DelegateHdids, string Reason);
+
+    /// <summary>
+    /// Request data to unprotect dependent.
+    /// </summary>
+    /// <param name="Reason">The reason to unprotect dependent.</param>
+    public record UnprotectDependentRequest(string Reason);
 }

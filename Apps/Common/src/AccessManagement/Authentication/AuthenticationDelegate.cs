@@ -194,6 +194,13 @@ namespace HealthGateway.Common.AccessManagement.Authentication
             return userLoginClientType;
         }
 
+        /// <inheritdoc/>
+        public string? FetchAuthenticatedPreferredUsername()
+        {
+            ClaimsPrincipal? user = this.httpContextAccessor?.HttpContext?.User;
+            return user?.FindFirst("preferred_username")?.Value;
+        }
+
         private JwtModel GetSystemToken(Uri tokenUri, ClientCredentialsTokenRequest tokenRequest)
         {
             JwtModel? jwtModel = this.ClientCredentialsGrant(tokenUri, tokenRequest);

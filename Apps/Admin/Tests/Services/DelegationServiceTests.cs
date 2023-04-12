@@ -200,13 +200,14 @@ namespace HealthGateway.Admin.Tests.Services
             DelegationService delegationService = this.GetDelegationService(null, delegationDelegate, resourceDelegateQueryResult, NewDependentHdid);
 
             // Act
-            await delegationService.ProtectDependentAsync(NewDependentHdid, delegateHdids).ConfigureAwait(true);
+            await delegationService.ProtectDependentAsync(NewDependentHdid, delegateHdids, It.IsAny<string>()).ConfigureAwait(true);
 
             // Assert
             delegationDelegate.Verify(
                 v => v.UpdateDelegationAsync(
                     It.Is<Dependent>(d => AssertProtectedDependant(expectedDependent, d)),
-                    It.Is<IEnumerable<ResourceDelegate>>(rd => AssertProtectedDependentResourceDelegates(expectedDeletedResourceDelegates.ToList(), rd.ToList()))));
+                    It.Is<IEnumerable<ResourceDelegate>>(rd => AssertProtectedDependentResourceDelegates(expectedDeletedResourceDelegates.ToList(), rd.ToList())),
+                    It.IsAny<DependentAudit>()));
         }
 
         /// <summary>
@@ -233,13 +234,14 @@ namespace HealthGateway.Admin.Tests.Services
             DelegationService delegationService = this.GetDelegationService(protectedDependent, delegationDelegate, resourceDelegateQueryResult, DependentHdid);
 
             // Act
-            await delegationService.UnprotectDependentAsync(DependentHdid).ConfigureAwait(true);
+            await delegationService.UnprotectDependentAsync(DependentHdid, It.IsAny<string>()).ConfigureAwait(true);
 
             // Assert
             delegationDelegate.Verify(
                 v => v.UpdateDelegationAsync(
                     It.Is<Dependent>(d => AssertProtectedDependant(expectedDependent, d)),
-                    It.Is<IEnumerable<ResourceDelegate>>(rd => AssertProtectedDependentResourceDelegates(expectedDeletedResourceDelegates.ToList(), rd.ToList()))));
+                    It.Is<IEnumerable<ResourceDelegate>>(rd => AssertProtectedDependentResourceDelegates(expectedDeletedResourceDelegates.ToList(), rd.ToList())),
+                    It.IsAny<DependentAudit>()));
         }
 
         /// <summary>
@@ -286,13 +288,14 @@ namespace HealthGateway.Admin.Tests.Services
             DelegationService delegationService = this.GetDelegationService(protectedDependent, delegationDelegate, resourceDelegateQueryResult, DependentHdid);
 
             // Act
-            await delegationService.ProtectDependentAsync(DependentHdid, delegateHdids).ConfigureAwait(true);
+            await delegationService.ProtectDependentAsync(DependentHdid, delegateHdids, It.IsAny<string>()).ConfigureAwait(true);
 
             // Assert
             delegationDelegate.Verify(
                 v => v.UpdateDelegationAsync(
                     It.Is<Dependent>(d => AssertProtectedDependant(expectedDependent, d)),
-                    It.Is<IEnumerable<ResourceDelegate>>(rd => AssertProtectedDependentResourceDelegates(expectedDeletedResourceDelegates.ToList(), rd.ToList()))));
+                    It.Is<IEnumerable<ResourceDelegate>>(rd => AssertProtectedDependentResourceDelegates(expectedDeletedResourceDelegates.ToList(), rd.ToList())),
+                    It.IsAny<DependentAudit>()));
         }
 
         /// <summary>
@@ -310,7 +313,7 @@ namespace HealthGateway.Admin.Tests.Services
             DelegationService delegationService = this.GetDelegationService(dependent, delegationDelegate, resourceDelegateQueryResult, DependentHdid);
 
             // Act and Assert
-            await Assert.ThrowsAsync<ProblemDetailsException>(() => delegationService.UnprotectDependentAsync(invalidDependentHdid)).ConfigureAwait(true);
+            await Assert.ThrowsAsync<ProblemDetailsException>(() => delegationService.UnprotectDependentAsync(invalidDependentHdid, It.IsAny<string>())).ConfigureAwait(true);
         }
 
         /// <summary>
