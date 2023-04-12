@@ -171,9 +171,11 @@ namespace HealthGateway.Admin.Server.Services
                 UpdatedBy = authenticatedUserId,
             };
 
+            IList<string> delegateHdidList = delegateHdids.ToList();
+
             // Compare dependent allowed delegations in database with passed in delegate hdids to determine which allowed delegations to remove.
             IEnumerable<AllowedDelegation> allowedDelegationsToDelete =
-                dependent.AllowedDelegations.Where(x => delegateHdids.All(y => y != x.DelegateHdId));
+                dependent.AllowedDelegations.Where(x => delegateHdidList.All(y => y != x.DelegateHdId));
 
             foreach (AllowedDelegation delegation in allowedDelegationsToDelete.ToList())
             {
@@ -181,9 +183,8 @@ namespace HealthGateway.Admin.Server.Services
             }
 
             // Compare passed in delegate hdids with dependent allowed delegations in database to determine what allowed delegations to add.
-            IEnumerable<string> delegateHdidEnumerable = delegateHdids.ToList();
             IEnumerable<string> delegateHdidsToAdd =
-                delegateHdidEnumerable.Where(x => dependent.AllowedDelegations.All(y => y.DelegateHdId != x));
+                delegateHdidList.Where(x => dependent.AllowedDelegations.All(y => y.DelegateHdId != x));
 
             foreach (string delegateHdid in delegateHdidsToAdd)
             {
@@ -200,7 +201,7 @@ namespace HealthGateway.Admin.Server.Services
             IEnumerable<ResourceDelegate> resourceDelegates = await this.SearchDelegates(dependent.HdId).ConfigureAwait(true);
 
             // Compare resource delegates with passed in delegate hdids to determine which resource delegates to remove
-            IEnumerable<ResourceDelegate> resourceDelegatesToDelete = resourceDelegates.Where(r => delegateHdidEnumerable.All(a => a != r.ProfileHdid));
+            IEnumerable<ResourceDelegate> resourceDelegatesToDelete = resourceDelegates.Where(r => delegateHdidList.All(a => a != r.ProfileHdid));
 
             // Update dependent, allow delegation and resource delegate in database
             await this.delegationDelegate.UpdateDelegationAsync(dependent, resourceDelegatesToDelete, dependentAudit).ConfigureAwait(true);
