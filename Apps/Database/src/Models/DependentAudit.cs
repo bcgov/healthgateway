@@ -39,7 +39,7 @@ namespace HealthGateway.Database.Models
         /// </summary>
         [Required]
         [MaxLength(52)]
-        public string DependentHdId { get; set; } = null!;
+        public string HdId { get; set; } = null!;
 
         /// <summary>
         /// Gets or sets the agent username.

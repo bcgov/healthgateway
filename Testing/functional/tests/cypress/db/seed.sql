@@ -1384,9 +1384,10 @@ VALUES (
 	current_timestamp
 );
 
+/* Dependent PHN: 9872868128 (35224807075386271) */
 INSERT INTO gateway."DependentAudit"(
 	"DependentAuditId",
-	"DependentHdId",
+	"HdId",
 	"AgentUsername",
 	"ProtectedReason",
 	"OperationCode",
@@ -1408,9 +1409,10 @@ VALUES (
 	current_timestamp
 );
 
+/* Dependent PHN: 9872868128 (35224807075386271) */
 INSERT INTO gateway."DependentAudit"(
 	"DependentAuditId",
-	"DependentHdId",
+	"HdId",
 	"AgentUsername",
 	"ProtectedReason",
 	"OperationCode",
@@ -1432,9 +1434,10 @@ VALUES (
 	current_timestamp - INTERVAL '1 day'
 );
 
+/* Dependent PHN: 9872868128 (35224807075386271) */
 INSERT INTO gateway."DependentAudit"(
 	"DependentAuditId",
-	"DependentHdId",
+	"HdId",
 	"AgentUsername",
 	"ProtectedReason",
 	"OperationCode",

@@ -54,7 +54,7 @@ namespace HealthGateway.Database.Migrations
                 columns: table => new
                 {
                     DependentAuditId = table.Column<Guid>(type: "uuid", nullable: false),
-                    DependentHdId = table.Column<string>(type: "character varying(52)", maxLength: 52, nullable: false),
+                    HdId = table.Column<string>(type: "character varying(52)", maxLength: 52, nullable: false),
                     AgentUsername = table.Column<string>(type: "character varying(255)", maxLength: 255, nullable: false),
                     ProtectedReason = table.Column<string>(type: "character varying(500)", maxLength: 500, nullable: false),
                     OperationCode = table.Column<string>(type: "character varying(10)", maxLength: 10, nullable: false),

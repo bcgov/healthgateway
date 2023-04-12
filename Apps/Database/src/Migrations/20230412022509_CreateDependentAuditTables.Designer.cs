@@ -29,7 +29,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace HealthGateway.Database.Migrations
 {
     [DbContext(typeof(GatewayDbContext))]
-    [Migration("20230411202749_CreateDependentAuditTables")]
+    [Migration("20230412022509_CreateDependentAuditTables")]
     partial class CreateDependentAuditTables
     {
         /// <inheritdoc />
@@ -38,7 +38,7 @@ namespace HealthGateway.Database.Migrations
 #pragma warning disable 612, 618
             modelBuilder
                 .HasDefaultSchema("gateway")
-                .HasAnnotation("ProductVersion", "7.0.4")
+                .HasAnnotation("ProductVersion", "7.0.5")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
@@ -1423,7 +1423,7 @@ namespace HealthGateway.Database.Migrations
                     b.Property<DateTime>("CreatedDateTime")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<string>("DependentHdId")
+                    b.Property<string>("HdId")
                         .IsRequired()
                         .HasMaxLength(52)
                         .HasColumnType("character varying(52)");
