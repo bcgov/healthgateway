@@ -12,14 +12,14 @@ import { ResultError } from "@/models/errors";
 import NoteTimelineEntry from "@/models/noteTimelineEntry";
 import UserNote from "@/models/userNote";
 
-import EntrycardTimelineComponent from "./EntrycardTimelineComponent.vue";
+import EntryCardTimelineComponent from "./EntrycardTimelineComponent.vue";
 
 library.add(faEllipsisV);
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const options: any = {
     components: {
-        EntryCard: EntrycardTimelineComponent,
+        EntryCard: EntryCardTimelineComponent,
     },
 };
 

@@ -12,12 +12,12 @@ import container from "@/plugins/container";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import { ILogger } from "@/services/interfaces";
 
-import EntrycardTimelineComponent from "./EntrycardTimelineComponent.vue";
+import EntryCardTimelineComponent from "./EntrycardTimelineComponent.vue";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const options: any = {
     components: {
-        EntryCard: EntrycardTimelineComponent,
+        EntryCard: EntryCardTimelineComponent,
         MessageModalComponent,
     },
 };

@@ -21,7 +21,13 @@ namespace HealthGateway.PatientDataAccess
     /// <summary>
     /// abstract record for health data.
     /// </summary>
-    public abstract record HealthData;
+    public abstract record HealthData
+    {
+        /// <summary>
+        /// Gets or sets the health data's id.
+        /// </summary>
+        public string? Id { get; set; }
+    }
 
     /// <summary>
     /// The details of a diagnostic imaging exam.

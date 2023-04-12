@@ -14,6 +14,7 @@ import DatePickerComponent from "@/components/DatePickerComponent.vue";
 import TutorialComponent from "@/components/shared/TutorialComponent.vue";
 import { EntryType, entryTypeMap } from "@/constants/entryType";
 import UserPreferenceType from "@/constants/userPreferenceType";
+import { PatientDataType } from "@/models/patientDataResponse";
 import TimelineFilter, { TimelineFilterBuilder } from "@/models/timelineFilter";
 import User from "@/models/user";
 
@@ -86,6 +87,12 @@ export default class FilterComponent extends Vue {
     @Getter("user", { namespace: "user" })
     user!: User;
 
+    @Getter("patientDataCount", { namespace: "patientData" })
+    patientDataCount!: (
+        hdid: string,
+        patientDataTypes: PatientDataType[]
+    ) => number;
+
     private isModalVisible = false;
     private isMenuVisible = false;
     private isFilterStartDateValidDate = true;
@@ -105,45 +112,45 @@ export default class FilterComponent extends Vue {
             .filter((entryTypeFilter) => entryTypeFilter.display !== "");
     }
 
-    private get hasFilterSelected(): boolean {
+    get hasFilterSelected(): boolean {
         return this.activeFilter.hasActiveFilter();
     }
 
-    private get timelineFilterTutorialPreference(): string {
+    get timelineFilterTutorialPreference(): string {
         return UserPreferenceType.TutorialTimelineFilter;
     }
 
-    private mounted(): void {
+    mounted(): void {
         this.syncWithFilter();
     }
 
     @Watch("isMobileView")
-    private onIsMobileView(): void {
+    onIsMobileView(): void {
         this.isModalVisible = false;
     }
 
     @Watch("isSidebarOpen")
-    private onIsSidebarOpen(): void {
+    onIsSidebarOpen(): void {
         this.isModalVisible = false;
     }
 
     @Watch("activeFilter", { deep: true })
-    private syncWithFilter(): void {
+    syncWithFilter(): void {
         this.keywordInputText = this.activeFilter.keyword;
         this.startDate = this.activeFilter.startDate;
         this.endDate = this.activeFilter.endDate;
         this.selectedEntryTypes = [...this.activeEntryTypes];
     }
 
-    private toggleMenu(): void {
+    toggleMenu(): void {
         this.isMenuVisible = !this.isMenuVisible;
     }
 
-    private toggleMobileView(): void {
+    toggleMobileView(): void {
         this.isModalVisible = !this.isModalVisible;
     }
 
-    private apply(): void {
+    apply(): void {
         let builder = TimelineFilterBuilder.create()
             .withKeyword(this.keywordInputText)
             .withStartDate(this.startDate)
@@ -155,17 +162,17 @@ export default class FilterComponent extends Vue {
         this.closeMenu();
     }
 
-    private cancel(): void {
+    cancel(): void {
         this.syncWithFilter();
         this.closeMenu();
     }
 
-    private closeMenu(): void {
+    closeMenu(): void {
         this.isMenuVisible = false;
         this.isModalVisible = false;
     }
 
-    private getFilterCount(entryType: EntryType): number | undefined {
+    getFilterCount(entryType: EntryType): number | undefined {
         switch (entryType) {
             case EntryType.ClinicalDocument:
                 return this.clinicalDocumentsCount(this.hdid);
@@ -185,6 +192,10 @@ export default class FilterComponent extends Vue {
                 return this.notesCount;
             case EntryType.SpecialAuthorityRequest:
                 return this.specialAuthorityRequestsCount(this.hdid);
+            case EntryType.DiagnosticImaging:
+                return this.patientDataCount(this.hdid, [
+                    PatientDataType.DiagnosticImaging,
+                ]);
             default:
                 return undefined;
         }

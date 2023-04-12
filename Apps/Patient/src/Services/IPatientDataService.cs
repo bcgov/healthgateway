@@ -69,6 +69,11 @@ namespace HealthGateway.Patient.Services
     public abstract record PatientData
     {
         /// <summary>
+        /// Gets or sets the unique identifier.
+        /// </summary>
+        public string? Id { get; set; }
+
+        /// <summary>
         /// Gets the type of the patient data.
         /// </summary>
         public abstract string Type { get; }

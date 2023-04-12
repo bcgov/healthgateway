@@ -9,10 +9,11 @@ import {
 import { ErrorType } from "@/constants/errorType";
 import { Dictionary } from "@/models/baseTypes";
 import { ResultError } from "@/models/errors";
-import PatientData, {
+import PatientDataResponse, {
+    PatientData,
     PatientDataFile,
     PatientDataType,
-} from "@/models/patientData";
+} from "@/models/patientDataResponse";
 import { LoadStatus } from "@/models/storeOperations";
 import { RootState } from "@/store/types";
 
@@ -26,7 +27,11 @@ export interface RecordState<T> {
     error: ResultError | undefined;
 }
 
-export type PatientDataRecordState = RecordState<PatientData>;
+export type PatientDataMap = {
+    [patientDataType in PatientDataType]: PatientData[];
+};
+
+export type PatientDataRecordState = RecordState<PatientDataMap>;
 export type PatientDataFileState = RecordState<PatientDataFile>;
 
 export interface PatientDataState {
@@ -38,14 +43,19 @@ export interface PatientDataGetters
     extends GetterTree<PatientDataState, RootState> {
     patientData(
         state: PatientDataState
-    ): (hdid: string) => PatientData | undefined;
-    isPatientDataLoading(state: PatientDataState): (hdid: string) => boolean;
+    ): (hdid: string, patientDataTypes: PatientDataType[]) => PatientData[];
+    patientDataAreLoading(state: PatientDataState): (hdid: string) => boolean;
     patientDataFile(
         state: PatientDataState
     ): (fileId: string) => PatientDataFile | undefined;
     isPatientDataFileLoading(
         state: PatientDataState
     ): (fileId: string) => boolean;
+
+    patientDataCount(
+        state: PatientDataState,
+        getters: PatientDataGetters
+    ): (hdid: string, patientDataTypes: PatientDataType[]) => number;
 }
 
 type StoreContext = ActionContext<PatientDataState, RootState>;
@@ -55,7 +65,7 @@ export interface PatientDataActions
     retrievePatientData(
         context: StoreContext,
         params: { hdid: string; patientDataTypes: PatientDataType[] }
-    ): Promise<PatientData>;
+    ): Promise<PatientDataResponse>;
     retrievePatientDataFile(
         context: StoreContext,
         params: { hdid: string; fileId: string }
@@ -76,7 +86,11 @@ export interface PatientDataMutations extends MutationTree<PatientDataState> {
     setPatientDataFileRequested(state: PatientDataState, fileId: string): void;
     setPatientData(
         state: PatientDataState,
-        payload: { hdid: string; patientData: PatientData }
+        payload: {
+            hdid: string;
+            patientDataTypes: PatientDataType[];
+            patientData: PatientDataResponse;
+        }
     ): void;
     setPatientDataFile(
         state: PatientDataState,
@@ -84,7 +98,11 @@ export interface PatientDataMutations extends MutationTree<PatientDataState> {
     ): void;
     setPatientDataError(
         state: PatientDataState,
-        payload: { hdid: string; error: ResultError }
+        payload: {
+            hdid: string;
+            patientDataTypes: PatientDataType[];
+            error: ResultError;
+        }
     ): void;
     setPatientDataFileError(
         state: PatientDataState,

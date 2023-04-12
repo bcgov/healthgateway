@@ -141,9 +141,8 @@ entryTypeMap.set(EntryType.HospitalVisit, {
 entryTypeMap.set(EntryType.DiagnosticImaging, {
     type: EntryType.DiagnosticImaging,
     commentType: CommentEntryType.DiagnosticImaging,
-    name: "Diagnostic Imaging",
-    description:
-        "View a list of your diagnostic imaging exams. You can get details of each exam performed.",
+    name: "Imaging Reports",
+    description: "Get imaging reports for X-rays, MRIs, ultrasounds and more.",
     icon: "x-ray",
     component: "DiagnosticImagingTimelineComponent",
     eventName: "diagnostic_imaging",

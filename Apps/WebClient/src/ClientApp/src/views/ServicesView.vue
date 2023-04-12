@@ -8,7 +8,7 @@ import BreadcrumbComponent from "@/components/navmenu/BreadcrumbComponent.vue";
 import OrganDonorDetailsCard from "@/components/services/OrganDonorDetailsCard.vue";
 import { ServiceName } from "@/constants/serviceName";
 import BreadcrumbItem from "@/models/breadcrumbItem";
-import { PatientDataType } from "@/models/patientData";
+import { PatientDataType } from "@/models/patientDataResponse";
 import User from "@/models/user";
 import container from "@/plugins/container";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
@@ -29,8 +29,8 @@ export default class ServicesView extends Vue {
     @Getter("user", { namespace: "user" })
     user!: User;
 
-    @Getter("isPatientDataLoading", { namespace: "patientData" })
-    isPatientDataLoading!: (hdid: string) => boolean;
+    @Getter("patientDataAreLoading", { namespace: "patientData" })
+    patientDataAreLoading!: (hdid: string) => boolean;
 
     @Action("retrievePatientData", { namespace: "patientData" })
     retrievePatientData!: (params: {
@@ -50,7 +50,7 @@ export default class ServicesView extends Vue {
     ];
 
     get isLoading(): boolean {
-        return this.isPatientDataLoading(this.user.hdid);
+        return this.patientDataAreLoading(this.user.hdid);
     }
 
     get hdid(): string {

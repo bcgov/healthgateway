@@ -27,10 +27,10 @@ import MedicationRequest from "@/models/medicationRequest";
 import MedicationStatementHistory from "@/models/medicationStatementHistory";
 import Notification from "@/models/notification";
 import Patient from "@/models/patient";
-import PatientData, {
+import PatientDataResponse, {
     PatientDataFile,
     PatientDataType,
-} from "@/models/patientData";
+} from "@/models/patientDataResponse";
 import RegisterTestKitRequest from "@/models/registerTestKitRequest";
 import Report from "@/models/report";
 import ReportRequest from "@/models/reportRequest";
@@ -309,6 +309,6 @@ export interface IPatientDataService extends IHttpDelegateService {
     getPatientData(
         hdid: string,
         patientDataTypes: PatientDataType[]
-    ): Promise<PatientData>;
+    ): Promise<PatientDataResponse>;
     getFile(hdid: string, fileId: string): Promise<PatientDataFile>;
 }

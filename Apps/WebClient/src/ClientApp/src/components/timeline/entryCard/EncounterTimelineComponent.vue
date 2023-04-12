@@ -7,14 +7,14 @@ import { Component, Prop } from "vue-property-decorator";
 import { EntryType, entryTypeMap } from "@/constants/entryType";
 import EncounterTimelineEntry from "@/models/encounterTimelineEntry";
 
-import EntrycardTimelineComponent from "./EntrycardTimelineComponent.vue";
+import EntryCardTimelineComponent from "./EntrycardTimelineComponent.vue";
 
 library.add(faInfoCircle);
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const options: any = {
     components: {
-        EntryCard: EntrycardTimelineComponent,
+        EntryCard: EntryCardTimelineComponent,
     },
 };
 
