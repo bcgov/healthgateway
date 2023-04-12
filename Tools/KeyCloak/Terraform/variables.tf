@@ -64,6 +64,21 @@ variable "keycloak_idp_bcsc_mobile" {
   description = "The configuration settings for the BCSC Mobile IDP"
 }
 
+variable "keycloak_idp_bcsc_pcare" {
+  type = object({
+    base_url      = string
+    auth_path     = optional(string, "/login/oidc/authorize/")
+    token_path    = optional(string, "/oauth2/token")
+    userinfo_path = optional(string, "/oauth2/userinfo")
+    client_id     = string
+    client_secret = string
+    issuer_path   = optional(string, "/oauth2/")
+    jwks_path     = optional(string, "/oauth2/jwk.json")
+  })
+  sensitive   = true
+  description = "The configuration settings for the BCSC Primary Care IDP"
+}
+
 variable "keycloak_idp_phsa" {
   type = object({
     base_url      = string
@@ -113,6 +128,16 @@ variable "client_hg_mobile" {
     token_lifespan  = number
   })
   description = "HealthGateway mobile client configuration"
+}
+
+variable "client_pcare" {
+  type = object({
+    id              = optional(string, "pcare")
+    valid_redirects = list(string)
+    web_origins     = list(string)
+    token_lifespan  = number
+  })
+  description = "Primary Care client configuration"
 }
 
 variable "client_hg_phsa" {
