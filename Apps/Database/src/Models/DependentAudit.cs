@@ -39,14 +39,14 @@ namespace HealthGateway.Database.Models
         /// </summary>
         [Required]
         [MaxLength(52)]
-        public string HdId { get; set; } = null!;
+        public string HdId { get; set; } = string.Empty;
 
         /// <summary>
         /// Gets or sets the agent username.
         /// </summary>
         [Required]
         [MaxLength(255)]
-        public string AgentUsername { get; set; } = null!;
+        public string AgentUsername { get; set; } = string.Empty;
 
         /// <summary>
         /// Gets or sets the protected reason.
