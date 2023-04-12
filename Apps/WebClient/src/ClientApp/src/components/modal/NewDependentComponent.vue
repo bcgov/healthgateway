@@ -325,9 +325,10 @@ export default class NewDependentComponent extends Vue {
                                     </b-form-invalid-feedback>
                                     <b-form-invalid-feedback
                                         v-if="isDependentAlreadyAdded"
+                                        data-testid="errorDependentAlreadyAdded"
                                         :state="isValid($v.dependent.PHN)"
                                     >
-                                        This depedent has already been added
+                                        This dependent has already been added
                                     </b-form-invalid-feedback>
                                 </b-col>
                             </b-row>
