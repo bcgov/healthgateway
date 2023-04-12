@@ -162,10 +162,11 @@ namespace HealthGateway.Admin.Server.Services
 
             DependentAudit dependentAudit = new()
             {
-                DependentHdId = dependentHdid,
+                HdId = dependentHdid,
                 ProtectedReason = reason,
                 OperationCode = DependentAuditOperation.Protect,
                 AgentUsername = this.authenticationDelegate.FetchAuthenticatedPreferredUsername() ?? authenticatedUserId,
+                TransactionDateTime = DateTime.UtcNow,
                 CreatedBy = authenticatedUserId,
                 UpdatedBy = authenticatedUserId,
             };
@@ -190,10 +191,11 @@ namespace HealthGateway.Admin.Server.Services
 
             DependentAudit dependentAudit = new()
             {
-                DependentHdId = dependentHdid,
+                HdId = dependentHdid,
                 ProtectedReason = reason,
                 OperationCode = DependentAuditOperation.Unprotect,
                 AgentUsername = this.authenticationDelegate.FetchAuthenticatedPreferredUsername() ?? authenticatedUserId,
+                TransactionDateTime = DateTime.UtcNow,
                 CreatedBy = authenticatedUserId,
                 UpdatedBy = authenticatedUserId,
             };

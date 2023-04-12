@@ -62,7 +62,7 @@ namespace HealthGateway.Database.Delegates
             this.logger.LogTrace("Getting dependent audit - hdid : {Hdid}", hdid);
 
             IQueryable<DependentAudit> query = this.dbContext.DependentAudit
-                .Where(d => d.DependentHdId == hdid);
+                .Where(d => d.HdId == hdid);
 
             return await query.ToListAsync().ConfigureAwait(true);
         }
