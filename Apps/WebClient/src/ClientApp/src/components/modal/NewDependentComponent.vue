@@ -13,6 +13,7 @@ import { ActionType } from "@/constants/actionType";
 import AddDependentRequest from "@/models/addDependentRequest";
 import type { WebClientConfiguration } from "@/models/configData";
 import { DateWrapper } from "@/models/dateWrapper";
+import { Dependent } from "@/models/dependent";
 import { ResultError } from "@/models/errors";
 import User from "@/models/user";
 import container from "@/plugins/container";
@@ -43,6 +44,9 @@ export default class NewDependentComponent extends Vue {
 
     @Action("setTooManyRequestsError", { namespace: "errorBanner" })
     setTooManyRequestsError!: (params: { key: string }) => void;
+
+    @Getter("dependents", { namespace: "dependent" })
+    private dependents!: Dependent[];
 
     private dependentService!: IDependentService;
     private isVisible = false;
@@ -80,6 +84,7 @@ export default class NewDependentComponent extends Vue {
                     required,
                     minLength: minLength(12),
                     validPersonalHealthNumber,
+                    isNew: () => !this.isDependentAlreadyAdded,
                 },
             },
             accepted: { isChecked: sameAs(() => true) },
@@ -119,6 +124,14 @@ export default class NewDependentComponent extends Vue {
             this.$v.$reset();
             this.addDependent();
         }
+    }
+
+    private get isDependentAlreadyAdded(): boolean {
+        return this.dependents.some(
+            (d) =>
+                d.dependentInformation.PHN ===
+                this.dependent.PHN.replace(/\s/g, "")
+        );
     }
 
     private addDependent(): void {
@@ -305,9 +318,17 @@ export default class NewDependentComponent extends Vue {
                                         @blur.native="$v.dependent.PHN.$touch()"
                                     ></b-form-input>
                                     <b-form-invalid-feedback
+                                        v-if="!isDependentAlreadyAdded"
                                         :state="isValid($v.dependent.PHN)"
                                     >
                                         Valid PHN is required
+                                    </b-form-invalid-feedback>
+                                    <b-form-invalid-feedback
+                                        v-if="isDependentAlreadyAdded"
+                                        data-testid="errorDependentAlreadyAdded"
+                                        :state="isValid($v.dependent.PHN)"
+                                    >
+                                        This dependent has already been added
                                     </b-form-invalid-feedback>
                                 </b-col>
                             </b-row>

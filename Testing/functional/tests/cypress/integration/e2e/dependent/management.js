@@ -218,7 +218,7 @@ describe("dependents - dashboard", () => {
     });
 
     // test should be skipped until the similar test for the old dependent page is removed
-    it.skip("Validate adding, viewing, and removing dependents", () => {
+    it.skip("Validate adding, viewing, duplicate prevention and removing dependents", () => {
         cy.log("Adding dependent");
 
         cy.get("[data-testid=addNewDependentBtn]").click();
@@ -255,6 +255,23 @@ describe("dependents - dashboard", () => {
                     validDependent.name
                 );
             });
+
+        cy.log("Validate duplicate dependent cannot be added by the same user");
+
+        cy.get("[data-testid=addNewDependentBtn]").click();
+        cy.get("[data-testid=newDependentModalText]").should(
+            "exist",
+            "be.visible"
+        );
+        cy.get("[data-testid=phnInput]")
+            .clear()
+            .type(validDependent.phn)
+            .blur();
+        cy.get("[data-testid=errorDependentAlreadyAdded]").should("be.visible");
+        cy.get("[data-testid=cancelRegistrationBtn]").click();
+
+        // Validate the modal is done
+        cy.get("[data-testid=newDependentModal]").should("not.exist");
 
         cy.log("Adding same dependent as another user");
 
