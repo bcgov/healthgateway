@@ -12,9 +12,9 @@ import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import { ILogger, IPatientDataService } from "@/services/interfaces";
 import { PatientDataActions } from "@/store/modules/patientData/types";
 import {
+    areAllPatientDataTypesStored,
     getPatientDataFileState,
     getPatientDataRecordState,
-    isAllPatientDataTypesStored,
 } from "@/store/modules/patientData/utils";
 import EventTracker from "@/utility/eventTracker";
 
@@ -107,7 +107,7 @@ export const actions: PatientDataActions = {
             if (
                 getPatientDataRecordState(context.state, params.hdid).status ===
                     LoadStatus.LOADED &&
-                isAllPatientDataTypesStored(
+                areAllPatientDataTypesStored(
                     context.state,
                     params.hdid,
                     params.patientDataTypes

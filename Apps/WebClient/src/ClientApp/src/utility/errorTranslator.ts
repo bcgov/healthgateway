@@ -90,6 +90,8 @@ export default abstract class ErrorTranslator {
                 return "quick links";
             case ErrorSourceType.TermsOfService:
                 return "terms of service";
+            case ErrorSourceType.PatientData:
+                return "patient data";
             default:
                 return `${source}s`;
         }

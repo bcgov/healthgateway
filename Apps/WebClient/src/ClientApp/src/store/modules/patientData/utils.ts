@@ -38,7 +38,7 @@ export function getPatientDataRecordState(
         }
     );
 }
-export function isAllPatientDataTypesStored(
+export function areAllPatientDataTypesStored(
     state: PatientDataState,
     hdid: string,
     patientDataTypes: PatientDataType[]
