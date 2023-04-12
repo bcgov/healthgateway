@@ -51,12 +51,11 @@ export const getters: PatientDataGetters = {
             LoadStatus.REQUESTED;
     },
     patientDataCount(
-        state: PatientDataState,
-        getters: PatientDataGetters
+        _state: PatientDataState,
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        getters: any
     ): (hdid: string, patientDataTypes: PatientDataType[]) => number {
         return (hdid: string, patientDataTypes: PatientDataType[]) => {
-            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-            // @ts-ignore
             const data = getters.patientData(hdid, patientDataTypes);
             return data.length;
         };

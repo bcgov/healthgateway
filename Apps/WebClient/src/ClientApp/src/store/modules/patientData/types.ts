@@ -51,7 +51,6 @@ export interface PatientDataGetters
     isPatientDataFileLoading(
         state: PatientDataState
     ): (fileId: string) => boolean;
-
     patientDataCount(
         state: PatientDataState,
         getters: PatientDataGetters

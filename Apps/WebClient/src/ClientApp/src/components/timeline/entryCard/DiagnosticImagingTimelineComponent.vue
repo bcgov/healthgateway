@@ -101,10 +101,10 @@ export default class DiagnosticImagingTimelineComponent extends Vue {
 
 <template>
     <EntryCard
-        :card-id="`${index}-${entry.id}`"
+        :card-id="`${index}-${datekey}`"
         :entry-icon="entryIcon"
         :title="entry.modality"
-        :subtitle="`status: ${entry.examStatus}`"
+        :subtitle="`Status: ${entry.examStatus}`"
         :entry="entry"
         :is-mobile-details="isMobileDetails"
         :allow-comment="commentsAreEnabled"
