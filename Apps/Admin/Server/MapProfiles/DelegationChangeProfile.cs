@@ -13,33 +13,24 @@
 //  See the License for the specific language governing permissions and
 //  limitations under the License.
 // -------------------------------------------------------------------------
-namespace HealthGateway.Admin.Tests.Utils
+namespace HealthGateway.Admin.Server.MapProfiles
 {
     using AutoMapper;
-    using HealthGateway.Admin.Server.MapProfiles;
+    using HealthGateway.Admin.Common.Models;
+    using HealthGateway.Database.Models;
 
     /// <summary>
-    /// Static utility class to provide a fully initialized AutoMapper.
-    /// NOTE: Any newly added profiles will have to be registered.
+    /// An AutoMapper profile class which defines mapping between dependent audit and delegation change models.
     /// </summary>
-    public static class MapperUtil
+    public class DelegationChangeProfile : Profile
     {
         /// <summary>
-        /// Creates an AutoMapper.
+        /// Initializes a new instance of the <see cref="DelegationChangeProfile"/> class.
         /// </summary>
-        /// <returns>A configured AutoMapper.</returns>
-        public static IMapper InitializeAutoMapper()
+        public DelegationChangeProfile()
         {
-            MapperConfiguration config = new(
-                cfg =>
-                {
-                    cfg.AddProfile(new AdminUserProfileViewProfile());
-                    cfg.AddProfile(new DependentInfoProfile());
-                    cfg.AddProfile(new DelegateInfoProfile());
-                    cfg.AddProfile(new DelegationChangeProfile());
-                });
-
-            return config.CreateMapper();
+            this.CreateMap<DependentAudit, DelegationChange>()
+                .ForMember(dest => dest.DependentHdId, opt => opt.MapFrom(src => src.HdId));
         }
     }
 }

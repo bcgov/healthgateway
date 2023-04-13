@@ -15,27 +15,38 @@
 // -------------------------------------------------------------------------
 namespace HealthGateway.Admin.Common.Models
 {
-    using System.Collections.Generic;
-    using System.Linq;
+    using System;
+    using HealthGateway.Common.Data.Constants;
 
     /// <summary>
-    /// The delegation info model.
+    /// The delegation change model.
     /// </summary>
-    public class DelegationInfo
+    public class DelegationChange
     {
         /// <summary>
-        /// Gets or sets the dependent info.
+        /// Gets or sets the dependent's hdid.
         /// </summary>
-        public DependentInfo Dependent { get; set; } = new();
+        public string DependentHdId { get; set; } = string.Empty;
 
         /// <summary>
-        /// Gets or sets the collection of delegate info.
+        /// Gets or sets the agent username.
         /// </summary>
-        public IEnumerable<DelegateInfo> Delegates { get; set; } = Enumerable.Empty<DelegateInfo>();
+        public string AgentUsername { get; set; } = string.Empty;
 
         /// <summary>
-        /// Gets or sets the delegation changes.
+        /// Gets or sets the protected reason.
         /// </summary>
-        public IEnumerable<DelegationChange> DelegationChanges { get; set; } = Enumerable.Empty<DelegationChange>();
+        public string ProtectedReason { get; set; } = string.Empty;
+
+        /// <summary>
+        /// Gets or sets a value representing the type of dependent audit operation.
+        /// The value is one of <see cref="DependentAuditOperation"/>.
+        /// </summary>
+        public DependentAuditOperation OperationCode { get; set; } = DependentAuditOperation.Unprotect;
+
+        /// <summary>
+        /// Gets or sets the transaction datetime.
+        /// </summary>
+        public DateTime TransactionDateTime { get; set; } = DateTime.MaxValue;
     }
 }
