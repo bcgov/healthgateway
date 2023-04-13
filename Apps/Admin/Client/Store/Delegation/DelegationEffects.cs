@@ -102,8 +102,8 @@ namespace HealthGateway.Admin.Client.Store.Delegation
             }
         }
 
-        [EffectMethod(typeof(DelegationActions.ProtectDependentAction))]
-        public async Task HandleProtectDependentAction(IDispatcher dispatcher)
+        [EffectMethod]
+        public async Task HandleProtectDependentAction(DelegationActions.ProtectDependentAction action, IDispatcher dispatcher)
         {
             this.Logger.LogInformation("Protect dependent");
             try
@@ -120,7 +120,7 @@ namespace HealthGateway.Admin.Client.Store.Delegation
                     .Where(d => d.StagedDelegationStatus is DelegationStatus.Added or DelegationStatus.Allowed)
                     .Select(x => x.Hdid);
 
-                ProtectDependentRequest protectDependentRequest = new(delegateHdids, this.DelegationState.Value.Reason);
+                ProtectDependentRequest protectDependentRequest = new(delegateHdids, action.Reason);
 
                 await this.Api.ProtectDependentAsync(dependentHdid, protectDependentRequest).ConfigureAwait(true);
                 this.Logger.LogInformation("Dependent protected successfully");
@@ -134,8 +134,8 @@ namespace HealthGateway.Admin.Client.Store.Delegation
             }
         }
 
-        [EffectMethod(typeof(DelegationActions.UnprotectDependentAction))]
-        public async Task HandleUnprotectDependentAction(IDispatcher dispatcher)
+        [EffectMethod]
+        public async Task HandleUnprotectDependentAction(DelegationActions.UnprotectDependentAction action, IDispatcher dispatcher)
         {
             this.Logger.LogInformation("Unprotecting dependent");
             try
@@ -148,7 +148,7 @@ namespace HealthGateway.Admin.Client.Store.Delegation
                     return;
                 }
 
-                UnprotectDependentRequest unprotectDependentRequest = new(this.DelegationState.Value.Reason);
+                UnprotectDependentRequest unprotectDependentRequest = new(action.Reason);
 
                 await this.Api.UnprotectDependentAsync(dependentHdid, unprotectDependentRequest).ConfigureAwait(true);
                 this.Logger.LogInformation("Dependent unprotected successfully");

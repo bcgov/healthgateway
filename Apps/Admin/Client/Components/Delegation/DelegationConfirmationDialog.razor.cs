@@ -101,15 +101,21 @@ public partial class DelegationConfirmationDialog : FluxorComponent
 
     private void HandleClickConfirm()
     {
-        this.DelegationState.Value.Reason = this.ProtectReasonString;
-
         switch (this.Type)
         {
             case ConfirmationType.Protect:
-                this.Dispatcher.Dispatch(new DelegationActions.ProtectDependentAction());
+                this.Dispatcher.Dispatch(
+                    new DelegationActions.ProtectDependentAction
+                    {
+                        Reason = this.ProtectReasonString,
+                    });
                 break;
             case ConfirmationType.Unprotect:
-                this.Dispatcher.Dispatch(new DelegationActions.UnprotectDependentAction());
+                this.Dispatcher.Dispatch(
+                    new DelegationActions.UnprotectDependentAction
+                    {
+                        Reason = this.ProtectReasonString,
+                    });
                 break;
         }
     }
