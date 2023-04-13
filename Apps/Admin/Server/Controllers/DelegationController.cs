@@ -15,7 +15,6 @@
 // -------------------------------------------------------------------------
 namespace HealthGateway.Admin.Server.Controllers
 {
-    using System.Collections.Generic;
     using System.Threading.Tasks;
     using HealthGateway.Admin.Common.Models;
     using HealthGateway.Admin.Server.Services;
@@ -135,17 +134,4 @@ namespace HealthGateway.Admin.Server.Controllers
             await this.delegationService.UnprotectDependentAsync(dependentHdid, request.Reason).ConfigureAwait(true);
         }
     }
-
-    /// <summary>
-    /// Request data to protect dependent.
-    /// </summary>
-    /// <param name="DelegateHdids">The list of delegate hdid(s) to allow delegation for the dependent.</param>
-    /// <param name="Reason">The reason to protect dependent.</param>
-    public record ProtectDependentRequest(IEnumerable<string> DelegateHdids, string Reason);
-
-    /// <summary>
-    /// Request data to unprotect dependent.
-    /// </summary>
-    /// <param name="Reason">The reason to unprotect dependent.</param>
-    public record UnprotectDependentRequest(string Reason);
 }

@@ -169,6 +169,10 @@ namespace HealthGateway.Admin.Client.Store.Delegation
         /// </summary>
         public class ProtectDependentAction
         {
+            /// <summary>
+            /// Gets the reason associated with the delegation change.
+            /// </summary>
+            public required string Reason { get; init; }
         }
 
         /// <summary>
@@ -198,6 +202,10 @@ namespace HealthGateway.Admin.Client.Store.Delegation
         /// </summary>
         public class UnprotectDependentAction
         {
+            /// <summary>
+            /// Gets the reason associated with the delegation change.
+            /// </summary>
+            public required string Reason { get; init; }
         }
 
         /// <summary>

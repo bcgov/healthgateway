@@ -15,6 +15,15 @@
             TResetAction="@DelegationActions.UnprotectDependentAction">
             @UnprotectErrorMessage
         </HgBannerFeedback>
+        <MudTextField
+            @ref="@ProtectReasonTextField"
+            Label="Reason"
+            @bind-Value="@ProtectReasonString"
+            T="@string"
+            MaxLength="500"
+            Required="true"
+            Lines="@(4)"
+            data-testid="protect-reason-input" />
     </DialogContent>
     <DialogActions>
         <HgButton
@@ -32,6 +41,7 @@
             BottomMargin="Breakpoint.Always"
             Color="@Color.Primary"
             Loading="@Loading"
+            Disabled="@SaveButtonDisabled"
             OnClick="@HandleClickConfirm"
             data-testid="confirm-button">
             Confirm
