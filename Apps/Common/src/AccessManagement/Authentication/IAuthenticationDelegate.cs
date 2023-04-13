@@ -83,5 +83,11 @@ namespace HealthGateway.Common.AccessManagement.Authentication
         /// </summary>
         /// <returns>The user's id.</returns>
         string? FetchAuthenticatedUserId();
+
+        /// <summary>
+        /// Fetches the preferred username for the authenticated user from the http context.
+        /// </summary>
+        /// <returns>The user's id.</returns>
+        string? FetchAuthenticatedPreferredUsername();
     }
 }
