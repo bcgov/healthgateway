@@ -24,6 +24,8 @@ namespace HealthGateway.PatientDataAccess.Api
     [JsonConverter(typeof(HealthDataJsonConverter))]
     internal abstract record HealthDataEntry;
 
+    // Class is currently not being passed by the front end
+    [System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
     internal record ClinicalDocument : HealthDataEntry
     {
         public string? Name { get; set; }
@@ -39,6 +41,8 @@ namespace HealthGateway.PatientDataAccess.Api
         public string? SourceSystemId { get; set; }
     }
 
+    // Class is currently not being passed by the front end
+    [System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
     internal record LaboratoryOrder : HealthDataEntry
     {
         public string? SourceSystemId { get; set; }
@@ -66,6 +70,8 @@ namespace HealthGateway.PatientDataAccess.Api
         public IEnumerable<LaboratoryResult>? LabResults { get; set; }
     }
 
+    // Class is currently not being passed by the front end
+    [System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
     internal record LaboratoryResult
     {
         public string? Id { get; set; }
