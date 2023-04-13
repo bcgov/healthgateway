@@ -30,7 +30,8 @@ namespace HealthGateway.Admin.Server.MapProfiles
         public DelegationChangeProfile()
         {
             this.CreateMap<DependentAudit, DelegationChange>()
-                .ForMember(dest => dest.DependentHdId, opt => opt.MapFrom(src => src.HdId));
+                .ForMember(dest => dest.DependentHdId, opt => opt.MapFrom(src => src.HdId))
+                .ForMember(dest => dest.Reason, opt => opt.MapFrom(src => src.ProtectedReason));
         }
     }
 }
