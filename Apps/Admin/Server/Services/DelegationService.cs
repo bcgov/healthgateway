@@ -129,6 +129,10 @@ namespace HealthGateway.Admin.Server.Services
                 }
 
                 delegationInfo.Delegates = delegates;
+
+                // Get dependent audits
+                IEnumerable<DependentAudit> dependentAudits = await this.delegationDelegate.GetDependentAuditsAsync(dependentPatientInfo.HdId).ConfigureAwait(true);
+                delegationInfo.DelegationChanges = dependentAudits.Select(da => this.autoMapper.Map<DelegationChange>(da));
             }
 
             return delegationInfo;
