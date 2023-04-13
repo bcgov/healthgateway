@@ -7,7 +7,6 @@ import DependentCardComponent from "@/components/dependent/DependentCardComponen
 import LoadingComponent from "@/components/LoadingComponent.vue";
 import NewDependentComponent from "@/components/modal/NewDependentComponent.vue";
 import BreadcrumbComponent from "@/components/navmenu/BreadcrumbComponent.vue";
-import UserPreferenceType from "@/constants/userPreferenceType";
 import BreadcrumbItem from "@/models/breadcrumbItem";
 import { Dependent } from "@/models/dependent";
 import User from "@/models/user";
@@ -53,10 +52,6 @@ export default class DependentManagementView extends Vue {
 
     private get isLoading(): boolean {
         return this.dependentsAreLoading;
-    }
-
-    private get addDependentTutorialPreference(): string {
-        return UserPreferenceType.TutorialAddDependent;
     }
 
     private async created(): Promise<void> {

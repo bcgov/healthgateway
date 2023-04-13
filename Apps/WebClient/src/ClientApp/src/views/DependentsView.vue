@@ -10,7 +10,6 @@ import LoadingComponent from "@/components/LoadingComponent.vue";
 import NewDependentComponent from "@/components/modal/NewDependentComponent.vue";
 import BreadcrumbComponent from "@/components/navmenu/BreadcrumbComponent.vue";
 import { ErrorSourceType, ErrorType } from "@/constants/errorType";
-import UserPreferenceType from "@/constants/userPreferenceType";
 import BreadcrumbItem from "@/models/breadcrumbItem";
 import type { WebClientConfiguration } from "@/models/configData";
 import type { Dependent } from "@/models/dependent";
@@ -74,10 +73,6 @@ export default class DependentsView extends Vue {
             dataTestId: "breadcrumb-dependents",
         },
     ];
-
-    private get addDependentTutorialPreference(): string {
-        return UserPreferenceType.TutorialAddDependent;
-    }
 
     private created(): void {
         this.logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);

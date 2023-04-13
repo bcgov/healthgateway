@@ -12,7 +12,6 @@ import { Action, Getter } from "vuex-class";
 
 import DatePickerComponent from "@/components/DatePickerComponent.vue";
 import { EntryType, entryTypeMap } from "@/constants/entryType";
-import UserPreferenceType from "@/constants/userPreferenceType";
 import { PatientDataType } from "@/models/patientDataResponse";
 import TimelineFilter, { TimelineFilterBuilder } from "@/models/timelineFilter";
 import User from "@/models/user";
@@ -112,10 +111,6 @@ export default class FilterComponent extends Vue {
 
     get hasFilterSelected(): boolean {
         return this.activeFilter.hasActiveFilter();
-    }
-
-    get timelineFilterTutorialPreference(): string {
-        return UserPreferenceType.TutorialTimelineFilter;
     }
 
     mounted(): void {

@@ -148,10 +148,6 @@ export default class HomeView extends Vue {
 
     private logger!: ILogger;
 
-    private get addQuickLinkTutorialPreference(): string {
-        return UserPreferenceType.TutorialAddQuickLink;
-    }
-
     private get isVaccineRecordDownloading(): boolean {
         const vaccinationRecord: VaccinationRecord | undefined =
             this.getVaccinationRecord();

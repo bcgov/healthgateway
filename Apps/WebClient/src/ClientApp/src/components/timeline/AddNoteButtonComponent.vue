@@ -2,7 +2,6 @@
 import Vue from "vue";
 import { Component } from "vue-property-decorator";
 
-import UserPreferenceType from "@/constants/userPreferenceType";
 import EventBus, { EventMessageName } from "@/eventbus";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -11,10 +10,6 @@ const options: any = {};
 @Component(options)
 export default class AddNoteButtonComponent extends Vue {
     private eventBus = EventBus;
-
-    private get noteTutorialPreference(): string {
-        return UserPreferenceType.TutorialNote;
-    }
 
     private createNote(): void {
         this.eventBus.$emit(EventMessageName.CreateNote);

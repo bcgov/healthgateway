@@ -2,10 +2,9 @@
 import { library } from "@fortawesome/fontawesome-svg-core";
 import { faArrowCircleUp, faLock } from "@fortawesome/free-solid-svg-icons";
 import Vue from "vue";
-import { Component, Emit, Prop, Watch } from "vue-property-decorator";
+import { Component, Emit, Prop } from "vue-property-decorator";
 import { Action, Getter } from "vuex-class";
 
-import UserPreferenceType from "@/constants/userPreferenceType";
 import { DateWrapper } from "@/models/dateWrapper";
 import { ResultError } from "@/models/errors";
 import User from "@/models/user";
@@ -39,27 +38,12 @@ export default class AddCommentComponent extends Vue {
     @Action("setTooManyRequestsError", { namespace: "errorBanner" })
     setTooManyRequestsError!: (params: { key: string }) => void;
 
-    @Action("setSeenTutorialComment", { namespace: "user" })
-    setSeenTutorialComment!: (params: { value: boolean }) => void;
-
-    @Getter("seenTutorialComment", { namespace: "user" })
-    seenTutorialComment!: boolean;
-
     @Getter("user", { namespace: "user" })
     user!: User;
 
     private commentInput = "";
     private logger!: ILogger;
     private isSaving = false;
-    private isCommentTutorialHidden = true;
-
-    private get showCommentTutorial(): boolean {
-        return this.visible && !this.isCommentTutorialHidden;
-    }
-
-    private get commentTutorialPreference(): string {
-        return UserPreferenceType.TutorialComment;
-    }
 
     private get privacyInfoId(): string {
         const id = `privacy-icon-${this.comment.parentEntryId}`;
@@ -106,22 +90,6 @@ export default class AddCommentComponent extends Vue {
                 window.scrollTo({ top: 0, behavior: "smooth" });
             })
             .finally(() => (this.isSaving = false));
-    }
-
-    @Watch("visible")
-    private async onVisibleChanged(): Promise<void> {
-        if (
-            this.visible &&
-            (!this.seenTutorialComment || this.isMobileDetails)
-        ) {
-            // wait 2 ticks for animations to complete
-            await this.$nextTick();
-            await this.$nextTick();
-
-            // enable popover
-            this.isCommentTutorialHidden = false;
-            this.setSeenTutorialComment({ value: true });
-        }
     }
 
     @Emit()

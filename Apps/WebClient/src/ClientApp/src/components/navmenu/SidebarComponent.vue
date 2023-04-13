@@ -14,7 +14,6 @@ import { Component, Watch } from "vue-property-decorator";
 import { Action, Getter } from "vuex-class";
 
 import FeedbackComponent from "@/components/FeedbackComponent.vue";
-import UserPreferenceType from "@/constants/userPreferenceType";
 import type { WebClientConfiguration } from "@/models/configData";
 import User from "@/models/user";
 import container from "@/plugins/container";
@@ -128,10 +127,6 @@ export default class SidebarComponent extends Vue {
         }
     }
 
-    private get exportTutorialPreference(): string {
-        return UserPreferenceType.TutorialMenuExport;
-    }
-
     private get isQueuePage(): boolean {
         return (
             this.$route.path.toLowerCase() === "/queue" ||
@@ -149,10 +144,6 @@ export default class SidebarComponent extends Vue {
             !this.patientRetrievalFailed &&
             !this.isQueuePage
         );
-    }
-
-    private get showExportTutorial(): boolean {
-        return (this.isOpen || !this.isMobileWidth) && !this.isAnimating;
     }
 
     private get isFullyOpen(): boolean {
