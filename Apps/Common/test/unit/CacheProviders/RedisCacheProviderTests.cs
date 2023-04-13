@@ -96,8 +96,7 @@ namespace HealthGateway.CommonTests.CacheProviders
             Mock<ILogger<RedisCacheProvider>> mockLogger = new();
             ConnectionMultiplexer broken = ConnectionMultiplexer.Connect("localhost:9999,abortConnect=false");
             ICacheProvider cacheProvider = new RedisCacheProvider(mockLogger.Object, broken);
-            string? result = cacheProvider.GetItem<string>("NOTFOUND");
-            Assert.Null(result);
+            Assert.Throws<RedisConnectionException>(() => cacheProvider.GetItem<string>("NOTFOUND"));
         }
 
         /// <summary>
