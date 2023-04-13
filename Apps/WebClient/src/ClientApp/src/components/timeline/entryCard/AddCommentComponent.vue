@@ -5,7 +5,6 @@ import Vue from "vue";
 import { Component, Emit, Prop, Watch } from "vue-property-decorator";
 import { Action, Getter } from "vuex-class";
 
-import TutorialComponent from "@/components/shared/TutorialComponent.vue";
 import UserPreferenceType from "@/constants/userPreferenceType";
 import { DateWrapper } from "@/models/dateWrapper";
 import { ResultError } from "@/models/errors";
@@ -18,11 +17,7 @@ import { ILogger } from "@/services/interfaces";
 library.add(faArrowCircleUp, faLock);
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-const options: any = {
-    components: {
-        TutorialComponent,
-    },
-};
+const options: any = {};
 
 @Component(options)
 export default class AddCommentComponent extends Vue {
@@ -153,17 +148,6 @@ export default class AddCommentComponent extends Vue {
         >
             Only you can see comments added to your medical records.
         </b-tooltip>
-        <TutorialComponent
-            :preference-type="commentTutorialPreference"
-            :target="privacyInfoId"
-            :show="showCommentTutorial"
-            placement="topright"
-        >
-            <div data-testid="comment-tutorial-popover">
-                You can add comments to help you keep track of important health
-                details. Only you can see them.
-            </div>
-        </TutorialComponent>
         <b-col class="ml-2">
             <b-input-group>
                 <b-form-textarea

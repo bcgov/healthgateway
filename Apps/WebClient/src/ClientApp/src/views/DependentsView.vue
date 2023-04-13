@@ -9,7 +9,6 @@ import DependentCardComponent from "@/components/DependentCardComponent.vue";
 import LoadingComponent from "@/components/LoadingComponent.vue";
 import NewDependentComponent from "@/components/modal/NewDependentComponent.vue";
 import BreadcrumbComponent from "@/components/navmenu/BreadcrumbComponent.vue";
-import TutorialComponent from "@/components/shared/TutorialComponent.vue";
 import { ErrorSourceType, ErrorType } from "@/constants/errorType";
 import UserPreferenceType from "@/constants/userPreferenceType";
 import BreadcrumbItem from "@/models/breadcrumbItem";
@@ -29,7 +28,6 @@ const options: any = {
         LoadingComponent,
         DependentCardComponent,
         NewDependentComponent,
-        TutorialComponent,
     },
 };
 
@@ -114,15 +112,6 @@ export default class DependentsView extends Vue {
                 <hg-icon icon="user-plus" size="medium" class="mr-2" />
                 <span>Add</span>
             </hg-button>
-            <TutorialComponent
-                :preference-type="addDependentTutorialPreference"
-                target="add-dependent-button"
-            >
-                <div data-testid="add-dependent-tutorial-popover">
-                    Add a dependent under 12 years old to get their health
-                    records.
-                </div>
-            </TutorialComponent>
         </page-title>
         <h5 class="my-3">
             You can add your dependents under the age of
