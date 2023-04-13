@@ -16,6 +16,7 @@
 namespace HealthGateway.PatientDataAccess
 {
     using System;
+    using System.Diagnostics.CodeAnalysis;
     using HealthGateway.Common.Utils.Phsa;
     using HealthGateway.PatientDataAccess.Api;
     using Microsoft.Extensions.DependencyInjection;
@@ -24,6 +25,7 @@ namespace HealthGateway.PatientDataAccess
     /// <summary>
     /// Helper class to add and configure <see cref="IPatientDataRepository"/> dependencies.
     /// </summary>
+    [ExcludeFromCodeCoverage]
     public static class ConfigurationExtensions
     {
         /// <summary>
