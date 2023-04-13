@@ -679,6 +679,16 @@ describe("Dependents", () => {
         hdid: "645645767756756767",
     };
 
+    // This should not be the same in order to test Add dependent too many requests error, the new duplicate dependent check prevents using validDependent
+    const alternativeDependent = {
+        firstName: "Sammy",
+        lastName: "Testfivey",
+        doB: "2014-Mar-15",
+        testDate: "2020-Mar-21",
+        phn: "9735361219",
+        hdid: "645645767756756767",
+    };
+
     beforeEach(() => {
         cy.intercept("GET", "**/Laboratory/Covid19Orders*", {
             fixture: "LaboratoryService/covid19Orders.json",
@@ -733,14 +743,14 @@ describe("Dependents", () => {
 
         cy.get("[data-testid=firstNameInput]")
             .clear()
-            .type(validDependent.firstName);
+            .type(alternativeDependent.firstName);
         cy.get("[data-testid=lastNameInput]")
             .clear()
-            .type(validDependent.lastName);
+            .type(alternativeDependent.lastName);
         cy.get("[data-testid=dateOfBirthInput] input")
             .clear()
-            .type(validDependent.doB);
-        cy.get("[data-testid=phnInput]").clear().type(validDependent.phn);
+            .type(alternativeDependent.doB);
+        cy.get("[data-testid=phnInput]").clear().type(alternativeDependent.phn);
         cy.get("[data-testid=termsCheckbox]").check({ force: true });
 
         cy.get("[data-testid=registerDependentBtn]").click();
