@@ -7,12 +7,12 @@ import { Component, Prop, Ref } from "vue-property-decorator";
 import { Action, Getter } from "vuex-class";
 
 import MessageModalComponent from "@/components/modal/MessageModalComponent.vue";
-import PatientData, {
-    HealthOptionType,
-    OrganDonorRegistrationData,
+import {
+    OrganDonorRegistration,
+    PatientData,
     PatientDataFile,
-    PatientHealthOption,
-} from "@/models/patientData";
+    PatientDataType,
+} from "@/models/patientDataResponse";
 import container from "@/plugins/container";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import { ILogger } from "@/services/interfaces";
@@ -34,7 +34,10 @@ export default class OrganDonorDetailsCard extends Vue {
     isPatientDataFileLoading!: (fileId: string) => boolean;
 
     @Getter("patientData", { namespace: "patientData" })
-    patientData!: (hdid: string) => PatientData;
+    patientData!: (
+        hdid: string,
+        patientDataTypes: PatientDataType[]
+    ) => PatientData[];
 
     @Action("retrievePatientDataFile", { namespace: "patientData" })
     retrievePatientDataFile!: (params: {
@@ -56,11 +59,13 @@ export default class OrganDonorDetailsCard extends Vue {
         );
     }
 
-    get registrationData(): OrganDonorRegistrationData | undefined {
-        return this.patientData(this.hdid).items.find(
-            (ho: PatientHealthOption) =>
-                ho.type === HealthOptionType.OrganDonorRegistrationData
-        ) as OrganDonorRegistrationData;
+    get registrationData(): OrganDonorRegistration | undefined {
+        const data = this.patientData(this.hdid, [
+            PatientDataType.OrganDonorRegistrationStatus,
+        ]);
+        if (data) {
+            return data[0] as OrganDonorRegistration;
+        }
     }
 
     async created(): Promise<void> {

@@ -1,5 +1,6 @@
 ﻿import Vue from "vue";
 
+import { PatientDataType } from "@/models/patientDataResponse";
 import { LoadStatus } from "@/models/storeOperations";
 import {
     PatientDataFileState,
@@ -36,6 +37,22 @@ export function getPatientDataRecordState(
             ...defaultPatientDataState,
         }
     );
+}
+export function areAllPatientDataTypesStored(
+    state: PatientDataState,
+    hdid: string,
+    patientDataTypes: PatientDataType[]
+): boolean {
+    const patientDataRecordState = getPatientDataRecordState(state, hdid);
+    if (!patientDataRecordState.data) {
+        return false;
+    }
+    for (const patientDataType of patientDataTypes) {
+        if (!patientDataRecordState.data[patientDataType]) {
+            return false;
+        }
+    }
+    return true;
 }
 
 /**

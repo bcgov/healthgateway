@@ -22,7 +22,10 @@ namespace HealthGateway.PatientDataAccess.Api
     using System.Text.Json.Serialization;
 
     [JsonConverter(typeof(HealthDataJsonConverter))]
-    internal abstract record HealthDataEntry;
+    internal abstract record HealthDataEntry
+    {
+        public string? HealthDataId { get; set; }
+    }
 
     internal record ClinicalDocument : HealthDataEntry
     {

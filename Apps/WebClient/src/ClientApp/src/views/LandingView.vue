@@ -19,6 +19,7 @@ import {
     faTabletScreenButton,
     faUserGroup,
     faVial,
+    faXRay,
 } from "@fortawesome/free-solid-svg-icons";
 import Vue from "vue";
 import { Component } from "vue-property-decorator";
@@ -47,7 +48,8 @@ library.add(
     faSyringe,
     faTabletScreenButton,
     faUserGroup,
-    faVial
+    faVial,
+    faXRay
 );
 
 interface Tile {
@@ -90,6 +92,7 @@ export default class LandingView extends Vue {
         EntryType.SpecialAuthorityRequest,
         EntryType.ClinicalDocument,
         EntryType.HospitalVisit,
+        EntryType.DiagnosticImaging,
     ];
 
     selectedPreviewDevice = "laptop";

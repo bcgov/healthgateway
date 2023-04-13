@@ -87,6 +87,10 @@ describe("Filters", () => {
                     name: "specialAuthorityRequest",
                     enabled: true,
                 },
+                {
+                    name: "diagnosticImaging",
+                    enabled: true,
+                },
             ],
         });
         cy.login(
@@ -125,6 +129,9 @@ describe("Filters", () => {
             .should("be.visible")
             .contains(countRegex);
         cy.get("[data-testid=HospitalVisitCount]")
+            .should("be.visible")
+            .contains(countRegex);
+        cy.get("[data-testid=DiagnosticImagingCount]")
             .should("be.visible")
             .contains(countRegex);
         cy.get("[data-testid=btnFilterCancel]").click();
@@ -217,6 +224,7 @@ describe("Filters", () => {
         );
         cy.get("[data-testid=clinicaldocumentTitle]").should("not.exist");
         cy.get("[data-testid=hospitalvisitTitle]").should("not.exist");
+        cy.get("[data-testid=diagnosticimagingTitle]").should("not.exist");
         verifyActiveFilters(["Immunization"]);
     });
 
@@ -256,6 +264,7 @@ describe("Filters", () => {
         );
         cy.get("[data-testid=clinicaldocumentTitle]").should("not.exist");
         cy.get("[data-testid=hospitalvisitTitle]").should("not.exist");
+        cy.get("[data-testid=diagnosticimagingTitle]").should("not.exist");
         verifyActiveFilters(["Medication"]);
     });
 
@@ -276,6 +285,7 @@ describe("Filters", () => {
         );
         cy.get("[data-testid=clinicaldocumentTitle]").should("not.exist");
         cy.get("[data-testid=hospitalvisitTitle]").should("not.exist");
+        cy.get("[data-testid=diagnosticimagingTitle]").should("not.exist");
         verifyActiveFilters(["Health Visits"]);
     });
 
@@ -296,6 +306,7 @@ describe("Filters", () => {
         );
         cy.get("[data-testid=clinicaldocumentTitle]").should("not.exist");
         cy.get("[data-testid=hospitalvisitTitle]").should("not.exist");
+        cy.get("[data-testid=diagnosticimagingTitle]").should("not.exist");
         verifyActiveFilters(["COVID‑19 Tests"]);
     });
 
@@ -316,6 +327,7 @@ describe("Filters", () => {
         );
         cy.get("[data-testid=clinicaldocumentTitle]").should("not.exist");
         cy.get("[data-testid=hospitalvisitTitle]").should("not.exist");
+        cy.get("[data-testid=diagnosticimagingTitle]").should("not.exist");
         verifyActiveFilters(["Lab Results"]);
     });
 
@@ -338,6 +350,7 @@ describe("Filters", () => {
         );
         cy.get("[data-testid=clinicaldocumentTitle]").should("not.exist");
         cy.get("[data-testid=hospitalvisitTitle]").should("not.exist");
+        cy.get("[data-testid=diagnosticimagingTitle]").should("not.exist");
         verifyActiveFilters(["Special Authority"]);
     });
 
@@ -358,6 +371,7 @@ describe("Filters", () => {
         );
         cy.get("[data-testid=clinicaldocumentTitle]").should("be.visible");
         cy.get("[data-testid=hospitalvisitTitle]").should("not.exist");
+        cy.get("[data-testid=diagnosticimagingTitle]").should("not.exist");
         verifyActiveFilters(["Clinical Documents"]);
     });
 
@@ -378,7 +392,29 @@ describe("Filters", () => {
         );
         cy.get("[data-testid=clinicaldocumentTitle]").should("not.exist");
         cy.get("[data-testid=hospitalvisitTitle]").should("be.visible");
+        cy.get("[data-testid=diagnosticimagingTitle]").should("not.exist");
         verifyActiveFilters(["Hospital Visits"]);
+    });
+
+    it("Filter Diagnostic Imaging", () => {
+        cy.get("[data-testid=filterContainer]").should("not.exist");
+        cy.get("[data-testid=filterDropdown]").click();
+        cy.get("[data-testid=DiagnosticImaging-filter]").click({ force: true });
+        cy.get("[data-testid=btnFilterApply]").click();
+
+        cy.get("[data-testid=healthvisitTitle]").should("not.exist");
+        cy.get("[data-testid=noteTitle]").should("not.exist");
+        cy.get("[data-testid=immunizationTitle]").should("not.exist");
+        cy.get("[data-testid=covid19testresultTitle]").should("not.exist");
+        cy.get("[data-testid=labresultTitle]").should("not.exist");
+        cy.get("[data-testid=medicationTitle]").should("not.exist");
+        cy.get("[data-testid=specialauthorityrequestTitle]").should(
+            "not.exist"
+        );
+        cy.get("[data-testid=clinicaldocumentTitle]").should("not.exist");
+        cy.get("[data-testid=hospitalvisitTitle]").should("not.exist");
+        cy.get("[data-testid=diagnosticimagingTitle]").should("be.visible");
+        verifyActiveFilters(["Imaging Reports"]);
     });
 
     it("Validate Apply and Cancel buttons", () => {

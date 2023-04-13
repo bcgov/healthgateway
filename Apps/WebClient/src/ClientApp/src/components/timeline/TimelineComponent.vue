@@ -12,6 +12,7 @@ import { ClinicalDocument } from "@/models/clinicalDocument";
 import ClinicalDocumentTimelineEntry from "@/models/clinicalDocumentTimelineEntry";
 import Covid19LaboratoryOrderTimelineEntry from "@/models/covid19LaboratoryOrderTimelineEntry";
 import { DateWrapper } from "@/models/dateWrapper";
+import DiagnosticImagingTimelineEntry from "@/models/diagnosticImagingTimelineEntry";
 import { Encounter, HospitalVisit } from "@/models/encounter";
 import EncounterTimelineEntry from "@/models/encounterTimelineEntry";
 import HospitalVisitTimelineEntry from "@/models/hospitalVisitTimelineEntry";
@@ -24,6 +25,11 @@ import MedicationRequestTimelineEntry from "@/models/medicationRequestTimelineEn
 import MedicationStatementHistory from "@/models/medicationStatementHistory";
 import MedicationTimelineEntry from "@/models/medicationTimelineEntry";
 import NoteTimelineEntry from "@/models/noteTimelineEntry";
+import {
+    DiagnosticImagingExam,
+    PatientData,
+    PatientDataType,
+} from "@/models/patientDataResponse";
 import TimelineEntry, { DateGroup } from "@/models/timelineEntry";
 import TimelineFilter, { TimelineFilterBuilder } from "@/models/timelineFilter";
 import { UserComment } from "@/models/userComment";
@@ -34,6 +40,7 @@ import { ILogger } from "@/services/interfaces";
 
 import ClinicalDocumentTimelineComponent from "./entryCard/ClinicalDocumentTimelineComponent.vue";
 import Covid19LaboratoryOrderTimelineComponent from "./entryCard/Covid19LaboratoryOrderTimelineComponent.vue";
+import DiagnosticImagingTimelineComponent from "./entryCard/DiagnosticImagingTimelineComponent.vue";
 import EncounterTimelineComponent from "./entryCard/EncounterTimelineComponent.vue";
 import HospitalVisitTimelineComponent from "./entryCard/HospitalVisitTimelineComponent.vue";
 import ImmunizationTimelineComponent from "./entryCard/ImmunizationTimelineComponent.vue";
@@ -64,6 +71,7 @@ const options: any = {
         MedicationTimelineComponent,
         NoteTimelineComponent,
         ProtectiveWordComponent,
+        DiagnosticImagingTimelineComponent,
     },
 };
 
@@ -113,6 +121,12 @@ export default class TimelineComponent extends Vue {
     @Action("retrieveSpecialAuthorityRequests", { namespace: "medication" })
     retrieveSpecialAuthorityRequests!: (params: {
         hdid: string;
+    }) => Promise<void>;
+
+    @Action("retrievePatientData", { namespace: "patientData" })
+    retrievePatientData!: (params: {
+        hdid: string;
+        patientDataTypes: PatientDataType[];
     }) => Promise<void>;
 
     @Action("setFilter", { namespace: "timeline" })
@@ -180,6 +194,15 @@ export default class TimelineComponent extends Vue {
 
     @Getter("specialAuthorityRequestsAreLoading", { namespace: "medication" })
     specialAuthorityRequestsAreLoading!: (hdid: string) => boolean;
+
+    @Getter("patientData", { namespace: "patientData" })
+    patientData!: (
+        hdid: string,
+        patientDataTypes: PatientDataType[]
+    ) => PatientData[];
+
+    @Getter("patientDataAreLoading", { namespace: "patientData" })
+    patientDataAreLoading!: (hdid: string) => boolean;
 
     @Getter("isHeaderShown", { namespace: "navbar" })
     isHeaderShown!: boolean;
@@ -381,6 +404,13 @@ export default class TimelineComponent extends Vue {
             entries.push(new ImmunizationTimelineEntry(immunization));
         }
 
+        // Add the diagnostic imaging entries to the timeline list
+        for (const exam of this.patientData(this.hdid, [
+            PatientDataType.DiagnosticImaging,
+        ]) as DiagnosticImagingExam[]) {
+            entries.push(new DiagnosticImagingTimelineEntry(exam, getComments));
+        }
+
         // Sort entries with newest first
         entries.sort((a, b) => {
             if (a.date.isBefore(b.date)) {
@@ -503,6 +533,8 @@ export default class TimelineComponent extends Vue {
                 return this.notesAreLoading;
             case EntryType.SpecialAuthorityRequest:
                 return this.specialAuthorityRequestsAreLoading(this.hdid);
+            case EntryType.DiagnosticImaging:
+                return this.patientDataAreLoading(this.hdid);
             default:
                 throw new Error(`Unknown dataset "${entryType}"`);
         }
@@ -531,6 +563,11 @@ export default class TimelineComponent extends Vue {
             case EntryType.SpecialAuthorityRequest:
                 return this.retrieveSpecialAuthorityRequests({
                     hdid: this.hdid,
+                });
+            case EntryType.DiagnosticImaging:
+                return this.retrievePatientData({
+                    hdid: this.hdid,
+                    patientDataTypes: [PatientDataType.DiagnosticImaging],
                 });
             default:
                 return Promise.reject(`Unknown dataset "${entryType}"`);
@@ -794,17 +831,17 @@ export default class TimelineComponent extends Vue {
 @import "@/assets/scss/_variables.scss";
 
 .row {
-    margin: 0px;
-    padding: 0px;
+    margin: 0;
+    padding: 0;
 }
 
 .col {
-    margin: 0px;
-    padding: 0px;
+    margin: 0;
+    padding: 0;
 }
 
 .form-group {
-    margin-bottom: 0px;
+    margin-bottom: 0;
 }
 
 .sticky-top {

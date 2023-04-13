@@ -1,10 +1,15 @@
 import Vue from "vue";
 
 import { ResultError } from "@/models/errors";
-import PatientData, { PatientDataFile } from "@/models/patientData";
+import PatientDataResponse, {
+    PatientDataFile,
+    PatientDataToHealthDataTypeMap,
+    PatientDataType,
+} from "@/models/patientDataResponse";
 import { LoadStatus } from "@/models/storeOperations";
 import {
     PatientDataFileState,
+    PatientDataMap,
     PatientDataMutations,
     PatientDataRecordState,
     PatientDataState,
@@ -50,13 +55,29 @@ export const mutations: PatientDataMutations = {
     },
     setPatientData(
         state: PatientDataState,
-        payload: { hdid: string; patientData: PatientData }
+        payload: {
+            hdid: string;
+            patientData: PatientDataResponse;
+            patientDataTypes: PatientDataType[];
+        }
     ): void {
-        const { hdid, patientData } = payload;
+        const { hdid, patientData, patientDataTypes } = payload;
+
         const currentState = getPatientDataRecordState(state, hdid);
+        const dataToUpdate: PatientDataMap =
+            currentState.data ?? ({} as PatientDataMap);
+
+        patientDataTypes.forEach((patientDataType) => {
+            dataToUpdate[patientDataType] = patientData.items.filter(
+                (i) =>
+                    i.type ===
+                    PatientDataToHealthDataTypeMap.get(patientDataType)
+            );
+        });
+
         const nextState: PatientDataRecordState = {
             ...currentState,
-            data: patientData,
+            data: dataToUpdate,
             error: undefined,
             statusMessage: "success",
             status: LoadStatus.LOADED,
@@ -65,7 +86,10 @@ export const mutations: PatientDataMutations = {
     },
     setPatientDataError(
         state: PatientDataState,
-        payload: { hdid: string; error: ResultError }
+        payload: {
+            hdid: string;
+            error: ResultError;
+        }
     ): void {
         const { hdid, error } = payload;
         const currentState = getPatientDataRecordState(state, hdid);

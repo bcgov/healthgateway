@@ -6,12 +6,12 @@ import { EntryType, entryTypeMap } from "@/constants/entryType";
 import MedicationTimelineEntry from "@/models/medicationTimelineEntry";
 import PhoneUtil from "@/utility/phoneUtil";
 
-import EntrycardTimelineComponent from "./EntrycardTimelineComponent.vue";
+import EntryCardTimelineComponent from "./EntrycardTimelineComponent.vue";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const options: any = {
     components: {
-        EntryCard: EntrycardTimelineComponent,
+        EntryCard: EntryCardTimelineComponent,
     },
 };
 
