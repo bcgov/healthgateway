@@ -34,9 +34,9 @@ namespace HealthGateway.Admin.Common.Models
         public string AgentUsername { get; set; } = string.Empty;
 
         /// <summary>
-        /// Gets or sets the protected reason.
+        /// Gets or sets the reason for the change.
         /// </summary>
-        public string ProtectedReason { get; set; } = string.Empty;
+        public string Reason { get; set; } = string.Empty;
 
         /// <summary>
         /// Gets or sets a value representing the type of dependent audit operation.
