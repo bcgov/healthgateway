@@ -59,6 +59,11 @@ namespace HealthGateway.Admin.Client.Store.Delegation
         public IImmutableList<ExtendedDelegateInfo> Delegates { get; init; } = ImmutableList<ExtendedDelegateInfo>.Empty;
 
         /// <summary>
+        /// Gets or sets the reason to protect or unprotect the delegate.
+        /// </summary>
+        public string? Reason { get; set; }
+
+        /// <summary>
         /// Gets a value indicating whether the delegation page is in edit mode.
         /// </summary>
         public bool InEditMode { get; init; }
