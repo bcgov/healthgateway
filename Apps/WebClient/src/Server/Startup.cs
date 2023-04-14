@@ -20,7 +20,9 @@ namespace HealthGateway.WebClient.Server
     using System.Diagnostics;
     using System.Diagnostics.CodeAnalysis;
     using HealthGateway.Common.AspNetConfiguration;
+    using HealthGateway.Common.AspNetConfiguration.Modules;
     using HealthGateway.Common.Utils;
+    using HealthGateway.Database.Delegates;
     using HealthGateway.WebClient.Server.Services;
     using Microsoft.AspNetCore.Builder;
     using Microsoft.AspNetCore.Hosting;
@@ -65,6 +67,7 @@ namespace HealthGateway.WebClient.Server
             this.startupConfig.ConfigureHttpServices(services, false);
             this.startupConfig.ConfigureSwaggerServices(services);
             this.startupConfig.ConfigureTracing(services);
+            this.startupConfig.ConfigureDatabaseServices(services);
 
             // Add Background Services
             services.Configure<ApiBehaviorOptions>(options => options.SuppressModelStateInvalidFilter = true);
@@ -84,7 +87,9 @@ namespace HealthGateway.WebClient.Server
                     });
 
             // Add services
-            services.AddSingleton<IConfigurationService, ConfigurationService>();
+            services.AddTransient<IConfigurationService, ConfigurationService>();
+            services.AddTransient<IApplicationSettingsDelegate, DbApplicationSettingsDelegate>();
+            GatewayCache.ConfigureCaching(services, this.startupConfig.Logger, this.startupConfig.Configuration);
         }
 
         /// <summary>

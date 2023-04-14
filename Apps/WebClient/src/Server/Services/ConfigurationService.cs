@@ -15,8 +15,13 @@
 //-------------------------------------------------------------------------
 namespace HealthGateway.WebClient.Server.Services
 {
+    using System.Collections.Generic;
     using System.IO;
+    using System.Linq;
     using System.Text.Json;
+    using HealthGateway.Common.CacheProviders;
+    using HealthGateway.Database.Delegates;
+    using HealthGateway.Database.Models;
     using HealthGateway.WebClient.Server.Models;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.Logging;
@@ -29,15 +34,23 @@ namespace HealthGateway.WebClient.Server.Services
         private readonly ExternalConfiguration config;
         private readonly ILogger logger;
         private readonly MobileConfiguration mobileConfig;
+        private readonly IApplicationSettingsDelegate applicationSettingsDelegate;
+        private readonly ICacheProvider cacheProvider;
+
+        private readonly string tourSettingsCacheKey = "web-client-tour-configuration";
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ConfigurationService"/> class.
         /// </summary>
         /// <param name="logger">Injected Logger Provider.</param>
         /// <param name="configuration">Injected Configuration Provider.</param>
-        public ConfigurationService(ILogger<ConfigurationService> logger, IConfiguration configuration)
+        /// <param name="applicationSettingsDelegate">Database delegate to retrieve application settings.</param>
+        /// <param name="cacheProvider">Cache provider for application.</param>
+        public ConfigurationService(ILogger<ConfigurationService> logger, IConfiguration configuration, IApplicationSettingsDelegate applicationSettingsDelegate, ICacheProvider cacheProvider)
         {
             this.logger = logger;
+            this.applicationSettingsDelegate = applicationSettingsDelegate;
+            this.cacheProvider = cacheProvider;
             this.config = new ExternalConfiguration();
             this.config = configuration.Get<ExternalConfiguration>() ?? new();
 
@@ -48,6 +61,8 @@ namespace HealthGateway.WebClient.Server.Services
                     fileContent,
                     new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
             }
+
+            this.config.WebClient.TourConfiguration = this.GetTourConfiguration();
 
             this.mobileConfig = new MobileConfiguration();
             configuration.Bind("MobileConfiguration", this.mobileConfig);
@@ -65,6 +80,22 @@ namespace HealthGateway.WebClient.Server.Services
         {
             this.logger.LogTrace("Getting mobile configuration data...");
             return this.mobileConfig;
+        }
+
+        private TourConfiguration? GetTourConfiguration()
+        {
+            TourConfiguration? tourConfig = this.cacheProvider.GetItem<TourConfiguration>(this.tourSettingsCacheKey);
+            if (tourConfig == null)
+            {
+                IList<ApplicationSetting>? settings = this.applicationSettingsDelegate.GetApplicationSettings(TourSettingsMapper.Application, TourSettingsMapper.Component);
+                if (settings.Any())
+                {
+                    tourConfig = TourSettingsMapper.Map(settings);
+                    this.cacheProvider.AddItem(this.tourSettingsCacheKey, tourConfig);
+                }
+            }
+
+            return tourConfig;
         }
     }
 }

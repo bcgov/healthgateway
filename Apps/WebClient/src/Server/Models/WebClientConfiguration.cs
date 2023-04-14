@@ -94,5 +94,10 @@ namespace HealthGateway.WebClient.Server.Models
         /// </summary>
         [JsonPropertyName("clientIP")]
         public string? ClientIp { get; set; }
+
+        /// <summary>
+        /// Gets or sets the client tour configuration.
+        /// </summary>
+        public TourConfiguration? TourConfiguration { get; set; }
     }
 }
