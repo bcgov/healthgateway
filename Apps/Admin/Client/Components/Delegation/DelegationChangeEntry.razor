@@ -1,0 +1,20 @@
+@using HealthGateway.Common.Data.Utils
+@inherits Fluxor.Blazor.Web.Components.FluxorComponent
+
+<MudGrid Spacing="2">
+    <MudItem xs="12">
+        <MudText Typo="Typo.body2" Color="@Color.Primary" data-testid="agent">
+            @Data.AgentUsername
+        </MudText>
+    </MudItem>
+    <MudItem xs="12">
+        <MudText Class="px-4" Typo="Typo.body2" data-testid="reason">
+            @Data.Reason
+        </MudText>
+    </MudItem>
+    <MudItem xs="12">
+        <MudText Class="px-4" Typo="Typo.body2" Color="@Color.Primary" data-testid="datetime">
+            @DateFormatter.ToShortDateAndTime(DateTime)
+        </MudText>
+    </MudItem>
+</MudGrid>

@@ -595,7 +595,7 @@ namespace HealthGateway.Admin.Tests.Services
                     {
                         DependentHdId = DependentHdid,
                         AgentUsername = AuthenticatedPreferredUsername,
-                        ProtectedReason = "Test",
+                        Reason = "Test",
                         OperationCode = isProtected ? DependentAuditOperation.Protect : DependentAuditOperation.Unprotect,
                         TransactionDateTime = TransactionDateTime,
                     },

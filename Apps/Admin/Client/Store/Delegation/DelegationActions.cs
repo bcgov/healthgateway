@@ -73,6 +73,11 @@ namespace HealthGateway.Admin.Client.Store.Delegation
             public required DependentInfo Dependent { get; init; }
 
             /// <summary>
+            /// Gets the collection of delegation changes.
+            /// </summary>
+            public required IEnumerable<DelegationChange> DelegationChanges { get; init; }
+
+            /// <summary>
             /// Gets the collection of delegate info.
             /// </summary>
             public required IEnumerable<ExtendedDelegateInfo> Delegates { get; init; }

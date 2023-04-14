@@ -49,6 +49,7 @@ namespace HealthGateway.Admin.Client.Store.Delegation
                     Error = null,
                 },
                 Dependent = action.Dependent,
+                DelegationChanges = action.DelegationChanges.OrderByDescending(c => c.TransactionDateTime).ToImmutableList(),
                 Delegates = action.Delegates.ToImmutableList(),
             };
         }
@@ -320,6 +321,7 @@ namespace HealthGateway.Admin.Client.Store.Delegation
                 Protect = new(),
                 Unprotect = new(),
                 Dependent = null,
+                DelegationChanges = ImmutableList<DelegationChange>.Empty,
                 Delegates = ImmutableList<ExtendedDelegateInfo>.Empty,
                 InEditMode = false,
             };
