@@ -131,15 +131,6 @@ describe("Public COVID-19 Test Results", () => {
         checkResult("Negative", "Final", "text-success");
     });
 
-    it("Successful Response: Negative Result", () => {
-        enterFormInputs(
-            negativeCollectionDateYear,
-            negativeCollectionDateMonth,
-            negativeCollectionDateDay
-        );
-        checkResult("Negative", "Final", "text-success");
-    });
-
     it("Successful Response: Positive Result", () => {
         enterFormInputs(
             positiveCollectionDateYear,
