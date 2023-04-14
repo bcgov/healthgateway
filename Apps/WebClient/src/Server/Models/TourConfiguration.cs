@@ -31,15 +31,32 @@ namespace HealthGateway.WebClient.Server.Models
         public DateTime? LatestChangeDateTime { get; set; }
     }
 
-#pragma warning disable SA1600
-#pragma warning disable SA1602
-    internal static class TourSettingsMapper
+    /// <summary>
+    /// Contains the ApplicationSettings values and mapping logic for the TourConfiguration.
+    /// </summary>
+    public static class TourSettingsMapper
     {
+        /// <summary>
+        /// The application name.
+        /// </summary>
         public const string Application = "WEB";
+
+        /// <summary>
+        /// The component name.
+        /// </summary>
         public const string Component = "Tour";
+
+        /// <summary>
+        /// The latest change date time key.
+        /// </summary>
         public const string LatestChangeDateTime = "latestChangeDateTime";
 
-        public static TourConfiguration Map(IList<ApplicationSetting> settings)
+        /// <summary>
+        /// Transforms a list of ApplicationSetting to a TourConfiguration.
+        /// </summary>
+        /// <param name="settings">list of ApplicationSetting models.</param>
+        /// <returns cref="TourConfiguration">a populated TourConfiguration.</returns>
+        internal static TourConfiguration Map(IList<ApplicationSetting> settings)
         {
             TourConfiguration config = new();
             foreach (ApplicationSetting setting in settings)
@@ -57,6 +74,4 @@ namespace HealthGateway.WebClient.Server.Models
             return config;
         }
     }
-#pragma warning restore SA1600
-#pragma warning restore SA1602
 }

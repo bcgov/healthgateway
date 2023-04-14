@@ -17,7 +17,11 @@ namespace HealthGateway.WebClientTests.Services
 {
     using System;
     using System.Collections.Generic;
+    using System.Globalization;
     using DeepEqual.Syntax;
+    using HealthGateway.Common.CacheProviders;
+    using HealthGateway.Database.Delegates;
+    using HealthGateway.Database.Models;
     using HealthGateway.WebClient.Server.Models;
     using HealthGateway.WebClient.Server.Services;
     using Microsoft.Extensions.Configuration;
@@ -31,6 +35,15 @@ namespace HealthGateway.WebClientTests.Services
     public class ConfigurationServiceTests
     {
         private readonly ConfigurationService service;
+        private static readonly string TourChangeDateTime = DateTime.Now.ToString(CultureInfo.InvariantCulture);
+        private readonly IList<ApplicationSetting> tourSettings = new List<ApplicationSetting>
+        {
+            new()
+            {
+                Key = TourSettingsMapper.LatestChangeDateTime,
+                Value = TourChangeDateTime,
+            },
+        };
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ConfigurationServiceTests"/> class.
@@ -43,9 +56,13 @@ namespace HealthGateway.WebClientTests.Services
 
             // Mock dependency injection of controller
             Mock<ILogger<ConfigurationService>> mockLog = new();
+            Mock<ICacheProvider> mockCacheProvider = new();
+            Mock<IApplicationSettingsDelegate> mockAppSettingsDelegate = new();
+            mockAppSettingsDelegate.Setup(del => del.GetApplicationSettings(It.IsAny<string>(), It.IsAny<string>()))
+                .Returns(this.tourSettings);
 
             // Creates the controller passing mocked dependencies
-            this.service = new ConfigurationService(mockLog.Object, config);
+            this.service = new ConfigurationService(mockLog.Object, config, mockAppSettingsDelegate.Object, mockCacheProvider.Object);
         }
 
         /// <summary>
@@ -92,6 +109,10 @@ namespace HealthGateway.WebClientTests.Services
                         {
                             "External", new Uri("https://localhost/external")
                         },
+                    },
+                    TourConfiguration = new TourConfiguration
+                    {
+                        LatestChangeDateTime = DateTime.Parse(TourChangeDateTime, CultureInfo.InvariantCulture),
                     },
                 },
                 ServiceEndpoints = new Dictionary<string, Uri>
