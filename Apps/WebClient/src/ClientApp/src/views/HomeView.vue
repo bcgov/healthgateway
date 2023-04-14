@@ -25,7 +25,6 @@ import { Action, Getter } from "vuex-class";
 import LoadingComponent from "@/components/LoadingComponent.vue";
 import AddQuickLinkComponent from "@/components/modal/AddQuickLinkComponent.vue";
 import MessageModalComponent from "@/components/modal/MessageModalComponent.vue";
-import TutorialComponent from "@/components/shared/TutorialComponent.vue";
 import {
     EntryTypeDetails,
     entryTypeMap,
@@ -80,7 +79,6 @@ const options: any = {
         AddQuickLinkComponent,
         LoadingComponent,
         MessageModalComponent,
-        TutorialComponent,
     },
 };
 
@@ -149,10 +147,6 @@ export default class HomeView extends Vue {
     readonly addQuickLinkModal!: AddQuickLinkComponent;
 
     private logger!: ILogger;
-
-    private get addQuickLinkTutorialPreference(): string {
-        return UserPreferenceType.TutorialAddQuickLink;
-    }
 
     private get isVaccineRecordDownloading(): boolean {
         const vaccinationRecord: VaccinationRecord | undefined =
@@ -546,15 +540,6 @@ export default class HomeView extends Vue {
                 <hg-icon icon="plus" size="medium" class="mr-2" />
                 <span>Add Quick Link</span>
             </hg-button>
-            <TutorialComponent
-                :preference-type="addQuickLinkTutorialPreference"
-                target="add-quick-link-button"
-            >
-                <div data-testid="add-quick-link-tutorial-popover">
-                    Add a quick link to easily access a health record type from
-                    your home screen.
-                </div>
-            </TutorialComponent>
         </page-title>
         <b-row cols="1" cols-lg="2" cols-xl="3">
             <b-col class="p-3">

@@ -31,36 +31,6 @@ export const mutations: UserMutation = {
         if (userProfile) {
             PreferenceUtil.setDefaultValue(
                 userProfile.preferences,
-                UserPreferenceType.TutorialNote,
-                "true"
-            );
-            PreferenceUtil.setDefaultValue(
-                userProfile.preferences,
-                UserPreferenceType.TutorialMenuExport,
-                "true"
-            );
-            PreferenceUtil.setDefaultValue(
-                userProfile.preferences,
-                UserPreferenceType.TutorialAddDependent,
-                "true"
-            );
-            PreferenceUtil.setDefaultValue(
-                userProfile.preferences,
-                UserPreferenceType.TutorialAddQuickLink,
-                "true"
-            );
-            PreferenceUtil.setDefaultValue(
-                userProfile.preferences,
-                UserPreferenceType.TutorialTimelineFilter,
-                "true"
-            );
-            PreferenceUtil.setDefaultValue(
-                userProfile.preferences,
-                UserPreferenceType.TutorialComment,
-                "true"
-            );
-            PreferenceUtil.setDefaultValue(
-                userProfile.preferences,
                 UserPreferenceType.HideVaccineCardQuickLink,
                 "false"
             );
@@ -164,7 +134,6 @@ export const mutations: UserMutation = {
         state.patient = new Patient();
         state.patientRetrievalFailed = false;
         state.smsResendDateTime = undefined;
-        state.seenTutorialComment = false;
         state.error = false;
         state.statusMessage = "";
         state.status = LoadStatus.NONE;
@@ -173,8 +142,5 @@ export const mutations: UserMutation = {
         state.error = true;
         state.statusMessage = errorMessage;
         state.status = LoadStatus.ERROR;
-    },
-    setSeenTutorialComment: function (state: UserState, value: boolean): void {
-        state.seenTutorialComment = value;
     },
 };
