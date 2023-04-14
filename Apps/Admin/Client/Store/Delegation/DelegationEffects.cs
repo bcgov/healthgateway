@@ -63,6 +63,7 @@ namespace HealthGateway.Admin.Client.Store.Delegation
                     new DelegationActions.SearchSuccessAction
                     {
                         Dependent = response.Dependent,
+                        DelegationChanges = response.DelegationChanges,
                         Delegates = this.AutoMapper.Map<IEnumerable<DelegateInfo>, IEnumerable<ExtendedDelegateInfo>>(response.Delegates),
                     });
             }
