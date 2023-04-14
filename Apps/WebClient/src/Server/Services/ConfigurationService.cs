@@ -15,13 +15,15 @@
 //-------------------------------------------------------------------------
 namespace HealthGateway.WebClient.Server.Services
 {
-    using System.Collections.Generic;
+    using System;
+    using System.Diagnostics.CodeAnalysis;
+    using System.Globalization;
     using System.IO;
-    using System.Linq;
     using System.Text.Json;
     using HealthGateway.Common.CacheProviders;
     using HealthGateway.Database.Delegates;
     using HealthGateway.Database.Models;
+    using HealthGateway.WebClient.Server.Constants;
     using HealthGateway.WebClient.Server.Models;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.Logging;
@@ -82,20 +84,30 @@ namespace HealthGateway.WebClient.Server.Services
             return this.mobileConfig;
         }
 
+        [ExcludeFromCodeCoverage(Justification = "Mocking the value getter is not worth the effort.")]
         private TourConfiguration? GetTourConfiguration()
         {
-            TourConfiguration? tourConfig = this.cacheProvider.GetItem<TourConfiguration>(this.tourSettingsCacheKey);
-            if (tourConfig == null)
-            {
-                IList<ApplicationSetting>? settings = this.applicationSettingsDelegate.GetApplicationSettings(TourSettingsMapper.Application, TourSettingsMapper.Component);
-                if (settings.Any())
+            return this.cacheProvider.GetOrSet(
+                this.tourSettingsCacheKey,
+                () =>
                 {
-                    tourConfig = TourSettingsMapper.Map(settings);
-                    this.cacheProvider.AddItem(this.tourSettingsCacheKey, tourConfig);
-                }
-            }
+                    ApplicationSetting? lastChangeSetting = this.applicationSettingsDelegate.GetApplicationSetting(
+                        TourApplicationSettings.Application,
+                        TourApplicationSettings.Component,
+                        TourApplicationSettings.LatestChangeDateTime);
+                    if (lastChangeSetting != null)
+                    {
+                        return new TourConfiguration
+                        {
+                            LatestChangeDateTime = lastChangeSetting.Value != null
+                                ? DateTime.Parse(lastChangeSetting.Value, CultureInfo.CurrentCulture)
+                                : null,
+                        };
+                    }
 
-            return tourConfig;
+                    return null;
+                },
+                new TimeSpan(0, 30, 0));
         }
     }
 }

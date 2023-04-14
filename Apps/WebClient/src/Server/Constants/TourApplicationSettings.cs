@@ -13,18 +13,27 @@
 //  See the License for the specific language governing permissions and
 //  limitations under the License.
 // -------------------------------------------------------------------------
-namespace HealthGateway.WebClient.Server.Models
+namespace HealthGateway.WebClient.Server.Constants
 {
-    using System;
-
     /// <summary>
-    /// The Tour Configuration.
+    /// Contains the ApplicationSettings values and mapping logic for the TourConfiguration.
     /// </summary>
-    public record TourConfiguration
+    public static class TourApplicationSettings
     {
         /// <summary>
-        /// Gets or sets the tour update date time.
+        /// The application name.
         /// </summary>
-        public DateTime? LatestChangeDateTime { get; set; }
+        public const string Application = "WEB";
+
+        /// <summary>
+        /// The component name.
+        /// </summary>
+        public const string Component = "Tour";
+
+
+        /// <summary>
+        /// The latest change date time key.
+        /// </summary>
+        public static readonly string LatestChangeDateTime = "latestChangeDateTime";
     }
 }

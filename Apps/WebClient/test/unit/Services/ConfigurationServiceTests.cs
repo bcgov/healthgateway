@@ -17,11 +17,9 @@ namespace HealthGateway.WebClientTests.Services
 {
     using System;
     using System.Collections.Generic;
-    using System.Globalization;
     using DeepEqual.Syntax;
     using HealthGateway.Common.CacheProviders;
     using HealthGateway.Database.Delegates;
-    using HealthGateway.Database.Models;
     using HealthGateway.WebClient.Server.Models;
     using HealthGateway.WebClient.Server.Services;
     using Microsoft.Extensions.Configuration;
@@ -34,15 +32,11 @@ namespace HealthGateway.WebClientTests.Services
     /// </summary>
     public class ConfigurationServiceTests
     {
+        private static readonly DateTime TourChangeDateTime = DateTime.Now;
         private readonly ConfigurationService service;
-        private static readonly string TourChangeDateTime = DateTime.Now.ToString(CultureInfo.InvariantCulture);
-        private readonly IList<ApplicationSetting> tourSettings = new List<ApplicationSetting>
+        private readonly TourConfiguration tourConfig = new()
         {
-            new()
-            {
-                Key = TourSettingsMapper.LatestChangeDateTime,
-                Value = TourChangeDateTime,
-            },
+            LatestChangeDateTime = TourChangeDateTime,
         };
 
         /// <summary>
@@ -56,10 +50,9 @@ namespace HealthGateway.WebClientTests.Services
 
             // Mock dependency injection of controller
             Mock<ILogger<ConfigurationService>> mockLog = new();
-            Mock<ICacheProvider> mockCacheProvider = new();
+            Mock<ICacheProvider> mockCacheProvider = new() { CallBase = true };
+            mockCacheProvider.Setup(provider => provider.GetOrSet(It.IsAny<string>(), It.IsAny<Func<TourConfiguration>>(), It.IsAny<TimeSpan>())).Returns(this.tourConfig);
             Mock<IApplicationSettingsDelegate> mockAppSettingsDelegate = new();
-            mockAppSettingsDelegate.Setup(del => del.GetApplicationSettings(It.IsAny<string>(), It.IsAny<string>()))
-                .Returns(this.tourSettings);
 
             // Creates the controller passing mocked dependencies
             this.service = new ConfigurationService(mockLog.Object, config, mockAppSettingsDelegate.Object, mockCacheProvider.Object);
@@ -112,7 +105,7 @@ namespace HealthGateway.WebClientTests.Services
                     },
                     TourConfiguration = new TourConfiguration
                     {
-                        LatestChangeDateTime = DateTime.Parse(TourChangeDateTime, CultureInfo.InvariantCulture),
+                        LatestChangeDateTime = TourChangeDateTime,
                     },
                 },
                 ServiceEndpoints = new Dictionary<string, Uri>
