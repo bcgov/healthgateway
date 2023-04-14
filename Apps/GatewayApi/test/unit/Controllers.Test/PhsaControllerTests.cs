@@ -65,7 +65,7 @@ namespace HealthGateway.GatewayApiTests.Controllers.Test
         /// GetDependents by date - Happy path scenario.
         /// </summary>
         [Fact]
-        public void ShouldGetDependentsByDate()
+        public async Task ShouldGetDependentsByDate()
         {
             Mock<IDependentService> dependentServiceMock = new();
             IEnumerable<GetDependentResponse> expectedDependents = GetMockDependentResponses();
@@ -74,11 +74,11 @@ namespace HealthGateway.GatewayApiTests.Controllers.Test
                 ResourcePayload = expectedDependents,
                 ResultStatus = ResultType.Success,
             };
-            dependentServiceMock.Setup(s => s.GetDependents(this.fromDate, this.toDate, 0, 5000)).Returns(expectedResult);
+            dependentServiceMock.Setup(s => s.GetDependentsAsync(this.fromDate, this.toDate, 0, 5000)).ReturnsAsync(expectedResult);
 
             PhsaController phsaController = new(
                 dependentServiceMock.Object);
-            ActionResult<RequestResult<IEnumerable<GetDependentResponse>>> actualResult = phsaController.GetAll(this.fromDate, this.toDate);
+            ActionResult<RequestResult<IEnumerable<GetDependentResponse>>> actualResult = await phsaController.GetAll(this.fromDate, this.toDate);
 
             RequestResult<IEnumerable<GetDependentResponse>>? actualRequestResult = actualResult.Value;
             expectedResult.ShouldDeepEqual(actualRequestResult);

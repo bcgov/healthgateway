@@ -25,6 +25,7 @@ namespace HealthGateway.GatewayApi
     using HealthGateway.Common.Data.Utils;
     using HealthGateway.Common.Delegates;
     using HealthGateway.Common.MapProfiles;
+    using HealthGateway.Common.Messaging;
     using HealthGateway.Common.Models.CDogs;
     using HealthGateway.Common.Models.PHSA;
     using HealthGateway.Common.Services;
@@ -141,6 +142,8 @@ namespace HealthGateway.GatewayApi
             services.AddControllers().AddJsonOptions(options => options.JsonSerializerOptions.Converters.Add(new DateOnlyJsonConverter()));
 
             services.AddAutoMapper(typeof(Startup), typeof(UserProfileProfile));
+
+            services.AddServiceBus(new ServiceBusSettings(this.startupConfig.Configuration.GetValue("PhsaV2:ServiceBus:ConnectionString", string.Empty)));
         }
 
         /// <summary>

@@ -134,7 +134,7 @@ namespace HealthGateway.GatewayApi.Services
                 return RequestResultFactory.ServiceError<DependentModel>(ErrorType.CommunicationInternal, ServiceType.Database, dbDependent.Message);
             }
 
-            this.UpdateNotificationSettings(dependent.ResourceOwnerHdid, delegateHdId);
+            await this.UpdateChangeFeedOnAdd(dependent.ResourceOwnerHdid, dependent.ProfileHdid);
 
             DbResult<Dictionary<string, int>> totalDelegateCounts = await this.resourceDelegateDelegate.GetTotalDelegateCountsAsync(
                     new List<string> { dependent.ResourceOwnerHdid })
@@ -205,13 +205,10 @@ namespace HealthGateway.GatewayApi.Services
         }
 
         /// <inheritdoc/>
-        public RequestResult<IEnumerable<GetDependentResponse>> GetDependents(DateTime fromDateUtc, DateTime? toDateUtc, int page, int pageSize)
+        public async Task<RequestResult<IEnumerable<GetDependentResponse>>> GetDependentsAsync(DateTime fromDateUtc, DateTime? toDateUtc, int page, int pageSize)
         {
-            DbResult<IEnumerable<ResourceDelegate>> dbResourceDelegates = this.resourceDelegateDelegate.Get(
-                fromDateUtc,
-                toDateUtc,
-                page,
-                pageSize);
+            await Task.CompletedTask;
+            DbResult<IEnumerable<ResourceDelegate>> dbResourceDelegates = this.resourceDelegateDelegate.Get(fromDateUtc, toDateUtc, page, pageSize);
 
             if (dbResourceDelegates.Status != DbStatusCode.Read)
             {
@@ -233,28 +230,18 @@ namespace HealthGateway.GatewayApi.Services
         }
 
         /// <inheritdoc/>
-        public RequestResult<DependentModel> Remove(DependentModel dependent)
+        public async Task<RequestResult<DependentModel>> RemoveAsync(DependentModel dependent)
         {
             DbResult<ResourceDelegate> dbDependent = this.resourceDelegateDelegate.Delete(this.autoMapper.Map<ResourceDelegate>(dependent), true);
 
-            if (dbDependent.Status == DbStatusCode.Deleted)
+            if (dbDependent.Status != DbStatusCode.Deleted)
             {
-                this.UpdateNotificationSettings(dependent.OwnerId, dependent.DelegateId, true);
+                return RequestResultFactory.ServiceError<DependentModel>(ErrorType.CommunicationInternal, ServiceType.Database, dbDependent.Message);
             }
 
-            RequestResult<DependentModel> result = new()
-            {
-                ResourcePayload = new DependentModel(),
-                ResultStatus = dbDependent.Status == DbStatusCode.Deleted ? ResultType.Success : ResultType.Error,
-                ResultError = dbDependent.Status == DbStatusCode.Deleted
-                    ? null
-                    : new RequestResultError
-                    {
-                        ResultMessage = dbDependent.Message,
-                        ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationInternal, ServiceType.Database),
-                    },
-            };
-            return result;
+            await this.UpdateChangeFeedOnRemove(dependent.OwnerId, dependent.DelegateId);
+
+            return RequestResultFactory.Success(new DependentModel());
         }
 
         private static bool IsMatch(AddDependentRequest? dependent, PatientModel? patientModel)
@@ -284,8 +271,19 @@ namespace HealthGateway.GatewayApi.Services
             return true;
         }
 
-        private void UpdateNotificationSettings(string dependentHdid, string delegateHdid, bool isDelete = false)
+        private async Task UpdateChangeFeedOnAdd(string dependentHdid, string delegateHdid)
         {
+            await this.UpdateNotificationSettings(dependentHdid, delegateHdid, false);
+        }
+
+        private async Task UpdateChangeFeedOnRemove(string dependentHdid, string delegateHdid)
+        {
+            await this.UpdateNotificationSettings(dependentHdid, delegateHdid, true);
+        }
+
+        private async Task UpdateNotificationSettings(string dependentHdid, string delegateHdid, bool isDelete = false)
+        {
+            await Task.CompletedTask;
             DbResult<UserProfile> dbResult = this.userProfileDelegate.GetUserProfile(delegateHdid);
             UserProfile delegateUserProfile = dbResult.Payload;
 

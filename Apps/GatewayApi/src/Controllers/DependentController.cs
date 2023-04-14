@@ -122,7 +122,7 @@ namespace HealthGateway.GatewayApi.Controllers
         [HttpDelete]
         [Authorize(Policy = UserProfilePolicy.Write)]
         [Route("{hdid}/[controller]/{dependentHdid}")]
-        public ActionResult<RequestResult<DependentModel>> Delete(string hdid, string dependentHdid, [FromBody] DependentModel dependent)
+        public async Task<ActionResult<RequestResult<DependentModel>>> Delete(string hdid, string dependentHdid, [FromBody] DependentModel dependent)
         {
             if (dependent.OwnerId != dependentHdid || dependent.DelegateId != hdid)
             {
@@ -130,7 +130,7 @@ namespace HealthGateway.GatewayApi.Controllers
                 return new BadRequestResult();
             }
 
-            return this.dependentService.Remove(dependent);
+            return await this.dependentService.RemoveAsync(dependent);
         }
     }
 }

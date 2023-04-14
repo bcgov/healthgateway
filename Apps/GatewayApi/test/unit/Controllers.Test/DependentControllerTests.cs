@@ -115,7 +115,7 @@ namespace HealthGateway.GatewayApiTests.Controllers.Test
         /// DeleteDependent - Happy path scenario.
         /// </summary>
         [Fact]
-        public void ShouldDeleteDependent()
+        public async Task ShouldDeleteDependent()
         {
             string delegateId = this.hdid;
             string dependentId = "123";
@@ -128,7 +128,7 @@ namespace HealthGateway.GatewayApiTests.Controllers.Test
             };
 
             Mock<IDependentService> dependentServiceMock = new();
-            dependentServiceMock.Setup(s => s.Remove(dependentModel)).Returns(expectedResult);
+            dependentServiceMock.Setup(s => s.RemoveAsync(dependentModel)).ReturnsAsync(expectedResult);
 
             Mock<IHttpContextAccessor> httpContextAccessorMock = CreateValidHttpContext(this.token, this.userId, this.hdid);
 
@@ -136,7 +136,7 @@ namespace HealthGateway.GatewayApiTests.Controllers.Test
                 new Mock<ILogger<DependentController>>().Object,
                 dependentServiceMock.Object,
                 httpContextAccessorMock.Object);
-            ActionResult<RequestResult<DependentModel>> actualResult = dependentController.Delete(delegateId, dependentId, dependentModel);
+            ActionResult<RequestResult<DependentModel>> actualResult = await dependentController.Delete(delegateId, dependentId, dependentModel);
             expectedResult.ShouldDeepEqual(actualResult.Value);
         }
 
@@ -144,7 +144,7 @@ namespace HealthGateway.GatewayApiTests.Controllers.Test
         /// DeleteDependent - BadRequest path scenario.
         /// </summary>
         [Fact]
-        public void ShouldFailDeleteDependent()
+        public async Task ShouldFailDeleteDependent()
         {
             string delegateId = this.hdid;
             string dependentId = "123";
@@ -157,7 +157,7 @@ namespace HealthGateway.GatewayApiTests.Controllers.Test
             };
 
             Mock<IDependentService> dependentServiceMock = new();
-            dependentServiceMock.Setup(s => s.Remove(dependentModel)).Returns(expectedResult);
+            dependentServiceMock.Setup(s => s.RemoveAsync(dependentModel)).ReturnsAsync(expectedResult);
 
             Mock<IHttpContextAccessor> httpContextAccessorMock = CreateValidHttpContext(this.token, this.userId, delegateId);
 
@@ -166,7 +166,7 @@ namespace HealthGateway.GatewayApiTests.Controllers.Test
                 dependentServiceMock.Object,
                 httpContextAccessorMock.Object);
 
-            ActionResult<RequestResult<DependentModel>> actualResult = dependentController.Delete("anotherId", "wrongId", dependentModel);
+            ActionResult<RequestResult<DependentModel>> actualResult = await dependentController.Delete("anotherId", "wrongId", dependentModel);
 
             Assert.IsType<BadRequestResult>(actualResult.Result);
         }

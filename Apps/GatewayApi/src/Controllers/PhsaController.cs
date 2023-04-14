@@ -82,13 +82,13 @@ namespace HealthGateway.GatewayApi.Controllers
         [HttpGet]
         [Authorize(Policy = SystemDelegatedPatientPolicy.Read)]
         [Route("dependents")]
-        public ActionResult<RequestResult<IEnumerable<GetDependentResponse>>> GetAll(
+        public async Task<ActionResult<RequestResult<IEnumerable<GetDependentResponse>>>> GetAll(
             [FromQuery] DateTime fromDateUtc,
             [FromQuery] DateTime? toDateUtc,
             [FromQuery] int page = 0,
             [FromQuery] int pageSize = 5000)
         {
-            return this.dependentService.GetDependents(fromDateUtc, toDateUtc, page, pageSize);
+            return await this.dependentService.GetDependentsAsync(fromDateUtc, toDateUtc, page, pageSize);
         }
     }
 }

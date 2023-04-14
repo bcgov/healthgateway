@@ -43,7 +43,7 @@ namespace HealthGateway.GatewayApi.Services
         /// <param name="page">The page of data to fetch indexed from 0.</param>
         /// <param name="pageSize">The amount of records per page.</param>
         /// <returns>A List of dependents wrapped in a RequestResult.</returns>
-        RequestResult<IEnumerable<GetDependentResponse>> GetDependents(DateTime fromDateUtc, DateTime? toDateUtc, int page, int pageSize);
+        Task<RequestResult<IEnumerable<GetDependentResponse>>> GetDependentsAsync(DateTime fromDateUtc, DateTime? toDateUtc, int page, int pageSize);
 
         /// <summary>
         /// Add a dependent to the given hdId of the delegate (parent or guardian).
@@ -58,6 +58,6 @@ namespace HealthGateway.GatewayApi.Services
         /// </summary>
         /// <param name="dependent">The dependent model to be deleted.</param>
         /// <returns>A dependent model wrapped in a RequestResult.</returns>
-        RequestResult<DependentModel> Remove(DependentModel dependent);
+        Task<RequestResult<DependentModel>> RemoveAsync(DependentModel dependent);
     }
 }

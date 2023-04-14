@@ -86,11 +86,11 @@ namespace HealthGateway.GatewayApiTests.Services.Test
         /// GetDependents by date - Happy Path.
         /// </summary>
         [Fact]
-        public void GetDependentsByDate()
+        public async Task GetDependentsByDate()
         {
             IDependentService service = this.SetupMockForGetDependents();
 
-            RequestResult<IEnumerable<GetDependentResponse>> actualResult = service.GetDependents(this.fromDate, this.toDate, 0, 5000);
+            RequestResult<IEnumerable<GetDependentResponse>> actualResult = await service.GetDependentsAsync(this.fromDate, this.toDate, 0, 5000);
 
             Assert.Equal(ResultType.Success, actualResult.ResultStatus);
             Assert.Equal(10, actualResult.TotalResultCount);
@@ -273,7 +273,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
         /// ValidateRemove - Happy Path.
         /// </summary>
         [Fact]
-        public void ValidateRemove()
+        public async Task ValidateRemove()
         {
             DependentModel delegateModel = new() { OwnerId = this.mockHdId, DelegateId = this.mockParentHdid };
             Mock<IResourceDelegateDelegate> mockDependentDelegate = new();
@@ -298,7 +298,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
                 mockDependentDelegate.Object,
                 MapperUtil.InitializeAutoMapper());
 
-            RequestResult<DependentModel> actualResult = service.Remove(delegateModel);
+            RequestResult<DependentModel> actualResult = await service.RemoveAsync(delegateModel);
 
             Assert.Equal(ResultType.Success, actualResult.ResultStatus);
         }
