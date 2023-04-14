@@ -29,7 +29,7 @@ namespace HealthGateway.Common.Utils
         /// <summary>
         /// Gets the type discriminator to read the type when deserializing or to save into the serialized json.
         /// </summary>
-        protected virtual string Discriminator => "_type";
+        protected virtual string Discriminator => "$type";
 
         /// <inheritdoc/>
         public override T Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
@@ -88,12 +88,12 @@ namespace HealthGateway.Common.Utils
         /// <summary>
         /// Resolves a type for deserialization by the discriminator value.
         /// </summary>
-        /// <param name="discriminatorValue">The disovered discriminator value.</param>
+        /// <param name="discriminatorValue">The discovered discriminator value.</param>
         /// <returns>Type to use for deserialization, null if type not found.</returns>
         protected virtual Type? ResolveType(string discriminatorValue) => Type.GetType(discriminatorValue);
 
         /// <summary>
-        /// Resolves a discrimantor value by the serialized type.
+        /// Resolves a discriminator value by the serialized type.
         /// </summary>
         /// <param name="value">The serialized value.</param>
         /// <returns>The discriminator value.</returns>

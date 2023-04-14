@@ -19,6 +19,7 @@ namespace HealthGateway.Common.CacheProviders
     using System;
     using System.Text.Json;
     using System.Threading.Tasks;
+    using HealthGateway.Common.Utils;
     using Microsoft.Extensions.Caching.Distributed;
 
     /// <summary>
@@ -63,13 +64,13 @@ namespace HealthGateway.Common.CacheProviders
         /// <inheritdoc/>
         public T? GetItem<T>(string key)
         {
-            return Deserialize<T?>(this.cache.Get(this.KeyGen(key)));
+            return this.cache.Get(this.KeyGen(key)).Deserialize<T?>();
         }
 
         /// <inheritdoc/>
         public void AddItem<T>(string key, T value, TimeSpan? expiry = null)
         {
-            this.cache.Set(this.KeyGen(key), Serialize(value), new DistributedCacheEntryOptions { AbsoluteExpirationRelativeToNow = expiry });
+            this.cache.Set(this.KeyGen(key), value.Serialize(), new DistributedCacheEntryOptions { AbsoluteExpirationRelativeToNow = expiry });
         }
 
         /// <inheritdoc/>
@@ -81,13 +82,13 @@ namespace HealthGateway.Common.CacheProviders
         /// <inheritdoc/>
         public async Task<T?> GetItemAsync<T>(string key)
         {
-            return Deserialize<T?>(await this.cache.GetAsync(this.KeyGen(key)).ConfigureAwait(true));
+            return (await this.cache.GetAsync(this.KeyGen(key)).ConfigureAwait(true)).Deserialize<T?>();
         }
 
         /// <inheritdoc/>
         public async Task AddItemAsync<T>(string key, T value, TimeSpan? expiry = null)
         {
-            await this.cache.SetAsync(this.KeyGen(key), Serialize(value), new DistributedCacheEntryOptions { AbsoluteExpirationRelativeToNow = expiry }).ConfigureAwait(true);
+            await this.cache.SetAsync(this.KeyGen(key), value.Serialize(), new DistributedCacheEntryOptions { AbsoluteExpirationRelativeToNow = expiry }).ConfigureAwait(true);
         }
 
         /// <inheritdoc/>
@@ -108,16 +109,6 @@ namespace HealthGateway.Common.CacheProviders
             }
 
             return value;
-        }
-
-        private static T? Deserialize<T>(byte[]? data)
-        {
-            return data == null || data.Length == 0 ? default : JsonSerializer.Deserialize<T?>(data);
-        }
-
-        private static byte[] Serialize<T>(T? obj)
-        {
-            return obj == null ? Array.Empty<byte>() : JsonSerializer.SerializeToUtf8Bytes(obj, obj.GetType());
         }
 
         private string KeyGen(string key)
