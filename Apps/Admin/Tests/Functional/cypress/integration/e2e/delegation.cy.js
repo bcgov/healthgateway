@@ -133,8 +133,20 @@ describe("Delegation Protect", () => {
         // Confirmation dialog confirmation button
         cy.get("[data-testid=confirm-button]").should(
             "be.visible",
-            "be.enabled"
+            "not.be.enabled"
         );
+
+        // Enter protect reason
+        cy.get("[data-testid=protect-reason-input]").type("test");
+
+        // Cancel confirmation dialog
+        cy.get("[data-testid=cancel-button]").click();
+
+        // Delegation Save button
+        cy.get("[data-testid=save-button]").click();
+
+        // Protect reason input is empty
+        cy.get("[data-testid=protect-reason-input]").should("be.empty");
 
         // Cancel confirmation dialog
         cy.get("[data-testid=cancel-button]").click();
@@ -171,7 +183,8 @@ describe("Delegation Protect", () => {
         cy.get("[data-testid=save-button]").click();
 
         // Delegation Confirmation button
-        cy.get("[data-testid=confirm-button]").click();
+        cy.get("[data-testid=protect-reason-input]").type("test");
+        cy.get("[data-testid=confirm-button]").click({ force: true });
 
         // Add guardian
         cy.get("[data-testid=add-button]").click();
@@ -219,7 +232,8 @@ describe("Delegation Protect", () => {
         cy.get("[data-testid=save-button]").click();
 
         // Delegation Confirmation button
-        cy.get("[data-testid=confirm-button]").click();
+        cy.get("[data-testid=protect-reason-input]").type("test");
+        cy.get("[data-testid=confirm-button]").click({ force: true });
 
         // Add guardian
         cy.get("[data-testid=add-button]").click();
@@ -240,7 +254,8 @@ describe("Delegation Protect", () => {
         cy.get("[data-testid=save-button]").click();
 
         // Delegation Confirmation button
-        cy.get("[data-testid=confirm-button]").click();
+        cy.get("[data-testid=protect-reason-input]").type("test");
+        cy.get("[data-testid=confirm-button]").click({ force: true });
 
         // Confirm guardian has been added to delegate table
         getTableRows("[data-testid=delegate-table]").should("have.length", 3);
@@ -264,7 +279,8 @@ describe("Delegation Protect", () => {
         cy.get("[data-testid=save-button]").click();
 
         // Delegation Confirmation button
-        cy.get("[data-testid=confirm-button]").click();
+        cy.get("[data-testid=protect-reason-input]").type("test");
+        cy.get("[data-testid=confirm-button]").click({ force: true });
 
         // Confirm delegate table
         getTableRows("[data-testid=delegate-table]").should("have.length", 2);
@@ -273,7 +289,8 @@ describe("Delegation Protect", () => {
         cy.get("[data-testid=dependent-protected-switch]").click();
 
         // Confirmation button
-        cy.get("[data-testid=confirm-button]").click();
+        cy.get("[data-testid=protect-reason-input]").type("test");
+        cy.get("[data-testid=confirm-button]").click({ force: true });
 
         // Protect dependent toggle
         cy.get("[data-testid=dependent-protected-switch]").should(
