@@ -117,14 +117,14 @@ namespace HealthGateway.Common.Messaging
                 using var scope = this.logger.BeginScope("Receive");
                 this.logger.LogDebug("received message {Session}:{SequenceNumber}", args.Message.SessionId, args.Message.SequenceNumber);
                 var sessionState = (await args.GetSessionStateAsync(ct))?.ToObjectFromJson<SessionState>();
-                // if session is faulty, send subsequent session related message to DLQ
-                if (sessionState != null && sessionState.IsFaulted)
-                {
-                    await args.DeadLetterMessageAsync(args.Message, $"Session {args.SessionId} is in error mode", null, ct);
-                    return;
-                }
+
                 try
                 {
+                    if (sessionState != null && sessionState.IsFaulted && args.Message.Subject != "unlock")
+                    {
+                        //session is blocked, do not process this message
+                        throw new InvalidOperationException($"Session {args.SessionId} is in error mode");
+                    }
                     await messageHandler(args.Message.Body.ToArray().Deserialize<Message>(), args.SessionId);
                     // clear the state
                     if (sessionState != null) await args.SetSessionStateAsync(null, ct);
@@ -135,6 +135,7 @@ namespace HealthGateway.Common.Messaging
                     // send message to DLQ and set the state to fault
                     await args.DeadLetterMessageAsync(args.Message, e.Message, e.ToString(), ct);
                     await args.SetSessionStateAsync(BinaryData.FromObjectAsJson(new SessionState(true)), ct);
+                    await errorHandler(e);
                 }
             };
             sessionProcessor.ProcessErrorAsync += args => errorHandler(args.Exception);
