@@ -123,9 +123,9 @@ namespace HealthGateway.Admin.Client.Store.Delegation
 
                 ProtectDependentRequest protectDependentRequest = new(delegateHdids, action.Reason);
 
-                await this.Api.ProtectDependentAsync(dependentHdid, protectDependentRequest).ConfigureAwait(true);
+                DelegationChange change = await this.Api.ProtectDependentAsync(dependentHdid, protectDependentRequest).ConfigureAwait(true);
                 this.Logger.LogInformation("Dependent protected successfully");
-                dispatcher.Dispatch(new DelegationActions.ProtectDependentSuccessAction());
+                dispatcher.Dispatch(new DelegationActions.ProtectDependentSuccessAction { DelegationChange = change });
             }
             catch (Exception e) when (e is ApiException or HttpRequestException)
             {
@@ -151,9 +151,9 @@ namespace HealthGateway.Admin.Client.Store.Delegation
 
                 UnprotectDependentRequest unprotectDependentRequest = new(action.Reason);
 
-                await this.Api.UnprotectDependentAsync(dependentHdid, unprotectDependentRequest).ConfigureAwait(true);
+                DelegationChange change = await this.Api.UnprotectDependentAsync(dependentHdid, unprotectDependentRequest).ConfigureAwait(true);
                 this.Logger.LogInformation("Dependent unprotected successfully");
-                dispatcher.Dispatch(new DelegationActions.UnprotectDependentSuccessAction());
+                dispatcher.Dispatch(new DelegationActions.UnprotectDependentSuccessAction { DelegationChange = change });
             }
             catch (Exception e) when (e is ApiException or HttpRequestException)
             {
