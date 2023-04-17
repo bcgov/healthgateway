@@ -22,9 +22,11 @@ namespace HealthGateway.Common.Services
     using System.Net.Http;
     using System.Threading.Tasks;
     using AutoMapper;
+    using FluentValidation.Results;
     using HealthGateway.Common.Api;
     using HealthGateway.Common.Data.Constants;
     using HealthGateway.Common.Data.Models;
+    using HealthGateway.Common.Data.Validations;
     using HealthGateway.Common.Data.ViewModels;
     using HealthGateway.Common.ErrorHandling;
     using HealthGateway.Common.Models.PHSA;
@@ -66,11 +68,23 @@ namespace HealthGateway.Common.Services
 
             try
             {
-                BroadcastRequest broadcastRequest = this.autoMapper.Map<BroadcastRequest>(broadcast);
-                BroadcastResponse response = await this.systemBroadcastApi.CreateBroadcastAsync(broadcastRequest).ConfigureAwait(true);
-                requestResult.ResultStatus = ResultType.Success;
-                requestResult.ResourcePayload = this.autoMapper.Map<Broadcast>(response);
-                requestResult.TotalResultCount = 1;
+                ValidationResult? validationResults = await new BroadcastValidator().ValidateAsync(broadcast).ConfigureAwait(true);
+                if (!validationResults.IsValid)
+                {
+                    requestResult.ResultError = new()
+                    {
+                        ResultMessage = "Effective Date should be before Expiry Date",
+                        ErrorCode = ErrorTranslator.InternalError(ErrorType.InvalidState),
+                    };
+                }
+                else
+                {
+                    BroadcastRequest broadcastRequest = this.autoMapper.Map<BroadcastRequest>(broadcast);
+                    BroadcastResponse response = await this.systemBroadcastApi.CreateBroadcastAsync(broadcastRequest).ConfigureAwait(true);
+                    requestResult.ResultStatus = ResultType.Success;
+                    requestResult.ResourcePayload = this.autoMapper.Map<Broadcast>(response);
+                    requestResult.TotalResultCount = 1;
+                }
             }
             catch (Exception e) when (e is ApiException or HttpRequestException)
             {
