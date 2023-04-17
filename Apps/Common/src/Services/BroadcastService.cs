@@ -145,11 +145,23 @@ namespace HealthGateway.Common.Services
 
             try
             {
-                BroadcastRequest broadcastRequest = this.autoMapper.Map<BroadcastRequest>(broadcast);
-                BroadcastResponse response = await this.systemBroadcastApi.UpdateBroadcastAsync(broadcast.Id.ToString(), broadcastRequest).ConfigureAwait(true);
-                requestResult.ResultStatus = ResultType.Success;
-                requestResult.ResourcePayload = this.autoMapper.Map<Broadcast>(response);
-                requestResult.TotalResultCount = 1;
+                ValidationResult? validationResults = await new BroadcastValidator().ValidateAsync(broadcast).ConfigureAwait(true);
+                if (!validationResults.IsValid)
+                {
+                    requestResult.ResultError = new()
+                    {
+                        ResultMessage = "Effective Date should be before Expiry Date",
+                        ErrorCode = ErrorTranslator.InternalError(ErrorType.InvalidState),
+                    };
+                }
+                else
+                {
+                    BroadcastRequest broadcastRequest = this.autoMapper.Map<BroadcastRequest>(broadcast);
+                    BroadcastResponse response = await this.systemBroadcastApi.UpdateBroadcastAsync(broadcast.Id.ToString(), broadcastRequest).ConfigureAwait(true);
+                    requestResult.ResultStatus = ResultType.Success;
+                    requestResult.ResourcePayload = this.autoMapper.Map<Broadcast>(response);
+                    requestResult.TotalResultCount = 1;
+                }
             }
             catch (Exception e) when (e is ApiException or HttpRequestException)
             {
