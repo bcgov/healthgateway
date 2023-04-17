@@ -102,16 +102,16 @@ namespace HealthGateway.Admin.Server.Controllers
         /// </summary>
         /// <param name="dependentHdid">The hdid of the dependent to protect.</param>
         /// <param name="request">The request object containing data used to protect a dependent.</param>
-        /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+        /// <returns>The delegation change entry created from the operation.</returns>
         /// <response code="200">The dependent is protected.</response>
         /// <response code="401">The client must authenticate itself to get the requested resource.</response>
         [HttpPut]
         [Route("{dependentHdid}/ProtectDependent")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-        public async Task ProtectDependent(string dependentHdid, ProtectDependentRequest request)
+        public async Task<DelegationChange> ProtectDependent(string dependentHdid, ProtectDependentRequest request)
         {
-            await this.delegationService.ProtectDependentAsync(dependentHdid, request.DelegateHdids, request.Reason).ConfigureAwait(true);
+            return await this.delegationService.ProtectDependentAsync(dependentHdid, request.DelegateHdids, request.Reason).ConfigureAwait(true);
         }
 
         /// <summary>
@@ -120,7 +120,7 @@ namespace HealthGateway.Admin.Server.Controllers
         /// </summary>
         /// <param name="dependentHdid">The hdid of the dependent to unprotect.</param>
         /// <param name="request">The request object containing data used to unprotect a dependent.</param>
-        /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+        /// <returns>The delegation change entry created from the operation.</returns>
         /// <response code="200">The dependent is unprotected.</response>
         /// <response code="401">The client must authenticate itself to get the requested resource.</response>
         /// <response code="404">The dependent could not be found.</response>
@@ -129,9 +129,9 @@ namespace HealthGateway.Admin.Server.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task UnprotectDependent(string dependentHdid, UnprotectDependentRequest request)
+        public async Task<DelegationChange> UnprotectDependent(string dependentHdid, UnprotectDependentRequest request)
         {
-            await this.delegationService.UnprotectDependentAsync(dependentHdid, request.Reason).ConfigureAwait(true);
+            return await this.delegationService.UnprotectDependentAsync(dependentHdid, request.Reason).ConfigureAwait(true);
         }
     }
 }

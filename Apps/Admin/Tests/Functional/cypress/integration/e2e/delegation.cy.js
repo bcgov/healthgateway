@@ -1,3 +1,4 @@
+const dependentWithAudit = "9872868128";
 const dependentWithoutGuardian = { phn: "9874307168" };
 const dependentWithGuardian = { phn: "9874307175", guardianPhn: "9735353315" };
 const dependentExceedingAgeCutoff = { phn: "9735353315" };
@@ -87,6 +88,58 @@ describe("Delegation Search", () => {
                         );
                     });
             });
+    });
+
+    it("Verify response contains dependent audit in descending datetime order as per seeded data.", () => {
+        cy.get("[data-testid=query-input]").clear().type(dependentWithAudit);
+        cy.get("[data-testid=search-button]").click();
+
+        // Click delegation change header to show dependent audit
+        cy.get("[data-testid=delegation-changes-header")
+            .should("be.visible")
+            .click();
+
+        cy.get("[data-testid=delegation-change-0]")
+            .should("be.visible")
+            .within(() => {
+                cy.get("[data-testid=agent]")
+                    .should("be.visible")
+                    .contains("admin");
+                cy.get("[data-testid=reason]")
+                    .should("be.visible")
+                    .contains("Protect");
+                cy.get("[data-testid=datetime]").should("be.visible");
+            });
+
+        cy.get("[data-testid=delegation-change-1]")
+            .should("be.visible")
+            .within(() => {
+                cy.get("[data-testid=agent]")
+                    .should("be.visible")
+                    .contains("support");
+                cy.get("[data-testid=reason]")
+                    .should("be.visible")
+                    .contains("Unprotect");
+                cy.get("[data-testid=datetime]").should("be.visible");
+            });
+
+        cy.get("[data-testid=delegation-change-2]")
+            .should("be.visible")
+            .within(() => {
+                cy.get("[data-testid=agent]")
+                    .should("be.visible")
+                    .contains("reviewer");
+                cy.get("[data-testid=reason]")
+                    .should("be.visible")
+                    .contains("Protect");
+                cy.get("[data-testid=datetime]").should("be.visible");
+            });
+
+        // Click delegation change header to not show dependent audit
+        cy.get("[data-testid=delegation-changes-header").click();
+
+        cy.get("[data-testid=delegation-change-0]").should("not.be.visible");
+        cy.get("[data-testid=delegation-change-1]").should("not.be.visible");
     });
 
     it("Verify error when searching for person exceeding age cutoff.", () => {

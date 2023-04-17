@@ -73,6 +73,11 @@ namespace HealthGateway.Admin.Client.Store.Delegation
             public required DependentInfo Dependent { get; init; }
 
             /// <summary>
+            /// Gets the collection of delegation changes.
+            /// </summary>
+            public required IEnumerable<DelegationChange> DelegationChanges { get; init; }
+
+            /// <summary>
             /// Gets the collection of delegate info.
             /// </summary>
             public required IEnumerable<ExtendedDelegateInfo> Delegates { get; init; }
@@ -195,6 +200,10 @@ namespace HealthGateway.Admin.Client.Store.Delegation
         /// </summary>
         public class ProtectDependentSuccessAction
         {
+            /// <summary>
+            /// Gets the delegation change entry created from the operation.
+            /// </summary>
+            public required DelegationChange DelegationChange { get; init; }
         }
 
         /// <summary>
@@ -228,6 +237,10 @@ namespace HealthGateway.Admin.Client.Store.Delegation
         /// </summary>
         public class UnprotectDependentSuccessAction
         {
+            /// <summary>
+            /// Gets the delegation change entry created from the operation.
+            /// </summary>
+            public required DelegationChange DelegationChange { get; init; }
         }
 
         /// <summary>
