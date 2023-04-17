@@ -68,7 +68,7 @@ namespace PatientDataAccessTests
             {
                 BodyPart = "Some BodyPart",
                 ExamDate = new DateTime(2020, 1, 1),
-                FileId = "Some FileId",
+                HealthDataFileId = "Some FileId",
                 HealthAuthority = "Some HealthAuthority",
                 Modality = "Some Modality",
                 Organization = "Some Organization",
@@ -89,7 +89,7 @@ namespace PatientDataAccessTests
             exam.BodyPart.ShouldBe(phsaDiagnosticImageExam.BodyPart);
             exam.ExamDate.ShouldBe(phsaDiagnosticImageExam.ExamDate);
             exam.Status.ShouldBe(HealthGateway.PatientDataAccess.DiagnosticImagingStatus.Scheduled);
-            exam.FileId.ShouldBe(phsaDiagnosticImageExam.FileId);
+            exam.FileId.ShouldBe(phsaDiagnosticImageExam.HealthDataFileId);
             exam.HealthAuthority.ShouldBe(phsaDiagnosticImageExam.HealthAuthority);
             exam.Modality.ShouldBe(phsaDiagnosticImageExam.Modality);
             exam.Organization.ShouldBe(phsaDiagnosticImageExam.Organization);

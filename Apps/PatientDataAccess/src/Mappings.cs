@@ -28,7 +28,8 @@ namespace HealthGateway.PatientDataAccess
 
             this.CreateMap<HealthDataEntry, HealthData>()
                 .IncludeAllDerived()
-                .ForMember(hd => hd.Id, opts => opts.MapFrom(hde => hde.HealthDataId));
+                .ForMember(hd => hd.Id, opts => opts.MapFrom(hde => hde.HealthDataId))
+                .ForMember(exam => exam.FileId, opts => opts.MapFrom(diExam => diExam.HealthDataFileId));
 
             this.CreateMap<Api.OrganDonorRegistration, OrganDonorRegistration>()
                 .ForMember(d => d.Status, opts => opts.MapFrom(s => s.DonorStatus))
