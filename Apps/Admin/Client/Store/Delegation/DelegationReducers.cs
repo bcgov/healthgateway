@@ -165,8 +165,8 @@ namespace HealthGateway.Admin.Client.Store.Delegation
             };
         }
 
-        [ReducerMethod(typeof(DelegationActions.ProtectDependentSuccessAction))]
-        public static DelegationState ReduceProtectDependentSuccessAction(DelegationState state)
+        [ReducerMethod]
+        public static DelegationState ReduceProtectDependentSuccessAction(DelegationState state, DelegationActions.ProtectDependentSuccessAction action)
         {
             DependentInfo? dependent = state.Dependent;
             if (dependent != null)
@@ -182,6 +182,7 @@ namespace HealthGateway.Admin.Client.Store.Delegation
                     Error = null,
                 },
                 Dependent = dependent,
+                DelegationChanges = state.DelegationChanges.Insert(0, action.DelegationChange),
                 Delegates = state.Delegates
                     .Where(d => d.StagedDelegationStatus is not DelegationStatus.Disallowed)
                     .Select(
@@ -219,8 +220,8 @@ namespace HealthGateway.Admin.Client.Store.Delegation
             };
         }
 
-        [ReducerMethod(typeof(DelegationActions.UnprotectDependentSuccessAction))]
-        public static DelegationState ReduceUnprotectDependentSuccessAction(DelegationState state)
+        [ReducerMethod]
+        public static DelegationState ReduceUnprotectDependentSuccessAction(DelegationState state, DelegationActions.UnprotectDependentSuccessAction action)
         {
             DependentInfo? dependent = state.Dependent;
             if (dependent != null)
@@ -236,6 +237,7 @@ namespace HealthGateway.Admin.Client.Store.Delegation
                     Error = null,
                 },
                 Dependent = dependent,
+                DelegationChanges = state.DelegationChanges.Insert(0, action.DelegationChange),
                 Delegates = state.Delegates
                     .Where(d => d.DelegationStatus is not DelegationStatus.Allowed)
                     .ToImmutableList(),
