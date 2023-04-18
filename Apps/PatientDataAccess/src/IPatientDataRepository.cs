@@ -74,6 +74,30 @@ namespace HealthGateway.PatientDataAccess
     /// <summary>
     /// Represents a patient file.
     /// </summary>
-    public record PatientFile(string FileId, IEnumerable<byte> Content, string ContentType) : HealthData;
+    public record PatientFile : HealthData
+    {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="PatientFile"/> class.
+        /// </summary>
+        /// <param name="fileId">File Id from PHSA.</param>
+        /// <param name="content">Data Byte Array.</param>
+        /// <param name="contentType">The media type of file.</param>
+        public PatientFile(string fileId, IEnumerable<byte> content, string contentType)
+        {
+            this.FileId = fileId;
+            this.Content = content;
+            this.ContentType = contentType;
+        }
+
+        /// <summary>
+        /// Gets or sets the file content.
+        /// </summary>
+        public IEnumerable<byte> Content { get; set; }
+
+        /// <summary>
+        /// Gets or sets the file content type.
+        /// </summary>
+        public string ContentType { get; set; }
+    }
 }
 #pragma warning disable SA1201

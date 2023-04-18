@@ -25,6 +25,8 @@ namespace HealthGateway.PatientDataAccess.Api
     internal abstract record HealthDataEntry
     {
         public string? HealthDataId { get; set; }
+
+        public string? HealthDataFileId { get; set; }
     }
 
     // Class is currently not being passed by the front end
@@ -117,8 +119,6 @@ namespace HealthGateway.PatientDataAccess.Api
         public string? HealthAuthority { get; set; }
 
         public DiagnosticImagingStatus Status { get; set; }
-
-        public string? FileId { get; set; }
 
         public DateTime? ExamDate { get; set; }
     }
