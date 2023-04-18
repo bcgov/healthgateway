@@ -85,11 +85,14 @@ namespace HealthGateway.Medication.Services
             {
                 protectiveWord = protectiveWord?.ToUpper(CultureInfo.InvariantCulture);
 
-                ValidationResult? protectiveWordValidation = new ProtectiveWordValidator().Validate(protectiveWord);
-                if (!protectiveWordValidation.IsValid)
+                if (protectiveWord != null)
                 {
-                    this.logger.LogInformation("Invalid protective word. {Hdid}", hdid);
-                    return RequestResultFactory.ActionRequired<IList<MedicationStatementHistory>>(ActionType.Protected, protectiveWordValidation.Errors);
+                    ValidationResult? protectiveWordValidation = new ProtectiveWordValidator().Validate(protectiveWord);
+                    if (!protectiveWordValidation.IsValid)
+                    {
+                        this.logger.LogInformation("Invalid protective word. {Hdid}", hdid);
+                        return RequestResultFactory.ActionRequired<IList<MedicationStatementHistory>>(ActionType.Protected, protectiveWordValidation.Errors);
+                    }
                 }
 
                 // Retrieve the phn
