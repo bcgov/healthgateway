@@ -36,11 +36,19 @@ namespace HealthGateway.Database.Delegates
         Task<Dependent?> GetDependentAsync(string hdid, bool includeAllowedDelegation = false);
 
         /// <summary>
+        /// Fetches the dependent audits by hdid from the database.
+        /// </summary>
+        /// <param name="hdid">The dependent hdid to query on.</param>
+        /// <returns>A list of Dependent Audits.</returns>
+        Task<IEnumerable<DependentAudit>> GetDependentAuditsAsync(string hdid);
+
+        /// <summary>
         /// Updates the dependent object including allowed delegation associations as well as resource delegates in the DB.
         /// </summary>
         /// <param name="dependent">The dependent to update.</param>
         /// <param name="resourceDelegatesToRemove">The resource delegates to remove.</param>
+        /// <param name="dependentAudit">The dependent audit to create.</param>
         /// <returns>A <see cref="Task"/> representing the result of the asynchronous operation.</returns>
-        Task UpdateDelegationAsync(Dependent dependent, IEnumerable<ResourceDelegate> resourceDelegatesToRemove);
+        Task UpdateDelegationAsync(Dependent dependent, IEnumerable<ResourceDelegate> resourceDelegatesToRemove, DependentAudit dependentAudit);
     }
 }

@@ -38,4 +38,6 @@ export enum ErrorSourceType {
     ExportRecords = "export record",
     Notification = "notification",
     OrganDonorRegistration = "organ donor registration",
+    DiagnosticImaging = "diagnostic imaging exam",
+    PatientData = "patient data",
 }

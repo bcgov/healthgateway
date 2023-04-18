@@ -47,6 +47,10 @@
         {
             "name": "specialAuthorityRequest",
             "enabled": true
+        },
+        {
+            "name": "diagnosticImaging",
+            "enabled": true
         }
     ],
     "covid19": {

@@ -27,5 +27,10 @@ namespace HealthGateway.Patient.Constants
         /// Organ donor registration status.
         /// </summary>
         OrganDonorRegistrationStatus,
+
+        /// <summary>
+        /// Diagnostic imaging exams.
+        /// </summary>
+        DiagnosticImaging,
     }
 }

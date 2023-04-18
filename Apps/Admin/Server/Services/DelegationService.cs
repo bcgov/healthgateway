@@ -25,6 +25,7 @@ namespace HealthGateway.Admin.Server.Services
     using HealthGateway.Admin.Common.Constants;
     using HealthGateway.Admin.Common.Models;
     using HealthGateway.Admin.Server.Validations;
+    using HealthGateway.Common.AccessManagement.Authentication;
     using HealthGateway.Common.Constants;
     using HealthGateway.Common.Data.Constants;
     using HealthGateway.Common.Data.ErrorHandling;
@@ -44,6 +45,7 @@ namespace HealthGateway.Admin.Server.Services
         private readonly IPatientService patientService;
         private readonly IResourceDelegateDelegate resourceDelegateDelegate;
         private readonly IDelegationDelegate delegationDelegate;
+        private readonly IAuthenticationDelegate authenticationDelegate;
         private readonly IMapper autoMapper;
         private readonly int maxDependentAge;
         private readonly int minDelegateAge;
@@ -55,17 +57,20 @@ namespace HealthGateway.Admin.Server.Services
         /// <param name="patientService">The injected patient service.</param>
         /// <param name="resourceDelegateDelegate">The injected resource delegate delegate.</param>
         /// <param name="delegationDelegate">The injected delegation delegate.</param>
+        /// <param name="authenticationDelegate">The injected authentication delegate.</param>
         /// <param name="autoMapper">The injected automapper provider.</param>
         public DelegationService(
             IConfiguration configuration,
             IPatientService patientService,
             IResourceDelegateDelegate resourceDelegateDelegate,
             IDelegationDelegate delegationDelegate,
+            IAuthenticationDelegate authenticationDelegate,
             IMapper autoMapper)
         {
             this.patientService = patientService;
             this.resourceDelegateDelegate = resourceDelegateDelegate;
             this.delegationDelegate = delegationDelegate;
+            this.authenticationDelegate = authenticationDelegate;
             this.autoMapper = autoMapper;
             this.maxDependentAge = configuration.GetSection(DelegationConfigSection).GetValue(MaxDependentAgeKey, 12);
             this.minDelegateAge = configuration.GetSection(DelegationConfigSection).GetValue(MinDelegateAgeKey, 12);
@@ -124,6 +129,10 @@ namespace HealthGateway.Admin.Server.Services
                 }
 
                 delegationInfo.Delegates = delegates;
+
+                // Get dependent audits
+                IEnumerable<DependentAudit> dependentAudits = await this.delegationDelegate.GetDependentAuditsAsync(dependentPatientInfo.HdId).ConfigureAwait(true);
+                delegationInfo.DelegationChanges = dependentAudits.Select(da => this.autoMapper.Map<DelegationChange>(da));
             }
 
             return delegationInfo;
@@ -146,35 +155,31 @@ namespace HealthGateway.Admin.Server.Services
         }
 
         /// <inheritdoc/>
-        public async Task ProtectDependentAsync(string dependentHdid, IEnumerable<string> delegateHdids)
+        public async Task<DelegationChange> ProtectDependentAsync(string dependentHdid, IEnumerable<string> delegateHdids, string reason)
         {
+            string authenticatedUserId = this.authenticationDelegate.FetchAuthenticatedUserId() ?? UserId.DefaultUser;
             Dependent? dependent = await this.delegationDelegate.GetDependentAsync(dependentHdid, true).ConfigureAwait(true);
-            dependent ??= new() { HdId = dependentHdid };
+            dependent ??= new() { HdId = dependentHdid, CreatedBy = authenticatedUserId };
 
             dependent.Protected = true;
-            await this.UpdateDelegationAsync(dependent, delegateHdids.ToList()).ConfigureAwait(true);
-        }
+            dependent.UpdatedBy = authenticatedUserId;
 
-        /// <inheritdoc/>
-        public async Task UnprotectDependentAsync(string dependentHdid)
-        {
-            Dependent? dependent = await this.delegationDelegate.GetDependentAsync(dependentHdid, true).ConfigureAwait(true);
-
-            if (dependent == null)
+            DependentAudit dependentAudit = new()
             {
-                throw new ProblemDetailsException(ExceptionUtility.CreateProblemDetails($"Dependent not found for hdid: {dependentHdid}", HttpStatusCode.NotFound, nameof(DelegationService)));
-            }
+                HdId = dependentHdid,
+                ProtectedReason = reason,
+                OperationCode = DependentAuditOperation.Protect,
+                AgentUsername = this.authenticationDelegate.FetchAuthenticatedPreferredUsername() ?? authenticatedUserId,
+                TransactionDateTime = DateTime.UtcNow,
+                CreatedBy = authenticatedUserId,
+                UpdatedBy = authenticatedUserId,
+            };
 
-            dependent.Protected = false;
-            dependent.AllowedDelegations.Clear();
-            await this.delegationDelegate.UpdateDelegationAsync(dependent, Enumerable.Empty<ResourceDelegate>()).ConfigureAwait(true);
-        }
+            IList<string> delegateHdidList = delegateHdids.ToList();
 
-        private async Task UpdateDelegationAsync(Dependent dependent, IList<string> delegateHdids)
-        {
             // Compare dependent allowed delegations in database with passed in delegate hdids to determine which allowed delegations to remove.
             IEnumerable<AllowedDelegation> allowedDelegationsToDelete =
-                dependent.AllowedDelegations.Where(x => delegateHdids.All(y => y != x.DelegateHdId));
+                dependent.AllowedDelegations.Where(x => delegateHdidList.All(y => y != x.DelegateHdId));
 
             foreach (AllowedDelegation delegation in allowedDelegationsToDelete.ToList())
             {
@@ -183,7 +188,7 @@ namespace HealthGateway.Admin.Server.Services
 
             // Compare passed in delegate hdids with dependent allowed delegations in database to determine what allowed delegations to add.
             IEnumerable<string> delegateHdidsToAdd =
-                delegateHdids.Where(x => dependent.AllowedDelegations.All(y => y.DelegateHdId != x));
+                delegateHdidList.Where(x => dependent.AllowedDelegations.All(y => y.DelegateHdId != x));
 
             foreach (string delegateHdid in delegateHdidsToAdd)
             {
@@ -192,16 +197,51 @@ namespace HealthGateway.Admin.Server.Services
                     {
                         DependentHdId = dependent.HdId,
                         DelegateHdId = delegateHdid,
+                        CreatedBy = authenticatedUserId,
+                        UpdatedBy = authenticatedUserId,
                     });
             }
 
             IEnumerable<ResourceDelegate> resourceDelegates = await this.SearchDelegates(dependent.HdId).ConfigureAwait(true);
 
             // Compare resource delegates with passed in delegate hdids to determine which resource delegates to remove
-            IEnumerable<ResourceDelegate> resourceDelegatesToDelete = resourceDelegates.Where(r => delegateHdids.All(a => a != r.ProfileHdid));
+            IEnumerable<ResourceDelegate> resourceDelegatesToDelete = resourceDelegates.Where(r => delegateHdidList.All(a => a != r.ProfileHdid));
 
             // Update dependent, allow delegation and resource delegate in database
-            await this.delegationDelegate.UpdateDelegationAsync(dependent, resourceDelegatesToDelete).ConfigureAwait(true);
+            await this.delegationDelegate.UpdateDelegationAsync(dependent, resourceDelegatesToDelete, dependentAudit).ConfigureAwait(true);
+
+            return this.autoMapper.Map<DependentAudit, DelegationChange>(dependentAudit);
+        }
+
+        /// <inheritdoc/>
+        public async Task<DelegationChange> UnprotectDependentAsync(string dependentHdid, string reason)
+        {
+            string authenticatedUserId = this.authenticationDelegate.FetchAuthenticatedUserId() ?? UserId.DefaultUser;
+            Dependent? dependent = await this.delegationDelegate.GetDependentAsync(dependentHdid, true).ConfigureAwait(true);
+
+            if (dependent == null)
+            {
+                throw new ProblemDetailsException(ExceptionUtility.CreateProblemDetails($"Dependent not found for hdid: {dependentHdid}", HttpStatusCode.NotFound, nameof(DelegationService)));
+            }
+
+            dependent.Protected = false;
+            dependent.UpdatedBy = authenticatedUserId;
+            dependent.AllowedDelegations.Clear();
+
+            DependentAudit dependentAudit = new()
+            {
+                HdId = dependentHdid,
+                ProtectedReason = reason,
+                OperationCode = DependentAuditOperation.Unprotect,
+                AgentUsername = this.authenticationDelegate.FetchAuthenticatedPreferredUsername() ?? authenticatedUserId,
+                TransactionDateTime = DateTime.UtcNow,
+                CreatedBy = authenticatedUserId,
+                UpdatedBy = authenticatedUserId,
+            };
+
+            await this.delegationDelegate.UpdateDelegationAsync(dependent, Enumerable.Empty<ResourceDelegate>(), dependentAudit).ConfigureAwait(true);
+
+            return this.autoMapper.Map<DependentAudit, DelegationChange>(dependentAudit);
         }
 
         private async Task<IEnumerable<ResourceDelegate>> SearchDelegates(string ownerHdid)

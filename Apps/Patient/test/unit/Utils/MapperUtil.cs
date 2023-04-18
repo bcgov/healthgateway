@@ -13,16 +13,32 @@
 //  See the License for the specific language governing permissions and
 //  limitations under the License.
 // -------------------------------------------------------------------------
-namespace HealthGateway.PatientDataAccess
+namespace HealthGateway.PatientTests.Utils
 {
+    using AutoMapper;
+    using HealthGateway.Patient.Mappings;
+
     /// <summary>
-    /// Health service categories.
+    /// Static utility class to provide a fully initialized AutoMapper.
+    /// NOTE: Any newly added profiles will have to be registered.
     /// </summary>
-    public enum HealthServiceCategory
+    public static class MapperUtil
     {
         /// <summary>
-        /// BC Transplant Organ Donor.
+        /// Creates an AutoMapper.
         /// </summary>
-        OrganDonor,
+        /// <returns>A configured AutoMapper.</returns>
+        public static IMapper InitializeAutoMapper()
+        {
+            MapperConfiguration config = new(
+                cfg =>
+                {
+                    cfg.AddProfile(new OrganDonorRegistrationProfile());
+                    cfg.AddProfile(new DiagnosticImagingExamProfile());
+                    cfg.AddProfile(new PatientDataAccessMappings());
+                });
+
+            return config.CreateMapper();
+        }
     }
 }

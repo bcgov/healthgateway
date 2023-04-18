@@ -71,6 +71,12 @@ public partial class DelegationConfirmationDialog : FluxorComponent
 
     private string? UnprotectErrorMessage => this.DelegationState.Value.Unprotect.Error?.Message;
 
+    private string ProtectReasonString { get; set; } = string.Empty;
+
+    private MudTextField<string> ProtectReasonTextField { get; set; } = default!;
+
+    private bool SaveButtonDisabled => this.ProtectReasonString.Length < 2;
+
     private bool Loading => this.Type switch
     {
         ConfirmationType.Protect => this.DelegationState.Value.Protect.IsLoading,
@@ -98,10 +104,18 @@ public partial class DelegationConfirmationDialog : FluxorComponent
         switch (this.Type)
         {
             case ConfirmationType.Protect:
-                this.Dispatcher.Dispatch(new DelegationActions.ProtectDependentAction());
+                this.Dispatcher.Dispatch(
+                    new DelegationActions.ProtectDependentAction
+                    {
+                        Reason = this.ProtectReasonString,
+                    });
                 break;
             case ConfirmationType.Unprotect:
-                this.Dispatcher.Dispatch(new DelegationActions.UnprotectDependentAction());
+                this.Dispatcher.Dispatch(
+                    new DelegationActions.UnprotectDependentAction
+                    {
+                        Reason = this.ProtectReasonString,
+                    });
                 break;
         }
     }

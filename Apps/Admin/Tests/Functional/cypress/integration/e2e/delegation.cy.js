@@ -1,3 +1,4 @@
+const dependentWithAudit = "9872868128";
 const dependentWithoutGuardian = { phn: "9874307168" };
 const dependentWithGuardian = { phn: "9874307175", guardianPhn: "9735353315" };
 const dependentExceedingAgeCutoff = { phn: "9735353315" };
@@ -89,6 +90,58 @@ describe("Delegation Search", () => {
             });
     });
 
+    it("Verify response contains dependent audit in descending datetime order as per seeded data.", () => {
+        cy.get("[data-testid=query-input]").clear().type(dependentWithAudit);
+        cy.get("[data-testid=search-button]").click();
+
+        // Click delegation change header to show dependent audit
+        cy.get("[data-testid=delegation-changes-header")
+            .should("be.visible")
+            .click();
+
+        cy.get("[data-testid=delegation-change-0]")
+            .should("be.visible")
+            .within(() => {
+                cy.get("[data-testid=agent]")
+                    .should("be.visible")
+                    .contains("admin");
+                cy.get("[data-testid=reason]")
+                    .should("be.visible")
+                    .contains("Protect");
+                cy.get("[data-testid=datetime]").should("be.visible");
+            });
+
+        cy.get("[data-testid=delegation-change-1]")
+            .should("be.visible")
+            .within(() => {
+                cy.get("[data-testid=agent]")
+                    .should("be.visible")
+                    .contains("support");
+                cy.get("[data-testid=reason]")
+                    .should("be.visible")
+                    .contains("Unprotect");
+                cy.get("[data-testid=datetime]").should("be.visible");
+            });
+
+        cy.get("[data-testid=delegation-change-2]")
+            .should("be.visible")
+            .within(() => {
+                cy.get("[data-testid=agent]")
+                    .should("be.visible")
+                    .contains("reviewer");
+                cy.get("[data-testid=reason]")
+                    .should("be.visible")
+                    .contains("Protect");
+                cy.get("[data-testid=datetime]").should("be.visible");
+            });
+
+        // Click delegation change header to not show dependent audit
+        cy.get("[data-testid=delegation-changes-header").click();
+
+        cy.get("[data-testid=delegation-change-0]").should("not.be.visible");
+        cy.get("[data-testid=delegation-change-1]").should("not.be.visible");
+    });
+
     it("Verify error when searching for person exceeding age cutoff.", () => {
         performSearch(dependentExceedingAgeCutoff.phn);
 
@@ -133,8 +186,20 @@ describe("Delegation Protect", () => {
         // Confirmation dialog confirmation button
         cy.get("[data-testid=confirm-button]").should(
             "be.visible",
-            "be.enabled"
+            "not.be.enabled"
         );
+
+        // Enter protect reason
+        cy.get("[data-testid=protect-reason-input]").type("test");
+
+        // Cancel confirmation dialog
+        cy.get("[data-testid=cancel-button]").click();
+
+        // Delegation Save button
+        cy.get("[data-testid=save-button]").click();
+
+        // Protect reason input is empty
+        cy.get("[data-testid=protect-reason-input]").should("be.empty");
 
         // Cancel confirmation dialog
         cy.get("[data-testid=cancel-button]").click();
@@ -171,7 +236,8 @@ describe("Delegation Protect", () => {
         cy.get("[data-testid=save-button]").click();
 
         // Delegation Confirmation button
-        cy.get("[data-testid=confirm-button]").click();
+        cy.get("[data-testid=protect-reason-input]").type("test");
+        cy.get("[data-testid=confirm-button]").click({ force: true });
 
         // Add guardian
         cy.get("[data-testid=add-button]").click();
@@ -219,7 +285,8 @@ describe("Delegation Protect", () => {
         cy.get("[data-testid=save-button]").click();
 
         // Delegation Confirmation button
-        cy.get("[data-testid=confirm-button]").click();
+        cy.get("[data-testid=protect-reason-input]").type("test");
+        cy.get("[data-testid=confirm-button]").click({ force: true });
 
         // Add guardian
         cy.get("[data-testid=add-button]").click();
@@ -240,7 +307,8 @@ describe("Delegation Protect", () => {
         cy.get("[data-testid=save-button]").click();
 
         // Delegation Confirmation button
-        cy.get("[data-testid=confirm-button]").click();
+        cy.get("[data-testid=protect-reason-input]").type("test");
+        cy.get("[data-testid=confirm-button]").click({ force: true });
 
         // Confirm guardian has been added to delegate table
         getTableRows("[data-testid=delegate-table]").should("have.length", 3);
@@ -264,7 +332,8 @@ describe("Delegation Protect", () => {
         cy.get("[data-testid=save-button]").click();
 
         // Delegation Confirmation button
-        cy.get("[data-testid=confirm-button]").click();
+        cy.get("[data-testid=protect-reason-input]").type("test");
+        cy.get("[data-testid=confirm-button]").click({ force: true });
 
         // Confirm delegate table
         getTableRows("[data-testid=delegate-table]").should("have.length", 2);
@@ -273,7 +342,8 @@ describe("Delegation Protect", () => {
         cy.get("[data-testid=dependent-protected-switch]").click();
 
         // Confirmation button
-        cy.get("[data-testid=confirm-button]").click();
+        cy.get("[data-testid=protect-reason-input]").type("test");
+        cy.get("[data-testid=confirm-button]").click({ force: true });
 
         // Protect dependent toggle
         cy.get("[data-testid=dependent-protected-switch]").should(

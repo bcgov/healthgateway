@@ -15,6 +15,7 @@ import {
     faSyringe,
     faUpload,
     faVial,
+    faXRay,
 } from "@fortawesome/free-solid-svg-icons";
 import { saveAs } from "file-saver";
 import Vue from "vue";
@@ -62,7 +63,8 @@ library.add(
     faStethoscope,
     faSyringe,
     faUpload,
-    faVial
+    faVial,
+    faXRay
 );
 
 interface QuickLinkCard {
@@ -635,9 +637,9 @@ export default class HomeView extends Vue {
                         </b-nav>
                     </template>
                     <div>
-                        BC Transplant oversees all aspects of organ donation and
-                        transplant across BC and manages the BC Organ Donor
-                        Registry.
+                        Check whether you are registered as an organ donor with
+                        BC Transplant. If you are registered, you can review the
+                        details of your decision.
                     </div>
                 </hg-card-button>
             </b-col>

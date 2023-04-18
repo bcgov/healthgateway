@@ -36,6 +36,7 @@ namespace HealthGateway.Admin.Tests.Utils
                     cfg.AddProfile(new AdminUserProfileViewProfile());
                     cfg.AddProfile(new DependentInfoProfile());
                     cfg.AddProfile(new DelegateInfoProfile());
+                    cfg.AddProfile(new DelegationChangeProfile());
                 });
 
             return config.CreateMapper();

@@ -19,13 +19,11 @@ namespace HealthGateway.CommonTests.CacheProviders
     using System.Text.Json;
     using System.Threading;
     using System.Threading.Tasks;
-    using DotNet.Testcontainers.Builders;
-    using DotNet.Testcontainers.Configurations;
-    using DotNet.Testcontainers.Containers;
     using HealthGateway.Common.CacheProviders;
     using Microsoft.Extensions.Logging;
     using Moq;
     using StackExchange.Redis;
+    using Testcontainers.Redis;
     using Xunit;
 
     /// <summary>
@@ -33,9 +31,7 @@ namespace HealthGateway.CommonTests.CacheProviders
     /// </summary>
     public class RedisCacheProviderTests : IAsyncLifetime
     {
-        private readonly RedisTestcontainer redisContainer = new TestcontainersBuilder<RedisTestcontainer>()
-            .WithDatabase(new RedisTestcontainerConfiguration("redis:latest"))
-            .Build();
+        private readonly RedisContainer redisContainer = new RedisBuilder().Build();
 
         private IConnectionMultiplexer? connectionMultiplexer;
 
@@ -96,8 +92,7 @@ namespace HealthGateway.CommonTests.CacheProviders
             Mock<ILogger<RedisCacheProvider>> mockLogger = new();
             ConnectionMultiplexer broken = ConnectionMultiplexer.Connect("localhost:9999,abortConnect=false");
             ICacheProvider cacheProvider = new RedisCacheProvider(mockLogger.Object, broken);
-            string? result = cacheProvider.GetItem<string>("NOTFOUND");
-            Assert.Null(result);
+            Assert.Throws<RedisConnectionException>(() => cacheProvider.GetItem<string>("NOTFOUND"));
         }
 
         /// <summary>
@@ -107,7 +102,7 @@ namespace HealthGateway.CommonTests.CacheProviders
         public async Task InitializeAsync()
         {
             await this.redisContainer.StartAsync().ConfigureAwait(true);
-            this.connectionMultiplexer = await ConnectionMultiplexer.ConnectAsync(this.redisContainer.ConnectionString).ConfigureAwait(true);
+            this.connectionMultiplexer = await ConnectionMultiplexer.ConnectAsync(this.redisContainer.GetConnectionString()).ConfigureAwait(true);
         }
 
         /// <summary>

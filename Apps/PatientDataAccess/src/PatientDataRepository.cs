@@ -16,7 +16,9 @@
 namespace HealthGateway.PatientDataAccess
 {
     using System;
+    using System.Collections.Generic;
     using System.Linq;
+    using System.Net;
     using System.Threading;
     using System.Threading.Tasks;
     using AutoMapper;
@@ -43,7 +45,7 @@ namespace HealthGateway.PatientDataAccess
         }
 
         /// <summary>
-        /// Performs a query against the data respository.
+        /// Performs a query against the data repository.
         /// </summary>
         /// <param name="query">The query to perform.</param>
         /// <param name="ct">The cancellation token.</param>
@@ -53,47 +55,110 @@ namespace HealthGateway.PatientDataAccess
         {
             return query switch
             {
-                HealthServicesQuery q => await this.Handle(q, ct).ConfigureAwait(true),
+                HealthQuery q => await this.Handle(q, ct).ConfigureAwait(true),
                 PatientFileQuery q => await this.Handle(q, ct).ConfigureAwait(true),
                 _ => throw new NotImplementedException($"{query.GetType().Name} doesn't have a handler"),
             };
         }
 
-        private static string Map(HealthServiceCategory category) =>
-            category switch
+        private static string? MapHealthOptionsCategories(HealthCategory category)
+        {
+            return category switch
             {
-                HealthServiceCategory.OrganDonor => "BcTransplantOrganDonor",
-                _ => throw new NotImplementedException($"No mapping implemented for {category}"),
+                HealthCategory.OrganDonorRegistrationStatus => "BcTransplantOrganDonor",
+                _ => null,
+            };
+        }
+
+        private static string? MapHealthDataCategories(HealthCategory category)
+        {
+            return category switch
+            {
+                HealthCategory.DiagnosticImaging => "DiagnosticImaging",
+                _ => null,
+            };
+        }
+
+        private static PatientFile Map(string fileId, FileResult file)
+        {
+            return new(fileId, Convert.FromBase64String(file.Data!), file.MediaType ?? string.Empty);
+        }
+
+        private async Task<PatientDataQueryResult> Handle(HealthQuery query, CancellationToken ct)
+        {
+            List<Task<IEnumerable<HealthData>>> tasks = new()
+            {
+                this.HandleServiceQuery(query, ct),
+                this.HandleDataQuery(query, ct),
             };
 
-        private static PatientFile Map(string fileId, FileResult file) =>
-            new(fileId, Convert.FromBase64String(file.Data!), file.MediaType ?? string.Empty);
-
-        private async Task<PatientDataQueryResult> Handle(HealthServicesQuery query, CancellationToken ct)
-        {
-            string[] categories = query.Categories.Select(c => Map(c)).ToArray();
-
-            HealthOptionsResult results = await this.patientApi.GetHealthOptionsAsync(query.Pid, categories, ct).ConfigureAwait(true) ?? new(new HealthOptionMetadata(), Array.Empty<HealthOptionData>());
-            return new PatientDataQueryResult(results.Data.Select(this.Map));
+            IEnumerable<IEnumerable<HealthData>> results = await Task.WhenAll(tasks).ConfigureAwait(true);
+            return new PatientDataQueryResult(results.SelectMany(r => r));
         }
 
         private async Task<PatientDataQueryResult> Handle(PatientFileQuery query, CancellationToken ct)
         {
             try
             {
-                var fileResult = await this.patientApi.GetFile(query.Pid, query.FileId, ct).ConfigureAwait(true);
-                var mappedFiles = new[] { fileResult }
+                FileResult? fileResult = await this.patientApi.GetFile(query.Pid, query.FileId, ct).ConfigureAwait(true);
+                IEnumerable<PatientFile> mappedFiles = new[] { fileResult }
                     .Where(f => f?.Data != null)
                     .Select(f => Map(query.FileId, f!));
                 return new PatientDataQueryResult(mappedFiles);
             }
-            catch (ApiException e) when (e.StatusCode == System.Net.HttpStatusCode.NotFound)
+            catch (ApiException e) when (e.StatusCode == HttpStatusCode.NotFound)
             {
                 // file not found
                 return new PatientDataQueryResult(Array.Empty<HealthData>());
             }
         }
 
-        private HealthData Map(HealthOptionData healthOptionData) => this.mapper.Map<HealthData>(healthOptionData);
+        private async Task<IEnumerable<HealthData>> HandleServiceQuery(HealthQuery query, CancellationToken ct)
+        {
+            string[] categories = query.Categories
+                .Select(MapHealthOptionsCategories)
+                .Where(c => c != null)
+                .OfType<string>()
+                .ToArray();
+
+            if (categories.Any())
+            {
+                HealthOptionsResult results = await this.patientApi.GetHealthOptionsAsync(query.Pid, categories, ct).ConfigureAwait(true) ??
+                                              new(new HealthOptionsMetadata(), Array.Empty<HealthOptionsData>());
+
+                return results.Data.Select(this.Map);
+            }
+
+            return Array.Empty<HealthData>();
+        }
+
+        private async Task<IEnumerable<HealthData>> HandleDataQuery(HealthQuery query, CancellationToken ct)
+        {
+            string[] categories = query.Categories
+                .Select(MapHealthDataCategories)
+                .Where(c => c != null)
+                .OfType<string>()
+                .ToArray();
+
+            if (categories.Any())
+            {
+                HealthDataResult results = await this.patientApi.GetHealthDataAsync(query.Pid, categories, ct).ConfigureAwait(true) ??
+                                           new(new HealthDataMetadata(), Array.Empty<HealthDataEntry>());
+
+                return results.Data.Select(this.Map);
+            }
+
+            return Array.Empty<HealthData>();
+        }
+
+        private HealthData Map(HealthOptionsData healthOptionsData)
+        {
+            return this.mapper.Map<HealthData>(healthOptionsData);
+        }
+
+        private HealthData Map(HealthDataEntry healthDataEntry)
+        {
+            return this.mapper.Map<HealthData>(healthDataEntry);
+        }
     }
 }

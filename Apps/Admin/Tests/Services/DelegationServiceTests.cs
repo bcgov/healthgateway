@@ -25,6 +25,7 @@ namespace HealthGateway.Admin.Tests.Services
     using HealthGateway.Admin.Common.Models;
     using HealthGateway.Admin.Server.Services;
     using HealthGateway.Admin.Tests.Utils;
+    using HealthGateway.Common.AccessManagement.Authentication;
     using HealthGateway.Common.Constants;
     using HealthGateway.Common.Data.Constants;
     using HealthGateway.Common.Data.ErrorHandling;
@@ -54,8 +55,11 @@ namespace HealthGateway.Admin.Tests.Services
         private const string ProtectedDelegateHdid2 = "P6FFO433A5WPMVTGM7T4ZVWBKCSVNAYGTWTU3J2LWMGUMERKI72A";
         private const string ProtectedDelegateHdid1Phn = "9874307168";
         private const string ProtectedDelegateHdid2Phn = "9874307208";
+        private const string AuthenticatedUser = "91ca9e2c-03b4-43f7-a806-8f6e15972c0f";
+        private const string AuthenticatedPreferredUsername = "agent@idir";
 
         private static readonly DateTime BirthDate = new(1990, 1, 1);
+        private static readonly DateTime TransactionDateTime = new(2023, 1, 1);
 
         private readonly IMapper autoMapper = MapperUtil.InitializeAutoMapper();
         private readonly IConfiguration configuration;
@@ -77,6 +81,10 @@ namespace HealthGateway.Admin.Tests.Services
         {
             RequestResult<PatientModel> dependentResult = GetDependentResult(DateTime.Now.AddYears(-11));
             RequestResult<PatientModel> delegateResult = GetDelegateResult();
+            IEnumerable<DependentAudit> dependentAudits = new List<DependentAudit>
+            {
+                GetDependentAudit(DependentHdid, DependentAuditOperation.Protect),
+            };
 
             DelegationInfo expectedDelegationInfo = GetExpectedDelegationInfo(dependentResult.ResourcePayload, delegateResult.ResourcePayload, true);
             Dependent protectedDependent = GetDependent(DependentHdid, true);
@@ -86,7 +94,7 @@ namespace HealthGateway.Admin.Tests.Services
             RequestResult<PatientModel> patientResult1 = GetPatientResult(patient1);
             RequestResult<PatientModel> patientResult2 = GetPatientResult(patient2);
 
-            IDelegationService delegationService = this.GetDelegationService(dependentResult, delegateResult, protectedDependent, patientResult1, patientResult2);
+            IDelegationService delegationService = this.GetDelegationService(dependentResult, delegateResult, protectedDependent, patientResult1, patientResult2, dependentAudits);
             DelegationInfo actualResult = await delegationService.GetDelegationInformationAsync(DependentPhn).ConfigureAwait(true);
 
             Assert.NotNull(actualResult);
@@ -102,6 +110,10 @@ namespace HealthGateway.Admin.Tests.Services
         {
             RequestResult<PatientModel> dependentResult = GetDependentResult(DateTime.Now.AddYears(-11));
             RequestResult<PatientModel> delegateResult = GetDelegateResult();
+            IEnumerable<DependentAudit> dependentAudits = new List<DependentAudit>
+            {
+                GetDependentAudit(DependentHdid, DependentAuditOperation.Unprotect),
+            };
 
             DelegationInfo expectedDelegationInfo = GetExpectedDelegationInfo(dependentResult.ResourcePayload, delegateResult.ResourcePayload, false);
             Dependent unprotectedDependent = GetDependent(DependentHdid, false);
@@ -111,7 +123,7 @@ namespace HealthGateway.Admin.Tests.Services
             RequestResult<PatientModel> patientResult1 = GetPatientResult(patient1);
             RequestResult<PatientModel> patientResult2 = GetPatientResult(patient2);
 
-            IDelegationService delegationService = this.GetDelegationService(dependentResult, delegateResult, unprotectedDependent, patientResult1, patientResult2);
+            IDelegationService delegationService = this.GetDelegationService(dependentResult, delegateResult, unprotectedDependent, patientResult1, patientResult2, dependentAudits);
             DelegationInfo actualResult = await delegationService.GetDelegationInformationAsync(DependentPhn).ConfigureAwait(true);
 
             Assert.NotNull(actualResult);
@@ -190,22 +202,25 @@ namespace HealthGateway.Admin.Tests.Services
                     { ResourceOwnerHdid = NewDependentHdid, ProfileHdid = ProtectedDelegateHdid2, ReasonCode = ResourceDelegateReason.Guardian },
             };
 
+            DependentAudit expectedDependentAudit = GetDependentAudit(NewDependentHdid, DependentAuditOperation.Protect);
+
             IEnumerable<string> delegateHdids = new List<string>
             {
                 ProtectedDelegateHdid1, NewDelegateHdid,
             };
             Mock<IDelegationDelegate> delegationDelegate = new();
             ResourceDelegateQueryResult resourceDelegateQueryResult = GetResourceDelegates(NewDependentHdid);
-            DelegationService delegationService = this.GetDelegationService(null, delegationDelegate, resourceDelegateQueryResult, NewDependentHdid);
+            DelegationService delegationService = this.GetDelegationService(null, delegationDelegate, resourceDelegateQueryResult, NewDependentHdid, AuthenticatedUser, AuthenticatedPreferredUsername);
 
             // Act
-            await delegationService.ProtectDependentAsync(NewDependentHdid, delegateHdids).ConfigureAwait(true);
+            await delegationService.ProtectDependentAsync(NewDependentHdid, delegateHdids, It.IsAny<string>()).ConfigureAwait(true);
 
             // Assert
             delegationDelegate.Verify(
                 v => v.UpdateDelegationAsync(
                     It.Is<Dependent>(d => AssertProtectedDependant(expectedDependent, d)),
-                    It.Is<IEnumerable<ResourceDelegate>>(rd => AssertProtectedDependentResourceDelegates(expectedDeletedResourceDelegates.ToList(), rd.ToList()))));
+                    It.Is<IEnumerable<ResourceDelegate>>(rd => AssertProtectedDependentResourceDelegates(expectedDeletedResourceDelegates.ToList(), rd.ToList())),
+                    It.Is<DependentAudit>(da => AssertDependentAudit(expectedDependentAudit, da))));
         }
 
         /// <summary>
@@ -226,19 +241,28 @@ namespace HealthGateway.Admin.Tests.Services
 
             IEnumerable<ResourceDelegate> expectedDeletedResourceDelegates = Enumerable.Empty<ResourceDelegate>();
 
+            DependentAudit expectedDependentAudit = GetDependentAudit(DependentHdid, DependentAuditOperation.Unprotect);
+
             Mock<IDelegationDelegate> delegationDelegate = new();
             Dependent protectedDependent = GetDependent(DependentHdid, true);
             ResourceDelegateQueryResult resourceDelegateQueryResult = GetResourceDelegates(DependentHdid);
-            DelegationService delegationService = this.GetDelegationService(protectedDependent, delegationDelegate, resourceDelegateQueryResult, DependentHdid);
+            DelegationService delegationService = this.GetDelegationService(
+                protectedDependent,
+                delegationDelegate,
+                resourceDelegateQueryResult,
+                DependentHdid,
+                AuthenticatedUser,
+                AuthenticatedPreferredUsername);
 
             // Act
-            await delegationService.UnprotectDependentAsync(DependentHdid).ConfigureAwait(true);
+            await delegationService.UnprotectDependentAsync(DependentHdid, It.IsAny<string>()).ConfigureAwait(true);
 
             // Assert
             delegationDelegate.Verify(
                 v => v.UpdateDelegationAsync(
                     It.Is<Dependent>(d => AssertProtectedDependant(expectedDependent, d)),
-                    It.Is<IEnumerable<ResourceDelegate>>(rd => AssertProtectedDependentResourceDelegates(expectedDeletedResourceDelegates.ToList(), rd.ToList()))));
+                    It.Is<IEnumerable<ResourceDelegate>>(rd => AssertProtectedDependentResourceDelegates(expectedDeletedResourceDelegates.ToList(), rd.ToList())),
+                    It.Is<DependentAudit>(da => AssertDependentAudit(expectedDependentAudit, da))));
         }
 
         /// <summary>
@@ -275,6 +299,8 @@ namespace HealthGateway.Admin.Tests.Services
                     { ResourceOwnerHdid = DependentHdid, ProfileHdid = ProtectedDelegateHdid2, ReasonCode = ResourceDelegateReason.Guardian },
             };
 
+            DependentAudit expectedDependentAudit = GetDependentAudit(DependentHdid, DependentAuditOperation.Protect);
+
             IEnumerable<string> delegateHdids = new List<string>
             {
                 ProtectedDelegateHdid1, NewDelegateHdid,
@@ -282,16 +308,23 @@ namespace HealthGateway.Admin.Tests.Services
             Mock<IDelegationDelegate> delegationDelegate = new();
             Dependent protectedDependent = GetDependent(DependentHdid, true);
             ResourceDelegateQueryResult resourceDelegateQueryResult = GetResourceDelegates(DependentHdid);
-            DelegationService delegationService = this.GetDelegationService(protectedDependent, delegationDelegate, resourceDelegateQueryResult, DependentHdid);
+            DelegationService delegationService = this.GetDelegationService(
+                protectedDependent,
+                delegationDelegate,
+                resourceDelegateQueryResult,
+                DependentHdid,
+                AuthenticatedUser,
+                AuthenticatedPreferredUsername);
 
             // Act
-            await delegationService.ProtectDependentAsync(DependentHdid, delegateHdids).ConfigureAwait(true);
+            await delegationService.ProtectDependentAsync(DependentHdid, delegateHdids, It.IsAny<string>()).ConfigureAwait(true);
 
             // Assert
             delegationDelegate.Verify(
                 v => v.UpdateDelegationAsync(
                     It.Is<Dependent>(d => AssertProtectedDependant(expectedDependent, d)),
-                    It.Is<IEnumerable<ResourceDelegate>>(rd => AssertProtectedDependentResourceDelegates(expectedDeletedResourceDelegates.ToList(), rd.ToList()))));
+                    It.Is<IEnumerable<ResourceDelegate>>(rd => AssertProtectedDependentResourceDelegates(expectedDeletedResourceDelegates.ToList(), rd.ToList())),
+                    It.Is<DependentAudit>(da => AssertDependentAudit(expectedDependentAudit, da))));
         }
 
         /// <summary>
@@ -306,10 +339,16 @@ namespace HealthGateway.Admin.Tests.Services
             Mock<IDelegationDelegate> delegationDelegate = new();
             Dependent dependent = GetDependent(DependentHdid, true);
             ResourceDelegateQueryResult resourceDelegateQueryResult = GetResourceDelegates(DependentHdid);
-            DelegationService delegationService = this.GetDelegationService(dependent, delegationDelegate, resourceDelegateQueryResult, DependentHdid);
+            DelegationService delegationService = this.GetDelegationService(
+                dependent,
+                delegationDelegate,
+                resourceDelegateQueryResult,
+                DependentHdid,
+                AuthenticatedUser,
+                AuthenticatedPreferredUsername);
 
             // Act and Assert
-            await Assert.ThrowsAsync<ProblemDetailsException>(() => delegationService.UnprotectDependentAsync(invalidDependentHdid)).ConfigureAwait(true);
+            await Assert.ThrowsAsync<ProblemDetailsException>(() => delegationService.UnprotectDependentAsync(invalidDependentHdid, It.IsAny<string>())).ConfigureAwait(true);
         }
 
         /// <summary>
@@ -328,7 +367,7 @@ namespace HealthGateway.Admin.Tests.Services
             RequestResult<PatientModel> patientResult1 = GetPatientResult(patient1);
             RequestResult<PatientModel> patientResult2 = GetPatientResult(patient2);
 
-            IDelegationService delegationService = this.GetDelegationService(dependentResult, delegateResult, protectedDependent, patientResult1, patientResult2);
+            IDelegationService delegationService = this.GetDelegationService(dependentResult, delegateResult, protectedDependent, patientResult1, patientResult2, new List<DependentAudit>());
             await Assert.ThrowsAsync<ProblemDetailsException>(() => delegationService.GetDelegationInformationAsync(DependentPhn)).ConfigureAwait(true);
         }
 
@@ -354,6 +393,7 @@ namespace HealthGateway.Admin.Tests.Services
                 patientService.Object,
                 new Mock<IResourceDelegateDelegate>().Object,
                 new Mock<IDelegationDelegate>().Object,
+                new Mock<IAuthenticationDelegate>().Object,
                 this.autoMapper);
 
             await Assert.ThrowsAsync<ProblemDetailsException>(() => delegationService.GetDelegationInformationAsync(DependentPhn)).ConfigureAwait(true);
@@ -443,6 +483,16 @@ namespace HealthGateway.Admin.Tests.Services
         {
             Assert.Equal(expected.Count, actual.Count);
             Assert.Equal(expected.Count == 0 ? null : expected.First().ProfileHdid, actual.Count == 0 ? null : actual.First().ProfileHdid);
+            return true;
+        }
+
+        private static bool AssertDependentAudit(DependentAudit expected, DependentAudit actual)
+        {
+            Assert.Equal(expected.HdId, actual.HdId);
+            Assert.Equal(expected.AgentUsername, actual.AgentUsername);
+            Assert.Equal(expected.OperationCode, actual.OperationCode);
+            Assert.Equal(expected.CreatedBy, actual.CreatedBy);
+            Assert.Equal(expected.UpdatedBy, actual.UpdatedBy);
             return true;
         }
 
@@ -539,6 +589,17 @@ namespace HealthGateway.Admin.Tests.Services
             {
                 Dependent = expectedDependentInfo,
                 Delegates = new List<DelegateInfo> { expectedDelegateInfo1, expectedDelegateInfo2, expectedDelegateInfo3 },
+                DelegationChanges = new List<DelegationChange>
+                {
+                    new()
+                    {
+                        DependentHdId = DependentHdid,
+                        AgentUsername = AuthenticatedPreferredUsername,
+                        Reason = "Test",
+                        OperationCode = isProtected ? DependentAuditOperation.Protect : DependentAuditOperation.Unprotect,
+                        TransactionDateTime = TransactionDateTime,
+                    },
+                },
             };
 
             return expectedDelegationInfo;
@@ -621,6 +682,20 @@ namespace HealthGateway.Admin.Tests.Services
             };
         }
 
+        private static DependentAudit GetDependentAudit(string hdid, DependentAuditOperation operationCode)
+        {
+            return new()
+            {
+                HdId = hdid,
+                AgentUsername = AuthenticatedPreferredUsername,
+                ProtectedReason = "Test",
+                OperationCode = operationCode,
+                TransactionDateTime = TransactionDateTime,
+                CreatedBy = AuthenticatedUser,
+                UpdatedBy = AuthenticatedUser,
+            };
+        }
+
         private static ResourceDelegateQueryResult GetResourceDelegates(string hdid)
         {
             return new ResourceDelegateQueryResult
@@ -640,7 +715,8 @@ namespace HealthGateway.Admin.Tests.Services
             RequestResult<PatientModel> delegateResult,
             Dependent protectedDependent,
             RequestResult<PatientModel> patientResult1,
-            RequestResult<PatientModel> patientResult2)
+            RequestResult<PatientModel> patientResult2,
+            IEnumerable<DependentAudit> dependentAudit)
         {
             Mock<IPatientService> patientService = new();
 
@@ -669,25 +745,48 @@ namespace HealthGateway.Admin.Tests.Services
 
             Mock<IDelegationDelegate> delegationDelegate = new();
             delegationDelegate.Setup(p => p.GetDependentAsync(DependentHdid, true)).ReturnsAsync(protectedDependent);
+            delegationDelegate.Setup(p => p.GetDependentAuditsAsync(It.IsAny<string>())).ReturnsAsync(dependentAudit);
 
-            return new DelegationService(this.configuration, patientService.Object, resourceDelegateDelegate.Object, delegationDelegate.Object, this.autoMapper);
+            return new DelegationService(
+                this.configuration,
+                patientService.Object,
+                resourceDelegateDelegate.Object,
+                delegationDelegate.Object,
+                new Mock<IAuthenticationDelegate>().Object,
+                this.autoMapper);
         }
 
-        private DelegationService GetDelegationService(Dependent? dependent, Mock<IDelegationDelegate> delegationDelegate, ResourceDelegateQueryResult resourceDelegates, string resourceOwnerHdid)
+        private DelegationService GetDelegationService(
+            Dependent? dependent,
+            Mock<IDelegationDelegate> delegationDelegate,
+            ResourceDelegateQueryResult resourceDelegates,
+            string resourceOwnerHdid,
+            string authenticatedUser,
+            string authenticatedPreferredUsername)
         {
+            Mock<IAuthenticationDelegate> authenticationDelegate = new();
+            authenticationDelegate.Setup(a => a.FetchAuthenticatedUserId()).Returns(authenticatedUser);
+            authenticationDelegate.Setup(a => a.FetchAuthenticatedPreferredUsername()).Returns(authenticatedPreferredUsername);
+
             Mock<IResourceDelegateDelegate> resourceDelegateDelegate = new();
             resourceDelegateDelegate.Setup(r => r.Search(new() { ByOwnerHdid = resourceOwnerHdid })).ReturnsAsync(resourceDelegates);
 
             delegationDelegate.Setup(p => p.GetDependentAsync(resourceOwnerHdid, true)).ReturnsAsync(dependent);
 
-            return new(this.configuration, new Mock<IPatientService>().Object, resourceDelegateDelegate.Object, delegationDelegate.Object, this.autoMapper);
+            return new(this.configuration, new Mock<IPatientService>().Object, resourceDelegateDelegate.Object, delegationDelegate.Object, authenticationDelegate.Object, this.autoMapper);
         }
 
         private DelegationService GetDelegationService(RequestResult<PatientModel> patient)
         {
             Mock<IPatientService> patientService = new();
             patientService.Setup(p => p.GetPatient(It.IsAny<string>(), PatientIdentifierType.Phn, false)).ReturnsAsync(patient);
-            return new(this.configuration, patientService.Object, new Mock<IResourceDelegateDelegate>().Object, new Mock<IDelegationDelegate>().Object, this.autoMapper);
+            return new(
+                this.configuration,
+                patientService.Object,
+                new Mock<IResourceDelegateDelegate>().Object,
+                new Mock<IDelegationDelegate>().Object,
+                new Mock<IAuthenticationDelegate>().Object,
+                this.autoMapper);
         }
     }
 }

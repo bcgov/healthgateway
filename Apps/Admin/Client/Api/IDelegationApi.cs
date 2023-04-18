@@ -15,7 +15,6 @@
 //-------------------------------------------------------------------------
 namespace HealthGateway.Admin.Client.Api
 {
-    using System.Collections.Generic;
     using System.Threading.Tasks;
     using HealthGateway.Admin.Common.Models;
     using Refit;
@@ -46,18 +45,19 @@ namespace HealthGateway.Admin.Client.Api
         /// synchronized.
         /// </summary>
         /// <param name="dependentHdid">The hdid of the dependent to protect.</param>
-        /// <param name="delegateHdids">The list of delegate hdid(s) to allow delegation for the dependent.</param>
-        /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+        /// <param name="request">The request object containing data used to protect a dependent.</param>
+        /// <returns>The delegation change entry created from the operation.</returns>
         [Put("/{dependentHdid}/ProtectDependent")]
-        Task ProtectDependentAsync(string dependentHdid, [Body] IEnumerable<string> delegateHdids);
+        Task<DelegationChange> ProtectDependentAsync(string dependentHdid, ProtectDependentRequest request);
 
         /// <summary>
         /// Unprotects the dependent and if necessary removes the allowed delegation(s) and keeps the resource delegates
         /// synchronized.
         /// </summary>
         /// <param name="dependentHdid">The hdid of the dependent to unprotect.</param>
-        /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+        /// <param name="request">The request object containing data used to unprotect a dependent.</param>
+        /// <returns>The delegation change entry created from the operation.</returns>
         [Put("/{dependentHdid}/UnprotectDependent")]
-        Task UnprotectDependentAsync(string dependentHdid);
+        Task<DelegationChange> UnprotectDependentAsync(string dependentHdid, UnprotectDependentRequest request);
     }
 }

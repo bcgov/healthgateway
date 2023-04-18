@@ -1,11 +1,11 @@
 {
     "items": [
-      {
-        "status": "Registered",
-        "statusMessage": "Your decision about organ donation has been registered.",
-        "registrationFileId": "some-file-id",
-        "type": "OrganDonorRegistrationData",
-        "_type": "OrganDonorRegistrationData"
-      }
+        {
+            "status": "Registered",
+            "statusMessage": "Your decision about organ donation has been registered.",
+            "registrationFileId": "some-file-id",
+            "type": "OrganDonorRegistration",
+            "_type": "OrganDonorRegistration"
+        }
     ]
-  }
+}

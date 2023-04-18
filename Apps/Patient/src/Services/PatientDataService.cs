@@ -15,63 +15,51 @@
 // -------------------------------------------------------------------------
 namespace HealthGateway.Patient.Services
 {
+#pragma warning disable SA1600 // Disable documentation for internal class.
     using System;
     using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
+    using AutoMapper;
     using HealthGateway.Common.Services;
-    using HealthGateway.Patient.Constants;
     using HealthGateway.PatientDataAccess;
 
-// Disable documentation for internal class.
-#pragma warning disable SA1600
     internal class PatientDataService : IPatientDataService
     {
         private readonly IPatientDataRepository patientDataRepository;
         private readonly IPersonalAccountsService personalAccountsService;
+        private readonly IMapper mapper;
 
-        public PatientDataService(IPatientDataRepository patientDataRepository, IPersonalAccountsService personalAccountsService)
+        public PatientDataService(IPatientDataRepository patientDataRepository, IPersonalAccountsService personalAccountsService, IMapper mapper)
         {
             this.patientDataRepository = patientDataRepository;
             this.personalAccountsService = personalAccountsService;
+            this.mapper = mapper;
         }
 
         public async Task<PatientDataResponse> Query(PatientDataQuery query, CancellationToken ct)
         {
-            var pid = await this.ResolvePidFromHdid(query.Hdid).ConfigureAwait(true);
-            var results = await this.patientDataRepository.Query(
-                new HealthServicesQuery(pid, query.PatientDataTypes.Select(this.MapToHealthServiceCategory)),
-                ct).ConfigureAwait(true);
-
-            return new PatientDataResponse(results.Items.Select(this.MapToPatientData).ToArray());
+            Guid pid = await this.ResolvePidFromHdid(query.Hdid).ConfigureAwait(true);
+            HealthQuery healthQuery = new(pid, query.PatientDataTypes.Select(t => this.mapper.Map<HealthCategory>(t)));
+            PatientDataQueryResult result = await this.patientDataRepository.Query(healthQuery, ct)
+                .ConfigureAwait(true);
+            return new PatientDataResponse(result.Items.Select(i => this.mapper.Map<PatientData>(i)));
         }
 
         public async Task<PatientFileResponse?> Query(PatientFileQuery query, CancellationToken ct)
         {
-            var pid = await this.ResolvePidFromHdid(query.Hdid).ConfigureAwait(true);
-            var file = (await this.patientDataRepository.Query(new PatientDataAccess.PatientFileQuery(pid, query.FileId), ct).ConfigureAwait(true)).Items.FirstOrDefault() as PatientFile;
+            Guid pid = await this.ResolvePidFromHdid(query.Hdid).ConfigureAwait(true);
+            PatientFile? file = (await this.patientDataRepository.Query(new PatientDataAccess.PatientFileQuery(pid, query.FileId), ct).ConfigureAwait(true)).Items.OfType<PatientFile>().FirstOrDefault();
 
             return file != null
                 ? new PatientFileResponse(file.Content, file.ContentType)
                 : null;
         }
 
-        private async Task<Guid> ResolvePidFromHdid(string patientHdid) =>
-            (await this.personalAccountsService.GetPatientAccountAsync(patientHdid).ConfigureAwait(true)).PatientIdentity.Pid;
-
-        private PatientData MapToPatientData(HealthData healthData) =>
-            healthData switch
-            {
-                OrganDonorRegistration hd => new OrganDonorRegistrationData(hd.Status, hd.StatusMessage, hd.RegistrationFileId),
-                _ => throw new NotImplementedException($"{healthData.GetType().Name} is not mapped to {nameof(PatientData)}"),
-            };
-
-        private HealthServiceCategory MapToHealthServiceCategory(PatientDataType patientDataType) =>
-            patientDataType switch
-            {
-                PatientDataType.OrganDonorRegistrationStatus => HealthServiceCategory.OrganDonor,
-                _ => throw new NotImplementedException($"{patientDataType} is not mapped to {nameof(HealthServiceCategory)}"),
-            };
+        private async Task<Guid> ResolvePidFromHdid(string patientHdid)
+        {
+            return (await this.personalAccountsService.GetPatientAccountAsync(patientHdid).ConfigureAwait(true)).PatientIdentity.Pid;
+        }
     }
 #pragma warning restore SA1600
 }
