@@ -105,6 +105,11 @@ namespace HealthGateway.Common.Data.ViewModels
         public DateTime? ClosedDateTime { get; set; }
 
         /// <summary>
+        /// Gets or sets a value indicating whether the user should be prompted of new tour slides.
+        /// </summary>
+        public bool HasTourUpdated { get; set; }
+
+        /// <summary>
         /// Gets the user preference.
         /// </summary>
         public IDictionary<string, UserPreferenceModel> Preferences { get; } = new Dictionary<string, UserPreferenceModel>();

@@ -21,6 +21,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
     using System.Threading.Tasks;
     using AutoMapper;
     using HealthGateway.Common.AccessManagement.Authentication;
+    using HealthGateway.Common.CacheProviders;
     using HealthGateway.Common.Data.Constants;
     using HealthGateway.Common.Data.Models;
     using HealthGateway.Common.Data.ViewModels;
@@ -53,23 +54,29 @@ namespace HealthGateway.GatewayApiTests.Services.Test
         private readonly string hdid = Guid.NewGuid().ToString();
         private readonly Guid termsOfServiceGuid = Guid.Parse("c99fd839-b4a2-40f9-b103-529efccd0dcd");
 
+
         /// <summary>
         /// GetUserProfile call - test for status Read, Error and NotFound.
         /// </summary>
         /// <param name="dBStatus">Db Status code.</param>
+        /// <param name="expectedHasTourChanged">Used to test if the app tour has changes.</param>
         /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
         [Theory]
-        [InlineData(DbStatusCode.Read)]
+        [InlineData(DbStatusCode.Read, true)]
+        [InlineData(DbStatusCode.Read, false)]
         [InlineData(DbStatusCode.Error)]
         [InlineData(DbStatusCode.NotFound)]
-        public async Task ShouldGetUserProfile(DbStatusCode dBStatus)
+        public async Task ShouldGetUserProfile(DbStatusCode dBStatus, bool expectedHasTourChanged = false)
         {
+            DateTime newLoginDateTime = DateTime.Today;
+            DateTime lastTourChangeDateTime = newLoginDateTime.AddDays(-1).AddMinutes(expectedHasTourChanged ? 10 : -10);
+
             // Arrange
             UserProfile userProfile = new()
             {
                 HdId = this.hdid,
                 TermsOfServiceId = this.termsOfServiceGuid,
-                LastLoginDateTime = DateTime.Today,
+                LastLoginDateTime = newLoginDateTime.AddDays(-1),
             };
 
             DbResult<UserProfile> userProfileDbResult = new()
@@ -82,14 +89,14 @@ namespace HealthGateway.GatewayApiTests.Services.Test
             {
                 HdId = Guid.NewGuid().ToString(),
                 Id = Guid.Parse(this.hdid),
-                LastLoginDateTime = DateTime.Today.AddDays(-1),
+                LastLoginDateTime = newLoginDateTime.AddDays(-1),
             };
 
             UserProfileHistory userProfileHistoryMinus2 = new()
             {
                 HdId = Guid.NewGuid().ToString(),
                 Id = Guid.Parse(this.hdid),
-                LastLoginDateTime = DateTime.Today.AddDays(-2),
+                LastLoginDateTime = newLoginDateTime.AddDays(-2),
             };
 
             IEnumerable<UserProfileHistory> userProfileHistories = new List<UserProfileHistory>
@@ -143,10 +150,11 @@ namespace HealthGateway.GatewayApiTests.Services.Test
                 termsOfService,
                 patientModel,
                 GetIConfigurationRoot(null),
-                userProfileHistoryDbResult).UserProfileServiceMockInstance();
+                userProfileHistoryDbResult,
+                lastTourChangeDateTime).UserProfileServiceMockInstance();
 
             // Act
-            RequestResult<UserProfileModel> actualResult = await service.GetUserProfile(this.hdid, DateTime.Now).ConfigureAwait(true);
+            RequestResult<UserProfileModel> actualResult = await service.GetUserProfile(this.hdid, newLoginDateTime).ConfigureAwait(true);
 
             // Assert
             if (dBStatus == DbStatusCode.Read)
@@ -155,9 +163,10 @@ namespace HealthGateway.GatewayApiTests.Services.Test
                 Assert.Equal(this.hdid, expected.HdId);
                 Assert.True(actualResult.ResourcePayload?.HasTermsOfServiceUpdated);
                 Assert.True(actualResult.ResourcePayload?.LastLoginDateTimes.Count == 3);
-                Assert.Equal(actualResult.ResourcePayload?.LastLoginDateTimes[0], userProfile.LastLoginDateTime);
-                Assert.Equal(actualResult.ResourcePayload?.LastLoginDateTimes[1], userProfileHistoryMinus1.LastLoginDateTime);
-                Assert.Equal(actualResult.ResourcePayload?.LastLoginDateTimes[2], userProfileHistoryMinus2.LastLoginDateTime);
+                Assert.Equal(userProfile.LastLoginDateTime, actualResult.ResourcePayload?.LastLoginDateTimes[0]);
+                Assert.Equal(userProfileHistoryMinus1.LastLoginDateTime, actualResult.ResourcePayload?.LastLoginDateTimes[1]);
+                Assert.Equal(userProfileHistoryMinus2.LastLoginDateTime, actualResult.ResourcePayload?.LastLoginDateTimes[2]);
+                Assert.Equal(expectedHasTourChanged, actualResult.ResourcePayload?.HasTourUpdated);
             }
 
             if (dBStatus == DbStatusCode.Error)
@@ -218,6 +227,8 @@ namespace HealthGateway.GatewayApiTests.Services.Test
                 },
             };
 
+            Mock<ICacheProvider> mockCacheProvider = new();
+            Mock<IApplicationSettingsDelegate> mockApplicationSettingsDelegate = new();
             Mock<ILegalAgreementDelegate> mockLegalAgreementDelegate = new();
             mockLegalAgreementDelegate.Setup(s => s.GetActiveByAgreementType(LegalAgreementType.TermsOfService)).Returns(tosDbResult);
             Mock<IUserProfileDelegate> mockUserProfileDelegate = new();
@@ -238,7 +249,9 @@ namespace HealthGateway.GatewayApiTests.Services.Test
                 new Mock<IHttpContextAccessor>().Object,
                 GetIConfigurationRoot(null),
                 MapperUtil.InitializeAutoMapper(),
-                new Mock<IAuthenticationDelegate>().Object);
+                new Mock<IAuthenticationDelegate>().Object,
+                mockApplicationSettingsDelegate.Object,
+                mockCacheProvider.Object);
             RequestResult<UserProfileModel> actualResult = service.UpdateAcceptedTerms(this.hdid, Guid.Empty);
 
             Assert.True(actualResult.ResultStatus == resultStatus);
