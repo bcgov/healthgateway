@@ -1,5 +1,6 @@
 <script lang="ts">
 import { library } from "@fortawesome/fontawesome-svg-core";
+import { faLightbulb } from "@fortawesome/free-regular-svg-icons";
 import {
     faBars,
     faSignInAlt,
@@ -11,6 +12,7 @@ import Vue from "vue";
 import { Component, Ref, Watch } from "vue-property-decorator";
 import { Action, Getter } from "vuex-class";
 
+import AppTourComponent from "@/components/modal/AppTourComponent.vue";
 import RatingComponent from "@/components/modal/RatingComponent.vue";
 import type { WebClientConfiguration } from "@/models/configData";
 import { DateWrapper, StringISODateTime } from "@/models/dateWrapper";
@@ -20,12 +22,13 @@ import container from "@/plugins/container";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import { ILogger } from "@/services/interfaces";
 
-library.add(faBars, faSignInAlt, faSignOutAlt, faTimes, faUser);
+library.add(faBars, faSignInAlt, faSignOutAlt, faTimes, faUser, faLightbulb);
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const options: any = {
     components: {
         RatingComponent,
+        AppTourComponent,
     },
 };
 
@@ -82,12 +85,15 @@ export default class HeaderComponent extends Vue {
     @Ref("ratingComponent")
     readonly ratingComponent!: RatingComponent;
 
-    readonly sidebarId = "notification-centre-sidebar";
-    private logger!: ILogger;
+    @Ref("appTourComponent")
+    readonly appTourComponent!: AppTourComponent;
 
-    private lastScrollTop = 0;
-    private static minimunScrollChange = 2;
-    private notificationButtonClicked = false;
+    readonly sidebarId = "notification-centre-sidebar";
+    logger!: ILogger;
+
+    lastScrollTop = 0;
+    static minimunScrollChange = 2;
+    notificationButtonClicked = false;
 
     private get userName(): string {
         if (this.oidcUserInfo === undefined) {
@@ -96,7 +102,7 @@ export default class HeaderComponent extends Vue {
         return `${this.oidcUserInfo.given_name} ${this.oidcUserInfo.family_name}`;
     }
 
-    private get userInitials(): string {
+    get userInitials(): string {
         const first = this.oidcUserInfo?.given_name;
         const last = this.oidcUserInfo?.family_name;
         if (first && last) {
@@ -111,13 +117,13 @@ export default class HeaderComponent extends Vue {
     }
 
     @Watch("isMobileWidth")
-    private onMobileWidth(): void {
+    onMobileWidth(): void {
         if (!this.isMobileWidth) {
             this.setHeaderState(false);
         }
     }
 
-    private created(): void {
+    created(): void {
         this.logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
         this.$nextTick(() => {
             window.addEventListener("scroll", this.onScroll);
@@ -127,22 +133,22 @@ export default class HeaderComponent extends Vue {
         });
     }
 
-    private destroyed(): void {
+    destroyed(): void {
         window.removeEventListener("scroll", this.onScroll);
     }
 
-    private get isPcrTest(): boolean {
+    get isPcrTest(): boolean {
         return this.$route.path.toLowerCase().startsWith("/pcrtest");
     }
 
-    private get isQueuePage(): boolean {
+    get isQueuePage(): boolean {
         return (
             this.$route.path.toLowerCase() === "/queue" ||
             this.$route.path.toLowerCase() === "/busy"
         );
     }
 
-    private get isSidebarButtonShown(): boolean {
+    get isSidebarButtonShown(): boolean {
         return (
             !this.isOffline &&
             this.oidcIsAuthenticated &&
@@ -156,7 +162,7 @@ export default class HeaderComponent extends Vue {
         );
     }
 
-    private get isNotificationCentreAvailable(): boolean {
+    get isNotificationCentreAvailable(): boolean {
         return (
             this.config.featureToggleConfiguration.notificationCentre.enabled &&
             !this.isOffline &&
@@ -170,15 +176,15 @@ export default class HeaderComponent extends Vue {
         );
     }
 
-    private get isLoggedInMenuShown(): boolean {
+    get isLoggedInMenuShown(): boolean {
         return this.oidcIsAuthenticated && !this.isPcrTest && !this.isQueuePage;
     }
 
-    private get isLogOutButtonShown(): boolean {
+    get isLogOutButtonShown(): boolean {
         return this.oidcIsAuthenticated && this.isPcrTest;
     }
 
-    private get isLogInButtonShown(): boolean {
+    get isLogInButtonShown(): boolean {
         return (
             !this.oidcIsAuthenticated &&
             !this.isOffline &&
@@ -187,7 +193,7 @@ export default class HeaderComponent extends Vue {
         );
     }
 
-    private get isProfileLinkAvailable(): boolean {
+    get isProfileLinkAvailable(): boolean {
         return (
             this.isLoggedInMenuShown &&
             this.isValidIdentityProvider &&
@@ -195,7 +201,7 @@ export default class HeaderComponent extends Vue {
         );
     }
 
-    private get newNotifications(): Notification[] {
+    get newNotifications(): Notification[] {
         this.logger.debug(`User last login: ${this.userLastLoginDateTime}`);
         if (this.userLastLoginDateTime) {
             const lastLoginDateTime = new DateWrapper(
@@ -211,14 +217,18 @@ export default class HeaderComponent extends Vue {
         return this.notifications;
     }
 
-    private get notificationBadgeContent(): string | boolean {
+    get notificationBadgeContent(): string | boolean {
         const count = this.newNotifications.length;
         return count === 0 || this.notificationButtonClicked
             ? false
             : count.toString();
     }
 
-    private onScroll(): void {
+    get showTourChangeIndicator(): boolean {
+        return this.user.hasTourUpdated;
+    }
+
+    onScroll(): void {
         let st = window.scrollY || document.documentElement.scrollTop;
         if (
             Math.abs(st - this.lastScrollTop) >
@@ -241,15 +251,15 @@ export default class HeaderComponent extends Vue {
         this.lastScrollTop = st <= 0 ? 0 : st;
     }
 
-    private handleToggleClick(): void {
+    handleToggleClick(): void {
         this.toggleSidebar();
     }
 
-    private toggleMenu(): void {
+    toggleMenu(): void {
         this.toggleSidebar();
     }
 
-    private handleLogoutClick(): void {
+    handleLogoutClick(): void {
         if (this.isValidIdentityProvider) {
             this.showRating();
         } else {
@@ -257,11 +267,15 @@ export default class HeaderComponent extends Vue {
         }
     }
 
-    private showRating(): void {
+    handleShowTourClick(): void {
+        this.appTourComponent.showModal();
+    }
+
+    showRating(): void {
         this.ratingComponent.showModal();
     }
 
-    private processLogout(): void {
+    processLogout(): void {
         this.logger.debug(`redirecting to logout view ...`);
         this.$router.push({ path: "/logout" });
     }
@@ -300,6 +314,19 @@ export default class HeaderComponent extends Vue {
 
             <!-- Navbar links -->
             <b-navbar-nav class="nav-pills ml-auto">
+                <b-avatar
+                    v-if="isLoggedInMenuShown"
+                    button
+                    variant="transparent"
+                    :badge="showTourChangeIndicator"
+                    :class="{ shine: showTourChangeIndicator }"
+                    badge-variant="info"
+                    badge-top
+                    icon="lightbulb"
+                    class="text-white my-3 mx-2 rounded-0"
+                    data-testid="app-tour-button"
+                    @click="handleShowTourClick"
+                />
                 <b-avatar
                     v-if="isNotificationCentreAvailable"
                     v-b-toggle="sidebarId"
@@ -391,6 +418,7 @@ export default class HeaderComponent extends Vue {
         </b-navbar>
 
         <RatingComponent ref="ratingComponent" @on-close="processLogout()" />
+        <app-tour-component ref="appTourComponent" />
     </header>
 </template>
 
@@ -413,6 +441,10 @@ export default class HeaderComponent extends Vue {
 .menu-icon {
     min-width: 1em;
     min-height: 1em;
+}
+
+button.shine {
+    color: yellow !important;
 }
 
 nav {

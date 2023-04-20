@@ -107,7 +107,7 @@ namespace HealthGateway.Common.Data.ViewModels
         /// <summary>
         /// Gets or sets a value indicating whether the user should be prompted of new tour slides.
         /// </summary>
-        public bool HasTourUpdated { get; set; }
+        public bool? HasTourUpdated { get; set; }
 
         /// <summary>
         /// Gets the user preference.
