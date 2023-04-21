@@ -12,6 +12,7 @@
     "devDependencies": {
         "@types/luxon": "^1.27.0",
         "@types/qrcode": "^1.5.0",
+        "@types/throttle-debounce": "^5.0.0",
         "@types/vuelidate": "^0.7.16",
         "@types/webpack-env": "^1.18.0",
         "@typescript-eslint/eslint-plugin": "^5.58.0",
@@ -61,7 +62,6 @@
         "file-saver": "^2.0.5",
         "html2canvas": "^1.4.1",
         "https-browserify": "^1.0.0",
-        "idle-vue": "^2.0.5",
         "image-webpack-loader": "^8.1.0",
         "inversify": "^6.0.1",
         "keycloak-js": "^18.0.1",
@@ -72,6 +72,7 @@
         "qrcode": "^1.5.1",
         "reflect-metadata": "^0.1.13",
         "stream-http": "^3.2.0",
+        "throttle-debounce": "^5.0.0",
         "vue": "^2.7.14",
         "vue-class-component": "^7.2.6",
         "vue-clickaway": "^2.2.2",
