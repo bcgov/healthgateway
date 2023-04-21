@@ -29,7 +29,7 @@ namespace HealthGateway.Common.Utils
         /// <summary>
         /// Gets the type discriminator to read the type when deserializing or to save into the serialized json.
         /// </summary>
-        protected virtual string Discriminator => "_type";
+        protected virtual string Discriminator => "$type";
 
         /// <inheritdoc/>
         public override T Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
