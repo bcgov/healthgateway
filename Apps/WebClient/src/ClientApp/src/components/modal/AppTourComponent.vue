@@ -165,7 +165,7 @@ export default class AppTourComponent extends Vue {
                 </b-col>
                 <b-col class="d-flex justify-content-end">
                     <hg-button
-                        v-if="!isFirstSlide"
+                        :aria-disabled="!isFirstSlide"
                         variant="secondary"
                         @click="previous($event)"
                         >back</hg-button
@@ -189,4 +189,14 @@ export default class AppTourComponent extends Vue {
     </b-modal>
 </template>
 
-<style scoped></style>
+<style lang="scss">
+@import "@/assets/scss/_variables.scss";
+.carousel-indicators {
+    li {
+        border: 1px solid $hg-text-primary !important;
+        &.active {
+            background-color: $hg-text-primary !important;
+        }
+    }
+}
+</style>

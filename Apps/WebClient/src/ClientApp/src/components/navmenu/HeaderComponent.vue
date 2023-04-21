@@ -1,8 +1,8 @@
 <script lang="ts">
 import { library } from "@fortawesome/fontawesome-svg-core";
-import { faLightbulb } from "@fortawesome/free-regular-svg-icons";
 import {
     faBars,
+    faLightbulb,
     faSignInAlt,
     faSignOutAlt,
     faTimes,
@@ -320,8 +320,8 @@ export default class HeaderComponent extends Vue {
                     v-if="isLoggedInMenuShown"
                     button
                     variant="transparent"
-                    :class="{ shine: highlightTourChangeIndicator }"
-                    badge-variant="info"
+                    :badge="highlightTourChangeIndicator"
+                    badge-variant="danger"
                     badge-top
                     icon="lightbulb"
                     class="text-white my-3 mx-2 rounded-0"
@@ -442,10 +442,6 @@ export default class HeaderComponent extends Vue {
 .menu-icon {
     min-width: 1em;
     min-height: 1em;
-}
-
-button.shine {
-    color: $bcgold !important;
 }
 
 nav {
