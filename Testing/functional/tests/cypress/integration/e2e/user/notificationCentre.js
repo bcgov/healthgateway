@@ -18,17 +18,17 @@ describe("Notification Centre", () => {
 
     it("Get notifications", () => {
         cy.get("[data-testid=notification-centre-button]")
-            .should("be.visible")
-            .should("be.enabled")
+            .should("be.visible", "be.enabled")
             .click();
 
-        cy.get("[data-testid=notification-centre-dismiss-all-button]").should(
-            "be.visible"
-        );
+        cy.get("[data-testid=notification-centre-dismiss-all-button]")
+            .should("be.visible", "be.enabled")
+            .click();
+
+        cy.get("[data-testid=notifications-div]").should("not.exist");
 
         cy.get("[data-testid=notification-centre-close-button]")
-            .should("be.visible")
-            .should("be.enabled")
+            .should("be.visible", "be.enabled")
             .click();
         cy.get("[data-testid=notification-centre-close-button]").should(
             "not.be.visible"
