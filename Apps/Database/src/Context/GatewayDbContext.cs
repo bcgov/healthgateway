@@ -421,6 +421,7 @@ namespace HealthGateway.Database.Context
             this.SeedCommentEntryTypeCode(modelBuilder);
             this.SeedUserLoginClientTypeCode(modelBuilder);
             this.SeedDependentAuditOperationCodes(modelBuilder);
+            this.SeeApplicationSettings(modelBuilder);
         }
 
         /// <summary>
@@ -1131,6 +1132,28 @@ namespace HealthGateway.Database.Context
                     {
                         Code = DependentAuditOperation.Unprotect,
                         Description = "Unprotect Dependent Operation Code",
+                        CreatedBy = UserId.DefaultUser,
+                        CreatedDateTime = this.DefaultSeedDate.ToUniversalTime(),
+                        UpdatedBy = UserId.DefaultUser,
+                        UpdatedDateTime = this.DefaultSeedDate.ToUniversalTime(),
+                    });
+        }
+
+        /// <summary>
+        /// Seeds ApplicationSetting table.
+        /// </summary>
+        /// <param name="modelBuilder">The passed in model builder.</param>
+        private void SeeApplicationSettings(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<ApplicationSetting>()
+                .HasData(
+                    new ApplicationSetting
+                    {
+                        Id = Guid.Parse("bfcb45f6-27f9-4c0c-b494-80b147bcba8e"),
+                        Application = TourApplicationSettings.Application,
+                        Component = TourApplicationSettings.Component,
+                        Key = TourApplicationSettings.LatestChangeDateTime,
+                        Value = new DateTime(2023, 5, 3, 15, 0, 0).ToUniversalTime().ToString("o"),
                         CreatedBy = UserId.DefaultUser,
                         CreatedDateTime = this.DefaultSeedDate.ToUniversalTime(),
                         UpdatedBy = UserId.DefaultUser,
