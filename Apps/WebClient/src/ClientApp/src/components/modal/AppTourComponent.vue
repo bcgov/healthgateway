@@ -83,6 +83,7 @@ export default class AppTourComponent extends Vue {
     }
 
     public hideModal(): void {
+        this.slideIndex = 0;
         this.isVisible = false;
     }
 
@@ -148,7 +149,7 @@ export default class AppTourComponent extends Vue {
                 :img-alt="slide.imageAlt ?? slide.title"
             />
         </b-carousel>
-        <div class="p-3">
+        <div class="p-3" data-testid="app-tour-modal">
             <b-row v-if="currentSlide">
                 <b-col>
                     <h3>{{ currentSlide.title }}</h3>
@@ -159,13 +160,17 @@ export default class AppTourComponent extends Vue {
             </b-row>
             <b-row v-if="!isFinalSlide">
                 <b-col>
-                    <hg-button variant="link" @click="hideModal"
+                    <hg-button
+                        variant="link"
+                        data-testid="app-tour-skip"
+                        @click="hideModal"
                         >skip</hg-button
                     >
                 </b-col>
                 <b-col class="d-flex justify-content-end">
                     <hg-button
                         :disabled="isFirstSlide"
+                        data-testid="app-tour-back"
                         variant="secondary"
                         @click="previous($event)"
                         >back</hg-button
@@ -173,6 +178,7 @@ export default class AppTourComponent extends Vue {
                     <hg-button
                         variant="primary"
                         class="ml-3"
+                        data-testid="app-tour-next"
                         @click="next($event)"
                         >Next</hg-button
                     >
@@ -180,7 +186,11 @@ export default class AppTourComponent extends Vue {
             </b-row>
             <b-row v-else>
                 <b-col class="d-flex justify-content-center">
-                    <hg-button variant="primary" class="ml-3" @click="hideModal"
+                    <hg-button
+                        variant="primary"
+                        class="ml-3"
+                        data-testid="app-tour-done"
+                        @click="hideModal"
                         >Done</hg-button
                     >
                 </b-col>
