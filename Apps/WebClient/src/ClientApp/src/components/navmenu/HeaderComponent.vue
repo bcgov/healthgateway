@@ -94,6 +94,7 @@ export default class HeaderComponent extends Vue {
     lastScrollTop = 0;
     static minimunScrollChange = 2;
     notificationButtonClicked = false;
+    hasViewedTour = false;
 
     private get userName(): string {
         if (this.oidcUserInfo === undefined) {
@@ -224,8 +225,8 @@ export default class HeaderComponent extends Vue {
             : count.toString();
     }
 
-    get showTourChangeIndicator(): boolean {
-        return this.user.hasTourUpdated;
+    get highlightTourChangeIndicator(): boolean {
+        return this.user.hasTourUpdated && !this.hasViewedTour;
     }
 
     onScroll(): void {
@@ -268,6 +269,7 @@ export default class HeaderComponent extends Vue {
     }
 
     handleShowTourClick(): void {
+        this.hasViewedTour = true;
         this.appTourComponent.showModal();
     }
 
@@ -318,8 +320,7 @@ export default class HeaderComponent extends Vue {
                     v-if="isLoggedInMenuShown"
                     button
                     variant="transparent"
-                    :badge="showTourChangeIndicator"
-                    :class="{ shine: showTourChangeIndicator }"
+                    :class="{ shine: highlightTourChangeIndicator }"
                     badge-variant="info"
                     badge-top
                     icon="lightbulb"
@@ -444,7 +445,7 @@ export default class HeaderComponent extends Vue {
 }
 
 button.shine {
-    color: yellow !important;
+    color: $bcgold !important;
 }
 
 nav {

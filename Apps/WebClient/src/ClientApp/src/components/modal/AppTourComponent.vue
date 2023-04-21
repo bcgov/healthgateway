@@ -4,7 +4,6 @@ import Vue from "vue";
 import { Component, Ref } from "vue-property-decorator";
 import { Getter } from "vuex-class";
 
-import addQuickLinkImage from "@/assets/images/tour/add-quicklink.png";
 import type { WebClientConfiguration } from "@/models/configData";
 
 interface TourSlide {
@@ -14,7 +13,6 @@ interface TourSlide {
     description?: string;
     // Image or Gif to be displayed for the slide.
     imageUri: string;
-
     // Optional alt text for the image.
     imageAlt?: string;
 }
@@ -26,23 +24,56 @@ export default class AppTourComponent extends Vue {
 
     @Ref("tourCarousel")
     readonly tourCarousel!: BCarousel;
-    slides: TourSlide[] = [
-        // TODO: REMOVE THIS
+
+    @Getter("isMobile")
+    isMobile!: boolean;
+
+    mobileSlides: TourSlide[] = [
+        // TODO: Final configuration in AB#15392
+        {
+            title: "MB-Add a Quick Link",
+            description:
+                "Add a quick link to easily access a health record type from your home screen.",
+            imageUri: new URL(
+                "@/assets/images/tour/add-quicklink.png",
+                import.meta.url
+            ).href,
+            imageAlt: "First slide",
+        },
+        {
+            title: "MB-Filter Timeline Data",
+            description: "Follow the demo above to filter your timeline data.",
+            imageUri: new URL(
+                "@/assets/images/tour/filter-timeline.gif",
+                import.meta.url
+            ).href,
+            imageAlt: "Second slide",
+        },
+    ];
+
+    desktopSlides: TourSlide[] = [
+        // TODO: Final configuration in AB#15392
         {
             title: "Add a Quick Link",
             description:
                 "Add a quick link to easily access a health record type from your home screen.",
-            imageUri: addQuickLinkImage,
+            imageUri: new URL(
+                "@/assets/images/tour/add-quicklink.png",
+                import.meta.url
+            ).href,
             imageAlt: "First slide",
         },
         {
-            title: "2 - Add a Quick Link",
-            description:
-                "2 - Add a quick link to easily access a health record type from your home screen.",
-            imageUri: "@/assets/images/tour/filter-timeline.gif",
+            title: "Filter Timeline Data",
+            description: "Follow the demo above to filter your timeline data.",
+            imageUri: new URL(
+                "@/assets/images/tour/filter-timeline.gif",
+                import.meta.url
+            ).href,
             imageAlt: "Second slide",
         },
     ];
+
     slideIndex = 0;
 
     isVisible = false;
@@ -71,10 +102,22 @@ export default class AppTourComponent extends Vue {
         }
     }
 
+    get slides(): TourSlide[] {
+        return this.isMobile ? this.mobileSlides : this.desktopSlides;
+    }
+
     get currentSlide(): TourSlide | undefined {
         return this.slides.length > 0
             ? this.slides[this.slideIndex]
             : undefined;
+    }
+
+    get isFinalSlide(): boolean {
+        return this.slideIndex === this.slides.length - 1;
+    }
+
+    get isFirstSlide(): boolean {
+        return this.slideIndex === 0;
     }
 }
 </script>
@@ -97,35 +140,34 @@ export default class AppTourComponent extends Vue {
             v-model="slideIndex"
             :interval="0"
             indicators
-            background="#ababab"
-            img-width="1024"
-            img-height="480"
-            style="text-shadow: 1px 1px 2px #333"
         >
             <b-carousel-slide
                 v-for="slide in slides"
                 :key="slide.title"
                 :img-src="slide.imageUri"
-                :img-alt="slide.imageAlt"
+                :img-alt="slide.imageAlt ?? slide.title"
             />
         </b-carousel>
         <div class="p-3">
             <b-row v-if="currentSlide">
                 <b-col>
                     <h3>{{ currentSlide.title }}</h3>
-                    <p>
+                    <p v-if="currentSlide.description">
                         {{ currentSlide.description }}
                     </p>
                 </b-col>
             </b-row>
-            <b-row>
+            <b-row v-if="!isFinalSlide">
                 <b-col>
                     <hg-button variant="link" @click="hideModal"
                         >skip</hg-button
                     >
                 </b-col>
                 <b-col class="d-flex justify-content-end">
-                    <hg-button variant="secondary" @click="previous($event)"
+                    <hg-button
+                        v-if="!isFirstSlide"
+                        variant="secondary"
+                        @click="previous($event)"
                         >back</hg-button
                     >
                     <hg-button
@@ -133,6 +175,13 @@ export default class AppTourComponent extends Vue {
                         class="ml-3"
                         @click="next($event)"
                         >Next</hg-button
+                    >
+                </b-col>
+            </b-row>
+            <b-row v-else>
+                <b-col class="d-flex justify-content-center">
+                    <hg-button variant="primary" class="ml-3" @click="hideModal"
+                        >Done</hg-button
                     >
                 </b-col>
             </b-row>

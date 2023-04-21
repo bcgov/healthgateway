@@ -80,6 +80,7 @@ export const mutations: UserMutation = {
         Vue.set(state.user, "verifiedEmail", userProfile.isEmailVerified);
         Vue.set(state.user, "hasSMS", !!userProfile.smsNumber);
         Vue.set(state.user, "verifiedSMS", userProfile.isSMSNumberVerified);
+        Vue.set(state.user, "hasTourUpdated", userProfile.hasTourUpdated);
 
         logger.verbose(`state.user: ${JSON.stringify(state.user)}`);
 
