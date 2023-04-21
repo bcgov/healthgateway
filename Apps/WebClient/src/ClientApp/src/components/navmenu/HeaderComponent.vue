@@ -92,7 +92,7 @@ export default class HeaderComponent extends Vue {
     logger!: ILogger;
 
     lastScrollTop = 0;
-    static minimunScrollChange = 2;
+    static minimumScrollChange = 2;
     notificationButtonClicked = false;
     hasViewedTour = false;
 
@@ -121,6 +121,15 @@ export default class HeaderComponent extends Vue {
     onMobileWidth(): void {
         if (!this.isMobileWidth) {
             this.setHeaderState(false);
+        }
+    }
+
+    // listen for successful registration and show the app tour.
+    @Watch("$route")
+    onRouteChange(): void {
+        if (this.$route.query.registration === "success") {
+            this.$router.replace({ query: {} });
+            this.appTourComponent.showModal();
         }
     }
 
@@ -233,7 +242,7 @@ export default class HeaderComponent extends Vue {
         let st = window.scrollY || document.documentElement.scrollTop;
         if (
             Math.abs(st - this.lastScrollTop) >
-                HeaderComponent.minimunScrollChange &&
+                HeaderComponent.minimumScrollChange &&
             this.isMobileWidth
         ) {
             if (st > this.lastScrollTop) {
