@@ -165,7 +165,7 @@ export default class AppTourComponent extends Vue {
                 </b-col>
                 <b-col class="d-flex justify-content-end">
                     <hg-button
-                        :aria-disabled="!isFirstSlide"
+                        :disabled="isFirstSlide"
                         variant="secondary"
                         @click="previous($event)"
                         >back</hg-button
