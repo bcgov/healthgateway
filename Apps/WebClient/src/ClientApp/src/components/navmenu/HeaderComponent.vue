@@ -419,7 +419,7 @@ export default class HeaderComponent extends Vue {
         </b-navbar>
 
         <RatingComponent ref="ratingComponent" @on-close="processLogout()" />
-        <app-tour-component ref="appTourComponent" />
+        <AppTourComponent ref="appTourComponent" />
     </header>
 </template>
 
