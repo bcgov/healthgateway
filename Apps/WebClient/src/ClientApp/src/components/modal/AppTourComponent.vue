@@ -84,6 +84,7 @@ export default class AppTourComponent extends Vue {
 
     public hideModal(): void {
         this.isVisible = false;
+        this.slideIndex = 0;
     }
 
     private next(bvModalEvt: Event): void {
@@ -159,30 +160,30 @@ export default class AppTourComponent extends Vue {
             </b-row>
             <b-row v-if="!isFinalSlide">
                 <b-col>
-                    <hg-button variant="link" @click="hideModal"
-                        >skip</hg-button
-                    >
+                    <hg-button variant="link" @click="hideModal">
+                        Skip
+                    </hg-button>
                 </b-col>
                 <b-col class="d-flex justify-content-end">
                     <hg-button
                         :disabled="isFirstSlide"
                         variant="secondary"
-                        @click="previous($event)"
-                        >back</hg-button
-                    >
+                        @click="previous($event)">
+                        Back
+                    </hg-button>
                     <hg-button
                         variant="primary"
                         class="ml-3"
-                        @click="next($event)"
-                        >Next</hg-button
-                    >
+                        @click="next($event)">
+                        Next
+                    </hg-button>
                 </b-col>
             </b-row>
             <b-row v-else>
                 <b-col class="d-flex justify-content-center">
-                    <hg-button variant="primary" class="ml-3" @click="hideModal"
-                        >Done</hg-button
-                    >
+                    <hg-button variant="primary" class="ml-3" @click="hideModal">
+                        Done
+                    </hg-button>
                 </b-col>
             </b-row>
         </div>
