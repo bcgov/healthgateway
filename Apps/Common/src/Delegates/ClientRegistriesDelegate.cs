@@ -262,7 +262,7 @@ namespace HealthGateway.Common.Delegates
                     ResultStatus = ResultType.Error,
                     ResultError = new RequestResultError
                     {
-                        ResultMessage = "Client Registry did not return a person",
+                        ResultMessage = ErrorMessages.ClientRegistryDoesNotReturnPerson,
                         ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.ClientRegistries),
                     },
                 };
@@ -299,7 +299,7 @@ namespace HealthGateway.Common.Delegates
                         ResultStatus = ResultType.Error,
                         ResultError = new RequestResultError
                         {
-                            ResultMessage = "Client Registry returned a person with the deceased indicator set to true",
+                            ResultMessage = ErrorMessages.ClientRegistryReturnedDeceasedPerson,
                             ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.ClientRegistries),
                         },
                     };
