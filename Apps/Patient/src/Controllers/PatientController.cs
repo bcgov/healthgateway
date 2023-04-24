@@ -90,7 +90,7 @@ namespace HealthGateway.Patient.Controllers
         /// <response code="502">Unable to get response from client registry.</response>
         [HttpGet]
         [Produces("application/json")]
-        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(ApiResult<PatientModelV2>))]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(ApiResult<AccountDataAccess.Patient.PatientModel>))]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -99,6 +99,26 @@ namespace HealthGateway.Patient.Controllers
         [Route("{hdid}")]
         [Authorize(Policy = PatientPolicy.Read)]
         public async Task<IActionResult> GetPatientV2(string hdid)
+        {
+            return this.Ok(await this.serviceV2.GetPatient(hdid).ConfigureAwait(true));
+        }
+
+        /// <summary>
+        /// Gets a json of patient record.
+        /// </summary>
+        /// <param name="hdid">The patient hdid.</param>
+        /// <returns>The patient record.</returns>
+        [HttpGet]
+        [Produces("application/json")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status502BadGateway)]
+        [ApiVersion("3.0")]
+        [Route("{hdid}")]
+        [Authorize(Policy = PatientPolicy.Read)]
+        public async Task<ActionResult<PatientDetails>> GetPatientV3(string hdid)
         {
             return this.Ok(await this.serviceV2.GetPatient(hdid).ConfigureAwait(true));
         }

@@ -13,21 +13,27 @@
 //  See the License for the specific language governing permissions and
 //  limitations under the License.
 // -------------------------------------------------------------------------
-namespace HealthGateway.Patient.Models
+namespace HealthGateway.AccountDataAccess.Patient
 {
+    using System.Diagnostics.CodeAnalysis;
+    using Microsoft.Extensions.DependencyInjection;
+
     /// <summary>
-    ///  Represents the name of a person.
+    /// Helper class to add and configure <see cref="IPatientRepository"/> dependencies.
     /// </summary>
-    public class Name
+    [ExcludeFromCodeCoverage]
+    public static class AccountDataAccessConfigurationExtensions
     {
         /// <summary>
-        /// Gets or sets the given name of a person.
+        /// Register AccountDataAccess in DI.
         /// </summary>
-        public string GivenName { get; set; } = string.Empty;
+        /// <param name="services">DI service collection.</param>
+        /// <returns>The service collection.</returns>
+        public static IServiceCollection AddAccountDataAccess(this IServiceCollection services)
+        {
+            services.AddTransient<IPatientRepository, PatientRepository>();
 
-        /// <summary>
-        /// Gets or sets the surname of a person.
-        /// </summary>
-        public string Surname { get; set; } = string.Empty;
+            return services;
+        }
     }
 }

@@ -16,12 +16,12 @@
 namespace HealthGateway.PatientTests.Controllers
 {
     using System;
+    using System.Threading;
     using DeepEqual.Syntax;
+    using HealthGateway.AccountDataAccess.Patient;
     using HealthGateway.Common.Constants;
     using HealthGateway.Common.Data.Constants;
-    using HealthGateway.Common.Data.Models;
     using HealthGateway.Common.Data.ViewModels;
-    using HealthGateway.Common.Models;
     using HealthGateway.Common.Services;
     using HealthGateway.Patient.Controllers;
     using HealthGateway.Patient.Models;
@@ -29,6 +29,8 @@ namespace HealthGateway.PatientTests.Controllers
     using Microsoft.AspNetCore.Mvc;
     using Moq;
     using Xunit;
+    using Address = HealthGateway.Common.Data.Models.Address;
+    using PatientModel = HealthGateway.Common.Models.PatientModel;
 
     /// <summary>
     /// Unit Tests for PatientController.
@@ -90,8 +92,8 @@ namespace HealthGateway.PatientTests.Controllers
             Assert.IsType<OkObjectResult>(actualResult);
             OkObjectResult? okResult = actualResult as OkObjectResult;
             Assert.Equal(StatusCodes.Status200OK, okResult?.StatusCode);
-            ApiResult<PatientModelV2> apiResult = Assert.IsAssignableFrom<ApiResult<PatientModelV2>>(okResult?.Value);
-            Assert.Equal(MockedHdId, apiResult.ResourcePayload!.HdId);
+            ApiResult<AccountDataAccess.Patient.PatientModel> apiResult = Assert.IsAssignableFrom<ApiResult<AccountDataAccess.Patient.PatientModel>>(okResult?.Value);
+            Assert.Equal(MockedHdId, apiResult.ResourcePayload!.Hdid);
         }
 
         private static PatientModel GetPatientModel()
@@ -119,7 +121,7 @@ namespace HealthGateway.PatientTests.Controllers
             };
         }
 
-        private static PatientModelV2 GetPatientModelV2()
+        private static PatientDetails GetPatientModelV2()
         {
             return new()
             {
@@ -132,13 +134,13 @@ namespace HealthGateway.PatientTests.Controllers
                 Gender = MockedGender,
                 HdId = MockedHdId,
                 PersonalHealthNumber = MockedPersonalHealthNumber,
-                PhysicalAddress = new Address
+                PhysicalAddress = new AccountDataAccess.Patient.Address
                 {
                     City = "Victoria",
                     State = "BC",
                     Country = "CA",
                 },
-                PostalAddress = new Address
+                PostalAddress = new AccountDataAccess.Patient.Address
                 {
                     City = "Vancouver",
                     State = "BC",
@@ -157,12 +159,9 @@ namespace HealthGateway.PatientTests.Controllers
                 ResourcePayload = GetPatientModel(),
             };
 
-            ApiResult<PatientModelV2> apiResult = new()
-            {
-                ResourcePayload = GetPatientModelV2(),
-            };
+            PatientDetails patientDetails = GetPatientModelV2();
 
-            patientServiceV2.Setup(x => x.GetPatient(It.IsAny<string>(), PatientIdentifierType.Hdid, false)).ReturnsAsync(apiResult);
+            patientServiceV2.Setup(x => x.GetPatient(It.IsAny<string>(), PatientIdentifierType.Hdid, false, new CancellationToken(false))).ReturnsAsync(patientDetails);
             patientServiceV1.Setup(x => x.GetPatient(It.IsAny<string>(), PatientIdentifierType.Hdid, false)).ReturnsAsync(requestResult);
             return new(patientServiceV1.Object, patientServiceV2.Object);
         }
