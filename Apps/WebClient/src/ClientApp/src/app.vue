@@ -180,7 +180,7 @@ export default class App extends Vue {
     }
 
     get timeBeforeIdle(): number {
-        return this.config.timeouts.idle;
+        return this.config?.timeouts?.idle ?? 0;
     }
 
     get maxIdleDialogCountdown(): number {
@@ -220,12 +220,14 @@ export default class App extends Vue {
     }
 
     private initializeIdleDetector() {
-        this.idleDetector = new IdleDetector(
-            (timeIdle) => this.handleIsIdle(timeIdle),
-            this.timeBeforeIdle
-        );
-        if (this.oidcIsAuthenticated) {
-            this.idleDetector.enable();
+        if (this.timeBeforeIdle > 0) {
+            this.idleDetector = new IdleDetector(
+                (timeIdle) => this.handleIsIdle(timeIdle),
+                this.timeBeforeIdle
+            );
+            if (this.oidcIsAuthenticated) {
+                this.idleDetector.enable();
+            }
         }
     }
 
