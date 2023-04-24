@@ -52,9 +52,6 @@ export default class EntryDetailsComponent extends Vue {
     @Getter("isMobile")
     isMobile!: boolean;
 
-    @Getter("isVisible", { namespace: "idle" })
-    isIdleWarningVisible!: boolean;
-
     @Getter("lastOperation", { namespace: "note" })
     lastNoteOperation!: Operation | null;
 
