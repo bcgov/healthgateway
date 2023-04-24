@@ -421,7 +421,7 @@ namespace HealthGateway.Database.Context
             this.SeedCommentEntryTypeCode(modelBuilder);
             this.SeedUserLoginClientTypeCode(modelBuilder);
             this.SeedDependentAuditOperationCodes(modelBuilder);
-            this.SeeApplicationSettings(modelBuilder);
+            this.SeedApplicationSettings(modelBuilder);
         }
 
         /// <summary>
@@ -1143,7 +1143,7 @@ namespace HealthGateway.Database.Context
         /// Seeds ApplicationSetting table.
         /// </summary>
         /// <param name="modelBuilder">The passed in model builder.</param>
-        private void SeeApplicationSettings(ModelBuilder modelBuilder)
+        private void SeedApplicationSettings(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<ApplicationSetting>()
                 .HasData(
