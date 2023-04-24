@@ -38,6 +38,9 @@ export default interface UserProfile {
 
     // The User Preference
     preferences: Dictionary<UserPreference>;
+
+    // Has the app tour been updated
+    hasTourUpdated?: boolean;
 }
 
 export interface CreateUserRequest {

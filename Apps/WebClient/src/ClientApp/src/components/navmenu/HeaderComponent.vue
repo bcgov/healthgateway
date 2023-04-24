@@ -2,6 +2,7 @@
 import { library } from "@fortawesome/fontawesome-svg-core";
 import {
     faBars,
+    faLightbulb,
     faSignInAlt,
     faSignOutAlt,
     faTimes,
@@ -11,6 +12,7 @@ import Vue from "vue";
 import { Component, Ref, Watch } from "vue-property-decorator";
 import { Action, Getter } from "vuex-class";
 
+import AppTourComponent from "@/components/modal/AppTourComponent.vue";
 import RatingComponent from "@/components/modal/RatingComponent.vue";
 import type { WebClientConfiguration } from "@/models/configData";
 import { DateWrapper, StringISODateTime } from "@/models/dateWrapper";
@@ -20,12 +22,13 @@ import container from "@/plugins/container";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import { ILogger } from "@/services/interfaces";
 
-library.add(faBars, faSignInAlt, faSignOutAlt, faTimes, faUser);
+library.add(faBars, faSignInAlt, faSignOutAlt, faTimes, faUser, faLightbulb);
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const options: any = {
     components: {
         RatingComponent,
+        AppTourComponent,
     },
 };
 
@@ -82,12 +85,16 @@ export default class HeaderComponent extends Vue {
     @Ref("ratingComponent")
     readonly ratingComponent!: RatingComponent;
 
+    @Ref("appTourComponent")
+    readonly appTourComponent!: AppTourComponent;
+
     readonly sidebarId = "notification-centre-sidebar";
     private logger!: ILogger;
 
     private lastScrollTop = 0;
     private static minimunScrollChange = 2;
     private notificationButtonClicked = false;
+    private hasViewedTour = false;
 
     private get userName(): string {
         if (this.oidcUserInfo === undefined) {
@@ -218,6 +225,10 @@ export default class HeaderComponent extends Vue {
             : count.toString();
     }
 
+    private get highlightTourChangeIndicator(): boolean {
+        return this.user.hasTourUpdated && !this.hasViewedTour;
+    }
+
     private onScroll(): void {
         let st = window.scrollY || document.documentElement.scrollTop;
         if (
@@ -255,6 +266,11 @@ export default class HeaderComponent extends Vue {
         } else {
             this.processLogout();
         }
+    }
+
+    private handleShowTourClick(): void {
+        this.hasViewedTour = true;
+        this.appTourComponent.showModal();
     }
 
     private showRating(): void {
@@ -300,6 +316,18 @@ export default class HeaderComponent extends Vue {
 
             <!-- Navbar links -->
             <b-navbar-nav class="nav-pills ml-auto">
+                <b-avatar
+                    v-if="isLoggedInMenuShown"
+                    button
+                    variant="transparent"
+                    :badge="highlightTourChangeIndicator"
+                    badge-variant="danger"
+                    badge-top
+                    icon="lightbulb"
+                    class="text-white my-3 mx-2 rounded-0"
+                    data-testid="app-tour-button"
+                    @click="handleShowTourClick"
+                />
                 <b-avatar
                     v-if="isNotificationCentreAvailable"
                     v-b-toggle="sidebarId"
@@ -391,6 +419,7 @@ export default class HeaderComponent extends Vue {
         </b-navbar>
 
         <RatingComponent ref="ratingComponent" @on-close="processLogout()" />
+        <AppTourComponent ref="appTourComponent" />
     </header>
 </template>
 
