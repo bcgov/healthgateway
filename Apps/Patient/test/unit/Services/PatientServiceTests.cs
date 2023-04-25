@@ -22,11 +22,11 @@ namespace HealthGateway.PatientTests.Services
     using System.Threading.Tasks;
     using AutoMapper;
     using HealthGateway.AccountDataAccess.Patient;
-    using HealthGateway.Common.CacheProviders;
     using HealthGateway.Common.Constants;
     using HealthGateway.Common.Data.ErrorHandling;
     using HealthGateway.Patient.Models;
     using HealthGateway.Patient.Services;
+    using HealthGateway.PatientTests.Utils;
     using Microsoft.Extensions.Logging;
     using Moq;
     using Xunit;
@@ -38,6 +38,7 @@ namespace HealthGateway.PatientTests.Services
     {
         private const string Hdid = "abc123";
         private const string Phn = "9735353315";
+        private static readonly IMapper Mapper = MapperUtil.InitializeAutoMapper();
 
         /// <summary>
         /// GetPatient - Happy Path.
@@ -46,42 +47,10 @@ namespace HealthGateway.PatientTests.Services
         public void ShouldGetPatient()
         {
             // Arrange
-            IPatientService service = GetPatientService(Phn);
+            IPatientService service = GetPatientService(Phn, Hdid);
 
             // Act
             PatientDetails actual = Task.Run(async () => await service.GetPatientAsync(Hdid).ConfigureAwait(true)).Result;
-
-            // Verify
-            Assert.Equal(Hdid, actual.HdId);
-        }
-
-        /// <summary>
-        /// GetPatient - Happy Path (Cached).
-        /// </summary>
-        [Fact]
-        public void ShouldGetPatientFromCache()
-        {
-            // Arrange
-            IPatientService service = GetPatientService(Phn, true);
-
-            // Act
-            PatientDetails actual = Task.Run(async () => await service.GetPatientAsync(Hdid).ConfigureAwait(true)).Result;
-
-            // Verify
-            Assert.Equal(Hdid, actual.HdId);
-        }
-
-        /// <summary>
-        /// GetPatient - Happy Path (Using PHN).
-        /// </summary>
-        [Fact]
-        public void ShouldGetPatientFromCacheWithPhn()
-        {
-            // Arrange
-            IPatientService service = GetPatientService(Phn, true);
-
-            // Act
-            PatientDetails actual = Task.Run(async () => await service.GetPatientAsync(Phn, PatientIdentifierType.Phn).ConfigureAwait(true)).Result;
 
             // Verify
             Assert.Equal(Hdid, actual.HdId);
@@ -94,13 +63,13 @@ namespace HealthGateway.PatientTests.Services
         public void ShouldGetPatientByValidPhn()
         {
             // Arrange
-            IPatientService service = GetPatientService(Phn);
+            IPatientService service = GetPatientService(Phn, Phn);
 
             // Act
             PatientDetails actual = Task.Run(async () => await service.GetPatientAsync(Phn, PatientIdentifierType.Phn).ConfigureAwait(true)).Result;
 
             // Verify
-            Assert.Equal(Phn, actual.PersonalHealthNumber);
+            Assert.Equal(Phn, actual.Phn);
         }
 
         /// <summary>
@@ -111,7 +80,7 @@ namespace HealthGateway.PatientTests.Services
         public async Task GetPatientThrowsProblemDetailsExceptionGivenClientRegistryRecordsNotFound()
         {
             // Setup
-            IPatientService patientService = GetPatientService(Phn, notFound: true);
+            IPatientService patientService = GetPatientService(Phn, Phn, true);
 
             // Act
             async Task Actual()
@@ -132,7 +101,7 @@ namespace HealthGateway.PatientTests.Services
         public async Task GetPatientThrowsProblemDetailsExceptionGivenNoIds()
         {
             // Setup
-            IPatientService patientService = GetPatientService(Phn, noIds: true);
+            IPatientService patientService = GetPatientService(Phn, Phn, noIds: true);
 
             // Act
             async Task Actual()
@@ -153,7 +122,7 @@ namespace HealthGateway.PatientTests.Services
         public async Task GetPatientThrowsProblemDetailsExceptionGivenNoLegalName()
         {
             // Setup
-            IPatientService patientService = GetPatientService(Phn, noNames: true);
+            IPatientService patientService = GetPatientService(Phn, Phn, noNames: true);
 
             // Act
             async Task Actual()
@@ -174,7 +143,7 @@ namespace HealthGateway.PatientTests.Services
         public async Task GetPatientThrowsProblemDetailsExceptionGivenClientRegistryPhnNotValid()
         {
             // Setup
-            IPatientService patientService = GetPatientService(Phn, throwsException: true);
+            IPatientService patientService = GetPatientService(Phn, Phn, throwsException: true);
 
             // Act
             async Task Actual()
@@ -189,7 +158,7 @@ namespace HealthGateway.PatientTests.Services
 
         private static IPatientService GetPatientService(
             string expectedPhn,
-            bool returnValidCache = false,
+            string expectedIdentifier,
             bool notFound = false,
             bool noNames = false,
             bool noIds = false,
@@ -206,7 +175,7 @@ namespace HealthGateway.PatientTests.Services
                 Hdid = Hdid,
             };
 
-            PatientQueryResult requestResult = new(new[] { patientModel });
+            PatientQueryResult requestResult = new(new List<PatientModel> { patientModel });
 
             if (notFound)
             {
@@ -240,20 +209,14 @@ namespace HealthGateway.PatientTests.Services
             }
             else
             {
-                patientRepositoryMock.Setup(p => p.Query(new PatientDetailsQuery(null, "abc123"), It.IsAny<CancellationToken>())).ReturnsAsync(requestResult);
-                patientRepositoryMock.Setup(p => p.Query(new PatientDetailsQuery("abc123", null), It.IsAny<CancellationToken>())).ReturnsAsync(requestResult);
-            }
-
-            Mock<ICacheProvider> cacheProviderMock = new();
-            if (returnValidCache)
-            {
-                cacheProviderMock.Setup(p => p.GetItem<PatientModel>(It.IsAny<string>())).Returns(requestResult.Items.First);
+                patientRepositoryMock.Setup(p => p.Query(new PatientDetailsQuery(null, expectedIdentifier), It.IsAny<CancellationToken>())).ReturnsAsync(requestResult);
+                patientRepositoryMock.Setup(p => p.Query(new PatientDetailsQuery(expectedIdentifier, null), It.IsAny<CancellationToken>())).ReturnsAsync(requestResult);
             }
 
             return new PatientService(
                 new Mock<ILogger<PatientService>>().Object,
                 patientRepositoryMock.Object,
-                new Mock<IMapper>().Object);
+                Mapper);
         }
     }
 }

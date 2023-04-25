@@ -34,7 +34,7 @@ namespace HealthGateway.Patient.Models
         /// Gets or sets the patient's PHN.
         /// </summary>
         [JsonPropertyName("personalHealthNumber")]
-        public string PersonalHealthNumber { get; set; } = string.Empty;
+        public string Phn { get; set; } = string.Empty;
 
         /// <summary>
         /// Gets or sets the patient's common name.

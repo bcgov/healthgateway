@@ -92,8 +92,8 @@ namespace HealthGateway.PatientTests.Controllers
             Assert.IsType<OkObjectResult>(actualResult);
             OkObjectResult? okResult = actualResult as OkObjectResult;
             Assert.Equal(StatusCodes.Status200OK, okResult?.StatusCode);
-            ApiResult<AccountDataAccess.Patient.PatientModel> apiResult = Assert.IsAssignableFrom<ApiResult<AccountDataAccess.Patient.PatientModel>>(okResult?.Value);
-            Assert.Equal(MockedHdId, apiResult.ResourcePayload!.Hdid);
+            ApiResult<PatientDetails> apiResult = Assert.IsAssignableFrom<ApiResult<PatientDetails>>(okResult?.Value);
+            Assert.Equal(MockedHdId, apiResult.ResourcePayload!.HdId);
         }
 
         private static PatientModel GetPatientModel()
@@ -133,7 +133,7 @@ namespace HealthGateway.PatientTests.Controllers
                 },
                 Gender = MockedGender,
                 HdId = MockedHdId,
-                PersonalHealthNumber = MockedPersonalHealthNumber,
+                Phn = MockedPersonalHealthNumber,
                 PhysicalAddress = new AccountDataAccess.Patient.Address
                 {
                     City = "Victoria",

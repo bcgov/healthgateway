@@ -37,7 +37,9 @@ namespace AccountDataAccessTest
         [Fact]
         public async Task GetDemographicsThrowsProblemDetailsExceptionGivenClientRegistryPhnNotValid()
         {
-            // Setup
+            string hdid = "abc123";
+            string phn = "9735353315";
+
             ApiResult<PatientModel> requestResult = new()
             {
                 ResourcePayload = new PatientModel
@@ -47,8 +49,8 @@ namespace AccountDataAccessTest
                         GivenName = "John",
                         Surname = "Doe",
                     },
-                    Phn = "abc123",
-                    Hdid = "abc123",
+                    Phn = phn,
+                    Hdid = hdid,
                 },
             };
 
@@ -60,7 +62,8 @@ namespace AccountDataAccessTest
             IConfigurationRoot configuration = new ConfigurationBuilder()
                 .AddInMemoryCollection(configDictionary.ToList())
                 .Build();
-            patientDelegateMock.Setup(p => p.GetDemographicsAsync(It.IsAny<OidType>(), It.IsAny<string>(), false)).ReturnsAsync(requestResult);
+            patientDelegateMock.Setup(p => p.GetDemographicsAsync(OidType.Hdid, hdid, false)).ReturnsAsync(requestResult);
+            patientDelegateMock.Setup(p => p.GetDemographicsAsync(OidType.Phn, phn, false)).ReturnsAsync(requestResult);
 
             PatientRepository patientRepository = new(patientDelegateMock.Object, new Mock<ICacheProvider>().Object, configuration, new Mock<ILogger<PatientRepository>>().Object);
             PatientQuery patientQuery = new PatientDetailsQuery(Phn: "abc123");

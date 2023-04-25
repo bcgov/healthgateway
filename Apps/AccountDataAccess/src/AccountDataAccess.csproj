@@ -14,4 +14,10 @@
       <ProjectReference Include="..\..\Common\src\Common.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+        <InternalsVisibleTo Include="AccountDataAccessTests" />
+        <InternalsVisibleTo Include="PatientTests" />
+        <InternalsVisibleTo Include="DynamicProxyGenAssembly2" />
+    </ItemGroup>
+
 </Project>
