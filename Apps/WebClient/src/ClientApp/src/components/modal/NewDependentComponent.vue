@@ -53,7 +53,7 @@ export default class NewDependentComponent extends Vue {
     private isLoading = true;
     private isDateOfBirthValidDate = true;
     private errorMessage = "";
-    private condensedErrorContactMessage = false;
+    private errorType: ActionType | null = null;
     private dependent: AddDependentRequest = {
         firstName: "",
         lastName: "",
@@ -62,6 +62,57 @@ export default class NewDependentComponent extends Vue {
     };
     private accepted = false;
     private maxDate = new DateWrapper();
+
+    public showModal(): void {
+        this.isVisible = true;
+    }
+
+    public hideModal(): void {
+        this.isVisible = false;
+    }
+
+    @Emit()
+    private handleSubmit(): void {
+        // Hide the modal manually
+        this.$nextTick(() => this.hideModal());
+    }
+
+    private get isError(): boolean {
+        return this.errorType !== null || this.errorMessage.length > 0;
+    }
+
+    private get isErrorDataMismatch(): boolean {
+        return this.errorType === ActionType.DataMismatch;
+    }
+
+    private get isErrorNoHdid(): boolean {
+        return this.errorType === ActionType.NoHdId;
+    }
+
+    private get isErrorProtected(): boolean {
+        return this.errorType === ActionType.Protected;
+    }
+
+    private get isDependentAlreadyAdded(): boolean {
+        return this.dependents.some(
+            (d) =>
+                d.dependentInformation.PHN ===
+                this.dependent.PHN.replace(/\s/g, "")
+        );
+    }
+
+    private get minBirthdate(): DateWrapper {
+        return new DateWrapper().subtract(
+            Duration.fromObject({ years: this.webClientConfig.maxDependentAge })
+        );
+    }
+
+    private created(): void {
+        this.dependentService = container.get<IDependentService>(
+            SERVICE_IDENTIFIER.DependentService
+        );
+        this.isLoading = false;
+    }
 
     private validations(): unknown {
         return {
@@ -95,27 +146,6 @@ export default class NewDependentComponent extends Vue {
         return param.$dirty ? !param.$invalid : undefined;
     }
 
-    private get minBirthdate(): DateWrapper {
-        return new DateWrapper().subtract(
-            Duration.fromObject({ years: this.webClientConfig.maxDependentAge })
-        );
-    }
-
-    public showModal(): void {
-        this.isVisible = true;
-    }
-
-    public hideModal(): void {
-        this.isVisible = false;
-    }
-
-    private created(): void {
-        this.dependentService = container.get<IDependentService>(
-            SERVICE_IDENTIFIER.DependentService
-        );
-        this.isLoading = false;
-    }
-
     private handleOk(bvModalEvt: Event): void {
         // Prevent modal from closing
         bvModalEvt.preventDefault();
@@ -126,14 +156,6 @@ export default class NewDependentComponent extends Vue {
         }
     }
 
-    private get isDependentAlreadyAdded(): boolean {
-        return this.dependents.some(
-            (d) =>
-                d.dependentInformation.PHN ===
-                this.dependent.PHN.replace(/\s/g, "")
-        );
-    }
-
     private addDependent(): void {
         this.dependentService
             .addDependent(this.user.hdid, {
@@ -141,26 +163,17 @@ export default class NewDependentComponent extends Vue {
                 PHN: this.dependent.PHN.replace(/\D/g, ""),
             })
             .then(() => {
-                this.errorMessage = "";
+                this.errorType = null;
                 this.handleSubmit();
             })
             .catch((err: ResultError) => {
                 if (err.statusCode === 429) {
                     this.setTooManyRequestsError({ key: "addDependentModal" });
-                } else if (err.actionCode == ActionType.Protected) {
-                    this.errorMessage = "Unable to add dependent.";
-                    this.condensedErrorContactMessage = true;
                 } else {
                     this.errorMessage = err.resultMessage;
-                    this.condensedErrorContactMessage = false;
+                    this.errorType = err.actionCode ?? null;
                 }
             });
-    }
-
-    @Emit()
-    private handleSubmit(): void {
-        // Hide the modal manually
-        this.$nextTick(() => this.hideModal());
     }
 
     private clear(): void {
@@ -172,6 +185,7 @@ export default class NewDependentComponent extends Vue {
         };
         this.accepted = false;
         this.errorMessage = "";
+        this.errorType = null;
         this.$v.$reset();
     }
 }
@@ -195,11 +209,30 @@ export default class NewDependentComponent extends Vue {
             data-testid="dependentErrorBanner"
             variant="danger"
             class="no-print"
-            :show="!!errorMessage"
+            :show="isError"
         >
-            <p data-testid="dependentErrorText">{{ errorMessage }}</p>
+            <p data-testid="dependentErrorText">
+                <span v-if="isErrorDataMismatch">
+                    The information you entered does not match our records.
+                    Please try again with the exact given and last names on the
+                    BC Services Card.
+                </span>
+                <span v-else-if="isErrorNoHdid">
+                    Please ensure you are using a current
+                    <a
+                        href="https://www2.gov.bc.ca/gov/content/governments/government-id/bc-services-card"
+                        target="_blank"
+                        rel="noopener"
+                        >BC Services Card</a
+                    >.
+                </span>
+                <span v-else-if="isErrorProtected">
+                    Unable to add dependent.
+                </span>
+                <span v-else>{{ errorMessage }}</span>
+            </p>
             <span
-                v-if="condensedErrorContactMessage"
+                v-if="isErrorProtected"
                 data-testid="condensed-error-contact-message"
             >
                 Please contact

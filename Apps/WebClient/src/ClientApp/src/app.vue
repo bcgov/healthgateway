@@ -51,6 +51,7 @@ import type { WebClientConfiguration } from "@/models/configData";
 import container from "@/plugins/container";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import { ILogger } from "@/services/interfaces";
+import { IdleDetector } from "@/utility/idleDetector";
 import AppErrorView from "@/views/errors/AppErrorView.vue";
 
 Vue.use(LayoutPlugin);
@@ -158,35 +159,46 @@ export default class App extends Vue {
     private queuePath = "/queue";
     private queueFullPath = "/busy";
     private landingPath = "/";
+    private idleDetector?: IdleDetector;
 
     constructor() {
         super();
+        logger.debug(`Node ENV: ${Process.NODE_ENV}; host: ${this.host}`);
         logger.debug(
-            `Node ENV: ${JSON.stringify(
-                Process.NODE_ENV
-            )}; host: ${JSON.stringify(this.host)}`
-        );
-        logger.debug(
-            `VUE Config Integrity Environment Variable: ${JSON.stringify(
-                process.env.VUE_APP_CONFIG_INTEGRITY
-            )}`
+            `VUE Config Integrity Environment Variable: ${process.env.VUE_APP_CONFIG_INTEGRITY}`
         );
     }
 
-    @Watch("isAppIdle")
-    private onIsAppIdleChanged(idle: boolean): void {
-        if (idle && this.oidcIsAuthenticated && this.isValidIdentityProvider) {
-            this.idleModal.show();
+    @Watch("oidcIsAuthenticated")
+    private onOidcIsAuthenticatedChanged(value: boolean): void {
+        // enable idle detector when authenticated and disable when not
+        if (value) {
+            this.idleDetector?.enable();
+        } else {
+            this.idleDetector?.disable();
         }
+    }
+
+    get timeBeforeIdle(): number {
+        return this.config?.timeouts?.idle ?? 0;
+    }
+
+    get maxIdleDialogCountdown(): number {
+        return 60000;
     }
 
     private created(): void {
         this.windowWidth = window.innerWidth;
         this.$nextTick(() => {
-            window.addEventListener("resize", this.onResize);
-            this.onResize();
+            this.initializeResizeListener();
+            this.initializeIdleDetector();
             this.initialized = true;
         });
+    }
+
+    private initializeResizeListener() {
+        window.addEventListener("resize", this.onResize);
+        this.onResize();
     }
 
     private beforeDestroy(): void {
@@ -204,6 +216,33 @@ export default class App extends Vue {
             if (this.isMobile) {
                 this.setIsMobile(false);
             }
+        }
+    }
+
+    private initializeIdleDetector() {
+        if (this.timeBeforeIdle > 0) {
+            this.idleDetector = new IdleDetector(
+                (timeIdle) => this.handleIsIdle(timeIdle),
+                this.timeBeforeIdle
+            );
+            if (this.oidcIsAuthenticated) {
+                this.idleDetector.enable();
+            }
+        }
+    }
+
+    private handleIsIdle(timeIdle: number): void {
+        if (!this.oidcIsAuthenticated) {
+            return;
+        }
+
+        const countdownTime = this.maxIdleDialogCountdown - timeIdle;
+        if (countdownTime <= 0) {
+            this.$router.push("/logout");
+        } else {
+            this.idleModal.show(countdownTime, () =>
+                this.idleDetector?.enable()
+            );
         }
     }
 

@@ -62,7 +62,7 @@ namespace HealthGateway.Common.Data.Tests.Validations
         /// <param name="shouldBeValid">The validation result to verify.</param>
         [Theory]
         [MemberData(nameof(Broadcasts))]
-        public void ValidateLessThan(Broadcast broadcast, bool shouldBeValid)
+        public void ValidateBroadcast(Broadcast broadcast, bool shouldBeValid)
         {
             BroadcastValidator validator = new();
             ValidationResult? validationResult = validator.Validate(broadcast);

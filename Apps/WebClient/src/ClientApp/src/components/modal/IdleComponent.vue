@@ -1,50 +1,70 @@
 ﻿<script lang="ts">
+import { BvModalEvent } from "bootstrap-vue";
 import Vue from "vue";
-import { Component, Watch } from "vue-property-decorator";
-import { Action } from "vuex-class";
+import { Component } from "vue-property-decorator";
+import { Action, Getter } from "vuex-class";
+
+import { ReliableTimer } from "@/utility/reliableTimer";
 
 @Component
 export default class IdleComponent extends Vue {
     @Action("setVisibleState", { namespace: "idle" })
-    setVisibleState!: (isVisible: boolean) => void;
+    private setVisibleState!: (isVisible: boolean) => void;
 
-    private readonly maxCountdownTime = 60;
-    private logoutCountdown = this.maxCountdownTime;
-    private isVisible = false;
-    private timerHandle = 0;
-    private timeoutHandle = 0;
+    @Getter("isVisible", { namespace: "idle" })
+    private isVisible!: boolean;
 
-    @Watch("logoutCountdown")
-    private onCountdownUpdate(): void {
-        if (this.logoutCountdown <= 0) {
-            this.$router.push("/logout");
-            window.clearTimeout(this.timeoutHandle);
-            window.clearInterval(this.timerHandle);
-        }
+    private intervalId?: ReturnType<typeof setInterval>;
+    private countdownTimer?: ReliableTimer;
+    private notifyStillHere?: () => void;
+
+    private remainingTime = Number.MAX_SAFE_INTEGER;
+
+    get remainingSeconds(): number {
+        return Math.ceil(this.remainingTime / 1000);
     }
 
-    public show(): void {
-        if (!this.isVisible) {
-            this.timerHandle = window.setInterval(() => this.countdown(), 1000);
-            this.timeoutHandle = window.setTimeout(
-                () => this.setVisibleState(false),
-                1000 * this.maxCountdownTime
-            );
+    show(countdownTime: number, notifyStillHere: () => void): void {
+        if (this.isVisible) {
+            return;
         }
 
-        this.isVisible = true;
+        this.notifyStillHere = notifyStillHere;
+
+        this.intervalId = setInterval(() => this.update(), 1000);
+        this.countdownTimer = new ReliableTimer(
+            () => this.logout(),
+            countdownTime
+        );
+        this.countdownTimer.start();
+        this.update();
+
         this.setVisibleState(true);
     }
 
-    private reset(): void {
-        this.logoutCountdown = this.maxCountdownTime;
-        window.clearTimeout(this.timeoutHandle);
-        window.clearInterval(this.timerHandle);
-        this.setVisibleState(false);
+    private update(): void {
+        if (this.countdownTimer === undefined) {
+            return;
+        }
+        this.remainingTime = this.countdownTimer.remainingTime;
     }
 
-    private countdown(): void {
-        this.logoutCountdown--;
+    private handleHide(event: BvModalEvent): void {
+        if (event.trigger !== null) {
+            // hide was caused by user interaction
+            if (this.notifyStillHere !== undefined) {
+                this.notifyStillHere();
+            }
+            this.setVisibleState(false);
+        }
+
+        clearInterval(this.intervalId);
+        this.countdownTimer?.cancel();
+    }
+
+    private logout(): void {
+        this.$router.push("/logout");
+        this.setVisibleState(false);
     }
 }
 </script>
@@ -52,7 +72,7 @@ export default class IdleComponent extends Vue {
 <template>
     <b-modal
         id="idle-modal"
-        v-model="isVisible"
+        :visible="isVisible"
         data-testid="idleModal"
         header-bg-variant="primary"
         header-text-variant="light"
@@ -60,13 +80,12 @@ export default class IdleComponent extends Vue {
         title="Are you still there?"
         ok-title="I'm here!"
         centered
-        @ok="reset"
-        @hidden="reset"
+        @hide="handleHide"
     >
         <b-row>
             <b-col data-testid="idleModalText">
                 You will be automatically logged out in
-                {{ logoutCountdown }} seconds.
+                {{ remainingSeconds }} seconds.
             </b-col>
         </b-row>
     </b-modal>
