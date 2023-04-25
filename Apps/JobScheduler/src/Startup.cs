@@ -148,6 +148,7 @@ namespace HealthGateway.JobScheduler
 
             GatewayCache.EnableRedis(services, this.logger, this.configuration);
             services.AddHostedService<AuditQueueListener>();
+            MessageBus.ConfigureMessageBus(services, this.configuration);
         }
 
         /// <summary>

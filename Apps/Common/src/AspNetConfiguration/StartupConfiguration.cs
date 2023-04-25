@@ -255,5 +255,14 @@ namespace HealthGateway.Common.AspNetConfiguration
         {
             HttpWeb.UseRest(app, this.Logger);
         }
+
+        /// <summary>
+        /// Configures the app to use messaging
+        /// </summary>
+        /// <param name="services">The service collection provider.</param>
+        public void ConfigureMessaging(IServiceCollection services)
+        {
+            MessageBus.ConfigureMessageBus(services, this.Configuration);
+        }
     }
 }
