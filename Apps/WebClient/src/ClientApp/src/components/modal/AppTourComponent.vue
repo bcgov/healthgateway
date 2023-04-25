@@ -28,7 +28,7 @@ export default class AppTourComponent extends Vue {
     @Getter("isMobile")
     isMobile!: boolean;
 
-    mobileSlides: TourSlide[] = [
+    private mobileSlides: TourSlide[] = [
         // TODO: Final configuration in AB#15392
         {
             title: "MB-Add a Quick Link",
@@ -51,7 +51,7 @@ export default class AppTourComponent extends Vue {
         },
     ];
 
-    desktopSlides: TourSlide[] = [
+    private desktopSlides: TourSlide[] = [
         // TODO: Final configuration in AB#15392
         {
             title: "Add a Quick Link",
@@ -74,9 +74,9 @@ export default class AppTourComponent extends Vue {
         },
     ];
 
-    slideIndex = 0;
+    private slideIndex = 0;
 
-    isVisible = false;
+    private isVisible = false;
 
     public showModal(): void {
         this.isVisible = true;
@@ -87,7 +87,7 @@ export default class AppTourComponent extends Vue {
         this.isVisible = false;
     }
 
-    next(bvModalEvt: Event): void {
+    private next(bvModalEvt: Event): void {
         // Prevent modal from closing
         bvModalEvt.preventDefault();
         if (this.slideIndex < this.slides.length - 1) {
@@ -95,7 +95,7 @@ export default class AppTourComponent extends Vue {
         }
     }
 
-    previous(bvModalEvt: Event): void {
+    private previous(bvModalEvt: Event): void {
         // Prevent modal from closing
         bvModalEvt.preventDefault();
         if (this.slideIndex > 0) {
@@ -103,21 +103,21 @@ export default class AppTourComponent extends Vue {
         }
     }
 
-    get slides(): TourSlide[] {
+    private get slides(): TourSlide[] {
         return this.isMobile ? this.mobileSlides : this.desktopSlides;
     }
 
-    get currentSlide(): TourSlide | undefined {
+    private get currentSlide(): TourSlide | undefined {
         return this.slides.length > 0
             ? this.slides[this.slideIndex]
             : undefined;
     }
 
-    get isFinalSlide(): boolean {
+    private get isFinalSlide(): boolean {
         return this.slideIndex === this.slides.length - 1;
     }
 
-    get isFirstSlide(): boolean {
+    private get isFirstSlide(): boolean {
         return this.slideIndex === 0;
     }
 }
@@ -164,8 +164,9 @@ export default class AppTourComponent extends Vue {
                         variant="link"
                         data-testid="app-tour-skip"
                         @click="hideModal"
-                        >skip</hg-button
                     >
+                        Skip
+                    </hg-button>
                 </b-col>
                 <b-col class="d-flex justify-content-end">
                     <hg-button
@@ -173,15 +174,17 @@ export default class AppTourComponent extends Vue {
                         data-testid="app-tour-back"
                         variant="secondary"
                         @click="previous($event)"
-                        >back</hg-button
                     >
+                        Back
+                    </hg-button>
                     <hg-button
                         variant="primary"
                         class="ml-3"
                         data-testid="app-tour-next"
                         @click="next($event)"
-                        >Next</hg-button
                     >
+                        Next
+                    </hg-button>
                 </b-col>
             </b-row>
             <b-row v-else>
@@ -191,8 +194,9 @@ export default class AppTourComponent extends Vue {
                         class="ml-3"
                         data-testid="app-tour-done"
                         @click="hideModal"
-                        >Done</hg-button
                     >
+                        Done
+                    </hg-button>
                 </b-col>
             </b-row>
         </div>

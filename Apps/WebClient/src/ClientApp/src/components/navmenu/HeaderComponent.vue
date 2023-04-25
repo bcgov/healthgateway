@@ -89,12 +89,12 @@ export default class HeaderComponent extends Vue {
     readonly appTourComponent!: AppTourComponent;
 
     readonly sidebarId = "notification-centre-sidebar";
-    logger!: ILogger;
+    private logger!: ILogger;
 
-    lastScrollTop = 0;
-    static minimumScrollChange = 2;
-    notificationButtonClicked = false;
-    hasViewedTour = false;
+    private lastScrollTop = 0;
+    private static minimumScrollChange = 2;
+    private notificationButtonClicked = false;
+    private hasViewedTour = false;
 
     private get userName(): string {
         if (this.oidcUserInfo === undefined) {
@@ -103,7 +103,7 @@ export default class HeaderComponent extends Vue {
         return `${this.oidcUserInfo.given_name} ${this.oidcUserInfo.family_name}`;
     }
 
-    get userInitials(): string {
+    private get userInitials(): string {
         const first = this.oidcUserInfo?.given_name;
         const last = this.oidcUserInfo?.family_name;
         if (first && last) {
@@ -118,22 +118,21 @@ export default class HeaderComponent extends Vue {
     }
 
     @Watch("isMobileWidth")
-    onMobileWidth(): void {
+    private onMobileWidth(): void {
         if (!this.isMobileWidth) {
             this.setHeaderState(false);
         }
     }
 
-    // listen for successful registration and show the app tour.
     @Watch("$route")
-    onRouteChange(): void {
+    private onRouteChange(): void {
         if (this.$route.query.registration === "success") {
             this.$router.replace({ query: {} });
             this.appTourComponent.showModal();
         }
     }
 
-    created(): void {
+    private created(): void {
         this.logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
         this.$nextTick(() => {
             window.addEventListener("scroll", this.onScroll);
@@ -143,22 +142,22 @@ export default class HeaderComponent extends Vue {
         });
     }
 
-    destroyed(): void {
+    private destroyed(): void {
         window.removeEventListener("scroll", this.onScroll);
     }
 
-    get isPcrTest(): boolean {
+    private get isPcrTest(): boolean {
         return this.$route.path.toLowerCase().startsWith("/pcrtest");
     }
 
-    get isQueuePage(): boolean {
+    private get isQueuePage(): boolean {
         return (
             this.$route.path.toLowerCase() === "/queue" ||
             this.$route.path.toLowerCase() === "/busy"
         );
     }
 
-    get isSidebarButtonShown(): boolean {
+    private get isSidebarButtonShown(): boolean {
         return (
             !this.isOffline &&
             this.oidcIsAuthenticated &&
@@ -172,7 +171,7 @@ export default class HeaderComponent extends Vue {
         );
     }
 
-    get isNotificationCentreAvailable(): boolean {
+    private get isNotificationCentreAvailable(): boolean {
         return (
             this.config.featureToggleConfiguration.notificationCentre.enabled &&
             !this.isOffline &&
@@ -186,15 +185,15 @@ export default class HeaderComponent extends Vue {
         );
     }
 
-    get isLoggedInMenuShown(): boolean {
+    private get isLoggedInMenuShown(): boolean {
         return this.oidcIsAuthenticated && !this.isPcrTest && !this.isQueuePage;
     }
 
-    get isLogOutButtonShown(): boolean {
+    private get isLogOutButtonShown(): boolean {
         return this.oidcIsAuthenticated && this.isPcrTest;
     }
 
-    get isLogInButtonShown(): boolean {
+    private get isLogInButtonShown(): boolean {
         return (
             !this.oidcIsAuthenticated &&
             !this.isOffline &&
@@ -203,7 +202,7 @@ export default class HeaderComponent extends Vue {
         );
     }
 
-    get isProfileLinkAvailable(): boolean {
+    private get isProfileLinkAvailable(): boolean {
         return (
             this.isLoggedInMenuShown &&
             this.isValidIdentityProvider &&
@@ -211,7 +210,7 @@ export default class HeaderComponent extends Vue {
         );
     }
 
-    get newNotifications(): Notification[] {
+    private get newNotifications(): Notification[] {
         this.logger.debug(`User last login: ${this.userLastLoginDateTime}`);
         if (this.userLastLoginDateTime) {
             const lastLoginDateTime = new DateWrapper(
@@ -227,18 +226,18 @@ export default class HeaderComponent extends Vue {
         return this.notifications;
     }
 
-    get notificationBadgeContent(): string | boolean {
+    private get notificationBadgeContent(): string | boolean {
         const count = this.newNotifications.length;
         return count === 0 || this.notificationButtonClicked
             ? false
             : count.toString();
     }
 
-    get highlightTourChangeIndicator(): boolean {
+    private get highlightTourChangeIndicator(): boolean {
         return this.user.hasTourUpdated && !this.hasViewedTour;
     }
 
-    onScroll(): void {
+    private onScroll(): void {
         let st = window.scrollY || document.documentElement.scrollTop;
         if (
             Math.abs(st - this.lastScrollTop) >
@@ -261,15 +260,15 @@ export default class HeaderComponent extends Vue {
         this.lastScrollTop = st <= 0 ? 0 : st;
     }
 
-    handleToggleClick(): void {
+    private handleToggleClick(): void {
         this.toggleSidebar();
     }
 
-    toggleMenu(): void {
+    private toggleMenu(): void {
         this.toggleSidebar();
     }
 
-    handleLogoutClick(): void {
+    private handleLogoutClick(): void {
         if (this.isValidIdentityProvider) {
             this.showRating();
         } else {
@@ -277,16 +276,16 @@ export default class HeaderComponent extends Vue {
         }
     }
 
-    handleShowTourClick(): void {
+    private handleShowTourClick(): void {
         this.hasViewedTour = true;
         this.appTourComponent.showModal();
     }
 
-    showRating(): void {
+    private showRating(): void {
         this.ratingComponent.showModal();
     }
 
-    processLogout(): void {
+    private processLogout(): void {
         this.logger.debug(`redirecting to logout view ...`);
         this.$router.push({ path: "/logout" });
     }
@@ -428,7 +427,7 @@ export default class HeaderComponent extends Vue {
         </b-navbar>
 
         <RatingComponent ref="ratingComponent" @on-close="processLogout()" />
-        <app-tour-component ref="appTourComponent" />
+        <AppTourComponent ref="appTourComponent" />
     </header>
 </template>
 

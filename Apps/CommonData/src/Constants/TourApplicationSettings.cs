@@ -13,7 +13,7 @@
 //  See the License for the specific language governing permissions and
 //  limitations under the License.
 // -------------------------------------------------------------------------
-namespace HealthGateway.GatewayApi.Constants
+namespace HealthGateway.Common.Data.Constants
 {
     /// <summary>
     /// Contains the ApplicationSettings values and mapping logic for the TourConfiguration.
