@@ -63,6 +63,20 @@ export default class NewDependentComponent extends Vue {
     private accepted = false;
     private maxDate = new DateWrapper();
 
+    public showModal(): void {
+        this.isVisible = true;
+    }
+
+    public hideModal(): void {
+        this.isVisible = false;
+    }
+
+    @Emit()
+    private handleSubmit(): void {
+        // Hide the modal manually
+        this.$nextTick(() => this.hideModal());
+    }
+
     private get isError(): boolean {
         return this.errorType !== null || this.errorMessage.length > 0;
     }
@@ -77,6 +91,27 @@ export default class NewDependentComponent extends Vue {
 
     private get isErrorProtected(): boolean {
         return this.errorType === ActionType.Protected;
+    }
+
+    private get isDependentAlreadyAdded(): boolean {
+        return this.dependents.some(
+            (d) =>
+                d.dependentInformation.PHN ===
+                this.dependent.PHN.replace(/\s/g, "")
+        );
+    }
+
+    private get minBirthdate(): DateWrapper {
+        return new DateWrapper().subtract(
+            Duration.fromObject({ years: this.webClientConfig.maxDependentAge })
+        );
+    }
+
+    private created(): void {
+        this.dependentService = container.get<IDependentService>(
+            SERVICE_IDENTIFIER.DependentService
+        );
+        this.isLoading = false;
     }
 
     private validations(): unknown {
@@ -111,27 +146,6 @@ export default class NewDependentComponent extends Vue {
         return param.$dirty ? !param.$invalid : undefined;
     }
 
-    private get minBirthdate(): DateWrapper {
-        return new DateWrapper().subtract(
-            Duration.fromObject({ years: this.webClientConfig.maxDependentAge })
-        );
-    }
-
-    public showModal(): void {
-        this.isVisible = true;
-    }
-
-    public hideModal(): void {
-        this.isVisible = false;
-    }
-
-    private created(): void {
-        this.dependentService = container.get<IDependentService>(
-            SERVICE_IDENTIFIER.DependentService
-        );
-        this.isLoading = false;
-    }
-
     private handleOk(bvModalEvt: Event): void {
         // Prevent modal from closing
         bvModalEvt.preventDefault();
@@ -140,14 +154,6 @@ export default class NewDependentComponent extends Vue {
             this.$v.$reset();
             this.addDependent();
         }
-    }
-
-    private get isDependentAlreadyAdded(): boolean {
-        return this.dependents.some(
-            (d) =>
-                d.dependentInformation.PHN ===
-                this.dependent.PHN.replace(/\s/g, "")
-        );
     }
 
     private addDependent(): void {
@@ -168,12 +174,6 @@ export default class NewDependentComponent extends Vue {
                     this.errorType = err.actionCode ?? null;
                 }
             });
-    }
-
-    @Emit()
-    private handleSubmit(): void {
-        // Hide the modal manually
-        this.$nextTick(() => this.hideModal());
     }
 
     private clear(): void {
