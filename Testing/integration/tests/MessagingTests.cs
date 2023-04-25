@@ -14,21 +14,25 @@
 //  limitations under the License.
 // -------------------------------------------------------------------------
 
-namespace IntegrationTests;
+namespace HealthGateway.IntegrationTests;
 
 using System.Collections.Concurrent;
+using Hangfire;
+using Hangfire.PostgreSql;
 using HealthGateway.Common.Messaging;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Shouldly;
 using Xunit.Abstractions;
 
 #pragma warning disable CA1063 // Implement IDisposable Correctly
 
-public class MessagingTests : ScenarioContextBase<HealthGateway.GatewayApi.Startup>, IDisposable
+public class MessagingTests : ScenarioContextBase<GatewayApi.Startup>, IDisposable
 {
     private readonly CancellationTokenSource cts;
     private IMessageSender sender = null!;
     private IMessageReceiver receiver = null!;
+    private BackgroundJobServer hangfireBackgroundJobServer = null!;
 
     public MessagingTests(ITestOutputHelper output, WebAppFixture fixture) : base(output, fixture)
     {
@@ -38,8 +42,15 @@ public class MessagingTests : ScenarioContextBase<HealthGateway.GatewayApi.Start
     public override async Task InitializeAsync()
     {
         await base.InitializeAsync();
+
         this.sender = this.Host.Services.GetRequiredService<IMessageSender>();
         this.receiver = this.Host.Services.GetRequiredService<IMessageReceiver>();
+
+        GlobalConfiguration.Configuration.UsePostgreSqlStorage(this.Host.Services.GetRequiredService<IConfiguration>().GetConnectionString("GatewayConnection"));
+        this.hangfireBackgroundJobServer = new BackgroundJobServer(new BackgroundJobServerOptions
+        {
+            Queues = new[] { HangFireOutboxDispatcher.OutboxQueueName },
+        });
     }
 
     private async Task SendMessages(IEnumerable<MessageBase>[] messages, CancellationToken ct)
@@ -120,8 +131,9 @@ public class MessagingTests : ScenarioContextBase<HealthGateway.GatewayApi.Start
 
     public void Dispose()
     {
+        this.cts.Dispose();
+        this.hangfireBackgroundJobServer.Dispose();
         GC.SuppressFinalize(this);
-        cts.Dispose();
     }
 
 #pragma warning restore CA1063 // Implement IDisposable Correctly

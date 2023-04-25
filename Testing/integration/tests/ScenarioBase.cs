@@ -21,7 +21,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Xunit.Abstractions;
 
-namespace IntegrationTests;
+namespace HealthGateway.IntegrationTests;
 
 #pragma warning disable CA1822 // Mark members as static
 #pragma warning disable S3220 // Method calls should not resolve ambiguously to overloads with "params"

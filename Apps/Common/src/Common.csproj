@@ -69,4 +69,7 @@
         </Content>
     </ItemGroup>
 
+    <ItemGroup>
+        <InternalsVisibleTo Include="IntegrationTests" />
+    </ItemGroup>
 </Project>

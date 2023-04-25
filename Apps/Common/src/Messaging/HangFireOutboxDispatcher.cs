@@ -24,6 +24,8 @@ using Microsoft.Extensions.Logging;
 
 internal class HangFireOutboxDispatcher : IOutboxStore
 {
+    public const string OutboxQueueName = "outbox";
+
     private readonly IBackgroundJobClient backgroundJobClient;
     private readonly IMessageSender messageSender;
     private readonly ILogger<HangFireOutboxDispatcher> logger;
@@ -39,9 +41,10 @@ internal class HangFireOutboxDispatcher : IOutboxStore
     {
         this.logger.LogDebug("Storing messages");
         await Task.CompletedTask;
-        this.backgroundJobClient.Enqueue(() => this.ForwardAsync(messages, default));
+        this.backgroundJobClient.Enqueue(() => this.ForwardAsync(messages, CancellationToken.None));
     }
 
+    [Queue(OutboxQueueName)]
     public async Task ForwardAsync(IEnumerable<MessageBase> messages, CancellationToken ct = default)
     {
         this.logger.LogDebug("Forwarding messages");
