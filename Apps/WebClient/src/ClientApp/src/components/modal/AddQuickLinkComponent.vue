@@ -268,7 +268,6 @@ export default class AddQuickLinkComponent extends Vue {
         id="add-quick-link-modal"
         v-model="isVisible"
         data-testid="add-quick-link-modal"
-        content-class="mt-5"
         title="Add a quick link"
         size="lg"
         header-bg-variant="primary"
